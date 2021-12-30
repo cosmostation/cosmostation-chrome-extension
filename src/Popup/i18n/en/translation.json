@@ -1,0 +1,75 @@
+{
+  "ledger": {
+    "cosmos": {
+      "error": {
+        "0x0001": "U2F: Unknown",
+        "0x0002": "U2F: Bad request",
+        "0x0003": "U2F: Configuration unsupported",
+        "0x0004": "U2F: Device Ineligible",
+        "0x0005": "U2F: Timeout",
+        "0x000e": "Timeout",
+        "0x6400": "Execution Error",
+        "0x6700": "Wrong Length",
+        "0x6802": "Error deriving keys",
+        "0x6982": "Empty Buffer",
+        "0x6983": "Output buffer too small",
+        "0x6984": "Data is invalid",
+        "0x6985": "Conditions not satisfied",
+        "0x6986": "Transaction rejected",
+        "0x6a80": "Bad key handle",
+        "0x6b00": "Invalid P1/P2",
+        "0x6d00": "Instruction not supported",
+        "0x6e00": "App does not seem to be open",
+        "0x6f00": "Unknown error",
+        "0x6f01": "Sign/verify error",
+        "0x9000": "No errors",
+        "0x9001": "Device is busy",
+        "0xa0000": "App Version is not supported",
+        "0xa0001": "Invalid HRP",
+        "0xa0002": "Transport has not been defined",
+        "0xa0003": "decompressed public key length should be 65 bytes",
+        "0xb0000": "transport is not exist",
+        "default": "Unknown Error"
+      }
+    }
+  },
+  "page": {
+    "dddd": {
+      "dddd": "__STRING_NOT_TRANSLATED__"
+    }
+  },
+  "schema": {
+    "PrivateKeyForm": {
+      "name": {
+        "any": {
+          "invlid": "name is duplicated"
+        }
+      }
+    },
+    "common": {
+      "string": {
+        "base": "문자를 입력하세요.",
+        "empty": "입력하세요.",
+        "min": "min {#limit}자 이상 입력하셔야 합니다."
+      }
+    },
+    "mnemonicForm": {
+      "mnemonic": "mnemonic is invalid",
+      "name": {
+        "any": {
+          "invlid": "name is duplicated"
+        }
+      }
+    },
+    "passwordForm": {
+      "repeatPassword": {
+        "any": {
+          "only": "비밀번호가 동일하지 않습니다."
+        }
+      }
+    },
+    "privateKeyForm": {
+      "privateKey": "Private Key is invalid"
+    }
+  }
+}
