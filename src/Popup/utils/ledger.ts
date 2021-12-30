@@ -2,20 +2,21 @@ import TransportWebBle from '@ledgerhq/hw-transport-web-ble';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
-export type TransportType = 'USB' | 'HID' | 'Bluetooth';
+import { TRANSPORT_TYPE } from '~/constants/ledger';
+import type { TransportType } from '~/types/ledger';
 
 export async function createTransport(type: TransportType) {
-  if ((await TransportWebUSB.isSupported()) && type === 'USB') {
+  if ((await TransportWebUSB.isSupported()) && type === TRANSPORT_TYPE.USB) {
     const transport = await TransportWebUSB.create();
     return transport;
   }
 
-  if ((await TransportWebHID.isSupported()) && type === 'HID') {
+  if ((await TransportWebHID.isSupported()) && type === TRANSPORT_TYPE.HID) {
     const transport = await TransportWebHID.create();
     return transport;
   }
 
-  if ((await TransportWebBle.isSupported()) && type === 'Bluetooth') {
+  if ((await TransportWebBle.isSupported()) && type === TRANSPORT_TYPE.BLUETOOTH) {
     const transport = await TransportWebBle.create();
     return transport;
   }

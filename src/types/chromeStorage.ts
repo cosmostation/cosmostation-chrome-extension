@@ -14,6 +14,7 @@ export type AccountCommon = {
 
 export type LedgerAccount = {
   type: typeof ACCOUNT_TYPE.LEDGER;
+  bip44: Omit<BIP44, 'purpose' | 'coinType'>;
   publicKey: Uint8Array;
 };
 
