@@ -8,6 +8,8 @@ import type { TransportType } from '~/types/ledger';
 export type LedgerForm = {
   transportType: TransportType;
   name: string;
+  account: number;
+  addressIndex: number;
 };
 
 type useSchemaProps = {
@@ -28,7 +30,25 @@ export function useSchema({ name }: useSchemaProps) {
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
-        'any.invalid': t('schema.mnemonicForm.name.any.invlid'),
+        'any.invalid': t('schema.ledgerForm.name.any.invlid'),
+      }),
+    account: Joi.number()
+      .required()
+      .min(0)
+      .max(100)
+      .messages({
+        'number.base': t('schema.common.number.base'),
+        'number.min': t('schema.common.number.min'),
+        'number.max': t('schema.common.number.max'),
+      }),
+    addressIndex: Joi.number()
+      .required()
+      .min(0)
+      .max(100)
+      .messages({
+        'number.base': t('schema.common.number.base'),
+        'number.min': t('schema.common.number.min'),
+        'number.max': t('schema.common.number.max'),
       }),
   });
 

@@ -48,10 +48,22 @@
       }
     },
     "common": {
+      "number": {
+        "base": "숫자를 입력하세요.",
+        "max": "{#limit} 이하의 값을 입력하셔야 합니다.",
+        "min": "{#limit} 이상의 값을 입력하셔야 합니다."
+      },
       "string": {
         "base": "문자를 입력하세요.",
         "empty": "입력하세요.",
         "min": "최소 {#limit}자 이상 입력하셔야 합니다."
+      }
+    },
+    "ledgerForm": {
+      "name": {
+        "any": {
+          "invlid": "이름이 중복됩니다."
+        }
       }
     },
     "mnemonicForm": {

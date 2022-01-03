@@ -47,10 +47,12 @@ export default function PrivateKey() {
     shouldFocusError: true,
     defaultValues: {
       transportType: TRANSPORT_TYPE.USB,
+      account: 0,
+      addressIndex: 0,
     },
   });
 
-  const step1HandleSubmit = async (data: LedgerForm) => {
+  const submit = async (data: LedgerForm) => {
     setIsLoading(true);
     console.log(data);
     try {
@@ -59,7 +61,7 @@ export default function PrivateKey() {
       try {
         const cosmos = await cosmosApp();
 
-        const publicKey = await cosmos.getPublicKey(new Uint8Array([44, 118, 0, 0, 0]));
+        const publicKey = await cosmos.getPublicKey(new Uint8Array([44, 118, data.account, 0, data.addressIndex]));
 
         await setChromeStorage('accounts', [
           ...chromeStorage.accounts,
@@ -68,7 +70,7 @@ export default function PrivateKey() {
             allowedOrigins: [],
             name: data.name,
             publicKey: publicKey.compressed_pk.toString('hex'),
-            bip44: { coinType: '118', account: '0', change: '0', addressIndex: '0' },
+            bip44: { coinType: '118', account: `${data.account}`, change: '0', addressIndex: `${data.addressIndex}` },
           },
         ]);
       } catch (e) {
@@ -85,7 +87,7 @@ export default function PrivateKey() {
 
   return (
     <Container>
-      <form onSubmit={handleSubmit(step1HandleSubmit)}>
+      <form onSubmit={handleSubmit(submit)}>
         <FormControl component="fieldset">
           <FormLabel component="legend">transport type</FormLabel>
           <Controller
@@ -101,6 +103,59 @@ export default function PrivateKey() {
           />
         </FormControl>
         <TextField {...register('name')} error={!!errors.name} helperText={errors.name?.message} />
+        <Controller
+          control={control}
+          name="account"
+          render={({ field }) => {
+            const { onChange, ...remainder } = field;
+            return (
+              <TextField
+                {...remainder}
+                onChange={(event) => {
+                  const { value } = event.currentTarget;
+
+                  const toNumber = Number(value);
+
+                  if (!Number.isNaN(toNumber)) {
+                    if (toNumber < 0) {
+                      return;
+                    }
+                    onChange(toNumber);
+                  }
+                }}
+                error={!!errors.account}
+                helperText={errors.account?.message}
+              />
+            );
+          }}
+        />
+        <Controller
+          control={control}
+          name="addressIndex"
+          render={({ field }) => {
+            const { onChange, ...remainder } = field;
+            return (
+              <TextField
+                {...remainder}
+                onChange={(event) => {
+                  const { value } = event.currentTarget;
+
+                  const toNumber = Number(value);
+
+                  if (!Number.isNaN(toNumber)) {
+                    if (toNumber < 0) {
+                      return;
+                    }
+                    onChange(toNumber);
+                  }
+                }}
+                error={!!errors.addressIndex}
+                helperText={errors.addressIndex?.message}
+              />
+            );
+          }}
+        />
+
         <Button type="submit" variant="contained" disabled={isLoading}>
           {isLoading ? <CircularProgress /> : 'connection'}
         </Button>
