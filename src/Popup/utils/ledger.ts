@@ -5,6 +5,15 @@ import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { TRANSPORT_TYPE } from '~/constants/ledger';
 import type { TransportType } from '~/types/ledger';
 
+export class LedgerError extends Error {
+  public errorCode: number;
+
+  constructor(errorCode: number, message?: string) {
+    super(message);
+    this.errorCode = errorCode;
+  }
+}
+
 export async function createTransport(type: TransportType) {
   if ((await TransportWebUSB.isSupported()) && type === TRANSPORT_TYPE.USB) {
     const transport = await TransportWebUSB.create();
@@ -21,5 +30,5 @@ export async function createTransport(type: TransportType) {
     return transport;
   }
 
-  return null;
+  throw new LedgerError(499, 'Not Supported');
 }

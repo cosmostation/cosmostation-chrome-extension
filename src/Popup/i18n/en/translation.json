@@ -29,6 +29,7 @@
         "0xa0002": "Transport has not been defined",
         "0xa0003": "decompressed public key length should be 65 bytes",
         "0xb0000": "transport is not exist",
+        "0xb0001": "not supported",
         "default": "Unknown Error"
       }
     }

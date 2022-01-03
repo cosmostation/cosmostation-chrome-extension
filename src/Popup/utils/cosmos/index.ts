@@ -5,8 +5,8 @@ import sha256 from 'crypto-js/sha256';
 import type Transport from '@ledgerhq/hw-transport';
 
 import { APP_KEY, CHUNK_SIZE, CLA, ERROR_CODE, INS } from './constants';
-import type { LedgerErrorType } from './error';
-import { errorCodeToString, errorResponse, LedgerError } from './error';
+import type { CosmosLedgerErrorType } from './error';
+import { CosmosLedgerError, errorCodeToString, errorResponse } from './error';
 import { publicKeyv1, serializePathv1, signSendChunkv1 } from './helperV1';
 import { publicKeyv2, serializePathv2, signSendChunkv2 } from './helperV2';
 
@@ -25,7 +25,7 @@ export default class Cosmos {
 
   constructor(transport: Transport, scrambleKey = APP_KEY) {
     if (!transport) {
-      throw new LedgerError(0xa0002, errorCodeToString(0xa0002));
+      throw new CosmosLedgerError(0xa0002, errorCodeToString(0xa0002));
     }
 
     this.transport = transport;
@@ -45,9 +45,9 @@ export default class Cosmos {
         patch: response[3],
         deviceLocked: response[4] === 1,
       }),
-      (e: LedgerErrorType) => {
+      (e: CosmosLedgerErrorType) => {
         const error = errorResponse(e);
-        throw new LedgerError(error.return_code, error.error_message);
+        throw new CosmosLedgerError(error.return_code, error.error_message);
       },
     );
   }
@@ -55,9 +55,9 @@ export default class Cosmos {
   isLocked() {
     return this.transport.send(CLA, INS.GET_VERSION, 0, 0).then(
       (response) => response[4] === 1,
-      (e: LedgerErrorType) => {
+      (e: CosmosLedgerErrorType) => {
         const error = errorResponse(e);
-        throw new LedgerError(error.return_code, error.error_message);
+        throw new CosmosLedgerError(error.return_code, error.error_message);
       },
     );
   }
@@ -73,7 +73,7 @@ export default class Cosmos {
         return publicKeyv2(this.transport, data);
       }
       default:
-        throw new LedgerError(0xa0000, errorCodeToString(0xa0000));
+        throw new CosmosLedgerError(0xa0000, errorCodeToString(0xa0000));
     }
   }
 
@@ -101,16 +101,16 @@ export default class Cosmos {
           signature: result.signature,
         };
       },
-      (e: LedgerErrorType) => {
+      (e: CosmosLedgerErrorType) => {
         const error = errorResponse(e);
-        throw new LedgerError(error.return_code, error.error_message);
+        throw new CosmosLedgerError(error.return_code, error.error_message);
       },
     );
   }
 
   static serializeHRP(hrp: string): Buffer {
     if (hrp == null || hrp.length < 3 || hrp.length > 83) {
-      throw new LedgerError(0xa0001, errorCodeToString(0xa0001));
+      throw new CosmosLedgerError(0xa0001, errorCodeToString(0xa0001));
     }
 
     const buf = Buffer.alloc(1 + hrp.length);
@@ -132,7 +132,7 @@ export default class Cosmos {
       case 2:
         return serializePathv2(path);
       default:
-        throw new LedgerError(0xa0000, errorCodeToString(0xa0000));
+        throw new CosmosLedgerError(0xa0000, errorCodeToString(0xa0000));
     }
   }
 
@@ -161,7 +161,7 @@ export default class Cosmos {
       case 2:
         return signSendChunkv2(this.transport, chunkIdx, chunkNum, chunk);
       default:
-        throw new LedgerError(0xa0000, errorCodeToString(0xa0000));
+        throw new CosmosLedgerError(0xa0000, errorCodeToString(0xa0000));
     }
   }
 }

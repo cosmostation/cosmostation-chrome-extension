@@ -1,8 +1,8 @@
 import type Transport from '@ledgerhq/hw-transport';
 
 import { CLA, ERROR_CODE, INS, PAYLOAD_TYPE } from './constants';
-import type { LedgerErrorType } from './error';
-import { errorCodeToString, errorResponse, LedgerError } from './error';
+import type { CosmosLedgerErrorType } from './error';
+import { CosmosLedgerError, errorCodeToString, errorResponse } from './error';
 import { signSendChunkv1 } from './helperV1';
 
 export function serializePathv2(path: Uint8Array) {
@@ -45,9 +45,9 @@ export function publicKeyv2(transport: Transport, data: Buffer) {
         error_message: errorCodeToString(returnCode),
       };
     },
-    (e: LedgerErrorType) => {
+    (e: CosmosLedgerErrorType) => {
       const error = errorResponse(e);
-      throw new LedgerError(error.return_code, error.error_message);
+      throw new CosmosLedgerError(error.return_code, error.error_message);
     },
   );
 }

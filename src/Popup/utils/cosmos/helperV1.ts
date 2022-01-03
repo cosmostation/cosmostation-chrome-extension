@@ -1,8 +1,8 @@
 import type Transport from '@ledgerhq/hw-transport';
 
 import { CLA, ERROR_CODE, INS } from './constants';
-import type { LedgerErrorType } from './error';
-import { errorCodeToString, errorResponse, LedgerError } from './error';
+import type { CosmosLedgerErrorType } from './error';
+import { CosmosLedgerError, errorCodeToString, errorResponse } from './error';
 
 export function serializePathv1(path: Uint8Array) {
   if (path == null || path.length < 3) {
@@ -46,16 +46,16 @@ export function signSendChunkv1(transport: Transport, chunkIdx: number, chunkNum
         error_message: errorMessage,
       };
     },
-    (e: LedgerErrorType) => {
+    (e: CosmosLedgerErrorType) => {
       const error = errorResponse(e);
-      throw new LedgerError(error.return_code, error.error_message);
+      throw new CosmosLedgerError(error.return_code, error.error_message);
     },
   );
 }
 
 function compressPublicKey(publicKey: Buffer) {
   if (publicKey.length !== 65) {
-    throw new LedgerError(0xa0003, errorCodeToString(0xa0003));
+    throw new CosmosLedgerError(0xa0003, errorCodeToString(0xa0003));
   }
   const y = publicKey.slice(33, 65);
   // eslint-disable-next-line no-bitwise
@@ -76,9 +76,9 @@ export function publicKeyv1(transport: Transport, data?: Buffer) {
         error_message: errorCodeToString(returnCode),
       };
     },
-    (e: LedgerErrorType) => {
+    (e: CosmosLedgerErrorType) => {
       const error = errorResponse(e);
-      throw new LedgerError(error.return_code, error.error_message);
+      throw new CosmosLedgerError(error.return_code, error.error_message);
     },
   );
 }

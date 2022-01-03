@@ -37,22 +37,22 @@ export default function Mnemonic() {
     },
   });
 
-  const submit = (data: MnemonicForm) => {
+  const submit = async (data: MnemonicForm) => {
     console.log(data);
 
-    // if (inMemory.password) {
-    //   await setChromeStorage('accounts', [
-    //     ...chromeStorage.accounts,
-    //     {
-    //       type: 'MNEMONIC',
-    //       allowedOrigins: [],
-    //       coinType: data.coinType,
-    //       bip44: { account: '0', addressIndex: '0', change: '0' },
-    //       encryptedMnemonic: aesEncrypt(data.mnemonic, inMemory.password),
-    //       name: data.name,
-    //     },
-    //   ]);
-    // }
+    if (inMemory.password) {
+      await setChromeStorage('accounts', [
+        ...chromeStorage.accounts,
+        {
+          type: 'MNEMONIC',
+          allowedOrigins: [],
+          coinType: data.coinType,
+          bip44: { account: '0', addressIndex: '0', change: '0' },
+          encryptedMnemonic: aesEncrypt(data.mnemonic, inMemory.password),
+          name: data.name,
+        },
+      ]);
+    }
   };
 
   useEffect(() => {

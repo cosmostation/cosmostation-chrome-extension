@@ -1,6 +1,6 @@
 import { ERROR_DESCRIPTION } from './constants';
 
-export class LedgerError extends Error {
+export class CosmosLedgerError extends Error {
   public errorCode: number;
 
   constructor(errorCode: number, message?: string) {
@@ -9,7 +9,7 @@ export class LedgerError extends Error {
   }
 }
 
-export type LedgerErrorType = {
+export type CosmosLedgerErrorType = {
   statusCode: number;
 };
 
@@ -29,7 +29,7 @@ type ErrorResponse = {
   error_message: string;
 };
 
-export function errorResponse(response: LedgerErrorType): ErrorResponse {
+export function errorResponse(response: CosmosLedgerErrorType): ErrorResponse {
   console.log(response);
   if (response) {
     if (isDict(response)) {

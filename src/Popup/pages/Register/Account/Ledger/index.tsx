@@ -2,7 +2,16 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { Button, CircularProgress, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  TextField,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { TRANSPORT_TYPE } from '~/constants/ledger';
@@ -11,7 +20,7 @@ import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useLedgerCosmos } from '~/Popup/hooks/useLedgerCosmos';
 import type { TransportType } from '~/types/ledger';
 
-import type { Step1Form } from './useSchema';
+import type { LedgerForm } from './useSchema';
 import { useSchema } from './useSchema';
 
 const Container = styled('div')(({ theme }) => ({
@@ -21,14 +30,19 @@ const Container = styled('div')(({ theme }) => ({
 export default function PrivateKey() {
   const navigate = useNavigate();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { transport, cosmosApp } = useLedgerCosmos();
+  const { cosmosApp, createTransport, closeTransport } = useLedgerCosmos();
   const { inMemory } = useInMemory();
 
   const [isLoading, setIsLoading] = useState(false);
-  const { step1FormSchema } = useSchema();
+  const { ledgerFormSchema } = useSchema({ name: [...chromeStorage.accounts.map((account) => account.name), 'test'] });
 
-  const step1Form = useForm<Step1Form>({
-    resolver: joiResolver(step1FormSchema),
+  const {
+    handleSubmit,
+    control,
+    register,
+    formState: { errors },
+  } = useForm<LedgerForm>({
+    resolver: joiResolver(ledgerFormSchema),
     mode: 'all',
     shouldFocusError: true,
     defaultValues: {
@@ -36,32 +50,46 @@ export default function PrivateKey() {
     },
   });
 
-  const step1HandleSubmit = async (data: Step1Form) => {
+  const step1HandleSubmit = async (data: LedgerForm) => {
     setIsLoading(true);
     console.log(data);
     try {
-      const cosmos = await cosmosApp(data.transportType, false);
+      await createTransport(data.transportType);
 
       try {
-        await cosmos.init();
+        const cosmos = await cosmosApp();
+
+        const publicKey = await cosmos.getPublicKey(new Uint8Array([44, 118, 0, 0, 0]));
+
+        await setChromeStorage('accounts', [
+          ...chromeStorage.accounts,
+          {
+            type: 'LEDGER',
+            allowedOrigins: [],
+            name: data.name,
+            publicKey: publicKey.compressed_pk.toString('hex'),
+            bip44: { coinType: '118', account: '0', change: '0', addressIndex: '0' },
+          },
+        ]);
       } catch (e) {
         console.log(e);
-        setIsLoading(false);
       }
     } catch (e) {
       // await cosmos.cl
       console.log(e);
+    } finally {
+      await closeTransport();
       setIsLoading(false);
     }
   };
 
   return (
     <Container>
-      <form onSubmit={step1Form.handleSubmit(step1HandleSubmit)}>
+      <form onSubmit={handleSubmit(step1HandleSubmit)}>
         <FormControl component="fieldset">
           <FormLabel component="legend">transport type</FormLabel>
           <Controller
-            control={step1Form.control}
+            control={control}
             name="transportType"
             render={({ field }) => (
               <RadioGroup aria-label="transportType" {...field}>
@@ -72,6 +100,7 @@ export default function PrivateKey() {
             )}
           />
         </FormControl>
+        <TextField {...register('name')} error={!!errors.name} helperText={errors.name?.message} />
         <Button type="submit" variant="contained" disabled={isLoading}>
           {isLoading ? <CircularProgress /> : 'connection'}
         </Button>
