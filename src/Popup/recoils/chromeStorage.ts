@@ -6,12 +6,13 @@ import type { ChromeStorage } from '~/types/chromeStorage';
 export const chromeStorageState = atom<ChromeStorage>({
   key: 'chromeStorageState',
   default: {
-    encryptedPassword: null,
-    accounts: [],
-    selectedAccountName: '',
-    queues: [],
     theme: THEME_TYPE.LIGHT,
-    windowId: null,
+    accounts: [],
+    queues: [],
     additionalChains: [],
+    encryptedPassword: null,
+    windowId: null,
+    selectedAccountName: '',
+    selectedChain: 'cosmos',
   },
 });

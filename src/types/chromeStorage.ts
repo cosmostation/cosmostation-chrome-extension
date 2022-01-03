@@ -42,11 +42,12 @@ export type Queue = {
 export type ChromeStorage = {
   encryptedPassword: string | null;
   accounts: Account[];
-  selectedAccountName: string;
   queues: Queue[];
   theme: ThemeType;
   windowId: number | null;
   additionalChains: Chain[];
+  selectedAccountName: string;
+  selectedChain: string;
 };
 
 export type ChromeStorageKeys = keyof ChromeStorage;
