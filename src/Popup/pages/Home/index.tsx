@@ -51,7 +51,7 @@ export default function HOME() {
       <button
         type="button"
         onClick={async () => {
-          await setChromeStorage('password', null);
+          await setChromeStorage('encryptedPassword', null);
         }}
       >
         password

@@ -30,12 +30,12 @@ export default function Lock({ children }: LockProps) {
 
   const submit = async (data: PasswordForm) => {
     const password = sha512(data.password);
-    if (chromeStorage.password === password) {
+    if (chromeStorage.encryptedPassword === password) {
       await setInMemory('password', data.password);
     }
   };
 
-  if (inMemory.password === null && chromeStorage.password) {
+  if (inMemory.password === null && chromeStorage.encryptedPassword) {
     return (
       <div>
         <div>lock page</div>

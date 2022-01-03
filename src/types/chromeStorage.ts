@@ -1,7 +1,7 @@
 import type { ACCOUNT_COIN_TYPE, ACCOUNT_TYPE } from '~/constants/chromeStorage';
 import type { ThemeType } from '~/types/theme';
 
-import type { BIP44 } from './chain';
+import type { BIP44, Chain } from './chain';
 import type { RequestMessage } from './message';
 
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
@@ -40,12 +40,13 @@ export type Queue = {
 };
 
 export type ChromeStorage = {
-  password: string | null;
+  encryptedPassword: string | null;
   accounts: Account[];
   selectedAccountName: string;
   queues: Queue[];
   theme: ThemeType;
   windowId: number | null;
+  additionalChains: Chain[];
 };
 
 export type ChromeStorageKeys = keyof ChromeStorage;

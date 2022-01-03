@@ -16,13 +16,13 @@ export default function Routes({ children }: RoutesType) {
 
   useEffect(() => {
     void (async function async() {
-      if (!chromeStorage.password) {
+      if (!chromeStorage.encryptedPassword) {
         console.log(chromeStorage);
         await openTab();
         navigate('/register/password');
       }
 
-      if (chromeStorage.password && chromeStorage.accounts.length < 1) {
+      if (chromeStorage.encryptedPassword && chromeStorage.accounts.length < 1) {
         await openTab();
         navigate('/register/account');
       }

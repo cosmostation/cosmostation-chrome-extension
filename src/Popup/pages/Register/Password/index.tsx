@@ -29,16 +29,16 @@ export default function Password() {
   });
 
   const submit = async (data: PasswordForm) => {
-    await setChromeStorage('password', sha512(data.password));
+    await setChromeStorage('encryptedPassword', sha512(data.password));
     await setInMemory('password', data.password);
     navigate('/register/account');
   };
 
   useEffect(() => {
-    if (chromeStorage.password) {
+    if (chromeStorage.encryptedPassword) {
       navigate('/', { replace: true });
     }
-  }, [chromeStorage.password, navigate]);
+  }, [chromeStorage.encryptedPassword, navigate]);
 
   useEffect(() => {
     console.log(errors);

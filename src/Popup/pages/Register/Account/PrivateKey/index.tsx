@@ -37,12 +37,14 @@ export default function PrivateKey() {
     console.log(data);
 
     if (inMemory.password) {
+      const privateKey = data.privateKey.startsWith('0x') ? data.privateKey.substring(2) : data.privateKey;
+
       await setChromeStorage('accounts', [
         ...chromeStorage.accounts,
         {
           type: 'PRIVATE_KEY',
           allowedOrigins: [],
-          encryptedPrivateKey: aesEncrypt(data.privateKey, inMemory.password),
+          encryptedPrivateKey: aesEncrypt(privateKey, inMemory.password),
           name: data.name,
         },
       ]);

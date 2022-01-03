@@ -12,7 +12,9 @@ export type Chain = {
   rest: string;
   baseDenom: string;
   displayDenom: string;
-  decimal: string;
+  decimal: number;
   coinType: BIP44['coinType']; // BIP44
-  addressPrefix: string;
+  bech32Prefix: {
+    address: string;
+  };
 };
