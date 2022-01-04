@@ -20,6 +20,7 @@ import Register from '~/Popup/pages/Register';
 import RegisterAccount from '~/Popup/pages/Register/Account';
 import RehisterAccountLedger from '~/Popup/pages/Register/Account/Ledger';
 import RehisterAccountMnemonic from '~/Popup/pages/Register/Account/Mnemonic';
+import RehisterAccountNew from '~/Popup/pages/Register/Account/New';
 import RehisterAccountPrivateKey from '~/Popup/pages/Register/Account/PrivateKey';
 import RegisterPassword from '~/Popup/pages/Register/Password';
 import { darkTheme, lightTheme } from '~/Popup/styles/theme';
@@ -49,6 +50,7 @@ function Popup() {
                 <Route path={PATH.REGISTER__ACCOUNT__MNEMONIC} element={<RehisterAccountMnemonic />} />
                 <Route path={PATH.REGISTER__ACCOUNT__PRIVATE_KEY} element={<RehisterAccountPrivateKey />} />
                 <Route path={PATH.REGISTER__ACCOUNT__LEDGER} element={<RehisterAccountLedger />} />
+                <Route path={PATH.REGISTER__ACCOUNT__NEW} element={<RehisterAccountNew />} />
               </Routes>
             </Lock>
             <Routes>

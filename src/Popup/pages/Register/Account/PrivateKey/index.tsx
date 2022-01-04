@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -39,15 +40,21 @@ export default function PrivateKey() {
     if (inMemory.password) {
       const privateKey = data.privateKey.startsWith('0x') ? data.privateKey.substring(2) : data.privateKey;
 
+      const accountId = uuidv4();
+
       await setChromeStorage('accounts', [
         ...chromeStorage.accounts,
         {
+          id: accountId,
           type: 'PRIVATE_KEY',
           allowedOrigins: [],
           encryptedPrivateKey: aesEncrypt(privateKey, inMemory.password),
           name: data.name,
         },
       ]);
+
+      await setChromeStorage('selectedAccountId', accountId);
+
       console.log(aesDecrypt(aesEncrypt(data.privateKey, inMemory.password), inMemory.password));
     }
   };
@@ -59,6 +66,9 @@ export default function PrivateKey() {
   return (
     <Container>
       <form onSubmit={handleSubmit(submit)}>
+        <div>
+          <TextField {...register('name')} error={!!errors.name} helperText={errors.name?.message} />
+        </div>
         <TextField
           multiline
           rows={4}
@@ -66,7 +76,7 @@ export default function PrivateKey() {
           error={!!errors.privateKey}
           helperText={errors.privateKey?.message}
         />
-        <TextField {...register('name')} error={!!errors.name} helperText={errors.name?.message} />
+
         <Button type="submit" variant="contained">
           register
         </Button>

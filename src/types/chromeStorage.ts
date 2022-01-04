@@ -8,6 +8,7 @@ export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
 export type AccountCoinType = ValueOf<typeof ACCOUNT_COIN_TYPE>;
 
 export type AccountCommon = {
+  id: string;
   name: string;
   allowedOrigins: string[];
 };
@@ -46,7 +47,7 @@ export type ChromeStorage = {
   theme: ThemeType;
   windowId: number | null;
   additionalChains: Chain[];
-  selectedAccountName: string;
+  selectedAccountId: string;
   selectedChain: string;
 };
 

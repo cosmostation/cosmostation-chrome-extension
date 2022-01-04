@@ -12,7 +12,7 @@ export const chromeStorageState = atom<ChromeStorage>({
     additionalChains: [],
     encryptedPassword: null,
     windowId: null,
-    selectedAccountName: '',
+    selectedAccountId: '',
     selectedChain: 'cosmos',
   },
 });

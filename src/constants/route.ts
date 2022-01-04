@@ -6,4 +6,5 @@ export const PATH = {
   REGISTER__ACCOUNT__MNEMONIC: '/register/account/mnemonic',
   REGISTER__ACCOUNT__LEDGER: '/register/account/ledger',
   REGISTER__ACCOUNT__PRIVATE_KEY: '/register/account/private-key',
+  REGISTER__ACCOUNT__NEW: '/register/account/new',
 } as const;

@@ -80,7 +80,7 @@ function background() {
         await setStorage('accounts', []);
         await setStorage('encryptedPassword', null);
         await setStorage('theme', THEME_TYPE.LIGHT);
-        await setStorage('selectedAccountName', '');
+        await setStorage('selectedAccountId', '');
         await openTab();
       }
     })();

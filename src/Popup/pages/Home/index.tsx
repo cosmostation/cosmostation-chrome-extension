@@ -1,9 +1,11 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { THEME_TYPE } from '~/constants/theme';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrentAccount';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { emitToWeb } from '~/Popup/utils/message';
 
@@ -15,6 +17,7 @@ export default function HOME() {
   const navigate = useNavigate();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { setInMemory } = useInMemory();
+  const { currentAccount } = useCurrentAccount();
 
   const handleOnClick = () => {
     navigate('/register');
@@ -23,6 +26,10 @@ export default function HOME() {
   const handleTheme = async () => {
     await setChromeStorage('theme', chromeStorage.theme === THEME_TYPE.LIGHT ? THEME_TYPE.DARK : THEME_TYPE.LIGHT);
   };
+
+  if (!currentAccount) {
+    return null;
+  }
 
   return (
     <Container>
@@ -68,6 +75,8 @@ export default function HOME() {
         cosmos
       </Button>
       HOME
+      <div>{currentAccount.name}</div>
+      <div>{currentAccount.type}</div>
       {process.env.RUN_MODE}
     </Container>
   );

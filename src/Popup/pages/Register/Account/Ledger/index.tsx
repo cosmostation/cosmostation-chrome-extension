@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { TransportOpenUserCancelled, TransportStatusError } from '@ledgerhq/errors';
 import {
@@ -67,9 +68,12 @@ export default function PrivateKey() {
 
         const publicKey = await cosmos.getPublicKey(new Uint8Array([44, 118, data.account, 0, data.addressIndex]));
 
+        const accountId = uuidv4();
+
         await setChromeStorage('accounts', [
           ...chromeStorage.accounts,
           {
+            id: accountId,
             type: 'LEDGER',
             allowedOrigins: [],
             name: data.name,
@@ -77,6 +81,8 @@ export default function PrivateKey() {
             bip44: { coinType: '118', account: `${data.account}`, change: '0', addressIndex: `${data.addressIndex}` },
           },
         ]);
+
+        await setChromeStorage('selectedAccountId', accountId);
       } catch (e) {
         // if (e instanceof CosmosAppError) {
         //   enqueueSnackbar(e.message);
@@ -97,21 +103,26 @@ export default function PrivateKey() {
   return (
     <Container>
       <form onSubmit={handleSubmit(submit)}>
-        <FormControl component="fieldset">
-          <FormLabel component="legend">transport type</FormLabel>
-          <Controller
-            control={control}
-            name="transportType"
-            render={({ field }) => (
-              <RadioGroup aria-label="transportType" {...field}>
-                <FormControlLabel value={TRANSPORT_TYPE.USB} control={<Radio />} label="USB" />
-                <FormControlLabel value={TRANSPORT_TYPE.HID} control={<Radio />} label="HID" />
-                <FormControlLabel value={TRANSPORT_TYPE.BLUETOOTH} control={<Radio />} label="Bluetooth" />
-              </RadioGroup>
-            )}
-          />
-        </FormControl>
-        <TextField {...register('name')} error={!!errors.name} helperText={errors.name?.message} />
+        <div>
+          <TextField {...register('name')} error={!!errors.name} helperText={errors.name?.message} />
+        </div>
+        <div>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">transport type</FormLabel>
+            <Controller
+              control={control}
+              name="transportType"
+              render={({ field }) => (
+                <RadioGroup aria-label="transportType" {...field}>
+                  <FormControlLabel value={TRANSPORT_TYPE.USB} control={<Radio />} label="USB" />
+                  <FormControlLabel value={TRANSPORT_TYPE.HID} control={<Radio />} label="HID" />
+                  <FormControlLabel value={TRANSPORT_TYPE.BLUETOOTH} control={<Radio />} label="Bluetooth" />
+                </RadioGroup>
+              )}
+            />
+          </FormControl>
+        </div>
+
         <Controller
           control={control}
           name="account"

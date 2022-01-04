@@ -46,6 +46,16 @@ export default function Account() {
       >
         Private Key
       </Button>
+      <Button
+        type="button"
+        variant="contained"
+        color="success"
+        onClick={() => {
+          navigate('/register/account/new');
+        }}
+      >
+        New
+      </Button>
     </Container>
   );
 }

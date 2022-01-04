@@ -1,9 +1,20 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import * as bip39 from 'bip39';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
+import {
+  Button,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { ACCOUNT_COIN_TYPE } from '~/constants/chromeStorage';
@@ -12,33 +23,41 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { aesEncrypt } from '~/Popup/utils/crypto';
 
-import type { MnemonicForm } from './useSchema';
+import type { NewMnemonicForm } from './useSchema';
 import { useSchema } from './useSchema';
 
 const Container = styled('div')(({ theme }) => ({
   backgroundColor: theme.colors.backgroundColor,
 }));
 
-export default function Mnemonic() {
+type Strength = 128 | 256;
+
+export default function New() {
   const navigate = useNavigate();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { mnemonicForm } = useSchema({ name: [...chromeStorage.accounts.map((account) => account.name), 'test'] });
+  const { newMnemonicForm } = useSchema({ name: [...chromeStorage.accounts.map((account) => account.name), 'test'] });
   const { inMemory } = useInMemory();
+
+  const [stength, setStrength] = useState<Strength>(128);
+  const [mnemonic, setMnemonic] = useState(bip39.generateMnemonic(stength));
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<MnemonicForm>({
-    resolver: joiResolver(mnemonicForm),
+  } = useForm<NewMnemonicForm>({
+    resolver: joiResolver(newMnemonicForm),
     mode: 'onSubmit',
     shouldFocusError: true,
     defaultValues: {
       coinType: ACCOUNT_COIN_TYPE.COSMOS,
+      account: 0,
+      change: 0,
+      addressIndex: 0,
     },
   });
 
-  const submit = async (data: MnemonicForm) => {
+  const submit = async (data: NewMnemonicForm) => {
     console.log(data);
 
     if (inMemory.password) {
@@ -51,7 +70,7 @@ export default function Mnemonic() {
           allowedOrigins: [],
           coinType: data.coinType,
           bip44: { account: `${data.account}'`, change: `${data.change}`, addressIndex: `${data.addressIndex}` },
-          encryptedMnemonic: aesEncrypt(data.mnemonic, inMemory.password),
+          encryptedMnemonic: aesEncrypt(mnemonic, inMemory.password),
           name: data.name,
         },
       ]);
@@ -66,6 +85,27 @@ export default function Mnemonic() {
 
   return (
     <Container>
+      <div>
+        <ToggleButtonGroup
+          value={stength}
+          exclusive
+          onChange={(_, newStrength: Strength | null) => {
+            if (newStrength !== null) {
+              setStrength(newStrength);
+              setMnemonic(bip39.generateMnemonic(newStrength));
+            }
+          }}
+          aria-label="text alignment"
+        >
+          <ToggleButton value={128} aria-label="left aligned">
+            12
+          </ToggleButton>
+          <ToggleButton value={256} aria-label="right aligned">
+            24
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </div>
+      <div>{mnemonic}</div>
       <form onSubmit={handleSubmit(submit)}>
         <div>
           <TextField {...register('name')} error={!!errors.name} helperText={errors.name?.message} />
@@ -84,15 +124,6 @@ export default function Mnemonic() {
               )}
             />
           </FormControl>
-        </div>
-        <div>
-          <TextField
-            multiline
-            rows={4}
-            {...register('mnemonic')}
-            error={!!errors.mnemonic}
-            helperText={errors.mnemonic?.message}
-          />
         </div>
         <div>
           <Controller

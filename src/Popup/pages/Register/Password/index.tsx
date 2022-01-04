@@ -38,7 +38,8 @@ export default function Password() {
     if (chromeStorage.encryptedPassword) {
       navigate('/', { replace: true });
     }
-  }, [chromeStorage.encryptedPassword, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     console.log(errors);
