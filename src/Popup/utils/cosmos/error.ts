@@ -5,7 +5,10 @@ export class CosmosLedgerError extends Error {
 
   constructor(errorCode: number, message?: string) {
     super(message);
+    this.name = 'CosmosLedgerError';
     this.errorCode = errorCode;
+
+    Object.setPrototypeOf(this, CosmosLedgerError.prototype);
   }
 }
 
@@ -30,7 +33,6 @@ type ErrorResponse = {
 };
 
 export function errorResponse(response: CosmosLedgerErrorType): ErrorResponse {
-  console.log(response);
   if (response) {
     if (isDict(response)) {
       if (Object.prototype.hasOwnProperty.call(response, 'statusCode')) {

@@ -4,11 +4,14 @@ import '~/Popup/styles/normalize.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter, Route, Routes } from 'react-router-dom';
+import { SnackbarProvider } from 'notistack';
 import { RecoilRoot } from 'recoil';
+import Grow from '@mui/material/Grow';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { PATH } from '~/constants/route';
 import { THEME_TYPE } from '~/constants/theme';
+import LoadingOverlay from '~/Popup/components/Loading/Overlay';
 import Lock from '~/Popup/components/Lock';
 import Wrapper from '~/Popup/components/Wrapper';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -33,19 +36,26 @@ function Popup() {
     <HashRouter>
       <Wrapper>
         <ThemeProvider theme={theme}>
-          <Lock>
+          <SnackbarProvider
+            maxSnack={3}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            TransitionComponent={Grow as React.ComponentType}
+          >
+            <Lock>
+              <Routes>
+                <Route path={PATH.HOME} element={<Home />} />
+                <Route path={PATH.REGISTER} element={<Register />} />
+                <Route path={PATH.REGISTER__ACCOUNT} element={<RegisterAccount />} />
+                <Route path={PATH.REGISTER__ACCOUNT__MNEMONIC} element={<RehisterAccountMnemonic />} />
+                <Route path={PATH.REGISTER__ACCOUNT__PRIVATE_KEY} element={<RehisterAccountPrivateKey />} />
+                <Route path={PATH.REGISTER__ACCOUNT__LEDGER} element={<RehisterAccountLedger />} />
+              </Routes>
+            </Lock>
             <Routes>
-              <Route path={PATH.HOME} element={<Home />} />
-              <Route path={PATH.REGISTER} element={<Register />} />
-              <Route path={PATH.REGISTER__ACCOUNT} element={<RegisterAccount />} />
-              <Route path={PATH.REGISTER__ACCOUNT__MNEMONIC} element={<RehisterAccountMnemonic />} />
-              <Route path={PATH.REGISTER__ACCOUNT__PRIVATE_KEY} element={<RehisterAccountPrivateKey />} />
-              <Route path={PATH.REGISTER__ACCOUNT__LEDGER} element={<RehisterAccountLedger />} />
+              <Route path={PATH.REGISTER__PASSWORD} element={<RegisterPassword />} />
             </Routes>
-          </Lock>
-          <Routes>
-            <Route path={PATH.REGISTER__PASSWORD} element={<RegisterPassword />} />
-          </Routes>
+            <LoadingOverlay />
+          </SnackbarProvider>
         </ThemeProvider>
       </Wrapper>
     </HashRouter>

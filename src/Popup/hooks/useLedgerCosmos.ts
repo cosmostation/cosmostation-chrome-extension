@@ -13,6 +13,7 @@ export class CosmosAppError extends Error {
   constructor(errorCode: number, message?: string) {
     super(message);
     this.errorCode = errorCode;
+    this.name = 'CosmosAppError';
   }
 }
 
@@ -38,6 +39,7 @@ export function useLedgerCosmos() {
             throw new CosmosAppError(0xb0001, getMessageFromReturnCode(0xb0001));
           }
         }
+        throw e;
       }
     },
     closeTransport: async () => {
@@ -146,6 +148,8 @@ export function useLedgerCosmos() {
         return t('ledger.cosmos.error.0x6f00');
       case 0x6f01:
         return t('ledger.cosmos.error.0x6f01');
+      case 0x6e01: // app 선택이 안되었을 때인 듯
+        return t('ledger.cosmos.error.0x6E01');
       case 0xa0000:
         return t('ledger.cosmos.error.0xa0000');
       case 0xa0001:

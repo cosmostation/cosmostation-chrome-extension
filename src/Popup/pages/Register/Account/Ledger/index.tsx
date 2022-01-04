@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 import { joiResolver } from '@hookform/resolvers/joi';
+import { TransportOpenUserCancelled, TransportStatusError } from '@ledgerhq/errors';
 import {
   Button,
   CircularProgress,
@@ -17,7 +19,8 @@ import { styled } from '@mui/material/styles';
 import { TRANSPORT_TYPE } from '~/constants/ledger';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
-import { useLedgerCosmos } from '~/Popup/hooks/useLedgerCosmos';
+import { CosmosAppError, useLedgerCosmos } from '~/Popup/hooks/useLedgerCosmos';
+import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import type { TransportType } from '~/types/ledger';
 
 import type { LedgerForm } from './useSchema';
@@ -32,9 +35,10 @@ export default function PrivateKey() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { cosmosApp, createTransport, closeTransport } = useLedgerCosmos();
   const { inMemory } = useInMemory();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const [isLoading, setIsLoading] = useState(false);
   const { ledgerFormSchema } = useSchema({ name: [...chromeStorage.accounts.map((account) => account.name), 'test'] });
+  const setLoadingOverlay = useLoadingOverlay();
 
   const {
     handleSubmit,
@@ -53,7 +57,7 @@ export default function PrivateKey() {
   });
 
   const submit = async (data: LedgerForm) => {
-    setIsLoading(true);
+    setLoadingOverlay(true);
     console.log(data);
     try {
       await createTransport(data.transportType);
@@ -74,14 +78,19 @@ export default function PrivateKey() {
           },
         ]);
       } catch (e) {
-        console.log(e);
+        // if (e instanceof CosmosAppError) {
+        //   enqueueSnackbar(e.message);
+        // }
+
+        enqueueSnackbar((e as { message: string }).message);
       }
     } catch (e) {
-      // await cosmos.cl
-      console.log(e);
+      if (!(e instanceof TransportOpenUserCancelled)) {
+        enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+      }
     } finally {
       await closeTransport();
-      setIsLoading(false);
+      setLoadingOverlay(false);
     }
   };
 
@@ -156,8 +165,8 @@ export default function PrivateKey() {
           }}
         />
 
-        <Button type="submit" variant="contained" disabled={isLoading}>
-          {isLoading ? <CircularProgress /> : 'connection'}
+        <Button type="submit" variant="contained">
+          connection
         </Button>
       </form>
     </Container>
