@@ -1,4 +1,4 @@
-import type { IN_MEMORY_MESSAGE_TYPE, LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
+import type { IN_MEMORY_MESSAGE_TYPE, LISTENER_TYPE, MESSAGE_TYPE, METHOD_TYPE } from '~/constants/message';
 
 import type { InMemoryData, InMemoryDataKeys } from './inMemory';
 
@@ -15,10 +15,11 @@ export type ResponseMessage = {
   data: unknown | null;
 };
 
-export type RequestMessage = {
-  method: string;
-  params: unknown;
+export type RequestAccountMessage = {
+  method: typeof METHOD_TYPE.REQUEST_ACCOUNT;
 };
+
+export type RequestMessage = RequestAccountMessage;
 
 // window.postMessage 통신
 // isCosmostation: extension 확인 플래그

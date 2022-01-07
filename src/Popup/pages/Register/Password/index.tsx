@@ -13,7 +13,7 @@ import type { PasswordForm } from './useSchema';
 import { useSchema } from './useSchema';
 
 export default function Password() {
-  const { i18n } = useTranslation();
+  const { changeLanguage, language } = useTranslation();
   const { inMemory, setInMemory } = useInMemory();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { navigate } = useNavigate();
@@ -63,8 +63,8 @@ export default function Password() {
       </form>
       <Button
         type="button"
-        onClick={() => {
-          void i18n.changeLanguage(i18n.language === 'ko' ? 'en' : 'ko');
+        onClick={async () => {
+          await changeLanguage(language === 'ko' ? 'en' : 'ko');
         }}
       >
         toggle

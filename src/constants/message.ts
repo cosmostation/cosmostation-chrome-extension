@@ -18,3 +18,7 @@ export const IN_MEMORY_MESSAGE_TYPE = {
   GET_ALL: 'getAll',
   SET: 'set',
 } as const;
+
+export const METHOD_TYPE = {
+  REQUEST_ACCOUNT: 'requestAccount',
+};

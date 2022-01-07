@@ -1,6 +1,8 @@
+import '~/Popup/i18n/background';
+
 import { IN_MEMORY_MESSAGE_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import { THEME_TYPE } from '~/constants/theme';
-import { setStorage } from '~/Popup/utils/chromeStorage';
+import { getCurrentAccount, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
 import type {
   ContentScriptToBackgroundEventMessage,
@@ -9,6 +11,7 @@ import type {
   ResponseMessage,
 } from '~/types/message';
 
+import { initI18n } from './i18n';
 import { inMemory } from './inMemory';
 import { persistent } from './persistent';
 
@@ -17,10 +20,15 @@ function background() {
   console.log('background start');
 
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, sender) => {
-    console.log('content-script to background', request, sender);
+    console.log('content-script to background request sender', request, sender);
+    // console.log('localStorage', localStorage.getItem('i18nextLng'));
 
     if (request?.type === MESSAGE_TYPE.REQUEST__CONTENT_SCRIPT_TO_BACKGROUND) {
       void (async function asyncHandler() {
+        const { t } = await initI18n();
+        if (request.message.method === 'requestAccount') {
+          const currentAccount = await getCurrentAccount();
+        }
         chrome.tabs.query({ url: `${request.origin}/*` }, (tabs) => {
           tabs.forEach((tab) => {
             console.log('tabid', tab.id);
@@ -28,7 +36,7 @@ function background() {
               const toContentScriptMessage: ContentScriptToBackgroundEventMessage<ResponseMessage> = {
                 type: MESSAGE_TYPE.RESPONSE__CONTENT_SCRIPT_TO_BACKGROUND,
                 messageId: request.messageId,
-                message: { data: request.message, error: null },
+                message: { data: t('schema.common.string.empty'), error: null },
                 origin: request.origin,
               };
               chrome.tabs.sendMessage(tab.id, toContentScriptMessage);

@@ -14,5 +14,6 @@ export const chromeStorageState = atom<ChromeStorage>({
     windowId: null,
     selectedAccountId: '',
     selectedChain: 'cosmos',
+    language: 'en',
   },
 });

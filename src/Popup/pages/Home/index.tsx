@@ -7,6 +7,7 @@ import { THEME_TYPE } from '~/constants/theme';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrentAccount';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { emitToWeb } from '~/Popup/utils/message';
 
 const Container = styled('div')(({ theme }) => ({
@@ -18,6 +19,7 @@ export default function HOME() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { setInMemory } = useInMemory();
   const { currentAccount } = useCurrentAccount();
+  const { changeLanguage, language } = useTranslation();
 
   const handleOnClick = () => {
     navigate('/register');
@@ -71,8 +73,13 @@ export default function HOME() {
       >
         clear
       </button>
-      <Button type="button" onClick={() => null}>
-        cosmos
+      <Button
+        type="button"
+        onClick={async () => {
+          await changeLanguage(language === 'ko' ? 'en' : 'ko');
+        }}
+      >
+        변경
       </Button>
       HOME
       <div>{currentAccount.name}</div>

@@ -8,3 +8,8 @@ export const ACCOUNT_COIN_TYPE = {
   COSMOS: 'COSMOS',
   FOUNDATION: 'FOUNDATION',
 } as const;
+
+export const LANGUAGE_TYPE = {
+  KO: 'ko',
+  EN: 'en',
+} as const;

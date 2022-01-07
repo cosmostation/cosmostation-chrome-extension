@@ -1,4 +1,4 @@
-import type { ACCOUNT_COIN_TYPE, ACCOUNT_TYPE } from '~/constants/chromeStorage';
+import type { ACCOUNT_COIN_TYPE, ACCOUNT_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import type { ThemeType } from '~/types/theme';
 
 import type { BIP44, Chain } from './chain';
@@ -6,6 +6,7 @@ import type { RequestMessage } from './message';
 
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
 export type AccountCoinType = ValueOf<typeof ACCOUNT_COIN_TYPE>;
+export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 
 export type AccountCommon = {
   id: string;
@@ -49,6 +50,7 @@ export type ChromeStorage = {
   additionalChains: Chain[];
   selectedAccountId: string;
   selectedChain: string;
+  language: LanguageType;
 };
 
 export type ChromeStorageKeys = keyof ChromeStorage;

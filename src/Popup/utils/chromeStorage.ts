@@ -32,3 +32,11 @@ export function setStorage<T extends ChromeStorageKeys>(key: T, value: ChromeSto
     });
   });
 }
+
+export async function getCurrentAccount() {
+  const storage = await getAllStorage();
+
+  const { accounts, selectedAccountId } = storage;
+
+  return accounts.find((account) => account.id === selectedAccountId) || null;
+}
