@@ -1,7 +1,14 @@
+import BIP32Factory from 'bip32';
+import * as bip39 from 'bip39';
 import aes from 'crypto-js/aes';
 import encHex from 'crypto-js/enc-hex';
 import encUtf8 from 'crypto-js/enc-utf8';
 import baseSha512 from 'crypto-js/sha512';
+import { ECPairFactory } from 'ecpair';
+import * as TinySecp256k1 from 'tiny-secp256k1';
+
+const bip32 = BIP32Factory(TinySecp256k1);
+const ECPair = ECPairFactory(TinySecp256k1);
 
 export function sha512(message: string) {
   return baseSha512(message).toString(encHex);
@@ -37,4 +44,20 @@ function cmpBN32(data1: Uint8Array, data2: Uint8Array): number {
     }
   }
   return 0;
+}
+
+export function mnemonicToPair(mnemonic: string, path: string) {
+  const seed = bip39.mnemonicToSeedSync(mnemonic);
+  const node = bip32.fromSeed(seed);
+  const child = node.derivePath(path);
+
+  return { privateKey: child.privateKey!, publicKey: child.publicKey };
+}
+
+export function privateKeyToPair(privateKey: Buffer) {
+  const ecpair = ECPair.fromPrivateKey(privateKey, {
+    compressed: true,
+  });
+
+  return { privateKey: ecpair.privateKey!, publicKey: ecpair.publicKey };
 }

@@ -86,6 +86,7 @@ function background() {
         await setStorage('queues', []);
         await setStorage('windowId', null);
         await setStorage('accounts', []);
+        await setStorage('additionalChains', []);
         await setStorage('encryptedPassword', null);
         await setStorage('theme', THEME_TYPE.LIGHT);
         await setStorage('selectedAccountId', '');

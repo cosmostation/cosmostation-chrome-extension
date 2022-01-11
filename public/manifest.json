@@ -28,5 +28,8 @@
   "permissions": ["storage", "scripting"],
 
   "host_permissions": ["<all_urls>"],
-  "web_accessible_resources": [{ "resources": ["js/injectScript.js"], "matches": ["<all_urls>"] }]
+  "web_accessible_resources": [{ "resources": ["js/injectScript.js"], "matches": ["<all_urls>"] }],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }

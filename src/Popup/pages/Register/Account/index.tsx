@@ -20,16 +20,6 @@ export default function Account() {
       <Button
         type="button"
         variant="contained"
-        color="info"
-        onClick={() => {
-          navigate('/register/account/ledger');
-        }}
-      >
-        Ledger
-      </Button>
-      <Button
-        type="button"
-        variant="contained"
         color="warning"
         onClick={() => {
           navigate('/register/account/mnemonic');

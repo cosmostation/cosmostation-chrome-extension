@@ -1,0 +1,9 @@
+POST http://61.74.179.193:51001
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_getBalance",
+    "params": ["0xE4A7e953486D01d4Fdc76986a0c88fa4F87B30e5", "latest"],
+    "id": 1
+}

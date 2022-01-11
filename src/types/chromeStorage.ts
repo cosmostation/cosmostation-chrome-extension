@@ -1,17 +1,18 @@
-import type { ACCOUNT_COIN_TYPE, ACCOUNT_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
+import type { ACCOUNT_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import type { ThemeType } from '~/types/theme';
 
 import type { BIP44, Chain } from './chain';
 import type { RequestMessage } from './message';
 
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
-export type AccountCoinType = ValueOf<typeof ACCOUNT_COIN_TYPE>;
 export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 
 export type AccountCommon = {
   id: string;
   name: string;
   allowedOrigins: string[];
+  allowedChains: string[];
+  selectedChain: string;
 };
 
 export type LedgerAccount = {
@@ -23,8 +24,7 @@ export type LedgerAccount = {
 export type MnemonicAccount = {
   type: typeof ACCOUNT_TYPE.MNEMONIC;
   encryptedMnemonic: string;
-  coinType: AccountCoinType;
-  bip44: Omit<BIP44, 'purpose' | 'coinType'>;
+  bip44: Omit<BIP44, 'purpose' | 'coinType' | 'account' | 'change'>;
 };
 
 export type PrivateKeyAccount = {
@@ -49,7 +49,6 @@ export type ChromeStorage = {
   windowId: number | null;
   additionalChains: Chain[];
   selectedAccountId: string;
-  selectedChain: string;
   language: LanguageType;
 };
 

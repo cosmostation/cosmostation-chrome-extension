@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 
 import { THEME_TYPE } from '~/constants/theme';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrentAccount } from '~/Popup/hooks/useCurrentAccount';
+import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { emitToWeb } from '~/Popup/utils/message';
@@ -18,8 +18,10 @@ export default function HOME() {
   const navigate = useNavigate();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { setInMemory } = useInMemory();
-  const { currentAccount } = useCurrentAccount();
   const { changeLanguage, language } = useTranslation();
+  const current = useCurrent();
+
+  const { currentAccount } = current;
 
   const handleOnClick = () => {
     navigate('/register');
@@ -35,6 +37,7 @@ export default function HOME() {
 
   return (
     <Container>
+      {JSON.stringify(current, undefined, 2)}
       <button type="button" onClick={handleOnClick}>
         register
       </button>

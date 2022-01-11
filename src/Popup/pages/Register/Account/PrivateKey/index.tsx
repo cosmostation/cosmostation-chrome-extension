@@ -6,7 +6,6 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import { ACCOUNT_COIN_TYPE } from '~/constants/chromeStorage';
 import { THEME_TYPE } from '~/constants/theme';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
@@ -48,6 +47,8 @@ export default function PrivateKey() {
           id: accountId,
           type: 'PRIVATE_KEY',
           allowedOrigins: [],
+          allowedChains: [],
+          selectedChain: '',
           encryptedPrivateKey: aesEncrypt(privateKey, inMemory.password),
           name: data.name,
         },

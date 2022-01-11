@@ -6,7 +6,6 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import { ACCOUNT_COIN_TYPE } from '~/constants/chromeStorage';
 import { THEME_TYPE } from '~/constants/theme';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
@@ -33,9 +32,6 @@ export default function Mnemonic() {
     resolver: joiResolver(mnemonicForm),
     mode: 'onSubmit',
     shouldFocusError: true,
-    defaultValues: {
-      coinType: ACCOUNT_COIN_TYPE.COSMOS,
-    },
   });
 
   const submit = async (data: MnemonicForm) => {
@@ -49,8 +45,9 @@ export default function Mnemonic() {
           id: accountId,
           type: 'MNEMONIC',
           allowedOrigins: [],
-          coinType: data.coinType,
-          bip44: { account: `${data.account}'`, change: `${data.change}`, addressIndex: `${data.addressIndex}` },
+          allowedChains: ['62a8e13a-3107-40ef-ade4-58de45aa6c1f'],
+          selectedChain: '62a8e13a-3107-40ef-ade4-58de45aa6c1f',
+          bip44: { addressIndex: `${data.addressIndex}` },
           encryptedMnemonic: aesEncrypt(data.mnemonic, inMemory.password),
           name: data.name,
         },
@@ -70,21 +67,7 @@ export default function Mnemonic() {
         <div>
           <TextField {...register('name')} error={!!errors.name} helperText={errors.name?.message} />
         </div>
-        <div>
-          <FormControl component="fieldset">
-            <FormLabel component="legend">coin type</FormLabel>
-            <Controller
-              name="coinType"
-              control={control}
-              render={({ field }) => (
-                <RadioGroup aria-label="coinType" {...field}>
-                  <FormControlLabel value={ACCOUNT_COIN_TYPE.COSMOS} control={<Radio />} label="cosmos" />
-                  <FormControlLabel value={ACCOUNT_COIN_TYPE.FOUNDATION} control={<Radio />} label="foundation" />
-                </RadioGroup>
-              )}
-            />
-          </FormControl>
-        </div>
+
         <div>
           <TextField
             multiline
@@ -95,58 +78,6 @@ export default function Mnemonic() {
           />
         </div>
         <div>
-          <Controller
-            control={control}
-            name="account"
-            render={({ field }) => {
-              const { onChange, ...remainder } = field;
-              return (
-                <TextField
-                  {...remainder}
-                  onChange={(event) => {
-                    const { value } = event.currentTarget;
-
-                    const toNumber = Number(value);
-
-                    if (!Number.isNaN(toNumber)) {
-                      if (toNumber < 0) {
-                        return;
-                      }
-                      onChange(toNumber);
-                    }
-                  }}
-                  error={!!errors.account}
-                  helperText={errors.account?.message}
-                />
-              );
-            }}
-          />
-          <Controller
-            control={control}
-            name="change"
-            render={({ field }) => {
-              const { onChange, ...remainder } = field;
-              return (
-                <TextField
-                  {...remainder}
-                  onChange={(event) => {
-                    const { value } = event.currentTarget;
-
-                    const toNumber = Number(value);
-
-                    if (!Number.isNaN(toNumber)) {
-                      if (toNumber < 0) {
-                        return;
-                      }
-                      onChange(toNumber);
-                    }
-                  }}
-                  error={!!errors.change}
-                  helperText={errors.change?.message}
-                />
-              );
-            }}
-          />
           <Controller
             control={control}
             name="addressIndex"

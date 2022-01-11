@@ -18,7 +18,6 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import Home from '~/Popup/pages/Home';
 import Register from '~/Popup/pages/Register';
 import RegisterAccount from '~/Popup/pages/Register/Account';
-import RehisterAccountLedger from '~/Popup/pages/Register/Account/Ledger';
 import RehisterAccountMnemonic from '~/Popup/pages/Register/Account/Mnemonic';
 import RehisterAccountNew from '~/Popup/pages/Register/Account/New';
 import RehisterAccountPrivateKey from '~/Popup/pages/Register/Account/PrivateKey';
@@ -49,7 +48,6 @@ function Popup() {
                 <Route path={PATH.REGISTER__ACCOUNT} element={<RegisterAccount />} />
                 <Route path={PATH.REGISTER__ACCOUNT__MNEMONIC} element={<RehisterAccountMnemonic />} />
                 <Route path={PATH.REGISTER__ACCOUNT__PRIVATE_KEY} element={<RehisterAccountPrivateKey />} />
-                <Route path={PATH.REGISTER__ACCOUNT__LEDGER} element={<RehisterAccountLedger />} />
                 <Route path={PATH.REGISTER__ACCOUNT__NEW} element={<RehisterAccountNew />} />
               </Routes>
             </Lock>

@@ -4,11 +4,6 @@ export const ACCOUNT_TYPE = {
   LEDGER: 'LEDGER',
 } as const;
 
-export const ACCOUNT_COIN_TYPE = {
-  COSMOS: 'COSMOS',
-  FOUNDATION: 'FOUNDATION',
-} as const;
-
 export const LANGUAGE_TYPE = {
   KO: 'ko',
   EN: 'en',
