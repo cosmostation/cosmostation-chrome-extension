@@ -50,9 +50,9 @@ export function fix(number: string, decimal: number, optional: RoundingMode = 0)
 }
 
 export function toDisplayDenomAmount(number: string, decimal: number) {
-  return times(number, pow(10, decimal), decimal);
+  return times(number, pow(10, -decimal), decimal);
 }
 
 export function toBaseDenomAmount(number: string, decimal: number) {
-  return times(number, pow(10, -decimal), 0);
+  return times(number, pow(10, decimal), 0);
 }

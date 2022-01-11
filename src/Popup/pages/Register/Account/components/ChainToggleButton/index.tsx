@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { ToggleButton } from '@mui/material';
 
 import { useCosmosBalance } from '~/Popup/hooks/SWR/cosmos/useCosmosBalance';
@@ -17,7 +18,7 @@ export default function ChainToggleButton({ chain, address }: ChainToggleButtonP
 
   return (
     <ToggleButton value={chain.id}>
-      {chain.chainName}
+      {chain.chainName}&nbsp;
       {toDisplayDenomAmount(balance, chain.decimal)}
     </ToggleButton>
   );

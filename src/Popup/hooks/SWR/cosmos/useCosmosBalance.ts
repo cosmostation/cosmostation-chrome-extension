@@ -9,9 +9,10 @@ import type { BalancePayload } from '~/types/cosmos/balance';
 type UseCosmosBalanceProps = {
   chain: CosmosChain;
   address: string;
+  suspense?: boolean;
 };
 
-export function useCosmosBalance({ chain, address }: UseCosmosBalanceProps) {
+export function useCosmosBalance({ chain, address, suspense }: UseCosmosBalanceProps) {
   const { getBalance } = cosmosURL(chain);
 
   const requestURL = getBalance(address);
@@ -23,6 +24,7 @@ export function useCosmosBalance({ chain, address }: UseCosmosBalanceProps) {
     errorRetryCount: 5,
     errorRetryInterval: 3000,
     revalidateOnFocus: false,
+    suspense,
   });
 
   return { data, error, mutate };
