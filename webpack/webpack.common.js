@@ -50,7 +50,12 @@ module.exports = {
     plugins: [new TsconfigPathsPlugin()],
     fallback: {
       stream: 'stream-browserify',
-      assert: require.resolve('assert/'),
+      assert: 'assert',
+      os: 'os-browserify',
+      url: 'url',
+      http: 'stream-http',
+      https: 'https-browserify',
+      crypto: 'crypto-browserify',
     },
   },
   plugins: [

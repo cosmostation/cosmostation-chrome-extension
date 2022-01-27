@@ -49,6 +49,7 @@ export default function PrivateKey() {
           allowedOrigins: [],
           allowedChains: [],
           selectedChain: '',
+          selectedEthereumNetworkId: '63c2c3dd-7ab1-47d7-9ec8-c70c64729cc6',
           encryptedPrivateKey: aesEncrypt(privateKey, inMemory.password),
           name: data.name,
         },

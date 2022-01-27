@@ -1,7 +1,7 @@
 import '~/Popup/i18n';
 import '~/Popup/styles/normalize.css';
 
-import React from 'react';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
@@ -63,10 +63,10 @@ function Popup() {
 }
 
 ReactDOM.render(
-  <React.StrictMode>
+  <StrictMode>
     <RecoilRoot>
       <Popup />
     </RecoilRoot>
-  </React.StrictMode>,
+  </StrictMode>,
   document.getElementById('root'),
 );

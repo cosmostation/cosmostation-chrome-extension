@@ -1,7 +1,7 @@
 import type { ACCOUNT_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import type { ThemeType } from '~/types/theme';
 
-import type { BIP44, Chain } from './chain';
+import type { BIP44, Chain, EthereumNetwork } from './chain';
 import type { RequestMessage } from './message';
 
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
@@ -13,12 +13,7 @@ export type AccountCommon = {
   allowedOrigins: string[];
   allowedChains: string[];
   selectedChain: string;
-};
-
-export type LedgerAccount = {
-  type: typeof ACCOUNT_TYPE.LEDGER;
-  bip44: Omit<BIP44, 'purpose'>;
-  publicKey: string;
+  selectedEthereumNetworkId: string;
 };
 
 export type MnemonicAccount = {
@@ -32,7 +27,7 @@ export type PrivateKeyAccount = {
   encryptedPrivateKey: string;
 };
 
-export type Account = AccountCommon & (LedgerAccount | MnemonicAccount | PrivateKeyAccount);
+export type Account = AccountCommon & (MnemonicAccount | PrivateKeyAccount);
 
 export type Queue = {
   tabId?: number;
@@ -48,6 +43,7 @@ export type ChromeStorage = {
   theme: ThemeType;
   windowId: number | null;
   additionalChains: Chain[];
+  additionalEthereumNetworks: EthereumNetwork[];
   selectedAccountId: string;
   language: LanguageType;
 };

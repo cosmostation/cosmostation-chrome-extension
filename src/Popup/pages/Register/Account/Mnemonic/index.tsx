@@ -47,6 +47,7 @@ export default function Mnemonic() {
           allowedOrigins: [],
           allowedChains: ['62a8e13a-3107-40ef-ade4-58de45aa6c1f'],
           selectedChain: '62a8e13a-3107-40ef-ade4-58de45aa6c1f',
+          selectedEthereumNetworkId: '63c2c3dd-7ab1-47d7-9ec8-c70c64729cc6',
           bip44: { addressIndex: `${data.addressIndex}` },
           encryptedMnemonic: aesEncrypt(data.mnemonic, inMemory.password),
           name: data.name,

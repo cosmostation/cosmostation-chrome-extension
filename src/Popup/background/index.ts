@@ -1,9 +1,15 @@
 import '~/Popup/i18n/background';
 
+import { ecsign, hashPersonalMessage, stripHexPrefix, toRpcSig } from 'ethereumjs-util';
+
+import { ETHEREUM_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/ethereum';
 import { IN_MEMORY_MESSAGE_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import { THEME_TYPE } from '~/constants/theme';
 import { getCurrentAccount, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
+import { EthereumRPCError } from '~/Popup/utils/error';
+import { getAddress, personalSign, requestRPC, rpcResponse, sign } from '~/Popup/utils/ethereum';
+import { responseToWeb } from '~/Popup/utils/message';
 import type {
   ContentScriptToBackgroundEventMessage,
   InMemoryMessage,
@@ -11,9 +17,11 @@ import type {
   ResponseMessage,
 } from '~/types/message';
 
+import { chromeStorage } from './chromeStorage';
 import { initI18n } from './i18n';
 import { inMemory } from './inMemory';
 import { persistent } from './persistent';
+import { mnemonicToPair, privateKeyToPair } from '../utils/crypto';
 
 function background() {
   const memory = inMemory();
@@ -24,29 +32,138 @@ function background() {
     // console.log('localStorage', localStorage.getItem('i18nextLng'));
 
     if (request?.type === MESSAGE_TYPE.REQUEST__CONTENT_SCRIPT_TO_BACKGROUND) {
+      const password = memory.get('password');
+
       void (async function asyncHandler() {
-        const { t } = await initI18n();
-        if (request.message.method === 'requestAccount') {
-          const currentAccount = await getCurrentAccount();
-        }
-        chrome.tabs.query({ url: `${request.origin}/*` }, (tabs) => {
-          tabs.forEach((tab) => {
-            console.log('tabid', tab.id);
-            if (tab.id) {
-              const toContentScriptMessage: ContentScriptToBackgroundEventMessage<ResponseMessage> = {
-                type: MESSAGE_TYPE.RESPONSE__CONTENT_SCRIPT_TO_BACKGROUND,
-                messageId: request.messageId,
-                message: { data: t('schema.common.string.empty'), error: null },
-                origin: request.origin,
-              };
-              chrome.tabs.sendMessage(tab.id, toContentScriptMessage);
+        // if (request.message.method === 'requestAccount') {
+        //   const currentAccount = await getCurrentAccount();
+        // }
+
+        if (request.line === 'ETHEREUM') {
+          const ethereumMethods = Object.values(ETHEREUM_METHOD_TYPE) as string[];
+          const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
+
+          const { message, messageId, origin } = request;
+          console.log('message', message);
+
+          try {
+            if (!message?.method || !ethereumMethods.includes(message.method)) {
+              throw new EthereumRPCError(
+                RPC_ERROR.UNSUPPORTED_METHOD,
+                RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD],
+                message?.id,
+              );
             }
-          });
-        });
 
-        const url = chrome.runtime.getURL('popup.html');
+            const { method, id } = message;
 
-        const aa = await chrome.windows.create({ width: 320, height: 560, url, type: 'popup' });
+            const { currentEthereumNetwork, currentAccount, getPairKey } = await chromeStorage();
+
+            if (ethereumPopupMethods.includes(method)) {
+              if (!password) {
+                console.log(password);
+                throw new EthereumRPCError(RPC_ERROR.UNAUTHORIZED, RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+              }
+
+              const keyPair = getPairKey('ethereum', password);
+
+              if (method === ETHEREUM_POPUP_METHOD_TYPE.ETH__SIGN) {
+                const { params } = message;
+
+                console.log(getAddress(keyPair.publicKey));
+
+                if (params?.[0].toLowerCase() !== getAddress(keyPair.publicKey).toLowerCase()) {
+                  throw new EthereumRPCError(
+                    RPC_ERROR.INVALID_PARAMS,
+                    `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]} (must provide an Account address.)`,
+                    id,
+                  );
+                }
+
+                const dataToSign = params?.[1]
+                  ? stripHexPrefix(params[1].startsWith('0x') ? params[1] : Buffer.from(params[1]).toString('hex'))
+                  : undefined;
+
+                if (!dataToSign) {
+                  throw new EthereumRPCError(
+                    RPC_ERROR.INVALID_PARAMS,
+                    `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]} (must provide data to sign)`,
+                    id,
+                  );
+                }
+
+                if (dataToSign.length < 66 || dataToSign.length > 67) {
+                  throw new EthereumRPCError(
+                    RPC_ERROR.INVALID_PARAMS,
+                    `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]} (eth_sign requires 32 byte message hash)`,
+                    id,
+                  );
+                }
+
+                responseToWeb({
+                  message: rpcResponse(sign(dataToSign, keyPair.privateKey), id),
+                  messageId,
+                  origin,
+                });
+              } else if (method === ETHEREUM_POPUP_METHOD_TYPE.PERSONAL_SIGN) {
+                const { params } = message;
+
+                if (params?.[1].toLowerCase() !== getAddress(keyPair.publicKey).toLowerCase()) {
+                  throw new EthereumRPCError(
+                    RPC_ERROR.INVALID_PARAMS,
+                    `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]} (must provide an Account address.)`,
+                    id,
+                  );
+                }
+
+                if (!params?.[0]) {
+                  throw new EthereumRPCError(
+                    RPC_ERROR.INVALID_PARAMS,
+                    `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]} (must provide data to sign)`,
+                    id,
+                  );
+                }
+
+                responseToWeb({
+                  message: rpcResponse(personalSign(params[0], keyPair.privateKey), id),
+                  messageId,
+                  origin,
+                });
+              }
+            } else {
+              const params =
+                method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1
+                  ? [...message.params, 'latest']
+                  : message.params;
+
+              const response = await requestRPC(method, params, id);
+              console.log('rpc response', response);
+              responseToWeb({ message: response, messageId, origin });
+            }
+          } catch (e) {
+            if (e instanceof EthereumRPCError) {
+              responseToWeb({
+                message: e.rpcMessage,
+                messageId,
+                origin,
+              });
+              return;
+            }
+
+            console.log(e);
+            responseToWeb({
+              message: {
+                error: {
+                  code: RPC_ERROR.INTERNAL,
+                  message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
+                },
+                jsonrpc: '2.0',
+              },
+              messageId,
+              origin,
+            });
+          }
+        }
       })();
     }
   });
@@ -87,6 +204,7 @@ function background() {
         await setStorage('windowId', null);
         await setStorage('accounts', []);
         await setStorage('additionalChains', []);
+        await setStorage('additionalEthereumNetworks', []);
         await setStorage('encryptedPassword', null);
         await setStorage('theme', THEME_TYPE.LIGHT);
         await setStorage('selectedAccountId', '');

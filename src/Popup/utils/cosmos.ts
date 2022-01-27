@@ -2,8 +2,12 @@ import { bech32 } from 'bech32';
 import encHex from 'crypto-js/enc-hex';
 import ripemd160 from 'crypto-js/ripemd160';
 import sha256 from 'crypto-js/sha256';
+import sortKeys from 'sort-keys';
+import TinySecp256k1 from 'tiny-secp256k1';
 
+import { cosmos } from '~/proto/cosmos.js';
 import type { CosmosChain } from '~/types/chain';
+import type { SignAminoDoc, SignDirectDoc } from '~/types/cosmos';
 
 export function cosmosURL(chain: CosmosChain) {
   const { restURL } = chain;
@@ -27,4 +31,24 @@ export function getAddress(publicKey: Buffer, prefix: string) {
   const result = bech32.encode(prefix, words);
 
   return result;
+}
+
+export function signAmino(signDoc: SignAminoDoc, privateKey: Buffer) {
+  const sha256SignDoc = sha256(JSON.stringify(sortKeys(signDoc, { deep: true }))).toString(encHex);
+
+  const signatureBuffer = TinySecp256k1.sign(Buffer.from(sha256SignDoc, 'hex'), privateKey);
+
+  return signatureBuffer;
+}
+
+export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer) {
+  const txSignDoc = new cosmos.tx.v1beta1.SignDoc({ ...signDoc, account_number: Number(signDoc.account_number) });
+
+  const txSignDocHex = Buffer.from(cosmos.tx.v1beta1.SignDoc.encode(txSignDoc).finish()).toString('hex');
+
+  const sha256SignDoc = sha256(encHex.parse(txSignDocHex)).toString(encHex);
+
+  const signatureBuffer = TinySecp256k1.sign(Buffer.from(sha256SignDoc, 'hex'), privateKey);
+
+  return signatureBuffer;
 }

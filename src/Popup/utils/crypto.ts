@@ -59,5 +59,5 @@ export function privateKeyToPair(privateKey: Buffer) {
     compressed: true,
   });
 
-  return { privateKey: ecpair.privateKey!, publicKey: ecpair.publicKey };
+  return { privateKey, publicKey: ecpair.publicKey };
 }

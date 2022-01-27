@@ -12,14 +12,14 @@ export type BIP44 = {
 
 type CommonChain = {
   id: string;
-  chainId: string;
-  chainName: string;
-  displayDenom: string;
   bip44: Omit<BIP44, 'addressIndex'>;
 };
 
 export type CosmosChain = {
   line: typeof LINE_TYPE.COSMOS;
+  chainId: string;
+  chainName: string;
+  displayDenom: string;
   restURL: string;
   baseDenom: string;
   decimal: number;
@@ -30,8 +30,19 @@ export type CosmosChain = {
 
 export type EthereumChain = {
   line: typeof LINE_TYPE.ETHEREUM;
+  chainName: string;
+  networks: EthereumNetwork[];
+} & CommonChain;
+
+export type EthereumNetwork = {
+  id: string;
+  chainId: string;
+  networkName: string;
+  baseDenom: string;
+  displayDenom: string;
+  decimal: number;
   rpcURL: string;
   explorerURL?: string;
-} & CommonChain;
+};
 
 export type Chain = CosmosChain | EthereumChain;

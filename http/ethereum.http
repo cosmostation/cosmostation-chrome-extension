@@ -1,4 +1,19 @@
-POST http://61.74.179.193:51001
+@rpcURL=http://61.74.179.193:51001
+
+### eth_accounts
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_accounts",
+    "params": [],
+    "id": 1
+}
+
+## eth_getBalance
+POST {{rpcURL}}
 content-type: application/json
 
 {
@@ -6,4 +21,144 @@ content-type: application/json
     "method": "eth_getBalance",
     "params": ["0xE4A7e953486D01d4Fdc76986a0c88fa4F87B30e5", "latest"],
     "id": 1
+}
+
+### web3_clientVersion
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "web3_clientVersion",
+    "params": [],
+    "id": 1
+}
+
+### eth_mining
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_mining",
+    "params": [],
+    "id": 1
+}
+
+### eth_blockNumber
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_blockNumber",
+    "params": [],
+    "id": 1
+}
+
+### eth_chainId
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_chainId",
+    "params": [],
+    "id": 1
+}
+
+### eth_gasPrice
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_gasPrice",
+    "params": [],
+    "id": 1
+}
+
+### eth_getBlockByHash
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_getBlockByHash",
+    "params": ["0xb3b20624f8f0f86eb50dd04688409e5cea4bd02d700bf6e79e9384d47d6a5a35", true],
+    "id": 1
+}
+
+### eth_getBlockTransactionCountByHash
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_getBlockTransactionCountByHash",
+    "params": ["0xb3b20624f8f0f86eb50dd4688409e5cea4bd02d700bf6e79e9384d47d6a5a35"],
+    "id": 1
+}
+
+### eth_getBlockTransactionCountByHash
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_sendTransaction",
+    "params": [],
+    "id": 1
+}
+
+### eth_getTransactionCount (get nonce)
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_getTransactionCount",
+    "params": [
+        "0xE4A7e953486D01d4Fdc76986a0c88fa4F87B30e5",
+        "latest"
+    ],
+    "id": 0
+}
+
+### eth_getTransactionByHash (get nonce)
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_call",
+    "params": [
+        {"data": "0x70a08231000000000000000000000000e4a7e953486d01d4fdc76986a0c88fa4f87b30e5", "to": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"},
+        "latest"
+    ],
+    "id": 0
+}
+
+### eth_getCode
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_getCode",
+    "params": [
+        "0xa4108aa1ec4967f8b52220a4f7e94a8201f2d906",
+        "latest"
+    ],
+    "id": 0
 }
