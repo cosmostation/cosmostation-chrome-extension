@@ -1,17 +1,12 @@
-import { Suspense, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, ToggleButtonGroup } from '@mui/material';
+import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import { CHAINS } from '~/constants/chain';
 import { THEME_TYPE } from '~/constants/theme';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import ChainToggleButton from '~/Popup/pages/Register/Account/components/ChainToggleButton';
-import { getAddress } from '~/Popup/utils/cosmos';
-import { aesDecrypt, mnemonicToPair } from '~/Popup/utils/crypto';
 import { emitToWeb } from '~/Popup/utils/message';
 
 const Container = styled('div')(({ theme }) => ({
@@ -39,6 +34,8 @@ export default function HOME() {
     return null;
   }
 
+  console.log('ddd');
+
   return (
     <Container>
       {JSON.stringify(current, undefined, 2)}
@@ -59,7 +56,7 @@ export default function HOME() {
       <Button
         type="button"
         onClick={() => {
-          emitToWeb({ type: 'accountChanged', message: { data: '', error: null } });
+          emitToWeb({ type: 'accountChanged', message: { result: '', error: null } });
         }}
       >
         Emit
@@ -92,22 +89,6 @@ export default function HOME() {
       <div>{currentAccount.name}</div>
       <div>{currentAccount.type}</div>
       {process.env.RUN_MODE}
-      <div style={{ marginLeft: '500px' }}>
-        <ToggleButtonGroup orientation="vertical">
-          {CHAINS.filter((chain) => chain.line === 'COSMOS').map((chain) => {
-            if (currentAccount.type === 'MNEMONIC' && inMemory.password && chain.line === 'COSMOS') {
-              const mnemonic = aesDecrypt(currentAccount.encryptedMnemonic, inMemory.password);
-              const keyPair = mnemonicToPair(
-                mnemonic,
-                `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/0`,
-              );
-              const address = getAddress(keyPair.publicKey, chain.bech32Prefix.address);
-              return <ChainToggleButton key={chain.id} address={address} chain={chain} />;
-            }
-            return null;
-          })}
-        </ToggleButtonGroup>
-      </div>
     </Container>
   );
 }

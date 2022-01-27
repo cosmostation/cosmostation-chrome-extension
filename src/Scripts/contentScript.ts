@@ -1,23 +1,28 @@
+import { readFileSync } from 'fs';
+
 import { LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import type {
+  BackgroundToContentScriptEventMessage,
   ContentScriptToBackgroundEventMessage,
+  ContentScriptToWebEventMessage,
   ListenerMessage,
   MessageType,
   RequestMessage,
   ResponseMessage,
-  WebtoContentScriptEventMessage,
+  WebToContentScriptEventMessage,
 } from '~/types/message';
 
 /** WebPage -> ContentScript -> Background */
 
 // Once Message
-window.addEventListener('message', (event: MessageEvent<WebtoContentScriptEventMessage<RequestMessage>>) => {
+window.addEventListener('message', (event: MessageEvent<WebToContentScriptEventMessage<RequestMessage>>) => {
   // console.log('contentScript window.addEventListener');
   if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT) {
     const { data } = event;
     console.log('content-script', event);
 
     const toBackgroundMessage: ContentScriptToBackgroundEventMessage<RequestMessage> = {
+      line: data.line,
       type: MESSAGE_TYPE.REQUEST__CONTENT_SCRIPT_TO_BACKGROUND,
       origin: event.origin,
       messageId: data.messageId,
@@ -30,10 +35,10 @@ window.addEventListener('message', (event: MessageEvent<WebtoContentScriptEventM
 /** Background -> ContentScript -> WebPage */
 
 // Once Message
-chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<ResponseMessage>) => {
+chrome.runtime.onMessage.addListener((request: BackgroundToContentScriptEventMessage<ResponseMessage>) => {
   console.log('once contentScript', request);
   if (request?.type === MESSAGE_TYPE.RESPONSE__CONTENT_SCRIPT_TO_BACKGROUND) {
-    const toWebMessage: WebtoContentScriptEventMessage<ResponseMessage> = {
+    const toWebMessage: ContentScriptToWebEventMessage<ResponseMessage> = {
       message: request.message,
       messageId: request.messageId,
       isCosmostation: true,

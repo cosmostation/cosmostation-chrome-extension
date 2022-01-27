@@ -1,4 +1,4 @@
-import type { CosmosChain, EthereumChain } from '~/types/chain';
+import type { CosmosChain, EthereumChain, EthereumNetwork } from '~/types/chain';
 
 export const LINE_TYPE = {
   COSMOS: 'COSMOS',
@@ -297,15 +297,25 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   },
 ];
 
+export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
+  {
+    id: '63c2c3dd-7ab1-47d7-9ec8-c70c64729cc6',
+    chainId: '1',
+    networkName: 'mainnet',
+    rpcURL: 'http://61.74.179.193:50001',
+    baseDenom: 'weth',
+    displayDenom: 'eth',
+    decimal: 16,
+    explorerURL: 'https://etherscan.io',
+  },
+];
+
 export const ETHEREUM_CHAINS: EthereumChain[] = [
   {
     id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
-    line: LINE_TYPE.ETHEREUM,
-    chainId: '1',
     chainName: 'ethereum',
-    rpcURL: 'http://61.74.179.193:50001',
-    displayDenom: 'ETH',
-    explorerURL: 'https://etherscan.io',
+    line: LINE_TYPE.ETHEREUM,
+    networks: ETHEREUM_NETWORKS,
     bip44: {
       purpose: "44'",
       coinType: "60'",

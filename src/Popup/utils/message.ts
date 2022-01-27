@@ -1,8 +1,7 @@
 import { MESSAGE_TYPE } from '~/constants/message';
 import type { InMemoryData, InMemoryDataKeys } from '~/types/inMemory';
 import type {
-  BackgroundToPopupEventMessage,
-  ContentScriptToBackgroundEventMessage,
+  BackgroundToContentScriptEventMessage,
   InMemoryMessageMethodGet,
   InMemoryMessageMethodGetAll,
   InMemoryMessageMethodSet,
@@ -10,9 +9,10 @@ import type {
   ResponseMessage,
 } from '~/types/message';
 
-export function responseToWeb(data: BackgroundToPopupEventMessage<ResponseMessage>) {
+export function responseToWeb<T>(data: Omit<BackgroundToContentScriptEventMessage<T>, 'type'>) {
   console.log('popup response');
-  const toContentScriptMessage: Omit<ContentScriptToBackgroundEventMessage<ResponseMessage>, 'origin'> = {
+  const toContentScriptMessage: BackgroundToContentScriptEventMessage<T> = {
+    origin: data.origin,
     messageId: data.messageId,
     message: data.message,
     type: MESSAGE_TYPE.RESPONSE__CONTENT_SCRIPT_TO_BACKGROUND,
