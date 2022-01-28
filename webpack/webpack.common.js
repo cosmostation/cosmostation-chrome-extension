@@ -46,7 +46,6 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
-    alias: { styles: path.join(srcDir, 'Popup/styles') },
     plugins: [new TsconfigPathsPlugin()],
     fallback: {
       stream: 'stream-browserify',

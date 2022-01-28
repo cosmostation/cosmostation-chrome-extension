@@ -17,6 +17,7 @@
   "dependencies": {
     "@emotion/react": "^11.7.0",
     "@emotion/styled": "^11.6.0",
+    "@ethersproject/abi": "^5.5.0",
     "@hookform/resolvers": "^2.8.3",
     "@ledgerhq/errors": "^6.10.0",
     "@ledgerhq/hw-transport": "^6.11.2",

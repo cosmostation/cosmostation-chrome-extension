@@ -1,7 +1,12 @@
 import type { IN_MEMORY_MESSAGE_TYPE, LISTENER_TYPE, MESSAGE_TYPE, METHOD_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
-import type { EthGetBalanceRequestMessage, EthRPCRequestMessage, EthSignRequestMessage } from './ethereum';
+import type {
+  EthGetBalanceRequestMessage,
+  EthRPCRequestMessage,
+  EthSendTransactionRequestMessage,
+  EthSignRequestMessage,
+} from './ethereum';
 import type { InMemoryData, InMemoryDataKeys } from './inMemory';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
@@ -27,6 +32,7 @@ export type RequestMessage =
   | EthRPCRequestMessage
   | AccountRequestMessage
   | EthSignRequestMessage
+  | EthSendTransactionRequestMessage
   | EthGetBalanceRequestMessage;
 
 // window.postMessage 통신
