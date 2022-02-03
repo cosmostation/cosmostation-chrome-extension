@@ -8,7 +8,7 @@ import { THEME_TYPE } from '~/constants/theme';
 import { getCurrentAccount, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
 import { EthereumRPCError } from '~/Popup/utils/error';
-import { getAddress, personalSign, requestRPC, rpcResponse, sign } from '~/Popup/utils/ethereum';
+import { getAddress, personalSign, rpcResponse, sign } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import type {
   ContentScriptToBackgroundEventMessage,
@@ -18,6 +18,7 @@ import type {
 } from '~/types/message';
 
 import { chromeStorage } from './chromeStorage';
+import { determineTxType, requestRPC } from './ethereum';
 import { initI18n } from './i18n';
 import { inMemory } from './inMemory';
 import { persistent } from './persistent';
@@ -129,6 +130,10 @@ function background() {
                   messageId,
                   origin,
                 });
+              } else if (method === ETHEREUM_POPUP_METHOD_TYPE.ETH__SEND_TRANSACTION) {
+                const { params } = message;
+
+                console.log(await determineTxType(params[0]));
               }
             } else {
               const params =
