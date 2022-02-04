@@ -12,17 +12,11 @@ export default function Layout({ children }: LayoutProps) {
   const { inMemory } = useInMemory();
   return (
     <Body>
-      <Container>
-        {children}
-        <div>
-          <div style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap', width: '30rem' }}>
-            {JSON.stringify(chromeStorage, undefined, 3)}
-          </div>
-          <div style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap', width: '30rem' }}>
-            {JSON.stringify(inMemory, undefined, 3)}
-          </div>
-        </div>
-      </Container>
+      <Container>{children}</Container>
+      <div>
+        <div style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap', width: '30rem' }}>{JSON.stringify(chromeStorage, undefined, 3)}</div>
+        <div style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap', width: '30rem' }}>{JSON.stringify(inMemory, undefined, 3)}</div>
+      </div>
     </Body>
   );
 }

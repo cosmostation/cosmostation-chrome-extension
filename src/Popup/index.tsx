@@ -38,9 +38,9 @@ function Popup() {
   );
 
   return (
-    <HashRouter>
-      <Wrapper>
-        <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
+      <HashRouter>
+        <Wrapper>
           <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} TransitionComponent={Grow as React.ComponentType}>
             <Lock>
               <Routes>
@@ -57,9 +57,9 @@ function Popup() {
             </Routes>
             <LoadingOverlay />
           </SnackbarProvider>
-        </ThemeProvider>
-      </Wrapper>
-    </HashRouter>
+        </Wrapper>
+      </HashRouter>
+    </ThemeProvider>
   );
 }
 

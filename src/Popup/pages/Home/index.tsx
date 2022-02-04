@@ -38,7 +38,6 @@ export default function HOME() {
 
   return (
     <Container>
-      {JSON.stringify(current, undefined, 2)}
       <button type="button" onClick={handleOnClick}>
         register
       </button>

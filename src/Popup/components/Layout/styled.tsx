@@ -1,14 +1,18 @@
 import { styled } from '@mui/material/styles';
 
-export const Body = styled('div')({});
-
-export const Container = styled('div')({
-  width: '40rem',
-  height: '74rem',
-
-  margin: '0 auto',
-
+export const Body = styled('div')({
+  width: '100%',
+  height: '100vh',
   display: 'flex',
-  flexDirection: 'column',
+  justifyContent: 'center',
   alignItems: 'center',
 });
+
+export const Container = styled('div')(({ theme }) => ({
+  width: '36rem',
+  height: '60rem',
+
+  backgroundColor: theme.colors.base02,
+
+  overflow: 'hidden',
+}));
