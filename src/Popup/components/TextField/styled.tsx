@@ -13,6 +13,12 @@ export const StyledTextField = styled(TextField)(({ theme }) => ({
     height: '4.8rem',
 
     '.MuiOutlinedInput-input': {
+      fontFamily: theme.typography.h5.fontFamily,
+      fontStyle: theme.typography.h5.fontStyle,
+      fontSize: theme.typography.h5.fontSize,
+      lineHeight: theme.typography.h5.lineHeight,
+      letterSpacing: theme.typography.h5.letterSpacing,
+
       '&::placeholder': {
         fontFamily: theme.typography.h5.fontFamily,
         fontStyle: theme.typography.h5.fontStyle,

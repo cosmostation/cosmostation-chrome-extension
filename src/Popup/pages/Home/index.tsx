@@ -99,7 +99,7 @@ export default function HOME() {
         </Button>
       </div>
       <div>
-        <TextField type="password" placeholder="패스워드" />
+        <TextField type="text" placeholder="패스워드" />
       </div>
       {process.env.RUN_MODE}
     </Container>
