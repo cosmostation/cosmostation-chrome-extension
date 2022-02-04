@@ -1,3 +1,23 @@
+@font-face {
+  font-family: Inter500;
+  src:url(../../fonts/Inter-Medium.ttf) format('truetype')
+}
+
+@font-face {
+  font-family: Inter600;
+  src:url(../../fonts/Inter-SemiBold.ttf) format('truetype')
+}
+
+@font-face {
+  font-family: Spoqa400;
+  src:url(../../fonts/SpoqaHanSansNeo-Medium.ttf) format('truetype')
+}
+
+@font-face {
+  font-family: Heebo500;
+  src:url(../../fonts/Heebo-Medium.ttf) format('truetype')
+}
+
 html {
   line-height: 1.15; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */

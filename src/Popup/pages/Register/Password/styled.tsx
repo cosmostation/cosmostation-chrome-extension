@@ -4,7 +4,7 @@ import BaseTextField from '@mui/material/TextField';
 
 export const Container = styled('div')(({ theme }) => ({
   display: 'flex',
-  color: theme.colors.backgroundColor,
+  color: theme.colors.base01,
 }));
 
 export const Button = styled(BaseButton)({});

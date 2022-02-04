@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { THEME_TYPE } from '~/constants/theme';
@@ -10,7 +10,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { emitToWeb } from '~/Popup/utils/message';
 
 const Container = styled('div')(({ theme }) => ({
-  backgroundColor: theme.colors.backgroundColor,
+  backgroundColor: theme.colors.base01,
 }));
 
 export default function HOME() {
@@ -48,8 +48,10 @@ export default function HOME() {
           navigate('/register/password');
         }}
       >
-        password
+        <Typography variant="h1">코스모스테이션 월렛</Typography>
       </button>
+      <Typography variant="h1n">149.000000</Typography>
+      <Typography variant="h1">Cosmostation Wallet</Typography>
       <button type="button" onClick={handleTheme}>
         Theme
       </button>
