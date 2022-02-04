@@ -8,11 +8,7 @@ module.exports = {
         sourceType: 'module',
       },
       plugins: ['@typescript-eslint'],
-      extends: [
-        'plugin:@typescript-eslint/recommended',
-        'plugin:@typescript-eslint/recommended-requiring-type-checking',
-        'plugin:import/typescript',
-      ],
+      extends: ['plugin:@typescript-eslint/recommended', 'plugin:@typescript-eslint/recommended-requiring-type-checking', 'plugin:import/typescript'],
       rules: {
         // function definition은 hoisting되기 때문에 define 되기 전에 사용해도 됩니다.
         // React component 등에서, 메인(default export) 컴포넌트를 위에 정의하고 private 컴포넌트를 밑에 정의하는 패턴에서 유용합니다.
@@ -52,6 +48,8 @@ module.exports = {
 
         // type이 잘못 추론됐을 때 쉽게 개발할 수 있도록 no-null-assertion(!)을 허용합니다.
         '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/camelcase': 'off',
+        camelcase: 'off',
       },
     },
   ],

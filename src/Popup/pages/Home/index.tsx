@@ -1,13 +1,17 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { THEME_TYPE } from '~/constants/theme';
+import Button from '~/Popup/components/Button';
+import TextField from '~/Popup/components/TextField';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { emitToWeb } from '~/Popup/utils/message';
+
+import SendIcon from '~/images/send.svg';
 
 const Container = styled('div')(({ theme }) => ({
   backgroundColor: theme.colors.base01,
@@ -60,7 +64,7 @@ export default function HOME() {
           emitToWeb({ type: 'accountChanged', message: { result: '', error: null } });
         }}
       >
-        Emit
+        Log in
       </Button>
       <button
         type="button"
@@ -89,6 +93,14 @@ export default function HOME() {
       HOME
       <div>{currentAccount.name}</div>
       <div>{currentAccount.type}</div>
+      <div>
+        <Button type="button" typoVarient="h4" Image={SendIcon} disabled>
+          Receive
+        </Button>
+      </div>
+      <div>
+        <TextField type="password" placeholder="패스워드" />
+      </div>
       {process.env.RUN_MODE}
     </Container>
   );

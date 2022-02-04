@@ -60,6 +60,7 @@
     "web3-providers-http": "^1.7.0"
   },
   "devDependencies": {
+    "@svgr/webpack": "^6.2.1",
     "@types/big.js": "^6.1.2",
     "@types/chrome": "^0.0.166",
     "@types/crypto-js": "^4.0.2",

@@ -13,4 +13,11 @@ declare module '*.jpg' {
   export default value;
 }
 
+declare module '*.svg' {
+  import type { VFC, SVGProps } from 'react';
+
+  const SVG: VFC<SVGProps<SVGSVGElement>>;
+  export default SVG;
+}
+
 type ValueOf<T> = T[keyof T];
