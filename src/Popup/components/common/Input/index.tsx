@@ -5,7 +5,7 @@ import { IconButton, InputAdornment } from '@mui/material';
 
 import { StyledTextField, StyledVisibility, StyledVisibilityOff } from './styled';
 
-export default function TextField({ type, ...remainder }: OutlinedInputProps) {
+export default function Input({ type, ...remainder }: OutlinedInputProps) {
   const [textFieldType, setTextFieldType] = useState<HTMLInputTypeAttribute | undefined>(type);
 
   return (

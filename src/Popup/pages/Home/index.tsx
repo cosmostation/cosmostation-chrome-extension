@@ -4,9 +4,10 @@ import { styled } from '@mui/material/styles';
 
 import { THEME_TYPE } from '~/constants/theme';
 import BottomNavigation from '~/Popup/components/BottomNavigation';
-import Button from '~/Popup/components/Button';
-import Checkbox from '~/Popup/components/Checkbox';
-import TextField from '~/Popup/components/Input';
+import Button from '~/Popup/components/common/Button';
+import Checkbox from '~/Popup/components/common/Checkbox';
+import TextField from '~/Popup/components/common/Input';
+import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
@@ -107,6 +108,9 @@ export default function HOME() {
       <div>
         <Checkbox />
         <Checkbox defaultChecked />
+      </div>
+      <div>
+        <Switch />
       </div>
       <BottomNavigation />
     </Container>
