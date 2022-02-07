@@ -3,15 +3,16 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { THEME_TYPE } from '~/constants/theme';
+import BottomNavigation from '~/Popup/components/BottomNavigation';
 import Button from '~/Popup/components/Button';
-import TextField from '~/Popup/components/TextField';
+import TextField from '~/Popup/components/Input';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { emitToWeb } from '~/Popup/utils/message';
 
-import SendIcon from '~/images/send.svg';
+import SendIcon from '~/images/icons/Send.svg';
 
 const Container = styled('div')(({ theme }) => ({
   backgroundColor: theme.colors.base01,
@@ -102,6 +103,7 @@ export default function HOME() {
         <TextField type="password" placeholder="패스워드" />
       </div>
       {process.env.RUN_MODE}
+      <BottomNavigation />
     </Container>
   );
 }

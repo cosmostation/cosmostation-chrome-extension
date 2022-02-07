@@ -1,7 +1,8 @@
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { OutlinedInput } from '@mui/material';
 import { styled } from '@mui/material/styles';
+
+import Visibility from '~/images/icons/Visibility.svg';
+import VisibilityOff from '~/images/icons/VisibilityOff.svg';
 
 export const StyledTextField = styled(OutlinedInput)(({ theme }) => ({
   borderRadius: '0.8rem',
@@ -48,10 +49,12 @@ export const StyledTextField = styled(OutlinedInput)(({ theme }) => ({
 
 export const StyledVisibility = styled(Visibility)(({ theme }) => ({
   width: '1.65rem',
+  height: '1.65rem',
   fill: theme.colors.base05,
 }));
 
 export const StyledVisibilityOff = styled(VisibilityOff)(({ theme }) => ({
   width: '1.65rem',
+  height: '1.65rem',
   fill: theme.colors.base05,
 }));
