@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import { THEME_TYPE } from '~/constants/theme';
 import BottomNavigation from '~/Popup/components/BottomNavigation';
 import Button from '~/Popup/components/Button';
+import Checkbox from '~/Popup/components/Checkbox';
 import TextField from '~/Popup/components/Input';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
@@ -100,9 +101,13 @@ export default function HOME() {
         </Button>
       </div>
       <div>
-        <TextField type="password" placeholder="패스워드" />
+        <TextField multiline placeholder="패스워드" />
       </div>
       {process.env.RUN_MODE}
+      <div>
+        <Checkbox />
+        <Checkbox defaultChecked />
+      </div>
       <BottomNavigation />
     </Container>
   );

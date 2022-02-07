@@ -10,7 +10,7 @@ export const StyledTextField = styled(OutlinedInput)(({ theme }) => ({
   backgroundColor: theme.colors.base01,
   color: theme.colors.text01,
 
-  height: '4.8rem',
+  // height: '4.8rem',
 
   '.MuiOutlinedInput-input': {
     fontFamily: theme.typography.h5.fontFamily,
