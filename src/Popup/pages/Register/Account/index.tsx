@@ -8,7 +8,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { emitToWeb } from '~/Popup/utils/message';
 
 const Container = styled('div')(({ theme }) => ({
-  backgroundColor: theme.colors.backgroundColor,
+  backgroundColor: theme.colors.base01,
 }));
 
 export default function Account() {

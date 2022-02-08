@@ -15,7 +15,7 @@ import type { MnemonicForm } from './useSchema';
 import { useSchema } from './useSchema';
 
 const Container = styled('div')(({ theme }) => ({
-  backgroundColor: theme.colors.backgroundColor,
+  backgroundColor: theme.colors.base01,
 }));
 
 export default function Mnemonic() {

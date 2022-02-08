@@ -22,25 +22,26 @@ import RehisterAccountMnemonic from '~/Popup/pages/Register/Account/Mnemonic';
 import RehisterAccountNew from '~/Popup/pages/Register/Account/New';
 import RehisterAccountPrivateKey from '~/Popup/pages/Register/Account/PrivateKey';
 import RegisterPassword from '~/Popup/pages/Register/Password';
-import { darkTheme, lightTheme } from '~/Popup/styles/theme';
+import { darkEnTheme, darkKoTheme, lightEnTheme, lightKoTheme } from '~/Popup/styles/theme';
 
 function Popup() {
   const { chromeStorage } = useChromeStorage();
 
-  const theme = createTheme({
-    ...(chromeStorage.theme === THEME_TYPE.DARK ? darkTheme : lightTheme),
-    typography: { htmlFontSize: 10 },
-  });
+  const theme = createTheme(
+    chromeStorage.theme === THEME_TYPE.LIGHT
+      ? chromeStorage.language === 'ko'
+        ? lightKoTheme
+        : lightEnTheme
+      : chromeStorage.language === 'ko'
+      ? darkKoTheme
+      : darkEnTheme,
+  );
 
   return (
-    <HashRouter>
-      <Wrapper>
-        <ThemeProvider theme={theme}>
-          <SnackbarProvider
-            maxSnack={3}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            TransitionComponent={Grow as React.ComponentType}
-          >
+    <ThemeProvider theme={theme}>
+      <HashRouter>
+        <Wrapper>
+          <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} TransitionComponent={Grow as React.ComponentType}>
             <Lock>
               <Routes>
                 <Route path={PATH.HOME} element={<Home />} />
@@ -56,9 +57,9 @@ function Popup() {
             </Routes>
             <LoadingOverlay />
           </SnackbarProvider>
-        </ThemeProvider>
-      </Wrapper>
-    </HashRouter>
+        </Wrapper>
+      </HashRouter>
+    </ThemeProvider>
   );
 }
 

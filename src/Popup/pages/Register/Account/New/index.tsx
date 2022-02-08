@@ -26,7 +26,7 @@ import type { NewMnemonicForm } from './useSchema';
 import { useSchema } from './useSchema';
 
 const Container = styled('div')(({ theme }) => ({
-  backgroundColor: theme.colors.backgroundColor,
+  backgroundColor: theme.colors.base01,
 }));
 
 type Strength = 128 | 256;
