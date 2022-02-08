@@ -12,6 +12,8 @@ export const StyledTextField = styled(OutlinedInput)(({ theme }) => ({
 
   // height: '4.8rem',
 
+  width: '100%',
+
   '.MuiOutlinedInput-input': {
     fontFamily: theme.typography.h5.fontFamily,
     fontStyle: theme.typography.h5.fontStyle,
@@ -57,4 +59,10 @@ export const StyledVisibilityOff = styled(VisibilityOff)(({ theme }) => ({
   width: '1.65rem',
   height: '1.65rem',
   fill: theme.colors.base05,
+}));
+
+export const HelperTextContainer = styled('div')<{ error: number }>(({ theme, error }) => ({
+  paddingLeft: '0.8rem',
+  marginTop: '0.2rem',
+  color: error ? '#F44336' : theme.colors.text02,
 }));

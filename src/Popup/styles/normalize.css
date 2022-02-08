@@ -198,3 +198,9 @@ template {
 [hidden] {
   display: none;
 }
+
+form {
+  font: inherit;
+  width: 100%;
+  height: 100%;
+}

@@ -28,7 +28,7 @@ export function useSchema({ name }: useSchemaProps) {
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
-        'any.invalid': t('schema.PrivateKeyForm.name.any.invlid'),
+        'any.invalid': t('schema.privateKeyForm.name.any.invlid'),
       }),
   });
 

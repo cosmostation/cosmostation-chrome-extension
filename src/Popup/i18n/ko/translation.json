@@ -41,13 +41,6 @@
     }
   },
   "schema": {
-    "PrivateKeyForm": {
-      "name": {
-        "any": {
-          "invlid": "이름이 중복됩니다."
-        }
-      }
-    },
     "common": {
       "number": {
         "base": "숫자를 입력하세요.",
@@ -76,6 +69,11 @@
       }
     },
     "passwordForm": {
+      "password": {
+        "any": {
+          "only": "비밀번호가 일치하지 않습니다."
+        }
+      },
       "repeatPassword": {
         "any": {
           "only": "비밀번호가 동일하지 않습니다."
@@ -83,6 +81,11 @@
       }
     },
     "privateKeyForm": {
+      "name": {
+        "any": {
+          "invlid": "이름이 중복됩니다."
+        }
+      },
       "privateKey": "개인키가 유효하지 않습니다."
     }
   }
