@@ -7,12 +7,12 @@ import { ContentCenterTextContainer, ContentContainer, ContentLeftImageContainer
 import BottomArrow from '~/images/icons/BottomArrow.svg';
 import UpArrow from '~/images/icons/UpArrow.svg';
 
-type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+type ChainButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   imgSrc?: string;
   isActive?: boolean;
 };
 
-export default function ChainButton({ children, imgSrc, isActive = false, ...remainder }: ButtonProps) {
+export default function ChainButton({ children, imgSrc, isActive = false, ...remainder }: ChainButtonProps) {
   return (
     <StyledButton {...remainder}>
       <ContentContainer>

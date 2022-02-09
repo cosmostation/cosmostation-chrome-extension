@@ -5,11 +5,12 @@ import { styled } from '@mui/material/styles';
 import { THEME_TYPE } from '~/constants/theme';
 import BottomNavigation from '~/Popup/components/BottomNavigation';
 import Button from '~/Popup/components/common/Button';
-import ChainButton from '~/Popup/components/common/Button/ChainButton';
-import NetworkButton from '~/Popup/components/common/Button/NetworkButton';
 import Checkbox from '~/Popup/components/common/Checkbox';
 import TextField from '~/Popup/components/common/Input';
 import Switch from '~/Popup/components/common/Switch';
+import AccountButton from '~/Popup/components/Header/AccountButton';
+import ChainButton from '~/Popup/components/Header/ChainButton';
+import NetworkButton from '~/Popup/components/Header/NetworkButton';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
@@ -119,6 +120,9 @@ export default function HOME() {
       </div>
       <div>
         <NetworkButton>eohgoiwghwoighweoighwioe</NetworkButton>
+      </div>
+      <div>
+        <AccountButton />
       </div>
       <BottomNavigation />
     </Container>

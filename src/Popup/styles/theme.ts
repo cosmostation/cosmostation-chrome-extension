@@ -31,6 +31,8 @@ type AccentColors = {
   purple01: string;
   purple02: string;
   white: string;
+  green: string;
+  red: string;
 };
 
 const lightThemeColors: Colors = {
@@ -59,6 +61,8 @@ const accentColors: AccentColors = {
   purple01: '#9C6CFF',
   purple02: '#7B4DDA',
   white: '#FFFFFF',
+  green: '#24D069',
+  red: '#FE1818',
 };
 
 const htmlFontSize = 10;
