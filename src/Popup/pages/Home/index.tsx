@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -6,6 +7,7 @@ import { THEME_TYPE } from '~/constants/theme';
 import BottomNavigation from '~/Popup/components/BottomNavigation';
 import Button from '~/Popup/components/common/Button';
 import Checkbox from '~/Popup/components/common/Checkbox';
+import Dialog from '~/Popup/components/common/Dialog';
 import TextField from '~/Popup/components/common/Input';
 import Switch from '~/Popup/components/common/Switch';
 import Header from '~/Popup/components/Header';
@@ -30,6 +32,8 @@ export default function HOME() {
   const { inMemory, setInMemory } = useInMemory();
   const { changeLanguage, language } = useTranslation();
   const current = useCurrent();
+
+  const [open, setOpen] = useState(false);
 
   const { currentAccount } = current;
 
@@ -75,11 +79,11 @@ export default function HOME() {
       </Button>
       <button
         type="button"
-        onClick={async () => {
-          await setChromeStorage('encryptedPassword', null);
+        onClick={() => {
+          setOpen(true);
         }}
       >
-        password
+        open
       </button>
       <button
         type="button"
@@ -127,6 +131,10 @@ export default function HOME() {
       </div>
       <Header />
       <BottomNavigation />
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge
+        weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge
+      </Dialog>
     </Container>
   );
 }

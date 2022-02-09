@@ -50,7 +50,7 @@ const lightThemeColors: Colors = {
 
 const darkThemeColors: Colors = {
   base01: '#1A1D26',
-  base02: '#2D3241',
+  base02: '#252935',
   base03: '#363C4D',
   base04: '#444860',
   base05: '#727E91',
