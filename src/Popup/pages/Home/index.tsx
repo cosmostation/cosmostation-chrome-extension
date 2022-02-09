@@ -8,6 +8,7 @@ import Button from '~/Popup/components/common/Button';
 import Checkbox from '~/Popup/components/common/Checkbox';
 import TextField from '~/Popup/components/common/Input';
 import Switch from '~/Popup/components/common/Switch';
+import Header from '~/Popup/components/Header';
 import AccountButton from '~/Popup/components/Header/AccountButton';
 import ChainButton from '~/Popup/components/Header/ChainButton';
 import NetworkButton from '~/Popup/components/Header/NetworkButton';
@@ -124,6 +125,7 @@ export default function HOME() {
       <div>
         <AccountButton isConnected />
       </div>
+      <Header />
       <BottomNavigation />
     </Container>
   );
