@@ -13,6 +13,8 @@ export type ThemeStyle = {
     h2n: Record<string, unknown>;
     h3n: Record<string, unknown>;
     h4n: Record<string, unknown>;
+    h5n: Record<string, unknown>;
+    h6n: Record<string, unknown>;
   };
 };
 
@@ -81,12 +83,14 @@ const h4Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.5rem', 
 const h5Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.6rem', letterSpacing: '-0.02em' };
 const h6Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.5rem', letterSpacing: '-0.02em' };
 
-const h1n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.909rem', letterSpacing: 'normal' };
-const h2n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.763rem', letterSpacing: 'normal' };
-const h3n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.616rem', letterSpacing: 'normal' };
-const h4n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.469rem', letterSpacing: 'normal' };
+const h1n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.8rem', lineHeight: '2.6rem', letterSpacing: 'normal' };
+const h2n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '2.2rem', letterSpacing: 'normal' };
+const h3n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.9rem', letterSpacing: 'normal' };
+const h4n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
+const h5n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
+const h6n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.5rem', letterSpacing: 'normal' };
 
-const hn = { h1n, h2n, h3n, h4n };
+const hn = { h1n, h2n, h3n, h4n, h5n, h6n };
 
 export const darkEnTheme: ThemeStyle = {
   colors: darkThemeColors,

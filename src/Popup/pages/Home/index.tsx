@@ -122,7 +122,7 @@ export default function HOME() {
         <NetworkButton>eohgoiwghwoighweoighwioe</NetworkButton>
       </div>
       <div>
-        <AccountButton />
+        <AccountButton isConnected />
       </div>
       <BottomNavigation />
     </Container>
