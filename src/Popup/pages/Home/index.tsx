@@ -5,6 +5,8 @@ import { styled } from '@mui/material/styles';
 import { THEME_TYPE } from '~/constants/theme';
 import BottomNavigation from '~/Popup/components/BottomNavigation';
 import Button from '~/Popup/components/common/Button';
+import ChainButton from '~/Popup/components/common/Button/ChainButton';
+import NetworkButton from '~/Popup/components/common/Button/NetworkButton';
 import Checkbox from '~/Popup/components/common/Checkbox';
 import TextField from '~/Popup/components/common/Input';
 import Switch from '~/Popup/components/common/Switch';
@@ -111,6 +113,12 @@ export default function HOME() {
       </div>
       <div>
         <Switch />
+      </div>
+      <div>
+        <ChainButton>eohgoiwghwoighweoighwioe</ChainButton>
+      </div>
+      <div>
+        <NetworkButton>eohgoiwghwoighweoighwioe</NetworkButton>
       </div>
       <BottomNavigation />
     </Container>
