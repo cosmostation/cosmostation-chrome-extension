@@ -10,7 +10,7 @@ export default function AccountButton({ isConnected = false, ...remainder }: Acc
   return (
     <StyledButton {...remainder}>
       <Account />
-      <Badge is_connect={isConnected ? 1 : 0} />
+      <Badge is_connected={isConnected ? 1 : 0} />
     </StyledButton>
   );
 }

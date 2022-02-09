@@ -28,7 +28,7 @@ export const StyledButton = styled('button')(({ theme }) => ({
   position: 'relative',
 }));
 
-export const Badge = styled('div')<{ is_connect: number }>(({ theme, is_connect }) => ({
+export const Badge = styled('div')<{ is_connected: number }>(({ theme, is_connected }) => ({
   width: '0.7rem',
   height: '0.7rem',
 
@@ -39,5 +39,5 @@ export const Badge = styled('div')<{ is_connect: number }>(({ theme, is_connect 
   top: '0.1rem',
   right: '0.1rem',
 
-  backgroundColor: is_connect ? theme.accentColors.green : theme.accentColors.red,
+  backgroundColor: is_connected ? theme.accentColors.green : theme.accentColors.red,
 }));
