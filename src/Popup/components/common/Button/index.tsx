@@ -10,8 +10,8 @@ type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButton
 
 export default function Button({ children, Image, typoVarient = 'h4', ...remainder }: ButtonProps) {
   return (
-    <StyledButton {...remainder} typo_varient={typoVarient}>
-      <ContentContainer is_image={Image ? 1 : 0}>
+    <StyledButton {...remainder} data-typo-varient={typoVarient}>
+      <ContentContainer data-is-image={Image ? 1 : 0}>
         {Image && <Image />}
         <Typography variant={typoVarient}>{children}</Typography>
       </ContentContainer>

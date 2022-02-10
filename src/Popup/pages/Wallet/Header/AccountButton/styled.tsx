@@ -3,6 +3,8 @@ import { styled } from '@mui/material/styles';
 export const StyledButton = styled('button')(({ theme }) => ({
   border: 'none',
 
+  padding: 0,
+
   cursor: 'pointer',
 
   display: 'flex',
@@ -11,7 +13,7 @@ export const StyledButton = styled('button')(({ theme }) => ({
   backgroundColor: 'transparent',
 
   '&:hover': {
-    '& > :nth-child(3n-2)': {
+    '& > :nth-of-type(1)': {
       backgroundColor: theme.colors.base04,
     },
   },
@@ -25,7 +27,7 @@ export const AccountLeftContainer = styled('div')(({ theme }) => ({
   backgroundColor: theme.colors.base03,
   color: theme.accentColors.white,
 
-  padding: '0',
+  padding: 0,
 
   display: 'flex',
   justifyContent: 'center',
@@ -38,17 +40,19 @@ export const AccountLeftContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-export const AccountRightContainer = styled('div')(({ theme }) => ({
+export const AccountRightContainer = styled('div')({
   marginLeft: '0.6rem',
-}));
+});
+
 export const AccountRightFirstContainer = styled('div')(({ theme }) => ({
   height: '1.5rem',
   color: theme.colors.text01,
 }));
-export const AccountRightSecendContainer = styled('div')(({ theme }) => ({
+
+export const AccountRightSecendContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
-}));
+});
 
 export const AccountRightSecendTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
@@ -56,11 +60,15 @@ export const AccountRightSecendTextContainer = styled('div')(({ theme }) => ({
   marginLeft: '0.4rem',
 }));
 
-export const Badge = styled('div')<{ is_connected: number }>(({ theme, is_connected }) => ({
+type BadgeProps = {
+  'data-is-connected': number;
+};
+
+export const Badge = styled('div')<BadgeProps>(({ theme, ...props }) => ({
   width: '0.6rem',
   height: '0.6rem',
 
   borderRadius: '50%',
 
-  backgroundColor: is_connected ? theme.accentColors.green : theme.accentColors.red,
+  backgroundColor: props['data-is-connected'] ? theme.accentColors.green : theme.accentColors.red,
 }));

@@ -11,11 +11,11 @@ import Dialog from '~/Popup/components/common/Dialog';
 import TextField from '~/Popup/components/common/Input';
 import Switch from '~/Popup/components/common/Switch';
 import Header from '~/Popup/components/Header';
-import WalletHeader from '~/Popup/components/WalletHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import WalletHeader from '~/Popup/pages/Wallet/Header';
 import { emitToWeb } from '~/Popup/utils/message';
 
 import SendIcon from '~/images/icons/Send.svg';

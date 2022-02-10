@@ -2,14 +2,16 @@ import { IconButton as BaseIconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
-  width: 'calc(36rem - 2.4rem)',
+  width: '36rem',
   height: '5.2rem',
+
+  boxSizing: 'border-box',
 
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
 
-  padding: '0 1.2rem 0 1.2rem',
+  padding: '0 0.4rem 0 1.2rem',
 
   backgroundColor: 'transparent',
 });
@@ -20,11 +22,15 @@ export const LeftContentContainer = styled('div')({
   justifyContent: 'flex-start',
 });
 
-export const LeftContentLogoContainer = styled('div')({
+export const LeftContentLogoContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-});
+
+  '& svg': {
+    fill: theme.colors.base06,
+  },
+}));
 export const LeftContentTextContainer = styled('div')(({ theme }) => ({
   marginLeft: '0.7rem',
   color: theme.colors.text01,

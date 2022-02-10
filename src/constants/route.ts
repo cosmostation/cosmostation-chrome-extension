@@ -1,5 +1,7 @@
 export const PATH = {
   HOME: '/',
+  DASHBOARD: '/dashboard',
+  WALLET: '/wallet',
   REGISTER: '/register',
   REGISTER__PASSWORD: '/register/password',
   REGISTER__ACCOUNT: '/register/account',

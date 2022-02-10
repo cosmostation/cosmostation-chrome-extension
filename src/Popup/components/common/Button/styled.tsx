@@ -1,10 +1,14 @@
 import { styled } from '@mui/material/styles';
 
-export const StyledButton = styled('button')<{ typo_varient: 'h4' | 'h5' }>(({ theme, typo_varient }) => ({
+type StyledButtonProps = {
+  'data-typo-varient': 'h4' | 'h5';
+};
+
+export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
   border: 'none',
 
-  width: typo_varient === 'h4' ? '32rem' : '14.2rem',
-  height: typo_varient === 'h4' ? '4.8rem' : '3.6rem',
+  width: props['data-typo-varient'] === 'h4' ? '32rem' : '14.2rem',
+  height: props['data-typo-varient'] === 'h4' ? '4.8rem' : '3.6rem',
 
   borderRadius: '0.8rem',
 
@@ -25,14 +29,18 @@ export const StyledButton = styled('button')<{ typo_varient: 'h4' | 'h5' }>(({ t
   },
 }));
 
-export const ContentContainer = styled('div')<{ is_image?: number }>(({ is_image }) => ({
+type ContentContainerProps = {
+  'data-is-image'?: number;
+};
+
+export const ContentContainer = styled('div')<ContentContainerProps>((props) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
 
-  marginLeft: is_image ? '-1.2rem' : '0',
+  marginLeft: props['data-is-image'] ? '-1.2rem' : '0',
 
   '& :first-of-type': {
-    marginRight: is_image ? '0.8rem' : '0',
+    marginRight: props['data-is-image'] ? '0.8rem' : '0',
   },
 }));

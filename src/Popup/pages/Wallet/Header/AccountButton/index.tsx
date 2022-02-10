@@ -27,7 +27,7 @@ export default function AccountButton({ isConnected = false, children, ...remain
           <Typography variant="h6">{children}</Typography>
         </AccountRightFirstContainer>
         <AccountRightSecendContainer>
-          <Badge is_connected={isConnected ? 1 : 0} />
+          <Badge data-is-connected={isConnected ? 1 : 0} />
           <AccountRightSecendTextContainer>
             <Typography variant="h7">{isConnected ? 'connected' : 'disconnected'}</Typography>
           </AccountRightSecendTextContainer>
