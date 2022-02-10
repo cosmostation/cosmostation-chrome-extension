@@ -4,16 +4,15 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { THEME_TYPE } from '~/constants/theme';
-import BottomNavigation from '~/Popup/components/BottomNavigation';
 import Button from '~/Popup/components/common/Button';
 import Checkbox from '~/Popup/components/common/Checkbox';
 import Dialog from '~/Popup/components/common/Dialog';
 import TextField from '~/Popup/components/common/Input';
 import Switch from '~/Popup/components/common/Switch';
-import Header from '~/Popup/components/Header';
-import AccountButton from '~/Popup/components/Header/AccountButton';
-import ChainButton from '~/Popup/components/Header/ChainButton';
-import NetworkButton from '~/Popup/components/Header/NetworkButton';
+import Header from '~/Popup/components/WalletHeader';
+import AccountButton from '~/Popup/components/WalletHeader/AccountButton';
+import ChainButton from '~/Popup/components/WalletHeader/ChainButton';
+import NetworkButton from '~/Popup/components/WalletHeader/NetworkButton';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
@@ -130,7 +129,6 @@ export default function HOME() {
         <AccountButton isConnected />
       </div>
       <Header />
-      <BottomNavigation />
       <Dialog open={open} onClose={() => setOpen(false)}>
         weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge
         weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge

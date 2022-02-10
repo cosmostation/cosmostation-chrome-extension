@@ -9,6 +9,7 @@ export type ThemeStyle = {
     h4: Record<string, unknown>;
     h5: Record<string, unknown>;
     h6: Record<string, unknown>;
+    h7: Record<string, unknown>;
     h1n: Record<string, unknown>;
     h2n: Record<string, unknown>;
     h3n: Record<string, unknown>;
@@ -39,7 +40,7 @@ type AccentColors = {
 
 const lightThemeColors: Colors = {
   base01: '#FFFFFF',
-  base02: '#F5F6F9',
+  base02: '#F1F5FA',
   base03: '#E7EEF6',
   base04: '#C6CFDD',
   base05: '#96A6BF',
@@ -60,11 +61,11 @@ const darkThemeColors: Colors = {
 };
 
 const accentColors: AccentColors = {
-  purple01: '#9C6CFF',
-  purple02: '#7B4DDA',
+  purple01: '#7C4FFC',
+  purple02: '#633FCA',
   white: '#FFFFFF',
-  green: '#24D069',
-  red: '#FE1818',
+  green: '#27BD69',
+  red: '#CD1A1A',
 };
 
 const htmlFontSize = 10;
@@ -75,6 +76,7 @@ const h3En = { fontFamily: 'Inter600', fontStyle: 'normal', fontSize: '1.8rem', 
 const h4En = { fontFamily: 'Inter600', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
 const h5En = { fontFamily: 'Inter500', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
 const h6En = { fontFamily: 'Inter500', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.5rem', letterSpacing: 'normal' };
+const h7En = { fontFamily: 'Inter500', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.2rem', letterSpacing: 'normal' };
 
 const h1Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '2.8rem', lineHeight: '3.5rem', letterSpacing: '-0.02em' };
 const h2Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3.0rem', letterSpacing: '-0.02em' };
@@ -82,6 +84,7 @@ const h3Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.8rem', 
 const h4Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '1.9rem', letterSpacing: '-0.02em' };
 const h5Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.6rem', letterSpacing: '-0.02em' };
 const h6Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.5rem', letterSpacing: '-0.02em' };
+const h7Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.2rem', letterSpacing: '-0.02em' };
 
 const h1n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.8rem', lineHeight: '2.6rem', letterSpacing: 'normal' };
 const h2n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '2.2rem', letterSpacing: 'normal' };
@@ -90,6 +93,9 @@ const h4n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.2rem', l
 const h5n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
 const h6n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.5rem', letterSpacing: 'normal' };
 
+const hEn = { h1: h1En, h2: h2En, h3: h3En, h4: h4En, h5: h5En, h6: h6En, h7: h7En };
+const hKo = { h1: h1Ko, h2: h2Ko, h3: h3Ko, h4: h4Ko, h5: h5Ko, h6: h6Ko, h7: h7Ko };
+
 const hn = { h1n, h2n, h3n, h4n, h5n, h6n };
 
 export const darkEnTheme: ThemeStyle = {
@@ -97,12 +103,7 @@ export const darkEnTheme: ThemeStyle = {
   accentColors,
   typography: {
     htmlFontSize,
-    h1: h1En,
-    h2: h2En,
-    h3: h3En,
-    h4: h4En,
-    h5: h5En,
-    h6: h6En,
+    ...hEn,
     ...hn,
   },
 };
@@ -112,12 +113,7 @@ export const darkKoTheme: ThemeStyle = {
   accentColors,
   typography: {
     htmlFontSize,
-    h1: h1Ko,
-    h2: h2Ko,
-    h3: h3Ko,
-    h4: h4Ko,
-    h5: h5Ko,
-    h6: h6Ko,
+    ...hKo,
     ...hn,
   },
 };
@@ -127,12 +123,7 @@ export const lightEnTheme: ThemeStyle = {
   accentColors,
   typography: {
     htmlFontSize,
-    h1: h1En,
-    h2: h2En,
-    h3: h3En,
-    h4: h4En,
-    h5: h5En,
-    h6: h6En,
+    ...hEn,
     ...hn,
   },
 };
@@ -142,12 +133,7 @@ export const lightKoTheme: ThemeStyle = {
   accentColors,
   typography: {
     htmlFontSize,
-    h1: h1Ko,
-    h2: h2Ko,
-    h3: h3Ko,
-    h4: h4Ko,
-    h5: h5Ko,
-    h6: h6Ko,
+    ...hKo,
     ...hn,
   },
 };

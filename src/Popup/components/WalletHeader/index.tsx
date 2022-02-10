@@ -7,12 +7,11 @@ export default function Header() {
   return (
     <Container>
       <LeftContentContainer>
-        <LogoIcon />
+        <AccountButton />
       </LeftContentContainer>
       <RightContentContainer>
-        <ChainButton />
         <NetworkButton />
-        <AccountButton />
+        <ChainButton />
       </RightContentContainer>
     </Container>
   );
