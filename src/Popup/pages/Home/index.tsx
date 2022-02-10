@@ -4,6 +4,7 @@ import { Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import { THEME_TYPE } from '~/constants/theme';
+import BottomSheet from '~/Popup/components/common/BottomSheet';
 import Button from '~/Popup/components/common/Button';
 import Checkbox from '~/Popup/components/common/Checkbox';
 import Dialog from '~/Popup/components/common/Dialog';
@@ -119,10 +120,10 @@ export default function HOME() {
       </div>
       <WalletHeader />
       <Header />
-      <Dialog open={open} onClose={() => setOpen(false)}>
+      <BottomSheet open={open} onClose={() => setOpen(false)}>
         weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge
         weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge
-      </Dialog>
+      </BottomSheet>
     </Container>
   );
 }

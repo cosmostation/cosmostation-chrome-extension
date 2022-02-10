@@ -20,11 +20,11 @@ export const LeftContentContainer = styled('div')({
   justifyContent: 'flex-start',
 });
 
-export const LeftContentLogoContainer = styled('div')(({ theme }) => ({
+export const LeftContentLogoContainer = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-}));
+});
 export const LeftContentTextContainer = styled('div')(({ theme }) => ({
   marginLeft: '0.7rem',
   color: theme.colors.text01,
