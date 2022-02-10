@@ -1,9 +1,7 @@
 import AccountButton from './AccountButton';
 import { ChainButton, Container, LeftContentContainer, NetworkButton, RightContentContainer } from './styled';
 
-import LogoIcon from '~/images/icons/Logo.svg';
-
-export default function Header() {
+export default function WalletHeader() {
   return (
     <Container>
       <LeftContentContainer>

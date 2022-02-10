@@ -1,4 +1,5 @@
 export type ThemeStyle = {
+  mode: 'light' | 'dark';
   colors: Colors;
   accentColors: AccentColors;
   typography: {
@@ -99,6 +100,7 @@ const hKo = { h1: h1Ko, h2: h2Ko, h3: h3Ko, h4: h4Ko, h5: h5Ko, h6: h6Ko, h7: h7
 const hn = { h1n, h2n, h3n, h4n, h5n, h6n };
 
 export const darkEnTheme: ThemeStyle = {
+  mode: 'dark',
   colors: darkThemeColors,
   accentColors,
   typography: {
@@ -109,6 +111,7 @@ export const darkEnTheme: ThemeStyle = {
 };
 
 export const darkKoTheme: ThemeStyle = {
+  mode: 'dark',
   colors: darkThemeColors,
   accentColors,
   typography: {
@@ -119,6 +122,7 @@ export const darkKoTheme: ThemeStyle = {
 };
 
 export const lightEnTheme: ThemeStyle = {
+  mode: 'light',
   colors: lightThemeColors,
   accentColors,
   typography: {
@@ -129,6 +133,7 @@ export const lightEnTheme: ThemeStyle = {
 };
 
 export const lightKoTheme: ThemeStyle = {
+  mode: 'light',
   colors: lightThemeColors,
   accentColors,
   typography: {

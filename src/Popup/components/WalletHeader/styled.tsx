@@ -3,9 +3,9 @@ import { styled } from '@mui/material/styles';
 import BaseChainButton from './ChainButton';
 import BaseNetworkButton from './NetworkButton';
 
-export const Container = styled('div')(({ theme }) => ({
+export const Container = styled('div')({
   width: 'calc(36rem - 2.4rem)',
-  height: '4.8rem',
+  height: '2.8rem',
 
   display: 'flex',
   alignItems: 'center',
@@ -13,8 +13,8 @@ export const Container = styled('div')(({ theme }) => ({
 
   padding: '0 1.2rem 0 1.2rem',
 
-  backgroundColor: theme.colors.base01,
-}));
+  backgroundColor: 'transparent',
+});
 
 export const LeftContentContainer = styled('div')({
   display: 'flex',

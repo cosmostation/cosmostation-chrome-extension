@@ -9,10 +9,8 @@ import Checkbox from '~/Popup/components/common/Checkbox';
 import Dialog from '~/Popup/components/common/Dialog';
 import TextField from '~/Popup/components/common/Input';
 import Switch from '~/Popup/components/common/Switch';
-import Header from '~/Popup/components/WalletHeader';
-import AccountButton from '~/Popup/components/WalletHeader/AccountButton';
-import ChainButton from '~/Popup/components/WalletHeader/ChainButton';
-import NetworkButton from '~/Popup/components/WalletHeader/NetworkButton';
+import Header from '~/Popup/components/Header';
+import WalletHeader from '~/Popup/components/WalletHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
@@ -119,15 +117,7 @@ export default function HOME() {
       <div>
         <Switch />
       </div>
-      <div>
-        <ChainButton>eohgoiwghwoighweoighwioe</ChainButton>
-      </div>
-      <div>
-        <NetworkButton>eohgoiwghwoighweoighwioe</NetworkButton>
-      </div>
-      <div>
-        <AccountButton isConnected />
-      </div>
+      <WalletHeader />
       <Header />
       <Dialog open={open} onClose={() => setOpen(false)}>
         weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge weoighewoihweoghweoighiwoge

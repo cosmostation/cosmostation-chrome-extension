@@ -12,7 +12,7 @@ export const Container = styled('div')(({ theme }) => ({
   width: '36rem',
   height: '60rem',
 
-  backgroundColor: theme.colors.base02,
+  backgroundColor: theme.colors.base01,
 
   overflow: 'hidden',
 }));
