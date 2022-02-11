@@ -7,13 +7,17 @@ type StyledButtonProps = {
 export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
   border: 'none',
 
-  width: props['data-typo-varient'] === 'h4' ? '32rem' : '14.2rem',
+  width: '100%',
   height: props['data-typo-varient'] === 'h4' ? '4.8rem' : '3.6rem',
 
   borderRadius: '0.8rem',
 
   backgroundColor: theme.accentColors.purple01,
   color: theme.accentColors.white,
+
+  '& svg': {
+    fill: theme.accentColors.white,
+  },
 
   '&:hover': {
     backgroundColor: theme.accentColors.purple02,
@@ -38,9 +42,9 @@ export const ContentContainer = styled('div')<ContentContainerProps>((props) => 
   justifyContent: 'center',
   alignItems: 'center',
 
-  marginLeft: props['data-is-image'] ? '-1.2rem' : '0',
+  marginLeft: props['data-is-image'] ? '-0.6rem' : '0',
 
   '& :first-of-type': {
-    marginRight: props['data-is-image'] ? '0.8rem' : '0',
+    marginRight: props['data-is-image'] ? '0.4rem' : '0',
   },
 }));

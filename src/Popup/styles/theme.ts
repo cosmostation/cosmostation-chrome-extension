@@ -1,43 +1,4 @@
-export type ThemeStyle = {
-  mode: 'light' | 'dark';
-  colors: Colors;
-  accentColors: AccentColors;
-  typography: {
-    htmlFontSize: number;
-    h1: Record<string, unknown>;
-    h2: Record<string, unknown>;
-    h3: Record<string, unknown>;
-    h4: Record<string, unknown>;
-    h5: Record<string, unknown>;
-    h6: Record<string, unknown>;
-    h7: Record<string, unknown>;
-    h1n: Record<string, unknown>;
-    h2n: Record<string, unknown>;
-    h3n: Record<string, unknown>;
-    h4n: Record<string, unknown>;
-    h5n: Record<string, unknown>;
-    h6n: Record<string, unknown>;
-  };
-};
-
-type Colors = {
-  base01: string;
-  base02: string;
-  base03: string;
-  base04: string;
-  base05: string;
-  base06: string;
-  text01: string;
-  text02: string;
-};
-
-type AccentColors = {
-  purple01: string;
-  purple02: string;
-  white: string;
-  green: string;
-  red: string;
-};
+import type { AccentColors, Colors, ThemeStyle } from '~/types/theme';
 
 const lightThemeColors: Colors = {
   base01: '#FFFFFF',

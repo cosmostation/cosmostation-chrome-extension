@@ -1,5 +1,6 @@
 import Header from './Header';
-import { Container, HeaderContainer } from './styled';
+import NativeChainCard from './NativeChainCard';
+import { Container, HeaderContainer, NativeChainCardContainer } from './styled';
 
 export default function Entry() {
   return (
@@ -7,6 +8,9 @@ export default function Entry() {
       <HeaderContainer>
         <Header />
       </HeaderContainer>
+      <NativeChainCardContainer>
+        <NativeChainCard />
+      </NativeChainCardContainer>
     </Container>
   );
 }

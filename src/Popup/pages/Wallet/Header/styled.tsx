@@ -4,14 +4,12 @@ import BaseChainButton from './ChainButton';
 import BaseNetworkButton from './NetworkButton';
 
 export const Container = styled('div')({
-  width: 'calc(36rem - 2.4rem)',
+  width: '100%',
   height: '2.8rem',
 
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-
-  padding: '0 1.2rem 0 1.2rem',
 
   backgroundColor: 'transparent',
 });

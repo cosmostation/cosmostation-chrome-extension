@@ -1,6 +1,8 @@
 import { Typography } from '@mui/material';
 
-import { Container, IconButton, LeftContentContainer, LeftContentLogoContainer, LeftContentTextContainer, RightContentContainer } from './styled';
+import IconButton from '~/Popup/components/common/IconButton';
+
+import { Container, LeftContentContainer, LeftContentLogoContainer, LeftContentTextContainer, RightContentContainer } from './styled';
 
 import DashboardIcon from '~/images/icons/Dashboard.svg';
 import LogoIcon from '~/images/icons/Logo.svg';

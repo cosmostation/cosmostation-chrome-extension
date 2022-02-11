@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 
-import ethereumImage from '~/images/symbols/ethereum.png';
+import Image from '~/Popup/components/common/Image';
 
 import { ContentCenterTextContainer, ContentContainer, ContentLeftImageContainer, ContentRightImageContainer, StyledButton } from './styled';
 
@@ -17,16 +17,7 @@ export default function ChainButton({ children, imgSrc, isActive = false, ...rem
     <StyledButton {...remainder}>
       <ContentContainer>
         <ContentLeftImageContainer>
-          <img
-            src={imgSrc ?? 'https://'}
-            alt=""
-            onError={(event) => {
-              // eslint-disable-next-line no-param-reassign
-              event.currentTarget.onerror = null;
-              // eslint-disable-next-line no-param-reassign
-              event.currentTarget.src = ethereumImage;
-            }}
-          />
+          <Image src={imgSrc} />
         </ContentLeftImageContainer>
         <ContentCenterTextContainer>
           <Typography variant="h6">{children}</Typography>
