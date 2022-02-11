@@ -88,13 +88,13 @@ export const ThirdLineContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-export const FourthLineContainer = styled('div')(({ theme }) => ({
+export const FourthLineContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
 
   marginTop: '1.6rem',
-}));
+});
 
 export const FourthLineCenterContainer = styled('div')({
   width: '0.8rem',

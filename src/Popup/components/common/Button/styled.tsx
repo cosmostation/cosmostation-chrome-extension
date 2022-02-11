@@ -8,7 +8,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
   border: 'none',
 
   width: '100%',
-  height: props['data-typo-varient'] === 'h4' ? '4.8rem' : '3.6rem',
+  height: props['data-typo-varient'] === 'h4' ? '4.8rem' : '3.2rem',
 
   borderRadius: '0.8rem',
 
