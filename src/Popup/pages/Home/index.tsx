@@ -68,7 +68,7 @@ export default function HOME() {
       <button
         type="button"
         onClick={() => {
-          navigate('/register/password');
+          navigate('/wallet');
         }}
       >
         <Typography variant="h1">코스모스테이션 월렛</Typography>

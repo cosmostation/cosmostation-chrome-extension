@@ -9,7 +9,7 @@ export const StyledPopover = styled(Popover)(({ theme }) => ({
 
     color: theme.colors.text01,
 
-    width: 'max-content',
+    maxWidth: 'max-content',
     height: 'max-content',
 
     borderRadius: '0.8rem',

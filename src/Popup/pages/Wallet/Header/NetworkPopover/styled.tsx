@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')(({ theme }) => ({
-  width: '17.8rem',
+  width: '18rem',
   maxHeight: '49.7rem',
   overflow: 'auto',
 

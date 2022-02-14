@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import IconButton from '~/Popup/components/common/IconButton';
 
 export const Container = styled('div')(({ theme }) => ({
-  width: '33.2rem',
+  width: '33.6rem',
   maxHeight: '49.7rem',
   overflow: 'auto',
 

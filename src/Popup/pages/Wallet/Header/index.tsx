@@ -26,6 +26,7 @@ export default function WalletHeader() {
         <ChainButton onClick={(event) => setChainPopoverAnchorEl(event.currentTarget)} isActive={isOpenChainPopover} />
       </RightContentContainer>
       <ChainPopover
+        marginThreshold={0}
         open={isOpenChainPopover}
         onClose={() => setChainPopoverAnchorEl(null)}
         anchorEl={chainPopoverAnchorEl}
@@ -52,6 +53,7 @@ export default function WalletHeader() {
         }}
       />
       <AccountPopover
+        marginThreshold={0}
         open={isOpenAccountPopover}
         onClose={() => setAccountPopoverAnchorEl(null)}
         anchorEl={accountPopoverAnchorEl}
