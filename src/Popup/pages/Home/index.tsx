@@ -114,7 +114,7 @@ export default function HOME() {
       <div>{currentAccount.name}</div>
       <div>{currentAccount.type}</div>
       <div>
-        <Button type="button" typoVarient="h4" Image={SendIcon} onClick={handleClick}>
+        <Button type="button" typoVarient="h4" Icon={SendIcon} onClick={handleClick}>
           Receive
         </Button>
       </div>

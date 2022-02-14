@@ -58,11 +58,11 @@ export default function NativeChainCard() {
         </Number>
       </ThirdLineContainer>
       <FourthLineContainer>
-        <Button Image={SendIcon} typoVarient="h5">
+        <Button Icon={SendIcon} typoVarient="h5">
           Send
         </Button>
         <FourthLineCenterContainer />
-        <Button Image={ReceiveIcon} typoVarient="h5">
+        <Button Icon={ReceiveIcon} typoVarient="h5">
           Receive
         </Button>
       </FourthLineContainer>

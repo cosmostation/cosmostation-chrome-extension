@@ -34,7 +34,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 }));
 
 type ContentContainerProps = {
-  'data-is-image'?: number;
+  'data-is-icon'?: number;
 };
 
 export const ContentContainer = styled('div')<ContentContainerProps>((props) => ({
@@ -42,9 +42,9 @@ export const ContentContainer = styled('div')<ContentContainerProps>((props) => 
   justifyContent: 'center',
   alignItems: 'center',
 
-  marginLeft: props['data-is-image'] ? '-0.6rem' : '0',
+  marginLeft: props['data-is-icon'] ? '-0.6rem' : '0',
 
   '& :first-of-type': {
-    marginRight: props['data-is-image'] ? '0.4rem' : '0',
+    marginRight: props['data-is-icon'] ? '0.4rem' : '0',
   },
 }));

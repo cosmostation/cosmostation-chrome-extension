@@ -14,7 +14,7 @@ import {
 } from './styled';
 
 import CheckIcon from '~/images/icons/Check.svg';
-import CloseIcon from '~/images/icons/Close.svg';
+import Close16Icon from '~/images/icons/Close16.svg';
 
 type ChainItemButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
   imgSrc?: string;
@@ -49,7 +49,7 @@ export default function ChainItemButton({ children, imgSrc, isActive = false, on
               onClickDelete();
             }}
           >
-            <CloseIcon />
+            <Close16Icon />
           </DeleteContainer>
         )}
       </ContentContainer>
