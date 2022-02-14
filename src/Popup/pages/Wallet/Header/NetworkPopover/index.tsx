@@ -22,21 +22,17 @@ import {
 
 import SettingIcon from '~/images/icons/Setting.svg';
 
-type ChainPopoverProps = Omit<PopoverProps, 'children'>;
+type NetworkPopoverProps = Omit<PopoverProps, 'children'>;
 
-export default function ChainPopover(props: ChainPopoverProps) {
+export default function NetworkPopover(props: NetworkPopoverProps) {
   return (
     <Popover {...props}>
       <Container>
         <HeaderContainer>
           <HeaderLeftContainer>
-            <Typography variant="h5">Select a chain</Typography>
+            <Typography variant="h5">Select a network</Typography>
           </HeaderLeftContainer>
-          <HeaderRightContainer>
-            <StyledIconButton>
-              <SettingIcon />
-            </StyledIconButton>
-          </HeaderRightContainer>
+          <HeaderRightContainer />
         </HeaderContainer>
         <Divider />
         <BodyContainer>
@@ -53,15 +49,10 @@ export default function ChainPopover(props: ChainPopoverProps) {
               <ChainItemButton>Cosmos</ChainItemButton>
             </ChainListContainer>
           </TendermintChainListContainer>
-          <Divider />
-          <EthereumChainListContainer>
-            <ChainListContainer>
-              <ChainItemButton>Ethereum</ChainItemButton>
-            </ChainListContainer>
-          </EthereumChainListContainer>
+
           <BetaChainContainer>
             <BetaChainTitleContainer>
-              <Typography variant="h6">Beta support</Typography>
+              <Typography variant="h6">Support</Typography>
             </BetaChainTitleContainer>
             <BetaChainListContainer>
               <ChainListContainer>

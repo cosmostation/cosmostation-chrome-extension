@@ -6,7 +6,7 @@ import { Container, LeftContentContainer, LeftContentLogoContainer, LeftContentT
 
 import DashboardIcon from '~/images/icons/Dashboard.svg';
 import LogoIcon from '~/images/icons/Logo.svg';
-import SettingIcon from '~/images/icons/Setting.svg';
+import MenuIcon from '~/images/icons/Menu.svg';
 
 export default function Header() {
   return (
@@ -24,7 +24,7 @@ export default function Header() {
           <DashboardIcon />
         </IconButton>
         <IconButton>
-          <SettingIcon />
+          <MenuIcon />
         </IconButton>
       </RightContentContainer>
     </Container>

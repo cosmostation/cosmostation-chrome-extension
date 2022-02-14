@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import IconButton from '~/Popup/components/common/IconButton';
 
 export const Container = styled('div')(({ theme }) => ({
-  width: '33.6rem',
+  width: '18rem',
   maxHeight: '49.7rem',
   overflow: 'auto',
 
@@ -50,8 +50,7 @@ export const StyledIconButton = styled(IconButton)(({ theme }) => ({
 export const ChainListContainer = styled('div')({
   width: '100%',
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  columnGap: '0.8rem',
+  gridTemplateColumns: '1fr',
   rowGap: '0.4rem',
 });
 
