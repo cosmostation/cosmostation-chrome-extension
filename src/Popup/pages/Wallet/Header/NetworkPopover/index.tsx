@@ -4,23 +4,18 @@ import { Typography } from '@mui/material';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 
-import ChainItemButton from './ChainItemButton';
+import NetworkItemButton from './NetworkItemButton';
 import {
-  BetaChainContainer,
-  BetaChainListContainer,
-  BetaChainTitleContainer,
+  BetaNetworkContainer,
+  BetaNetworkListContainer,
+  BetaNetworkTitleContainer,
   BodyContainer,
-  ChainListContainer,
   Container,
-  EthereumChainListContainer,
   HeaderContainer,
   HeaderLeftContainer,
   HeaderRightContainer,
-  StyledIconButton,
-  TendermintChainListContainer,
+  NetworkListContainer,
 } from './styled';
-
-import SettingIcon from '~/images/icons/Setting.svg';
 
 type NetworkPopoverProps = Omit<PopoverProps, 'children'>;
 
@@ -36,33 +31,31 @@ export default function NetworkPopover(props: NetworkPopoverProps) {
         </HeaderContainer>
         <Divider />
         <BodyContainer>
-          <TendermintChainListContainer>
-            <ChainListContainer>
-              <ChainItemButton isActive imgSrc="https://">
-                Cosmos
-              </ChainItemButton>
-              <ChainItemButton>Cosmos</ChainItemButton>
-              <ChainItemButton>cosmos</ChainItemButton>
-              <ChainItemButton>Cosmos</ChainItemButton>
-              <ChainItemButton>Cosmos</ChainItemButton>
-              <ChainItemButton>Cosmos</ChainItemButton>
-              <ChainItemButton>Cosmos</ChainItemButton>
-            </ChainListContainer>
-          </TendermintChainListContainer>
+          <NetworkListContainer>
+            <NetworkItemButton isActive imgSrc="https://">
+              Cosmos
+            </NetworkItemButton>
+            <NetworkItemButton>Cosmos</NetworkItemButton>
+            <NetworkItemButton>cosmos</NetworkItemButton>
+            <NetworkItemButton>Cosmos</NetworkItemButton>
+            <NetworkItemButton>Cosmos</NetworkItemButton>
+            <NetworkItemButton>Cosmos</NetworkItemButton>
+            <NetworkItemButton>Cosmos</NetworkItemButton>
+          </NetworkListContainer>
 
-          <BetaChainContainer>
-            <BetaChainTitleContainer>
+          <BetaNetworkContainer>
+            <BetaNetworkTitleContainer>
               <Typography variant="h6">Support</Typography>
-            </BetaChainTitleContainer>
-            <BetaChainListContainer>
-              <ChainListContainer>
-                <ChainItemButton onClick={() => console.log('select chain')} onClickDelete={() => console.log('delete')}>
+            </BetaNetworkTitleContainer>
+            <BetaNetworkListContainer>
+              <NetworkListContainer>
+                <NetworkItemButton onClick={() => console.log('select chain')} onClickDelete={() => console.log('delete')}>
                   Axeler
-                </ChainItemButton>
-                <ChainItemButton onClickDelete={() => console.log('delete')}>adadad</ChainItemButton>
-              </ChainListContainer>
-            </BetaChainListContainer>
-          </BetaChainContainer>
+                </NetworkItemButton>
+                <NetworkItemButton onClickDelete={() => console.log('delete')}>adadad</NetworkItemButton>
+              </NetworkListContainer>
+            </BetaNetworkListContainer>
+          </BetaNetworkContainer>
         </BodyContainer>
       </Container>
     </Popover>

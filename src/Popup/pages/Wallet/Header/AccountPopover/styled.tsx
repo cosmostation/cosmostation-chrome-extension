@@ -1,7 +1,9 @@
 import { styled } from '@mui/material/styles';
 
+import IconButton from '~/Popup/components/common/IconButton';
+
 export const Container = styled('div')(({ theme }) => ({
-  width: '17.8rem',
+  width: '33.2rem',
   maxHeight: '49.7rem',
   overflow: 'auto',
 
@@ -37,24 +39,17 @@ export const BodyContainer = styled('div')(({ theme }) => ({
   padding: '1.6rem',
 }));
 
-export const NetworkListContainer = styled('div')({
+export const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  marginRight: '-1.2rem',
+
+  '& svg': {
+    fill: theme.colors.base05,
+  },
+}));
+
+export const AccountListContainer = styled('div')({
   width: '100%',
   display: 'grid',
   gridTemplateColumns: '1fr',
   rowGap: '0.4rem',
-
-  marginBottom: '1.2rem',
-});
-
-export const BetaNetworkContainer = styled('div')({
-  marginTop: '2.4rem',
-  width: '100%',
-});
-
-export const BetaNetworkTitleContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text02,
-}));
-
-export const BetaNetworkListContainer = styled('div')({
-  marginTop: '0.8rem',
 });

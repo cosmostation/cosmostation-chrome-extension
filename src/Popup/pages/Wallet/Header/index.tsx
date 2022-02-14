@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import AccountButton from './AccountButton';
+import AccountPopover from './AccountPopover';
 import ChainPopover from './ChainPopover';
 import NetworkPopover from './NetworkPopover';
 import { ChainButton, Container, LeftContentContainer, NetworkButton, RightContentContainer } from './styled';
@@ -12,10 +13,13 @@ export default function WalletHeader() {
   const [networkPopoverAnchorEl, setNetworkPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenNetworkPopover = Boolean(networkPopoverAnchorEl);
 
+  const [accountPopoverAnchorEl, setAccountPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const isOpenAccountPopover = Boolean(accountPopoverAnchorEl);
+
   return (
     <Container>
       <LeftContentContainer>
-        <AccountButton />
+        <AccountButton onClick={(event) => setAccountPopoverAnchorEl(event.currentTarget)} />
       </LeftContentContainer>
       <RightContentContainer>
         <NetworkButton onClick={(event) => setNetworkPopoverAnchorEl(event.currentTarget)} />
@@ -45,6 +49,19 @@ export default function WalletHeader() {
         transformOrigin={{
           vertical: 'top',
           horizontal: 'right',
+        }}
+      />
+      <AccountPopover
+        open={isOpenAccountPopover}
+        onClose={() => setAccountPopoverAnchorEl(null)}
+        anchorEl={accountPopoverAnchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
         }}
       />
     </Container>

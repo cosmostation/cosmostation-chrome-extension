@@ -1,7 +1,5 @@
 import { styled } from '@mui/material/styles';
 
-import IconButton from '~/Popup/components/common/IconButton';
-
 type StyledButtonProps = {
   'data-is-active'?: number;
 };
