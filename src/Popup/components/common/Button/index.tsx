@@ -5,14 +5,14 @@ import { ContentContainer, StyledButton } from './styled';
 
 type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   typoVarient?: 'h4' | 'h5';
-  Image?: VFC<SVGProps<SVGSVGElement>>;
+  Icon?: VFC<SVGProps<SVGSVGElement>>;
 };
 
-export default function Button({ children, Image, typoVarient = 'h4', ...remainder }: ButtonProps) {
+export default function Button({ children, Icon, typoVarient = 'h4', ...remainder }: ButtonProps) {
   return (
-    <StyledButton {...remainder} typo_varient={typoVarient}>
-      <ContentContainer is_image={Image ? 1 : 0}>
-        {Image && <Image />}
+    <StyledButton {...remainder} data-typo-varient={typoVarient}>
+      <ContentContainer data-is-icon={Icon ? 1 : 0}>
+        {Icon && <Icon />}
         <Typography variant={typoVarient}>{children}</Typography>
       </ContentContainer>
     </StyledButton>

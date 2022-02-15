@@ -1,5 +1,4 @@
-import Layout from '~/Popup/components/Layout';
-
+import Body from './Body';
 import Init from './Init';
 import Routes from './Routes';
 
@@ -9,10 +8,10 @@ type WrapperType = {
 
 export default function Wrapper({ children }: WrapperType) {
   return (
-    <Init>
-      <Layout>
+    <Body>
+      <Init>
         <Routes>{children}</Routes>
-      </Layout>
-    </Init>
+      </Init>
+    </Body>
   );
 }

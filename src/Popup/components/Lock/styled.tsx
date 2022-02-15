@@ -40,6 +40,7 @@ export const RestoreContainer = styled('div')(({ theme }) => ({
 export const UnlockButtonContainer = styled('div')(({ theme }) => ({
   position: 'absolute',
   bottom: '2rem',
+  width: '32rem',
 }));
 
 export const Button = styled(BaseButton)({});

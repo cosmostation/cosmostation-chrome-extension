@@ -15,6 +15,7 @@ import LoadingOverlay from '~/Popup/components/Loading/Overlay';
 import Lock from '~/Popup/components/Lock';
 import Wrapper from '~/Popup/components/Wrapper';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
 import Register from '~/Popup/pages/Register';
 import RegisterAccount from '~/Popup/pages/Register/Account';
@@ -22,6 +23,7 @@ import RehisterAccountMnemonic from '~/Popup/pages/Register/Account/Mnemonic';
 import RehisterAccountNew from '~/Popup/pages/Register/Account/New';
 import RehisterAccountPrivateKey from '~/Popup/pages/Register/Account/PrivateKey';
 import RegisterPassword from '~/Popup/pages/Register/Password';
+import Wallet from '~/Popup/pages/Wallet';
 import { darkEnTheme, darkKoTheme, lightEnTheme, lightKoTheme } from '~/Popup/styles/theme';
 
 function Popup() {
@@ -45,6 +47,8 @@ function Popup() {
             <Lock>
               <Routes>
                 <Route path={PATH.HOME} element={<Home />} />
+                <Route path={PATH.DASHBOARD} element={<Dashboard />} />
+                <Route path={PATH.WALLET} element={<Wallet />} />
                 <Route path={PATH.REGISTER} element={<Register />} />
                 <Route path={PATH.REGISTER__ACCOUNT} element={<RegisterAccount />} />
                 <Route path={PATH.REGISTER__ACCOUNT__MNEMONIC} element={<RehisterAccountMnemonic />} />

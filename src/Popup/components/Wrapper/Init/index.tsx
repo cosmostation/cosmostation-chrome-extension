@@ -19,7 +19,7 @@ export default function Init({ children }: InitType) {
   const [isLoading, setIsLoading] = useState(true);
 
   const [chromeStorage, setChromeStorage] = useRecoilState(chromeStorageState);
-  const setInMemory = useSetRecoilState(inMemoryState);
+  const [inMemory, setInMemory] = useRecoilState(inMemoryState);
 
   const navigate = useNavigate();
 
@@ -53,6 +53,11 @@ export default function Init({ children }: InitType) {
     console.log('init useEffect');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    console.log(JSON.stringify(chromeStorage, undefined, 3));
+    console.log(JSON.stringify(inMemory, undefined, 3));
+  }, [inMemory, chromeStorage]);
 
   if (isLoading) {
     return null;
