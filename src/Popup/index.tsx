@@ -23,6 +23,9 @@ import RehisterAccountMnemonic from '~/Popup/pages/Register/Account/Mnemonic';
 import RehisterAccountNew from '~/Popup/pages/Register/Account/New';
 import RehisterAccountPrivateKey from '~/Popup/pages/Register/Account/PrivateKey';
 import RegisterPassword from '~/Popup/pages/Register/Password';
+import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
+import SettingChangeLanguage from '~/Popup/pages/Setting/ChangeLanguage';
+import SettingChangePassword from '~/Popup/pages/Setting/ChangePassword';
 import Wallet from '~/Popup/pages/Wallet';
 import { darkEnTheme, darkKoTheme, lightEnTheme, lightKoTheme } from '~/Popup/styles/theme';
 
@@ -49,6 +52,9 @@ function Popup() {
                 <Route path={PATH.HOME} element={<Home />} />
                 <Route path={PATH.DASHBOARD} element={<Dashboard />} />
                 <Route path={PATH.WALLET} element={<Wallet />} />
+                <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />
+                <Route path={PATH.SETTING__CHANGE_LANGUAGE} element={<SettingChangeLanguage />} />
+                <Route path={PATH.SETTING__CHANGE_CURRENCY} element={<SettingChangeCurrency />} />
                 <Route path={PATH.REGISTER} element={<Register />} />
                 <Route path={PATH.REGISTER__ACCOUNT} element={<RegisterAccount />} />
                 <Route path={PATH.REGISTER__ACCOUNT__MNEMONIC} element={<RehisterAccountMnemonic />} />

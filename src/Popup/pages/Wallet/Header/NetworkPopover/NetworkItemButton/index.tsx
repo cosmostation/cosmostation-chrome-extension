@@ -13,7 +13,7 @@ import {
   StyledButton,
 } from './styled';
 
-import CheckIcon from '~/images/icons/Check.svg';
+import Check16Icon from '~/images/icons/Check16.svg';
 import Close16Icon from '~/images/icons/Close16.svg';
 
 type ChainItemButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
@@ -40,7 +40,7 @@ export default function ChainItemButton({ children, imgSrc, isActive = false, on
           </ContentLeftTextContainer>
         </ContentLeftContainer>
         <ContentRightContainer>
-          <ContentRightImageContainer>{isActive && <CheckIcon />}</ContentRightImageContainer>
+          <ContentRightImageContainer>{isActive && <Check16Icon />}</ContentRightImageContainer>
         </ContentRightContainer>
         {onClickDelete && (
           <DeleteContainer

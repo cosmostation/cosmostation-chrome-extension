@@ -1,7 +1,9 @@
 import type { HTMLInputTypeAttribute } from 'react';
 import { useState } from 'react';
 import type { OutlinedInputProps } from '@mui/material';
-import { IconButton, InputAdornment, Typography } from '@mui/material';
+import { InputAdornment, Typography } from '@mui/material';
+
+import IconButton from '~/Popup/components/common/IconButton';
 
 import { HelperTextContainer, StyledTextField, StyledVisibility, StyledVisibilityOff } from './styled';
 

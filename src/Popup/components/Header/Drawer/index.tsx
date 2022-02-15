@@ -1,7 +1,9 @@
 import type { SVGProps, VFC } from 'react';
+import { useLocation } from 'react-router-dom';
 import type { DrawerProps as BaseDrawerProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
+import { PATH } from '~/constants/route';
 import { THEME_TYPE } from '~/constants/theme';
 import Button from '~/Popup/components/common/Button';
 import Divider from '~/Popup/components/common/Divider';
@@ -9,6 +11,7 @@ import IconButton from '~/Popup/components/common/IconButton';
 import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 
 import {
   HeaderContainer,
@@ -42,7 +45,9 @@ type DrawerProps = Omit<BaseDrawerProps, 'children' | 'onClose'> & {
 
 export default function Drawer({ onClose, ...remainder }: DrawerProps) {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { navigate } = useNavigate();
   const { setInMemory } = useInMemory();
+  const { pathname } = useLocation();
 
   const isDarkMode = chromeStorage.theme === THEME_TYPE.DARK;
 
@@ -84,11 +89,38 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
         </ItemRightContainer>
       </ItemContainer>
 
-      <ItemButton Icon={PasswordChangeIcon}>Change Password</ItemButton>
+      <ItemButton
+        Icon={PasswordChangeIcon}
+        onClick={() => {
+          if (!pathname?.startsWith(PATH.SETTING__CHANGE_PASSWORD)) {
+            navigate(PATH.SETTING__CHANGE_PASSWORD);
+          }
+        }}
+      >
+        Change Password
+      </ItemButton>
 
-      <ItemButton Icon={LanguageChangeIcon}>Language</ItemButton>
+      <ItemButton
+        Icon={LanguageChangeIcon}
+        onClick={() => {
+          if (!pathname?.startsWith(PATH.SETTING__CHANGE_LANGUAGE)) {
+            navigate(PATH.SETTING__CHANGE_LANGUAGE);
+          }
+        }}
+      >
+        Language
+      </ItemButton>
 
-      <ItemButton Icon={CurrencyChangeIcon}>Currency</ItemButton>
+      <ItemButton
+        Icon={CurrencyChangeIcon}
+        onClick={() => {
+          if (!pathname?.startsWith(PATH.SETTING__CHANGE_CURRENCY)) {
+            navigate(PATH.SETTING__CHANGE_CURRENCY);
+          }
+        }}
+      >
+        Currency
+      </ItemButton>
 
       <ItemButton Icon={HelpIcon}>Help & Support</ItemButton>
 
