@@ -1,13 +1,9 @@
-import { Body as BaseBody, Container } from './styled';
+import { Body as BaseBody } from './styled';
 
 type LayoutProps = {
   children: JSX.Element;
 };
 
 export default function Body({ children }: LayoutProps) {
-  return (
-    <BaseBody>
-      <Container>{children}</Container>
-    </BaseBody>
-  );
+  return <BaseBody>{children}</BaseBody>;
 }
