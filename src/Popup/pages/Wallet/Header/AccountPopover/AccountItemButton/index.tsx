@@ -13,7 +13,7 @@ import {
   StyledButton,
 } from './styled';
 
-import CheckIcon from '~/images/icons/Check.svg';
+import Check16Icon from '~/images/icons/Check16.svg';
 
 type AccountItemButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
   isActive?: boolean;
@@ -39,7 +39,7 @@ export default function AccountItemButton({ children, isActive = false, ...remai
           </ContentLeftTextContainer>
         </ContentLeftContainer>
         <ContentRightContainer>
-          <ContentRightImageContainer>{isActive && <CheckIcon />}</ContentRightImageContainer>
+          <ContentRightImageContainer>{isActive && <Check16Icon />}</ContentRightImageContainer>
         </ContentRightContainer>
       </ContentContainer>
     </StyledButton>

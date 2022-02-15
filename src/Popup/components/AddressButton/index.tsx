@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 
 import { StyledButton } from './styled';
 
-export default function AddressButton({
+export default function SelectButton({
   children,
   ...remainder
 }: Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & { children?: string }) {
