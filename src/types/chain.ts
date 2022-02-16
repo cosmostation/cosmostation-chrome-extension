@@ -13,6 +13,7 @@ export type BIP44 = {
 type CommonChain = {
   id: string;
   bip44: Omit<BIP44, 'addressIndex'>;
+  imageURL?: string;
 };
 
 export type CosmosChain = {
@@ -22,7 +23,7 @@ export type CosmosChain = {
   displayDenom: string;
   restURL: string;
   baseDenom: string;
-  decimal: number;
+  decimals: number;
   bech32Prefix: {
     address: string;
   };
@@ -31,18 +32,29 @@ export type CosmosChain = {
 export type EthereumChain = {
   line: typeof LINE_TYPE.ETHEREUM;
   chainName: string;
-  networks: EthereumNetwork[];
 } & CommonChain;
 
 export type EthereumNetwork = {
   id: string;
+  ethereumChainId: string;
   chainId: string;
   networkName: string;
   baseDenom: string;
   displayDenom: string;
-  decimal: number;
+  decimals: number;
   rpcURL: string;
+  imageURL?: string;
   explorerURL?: string;
+};
+
+export type EthereumToken = {
+  id: string;
+  accountId: string;
+  ethereumNetworkId: string;
+  address: string;
+  tokenName: string;
+  decimals: number;
+  imageURL?: string;
 };
 
 export type Chain = CosmosChain | EthereumChain;
