@@ -32,17 +32,26 @@ export const HeaderLeftImageContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
 
   '& svg': {
-    fill: theme.colors.base06,
+    '& > rect': {
+      fill: theme.colors.base06,
+    },
+    '& > path': {
+      stroke: theme.colors.base01,
+    },
   },
 }));
 
-export const HeaderLeftTextContainer = styled('div')({
+export const HeaderLeftTextContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
 
   marginLeft: '0.7rem',
-});
+
+  '& svg': {
+    fill: theme.colors.base06,
+  },
+}));
 
 export const HeaderRightContainer = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -92,7 +101,7 @@ export const ItemLeftImageContainer = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   alignItems: 'center',
 
-  '& svg': {
+  '& > svg > path': {
     fill: theme.colors.base05,
   },
 }));

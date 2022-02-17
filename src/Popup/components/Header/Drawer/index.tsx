@@ -30,12 +30,13 @@ import {
 } from './styled';
 
 import Close24Icon from '~/images/icons/Close24.svg';
-import CurrencyChangeIcon from '~/images/icons/CurrencyChange.svg';
-import DarkModeIcon from '~/images/icons/DarkMode.svg';
+import Cosmostation14Icon from '~/images/icons/Cosmostation14.svg';
+import Currency24Icon from '~/images/icons/Currency24.svg';
+import DarkMode24Icon from '~/images/icons/DarkMode24.svg';
 import HelpIcon from '~/images/icons/Help.svg';
 import LanguageChangeIcon from '~/images/icons/LanguageChange.svg';
 import Lock16 from '~/images/icons/Lock16.svg';
-import LogoIcon from '~/images/icons/Logo.svg';
+import Logo24Icon from '~/images/icons/Logo28.svg';
 import PasswordChangeIcon from '~/images/icons/PasswordChange.svg';
 import RightArrowIcon from '~/images/icons/RightArrow.svg';
 
@@ -56,10 +57,10 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
       <HeaderContainer>
         <HeaderLeftContainer>
           <HeaderLeftImageContainer>
-            <LogoIcon />
+            <Logo24Icon />
           </HeaderLeftImageContainer>
           <HeaderLeftTextContainer>
-            <Typography variant="h4">STATION</Typography>
+            <Cosmostation14Icon />
           </HeaderLeftTextContainer>
         </HeaderLeftContainer>
         <HeaderRightContainer>
@@ -73,7 +74,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
       <ItemContainer>
         <ItemLeftContainer>
           <ItemLeftImageContainer>
-            <DarkModeIcon />
+            <DarkMode24Icon id="darkMode" />
           </ItemLeftImageContainer>
           <ItemLeftTextContainer>
             <Typography variant="h4">Dark mode</Typography>
@@ -112,7 +113,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
       </ItemButton>
 
       <ItemButton
-        Icon={CurrencyChangeIcon}
+        Icon={Currency24Icon}
         onClick={() => {
           if (!pathname?.startsWith(PATH.SETTING__CHANGE_CURRENCY)) {
             navigate(PATH.SETTING__CHANGE_CURRENCY);

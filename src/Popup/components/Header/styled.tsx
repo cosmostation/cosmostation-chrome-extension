@@ -25,12 +25,25 @@ export const LeftContentLogoContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
 
   '& svg': {
-    fill: theme.colors.base06,
+    '& > rect': {
+      fill: theme.colors.base06,
+    },
+    '& > path': {
+      stroke: theme.colors.base01,
+    },
   },
 }));
 export const LeftContentTextContainer = styled('div')(({ theme }) => ({
   marginLeft: '0.7rem',
   color: theme.colors.text01,
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  '& svg': {
+    fill: theme.colors.text01,
+  },
 }));
 
 export const RightContentContainer = styled('div')({
