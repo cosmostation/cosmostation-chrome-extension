@@ -4,13 +4,11 @@ export const Container = styled('div')({
   width: 'calc(100% - 2.4rem)',
   height: '100%',
 
-  margin: '0 1.2rem',
+  padding: '0.8rem 1.2rem 0',
 });
 
 export const ListContainer = styled('div')({
-  marginTop: '0.8rem',
-
-  '& > :nth-of-type(n + 1)': {
+  '& > :nth-of-type(n + 2)': {
     marginTop: '0.8rem',
   },
 });

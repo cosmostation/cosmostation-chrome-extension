@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
@@ -41,7 +42,7 @@ export default function Lock({ children }: LockProps) {
   } = useForm<PasswordForm>({
     resolver: joiResolver(passwordForm),
     mode: 'onSubmit',
-    shouldFocusError: true,
+    reValidateMode: 'onSubmit',
   });
 
   const submit = async (data: PasswordForm) => {

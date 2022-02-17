@@ -4,12 +4,12 @@ import { LeftContainer, RightContainer, StyledButton } from './styled';
 
 import Check24Icon from '~/images/icons/Check24.svg';
 
-type AddressButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
+type SelectButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
   children?: string;
   isActive?: boolean;
 };
 
-export default function AddressButton({ children, isActive, ...remainder }: AddressButtonProps) {
+export default function SelectButton({ children, isActive, ...remainder }: SelectButtonProps) {
   return (
     <StyledButton {...remainder}>
       <LeftContainer>

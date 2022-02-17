@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import type { DrawerProps as BaseDrawerProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
-import { PATH } from '~/constants/route';
 import { THEME_TYPE } from '~/constants/theme';
 import Button from '~/Popup/components/common/Button';
 import Divider from '~/Popup/components/common/Divider';
@@ -90,36 +89,15 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
         </ItemRightContainer>
       </ItemContainer>
 
-      <ItemButton
-        Icon={PasswordChangeIcon}
-        onClick={() => {
-          if (!pathname?.startsWith(PATH.SETTING__CHANGE_PASSWORD)) {
-            navigate(PATH.SETTING__CHANGE_PASSWORD);
-          }
-        }}
-      >
+      <ItemButton Icon={PasswordChangeIcon} onClick={() => navigate('/setting/change-password', { isDuplicateCheck: true })}>
         Change Password
       </ItemButton>
 
-      <ItemButton
-        Icon={LanguageChangeIcon}
-        onClick={() => {
-          if (!pathname?.startsWith(PATH.SETTING__CHANGE_LANGUAGE)) {
-            navigate(PATH.SETTING__CHANGE_LANGUAGE);
-          }
-        }}
-      >
+      <ItemButton Icon={LanguageChangeIcon} onClick={() => navigate('/setting/change-language', { isDuplicateCheck: true })}>
         Language
       </ItemButton>
 
-      <ItemButton
-        Icon={Currency24Icon}
-        onClick={() => {
-          if (!pathname?.startsWith(PATH.SETTING__CHANGE_CURRENCY)) {
-            navigate(PATH.SETTING__CHANGE_CURRENCY);
-          }
-        }}
-      >
+      <ItemButton Icon={Currency24Icon} onClick={() => navigate('/setting/change-currency', { isDuplicateCheck: true })}>
         Currency
       </ItemButton>
 

@@ -5,6 +5,8 @@ export const PATH = {
   SETTING__CHANGE_PASSWORD: '/setting/change-password',
   SETTING__CHANGE_LANGUAGE: '/setting/change-language',
   SETTING__CHANGE_CURRENCY: '/setting/change-currency',
+  CHAIN__MANAGEMENT: '/chain/management',
+  CHAIN__MANAGEMENT__USE: '/chain/management/use',
   REGISTER: '/register',
   REGISTER__PASSWORD: '/register/password',
   REGISTER__ACCOUNT: '/register/account',

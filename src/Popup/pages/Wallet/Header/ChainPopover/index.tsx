@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 
 import ChainItemButton from './ChainItemButton';
 import {
@@ -25,6 +26,7 @@ import SettingIcon from '~/images/icons/Setting.svg';
 type ChainPopoverProps = Omit<PopoverProps, 'children'>;
 
 export default function ChainPopover(props: ChainPopoverProps) {
+  const { navigate } = useNavigate();
   return (
     <Popover {...props}>
       <Container>
@@ -33,7 +35,7 @@ export default function ChainPopover(props: ChainPopoverProps) {
             <Typography variant="h5">Select a chain</Typography>
           </HeaderLeftContainer>
           <HeaderRightContainer>
-            <StyledIconButton>
+            <StyledIconButton onClick={() => navigate('/chain/management')}>
               <SettingIcon />
             </StyledIconButton>
           </HeaderRightContainer>
