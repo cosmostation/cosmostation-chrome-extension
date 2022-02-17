@@ -4,6 +4,7 @@ import BaseTextField from '@mui/material/TextField';
 
 import backgroundDarkImg from '~/images/backgrounds/dark.png';
 import backgroundLightImg from '~/images/backgrounds/light.png';
+import Input from '~/Popup/components/common/Input';
 
 export const Container = styled('div')(({ theme }) => ({
   width: '100%',
@@ -26,13 +27,18 @@ export const TitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const DescriptionContainer = styled('div')(({ theme }) => ({
+export const DescriptionContainer = styled('div')({
   marginTop: '1.5rem',
-}));
+});
 
 export const PasswordContainer = styled('div')({
   marginTop: '4.1rem',
+
   width: '32rem',
+});
+
+export const StyledInput = styled(Input)({
+  height: '4.8rem',
 });
 
 export const ButtonContainer = styled('div')(({ theme }) => ({

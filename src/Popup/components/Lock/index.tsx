@@ -1,11 +1,9 @@
-import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { FormHelperText, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
-import Input from '~/Popup/components/common/Input';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { sha512 } from '~/Popup/utils/crypto';
@@ -18,6 +16,7 @@ import {
   PasswordContainer,
   RestoreButton,
   RestoreContainer,
+  StyledInput,
   TitleContainer,
 } from './styled';
 import type { PasswordForm } from './useSchema';
@@ -63,7 +62,7 @@ export default function Lock({ children }: LockProps) {
                 <Cosmostation21Icon />
               </DescriptionContainer>
               <PasswordContainer>
-                <Input
+                <StyledInput
                   type="password"
                   placeholder="password"
                   inputProps={register('password', { setValueAs: (v: string) => (v ? sha512(v) : '') })}
