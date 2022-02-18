@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
@@ -34,6 +34,9 @@ export default function Lock({ children }: LockProps) {
   const { inMemory, setInMemory } = useInMemory();
   const { chromeStorage } = useChromeStorage();
   const { passwordForm } = useSchema({ encryptedPassword: chromeStorage.encryptedPassword! });
+
+  const [password, setPassword] = useState('');
+
   const {
     register,
     handleSubmit,
@@ -45,8 +48,8 @@ export default function Lock({ children }: LockProps) {
     reValidateMode: 'onSubmit',
   });
 
-  const submit = async (data: PasswordForm) => {
-    await setInMemory('password', data.password);
+  const submit = async () => {
+    await setInMemory('password', password);
     reset();
   };
 
@@ -66,7 +69,12 @@ export default function Lock({ children }: LockProps) {
                 <StyledInput
                   type="password"
                   placeholder="password"
-                  inputProps={register('password', { setValueAs: (v: string) => (v ? sha512(v) : '') })}
+                  inputProps={register('password', {
+                    setValueAs: (v: string) => {
+                      setPassword(v);
+                      return v ? sha512(v) : '';
+                    },
+                  })}
                   error={!!errors.password}
                   helperText={errors.password?.message}
                 />

@@ -18,10 +18,17 @@ import Check16Icon from '~/images/icons/Check16.svg';
 type AccountItemButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
   isActive?: boolean;
   children?: string;
+  description?: string;
 };
 
-export default function AccountItemButton({ children, isActive = false, ...remainder }: AccountItemButtonProps) {
+export default function AccountItemButton({ children, description, isActive = false, ...remainder }: AccountItemButtonProps) {
   const chainName = children ? `${children.substring(0, 1).toUpperCase()}${children.substring(1).toLowerCase()}` : '';
+
+  const address = description
+    ? description.length > 20
+      ? `${description.substring(0, 8)}...${description.substring(description.length - 8, description.length)}`
+      : description
+    : '';
 
   return (
     <StyledButton {...remainder} data-is-active={isActive ? 1 : 0}>
@@ -32,9 +39,7 @@ export default function AccountItemButton({ children, isActive = false, ...remai
               <Typography variant="h6">{chainName}</Typography>
             </ContentLeftTitleContainer>
             <ContentLeftDescriptionContainer>
-              <Number typoOfIntegers="h4n" typoOfDecimals="h6n">
-                3000.00
-              </Number>
+              <Typography variant="h7">{address}</Typography>
             </ContentLeftDescriptionContainer>
           </ContentLeftTextContainer>
         </ContentLeftContainer>

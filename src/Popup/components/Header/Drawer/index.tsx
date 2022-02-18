@@ -39,9 +39,7 @@ import Logo24Icon from '~/images/icons/Logo28.svg';
 import PasswordChangeIcon from '~/images/icons/PasswordChange.svg';
 import RightArrowIcon from '~/images/icons/RightArrow.svg';
 
-type DrawerProps = Omit<BaseDrawerProps, 'children' | 'onClose'> & {
-  onClose: () => void;
-};
+type DrawerProps = Omit<BaseDrawerProps, 'children'>;
 
 export default function Drawer({ onClose, ...remainder }: DrawerProps) {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
@@ -63,7 +61,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
           </HeaderLeftTextContainer>
         </HeaderLeftContainer>
         <HeaderRightContainer>
-          <IconButton onClick={() => onClose()}>
+          <IconButton onClick={() => onClose?.({}, 'backdropClick')}>
             <Close24Icon />
           </IconButton>
         </HeaderRightContainer>

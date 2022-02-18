@@ -8,6 +8,7 @@ export const chromeStorageState = atom<ChromeStorage>({
   default: {
     theme: THEME_TYPE.LIGHT,
     accounts: [],
+    accountName: {},
     queues: [],
     additionalChains: [],
     additionalEthereumNetworks: [],
@@ -15,5 +16,10 @@ export const chromeStorageState = atom<ChromeStorage>({
     windowId: null,
     selectedAccountId: '',
     language: 'en',
+
+    allowedChains: [],
+    allowedOrigins: [],
+    selectedChainId: {},
+    selectedEthereumNetworkId: {},
   },
 });

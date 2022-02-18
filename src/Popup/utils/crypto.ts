@@ -7,6 +7,9 @@ import baseSha512 from 'crypto-js/sha512';
 import { ECPairFactory } from 'ecpair';
 import * as TinySecp256k1 from 'tiny-secp256k1';
 
+import type { Chain } from '~/types/chain';
+import type { Account } from '~/types/chromeStorage';
+
 const bip32 = BIP32Factory(TinySecp256k1);
 const ECPair = ECPairFactory(TinySecp256k1);
 
@@ -25,8 +28,7 @@ export function aesDecrypt(message: string, key: string) {
 const PRIVATE_KEY_SIZE = 32;
 const BN32_ZERO = new Uint8Array(32);
 const BN32_N = new Uint8Array([
-  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 186, 174, 220, 230, 175, 72, 160, 59,
-  191, 210, 94, 140, 208, 54, 65, 65,
+  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 186, 174, 220, 230, 175, 72, 160, 59, 191, 210, 94, 140, 208, 54, 65, 65,
 ]);
 
 export function isPrivate(x: Uint8Array): boolean {
@@ -60,4 +62,22 @@ export function privateKeyToPair(privateKey: Buffer) {
   });
 
   return { privateKey, publicKey: ecpair.publicKey };
+}
+
+export function getKeyPair(account: Account, chain: Chain, password: string | null) {
+  if (password === null) return null;
+
+  if (account.type === 'MNEMONIC') {
+    console.log(account.encryptedMnemonic, password);
+    const mnemonic = aesDecrypt(account.encryptedMnemonic, password);
+    const path = `m/${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${account.bip44.addressIndex}`;
+    return mnemonicToPair(mnemonic, path);
+  }
+
+  if (account.type === 'PRIVATE_KEY') {
+    const privateKey = aesDecrypt(account.encryptedPrivateKey, password);
+    return privateKeyToPair(Buffer.from(privateKey, 'hex'));
+  }
+
+  return null;
 }

@@ -6,6 +6,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import { ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { THEME_TYPE } from '~/constants/theme';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
@@ -21,7 +22,7 @@ const Container = styled('div')(({ theme }) => ({
 export default function Mnemonic() {
   const navigate = useNavigate();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { mnemonicForm } = useSchema({ name: [...chromeStorage.accounts.map((account) => account.name), 'test'] });
+  const { mnemonicForm } = useSchema({ name: [...Object.values(chromeStorage.accountName), 'test'] });
   const { inMemory } = useInMemory();
   const {
     register,
@@ -44,17 +45,20 @@ export default function Mnemonic() {
         {
           id: accountId,
           type: 'MNEMONIC',
-          allowedOrigins: [],
-          allowedChains: ['62a8e13a-3107-40ef-ade4-58de45aa6c1f'],
-          selectedChain: '62a8e13a-3107-40ef-ade4-58de45aa6c1f',
-          selectedEthereumNetworkId: '63c2c3dd-7ab1-47d7-9ec8-c70c64729cc6',
           bip44: { addressIndex: `${data.addressIndex}` },
           encryptedMnemonic: aesEncrypt(data.mnemonic, inMemory.password),
-          name: data.name,
         },
       ]);
 
       await setChromeStorage('selectedAccountId', accountId);
+
+      await setChromeStorage('accountName', { ...chromeStorage.accountName, [accountId]: data.name });
+
+      await setChromeStorage('selectedChainId', { ...chromeStorage.selectedChainId, [accountId]: ETHEREUM_CHAINS[0].id });
+
+      await setChromeStorage('allowedChains', [...chromeStorage.allowedChains, { accountId, chainId: ETHEREUM_CHAINS[0].id }]);
+
+      await setChromeStorage('selectedEthereumNetworkId', { ...chromeStorage.selectedEthereumNetworkId, [accountId]: ETHEREUM_NETWORKS[0].id });
     }
   };
 
@@ -70,13 +74,7 @@ export default function Mnemonic() {
         </div>
 
         <div>
-          <TextField
-            multiline
-            rows={4}
-            {...register('mnemonic')}
-            error={!!errors.mnemonic}
-            helperText={errors.mnemonic?.message}
-          />
+          <TextField multiline rows={4} {...register('mnemonic')} error={!!errors.mnemonic} helperText={errors.mnemonic?.message} />
         </div>
         <div>
           <Controller

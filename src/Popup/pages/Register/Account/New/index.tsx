@@ -4,19 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import * as bip39 from 'bip39';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
-import {
-  Button,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-} from '@mui/material';
+import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import { ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { THEME_TYPE } from '~/constants/theme';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
@@ -34,7 +25,7 @@ type Strength = 128 | 256;
 export default function New() {
   const navigate = useNavigate();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { newMnemonicForm } = useSchema({ name: [...chromeStorage.accounts.map((account) => account.name), 'test'] });
+  const { newMnemonicForm } = useSchema({ name: [...Object.values(chromeStorage.accountName), 'test'] });
   const { inMemory } = useInMemory();
 
   const [stength, setStrength] = useState<Strength>(128);
@@ -63,17 +54,20 @@ export default function New() {
         {
           id: accountId,
           type: 'MNEMONIC',
-          allowedOrigins: [],
-          allowedChains: ['62a8e13a-3107-40ef-ade4-58de45aa6c1f'],
-          selectedChain: '62a8e13a-3107-40ef-ade4-58de45aa6c1f',
-          selectedEthereumNetworkId: '63c2c3dd-7ab1-47d7-9ec8-c70c64729cc6',
           bip44: { addressIndex: `${data.addressIndex}` },
           encryptedMnemonic: aesEncrypt(mnemonic, inMemory.password),
-          name: data.name,
         },
       ]);
 
       await setChromeStorage('selectedAccountId', accountId);
+
+      await setChromeStorage('accountName', { ...chromeStorage.accountName, [accountId]: data.name });
+
+      await setChromeStorage('selectedChainId', { ...chromeStorage.selectedChainId, [accountId]: ETHEREUM_CHAINS[0].id });
+
+      await setChromeStorage('allowedChains', [...chromeStorage.allowedChains, { accountId, chainId: ETHEREUM_CHAINS[0].id }]);
+
+      await setChromeStorage('selectedEthereumNetworkId', { ...chromeStorage.selectedEthereumNetworkId, [accountId]: ETHEREUM_NETWORKS[0].id });
     }
   };
 

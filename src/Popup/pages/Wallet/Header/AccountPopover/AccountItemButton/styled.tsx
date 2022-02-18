@@ -48,6 +48,7 @@ export const ContentLeftTextContainer = styled('div')(({ theme }) => ({
 
 export const ContentLeftTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+  width: 'max-content',
 }));
 
 export const ContentLeftDescriptionContainer = styled('div')(({ theme }) => ({

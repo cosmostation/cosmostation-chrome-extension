@@ -3,9 +3,14 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 export function useCurrentAccount() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
-  const selectedAccount = chromeStorage.accounts.find((account) => account.id === chromeStorage.selectedAccountId);
+  const { selectedAccountId, accounts, accountName } = chromeStorage;
 
-  const currentAccount = selectedAccount || chromeStorage.accounts[0];
+  const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
+
+  const currentAccount = selectedAccount || accounts[0];
+
+  const name = accountName[currentAccount.id] ?? '';
+  const allowedChains = chromeStorage.allowedChains.filter((chain) => chain.accountId === currentAccount.id).map((chain) => chain.chainId);
 
   const setCurrentAccount = async (id: string) => {
     const isExist = !!chromeStorage.accounts.find((account) => account.id === id);
@@ -13,5 +18,5 @@ export function useCurrentAccount() {
     await setChromeStorage('selectedAccountId', isExist ? id : chromeStorage.accounts[0].id);
   };
 
-  return { currentAccount, setCurrentAccount };
+  return { currentAccount: { ...currentAccount, name, allowedChains }, setCurrentAccount };
 }
