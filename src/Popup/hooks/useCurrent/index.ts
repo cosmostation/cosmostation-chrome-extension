@@ -1,5 +1,6 @@
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { getAddress as getCosmosAddress } from '~/Popup/utils/cosmos';
 import { getKeyPair } from '~/Popup/utils/crypto';
@@ -9,12 +10,13 @@ import type { Chain } from '~/types/chain';
 export function useCurrent() {
   const { currentAccount, setCurrentAccount } = useCurrentAccount();
   const { currentChain, setCurrentChain } = useCurrentChain();
+  const { currentNetwork, setCurrentNetwork } = useCurrentNetwork();
   const { inMemory } = useInMemory();
 
   const currentKeyPair = getKeyPair(currentAccount, currentChain, inMemory.password);
   const currentAddress = currentKeyPair?.publicKey ? getAddress(currentKeyPair.publicKey, currentChain) : null;
 
-  return { currentAccount, currentChain, currentKeyPair, currentAddress, setCurrentAccount, setCurrentChain };
+  return { currentAccount, currentChain, currentKeyPair, currentAddress, currentNetwork, setCurrentNetwork, setCurrentAccount, setCurrentChain };
 }
 
 function getAddress(publicKey: Buffer, chain: Chain) {

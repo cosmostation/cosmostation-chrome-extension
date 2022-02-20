@@ -1,10 +1,11 @@
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
+import { CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { getAddress } from '~/Popup/utils/common';
 import { getKeyPair } from '~/Popup/utils/crypto';
@@ -17,8 +18,8 @@ import SettingIcon from '~/images/icons/Setting.svg';
 type AccountPopoverProps = Omit<PopoverProps, 'children'>;
 
 export default function AccountPopover({ onClose, ...remainder }: AccountPopoverProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { currentChain } = useCurrentChain();
+  const { chromeStorage } = useChromeStorage();
+  const { setCurrentAccount } = useCurrent();
 
   const { inMemory } = useInMemory();
 
@@ -41,15 +42,17 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
         <BodyContainer>
           <AccountListContainer>
             {accounts.map((account) => {
-              const keypair = getKeyPair(account, currentChain, inMemory.password);
-              const address = getAddress(currentChain, keypair?.publicKey);
+              const accountChainId = chromeStorage.selectedChainId[account.id];
+              const accountChain = CHAINS.find((chain) => chain.id === accountChainId)!;
+              const keypair = getKeyPair(account, accountChain, inMemory.password);
+              const address = getAddress(accountChain, keypair?.publicKey);
               return (
                 <AccountItemButton
                   key={account.id}
                   description={address}
                   isActive={account.id === selectedAccountId}
                   onClick={async () => {
-                    await setChromeStorage('selectedAccountId', account.id);
+                    await setCurrentAccount(account.id);
                     onClose?.({}, 'backdropClick');
                   }}
                 >

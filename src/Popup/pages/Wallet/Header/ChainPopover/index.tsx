@@ -30,7 +30,7 @@ type ChainPopoverProps = Omit<PopoverProps, 'children'>;
 
 export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProps) {
   const { navigate } = useNavigate();
-  const { currentAccount, currentChain } = useCurrent();
+  const { currentAccount, currentChain, setCurrentChain } = useCurrent();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
   const { allowedChains } = currentAccount;
@@ -62,7 +62,7 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
                     isActive={currentChain.id === chain.id}
                     imgSrc={chain.imageURL}
                     onClick={async () => {
-                      await setChromeStorage('selectedChainId', { ...chromeStorage.selectedChainId, [currentAccount.id]: chain.id });
+                      await setCurrentChain(chain);
                       onClose?.({}, 'backdropClick');
                     }}
                   >
@@ -82,7 +82,7 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
                     isActive={currentChain.id === chain.id}
                     imgSrc={chain.imageURL}
                     onClick={async () => {
-                      await setChromeStorage('selectedChainId', { ...chromeStorage.selectedChainId, [currentAccount.id]: chain.id });
+                      await setCurrentChain(chain);
                       onClose?.({}, 'backdropClick');
                     }}
                   >

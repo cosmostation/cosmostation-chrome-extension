@@ -8,9 +8,7 @@ export function useCurrentChain() {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
-  const { accounts, additionalChains, allowedChains, selectedChainId } = chromeStorage;
-
-  console.log(allowedChains);
+  const { additionalChains, allowedChains, selectedChainId } = chromeStorage;
 
   const allChains = [...CHAINS, ...additionalChains];
 
@@ -21,8 +19,6 @@ export function useCurrentChain() {
   const currentAccountSelectedChainId = selectedChainId[currentAccount.id] ?? currentAccountAllowedChains[0];
 
   const currentChain = allChains.find((chain) => chain.id === currentAccountSelectedChainId)!;
-
-  console.log(currentChain);
 
   const setCurrentChain = async (chain: Chain) => {
     if (!currentAccountAllowedChains.includes(chain.id)) {

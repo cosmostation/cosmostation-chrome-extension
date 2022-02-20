@@ -25,8 +25,8 @@ export default function AccountItemButton({ children, description, isActive = fa
   const chainName = children ? `${children.substring(0, 1).toUpperCase()}${children.substring(1).toLowerCase()}` : '';
 
   const address = description
-    ? description.length > 20
-      ? `${description.substring(0, 8)}...${description.substring(description.length - 8, description.length)}`
+    ? description.length > 35
+      ? `${description.substring(0, 12)}...${description.substring(description.length - 12, description.length)}`
       : description
     : '';
 

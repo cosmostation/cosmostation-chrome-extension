@@ -68,7 +68,6 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
   if (password === null) return null;
 
   if (account.type === 'MNEMONIC') {
-    console.log(account.encryptedMnemonic, password);
     const mnemonic = aesDecrypt(account.encryptedMnemonic, password);
     const path = `m/${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${account.bip44.addressIndex}`;
     return mnemonicToPair(mnemonic, path);
