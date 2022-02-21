@@ -11,7 +11,7 @@ import { ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { THEME_TYPE } from '~/constants/theme';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
-import { aesEncrypt } from '~/Popup/utils/crypto';
+import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import type { NewMnemonicForm } from './useSchema';
 import { useSchema } from './useSchema';
@@ -56,6 +56,7 @@ export default function New() {
           type: 'MNEMONIC',
           bip44: { addressIndex: `${data.addressIndex}` },
           encryptedMnemonic: aesEncrypt(mnemonic, inMemory.password),
+          encryptedRestoreString: sha512(mnemonic),
         },
       ]);
 

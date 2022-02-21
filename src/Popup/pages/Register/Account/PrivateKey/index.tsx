@@ -10,7 +10,7 @@ import { ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { THEME_TYPE } from '~/constants/theme';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
-import { aesDecrypt, aesEncrypt } from '~/Popup/utils/crypto';
+import { aesDecrypt, aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import type { PrivateKeyForm } from './useSchema';
 import { useSchema } from './useSchema';
@@ -48,6 +48,7 @@ export default function PrivateKey() {
           id: accountId,
           type: 'PRIVATE_KEY',
           encryptedPrivateKey: aesEncrypt(privateKey, inMemory.password),
+          encryptedRestoreString: sha512(privateKey),
         },
       ]);
 

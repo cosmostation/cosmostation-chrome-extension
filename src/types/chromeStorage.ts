@@ -9,6 +9,7 @@ export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 
 export type AccountCommon = {
   id: string;
+  encryptedRestoreString: string;
 };
 
 export type AllowedOrigin = { accountId: string; origin: string };
