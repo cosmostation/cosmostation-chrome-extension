@@ -1,8 +1,11 @@
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
+import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 
 import NetworkItemButton from './NetworkItemButton';
 import {
@@ -20,6 +23,11 @@ import {
 type NetworkPopoverProps = Omit<PopoverProps, 'children'>;
 
 export default function NetworkPopover(props: NetworkPopoverProps) {
+  const { chromeStorage } = useChromeStorage();
+  const { currentNetwork } = useCurrentNetwork();
+
+  const { additionalEthereumNetworks } = chromeStorage;
+
   return (
     <Popover {...props}>
       <Container>
@@ -32,30 +40,29 @@ export default function NetworkPopover(props: NetworkPopoverProps) {
         <Divider />
         <BodyContainer>
           <NetworkListContainer>
-            <NetworkItemButton isActive imgSrc="https://">
-              Cosmos
-            </NetworkItemButton>
-            <NetworkItemButton>Cosmos</NetworkItemButton>
-            <NetworkItemButton>cosmos</NetworkItemButton>
-            <NetworkItemButton>Cosmos</NetworkItemButton>
-            <NetworkItemButton>Cosmos</NetworkItemButton>
-            <NetworkItemButton>Cosmos</NetworkItemButton>
-            <NetworkItemButton>Cosmos</NetworkItemButton>
+            {ETHEREUM_NETWORKS.map((network) => (
+              <NetworkItemButton key={network.id} isActive={network.id === currentNetwork.id} imgSrc={network.imageURL}>
+                {network.networkName}
+              </NetworkItemButton>
+            ))}
           </NetworkListContainer>
 
-          <BetaNetworkContainer>
-            <BetaNetworkTitleContainer>
-              <Typography variant="h6">Support</Typography>
-            </BetaNetworkTitleContainer>
-            <BetaNetworkListContainer>
-              <NetworkListContainer>
-                <NetworkItemButton onClick={() => console.log('select chain')} onClickDelete={() => console.log('delete')}>
-                  Axeler
-                </NetworkItemButton>
-                <NetworkItemButton onClickDelete={() => console.log('delete')}>adadad</NetworkItemButton>
-              </NetworkListContainer>
-            </BetaNetworkListContainer>
-          </BetaNetworkContainer>
+          {additionalEthereumNetworks.length > 0 && (
+            <BetaNetworkContainer>
+              <BetaNetworkTitleContainer>
+                <Typography variant="h6">Support</Typography>
+              </BetaNetworkTitleContainer>
+              <BetaNetworkListContainer>
+                <NetworkListContainer>
+                  {additionalEthereumNetworks.map((network) => (
+                    <NetworkItemButton key={network.id} onClickDelete={() => null} isActive={network.id === currentNetwork.id} imgSrc={network.imageURL}>
+                      {network.networkName}
+                    </NetworkItemButton>
+                  ))}
+                </NetworkListContainer>
+              </BetaNetworkListContainer>
+            </BetaNetworkContainer>
+          )}
         </BodyContainer>
       </Container>
     </Popover>

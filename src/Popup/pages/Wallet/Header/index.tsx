@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { useCurrent } from '~/Popup/hooks/useCurrent';
+
 import AccountButton from './AccountButton';
 import AccountPopover from './AccountPopover';
 import ChainPopover from './ChainPopover';
@@ -7,6 +9,8 @@ import NetworkPopover from './NetworkPopover';
 import { ChainButton, Container, LeftContentContainer, NetworkButton, RightContentContainer } from './styled';
 
 export default function WalletHeader() {
+  const { currentAccount, currentChain, currentNetwork } = useCurrent();
+
   const [chainPopoverAnchorEl, setChainPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenChainPopover = Boolean(chainPopoverAnchorEl);
 
@@ -19,11 +23,15 @@ export default function WalletHeader() {
   return (
     <Container>
       <LeftContentContainer>
-        <AccountButton onClick={(event) => setAccountPopoverAnchorEl(event.currentTarget)} />
+        <AccountButton onClick={(event) => setAccountPopoverAnchorEl(event.currentTarget)}>{currentAccount.name}</AccountButton>
       </LeftContentContainer>
       <RightContentContainer>
-        <NetworkButton onClick={(event) => setNetworkPopoverAnchorEl(event.currentTarget)} />
-        <ChainButton onClick={(event) => setChainPopoverAnchorEl(event.currentTarget)} isActive={isOpenChainPopover} />
+        {currentChain.line === 'ETHEREUM' && (
+          <NetworkButton onClick={(event) => setNetworkPopoverAnchorEl(event.currentTarget)}>{currentNetwork.networkName}</NetworkButton>
+        )}
+        <ChainButton imgSrc={currentChain.imageURL} onClick={(event) => setChainPopoverAnchorEl(event.currentTarget)} isActive={isOpenChainPopover}>
+          {currentChain.chainName}
+        </ChainButton>
       </RightContentContainer>
       <ChainPopover
         marginThreshold={0}

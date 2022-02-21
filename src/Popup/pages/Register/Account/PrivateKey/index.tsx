@@ -6,10 +6,11 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import { Button, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import { ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { THEME_TYPE } from '~/constants/theme';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
-import { aesDecrypt, aesEncrypt } from '~/Popup/utils/crypto';
+import { aesDecrypt, aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import type { PrivateKeyForm } from './useSchema';
 import { useSchema } from './useSchema';
@@ -21,7 +22,7 @@ const Container = styled('div')(({ theme }) => ({
 export default function PrivateKey() {
   const navigate = useNavigate();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { privateKeyForm } = useSchema({ name: [...chromeStorage.accounts.map((account) => account.name), 'test'] });
+  const { privateKeyForm } = useSchema({ name: [...Object.values(chromeStorage.accountName), 'test'] });
   const { inMemory } = useInMemory();
   const {
     register,
@@ -46,16 +47,20 @@ export default function PrivateKey() {
         {
           id: accountId,
           type: 'PRIVATE_KEY',
-          allowedOrigins: [],
-          allowedChains: [],
-          selectedChain: '',
-          selectedEthereumNetworkId: '63c2c3dd-7ab1-47d7-9ec8-c70c64729cc6',
           encryptedPrivateKey: aesEncrypt(privateKey, inMemory.password),
-          name: data.name,
+          encryptedRestoreString: sha512(privateKey),
         },
       ]);
 
       await setChromeStorage('selectedAccountId', accountId);
+
+      await setChromeStorage('accountName', { ...chromeStorage.accountName, [accountId]: data.name });
+
+      await setChromeStorage('selectedChainId', { ...chromeStorage.selectedChainId, [accountId]: ETHEREUM_CHAINS[0].id });
+
+      await setChromeStorage('allowedChains', [...chromeStorage.allowedChains, { accountId, chainId: ETHEREUM_CHAINS[0].id }]);
+
+      await setChromeStorage('selectedEthereumNetworkId', { ...chromeStorage.selectedEthereumNetworkId, [accountId]: ETHEREUM_NETWORKS[0].id });
 
       console.log(aesDecrypt(aesEncrypt(data.privateKey, inMemory.password), inMemory.password));
     }
@@ -71,13 +76,7 @@ export default function PrivateKey() {
         <div>
           <TextField {...register('name')} error={!!errors.name} helperText={errors.name?.message} />
         </div>
-        <TextField
-          multiline
-          rows={4}
-          {...register('privateKey')}
-          error={!!errors.privateKey}
-          helperText={errors.privateKey?.message}
-        />
+        <TextField multiline rows={4} {...register('privateKey')} error={!!errors.privateKey} helperText={errors.privateKey?.message} />
 
         <Button type="submit" variant="contained">
           register

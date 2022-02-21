@@ -2,45 +2,32 @@ import { CHAINS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import type { Chain } from '~/types/chain';
-import type { Account } from '~/types/chromeStorage';
+import type { SelectedChainId } from '~/types/chromeStorage';
 
 export function useCurrentChain() {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
-  const { accounts, additionalChains } = chromeStorage;
-
-  const { allowedChains } = currentAccount;
-
-  console.log(allowedChains);
-  console.log('currentAccount.selectedChain', currentAccount.selectedChain);
+  const { additionalChains, allowedChains, selectedChainId } = chromeStorage;
 
   const allChains = [...CHAINS, ...additionalChains];
 
-  const currentChain = allowedChains.includes(currentAccount.selectedChain)
-    ? allChains.find((chain) => chain.id === currentAccount.selectedChain)!
-    : allChains.find((chain) => chain.id === allowedChains[0])!;
+  const currentAccountAllowedChains = allowedChains
+    .filter((allowedChain) => allowedChain.accountId === currentAccount.id)
+    .map((allowedChain) => allowedChain.chainId);
 
-  console.log(currentChain);
+  const currentAccountSelectedChainId = selectedChainId[currentAccount.id] ?? currentAccountAllowedChains[0];
+
+  const currentChain = allChains.find((chain) => chain.id === currentAccountSelectedChainId)!;
 
   const setCurrentChain = async (chain: Chain) => {
-    if (!allowedChains.includes(chain.id)) {
+    if (!currentAccountAllowedChains.includes(chain.id)) {
       return;
     }
 
-    const newAccount: Account = { ...currentAccount, selectedChain: chain.id };
+    const newSelecteChainId: SelectedChainId = { ...selectedChainId, [currentAccount.id]: chain.id };
 
-    const currentAccountIndex = accounts.findIndex((account) => account.id === currentAccount.id);
-
-    if (currentAccountIndex > -1) {
-      accounts.splice(
-        accounts.findIndex((account) => account.id === currentAccount.id),
-        1,
-        newAccount,
-      );
-
-      await setChromeStorage('accounts', accounts);
-    }
+    await setChromeStorage('selectedChainId', newSelecteChainId);
   };
 
   return { currentChain, setCurrentChain };

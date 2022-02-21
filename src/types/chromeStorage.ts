@@ -9,12 +9,16 @@ export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 
 export type AccountCommon = {
   id: string;
-  name: string;
-  allowedOrigins: string[];
-  allowedChains: string[];
-  selectedChain: string;
-  selectedEthereumNetworkId: string;
+  encryptedRestoreString: string;
 };
+
+export type AllowedOrigin = { accountId: string; origin: string };
+export type AllowedChain = { accountId: string; chainId: string };
+
+export type SelectedChainId = Record<AccountCommon['id'], string>;
+export type SelectedEthereumNetworkId = Record<AccountCommon['id'], string>;
+
+export type AccountName = Record<AccountCommon['id'], string>;
 
 export type MnemonicAccount = {
   type: typeof ACCOUNT_TYPE.MNEMONIC;
@@ -39,6 +43,7 @@ export type Queue = {
 export type ChromeStorage = {
   encryptedPassword: string | null;
   accounts: Account[];
+  accountName: AccountName;
   queues: Queue[];
   theme: ThemeType;
   windowId: number | null;
@@ -46,6 +51,11 @@ export type ChromeStorage = {
   additionalEthereumNetworks: EthereumNetwork[];
   selectedAccountId: string;
   language: LanguageType;
+
+  allowedOrigins: AllowedOrigin[];
+  allowedChains: AllowedChain[];
+  selectedChainId: SelectedChainId;
+  selectedEthereumNetworkId: SelectedEthereumNetworkId;
 };
 
 export type ChromeStorageKeys = keyof ChromeStorage;

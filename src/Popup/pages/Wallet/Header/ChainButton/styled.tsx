@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles';
 export const StyledButton = styled('button')(({ theme }) => ({
   border: 'none',
 
-  width: 'max-content',
   height: '2.8rem',
 
   borderRadius: '0.8rem',
@@ -12,6 +11,8 @@ export const StyledButton = styled('button')(({ theme }) => ({
   color: theme.accentColors.white,
 
   padding: '0',
+
+  textAlign: 'left',
 
   '&:hover': {
     backgroundColor: theme.colors.base04,

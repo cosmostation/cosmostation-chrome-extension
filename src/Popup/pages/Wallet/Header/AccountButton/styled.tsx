@@ -7,6 +7,8 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   cursor: 'pointer',
 
+  textAlign: 'left',
+
   display: 'flex',
   alignContent: 'center',
 

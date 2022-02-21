@@ -27,6 +27,9 @@ export const StyledTextField = styled(OutlinedInput)(({ theme }) => ({
       fontSize: theme.typography.h5.fontSize,
       lineHeight: theme.typography.h5.lineHeight,
       letterSpacing: theme.typography.h5.letterSpacing,
+
+      color: theme.colors.text02,
+      opacity: 0.8,
     },
 
     '&[type=password]': {

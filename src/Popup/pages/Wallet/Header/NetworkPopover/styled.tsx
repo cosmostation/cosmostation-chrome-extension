@@ -42,12 +42,10 @@ export const NetworkListContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: '1fr',
   rowGap: '0.4rem',
-
-  marginBottom: '1.2rem',
 });
 
 export const BetaNetworkContainer = styled('div')({
-  marginTop: '2.4rem',
+  marginTop: '2.2rem',
   width: '100%',
 });
 

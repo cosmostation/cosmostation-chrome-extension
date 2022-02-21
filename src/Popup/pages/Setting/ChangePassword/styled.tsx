@@ -4,7 +4,7 @@ export const Container = styled('div')({
   width: 'calc(100% - 2.4rem)',
   height: '100%',
 
-  margin: '0 1.2rem',
+  padding: '0 1.2rem',
 });
 
 export const CurrentPasswordContainer = styled('div')({
