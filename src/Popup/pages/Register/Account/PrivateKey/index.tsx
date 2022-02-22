@@ -48,6 +48,7 @@ export default function PrivateKey() {
           id: accountId,
           type: 'PRIVATE_KEY',
           encryptedPrivateKey: aesEncrypt(privateKey, inMemory.password),
+          encryptedPassword: aesEncrypt(inMemory.password, privateKey),
           encryptedRestoreString: sha512(privateKey),
         },
       ]);

@@ -10,7 +10,12 @@ import DashboardIcon from '~/images/icons/Dashboard.svg';
 import Logo28Icon from '~/images/icons/Logo28.svg';
 import MenuIcon from '~/images/icons/Menu.svg';
 
-export default function Header() {
+type HeaderProps = {
+  isShowPageButton?: boolean;
+  isShowMenuButton?: boolean;
+};
+
+export default function Header({ isShowMenuButton = true, isShowPageButton = true }: HeaderProps) {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
 
   return (
@@ -24,12 +29,16 @@ export default function Header() {
         </LeftContentTextContainer>
       </LeftContentContainer>
       <RightContentContainer>
-        <IconButton>
-          <DashboardIcon />
-        </IconButton>
-        <IconButton onClick={() => setIsOpenDrawer(true)}>
-          <MenuIcon />
-        </IconButton>
+        {isShowPageButton && (
+          <IconButton>
+            <DashboardIcon />
+          </IconButton>
+        )}
+        {isShowMenuButton && (
+          <IconButton onClick={() => setIsOpenDrawer(true)}>
+            <MenuIcon />
+          </IconButton>
+        )}
       </RightContentContainer>
       <Drawer anchor="right" open={isOpenDrawer} onClose={() => setIsOpenDrawer(false)} />
     </Container>

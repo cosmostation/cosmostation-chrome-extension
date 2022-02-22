@@ -5,5 +5,5 @@ type LayoutProps = {
 };
 
 export default function Layout({ children }: LayoutProps) {
-  return <BaseLayout useHeader>{children}</BaseLayout>;
+  return <BaseLayout useHeader={{}}>{children}</BaseLayout>;
 }

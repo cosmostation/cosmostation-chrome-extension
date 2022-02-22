@@ -4,7 +4,11 @@ import { styled } from '@mui/material/styles';
 import Visibility from '~/images/icons/Visibility.svg';
 import VisibilityOff from '~/images/icons/VisibilityOff.svg';
 
-export const StyledTextField = styled(OutlinedInput)(({ theme }) => ({
+type StyledTextFieldProps = {
+  'data-is-multiline-password'?: number;
+};
+
+export const StyledTextField = styled(OutlinedInput)<StyledTextFieldProps>(({ theme, ...props }) => ({
   borderRadius: '0.8rem',
 
   backgroundColor: theme.colors.base01,
@@ -20,6 +24,9 @@ export const StyledTextField = styled(OutlinedInput)(({ theme }) => ({
     fontSize: theme.typography.h5.fontSize,
     lineHeight: theme.typography.h5.lineHeight,
     letterSpacing: theme.typography.h5.letterSpacing,
+
+    WebkitTextSecurity: props['data-is-multiline-password'] ? 'disc' : 'none',
+    MoxTextSecurity: props['data-is-multiline-password'] ? 'disc' : 'none',
 
     '&::placeholder': {
       fontFamily: theme.typography.h5.fontFamily,
@@ -64,8 +71,24 @@ export const StyledVisibilityOff = styled(VisibilityOff)(({ theme }) => ({
   fill: theme.colors.base05,
 }));
 
+export const HelperContainer = styled('div')({
+  marginTop: '0.8rem',
+  display: 'flex',
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+});
+
+export const HelperImageContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  '& > svg': {
+    fill: theme.accentColors.red,
+  },
+}));
+
 export const HelperTextContainer = styled('div')<{ error: number }>(({ theme, error }) => ({
-  paddingLeft: '0.8rem',
-  marginTop: '0.2rem',
-  color: error ? '#F44336' : theme.colors.text02,
+  paddingLeft: '0.4rem',
+  color: error ? theme.accentColors.red : theme.colors.text02,
 }));

@@ -15,6 +15,8 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
   backgroundColor: theme.accentColors.purple01,
   color: theme.accentColors.white,
 
+  cursor: 'pointer',
+
   '& svg': {
     fill: theme.accentColors.white,
   },
