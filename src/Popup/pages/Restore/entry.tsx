@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSnackbar } from 'notistack';
 import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
@@ -15,6 +16,7 @@ export default function Entry() {
   const [restoreString, setRestoreString] = useState('');
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { setInMemory } = useInMemory();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { restoreForm } = useSchema({ encryptedRestoreString: chromeStorage.accounts.map((account) => account.encryptedRestoreString) });
   const {
@@ -64,6 +66,8 @@ export default function Entry() {
     await setInMemory('password', null);
 
     reset();
+
+    enqueueSnackbar('Change password success', { variant: 'success' });
   };
   return (
     <Container>

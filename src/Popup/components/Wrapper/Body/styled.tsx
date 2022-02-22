@@ -9,6 +9,43 @@ export const Body = styled('div')(({ theme }) => ({
 
   // TODO: 테스트 이후 삭제
   backgroundColor: theme.colors.text01,
+
+  // snackbar
+  '& > .SnackbarContainer-root': {
+    bottom: '7rem !important',
+
+    '& .SnackbarContent-root': {
+      fontFamily: theme.typography.h6.fontFamily,
+      fontStyle: theme.typography.h6.fontStyle,
+      fontSize: theme.typography.h6.fontSize,
+      lineHeight: theme.typography.h6.lineHeight,
+      letterSpacing: theme.typography.h6.letterSpacing,
+
+      borderRadius: '0.8rem',
+
+      minWidth: '29.2rem',
+
+      height: '4rem',
+
+      paddingTop: 0,
+      paddingBottom: 0,
+
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+
+      '& svg': {
+        fill: theme.accentColors.white,
+
+        marginRight: '0.4rem',
+      },
+
+      '&.SnackbarItem-variantSuccess': {
+        backgroundColor: theme.accentColors.green,
+        color: theme.accentColors.white,
+      },
+    },
+  },
 }));
 
 export const Container = styled('div')(({ theme }) => ({

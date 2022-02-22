@@ -12,7 +12,6 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { PATH } from '~/constants/route';
 import { THEME_TYPE } from '~/constants/theme';
 import LoadingOverlay from '~/Popup/components/Loading/Overlay';
-import Lock from '~/Popup/components/Lock';
 import Wrapper from '~/Popup/components/Wrapper';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import ChainManagement from '~/Popup/pages/Chain/Management';
@@ -32,24 +31,31 @@ import SettingChangePassword from '~/Popup/pages/Setting/ChangePassword';
 import Wallet from '~/Popup/pages/Wallet';
 import { darkEnTheme, darkKoTheme, lightEnTheme, lightKoTheme } from '~/Popup/styles/theme';
 
+import Info16Icon from '~/images/icons/Info16.svg';
+
 function Popup() {
   const { chromeStorage } = useChromeStorage();
 
-  const theme = createTheme(
-    chromeStorage.theme === THEME_TYPE.LIGHT
+  const theme = createTheme({
+    ...(chromeStorage.theme === THEME_TYPE.LIGHT
       ? chromeStorage.language === 'ko'
         ? lightKoTheme
         : lightEnTheme
       : chromeStorage.language === 'ko'
       ? darkKoTheme
-      : darkEnTheme,
-  );
+      : darkEnTheme),
+  });
 
   return (
     <ThemeProvider theme={theme}>
       <HashRouter>
         <Wrapper>
-          <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} TransitionComponent={Grow as React.ComponentType}>
+          <SnackbarProvider
+            maxSnack={3}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            TransitionComponent={Grow as React.ComponentType}
+            iconVariant={{ success: <Info16Icon /> }}
+          >
             <Routes>
               <Route path={PATH.HOME} element={<Home />} />
               <Route path={PATH.DASHBOARD} element={<Dashboard />} />
