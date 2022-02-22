@@ -7,6 +7,7 @@ import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { sha512 } from '~/Popup/utils/crypto';
 
 import {
@@ -33,6 +34,7 @@ type LockProps = {
 export default function Lock({ children }: LockProps) {
   const { inMemory, setInMemory } = useInMemory();
   const { chromeStorage } = useChromeStorage();
+  const { navigate } = useNavigate();
   const { passwordForm } = useSchema({ encryptedPassword: chromeStorage.encryptedPassword! });
 
   const [password, setPassword] = useState('');
@@ -55,7 +57,7 @@ export default function Lock({ children }: LockProps) {
 
   if (inMemory.password === null && chromeStorage.encryptedPassword) {
     return (
-      <BaseLayout useHeader={false}>
+      <BaseLayout>
         <Container>
           <form onSubmit={handleSubmit(submit)}>
             <ContentContainer>
@@ -83,7 +85,7 @@ export default function Lock({ children }: LockProps) {
               <ButtonContainer>
                 <RestoreContainer>
                   <Typography variant="h6">Do you need to&nbsp;</Typography>
-                  <RestoreButton>
+                  <RestoreButton type="button" onClick={() => navigate('/restore')}>
                     <Typography variant="h6">
                       <u>restore account?</u>
                     </Typography>

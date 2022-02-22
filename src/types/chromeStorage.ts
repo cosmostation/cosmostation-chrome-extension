@@ -9,6 +9,7 @@ export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 
 export type AccountCommon = {
   id: string;
+  encryptedPassword: string;
   encryptedRestoreString: string;
 };
 

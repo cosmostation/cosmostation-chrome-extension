@@ -1,7 +1,7 @@
 import Entry from './entry';
 import Layout from './layout';
 
-export default function ChangeCurrency() {
+export default function Restore() {
   return (
     <Layout>
       <Entry />

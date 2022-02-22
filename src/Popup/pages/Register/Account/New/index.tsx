@@ -56,6 +56,7 @@ export default function New() {
           type: 'MNEMONIC',
           bip44: { addressIndex: `${data.addressIndex}` },
           encryptedMnemonic: aesEncrypt(mnemonic, inMemory.password),
+          encryptedPassword: aesEncrypt(inMemory.password, mnemonic),
           encryptedRestoreString: sha512(mnemonic),
         },
       ]);

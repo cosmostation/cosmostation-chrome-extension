@@ -9,7 +9,7 @@ export default function Layout({ children }: LayoutProps) {
   const { navigateBack } = useNavigate();
 
   return (
-    <BaseLayout useHeader useSubHeader={{ title: 'Restore Wallet', onClick: () => navigateBack() }}>
+    <BaseLayout useHeader={{ isShowMenuButton: false, isShowPageButton: false }} useSubHeader={{ title: 'Restore Wallet', onClick: () => navigateBack() }}>
       {children}
     </BaseLayout>
   );
