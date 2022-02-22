@@ -46,8 +46,12 @@ export const LeftContentTextContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-export const RightContentContainer = styled('div')({
+export const RightContentContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',
-});
+
+  '& svg > path': {
+    fill: theme.colors.text01,
+  },
+}));

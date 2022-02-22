@@ -1,4 +1,5 @@
 import type { ACCOUNT_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
+import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
 
 import type { BIP44, Chain, EthereumNetwork } from './chain';
@@ -52,6 +53,8 @@ export type ChromeStorage = {
   additionalEthereumNetworks: EthereumNetwork[];
   selectedAccountId: string;
   language: LanguageType;
+
+  rootPath: Path;
 
   allowedOrigins: AllowedOrigin[];
   allowedChains: AllowedChain[];

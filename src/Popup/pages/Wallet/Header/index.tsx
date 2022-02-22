@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import Popover from '~/Popup/components/common/Popover';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
 
 import AccountButton from './AccountButton';
@@ -11,69 +12,72 @@ import { ChainButton, Container, LeftContentContainer, NetworkButton, RightConte
 export default function WalletHeader() {
   const { currentAccount, currentChain, currentNetwork } = useCurrent();
 
-  const [chainPopoverAnchorEl, setChainPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const isOpenChainPopover = Boolean(chainPopoverAnchorEl);
+  const [requestPopover, setRequestPopover] = useState<'chain' | 'network' | 'account' | null>(null);
 
-  const [networkPopoverAnchorEl, setNetworkPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const isOpenNetworkPopover = Boolean(networkPopoverAnchorEl);
+  const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const isOpenPopover = Boolean(popoverAnchorEl);
 
-  const [accountPopoverAnchorEl, setAccountPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const isOpenAccountPopover = Boolean(accountPopoverAnchorEl);
+  const handleOnClosePopover = () => {
+    setPopoverAnchorEl(null);
+
+    setTimeout(() => {
+      setRequestPopover(null);
+    }, 500);
+  };
 
   return (
     <Container>
       <LeftContentContainer>
-        <AccountButton onClick={(event) => setAccountPopoverAnchorEl(event.currentTarget)}>{currentAccount.name}</AccountButton>
+        <AccountButton
+          onClick={(event) => {
+            setRequestPopover('account');
+            setPopoverAnchorEl(event.currentTarget);
+          }}
+        >
+          {currentAccount.name}
+        </AccountButton>
       </LeftContentContainer>
       <RightContentContainer>
         {currentChain.line === 'ETHEREUM' && (
-          <NetworkButton onClick={(event) => setNetworkPopoverAnchorEl(event.currentTarget)}>{currentNetwork.networkName}</NetworkButton>
+          <NetworkButton
+            onClick={(event) => {
+              setRequestPopover('network');
+              setPopoverAnchorEl(event.currentTarget);
+            }}
+          >
+            {currentNetwork.networkName}
+          </NetworkButton>
         )}
-        <ChainButton imgSrc={currentChain.imageURL} onClick={(event) => setChainPopoverAnchorEl(event.currentTarget)} isActive={isOpenChainPopover}>
+        <ChainButton
+          imgSrc={currentChain.imageURL}
+          onClick={(event) => {
+            setRequestPopover('chain');
+            setPopoverAnchorEl(event.currentTarget);
+          }}
+          isActive={requestPopover === 'chain' && isOpenPopover}
+        >
           {currentChain.chainName}
         </ChainButton>
       </RightContentContainer>
-      <ChainPopover
+
+      <Popover
         marginThreshold={0}
-        open={isOpenChainPopover}
-        onClose={() => setChainPopoverAnchorEl(null)}
-        anchorEl={chainPopoverAnchorEl}
+        open={isOpenPopover}
+        onClose={() => setPopoverAnchorEl(null)}
+        anchorEl={popoverAnchorEl}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right',
+          horizontal: requestPopover === 'account' ? 'left' : 'right',
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right',
+          horizontal: requestPopover === 'account' ? 'left' : 'right',
         }}
-      />
-      <NetworkPopover
-        open={isOpenNetworkPopover}
-        onClose={() => setNetworkPopoverAnchorEl(null)}
-        anchorEl={networkPopoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      />
-      <AccountPopover
-        marginThreshold={0}
-        open={isOpenAccountPopover}
-        onClose={() => setAccountPopoverAnchorEl(null)}
-        anchorEl={accountPopoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-      />
+      >
+        {requestPopover === 'account' && <AccountPopover onClose={handleOnClosePopover} />}
+        {requestPopover === 'chain' && <ChainPopover onClose={handleOnClosePopover} />}
+        {requestPopover === 'network' && <NetworkPopover onClose={handleOnClosePopover} />}
+      </Popover>
     </Container>
   );
 }

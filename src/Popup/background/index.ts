@@ -4,6 +4,7 @@ import { ecsign, hashPersonalMessage, stripHexPrefix, toRpcSig } from 'ethereumj
 
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/ethereum';
 import { IN_MEMORY_MESSAGE_TYPE, MESSAGE_TYPE } from '~/constants/message';
+import { PATH } from '~/constants/route';
 import { THEME_TYPE } from '~/constants/theme';
 import { getCurrentAccount, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
@@ -184,6 +185,8 @@ function background() {
         await setStorage('encryptedPassword', null);
         await setStorage('theme', THEME_TYPE.LIGHT);
         await setStorage('selectedAccountId', '');
+
+        await setStorage('rootPath', PATH.DASHBOARD);
 
         await setStorage('allowedChains', []);
         await setStorage('allowedOrigins', []);

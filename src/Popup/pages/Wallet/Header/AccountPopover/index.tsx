@@ -1,9 +1,9 @@
+import { Suspense } from 'react';
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
 import { CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
-import Popover from '~/Popup/components/common/Popover';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
@@ -15,9 +15,9 @@ import { AccountListContainer, BodyContainer, Container, HeaderContainer, Header
 
 import SettingIcon from '~/images/icons/Setting.svg';
 
-type AccountPopoverProps = Omit<PopoverProps, 'children'>;
+type AccountPopoverProps = Pick<PopoverProps, 'onClose'>;
 
-export default function AccountPopover({ onClose, ...remainder }: AccountPopoverProps) {
+export default function AccountPopover({ onClose }: AccountPopoverProps) {
   const { chromeStorage } = useChromeStorage();
   const { setCurrentAccount } = useCurrent();
 
@@ -26,7 +26,7 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
   const { accounts, accountName, selectedAccountId } = chromeStorage;
 
   return (
-    <Popover {...remainder} onClose={onClose}>
+    <Suspense fallback={null}>
       <Container>
         <HeaderContainer>
           <HeaderLeftContainer>
@@ -63,6 +63,6 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
           </AccountListContainer>
         </BodyContainer>
       </Container>
-    </Popover>
+    </Suspense>
   );
 }

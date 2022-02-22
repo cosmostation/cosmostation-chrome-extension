@@ -1,5 +1,6 @@
 import { atom } from 'recoil';
 
+import { PATH } from '~/constants/route';
 import { THEME_TYPE } from '~/constants/theme';
 import type { ChromeStorage } from '~/types/chromeStorage';
 
@@ -16,6 +17,8 @@ export const chromeStorageState = atom<ChromeStorage>({
     windowId: null,
     selectedAccountId: '',
     language: 'en',
+
+    rootPath: PATH.DASHBOARD,
 
     allowedChains: [],
     allowedOrigins: [],
