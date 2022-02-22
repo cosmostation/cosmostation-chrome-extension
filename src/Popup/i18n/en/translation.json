@@ -87,6 +87,18 @@
         }
       },
       "privateKey": "Private Key is invalid"
+    },
+    "restoreForm": {
+      "repeatPassword": {
+        "any": {
+          "only": "비밀번호가 동일하지 않습니다. (en)"
+        }
+      },
+      "restoreString": {
+        "any": {
+          "only": "복구 문구가 일치하지 않습니다. (en)"
+        }
+      }
     }
   }
 }
