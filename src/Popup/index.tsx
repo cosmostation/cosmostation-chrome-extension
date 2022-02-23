@@ -14,6 +14,7 @@ import { THEME_TYPE } from '~/constants/theme';
 import LoadingOverlay from '~/Popup/components/Loading/Overlay';
 import Wrapper from '~/Popup/components/Wrapper';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import AccountManagement from '~/Popup/pages/Account/Management';
 import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
@@ -53,6 +54,7 @@ function Popup() {
           <SnackbarProvider
             maxSnack={3}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            variant="success"
             TransitionComponent={Grow as React.ComponentType}
             iconVariant={{ success: <Info16Icon /> }}
           >
@@ -63,6 +65,7 @@ function Popup() {
               <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />
               <Route path={PATH.SETTING__CHANGE_LANGUAGE} element={<SettingChangeLanguage />} />
               <Route path={PATH.SETTING__CHANGE_CURRENCY} element={<SettingChangeCurrency />} />
+              <Route path={PATH.ACCOUNT__MANAGEMENT} element={<AccountManagement />} />
               <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
               <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
               <Route path={PATH.REGISTER} element={<Register />} />

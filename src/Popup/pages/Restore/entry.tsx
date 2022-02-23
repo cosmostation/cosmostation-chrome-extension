@@ -67,7 +67,7 @@ export default function Entry() {
 
     reset();
 
-    enqueueSnackbar('Change password success', { variant: 'success' });
+    enqueueSnackbar('Change password success');
   };
   return (
     <Container>

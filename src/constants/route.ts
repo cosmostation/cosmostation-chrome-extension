@@ -7,6 +7,7 @@ export const PATH = {
   SETTING__CHANGE_CURRENCY: '/setting/change-currency',
   CHAIN__MANAGEMENT: '/chain/management',
   CHAIN__MANAGEMENT__USE: '/chain/management/use',
+  ACCOUNT__MANAGEMENT: '/account/management',
   RESTORE: '/restore',
   REGISTER: '/register',
   REGISTER__PASSWORD: '/register/password',

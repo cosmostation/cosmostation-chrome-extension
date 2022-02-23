@@ -1,16 +1,57 @@
-import MenuButton from '~/Popup/components/MenuButton';
-import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useState } from 'react';
 
-import { Container, ListContainer } from './styled';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import type { Account } from '~/types/chromeStorage';
+
+import AccountItem from './AccountItem';
+import ManagePopover from './ManagePopover';
+import { ButtonContainer, Container, ListContainer, StyledButton } from './styled';
 
 export default function Entry() {
-  const { navigate } = useNavigate();
+  const { chromeStorage } = useChromeStorage();
+
+  const [selectedAccount, setSelectedAccount] = useState<Account>();
+
+  const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const isOpenPopover = Boolean(popoverAnchorEl);
+
+  const { accounts, accountName } = chromeStorage;
   return (
     <Container>
       <ListContainer>
-        <MenuButton onClick={() => navigate('/chain/management/use', { isDuplicateCheck: true })}>Chain management</MenuButton>
-        <MenuButton>Add Network</MenuButton>
+        {accounts.map((account) => (
+          <AccountItem
+            isActive={selectedAccount?.id === account.id && isOpenPopover}
+            key={account.id}
+            onClick={(event) => {
+              setSelectedAccount(account);
+              setPopoverAnchorEl(event.currentTarget);
+            }}
+          >
+            {accountName[account.id]}
+          </AccountItem>
+        ))}
       </ListContainer>
+      <ButtonContainer>
+        <StyledButton>Create Account</StyledButton>
+      </ButtonContainer>
+      <ManagePopover
+        account={selectedAccount}
+        marginThreshold={0}
+        open={isOpenPopover}
+        onClose={() => {
+          setPopoverAnchorEl(null);
+        }}
+        anchorEl={popoverAnchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      />
     </Container>
   );
 }

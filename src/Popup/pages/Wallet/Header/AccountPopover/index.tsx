@@ -6,6 +6,7 @@ import Popover from '~/Popup/components/common/Popover';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 
 import AccountItemButton from './AccountItemButton';
 import { AccountListContainer, BodyContainer, Container, HeaderContainer, HeaderLeftContainer, HeaderRightContainer, StyledIconButton } from './styled';
@@ -17,6 +18,7 @@ type AccountPopoverProps = Omit<PopoverProps, 'children'>;
 export default function AccountPopover({ onClose, ...remainder }: AccountPopoverProps) {
   const { chromeStorage } = useChromeStorage();
   const { setCurrentAccount } = useCurrent();
+  const { navigate } = useNavigate();
 
   const { data } = useAccounts();
 
@@ -30,7 +32,7 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
             <Typography variant="h5">Select a account</Typography>
           </HeaderLeftContainer>
           <HeaderRightContainer>
-            <StyledIconButton>
+            <StyledIconButton onClick={() => navigate('/account/management')}>
               <SettingIcon />
             </StyledIconButton>
           </HeaderRightContainer>

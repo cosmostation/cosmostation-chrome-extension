@@ -41,6 +41,13 @@
     }
   },
   "schema": {
+    "changeNameForm": {
+      "name": {
+        "any": {
+          "invlid": "name is duplicated"
+        }
+      }
+    },
     "common": {
       "number": {
         "base": "숫자를 입력하세요.",
@@ -50,7 +57,8 @@
       "string": {
         "base": "문자를 입력하세요.",
         "empty": "dd입력하세요.",
-        "min": "min {#limit}자 이상 입력하셔야 합니다."
+        "max": "max {#limit}자까지 입력할 수 있습니다.",
+        "min": "min {#limit}자 이상으로 입력하셔야 합니다."
       }
     },
     "ledgerForm": {

@@ -41,6 +41,13 @@
     }
   },
   "schema": {
+    "changeNameForm": {
+      "name": {
+        "any": {
+          "invlid": "이름이 중복됩니다."
+        }
+      }
+    },
     "common": {
       "number": {
         "base": "숫자를 입력하세요.",
@@ -50,6 +57,7 @@
       "string": {
         "base": "문자를 입력하세요.",
         "empty": "입력하세요.",
+        "max": "최대 {#limit}자까지 입력할 수 있습니다.",
         "min": "최소 {#limit}자 이상 입력하셔야 합니다."
       }
     },

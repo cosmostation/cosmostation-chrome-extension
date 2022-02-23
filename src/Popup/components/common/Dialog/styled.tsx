@@ -6,9 +6,11 @@ export const StyledDialog = styled(Dialog)(({ theme }) => ({
     backgroundColor: theme.colors.base01,
     color: theme.colors.text01,
 
-    width: '33.6rem',
+    width: '32rem',
     maxHeight: '48rem',
 
     borderRadius: '0.8rem',
+
+    border: `0.1rem solid ${theme.colors.base03}`,
   },
 }));
