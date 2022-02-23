@@ -1,33 +1,24 @@
 import { CHAINS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import type { Chain } from '~/types/chain';
-import type { SelectedChainId } from '~/types/chromeStorage';
 
 export function useCurrentChain() {
-  const { currentAccount } = useCurrentAccount();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
-  const { additionalChains, allowedChains, selectedChainId } = chromeStorage;
+  const { additionalChains, allowedChainIds, selectedChainId } = chromeStorage;
 
   const allChains = [...CHAINS, ...additionalChains];
 
-  const currentAccountAllowedChains = allowedChains
-    .filter((allowedChain) => allowedChain.accountId === currentAccount.id)
-    .map((allowedChain) => allowedChain.chainId);
-
-  const currentAccountSelectedChainId = selectedChainId[currentAccount.id] ?? currentAccountAllowedChains[0];
+  const currentAccountSelectedChainId = selectedChainId ?? allowedChainIds[0];
 
   const currentChain = allChains.find((chain) => chain.id === currentAccountSelectedChainId)!;
 
   const setCurrentChain = async (chain: Chain) => {
-    if (!currentAccountAllowedChains.includes(chain.id)) {
+    if (!allowedChainIds.includes(chain.id)) {
       return;
     }
 
-    const newSelecteChainId: SelectedChainId = { ...selectedChainId, [currentAccount.id]: chain.id };
-
-    await setChromeStorage('selectedChainId', newSelecteChainId);
+    await setChromeStorage('selectedChainId', chain.id);
   };
 
   return { currentChain, setCurrentChain };

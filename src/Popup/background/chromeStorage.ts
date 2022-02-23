@@ -10,11 +10,9 @@ export async function chromeStorage() {
   const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
 
   const currentEthereumNetwork = (() => {
-    const account = currentAccount;
-
     const ethereumNetworks = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks];
 
-    const networkId = selectedEthereumNetworkId[account.id] ?? ETHEREUM_NETWORKS[1].id;
+    const networkId = selectedEthereumNetworkId ?? ETHEREUM_NETWORKS[1].id;
 
     return ethereumNetworks.find((network) => network.id === networkId) ?? ETHEREUM_NETWORKS[1];
   })();

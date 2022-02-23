@@ -188,10 +188,10 @@ function background() {
 
         await setStorage('rootPath', PATH.DASHBOARD);
 
-        await setStorage('allowedChains', []);
+        await setStorage('allowedChainIds', []);
         await setStorage('allowedOrigins', []);
-        await setStorage('selectedChainId', {});
-        await setStorage('selectedEthereumNetworkId', {});
+        await setStorage('selectedChainId', '');
+        await setStorage('selectedEthereumNetworkId', '');
         await openTab();
       }
     })();

@@ -21,7 +21,7 @@ const Container = styled('div')(({ theme }) => ({
 
 export default function PrivateKey() {
   const navigate = useNavigate();
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { chromeStorage, setChromeStorage, addAllowedChainId } = useChromeStorage();
   const { privateKeyForm } = useSchema({ name: [...Object.values(chromeStorage.accountName), 'test'] });
   const { inMemory } = useInMemory();
   const {
@@ -57,11 +57,12 @@ export default function PrivateKey() {
 
       await setChromeStorage('accountName', { ...chromeStorage.accountName, [accountId]: data.name });
 
-      await setChromeStorage('selectedChainId', { ...chromeStorage.selectedChainId, [accountId]: ETHEREUM_CHAINS[0].id });
+      await addAllowedChainId(ETHEREUM_CHAINS[0].id);
+      await setChromeStorage('selectedChainId', ETHEREUM_CHAINS[0].id);
 
-      await setChromeStorage('allowedChains', [...chromeStorage.allowedChains, { accountId, chainId: ETHEREUM_CHAINS[0].id }]);
+      await setChromeStorage('allowedChainIds', [...chromeStorage.allowedChainIds, ETHEREUM_CHAINS[0].id]);
 
-      await setChromeStorage('selectedEthereumNetworkId', { ...chromeStorage.selectedEthereumNetworkId, [accountId]: ETHEREUM_NETWORKS[0].id });
+      await setChromeStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
 
       console.log(aesDecrypt(aesEncrypt(data.privateKey, inMemory.password), inMemory.password));
     }

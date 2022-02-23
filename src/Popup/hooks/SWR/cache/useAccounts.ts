@@ -17,14 +17,13 @@ export function useAccounts() {
 
   const { inMemory } = useInMemory();
 
-  const { accounts, selectedAccountId } = chromeStorage;
+  const { accounts, selectedAccountId, selectedChainId } = chromeStorage;
 
   const fetcher = () =>
     new Promise<AccountList[]>((res) => {
       res(
         accounts.map((account) => {
-          const accountChainId = chromeStorage.selectedChainId[account.id];
-          const accountChain = CHAINS.find((chain) => chain.id === accountChainId)!;
+          const accountChain = CHAINS.find((chain) => chain.id === selectedChainId)!;
           const keypair = getKeyPair(account, accountChain, inMemory.password);
           const address = getAddress(accountChain, keypair?.publicKey);
           return { id: account.id, address, isActive: account.id === selectedAccountId };
@@ -32,11 +31,7 @@ export function useAccounts() {
       );
     });
 
-  const { data, mutate } = useSWR('accountList', fetcher, {
-    refreshInterval: 0,
-    errorRetryCount: 5,
-    errorRetryInterval: 3000,
-    revalidateOnFocus: false,
+  const { data, mutate } = useSWR(`accountList-${selectedAccountId}-${selectedChainId}`, fetcher, {
     suspense: true,
   });
 

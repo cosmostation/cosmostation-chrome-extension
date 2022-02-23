@@ -10,7 +10,6 @@ export function useCurrentAccount() {
   const currentAccount = selectedAccount || accounts[0];
 
   const name = accountName[currentAccount.id] ?? '';
-  const allowedChains = chromeStorage.allowedChains.filter((chain) => chain.accountId === currentAccount.id).map((chain) => chain.chainId);
 
   const setCurrentAccount = async (id: string) => {
     const isExist = !!chromeStorage.accounts.find((account) => account.id === id);
@@ -18,5 +17,5 @@ export function useCurrentAccount() {
     await setChromeStorage('selectedAccountId', isExist ? id : chromeStorage.accounts[0].id);
   };
 
-  return { currentAccount: { ...currentAccount, name, allowedChains }, setCurrentAccount };
+  return { currentAccount: { ...currentAccount, name }, setCurrentAccount };
 }

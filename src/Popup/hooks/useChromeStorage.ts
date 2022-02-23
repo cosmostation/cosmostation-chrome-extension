@@ -6,34 +6,34 @@ import { setStorage } from '~/Popup/utils/chromeStorage';
 export function useChromeStorage() {
   const chromeStorage = useRecoilValue(chromeStorageState);
 
-  const addAllowedChain = async (accountId: string, chainId: string) => {
-    const { allowedChains } = chromeStorage;
+  const addAllowedChainId = async (chainId: string) => {
+    const { allowedChainIds } = chromeStorage;
 
-    if (allowedChains.find((chain) => chain.accountId === accountId && chain.chainId === chainId)) {
+    if (allowedChainIds.find((allowedChainId) => allowedChainId === chainId)) {
       return;
     }
 
-    await setStorage('allowedChains', [...allowedChains, { accountId, chainId }]);
+    await setStorage('allowedChainIds', [...allowedChainIds, chainId]);
   };
 
-  const removeAllowedChain = async (accountId: string, chainId: string) => {
-    const { allowedChains } = chromeStorage;
+  const removeAllowedChainId = async (chainId: string) => {
+    const { allowedChainIds } = chromeStorage;
 
-    if (!allowedChains.find((chain) => chain.accountId === accountId && chain.chainId === chainId)) {
+    if (!allowedChainIds.find((allowedChainId) => allowedChainId === chainId)) {
       return;
     }
 
-    const newAllowedChains = JSON.parse(JSON.stringify(allowedChains)) as typeof allowedChains;
+    const newAllowedChainIds = allowedChainIds.slice();
 
-    for (let i = 0; i < newAllowedChains.filter((chain) => chain.accountId === accountId && chain.chainId === chainId).length; i += 1) {
-      newAllowedChains.splice(
-        newAllowedChains.findIndex((chain) => chain.accountId === accountId && chain.chainId === chainId),
+    for (let i = 0; i < newAllowedChainIds.filter((newAllowedChainId) => newAllowedChainId === chainId).length; i += 1) {
+      newAllowedChainIds.splice(
+        newAllowedChainIds.findIndex((newAllowedChainId) => newAllowedChainId === chainId),
         1,
       );
     }
 
-    await setStorage('allowedChains', newAllowedChains);
+    await setStorage('allowedChainIds', newAllowedChainIds);
   };
 
-  return { chromeStorage, setChromeStorage: setStorage, addAllowedChain, removeAllowedChain };
+  return { chromeStorage, setChromeStorage: setStorage, addAllowedChainId, removeAllowedChainId };
 }

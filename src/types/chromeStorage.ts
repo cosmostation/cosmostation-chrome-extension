@@ -15,10 +15,6 @@ export type AccountCommon = {
 };
 
 export type AllowedOrigin = { accountId: string; origin: string };
-export type AllowedChain = { accountId: string; chainId: string };
-
-export type SelectedChainId = Record<AccountCommon['id'], string>;
-export type SelectedEthereumNetworkId = Record<AccountCommon['id'], string>;
 
 export type AccountName = Record<AccountCommon['id'], string>;
 
@@ -51,15 +47,16 @@ export type ChromeStorage = {
   windowId: number | null;
   additionalChains: Chain[];
   additionalEthereumNetworks: EthereumNetwork[];
-  selectedAccountId: string;
   language: LanguageType;
 
   rootPath: Path;
 
+  selectedAccountId: string;
+
   allowedOrigins: AllowedOrigin[];
-  allowedChains: AllowedChain[];
-  selectedChainId: SelectedChainId;
-  selectedEthereumNetworkId: SelectedEthereumNetworkId;
+  allowedChainIds: string[];
+  selectedChainId: string;
+  selectedEthereumNetworkId: string;
 };
 
 export type ChromeStorageKeys = keyof ChromeStorage;

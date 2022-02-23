@@ -20,9 +20,9 @@ export const chromeStorageState = atom<ChromeStorage>({
 
     rootPath: PATH.DASHBOARD,
 
-    allowedChains: [],
+    allowedChainIds: [],
     allowedOrigins: [],
-    selectedChainId: {},
-    selectedEthereumNetworkId: {},
+    selectedChainId: '',
+    selectedEthereumNetworkId: '',
   },
 });

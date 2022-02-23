@@ -24,11 +24,11 @@ import {
 export default function Entry() {
   const [search, setSearch] = useState('');
 
-  const { addAllowedChain, removeAllowedChain } = useChromeStorage();
+  const { addAllowedChainId, removeAllowedChainId, chromeStorage } = useChromeStorage();
 
   const { currentAccount } = useCurrentAccount();
 
-  const { allowedChains } = currentAccount;
+  const { allowedChainIds } = chromeStorage;
 
   const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
   const filteredEthereumChains = search ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : ETHEREUM_CHAINS;
@@ -51,12 +51,12 @@ export default function Entry() {
             key={chain.id}
             imageProps={{ alt: chain.chainName, src: chain.imageURL }}
             switchProps={{
-              checked: allowedChains.includes(chain.id),
+              checked: allowedChainIds.includes(chain.id),
               onChange: async (_, checked) => {
                 if (checked) {
-                  await addAllowedChain(currentAccount.id, chain.id);
+                  await addAllowedChainId(chain.id);
                 } else {
-                  await removeAllowedChain(currentAccount.id, chain.id);
+                  await removeAllowedChainId(chain.id);
                 }
               },
             }}
@@ -74,12 +74,12 @@ export default function Entry() {
             key={chain.id}
             imageProps={{ alt: chain.chainName, src: chain.imageURL }}
             switchProps={{
-              checked: allowedChains.includes(chain.id),
+              checked: allowedChainIds.includes(chain.id),
               onChange: async (_, checked) => {
                 if (checked) {
-                  await addAllowedChain(currentAccount.id, chain.id);
+                  await addAllowedChainId(chain.id);
                 } else {
-                  await removeAllowedChain(currentAccount.id, chain.id);
+                  await removeAllowedChainId(chain.id);
                 }
               },
             }}

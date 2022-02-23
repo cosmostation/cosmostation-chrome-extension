@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 import { COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrent } from '~/Popup/hooks/useCurrent';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 
@@ -30,12 +31,14 @@ type ChainPopoverProps = Omit<PopoverProps, 'children'>;
 
 export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProps) {
   const { navigate } = useNavigate();
-  const { currentAccount, currentChain, setCurrentChain } = useCurrent();
+  const { currentChain, setCurrentChain } = useCurrent();
 
-  const { allowedChains } = currentAccount;
+  const { chromeStorage } = useChromeStorage();
 
-  const allowedCosmosChain = useMemo(() => COSMOS_CHAINS.filter((chain) => allowedChains.includes(chain.id)), [allowedChains]);
-  const allowedEthereumChain = useMemo(() => ETHEREUM_CHAINS.filter((chain) => allowedChains.includes(chain.id)), [allowedChains]);
+  const { allowedChainIds } = chromeStorage;
+
+  const allowedCosmosChain = useMemo(() => COSMOS_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
+  const allowedEthereumChain = useMemo(() => ETHEREUM_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
 
   return (
     <Popover {...remainder} onClose={onClose}>
