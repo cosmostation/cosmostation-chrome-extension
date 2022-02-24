@@ -14,7 +14,7 @@ export type AccountCommon = {
   encryptedRestoreString: string;
 };
 
-export type AllowedOrigin = { accountId: string; origin: string };
+export type AllowedOrigin = { accountId: AccountCommon['id']; origin: string };
 
 export type AccountName = Record<AccountCommon['id'], string>;
 

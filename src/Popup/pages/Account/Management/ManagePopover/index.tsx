@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import type { PopoverProps } from '@mui/material';
 
-import Popover from '~/Popup/components/common/Popover';
 import type { Account } from '~/types/chromeStorage';
 
 import ChangeNameDialog from './ChangeNameDialog';
+import DeleteDialog from './DeleteDialog';
+import ExportMnemonicDialog from './ExportMnemonicDialog';
 import ExportPrivateKeyDialog from './ExportPrivateKeyDialog';
 import ManageButton from './ManageButton';
 import { Container, StyledPopover } from './styled';
@@ -19,6 +20,8 @@ type ManagePopoverProps = Omit<PopoverProps, 'children'> & { account?: Account }
 export default function ManagePopover({ account, onClose, ...remainder }: ManagePopoverProps) {
   const [isOpenedChangeNameDialog, setIsOpenedChangeNameDialog] = useState(false);
   const [isOpenedExportPrivateKeyDialog, setIsOpenedExportPrivateKeyDialog] = useState(false);
+  const [isOpenedExportMnemonicDialog, setIsOpenedExportMnemonicDialog] = useState(false);
+  const [isOpenedDeleteDialog, setIsOpenedDeleteDialog] = useState(false);
 
   if (!account) {
     return null;
@@ -28,18 +31,50 @@ export default function ManagePopover({ account, onClose, ...remainder }: Manage
     <>
       <StyledPopover onClose={onClose} {...remainder}>
         <Container>
-          <ManageButton Icon={Edit16Icon} onClick={() => setIsOpenedChangeNameDialog(true)}>
+          <ManageButton
+            Icon={Edit16Icon}
+            onClick={() => {
+              setIsOpenedChangeNameDialog(true);
+              onClose?.({}, 'backdropClick');
+            }}
+          >
             Rename account
           </ManageButton>
-          {account.type === 'MNEMONIC' && <ManageButton Icon={Lock16Icon}>View secret phrase</ManageButton>}
-          <ManageButton Icon={Key16Icon} onClick={() => setIsOpenedExportPrivateKeyDialog(true)}>
+          {account.type === 'MNEMONIC' && (
+            <ManageButton
+              Icon={Lock16Icon}
+              onClick={() => {
+                setIsOpenedExportMnemonicDialog(true);
+                onClose?.({}, 'backdropClick');
+              }}
+            >
+              View secret phrase
+            </ManageButton>
+          )}
+          <ManageButton
+            Icon={Key16Icon}
+            onClick={() => {
+              setIsOpenedExportPrivateKeyDialog(true);
+              onClose?.({}, 'backdropClick');
+            }}
+          >
             Export private key
           </ManageButton>
-          <ManageButton Icon={Delete16Icon}>Delete account</ManageButton>
+          <ManageButton
+            Icon={Delete16Icon}
+            onClick={() => {
+              setIsOpenedDeleteDialog(true);
+              onClose?.({}, 'backdropClick');
+            }}
+          >
+            Delete account
+          </ManageButton>
         </Container>
       </StyledPopover>
       <ChangeNameDialog open={isOpenedChangeNameDialog} onClose={() => setIsOpenedChangeNameDialog(false)} account={account} />
       <ExportPrivateKeyDialog open={isOpenedExportPrivateKeyDialog} onClose={() => setIsOpenedExportPrivateKeyDialog(false)} account={account} />
+      <ExportMnemonicDialog open={isOpenedExportMnemonicDialog} onClose={() => setIsOpenedExportMnemonicDialog(false)} account={account} />
+      <DeleteDialog open={isOpenedDeleteDialog} onClose={() => setIsOpenedDeleteDialog(false)} account={account} />
     </>
   );
 }

@@ -6,30 +6,24 @@ import type { DialogProps, PopoverProps } from '@mui/material';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
-import { getKeyPair } from '~/Popup/utils/common';
-import { sha512 } from '~/Popup/utils/crypto';
+import { aesDecrypt, sha512 } from '~/Popup/utils/crypto';
 import type { Account } from '~/types/chromeStorage';
 
-import PrivateKeyView from './PrivateKeyView';
+import MnemonicView from './MnemonicView';
 import { Container, StyledButton, StyledInput } from './styled';
 import type { PasswordForm } from './useSchema';
 import { useSchema } from './useSchema';
 
-type ExportPrivateKeyDialogProps = Omit<DialogProps, 'children'> & { account: Account; popoverOnClose?: PopoverProps['onClose'] };
+type ExportMnemonicDialogProps = Omit<DialogProps, 'children'> & { account: Account; popoverOnClose?: PopoverProps['onClose'] };
 
-export default function ExportPrivateKeyDialog({ onClose, account, ...remainder }: ExportPrivateKeyDialogProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
-
-  const { currentChain } = useCurrentChain();
-
-  const { bip44 } = currentChain;
+export default function ExportMnemonicDialog({ onClose, account, ...remainder }: ExportMnemonicDialogProps) {
+  const { chromeStorage } = useChromeStorage();
 
   const { accountName, encryptedPassword } = chromeStorage;
 
   const [password, setPassword] = useState('');
 
-  const [privateKey, setPrivateKey] = useState('');
+  const [mnemonic, setMnemonic] = useState('');
 
   const invalidNames = [...Object.values(accountName)];
   invalidNames.splice(invalidNames.indexOf(accountName[account.id], 1));
@@ -48,10 +42,12 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
     shouldFocusError: true,
   });
 
-  const submit = () => {
-    const keyPair = getKeyPair(account, currentChain, password);
+  if (account.type !== 'MNEMONIC') {
+    return null;
+  }
 
-    setPrivateKey(keyPair?.privateKey.toString('hex') ?? '');
+  const submit = () => {
+    setMnemonic(aesDecrypt(account.encryptedMnemonic, password));
   };
 
   const handleOnClose = () => {
@@ -59,14 +55,14 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
     setTimeout(() => {
       reset();
       setPassword('');
-      setPrivateKey('');
+      setMnemonic('');
     }, 200);
   };
 
   return (
     <Dialog {...remainder} onClose={handleOnClose}>
-      {privateKey ? (
-        <PrivateKeyView privateKey={privateKey} onClose={handleOnClose} />
+      {mnemonic ? (
+        <MnemonicView mnemonic={mnemonic} onClose={handleOnClose} />
       ) : (
         <>
           <DialogHeader onClose={handleOnClose}>View Private Key</DialogHeader>

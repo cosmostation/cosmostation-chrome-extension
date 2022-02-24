@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { joiResolver } from '@hookform/resolvers/joi';
-import type { DialogProps } from '@mui/material';
+import type { DialogProps, PopoverProps } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
@@ -12,7 +12,7 @@ import { Container, StyledButton, StyledInput } from './styled';
 import type { ChangeNameForm } from './useSchema';
 import { useSchema } from './useSchema';
 
-type ChangeNameDialogProps = Omit<DialogProps, 'children'> & { account: Account };
+type ChangeNameDialogProps = Omit<DialogProps, 'children'> & { account: Account; popoverOnClose?: PopoverProps['onClose'] };
 
 export default function ChangeNameDialog({ onClose, account, ...remainder }: ChangeNameDialogProps) {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
