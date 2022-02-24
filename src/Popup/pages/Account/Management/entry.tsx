@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import type { Account } from '~/types/chromeStorage';
 
-import AccountItem from './AccountItem';
-import ManagePopover from './ManagePopover';
+import AccountItem from './components/AccountItem';
+import ManagePopover from './components/ManagePopover';
 import { ButtonContainer, Container, ListContainer, StyledButton } from './styled';
 
 export default function Entry() {

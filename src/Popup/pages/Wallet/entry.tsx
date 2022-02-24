@@ -1,5 +1,5 @@
-import Header from './Header';
-import NativeChainCard from './NativeChainCard';
+import Header from './components/Header';
+import NativeChainCard from './components/NativeChainCard';
 import { Container, HeaderContainer, NativeChainCardContainer } from './styled';
 
 export default function Entry() {
