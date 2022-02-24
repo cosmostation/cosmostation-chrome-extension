@@ -37,16 +37,20 @@ export default function ChangeNameDialog({ onClose, account, ...remainder }: Cha
     shouldFocusError: true,
   });
 
-  const submit = async (data: ChangeNameForm) => {
-    await setChromeStorage('accountName', { ...accountName, [account.id]: data.name });
-    enqueueSnackbar('success rename');
+  const handleOnClose = () => {
     reset();
     onClose?.({}, 'backdropClick');
   };
 
+  const submit = async (data: ChangeNameForm) => {
+    await setChromeStorage('accountName', { ...accountName, [account.id]: data.name });
+    enqueueSnackbar('success rename');
+    handleOnClose();
+  };
+
   return (
-    <Dialog {...remainder} onClose={onClose}>
-      <DialogHeader onClose={onClose}>Rename account</DialogHeader>
+    <Dialog {...remainder} onClose={handleOnClose}>
+      <DialogHeader onClose={handleOnClose}>Rename account</DialogHeader>
       <Container>
         <form onSubmit={handleSubmit(submit)}>
           <StyledInput

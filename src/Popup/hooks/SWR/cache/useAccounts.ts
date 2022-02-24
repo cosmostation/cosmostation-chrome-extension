@@ -3,8 +3,7 @@ import useSWR from 'swr';
 import { CHAINS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
-import { getAddress } from '~/Popup/utils/common';
-import { getKeyPair } from '~/Popup/utils/crypto';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
 
 type AccountList = {
   id: string;

@@ -5,6 +5,7 @@ import Popover from '~/Popup/components/common/Popover';
 import type { Account } from '~/types/chromeStorage';
 
 import ChangeNameDialog from './ChangeNameDialog';
+import ExportPrivateKeyDialog from './ExportPrivateKeyDialog';
 import ManageButton from './ManageButton';
 import { Container, StyledPopover } from './styled';
 
@@ -17,6 +18,7 @@ type ManagePopoverProps = Omit<PopoverProps, 'children'> & { account?: Account }
 
 export default function ManagePopover({ account, onClose, ...remainder }: ManagePopoverProps) {
   const [isOpenedChangeNameDialog, setIsOpenedChangeNameDialog] = useState(false);
+  const [isOpenedExportPrivateKeyDialog, setIsOpenedExportPrivateKeyDialog] = useState(false);
 
   if (!account) {
     return null;
@@ -29,12 +31,15 @@ export default function ManagePopover({ account, onClose, ...remainder }: Manage
           <ManageButton Icon={Edit16Icon} onClick={() => setIsOpenedChangeNameDialog(true)}>
             Rename account
           </ManageButton>
-          <ManageButton Icon={Lock16Icon}>View secret phrase</ManageButton>
-          <ManageButton Icon={Key16Icon}>Export private key</ManageButton>
+          {account.type === 'MNEMONIC' && <ManageButton Icon={Lock16Icon}>View secret phrase</ManageButton>}
+          <ManageButton Icon={Key16Icon} onClick={() => setIsOpenedExportPrivateKeyDialog(true)}>
+            Export private key
+          </ManageButton>
           <ManageButton Icon={Delete16Icon}>Delete account</ManageButton>
         </Container>
       </StyledPopover>
       <ChangeNameDialog open={isOpenedChangeNameDialog} onClose={() => setIsOpenedChangeNameDialog(false)} account={account} />
+      <ExportPrivateKeyDialog open={isOpenedExportPrivateKeyDialog} onClose={() => setIsOpenedExportPrivateKeyDialog(false)} account={account} />
     </>
   );
 }

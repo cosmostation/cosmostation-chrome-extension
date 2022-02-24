@@ -13,6 +13,7 @@ export const Container = styled('div')({
 export const LeftContainter = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
+
 export const StyledButton = styled('button')(({ theme }) => ({
   backgroundColor: 'transparent',
   padding: 0,

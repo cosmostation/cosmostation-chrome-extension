@@ -2,8 +2,8 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { getKeyPair } from '~/Popup/utils/common';
 import { getAddress as getCosmosAddress } from '~/Popup/utils/cosmos';
-import { getKeyPair } from '~/Popup/utils/crypto';
 import { getAddress as getEthereumAddress } from '~/Popup/utils/ethereum';
 import type { Chain } from '~/types/chain';
 
