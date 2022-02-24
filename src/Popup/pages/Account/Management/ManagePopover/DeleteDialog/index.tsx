@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import { useSnackbar } from 'notistack';
 import { joiResolver } from '@hookform/resolvers/joi';
 import type { DialogProps, PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
@@ -20,6 +21,8 @@ type ExportMnemonicDialogProps = Omit<DialogProps, 'children'> & { account: Acco
 export default function ExportMnemonicDialog({ onClose, account, ...remainder }: ExportMnemonicDialogProps) {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const { accountName, encryptedPassword } = chromeStorage;
 
   const invalidNames = [...Object.values(accountName)];
@@ -39,10 +42,6 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
     shouldFocusError: true,
   });
 
-  if (account.type !== 'MNEMONIC') {
-    return null;
-  }
-
   const handleOnClose = () => {
     onClose?.({}, 'backdropClick');
     setTimeout(() => {
@@ -60,6 +59,8 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
     await setChromeStorage('accounts', newAccounts);
 
     handleOnClose();
+
+    enqueueSnackbar('Your account has been deleted.', { variant: 'error' });
   };
 
   return (

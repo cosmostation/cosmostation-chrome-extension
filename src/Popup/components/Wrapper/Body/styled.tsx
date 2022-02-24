@@ -44,6 +44,11 @@ export const Body = styled('div')(({ theme }) => ({
         backgroundColor: theme.accentColors.green,
         color: theme.accentColors.white,
       },
+
+      '&.SnackbarItem-variantError': {
+        backgroundColor: theme.accentColors.red,
+        color: theme.accentColors.white,
+      },
     },
   },
 }));

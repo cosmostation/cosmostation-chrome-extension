@@ -56,7 +56,7 @@ function Popup() {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             variant="success"
             TransitionComponent={Grow as React.ComponentType}
-            iconVariant={{ success: <Info16Icon /> }}
+            iconVariant={{ success: <Info16Icon />, error: <Info16Icon /> }}
           >
             <Routes>
               <Route path={PATH.HOME} element={<Home />} />

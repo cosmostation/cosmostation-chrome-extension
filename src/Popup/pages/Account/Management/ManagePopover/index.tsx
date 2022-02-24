@@ -63,8 +63,9 @@ export default function ManagePopover({ account, onClose, ...remainder }: Manage
           <ManageButton
             Icon={Delete16Icon}
             onClick={() => {
-              setIsOpenedDeleteDialog(true);
+              console.log('ddd');
               onClose?.({}, 'backdropClick');
+              setIsOpenedDeleteDialog(true);
             }}
           >
             Delete account
