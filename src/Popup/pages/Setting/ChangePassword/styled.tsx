@@ -5,6 +5,7 @@ export const Container = styled('div')({
   height: '100%',
 
   padding: '0 1.2rem',
+  position: 'relative',
 });
 
 export const CurrentPasswordContainer = styled('div')({
@@ -15,17 +16,10 @@ export const NewPasswordContainer = styled('div')({
   padding: '2rem 0 0.8rem 0',
 });
 
-export const StyledForm = styled('form')({
-  width: '100%',
-  height: '100%',
-
-  position: 'relative',
-});
-
 export const ButtonContainer = styled('div')({
   position: 'absolute',
 
-  width: '100%',
+  width: 'inherit',
 
   bottom: '1.6rem',
 });

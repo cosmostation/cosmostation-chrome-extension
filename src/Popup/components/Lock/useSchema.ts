@@ -14,8 +14,8 @@ export function useSchema({ encryptedPassword }: useSchemaProps) {
   const { t } = useTranslation();
   const passwordForm = Joi.object<PasswordForm>({
     password: Joi.string()
-      .min(8)
       .required()
+      .min(8)
       .valid(encryptedPassword)
       .messages({
         'string.base': t('schema.common.string.base'),

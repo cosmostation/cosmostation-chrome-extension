@@ -12,6 +12,18 @@
         }
       }
     },
+    "changePasswordForm": {
+      "password": {
+        "any": {
+          "only": "비밀번호가 일치하지 않습니다.(en)"
+        }
+      },
+      "repeatPassword": {
+        "any": {
+          "only": "비밀번호가 동일하지 않습니다. (en)"
+        }
+      }
+    },
     "common": {
       "number": {
         "base": "숫자를 입력하세요.",

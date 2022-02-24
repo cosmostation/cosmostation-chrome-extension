@@ -15,6 +15,7 @@ import LoadingOverlay from '~/Popup/components/Loading/Overlay';
 import Wrapper from '~/Popup/components/Wrapper';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import AccountCreate from '~/Popup/pages/Account/Create';
+import AccountCreateNewMnemonicStep1 from '~/Popup/pages/Account/Create/New/Mnemonic/Step1';
 import AccountManagement from '~/Popup/pages/Account/Management';
 import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
@@ -68,6 +69,7 @@ function Popup() {
               <Route path={PATH.SETTING__CHANGE_CURRENCY} element={<SettingChangeCurrency />} />
               <Route path={PATH.ACCOUNT__MANAGEMENT} element={<AccountManagement />} />
               <Route path={PATH.ACCOUNT__CREATE} element={<AccountCreate />} />
+              <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP1} element={<AccountCreateNewMnemonicStep1 />} />
               <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
               <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
               <Route path={PATH.REGISTER} element={<Register />} />

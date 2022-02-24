@@ -8,7 +8,7 @@ export default function Entry() {
   return (
     <Container>
       <ListContainer>
-        <MenuButton>Create a new account</MenuButton>
+        <MenuButton onClick={() => navigate('/account/create/new/mnemonic/step1')}>Create a new account</MenuButton>
         <MenuButton>import mnemonic</MenuButton>
         <MenuButton>import private key</MenuButton>
       </ListContainer>

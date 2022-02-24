@@ -5,10 +5,14 @@ export const Container = styled('div')({
   height: 'calc(100% - 0.8rem)',
 
   padding: '0.8rem 1.2rem 0',
+
+  position: 'relative',
 });
 
-export const ListContainer = styled('div')({
-  '& > :nth-of-type(n + 2)': {
-    marginTop: '0.8rem',
-  },
+export const BottomContainer = styled('div')({
+  position: 'absolute',
+
+  width: 'inherit',
+
+  bottom: '1.6rem',
 });
