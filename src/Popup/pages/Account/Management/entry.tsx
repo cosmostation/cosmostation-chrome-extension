@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import type { Account } from '~/types/chromeStorage';
 
 import AccountItem from './components/AccountItem';
@@ -9,6 +10,8 @@ import { ButtonContainer, Container, ListContainer, StyledButton } from './style
 
 export default function Entry() {
   const { chromeStorage } = useChromeStorage();
+
+  const { navigate } = useNavigate();
 
   const [selectedAccount, setSelectedAccount] = useState<Account>();
 
@@ -33,7 +36,7 @@ export default function Entry() {
         ))}
       </ListContainer>
       <ButtonContainer>
-        <StyledButton>Create Account</StyledButton>
+        <StyledButton onClick={() => navigate('/account/create')}>Create Account</StyledButton>
       </ButtonContainer>
       <ManagePopover
         account={selectedAccount}

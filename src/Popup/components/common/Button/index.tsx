@@ -8,9 +8,9 @@ type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButton
   Icon?: VFC<SVGProps<SVGSVGElement>>;
 };
 
-export default function Button({ children, Icon, typoVarient = 'h4', ...remainder }: ButtonProps) {
+export default function Button({ children, Icon, typoVarient = 'h4', type, ...remainder }: ButtonProps) {
   return (
-    <StyledButton {...remainder} data-typo-varient={typoVarient}>
+    <StyledButton {...remainder} data-typo-varient={typoVarient} type={type ?? 'button'}>
       <ContentContainer data-is-icon={Icon ? 1 : 0}>
         {Icon && <Icon />}
         <Typography variant={typoVarient}>{children}</Typography>

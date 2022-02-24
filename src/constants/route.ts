@@ -8,6 +8,7 @@ export const PATH = {
   CHAIN__MANAGEMENT: '/chain/management',
   CHAIN__MANAGEMENT__USE: '/chain/management/use',
   ACCOUNT__MANAGEMENT: '/account/management',
+  ACCOUNT__CREATE: '/account/create',
   RESTORE: '/restore',
   REGISTER: '/register',
   REGISTER__PASSWORD: '/register/password',
