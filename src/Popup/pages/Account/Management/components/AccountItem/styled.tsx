@@ -32,7 +32,7 @@ export const RightContainer = styled('div')(({ theme }) => ({
 }));
 
 type StyledButtonProps = {
-  'data-is-active': number;
+  'data-is-active'?: number;
 };
 
 export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({

@@ -20,10 +20,7 @@ export default function ChangeNameDialog({ onClose, account, ...remainder }: Cha
 
   const { accountName } = chromeStorage;
 
-  const invalidNames = [...Object.values(accountName)];
-  invalidNames.splice(invalidNames.indexOf(accountName[account.id], 1));
-
-  const { changeNameForm } = useSchema({ names: invalidNames });
+  const { changeNameForm } = useSchema();
 
   const {
     register,

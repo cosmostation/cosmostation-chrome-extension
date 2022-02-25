@@ -1,17 +1,51 @@
+import { useForm } from 'react-hook-form';
+import { useRecoilState } from 'recoil';
+import { joiResolver } from '@hookform/resolvers/joi';
+
 import Button from '~/Popup/components/common/Button';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { newAccountState } from '~/Popup/recoils/newAccount';
 
-import { BottomContainer, Container } from './styled';
+import { BottomContainer, Container, StyledInput } from './styled';
+import type { Step1Form } from './useSchema';
+import { useSchema } from './useSchema';
 import Description from '../components/Description';
 
 export default function Entry() {
   const { navigate } = useNavigate();
+
+  const { step1Form } = useSchema();
+
+  const [newAccount, setNewAccount] = useRecoilState(newAccountState);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isDirty },
+    reset,
+  } = useForm<Step1Form>({
+    resolver: joiResolver(step1Form),
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
+    shouldFocusError: true,
+    defaultValues: { name: newAccount.accountName },
+  });
+
+  const submit = (data: Step1Form) => {
+    setNewAccount((prev) => ({ ...prev, accountName: data.name }));
+    navigate('/account/create/new/mnemonic/step2');
+    reset();
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(submit)}>
       <Container>
         <Description>Enter your secret phrase below to verify it is stored safely.</Description>
+        <StyledInput placeholder="account name" inputProps={register('name')} error={!!errors.name} helperText={errors.name?.message} />
         <BottomContainer>
-          <Button>Next</Button>
+          <Button type="submit" disabled={!isDirty && !newAccount.accountName}>
+            Next
+          </Button>
         </BottomContainer>
       </Container>
     </form>

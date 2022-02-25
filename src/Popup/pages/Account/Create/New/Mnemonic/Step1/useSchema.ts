@@ -2,13 +2,13 @@ import Joi from 'joi';
 
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
-export type ChangeNameForm = {
+export type Step1Form = {
   name: string;
 };
 
 export function useSchema() {
   const { t } = useTranslation();
-  const changeNameForm = Joi.object<ChangeNameForm>({
+  const step1Form = Joi.object<Step1Form>({
     name: Joi.string()
       .required()
       .min(1)
@@ -21,5 +21,5 @@ export function useSchema() {
       }),
   });
 
-  return { changeNameForm };
+  return { step1Form };
 }

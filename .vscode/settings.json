@@ -52,5 +52,7 @@
   "search.exclude": {
     "**/.git": true,
     "**/node_modules": true
-  }
+  },
+  "explorer.sortOrder": "filesFirst",
+  "explorer.sortOrderLexicographicOptions": "lower"
 }
