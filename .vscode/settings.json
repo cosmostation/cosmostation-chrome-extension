@@ -38,5 +38,19 @@
   "files.associations": {
     "*.env.development": "env",
     "*.env": "env"
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/node_modules/**": true
+  },
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/yarn.lock": true
+  },
+  "search.exclude": {
+    "**/.git": true,
+    "**/node_modules": true
   }
 }
