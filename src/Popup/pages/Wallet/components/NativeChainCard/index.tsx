@@ -5,6 +5,7 @@ import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 
 import {
   Container,
@@ -27,6 +28,7 @@ import ReceiveIcon from '~/images/icons/Receive.svg';
 import SendIcon from '~/images/icons/Send.svg';
 
 export default function NativeChainCard() {
+  const { chromeStorage } = useChromeStorage();
   return (
     <Container>
       <FirstLineContainer>
@@ -53,7 +55,7 @@ export default function NativeChainCard() {
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>
-        <Number typoOfIntegers="h3n" typoOfDecimals="h5n" fixed={2}>
+        <Number typoOfIntegers="h3n" typoOfDecimals="h5n" fixed={2} currency={chromeStorage.currency}>
           75.4000
         </Number>
       </ThirdLineContainer>
