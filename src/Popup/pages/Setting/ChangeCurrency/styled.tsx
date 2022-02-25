@@ -8,8 +8,12 @@ export const Container = styled('div')({
 });
 
 export const ListContainer = styled('div')({
-  // TODO: grid 로 변경
-  '& > :nth-of-type(n + 2)': {
-    marginTop: '0.8rem',
-  },
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  rowGap: '0.8rem',
+
+  width: '100%',
+  maxHeight: '100%',
+
+  overflow: 'auto',
 });

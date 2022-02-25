@@ -7,23 +7,27 @@ export const Container = styled('div')({
   height: '100%',
 
   padding: '0.8rem 1.6rem 0',
+
+  position: 'relative',
 });
 
 export const ListContainer = styled('div')({
-  // TODO: grid 로 변경
-  '& > :nth-of-type(n + 2)': {
-    marginTop: '0.8rem',
-  },
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  rowGap: '0.8rem',
 
   width: '100%',
-  height: 'calc(100% - 8rem)',
+  maxHeight: 'calc(100% - 8rem)',
 
   overflow: 'auto',
 });
 
 export const ButtonContainer = styled('div')({
-  width: '100%',
+  position: 'absolute',
+  width: 'calc(100% - 3.2rem)',
   height: '8rem',
+
+  bottom: '0',
 
   display: 'flex',
   justifyContent: 'center',

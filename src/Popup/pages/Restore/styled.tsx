@@ -1,6 +1,5 @@
 import { styled } from '@mui/material/styles';
 
-import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
 
 export const Container = styled('div')({
@@ -13,10 +12,14 @@ export const Container = styled('div')({
 });
 
 export const InputContainer = styled('div')({
-  // TODO: grid 로 변경
-  '& > :nth-of-type(n + 2)': {
-    marginTop: '0.8rem',
-  },
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  rowGap: '0.8rem',
+
+  width: '100%',
+  maxHeight: 'calc(100% - 4.8rem)',
+
+  overflow: 'auto',
 });
 
 export const StyledInput48 = styled(Input)({
