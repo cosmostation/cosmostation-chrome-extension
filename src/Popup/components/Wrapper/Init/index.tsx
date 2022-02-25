@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeStorageState } from '~/Popup/recoils/chromeStorage';
 import { inMemoryState } from '~/Popup/recoils/inMemory';
 import { getAllStorage, setStorage } from '~/Popup/utils/chromeStorage';
-import { openTab } from '~/Popup/utils/chromeTabs';
-import { openWindow } from '~/Popup/utils/chromeWindows';
 import { requestGetAllInMemory } from '~/Popup/utils/message';
 import type { LanguageType } from '~/types/chromeStorage';
 
@@ -21,8 +18,6 @@ export default function Init({ children }: InitType) {
 
   const [chromeStorage, setChromeStorage] = useRecoilState(chromeStorageState);
   const [inMemory, setInMemory] = useRecoilState(inMemoryState);
-
-  const navigate = useNavigate();
 
   const { changeLanguage, language } = useTranslation();
 
