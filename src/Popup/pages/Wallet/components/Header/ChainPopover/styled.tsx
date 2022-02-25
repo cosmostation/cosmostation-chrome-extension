@@ -12,14 +12,13 @@ export const Container = styled('div')(({ theme }) => ({
 
 export const HeaderContainer = styled('div')(({ theme }) => ({
   height: '4.2rem',
+  width: '100%',
+
+  padding: '0 1.6rem',
 
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-
-  padding: '0 1.6rem',
-
-  width: 'calc(100% - 3.2rem)',
 }));
 
 export const HeaderLeftContainer = styled('div')({
@@ -35,7 +34,6 @@ export const HeaderRightContainer = styled('div')({
 });
 
 export const BodyContainer = styled('div')(({ theme }) => ({
-  boxSizing: 'border-box',
   padding: '1.6rem',
 }));
 

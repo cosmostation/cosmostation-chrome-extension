@@ -5,10 +5,10 @@ import Input from '~/Popup/components/common/Input';
 import Search20Icon from '~/images/icons/Search20.svg';
 
 export const Container = styled('div')({
-  width: 'calc(100% - 2.4rem)',
-  height: 'calc(100% - 0.8rem)',
+  width: '100%',
+  height: '100%',
 
-  padding: '0.8rem 1.2rem 0',
+  padding: '0.8rem 1.6rem 0',
 
   overflow: 'auto',
 });
@@ -22,7 +22,7 @@ export const ListContainer = styled('div')({
 });
 
 export const ItemContainer = styled('div')({
-  width: 'calc(100% - 0.8rem)',
+  width: '100%',
   height: '4rem',
 
   padding: '0 0.4rem',

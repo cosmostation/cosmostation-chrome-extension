@@ -1,10 +1,10 @@
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
-  width: 'calc(100% - 2.4rem)',
+  width: '100%',
   height: '100%',
 
-  padding: '0 1.2rem',
+  padding: '0 1.6rem',
   position: 'relative',
 });
 
@@ -19,7 +19,7 @@ export const NewPasswordContainer = styled('div')({
 export const ButtonContainer = styled('div')({
   position: 'absolute',
 
-  width: 'inherit',
+  width: 'calc(100% - 3.2rem)',
 
   bottom: '1.6rem',
 });

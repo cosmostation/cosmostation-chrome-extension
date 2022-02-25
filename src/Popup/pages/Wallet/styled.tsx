@@ -1,10 +1,10 @@
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
-  width: 'calc(100% - 2.4rem)',
+  width: '100%',
   height: '100%',
 
-  margin: '0 1.2rem 0 1.2rem',
+  padding: '0 1.2rem 0 1.2rem',
 });
 
 export const HeaderContainer = styled('div')({

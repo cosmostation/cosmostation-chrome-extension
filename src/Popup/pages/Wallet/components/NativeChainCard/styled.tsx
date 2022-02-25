@@ -5,8 +5,8 @@ import IconButton from '~/Popup/components/common/IconButton';
 export const Container = styled('div')(({ theme }) => ({
   backgroundColor: theme.colors.base02,
 
-  width: 'calc(100% - 3.2rem)',
-  height: 'calc(16.5rem - 3.2rem)',
+  width: '100%',
+  height: '16.5rem',
 
   borderRadius: '0.8rem',
 

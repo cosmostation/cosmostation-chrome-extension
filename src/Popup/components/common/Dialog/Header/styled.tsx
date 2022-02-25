@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 export const Container = styled('div')({
   padding: '1.3rem 1.6rem 0 1.6rem',
 
-  width: 'calc(100% - 3.2rem)',
+  width: '100%',
 
   display: 'flex',
   justifyContent: 'space-between',

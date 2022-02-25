@@ -1,14 +1,14 @@
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
-  width: 'calc(100% - 1.6rem)',
+  width: '100%',
   height: '5.2rem',
 
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
 
-  margin: '0 0.4rem 0 1.2rem',
+  padding: '0 0.4rem 0 1.2rem',
 
   backgroundColor: 'transparent',
 });

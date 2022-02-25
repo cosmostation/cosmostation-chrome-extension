@@ -3,13 +3,14 @@ import { styled } from '@mui/material/styles';
 import Button from '~/Popup/components/common/Button';
 
 export const Container = styled('div')({
-  width: 'calc(100% - 2.4rem)',
-  height: 'calc(100% - 0.8rem)',
+  width: '100%',
+  height: '100%',
 
-  padding: '0.8rem 1.2rem 0',
+  padding: '0.8rem 1.6rem 0',
 });
 
 export const ListContainer = styled('div')({
+  // TODO: grid 로 변경
   '& > :nth-of-type(n + 2)': {
     marginTop: '0.8rem',
   },

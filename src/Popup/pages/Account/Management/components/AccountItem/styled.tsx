@@ -5,7 +5,7 @@ export const Container = styled('div')(({ theme }) => ({
 
   padding: '0 0.8rem 0 1.6rem',
 
-  width: 'calc(100% - 2.6rem)',
+  width: '100%',
   height: '4.8rem',
 
   display: 'flex',

@@ -38,7 +38,7 @@ export const ContentContainer = styled('div')({
   alignItems: 'center',
   justifyContent: 'space-between',
 
-  width: 'calc(100% - 0.8rem)',
+  width: '100%',
 
   paddingLeft: '0.8rem',
 });
