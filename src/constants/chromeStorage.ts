@@ -7,3 +7,11 @@ export const LANGUAGE_TYPE = {
   KO: 'ko',
   EN: 'en',
 } as const;
+
+export const CURRENCY_TYPE = {
+  USD: 'usd',
+  KRW: 'krw',
+  EUR: 'eur',
+  JPY: 'jpy',
+  CNY: 'cny',
+} as const;

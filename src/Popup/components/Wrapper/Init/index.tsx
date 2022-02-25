@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
+import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeStorageState } from '~/Popup/recoils/chromeStorage';
 import { inMemoryState } from '~/Popup/recoils/inMemory';
@@ -33,14 +34,31 @@ export default function Init({ children }: InitType) {
     });
 
     void (async function async() {
-      console.log(await getAllStorage());
-      setChromeStorage(await getAllStorage());
+      const originChromeStorage = await getAllStorage();
+
+      setChromeStorage(originChromeStorage);
 
       setInMemory(await requestGetAllInMemory());
 
-      if (language && chromeStorage.language !== language) {
-        await setStorage('language', language as LanguageType);
+      if (language && !originChromeStorage.currency) {
+        const newCurrency = language.startsWith('ko')
+          ? CURRENCY_TYPE.KRW
+          : language.startsWith('ja')
+          ? CURRENCY_TYPE.JPY
+          : language.startsWith('zh')
+          ? CURRENCY_TYPE.CNY
+          : CURRENCY_TYPE.USD;
+
+        await setStorage('currency', newCurrency);
       }
+
+      if (language && !originChromeStorage.language) {
+        const languageType = Object.values(LANGUAGE_TYPE) as string[];
+        const newLanguage = (languageType.includes(language) ? language : 'en') as LanguageType;
+        await changeLanguage(newLanguage);
+        await setStorage('language', newLanguage);
+      }
+
       // if (!chromeStorage.password) {
       //   console.log(chromeStorage);
       //   await openTab();

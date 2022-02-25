@@ -11,6 +11,7 @@ import { openTab } from '~/Popup/utils/chromeTabs';
 import { EthereumRPCError } from '~/Popup/utils/error';
 import { getAddress, personalSign, rpcResponse, sign } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
+import type { CurrencyType, LanguageType } from '~/types/chromeStorage';
 import type { ContentScriptToBackgroundEventMessage, InMemoryMessage, RequestMessage, ResponseMessage } from '~/types/message';
 
 import { chromeStorage } from './chromeStorage';
@@ -183,10 +184,14 @@ function background() {
         await setStorage('additionalChains', []);
         await setStorage('additionalEthereumNetworks', []);
         await setStorage('encryptedPassword', null);
-        await setStorage('theme', THEME_TYPE.LIGHT);
         await setStorage('selectedAccountId', '');
 
+        await setStorage('theme', THEME_TYPE.LIGHT);
+
         await setStorage('rootPath', PATH.DASHBOARD);
+
+        await setStorage('language', '' as LanguageType);
+        await setStorage('currency', '' as CurrencyType);
 
         await setStorage('allowedChainIds', []);
         await setStorage('allowedOrigins', []);

@@ -1,16 +1,21 @@
+import { CURRENCY_TYPE } from '~/constants/chromeStorage';
 import SelectButton from '~/Popup/components/SelectButton';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 
 import { Container, ListContainer } from './styled';
 
 export default function Entry() {
+  const { chromeStorage, setChromeStorage } = useChromeStorage();
+
+  const currencyTypes = Object.values(CURRENCY_TYPE);
   return (
     <Container>
       <ListContainer>
-        <SelectButton>USD</SelectButton>
-        <SelectButton>KRW</SelectButton>
-        <SelectButton>EUR</SelectButton>
-        <SelectButton>JPY</SelectButton>
-        <SelectButton>CNY</SelectButton>
+        {currencyTypes.map((currencyType) => (
+          <SelectButton key={currencyType} isActive={currencyType === chromeStorage.currency} onClick={() => setChromeStorage('currency', currencyType)}>
+            {currencyType.toUpperCase()}
+          </SelectButton>
+        ))}
       </ListContainer>
     </Container>
   );

@@ -2,7 +2,7 @@ import { atom } from 'recoil';
 
 import { PATH } from '~/constants/route';
 import { THEME_TYPE } from '~/constants/theme';
-import type { ChromeStorage } from '~/types/chromeStorage';
+import type { ChromeStorage, CurrencyType, LanguageType } from '~/types/chromeStorage';
 
 export const chromeStorageState = atom<ChromeStorage>({
   key: 'chromeStorageState',
@@ -16,7 +16,9 @@ export const chromeStorageState = atom<ChromeStorage>({
     encryptedPassword: null,
     windowId: null,
     selectedAccountId: '',
-    language: 'en',
+
+    language: '' as LanguageType,
+    currency: '' as CurrencyType,
 
     rootPath: PATH.DASHBOARD,
 
