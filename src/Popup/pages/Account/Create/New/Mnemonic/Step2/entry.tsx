@@ -38,7 +38,7 @@ const mnemonicBits = {
 type MnemonicBits = ValueOf<typeof mnemonicBits>;
 
 export default function Entry() {
-  const { navigate } = useNavigate();
+  const { navigateBack, navigate } = useNavigate();
   const [bits, setBits] = useState<MnemonicBits>(mnemonicBits[12]);
   const [isOpenHDPathDialog, setIsOpenHDPathDialog] = useState(false);
 
@@ -48,6 +48,12 @@ export default function Entry() {
 
   const mnemonic = useMemo(() => bip39.generateMnemonic(bits), [bits]);
   const splitedMnemonic = mnemonic.split(' ');
+
+  useEffect(() => {
+    if (!newAccount.accountName) {
+      navigateBack(-2);
+    }
+  }, [navigateBack, newAccount.accountName]);
 
   return (
     <Container>
@@ -98,7 +104,14 @@ export default function Entry() {
             HD path setting
           </IconButton>
         </BottomSettingButtonContainer>
-        <Button onClick={() => setNewAccount((prev) => ({ ...prev, mnemonic }))}>Next</Button>
+        <Button
+          onClick={() => {
+            setNewAccount((prev) => ({ ...prev, mnemonic }));
+            navigate('/account/create/new/mnemonic/step3');
+          }}
+        >
+          Next
+        </Button>
       </BottomContainer>
       <HDPathDialog
         open={isOpenHDPathDialog}

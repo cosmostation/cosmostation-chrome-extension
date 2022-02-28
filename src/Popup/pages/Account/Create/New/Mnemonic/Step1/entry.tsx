@@ -33,8 +33,8 @@ export default function Entry() {
 
   const submit = (data: Step1Form) => {
     setNewAccount((prev) => ({ ...prev, accountName: data.name }));
-    navigate('/account/create/new/mnemonic/step2');
     reset();
+    navigate('/account/create/new/mnemonic/step2');
   };
 
   return (
