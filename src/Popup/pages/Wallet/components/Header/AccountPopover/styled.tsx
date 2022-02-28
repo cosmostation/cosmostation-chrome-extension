@@ -40,7 +40,7 @@ export const BodyContainer = styled('div')(({ theme }) => ({
 export const StyledIconButton = styled(IconButton)(({ theme }) => ({
   marginRight: '-1.2rem',
 
-  '& svg': {
+  '& > svg > path': {
     fill: theme.colors.base05,
   },
 }));

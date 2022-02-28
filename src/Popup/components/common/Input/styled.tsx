@@ -42,6 +42,10 @@ export const StyledTextField = styled(OutlinedInput)<StyledTextFieldProps>(({ th
     '&[type=password]': {
       letterSpacing: '5px',
     },
+
+    '&[type=number]': {
+      colorScheme: theme.mode === 'dark' ? 'dark' : 'none',
+    },
   },
   '.MuiOutlinedInput-notchedOutline': {
     border: `1px solid ${theme.colors.base03}`,

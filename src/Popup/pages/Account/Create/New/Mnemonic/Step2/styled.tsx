@@ -1,7 +1,5 @@
 import { styled } from '@mui/material/styles';
 
-import Input from '~/Popup/components/common/Input';
-
 export const Container = styled('div')({
   width: '100%',
   height: '100%',
@@ -11,12 +9,33 @@ export const Container = styled('div')({
   position: 'relative',
 });
 
-export const BottomContainer = styled('div')({
-  position: 'absolute',
+export const MnemonicTitleContainer = styled('div')({
+  width: '100%',
+  height: '2.4rem',
 
-  width: 'calc(100% - 3.2rem)',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
 
-  bottom: '1.6rem',
+  marginTop: '2rem',
+});
+
+export const MnemonicTitleLeftContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+
+  color: theme.colors.text01,
+}));
+
+export const MnemonicTitleRightContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+
+  '& > :nth-of-type(n + 2)': {
+    marginLeft: '0.4rem',
+  },
 });
 
 export const MnemonicContainer = styled('div')(({ theme }) => ({
@@ -26,6 +45,8 @@ export const MnemonicContainer = styled('div')(({ theme }) => ({
 
   borderRadius: '0.8rem',
   backgroundColor: theme.colors.base02,
+
+  marginTop: '1.2rem',
 }));
 
 export const MnemonicWordContainer = styled('div')({
@@ -56,3 +77,29 @@ export const MnemonicWordTextContainer = styled('div')(({ theme }) => ({
 
   marginLeft: '0.4rem',
 }));
+
+export const CopyButtonContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+
+  width: '100%',
+
+  marginTop: '1.2rem',
+});
+
+export const BottomContainer = styled('div')({
+  position: 'absolute',
+
+  width: 'calc(100% - 3.2rem)',
+
+  bottom: '1.6rem',
+});
+
+export const BottomSettingButtonContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  marginBottom: '2.4rem',
+});

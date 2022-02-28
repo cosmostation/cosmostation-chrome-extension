@@ -25,7 +25,7 @@ import {
   TendermintChainListContainer,
 } from './styled';
 
-import SettingIcon from '~/images/icons/Setting.svg';
+import SettingIcon24 from '~/images/icons/Setting24.svg';
 
 type ChainPopoverProps = Omit<PopoverProps, 'children'>;
 
@@ -49,7 +49,7 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
           </HeaderLeftContainer>
           <HeaderRightContainer>
             <StyledIconButton onClick={() => navigate('/chain/management')}>
-              <SettingIcon />
+              <SettingIcon24 />
             </StyledIconButton>
           </HeaderRightContainer>
         </HeaderContainer>

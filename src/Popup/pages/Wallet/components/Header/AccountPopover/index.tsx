@@ -11,7 +11,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import AccountItemButton from './AccountItemButton';
 import { AccountListContainer, BodyContainer, Container, HeaderContainer, HeaderLeftContainer, HeaderRightContainer, StyledIconButton } from './styled';
 
-import SettingIcon from '~/images/icons/Setting.svg';
+import SettingIcon24 from '~/images/icons/Setting24.svg';
 
 type AccountPopoverProps = Omit<PopoverProps, 'children'>;
 
@@ -33,7 +33,7 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
           </HeaderLeftContainer>
           <HeaderRightContainer>
             <StyledIconButton onClick={() => navigate('/account/management')}>
-              <SettingIcon />
+              <SettingIcon24 />
             </StyledIconButton>
           </HeaderRightContainer>
         </HeaderContainer>
