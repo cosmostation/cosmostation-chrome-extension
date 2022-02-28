@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import * as bip39 from 'bip39';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { Icon, Typography } from '@mui/material';
+import { useRecoilState } from 'recoil';
+import { Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/IconButton';
@@ -53,7 +53,12 @@ export default function Entry() {
     if (!newAccount.accountName) {
       navigateBack(-2);
     }
-  }, [navigateBack, newAccount.accountName]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setNewAccount((prev) => ({ ...prev, mnemonic }));
+  }, [mnemonic, setNewAccount]);
 
   return (
     <Container>
@@ -106,7 +111,6 @@ export default function Entry() {
         </BottomSettingButtonContainer>
         <Button
           onClick={() => {
-            setNewAccount((prev) => ({ ...prev, mnemonic }));
             navigate('/account/create/new/mnemonic/step3');
           }}
         >

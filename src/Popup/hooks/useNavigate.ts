@@ -16,10 +16,11 @@ export function useNavigate() {
   };
 
   const navigateBack = (delta = -1) => {
-    if (window.history.length + delta < 3) {
-      navigate('/');
-    } else {
+    console.log(window.history.length + delta);
+    if (window.history.length + delta > 2) {
       baseNavigate(delta);
+    } else {
+      navigate('/');
     }
   };
 
