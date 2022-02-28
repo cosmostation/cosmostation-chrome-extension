@@ -1,6 +1,5 @@
-import Joi from 'joi';
-
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import Joi from '~/Popup/utils/joi';
 
 export type ChangePasswordForm = {
   password: string;

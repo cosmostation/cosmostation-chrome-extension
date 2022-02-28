@@ -15,6 +15,8 @@ import LoadingOverlay from '~/Popup/components/Loading/Overlay';
 import Wrapper from '~/Popup/components/Wrapper';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import AccountCreate from '~/Popup/pages/Account/Create';
+import AccountCreateImportMnemonic from '~/Popup/pages/Account/Create/Import/Mnemonic';
+import AccountCreateImportPrivateKey from '~/Popup/pages/Account/Create/Import/PrivateKey';
 import AccountCreateNewMnemonicStep1 from '~/Popup/pages/Account/Create/New/Mnemonic/Step1';
 import AccountCreateNewMnemonicStep2 from '~/Popup/pages/Account/Create/New/Mnemonic/Step2';
 import AccountCreateNewMnemonicStep3 from '~/Popup/pages/Account/Create/New/Mnemonic/Step3';
@@ -25,9 +27,9 @@ import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
 import Register from '~/Popup/pages/Register';
 import RegisterAccount from '~/Popup/pages/Register/Account';
-import RehisterAccountMnemonic from '~/Popup/pages/Register/Account/Mnemonic';
-import RehisterAccountNew from '~/Popup/pages/Register/Account/New';
-import RehisterAccountPrivateKey from '~/Popup/pages/Register/Account/PrivateKey';
+import RegisterAccountMnemonic from '~/Popup/pages/Register/Account/Mnemonic';
+import RegisterAccountNew from '~/Popup/pages/Register/Account/New';
+import RegisterAccountPrivateKey from '~/Popup/pages/Register/Account/PrivateKey';
 import RegisterPassword from '~/Popup/pages/Register/Password';
 import Restore from '~/Popup/pages/Restore';
 import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
@@ -74,13 +76,15 @@ function Popup() {
               <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP1} element={<AccountCreateNewMnemonicStep1 />} />
               <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP2} element={<AccountCreateNewMnemonicStep2 />} />
               <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP3} element={<AccountCreateNewMnemonicStep3 />} />
+              <Route path={PATH.ACCOUNT__CREATE__IMPORT__MNEMONIC} element={<AccountCreateImportMnemonic />} />
+              <Route path={PATH.ACCOUNT__CREATE__IMPORT__PRIVATE_KEY} element={<AccountCreateImportPrivateKey />} />
               <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
               <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
               <Route path={PATH.REGISTER} element={<Register />} />
               <Route path={PATH.REGISTER__ACCOUNT} element={<RegisterAccount />} />
-              <Route path={PATH.REGISTER__ACCOUNT__MNEMONIC} element={<RehisterAccountMnemonic />} />
-              <Route path={PATH.REGISTER__ACCOUNT__PRIVATE_KEY} element={<RehisterAccountPrivateKey />} />
-              <Route path={PATH.REGISTER__ACCOUNT__NEW} element={<RehisterAccountNew />} />
+              <Route path={PATH.REGISTER__ACCOUNT__MNEMONIC} element={<RegisterAccountMnemonic />} />
+              <Route path={PATH.REGISTER__ACCOUNT__PRIVATE_KEY} element={<RegisterAccountPrivateKey />} />
+              <Route path={PATH.REGISTER__ACCOUNT__NEW} element={<RegisterAccountNew />} />
               <Route path={PATH.REGISTER__PASSWORD} element={<RegisterPassword />} />
               <Route path={PATH.RESTORE} element={<Restore />} />
             </Routes>

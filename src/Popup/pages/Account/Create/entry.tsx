@@ -19,8 +19,8 @@ export default function Entry() {
     <Container>
       <ListContainer>
         <MenuButton onClick={() => navigate('/account/create/new/mnemonic/step1')}>Create a new account</MenuButton>
-        <MenuButton>import mnemonic</MenuButton>
-        <MenuButton>import private key</MenuButton>
+        <MenuButton onClick={() => navigate('/account/create/import/mnemonic')}>import mnemonic</MenuButton>
+        <MenuButton onClick={() => navigate('/account/create/import/private-key')}>import private key</MenuButton>
       </ListContainer>
     </Container>
   );

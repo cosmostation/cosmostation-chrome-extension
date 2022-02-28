@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import Joi from '~/Popup/utils/joi';
 
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 

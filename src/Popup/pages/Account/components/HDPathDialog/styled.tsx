@@ -56,6 +56,10 @@ export const InfoItemRightContainer = styled('div')(({ theme }) => ({
   },
 }));
 
+export const InfoItemRightAccentSpan = styled('span')(({ theme }) => ({
+  color: theme.accentColors.purple01,
+}));
+
 export const InputContainer = styled('div')({
   marginTop: '2.4rem',
   width: '100%',

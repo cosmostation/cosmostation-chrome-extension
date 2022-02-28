@@ -12,6 +12,8 @@ export const PATH = {
   ACCOUNT__CREATE__NEW__MNEMONIC__STEP1: '/account/create/new/mnemonic/step1',
   ACCOUNT__CREATE__NEW__MNEMONIC__STEP2: '/account/create/new/mnemonic/step2',
   ACCOUNT__CREATE__NEW__MNEMONIC__STEP3: '/account/create/new/mnemonic/step3',
+  ACCOUNT__CREATE__IMPORT__MNEMONIC: '/account/create/import/mnemonic',
+  ACCOUNT__CREATE__IMPORT__PRIVATE_KEY: '/account/create/import/private-key',
   RESTORE: '/restore',
   REGISTER: '/register',
   REGISTER__PASSWORD: '/register/password',

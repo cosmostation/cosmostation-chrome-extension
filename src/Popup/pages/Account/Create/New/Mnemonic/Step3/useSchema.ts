@@ -1,4 +1,6 @@
-import Joi from 'joi';
+import type { StringSchema } from 'joi';
+
+import Joi from '~/Popup/utils/joi';
 
 import type { CheckWord } from './entry';
 
@@ -9,7 +11,7 @@ type useSchemaProps = {
 };
 
 export function useSchema({ words }: useSchemaProps) {
-  const schema = words.reduce<Record<string, Joi.StringSchema>>((acc, cur) => {
+  const schema = words.reduce<Record<string, StringSchema>>((acc, cur) => {
     acc[`word${cur.index}`] = Joi.string().valid(cur.word);
     return acc;
   }, {});

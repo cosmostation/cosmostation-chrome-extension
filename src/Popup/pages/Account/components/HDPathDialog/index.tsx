@@ -13,6 +13,7 @@ import {
   InfoContainer,
   InfoItemContainer,
   InfoItemLeftContainer,
+  InfoItemRightAccentSpan,
   InfoItemRightContainer,
   InputContainer,
   StyledButton,
@@ -73,7 +74,10 @@ export default function HDPathDialog({ onClose, onSubmitHdPath, currentAddressIn
                   <Typography variant="h5">{info.name}</Typography>
                 </InfoItemLeftContainer>
                 <InfoItemRightContainer>
-                  <Typography variant="h5">{`${info.path}/${addressIndex || currentAddressIndex || '0'}`}</Typography>
+                  <Typography variant="h5">
+                    {`${info.path}/`}
+                    <InfoItemRightAccentSpan>{addressIndex || currentAddressIndex || '0'}</InfoItemRightAccentSpan>
+                  </Typography>
                 </InfoItemRightContainer>
               </InfoItemContainer>
             ))}

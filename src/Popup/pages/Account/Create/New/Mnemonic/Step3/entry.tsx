@@ -80,7 +80,7 @@ export default function Entry() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty, isValid },
+    formState: { errors, isDirty },
     reset,
   } = useForm<Step3Form>({
     resolver: joiResolver(step3Form),
@@ -134,13 +134,7 @@ export default function Entry() {
           ))}
         </CheckWordContainer>
         <BottomContainer>
-          <Button
-            type="submit"
-            disabled={!isDirty}
-            onClick={() => {
-              console.log(isValid);
-            }}
-          >
+          <Button type="submit" disabled={!isDirty}>
             Done
           </Button>
         </BottomContainer>

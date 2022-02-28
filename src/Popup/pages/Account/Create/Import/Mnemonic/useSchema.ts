@@ -1,13 +1,14 @@
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Joi from '~/Popup/utils/joi';
 
-export type Step1Form = {
+export type MnemonicForm = {
   name: string;
+  mnemonic: string;
 };
 
 export function useSchema() {
   const { t } = useTranslation();
-  const step1Form = Joi.object<Step1Form>({
+  const mnemonicForm = Joi.object<MnemonicForm>({
     name: Joi.string()
       .required()
       .min(1)
@@ -18,7 +19,15 @@ export function useSchema() {
         'string.min': t('schema.common.string.min'),
         'string.max': t('schema.common.string.max'),
       }),
+    mnemonic: Joi.string()
+      .required()
+      .mnemonic()
+      .messages({
+        'string.base': t('schema.common.string.base'),
+        'string.empty': t('schema.common.string.empty'),
+        mnemonic: t('schema.mnemonicForm.mnemonic'),
+      }),
   });
 
-  return { step1Form };
+  return { mnemonicForm };
 }

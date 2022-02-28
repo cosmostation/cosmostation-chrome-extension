@@ -8,9 +8,9 @@ type IconButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<H
   Icon: VFC<SVGProps<SVGSVGElement>>;
 };
 
-export default function IconButton({ children, Icon, ...remainder }: IconButtonProps) {
+export default function IconButton({ children, Icon, type, ...remainder }: IconButtonProps) {
   return (
-    <StyledButton {...remainder}>
+    <StyledButton {...remainder} type={type || 'button'}>
       <Icon />
       <Typography variant="h6">{children}</Typography>
     </StyledButton>
