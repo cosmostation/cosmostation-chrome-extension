@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
@@ -54,6 +54,16 @@ export default function Lock({ children }: LockProps) {
     await setInMemory('password', password);
     reset();
   };
+
+  useEffect(() => {
+    if (chromeStorage.accounts.length < 1) {
+      navigate('/');
+    }
+  }, [chromeStorage.accounts, navigate]);
+
+  if (chromeStorage.accounts.length < 1) {
+    return null;
+  }
 
   if (inMemory.password === null && chromeStorage.encryptedPassword) {
     return (

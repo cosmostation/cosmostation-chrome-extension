@@ -10,6 +10,7 @@ export const PATH = {
   ACCOUNT__MANAGEMENT: '/account/management',
   ACCOUNT__CREATE: '/account/create',
   ACCOUNT__INITIALIZE: '/account/initialize',
+  ACCOUNT__INITIALIZE__COMPLETE: '/account/initialize/complete',
   ACCOUNT__INITIALIZE__IMPORT: '/account/initialize/import',
   ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP1: '/account/initialize/new/mnemonic/step1',
   ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP2: '/account/initialize/new/mnemonic/step2',

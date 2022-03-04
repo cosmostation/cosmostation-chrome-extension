@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
@@ -21,8 +22,10 @@ import {
   StyledSearch20Icon,
 } from './styled';
 
-export default function Entry() {
+export default function SelectChain() {
   const [search, setSearch] = useState('');
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const { addAllowedChainId, removeAllowedChainId, chromeStorage } = useChromeStorage();
 
@@ -54,6 +57,8 @@ export default function Entry() {
                 onChange: async (_, checked) => {
                   if (checked) {
                     await addAllowedChainId(chain.id);
+                  } else if (allowedChainIds.length < 2) {
+                    enqueueSnackbar('1개 이상 선택하셔야 됩니다.', { variant: 'error' });
                   } else {
                     await removeAllowedChainId(chain.id);
                   }
@@ -81,6 +86,8 @@ export default function Entry() {
                 onChange: async (_, checked) => {
                   if (checked) {
                     await addAllowedChainId(chain.id);
+                  } else if (allowedChainIds.length < 2) {
+                    enqueueSnackbar('1개 이상 선택하셔야 됩니다.', { variant: 'error' });
                   } else {
                     await removeAllowedChainId(chain.id);
                   }

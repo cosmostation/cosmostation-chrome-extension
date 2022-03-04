@@ -67,10 +67,7 @@ export const ContentRightImageContainer = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   alignItems: 'center',
 
-  '& > svg': {
-    width: '1.6rem',
-    height: '1.6rem',
-
+  '& > svg > path': {
     fill: theme.colors.base06,
   },
 }));

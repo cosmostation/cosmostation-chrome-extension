@@ -16,23 +16,13 @@ export default function Routes({ children }: RoutesType) {
 
   useEffect(() => {
     void (async function async() {
-      if (!chromeStorage.encryptedPassword) {
-        console.log(chromeStorage);
+      if (chromeStorage.accounts.length < 1) {
         await openTab();
-        navigate('/register/password');
-      }
-
-      if (chromeStorage.encryptedPassword && chromeStorage.accounts.length < 1) {
-        await openTab();
-        navigate('/register/account');
       }
 
       setIsLoading(false);
     })();
-
-    console.log('routes useEffect');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [chromeStorage.accounts]);
 
   if (isLoading) {
     return null;

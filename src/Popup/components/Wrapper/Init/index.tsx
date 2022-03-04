@@ -6,6 +6,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeStorageState } from '~/Popup/recoils/chromeStorage';
 import { inMemoryState } from '~/Popup/recoils/inMemory';
 import { getAllStorage, setStorage } from '~/Popup/utils/chromeStorage';
+import { openTab } from '~/Popup/utils/chromeTabs';
 import { requestGetAllInMemory } from '~/Popup/utils/message';
 import type { LanguageType } from '~/types/chromeStorage';
 

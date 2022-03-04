@@ -21,11 +21,13 @@ import AccountCreateNewMnemonicStep1 from '~/Popup/pages/Account/Create/New/Mnem
 import AccountCreateNewMnemonicStep2 from '~/Popup/pages/Account/Create/New/Mnemonic/Step2';
 import AccountCreateNewMnemonicStep3 from '~/Popup/pages/Account/Create/New/Mnemonic/Step3';
 import AccountInitialize from '~/Popup/pages/Account/Initialize';
+import AccountInitializeComplete from '~/Popup/pages/Account/Initialize/Complete';
 import AccountInitializeImport from '~/Popup/pages/Account/Initialize/Import';
 import AccountInitializeNewMnemonicStep1 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step1';
 import AccountInitializeNewMnemonicStep2 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step2';
 import AccountInitializeNewMnemonicStep3 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step3';
 import AccountInitializeNewMnemonicStep4 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step4';
+import AccountInitializeNewMnemonicStep5 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step5';
 import AccountManagement from '~/Popup/pages/Account/Management';
 import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
@@ -85,11 +87,13 @@ function Popup() {
               <Route path={PATH.ACCOUNT__CREATE__IMPORT__MNEMONIC} element={<AccountCreateImportMnemonic />} />
               <Route path={PATH.ACCOUNT__CREATE__IMPORT__PRIVATE_KEY} element={<AccountCreateImportPrivateKey />} />
               <Route path={PATH.ACCOUNT__INITIALIZE} element={<AccountInitialize />} />
+              <Route path={PATH.ACCOUNT__INITIALIZE__COMPLETE} element={<AccountInitializeComplete />} />
               <Route path={PATH.ACCOUNT__INITIALIZE__IMPORT} element={<AccountInitializeImport />} />
               <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP1} element={<AccountInitializeNewMnemonicStep1 />} />
               <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP2} element={<AccountInitializeNewMnemonicStep2 />} />
               <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP3} element={<AccountInitializeNewMnemonicStep3 />} />
               <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP4} element={<AccountInitializeNewMnemonicStep4 />} />
+              <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP5} element={<AccountInitializeNewMnemonicStep5 />} />
               <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
               <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
               <Route path={PATH.REGISTER} element={<Register />} />
