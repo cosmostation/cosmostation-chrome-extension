@@ -2,17 +2,12 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { useRecoilValue } from 'recoil';
-import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
-import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { newAccountState } from '~/Popup/recoils/newAccount';
-import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import {
   BottomContainer,
@@ -25,7 +20,6 @@ import {
 } from './styled';
 import type { Step3Form } from './useSchema';
 import { useSchema } from './useSchema';
-import Description from '../components/Description';
 
 export type CheckWord = {
   index: number;
@@ -33,25 +27,20 @@ export type CheckWord = {
 };
 
 export default function Entry() {
-  const { navigateBack } = useNavigate();
+  const { navigateBack, navigate } = useNavigate();
 
   const newAccount = useRecoilValue(newAccountState);
 
-  const setLoadingOverlay = useLoadingOverlay();
-
   const { enqueueSnackbar } = useSnackbar();
 
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { inMemory } = useInMemory();
-
   useEffect(() => {
-    if (!newAccount.accountName || !newAccount.mnemonic || !inMemory.password) {
+    if (!newAccount.accountName || !newAccount.mnemonic) {
       navigateBack(-3);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { mnemonic, accountName, addressIndex } = newAccount;
+  const { mnemonic } = newAccount;
 
   const splitedMnemonic = mnemonic.split(' ');
 
@@ -89,30 +78,9 @@ export default function Entry() {
     shouldFocusError: true,
   });
 
-  const submit = async () => {
-    setLoadingOverlay(true);
-
-    const accountId = uuidv4();
-
-    await setChromeStorage('accounts', [
-      ...chromeStorage.accounts,
-      {
-        id: accountId,
-        type: 'MNEMONIC',
-        bip44: { addressIndex: `${addressIndex}` },
-        encryptedMnemonic: aesEncrypt(mnemonic, inMemory.password!),
-        encryptedPassword: aesEncrypt(inMemory.password!, mnemonic),
-        encryptedRestoreString: sha512(mnemonic),
-      },
-    ]);
-
-    await setChromeStorage('accountName', { ...chromeStorage.accountName, [accountId]: accountName });
-
-    setLoadingOverlay(false);
-
+  const submit = () => {
     reset();
-    enqueueSnackbar('success creating new account');
-    navigateBack(-3);
+    navigate('/account/initialize/new/mnemonic/step4');
   };
 
   const error = () => enqueueSnackbar('단어가 맞지 않습니다.', { variant: 'error' });
@@ -120,7 +88,6 @@ export default function Entry() {
   return (
     <form onSubmit={handleSubmit(submit, error)}>
       <Container>
-        <Description>Enter your secret phrase below to verify it is stored safely.</Description>
         <CheckWordContainer>
           {checkWords.map((checkWord) => (
             <CheckWordItemContainer key={checkWord.index}>
@@ -135,7 +102,7 @@ export default function Entry() {
         </CheckWordContainer>
         <BottomContainer>
           <Button type="submit" disabled={!isDirty}>
-            Done
+            Next
           </Button>
         </BottomContainer>
       </Container>

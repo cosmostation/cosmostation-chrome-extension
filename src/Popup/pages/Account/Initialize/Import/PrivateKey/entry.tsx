@@ -77,7 +77,7 @@ export default function Entry() {
 
     reset();
     enqueueSnackbar('success creating new account');
-    navigateBack(-1);
+    navigateBack();
   };
 
   return (

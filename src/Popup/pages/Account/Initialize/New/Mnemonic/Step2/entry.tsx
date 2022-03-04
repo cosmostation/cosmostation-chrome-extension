@@ -62,7 +62,6 @@ export default function Entry() {
 
   return (
     <Container>
-      <WarningDescription>This phrase is the only way to recover your account. Do not share with anyone.</WarningDescription>
       <MnemonicTitleContainer>
         <MnemonicTitleLeftContainer>
           <Typography variant="h4">Seed Phrase</Typography>
@@ -111,7 +110,7 @@ export default function Entry() {
         </BottomSettingButtonContainer>
         <Button
           onClick={() => {
-            navigate('/account/create/new/mnemonic/step3');
+            navigate('/account/initialize/new/mnemonic/step3');
           }}
         >
           Next

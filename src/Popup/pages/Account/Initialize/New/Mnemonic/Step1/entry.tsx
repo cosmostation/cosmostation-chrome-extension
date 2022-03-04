@@ -9,7 +9,6 @@ import { newAccountState } from '~/Popup/recoils/newAccount';
 import { BottomContainer, Container, StyledInput } from './styled';
 import type { Step1Form } from './useSchema';
 import { useSchema } from './useSchema';
-import Description from '../components/Description';
 
 export default function Entry() {
   const { navigate } = useNavigate();
@@ -34,13 +33,12 @@ export default function Entry() {
   const submit = (data: Step1Form) => {
     setNewAccount((prev) => ({ ...prev, accountName: data.name }));
     reset();
-    navigate('/account/create/new/mnemonic/step2');
+    navigate('/account/initialize/new/mnemonic/step2');
   };
 
   return (
     <form onSubmit={handleSubmit(submit)}>
       <Container>
-        <Description>Enter your secret phrase below to verify it is stored safely.</Description>
         <StyledInput placeholder="account name" inputProps={register('name')} error={!!errors.name} helperText={errors.name?.message} />
         <BottomContainer>
           <Button type="submit" disabled={!isDirty && !newAccount.accountName}>

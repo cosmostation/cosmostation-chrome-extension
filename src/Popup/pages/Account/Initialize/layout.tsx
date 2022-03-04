@@ -1,6 +1,5 @@
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-
-import BaseLayout from './components/BaseLayout';
+import BaseLayout from '~/Popup/pages/Account/Initialize/components/BaseLayout';
 
 type LayoutProps = {
   children: JSX.Element;

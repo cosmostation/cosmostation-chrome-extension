@@ -6,7 +6,7 @@ export const Container = styled('div')({
   width: '100%',
   height: '100%',
 
-  padding: '0.8rem 1.6rem 0',
+  padding: '0.8rem 2.4rem 0',
 
   position: 'relative',
 });
@@ -18,7 +18,7 @@ export const StyledInput = styled(Input)(({ theme }) => ({
 }));
 
 export const CheckWordContainer = styled('div')({
-  marginTop: '1.2rem',
+  marginTop: '3.2rem',
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
   columnGap: '0.6rem',
@@ -41,7 +41,7 @@ export const CheckWordItemNoContainer = styled('div')(({ theme }) => ({
 }));
 
 export const CheckWordItemInputContainer = styled('div')({
-  width: '12.8rem',
+  width: '15.6rem',
 
   marginLeft: '0.4rem',
 });
@@ -49,7 +49,7 @@ export const CheckWordItemInputContainer = styled('div')({
 export const BottomContainer = styled('div')({
   position: 'absolute',
 
-  width: 'calc(100% - 3.2rem)',
+  width: 'calc(100% - 4.8rem)',
 
-  bottom: '1.6rem',
+  bottom: '2.4rem',
 });

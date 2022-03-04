@@ -9,7 +9,7 @@ export const Container = styled('div')({
 
 export const LogoContainer = styled('div')(({ theme }) => ({
   paddingTop: '12rem',
-  paddingBottom: '13.5rem',
+  paddingBottom: '13rem',
 
   display: 'flex',
   flexDirection: 'column',

@@ -8,12 +8,5 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   const { navigateBack } = useNavigate();
 
-  return (
-    <BaseLayout
-      useHeader={{ onClick: () => navigateBack(), step: { total: 5, current: 3 } }}
-      useTitle={{ title: 'Verify secret phrase', description: 'Enter your secret phrase below to verify it is stored safely.' }}
-    >
-      {children}
-    </BaseLayout>
-  );
+  return <BaseLayout useHeader={{ onClick: () => navigateBack() }}>{children}</BaseLayout>;
 }

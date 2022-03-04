@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useResetRecoilState } from 'recoil';
 
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import IconButton from '~/Popup/pages/Account/Initialize/components/IconButton';
 import { newAccountState } from '~/Popup/recoils/newAccount';
 
-import IconButton from './components/IconButton';
 import { ButtonContainer, Container, LogoContainer, LogoImageContainer, LogoTextContainer } from './styled';
 
 import Cosmostation21Icon from '~/images/icons/Cosmostation21.svg';
@@ -31,8 +31,12 @@ export default function Entry() {
         </LogoTextContainer>
       </LogoContainer>
       <ButtonContainer>
-        <IconButton Icon={CreateAccount28Icon}>Create account</IconButton>
-        <IconButton Icon={Import28Icon}>Import account</IconButton>
+        <IconButton Icon={CreateAccount28Icon} onClick={() => navigate('/account/initialize/new/mnemonic/step1')}>
+          Create account
+        </IconButton>
+        <IconButton Icon={Import28Icon} onClick={() => navigate('/account/initialize/import')}>
+          Import account
+        </IconButton>
       </ButtonContainer>
     </Container>
   );

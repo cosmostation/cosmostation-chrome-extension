@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 
 import { ImageContainer, StyledButton, TextContainer } from './styled';
 
-type IconButtonProps = Omit<React.ComponentType<typeof StyledButton>, 'children'> & {
+type IconButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
   Icon?: SvgElement;
   children?: string;
 };
