@@ -1,4 +1,3 @@
-import type { SVGProps, VFC } from 'react';
 import { useLocation } from 'react-router-dom';
 import type { DrawerProps as BaseDrawerProps } from '@mui/material';
 import { Typography } from '@mui/material';
@@ -119,7 +118,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
 type ItemButtonProps = {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   children: string;
-  Icon: VFC<SVGProps<SVGSVGElement>>;
+  Icon: SvgElement;
 };
 
 function ItemButton({ onClick, children, Icon }: ItemButtonProps) {

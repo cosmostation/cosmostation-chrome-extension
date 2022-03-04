@@ -9,6 +9,7 @@ export const PATH = {
   CHAIN__MANAGEMENT__USE: '/chain/management/use',
   ACCOUNT__MANAGEMENT: '/account/management',
   ACCOUNT__CREATE: '/account/create',
+  ACCOUNT__INITIALIZE: '/account/initialize',
   ACCOUNT__CREATE__NEW__MNEMONIC__STEP1: '/account/create/new/mnemonic/step1',
   ACCOUNT__CREATE__NEW__MNEMONIC__STEP2: '/account/create/new/mnemonic/step2',
   ACCOUNT__CREATE__NEW__MNEMONIC__STEP3: '/account/create/new/mnemonic/step3',

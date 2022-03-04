@@ -7,8 +7,7 @@ export const Body = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   alignItems: 'center',
 
-  // TODO: 테스트 이후 삭제
-  backgroundColor: theme.colors.text01,
+  backgroundColor: theme.colors.base02,
 
   // snackbar
   '& > .SnackbarContainer-root': {

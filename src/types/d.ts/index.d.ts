@@ -21,3 +21,5 @@ declare module '*.svg' {
 }
 
 type ValueOf<T> = T[keyof T];
+
+type SvgElement = VFC<SVGProps<SVGSVGElement>>;

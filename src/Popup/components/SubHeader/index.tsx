@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 
 import { BackButton, Container, TextContainer } from './styled';
 
-import BackIcon from '~/images/icons/Back.svg';
+import LeftArrow16Icon from '~/images/icons/LeftArrow16.svg';
 
 type SubHeaderProps = {
   title: string;
@@ -13,7 +13,7 @@ export default function SubHeader({ title, onClick }: SubHeaderProps) {
   return (
     <Container>
       <BackButton onClick={onClick}>
-        <BackIcon />
+        <LeftArrow16Icon />
       </BackButton>
       <TextContainer>
         <Typography variant="h3">{title}</Typography>

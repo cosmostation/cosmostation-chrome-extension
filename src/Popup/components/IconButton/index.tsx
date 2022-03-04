@@ -1,11 +1,10 @@
-import type { SVGProps, VFC } from 'react';
 import { Typography } from '@mui/material';
 
 import { StyledButton } from './styled';
 
 type IconButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
   children?: string;
-  Icon: VFC<SVGProps<SVGSVGElement>>;
+  Icon: SvgElement;
 };
 
 export default function IconButton({ children, Icon, type, ...remainder }: IconButtonProps) {

@@ -20,6 +20,7 @@ import AccountCreateImportPrivateKey from '~/Popup/pages/Account/Create/Import/P
 import AccountCreateNewMnemonicStep1 from '~/Popup/pages/Account/Create/New/Mnemonic/Step1';
 import AccountCreateNewMnemonicStep2 from '~/Popup/pages/Account/Create/New/Mnemonic/Step2';
 import AccountCreateNewMnemonicStep3 from '~/Popup/pages/Account/Create/New/Mnemonic/Step3';
+import AccountInitialize from '~/Popup/pages/Account/Initialize';
 import AccountManagement from '~/Popup/pages/Account/Management';
 import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
@@ -78,6 +79,7 @@ function Popup() {
               <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP3} element={<AccountCreateNewMnemonicStep3 />} />
               <Route path={PATH.ACCOUNT__CREATE__IMPORT__MNEMONIC} element={<AccountCreateImportMnemonic />} />
               <Route path={PATH.ACCOUNT__CREATE__IMPORT__PRIVATE_KEY} element={<AccountCreateImportPrivateKey />} />
+              <Route path={PATH.ACCOUNT__INITIALIZE} element={<AccountInitialize />} />
               <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
               <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
               <Route path={PATH.REGISTER} element={<Register />} />

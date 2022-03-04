@@ -1,11 +1,10 @@
-import type { SVGProps, VFC } from 'react';
 import { Typography } from '@mui/material';
 
 import { ContentContainer, StyledButton } from './styled';
 
 type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   typoVarient?: 'h4' | 'h5';
-  Icon?: VFC<SVGProps<SVGSVGElement>>;
+  Icon?: SvgElement;
 };
 
 export default function Button({ children, Icon, typoVarient = 'h4', type, ...remainder }: ButtonProps) {
