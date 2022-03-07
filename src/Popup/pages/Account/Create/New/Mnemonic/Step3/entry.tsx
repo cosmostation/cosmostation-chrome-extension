@@ -11,7 +11,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { newAccountState } from '~/Popup/recoils/newAccount';
+import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import {
@@ -35,7 +35,7 @@ export type CheckWord = {
 export default function Entry() {
   const { navigateBack } = useNavigate();
 
-  const newAccount = useRecoilValue(newAccountState);
+  const newAccount = useRecoilValue(newMnemonicAccountState);
 
   const setLoadingOverlay = useLoadingOverlay();
 

@@ -4,7 +4,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { newAccountState } from '~/Popup/recoils/newAccount';
+import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 
 import { BottomContainer, Container, StyledInput } from './styled';
 import type { Step1Form } from './useSchema';
@@ -16,7 +16,7 @@ export default function Entry() {
 
   const { step1Form } = useSchema();
 
-  const [newAccount, setNewAccount] = useRecoilState(newAccountState);
+  const [newAccount, setNewAccount] = useRecoilState(newMnemonicAccountState);
 
   const {
     register,

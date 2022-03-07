@@ -1,14 +1,10 @@
 import { useForm } from 'react-hook-form';
-import { useSnackbar } from 'notistack';
-import { v4 as uuidv4 } from 'uuid';
+import { useRecoilState } from 'recoil';
 import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
-import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
+import { newPrivateKeyAccountState } from '~/Popup/recoils/newAccount';
 
 import { BottomContainer, Container, InputContainer, StyledInput48, StyledInput140 } from './styled';
 import type { PrivateKeyForm } from './useSchema';
@@ -20,14 +16,9 @@ export type CheckWord = {
 };
 
 export default function Entry() {
-  const { navigateBack } = useNavigate();
+  const { navigate } = useNavigate();
 
-  const setLoadingOverlay = useLoadingOverlay();
-
-  const { enqueueSnackbar } = useSnackbar();
-
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { inMemory } = useInMemory();
+  const [newAccount, setNewAccount] = useRecoilState(newPrivateKeyAccountState);
 
   const { privateKeyForm } = useSchema();
 
@@ -41,43 +32,20 @@ export default function Entry() {
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     shouldFocusError: true,
+    defaultValues: {
+      name: newAccount.accountName,
+      privateKey: newAccount.privateKey,
+    },
   });
 
-  const submit = async (data: PrivateKeyForm) => {
-    setLoadingOverlay(true);
-
+  const submit = (data: PrivateKeyForm) => {
     const privateKey = data.privateKey.startsWith('0x') ? data.privateKey.substring(2) : data.privateKey;
 
-    const privateKeyRestoreStrings = chromeStorage.accounts
-      .filter((account) => account.type === 'PRIVATE_KEY')
-      .map((account) => account.encryptedRestoreString);
+    setNewAccount((prev) => ({ ...prev, accountName: data.name, privateKey }));
 
-    if (privateKeyRestoreStrings.includes(sha512(privateKey))) {
-      enqueueSnackbar('이미 존재하는 개인키 입니다.', { variant: 'error' });
-      setLoadingOverlay(false);
-      return;
-    }
-
-    const accountId = uuidv4();
-
-    await setChromeStorage('accounts', [
-      ...chromeStorage.accounts,
-      {
-        id: accountId,
-        type: 'PRIVATE_KEY',
-        encryptedPrivateKey: aesEncrypt(privateKey, inMemory.password!),
-        encryptedPassword: aesEncrypt(inMemory.password!, privateKey),
-        encryptedRestoreString: sha512(privateKey),
-      },
-    ]);
-
-    await setChromeStorage('accountName', { ...chromeStorage.accountName, [accountId]: data.name });
-
-    setLoadingOverlay(false);
+    navigate('/account/initialize/import/step2');
 
     reset();
-    enqueueSnackbar('success creating new account');
-    navigateBack();
   };
 
   return (

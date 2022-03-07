@@ -5,7 +5,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import IconButton from '~/Popup/pages/Account/Initialize/components/IconButton';
-import { newAccountState } from '~/Popup/recoils/newAccount';
+import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 
 import { ButtonContainer, Container, LogoContainer, LogoImageContainer, LogoTextContainer } from './styled';
 
@@ -17,7 +17,7 @@ import Logo40Icon from '~/images/icons/Logo40.svg';
 export default function Entry() {
   const { navigate } = useNavigate();
 
-  const resetNewAccount = useResetRecoilState(newAccountState);
+  const resetNewAccount = useResetRecoilState(newMnemonicAccountState);
 
   const { setChromeStorage } = useChromeStorage();
   const { setInMemory } = useInMemory();

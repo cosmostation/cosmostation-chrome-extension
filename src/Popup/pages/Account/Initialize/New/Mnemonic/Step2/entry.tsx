@@ -9,7 +9,7 @@ import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/IconButton';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import HDPathDialog from '~/Popup/pages/Account/components/HDPathDialog';
-import { newAccountState } from '~/Popup/recoils/newAccount';
+import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 
 import MnemonicButton from './components/Button';
 import {
@@ -44,7 +44,7 @@ export default function Entry() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [newAccount, setNewAccount] = useRecoilState(newAccountState);
+  const [newAccount, setNewAccount] = useRecoilState(newMnemonicAccountState);
 
   const mnemonic = useMemo(() => bip39.generateMnemonic(bits), [bits]);
   const splitedMnemonic = mnemonic.split(' ');

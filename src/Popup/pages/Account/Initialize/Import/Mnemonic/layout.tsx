@@ -1,5 +1,5 @@
-import BaseLayout from '~/Popup/components/BaseLayout';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import BaseLayout from '~/Popup/pages/Account/Initialize/components/BaseLayout';
 
 type LayoutProps = {
   children: JSX.Element;
@@ -9,7 +9,7 @@ export default function Layout({ children }: LayoutProps) {
   const { navigateBack } = useNavigate();
 
   return (
-    <BaseLayout useHeader={{}} useSubHeader={{ title: 'Import mnemonic ', onClick: () => navigateBack() }}>
+    <BaseLayout useHeader={{ onClick: () => navigateBack(), step: { current: 1, total: 3 } }} useTitle={{ title: 'Import mnemonic' }}>
       {children}
     </BaseLayout>
   );

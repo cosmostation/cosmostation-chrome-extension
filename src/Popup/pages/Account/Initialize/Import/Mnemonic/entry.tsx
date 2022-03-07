@@ -1,17 +1,13 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useSnackbar } from 'notistack';
-import { v4 as uuidv4 } from 'uuid';
+import { useRecoilState } from 'recoil';
 import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/IconButton';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
-import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import HDPathDialog from '~/Popup/pages/Account/components/HDPathDialog';
-import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
+import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 
 import { BottomContainer, BottomSettingButtonContainer, Container, InputContainer, StyledInput48, StyledInput140 } from './styled';
 import type { MnemonicForm } from './useSchema';
@@ -25,18 +21,13 @@ export type CheckWord = {
 };
 
 export default function Entry() {
-  const { navigateBack } = useNavigate();
+  const { navigate } = useNavigate();
+
+  const [newAccount, setNewAccount] = useRecoilState(newMnemonicAccountState);
 
   const [addressIndex, setAddressIndex] = useState(0);
 
   const [isOpenHDPathDialog, setIsOpenHDPathDialog] = useState(false);
-
-  const setLoadingOverlay = useLoadingOverlay();
-
-  const { enqueueSnackbar } = useSnackbar();
-
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { inMemory } = useInMemory();
 
   const { mnemonicForm } = useSchema();
 
@@ -50,40 +41,16 @@ export default function Entry() {
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
     shouldFocusError: true,
+    defaultValues: {
+      name: newAccount.accountName,
+      mnemonic: newAccount.mnemonic,
+    },
   });
 
-  const submit = async (data: MnemonicForm) => {
-    setLoadingOverlay(true);
-
-    const mnemonicRestoreStrings = chromeStorage.accounts.filter((account) => account.type === 'MNEMONIC').map((account) => account.encryptedRestoreString);
-
-    if (mnemonicRestoreStrings.includes(sha512(data.mnemonic))) {
-      enqueueSnackbar('이미 존재하는 니모닉 입니다.', { variant: 'error' });
-      setLoadingOverlay(false);
-      return;
-    }
-
-    const accountId = uuidv4();
-
-    await setChromeStorage('accounts', [
-      ...chromeStorage.accounts,
-      {
-        id: accountId,
-        type: 'MNEMONIC',
-        bip44: { addressIndex: `${addressIndex}` },
-        encryptedMnemonic: aesEncrypt(data.mnemonic, inMemory.password!),
-        encryptedPassword: aesEncrypt(inMemory.password!, data.mnemonic),
-        encryptedRestoreString: sha512(data.mnemonic),
-      },
-    ]);
-
-    await setChromeStorage('accountName', { ...chromeStorage.accountName, [accountId]: data.name });
-
-    setLoadingOverlay(false);
-
+  const submit = (data: MnemonicForm) => {
+    setNewAccount((prev) => ({ ...prev, accountName: data.name, mnemonic: data.mnemonic }));
+    navigate('/account/initialize/import/step2');
     reset();
-    enqueueSnackbar('success creating new account');
-    navigateBack();
   };
 
   return (

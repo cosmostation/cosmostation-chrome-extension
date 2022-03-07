@@ -7,7 +7,7 @@ import { Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { newAccountState } from '~/Popup/recoils/newAccount';
+import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 
 import {
   BottomContainer,
@@ -29,7 +29,7 @@ export type CheckWord = {
 export default function Entry() {
   const { navigateBack, navigate } = useNavigate();
 
-  const newAccount = useRecoilValue(newAccountState);
+  const newAccount = useRecoilValue(newMnemonicAccountState);
 
   const { enqueueSnackbar } = useSnackbar();
 

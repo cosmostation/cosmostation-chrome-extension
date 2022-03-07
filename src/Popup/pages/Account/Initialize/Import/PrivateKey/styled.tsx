@@ -6,7 +6,7 @@ export const Container = styled('div')({
   width: '100%',
   height: '100%',
 
-  padding: '0.8rem 1.6rem 0',
+  padding: '2.8rem 2.4rem 0',
 
   position: 'relative',
 });
@@ -20,9 +20,9 @@ export const InputContainer = styled('div')({
 export const BottomContainer = styled('div')({
   position: 'absolute',
 
-  width: 'calc(100% - 3.2rem)',
+  width: 'calc(100% - 4.8rem)',
 
-  bottom: '1.6rem',
+  bottom: '2.4rem',
 });
 
 export const StyledInput48 = styled(Input)({

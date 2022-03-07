@@ -9,7 +9,10 @@ export default function Layout({ children }: LayoutProps) {
   const { navigateBack } = useNavigate();
 
   return (
-    <BaseLayout useHeader={{ onClick: () => navigateBack() }} useTitle={{ title: 'Import private key' }}>
+    <BaseLayout
+      useHeader={{ onClick: () => navigateBack(), step: { total: 3, current: 3 } }}
+      useTitle={{ title: 'Create Password', description: 'Enter a memorable password for your new account.' }}
+    >
       {children}
     </BaseLayout>
   );

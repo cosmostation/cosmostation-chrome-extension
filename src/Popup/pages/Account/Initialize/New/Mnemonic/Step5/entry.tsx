@@ -7,7 +7,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import Password from '~/Popup/pages/Account/Initialize/components/Password';
-import { newAccountState } from '~/Popup/recoils/newAccount';
+import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import { Container } from './styled';
@@ -17,7 +17,7 @@ export default function Entry() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const setLoading = useLoadingOverlay();
 
-  const newAccount = useRecoilValue(newAccountState);
+  const newAccount = useRecoilValue(newMnemonicAccountState);
 
   useEffect(() => {
     if (!newAccount.accountName || !newAccount.mnemonic) {

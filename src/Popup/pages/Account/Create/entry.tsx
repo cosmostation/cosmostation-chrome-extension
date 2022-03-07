@@ -3,14 +3,14 @@ import { useResetRecoilState } from 'recoil';
 
 import MenuButton from '~/Popup/components/MenuButton';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { newAccountState } from '~/Popup/recoils/newAccount';
+import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 
 import { Container, ListContainer } from './styled';
 
 export default function Entry() {
   const { navigate } = useNavigate();
 
-  const resetNewAccount = useResetRecoilState(newAccountState);
+  const resetNewAccount = useResetRecoilState(newMnemonicAccountState);
 
   useEffect(() => {
     resetNewAccount();
