@@ -15,7 +15,7 @@ type NumberProps = {
 
 // TODO: 통화 기호 prefix optional 하게 추가 하기
 
-export default function Number({ children, typoOfIntegers = 'h1n', typoOfDecimals = 'h2n', fixed, currency }: NumberProps) {
+export default function Number({ children, typoOfIntegers = 'h3n', typoOfDecimals = 'h4n', fixed, currency }: NumberProps) {
   const number = children ? (fixed !== undefined ? fix(children, fixed) : children) : '';
 
   const splitedNumber = number.split('.');

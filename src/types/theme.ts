@@ -29,6 +29,8 @@ export type NumberTypos = {
   h4n: Record<string, unknown>;
   h5n: Record<string, unknown>;
   h6n: Record<string, unknown>;
+  h7n: Record<string, unknown>;
+  h8n: Record<string, unknown>;
 };
 
 export type Colors = {

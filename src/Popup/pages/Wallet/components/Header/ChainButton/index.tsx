@@ -1,6 +1,7 @@
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
+import { upperCaseFirst } from '~/Popup/utils/common';
 
 import { ContentCenterTextContainer, ContentContainer, ContentLeftImageContainer, ContentRightImageContainer, StyledButton } from './styled';
 
@@ -14,8 +15,6 @@ type ChainButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<
 };
 
 export default function ChainButton({ children, imgSrc, isActive = false, ...remainder }: ChainButtonProps) {
-  const chainName = children ? `${children.substring(0, 1).toUpperCase()}${children.substring(1).toLowerCase()}` : '';
-
   return (
     <StyledButton {...remainder}>
       <ContentContainer>
@@ -23,7 +22,7 @@ export default function ChainButton({ children, imgSrc, isActive = false, ...rem
           <Image src={imgSrc} />
         </ContentLeftImageContainer>
         <ContentCenterTextContainer>
-          <Typography variant="h6">{chainName}</Typography>
+          <Typography variant="h6">{upperCaseFirst(children)}</Typography>
         </ContentCenterTextContainer>
         <ContentRightImageContainer>{isActive ? <UpArrow /> : <BottomArrow />}</ContentRightImageContainer>
       </ContentContainer>

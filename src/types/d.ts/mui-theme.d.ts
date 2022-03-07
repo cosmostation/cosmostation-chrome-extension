@@ -15,6 +15,8 @@ declare module '@mui/material/styles' {
     h4n: React.CSSProperties;
     h5n: React.CSSProperties;
     h6n: React.CSSProperties;
+    h7n: React.CSSProperties;
+    h8n: React.CSSProperties;
   }
 
   // allow configuration using `createTheme`
@@ -26,6 +28,8 @@ declare module '@mui/material/styles' {
     h4n: React.CSSProperties;
     h5n: React.CSSProperties;
     h6n: React.CSSProperties;
+    h7n: React.CSSProperties;
+    h8n: React.CSSProperties;
   }
 }
 
@@ -39,5 +43,7 @@ declare module '@mui/material/Typography' {
     h4n: true;
     h5n: true;
     h6n: true;
+    h7n: true;
+    h8n: true;
   }
 }

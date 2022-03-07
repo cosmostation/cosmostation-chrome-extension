@@ -33,6 +33,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'cosmos' },
+    coingeckoId: 'cosmos',
   },
   {
     id: 'd86e2b4e-e422-4b58-b687-f1de03cde152',
@@ -51,11 +52,12 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'iaa' },
+    coingeckoId: 'iris-network',
   },
   {
     id: '634e5e88-0a26-4ef5-92b5-dbf4cf040a8a',
     line: LINE_TYPE.COSMOS,
-    chainId: 'kava-8',
+    chainId: 'kava-9',
     chainName: 'kava',
     restURL: 'https://lcd-kava.cosmostation.io',
     imageURL: kavaImg,
@@ -69,6 +71,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'kava' },
+    coingeckoId: 'kava',
   },
   // {
   //   id: 'c3e5474b-8cf7-467e-b6a8-706d2b694e5a',
@@ -348,7 +351,8 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
     displayDenom: 'eth',
     decimals: 16,
     explorerURL: 'https://etherscan.io',
+    coingeckoId: 'ethereum',
   },
 ];
 
-export const CHAINS = [...COSMOS_CHAINS, ...ETHEREUM_CHAINS];
+export const CHAINS = [...ETHEREUM_CHAINS, ...COSMOS_CHAINS];

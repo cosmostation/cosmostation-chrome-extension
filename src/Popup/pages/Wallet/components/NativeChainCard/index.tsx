@@ -55,7 +55,7 @@ export default function NativeChainCard() {
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>
-        <Number typoOfIntegers="h3n" typoOfDecimals="h5n" fixed={2} currency={chromeStorage.currency}>
+        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={2} currency={chromeStorage.currency}>
           75.4000
         </Number>
       </ThirdLineContainer>

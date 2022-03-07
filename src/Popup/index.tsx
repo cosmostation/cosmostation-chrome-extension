@@ -37,12 +37,6 @@ import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
-import Register from '~/Popup/pages/Register';
-import RegisterAccount from '~/Popup/pages/Register/Account';
-import RegisterAccountMnemonic from '~/Popup/pages/Register/Account/Mnemonic';
-import RegisterAccountNew from '~/Popup/pages/Register/Account/New';
-import RegisterAccountPrivateKey from '~/Popup/pages/Register/Account/PrivateKey';
-import RegisterPassword from '~/Popup/pages/Register/Password';
 import Restore from '~/Popup/pages/Restore';
 import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
 import SettingChangeLanguage from '~/Popup/pages/Setting/ChangeLanguage';
@@ -94,10 +88,15 @@ function Popup() {
               ) : (
                 <>
                   <Route path={PATH.DASHBOARD} element={<Dashboard />} />
+
                   <Route path={PATH.WALLET} element={<Wallet />} />
+
+                  <Route path={PATH.RESTORE} element={<Restore />} />
+
                   <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />
                   <Route path={PATH.SETTING__CHANGE_LANGUAGE} element={<SettingChangeLanguage />} />
                   <Route path={PATH.SETTING__CHANGE_CURRENCY} element={<SettingChangeCurrency />} />
+
                   <Route path={PATH.ACCOUNT__MANAGEMENT} element={<AccountManagement />} />
                   <Route path={PATH.ACCOUNT__CREATE} element={<AccountCreate />} />
                   <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP1} element={<AccountCreateNewMnemonicStep1 />} />
@@ -108,13 +107,6 @@ function Popup() {
 
                   <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
                   <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
-                  <Route path={PATH.REGISTER} element={<Register />} />
-                  <Route path={PATH.REGISTER__ACCOUNT} element={<RegisterAccount />} />
-                  <Route path={PATH.REGISTER__ACCOUNT__MNEMONIC} element={<RegisterAccountMnemonic />} />
-                  <Route path={PATH.REGISTER__ACCOUNT__PRIVATE_KEY} element={<RegisterAccountPrivateKey />} />
-                  <Route path={PATH.REGISTER__ACCOUNT__NEW} element={<RegisterAccountNew />} />
-                  <Route path={PATH.REGISTER__PASSWORD} element={<RegisterPassword />} />
-                  <Route path={PATH.RESTORE} element={<Restore />} />
                 </>
               )}
               <Route path={PATH.HOME} element={<Home />} />

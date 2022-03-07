@@ -35,3 +35,7 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
 
   return null;
 }
+
+export function upperCaseFirst(text?: string) {
+  return text ? `${text.substring(0, 1).toUpperCase()}${text.substring(1).toLowerCase()}` : '';
+}

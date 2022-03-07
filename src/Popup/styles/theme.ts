@@ -48,17 +48,19 @@ const h5Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.3rem', 
 const h6Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.5rem', letterSpacing: '-0.02em' };
 const h7Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.2rem', letterSpacing: '-0.02em' };
 
-const h1n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.8rem', lineHeight: '2.6rem', letterSpacing: 'normal' };
-const h2n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '2.2rem', letterSpacing: 'normal' };
-const h3n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.9rem', letterSpacing: 'normal' };
-const h4n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
-const h5n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
-const h6n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.5rem', letterSpacing: 'normal' };
+const h1n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '2.8rem', lineHeight: '4.1rem', letterSpacing: 'normal' };
+const h2n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3.5rem', letterSpacing: 'normal' };
+const h3n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.8rem', lineHeight: '2.6rem', letterSpacing: 'normal' };
+const h4n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '2.2rem', letterSpacing: 'normal' };
+const h5n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.9rem', letterSpacing: 'normal' };
+const h6n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.8rem', letterSpacing: 'normal' };
+const h7n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
+const h8n = { fontFamily: 'Heebo500', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.5rem', letterSpacing: 'normal' };
 
 const hEn = { h1: h1En, h2: h2En, h3: h3En, h4: h4En, h5: h5En, h6: h6En, h7: h7En };
 const hKo = { h1: h1Ko, h2: h2Ko, h3: h3Ko, h4: h4Ko, h5: h5Ko, h6: h6Ko, h7: h7Ko };
 
-const hn = { h1n, h2n, h3n, h4n, h5n, h6n };
+const hn = { h1n, h2n, h3n, h4n, h5n, h6n, h7n, h8n };
 
 export const darkEnTheme: ThemeStyle = {
   mode: 'dark',

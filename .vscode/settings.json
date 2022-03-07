@@ -41,17 +41,20 @@
   },
   "files.watcherExclude": {
     "**/.git/objects/**": true,
-    "**/node_modules/**": true
+    "**/node_modules/**": true,
+    "**/dist/**": true
   },
   "files.exclude": {
     "**/.git": true,
     "**/.DS_Store": true,
     "**/node_modules": true,
-    "**/yarn.lock": true
+    "**/yarn.lock": true,
+    "**/dist": true
   },
   "search.exclude": {
     "**/.git": true,
-    "**/node_modules": true
+    "**/node_modules": true,
+    "**/dist": true
   },
   "explorer.sortOrder": "filesFirst",
   "explorer.sortOrderLexicographicOptions": "lower"

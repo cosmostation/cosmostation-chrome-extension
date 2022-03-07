@@ -20,13 +20,14 @@ export type CosmosChain = {
   line: typeof LINE_TYPE.COSMOS;
   chainId: string;
   chainName: string;
+  baseDenom: string;
   displayDenom: string;
   restURL: string;
-  baseDenom: string;
   decimals: number;
   bech32Prefix: {
     address: string;
   };
+  coingeckoId?: string;
 } & CommonChain;
 
 export type EthereumChain = {
@@ -45,6 +46,7 @@ export type EthereumNetwork = {
   rpcURL: string;
   imageURL?: string;
   explorerURL?: string;
+  coingeckoId?: string;
 };
 
 export type EthereumToken = {

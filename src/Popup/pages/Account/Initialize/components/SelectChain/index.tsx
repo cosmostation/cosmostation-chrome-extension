@@ -7,6 +7,7 @@ import Divider from '~/Popup/components/common/Divider';
 import Image from '~/Popup/components/common/Image';
 import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { upperCaseFirst } from '~/Popup/utils/common';
 
 import {
   ChainContainer,
@@ -110,8 +111,6 @@ type ItemProps = {
 };
 
 function Item({ children, imageProps, switchProps }: ItemProps) {
-  const chainName = children ? `${children.substring(0, 1).toUpperCase()}${children.substring(1).toLowerCase()}` : '';
-
   return (
     <ItemContainer>
       <ItemLeftContainer>
@@ -119,7 +118,7 @@ function Item({ children, imageProps, switchProps }: ItemProps) {
           <Image {...imageProps} />
         </ItemLeftImageContainer>
         <ItemLeftTextContainer>
-          <Typography variant="h5">{chainName}</Typography>
+          <Typography variant="h5">{upperCaseFirst(children)}</Typography>
         </ItemLeftTextContainer>
       </ItemLeftContainer>
       <ItemRightContainer>
