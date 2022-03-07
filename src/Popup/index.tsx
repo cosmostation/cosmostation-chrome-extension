@@ -73,36 +73,45 @@ function Popup() {
             iconVariant={{ success: <Info16Icon />, error: <Info16Icon /> }}
           >
             <Routes>
+              {chromeStorage.accounts.length === 0 ? (
+                <>
+                  <Route path={PATH.ACCOUNT__INITIALIZE} element={<AccountInitialize />} />
+                  <Route path={PATH.ACCOUNT__INITIALIZE__IMPORT} element={<AccountInitializeImport />} />
+                  <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP1} element={<AccountInitializeNewMnemonicStep1 />} />
+                  <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP2} element={<AccountInitializeNewMnemonicStep2 />} />
+                  <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP3} element={<AccountInitializeNewMnemonicStep3 />} />
+                  <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP4} element={<AccountInitializeNewMnemonicStep4 />} />
+                  <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP5} element={<AccountInitializeNewMnemonicStep5 />} />
+                </>
+              ) : (
+                <>
+                  <Route path={PATH.DASHBOARD} element={<Dashboard />} />
+                  <Route path={PATH.WALLET} element={<Wallet />} />
+                  <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />
+                  <Route path={PATH.SETTING__CHANGE_LANGUAGE} element={<SettingChangeLanguage />} />
+                  <Route path={PATH.SETTING__CHANGE_CURRENCY} element={<SettingChangeCurrency />} />
+                  <Route path={PATH.ACCOUNT__MANAGEMENT} element={<AccountManagement />} />
+                  <Route path={PATH.ACCOUNT__CREATE} element={<AccountCreate />} />
+                  <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP1} element={<AccountCreateNewMnemonicStep1 />} />
+                  <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP2} element={<AccountCreateNewMnemonicStep2 />} />
+                  <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP3} element={<AccountCreateNewMnemonicStep3 />} />
+                  <Route path={PATH.ACCOUNT__CREATE__IMPORT__MNEMONIC} element={<AccountCreateImportMnemonic />} />
+                  <Route path={PATH.ACCOUNT__CREATE__IMPORT__PRIVATE_KEY} element={<AccountCreateImportPrivateKey />} />
+
+                  <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
+                  <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
+                  <Route path={PATH.REGISTER} element={<Register />} />
+                  <Route path={PATH.REGISTER__ACCOUNT} element={<RegisterAccount />} />
+                  <Route path={PATH.REGISTER__ACCOUNT__MNEMONIC} element={<RegisterAccountMnemonic />} />
+                  <Route path={PATH.REGISTER__ACCOUNT__PRIVATE_KEY} element={<RegisterAccountPrivateKey />} />
+                  <Route path={PATH.REGISTER__ACCOUNT__NEW} element={<RegisterAccountNew />} />
+                  <Route path={PATH.REGISTER__PASSWORD} element={<RegisterPassword />} />
+                  <Route path={PATH.RESTORE} element={<Restore />} />
+                </>
+              )}
               <Route path={PATH.HOME} element={<Home />} />
-              <Route path={PATH.DASHBOARD} element={<Dashboard />} />
-              <Route path={PATH.WALLET} element={<Wallet />} />
-              <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />
-              <Route path={PATH.SETTING__CHANGE_LANGUAGE} element={<SettingChangeLanguage />} />
-              <Route path={PATH.SETTING__CHANGE_CURRENCY} element={<SettingChangeCurrency />} />
-              <Route path={PATH.ACCOUNT__MANAGEMENT} element={<AccountManagement />} />
-              <Route path={PATH.ACCOUNT__CREATE} element={<AccountCreate />} />
-              <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP1} element={<AccountCreateNewMnemonicStep1 />} />
-              <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP2} element={<AccountCreateNewMnemonicStep2 />} />
-              <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP3} element={<AccountCreateNewMnemonicStep3 />} />
-              <Route path={PATH.ACCOUNT__CREATE__IMPORT__MNEMONIC} element={<AccountCreateImportMnemonic />} />
-              <Route path={PATH.ACCOUNT__CREATE__IMPORT__PRIVATE_KEY} element={<AccountCreateImportPrivateKey />} />
-              <Route path={PATH.ACCOUNT__INITIALIZE} element={<AccountInitialize />} />
               <Route path={PATH.ACCOUNT__INITIALIZE__COMPLETE} element={<AccountInitializeComplete />} />
-              <Route path={PATH.ACCOUNT__INITIALIZE__IMPORT} element={<AccountInitializeImport />} />
-              <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP1} element={<AccountInitializeNewMnemonicStep1 />} />
-              <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP2} element={<AccountInitializeNewMnemonicStep2 />} />
-              <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP3} element={<AccountInitializeNewMnemonicStep3 />} />
-              <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP4} element={<AccountInitializeNewMnemonicStep4 />} />
-              <Route path={PATH.ACCOUNT__INITIALIZE__NEW__MNEMONIC__STEP5} element={<AccountInitializeNewMnemonicStep5 />} />
-              <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
-              <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
-              <Route path={PATH.REGISTER} element={<Register />} />
-              <Route path={PATH.REGISTER__ACCOUNT} element={<RegisterAccount />} />
-              <Route path={PATH.REGISTER__ACCOUNT__MNEMONIC} element={<RegisterAccountMnemonic />} />
-              <Route path={PATH.REGISTER__ACCOUNT__PRIVATE_KEY} element={<RegisterAccountPrivateKey />} />
-              <Route path={PATH.REGISTER__ACCOUNT__NEW} element={<RegisterAccountNew />} />
-              <Route path={PATH.REGISTER__PASSWORD} element={<RegisterPassword />} />
-              <Route path={PATH.RESTORE} element={<Restore />} />
+              <Route path="*" element={<Home />} />
             </Routes>
             <LoadingOverlay />
           </SnackbarProvider>

@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { useResetRecoilState } from 'recoil';
 
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import IconButton from '~/Popup/pages/Account/Initialize/components/IconButton';
 import { newAccountState } from '~/Popup/recoils/newAccount';
@@ -17,9 +19,30 @@ export default function Entry() {
 
   const resetNewAccount = useResetRecoilState(newAccountState);
 
+  const { setChromeStorage } = useChromeStorage();
+  const { setInMemory } = useInMemory();
+
   useEffect(() => {
     resetNewAccount();
-  }, [resetNewAccount]);
+
+    void setChromeStorage('queues', []);
+    void setChromeStorage('windowId', null);
+    void setChromeStorage('accounts', []);
+    void setChromeStorage('accountName', {});
+    void setChromeStorage('additionalChains', []);
+    void setChromeStorage('additionalEthereumNetworks', []);
+    void setChromeStorage('encryptedPassword', null);
+    void setChromeStorage('selectedAccountId', '');
+
+    void setChromeStorage('allowedChainIds', ['62a8e13a-3107-40ef-ade4-58de45aa6c1f', '33c328b1-2d5f-43f1-ac88-25be1a5abf6c']);
+    void setChromeStorage('allowedOrigins', []);
+    void setChromeStorage('selectedChainId', '');
+    void setChromeStorage('selectedEthereumNetworkId', '');
+    void setChromeStorage('encryptedPassword', null);
+
+    void setInMemory('password', null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <Container>
       <LogoContainer>
