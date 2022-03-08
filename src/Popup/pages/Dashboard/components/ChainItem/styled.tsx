@@ -2,8 +2,8 @@ import { styled } from '@mui/material/styles';
 
 export const StyledButton = styled('button')(({ theme }) => ({
   backgroundColor: theme.colors.base02,
+  border: `0.1rem solid ${theme.colors.base02}`,
 
-  border: 0,
   padding: '1.2rem',
 
   display: 'flex',
@@ -11,6 +11,8 @@ export const StyledButton = styled('button')(({ theme }) => ({
   alignItems: 'center',
 
   borderRadius: '0.8rem',
+
+  cursor: 'pointer',
 
   '&:hover': {
     border: `0.1rem solid ${theme.colors.base04}`,

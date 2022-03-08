@@ -2,10 +2,10 @@ import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
-import { useCoinGeckoPrice } from '~/Popup/hooks/SWR/useCoinGeckoPrice';
+import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
-import { times } from '~/Popup/utils/big';
+import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { upperCaseFirst } from '~/Popup/utils/common';
 import type { Chain } from '~/types/chain';
 
@@ -29,11 +29,12 @@ type ChainItemProps = {
   displayDenom: string;
   coinGeckoId?: string;
   imageURL?: string;
+  onClick?: () => void;
 };
 
-export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, decimals, displayDenom }: ChainItemProps) {
+export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, decimals, displayDenom, onClick }: ChainItemProps) {
   const { chromeStorage } = useChromeStorage();
-  const { data } = useCoinGeckoPrice();
+  const { data } = useCoinGeckoPriceSWR();
 
   const price = (coinGeckoId && data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
 
@@ -42,7 +43,7 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
   const upperDisplayDenom = displayDenom.toUpperCase();
 
   return (
-    <StyledButton>
+    <StyledButton onClick={onClick}>
       <LeftContainer>
         <LeftImageContainer>
           <Image src={imageURL} />
@@ -53,7 +54,7 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
           </LeftTextChainContainer>
           <LeftTextChainAmountContainer>
             <Number typoOfIntegers="h6n" typoOfDecimals="h8n" fixed={decimals}>
-              {amount}
+              {toDisplayDenomAmount(amount, decimals)}
             </Number>{' '}
             <Typography variant="h6n">{upperDisplayDenom}</Typography>
           </LeftTextChainAmountContainer>

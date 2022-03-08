@@ -6,13 +6,9 @@ import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllo
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { get } from '~/Popup/utils/axios';
 import type { CosmosChain } from '~/types/chain';
-import type { SimplePrice } from '~/types/payload/coingecko';
+import type { SimplePrice } from '~/types/coingecko';
 
-type useCoinGeckoPriceProps = {
-  suspense?: boolean;
-};
-
-export function useCoinGeckoPrice(props?: useCoinGeckoPriceProps) {
+export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const { currentAllowedChains } = useCurrentAllowedChains();
   const { currentNetwork } = useCurrentNetwork();
 
@@ -33,7 +29,7 @@ export function useCoinGeckoPrice(props?: useCoinGeckoPriceProps) {
     errorRetryCount: 5,
     errorRetryInterval: 3000,
     revalidateOnFocus: false,
-    suspense: props?.suspense,
+    suspense,
   });
 
   return { data, error, mutate };

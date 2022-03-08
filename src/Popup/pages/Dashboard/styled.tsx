@@ -2,6 +2,9 @@ import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
   padding: '0 1.2rem',
+
+  height: '100%',
+  overflow: 'hidden',
 });
 
 export const TotalValueTextContainer = styled('div')(({ theme }) => ({
@@ -47,8 +50,16 @@ export const CountRightContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-export const ChainList = styled('div')(({ theme }) => ({
-  paddingTop: '0.8rem',
+type ChainListProps = {
+  'data-height': string;
+};
+
+export const ChainList = styled('div')<ChainListProps>(({ ...props }) => ({
+  padding: '0.8rem 0',
+
+  overflow: 'auto',
+
+  maxHeight: props['data-height'],
 
   display: 'grid',
   gridTemplateColumns: '1fr',

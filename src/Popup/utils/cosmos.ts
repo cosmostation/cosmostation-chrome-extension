@@ -16,7 +16,7 @@ export function cosmosURL(chain: CosmosChain) {
     getBalance: (address: string) => `${restURL}/bank/balances/${address}`,
     getDelegations: (address: string) => `${restURL}/staking/delegators/${address}/delegations`,
     getRewards: (address: string) => `${restURL}/distribution/delegators/${address}/rewards`,
-    getUnbondingDelegations: (address: string) => `${restURL}/staking/delegators/${address}/unbonding_delegations`,
+    getUndelegations: (address: string) => `${restURL}/staking/delegators/${address}/unbonding_delegations`,
     getAccount: (address: string) => `${restURL}/auth/accounts/${address}`,
     getWithdrawAddress: (address: string) => `${restURL}/distribution/delegators/${address}/withdraw_address`,
   };

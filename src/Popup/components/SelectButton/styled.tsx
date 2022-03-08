@@ -32,7 +32,7 @@ export const RightContainer = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   alignItems: 'center',
 
-  '& > svg': {
+  '& > svg > path': {
     fill: theme.colors.base05,
   },
 }));

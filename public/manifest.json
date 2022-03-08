@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
 
-  "name": "Chrome Extension TypeScript Starter",
-  "description": "Chrome Extension, TypeScript, Visual Studio Code",
+  "name": "Cosmostation",
+  "description": "tendermint, ethereum",
   "version": "1.0",
 
   "options_ui": {

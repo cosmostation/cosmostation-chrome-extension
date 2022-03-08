@@ -3,10 +3,21 @@ import type { CosmosChain } from '~/types/chain';
 
 type CosmosChainItemProps = {
   chain: CosmosChain;
+  onClick?: () => void;
 };
 
-export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
+export default function CosmosChainItem({ chain, onClick }: CosmosChainItemProps) {
   const { chainName, decimals, displayDenom, coingeckoId, imageURL } = chain;
 
-  return <ChainItem chainName={chainName} amount="1" decimals={decimals} displayDenom={displayDenom} coinGeckoId={coingeckoId} imageURL={imageURL} />;
+  return (
+    <ChainItem
+      onClick={onClick}
+      chainName={chainName}
+      amount="1"
+      decimals={decimals}
+      displayDenom={displayDenom}
+      coinGeckoId={coingeckoId}
+      imageURL={imageURL}
+    />
+  );
 }
