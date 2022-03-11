@@ -1,4 +1,4 @@
-@rpcURL=http://61.74.179.193:51001
+@rpcURL=https://api.mycryptoapi.com/eth
 
 ### eth_accounts
 
@@ -12,7 +12,7 @@ content-type: application/json
     "id": 1
 }
 
-## eth_getBalance
+### eth_getBalance
 POST {{rpcURL}}
 content-type: application/json
 

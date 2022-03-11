@@ -18,7 +18,7 @@ export default function CosmosChainItem({ chain, onClick }: CosmosChainItemProps
   const { chromeStorage } = useChromeStorage();
   const setDashboard = useSetRecoilState(dashboardState);
   const { data } = useCoinGeckoPriceSWR();
-  const { totalAmount, isLoading } = useAmountSWR(chain, true);
+  const { totalAmount } = useAmountSWR(chain, true);
   const { chainName, decimals, displayDenom, coingeckoId, imageURL } = chain;
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function CosmosChainItem({ chain, onClick }: CosmosChainItemProps
       ...prev,
       [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coingeckoId && data?.[coingeckoId]?.[chromeStorage.currency]) || 0) || '0',
     }));
-  }, [chain.id, chromeStorage.currency, coingeckoId, data, decimals, isLoading, setDashboard, totalAmount]);
+  }, [chain.id, chromeStorage.currency, coingeckoId, data, decimals, setDashboard, totalAmount]);
 
   return (
     <ChainItem

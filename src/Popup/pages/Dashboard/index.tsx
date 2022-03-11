@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import Lock from '~/Popup/components/Lock';
 
 import Entry from './entry';

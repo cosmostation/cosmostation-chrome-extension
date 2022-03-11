@@ -20,7 +20,9 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
   const { setCurrentAccount } = useCurrent();
   const { navigate } = useNavigate();
 
-  const { data } = useAccounts();
+  const { data } = useAccounts(true);
+
+  const { selectedAccountId, selectedChainId } = chromeStorage;
 
   const { accountName } = chromeStorage;
 
@@ -43,8 +45,8 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
             {data?.map((account) => (
               <AccountItemButton
                 key={account.id}
-                description={account.address}
-                isActive={account.isActive}
+                description={account.address[selectedChainId] || ''}
+                isActive={account.id === selectedAccountId}
                 onClick={async () => {
                   await setCurrentAccount(account.id);
                   onClose?.({}, 'backdropClick');

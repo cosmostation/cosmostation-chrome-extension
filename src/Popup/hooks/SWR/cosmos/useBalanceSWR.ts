@@ -1,12 +1,18 @@
 import type { AxiosError } from 'axios';
 import useSWR from 'swr';
 
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { BalancePayload } from '~/types/cosmos/balance';
 
-export function useBalanceSWR(address: string, chain: CosmosChain, suspense?: boolean) {
+export function useBalanceSWR(chain: CosmosChain, suspense?: boolean) {
+  const accounts = useAccounts(suspense);
+  const { chromeStorage } = useChromeStorage();
+
+  const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
   const { getBalance } = cosmosURL(chain);
 
   const requestURL = getBalance(address);
@@ -18,6 +24,7 @@ export function useBalanceSWR(address: string, chain: CosmosChain, suspense?: bo
     errorRetryCount: 5,
     errorRetryInterval: 3000,
     suspense,
+    isPaused: () => !address,
   });
 
   const returnData = data ? { balance: data.result ? data.result : data.balances, height: data.height } : undefined;

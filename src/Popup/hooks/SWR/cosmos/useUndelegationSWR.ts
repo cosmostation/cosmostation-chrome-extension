@@ -2,12 +2,19 @@ import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import useSWR from 'swr';
 
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { Unbonding, UnbondingPayload } from '~/types/cosmos/undelegation';
 
-export function useUndelegationSWR(address: string, chain: CosmosChain, suspense?: boolean) {
+export function useUndelegationSWR(chain: CosmosChain, suspense?: boolean) {
+  const accounts = useAccounts(suspense);
+  const { chromeStorage } = useChromeStorage();
+
+  const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
+
   const { getUndelegations } = cosmosURL(chain);
 
   const requestURL = getUndelegations(address);
@@ -19,6 +26,8 @@ export function useUndelegationSWR(address: string, chain: CosmosChain, suspense
     errorRetryCount: 5,
     errorRetryInterval: 3000,
     suspense,
+    isPaused: () => !address,
+    onError: () => undefined,
   });
 
   const returnData: Unbonding[][] | undefined = useMemo(() => {

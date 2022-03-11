@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useRef, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { useRecoilValue } from 'recoil';
 import { Typography } from '@mui/material';
 
@@ -63,11 +64,17 @@ export default function Entry() {
       <ChainList data-height={listHeight}>
         {chainList.map((item) =>
           item.chain.line === 'COSMOS' ? (
-            <Suspense fallback={<CosmosChainItemSkeleton key={item.chain.id} chain={item.chain} />}>
-              <CosmosChainItem key={item.chain.id} chain={item.chain} />
-            </Suspense>
+            <ErrorBoundary key={item.chain.id} fallback={<CosmosChainItemSkeleton chain={item.chain} />}>
+              <Suspense fallback={<CosmosChainItemSkeleton chain={item.chain} />}>
+                <CosmosChainItem chain={item.chain} />
+              </Suspense>
+            </ErrorBoundary>
           ) : (
-            <EthereumChainItem key={item.chain.id} chain={item.chain} />
+            <ErrorBoundary key={item.chain.id} fallback={<EthereumChainItemSkeleton chain={item.chain} />}>
+              <Suspense fallback={<EthereumChainItemSkeleton chain={item.chain} />}>
+                <EthereumChainItem key={item.chain.id} chain={item.chain} />
+              </Suspense>
+            </ErrorBoundary>
           ),
         )}
       </ChainList>

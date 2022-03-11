@@ -1,25 +1,30 @@
 import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
+import axios from 'axios';
 import useSWR from 'swr';
 
-import { useInMemory } from '~/Popup/hooks/useInMemory';
-import { get } from '~/Popup/utils/axios';
-import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { AuthAccount, AuthAccountsPayload, AuthAccountValue, AuthBaseVestingAccount, AuthBaseWithStartAndPeriod } from '~/types/cosmos/account';
 
-export function useAccountSWR(address: string, chain: CosmosChain, suspense?: boolean) {
+export function useAccountSWR(chain: CosmosChain, suspense?: boolean) {
+  const accounts = useAccounts(suspense);
+  const { chromeStorage } = useChromeStorage();
+
+  const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
   const { getAccount } = cosmosURL(chain);
 
   const requestURL = getAccount(address);
 
-  const fetcher = (fetchUrl: string) => get<AuthAccountsPayload>(fetchUrl);
+  const fetcher = (url: string) => axios.get<AuthAccountsPayload>(url).then((res) => res.data);
 
   const { data, error, mutate } = useSWR<AuthAccountsPayload, AxiosError>(requestURL, fetcher, {
     refreshInterval: 0,
     errorRetryCount: 0,
     suspense,
+    isPaused: () => !address,
   });
 
   const isBaseVestingAccount = (payload: AuthAccountValue | AuthBaseVestingAccount | AuthBaseWithStartAndPeriod): payload is AuthBaseVestingAccount =>
