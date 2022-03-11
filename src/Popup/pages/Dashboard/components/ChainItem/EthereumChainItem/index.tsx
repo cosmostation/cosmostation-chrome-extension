@@ -1,5 +1,5 @@
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
-import ChainItem from '~/Popup/pages/Dashboard/components/ChainItem';
+import ChainItem, { ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import type { EthereumChain } from '~/types/chain';
 
 type EthereumChainItemProps = {
@@ -21,4 +21,12 @@ export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
       imageURL={imageURL}
     />
   );
+}
+
+export function EthereumChainItemSkeleton({ chain }: EthereumChainItemProps) {
+  const { currentNetwork } = useCurrentNetwork();
+
+  const { networkName } = currentNetwork;
+  const { chainName, imageURL } = chain;
+  return <ChainItemSkeleton chainName={`${chainName} (${networkName})`} imageURL={imageURL} />;
 }

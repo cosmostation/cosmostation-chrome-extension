@@ -1,15 +1,10 @@
 import { atom } from 'recoil';
 
-import type { Chain } from '~/types/chain';
+// import type { Chain } from '~/types/chain';
 
-type DashboardState = {
-  chain: Chain;
-  amount: string;
-  price: string;
-  cap: string;
-};
+type DashboardState = Record<string, string>;
 
-export const dashboardState = atom<DashboardState[]>({
+export const dashboardState = atom<DashboardState>({
   key: 'dashboardState',
-  default: [],
+  default: {},
 });

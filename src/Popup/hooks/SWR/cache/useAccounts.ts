@@ -31,7 +31,7 @@ export function useAccounts() {
     });
 
   const { data, mutate } = useSWR(`accountList-${selectedAccountId}-${selectedChainId}`, fetcher, {
-    suspense: true,
+    suspense: false,
   });
 
   return { data, mutate };

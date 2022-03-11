@@ -1,20 +1,24 @@
-import { useEffect, useRef, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
+import { Container as Overlay } from '~/Popup/components/Loading/Overlay/styled';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
-import CosmosChainItem from '~/Popup/pages/Dashboard/components/ChainItem/CosmosChainItem';
-import EthereumChainItem from '~/Popup/pages/Dashboard/components/ChainItem/EthereumChainItem';
+import ChainItem from '~/Popup/pages/Dashboard/components/ChainItem';
+import CosmosChainItem, { CosmosChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/CosmosChainItem';
+import EthereumChainItem, { EthereumChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/EthereumChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
+import { plus } from '~/Popup/utils/big';
+import type { CosmosChain } from '~/types/chain';
 
 import { ChainList, Container, CountContainer, CountLeftContainer, CountRightContainer, TotalValueContainer, TotalValueTextContainer } from './styled';
 
 export default function Entry() {
   const { chromeStorage } = useChromeStorage();
   const { currentAllowedChains } = useCurrentAllowedChains();
-  const [dashboard, setDashboard] = useRecoilState(dashboardState);
+  const dashboard = useRecoilValue(dashboardState);
 
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -22,11 +26,19 @@ export default function Entry() {
 
   const listHeight = `calc(100% - ${divHeight / 10}rem)`;
 
+  const chainList = currentAllowedChains.map((chain) => ({ chain, amount: '0', isLoading: true }));
+
+  const totalAmount = Object.values(dashboard).reduce((acc, cur) => plus(acc, cur), '0');
+
   useEffect(() => {
-    void setDashboard(currentAllowedChains.map((chain) => ({ chain, amount: '0', price: '0', cap: '0' })));
     setDivHeight(divRef.current?.clientHeight || 0);
+
+    console.log('dd');
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // useEffect(() => console.log(dashboard), [dashboard]);
 
   return (
     <Container>
@@ -35,8 +47,8 @@ export default function Entry() {
           <Typography variant="h5">Total Value</Typography>
         </TotalValueTextContainer>
         <TotalValueContainer>
-          <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={chromeStorage.currency}>
-            105.00
+          <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={chromeStorage.currency} fixed={2}>
+            {totalAmount}
           </Number>
         </TotalValueContainer>
         <CountContainer>
@@ -44,14 +56,16 @@ export default function Entry() {
             <Typography variant="h6">Chain</Typography>
           </CountLeftContainer>
           <CountRightContainer>
-            <Typography variant="h6">{dashboard.length}</Typography>
+            <Typography variant="h6">{chainList.length}</Typography>
           </CountRightContainer>
         </CountContainer>
       </div>
       <ChainList data-height={listHeight}>
-        {dashboard.map((item) =>
+        {chainList.map((item) =>
           item.chain.line === 'COSMOS' ? (
-            <CosmosChainItem key={item.chain.id} chain={item.chain} />
+            <Suspense fallback={<CosmosChainItemSkeleton key={item.chain.id} chain={item.chain} />}>
+              <CosmosChainItem key={item.chain.id} chain={item.chain} />
+            </Suspense>
           ) : (
             <EthereumChainItem key={item.chain.id} chain={item.chain} />
           ),

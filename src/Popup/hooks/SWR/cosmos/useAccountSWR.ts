@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import useSWR from 'swr';
 
-import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { get } from '~/Popup/utils/axios';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
@@ -10,13 +9,7 @@ import { cosmosURL } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { AuthAccount, AuthAccountsPayload, AuthAccountValue, AuthBaseVestingAccount, AuthBaseWithStartAndPeriod } from '~/types/cosmos/account';
 
-export function useAccountSWR(chain: CosmosChain, suspense?: boolean) {
-  const { currentAccount } = useCurrentAccount();
-  const { inMemory } = useInMemory();
-
-  const keyPair = getKeyPair(currentAccount, chain, inMemory.password);
-  const address = getAddress(chain, keyPair?.publicKey);
-
+export function useAccountSWR(address: string, chain: CosmosChain, suspense?: boolean) {
   const { getAccount } = cosmosURL(chain);
 
   const requestURL = getAccount(address);
@@ -25,10 +18,8 @@ export function useAccountSWR(chain: CosmosChain, suspense?: boolean) {
 
   const { data, error, mutate } = useSWR<AuthAccountsPayload, AxiosError>(requestURL, fetcher, {
     refreshInterval: 0,
-    revalidateOnFocus: false,
     errorRetryCount: 0,
     suspense,
-    isPaused: () => !address,
   });
 
   const isBaseVestingAccount = (payload: AuthAccountValue | AuthBaseVestingAccount | AuthBaseWithStartAndPeriod): payload is AuthBaseVestingAccount =>

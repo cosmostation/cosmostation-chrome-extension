@@ -1,7 +1,9 @@
+import { lazy } from 'react';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
+import Skeleton from '~/Popup/components/common/Skeleton';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
@@ -42,6 +44,8 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
 
   const upperDisplayDenom = displayDenom.toUpperCase();
 
+  const displayAmount = toDisplayDenomAmount(amount, decimals);
+
   return (
     <StyledButton onClick={onClick}>
       <LeftContainer>
@@ -54,7 +58,7 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
           </LeftTextChainContainer>
           <LeftTextChainAmountContainer>
             <Number typoOfIntegers="h6n" typoOfDecimals="h8n" fixed={decimals}>
-              {toDisplayDenomAmount(amount, decimals)}
+              {displayAmount}
             </Number>{' '}
             <Typography variant="h6n">{upperDisplayDenom}</Typography>
           </LeftTextChainAmountContainer>
@@ -64,7 +68,7 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
         <RightTextContainer>
           <RightTextValueContainer>
             <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={chromeStorage.currency}>
-              {coinGeckoId ? times(amount, price, 2) : '0'}
+              {coinGeckoId ? times(displayAmount, price, 2) : '0'}
             </Number>
           </RightTextValueContainer>
 
@@ -74,6 +78,39 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
               {String(cap)}
             </Number>
             <Typography variant="h6n">%</Typography>
+          </RightTextChangeRateContainer>
+        </RightTextContainer>
+      </RightContainer>
+    </StyledButton>
+  );
+}
+
+type ChainItemSkeletonProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'>;
+
+export function ChainItemSkeleton({ chainName, imageURL, onClick }: ChainItemSkeletonProps) {
+  return (
+    <StyledButton onClick={onClick}>
+      <LeftContainer>
+        <LeftImageContainer>
+          <Image src={imageURL} />
+        </LeftImageContainer>
+        <LeftTextContainer>
+          <LeftTextChainContainer>
+            <Typography variant="h5">{upperCaseFirst(chainName)}</Typography>
+          </LeftTextChainContainer>
+          <LeftTextChainAmountContainer>
+            <Skeleton variant="text" width={40} sx={{ color: 'red' }} />
+          </LeftTextChainAmountContainer>
+        </LeftTextContainer>
+      </LeftContainer>
+      <RightContainer>
+        <RightTextContainer>
+          <RightTextValueContainer>
+            <Skeleton variant="text" width={40} />
+          </RightTextValueContainer>
+
+          <RightTextChangeRateContainer>
+            <Skeleton variant="text" width={40} />
           </RightTextChangeRateContainer>
         </RightTextContainer>
       </RightContainer>

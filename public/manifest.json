@@ -32,5 +32,8 @@
   "web_accessible_resources": [{ "resources": ["js/injectScript.js"], "matches": ["<all_urls>"] }],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "cache_control": {
+    "extension_pages": "max-age=6000"
   }
 }
