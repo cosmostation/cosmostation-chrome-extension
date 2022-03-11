@@ -27,7 +27,6 @@ export function useUndelegationSWR(chain: CosmosChain, suspense?: boolean) {
     errorRetryInterval: 3000,
     suspense,
     isPaused: () => !address,
-    onError: () => undefined,
   });
 
   const returnData: Unbonding[][] | undefined = useMemo(() => {

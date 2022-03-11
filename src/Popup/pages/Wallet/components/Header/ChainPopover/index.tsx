@@ -6,7 +6,7 @@ import { COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrent } from '~/Popup/hooks/useCurrent';
+import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 
 import ChainItemButton from './ChainItemButton';
@@ -31,8 +31,7 @@ type ChainPopoverProps = Omit<PopoverProps, 'children'>;
 
 export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProps) {
   const { navigate } = useNavigate();
-  const { currentChain, setCurrentChain } = useCurrent();
-
+  const { currentChain, setCurrentChain } = useCurrentChain();
   const { chromeStorage } = useChromeStorage();
 
   const { allowedChainIds } = chromeStorage;

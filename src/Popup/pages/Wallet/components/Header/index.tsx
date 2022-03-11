@@ -1,21 +1,32 @@
-import { lazy, Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
-import { useCurrent } from '~/Popup/hooks/useCurrent';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 
 import AccountButton from './AccountButton';
+import AccountPopover from './AccountPopover';
+import ChainPopover from './ChainPopover';
+import NetworkPopover from './NetworkPopover';
 import { ChainButton, Container, LeftContentContainer, NetworkButton, RightContentContainer } from './styled';
 
-const AccountPopover = lazy(() => import('./AccountPopover'));
-const ChainPopover = lazy(() => import('./ChainPopover'));
-const NetworkPopover = lazy(() => import('./NetworkPopover'));
-
 export default function WalletHeader() {
-  const { currentAccount, currentChain, currentNetwork } = useCurrent();
+  const { currentAccount } = useCurrentAccount();
+  const { currentChain } = useCurrentChain();
+  const { currentNetwork } = useCurrentNetwork();
+
+  const [loadPopover, setLoadPopover] = useState(false);
 
   const [popover, setPopover] = useState<'chain' | 'network' | 'account' | null>(null);
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoadPopover(true);
+    }, 200);
+  }, []);
 
   return (
     <Container>
@@ -51,37 +62,34 @@ export default function WalletHeader() {
           {currentChain.chainName}
         </ChainButton>
       </RightContentContainer>
-      <Suspense fallback={null}>
-        <ChainPopover
-          marginThreshold={0}
-          open={isOpenPopover && popover === 'chain'}
-          onClose={() => setPopoverAnchorEl(null)}
-          anchorEl={popoverAnchorEl}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-        />
-      </Suspense>
-      <Suspense fallback={null}>
-        <NetworkPopover
-          open={isOpenPopover && popover === 'network'}
-          onClose={() => setPopoverAnchorEl(null)}
-          anchorEl={popoverAnchorEl}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-        />
-      </Suspense>
+
+      <ChainPopover
+        marginThreshold={0}
+        open={isOpenPopover && popover === 'chain'}
+        onClose={() => setPopoverAnchorEl(null)}
+        anchorEl={popoverAnchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      />
+      <NetworkPopover
+        open={isOpenPopover && popover === 'network'}
+        onClose={() => setPopoverAnchorEl(null)}
+        anchorEl={popoverAnchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      />
       <Suspense fallback={null}>
         <AccountPopover
           marginThreshold={0}

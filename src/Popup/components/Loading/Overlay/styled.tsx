@@ -1,11 +1,11 @@
+import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import atomImage from './assets/atom.gif';
-
 export const Container = styled('div')({
-  background: `url(${atomImage}) no-repeat center center`,
-  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-  backgroundSize: '70px',
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   position: 'fixed',
   top: '0',
   bottom: '0',
@@ -13,3 +13,9 @@ export const Container = styled('div')({
   right: '0',
   zIndex: 10000,
 });
+
+export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
+  '&.MuiCircularProgress-root': {
+    color: theme.accentColors.purple01,
+  },
+}));

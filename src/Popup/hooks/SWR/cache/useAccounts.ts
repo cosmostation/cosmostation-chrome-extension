@@ -20,23 +20,29 @@ export function useAccounts(suspense?: boolean) {
 
   const fetcher = () =>
     new Promise<AccountList[]>((res) => {
-      res(
-        accounts.map((account) => {
-          const addresses: Record<string, string> = {};
+      setTimeout(() => {
+        res(
+          accounts.map((account) => {
+            const addresses: Record<string, string> = {};
 
-          currentAllowedChains.forEach((chain) => {
-            const keypair = getKeyPair(account, chain, inMemory.password);
-            const address = getAddress(chain, keypair?.publicKey);
-            addresses[chain.id] = address;
-          });
-          return { id: account.id, address: addresses };
-        }),
-      );
+            currentAllowedChains.forEach((chain) => {
+              const keypair = getKeyPair(account, chain, inMemory.password);
+              const address = getAddress(chain, keypair?.publicKey);
+              addresses[chain.id] = address;
+            });
+            return { id: account.id, address: addresses };
+          }),
+        );
+      }, 500);
     });
 
   const { data, mutate } = useSWR([accounts, currentAllowedChains], fetcher, {
     suspense,
     revalidateOnFocus: false,
+    revalidateOnMount: false,
+    revalidateOnReconnect: false,
+    revalidateIfStale: false,
+    isPaused: () => accounts.length < 1 || currentAllowedChains.length < 1,
   });
 
   return { data, mutate };

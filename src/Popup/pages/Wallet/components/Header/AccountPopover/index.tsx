@@ -5,7 +5,7 @@ import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrent } from '~/Popup/hooks/useCurrent';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 
 import AccountItemButton from './AccountItemButton';
@@ -17,7 +17,7 @@ type AccountPopoverProps = Omit<PopoverProps, 'children'>;
 
 export default function AccountPopover({ onClose, ...remainder }: AccountPopoverProps) {
   const { chromeStorage } = useChromeStorage();
-  const { setCurrentAccount } = useCurrent();
+  const { setCurrentAccount } = useCurrentAccount();
   const { navigate } = useNavigate();
 
   const { data } = useAccounts(true);
