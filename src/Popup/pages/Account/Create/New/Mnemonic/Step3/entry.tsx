@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
@@ -11,6 +11,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
 import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
@@ -43,6 +44,8 @@ export default function Entry() {
 
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { inMemory } = useInMemory();
+
+  const setDisposableLoading = useSetRecoilState(disposableLoadingState);
 
   useEffect(() => {
     if (!newAccount.accountName || !newAccount.mnemonic || !inMemory.password) {
@@ -90,6 +93,7 @@ export default function Entry() {
   });
 
   const submit = async () => {
+    setDisposableLoading(false);
     setLoadingOverlay(true);
 
     const accountId = uuidv4();

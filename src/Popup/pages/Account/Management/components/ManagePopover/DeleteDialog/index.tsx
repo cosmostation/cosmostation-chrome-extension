@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
+import { useSetRecoilState } from 'recoil';
 import { joiResolver } from '@hookform/resolvers/joi';
 import type { DialogProps, PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
@@ -7,7 +8,7 @@ import { Typography } from '@mui/material';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
 import { sha512 } from '~/Popup/utils/crypto';
 import type { Account } from '~/types/chromeStorage';
 
@@ -25,6 +26,8 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
   const { enqueueSnackbar } = useSnackbar();
 
   const { accountName, encryptedPassword } = chromeStorage;
+
+  const setDisposableLoading = useSetRecoilState(disposableLoadingState);
 
   const invalidNames = [...Object.values(accountName)];
   invalidNames.splice(invalidNames.indexOf(accountName[account.id], 1));
@@ -51,6 +54,8 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
   };
 
   const submit = async () => {
+    setDisposableLoading(false);
+
     if (account.id === chromeStorage.selectedAccountId) {
       await setChromeStorage('selectedAccountId', chromeStorage.accounts?.[0]?.id ?? '');
     }

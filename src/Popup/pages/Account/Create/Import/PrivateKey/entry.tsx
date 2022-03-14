@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
+import { useSetRecoilState } from 'recoil';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 
@@ -8,6 +9,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
 import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import { BottomContainer, Container, InputContainer, StyledInput48, StyledInput140 } from './styled';
@@ -29,6 +31,8 @@ export default function Entry() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { inMemory } = useInMemory();
 
+  const setDisposableLoading = useSetRecoilState(disposableLoadingState);
+
   const { privateKeyForm } = useSchema();
 
   const {
@@ -44,6 +48,7 @@ export default function Entry() {
   });
 
   const submit = async (data: PrivateKeyForm) => {
+    setDisposableLoading(false);
     setLoadingOverlay(true);
 
     const privateKey = data.privateKey.startsWith('0x') ? data.privateKey.substring(2) : data.privateKey;

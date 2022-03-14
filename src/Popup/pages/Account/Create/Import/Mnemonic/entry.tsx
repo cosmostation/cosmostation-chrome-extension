@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
+import { useSetRecoilState } from 'recoil';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 
@@ -11,6 +12,7 @@ import { useInMemory } from '~/Popup/hooks/useInMemory';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import HDPathDialog from '~/Popup/pages/Account/components/HDPathDialog';
+import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
 import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import { BottomContainer, BottomSettingButtonContainer, Container, InputContainer, StyledInput48, StyledInput140 } from './styled';
@@ -38,6 +40,8 @@ export default function Entry() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { inMemory } = useInMemory();
 
+  const setDisposableLoading = useSetRecoilState(disposableLoadingState);
+
   const { mnemonicForm } = useSchema();
 
   const {
@@ -53,6 +57,7 @@ export default function Entry() {
   });
 
   const submit = async (data: MnemonicForm) => {
+    setDisposableLoading(false);
     setLoadingOverlay(true);
 
     const mnemonicRestoreStrings = chromeStorage.accounts.filter((account) => account.type === 'MNEMONIC').map((account) => account.encryptedRestoreString);

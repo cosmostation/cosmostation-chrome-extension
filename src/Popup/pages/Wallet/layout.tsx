@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 
 import BaseLayout from '~/Popup/components/BaseLayout';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
 
@@ -12,6 +13,7 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   const [isAlready, setIsAlready] = useRecoilState(disposableLoadingState);
   const setLoadingOverlay = useLoadingOverlay();
+  const { setChromeStorage } = useChromeStorage();
 
   useEffect(() => {
     if (!isAlready) {
@@ -22,6 +24,8 @@ export default function Layout({ children }: LayoutProps) {
         setLoadingOverlay(false);
       }, 2000);
     }
+
+    void setChromeStorage('rootPath', '/wallet');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return <BaseLayout useHeader={{}}>{children}</BaseLayout>;

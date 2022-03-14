@@ -22,7 +22,7 @@ type HeaderProps = {
 
 export default function Header({ isShowMenuButton = true, isShowPageButton = true }: HeaderProps) {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { chromeStorage } = useChromeStorage();
   const { pathname } = useLocation();
   const { navigate } = useNavigate();
 
@@ -44,14 +44,10 @@ export default function Header({ isShowMenuButton = true, isShowPageButton = tru
         {isShowPageButton && (
           <IconButton
             onClick={() => {
-              void setChromeStorage('rootPath', buttonPath);
               navigate(buttonPath);
             }}
           >
-            {
-              // pathname === PATH.WALLET 로직은 없어도 되지만 렌더링을 조금 더 빠르게 반영하기 위해 넣은 코드
-              buttonPath === PATH.DASHBOARD || pathname === PATH.WALLET ? <Dashboard24Icon /> : <Wallet24Icon />
-            }
+            {buttonPath === PATH.DASHBOARD ? <Dashboard24Icon /> : <Wallet24Icon />}
           </IconButton>
         )}
         {isShowMenuButton && (

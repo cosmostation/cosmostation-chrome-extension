@@ -4,7 +4,9 @@ import { useSetRecoilState } from 'recoil';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -17,6 +19,8 @@ type EthereumChainItemProps = {
 export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
   const { currentNetwork } = useCurrentNetwork();
   const { chromeStorage } = useChromeStorage();
+  const { setCurrentChain } = useCurrentChain();
+  const { navigate } = useNavigate();
   const { data: coinGeckoData } = useCoinGeckoPriceSWR();
 
   const setDashboard = useSetRecoilState(dashboardState);
@@ -34,8 +38,14 @@ export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
     }));
   }, [chain.id, chromeStorage.currency, coingeckoId, coinGeckoData, decimals, setDashboard, totalAmount]);
 
+  const handleOnClick = () => {
+    void setCurrentChain(chain);
+    navigate('/wallet');
+  };
+
   return (
     <ChainItem
+      onClick={handleOnClick}
       chainName={`${chainName} (${networkName})`}
       decimals={decimals}
       coinGeckoId={coingeckoId}
@@ -47,9 +57,17 @@ export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
 }
 
 export function EthereumChainItemSkeleton({ chain }: EthereumChainItemProps) {
+  const { setCurrentChain } = useCurrentChain();
+  const { navigate } = useNavigate();
+
   const { currentNetwork } = useCurrentNetwork();
+
+  const handleOnClick = () => {
+    void setCurrentChain(chain);
+    navigate('/wallet');
+  };
 
   const { networkName } = currentNetwork;
   const { chainName, imageURL } = chain;
-  return <ChainItemSkeleton chainName={`${chainName} (${networkName})`} imageURL={imageURL} />;
+  return <ChainItemSkeleton chainName={`${chainName} (${networkName})`} imageURL={imageURL} onClick={handleOnClick} />;
 }

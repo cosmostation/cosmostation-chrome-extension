@@ -4,21 +4,22 @@ import { useRecoilValue } from 'recoil';
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
-import { Container as Overlay } from '~/Popup/components/Loading/Overlay/styled';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
-import ChainItem from '~/Popup/pages/Dashboard/components/ChainItem';
+import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import CosmosChainItem, { CosmosChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/CosmosChainItem';
 import EthereumChainItem, { EthereumChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/EthereumChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { plus } from '~/Popup/utils/big';
-import type { CosmosChain } from '~/types/chain';
 
 import { ChainList, Container, CountContainer, CountLeftContainer, CountRightContainer, TotalValueContainer, TotalValueTextContainer } from './styled';
 
 export default function Entry() {
   const { chromeStorage } = useChromeStorage();
   const { currentAllowedChains } = useCurrentAllowedChains();
+  const { setCurrentChain } = useCurrentChain();
+  const { navigate } = useNavigate();
   const dashboard = useRecoilValue(dashboardState);
 
   const divRef = useRef<HTMLDivElement>(null);
@@ -34,12 +35,8 @@ export default function Entry() {
   useEffect(() => {
     setDivHeight(divRef.current?.clientHeight || 0);
 
-    console.log('dd');
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // useEffect(() => console.log(dashboard), [dashboard]);
 
   return (
     <Container>
