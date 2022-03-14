@@ -59,6 +59,8 @@ export type ChromeStorage = {
   allowedChainIds: string[];
   selectedChainId: string;
   selectedEthereumNetworkId: string;
+
+  password: string | null;
 };
 
 export type ChromeStorageKeys = keyof ChromeStorage;

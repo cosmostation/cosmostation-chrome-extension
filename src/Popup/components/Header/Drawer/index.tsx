@@ -8,7 +8,7 @@ import Divider from '~/Popup/components/common/Divider';
 import IconButton from '~/Popup/components/common/IconButton';
 import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 
 import {
@@ -43,8 +43,8 @@ type DrawerProps = Omit<BaseDrawerProps, 'children'>;
 export default function Drawer({ onClose, ...remainder }: DrawerProps) {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { navigate } = useNavigate();
-  const { setInMemory } = useInMemory();
   const { pathname } = useLocation();
+  const { setCurrentPassword } = useCurrentPassword();
 
   const isDarkMode = chromeStorage.theme === THEME_TYPE.DARK;
 
@@ -105,7 +105,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
           Icon={Lock16}
           typoVarient="h5"
           onClick={async () => {
-            await setInMemory('password', null);
+            await setCurrentPassword(null);
           }}
         >
           Lock

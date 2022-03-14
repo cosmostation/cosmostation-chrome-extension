@@ -27,7 +27,8 @@ export type CosmosChain = {
   bech32Prefix: {
     address: string;
   };
-  coingeckoId?: string;
+  coinGeckoId?: string;
+  explorerURL?: string;
 } & CommonChain;
 
 export type EthereumChain = {
@@ -46,7 +47,7 @@ export type EthereumNetwork = {
   rpcURL: string;
   imageURL?: string;
   explorerURL?: string;
-  coingeckoId?: string;
+  coinGeckoId?: string;
 };
 
 export type EthereumToken = {

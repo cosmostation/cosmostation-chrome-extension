@@ -1,73 +1,33 @@
-import { Typography } from '@mui/material';
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
-import cosmosImg from '~/images/symbols/cosmos.png';
-import AddressButton from '~/Popup/components/AddressButton';
-import Button from '~/Popup/components/common/Button';
-import Image from '~/Popup/components/common/Image';
-import Number from '~/Popup/components/common/Number';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 
-import {
-  Container,
-  FirstLineContainer,
-  FirstLineLeftContainer,
-  FirstLineRightContainer,
-  FourthLineCenterContainer,
-  FourthLineContainer,
-  SecondLineContainer,
-  SecondLineLeftContainer,
-  SecondLineLeftImageContainer,
-  SecondLineLeftTextContainer,
-  SecondLineRightContainer,
-  StyledIconButton,
-  ThirdLineContainer,
-} from './styled';
-
-import ExplorerIcon from '~/images/icons/Explorer.svg';
-import ReceiveIcon from '~/images/icons/Receive.svg';
-import SendIcon from '~/images/icons/Send.svg';
+import CosmosNativeChainCard, { CosmosNativeChainCardSkeleton } from './CosmosNativeChainCard';
+import EthereumNativeChainCard, { EthereumNativeChainCardSkeleton } from './EthereumNativeChainCard';
 
 export default function NativeChainCard() {
-  const { chromeStorage } = useChromeStorage();
-  return (
-    <Container>
-      <FirstLineContainer>
-        <FirstLineLeftContainer>
-          <AddressButton>cosmos1gr0e3pj3y6fqvzyfm0qxyw9h5dwfrvh8zv3x9p</AddressButton>
-        </FirstLineLeftContainer>
-        <FirstLineRightContainer>
-          <StyledIconButton>
-            <ExplorerIcon />
-          </StyledIconButton>
-        </FirstLineRightContainer>
-      </FirstLineContainer>
-      <SecondLineContainer>
-        <SecondLineLeftContainer>
-          <SecondLineLeftImageContainer>
-            <Image src={cosmosImg} />
-          </SecondLineLeftImageContainer>
-          <SecondLineLeftTextContainer>
-            <Typography variant="h3">ATOM</Typography>
-          </SecondLineLeftTextContainer>
-        </SecondLineLeftContainer>
-        <SecondLineRightContainer>
-          <Number>1090.000069</Number>
-        </SecondLineRightContainer>
-      </SecondLineContainer>
-      <ThirdLineContainer>
-        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={2} currency={chromeStorage.currency}>
-          75.4000
-        </Number>
-      </ThirdLineContainer>
-      <FourthLineContainer>
-        <Button Icon={SendIcon} typoVarient="h5">
-          Send
-        </Button>
-        <FourthLineCenterContainer />
-        <Button Icon={ReceiveIcon} typoVarient="h5">
-          Receive
-        </Button>
-      </FourthLineContainer>
-    </Container>
-  );
+  const { currentChain } = useCurrentChain();
+
+  if (currentChain.line === 'COSMOS') {
+    return (
+      <ErrorBoundary fallback={<CosmosNativeChainCardSkeleton chain={currentChain} />}>
+        <Suspense fallback={<CosmosNativeChainCardSkeleton chain={currentChain} />}>
+          <CosmosNativeChainCard chain={currentChain} />
+        </Suspense>
+      </ErrorBoundary>
+    );
+  }
+
+  if (currentChain.line === 'ETHEREUM') {
+    return (
+      <ErrorBoundary fallback={<EthereumNativeChainCardSkeleton chain={currentChain} />}>
+        <Suspense fallback={<EthereumNativeChainCardSkeleton chain={currentChain} />}>
+          <EthereumNativeChainCard chain={currentChain} />
+        </Suspense>
+      </ErrorBoundary>
+    );
+  }
+
+  return null;
 }

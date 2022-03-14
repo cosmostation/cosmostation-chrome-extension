@@ -46,6 +46,8 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
 
   const displayAmount = toDisplayDenomAmount(amount, decimals);
 
+  const value = times(displayAmount, price, 2);
+
   return (
     <StyledButton onClick={onClick}>
       <LeftContainer>
@@ -68,7 +70,7 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
         <RightTextContainer>
           <RightTextValueContainer>
             <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={chromeStorage.currency}>
-              {coinGeckoId ? times(displayAmount, price, 2) : '0'}
+              {value}
             </Number>
           </RightTextValueContainer>
 

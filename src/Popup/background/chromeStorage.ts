@@ -1,4 +1,5 @@
 import { CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { ENCTYPT_KEY } from '~/constants/common';
 import { getAllStorage } from '~/Popup/utils/chromeStorage';
 import { aesDecrypt, mnemonicToPair, privateKeyToPair, sha512 } from '~/Popup/utils/crypto';
 
@@ -39,10 +40,13 @@ export async function chromeStorage() {
     return privateKeyToPair(Buffer.from(aesDecrypt(currentAccount.encryptedPrivateKey, password), 'hex'));
   };
 
+  const password = storage.password ? aesDecrypt(storage.password, ENCTYPT_KEY) : null;
+
   return {
     storage,
     currentAccount,
     currentEthereumNetwork,
+    password,
     getPairKey,
   };
 }

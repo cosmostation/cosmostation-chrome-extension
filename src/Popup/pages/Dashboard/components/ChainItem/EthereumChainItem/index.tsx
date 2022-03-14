@@ -28,15 +28,15 @@ export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
 
   const totalAmount = BigInt(data?.result || '0').toString();
 
-  const { decimals, networkName, coingeckoId, displayDenom } = currentNetwork;
+  const { decimals, networkName, coinGeckoId, displayDenom } = currentNetwork;
   const { chainName, imageURL } = chain;
 
   useEffect(() => {
     setDashboard((prev) => ({
       ...prev,
-      [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coingeckoId && coinGeckoData?.[coingeckoId]?.[chromeStorage.currency]) || 0) || '0',
+      [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[chromeStorage.currency]) || 0) || '0',
     }));
-  }, [chain.id, chromeStorage.currency, coingeckoId, coinGeckoData, decimals, setDashboard, totalAmount]);
+  }, [chain.id, chromeStorage.currency, coinGeckoId, coinGeckoData, decimals, setDashboard, totalAmount]);
 
   const handleOnClick = () => {
     void setCurrentChain(chain);
@@ -48,7 +48,7 @@ export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
       onClick={handleOnClick}
       chainName={`${chainName} (${networkName})`}
       decimals={decimals}
-      coinGeckoId={coingeckoId}
+      coinGeckoId={coinGeckoId}
       amount={totalAmount}
       displayDenom={displayDenom}
       imageURL={imageURL}

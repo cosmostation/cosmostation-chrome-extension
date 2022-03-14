@@ -5,7 +5,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { aesDecrypt, aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import { ButtonContainer, Container, InputContainer, StyledInput48, StyledInput140 } from './styled';
@@ -15,8 +15,8 @@ import { useSchema } from './useSchema';
 export default function Entry() {
   const [restoreString, setRestoreString] = useState('');
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { setInMemory } = useInMemory();
   const { enqueueSnackbar } = useSnackbar();
+  const { setCurrentPassword } = useCurrentPassword();
 
   const { restoreForm } = useSchema({ encryptedRestoreString: chromeStorage.accounts.map((account) => account.encryptedRestoreString) });
   const {
@@ -63,7 +63,7 @@ export default function Entry() {
 
     await setChromeStorage('accounts', newAccounts);
     await setChromeStorage('encryptedPassword', sha512(data.password));
-    await setInMemory('password', null);
+    await setCurrentPassword(null);
 
     reset();
 

@@ -7,8 +7,8 @@ export default function SelectButton({
   ...remainder
 }: Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & { children?: string }) {
   const address = children
-    ? children.length > 20
-      ? `${children.substring(0, 8)}...${children.substring(children.length - 8, children.length)}`
+    ? children.length > 30
+      ? `${children.substring(0, 14)}...${children.substring(children.length - 14, children.length)}`
       : children
     : '';
   return (

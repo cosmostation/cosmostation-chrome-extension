@@ -6,7 +6,7 @@ import { Typography } from '@mui/material';
 import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { sha512 } from '~/Popup/utils/crypto';
 
@@ -32,7 +32,7 @@ type LockProps = {
 };
 
 export default function Lock({ children }: LockProps) {
-  const { inMemory, setInMemory } = useInMemory();
+  const { currentPassword, setCurrentPassword } = useCurrentPassword();
   const { chromeStorage } = useChromeStorage();
   const { navigate } = useNavigate();
   const { passwordForm } = useSchema({ encryptedPassword: chromeStorage.encryptedPassword! });
@@ -51,7 +51,7 @@ export default function Lock({ children }: LockProps) {
   });
 
   const submit = async () => {
-    await setInMemory('password', password);
+    await setCurrentPassword(password);
     reset();
   };
 
@@ -65,7 +65,7 @@ export default function Lock({ children }: LockProps) {
     return null;
   }
 
-  if (inMemory.password === null && chromeStorage.encryptedPassword) {
+  if (currentPassword === null && chromeStorage.encryptedPassword) {
     return (
       <BaseLayout>
         <Container>

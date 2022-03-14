@@ -12,17 +12,15 @@ import { EthereumRPCError } from '~/Popup/utils/error';
 import { getAddress, personalSign, rpcResponse, sign } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CurrencyType, LanguageType } from '~/types/chromeStorage';
-import type { ContentScriptToBackgroundEventMessage, InMemoryMessage, RequestMessage, ResponseMessage } from '~/types/message';
+import type { ContentScriptToBackgroundEventMessage, RequestMessage, ResponseMessage } from '~/types/message';
+import type { ThemeType } from '~/types/theme';
 
 import { chromeStorage } from './chromeStorage';
 import { determineTxType, requestRPC } from './ethereum';
 import { initI18n } from './i18n';
-import { inMemory } from './inMemory';
-import { persistent } from './persistent';
 import { mnemonicToPair, privateKeyToPair } from '../utils/crypto';
 
 function background() {
-  const memory = inMemory();
   console.log('background start');
 
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, sender) => {
@@ -30,8 +28,6 @@ function background() {
     // console.log('localStorage', localStorage.getItem('i18nextLng'));
 
     if (request?.type === MESSAGE_TYPE.REQUEST__CONTENT_SCRIPT_TO_BACKGROUND) {
-      const password = memory.get('password');
-
       void (async function asyncHandler() {
         // if (request.message.method === 'requestAccount') {
         //   const currentAccount = await getCurrentAccount();
@@ -51,7 +47,7 @@ function background() {
 
             const { method, id } = message;
 
-            const { currentEthereumNetwork, currentAccount, getPairKey } = await chromeStorage();
+            const { currentEthereumNetwork, currentAccount, getPairKey, password } = await chromeStorage();
 
             if (ethereumPopupMethods.includes(method)) {
               if (!password) {
@@ -145,32 +141,12 @@ function background() {
     }
   });
 
-  chrome.runtime.onMessage.addListener((request: InMemoryMessage, sender, sendResponse) => {
-    console.log('in memory in background', request, sender);
-
-    if (request?.type === MESSAGE_TYPE.IN_MEMORY) {
-      const { message } = request;
-
-      if (message.method === IN_MEMORY_MESSAGE_TYPE.GET) {
-        sendResponse(memory.get(message.params.key));
-      }
-
-      if (message.method === IN_MEMORY_MESSAGE_TYPE.GET_ALL) {
-        sendResponse(memory.getAll());
-      }
-
-      if (message.method === IN_MEMORY_MESSAGE_TYPE.SET) {
-        memory.set(message.params.key, message.params.value);
-        sendResponse(memory.get(message.params.key));
-      }
-    }
-  });
-
   chrome.runtime.onStartup.addListener(() => {
     console.log('startup');
     void (async function async() {
       await setStorage('queues', []);
       await setStorage('windowId', null);
+      await setStorage('password', null);
     })();
   });
 
@@ -186,7 +162,7 @@ function background() {
         await setStorage('encryptedPassword', null);
         await setStorage('selectedAccountId', '');
 
-        await setStorage('theme', THEME_TYPE.LIGHT);
+        await setStorage('theme', '' as ThemeType);
 
         await setStorage('rootPath', PATH.DASHBOARD);
 
@@ -197,13 +173,12 @@ function background() {
         await setStorage('allowedOrigins', []);
         await setStorage('selectedChainId', '');
         await setStorage('selectedEthereumNetworkId', '');
+
+        await setStorage('password', null);
         await openTab();
       }
     })();
   });
-
-  const { doing } = persistent();
-  void doing();
 }
 
 background();

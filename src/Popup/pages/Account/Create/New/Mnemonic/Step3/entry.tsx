@@ -8,7 +8,7 @@ import { Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
@@ -35,6 +35,7 @@ export type CheckWord = {
 
 export default function Entry() {
   const { navigateBack } = useNavigate();
+  const { currentPassword } = useCurrentPassword();
 
   const newAccount = useRecoilValue(newMnemonicAccountState);
 
@@ -43,12 +44,11 @@ export default function Entry() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { inMemory } = useInMemory();
 
   const setDisposableLoading = useSetRecoilState(disposableLoadingState);
 
   useEffect(() => {
-    if (!newAccount.accountName || !newAccount.mnemonic || !inMemory.password) {
+    if (!newAccount.accountName || !newAccount.mnemonic || !currentPassword) {
       navigateBack(-3);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,8 +104,8 @@ export default function Entry() {
         id: accountId,
         type: 'MNEMONIC',
         bip44: { addressIndex: `${addressIndex}` },
-        encryptedMnemonic: aesEncrypt(mnemonic, inMemory.password!),
-        encryptedPassword: aesEncrypt(inMemory.password!, mnemonic),
+        encryptedMnemonic: aesEncrypt(mnemonic, currentPassword!),
+        encryptedPassword: aesEncrypt(currentPassword!, mnemonic),
         encryptedRestoreString: sha512(mnemonic),
       },
     ]);

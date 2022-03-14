@@ -7,7 +7,7 @@ import Button from '~/Popup/components/common/Button';
 import Divider from '~/Popup/components/common/Divider';
 import Input from '~/Popup/components/common/Input';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { aesDecrypt, aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import { ButtonContainer, Container, CurrentPasswordContainer, NewPasswordContainer } from './styled';
@@ -16,9 +16,8 @@ import { useSchema } from './useSchema';
 
 export default function Entry() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { setInMemory } = useInMemory();
   const { changePasswordForm } = useSchema({ encryptedPassword: chromeStorage.encryptedPassword! });
-
+  const { setCurrentPassword } = useCurrentPassword();
   const [password, setPassword] = useState('');
 
   const { enqueueSnackbar } = useSnackbar();
@@ -57,7 +56,7 @@ export default function Entry() {
 
     await setChromeStorage('encryptedPassword', sha512(data.newPassword));
 
-    await setInMemory('password', data.newPassword);
+    await setCurrentPassword(data.newPassword);
 
     reset();
     enqueueSnackbar('Change password success');

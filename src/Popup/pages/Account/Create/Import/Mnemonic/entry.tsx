@@ -8,7 +8,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/IconButton';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import HDPathDialog from '~/Popup/pages/Account/components/HDPathDialog';
@@ -29,6 +29,8 @@ export type CheckWord = {
 export default function Entry() {
   const { navigateBack } = useNavigate();
 
+  const { currentPassword } = useCurrentPassword();
+
   const [addressIndex, setAddressIndex] = useState(0);
 
   const [isOpenHDPathDialog, setIsOpenHDPathDialog] = useState(false);
@@ -38,7 +40,6 @@ export default function Entry() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { inMemory } = useInMemory();
 
   const setDisposableLoading = useSetRecoilState(disposableLoadingState);
 
@@ -76,8 +77,8 @@ export default function Entry() {
         id: accountId,
         type: 'MNEMONIC',
         bip44: { addressIndex: `${addressIndex}` },
-        encryptedMnemonic: aesEncrypt(data.mnemonic, inMemory.password!),
-        encryptedPassword: aesEncrypt(inMemory.password!, data.mnemonic),
+        encryptedMnemonic: aesEncrypt(data.mnemonic, currentPassword!),
+        encryptedPassword: aesEncrypt(currentPassword!, data.mnemonic),
         encryptedRestoreString: sha512(data.mnemonic),
       },
     ]);

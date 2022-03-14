@@ -4,10 +4,8 @@ import { useRecoilState } from 'recoil';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeStorageState } from '~/Popup/recoils/chromeStorage';
-import { inMemoryState } from '~/Popup/recoils/inMemory';
 import { getAllStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
-import { requestGetAllInMemory } from '~/Popup/utils/message';
 import type { LanguageType } from '~/types/chromeStorage';
 
 type InitType = {
@@ -18,7 +16,6 @@ export default function Init({ children }: InitType) {
   const [isLoading, setIsLoading] = useState(true);
 
   const [chromeStorage, setChromeStorage] = useRecoilState(chromeStorageState);
-  const [inMemory, setInMemory] = useRecoilState(inMemoryState);
 
   const { changeLanguage, language } = useTranslation();
 
@@ -33,8 +30,6 @@ export default function Init({ children }: InitType) {
       const originChromeStorage = await getAllStorage();
 
       setChromeStorage(originChromeStorage);
-
-      setInMemory(await requestGetAllInMemory());
 
       if (language && !originChromeStorage.currency) {
         const newCurrency = language.startsWith('ko')
@@ -55,6 +50,12 @@ export default function Init({ children }: InitType) {
         await setStorage('language', newLanguage);
       }
 
+      if (!originChromeStorage.theme) {
+        const theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'DARK' : 'LIGHT';
+
+        await setStorage('theme', theme);
+      }
+
       // if (!chromeStorage.password) {
       //   console.log(chromeStorage);
       //   await openTab();
@@ -70,8 +71,7 @@ export default function Init({ children }: InitType) {
 
   useEffect(() => {
     console.log(JSON.stringify(chromeStorage, undefined, 3));
-    console.log(JSON.stringify(inMemory, undefined, 3));
-  }, [inMemory, chromeStorage]);
+  }, [chromeStorage]);
 
   if (isLoading) {
     return null;

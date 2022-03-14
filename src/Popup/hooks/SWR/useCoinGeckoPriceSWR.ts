@@ -12,10 +12,10 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const { currentAllowedChains } = useCurrentAllowedChains();
   const { currentNetwork } = useCurrentNetwork();
 
-  const ethereumCoinGeckoId = currentNetwork.coingeckoId ? `,${currentNetwork.coingeckoId}` : '';
+  const ethereumCoinGeckoId = currentNetwork.coinGeckoId ? `,${currentNetwork.coinGeckoId}` : '';
 
-  const coinGeckoIds = `${(currentAllowedChains.filter((chain) => chain.line === 'COSMOS' && chain.coingeckoId) as CosmosChain[])
-    .map((chain) => chain.coingeckoId)
+  const coinGeckoIds = `${(currentAllowedChains.filter((chain) => chain.line === 'COSMOS' && chain.coinGeckoId) as CosmosChain[])
+    .map((chain) => chain.coinGeckoId)
     .join(',')}${ethereumCoinGeckoId}`;
 
   const currencySymbols = Object.values(CURRENCY_TYPE).join(',');

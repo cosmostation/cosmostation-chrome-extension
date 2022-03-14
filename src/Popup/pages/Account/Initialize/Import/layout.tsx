@@ -8,5 +8,9 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   const { navigateBack } = useNavigate();
 
-  return <BaseLayout useHeader={{ onClick: () => navigateBack() }}>{children}</BaseLayout>;
+  return (
+    <BaseLayout useHeader={{ onClick: () => navigateBack() }} useTitle={{ title: 'Restore an account' }}>
+      {children}
+    </BaseLayout>
+  );
 }

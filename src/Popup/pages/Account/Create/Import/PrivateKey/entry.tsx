@@ -6,7 +6,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
@@ -25,11 +25,11 @@ export default function Entry() {
   const { navigateBack } = useNavigate();
 
   const setLoadingOverlay = useLoadingOverlay();
+  const { currentPassword } = useCurrentPassword();
 
   const { enqueueSnackbar } = useSnackbar();
 
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { inMemory } = useInMemory();
 
   const setDisposableLoading = useSetRecoilState(disposableLoadingState);
 
@@ -70,8 +70,8 @@ export default function Entry() {
       {
         id: accountId,
         type: 'PRIVATE_KEY',
-        encryptedPrivateKey: aesEncrypt(privateKey, inMemory.password!),
-        encryptedPassword: aesEncrypt(inMemory.password!, privateKey),
+        encryptedPrivateKey: aesEncrypt(privateKey, currentPassword!),
+        encryptedPassword: aesEncrypt(currentPassword!, privateKey),
         encryptedRestoreString: sha512(privateKey),
       },
     ]);

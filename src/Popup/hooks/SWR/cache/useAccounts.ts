@@ -2,7 +2,7 @@ import useSWR from 'swr';
 
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 
 type AccountList = {
@@ -13,8 +13,7 @@ type AccountList = {
 export function useAccounts(suspense?: boolean) {
   const { chromeStorage } = useChromeStorage();
   const { currentAllowedChains } = useCurrentAllowedChains();
-
-  const { inMemory } = useInMemory();
+  const { currentPassword } = useCurrentPassword();
 
   const { accounts } = chromeStorage;
 
@@ -26,7 +25,7 @@ export function useAccounts(suspense?: boolean) {
             const addresses: Record<string, string> = {};
 
             currentAllowedChains.forEach((chain) => {
-              const keypair = getKeyPair(account, chain, inMemory.password);
+              const keypair = getKeyPair(account, chain, currentPassword);
               const address = getAddress(chain, keypair?.publicKey);
               addresses[chain.id] = address;
             });

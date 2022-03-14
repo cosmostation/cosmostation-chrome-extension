@@ -1,13 +1,7 @@
 import type { IN_MEMORY_MESSAGE_TYPE, LISTENER_TYPE, MESSAGE_TYPE, METHOD_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
-import type {
-  EthGetBalanceRequestMessage,
-  EthRPCRequestMessage,
-  EthSendTransactionRequestMessage,
-  EthSignRequestMessage,
-} from './ethereum';
-import type { InMemoryData, InMemoryDataKeys } from './inMemory';
+import type { EthGetBalanceRequestMessage, EthRPCRequestMessage, EthSendTransactionRequestMessage, EthSignRequestMessage } from './ethereum';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type ListenerType = ValueOf<typeof LISTENER_TYPE>;
@@ -75,16 +69,4 @@ export type ListenerMessage<T> = {
   isCosmostation: boolean;
   type: ListenerType;
   message: T;
-};
-
-export type InMemoryMessageMethodGet = { method: typeof IN_MEMORY_MESSAGE_TYPE.GET; params: { key: InMemoryDataKeys } };
-export type InMemoryMessageMethodSet = {
-  method: typeof IN_MEMORY_MESSAGE_TYPE.SET;
-  params: { key: InMemoryDataKeys; value: InMemoryData[InMemoryDataKeys] };
-};
-export type InMemoryMessageMethodGetAll = { method: typeof IN_MEMORY_MESSAGE_TYPE.GET_ALL };
-
-export type InMemoryMessage = {
-  type: InMemoryType;
-  message: InMemoryMessageMethodGet | InMemoryMessageMethodSet | InMemoryMessageMethodGetAll;
 };

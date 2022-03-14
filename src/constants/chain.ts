@@ -15,6 +15,8 @@ export const LINE_TYPE = {
   ETHEREUM: 'ETHEREUM',
 } as const;
 
+export const MINTSCAN_URL = 'https://www.mintscan.io';
+
 export const COSMOS_CHAINS: CosmosChain[] = [
   {
     id: '62a8e13a-3107-40ef-ade4-58de45aa6c1f',
@@ -33,7 +35,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'cosmos' },
-    coingeckoId: 'cosmos',
+    coinGeckoId: 'cosmos',
+    explorerURL: `${MINTSCAN_URL}/cosmos`,
   },
   {
     id: 'd86e2b4e-e422-4b58-b687-f1de03cde152',
@@ -52,7 +55,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'iaa' },
-    coingeckoId: 'iris-network',
+    coinGeckoId: 'iris-network',
+    explorerURL: `${MINTSCAN_URL}/iris`,
   },
   {
     id: '634e5e88-0a26-4ef5-92b5-dbf4cf040a8a',
@@ -71,7 +75,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'kava' },
-    coingeckoId: 'kava',
+    coinGeckoId: 'kava',
+    explorerURL: `${MINTSCAN_URL}/kava`,
   },
   {
     id: 'c3e5474b-8cf7-467e-b6a8-706d2b694e5a',
@@ -89,7 +94,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'band' },
-    coingeckoId: 'band-protocol',
+    coinGeckoId: 'band-protocol',
+    explorerURL: `${MINTSCAN_URL}/band`,
   },
   {
     id: 'b869bcf8-f489-443a-9be4-56cac21f6f53',
@@ -108,7 +114,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'akash' },
-    coingeckoId: 'akash-network',
+    coinGeckoId: 'akash-network',
+    explorerURL: `${MINTSCAN_URL}/akash`,
   },
   {
     id: '29d61a8d-6bbe-4524-afa5-6f70931bcdee',
@@ -127,7 +134,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'certik' },
-    coingeckoId: 'certik',
+    coinGeckoId: 'certik',
+    explorerURL: `${MINTSCAN_URL}/certik`,
   },
   {
     id: '8c72318f-8279-4d37-a457-1cd4c0b1f160',
@@ -146,7 +154,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'sent' },
-    coingeckoId: 'sentinel-group',
+    coinGeckoId: 'sentinel-group',
+    explorerURL: `${MINTSCAN_URL}/sentinel`,
   },
   {
     id: '58c55107-2df3-4851-a68e-fee203308be2',
@@ -160,12 +169,13 @@ export const COSMOS_CHAINS: CosmosChain[] = [
     decimals: 6,
     bip44: {
       purpose: "44'",
-      coinType: "118'",
+      coinType: "750'",
       account: "0'",
       change: '0',
     },
     bech32Prefix: { address: 'persistence' },
-    coingeckoId: 'persistence',
+    coinGeckoId: 'persistence',
+    explorerURL: `${MINTSCAN_URL}/persistence`,
   },
   {
     id: '3b8e015e-ab6c-4095-9dd8-57e62f437f4f',
@@ -183,7 +193,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'fetch' },
-    coingeckoId: 'fetch-ai',
+    coinGeckoId: 'fetch-ai',
+    explorerURL: `${MINTSCAN_URL}/fetchai`,
   },
   {
     id: 'ba43a35a-0861-486a-9ce9-c23fb1ba610c',
@@ -202,7 +213,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'sif' },
-    coingeckoId: 'sifchain',
+    coinGeckoId: 'sifchain',
+    explorerURL: `${MINTSCAN_URL}/sifchain`,
   },
   {
     id: 'b006dccc-ff1e-4c5a-95ad-94f313029d93',
@@ -221,7 +233,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'cro' },
-    coingeckoId: 'crypto-com-chain',
+    coinGeckoId: 'crypto-com-chain',
+    explorerURL: `${MINTSCAN_URL}/crypto-org`,
   },
   {
     id: 'f850280f-316c-44ab-9624-c8d760dbca8c',
@@ -239,7 +252,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'ki' },
-    coingeckoId: 'ki',
+    coinGeckoId: 'ki',
+    explorerURL: `${MINTSCAN_URL}/ki-chain`,
   },
   {
     id: '320cfa03-401d-44b5-a40a-0de7c0d705eb',
@@ -257,7 +271,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'star' },
-    coingeckoId: 'starname',
+    coinGeckoId: 'starname',
+    explorerURL: `${MINTSCAN_URL}/starname`,
   },
   {
     id: '1272070c-b1f0-455e-9bb7-ff434b5011e9',
@@ -275,7 +290,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'panacea' },
-    coingeckoId: 'medibloc',
+    coinGeckoId: 'medibloc',
+    explorerURL: `${MINTSCAN_URL}/medibloc`,
   },
   {
     id: 'b6b1f158-9d6c-4779-a40d-9be657555612',
@@ -293,7 +309,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'emoney' },
-    coingeckoId: 'e-money',
+    coinGeckoId: 'e-money',
+    explorerURL: `${MINTSCAN_URL}/emoney`,
   },
   {
     id: '2be3f1c4-8c2e-4fc9-80c8-5877b0bb77c8',
@@ -311,7 +328,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'rizon' },
-    coingeckoId: 'hdac',
+    coinGeckoId: 'hdac',
+    explorerURL: `${MINTSCAN_URL}/rizon`,
   },
   {
     id: '23076a4e-8bba-4e36-8563-2c30948f290c',
@@ -329,7 +347,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
       change: '0',
     },
     bech32Prefix: { address: 'juno' },
-    coingeckoId: 'juno-network',
+    coinGeckoId: 'juno-network',
+    explorerURL: `${MINTSCAN_URL}/juno`,
   },
 ];
 
@@ -361,7 +380,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
     displayDenom: 'eth',
     decimals: 18,
     explorerURL: 'https://etherscan.io',
-    coingeckoId: 'ethereum',
+    coinGeckoId: 'ethereum',
   },
 ];
 

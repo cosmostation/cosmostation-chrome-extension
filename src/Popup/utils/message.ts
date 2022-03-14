@@ -1,13 +1,5 @@
 import { MESSAGE_TYPE } from '~/constants/message';
-import type { InMemoryData, InMemoryDataKeys } from '~/types/inMemory';
-import type {
-  BackgroundToContentScriptEventMessage,
-  InMemoryMessageMethodGet,
-  InMemoryMessageMethodGetAll,
-  InMemoryMessageMethodSet,
-  ListenerMessage,
-  ResponseMessage,
-} from '~/types/message';
+import type { BackgroundToContentScriptEventMessage, ListenerMessage, ResponseMessage } from '~/types/message';
 
 export function responseToWeb<T>(data: Omit<BackgroundToContentScriptEventMessage<T>, 'type'>) {
   console.log('popup response');
@@ -44,66 +36,6 @@ export function emitToWeb(data: Omit<ListenerMessage<ResponseMessage>, 'isCosmos
       if (tab.id) {
         chrome.tabs.sendMessage(tab.id, toContentScriptMessage);
       }
-    });
-  });
-}
-
-// request background
-export function requestGetInMemory<T extends InMemoryDataKeys>(key: T): Promise<InMemoryData[T]> {
-  const message: InMemoryMessageMethodGet = { method: 'get', params: { key } };
-
-  const requestMessage = {
-    type: MESSAGE_TYPE.IN_MEMORY,
-    message,
-  };
-
-  return new Promise((res, rej) => {
-    chrome.runtime.sendMessage(requestMessage, (response: InMemoryData[T]) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
-      }
-      res(response);
-    });
-  });
-}
-
-// request background
-export function requestSetInMemory<T extends InMemoryDataKeys>(
-  key: T,
-  value: InMemoryData[T],
-): Promise<InMemoryData[T]> {
-  const message: InMemoryMessageMethodSet = { method: 'set', params: { key, value } };
-
-  const requestMessage = {
-    type: MESSAGE_TYPE.IN_MEMORY,
-    message,
-  };
-
-  return new Promise((res, rej) => {
-    chrome.runtime.sendMessage(requestMessage, (response: InMemoryData[T]) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
-      }
-      res(response);
-    });
-  });
-}
-
-// request background
-export function requestGetAllInMemory(): Promise<InMemoryData> {
-  const message: InMemoryMessageMethodGetAll = { method: 'getAll' };
-
-  const requestMessage = {
-    type: MESSAGE_TYPE.IN_MEMORY,
-    message,
-  };
-
-  return new Promise((res, rej) => {
-    chrome.runtime.sendMessage(requestMessage, (response: InMemoryData) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
-      }
-      res(response);
     });
   });
 }

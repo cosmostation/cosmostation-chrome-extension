@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useResetRecoilState } from 'recoil';
 
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useInMemory } from '~/Popup/hooks/useInMemory';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import IconButton from '~/Popup/pages/Account/Initialize/components/IconButton';
 import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
@@ -20,7 +20,8 @@ export default function Entry() {
   const resetNewAccount = useResetRecoilState(newMnemonicAccountState);
 
   const { setChromeStorage } = useChromeStorage();
-  const { setInMemory } = useInMemory();
+
+  const { setCurrentPassword } = useCurrentPassword();
 
   useEffect(() => {
     resetNewAccount();
@@ -40,7 +41,7 @@ export default function Entry() {
     void setChromeStorage('selectedEthereumNetworkId', '');
     void setChromeStorage('encryptedPassword', null);
 
-    void setInMemory('password', null);
+    void setCurrentPassword(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
