@@ -13,11 +13,11 @@ import {
   getVestingRelatedBalances,
   getVestingRemained,
 } from '~/Popup/utils/cosmosVesting';
-import type { CosmosChain } from '~/types/chain';
+import type { TendermintChain } from '~/types/chain';
 
 import { useBalanceSWR } from './useBalanceSWR';
 
-export function useAmountSWR(chain: CosmosChain, suspense?: boolean) {
+export function useAmountSWR(chain: TendermintChain, suspense?: boolean) {
   const account = useAccountSWR(chain, suspense);
   const delegation = useDelegationSWR(chain, suspense);
   const undelegation = useUndelegationSWR(chain, suspense);

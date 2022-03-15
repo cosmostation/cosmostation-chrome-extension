@@ -8,7 +8,7 @@ export function getAddress(chain: Chain, publicKey?: Buffer) {
   if (!publicKey) {
     return '';
   }
-  if (chain.line === 'COSMOS') {
+  if (chain.line === 'TENDERMINT') {
     return getBech32Address(publicKey, chain.bech32Prefix.address);
   }
 

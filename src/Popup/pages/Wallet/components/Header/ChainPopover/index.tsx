@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
+import { ETHEREUM_CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -36,7 +36,7 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
 
   const { allowedChainIds } = chromeStorage;
 
-  const allowedCosmosChain = useMemo(() => COSMOS_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
+  const allowedTendermintChain = useMemo(() => TENDERMINT_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
   const allowedEthereumChain = useMemo(() => ETHEREUM_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
 
   return (
@@ -54,10 +54,10 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
         </HeaderContainer>
         <Divider />
         <BodyContainer>
-          {allowedCosmosChain.length > 0 && (
+          {allowedTendermintChain.length > 0 && (
             <TendermintChainListContainer>
               <ChainListContainer>
-                {allowedCosmosChain.map((chain) => (
+                {allowedTendermintChain.map((chain) => (
                   <ChainItemButton
                     key={chain.id}
                     isActive={currentChain.id === chain.id}
@@ -73,7 +73,7 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
               </ChainListContainer>
             </TendermintChainListContainer>
           )}
-          {allowedCosmosChain.length > 0 && allowedEthereumChain.length > 0 && <Divider />}
+          {allowedTendermintChain.length > 0 && allowedEthereumChain.length > 0 && <Divider />}
           {allowedEthereumChain.length > 0 && (
             <EthereumChainListContainer>
               <ChainListContainer>

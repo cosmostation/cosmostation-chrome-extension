@@ -16,7 +16,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import type { CosmosChain } from '~/types/chain';
+import type { TendermintChain } from '~/types/chain';
 
 import {
   ButtonCenterContainer,
@@ -42,11 +42,11 @@ import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import SendIcon from '~/images/icons/Send.svg';
 
-type CosmosNativeChainCardProps = {
-  chain: CosmosChain;
+type TendermintNativeChainCardProps = {
+  chain: TendermintChain;
 };
 
-export default function CosmosNativeChainCard({ chain }: CosmosNativeChainCardProps) {
+export default function TendermintNativeChainCard({ chain }: TendermintNativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
   const accounts = useAccounts(true);
@@ -168,7 +168,7 @@ export default function CosmosNativeChainCard({ chain }: CosmosNativeChainCardPr
   );
 }
 
-export function CosmosNativeChainCardSkeleton({ chain }: CosmosNativeChainCardProps) {
+export function TendermintNativeChainCardSkeleton({ chain }: TendermintNativeChainCardProps) {
   return (
     <Container>
       <FirstLineContainer>

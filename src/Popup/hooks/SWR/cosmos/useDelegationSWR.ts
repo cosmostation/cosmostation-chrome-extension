@@ -6,10 +6,10 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
-import type { CosmosChain } from '~/types/chain';
+import type { TendermintChain } from '~/types/chain';
 import type { Delegation, DelegationPayload, KavaDelegationPayload } from '~/types/cosmos/delegation';
 
-export function useDelegationSWR(chain: CosmosChain, suspense?: boolean) {
+export function useDelegationSWR(chain: TendermintChain, suspense?: boolean) {
   const accounts = useAccounts(suspense);
   const { chromeStorage } = useChromeStorage();
 

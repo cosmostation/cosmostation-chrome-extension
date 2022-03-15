@@ -5,7 +5,7 @@ import { CURRENCY_TYPE } from '~/constants/chromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { get } from '~/Popup/utils/axios';
-import type { CosmosChain } from '~/types/chain';
+import type { TendermintChain } from '~/types/chain';
 import type { SimplePrice } from '~/types/coingecko';
 
 export function useCoinGeckoPriceSWR(suspense?: boolean) {
@@ -14,7 +14,7 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
 
   const ethereumCoinGeckoId = currentNetwork.coinGeckoId ? `,${currentNetwork.coinGeckoId}` : '';
 
-  const coinGeckoIds = `${(currentAllowedChains.filter((chain) => chain.line === 'COSMOS' && chain.coinGeckoId) as CosmosChain[])
+  const coinGeckoIds = `${(currentAllowedChains.filter((chain) => chain.line === 'TENDERMINT' && chain.coinGeckoId) as TendermintChain[])
     .map((chain) => chain.coinGeckoId)
     .join(',')}${ethereumCoinGeckoId}`;
 

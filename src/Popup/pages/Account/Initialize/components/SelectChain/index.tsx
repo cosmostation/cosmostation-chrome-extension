@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
+import { ETHEREUM_CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Image from '~/Popup/components/common/Image';
 import Switch from '~/Popup/components/common/Switch';
@@ -34,7 +34,9 @@ export default function SelectChain() {
 
   const { allowedChainIds } = chromeStorage;
 
-  const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
+  const filteredTendermintChains = search
+    ? TENDERMINT_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+    : TENDERMINT_CHAINS;
   const filteredEthereumChains = search ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : ETHEREUM_CHAINS;
 
   return (
@@ -73,14 +75,14 @@ export default function SelectChain() {
           ))}
         </ListContainer>
 
-        {filteredCosmosChains.length > 0 && filteredEthereumChains.length > 0 && (
+        {filteredTendermintChains.length > 0 && filteredEthereumChains.length > 0 && (
           <DividerContainer>
             <Divider />
           </DividerContainer>
         )}
 
         <ListContainer>
-          {filteredCosmosChains.map((chain) => (
+          {filteredTendermintChains.map((chain) => (
             <Item
               key={chain.id}
               imageProps={{ alt: chain.chainName, src: chain.imageURL }}

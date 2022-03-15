@@ -16,8 +16,8 @@ type CommonChain = {
   imageURL?: string;
 };
 
-export type CosmosChain = {
-  line: typeof LINE_TYPE.COSMOS;
+export type TendermintChain = {
+  line: typeof LINE_TYPE.TENDERMINT;
   chainId: string;
   chainName: string;
   baseDenom: string;
@@ -60,4 +60,4 @@ export type EthereumToken = {
   imageURL?: string;
 };
 
-export type Chain = CosmosChain | EthereumChain;
+export type Chain = TendermintChain | EthereumChain;

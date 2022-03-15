@@ -9,13 +9,13 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import type { CosmosChain } from '~/types/chain';
+import type { TendermintChain } from '~/types/chain';
 
-type CosmosChainItemProps = {
-  chain: CosmosChain;
+type TendermintChainItemProps = {
+  chain: TendermintChain;
 };
 
-export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
+export default function TendermintChainItem({ chain }: TendermintChainItemProps) {
   const { chromeStorage } = useChromeStorage();
   const setDashboard = useSetRecoilState(dashboardState);
   const { data } = useCoinGeckoPriceSWR();
@@ -50,7 +50,7 @@ export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
   );
 }
 
-export function CosmosChainItemSkeleton({ chain }: CosmosChainItemProps) {
+export function TendermintChainItemSkeleton({ chain }: TendermintChainItemProps) {
   const { setCurrentChain } = useCurrentChain();
   const { navigate } = useNavigate();
 

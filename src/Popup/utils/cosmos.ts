@@ -6,10 +6,10 @@ import sortKeys from 'sort-keys';
 import TinySecp256k1 from 'tiny-secp256k1';
 
 import { cosmos } from '~/proto/cosmos.js';
-import type { CosmosChain } from '~/types/chain';
+import type { TendermintChain } from '~/types/chain';
 import type { SignAminoDoc, SignDirectDoc } from '~/types/cosmos';
 
-export function cosmosURL(chain: CosmosChain) {
+export function cosmosURL(chain: TendermintChain) {
   const { restURL } = chain;
 
   return {

@@ -76,7 +76,7 @@ export default function Entry() {
           <StyledInput140
             multiline
             minRows={6}
-            placeholder={'To restore your password,\nplease enter your Cosmostation Wallet\nrecovery code (or phrase).'}
+            placeholder={'To restore your password,\nplease enter your Tenderminttation Wallet\nrecovery code (or phrase).'}
             type="password"
             inputProps={register('restoreString', {
               setValueAs: (v: string) => {

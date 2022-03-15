@@ -3,17 +3,17 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 
-import CosmosNativeChainCard, { CosmosNativeChainCardSkeleton } from './CosmosNativeChainCard';
 import EthereumNativeChainCard, { EthereumNativeChainCardSkeleton } from './EthereumNativeChainCard';
+import TendermintNativeChainCard, { TendermintNativeChainCardSkeleton } from './TendermintNativeChainCard';
 
 export default function NativeChainCard() {
   const { currentChain } = useCurrentChain();
 
-  if (currentChain.line === 'COSMOS') {
+  if (currentChain.line === 'TENDERMINT') {
     return (
-      <ErrorBoundary fallback={<CosmosNativeChainCardSkeleton chain={currentChain} />}>
-        <Suspense fallback={<CosmosNativeChainCardSkeleton chain={currentChain} />}>
-          <CosmosNativeChainCard chain={currentChain} />
+      <ErrorBoundary fallback={<TendermintNativeChainCardSkeleton chain={currentChain} />}>
+        <Suspense fallback={<TendermintNativeChainCardSkeleton chain={currentChain} />}>
+          <TendermintNativeChainCard chain={currentChain} />
         </Suspense>
       </ErrorBoundary>
     );

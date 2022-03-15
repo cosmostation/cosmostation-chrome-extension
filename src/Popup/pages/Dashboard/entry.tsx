@@ -8,8 +8,8 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import CosmosChainItem, { CosmosChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/CosmosChainItem';
 import EthereumChainItem, { EthereumChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/EthereumChainItem';
+import TendermintChainItem, { TendermintChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/TendermintChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { plus } from '~/Popup/utils/big';
 
@@ -60,10 +60,10 @@ export default function Entry() {
       </div>
       <ChainList data-height={listHeight}>
         {chainList.map((item) =>
-          item.chain.line === 'COSMOS' ? (
-            <ErrorBoundary key={item.chain.id} fallback={<CosmosChainItemSkeleton chain={item.chain} />}>
-              <Suspense fallback={<CosmosChainItemSkeleton chain={item.chain} />}>
-                <CosmosChainItem chain={item.chain} />
+          item.chain.line === 'TENDERMINT' ? (
+            <ErrorBoundary key={item.chain.id} fallback={<TendermintChainItemSkeleton chain={item.chain} />}>
+              <Suspense fallback={<TendermintChainItemSkeleton chain={item.chain} />}>
+                <TendermintChainItem chain={item.chain} />
               </Suspense>
             </ErrorBoundary>
           ) : (
