@@ -1,4 +1,4 @@
-import type { Amount } from '~/types/cosmos/common';
+import type { Amount } from '~/types/tendermint/common';
 
 export type VestingType =
   | 'BaseVestingAccount'

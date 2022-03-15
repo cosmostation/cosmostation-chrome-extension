@@ -1,5 +1,5 @@
-import type { Pagination } from '~/types/cosmos/common';
-import type { Validators } from '~/types/cosmos/validator';
+import type { Pagination } from '~/types/tendermint/common';
+import type { Validators } from '~/types/tendermint/validator';
 
 export type ParsingUnbondingProps = {
   balance: string;

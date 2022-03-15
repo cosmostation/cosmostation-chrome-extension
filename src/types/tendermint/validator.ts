@@ -1,4 +1,4 @@
-import type { Pagination, Uptime } from '~/types/cosmos/common';
+import type { Pagination, Uptime } from '~/types/tendermint/common';
 
 export type Validators = {
   account_address: string;

@@ -16,7 +16,7 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
 
   const coinGeckoIds = `${(currentAllowedChains.filter((chain) => chain.line === 'TENDERMINT' && chain.coinGeckoId) as TendermintChain[])
     .map((chain) => chain.coinGeckoId)
-    .join(',')}${ethereumCoinGeckoId}`;
+    .join(',')}${ethereumCoinGeckoId},tether`;
 
   const currencySymbols = Object.values(CURRENCY_TYPE).join(',');
 

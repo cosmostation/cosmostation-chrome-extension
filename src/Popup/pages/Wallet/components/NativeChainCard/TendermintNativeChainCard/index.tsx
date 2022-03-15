@@ -10,7 +10,7 @@ import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+import { useAmountSWR } from '~/Popup/hooks/SWR/tendermint/useAmountSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';

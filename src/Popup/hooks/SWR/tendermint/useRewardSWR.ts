@@ -4,9 +4,9 @@ import useSWR from 'swr';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { get } from '~/Popup/utils/axios';
-import { cosmosURL } from '~/Popup/utils/cosmos';
+import { cosmosURL } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
-import type { RewardPayload } from '~/types/cosmos/reward';
+import type { RewardPayload } from '~/types/tendermint/reward';
 
 export function useRewardSWR(chain: TendermintChain, suspense?: boolean) {
   const accounts = useAccounts(suspense);

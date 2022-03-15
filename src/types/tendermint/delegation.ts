@@ -1,4 +1,4 @@
-import type { Amount, Pagination } from '~/types/cosmos/common';
+import type { Amount, Pagination } from '~/types/tendermint/common';
 
 export type DelegationResponse = {
   balance: Amount;

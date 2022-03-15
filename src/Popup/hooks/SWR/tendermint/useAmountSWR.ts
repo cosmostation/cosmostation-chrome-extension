@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import Big from 'big.js';
 
-import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
-import { useDelegationSWR } from '~/Popup/hooks/SWR/cosmos/useDelegationSWR';
-import { useRewardSWR } from '~/Popup/hooks/SWR/cosmos/useRewardSWR';
-import { useUndelegationSWR } from '~/Popup/hooks/SWR/cosmos/useUndelegationSWR';
+import { useAccountSWR } from '~/Popup/hooks/SWR/tendermint/useAccountSWR';
+import { useDelegationSWR } from '~/Popup/hooks/SWR/tendermint/useDelegationSWR';
+import { useRewardSWR } from '~/Popup/hooks/SWR/tendermint/useRewardSWR';
+import { useUndelegationSWR } from '~/Popup/hooks/SWR/tendermint/useUndelegationSWR';
 import { gt, plus } from '~/Popup/utils/big';
 import {
   calculatingDelegatedVestingTotal,
@@ -12,7 +12,7 @@ import {
   getPersistenceVestingRelatedBalances,
   getVestingRelatedBalances,
   getVestingRemained,
-} from '~/Popup/utils/cosmosVesting';
+} from '~/Popup/utils/tendermintVesting';
 import type { TendermintChain } from '~/types/chain';
 
 import { useBalanceSWR } from './useBalanceSWR';

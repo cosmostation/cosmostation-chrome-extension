@@ -5,9 +5,9 @@ import useSWR from 'swr';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { cosmosURL } from '~/Popup/utils/cosmos';
+import { cosmosURL } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
-import type { AuthAccount, AuthAccountsPayload, AuthAccountValue, AuthBaseVestingAccount, AuthBaseWithStartAndPeriod } from '~/types/cosmos/account';
+import type { AuthAccount, AuthAccountsPayload, AuthAccountValue, AuthBaseVestingAccount, AuthBaseWithStartAndPeriod } from '~/types/tendermint/account';
 
 export function useAccountSWR(chain: TendermintChain, suspense?: boolean) {
   const accounts = useAccounts(suspense);

@@ -3,8 +3,8 @@
 import dayjs from 'dayjs';
 
 import { gt, minus, plus } from '~/Popup/utils/big';
-import type { AuthAccount, VestingType } from '~/types/cosmos/account';
-import type { Amount } from '~/types/cosmos/common';
+import type { AuthAccount, VestingType } from '~/types/tendermint/account';
+import type { Amount } from '~/types/tendermint/common';
 
 export interface IVesting {
   originAmount?: Amount;
