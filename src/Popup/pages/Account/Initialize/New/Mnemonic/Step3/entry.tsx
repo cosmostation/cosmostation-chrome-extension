@@ -7,6 +7,7 @@ import { Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 
 import {
@@ -32,6 +33,8 @@ export default function Entry() {
   const newAccount = useRecoilValue(newMnemonicAccountState);
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!newAccount.accountName || !newAccount.mnemonic) {
@@ -102,7 +105,7 @@ export default function Entry() {
         </CheckWordContainer>
         <BottomContainer>
           <Button type="submit" disabled={!isDirty}>
-            Next
+            {t('pages.Account.Initialize.New.Mnemonic.Step3.entry.next')}
           </Button>
         </BottomContainer>
       </Container>

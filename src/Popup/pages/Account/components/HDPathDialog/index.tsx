@@ -6,6 +6,7 @@ import { Typography } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import {
   Container,
@@ -37,6 +38,8 @@ export default function HDPathDialog({ onClose, onSubmitHdPath, currentAddressIn
 
   const { hdPathForm } = useSchema();
 
+  const { t } = useTranslation();
+
   const {
     register,
     handleSubmit,
@@ -61,11 +64,11 @@ export default function HDPathDialog({ onClose, onSubmitHdPath, currentAddressIn
 
   return (
     <Dialog {...remainder} onClose={handleOnClose}>
-      <DialogHeader onClose={handleOnClose}>HD path setting</DialogHeader>
+      <DialogHeader onClose={handleOnClose}>{t('pages.Account.components.HDPathDialog.index.title')}</DialogHeader>
       <form onSubmit={handleSubmit(submit)}>
         <Container>
           <DescriptionContainer>
-            <Typography variant="h6">Above are derivation paths for Cosmos, Ethereum, and Bitcoin.</Typography>
+            <Typography variant="h6">{t('pages.Account.components.HDPathDialog.index.description')}</Typography>
           </DescriptionContainer>
           <InfoContainer>
             {HD_PATH_INFOS.map((info) => (
@@ -97,7 +100,7 @@ export default function HDPathDialog({ onClose, onSubmitHdPath, currentAddressIn
             />
           </InputContainer>
           <StyledButton type="submit" disabled={!isDirty}>
-            Confirm
+            {t('pages.Account.components.HDPathDialog.index.confirm')}
           </StyledButton>
         </Container>
       </form>

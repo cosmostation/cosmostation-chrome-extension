@@ -4,6 +4,7 @@ import { useResetRecoilState } from 'recoil';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import IconButton from '~/Popup/pages/Account/Initialize/components/IconButton';
 import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 
@@ -16,6 +17,7 @@ import Logo40Icon from '~/images/icons/Logo40.svg';
 
 export default function Entry() {
   const { navigate } = useNavigate();
+  const { t } = useTranslation();
 
   const resetNewAccount = useResetRecoilState(newMnemonicAccountState);
 
@@ -56,10 +58,10 @@ export default function Entry() {
       </LogoContainer>
       <ButtonContainer>
         <IconButton Icon={CreateAccount28Icon} onClick={() => navigate('/account/initialize/new/mnemonic/step1')}>
-          Create account
+          {t('pages.Account.Initialize.entry.createWallet')}
         </IconButton>
         <IconButton Icon={Import28Icon} onClick={() => navigate('/account/initialize/import')}>
-          Import account
+          {t('pages.Account.Initialize.entry.importWallet')}
         </IconButton>
       </ButtonContainer>
     </Container>

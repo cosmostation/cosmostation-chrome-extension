@@ -4,6 +4,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { newPrivateKeyAccountState } from '~/Popup/recoils/newAccount';
 
 import { BottomContainer, Container, InputContainer, StyledInput48, StyledInput140 } from './styled';
@@ -21,6 +22,8 @@ export default function Entry() {
   const [newAccount, setNewAccount] = useRecoilState(newPrivateKeyAccountState);
 
   const { privateKeyForm } = useSchema();
+
+  const { t } = useTranslation();
 
   const {
     register,
@@ -53,13 +56,18 @@ export default function Entry() {
       <Container>
         <InputContainer>
           <div>
-            <StyledInput48 placeholder="account name" inputProps={register('name')} error={!!errors.name} helperText={errors.name?.message} />
+            <StyledInput48
+              placeholder={t('pages.Account.Initialize.Import.PrivateKey.entry.accountName')}
+              inputProps={register('name')}
+              error={!!errors.name}
+              helperText={errors.name?.message}
+            />
           </div>
           <div>
             <StyledInput140
               multiline
               minRows={6}
-              placeholder={'To restore your password,\nplease enter your Cosmostation Wallet\nrecovery code (or phrase).'}
+              placeholder={t('pages.Account.Initialize.Import.PrivateKey.entry.privateKey')}
               inputProps={register('privateKey', { setValueAs: (v: string) => v.trim() })}
               error={!!errors.privateKey}
               helperText={errors.privateKey?.message}
@@ -68,7 +76,7 @@ export default function Entry() {
         </InputContainer>
         <BottomContainer>
           <Button type="submit" disabled={!isDirty}>
-            Import
+            {t('pages.Account.Initialize.Import.PrivateKey.entry.next')}
           </Button>
         </BottomContainer>
       </Container>

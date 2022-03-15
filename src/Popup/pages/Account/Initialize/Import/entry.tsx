@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useResetRecoilState } from 'recoil';
 
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import IconButton from '~/Popup/pages/Account/Initialize/components/IconButton';
 import { newMnemonicAccountState, newPrivateKeyAccountState } from '~/Popup/recoils/newAccount';
 
@@ -12,6 +13,8 @@ import Mnemonic28Icon from '~/images/icons/Mnemonic28.svg';
 
 export default function Entry() {
   const { navigate } = useNavigate();
+
+  const { t } = useTranslation();
 
   const resetNewMnemonicAccount = useResetRecoilState(newMnemonicAccountState);
   const resetNewPrivateKeyAccount = useResetRecoilState(newPrivateKeyAccountState);
@@ -26,10 +29,10 @@ export default function Entry() {
     <Container>
       <ButtonContainer>
         <IconButton Icon={Mnemonic28Icon} onClick={() => navigate('/account/initialize/import/mnemonic')}>
-          Restore with mnemonic
+          {t('pages.Account.Initialize.Import.entry.mnemonic')}
         </IconButton>
         <IconButton Icon={Key28Icon} onClick={() => navigate('/account/initialize/import/private-key')}>
-          Restore with private key
+          {t('pages.Account.Initialize.Import.entry.privateKey')}
         </IconButton>
       </ButtonContainer>
     </Container>

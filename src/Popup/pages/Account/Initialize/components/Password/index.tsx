@@ -3,6 +3,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import { ButtonContainer, Container, PasswordContainer } from './styled';
 import type { PasswordForm } from './useSchema';
@@ -14,6 +15,8 @@ type PasswordProps = {
 
 export default function Password({ onSubmit }: PasswordProps) {
   const { passwordForm } = useSchema();
+
+  const { t } = useTranslation();
 
   const {
     register,
@@ -34,7 +37,13 @@ export default function Password({ onSubmit }: PasswordProps) {
     <form onSubmit={handleSubmit(submit)}>
       <Container>
         <div>
-          <Input type="password" inputProps={register('password')} error={!!errors.password} helperText={errors.password?.message} placeholder="password" />
+          <Input
+            type="password"
+            inputProps={register('password')}
+            error={!!errors.password}
+            helperText={errors.password?.message}
+            placeholder={t('pages.Account.Initialize.components.Password.index.newPlaceholder')}
+          />
         </div>
         <PasswordContainer>
           <Input
@@ -42,12 +51,12 @@ export default function Password({ onSubmit }: PasswordProps) {
             inputProps={register('repeatPassword')}
             error={!!errors.repeatPassword}
             helperText={errors.repeatPassword?.message}
-            placeholder="password confirmation"
+            placeholder={t('pages.Account.Initialize.components.Password.index.confirmPlaceholder')}
           />
         </PasswordContainer>
         <ButtonContainer>
           <Button type="submit" disabled={!isDirty}>
-            Next
+            {t('pages.Account.Initialize.components.Password.index.next')}
           </Button>
         </ButtonContainer>
       </Container>

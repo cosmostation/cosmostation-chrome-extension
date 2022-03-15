@@ -1,7 +1,138 @@
 {
-  "page": {
-    "dddd": {
-      "dddd": "__STRING_NOT_TRANSLATED__"
+  "pages": {
+    "Account": {
+      "Initialize": {
+        "Complete": {
+          "entry": {
+            "description": "You can use the extension now.",
+            "done": "Done",
+            "title": "Registration complete!"
+          }
+        },
+        "Import": {
+          "Mnemonic": {
+            "entry": {
+              "hdPathSetting": "HD path setting",
+              "mnemonicPlaceholder": "To restore with mnemonic, please enter your mnemonic phrases from Cosmostation Wallet.",
+              "namePlaceholder": "Account name",
+              "next": "Next"
+            },
+            "layout": {
+              "title": "Restore with Mnemonics"
+            }
+          },
+          "PrivateKey": {
+            "entry": {
+              "accountName": "Account name",
+              "next": "Next",
+              "privateKey": "To restore with private key, please enter your private key from Cosmostation Wallet. (The private key is a 66-digit string starting with 0x)"
+            },
+            "layout": {
+              "title": "Restore with Private Key"
+            }
+          },
+          "Step2": {
+            "entry": {
+              "next": "Next"
+            },
+            "layout": {
+              "description": "Select chains to use with cosmostation wallet.",
+              "title": "Select a chain"
+            }
+          },
+          "Step3": {
+            "layout": {
+              "description": "Please enter a password for your wallet",
+              "title": "Create password"
+            }
+          },
+          "entry": {
+            "mnemonic": "Restore with Mnemonics",
+            "privateKey": "Restore with Private Key"
+          },
+          "layout": {
+            "title": "Import Wallet"
+          }
+        },
+        "New": {
+          "Mnemonic": {
+            "Step1": {
+              "entry": {
+                "next": "Next",
+                "placeholder": "account name"
+              },
+              "layout": {
+                "description": "Please enter account name.",
+                "title": "Account name"
+              }
+            },
+            "Step2": {
+              "entry": {
+                "12Words": "12 words",
+                "24Words": "24 words",
+                "copy": "Copy",
+                "hdPathSetting": "HD path setting",
+                "next": "Next",
+                "seedPhrase": "Seed phrase"
+              },
+              "layout": {
+                "title": "Mnemonic phrases"
+              }
+            },
+            "Step3": {
+              "entry": {
+                "next": "Next"
+              },
+              "layout": {
+                "description": "Please enter your seed phrase below. Make sure you stored mnemonic phrases safely.",
+                "title": "Verify seed phrase"
+              }
+            },
+            "Step4": {
+              "entry": {
+                "next": "Next"
+              },
+              "layout": {
+                "description": "Select chains to use with cosmostation wallet.",
+                "title": "Select a chain"
+              }
+            },
+            "Step5": {
+              "layout": {
+                "description": "Please enter a password for your wallet",
+                "title": "Create password"
+              }
+            }
+          }
+        },
+        "components": {
+          "Password": {
+            "index": {
+              "confirmPlaceholder": "Confirm password",
+              "newPlaceholder": "New password",
+              "next": "Next"
+            }
+          },
+          "SelectChain": {
+            "index": {
+              "placeholder": "Search a chain"
+            }
+          }
+        },
+        "entry": {
+          "createWallet": "Create Wallet",
+          "importWallet": "Import Wallet"
+        }
+      },
+      "components": {
+        "HDPathDialog": {
+          "index": {
+            "confirm": "Confirm",
+            "description": "Below are derivation paths for Cosmos and Ethereum",
+            "title": "HD path setting"
+          }
+        }
+      }
     }
   },
   "schema": {

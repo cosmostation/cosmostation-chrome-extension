@@ -8,6 +8,7 @@ import { Typography } from '@mui/material';
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/IconButton';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import HDPathDialog from '~/Popup/pages/Account/components/HDPathDialog';
 import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 
@@ -44,6 +45,8 @@ export default function Entry() {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const { t } = useTranslation();
+
   const [newAccount, setNewAccount] = useRecoilState(newMnemonicAccountState);
 
   const mnemonic = useMemo(() => bip39.generateMnemonic(bits), [bits]);
@@ -64,14 +67,14 @@ export default function Entry() {
     <Container>
       <MnemonicTitleContainer>
         <MnemonicTitleLeftContainer>
-          <Typography variant="h4">Seed Phrase</Typography>
+          <Typography variant="h4">{t('pages.Account.Initialize.New.Mnemonic.Step2.entry.seedPhrase')}</Typography>
         </MnemonicTitleLeftContainer>
         <MnemonicTitleRightContainer>
           <MnemonicButton isActvie={bits === mnemonicBits[12]} onClick={() => setBits(128)}>
-            12 words
+            {t('pages.Account.Initialize.New.Mnemonic.Step2.entry.12Words')}
           </MnemonicButton>
           <MnemonicButton isActvie={bits === mnemonicBits[24]} onClick={() => setBits(256)}>
-            24 words
+            {t('pages.Account.Initialize.New.Mnemonic.Step2.entry.24Words')}
           </MnemonicButton>
         </MnemonicTitleRightContainer>
       </MnemonicTitleContainer>
@@ -98,14 +101,14 @@ export default function Entry() {
             }
           }}
         >
-          Copy
+          {t('pages.Account.Initialize.New.Mnemonic.Step2.entry.copy')}
         </IconButton>
       </CopyButtonContainer>
 
       <BottomContainer>
         <BottomSettingButtonContainer>
           <IconButton Icon={Setting16Icon} onClick={() => setIsOpenHDPathDialog(true)}>
-            HD path setting
+            {t('pages.Account.Initialize.New.Mnemonic.Step2.entry.hdPathSetting')}
           </IconButton>
         </BottomSettingButtonContainer>
         <Button
@@ -113,7 +116,7 @@ export default function Entry() {
             navigate('/account/initialize/new/mnemonic/step3');
           }}
         >
-          Next
+          {t('pages.Account.Initialize.New.Mnemonic.Step2.entry.next')}
         </Button>
       </BottomContainer>
       <HDPathDialog

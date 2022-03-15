@@ -7,6 +7,7 @@ import Divider from '~/Popup/components/common/Divider';
 import Image from '~/Popup/components/common/Image';
 import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { upperCaseFirst } from '~/Popup/utils/common';
 
 import {
@@ -27,6 +28,7 @@ export default function SelectChain() {
   const [search, setSearch] = useState('');
 
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const { addAllowedChainId, removeAllowedChainId, chromeStorage } = useChromeStorage();
 
@@ -43,7 +45,7 @@ export default function SelectChain() {
             <StyledSearch20Icon />
           </InputAdornment>
         }
-        placeholder="Search chain"
+        placeholder={t('pages.Account.Initialize.components.SelectChain.index.placeholder')}
         value={search}
         onChange={(event) => setSearch(event.currentTarget.value)}
       />

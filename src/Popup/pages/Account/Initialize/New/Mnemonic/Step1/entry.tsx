@@ -4,6 +4,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 
 import { BottomContainer, Container, StyledInput } from './styled';
@@ -17,6 +18,7 @@ export default function Entry() {
 
   const [newAccount, setNewAccount] = useRecoilState(newMnemonicAccountState);
 
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -39,10 +41,15 @@ export default function Entry() {
   return (
     <form onSubmit={handleSubmit(submit)}>
       <Container>
-        <StyledInput placeholder="account name" inputProps={register('name')} error={!!errors.name} helperText={errors.name?.message} />
+        <StyledInput
+          placeholder={t('pages.Account.Initialize.New.Mnemonic.Step1.entry.placeholder')}
+          inputProps={register('name')}
+          error={!!errors.name}
+          helperText={errors.name?.message}
+        />
         <BottomContainer>
           <Button type="submit" disabled={!isDirty && !newAccount.accountName}>
-            Next
+            {t('pages.Account.Initialize.New.Mnemonic.Step1.entry.next')}
           </Button>
         </BottomContainer>
       </Container>
