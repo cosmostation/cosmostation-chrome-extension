@@ -1,5 +1,6 @@
 import BaseLayout from '~/Popup/components/BaseLayout';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 type LayoutProps = {
   children: JSX.Element;
@@ -8,8 +9,10 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   const { navigateBack } = useNavigate();
 
+  const { t } = useTranslation();
+
   return (
-    <BaseLayout useHeader={{}} useSubHeader={{ title: 'Verify secret phrase', onClick: () => navigateBack() }}>
+    <BaseLayout useHeader={{}} useSubHeader={{ title: t('pages.Account.Create.New.Mnemonic.Step3.layout.title'), onClick: () => navigateBack() }}>
       {children}
     </BaseLayout>
   );

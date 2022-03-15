@@ -6,6 +6,7 @@ import type { DialogProps, PopoverProps } from '@mui/material';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Account } from '~/types/chromeStorage';
 
 import { Container, StyledButton, StyledInput } from './styled';
@@ -21,6 +22,8 @@ export default function ChangeNameDialog({ onClose, account, ...remainder }: Cha
   const { accountName } = chromeStorage;
 
   const { changeNameForm } = useSchema();
+
+  const { t } = useTranslation();
 
   const {
     register,
@@ -47,7 +50,7 @@ export default function ChangeNameDialog({ onClose, account, ...remainder }: Cha
 
   return (
     <Dialog {...remainder} onClose={handleOnClose}>
-      <DialogHeader onClose={handleOnClose}>Rename account</DialogHeader>
+      <DialogHeader onClose={handleOnClose}>{t('pages.Account.Management.components.ManagePopover.ChangeNameDialog.index.title')}</DialogHeader>
       <Container>
         <form onSubmit={handleSubmit(submit)}>
           <StyledInput
@@ -57,7 +60,7 @@ export default function ChangeNameDialog({ onClose, account, ...remainder }: Cha
             helperText={errors.name?.message}
           />
           <StyledButton type="submit" disabled={!isDirty}>
-            Submit
+            {t('pages.Account.Management.components.ManagePopover.ChangeNameDialog.index.submit')}
           </StyledButton>
         </form>
       </Container>

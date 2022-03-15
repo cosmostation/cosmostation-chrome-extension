@@ -11,6 +11,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import HDPathDialog from '~/Popup/pages/Account/components/HDPathDialog';
 import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
 import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
@@ -44,6 +45,8 @@ export default function Entry() {
   const setDisposableLoading = useSetRecoilState(disposableLoadingState);
 
   const { mnemonicForm } = useSchema();
+
+  const { t } = useTranslation();
 
   const {
     register,
@@ -97,13 +100,18 @@ export default function Entry() {
       <Container>
         <InputContainer>
           <div>
-            <StyledInput48 placeholder="account name" inputProps={register('name')} error={!!errors.name} helperText={errors.name?.message} />
+            <StyledInput48
+              placeholder={t('pages.Account.Create.Import.Mnemonic.entry.accountNamePlaceholder')}
+              inputProps={register('name')}
+              error={!!errors.name}
+              helperText={errors.name?.message}
+            />
           </div>
           <div>
             <StyledInput140
               multiline
               minRows={6}
-              placeholder={'To restore your password,\nplease enter your Cosmostation Wallet\nrecovery code (or phrase).'}
+              placeholder={t('pages.Account.Create.Import.Mnemonic.entry.mnemonicPlaceholder')}
               inputProps={register('mnemonic', { setValueAs: (v: string) => v.trim() })}
               error={!!errors.mnemonic}
               helperText={errors.mnemonic?.message}
@@ -113,11 +121,11 @@ export default function Entry() {
         <BottomContainer>
           <BottomSettingButtonContainer>
             <IconButton Icon={Setting16Icon} onClick={() => setIsOpenHDPathDialog(true)}>
-              HD path setting
+              {t('pages.Account.Create.Import.Mnemonic.entry.hdPathSetting')}
             </IconButton>
           </BottomSettingButtonContainer>
           <Button type="submit" disabled={!isDirty}>
-            Import
+            {t('pages.Account.Create.Import.Mnemonic.entry.done')}
           </Button>
         </BottomContainer>
         <HDPathDialog

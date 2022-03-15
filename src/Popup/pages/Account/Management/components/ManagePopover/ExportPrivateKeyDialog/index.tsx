@@ -7,6 +7,7 @@ import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { getKeyPair } from '~/Popup/utils/common';
 import { sha512 } from '~/Popup/utils/crypto';
 import type { Account } from '~/types/chromeStorage';
@@ -19,11 +20,9 @@ import { useSchema } from './useSchema';
 type ExportPrivateKeyDialogProps = Omit<DialogProps, 'children'> & { account: Account; popoverOnClose?: PopoverProps['onClose'] };
 
 export default function ExportPrivateKeyDialog({ onClose, account, ...remainder }: ExportPrivateKeyDialogProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { chromeStorage } = useChromeStorage();
 
   const { currentChain } = useCurrentChain();
-
-  const { bip44 } = currentChain;
 
   const { accountName, encryptedPassword } = chromeStorage;
 
@@ -33,6 +32,8 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
 
   const invalidNames = [...Object.values(accountName)];
   invalidNames.splice(invalidNames.indexOf(accountName[account.id], 1));
+
+  const { t } = useTranslation();
 
   const { passwordForm } = useSchema({ encryptedPassword: encryptedPassword! });
 
@@ -69,7 +70,7 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
         <PrivateKeyView privateKey={privateKey} onClose={handleOnClose} />
       ) : (
         <>
-          <DialogHeader onClose={handleOnClose}>View Private Key</DialogHeader>
+          <DialogHeader onClose={handleOnClose}>{t('pages.Account.Management.components.ManagePopover.ExportPrivateKeyDialog.index.title')}</DialogHeader>
           <Container>
             <form onSubmit={handleSubmit(submit)}>
               <StyledInput
@@ -80,12 +81,12 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
                   },
                 })}
                 type="password"
-                placeholder="Please type password to confirm"
+                placeholder={t('pages.Account.Management.components.ManagePopover.ExportPrivateKeyDialog.index.placeholder')}
                 error={!!errors.password}
                 helperText={errors.password?.message}
               />
               <StyledButton type="submit" disabled={!isDirty}>
-                Submit
+                {t('pages.Account.Management.components.ManagePopover.ExportPrivateKeyDialog.index.confirm')}
               </StyledButton>
             </form>
           </Container>

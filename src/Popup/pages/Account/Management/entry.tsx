@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Account } from '~/types/chromeStorage';
 
 import AccountItem from './components/AccountItem';
@@ -19,6 +20,8 @@ export default function Entry() {
   const isOpenPopover = Boolean(popoverAnchorEl);
 
   const { accounts, accountName } = chromeStorage;
+
+  const { t } = useTranslation();
   return (
     <Container>
       <ListContainer>
@@ -36,7 +39,7 @@ export default function Entry() {
         ))}
       </ListContainer>
       <ButtonContainer>
-        <StyledButton onClick={() => navigate('/account/create')}>Create Account</StyledButton>
+        <StyledButton onClick={() => navigate('/account/create')}>{t('pages.Account.Management.entry.addAccount')}</StyledButton>
       </ButtonContainer>
       <ManagePopover
         account={selectedAccount}

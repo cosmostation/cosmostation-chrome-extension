@@ -8,6 +8,7 @@ import { Typography } from '@mui/material';
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/IconButton';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import HDPathDialog from '~/Popup/pages/Account/components/HDPathDialog';
 import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 
@@ -46,6 +47,8 @@ export default function Entry() {
 
   const [newAccount, setNewAccount] = useRecoilState(newMnemonicAccountState);
 
+  const { t } = useTranslation();
+
   const mnemonic = useMemo(() => bip39.generateMnemonic(bits), [bits]);
   const splitedMnemonic = mnemonic.split(' ');
 
@@ -62,17 +65,17 @@ export default function Entry() {
 
   return (
     <Container>
-      <WarningDescription>This phrase is the only way to recover your account. Do not share with anyone.</WarningDescription>
+      <WarningDescription>{t('pages.Account.Create.New.Mnemonic.Step2.entry.description')}</WarningDescription>
       <MnemonicTitleContainer>
         <MnemonicTitleLeftContainer>
-          <Typography variant="h4">Seed Phrase</Typography>
+          <Typography variant="h4">{t('pages.Account.Create.New.Mnemonic.Step2.entry.seedPhrase')}</Typography>
         </MnemonicTitleLeftContainer>
         <MnemonicTitleRightContainer>
           <MnemonicButton isActvie={bits === mnemonicBits[12]} onClick={() => setBits(128)}>
-            12 words
+            {t('pages.Account.Create.New.Mnemonic.Step2.entry.12Words')}
           </MnemonicButton>
           <MnemonicButton isActvie={bits === mnemonicBits[24]} onClick={() => setBits(256)}>
-            24 words
+            {t('pages.Account.Create.New.Mnemonic.Step2.entry.24Words')}
           </MnemonicButton>
         </MnemonicTitleRightContainer>
       </MnemonicTitleContainer>
@@ -99,14 +102,14 @@ export default function Entry() {
             }
           }}
         >
-          Copy
+          {t('pages.Account.Create.New.Mnemonic.Step2.entry.copy')}
         </IconButton>
       </CopyButtonContainer>
 
       <BottomContainer>
         <BottomSettingButtonContainer>
           <IconButton Icon={Setting16Icon} onClick={() => setIsOpenHDPathDialog(true)}>
-            HD path setting
+            {t('pages.Account.Create.New.Mnemonic.Step2.entry.hdPathSetting')}
           </IconButton>
         </BottomSettingButtonContainer>
         <Button
@@ -114,7 +117,7 @@ export default function Entry() {
             navigate('/account/create/new/mnemonic/step3');
           }}
         >
-          Next
+          {t('pages.Account.Create.New.Mnemonic.Step2.entry.next')}
         </Button>
       </BottomContainer>
       <HDPathDialog

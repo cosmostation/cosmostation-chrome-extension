@@ -1,6 +1,66 @@
 {
   "pages": {
     "Account": {
+      "Create": {
+        "Import": {
+          "Mnemonic": {
+            "entry": {
+              "accountNamePlaceholder": "계정 이름",
+              "done": "확인",
+              "hdPathSetting": "HD path 세팅",
+              "mnemonicPlaceholder": "지갑을 복원하기 위해서 니모닉 구문을 입력하세요"
+            },
+            "layout": {
+              "title": "니모닉 가져오기"
+            }
+          }
+        },
+        "New": {
+          "Mnemonic": {
+            "Step1": {
+              "entry": {
+                "description": "계정 이름을 입력하세요",
+                "next": "다음",
+                "placeholder": "계정 이름"
+              },
+              "layout": {
+                "title": "새로운 계정 생성"
+              }
+            },
+            "Step2": {
+              "entry": {
+                "12Words": "12 단어",
+                "24Words": "24 단어",
+                "copy": "복사",
+                "description": "니모닉 구문은 계정을 복구 할 수 있는 유일한 방법입니다. 절대로 니모닉을 다른 사람과 공유하지 마세요. 니모닉을 잃어버리면 자산의 손실로 이어집니다.",
+                "hdPathSetting": "HD path 세팅",
+                "next": "다음",
+                "seedPhrase": "시드 문구"
+              },
+              "layout": {
+                "title": "니모닉 구문"
+              }
+            },
+            "Step3": {
+              "entry": {
+                "description": "니모닉을 제대로 저장했는지 확인하기 위해 입력해주세요",
+                "done": "확인"
+              },
+              "layout": {
+                "title": "니모닉 확인"
+              }
+            }
+          }
+        },
+        "entry": {
+          "createAccount": "새로운 계정 생성",
+          "importMnemonic": "니모닉 가져오기",
+          "importPrivateKey": "개인키 가져오기"
+        },
+        "layout": {
+          "title": "계정 추가"
+        }
+      },
       "Initialize": {
         "Complete": {
           "entry": {
@@ -122,6 +182,74 @@
         "entry": {
           "createWallet": "지갑 생성",
           "importWallet": "지갑 가져오기"
+        }
+      },
+      "Management": {
+        "components": {
+          "ManagePopover": {
+            "ChangeNameDialog": {
+              "index": {
+                "submit": "제출",
+                "title": "계정 이름 변경"
+              }
+            },
+            "DeleteDialog": {
+              "index": {
+                "confirm": "확인",
+                "placeholder": "비밀번호를 입력해주세요",
+                "title": "계정 삭제",
+                "warning": "__STRING_NOT_TRANSLATED__"
+              }
+            },
+            "ExportMnemonicDialog": {
+              "MnemonicView": {
+                "Header": {
+                  "index": {
+                    "copy": "복사"
+                  }
+                },
+                "index": {
+                  "done": "완료",
+                  "title": "니모닉 구문"
+                }
+              },
+              "index": {
+                "confirm": "확인",
+                "placeholder": "비밀번호를 입력해주세요",
+                "title": "니모닉 확인"
+              }
+            },
+            "ExportPrivateKeyDialog": {
+              "PrivateKeyView": {
+                "Header": {
+                  "index": {
+                    "copy": "복사"
+                  }
+                },
+                "index": {
+                  "done": "완료",
+                  "title": "개인키 추출"
+                }
+              },
+              "index": {
+                "confirm": "확인",
+                "placeholder": "비밀번호를 입력해주세요",
+                "title": "개인키 추출"
+              }
+            },
+            "index": {
+              "delete": "계정 삭제",
+              "rename": "계정 이름 변경",
+              "viewMnemonic": "니모닉 확인",
+              "viewPrivateKey": "개인키 추출"
+            }
+          }
+        },
+        "entry": {
+          "addAccount": "계정 추가"
+        },
+        "layout": {
+          "title": "계정 관리"
         }
       },
       "components": {

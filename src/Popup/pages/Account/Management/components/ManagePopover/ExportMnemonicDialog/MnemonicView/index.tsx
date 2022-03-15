@@ -3,6 +3,8 @@ import { useSnackbar } from 'notistack';
 import type { DialogProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
+import { useTranslation } from '~/Popup/hooks/useTranslation';
+
 import DialogHeader from './Header';
 import {
   ButtonContainer,
@@ -28,10 +30,12 @@ export default function MnemonicView({ onClose, mnemonic }: MnemonicViewProps) {
     }
   };
 
+  const { t } = useTranslation();
+
   const splitedMnemonic = mnemonic.split(' ');
   return (
     <>
-      <DialogHeader onClick={handleOnCopy}>View Secret Phrase</DialogHeader>
+      <DialogHeader onClick={handleOnCopy}>{t('pages.Account.Management.components.ManagePopover.ExportMnemonicDialog.MnemonicView.index.title')}</DialogHeader>
       <Container>
         <MnemonicContainer>
           {splitedMnemonic.map((word, index) => (
@@ -48,7 +52,7 @@ export default function MnemonicView({ onClose, mnemonic }: MnemonicViewProps) {
         </MnemonicContainer>
         <ButtonContainer>
           <StyledButton type="button" onClick={() => onClose?.({}, 'backdropClick')}>
-            Done
+            {t('pages.Account.Management.components.ManagePopover.ExportMnemonicDialog.MnemonicView.index.done')}
           </StyledButton>
         </ButtonContainer>
       </Container>

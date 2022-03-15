@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { PopoverProps } from '@mui/material';
 
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Account } from '~/types/chromeStorage';
 
 import ChangeNameDialog from './ChangeNameDialog';
@@ -23,6 +24,8 @@ export default function ManagePopover({ account, onClose, ...remainder }: Manage
   const [isOpenedExportMnemonicDialog, setIsOpenedExportMnemonicDialog] = useState(false);
   const [isOpenedDeleteDialog, setIsOpenedDeleteDialog] = useState(false);
 
+  const { t } = useTranslation();
+
   if (!account) {
     return null;
   }
@@ -38,7 +41,7 @@ export default function ManagePopover({ account, onClose, ...remainder }: Manage
               onClose?.({}, 'backdropClick');
             }}
           >
-            Rename account
+            {t('pages.Account.Management.components.ManagePopover.index.rename')}
           </ManageButton>
           {account.type === 'MNEMONIC' && (
             <ManageButton
@@ -48,7 +51,7 @@ export default function ManagePopover({ account, onClose, ...remainder }: Manage
                 onClose?.({}, 'backdropClick');
               }}
             >
-              View secret phrase
+              {t('pages.Account.Management.components.ManagePopover.index.viewMnemonic')}
             </ManageButton>
           )}
           <ManageButton
@@ -58,17 +61,16 @@ export default function ManagePopover({ account, onClose, ...remainder }: Manage
               onClose?.({}, 'backdropClick');
             }}
           >
-            Export private key
+            {t('pages.Account.Management.components.ManagePopover.index.viewPrivateKey')}
           </ManageButton>
           <ManageButton
             Icon={Delete16Icon}
             onClick={() => {
-              console.log('ddd');
               onClose?.({}, 'backdropClick');
               setIsOpenedDeleteDialog(true);
             }}
           >
-            Delete account
+            {t('pages.Account.Management.components.ManagePopover.index.delete')}
           </ManageButton>
         </Container>
       </StyledPopover>

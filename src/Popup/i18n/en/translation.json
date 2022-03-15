@@ -1,6 +1,66 @@
 {
   "pages": {
     "Account": {
+      "Create": {
+        "Import": {
+          "Mnemonic": {
+            "entry": {
+              "accountNamePlaceholder": "account name",
+              "done": "Done",
+              "hdPathSetting": "HD path setting",
+              "mnemonicPlaceholder": "To restore wallet, please enter mnemonic phrases"
+            },
+            "layout": {
+              "title": "Import mnemonics"
+            }
+          }
+        },
+        "New": {
+          "Mnemonic": {
+            "Step1": {
+              "entry": {
+                "description": "Please enter account name.",
+                "next": "Next",
+                "placeholder": "Account name"
+              },
+              "layout": {
+                "title": "Create a new account"
+              }
+            },
+            "Step2": {
+              "entry": {
+                "12Words": "12 words",
+                "24Words": "24 words",
+                "copy": "Copy",
+                "description": "This phrase is the only way to recover your account. Do not share with anyone. Losing this mnemonics could lead to loss of your asset.",
+                "hdPathSetting": "HD path setting",
+                "next": "Next",
+                "seedPhrase": "Seed phrase"
+              },
+              "layout": {
+                "title": "Mnemonic Phrases"
+              }
+            },
+            "Step3": {
+              "entry": {
+                "description": "Enter your mnemonics below to make sure you saved mnemonics correctly",
+                "done": "Done"
+              },
+              "layout": {
+                "title": "Verify Mnemonics"
+              }
+            }
+          }
+        },
+        "entry": {
+          "createAccount": "Create a new account",
+          "importMnemonic": "Import mnemonics",
+          "importPrivateKey": "Import Private Key"
+        },
+        "layout": {
+          "title": "Add Account"
+        }
+      },
       "Initialize": {
         "Complete": {
           "entry": {
@@ -122,6 +182,74 @@
         "entry": {
           "createWallet": "Create Wallet",
           "importWallet": "Import Wallet"
+        }
+      },
+      "Management": {
+        "components": {
+          "ManagePopover": {
+            "ChangeNameDialog": {
+              "index": {
+                "submit": "Submit",
+                "title": "Rename Account"
+              }
+            },
+            "DeleteDialog": {
+              "index": {
+                "confirm": "Confirm",
+                "placeholder": "Please insert a password",
+                "title": "Delete account",
+                "warning": "Even though you are removing this account you will able to re-derive it using your mnemonic in this or another account."
+              }
+            },
+            "ExportMnemonicDialog": {
+              "MnemonicView": {
+                "Header": {
+                  "index": {
+                    "copy": "Copy"
+                  }
+                },
+                "index": {
+                  "done": "Done",
+                  "title": "Mnemonic phrases"
+                }
+              },
+              "index": {
+                "confirm": "Confirm",
+                "placeholder": "Please insert a password",
+                "title": "View mnemonics"
+              }
+            },
+            "ExportPrivateKeyDialog": {
+              "PrivateKeyView": {
+                "Header": {
+                  "index": {
+                    "copy": "Copy"
+                  }
+                },
+                "index": {
+                  "done": "Done",
+                  "title": "Export Private Key"
+                }
+              },
+              "index": {
+                "confirm": "Confirm",
+                "placeholder": "Please insert a password",
+                "title": "Export Private Key"
+              }
+            },
+            "index": {
+              "delete": "Delete account",
+              "rename": "Rename account",
+              "viewMnemonic": "View mnemonics",
+              "viewPrivateKey": "Export private key"
+            }
+          }
+        },
+        "entry": {
+          "addAccount": "Add account"
+        },
+        "layout": {
+          "title": "Account Management"
         }
       },
       "components": {

@@ -11,6 +11,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
 import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
@@ -46,6 +47,8 @@ export default function Entry() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
   const setDisposableLoading = useSetRecoilState(disposableLoadingState);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!newAccount.accountName || !newAccount.mnemonic || !currentPassword) {
@@ -124,7 +127,7 @@ export default function Entry() {
   return (
     <form onSubmit={handleSubmit(submit, error)}>
       <Container>
-        <Description>Enter your secret phrase below to verify it is stored safely.</Description>
+        <Description>{t('pages.Account.Create.New.Mnemonic.Step3.entry.description')}</Description>
         <CheckWordContainer>
           {checkWords.map((checkWord) => (
             <CheckWordItemContainer key={checkWord.index}>
@@ -139,7 +142,7 @@ export default function Entry() {
         </CheckWordContainer>
         <BottomContainer>
           <Button type="submit" disabled={!isDirty}>
-            Done
+            {t('pages.Account.Create.New.Mnemonic.Step3.entry.done')}
           </Button>
         </BottomContainer>
       </Container>

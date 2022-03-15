@@ -2,6 +2,8 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import type { DialogProps } from '@mui/material';
 
+import { useTranslation } from '~/Popup/hooks/useTranslation';
+
 import DialogHeader from './Header';
 import { Container, StyledButton, StyledInput } from './styled';
 
@@ -13,6 +15,8 @@ type PrivateKeyViewProps = {
 export default function PrivateKeyView({ onClose, privateKey }: PrivateKeyViewProps) {
   const { enqueueSnackbar } = useSnackbar();
 
+  const { t } = useTranslation();
+
   const handleOnCopy = () => {
     if (copy(privateKey)) {
       enqueueSnackbar(`copied!`);
@@ -20,11 +24,13 @@ export default function PrivateKeyView({ onClose, privateKey }: PrivateKeyViewPr
   };
   return (
     <>
-      <DialogHeader onClick={handleOnCopy}>View Private Key</DialogHeader>
+      <DialogHeader onClick={handleOnCopy}>
+        {t('pages.Account.Management.components.ManagePopover.ExportPrivateKeyDialog.PrivateKeyView.index.title')}
+      </DialogHeader>
       <Container>
         <StyledInput type="text" value={privateKey} multiline readOnly onClick={handleOnCopy} />
         <StyledButton type="button" onClick={() => onClose?.({}, 'backdropClick')}>
-          Done
+          {t('pages.Account.Management.components.ManagePopover.ExportPrivateKeyDialog.PrivateKeyView.index.done')}
         </StyledButton>
       </Container>
     </>

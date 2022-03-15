@@ -6,6 +6,7 @@ import type { DialogProps, PopoverProps } from '@mui/material';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { aesDecrypt, sha512 } from '~/Popup/utils/crypto';
 import type { Account } from '~/types/chromeStorage';
 
@@ -27,6 +28,8 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
 
   const invalidNames = [...Object.values(accountName)];
   invalidNames.splice(invalidNames.indexOf(accountName[account.id], 1));
+
+  const { t } = useTranslation();
 
   const { passwordForm } = useSchema({ encryptedPassword: encryptedPassword! });
 
@@ -65,7 +68,7 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
         <MnemonicView mnemonic={mnemonic} onClose={handleOnClose} />
       ) : (
         <>
-          <DialogHeader onClose={handleOnClose}>View Private Key</DialogHeader>
+          <DialogHeader onClose={handleOnClose}>{t('pages.Account.Management.components.ManagePopover.ExportMnemonicDialog.index.title')}</DialogHeader>
           <Container>
             <form onSubmit={handleSubmit(submit)}>
               <StyledInput
@@ -76,12 +79,12 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
                   },
                 })}
                 type="password"
-                placeholder="Please type password to confirm"
+                placeholder={t('pages.Account.Management.components.ManagePopover.ExportMnemonicDialog.index.placeholder')}
                 error={!!errors.password}
                 helperText={errors.password?.message}
               />
               <StyledButton type="submit" disabled={!isDirty}>
-                Submit
+                {t('pages.Account.Management.components.ManagePopover.ExportMnemonicDialog.index.confirm')}
               </StyledButton>
             </form>
           </Container>

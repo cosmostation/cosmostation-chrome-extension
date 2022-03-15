@@ -8,6 +8,7 @@ import { Typography } from '@mui/material';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
 import { sha512 } from '~/Popup/utils/crypto';
 import type { Account } from '~/types/chromeStorage';
@@ -33,6 +34,8 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
   invalidNames.splice(invalidNames.indexOf(accountName[account.id], 1));
 
   const { passwordForm } = useSchema({ encryptedPassword: encryptedPassword! });
+
+  const { t } = useTranslation();
 
   const {
     register,
@@ -71,7 +74,7 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
 
   return (
     <Dialog {...remainder} onClose={handleOnClose}>
-      <DialogHeader onClose={handleOnClose}>Delete account</DialogHeader>
+      <DialogHeader onClose={handleOnClose}>{t('pages.Account.Management.components.ManagePopover.DeleteDialog.index.title')}</DialogHeader>
 
       <Container>
         <DescriptionContainer>
@@ -79,9 +82,7 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
             <Info16Icon />
           </DescriptionImageContainer>
           <DescriptionTextContainer>
-            <Typography variant="h6">
-              Even though you are removing this account you will able to re-derive it using your mnemonic in this or another account.
-            </Typography>
+            <Typography variant="h6">{t('pages.Account.Management.components.ManagePopover.DeleteDialog.index.warning')}</Typography>
           </DescriptionTextContainer>
         </DescriptionContainer>
         <form onSubmit={handleSubmit(submit)}>
@@ -90,12 +91,12 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
               setValueAs: (v: string) => (v ? sha512(v) : ''),
             })}
             type="password"
-            placeholder="Please type password to confirm"
+            placeholder={t('pages.Account.Management.components.ManagePopover.DeleteDialog.index.placeholder')}
             error={!!errors.password}
             helperText={errors.password?.message}
           />
           <StyledButton type="submit" disabled={!isDirty}>
-            Confirm
+            {t('pages.Account.Management.components.ManagePopover.DeleteDialog.index.confirm')}
           </StyledButton>
         </form>
       </Container>
