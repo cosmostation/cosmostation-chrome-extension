@@ -15,6 +15,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { TendermintChain } from '~/types/chain';
 
@@ -54,6 +55,8 @@ export default function TendermintNativeChainCard({ chain }: TendermintNativeCha
   const { data } = useCoinGeckoPriceSWR();
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { navigate } = useNavigate();
 
   const { decimals, coinGeckoId, explorerURL } = chain;
 
@@ -160,7 +163,7 @@ export default function TendermintNativeChainCard({ chain }: TendermintNativeCha
           Send
         </Button>
         <ButtonCenterContainer />
-        <Button Icon={ReceiveIcon} typoVarient="h5">
+        <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
           Receive
         </Button>
       </ButtonContainer>
@@ -175,11 +178,7 @@ export function TendermintNativeChainCardSkeleton({ chain }: TendermintNativeCha
         <FirstLineLeftContainer>
           <Skeleton width="12rem" height="2.4rem" />
         </FirstLineLeftContainer>
-        <FirstLineRightContainer>
-          <StyledIconButton>
-            <ExplorerIcon />
-          </StyledIconButton>
-        </FirstLineRightContainer>
+        <FirstLineRightContainer />
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>

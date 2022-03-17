@@ -42,6 +42,7 @@ import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
 import SettingChangeLanguage from '~/Popup/pages/Setting/ChangeLanguage';
 import SettingChangePassword from '~/Popup/pages/Setting/ChangePassword';
 import Wallet from '~/Popup/pages/Wallet';
+import WalletReceive from '~/Popup/pages/Wallet/Receive';
 import { darkEnTheme, darkKoTheme, lightEnTheme, lightKoTheme } from '~/Popup/styles/theme';
 
 import Info16Icon from '~/images/icons/Info16.svg';
@@ -90,6 +91,7 @@ function Popup() {
                   <Route path={PATH.DASHBOARD} element={<Dashboard />} />
 
                   <Route path={PATH.WALLET} element={<Wallet />} />
+                  <Route path={PATH.WALLET__RECEIVE} element={<WalletReceive />} />
 
                   <Route path={PATH.RESTORE} element={<Restore />} />
 
