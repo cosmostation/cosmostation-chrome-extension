@@ -36,7 +36,7 @@ export const ContentContainer = styled('div')({
 
 export const ContentLeftContainer = styled('div')({
   display: 'flex',
-  alignItems: 'center',
+  // alignItems: 'center',
   justifyContent: 'flex-start',
 });
 
@@ -49,6 +49,9 @@ export const ContentLeftTextContainer = styled('div')(({ theme }) => ({
 export const ContentLeftTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
   width: 'max-content',
+
+  display: 'flex',
+  alignItems: 'center',
 }));
 
 export const ContentLeftDescriptionContainer = styled('div')(({ theme }) => ({
@@ -70,4 +73,28 @@ export const ContentRightImageContainer = styled('div')(({ theme }) => ({
   '& > svg > path': {
     fill: theme.colors.base06,
   },
+}));
+
+export const ConnectContainer = styled('div')({
+  display: 'grid',
+  gridAutoColumns: '1fr',
+  width: '1.2rem',
+});
+
+export const ConnectBadgeContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+type ConnectBadgeProps = {
+  'data-is-connected': number;
+};
+
+export const ConnectBadge = styled('div')<ConnectBadgeProps>(({ theme, ...props }) => ({
+  width: '0.6rem',
+  height: '0.6rem',
+
+  borderRadius: '50%',
+
+  backgroundColor: props['data-is-connected'] ? theme.accentColors.green : theme.accentColors.red,
 }));

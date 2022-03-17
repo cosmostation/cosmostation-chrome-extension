@@ -1,5 +1,9 @@
 import { styled } from '@mui/material/styles';
 
+export const Container = styled('div')({
+  position: 'relative',
+});
+
 export const StyledButton = styled('button')(({ theme }) => ({
   border: 'none',
 
@@ -51,13 +55,35 @@ export const AccountRightFirstContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const AccountRightSecendContainer = styled('div')({
+export const ConnectButton = styled('button')(({ theme }) => ({
+  border: 'none',
+
+  backgroundColor: 'transparent',
+
+  padding: '0 0.3rem',
+
+  left: '3.4rem',
+  bottom: 0,
+
+  cursor: 'pointer',
+
+  position: 'absolute',
+
+  textAlign: 'left',
   display: 'flex',
   alignItems: 'center',
-});
 
-export const AccountRightSecendTextContainer = styled('div')(({ theme }) => ({
+  borderRadius: '5rem',
+
+  '&:hover': {
+    backgroundColor: theme.colors.base03,
+  },
+}));
+
+export const ConnectButtonText = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
+
+  width: 'max-content',
 
   marginLeft: '0.4rem',
 }));
@@ -66,7 +92,7 @@ type BadgeProps = {
   'data-is-connected': number;
 };
 
-export const Badge = styled('div')<BadgeProps>(({ theme, ...props }) => ({
+export const ConnectButtonBadge = styled('div')<BadgeProps>(({ theme, ...props }) => ({
   width: '0.6rem',
   height: '0.6rem',
 

@@ -4,6 +4,7 @@ import { Typography } from '@mui/material';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useCurrentTab } from '~/Popup/hooks/SWR/cache/useCurrentTab';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -21,8 +22,9 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
   const { navigate } = useNavigate();
 
   const { data } = useAccounts(true);
+  const currentTab = useCurrentTab(true);
 
-  const { selectedAccountId, selectedChainId } = chromeStorage;
+  const { selectedAccountId, selectedChainId, allowedOrigins } = chromeStorage;
 
   const { accountName } = chromeStorage;
 
@@ -42,19 +44,26 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
         <Divider />
         <BodyContainer>
           <AccountListContainer>
-            {data?.map((account) => (
-              <AccountItemButton
-                key={account.id}
-                description={account.address[selectedChainId] || ''}
-                isActive={account.id === selectedAccountId}
-                onClick={async () => {
-                  await setCurrentAccount(account.id);
-                  onClose?.({}, 'backdropClick');
-                }}
-              >
-                {accountName[account.id] ?? ''}
-              </AccountItemButton>
-            ))}
+            {data?.map((account) => {
+              const specificAllowedOrigins = allowedOrigins.filter((item) => item.accountId === account.id).map((item) => item.origin);
+
+              const isConnected = currentTab.data?.url ? specificAllowedOrigins.includes(currentTab.data.url) : undefined;
+
+              return (
+                <AccountItemButton
+                  key={account.id}
+                  description={account.address[selectedChainId] || ''}
+                  isActive={account.id === selectedAccountId}
+                  isConnected={isConnected}
+                  onClick={async () => {
+                    await setCurrentAccount(account.id);
+                    onClose?.({}, 'backdropClick');
+                  }}
+                >
+                  {accountName[account.id] ?? ''}
+                </AccountItemButton>
+              );
+            })}
           </AccountListContainer>
         </BodyContainer>
       </Container>

@@ -1,11 +1,11 @@
 export async function openTab(path?: string): Promise<chrome.tabs.Tab> {
   const url = chrome.runtime.getURL(`popup.html${path ? `#${path}` : ''}`);
 
-  const currentTab = await getCurrentTab();
+  const current = await getCurrent();
 
   return new Promise((res, rej) => {
-    if (currentTab) {
-      res(currentTab);
+    if (current) {
+      res(current);
     } else {
       chrome.tabs.create({ active: true, url }, (tab) => {
         if (chrome.runtime.lastError) {
@@ -18,7 +18,7 @@ export async function openTab(path?: string): Promise<chrome.tabs.Tab> {
   });
 }
 
-export function getCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
+export function getCurrent(): Promise<chrome.tabs.Tab | undefined> {
   return new Promise((res, rej) => {
     chrome.tabs.getCurrent((tab) => {
       if (chrome.runtime.lastError) {
@@ -28,4 +28,12 @@ export function getCurrentTab(): Promise<chrome.tabs.Tab | undefined> {
       res(tab);
     });
   });
+}
+
+export async function getCurrentTab() {
+  const queryOptions = { active: true, currentWindow: true };
+  const [tab] = await chrome.tabs.query(queryOptions);
+
+  const origin = tab?.url ? new URL(tab.url).origin : undefined;
+  return { ...tab, origin };
 }

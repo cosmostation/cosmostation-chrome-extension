@@ -5,6 +5,7 @@ import BaseLayout from '~/Popup/components/BaseLayout';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
+import { getCurrentTab } from '~/Popup/utils/chromeTabs';
 
 type LayoutProps = {
   children: JSX.Element;
@@ -26,6 +27,8 @@ export default function Layout({ children }: LayoutProps) {
     }
 
     void setChromeStorage('rootPath', '/wallet');
+
+    void getCurrentTab().then(console.log);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return <BaseLayout useHeader={{}}>{children}</BaseLayout>;

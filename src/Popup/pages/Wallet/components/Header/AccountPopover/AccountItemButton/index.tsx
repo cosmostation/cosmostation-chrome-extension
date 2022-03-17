@@ -1,6 +1,9 @@
 import { Typography } from '@mui/material';
 
 import {
+  ConnectBadge,
+  ConnectBadgeContainer,
+  ConnectContainer,
   ContentContainer,
   ContentLeftContainer,
   ContentLeftDescriptionContainer,
@@ -15,11 +18,12 @@ import Check16Icon from '~/images/icons/Check16.svg';
 
 type AccountItemButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
   isActive?: boolean;
+  isConnected?: boolean;
   children?: string;
   description?: string;
 };
 
-export default function AccountItemButton({ children, description, isActive = false, ...remainder }: AccountItemButtonProps) {
+export default function AccountItemButton({ children, description, isActive = false, isConnected, ...remainder }: AccountItemButtonProps) {
   const address = description
     ? description.length > 35
       ? `${description.substring(0, 12)}...${description.substring(description.length - 12, description.length)}`
@@ -30,6 +34,16 @@ export default function AccountItemButton({ children, description, isActive = fa
     <StyledButton {...remainder} data-is-active={isActive ? 1 : 0}>
       <ContentContainer>
         <ContentLeftContainer>
+          {isConnected !== undefined && (
+            <ConnectContainer>
+              <ConnectBadgeContainer>
+                <ConnectBadge data-is-connected={isConnected ? 1 : 0} />
+              </ConnectBadgeContainer>
+              <ConnectBadgeContainer>
+                <div style={{ height: '0.6rem' }} />
+              </ConnectBadgeContainer>
+            </ConnectContainer>
+          )}
           <ContentLeftTextContainer>
             <ContentLeftTitleContainer>
               <Typography variant="h6">{children}</Typography>

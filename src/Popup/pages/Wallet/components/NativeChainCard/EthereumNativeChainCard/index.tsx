@@ -16,6 +16,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { EthereumChain } from '~/types/chain';
 
@@ -50,6 +51,8 @@ export default function EthereumNativeChainCard({ chain }: EthereumNativeChainCa
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
   const balance = useBalanceSWR(chain, true);
+
+  const { navigate } = useNavigate();
 
   const { coinGeckoId, decimals, explorerURL } = currentNetwork;
 
@@ -112,7 +115,7 @@ export default function EthereumNativeChainCard({ chain }: EthereumNativeChainCa
           Send
         </Button>
         <FourthLineCenterContainer />
-        <Button Icon={ReceiveIcon} typoVarient="h5">
+        <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
           Receive
         </Button>
       </FourthLineContainer>
