@@ -50,6 +50,13 @@ export const Body = styled('div')(({ theme }) => ({
       },
     },
   },
+
+  'div::-webkit-scrollbar': {
+    width: '0.1rem',
+  },
+  'div::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.colors.base05,
+  },
 }));
 
 export const Container = styled('div')(({ theme }) => ({
