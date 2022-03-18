@@ -1,13 +1,10 @@
-import type { IN_MEMORY_MESSAGE_TYPE, LISTENER_TYPE, MESSAGE_TYPE, METHOD_TYPE } from '~/constants/message';
+import type { LISTENER_TYPE, MESSAGE_TYPE, METHOD_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
 import type { EthGetBalanceRequestMessage, EthRPCRequestMessage, EthSendTransactionRequestMessage, EthSignRequestMessage } from './ethereum';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type ListenerType = ValueOf<typeof LISTENER_TYPE>;
-
-export type InMemoryType = typeof MESSAGE_TYPE.IN_MEMORY;
-export type InMemoryMessageType = ValueOf<typeof IN_MEMORY_MESSAGE_TYPE>;
 
 /** Web Page <-> Content Script 통신 타입 정의 */
 

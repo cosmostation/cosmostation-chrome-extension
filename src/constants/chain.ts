@@ -15,12 +15,18 @@ export const LINE_TYPE = {
   ETHEREUM: 'ETHEREUM',
 } as const;
 
+export const TENDERMINT_TYPE = {
+  BASIC: '',
+  ETHERMINT: 'ETHERMINT',
+};
+
 export const MINTSCAN_URL = 'https://www.mintscan.io';
 
 export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: '62a8e13a-3107-40ef-ade4-58de45aa6c1f',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'cosmoshub-4',
     chainName: 'cosmos',
     restURL: 'https://lcd-cosmos.cosmostation.io',
@@ -41,6 +47,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: 'd86e2b4e-e422-4b58-b687-f1de03cde152',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'irishub-1',
     chainName: 'iris',
     restURL: 'https://lcd-iris.cosmostation.io',
@@ -61,6 +68,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: '634e5e88-0a26-4ef5-92b5-dbf4cf040a8a',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'kava-9',
     chainName: 'kava',
     restURL: 'https://lcd-kava.cosmostation.io',
@@ -81,6 +89,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: 'c3e5474b-8cf7-467e-b6a8-706d2b694e5a',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'laozi-mainnet',
     chainName: 'band',
     restURL: 'https://lcd-band.cosmostation.io',
@@ -100,6 +109,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: 'b869bcf8-f489-443a-9be4-56cac21f6f53',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'akashnet-2',
     chainName: 'akash',
     restURL: 'https://lcd-akash.cosmostation.io',
@@ -120,6 +130,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: '29d61a8d-6bbe-4524-afa5-6f70931bcdee',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'shentu-2.2',
     chainName: 'certik',
     restURL: 'https://lcd-certik.cosmostation.io',
@@ -140,6 +151,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: '8c72318f-8279-4d37-a457-1cd4c0b1f160',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'sentinelhub-2',
     chainName: 'sentinel',
     restURL: 'https://lcd-sentinel.cosmostation.io',
@@ -160,6 +172,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: '58c55107-2df3-4851-a68e-fee203308be2',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'core-1',
     chainName: 'persistence',
     restURL: 'https://lcd-persistence.cosmostation.io',
@@ -180,6 +193,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: '3b8e015e-ab6c-4095-9dd8-57e62f437f4f',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'fetchhub-2',
     chainName: 'fetch.ai',
     restURL: 'https://lcd-fetchai.cosmostation.io',
@@ -199,6 +213,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: 'ba43a35a-0861-486a-9ce9-c23fb1ba610c',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'sifchain-1',
     chainName: 'sifchain',
     restURL: 'https://lcd-sifchain.cosmostation.io',
@@ -219,6 +234,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: 'b006dccc-ff1e-4c5a-95ad-94f313029d93',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'crypto-org-chain-mainnet-1',
     chainName: 'crypto.org',
     restURL: 'https://lcd-cryptocom.cosmostation.io',
@@ -239,6 +255,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: 'f850280f-316c-44ab-9624-c8d760dbca8c',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'kichain-2',
     chainName: 'kichain',
     restURL: 'https://lcd-kichain.cosmostation.io',
@@ -258,6 +275,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: '320cfa03-401d-44b5-a40a-0de7c0d705eb',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'iov-mainnet-ibc',
     chainName: 'starname',
     restURL: 'https://lcd-iov.cosmostation.io',
@@ -277,6 +295,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: '1272070c-b1f0-455e-9bb7-ff434b5011e9',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'panacea-3',
     chainName: 'medibloc',
     restURL: 'https://lcd-medibloc.cosmostation.io',
@@ -296,6 +315,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: 'b6b1f158-9d6c-4779-a40d-9be657555612',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'emoney-3',
     chainName: 'emoney',
     restURL: 'https://lcd-emoney.cosmostation.io',
@@ -315,6 +335,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: '2be3f1c4-8c2e-4fc9-80c8-5877b0bb77c8',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'titan-1',
     chainName: 'rizon',
     restURL: 'https://lcd-rizon.cosmostation.io',
@@ -334,6 +355,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: '23076a4e-8bba-4e36-8563-2c30948f290c',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'juno-1',
     chainName: 'juno',
     restURL: 'https://lcd-juno.cosmostation.io',
@@ -353,6 +375,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
     id: 'd17852e4-351a-4b91-af44-358e5ed1dbf0',
     line: LINE_TYPE.TENDERMINT,
+    type: TENDERMINT_TYPE.BASIC,
     chainId: 'osmosis-1',
     chainName: 'osmosis',
     restURL: 'https://lcd-osmosis.cosmostation.io',

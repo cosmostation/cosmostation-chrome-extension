@@ -1,6 +1,8 @@
-import type { LINE_TYPE } from '~/constants/chain';
+import type { LINE_TYPE, TENDERMINT_TYPE } from '~/constants/chain';
 
 export type LineType = ValueOf<typeof LINE_TYPE>;
+
+export type TendermintType = ValueOf<typeof TENDERMINT_TYPE>;
 
 export type BIP44 = {
   purpose: string;
@@ -18,6 +20,7 @@ type CommonChain = {
 
 export type TendermintChain = {
   line: typeof LINE_TYPE.TENDERMINT;
+  type: TendermintType;
   chainId: string;
   chainName: string;
   baseDenom: string;
