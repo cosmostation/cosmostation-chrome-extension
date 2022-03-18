@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios';
 import useSWR from 'swr';
 
-import { useNodeInfoSWR } from '~/Popup/hooks/SWR/tendermint/useNodeInfoSWR';
+import { useNodeInfoSWR } from '~/Popup/hooks/SWR/tendermint/useNodeinfoSWR';
 import { get } from '~/Popup/utils/axios';
 import type { TendermintChain } from '~/types/chain';
 import type { IbcTokenPayload } from '~/types/tendermint/ibcToken';
