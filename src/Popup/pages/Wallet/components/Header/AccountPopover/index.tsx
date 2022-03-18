@@ -47,7 +47,7 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
             {data?.map((account) => {
               const specificAllowedOrigins = allowedOrigins.filter((item) => item.accountId === account.id).map((item) => item.origin);
 
-              const isConnected = currentTab.data?.url ? specificAllowedOrigins.includes(currentTab.data.url) : undefined;
+              const isConnected = currentTab.data?.origin ? specificAllowedOrigins.includes(currentTab.data.origin) : undefined;
 
               return (
                 <AccountItemButton

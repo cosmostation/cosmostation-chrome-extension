@@ -261,6 +261,24 @@
           }
         }
       }
+    },
+    "Wallet": {
+      "components": {
+        "Header": {
+          "AccountButton": {
+            "ConnectDialog": {
+              "index": {
+                "connect": "연결",
+                "connectDescription1": "이 사이트에 연결되어 있지 않습니다.",
+                "connectDescription2": "연결하시겠습니까?",
+                "disconnect": "해제",
+                "disconnectDescription1": "이 사이트에 계정이 연결되어 있습니다.",
+                "disconnectDescription2": "연결을 해제하시겠습니까?"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "schema": {

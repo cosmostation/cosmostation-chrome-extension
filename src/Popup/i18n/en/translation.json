@@ -261,6 +261,24 @@
           }
         }
       }
+    },
+    "Wallet": {
+      "components": {
+        "Header": {
+          "AccountButton": {
+            "ConnectDialog": {
+              "index": {
+                "connect": "Connect",
+                "connectDescription1": "You are not connected to this site.",
+                "connectDescription2": "Do you want to connect?",
+                "disconnect": "Disconnect",
+                "disconnectDescription1": "You wallet is connected to this site.",
+                "disconnectDescription2": "Do you want to disconnect?"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "schema": {
