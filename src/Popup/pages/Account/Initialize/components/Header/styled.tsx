@@ -71,7 +71,7 @@ export const Step = styled('div')<StepProps>(({ theme, ...props }) => ({
   color: props['data-is-active'] ? theme.accentColors.white : theme.colors.text02,
 
   '& > h6': {
-    lineHeight: '1.452rem',
+    lineHeight: '1.4rem',
   },
 }));
 

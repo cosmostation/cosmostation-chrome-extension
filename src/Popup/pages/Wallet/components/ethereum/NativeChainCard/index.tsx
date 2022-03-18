@@ -40,11 +40,11 @@ import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import SendIcon from '~/images/icons/Send.svg';
 
-type EthereumNativeChainCardProps = {
+type NativeChainCardProps = {
   chain: EthereumChain;
 };
 
-export default function EthereumNativeChainCard({ chain }: EthereumNativeChainCardProps) {
+export default function NativeChainCard({ chain }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
   const { currentNetwork } = useCurrentNetwork();
@@ -123,7 +123,7 @@ export default function EthereumNativeChainCard({ chain }: EthereumNativeChainCa
   );
 }
 
-export function EthereumNativeChainCardSkeleton({ chain }: EthereumNativeChainCardProps) {
+export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
   const { currentNetwork } = useCurrentNetwork();
   return (
     <Container>

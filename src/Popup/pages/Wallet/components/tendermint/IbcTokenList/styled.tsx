@@ -1,12 +1,19 @@
 import { styled } from '@mui/material/styles';
 
-export const Container = styled('div')(({ theme }) => ({
+export const Container = styled('div')({
   marginTop: '1.6rem',
-}));
+
+  display: 'flex',
+  paddingBottom: '1.6rem',
+  flexDirection: 'column',
+  overflow: 'hidden',
+});
 
 export const ListTitleContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
+
+  flexShrink: 0,
 });
 
 export const ListTitleLeftContainer = styled('div')(({ theme }) => ({
@@ -24,4 +31,6 @@ export const ListContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: '1fr',
   rowGap: '0.8rem',
+
+  overflow: 'auto',
 });

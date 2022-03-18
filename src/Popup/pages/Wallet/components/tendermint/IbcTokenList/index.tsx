@@ -5,32 +5,16 @@ import { Typography } from '@mui/material';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/tendermint/useBalanceSWR';
 import { useIbcTokenSWR } from '~/Popup/hooks/SWR/tendermint/useIbcTokenSWR';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
-import IbcTokenItem from '~/Popup/pages/Wallet/components/IbcTokenList/components/IbcTokenItem';
+import IbcTokenItem from '~/Popup/pages/Wallet/components/tendermint/IbcTokenList/components/IbcTokenItem';
 import type { TendermintChain } from '~/types/chain';
 
 import { Container, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
-
-export default function SuspenseIbcTokenList() {
-  const { currentChain } = useCurrentChain();
-
-  if (currentChain.line !== 'TENDERMINT') {
-    return null;
-  }
-  return (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    <ErrorBoundary fallback={<></>}>
-      <Suspense fallback={null}>
-        <IbcTokenList chain={currentChain} />
-      </Suspense>
-    </ErrorBoundary>
-  );
-}
 
 type EntryProps = {
   chain: TendermintChain;
 };
 
-function IbcTokenList({ chain }: EntryProps) {
+export default function IbcTokenList({ chain }: EntryProps) {
   const balance = useBalanceSWR(chain, true);
   const ibcToken = useIbcTokenSWR(chain, true);
 
@@ -44,12 +28,13 @@ function IbcTokenList({ chain }: EntryProps) {
         return { balance: token, tokenInfo };
       }) || [];
 
-  const sortedTokens = tokens.sort((a) => (a.tokenInfo?.auth ? -1 : 1));
+  const tokensLength = tokens.length;
 
-  console.log(sortedTokens);
-  if (tokens.length < 1) {
+  if (tokensLength < 1) {
     return null;
   }
+
+  const sortedTokens = tokens.sort((a) => (a.tokenInfo?.auth ? -1 : 1));
 
   return (
     <Container>
@@ -58,11 +43,21 @@ function IbcTokenList({ chain }: EntryProps) {
           <Typography variant="h6">IBC Tokens</Typography>
         </ListTitleLeftContainer>
         <ListTitleRightContainer>
-          <Typography variant="h6">2</Typography>
+          <Typography variant="h6">{tokensLength}</Typography>
         </ListTitleRightContainer>
       </ListTitleContainer>
       <ListContainer>
-        <IbcTokenItem amount="0" channel="dd" />
+        {sortedTokens.map((token) => (
+          <IbcTokenItem
+            key={token.tokenInfo?.hash}
+            amount={token.balance.amount}
+            channel={token.tokenInfo?.channel_id}
+            decimals={token.tokenInfo?.decimal}
+            baseDenom={token.tokenInfo?.base_denom}
+            displayDenom={token.tokenInfo?.display_denom}
+            imageURL={token.tokenInfo?.moniker}
+          />
+        ))}
       </ListContainer>
     </Container>
   );

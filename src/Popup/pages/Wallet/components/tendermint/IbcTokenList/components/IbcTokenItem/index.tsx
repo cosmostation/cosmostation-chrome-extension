@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 
+import ibcUnauthImg from '~/images/etc/ibcUnauth.png';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import { useMarketPriceSWR } from '~/Popup/hooks/SWR/tendermint/useMarketPriceSWR';
@@ -48,7 +49,7 @@ export default function ChainItem({ imageURL, amount, decimals = 0, baseDenom, d
     <StyledButton onClick={onClick}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image src={imageURL} />
+          <Image src={imageURL} defaultImgSrc={ibcUnauthImg} />
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>

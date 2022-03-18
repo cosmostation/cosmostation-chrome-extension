@@ -43,11 +43,11 @@ import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import SendIcon from '~/images/icons/Send.svg';
 
-type TendermintNativeChainCardProps = {
+type NativeChainCardProps = {
   chain: TendermintChain;
 };
 
-export default function TendermintNativeChainCard({ chain }: TendermintNativeChainCardProps) {
+export default function NativeChainCard({ chain }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
   const accounts = useAccounts(true);
@@ -171,7 +171,7 @@ export default function TendermintNativeChainCard({ chain }: TendermintNativeCha
   );
 }
 
-export function TendermintNativeChainCardSkeleton({ chain }: TendermintNativeChainCardProps) {
+export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
   return (
     <Container>
       <FirstLineContainer>
