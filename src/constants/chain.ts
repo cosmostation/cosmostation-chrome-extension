@@ -350,21 +350,40 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     coinGeckoId: 'juno-network',
     explorerURL: `${MINTSCAN_URL}/juno`,
   },
-];
-
-export const ETHEREUM_CHAINS: EthereumChain[] = [
   {
-    id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
-    chainName: 'ethereum',
-    imageURL: ethereumImg,
-    line: LINE_TYPE.ETHEREUM,
+    id: 'd17852e4-351a-4b91-af44-358e5ed1dbf0',
+    line: LINE_TYPE.TENDERMINT,
+    chainId: 'osmosis-1',
+    chainName: 'osmosis',
+    restURL: 'https://lcd-osmosis.cosmostation.io',
+    baseDenom: 'uosmo',
+    displayDenom: 'OSMO',
+    decimals: 6,
     bip44: {
       purpose: "44'",
-      coinType: "60'",
+      coinType: "118'",
       account: "0'",
       change: '0',
     },
+    bech32Prefix: { address: 'osmo' },
+    coinGeckoId: 'osmosis',
+    explorerURL: `${MINTSCAN_URL}/osmosis`,
   },
+];
+
+export const ETHEREUM_CHAINS: EthereumChain[] = [
+  // {
+  //   id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
+  //   chainName: 'ethereum',
+  //   imageURL: ethereumImg,
+  //   line: LINE_TYPE.ETHEREUM,
+  //   bip44: {
+  //     purpose: "44'",
+  //     coinType: "60'",
+  //     account: "0'",
+  //     change: '0',
+  //   },
+  // },
 ];
 
 export const ETHEREUM_NETWORKS: EthereumNetwork[] = [

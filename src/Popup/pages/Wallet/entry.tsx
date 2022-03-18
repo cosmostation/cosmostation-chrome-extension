@@ -1,4 +1,5 @@
 import Header from './components/Header';
+import IbcTokenList from './components/IbcTokenList';
 import NativeChainCard from './components/NativeChainCard';
 import { Container, HeaderContainer, NativeChainCardContainer } from './styled';
 
@@ -11,6 +12,7 @@ export default function Entry() {
       <NativeChainCardContainer>
         <NativeChainCard />
       </NativeChainCardContainer>
+      <IbcTokenList />
     </Container>
   );
 }

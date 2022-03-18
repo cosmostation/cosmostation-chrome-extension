@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { get } from '~/Popup/utils/axios';
-import { cosmosURL } from '~/Popup/utils/tendermint';
+import { tendermintURL } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
 import type { Delegation, DelegationPayload, KavaDelegationPayload } from '~/types/tendermint/delegation';
 
@@ -15,7 +15,7 @@ export function useDelegationSWR(chain: TendermintChain, suspense?: boolean) {
 
   const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
 
-  const { getDelegations } = cosmosURL(chain);
+  const { getDelegations } = tendermintURL(chain);
 
   const requestURL = getDelegations(address);
 

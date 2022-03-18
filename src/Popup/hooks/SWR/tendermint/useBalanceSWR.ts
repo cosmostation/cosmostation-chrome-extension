@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { get } from '~/Popup/utils/axios';
-import { cosmosURL } from '~/Popup/utils/tendermint';
+import { tendermintURL } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
 import type { BalancePayload } from '~/types/tendermint/balance';
 
@@ -13,7 +13,7 @@ export function useBalanceSWR(chain: TendermintChain, suspense?: boolean) {
   const { chromeStorage } = useChromeStorage();
 
   const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
-  const { getBalance } = cosmosURL(chain);
+  const { getBalance } = tendermintURL(chain);
 
   const requestURL = getBalance(address);
 

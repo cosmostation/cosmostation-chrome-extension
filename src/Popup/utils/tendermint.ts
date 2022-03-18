@@ -9,10 +9,11 @@ import { cosmos } from '~/proto/cosmos.js';
 import type { TendermintChain } from '~/types/chain';
 import type { SignAminoDoc, SignDirectDoc } from '~/types/tendermint';
 
-export function cosmosURL(chain: TendermintChain) {
+export function tendermintURL(chain: TendermintChain) {
   const { restURL } = chain;
 
   return {
+    getNodeInfo: () => `${restURL}/node_info`,
     getBalance: (address: string) => `${restURL}/bank/balances/${address}`,
     getDelegations: (address: string) => `${restURL}/staking/delegators/${address}/delegations`,
     getRewards: (address: string) => `${restURL}/distribution/delegators/${address}/rewards`,

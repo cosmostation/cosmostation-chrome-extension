@@ -6,7 +6,7 @@ import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllo
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { get } from '~/Popup/utils/axios';
 import type { TendermintChain } from '~/types/chain';
-import type { SimplePrice } from '~/types/coingecko';
+import type { SimplePrice } from '~/types/coinGecko';
 
 export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const { currentAllowedChains } = useCurrentAllowedChains();

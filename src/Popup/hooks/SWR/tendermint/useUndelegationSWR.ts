@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { get } from '~/Popup/utils/axios';
-import { cosmosURL } from '~/Popup/utils/tendermint';
+import { tendermintURL } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
 import type { Unbonding, UnbondingPayload } from '~/types/tendermint/undelegation';
 
@@ -15,7 +15,7 @@ export function useUndelegationSWR(chain: TendermintChain, suspense?: boolean) {
 
   const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
 
-  const { getUndelegations } = cosmosURL(chain);
+  const { getUndelegations } = tendermintURL(chain);
 
   const requestURL = getUndelegations(address);
 
