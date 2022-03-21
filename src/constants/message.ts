@@ -11,10 +11,6 @@ export const LISTENER_TYPE = {
   ACCOUNT_CHANGED: 'accountChanged',
 } as const;
 
-export const METHOD_TYPE = {
-  REQUEST_ACCOUNT: 'requestAccount',
-} as const;
-
 export const ETHEREUM_LISTENER_TYPE = {
   ACCOUNTS_CHANGED: 'accountsChanged',
   CHAIN_CHANGED: 'chainChanged',

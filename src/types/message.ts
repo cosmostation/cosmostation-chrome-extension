@@ -1,7 +1,14 @@
-import type { LISTENER_TYPE, MESSAGE_TYPE, METHOD_TYPE } from '~/constants/message';
+import type { LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
-import type { EthGetBalanceRequestMessage, EthRPCRequestMessage, EthSendTransactionRequestMessage, EthSignRequestMessage } from './ethereum';
+import type {
+  EthGetBalanceRequestMessage,
+  EthRequestAccounts,
+  EthRPCRequestMessage,
+  EthSendTransactionRequestMessage,
+  EthSignRequestMessage,
+} from './ethereum/message';
+import type { TenRequestAccounts } from './tendermint/message';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type ListenerType = ValueOf<typeof LISTENER_TYPE>;
@@ -13,18 +20,16 @@ export type ResponseMessage = {
   result?: unknown | null;
 };
 
-export type AccountRequestMessage = {
-  method: typeof METHOD_TYPE.REQUEST_ACCOUNT;
-  params: unknown;
-  id?: number | string;
-};
-
-export type RequestMessage =
+export type EthereumRequestMessage =
   | EthRPCRequestMessage
-  | AccountRequestMessage
   | EthSignRequestMessage
   | EthSendTransactionRequestMessage
-  | EthGetBalanceRequestMessage;
+  | EthGetBalanceRequestMessage
+  | EthRequestAccounts;
+
+export type TendermintRequestMessage = TenRequestAccounts;
+
+export type RequestMessage = EthereumRequestMessage | TendermintRequestMessage;
 
 // window.postMessage 통신
 // isCosmostation: extension 확인 플래그

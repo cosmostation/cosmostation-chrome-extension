@@ -1,9 +1,10 @@
 import { Interface } from '@ethersproject/abi';
 
 import { ERC20_ABI } from '~/constants/abi';
-import { ETHEREUM_TX_TYPE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/ethereum';
+import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR } from '~/constants/error';
+import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
-import type { EthereumTxParams } from '~/types/ethereum';
+import type { EthereumTxParams } from '~/types/ethereum/message';
 
 import { chromeStorage } from './chromeStorage';
 
@@ -33,7 +34,7 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
 
     return responseJSON as unknown as T;
   } catch {
-    throw new EthereumRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], rpcId);
+    throw new EthereumRPCError(RPC_ERROR.INTERNAL, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], rpcId);
   }
 }
 
@@ -47,11 +48,9 @@ export async function determineTxType(txParams: EthereumTxParams) {
     // eslint-disable-next-line no-empty
   } catch {}
 
-  const tokenMethodName = [
-    ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE,
-    ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER,
-    ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM,
-  ].find((methodName) => isEqualString(methodName, name));
+  const tokenMethodName = [ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM].find(
+    (methodName) => isEqualString(methodName, name),
+  );
 
   let result = '';
 

@@ -1,24 +1,11 @@
-import type {
-  ETHEREUM_METHOD_TYPE,
-  ETHEREUM_NO_POPUP_METHOD_TYPE,
-  ETHEREUM_POPUP_METHOD_TYPE,
-} from '~/constants/ethereum';
+import type { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 
 export type EthereumNoPopupMethodType = ValueOf<typeof ETHEREUM_NO_POPUP_METHOD_TYPE>;
 export type EthereumPopupMethodType = ValueOf<typeof ETHEREUM_POPUP_METHOD_TYPE>;
 
 export type BaseChain = 'mainnet' | 'goerli' | 'kovan' | 'rinkeby' | 'ropsten';
 
-export type HardFork =
-  | 'chainstart'
-  | 'homestead'
-  | 'dao'
-  | 'tangerineWhistle'
-  | 'spuriousDragon'
-  | 'byzantium'
-  | 'constantinople'
-  | 'petersburg'
-  | 'istanbul';
+export type HardFork = 'chainstart' | 'homestead' | 'dao' | 'tangerineWhistle' | 'spuriousDragon' | 'byzantium' | 'constantinople' | 'petersburg' | 'istanbul';
 
 export interface CustomChainParams {
   name?: string;
@@ -46,6 +33,12 @@ export type EthereumTxParams = {
   common?: Common;
   chain?: string;
   hardfork?: string;
+};
+
+export type EthRequestAccounts = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETH__REQUEST_ACCOUNTS;
+  params: unknown;
+  id?: number | string;
 };
 
 export type EthSignRequestMessage = {

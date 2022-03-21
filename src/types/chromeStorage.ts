@@ -37,6 +37,7 @@ export type Queue = {
   origin: string;
   messageId: string;
   message: RequestMessage;
+  channel?: string;
 };
 
 export type ChromeStorage = {
