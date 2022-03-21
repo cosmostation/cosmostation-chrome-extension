@@ -77,6 +77,7 @@ import type {
 
             if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
               console.log('inject listener2');
+              console.log(`response-${messageId}-inject-script`, event);
               window.removeEventListener('message', handler);
 
               const { data } = event;
@@ -86,7 +87,6 @@ import type {
               } else {
                 res(data.message.result);
               }
-              console.log(`response-${messageId}-inject-script`, event);
             }
           };
 

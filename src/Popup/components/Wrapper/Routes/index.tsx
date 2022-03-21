@@ -24,6 +24,16 @@ export default function Routes({ children }: RoutesType) {
     })();
   }, [chromeStorage.accounts]);
 
+  useEffect(() => {
+    if (chromeStorage.queues.length > 0) {
+      if (chromeStorage.queues[0].message.method === 'ten_requestAccounts') {
+        navigate('/popup/request-account');
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chromeStorage.queues]);
+
   if (isLoading) {
     return null;
   }

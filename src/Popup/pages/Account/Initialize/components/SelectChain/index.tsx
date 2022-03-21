@@ -7,6 +7,7 @@ import Divider from '~/Popup/components/common/Divider';
 import Image from '~/Popup/components/common/Image';
 import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { upperCaseFirst } from '~/Popup/utils/common';
 
@@ -30,7 +31,9 @@ export default function SelectChain() {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
 
-  const { addAllowedChainId, removeAllowedChainId, chromeStorage } = useChromeStorage();
+  const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
+
+  const { chromeStorage } = useChromeStorage();
 
   const { allowedChainIds } = chromeStorage;
 

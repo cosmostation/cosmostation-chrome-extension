@@ -2,6 +2,7 @@ import '~/Popup/i18n/background';
 
 import { ecsign, hashPersonalMessage, stripHexPrefix, toRpcSig } from 'ethereumjs-util';
 
+import { CHAINS } from '~/constants/chain';
 import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -11,8 +12,8 @@ import { THEME_TYPE } from '~/constants/theme';
 import { getCurrentAccount, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
 import { openWindow } from '~/Popup/utils/chromeWindows';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { EthereumRPCError, TendermintRPCError } from '~/Popup/utils/error';
-import { getAddress, personalSign, rpcResponse, sign } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CurrencyType, LanguageType } from '~/types/chromeStorage';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage, ResponseMessage } from '~/types/message';
@@ -28,6 +29,8 @@ function background() {
 
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, sender, sendResponse) => {
     console.log('content-script to background request sender', request, sender);
+    sendResponse();
+    console.log('진입');
 
     // console.log('localStorage', localStorage.getItem('i18nextLng'));
 
@@ -50,13 +53,54 @@ function background() {
               throw new TendermintRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
             }
 
-            const { method, id } = message;
+            const { method } = message;
 
-            const { currentEthereumNetwork, currentAccount, getPairKey, password } = await chromeStorage();
+            const {
+              currentEthereumNetwork,
+              currentAccount,
+              additionalChains,
+              queues,
+              allowedOrigins,
+              currentAllowedChains,
+              currentAccountAllowedOrigins,
+              password,
+            } = await chromeStorage();
 
             if (tendermintPopupMethods.includes(method)) {
               if (method === 'ten_requestAccounts') {
-                await openWindow();
+                const { params } = message;
+
+                if (params?.isBeta && !additionalChains.map((item) => item.chainName).includes(params?.chainName)) {
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                }
+
+                if (!params?.isBeta && !CHAINS.map((item) => item.chainName).includes(params?.chainName)) {
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                }
+
+                const chain = message.params.isBeta
+                  ? additionalChains.find((item) => item.chainName === message.params.chainName)
+                  : CHAINS.find((item) => item.chainName === message.params.chainName);
+
+                if (
+                  chain?.id &&
+                  [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain?.id) &&
+                  currentAccountAllowedOrigins.includes(origin)
+                ) {
+                  const keypair = getKeyPair(currentAccount, chain, password);
+                  const address = getAddress(chain, keypair?.publicKey);
+
+                  responseToWeb({
+                    message: {
+                      result: address,
+                    },
+                    messageId,
+                    origin,
+                  });
+                } else {
+                  await setStorage('queues', [...queues, request]);
+                  await openWindow();
+                }
               }
             }
 
@@ -192,8 +236,6 @@ function background() {
           }
         }
       })();
-
-      sendResponse();
     }
   });
 

@@ -6,7 +6,17 @@ import { aesDecrypt, mnemonicToPair, privateKeyToPair, sha512 } from '~/Popup/ut
 export async function chromeStorage() {
   const storage = await getAllStorage();
 
-  const { accounts, selectedAccountId, additionalEthereumNetworks, encryptedPassword, selectedEthereumNetworkId } = storage;
+  const {
+    accounts,
+    selectedAccountId,
+    additionalEthereumNetworks,
+    encryptedPassword,
+    selectedEthereumNetworkId,
+    additionalChains,
+    queues,
+    allowedOrigins,
+    allowedChainIds,
+  } = storage;
 
   const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
 
@@ -17,6 +27,12 @@ export async function chromeStorage() {
 
     return ethereumNetworks.find((network) => network.id === networkId) ?? ETHEREUM_NETWORKS[1];
   })();
+
+  const currentAllowedChains = CHAINS.filter((chain) => allowedChainIds.includes(chain.id));
+
+  const currentAccountAllowedOrigins = allowedOrigins
+    .filter((allowedOrigin) => allowedOrigin.accountId === selectedAccountId)
+    .map((allowedOrigin) => allowedOrigin.origin);
 
   const getPairKey = (chainName: string, password: string) => {
     const chains = Object.values(CHAINS);
@@ -46,7 +62,12 @@ export async function chromeStorage() {
     storage,
     currentAccount,
     currentEthereumNetwork,
+    currentAllowedChains,
+    currentAccountAllowedOrigins,
+    additionalChains,
+    allowedOrigins,
     password,
+    queues,
     getPairKey,
   };
 }

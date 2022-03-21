@@ -106,7 +106,7 @@ export default function AccessRequest({ children }: AccessRequestProps) {
             </OutlineButton>
             <Button
               onClick={async () => {
-                await addAllowedOrigin(origin);
+                await addAllowedOrigin(currentQueue.origin);
               }}
             >
               Confirm

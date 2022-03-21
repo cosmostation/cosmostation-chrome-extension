@@ -7,6 +7,7 @@ import Image from '~/Popup/components/common/Image';
 import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { upperCaseFirst } from '~/Popup/utils/common';
 
 import {
@@ -25,7 +26,8 @@ import {
 export default function Entry() {
   const [search, setSearch] = useState('');
 
-  const { addAllowedChainId, removeAllowedChainId, chromeStorage } = useChromeStorage();
+  const { chromeStorage } = useChromeStorage();
+  const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
 
   const { currentAccount } = useCurrentAccount();
 
