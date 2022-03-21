@@ -1,7 +1,7 @@
 import { Interface } from '@ethersproject/abi';
 
 import { ERC20_ABI } from '~/constants/abi';
-import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR } from '~/constants/error';
+import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
 import type { EthereumTxParams } from '~/types/ethereum/message';
@@ -34,7 +34,7 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
 
     return responseJSON as unknown as T;
   } catch {
-    throw new EthereumRPCError(RPC_ERROR.INTERNAL, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], rpcId);
+    throw new EthereumRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], rpcId);
   }
 }
 

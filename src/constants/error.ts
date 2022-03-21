@@ -18,7 +18,7 @@ export const RPC_ERROR = {
   CHAIN_DISCONNECTED: 4901,
 } as const;
 
-export const ETHEREUM_RPC_ERROR_MESSAGE = {
+export const RPC_ERROR_MESSAGE = {
   [RPC_ERROR.PARSE]: 'Invalid JSON was received by the server. An error occurred on the server while parsing the JSON text.',
   [RPC_ERROR.INVALID_REQUEST]: 'The JSON sent is not a valid Request object.',
   [RPC_ERROR.METHOD_NOT_FOUND]: 'The method does not exist / is not available.',
@@ -32,6 +32,9 @@ export const ETHEREUM_RPC_ERROR_MESSAGE = {
   [RPC_ERROR.LIMIT_EXCEEDED]: 'Request limit exceeded.',
 
   [RPC_ERROR.USER_REJECTED_REQUEST]: 'User rejected the request.',
+};
+
+export const ETHEREUM_RPC_ERROR_MESSAGE = {
   [RPC_ERROR.UNAUTHORIZED]: 'The requested account and/or method has not been authorized by the user.',
   [RPC_ERROR.UNSUPPORTED_METHOD]: 'The requested method is not supported',
   [RPC_ERROR.DISCONNECTED]: 'The provider is disconnected from all chains.',
@@ -39,19 +42,6 @@ export const ETHEREUM_RPC_ERROR_MESSAGE = {
 } as const;
 
 export const TENDERMINT_RPC_ERROR_MESSAGE = {
-  [RPC_ERROR.PARSE]: 'Invalid JSON was received by the server. An error occurred on the server while parsing the JSON text.',
-  [RPC_ERROR.INVALID_REQUEST]: 'The JSON sent is not a valid Request object.',
-  [RPC_ERROR.METHOD_NOT_FOUND]: 'The method does not exist / is not available.',
-  [RPC_ERROR.INVALID_PARAMS]: 'Invalid method parameter(s).',
-  [RPC_ERROR.INTERNAL]: 'Internal JSON-RPC error.',
-  [RPC_ERROR.INVALID_INPUT]: 'Invalid input.',
-  [RPC_ERROR.RESOURCE_NOT_FOUND]: 'Resource not found.',
-  [RPC_ERROR.RESOURCE_UNAVAILABLE]: 'Resource unavailable.',
-  [RPC_ERROR.TRANSACTION_REJECTED]: 'Transaction rejected.',
-  [RPC_ERROR.METHOD_NOT_SUPPORTED]: 'Method not supported.',
-  [RPC_ERROR.LIMIT_EXCEEDED]: 'Request limit exceeded.',
-
-  [RPC_ERROR.USER_REJECTED_REQUEST]: 'User rejected the request.',
   [RPC_ERROR.UNAUTHORIZED]: 'The requested account and/or method has not been authorized by the user.',
   [RPC_ERROR.UNSUPPORTED_METHOD]: 'The requested method is not supported by this Ethereum provider.',
   [RPC_ERROR.DISCONNECTED]: 'The provider is disconnected from all chains.',

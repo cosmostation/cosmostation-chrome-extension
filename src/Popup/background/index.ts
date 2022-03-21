@@ -2,7 +2,7 @@ import '~/Popup/i18n/background';
 
 import { ecsign, hashPersonalMessage, stripHexPrefix, toRpcSig } from 'ethereumjs-util';
 
-import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
+import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
@@ -47,7 +47,7 @@ function background() {
 
           try {
             if (!message?.method || !tendermintMethods.includes(message.method)) {
-              throw new TendermintRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, TENDERMINT_RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
+              throw new TendermintRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
             }
 
             const { method, id } = message;
@@ -61,7 +61,7 @@ function background() {
             }
 
             if (tendermintNoPopupMethods.includes(message.method)) {
-              throw new TendermintRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, TENDERMINT_RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
+              throw new TendermintRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
             }
           } catch (e) {
             if (e instanceof TendermintRPCError) {
@@ -78,7 +78,7 @@ function background() {
               message: {
                 error: {
                   code: RPC_ERROR.INTERNAL,
-                  message: `${TENDERMINT_RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
+                  message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
                 },
               },
               messageId,
@@ -182,7 +182,7 @@ function background() {
               message: {
                 error: {
                   code: RPC_ERROR.INTERNAL,
-                  message: `${ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
+                  message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
                 },
                 jsonrpc: '2.0',
               },

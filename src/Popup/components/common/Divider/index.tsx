@@ -1,5 +1,9 @@
 import { StyledDivider } from './styled';
 
-export default function Divider() {
-  return <StyledDivider />;
+type DividerProps = {
+  className?: string;
+};
+
+export default function Divider({ className }: DividerProps) {
+  return <StyledDivider className={className} />;
 }

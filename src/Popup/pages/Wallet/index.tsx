@@ -1,3 +1,4 @@
+import AccessRequest from '~/Popup/components/AccessRequest';
 import Lock from '~/Popup/components/Lock';
 
 import Entry from './Entry';
@@ -6,9 +7,11 @@ import Layout from './layout';
 export default function Wallet() {
   return (
     <Lock>
-      <Layout>
-        <Entry />
-      </Layout>
+      <AccessRequest>
+        <Layout>
+          <Entry />
+        </Layout>
+      </AccessRequest>
     </Lock>
   );
 }

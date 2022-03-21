@@ -5,6 +5,6 @@ export type TendermintPopupMethodType = ValueOf<typeof TENDERMINT_POPUP_METHOD_T
 
 export type TenRequestAccounts = {
   method: typeof TENDERMINT_POPUP_METHOD_TYPE.TEN__REQUEST_ACCOUNTS;
-  params?: unknown;
+  params: { chainName: string; isBeta?: boolean };
   id?: number | string;
 };
