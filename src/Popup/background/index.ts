@@ -266,6 +266,31 @@ function background() {
   //   }
   // });
 
+  chrome.windows.onRemoved.addListener((windowId) => {
+    void (async function asyncHandler() {
+      const currentWindowId = await getStorage('windowId');
+
+      if (currentWindowId === windowId) {
+        const queues = await getStorage('queues');
+
+        queues.forEach((queue) => {
+          responseToWeb({
+            message: {
+              error: {
+                code: RPC_ERROR.USER_REJECTED_REQUEST,
+                message: `${RPC_ERROR_MESSAGE[RPC_ERROR.USER_REJECTED_REQUEST]}`,
+              },
+            },
+            messageId: queue.messageId,
+            origin: queue.origin,
+          });
+        });
+
+        await setStorage('queues', []);
+      }
+    })();
+  });
+
   chrome.runtime.onStartup.addListener(() => {
     console.log('startup');
     void (async function async() {
