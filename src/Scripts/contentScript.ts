@@ -1,12 +1,9 @@
-import { readFileSync } from 'fs';
-
 import { LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import type {
   BackgroundToContentScriptEventMessage,
   ContentScriptToBackgroundEventMessage,
   ContentScriptToWebEventMessage,
   ListenerMessage,
-  MessageType,
   RequestMessage,
   ResponseMessage,
   WebToContentScriptEventMessage,
