@@ -42,4 +42,5 @@ export const PATH = {
   REGISTER__ACCOUNT__NEW: '/register/account/new',
 
   POPUP__REQUEST_ACCOUNT: '/popup/request-account',
+  POPUP__TENDERMINT__ADD_CHAIN: '/popup/tendermint/add-chain',
 } as const;

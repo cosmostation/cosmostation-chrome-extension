@@ -1,5 +1,6 @@
 export const TENDERMINT_POPUP_METHOD_TYPE = {
   TEN__REQUEST_ACCOUNTS: 'ten_requestAccounts',
+  TEN__ADD_CHAIN: 'ten_addChain',
 } as const;
 
 export const TENDERMINT_NO_POPUP_METHOD_TYPE = {

@@ -21,15 +21,13 @@ export default function Entry() {
     if (currentQueue?.message.method === 'ten_requestAccounts' && currentPassword) {
       const { message, messageId, origin } = currentQueue;
 
-      const chain = message.params.isBeta
-        ? additionalChains.find((item) => item.chainName === message.params.chainName)
-        : CHAINS.find((item) => item.chainName === message.params.chainName);
+      const allChains = [...CHAINS, ...additionalChains];
+
+      const chain = allChains.find((item) => item.chainName === message.params.chainName);
 
       if (chain) {
         const keyPair = getKeyPair(currentAccount, chain, currentPassword);
         const address = getAddress(chain, keyPair?.publicKey);
-
-        console.log('dddd');
 
         responseToWeb({
           message: {

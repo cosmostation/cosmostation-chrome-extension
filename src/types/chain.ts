@@ -12,10 +12,20 @@ export type BIP44 = {
   addressIndex: string;
 };
 
-type CommonChain = {
+export type CommonChain = {
   id: string;
   bip44: Omit<BIP44, 'addressIndex'>;
   imageURL?: string;
+};
+
+export type GasRate = {
+  tiny: string;
+  low: string;
+  average: string;
+};
+
+export type Gas = {
+  send?: string;
 };
 
 export type TendermintChain = {
@@ -32,6 +42,8 @@ export type TendermintChain = {
   };
   coinGeckoId?: string;
   explorerURL?: string;
+  gasRate: GasRate;
+  gas: Gas;
 } & CommonChain;
 
 export type EthereumChain = {

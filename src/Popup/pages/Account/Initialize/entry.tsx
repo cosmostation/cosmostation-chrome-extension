@@ -37,7 +37,7 @@ export default function Entry() {
     void setChromeStorage('encryptedPassword', null);
     void setChromeStorage('selectedAccountId', '');
 
-    void setChromeStorage('allowedChainIds', ['62a8e13a-3107-40ef-ade4-58de45aa6c1f', '33c328b1-2d5f-43f1-ac88-25be1a5abf6c']);
+    void setChromeStorage('allowedChainIds', ['62a8e13a-3107-40ef-ade4-58de45aa6c1f']);
     void setChromeStorage('allowedOrigins', []);
     void setChromeStorage('selectedChainId', '');
     void setChromeStorage('selectedEthereumNetworkId', '');

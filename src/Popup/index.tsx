@@ -37,7 +37,8 @@ import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
-import RequestAccount from '~/Popup/pages/Popup/RequestAccount';
+import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
+import PopupTendermintAddChain from '~/Popup/pages/Popup/Tendermint/AddChain';
 import Restore from '~/Popup/pages/Restore';
 import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
 import SettingChangeLanguage from '~/Popup/pages/Setting/ChangeLanguage';
@@ -111,7 +112,8 @@ function Popup() {
                   <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
                   <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
 
-                  <Route path={PATH.POPUP__REQUEST_ACCOUNT} element={<RequestAccount />} />
+                  <Route path={PATH.POPUP__REQUEST_ACCOUNT} element={<PopupRequestAccount />} />
+                  <Route path={PATH.POPUP__TENDERMINT__ADD_CHAIN} element={<PopupTendermintAddChain />} />
                 </>
               )}
               <Route path={PATH.HOME} element={<Home />} />

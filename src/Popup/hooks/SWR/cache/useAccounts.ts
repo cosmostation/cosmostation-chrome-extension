@@ -15,7 +15,7 @@ export function useAccounts(suspense?: boolean) {
   const { currentAllowedChains } = useCurrentAllowedChains();
   const { currentPassword } = useCurrentPassword();
 
-  const { accounts } = chromeStorage;
+  const { accounts, additionalChains } = chromeStorage;
 
   const fetcher = () =>
     new Promise<AccountList[]>((res) => {
@@ -24,7 +24,7 @@ export function useAccounts(suspense?: boolean) {
           accounts.map((account) => {
             const addresses: Record<string, string> = {};
 
-            currentAllowedChains.forEach((chain) => {
+            [...currentAllowedChains, ...additionalChains].forEach((chain) => {
               const keypair = getKeyPair(account, chain, currentPassword);
               const address = getAddress(chain, keypair?.publicKey);
               addresses[chain.id] = address;
@@ -35,13 +35,13 @@ export function useAccounts(suspense?: boolean) {
       }, 500);
     });
 
-  const { data, mutate } = useSWR([accounts, currentAllowedChains], fetcher, {
+  const { data, mutate } = useSWR([accounts, currentAllowedChains, additionalChains], fetcher, {
     suspense,
     revalidateOnFocus: false,
     revalidateOnMount: false,
     revalidateOnReconnect: false,
     revalidateIfStale: false,
-    isPaused: () => accounts.length < 1 || currentAllowedChains.length < 1,
+    isPaused: () => accounts.length < 1 || [...currentAllowedChains, ...additionalChains].length < 1,
   });
 
   return { data, mutate };

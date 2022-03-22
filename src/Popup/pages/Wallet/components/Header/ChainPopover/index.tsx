@@ -32,9 +32,9 @@ type ChainPopoverProps = Omit<PopoverProps, 'children'>;
 export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProps) {
   const { navigate } = useNavigate();
   const { currentChain, setCurrentChain } = useCurrentChain();
-  const { chromeStorage } = useChromeStorage();
+  const { chromeStorage, setChromeStorage } = useChromeStorage();
 
-  const { allowedChainIds } = chromeStorage;
+  const { allowedChainIds, additionalChains } = chromeStorage;
 
   const allowedTendermintChain = useMemo(() => TENDERMINT_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
   const allowedEthereumChain = useMemo(() => ETHEREUM_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
@@ -93,19 +93,38 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
               </ChainListContainer>
             </EthereumChainListContainer>
           )}
-          <BetaChainContainer>
-            <BetaChainTitleContainer>
-              <Typography variant="h6">Beta support</Typography>
-            </BetaChainTitleContainer>
-            <BetaChainListContainer>
-              <ChainListContainer>
-                <ChainItemButton onClick={() => console.log('select chain')} onClickDelete={() => console.log('delete')}>
-                  Axeler
-                </ChainItemButton>
-                <ChainItemButton onClickDelete={() => console.log('delete')}>adadad</ChainItemButton>
-              </ChainListContainer>
-            </BetaChainListContainer>
-          </BetaChainContainer>
+
+          {additionalChains.length > 0 && (
+            <BetaChainContainer>
+              <BetaChainTitleContainer>
+                <Typography variant="h6">Beta support</Typography>
+              </BetaChainTitleContainer>
+              <BetaChainListContainer>
+                <ChainListContainer>
+                  {additionalChains.map((chain) => (
+                    <ChainItemButton
+                      key={chain.id}
+                      onClick={async () => {
+                        await setCurrentChain(chain);
+                        onClose?.({}, 'backdropClick');
+                      }}
+                      onClickDelete={async () => {
+                        if (currentChain.id === chain.id) {
+                          await setCurrentChain([...allowedTendermintChain, ...allowedEthereumChain][0]);
+                        }
+                        const newAdditionalChains = additionalChains.filter((item) => item.id !== chain.id);
+
+                        await setChromeStorage('additionalChains', newAdditionalChains);
+                      }}
+                      imgSrc={chain.imageURL}
+                    >
+                      {chain.chainName}
+                    </ChainItemButton>
+                  ))}
+                </ChainListContainer>
+              </BetaChainListContainer>
+            </BetaChainContainer>
+          )}
         </BodyContainer>
       </Container>
     </Popover>

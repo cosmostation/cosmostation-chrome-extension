@@ -22,6 +22,7 @@ import type { ThemeType } from '~/types/theme';
 import { chromeStorage } from './chromeStorage';
 import { determineTxType, requestRPC } from './ethereum';
 import { initI18n } from './i18n';
+import { tenAddChainParamsSchema } from './joiSchema';
 import { mnemonicToPair, privateKeyToPair } from '../utils/crypto';
 
 function background() {
@@ -70,17 +71,13 @@ function background() {
               if (method === 'ten_requestAccounts') {
                 const { params } = message;
 
-                if (params?.isBeta && !additionalChains.map((item) => item.chainName).includes(params?.chainName)) {
+                const allChains = [...CHAINS, ...additionalChains];
+
+                if (!allChains.map((item) => item.chainName).includes(params?.chainName)) {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
                 }
 
-                if (!params?.isBeta && !CHAINS.map((item) => item.chainName).includes(params?.chainName)) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
-                }
-
-                const chain = message.params.isBeta
-                  ? additionalChains.find((item) => item.chainName === message.params.chainName)
-                  : CHAINS.find((item) => item.chainName === message.params.chainName);
+                const chain = allChains.find((item) => item.chainName === message.params.chainName);
 
                 if (
                   chain?.id &&
@@ -101,6 +98,26 @@ function background() {
                   await setStorage('queues', [...queues, request]);
                   await openWindow();
                 }
+              }
+
+              if (method === 'ten_addChain') {
+                const { params } = message;
+
+                try {
+                  await tenAddChainParamsSchema.validateAsync(params);
+                } catch (err) {
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
+                }
+
+                const allChains = [...CHAINS];
+                const allChainsName = allChains.map((item) => item.chainName);
+
+                if (allChainsName.includes(params.chainName)) {
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                }
+
+                await setStorage('queues', [...queues, request]);
+                await openWindow();
               }
             }
 
@@ -238,6 +255,16 @@ function background() {
       })();
     }
   });
+
+  // chrome.storage.onChanged.addListener((changes) => {
+  //   // eslint-disable-next-line no-restricted-syntax
+  //   for (const [key, { newValue }] of Object.entries(changes)) {
+  //     console.log(key, newValue);
+  //     if (key === 'queues') {
+  //       void chrome.browserAction.setBadgeText({ text: '1' });
+  //     }
+  //   }
+  // });
 
   chrome.runtime.onStartup.addListener(() => {
     console.log('startup');

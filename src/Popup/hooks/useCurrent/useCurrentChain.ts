@@ -6,15 +6,16 @@ export function useCurrentChain() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
   const { additionalChains, allowedChainIds, selectedChainId } = chromeStorage;
+  const additionalChainIds = additionalChains.map((item) => item.id);
 
   const allChains = [...CHAINS, ...additionalChains];
 
-  const currentAccountSelectedChainId = selectedChainId ?? allowedChainIds[0];
+  const currentAccountSelectedChainId = [...allowedChainIds, ...additionalChainIds].includes(selectedChainId) ? selectedChainId : allowedChainIds[0];
 
   const currentChain = allChains.find((chain) => chain.id === currentAccountSelectedChainId)!;
 
   const setCurrentChain = async (chain: Chain) => {
-    if (!allowedChainIds.includes(chain.id)) {
+    if (![...allowedChainIds, ...additionalChainIds].includes(chain.id)) {
       return;
     }
 

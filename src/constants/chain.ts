@@ -18,9 +18,11 @@ export const LINE_TYPE = {
 export const TENDERMINT_TYPE = {
   BASIC: '',
   ETHERMINT: 'ETHERMINT',
-};
+} as const;
 
 export const MINTSCAN_URL = 'https://www.mintscan.io';
+
+export const DEFAULT_GAS = '100000';
 
 export const TENDERMINT_CHAINS: TendermintChain[] = [
   {
@@ -43,6 +45,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'cosmos' },
     coinGeckoId: 'cosmos',
     explorerURL: `${MINTSCAN_URL}/cosmos`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: 'd86e2b4e-e422-4b58-b687-f1de03cde152',
@@ -64,6 +72,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'iaa' },
     coinGeckoId: 'iris-network',
     explorerURL: `${MINTSCAN_URL}/iris`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: '634e5e88-0a26-4ef5-92b5-dbf4cf040a8a',
@@ -85,6 +99,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'kava' },
     coinGeckoId: 'kava',
     explorerURL: `${MINTSCAN_URL}/kava`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: 'c3e5474b-8cf7-467e-b6a8-706d2b694e5a',
@@ -105,6 +125,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'band' },
     coinGeckoId: 'band-protocol',
     explorerURL: `${MINTSCAN_URL}/band`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: 'b869bcf8-f489-443a-9be4-56cac21f6f53',
@@ -126,6 +152,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'akash' },
     coinGeckoId: 'akash-network',
     explorerURL: `${MINTSCAN_URL}/akash`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: '29d61a8d-6bbe-4524-afa5-6f70931bcdee',
@@ -147,6 +179,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'certik' },
     coinGeckoId: 'certik',
     explorerURL: `${MINTSCAN_URL}/certik`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: '8c72318f-8279-4d37-a457-1cd4c0b1f160',
@@ -168,6 +206,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'sent' },
     coinGeckoId: 'sentinel-group',
     explorerURL: `${MINTSCAN_URL}/sentinel`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: '58c55107-2df3-4851-a68e-fee203308be2',
@@ -189,6 +233,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'persistence' },
     coinGeckoId: 'persistence',
     explorerURL: `${MINTSCAN_URL}/persistence`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: '3b8e015e-ab6c-4095-9dd8-57e62f437f4f',
@@ -209,6 +259,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'fetch' },
     coinGeckoId: 'fetch-ai',
     explorerURL: `${MINTSCAN_URL}/fetchai`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: 'ba43a35a-0861-486a-9ce9-c23fb1ba610c',
@@ -230,6 +286,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'sif' },
     coinGeckoId: 'sifchain',
     explorerURL: `${MINTSCAN_URL}/sifchain`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: 'b006dccc-ff1e-4c5a-95ad-94f313029d93',
@@ -251,6 +313,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'cro' },
     coinGeckoId: 'crypto-com-chain',
     explorerURL: `${MINTSCAN_URL}/crypto-org`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: 'f850280f-316c-44ab-9624-c8d760dbca8c',
@@ -271,6 +339,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'ki' },
     coinGeckoId: 'ki',
     explorerURL: `${MINTSCAN_URL}/ki-chain`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: '320cfa03-401d-44b5-a40a-0de7c0d705eb',
@@ -291,6 +365,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'star' },
     coinGeckoId: 'starname',
     explorerURL: `${MINTSCAN_URL}/starname`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: '1272070c-b1f0-455e-9bb7-ff434b5011e9',
@@ -311,6 +391,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'panacea' },
     coinGeckoId: 'medibloc',
     explorerURL: `${MINTSCAN_URL}/medibloc`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: 'b6b1f158-9d6c-4779-a40d-9be657555612',
@@ -331,6 +417,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'emoney' },
     coinGeckoId: 'e-money',
     explorerURL: `${MINTSCAN_URL}/emoney`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: '2be3f1c4-8c2e-4fc9-80c8-5877b0bb77c8',
@@ -351,6 +443,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'rizon' },
     coinGeckoId: 'hdac',
     explorerURL: `${MINTSCAN_URL}/rizon`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: '23076a4e-8bba-4e36-8563-2c30948f290c',
@@ -371,6 +469,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'juno' },
     coinGeckoId: 'juno-network',
     explorerURL: `${MINTSCAN_URL}/juno`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
   {
     id: 'd17852e4-351a-4b91-af44-358e5ed1dbf0',
@@ -391,6 +495,12 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
     bech32Prefix: { address: 'osmo' },
     coinGeckoId: 'osmosis',
     explorerURL: `${MINTSCAN_URL}/osmosis`,
+    gasRate: {
+      tiny: '0.00025',
+      low: '0.0025',
+      average: '0.025',
+    },
+    gas: {},
   },
 ];
 

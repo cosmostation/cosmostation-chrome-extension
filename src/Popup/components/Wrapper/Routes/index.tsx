@@ -29,6 +29,10 @@ export default function Routes({ children }: RoutesType) {
       if (chromeStorage.queues[0].message.method === 'ten_requestAccounts') {
         navigate('/popup/request-account');
       }
+
+      if (chromeStorage.queues[0].message.method === 'ten_addChain') {
+        navigate('/popup/tendermint/add-chain');
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
