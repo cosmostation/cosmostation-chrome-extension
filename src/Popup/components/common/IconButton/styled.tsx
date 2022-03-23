@@ -8,5 +8,8 @@ export const StyledIconButton = styled(IconButton)(({ theme }) => ({
 
   '& svg': {
     fill: theme.colors.base06,
+    '& > path': {
+      fill: theme.colors.base06,
+    },
   },
 }));

@@ -89,12 +89,13 @@ export default function AccessRequest({ children }: AccessRequestProps) {
             <OutlineButton
               onClick={async () => {
                 responseToWeb({
-                  message: {
+                  response: {
                     error: {
                       code: RPC_ERROR.USER_REJECTED_REQUEST,
                       message: `${RPC_ERROR_MESSAGE[RPC_ERROR.USER_REJECTED_REQUEST]}`,
                     },
                   },
+                  message: currentQueue.message,
                   messageId: currentQueue.messageId,
                   origin: currentQueue.origin,
                 });

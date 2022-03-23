@@ -1,6 +1,10 @@
 export const TENDERMINT_POPUP_METHOD_TYPE = {
+  TEN__SUPPORTED_CHAIN_NAMES: 'ten_supportedChainNames',
   TEN__REQUEST_ACCOUNTS: 'ten_requestAccounts',
   TEN__ADD_CHAIN: 'ten_addChain',
+  TEN__SIGN_AMINO: 'ten_signAmino',
+  TEN__SIGN_DIRECT: 'ten_signDirect',
+  TEN__TEST: 'ten_test',
 } as const;
 
 export const TENDERMINT_NO_POPUP_METHOD_TYPE = {

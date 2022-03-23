@@ -3,13 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { LINE_TYPE } from '~/constants/chain';
 import { LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import type {
+  ContentScriptToWebEventMessage,
   EthereumRequestMessage,
   ListenerMessage,
   ListenerType,
-  RequestMessage,
   ResponseMessage,
   TendermintRequestMessage,
-  WebToContentScriptEventMessage,
 } from '~/types/message';
 
 (function injectScript() {
@@ -29,7 +28,7 @@ import type {
         new Promise((res, rej) => {
           const messageId = uuidv4();
 
-          const handler = (event: MessageEvent<WebToContentScriptEventMessage<ResponseMessage>>) => {
+          const handler = (event: MessageEvent<ContentScriptToWebEventMessage<EthereumRequestMessage, ResponseMessage>>) => {
             console.log('inject listener', event);
 
             if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
@@ -38,10 +37,10 @@ import type {
 
               const { data } = event;
 
-              if (data.message?.error) {
-                rej(data.message.error);
+              if (data.response?.error) {
+                rej(data.response.error);
               } else {
-                res(data.message.result);
+                res(data.response.result);
               }
               console.log(`response-${messageId}-inject-script`, event);
             }
@@ -72,7 +71,7 @@ import type {
         new Promise((res, rej) => {
           const messageId = uuidv4();
 
-          const handler = (event: MessageEvent<WebToContentScriptEventMessage<ResponseMessage>>) => {
+          const handler = (event: MessageEvent<ContentScriptToWebEventMessage<TendermintRequestMessage, ResponseMessage>>) => {
             console.log('inject listener', event);
 
             if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
@@ -82,23 +81,42 @@ import type {
 
               const { data } = event;
 
-              if (data.message?.error) {
-                rej(data.message.error);
+              if (data.response?.error) {
+                rej(data.response.error);
+              } else if (data.message.method === 'ten_requestAccounts') {
+                const { publicKey } = data.response.result as { publicKey: string; address: string };
+
+                res({ ...(data.response.result as { publicKey: string; address: string }), publicKey: new Uint8Array(Buffer.from(publicKey, 'hex')) });
               } else {
-                res(data.message.result);
+                res(data.response.result);
               }
             }
           };
 
           window.addEventListener('message', handler);
 
-          window.postMessage({
-            isCosmostation: true,
-            line: LINE_TYPE.TENDERMINT,
-            type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
-            messageId,
-            message,
-          });
+          if (message.method === 'ten_test') {
+            const { params } = message;
+
+            const newParams = { ddd: Buffer.from(params.ddd).toString('hex') };
+            const newMessage = { ...message, params: newParams };
+
+            window.postMessage({
+              isCosmostation: true,
+              line: LINE_TYPE.TENDERMINT,
+              type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+              messageId,
+              message: newMessage,
+            });
+          } else {
+            window.postMessage({
+              isCosmostation: true,
+              line: LINE_TYPE.TENDERMINT,
+              type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+              messageId,
+              message,
+            });
+          }
         }),
     },
   };

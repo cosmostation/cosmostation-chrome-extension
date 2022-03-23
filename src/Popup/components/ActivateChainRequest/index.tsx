@@ -11,7 +11,7 @@ import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllo
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { responseToWeb } from '~/Popup/utils/message';
 
-import { BottomContainer, Container, DescriptionContainer, LogoContainer, StyledDivider, TitleContainer } from './styled';
+import { BottomContainer, ChainImageContainer, Container, DescriptionContainer, LogoContainer, StyledDivider, TitleContainer } from './styled';
 
 type AccessRequestProps = {
   children: JSX.Element;
@@ -25,6 +25,8 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
 
   if (currentQueue?.message.method === 'ten_requestAccounts' && !allowedChains.includes(currentQueue?.message.params.chainName)) {
     const { message } = currentQueue;
+
+    const chain = CHAINS.find((item) => item.chainName === message.params.chainName);
     return (
       <BaseLayout>
         <Container>
@@ -36,11 +38,15 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
           </TitleContainer>
           <StyledDivider />
 
+          <ChainImageContainer>
+            <Image src={chain?.imageURL} />
+          </ChainImageContainer>
+
           <DescriptionContainer>
             <Typography variant="h4">
-              {message.params.chainName} chain
+              코스모스테이션에
               <br />
-              활성화 하시겠습니까?
+              블록체인 {message.params.chainName} 을(를) 활성화 하시겠습니까?
             </Typography>
           </DescriptionContainer>
 
@@ -48,12 +54,13 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
             <OutlineButton
               onClick={async () => {
                 responseToWeb({
-                  message: {
+                  response: {
                     error: {
                       code: RPC_ERROR.USER_REJECTED_REQUEST,
                       message: `${RPC_ERROR_MESSAGE[RPC_ERROR.USER_REJECTED_REQUEST]}`,
                     },
                   },
+                  message: currentQueue.message,
                   messageId: currentQueue.messageId,
                   origin: currentQueue.origin,
                 });
@@ -65,7 +72,7 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
             </OutlineButton>
             <Button
               onClick={async () => {
-                const chainId = CHAINS.find((item) => item.chainName === message.params.chainName)?.id;
+                const chainId = chain?.id;
                 if (chainId) await addAllowedChainId(chainId);
               }}
             >

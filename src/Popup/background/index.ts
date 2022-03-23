@@ -2,7 +2,7 @@ import '~/Popup/i18n/background';
 
 import { ecsign, hashPersonalMessage, stripHexPrefix, toRpcSig } from 'ethereumjs-util';
 
-import { CHAINS } from '~/constants/chain';
+import { CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -15,14 +15,16 @@ import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { EthereumRPCError, TendermintRPCError } from '~/Popup/utils/error';
 import { responseToWeb } from '~/Popup/utils/message';
+import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType } from '~/types/chromeStorage';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage, ResponseMessage } from '~/types/message';
+import type { TenAddChainParams, TenSignAminoParams } from '~/types/tendermint/message';
 import type { ThemeType } from '~/types/theme';
 
 import { chromeStorage } from './chromeStorage';
 import { determineTxType, requestRPC } from './ethereum';
 import { initI18n } from './i18n';
-import { tenAddChainParamsSchema } from './joiSchema';
+import { tenAddChainParamsSchema, tenSignAminoParamsSchema } from './joiSchema';
 import { mnemonicToPair, privateKeyToPair } from '../utils/crypto';
 
 function background() {
@@ -67,11 +69,13 @@ function background() {
               password,
             } = await chromeStorage();
 
+            const tendermintAdditionalChains = additionalChains.filter((item) => item.line === 'TENDERMINT') as TendermintChain[];
+
             if (tendermintPopupMethods.includes(method)) {
               if (method === 'ten_requestAccounts') {
                 const { params } = message;
 
-                const allChains = [...CHAINS, ...additionalChains];
+                const allChains = [...TENDERMINT_CHAINS, ...tendermintAdditionalChains];
 
                 if (!allChains.map((item) => item.chainName).includes(params?.chainName)) {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
@@ -84,13 +88,16 @@ function background() {
                   [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain?.id) &&
                   currentAccountAllowedOrigins.includes(origin)
                 ) {
-                  const keypair = getKeyPair(currentAccount, chain, password);
-                  const address = getAddress(chain, keypair?.publicKey);
+                  const keyPair = getKeyPair(currentAccount, chain, password);
+                  const address = getAddress(chain, keyPair?.publicKey);
+
+                  const publicKey = keyPair?.publicKey.toString('hex');
 
                   responseToWeb({
-                    message: {
-                      result: address,
+                    response: {
+                      result: { address, publicKey },
                     },
+                    message,
                     messageId,
                     origin,
                   });
@@ -103,21 +110,61 @@ function background() {
               if (method === 'ten_addChain') {
                 const { params } = message;
 
+                const allChains = [...TENDERMINT_CHAINS];
+                const allChainsName = allChains.map((item) => item.chainName);
+
+                const schema = tenAddChainParamsSchema(allChainsName);
+
                 try {
-                  await tenAddChainParamsSchema.validateAsync(params);
+                  const validatedParams = (await schema.validateAsync(params)) as TenAddChainParams;
+
+                  await setStorage('queues', [...queues, { ...request, message: { ...request.message, method, params: validatedParams } }]);
+                  await openWindow();
                 } catch (err) {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
                 }
+              }
 
-                const allChains = [...CHAINS];
-                const allChainsName = allChains.map((item) => item.chainName);
+              if (method === 'ten_supportedChainNames') {
+                const official = TENDERMINT_CHAINS.map((item) => item.chainName);
 
-                if (allChainsName.includes(params.chainName)) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                const unofficial = additionalChains.map((item) => item.chainName);
+
+                responseToWeb({
+                  response: {
+                    result: { official, unofficial },
+                  },
+                  message,
+                  messageId,
+                  origin,
+                });
+              }
+
+              if (method === 'ten_signAmino') {
+                const { params } = message;
+
+                const allChains = [...TENDERMINT_CHAINS, ...tendermintAdditionalChains];
+
+                const allChainNames = allChains.map((item) => item.chainName);
+
+                const chain = allChains.find((item) => item.chainName === message.params.chainName);
+
+                const schema = tenSignAminoParamsSchema(allChainNames, chain ? chain.chainId : '');
+
+                try {
+                  const validatedParams = (await schema.validateAsync(params)) as TenSignAminoParams;
+
+                  await setStorage('queues', [...queues, { ...request, message: { ...request.message, method, params: validatedParams } }]);
+                  await openWindow();
+                } catch (err) {
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
                 }
+              }
 
-                await setStorage('queues', [...queues, request]);
-                await openWindow();
+              if (method === 'ten_test') {
+                const { params } = message;
+
+                console.log(new Uint8Array(Buffer.from(params.ddd as unknown as string, 'hex')));
               }
             }
 
@@ -127,7 +174,8 @@ function background() {
           } catch (e) {
             if (e instanceof TendermintRPCError) {
               responseToWeb({
-                message: e.rpcMessage,
+                response: e.rpcMessage,
+                message,
                 messageId,
                 origin,
               });
@@ -136,12 +184,13 @@ function background() {
 
             console.log(e);
             responseToWeb({
-              message: {
+              response: {
                 error: {
                   code: RPC_ERROR.INTERNAL,
                   message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
                 },
               },
+              message,
               messageId,
               origin,
             });
@@ -226,12 +275,13 @@ function background() {
 
               const response = await requestRPC(method, params, id);
               console.log('rpc response', response);
-              responseToWeb({ message: response, messageId, origin });
+              responseToWeb({ response, message, messageId, origin });
             }
           } catch (e) {
             if (e instanceof EthereumRPCError) {
               responseToWeb({
-                message: e.rpcMessage,
+                response: e.rpcMessage,
+                message,
                 messageId,
                 origin,
               });
@@ -240,13 +290,14 @@ function background() {
 
             console.log(e);
             responseToWeb({
-              message: {
+              response: {
                 error: {
                   code: RPC_ERROR.INTERNAL,
                   message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
                 },
                 jsonrpc: '2.0',
               },
+              message,
               messageId,
               origin,
             });
@@ -275,12 +326,13 @@ function background() {
 
         queues.forEach((queue) => {
           responseToWeb({
-            message: {
+            response: {
               error: {
                 code: RPC_ERROR.USER_REJECTED_REQUEST,
                 message: `${RPC_ERROR_MESSAGE[RPC_ERROR.USER_REJECTED_REQUEST]}`,
               },
             },
+            message: queue.message,
             messageId: queue.messageId,
             origin: queue.origin,
           });

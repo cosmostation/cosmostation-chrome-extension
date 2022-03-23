@@ -1,12 +1,13 @@
 import { MESSAGE_TYPE } from '~/constants/message';
 import type { BackgroundToContentScriptEventMessage, ListenerMessage, ResponseMessage } from '~/types/message';
 
-export function responseToWeb<T>(data: Omit<BackgroundToContentScriptEventMessage<T>, 'type'>) {
+export function responseToWeb<T, U>(data: Omit<BackgroundToContentScriptEventMessage<T, U>, 'type'>) {
   console.log('popup response', data);
-  const toContentScriptMessage: BackgroundToContentScriptEventMessage<T> = {
+  const toContentScriptMessage: BackgroundToContentScriptEventMessage<T, U> = {
     origin: data.origin,
     messageId: data.messageId,
     message: data.message,
+    response: data.response,
     type: MESSAGE_TYPE.RESPONSE__CONTENT_SCRIPT_TO_BACKGROUND,
   };
 

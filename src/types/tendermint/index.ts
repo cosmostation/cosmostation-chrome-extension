@@ -1,15 +1,19 @@
 import type { Amount } from './common';
 
+export type Fee = { amount: Amount[]; gas: string };
+
+export type Msg = {
+  type: string;
+  value: unknown;
+};
+
 export type SignAminoDoc = {
   chain_id: string;
   sequence: string;
   account_number: string;
-  fee: { amount: Amount[]; gas: string };
+  fee: Fee;
   memo: string;
-  msgs: {
-    type: string;
-    value: unknown;
-  };
+  msgs: Msg[];
 };
 
 export type SignDirectDoc = {

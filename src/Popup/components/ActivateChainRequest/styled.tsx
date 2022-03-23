@@ -27,6 +27,17 @@ export const TitleContainer = styled('div')(({ theme }) => ({
   textAlign: 'center',
 }));
 
+export const ChainImageContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  '& > img': {
+    width: '4rem',
+    height: '4rem',
+  },
+});
+
 export const DescriptionContainer = styled('div')(({ theme }) => ({
   marginTop: '1.2rem',
   color: theme.colors.text01,

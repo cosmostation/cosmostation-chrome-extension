@@ -32,12 +32,13 @@ window.addEventListener('message', (event: MessageEvent<WebToContentScriptEventM
 /** Background -> ContentScript -> WebPage */
 
 // Once Message
-chrome.runtime.onMessage.addListener((request: BackgroundToContentScriptEventMessage<ResponseMessage>, _, sendResponse) => {
+chrome.runtime.onMessage.addListener((request: BackgroundToContentScriptEventMessage<RequestMessage, ResponseMessage>, _, sendResponse) => {
   console.log('once contentScript', request);
   if (request?.type === MESSAGE_TYPE.RESPONSE__CONTENT_SCRIPT_TO_BACKGROUND) {
     sendResponse();
 
-    const toWebMessage: ContentScriptToWebEventMessage<ResponseMessage> = {
+    const toWebMessage: ContentScriptToWebEventMessage<RequestMessage, ResponseMessage> = {
+      response: request.response,
       message: request.message,
       messageId: request.messageId,
       isCosmostation: true,

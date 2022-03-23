@@ -8,7 +8,7 @@ import type {
   EthSendTransactionRequestMessage,
   EthSignRequestMessage,
 } from './ethereum/message';
-import type { TenAddChain, TenRequestAccounts } from './tendermint/message';
+import type { TenAddChain, TenRequestAccounts, TenSignAmino, TenSignDirect, TenSupportedChainNames, TenTest } from './tendermint/message';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type ListenerType = ValueOf<typeof LISTENER_TYPE>;
@@ -27,7 +27,7 @@ export type EthereumRequestMessage =
   | EthGetBalanceRequestMessage
   | EthRequestAccounts;
 
-export type TendermintRequestMessage = TenRequestAccounts | TenAddChain;
+export type TendermintRequestMessage = TenRequestAccounts | TenAddChain | TenTest | TenSignAmino | TenSignDirect | TenSupportedChainNames;
 
 export type RequestMessage = EthereumRequestMessage | TendermintRequestMessage;
 
@@ -43,7 +43,9 @@ export type WebToContentScriptEventMessage<T> = {
   message: T;
 };
 
-export type ContentScriptToWebEventMessage<T> = Omit<WebToContentScriptEventMessage<T>, 'line'>;
+export type ContentScriptToWebEventMessage<T, U> = Omit<WebToContentScriptEventMessage<T>, 'line'> & {
+  response: U;
+};
 
 /** Content Script <-> Background 통신 타입 정의 */
 export type ContentScriptToBackgroundEventMessage<T> = {
@@ -54,8 +56,9 @@ export type ContentScriptToBackgroundEventMessage<T> = {
   message: T;
 };
 
-export type BackgroundToContentScriptEventMessage<T> = Omit<ContentScriptToBackgroundEventMessage<T>, 'line'> & {
+export type BackgroundToContentScriptEventMessage<T, U> = Omit<ContentScriptToBackgroundEventMessage<T>, 'line'> & {
   tabId?: number;
+  response: U;
 };
 
 /** Background <-> Popup 통신 타입 정의 */

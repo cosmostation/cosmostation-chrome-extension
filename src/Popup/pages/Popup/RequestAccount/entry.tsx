@@ -29,10 +29,13 @@ export default function Entry() {
         const keyPair = getKeyPair(currentAccount, chain, currentPassword);
         const address = getAddress(chain, keyPair?.publicKey);
 
+        const publicKey = keyPair?.publicKey.toString('hex');
+
         responseToWeb({
-          message: {
-            result: address,
+          response: {
+            result: { address, publicKey },
           },
+          message,
           messageId,
           origin,
         });
