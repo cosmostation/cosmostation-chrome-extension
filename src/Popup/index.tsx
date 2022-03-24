@@ -39,6 +39,7 @@ import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
 import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
 import PopupTendermintAddChain from '~/Popup/pages/Popup/Tendermint/AddChain';
+import PopupTendermintSignAmino from '~/Popup/pages/Popup/Tendermint/Sign/Amino';
 import Restore from '~/Popup/pages/Restore';
 import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
 import SettingChangeLanguage from '~/Popup/pages/Setting/ChangeLanguage';
@@ -114,6 +115,7 @@ function Popup() {
 
                   <Route path={PATH.POPUP__REQUEST_ACCOUNT} element={<PopupRequestAccount />} />
                   <Route path={PATH.POPUP__TENDERMINT__ADD_CHAIN} element={<PopupTendermintAddChain />} />
+                  <Route path={PATH.POPUP__TENDERMINT__SIGN__AMINO} element={<PopupTendermintSignAmino />} />
                 </>
               )}
               <Route path={PATH.HOME} element={<Home />} />

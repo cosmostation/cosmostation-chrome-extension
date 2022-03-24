@@ -32,11 +32,11 @@ export type PrivateKeyAccount = {
 
 export type Account = AccountCommon & (MnemonicAccount | PrivateKeyAccount);
 
-export type Queue = {
+export type Queue<T = RequestMessage> = {
   tabId?: number;
   origin: string;
   messageId: string;
-  message: RequestMessage;
+  message: T;
   channel?: string;
 };
 

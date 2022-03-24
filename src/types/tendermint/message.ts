@@ -1,6 +1,7 @@
 import type { TENDERMINT_NO_POPUP_METHOD_TYPE, TENDERMINT_POPUP_METHOD_TYPE } from '~/constants/tendermint';
 import type { GasRate } from '~/types/chain';
-import type { SignAminoDoc, SignDirectDoc } from '~/types/tendermint';
+import type { SignDirectDoc } from '~/types/tendermint';
+import type { SignAminoDoc } from '~/types/tendermint/amino';
 
 export type TendermintNoPopupMethodType = ValueOf<typeof TENDERMINT_NO_POPUP_METHOD_TYPE>;
 export type TendermintPopupMethodType = ValueOf<typeof TENDERMINT_POPUP_METHOD_TYPE>;
@@ -38,7 +39,7 @@ export type TenAddChain = {
   id?: number | string;
 };
 
-export type TenSignAminoParams = { chainName: string; doc: SignAminoDoc };
+export type TenSignAminoParams = { chainName: string; doc: SignAminoDoc; isEditMemo?: boolean; isEditFee?: boolean };
 
 export type TenSignAmino = {
   method: typeof TENDERMINT_POPUP_METHOD_TYPE.TEN__SIGN_AMINO;

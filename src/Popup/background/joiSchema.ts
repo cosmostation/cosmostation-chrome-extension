@@ -1,6 +1,6 @@
 import Joi from '~/Popup/utils/joi';
 import type { GasRate } from '~/types/chain';
-import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint';
+import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint/amino';
 import type { Amount } from '~/types/tendermint/common';
 import type { TenAddChainParams, TenSignAminoParams } from '~/types/tendermint/message';
 
@@ -60,4 +60,6 @@ export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) 
         }),
       ),
     }).required(),
+    isEditFee: Joi.boolean().default(false),
+    isEditMemo: Joi.boolean().default(false),
   });

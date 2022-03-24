@@ -18,6 +18,10 @@ export const StyledTextField = styled(OutlinedInput)<StyledTextFieldProps>(({ th
 
   width: '100%',
 
+  '&.MuiOutlinedInput-root': {
+    backgroundColor: theme.colors.base02,
+  },
+
   '.MuiOutlinedInput-input': {
     fontFamily: theme.typography.h5.fontFamily,
     fontStyle: theme.typography.h5.fontStyle,

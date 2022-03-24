@@ -33,6 +33,10 @@ export default function Routes({ children }: RoutesType) {
       if (chromeStorage.queues[0].message.method === 'ten_addChain') {
         navigate('/popup/tendermint/add-chain');
       }
+
+      if (chromeStorage.queues[0].message.method === 'ten_signAmino') {
+        navigate('/popup/tendermint/sign/amino');
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -7,7 +7,8 @@ import TinySecp256k1 from 'tiny-secp256k1';
 
 import { cosmos } from '~/proto/cosmos.js';
 import type { TendermintChain } from '~/types/chain';
-import type { SignAminoDoc, SignDirectDoc } from '~/types/tendermint';
+import type { SignDirectDoc } from '~/types/tendermint';
+import type { SignAminoDoc } from '~/types/tendermint/amino';
 
 export function tendermintURL(chain: TendermintChain) {
   const { restURL } = chain;
