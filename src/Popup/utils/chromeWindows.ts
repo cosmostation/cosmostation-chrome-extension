@@ -13,7 +13,7 @@ export async function openWindow(): Promise<chrome.windows.Window | undefined> {
       return;
     }
 
-    chrome.windows.create({ width: 360, height: 620, url, type: 'popup' }, (window) => {
+    chrome.windows.create({ width: 360, height: 640, url, type: 'popup' }, (window) => {
       void (async function async() {
         if (chrome.runtime.lastError) {
           rej(chrome.runtime.lastError);
