@@ -1,12 +1,12 @@
 import YAML from 'js-yaml';
 import { Typography } from '@mui/material';
 
-import type { Msg } from '~/types/tendermint/amino';
+import type { Msg, MsgCustom } from '~/types/tendermint/amino';
 
 import { ContentContainer } from './styled';
 import Container from '../../components/Container';
 
-type CustomProps = { msg: Msg<Record<string | number, unknown>> };
+type CustomProps = { msg: Msg<MsgCustom> };
 
 export default function Custom({ msg }: CustomProps) {
   const { type, value } = msg;

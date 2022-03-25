@@ -1,6 +1,6 @@
 {
   "name": "cosmostation",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "chrome extension cosmos wallet",
   "scripts": {
     "start": "webpack --config webpack/webpack.dev.js --watch",

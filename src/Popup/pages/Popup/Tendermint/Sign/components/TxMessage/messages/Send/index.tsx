@@ -5,14 +5,26 @@ import Number from '~/Popup/components/common/Number';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { shorterAddress } from '~/Popup/utils/common';
 import type { TendermintChain } from '~/types/chain';
-import type { Msg, Send } from '~/types/tendermint/amino';
+import type { Msg, MsgSend } from '~/types/tendermint/amino';
 
-import { ContentContainer, FeeInfoContainer, LeftContainer, RightAmountContainer, RightColumnContainer, RightContainer, RightValueContainer } from './styled';
+import {
+  AddressContainer,
+  AmountInfoContainer,
+  ContentContainer,
+  LabelContainer,
+  LeftContainer,
+  RightAmountContainer,
+  RightColumnContainer,
+  RightContainer,
+  RightValueContainer,
+  ValueContainer,
+} from './styled';
 import Container from '../../components/Container';
 
 type SendProps = {
-  msg: Msg<Send>;
+  msg: Msg<MsgSend>;
   chain: TendermintChain;
 };
 
@@ -24,7 +36,7 @@ export default function Send({ msg, chain }: SendProps) {
 
   const { value } = msg;
 
-  const { amount } = value;
+  const { amount, from_address, to_address } = value;
 
   const baseDenomAmount = amount.find((item) => item.denom === baseDenom)?.amount || '0';
 
@@ -36,9 +48,26 @@ export default function Send({ msg, chain }: SendProps) {
   return (
     <Container title="Send">
       <ContentContainer>
-        <FeeInfoContainer>
+        <AddressContainer>
+          <LabelContainer>
+            <Typography variant="h5">from address</Typography>
+          </LabelContainer>
+          <ValueContainer>
+            <Typography variant="h5">{shorterAddress(from_address, 32)}</Typography>
+          </ValueContainer>
+        </AddressContainer>
+
+        <AddressContainer sx={{ marginTop: '0.4rem' }}>
+          <LabelContainer>
+            <Typography variant="h5">to address</Typography>
+          </LabelContainer>
+          <ValueContainer>
+            <Typography variant="h5">{shorterAddress(to_address, 32)}</Typography>
+          </ValueContainer>
+        </AddressContainer>
+        <AmountInfoContainer>
           <LeftContainer>
-            <Typography variant="h5">Fee</Typography>
+            <Typography variant="h5">Amount</Typography>
           </LeftContainer>
           <RightContainer>
             <RightColumnContainer>
@@ -56,7 +85,7 @@ export default function Send({ msg, chain }: SendProps) {
               </RightValueContainer>
             </RightColumnContainer>
           </RightContainer>
-        </FeeInfoContainer>
+        </AmountInfoContainer>
       </ContentContainer>
     </Container>
   );

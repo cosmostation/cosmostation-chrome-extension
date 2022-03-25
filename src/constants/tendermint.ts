@@ -15,3 +15,7 @@ export const TENDERMINT_METHOD_TYPE = {
   ...TENDERMINT_POPUP_METHOD_TYPE,
   ...TENDERMINT_NO_POPUP_METHOD_TYPE,
 } as const;
+
+export const PUBLIC_KEY_TYPE = {
+  SECP256K1: 'tendermint/PubKeySecp256k1',
+};

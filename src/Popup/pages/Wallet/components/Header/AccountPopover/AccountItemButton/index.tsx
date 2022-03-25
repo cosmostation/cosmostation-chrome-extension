@@ -1,5 +1,7 @@
 import { Typography } from '@mui/material';
 
+import { shorterAddress } from '~/Popup/utils/common';
+
 import {
   ConnectBadge,
   ConnectBadgeContainer,
@@ -24,11 +26,7 @@ type AccountItemButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttri
 };
 
 export default function AccountItemButton({ children, description, isActive = false, isConnected, ...remainder }: AccountItemButtonProps) {
-  const address = description
-    ? description.length > 35
-      ? `${description.substring(0, 12)}...${description.substring(description.length - 12, description.length)}`
-      : description
-    : '';
+  const address = shorterAddress(description, 30);
 
   return (
     <StyledButton {...remainder} data-is-active={isActive ? 1 : 0}>

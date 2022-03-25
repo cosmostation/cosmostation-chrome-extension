@@ -6,18 +6,22 @@ import { useTheme } from '@mui/material/styles';
 
 import { CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import { PUBLIC_KEY_TYPE } from '~/constants/tendermint';
 import logoImg from '~/images/etc/logo.png';
 import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { upperCaseFirst } from '~/Popup/utils/common';
+import { getKeyPair, upperCaseFirst } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
+import { signAmino } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { TenSignAmino } from '~/types/tendermint/message';
@@ -57,6 +61,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const theme = useTheme();
   const [txMsgPage, setTxMsgPage] = useState(1);
   const { deQueue } = useCurrentQueue();
+  const { currentAccount } = useCurrentAccount();
+  const { currentPassword } = useCurrentPassword();
 
   const { message, messageId, origin } = queue;
 
@@ -72,6 +78,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [gas, setGas] = useState(inputGas);
   const [baseFee, setBaseFee] = useState(inputFee);
   const [memo, setMemo] = useState(doc.memo);
+
+  const tx = { ...doc, memo, fee: { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas } };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -116,7 +124,7 @@ export default function Entry({ queue, chain }: EntryProps) {
           </FeeContainer>
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
-          <Tx tx={{ ...doc, memo, fee: { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas } }} />
+          <Tx tx={tx} />
         </TabPanel>
       </SwipeableViews>
       <BottomContainer>
@@ -140,7 +148,35 @@ export default function Entry({ queue, chain }: EntryProps) {
           >
             Cancel
           </OutlineButton>
-          <Button>Confirm</Button>
+          <Button
+            onClick={async () => {
+              const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+
+              const signature = signAmino(tx, keyPair!.privateKey);
+              const base64Signature = Buffer.from(signature).toString('base64');
+
+              const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
+
+              const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
+
+              responseToWeb({
+                response: {
+                  result: {
+                    signature: base64Signature,
+                    pub_key: { type: publicKeyType, value: base64PublicKey },
+                    signed_doc: tx,
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+
+              await deQueue();
+            }}
+          >
+            Confirm
+          </Button>
         </BottomButtonContainer>
       </BottomContainer>
     </Container>
