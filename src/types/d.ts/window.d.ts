@@ -8,6 +8,7 @@ interface Window {
     tendermint: {
       request: (message: import('~/types/message').TendermintRequestMessage) => Promise<T>;
       on: (eventName: import('~/types/message').ListenerType, eventHandler: (event?: unknown) => void) => void;
+      off: (handler: (event: MessageEvent<ListenerMessage>) => void) => void;
     };
   };
 }

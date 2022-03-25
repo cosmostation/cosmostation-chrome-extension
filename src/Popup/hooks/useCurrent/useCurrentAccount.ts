@@ -1,4 +1,5 @@
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { emitToWeb } from '~/Popup/utils/message';
 
 export function useCurrentAccount() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
@@ -15,6 +16,8 @@ export function useCurrentAccount() {
     const isExist = !!chromeStorage.accounts.find((account) => account.id === id);
 
     await setChromeStorage('selectedAccountId', isExist ? id : chromeStorage.accounts[0].id);
+
+    emitToWeb({ line: 'TENDERMINT', type: 'accountChanged' });
   };
 
   const currentAccountAllowedOrigins = allowedOrigins

@@ -28,6 +28,7 @@ export function emitToWeb(data: Omit<ListenerMessage<ResponseMessage>, 'isCosmos
   console.log('editToWeb(background)');
   const toContentScriptMessage: ListenerMessage<ResponseMessage> = {
     isCosmostation: true,
+    line: data.line,
     message: data.message,
     type: data.type,
   };

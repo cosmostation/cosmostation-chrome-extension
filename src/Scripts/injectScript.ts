@@ -15,15 +15,16 @@ import type {
   // console.log('injectScript');
   window.cosmostation = {
     ethereum: {
-      on: (eventName: ListenerType, eventHandler: (data: ResponseMessage) => void) => {
-        const handler = (event: MessageEvent<ListenerMessage<ResponseMessage>>) => {
-          if (event.data?.isCosmostation && event.data?.type === eventName) {
-            eventHandler(event.data.message);
+      on: (eventName: ListenerType, eventHandler: (data: unknown) => void) => {
+        const handler = (event: MessageEvent<ListenerMessage>) => {
+          if (event.data?.isCosmostation && event.data?.type === eventName && event.data?.line === 'ETHEREUM') {
+            eventHandler(event.data?.message);
           }
         };
 
         window.addEventListener('message', handler);
       },
+
       request: (message: EthereumRequestMessage) =>
         new Promise((res, rej) => {
           const messageId = uuidv4();
@@ -58,14 +59,19 @@ import type {
         }),
     },
     tendermint: {
-      on: (eventName: ListenerType, eventHandler: (data: ResponseMessage) => void) => {
-        const handler = (event: MessageEvent<ListenerMessage<ResponseMessage>>) => {
-          if (event.data?.isCosmostation && event.data?.type === eventName) {
-            eventHandler(event.data.message);
+      on: (eventName: ListenerType, eventHandler: (data: unknown) => void) => {
+        const handler = (event: MessageEvent<ListenerMessage>) => {
+          if (event.data?.isCosmostation && event.data?.type === eventName && event.data?.line === 'TENDERMINT') {
+            eventHandler(event.data?.message);
           }
         };
 
         window.addEventListener('message', handler);
+
+        return handler;
+      },
+      off: (handler: (event: MessageEvent<ListenerMessage>) => void) => {
+        window.removeEventListener('message', handler);
       },
       request: (message: TendermintRequestMessage) =>
         new Promise((res, rej) => {

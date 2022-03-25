@@ -57,6 +57,7 @@ chrome.runtime.onMessage.addListener((request: ListenerMessage<ResponseMessage>,
     sendResponse();
 
     const toWebMessage: ListenerMessage<ResponseMessage> = {
+      line: request.line,
       type: request.type,
       isCosmostation: true,
       message: request.message,

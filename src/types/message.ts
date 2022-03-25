@@ -70,8 +70,9 @@ export type BackgroundToPopupEventMessage<T> = {
   message: T;
 };
 
-export type ListenerMessage<T> = {
+export type ListenerMessage<T = unknown> = {
   isCosmostation: boolean;
+  line: LineType;
   type: ListenerType;
-  message: T;
+  message?: T;
 };
