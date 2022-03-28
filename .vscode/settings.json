@@ -48,8 +48,7 @@
     "**/.git": true,
     "**/.DS_Store": true,
     "**/node_modules": true,
-    "**/yarn.lock": true,
-    "**/dist": true
+    "**/yarn.lock": true
   },
   "search.exclude": {
     "**/.git": true,

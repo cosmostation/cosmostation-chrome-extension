@@ -24,7 +24,8 @@
     {
       "matches": ["<all_urls>"],
       "js": ["js/vendor.js", "js/contentScript.js"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "all_frames": true
     }
   ],
 
@@ -32,11 +33,8 @@
     "service_worker": "js/background.js"
   },
 
-  "permissions": ["storage", "scripting"],
+  "permissions": ["storage"],
 
   "host_permissions": ["<all_urls>"],
-  "web_accessible_resources": [{ "resources": ["js/injectScript.js"], "matches": ["<all_urls>"] }],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
-  }
+  "web_accessible_resources": [{ "resources": ["js/injectScript.js"], "matches": ["<all_urls>"] }]
 }
