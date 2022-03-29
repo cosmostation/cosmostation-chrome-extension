@@ -7,6 +7,7 @@ import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
+import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { responseToWeb } from '~/Popup/utils/message';
@@ -20,10 +21,16 @@ type AccessRequestProps = {
 export default function ActivateChainRequest({ children }: AccessRequestProps) {
   const { currentQueue, deQueue } = useCurrentQueue();
   const { currentAllowedChains, addAllowedChainId } = useCurrentAllowedChains();
+  const { currentTendermintAdditionalChains } = useCurrentAdditionalChains();
 
   const allowedChains = currentAllowedChains.map((item) => item.chainName);
+  const currentTendermintAdditionalChainNames = currentTendermintAdditionalChains.map((item) => item.chainName);
 
-  if (currentQueue?.message.method === 'ten_requestAccounts' && !allowedChains.includes(currentQueue?.message.params.chainName)) {
+  if (
+    currentQueue?.message.method === 'ten_requestAccounts' &&
+    !allowedChains.includes(currentQueue?.message.params.chainName) &&
+    !currentTendermintAdditionalChainNames.includes(currentQueue?.message.params.chainName)
+  ) {
     const { message } = currentQueue;
 
     const chain = CHAINS.find((item) => item.chainName === message.params.chainName);
