@@ -67,7 +67,12 @@ function background() {
               currentAllowedChains,
               currentAccountAllowedOrigins,
               password,
+              accounts,
             } = await chromeStorage();
+
+            if (accounts.length === 0) {
+              throw new TendermintRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
+            }
 
             const tendermintAdditionalChains = additionalChains.filter((item) => item.line === 'TENDERMINT') as TendermintChain[];
 

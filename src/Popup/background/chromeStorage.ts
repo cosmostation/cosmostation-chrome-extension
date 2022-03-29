@@ -59,6 +59,7 @@ export async function chromeStorage() {
   const password = storage.password ? aesDecrypt(storage.password, ENCTYPT_KEY) : null;
 
   return {
+    accounts,
     storage,
     currentAccount,
     currentEthereumNetwork,

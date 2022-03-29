@@ -113,14 +113,7 @@ export default function Entry({ queue, chain }: EntryProps) {
             <Memo memo={memo} onChange={(m) => setMemo(m)} isEdit={isEditMemo} />
           </MemoContainer>
           <FeeContainer>
-            <Fee
-              chain={TENDERMINT_CHAINS[0]}
-              baseFee={baseFee}
-              gas={gas}
-              onChangeFee={(f) => setBaseFee(f)}
-              onChangeGas={(g) => setGas(g)}
-              isEdit={isEditFee}
-            />
+            <Fee chain={chain} baseFee={baseFee} gas={gas} onChangeFee={(f) => setBaseFee(f)} onChangeGas={(g) => setGas(g)} isEdit={isEditFee} />
           </FeeContainer>
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
