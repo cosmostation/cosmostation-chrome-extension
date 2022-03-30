@@ -1,24 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import SwipeableViews from 'react-swipeable-views';
-import { v4 as uuidv4 } from 'uuid';
 import { Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
-import { CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { PUBLIC_KEY_TYPE } from '~/constants/tendermint';
-import logoImg from '~/images/etc/logo.png';
-import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
-import Image from '~/Popup/components/common/Image';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
-import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { getKeyPair, upperCaseFirst } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import { signAmino } from '~/Popup/utils/tendermint';

@@ -40,11 +40,11 @@ export const ContentLeftContainer = styled('div')({
   justifyContent: 'flex-start',
 });
 
-export const ContentLeftTextContainer = styled('div')(({ theme }) => ({
+export const ContentLeftTextContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
-}));
+});
 
 export const ContentLeftTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,

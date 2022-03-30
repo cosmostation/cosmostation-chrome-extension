@@ -7,14 +7,14 @@ export const Container = styled('div')({
   padding: '0 3.2rem',
 });
 
-export const LogoContainer = styled('div')(({ theme }) => ({
+export const LogoContainer = styled('div')({
   paddingTop: '12rem',
   paddingBottom: '13rem',
 
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-}));
+});
 export const LogoImageContainer = styled('div')(({ theme }) => ({
   '& svg': {
     '& > rect': {

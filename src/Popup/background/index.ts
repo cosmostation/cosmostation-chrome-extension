@@ -1,15 +1,12 @@
 import '~/Popup/i18n/background';
 
-import { ecsign, hashPersonalMessage, stripHexPrefix, toRpcSig } from 'ethereumjs-util';
-
-import { CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
-import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
+import { TENDERMINT_CHAINS } from '~/constants/chain';
+import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
 import { TENDERMINT_METHOD_TYPE, TENDERMINT_NO_POPUP_METHOD_TYPE, TENDERMINT_POPUP_METHOD_TYPE } from '~/constants/tendermint';
-import { THEME_TYPE } from '~/constants/theme';
-import { getCurrentAccount, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
+import { getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
@@ -17,39 +14,26 @@ import { EthereumRPCError, TendermintRPCError } from '~/Popup/utils/error';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType } from '~/types/chromeStorage';
-import type { ContentScriptToBackgroundEventMessage, RequestMessage, ResponseMessage } from '~/types/message';
+import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
 import type { TenAddChainParams, TenSignAminoParams } from '~/types/tendermint/message';
 import type { ThemeType } from '~/types/theme';
 
 import { chromeStorage } from './chromeStorage';
-import { determineTxType, requestRPC } from './ethereum';
-import { initI18n } from './i18n';
+import { requestRPC } from './ethereum';
 import { tenAddChainParamsSchema, tenSignAminoParamsSchema } from './joiSchema';
-import { mnemonicToPair, privateKeyToPair } from '../utils/crypto';
 
 function background() {
-  console.log('background start');
-
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, sender, sendResponse) => {
-    console.log('content-script to background request sender', request, sender);
     sendResponse();
-    console.log('진입');
-
-    // console.log('localStorage', localStorage.getItem('i18nextLng'));
 
     if (request?.type === MESSAGE_TYPE.REQUEST__CONTENT_SCRIPT_TO_BACKGROUND) {
       void (async function asyncHandler() {
-        // if (request.message.method === 'requestAccount') {
-        //   const currentAccount = await getCurrentAccount();
-        // }
-
         if (request.line === 'TENDERMINT') {
           const tendermintMethods = Object.values(TENDERMINT_METHOD_TYPE) as string[];
           const tendermintPopupMethods = Object.values(TENDERMINT_POPUP_METHOD_TYPE) as string[];
           const tendermintNoPopupMethods = Object.values(TENDERMINT_NO_POPUP_METHOD_TYPE) as string[];
 
           const { message, messageId, origin } = request;
-          console.log('message', message);
 
           try {
             if (!message?.method || !tendermintMethods.includes(message.method)) {
@@ -58,17 +42,7 @@ function background() {
 
             const { method } = message;
 
-            const {
-              currentEthereumNetwork,
-              currentAccount,
-              additionalChains,
-              queues,
-              allowedOrigins,
-              currentAllowedChains,
-              currentAccountAllowedOrigins,
-              password,
-              accounts,
-            } = await chromeStorage();
+            const { currentAccount, additionalChains, queues, currentAllowedChains, currentAccountAllowedOrigins, password, accounts } = await chromeStorage();
 
             if (accounts.length === 0) {
               throw new TendermintRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
@@ -166,12 +140,6 @@ function background() {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
                 }
               }
-
-              if (method === 'ten_test') {
-                const { params } = message;
-
-                console.log(new Uint8Array(Buffer.from(params.ddd as unknown as string, 'hex')));
-              }
             }
 
             if (tendermintNoPopupMethods.includes(message.method)) {
@@ -188,7 +156,6 @@ function background() {
               return;
             }
 
-            console.log(e);
             responseToWeb({
               response: {
                 error: {
@@ -208,7 +175,6 @@ function background() {
           const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
 
           const { message, messageId, origin } = request;
-          console.log('message', message);
 
           try {
             if (!message?.method || !ethereumMethods.includes(message.method)) {
@@ -217,20 +183,17 @@ function background() {
 
             const { method, id } = message;
 
-            const { currentEthereumNetwork, currentAccount, getPairKey, password } = await chromeStorage();
+            const { password } = await chromeStorage();
 
             if (ethereumPopupMethods.includes(method)) {
               if (!password) {
-                console.log(password);
                 throw new EthereumRPCError(RPC_ERROR.UNAUTHORIZED, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
               }
 
-              const keyPair = getPairKey('ethereum', password);
+              // const keyPair = getPairKey('ethereum', password);
 
               // if (method === ETHEREUM_POPUP_METHOD_TYPE.ETH__SIGN) {
               //   const { params } = message;
-
-              //   console.log(getAddress(keyPair.publicKey));
 
               //   if (params?.[0].toLowerCase() !== getAddress(keyPair.publicKey).toLowerCase()) {
               //     throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]} (must provide an Account address.)`, id);
@@ -274,13 +237,11 @@ function background() {
               // } else if (method === ETHEREUM_POPUP_METHOD_TYPE.ETH__SEND_TRANSACTION) {
               //   const { params } = message;
 
-              //   console.log(await determineTxType(params[0]));
               // }
             } else {
               const params = method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
 
               const response = await requestRPC(method, params, id);
-              console.log('rpc response', response);
               responseToWeb({ response, message, messageId, origin });
             }
           } catch (e) {
@@ -294,7 +255,6 @@ function background() {
               return;
             }
 
-            console.log(e);
             responseToWeb({
               response: {
                 error: {
@@ -316,7 +276,6 @@ function background() {
   // chrome.storage.onChanged.addListener((changes) => {
   //   // eslint-disable-next-line no-restricted-syntax
   //   for (const [key, { newValue }] of Object.entries(changes)) {
-  //     console.log(key, newValue);
   //     if (key === 'queues') {
   //       void chrome.browserAction.setBadgeText({ text: '1' });
   //     }
@@ -350,7 +309,6 @@ function background() {
   });
 
   chrome.runtime.onStartup.addListener(() => {
-    console.log('startup');
     void (async function async() {
       await setStorage('queues', []);
       await setStorage('windowId', null);

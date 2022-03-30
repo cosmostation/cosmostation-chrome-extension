@@ -6,9 +6,7 @@ import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { responseToWeb } from '~/Popup/utils/message';
@@ -34,7 +32,6 @@ type AccessRequestProps = {
 };
 
 export default function AccessRequest({ children }: AccessRequestProps) {
-  const { chromeStorage } = useChromeStorage();
   const { currentQueue, deQueue } = useCurrentQueue();
   const { currentAccount, addAllowedOrigin } = useCurrentAccount();
 

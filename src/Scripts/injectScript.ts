@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { LINE_TYPE } from '~/constants/chain';
-import { LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
+import { MESSAGE_TYPE } from '~/constants/message';
 import type {
   ContentScriptToWebEventMessage,
   EthereumRequestMessage,
@@ -12,7 +12,6 @@ import type {
 } from '~/types/message';
 
 (function injectScript() {
-  // console.log('injectScript');
   window.cosmostation = {
     ethereum: {
       on: (eventName: ListenerType, eventHandler: (data: unknown) => void) => {
@@ -30,10 +29,7 @@ import type {
           const messageId = uuidv4();
 
           const handler = (event: MessageEvent<ContentScriptToWebEventMessage<EthereumRequestMessage, ResponseMessage>>) => {
-            console.log('inject listener', event);
-
             if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
-              console.log('inject listener2');
               window.removeEventListener('message', handler);
 
               const { data } = event;
@@ -43,7 +39,6 @@ import type {
               } else {
                 res(data.response.result);
               }
-              console.log(`response-${messageId}-inject-script`, event);
             }
           };
 
@@ -78,11 +73,7 @@ import type {
           const messageId = uuidv4();
 
           const handler = (event: MessageEvent<ContentScriptToWebEventMessage<TendermintRequestMessage, ResponseMessage>>) => {
-            console.log('inject listener', event);
-
             if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
-              console.log('inject listener2');
-              console.log(`response-${messageId}-inject-script`, event);
               window.removeEventListener('message', handler);
 
               const { data } = event;

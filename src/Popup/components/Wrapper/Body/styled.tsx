@@ -64,9 +64,9 @@ export const Body = styled('div')(({ theme }) => ({
   },
 }));
 
-export const Container = styled('div')(({ theme }) => ({
+export const Container = styled('div')({
   width: '36rem',
   height: '60rem',
 
   overflow: 'hidden',
-}));
+});

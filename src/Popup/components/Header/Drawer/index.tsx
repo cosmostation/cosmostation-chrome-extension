@@ -1,4 +1,3 @@
-import { useLocation } from 'react-router-dom';
 import type { DrawerProps as BaseDrawerProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
@@ -44,7 +43,6 @@ type DrawerProps = Omit<BaseDrawerProps, 'children'>;
 export default function Drawer({ onClose, ...remainder }: DrawerProps) {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { navigate } = useNavigate();
-  const { pathname } = useLocation();
   const { setCurrentPassword } = useCurrentPassword();
   const { t } = useTranslation();
 

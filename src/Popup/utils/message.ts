@@ -2,7 +2,6 @@ import { MESSAGE_TYPE } from '~/constants/message';
 import type { BackgroundToContentScriptEventMessage, ListenerMessage, ResponseMessage } from '~/types/message';
 
 export function responseToWeb<T, U>(data: Omit<BackgroundToContentScriptEventMessage<T, U>, 'type'>) {
-  console.log('popup response', data);
   const toContentScriptMessage: BackgroundToContentScriptEventMessage<T, U> = {
     origin: data.origin,
     messageId: data.messageId,
@@ -25,7 +24,6 @@ export function responseToWeb<T, U>(data: Omit<BackgroundToContentScriptEventMes
 }
 
 export function emitToWeb(data: Omit<ListenerMessage<ResponseMessage>, 'isCosmostation'>) {
-  console.log('editToWeb(background)');
   const toContentScriptMessage: ListenerMessage<ResponseMessage> = {
     isCosmostation: true,
     line: data.line,

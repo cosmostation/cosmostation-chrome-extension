@@ -1,12 +1,9 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { joiResolver } from '@hookform/resolvers/joi';
 import type { DialogProps } from '@mui/material';
-import { Typography } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
-import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import { Container, InputContainer, StyledButton, StyledInput } from './styled';
 import type { GasForm } from './useSchema';
@@ -19,8 +16,6 @@ type GasSettingDialogProps = Omit<DialogProps, 'children'> & {
 
 export default function GasSettingDialog({ onClose, onSubmitGas, currentGas, ...remainder }: GasSettingDialogProps) {
   const { gasForm } = useSchema();
-
-  const { t } = useTranslation();
 
   const {
     register,

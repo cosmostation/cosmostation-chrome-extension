@@ -6,8 +6,6 @@ import { Typography } from '@mui/material';
 import Number from '~/Popup/components/common/Number';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
-import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
-import { useNavigate } from '~/Popup/hooks/useNavigate';
 import EthereumChainItem, { EthereumChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/EthereumChainItem';
 import TendermintChainItem, { TendermintChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/TendermintChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
@@ -18,8 +16,6 @@ import { ChainList, Container, CountContainer, CountLeftContainer, CountRightCon
 export default function Entry() {
   const { chromeStorage } = useChromeStorage();
   const { currentAllowedChains } = useCurrentAllowedChains();
-  const { setCurrentChain } = useCurrentChain();
-  const { navigate } = useNavigate();
   const dashboard = useRecoilValue(dashboardState);
 
   const divRef = useRef<HTMLDivElement>(null);

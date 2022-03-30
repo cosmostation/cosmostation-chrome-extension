@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useSetRecoilState } from 'recoil';
 
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeStorageState } from '~/Popup/recoils/chromeStorage';
 import { getAllStorage, setStorage } from '~/Popup/utils/chromeStorage';
-import { openTab } from '~/Popup/utils/chromeTabs';
 import type { LanguageType } from '~/types/chromeStorage';
 
 type InitType = {
@@ -15,7 +14,7 @@ type InitType = {
 export default function Init({ children }: InitType) {
   const [isLoading, setIsLoading] = useState(true);
 
-  const [chromeStorage, setChromeStorage] = useRecoilState(chromeStorageState);
+  const setChromeStorage = useSetRecoilState(chromeStorageState);
 
   const { changeLanguage, language } = useTranslation();
 
@@ -57,7 +56,6 @@ export default function Init({ children }: InitType) {
       }
 
       // if (!chromeStorage.password) {
-      //   console.log(chromeStorage);
       //   await openTab();
       //   navigate('/register/password');
       // }
@@ -65,13 +63,8 @@ export default function Init({ children }: InitType) {
       setIsLoading(false);
     })();
 
-    console.log('init useEffect');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    console.log(JSON.stringify(chromeStorage, undefined, 3));
-  }, [chromeStorage]);
 
   if (isLoading) {
     return null;

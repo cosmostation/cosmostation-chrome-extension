@@ -10,7 +10,7 @@ export const Container = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const HeaderContainer = styled('div')(({ theme }) => ({
+export const HeaderContainer = styled('div')({
   height: '4.2rem',
   width: '100%',
 
@@ -19,7 +19,7 @@ export const HeaderContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-}));
+});
 
 export const HeaderLeftContainer = styled('div')({
   display: 'flex',
@@ -33,9 +33,9 @@ export const HeaderRightContainer = styled('div')({
   alignItems: 'center',
 });
 
-export const BodyContainer = styled('div')(({ theme }) => ({
+export const BodyContainer = styled('div')({
   padding: '1.6rem',
-}));
+});
 
 export const StyledIconButton = styled(IconButton)(({ theme }) => ({
   marginRight: '-1.2rem',

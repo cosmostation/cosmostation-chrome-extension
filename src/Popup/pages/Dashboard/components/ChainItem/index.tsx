@@ -1,4 +1,3 @@
-import { lazy } from 'react';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
@@ -6,10 +5,8 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { upperCaseFirst } from '~/Popup/utils/common';
-import type { Chain } from '~/types/chain';
 
 import {
   LeftContainer,

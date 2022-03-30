@@ -1,4 +1,3 @@
-import { CHAINS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import type { Chain, TendermintChain } from '~/types/chain';
 

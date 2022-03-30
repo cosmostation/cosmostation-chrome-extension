@@ -1,4 +1,3 @@
-import YAML from 'js-yaml';
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';

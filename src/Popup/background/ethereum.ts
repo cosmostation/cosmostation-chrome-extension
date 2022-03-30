@@ -1,7 +1,7 @@
 import { Interface } from '@ethersproject/abi';
 
 import { ERC20_ABI } from '~/constants/abi';
-import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
 import type { EthereumTxParams } from '~/types/ethereum/message';
@@ -40,10 +40,8 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
 
 export async function determineTxType(txParams: EthereumTxParams) {
   const { data, to } = txParams;
-  console.log(txParams);
   let name: undefined | string;
   try {
-    console.log(abiInterface.parseTransaction({ data: data! }));
     name = data && abiInterface.parseTransaction({ data }).name;
     // eslint-disable-next-line no-empty
   } catch {}
@@ -88,7 +86,6 @@ export function isEqualString(value1?: string, value2?: string) {
 
 export async function readAddressAsContract(address: string) {
   let contractCode;
-  console.log(await requestRPC<{ result?: string }>('eth_getCode', [address, 'latest']));
   try {
     contractCode = (await requestRPC<{ result?: string }>('eth_getCode', [address, 'latest'])).result ?? null;
   } catch {

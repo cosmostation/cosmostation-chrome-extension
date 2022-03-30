@@ -8,7 +8,7 @@ export const Container = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const HeaderContainer = styled('div')(({ theme }) => ({
+export const HeaderContainer = styled('div')({
   height: '4.2rem',
   width: '100%',
 
@@ -17,7 +17,7 @@ export const HeaderContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
 
   padding: '0 1.6rem',
-}));
+});
 
 export const HeaderLeftContainer = styled('div')({
   display: 'flex',
@@ -31,9 +31,9 @@ export const HeaderRightContainer = styled('div')({
   alignItems: 'center',
 });
 
-export const BodyContainer = styled('div')(({ theme }) => ({
+export const BodyContainer = styled('div')({
   padding: '1.6rem',
-}));
+});
 
 export const NetworkListContainer = styled('div')({
   width: '100%',

@@ -1,4 +1,3 @@
-import { useNavigate } from '~/Popup/hooks/useNavigate';
 import BaseLayout from '~/Popup/pages/Account/Initialize/components/BaseLayout';
 
 type LayoutProps = {
@@ -6,7 +5,5 @@ type LayoutProps = {
 };
 
 export default function Layout({ children }: LayoutProps) {
-  const { navigateBack } = useNavigate();
-
   return <BaseLayout>{children}</BaseLayout>;
 }

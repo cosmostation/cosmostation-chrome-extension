@@ -3,10 +3,12 @@
   "version": "0.0.1",
   "description": "chrome extension cosmos wallet",
   "scripts": {
+    "postinstall": "git config --local core.hooksPath ./git-hooks",
     "start": "webpack --config webpack/webpack.dev.js --watch",
     "prebuild": "rimraf dist",
     "build": "webpack --config webpack/webpack.prod.js",
-    "i18next-scanner": "i18next-scanner"
+    "i18next-scanner": "i18next-scanner",
+    "eslint": "eslint --max-warnings 0 ./src"
   },
   "author": "",
   "license": "MIT",

@@ -18,11 +18,11 @@ export const ValueContainer = styled('div')(({ theme }) => ({
   marginTop: '0.4rem',
 }));
 
-export const AmountInfoContainer = styled('div')(({ theme }) => ({
+export const AmountInfoContainer = styled('div')({
   marginTop: '1.6rem',
   display: 'flex',
   justifyContent: 'space-between',
-}));
+});
 
 export const LeftContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,

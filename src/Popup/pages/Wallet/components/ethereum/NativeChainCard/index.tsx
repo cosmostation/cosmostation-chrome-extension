@@ -1,9 +1,7 @@
-import { Suspense } from 'react';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
-import cosmosImg from '~/images/symbols/cosmos.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
@@ -14,7 +12,6 @@ import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';

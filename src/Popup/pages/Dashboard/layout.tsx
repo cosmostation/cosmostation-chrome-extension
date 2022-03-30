@@ -23,7 +23,7 @@ export default function Layout({ children }: LayoutProps) {
 
       setTimeout(() => {
         setLoadingOverlay(false);
-      }, 2000);
+      }, 1000);
     }
 
     void setChromeStorage('rootPath', '/dashboard');

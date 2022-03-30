@@ -1,10 +1,7 @@
-import { Suspense } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
 import { useBalanceSWR } from '~/Popup/hooks/SWR/tendermint/useBalanceSWR';
 import { useIbcTokenSWR } from '~/Popup/hooks/SWR/tendermint/useIbcTokenSWR';
-import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import IbcTokenItem from '~/Popup/pages/Wallet/components/tendermint/IbcTokenList/components/IbcTokenItem';
 import type { TendermintChain } from '~/types/chain';
 

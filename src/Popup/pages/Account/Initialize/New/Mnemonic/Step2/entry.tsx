@@ -26,7 +26,6 @@ import {
   MnemonicWordNumberContainer,
   MnemonicWordTextContainer,
 } from './styled';
-import WarningDescription from '../components/WarningDescription';
 
 import Copy16Icon from '~/images/icons/Copy16.svg';
 import Setting16Icon from '~/images/icons/Setting16.svg';

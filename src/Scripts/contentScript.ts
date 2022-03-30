@@ -13,10 +13,8 @@ import type {
 
 // Once Message
 window.addEventListener('message', (event: MessageEvent<WebToContentScriptEventMessage<RequestMessage>>) => {
-  // console.log('contentScript window.addEventListener');
   if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT) {
     const { data } = event;
-    console.log('content-script', event);
 
     const toBackgroundMessage: ContentScriptToBackgroundEventMessage<RequestMessage> = {
       line: data.line,
@@ -33,7 +31,6 @@ window.addEventListener('message', (event: MessageEvent<WebToContentScriptEventM
 
 // Once Message
 chrome.runtime.onMessage.addListener((request: BackgroundToContentScriptEventMessage<RequestMessage, ResponseMessage>, _, sendResponse) => {
-  console.log('once contentScript', request);
   if (request?.type === MESSAGE_TYPE.RESPONSE__CONTENT_SCRIPT_TO_BACKGROUND) {
     sendResponse();
 
@@ -51,7 +48,6 @@ chrome.runtime.onMessage.addListener((request: BackgroundToContentScriptEventMes
 
 // On Message
 chrome.runtime.onMessage.addListener((request: ListenerMessage<ResponseMessage>, _, sendResponse) => {
-  console.log('on contentScript', request);
   const types = Object.values(LISTENER_TYPE);
   if (types.includes(request?.type)) {
     sendResponse();

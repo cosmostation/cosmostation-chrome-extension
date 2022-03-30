@@ -29,13 +29,13 @@ export const DescriptionContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-export const CheckContainer = styled('div')(({ theme }) => ({
+export const CheckContainer = styled('div')({
   paddingTop: '11rem',
 
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-}));
+});
 
 export const Check = styled('div')(({ theme }) => ({
   width: '10rem',

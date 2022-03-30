@@ -7,10 +7,10 @@ export const Container = styled('div')(({ theme }) => ({
   borderRadius: '0.8rem',
 }));
 
-export const FeeInfoContainer = styled('div')(({ theme }) => ({
+export const FeeInfoContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
-}));
+});
 
 export const LeftContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,

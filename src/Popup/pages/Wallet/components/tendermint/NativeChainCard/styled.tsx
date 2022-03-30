@@ -87,20 +87,20 @@ export const ThirdLineContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-export const FourthLineContainer = styled('div')(({ theme }) => ({
+export const FourthLineContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: '1fr',
 
   marginTop: '0.6rem',
 
   rowGap: '0.4rem',
-}));
+});
 
-export const FourthLineContainerItem = styled('div')(({ theme }) => ({
+export const FourthLineContainerItem = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-}));
+});
 
 export const FourthLineContainerItemLeft = styled('div')(({ theme }) => ({
   display: 'flex',

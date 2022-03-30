@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 
 import { CHAINS } from '~/constants/chain';
-import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';

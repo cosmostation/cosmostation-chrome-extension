@@ -22,11 +22,11 @@ export const Panel = styled('div')(({ theme }) => ({
   padding: '1.6rem',
 }));
 
-export const TitleAreaContainer = styled('div')(({ theme }) => ({
+export const TitleAreaContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-}));
+});
 
 export const TitleContainer = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -36,7 +36,7 @@ export const TitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-export const ButtonContainer = styled('div')(({ theme }) => ({
+export const ButtonContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
   alignItems: 'center',
@@ -44,7 +44,7 @@ export const ButtonContainer = styled('div')(({ theme }) => ({
   '& > button:nth-of-type(n + 2)': {
     marginLeft: '0.4rem',
   },
-}));
+});
 
 export const AddressContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
@@ -53,13 +53,13 @@ export const AddressContainer = styled('div')(({ theme }) => ({
   marginTop: '0.4rem',
 }));
 
-export const QRContentContainer = styled('div')(({ theme }) => ({
+export const QRContentContainer = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
 
   marginTop: '2rem',
-}));
+});
 
 export const QRContainer = styled('div')(({ theme }) => ({
   padding: '0.8rem',
