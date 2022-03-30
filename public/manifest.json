@@ -5,10 +5,6 @@
   "description": "tendermint, ethereum",
   "version": "0.0.1",
 
-  "options_ui": {
-    "page": "options.html"
-  },
-
   "action": {
     "default_icon": "icon128.png",
     "default_popup": "popup.html"

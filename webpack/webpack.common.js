@@ -9,7 +9,6 @@ const srcDir = path.join(__dirname, '..', 'src');
 module.exports = {
   entry: {
     popup: path.join(srcDir, 'Popup/index.tsx'),
-    options: path.join(srcDir, 'Options/index.tsx'),
     background: path.join(srcDir, 'Popup/background/index.ts'),
     contentScript: path.join(srcDir, 'Scripts/contentScript.ts'),
     injectScript: { import: path.join(srcDir, 'Scripts/injectScript.ts') },
