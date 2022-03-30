@@ -97,7 +97,7 @@ export default function Entry() {
           Icon={Copy16Icon}
           onClick={() => {
             if (copy(mnemonic)) {
-              enqueueSnackbar(`copied!`);
+              enqueueSnackbar(t('pages.Account.Initialize.New.Mnemonic.Step2.entry.copied'));
             }
           }}
         >

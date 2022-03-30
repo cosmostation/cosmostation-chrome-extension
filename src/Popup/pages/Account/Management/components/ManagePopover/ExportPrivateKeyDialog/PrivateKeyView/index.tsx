@@ -19,7 +19,7 @@ export default function PrivateKeyView({ onClose, privateKey }: PrivateKeyViewPr
 
   const handleOnCopy = () => {
     if (copy(privateKey)) {
-      enqueueSnackbar(`copied!`);
+      enqueueSnackbar(t('pages.Account.Management.components.ManagePopover.ExportPrivateKeyDialog.PrivateKeyView.index.copied'));
     }
   };
   return (

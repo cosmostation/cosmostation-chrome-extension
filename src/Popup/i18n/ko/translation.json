@@ -53,6 +53,7 @@
               "entry": {
                 "12Words": "12 단어",
                 "24Words": "24 단어",
+                "copied": "복사되었습니다",
                 "copy": "복사",
                 "description": "니모닉 구문은 계정을 복구 할 수 있는 유일한 방법입니다. 절대로 니모닉을 다른 사람과 공유하지 마세요. 니모닉을 잃어버리면 자산의 손실로 이어집니다.",
                 "hdPathSetting": "HD path 세팅",
@@ -152,6 +153,7 @@
               "entry": {
                 "12Words": "12 단어",
                 "24Words": "24 단어",
+                "copied": "복사되었습니다",
                 "copy": "복사",
                 "hdPathSetting": "HD path 세팅",
                 "next": "다음",
@@ -166,7 +168,7 @@
                 "next": "다음"
               },
               "layout": {
-                "description": "__STRING_NOT_TRANSLATED__",
+                "description": "시드문구를 입력해주세요. 니모닉을 안전하게 보관하였는지 확인해주세요.",
                 "title": "시드문구 확인"
               }
             },
@@ -175,7 +177,7 @@
                 "next": "다음"
               },
               "layout": {
-                "description": "__STRING_NOT_TRANSLATED__",
+                "description": "코스모스 지갑에서 사용할 체인을 선택해주세요",
                 "title": "체인을 선택하세요"
               }
             },
@@ -232,6 +234,7 @@
                   }
                 },
                 "index": {
+                  "copied": "복사되었습니다",
                   "done": "완료",
                   "title": "니모닉 구문"
                 }
@@ -250,6 +253,7 @@
                   }
                 },
                 "index": {
+                  "copied": "복사되었습니다",
                   "done": "완료",
                   "title": "개인키 추출"
                 }
@@ -330,6 +334,13 @@
       }
     },
     "Wallet": {
+      "Receive": {
+        "Entry": {
+          "Tendermint": {
+            "copied": "복사되었습니다"
+          }
+        }
+      },
       "components": {
         "Header": {
           "AccountButton": {
@@ -364,6 +375,7 @@
           "NativeChainCard": {
             "index": {
               "available": "전송가능수량",
+              "copied": "복사되었습니다",
               "delegated": "위임 수량",
               "depositButton": "입금",
               "reward": "이자 수량",
@@ -398,7 +410,7 @@
     },
     "common": {
       "any": {
-        "required": "필수 값 입니다. (en)"
+        "required": "필수 값 입니다."
       },
       "number": {
         "base": "숫자를 입력하세요.",
@@ -407,7 +419,7 @@
       },
       "string": {
         "base": "문자를 입력하세요.",
-        "empty": "입력하세요.",
+        "empty": "필수 값 입니다.",
         "max": "최대 {#limit}자까지 입력할 수 있습니다.",
         "min": "최소 {#limit}자 이상 입력하셔야 합니다."
       }
@@ -455,7 +467,7 @@
       },
       "restoreString": {
         "any": {
-          "only": "복구 문구가 일치하지 않습니다. (en)"
+          "only": "복구 문구가 일치하지 않습니다."
         }
       }
     }

@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { TendermintChain } from '~/types/chain';
 
 import {
@@ -31,13 +32,15 @@ export default function Tendermint({ chain }: TendermintProps) {
   const { currentAccount } = useCurrentAccount();
   const { enqueueSnackbar } = useSnackbar();
 
+  const { t } = useTranslation();
+
   const { explorerURL } = chain;
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
-      enqueueSnackbar(`copied!`);
+      enqueueSnackbar(t('pages.Wallet.Receive.Entry.Tendermint.copied'));
     }
   };
   return (

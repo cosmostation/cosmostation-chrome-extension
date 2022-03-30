@@ -70,7 +70,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
-      enqueueSnackbar(`copied!`);
+      enqueueSnackbar(t('pages.Wallet.components.tendermint.NativeChainCard.index.copied'));
     }
   };
 

@@ -23,14 +23,13 @@ type MnemonicViewProps = {
 
 export default function MnemonicView({ onClose, mnemonic }: MnemonicViewProps) {
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const handleOnCopy = () => {
     if (copy(mnemonic)) {
-      enqueueSnackbar(`copied!`);
+      enqueueSnackbar(t('pages.Account.Management.components.ManagePopover.ExportMnemonicDialog.MnemonicView.index.copied'));
     }
   };
-
-  const { t } = useTranslation();
 
   const splitedMnemonic = mnemonic.split(' ');
   return (

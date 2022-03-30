@@ -53,6 +53,7 @@
               "entry": {
                 "12Words": "12 words",
                 "24Words": "24 words",
+                "copied": "Copied",
                 "copy": "Copy",
                 "description": "This phrase is the only way to recover your account. Do not share with anyone. Losing this mnemonics could lead to loss of your asset.",
                 "hdPathSetting": "HD path setting",
@@ -152,6 +153,7 @@
               "entry": {
                 "12Words": "12 words",
                 "24Words": "24 words",
+                "copied": "Copied",
                 "copy": "Copy",
                 "hdPathSetting": "HD path setting",
                 "next": "Next",
@@ -232,6 +234,7 @@
                   }
                 },
                 "index": {
+                  "copied": "Copied",
                   "done": "Done",
                   "title": "Mnemonic phrases"
                 }
@@ -250,6 +253,7 @@
                   }
                 },
                 "index": {
+                  "copied": "Copied",
                   "done": "Done",
                   "title": "Export Private Key"
                 }
@@ -330,6 +334,13 @@
       }
     },
     "Wallet": {
+      "Receive": {
+        "Entry": {
+          "Tendermint": {
+            "copied": "Copied"
+          }
+        }
+      },
       "components": {
         "Header": {
           "AccountButton": {
@@ -364,6 +375,7 @@
           "NativeChainCard": {
             "index": {
               "available": "Available",
+              "copied": "Copied",
               "delegated": "Delegated",
               "depositButton": "Deposit",
               "reward": "Reward",
@@ -380,19 +392,19 @@
     "changeNameForm": {
       "name": {
         "any": {
-          "invlid": "name is duplicated"
+          "invlid": "Please choose another name."
         }
       }
     },
     "changePasswordForm": {
       "password": {
         "any": {
-          "only": "비밀번호가 일치하지 않습니다.(en)"
+          "only": "The password does not match."
         }
       },
       "repeatPassword": {
         "any": {
-          "only": "비밀번호가 동일하지 않습니다. (en)"
+          "only": "The password confirmation does not match."
         }
       }
     },
@@ -401,21 +413,21 @@
         "required": "required"
       },
       "number": {
-        "base": "숫자를 입력하세요.",
-        "max": "{#limit} 이하의 값을 입력하셔야 합니다.",
-        "min": "{#limit} 이상의 값을 입력하셔야 합니다."
+        "base": "Please enter numbers.",
+        "max": "Please enter a number less than {#limit}",
+        "min": "Please enter at least {#limit} or more numbers."
       },
       "string": {
-        "base": "문자를 입력하세요.",
+        "base": "Please enter characters.",
         "empty": "required",
-        "max": "max {#limit}자까지 입력할 수 있습니다.",
-        "min": "min {#limit}자 이상으로 입력하셔야 합니다."
+        "max": "Please enter less than {#limit} characters.",
+        "min": "Please enter at least {#limit} or more characters."
       }
     },
     "ledgerForm": {
       "name": {
         "any": {
-          "invlid": "name is duplicated"
+          "invlid": "Please choose another name."
         }
       }
     },
@@ -423,26 +435,26 @@
       "mnemonic": "mnemonic is invalid",
       "name": {
         "any": {
-          "invlid": "이름이 중복됩니다."
+          "invlid": "Please choose another name."
         }
       }
     },
     "passwordForm": {
       "password": {
         "any": {
-          "only": "비밀번호가 일치하지 않습니다.(en)"
+          "only": "The password does not match."
         }
       },
       "repeatPassword": {
         "any": {
-          "only": "비밀번호가 동일하지 않습니다."
+          "only": "The password confirmation does not match."
         }
       }
     },
     "privateKeyForm": {
       "name": {
         "any": {
-          "invlid": "이름이 중복됩니다."
+          "invlid": "Please choose another name."
         }
       },
       "privateKey": "Private Key is invalid"
@@ -450,12 +462,12 @@
     "restoreForm": {
       "repeatPassword": {
         "any": {
-          "only": "비밀번호가 동일하지 않습니다. (en)"
+          "only": "The password confirmation does not match."
         }
       },
       "restoreString": {
         "any": {
-          "only": "복구 문구가 일치하지 않습니다. (en)"
+          "only": "Recovery phrases do not match."
         }
       }
     }

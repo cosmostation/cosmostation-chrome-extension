@@ -1,5 +1,6 @@
 import { TENDERMINT_CHAINS } from '~/constants/chain';
 import AccessRequest from '~/Popup/components/AccessRequest';
+import ActivateChainRequest from '~/Popup/components/ActivateChainRequest';
 import Lock from '~/Popup/components/Lock';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -20,9 +21,11 @@ export default function AddChain() {
       return (
         <Lock>
           <AccessRequest>
-            <Layout>
-              <Entry queue={currentQueue} chain={selecteChain} />
-            </Layout>
+            <ActivateChainRequest>
+              <Layout>
+                <Entry queue={currentQueue} chain={selecteChain} />
+              </Layout>
+            </ActivateChainRequest>
           </AccessRequest>
         </Lock>
       );
