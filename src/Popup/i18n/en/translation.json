@@ -10,6 +10,13 @@
         "upDescription2": "requesting to connect to your Cosmostation wallet"
       }
     },
+    "ActivateChainRequest": {
+      "index": {
+        "description1": "Do you want to activate",
+        "description2": "blockchain",
+        "description3": "to the Cosmostation?"
+      }
+    },
     "Header": {
       "Drawer": {
         "index": {

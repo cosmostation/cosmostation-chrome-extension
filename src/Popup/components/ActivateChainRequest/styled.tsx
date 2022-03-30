@@ -60,3 +60,7 @@ export const BottomContainer = styled('div')({
 
   bottom: '1.6rem',
 });
+
+export const AccentSpan = styled('span')(({ theme }) => ({
+  color: theme.accentColors.purple01,
+}));

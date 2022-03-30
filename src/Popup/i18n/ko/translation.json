@@ -10,6 +10,13 @@
         "upDescription2": "접근을 요청합니다."
       }
     },
+    "ActivateChainRequest": {
+      "index": {
+        "description1": "코스모스테이션에",
+        "description2": "블록체인",
+        "description3": "을(를) 활성화 하시겠습니까?"
+      }
+    },
     "Header": {
       "Drawer": {
         "index": {

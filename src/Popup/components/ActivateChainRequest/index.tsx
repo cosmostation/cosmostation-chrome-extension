@@ -10,9 +10,11 @@ import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { upperCaseFirst } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 
-import { BottomContainer, ChainImageContainer, Container, DescriptionContainer, LogoContainer, StyledDivider, TitleContainer } from './styled';
+import { AccentSpan, BottomContainer, ChainImageContainer, Container, DescriptionContainer, LogoContainer, StyledDivider, TitleContainer } from './styled';
 
 type AccessRequestProps = {
   children: JSX.Element;
@@ -22,6 +24,8 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
   const { currentQueue, deQueue } = useCurrentQueue();
   const { currentAllowedChains, addAllowedChainId } = useCurrentAllowedChains();
   const { currentTendermintAdditionalChains } = useCurrentAdditionalChains();
+
+  const { t } = useTranslation();
 
   const allowedChains = currentAllowedChains.map((item) => item.chainName);
   const currentTendermintAdditionalChainNames = currentTendermintAdditionalChains.map((item) => item.chainName);
@@ -51,9 +55,10 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
 
           <DescriptionContainer>
             <Typography variant="h4">
-              코스모스테이션에
+              {t('components.ActivateChainRequest.index.description1')}
               <br />
-              블록체인 {message.params.chainName} 을(를) 활성화 하시겠습니까?
+              {t('components.ActivateChainRequest.index.description2')} <AccentSpan>{upperCaseFirst(message.params.chainName)}</AccentSpan>{' '}
+              {t('components.ActivateChainRequest.index.description3')}
             </Typography>
           </DescriptionContainer>
 
