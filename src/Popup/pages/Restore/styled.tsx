@@ -18,8 +18,6 @@ export const InputContainer = styled('div')({
 
   width: '100%',
   maxHeight: 'calc(100% - 4.8rem)',
-
-  overflow: 'auto',
 });
 
 export const StyledInput48 = styled(Input)({
