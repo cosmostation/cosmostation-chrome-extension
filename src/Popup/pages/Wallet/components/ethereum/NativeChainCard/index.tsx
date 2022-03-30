@@ -111,7 +111,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
         </Number>
       </ThirdLineContainer>
       <FourthLineContainer>
-        <Button Icon={SendIcon} typoVarient="h5">
+        <Button Icon={SendIcon} typoVarient="h5" disabled>
           Send
         </Button>
         <FourthLineCenterContainer />

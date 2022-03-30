@@ -29,6 +29,8 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
     backgroundColor: theme.colors.base04,
     color: theme.colors.text02,
 
+    cursor: 'default',
+
     '& svg': {
       fill: theme.colors.text02,
     },

@@ -159,7 +159,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
       </FourthLineContainer>
       <ButtonContainer>
-        <Button Icon={SendIcon} typoVarient="h5">
+        <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.tendermint.NativeChainCard.index.sendButton')}
         </Button>
         <ButtonCenterContainer />
