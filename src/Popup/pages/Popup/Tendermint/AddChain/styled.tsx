@@ -76,3 +76,7 @@ export const WarningTextContainer = styled('div')(({ theme }) => ({
   marginLeft: '0.4rem',
   color: theme.colors.text01,
 }));
+
+export const AccentSpan = styled('span')(({ theme }) => ({
+  color: theme.accentColors.purple01,
+}));

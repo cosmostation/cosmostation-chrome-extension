@@ -1,5 +1,15 @@
 {
   "components": {
+    "AccessRequest": {
+      "index": {
+        "downDescription": "By approving this request, the website will:",
+        "downItem1": "Know your wallet address",
+        "downItem2": "Request signatures for transactions",
+        "downItem3": "Encrypt/Decrypt messages",
+        "upDescription1": "is",
+        "upDescription2": "requesting to connect to your Cosmostation wallet"
+      }
+    },
     "Header": {
       "Drawer": {
         "index": {
@@ -305,6 +315,18 @@
         },
         "layout": {
           "title": "Management"
+        }
+      }
+    },
+    "Popup": {
+      "Tendermint": {
+        "AddChain": {
+          "entry": {
+            "description1": "would",
+            "description2": "like to add blockchain",
+            "description3": "to Cosmostation wallet.",
+            "description4": ""
+          }
         }
       }
     },

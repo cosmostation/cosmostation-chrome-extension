@@ -1,5 +1,15 @@
 {
   "components": {
+    "AccessRequest": {
+      "index": {
+        "downDescription": "이 웹사이트에서 다음을 수행하려고 합니다.",
+        "downItem1": "계정 주소 확인",
+        "downItem2": "트랜잭션 서명 요청",
+        "downItem3": "메세지 암호화 / 보호화",
+        "upDescription1": "가",
+        "upDescription2": "접근을 요청합니다."
+      }
+    },
     "Header": {
       "Drawer": {
         "index": {
@@ -305,6 +315,18 @@
         },
         "layout": {
           "title": "관리"
+        }
+      }
+    },
+    "Popup": {
+      "Tendermint": {
+        "AddChain": {
+          "entry": {
+            "description1": "는",
+            "description2": "코스모스테이션에",
+            "description3": "블록체인",
+            "description4": "을 추가합니다."
+          }
         }
       }
     },
