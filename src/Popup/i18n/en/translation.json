@@ -1,4 +1,26 @@
 {
+  "components": {
+    "Header": {
+      "Drawer": {
+        "index": {
+          "changePassword": "Change password",
+          "currency": "Currency",
+          "darkMode": "Dark mode",
+          "helpSupport": "Help & Support",
+          "language": "Language",
+          "lock": "Lock"
+        }
+      }
+    },
+    "Lock": {
+      "index": {
+        "passwordPlaceholder": "Password",
+        "restore1": "Do you need to",
+        "restore2": "restore account?",
+        "unlockButton": "Unlock"
+      }
+    }
+  },
   "pages": {
     "Account": {
       "Create": {
@@ -196,7 +218,8 @@
             "DeleteDialog": {
               "index": {
                 "confirm": "Confirm",
-                "placeholder": "Please insert a password",
+                "deleteSnackbar": "Your account has been deleted",
+                "placeholder": "Password",
                 "title": "Delete account",
                 "warning": "Even though you are removing this account you will able to re-derive it using your mnemonic in this or another account."
               }
@@ -215,7 +238,7 @@
               },
               "index": {
                 "confirm": "Confirm",
-                "placeholder": "Please insert a password",
+                "placeholder": "Password",
                 "title": "View mnemonics"
               }
             },
@@ -233,7 +256,7 @@
               },
               "index": {
                 "confirm": "Confirm",
-                "placeholder": "Please insert a password",
+                "placeholder": "Password",
                 "title": "Export Private Key"
               }
             },
@@ -262,6 +285,50 @@
         }
       }
     },
+    "Chain": {
+      "Management": {
+        "Use": {
+          "entry": {
+            "searchPlaceholder": "Search chain"
+          },
+          "layout": {
+            "title": "Chain management"
+          }
+        },
+        "entry": {
+          "addChain": "Add chains",
+          "chainManagement": "Chain management"
+        },
+        "layout": {
+          "title": "Management"
+        }
+      }
+    },
+    "Restore": {
+      "entry": {
+        "passwordConfirmPlaceholder": "Confirm password",
+        "passwordPlaceholder": "Password",
+        "restoreButton": "Restore",
+        "restoreStringPlaceholder": "To restore password, please enter your mnemonic phrases from Cosmostation wallet."
+      },
+      "layout": {
+        "title": "Restore Wallet"
+      }
+    },
+    "Setting": {
+      "ChangePassword": {
+        "entry": {
+          "changePasswordSnackbar": "Password changed",
+          "confirmNewPasswordPlaceholder": "Confirm password",
+          "currentPasswordPlaceholder": "Current password",
+          "done": "Done",
+          "newPasswordPlaceholder": "New password"
+        },
+        "layout": {
+          "title": "Change password"
+        }
+      }
+    },
     "Wallet": {
       "components": {
         "Header": {
@@ -275,6 +342,34 @@
                 "disconnectDescription1": "You wallet is connected to this site.",
                 "disconnectDescription2": "Do you want to disconnect?"
               }
+            },
+            "index": {
+              "connected": "Connected",
+              "notConnected": "Not Connected"
+            }
+          },
+          "AccountPopover": {
+            "index": {
+              "title": "Select account"
+            }
+          },
+          "ChainPopover": {
+            "index": {
+              "betaSupport": "Beta support",
+              "title": "Select a chain"
+            }
+          }
+        },
+        "tendermint": {
+          "NativeChainCard": {
+            "index": {
+              "available": "Available",
+              "delegated": "Delegated",
+              "depositButton": "Deposit",
+              "reward": "Reward",
+              "sendButton": "Send",
+              "unbonding": "Unbonding",
+              "vesting": "Vesting"
             }
           }
         }
@@ -303,7 +398,7 @@
     },
     "common": {
       "any": {
-        "required": "필수 값 입니다. (en)"
+        "required": "required"
       },
       "number": {
         "base": "숫자를 입력하세요.",
@@ -312,7 +407,7 @@
       },
       "string": {
         "base": "문자를 입력하세요.",
-        "empty": "dd입력하세요.",
+        "empty": "required",
         "max": "max {#limit}자까지 입력할 수 있습니다.",
         "min": "min {#limit}자 이상으로 입력하셔야 합니다."
       }
@@ -328,7 +423,7 @@
       "mnemonic": "mnemonic is invalid",
       "name": {
         "any": {
-          "invlid": "name is duplicated"
+          "invlid": "이름이 중복됩니다."
         }
       }
     },
@@ -347,7 +442,7 @@
     "privateKeyForm": {
       "name": {
         "any": {
-          "invlid": "name is duplicated"
+          "invlid": "이름이 중복됩니다."
         }
       },
       "privateKey": "Private Key is invalid"

@@ -69,6 +69,7 @@ function Popup() {
         <Wrapper>
           <SnackbarProvider
             maxSnack={3}
+            autoHideDuration={1200}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             variant="success"
             TransitionComponent={Grow as React.ComponentType}

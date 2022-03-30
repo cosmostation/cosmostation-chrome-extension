@@ -8,6 +8,7 @@ import Popover from '~/Popup/components/common/Popover';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import ChainItemButton from './ChainItemButton';
 import {
@@ -34,6 +35,8 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
   const { currentChain, setCurrentChain } = useCurrentChain();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
+  const { t } = useTranslation();
+
   const { allowedChainIds, additionalChains } = chromeStorage;
 
   const allowedTendermintChain = useMemo(() => TENDERMINT_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
@@ -44,7 +47,7 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
       <Container>
         <HeaderContainer>
           <HeaderLeftContainer>
-            <Typography variant="h5">Select a chain</Typography>
+            <Typography variant="h5">{t('pages.Wallet.components.Header.ChainPopover.index.title')}</Typography>
           </HeaderLeftContainer>
           <HeaderRightContainer>
             <StyledIconButton onClick={() => navigate('/chain/management')}>
@@ -97,7 +100,7 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
           {additionalChains.length > 0 && (
             <BetaChainContainer>
               <BetaChainTitleContainer>
-                <Typography variant="h6">Beta support</Typography>
+                <Typography variant="h6">{t('pages.Wallet.components.Header.ChainPopover.index.betaSupport')}</Typography>
               </BetaChainTitleContainer>
               <BetaChainListContainer>
                 <ChainListContainer>

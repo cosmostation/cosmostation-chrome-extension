@@ -1,9 +1,7 @@
-import { Suspense } from 'react';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
-import cosmosImg from '~/images/symbols/cosmos.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
@@ -14,8 +12,8 @@ import { useAmountSWR } from '~/Popup/hooks/SWR/tendermint/useAmountSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { TendermintChain } from '~/types/chain';
 
@@ -53,6 +51,8 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
   const accounts = useAccounts(true);
   const { totalAmount, delegationAmount, rewardAmount, unbondingAmount, vestingNotDelegate, vestingRelatedAvailable } = useAmountSWR(chain, true);
   const { data } = useCoinGeckoPriceSWR();
+
+  const { t } = useTranslation();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -109,7 +109,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
       <FourthLineContainer>
         <FourthLineContainerItem>
           <FourthLineContainerItemLeft>
-            <Typography variant="h6">Available</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.available')}</Typography>
           </FourthLineContainerItemLeft>
           <FourthLineContainerItemRight>
             <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
@@ -119,7 +119,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
         <FourthLineContainerItem>
           <FourthLineContainerItemLeft>
-            <Typography variant="h6">Delegated</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.delegated')}</Typography>
           </FourthLineContainerItemLeft>
           <FourthLineContainerItemRight>
             <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
@@ -129,7 +129,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
         <FourthLineContainerItem>
           <FourthLineContainerItemLeft>
-            <Typography variant="h6">Unbonding</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.unbonding')}</Typography>
           </FourthLineContainerItemLeft>
           <FourthLineContainerItemRight>
             <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
@@ -139,7 +139,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
         <FourthLineContainerItem>
           <FourthLineContainerItemLeft>
-            <Typography variant="h6">Reward</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.reward')}</Typography>
           </FourthLineContainerItemLeft>
           <FourthLineContainerItemRight>
             <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
@@ -149,7 +149,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
         <FourthLineContainerItem>
           <FourthLineContainerItemLeft>
-            <Typography variant="h6">Vesting</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.vesting')}</Typography>
           </FourthLineContainerItemLeft>
           <FourthLineContainerItemRight>
             <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
@@ -160,11 +160,11 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
       </FourthLineContainer>
       <ButtonContainer>
         <Button Icon={SendIcon} typoVarient="h5">
-          Send
+          {t('pages.Wallet.components.tendermint.NativeChainCard.index.sendButton')}
         </Button>
         <ButtonCenterContainer />
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
-          Receive
+          {t('pages.Wallet.components.tendermint.NativeChainCard.index.depositButton')}
         </Button>
       </ButtonContainer>
     </Container>
@@ -172,6 +172,8 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
 }
 
 export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
+  const { t } = useTranslation();
+
   return (
     <Container>
       <FirstLineContainer>
@@ -199,7 +201,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
       <FourthLineContainer>
         <FourthLineContainerItem>
           <FourthLineContainerItemLeft>
-            <Typography variant="h6">Available</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.available')}</Typography>
           </FourthLineContainerItemLeft>
           <FourthLineContainerItemRight>
             <Skeleton width="8rem" height="1.9rem" />
@@ -207,7 +209,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
         <FourthLineContainerItem>
           <FourthLineContainerItemLeft>
-            <Typography variant="h6">Delegated</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.delegated')}</Typography>
           </FourthLineContainerItemLeft>
           <FourthLineContainerItemRight>
             <Skeleton width="8rem" height="1.9rem" />
@@ -215,7 +217,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
         <FourthLineContainerItem>
           <FourthLineContainerItemLeft>
-            <Typography variant="h6">Unbonding</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.unbonding')}</Typography>
           </FourthLineContainerItemLeft>
           <FourthLineContainerItemRight>
             <Skeleton width="8rem" height="1.9rem" />
@@ -223,7 +225,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
         <FourthLineContainerItem>
           <FourthLineContainerItemLeft>
-            <Typography variant="h6">Reward</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.reward')}</Typography>
           </FourthLineContainerItemLeft>
           <FourthLineContainerItemRight>
             <Skeleton width="8rem" height="1.9rem" />
@@ -231,7 +233,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
         <FourthLineContainerItem>
           <FourthLineContainerItemLeft>
-            <Typography variant="h6">Vesting</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.vesting')}</Typography>
           </FourthLineContainerItemLeft>
           <FourthLineContainerItemRight>
             <Skeleton width="8rem" height="1.9rem" />
@@ -240,11 +242,11 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
       </FourthLineContainer>
       <ButtonContainer>
         <Button Icon={SendIcon} typoVarient="h5" disabled>
-          Send
+          {t('pages.Wallet.components.tendermint.NativeChainCard.index.sendButton')}
         </Button>
         <ButtonCenterContainer />
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
-          Receive
+          {t('pages.Wallet.components.tendermint.NativeChainCard.index.depositButton')}
         </Button>
       </ButtonContainer>
     </Container>

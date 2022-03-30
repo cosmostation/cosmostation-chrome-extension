@@ -8,6 +8,7 @@ import { useCurrentTab } from '~/Popup/hooks/SWR/cache/useCurrentTab';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import AccountItemButton from './AccountItemButton';
 import { AccountListContainer, BodyContainer, Container, HeaderContainer, HeaderLeftContainer, HeaderRightContainer, StyledIconButton } from './styled';
@@ -21,6 +22,8 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
   const { setCurrentAccount } = useCurrentAccount();
   const { navigate } = useNavigate();
 
+  const { t } = useTranslation();
+
   const { data } = useAccounts(true);
   const currentTab = useCurrentTab(true);
 
@@ -33,7 +36,7 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
       <Container>
         <HeaderContainer>
           <HeaderLeftContainer>
-            <Typography variant="h5">Select a account</Typography>
+            <Typography variant="h5">{t('pages.Wallet.components.Header.AccountPopover.index.title')}</Typography>
           </HeaderLeftContainer>
           <HeaderRightContainer>
             <StyledIconButton onClick={() => navigate('/account/management')}>

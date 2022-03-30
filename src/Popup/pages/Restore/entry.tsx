@@ -6,6 +6,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { aesDecrypt, aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import { ButtonContainer, Container, InputContainer, StyledInput48, StyledInput140 } from './styled';
@@ -17,6 +18,8 @@ export default function Entry() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { enqueueSnackbar } = useSnackbar();
   const { setCurrentPassword } = useCurrentPassword();
+
+  const { t } = useTranslation();
 
   const { restoreForm } = useSchema({ encryptedRestoreString: chromeStorage.accounts.map((account) => account.encryptedRestoreString) });
   const {
@@ -76,7 +79,7 @@ export default function Entry() {
           <StyledInput140
             multiline
             minRows={6}
-            placeholder={'To restore your password,\nplease enter your Tenderminttation Wallet\nrecovery code (or phrase).'}
+            placeholder={t('pages.Restore.entry.restoreStringPlaceholder')}
             type="password"
             inputProps={register('restoreString', {
               setValueAs: (v: string) => {
@@ -89,14 +92,14 @@ export default function Entry() {
           />
           <StyledInput48
             type="password"
-            placeholder="new password"
+            placeholder={t('pages.Restore.entry.passwordPlaceholder')}
             inputProps={register('password')}
             error={!!errors.password}
             helperText={errors.password?.message}
           />
           <StyledInput48
             type="password"
-            placeholder="new password confirmation"
+            placeholder={t('pages.Restore.entry.passwordConfirmPlaceholder')}
             inputProps={register('repeatPassword')}
             error={!!errors.repeatPassword}
             helperText={errors.repeatPassword?.message}
@@ -104,7 +107,7 @@ export default function Entry() {
         </InputContainer>
         <ButtonContainer>
           <Button type="submit" disabled={!isDirty}>
-            Restore
+            {t('pages.Restore.entry.restoreButton')}
           </Button>
         </ButtonContainer>
       </form>

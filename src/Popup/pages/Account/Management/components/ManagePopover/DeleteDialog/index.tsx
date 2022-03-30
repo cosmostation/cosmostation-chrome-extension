@@ -69,7 +69,7 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
 
     handleOnClose();
 
-    enqueueSnackbar('Your account has been deleted.', { variant: 'error' });
+    enqueueSnackbar(t('pages.Account.Management.components.ManagePopover.DeleteDialog.index.deleteSnackbar'), { variant: 'error' });
   };
 
   return (

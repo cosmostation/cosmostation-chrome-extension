@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 
 import { useCurrentTab } from '~/Popup/hooks/SWR/cache/useCurrentTab';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import ConnectDialog from './ConnectDialog';
 import {
@@ -45,6 +46,8 @@ export default function AccountButton({ children, ...remainder }: AccountButtonP
 function ConnectionButton() {
   const { data } = useCurrentTab(true);
 
+  const { t } = useTranslation();
+
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
   const { currentAccount } = useCurrentAccount();
@@ -64,7 +67,11 @@ function ConnectionButton() {
       <ConnectButton onClick={() => setIsOpenDialog(true)}>
         <ConnectButtonBadge data-is-connected={isConnected ? 1 : 0} />
         <ConnectButtonText>
-          <Typography variant="h7">{isConnected ? '연결 됨' : '연결 안 됨'}</Typography>
+          <Typography variant="h7">
+            {isConnected
+              ? t('pages.Wallet.components.Header.AccountButton.index.connected')
+              : t('pages.Wallet.components.Header.AccountButton.index.notConnected')}
+          </Typography>
         </ConnectButtonText>
       </ConnectButton>
       <ConnectDialog open={isOpenDialog} onClose={() => setIsOpenDialog(false)} />

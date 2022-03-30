@@ -8,6 +8,7 @@ import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { sha512 } from '~/Popup/utils/crypto';
 
 import {
@@ -38,6 +39,8 @@ export default function Lock({ children }: LockProps) {
   const { passwordForm } = useSchema({ encryptedPassword: chromeStorage.encryptedPassword! });
 
   const [password, setPassword] = useState('');
+
+  const { t } = useTranslation();
 
   const {
     register,
@@ -80,7 +83,7 @@ export default function Lock({ children }: LockProps) {
               <PasswordContainer>
                 <StyledInput
                   type="password"
-                  placeholder="password"
+                  placeholder={t('components.Lock.index.passwordPlaceholder')}
                   inputProps={register('password', {
                     setValueAs: (v: string) => {
                       setPassword(v);
@@ -94,14 +97,14 @@ export default function Lock({ children }: LockProps) {
 
               <ButtonContainer>
                 <RestoreContainer>
-                  <Typography variant="h6">Do you need to&nbsp;</Typography>
+                  <Typography variant="h6">{t('components.Lock.index.restore1')}&nbsp;</Typography>
                   <RestoreButton type="button" onClick={() => navigate('/restore')}>
                     <Typography variant="h6">
-                      <u>restore account?</u>
+                      <u>{t('components.Lock.index.restore2')}</u>
                     </Typography>
                   </RestoreButton>
                 </RestoreContainer>
-                <Button type="submit">Unlock</Button>
+                <Button type="submit">{t('components.Lock.index.unlockButton')}</Button>
               </ButtonContainer>
             </ContentContainer>
           </form>

@@ -11,7 +11,7 @@ export const Body = styled('div')(({ theme }) => ({
 
   // snackbar
   '& > .SnackbarContainer-root': {
-    bottom: '7rem !important',
+    // bottom: '2.4rem !important',
 
     '& .SnackbarContent-root': {
       fontFamily: theme.typography.h6.fontFamily,

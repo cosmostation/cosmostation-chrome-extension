@@ -1,4 +1,26 @@
 {
+  "components": {
+    "Header": {
+      "Drawer": {
+        "index": {
+          "changePassword": "비밀번호 변경",
+          "currency": "통화",
+          "darkMode": "다크모드",
+          "helpSupport": "도움 및 지원",
+          "language": "언어",
+          "lock": "잠금"
+        }
+      }
+    },
+    "Lock": {
+      "index": {
+        "passwordPlaceholder": "비밀번호",
+        "restore1": "계정을",
+        "restore2": "복원하시겠습니까?",
+        "unlockButton": "해제"
+      }
+    }
+  },
   "pages": {
     "Account": {
       "Create": {
@@ -96,7 +118,7 @@
               "next": "다음"
             },
             "layout": {
-              "description": "__STRING_NOT_TRANSLATED__",
+              "description": "코스모스 지갑에서 사용할 체인을 선택해주세요",
               "title": "체인을 선택하세요"
             }
           },
@@ -196,9 +218,10 @@
             "DeleteDialog": {
               "index": {
                 "confirm": "확인",
-                "placeholder": "비밀번호를 입력해주세요",
+                "deleteSnackbar": "계정이 삭제되었습니다.",
+                "placeholder": "비밀번호",
                 "title": "계정 삭제",
-                "warning": "__STRING_NOT_TRANSLATED__"
+                "warning": "계정을 삭제해도, 니모닉으로 지갑을 언제든지 복원이 가능합니다. 계정을 삭제하려면 비밀번호를 입력해주세요."
               }
             },
             "ExportMnemonicDialog": {
@@ -215,7 +238,7 @@
               },
               "index": {
                 "confirm": "확인",
-                "placeholder": "비밀번호를 입력해주세요",
+                "placeholder": "비밀번호",
                 "title": "니모닉 확인"
               }
             },
@@ -233,7 +256,7 @@
               },
               "index": {
                 "confirm": "확인",
-                "placeholder": "비밀번호를 입력해주세요",
+                "placeholder": "비밀번호",
                 "title": "개인키 추출"
               }
             },
@@ -262,6 +285,50 @@
         }
       }
     },
+    "Chain": {
+      "Management": {
+        "Use": {
+          "entry": {
+            "searchPlaceholder": "체인 검색"
+          },
+          "layout": {
+            "title": "체인 관리"
+          }
+        },
+        "entry": {
+          "addChain": "체인 추가",
+          "chainManagement": "체인 관리"
+        },
+        "layout": {
+          "title": "관리"
+        }
+      }
+    },
+    "Restore": {
+      "entry": {
+        "passwordConfirmPlaceholder": "비밀번호 확인",
+        "passwordPlaceholder": "비밀번호",
+        "restoreButton": "복원하기",
+        "restoreStringPlaceholder": "비밀번호를 변경하기 위해 코스모스테이션 지갑의 니모닉을 입력해주세요."
+      },
+      "layout": {
+        "title": "계정 복구"
+      }
+    },
+    "Setting": {
+      "ChangePassword": {
+        "entry": {
+          "changePasswordSnackbar": "비밀번호 변경 완료",
+          "confirmNewPasswordPlaceholder": "비밀번호 확인",
+          "currentPasswordPlaceholder": "현재 비밀번호",
+          "done": "확인",
+          "newPasswordPlaceholder": "새로운 비밀번호"
+        },
+        "layout": {
+          "title": "비밀번호 변경"
+        }
+      }
+    },
     "Wallet": {
       "components": {
         "Header": {
@@ -275,6 +342,34 @@
                 "disconnectDescription1": "이 사이트에 계정이 연결되어 있습니다.",
                 "disconnectDescription2": "연결을 해제하시겠습니까?"
               }
+            },
+            "index": {
+              "connected": "연결됨",
+              "notConnected": "연결되지 않음"
+            }
+          },
+          "AccountPopover": {
+            "index": {
+              "title": "계정 선택"
+            }
+          },
+          "ChainPopover": {
+            "index": {
+              "betaSupport": "베타 지원",
+              "title": "체인 선택"
+            }
+          }
+        },
+        "tendermint": {
+          "NativeChainCard": {
+            "index": {
+              "available": "전송가능수량",
+              "delegated": "위임 수량",
+              "depositButton": "입금",
+              "reward": "이자 수량",
+              "sendButton": "보내기",
+              "unbonding": "위임해제 수량",
+              "vesting": "위임가능 수량"
             }
           }
         }

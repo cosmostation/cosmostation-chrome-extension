@@ -1,5 +1,6 @@
 import BaseLayout from '~/Popup/components/BaseLayout';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 type LayoutProps = {
   children: JSX.Element;
@@ -8,8 +9,13 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   const { navigateBack } = useNavigate();
 
+  const { t } = useTranslation();
+
   return (
-    <BaseLayout useHeader={{ isShowMenuButton: false, isShowPageButton: false }} useSubHeader={{ title: 'Restore Wallet', onClick: () => navigateBack() }}>
+    <BaseLayout
+      useHeader={{ isShowMenuButton: false, isShowPageButton: false }}
+      useSubHeader={{ title: t('pages.Restore.layout.title'), onClick: () => navigateBack() }}
+    >
       {children}
     </BaseLayout>
   );

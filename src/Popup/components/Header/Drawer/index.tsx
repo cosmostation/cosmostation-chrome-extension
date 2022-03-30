@@ -10,6 +10,7 @@ import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import {
   HeaderContainer,
@@ -45,6 +46,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
   const { navigate } = useNavigate();
   const { pathname } = useLocation();
   const { setCurrentPassword } = useCurrentPassword();
+  const { t } = useTranslation();
 
   const isDarkMode = chromeStorage.theme === THEME_TYPE.DARK;
 
@@ -73,7 +75,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
             <DarkMode24Icon id="darkMode" />
           </ItemLeftImageContainer>
           <ItemLeftTextContainer>
-            <Typography variant="h4">Dark mode</Typography>
+            <Typography variant="h4">{t('components.Header.Drawer.index.darkMode')}</Typography>
           </ItemLeftTextContainer>
         </ItemLeftContainer>
         <ItemRightContainer>
@@ -87,18 +89,18 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
       </ItemContainer>
 
       <ItemButton Icon={PasswordChangeIcon} onClick={() => navigate('/setting/change-password', { isDuplicateCheck: true })}>
-        Change Password
+        {t('components.Header.Drawer.index.changePassword')}
       </ItemButton>
 
       <ItemButton Icon={LanguageChangeIcon} onClick={() => navigate('/setting/change-language', { isDuplicateCheck: true })}>
-        Language
+        {t('components.Header.Drawer.index.language')}
       </ItemButton>
 
       <ItemButton Icon={Currency24Icon} onClick={() => navigate('/setting/change-currency', { isDuplicateCheck: true })}>
-        Currency
+        {t('components.Header.Drawer.index.currency')}
       </ItemButton>
 
-      <ItemButton Icon={HelpIcon}>Help & Support</ItemButton>
+      <ItemButton Icon={HelpIcon}>{t('components.Header.Drawer.index.helpSupport')}</ItemButton>
 
       <LockButtonContainer>
         <Button
@@ -108,7 +110,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
             await setCurrentPassword(null);
           }}
         >
-          Lock
+          {t('components.Header.Drawer.index.lock')}
         </Button>
       </LockButtonContainer>
     </StyledDrawer>

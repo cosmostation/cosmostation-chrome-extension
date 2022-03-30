@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { ETHEREUM_CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
@@ -6,7 +7,6 @@ import Divider from '~/Popup/components/common/Divider';
 import Image from '~/Popup/components/common/Image';
 import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { upperCaseFirst } from '~/Popup/utils/common';
 
@@ -29,7 +29,7 @@ export default function Entry() {
   const { chromeStorage } = useChromeStorage();
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
 
-  const { currentAccount } = useCurrentAccount();
+  const { t } = useTranslation();
 
   const { allowedChainIds } = chromeStorage;
 
@@ -46,7 +46,7 @@ export default function Entry() {
             <StyledSearch20Icon />
           </InputAdornment>
         }
-        placeholder="Search chain"
+        placeholder={t('pages.Chain.Management.Use.entry.searchPlaceholder')}
         value={search}
         onChange={(event) => setSearch(event.currentTarget.value)}
       />

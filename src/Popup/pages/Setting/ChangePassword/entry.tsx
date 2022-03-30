@@ -8,6 +8,7 @@ import Divider from '~/Popup/components/common/Divider';
 import Input from '~/Popup/components/common/Input';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { aesDecrypt, aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import { ButtonContainer, Container, CurrentPasswordContainer, NewPasswordContainer } from './styled';
@@ -18,6 +19,7 @@ export default function Entry() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { changePasswordForm } = useSchema({ encryptedPassword: chromeStorage.encryptedPassword! });
   const { setCurrentPassword } = useCurrentPassword();
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
 
   const { enqueueSnackbar } = useSnackbar();
@@ -59,7 +61,7 @@ export default function Entry() {
     await setCurrentPassword(data.newPassword);
 
     reset();
-    enqueueSnackbar('Change password success');
+    enqueueSnackbar(t('pages.Setting.ChangePassword.entry.changePasswordSnackbar'));
   };
   return (
     <form onSubmit={handleSubmit(submit)}>
@@ -73,7 +75,7 @@ export default function Entry() {
                 return v ? sha512(v) : '';
               },
             })}
-            placeholder="current password"
+            placeholder={t('pages.Setting.ChangePassword.entry.currentPasswordPlaceholder')}
             error={!!errors.password}
             helperText={errors.password?.message}
           />
@@ -85,7 +87,7 @@ export default function Entry() {
             inputProps={register('newPassword')}
             error={!!errors.newPassword}
             helperText={errors.newPassword?.message}
-            placeholder="new password"
+            placeholder={t('pages.Setting.ChangePassword.entry.newPasswordPlaceholder')}
           />
         </NewPasswordContainer>
         <Input
@@ -93,11 +95,11 @@ export default function Entry() {
           inputProps={register('repeatNewPassword')}
           error={!!errors.repeatNewPassword}
           helperText={errors.repeatNewPassword?.message}
-          placeholder="password confirmation"
+          placeholder={t('pages.Setting.ChangePassword.entry.confirmNewPasswordPlaceholder')}
         />
         <ButtonContainer>
           <Button type="submit" disabled={!isDirty}>
-            Confirm
+            {t('pages.Setting.ChangePassword.entry.done')}
           </Button>
         </ButtonContainer>
       </Container>

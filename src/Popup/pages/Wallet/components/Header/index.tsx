@@ -15,18 +15,10 @@ export default function WalletHeader() {
   const { currentChain } = useCurrentChain();
   const { currentNetwork } = useCurrentNetwork();
 
-  const [loadPopover, setLoadPopover] = useState(false);
-
   const [popover, setPopover] = useState<'chain' | 'network' | 'account' | null>(null);
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoadPopover(true);
-    }, 200);
-  }, []);
 
   return (
     <Container>
