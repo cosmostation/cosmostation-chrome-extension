@@ -91,7 +91,8 @@ function background() {
                 if (
                   chain?.id &&
                   [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain?.id) &&
-                  currentAccountAllowedOrigins.includes(origin)
+                  currentAccountAllowedOrigins.includes(origin) &&
+                  password
                 ) {
                   const keyPair = getKeyPair(currentAccount, chain, password);
                   const address = getAddress(chain, keyPair?.publicKey);
