@@ -22,7 +22,8 @@ export default function Routes({ children }: RoutesType) {
 
       setIsLoading(false);
     })();
-  }, [chromeStorage.accounts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (chromeStorage.queues.length > 0) {

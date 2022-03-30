@@ -10,6 +10,7 @@ import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
+import { openTab } from '~/Popup/utils/chromeTabs';
 import { sha512 } from '~/Popup/utils/crypto';
 import type { Account } from '~/types/chromeStorage';
 
@@ -66,6 +67,10 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
     const newAccounts = chromeStorage.accounts.filter((acc) => acc.id !== account.id);
 
     await setChromeStorage('accounts', newAccounts);
+
+    if (newAccounts.length === 0) {
+      await openTab();
+    }
 
     handleOnClose();
 
