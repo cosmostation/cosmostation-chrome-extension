@@ -40,6 +40,14 @@ export type Queue<T = RequestMessage> = {
   channel?: string;
 };
 
+export type Address = {
+  id: string;
+  chainId: string;
+  label: string;
+  address: string;
+  memo?: string;
+};
+
 export type ChromeStorage = {
   encryptedPassword: string | null;
   accounts: Account[];
@@ -51,6 +59,7 @@ export type ChromeStorage = {
   additionalChains: Chain[];
   additionalEthereumNetworks: EthereumNetwork[];
   language: LanguageType;
+  addressBook: Address[];
 
   rootPath: Path;
 

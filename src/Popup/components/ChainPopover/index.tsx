@@ -9,6 +9,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import type { Chain } from '~/types/chain';
 
 import ChainItemButton from './ChainItemButton';
 import {
@@ -28,11 +29,15 @@ import {
 
 import SettingIcon24 from '~/images/icons/Setting24.svg';
 
-type ChainPopoverProps = Omit<PopoverProps, 'children'>;
+type ChainPopoverProps = Omit<PopoverProps, 'children'> & {
+  currentChain: Chain;
+  onClickChain?: (chain: Chain) => void;
+  isVisibleAdditionalChains?: boolean;
+};
 
-export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProps) {
+export default function ChainPopover({ onClose, currentChain, onClickChain, isVisibleAdditionalChains = true, ...remainder }: ChainPopoverProps) {
   const { navigate } = useNavigate();
-  const { currentChain, setCurrentChain } = useCurrentChain();
+  const { setCurrentChain } = useCurrentChain();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
   const { t } = useTranslation();
@@ -65,8 +70,8 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
                     key={chain.id}
                     isActive={currentChain.id === chain.id}
                     imgSrc={chain.imageURL}
-                    onClick={async () => {
-                      await setCurrentChain(chain);
+                    onClick={() => {
+                      onClickChain?.(chain);
                       onClose?.({}, 'backdropClick');
                     }}
                   >
@@ -85,8 +90,8 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
                     key={chain.id}
                     isActive={currentChain.id === chain.id}
                     imgSrc={chain.imageURL}
-                    onClick={async () => {
-                      await setCurrentChain(chain);
+                    onClick={() => {
+                      onClickChain?.(chain);
                       onClose?.({}, 'backdropClick');
                     }}
                   >
@@ -97,7 +102,7 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
             </EthereumChainListContainer>
           )}
 
-          {additionalChains.length > 0 && (
+          {isVisibleAdditionalChains && additionalChains.length > 0 && (
             <BetaChainContainer>
               <BetaChainTitleContainer>
                 <Typography variant="h6">{t('pages.Wallet.components.Header.ChainPopover.index.betaSupport')}</Typography>
@@ -107,8 +112,8 @@ export default function ChainPopover({ onClose, ...remainder }: ChainPopoverProp
                   {additionalChains.map((chain) => (
                     <ChainItemButton
                       key={chain.id}
-                      onClick={async () => {
-                        await setCurrentChain(chain);
+                      onClick={() => {
+                        onClickChain?.(chain);
                         onClose?.({}, 'backdropClick');
                       }}
                       onClickDelete={async () => {

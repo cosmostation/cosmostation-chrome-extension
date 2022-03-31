@@ -20,6 +20,7 @@
     "Header": {
       "Drawer": {
         "index": {
+          "addressBook": "주소록",
           "changePassword": "비밀번호 변경",
           "currency": "통화",
           "darkMode": "다크모드",

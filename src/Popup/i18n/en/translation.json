@@ -20,6 +20,7 @@
     "Header": {
       "Drawer": {
         "index": {
+          "addressBook": "Address Book",
           "changePassword": "Change password",
           "currency": "Currency",
           "darkMode": "Dark mode",

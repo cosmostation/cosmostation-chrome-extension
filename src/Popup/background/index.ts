@@ -328,6 +328,8 @@ function background() {
         await setStorage('encryptedPassword', null);
         await setStorage('selectedAccountId', '');
 
+        await setStorage('addressBook', []);
+
         await setStorage('theme', '' as ThemeType);
 
         await setStorage('rootPath', PATH.DASHBOARD);

@@ -1,18 +1,19 @@
 import { Suspense, useState } from 'react';
 
+import ChainButton from '~/Popup/components/ChainButton';
+import ChainPopover from '~/Popup/components/ChainPopover';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 
 import AccountButton from './AccountButton';
 import AccountPopover from './AccountPopover';
-import ChainPopover from './ChainPopover';
 import NetworkPopover from './NetworkPopover';
-import { ChainButton, Container, LeftContentContainer, NetworkButton, RightContentContainer } from './styled';
+import { Container, LeftContentContainer, NetworkButton, RightContentContainer } from './styled';
 
 export default function WalletHeader() {
   const { currentAccount } = useCurrentAccount();
-  const { currentChain } = useCurrentChain();
+  const { currentChain, setCurrentChain } = useCurrentChain();
   const { currentNetwork } = useCurrentNetwork();
 
   const [popover, setPopover] = useState<'chain' | 'network' | 'account' | null>(null);
@@ -57,6 +58,10 @@ export default function WalletHeader() {
 
       <ChainPopover
         marginThreshold={0}
+        currentChain={currentChain}
+        onClickChain={async (chain) => {
+          await setCurrentChain(chain);
+        }}
         open={isOpenPopover && popover === 'chain'}
         onClose={() => setPopoverAnchorEl(null)}
         anchorEl={popoverAnchorEl}

@@ -1,6 +1,5 @@
 import { styled } from '@mui/material/styles';
 
-import BaseChainButton from './ChainButton';
 import BaseNetworkButton from './NetworkButton';
 
 export const Container = styled('div')({
@@ -29,5 +28,3 @@ export const RightContentContainer = styled('div')({
 export const NetworkButton = styled(BaseNetworkButton)({
   marginRight: '0.8rem',
 });
-
-export const ChainButton = styled(BaseChainButton)({});

@@ -17,6 +17,8 @@ export const chromeStorageState = atom<ChromeStorage>({
     windowId: null,
     selectedAccountId: '',
 
+    addressBook: [],
+
     language: '' as LanguageType,
     currency: '' as CurrencyType,
 

@@ -27,6 +27,7 @@ import {
   StyledDrawer,
 } from './styled';
 
+import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
 import Close24Icon from '~/images/icons/Close24.svg';
 import Cosmostation14Icon from '~/images/icons/Cosmostation14.svg';
 import Currency24Icon from '~/images/icons/Currency24.svg';
@@ -88,6 +89,10 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
 
       <ItemButton Icon={PasswordChangeIcon} onClick={() => navigate('/setting/change-password', { isDuplicateCheck: true })}>
         {t('components.Header.Drawer.index.changePassword')}
+      </ItemButton>
+
+      <ItemButton Icon={AddressBook24Icon} onClick={() => navigate('/setting/address-book', { isDuplicateCheck: true })}>
+        {t('components.Header.Drawer.index.addressBook')}
       </ItemButton>
 
       <ItemButton Icon={LanguageChangeIcon} onClick={() => navigate('/setting/change-language', { isDuplicateCheck: true })}>

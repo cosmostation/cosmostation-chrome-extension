@@ -2,7 +2,7 @@
   "manifest_version": 3,
 
   "name": "Cosmostation",
-  "description": "tendermint, ethereum",
+  "description": "Cosmostation is a non-custodial multi-chain cryptocurrency browser extension wallet",
   "version": "0.0.1",
 
   "action": {

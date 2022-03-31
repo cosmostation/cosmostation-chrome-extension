@@ -9,6 +9,7 @@ export const PATH = {
   SETTING__CHANGE_PASSWORD: '/setting/change-password',
   SETTING__CHANGE_LANGUAGE: '/setting/change-language',
   SETTING__CHANGE_CURRENCY: '/setting/change-currency',
+  SETTING__ADDRESS_BOOK: '/setting/address-book',
 
   CHAIN__MANAGEMENT: '/chain/management',
   CHAIN__MANAGEMENT__USE: '/chain/management/use',
