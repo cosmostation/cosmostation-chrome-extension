@@ -2,16 +2,23 @@ import { useState } from 'react';
 
 import AddButton from '~/Popup/components/AddButton';
 import AddressBookItem from '~/Popup/components/AddressBookItem';
-// import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 
 import { AddressBookList, Container, Header, StyledChainButton, StyledChainPopover } from './styled';
 
 export default function Entry() {
-  // const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { chromeStorage } = useChromeStorage();
   const { currentChain } = useCurrentChain();
 
+  const { addressBook } = chromeStorage;
+
   const [chain, setChain] = useState(currentChain);
+
+  const { navigate } = useNavigate();
+
+  const filteredAddressBook = addressBook.filter((item) => item.chainId === chain.id);
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
@@ -28,18 +35,12 @@ export default function Entry() {
         >
           {chain.chainName}
         </StyledChainButton>
-        <AddButton>Add address</AddButton>
+        <AddButton onClick={() => navigate('/setting/address-book/add')}>Add address</AddButton>
       </Header>
       <AddressBookList>
-        <AddressBookItem
-          addressInfo={{
-            address: 'ewgewgwegew',
-            chainId: '62a8e13a-3107-40ef-ade4-58de45aa6c1f',
-            id: '62a8e13a-3107-40ef-ade4-58de45aa6c1a',
-            label: 'wegwegewg,',
-            memo: 'ewoigheowigh',
-          }}
-        />
+        {filteredAddressBook.map((item) => (
+          <AddressBookItem key={item.id} addressInfo={item} />
+        ))}
       </AddressBookList>
       <StyledChainPopover
         marginThreshold={0}

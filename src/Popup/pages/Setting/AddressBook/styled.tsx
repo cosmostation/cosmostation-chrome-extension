@@ -19,6 +19,11 @@ export const Header = styled('div')({
 export const StyledChainButton = styled(ChainButton)(({ theme }) => ({
   backgroundColor: 'transparent',
   border: `0.1rem solid ${theme.colors.base04}`,
+
+  '&:hover': {
+    border: `0.1rem solid ${theme.colors.base03}`,
+    backgroundColor: 'transparent',
+  },
 }));
 
 export const StyledChainPopover = styled(ChainPopover)({
@@ -29,4 +34,14 @@ export const StyledChainPopover = styled(ChainPopover)({
 
 export const AddressBookList = styled('div')({
   marginTop: '1rem',
+
+  display: 'grid',
+
+  gridTemplateColumns: '1fr',
+
+  rowGap: '0.8rem',
+
+  maxHeight: '44.8rem',
+
+  overflow: 'auto',
 });

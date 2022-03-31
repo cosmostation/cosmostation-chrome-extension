@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Typography } from '@mui/material';
 
 import { CHAINS } from '~/constants/chain';
+import { shorterAddress } from '~/Popup/utils/common';
 import type { AddressInfo } from '~/types/chromeStorage';
 
 import ManagePopover from './ManagePopover';
@@ -40,7 +41,7 @@ export default function AddressBookItem({ addressInfo }: AddressBookItemProps) {
         </LabelRightContainer>
       </LabelContainer>
       <AddressContainer>
-        <Typography variant="h6">{address}</Typography>
+        <Typography variant="h6">{shorterAddress(address, 30)}</Typography>
       </AddressContainer>
       {memo && (
         <MemoContainer>

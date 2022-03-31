@@ -23,7 +23,7 @@
           "index": {
             "addressPlaceholder": "주소",
             "labelPlaceholder": "라벨",
-            "memoPlaceholder": "메모",
+            "memoPlaceholder": "메모 (선택사항)",
             "submit": "수정",
             "title": "주소록 수정"
           }
@@ -367,6 +367,19 @@
       }
     },
     "Setting": {
+      "AddressBook": {
+        "Add": {
+          "entry": {
+            "addressPlaceholder": "주소",
+            "done": "추가",
+            "labelPlaceholder": "라벨",
+            "memoPlaceholder": "메모 (선택사항)"
+          },
+          "layout": {
+            "title": "주소록 추가"
+          }
+        }
+      },
       "ChangePassword": {
         "entry": {
           "changePasswordSnackbar": "비밀번호 변경 완료",

@@ -23,7 +23,7 @@
           "index": {
             "addressPlaceholder": "Address",
             "labelPlaceholder": "Label",
-            "memoPlaceholder": "Memo",
+            "memoPlaceholder": "Memo (option)",
             "submit": "Edit",
             "title": "Edit an address"
           }
@@ -367,6 +367,19 @@
       }
     },
     "Setting": {
+      "AddressBook": {
+        "Add": {
+          "entry": {
+            "addressPlaceholder": "Address",
+            "done": "Done",
+            "labelPlaceholder": "Label",
+            "memoPlaceholder": "Memo (option)"
+          },
+          "layout": {
+            "title": "Add address"
+          }
+        }
+      },
       "ChangePassword": {
         "entry": {
           "changePasswordSnackbar": "Password changed",

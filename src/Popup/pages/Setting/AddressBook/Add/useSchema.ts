@@ -31,9 +31,9 @@ export function useSchema() {
       }),
 
     memo: Joi.string()
-      .optional()
       .max(80)
       .allow('')
+      .optional()
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
