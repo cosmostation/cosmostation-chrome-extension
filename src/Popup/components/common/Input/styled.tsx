@@ -50,6 +50,18 @@ export const StyledTextField = styled(OutlinedInput)<StyledTextFieldProps>(({ th
     '&[type=number]': {
       colorScheme: theme.mode === 'dark' ? 'dark' : 'none',
     },
+
+    '&::-webkit-scrollbar': {
+      width: '0.1rem',
+      height: '0.1rem',
+      backgroundColor: 'transparent',
+    },
+    '&::-webkit-scrollbar-thumb': {
+      backgroundColor: theme.colors.base05,
+    },
+    '&::-webkit-scrollbar-corner': {
+      backgroundColor: 'transparent',
+    },
   },
   '.MuiOutlinedInput-notchedOutline': {
     border: `1px solid ${theme.colors.base03}`,

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 
 import AddButton from '~/Popup/components/AddButton';
+import AddressBookItem from '~/Popup/components/AddressBookItem';
 // import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 
-import { Container, Header, StyledChainButton, StyledChainPopover } from './styled';
+import { AddressBookList, Container, Header, StyledChainButton, StyledChainPopover } from './styled';
 
 export default function Entry() {
   // const { chromeStorage, setChromeStorage } = useChromeStorage();
@@ -29,6 +30,17 @@ export default function Entry() {
         </StyledChainButton>
         <AddButton>Add address</AddButton>
       </Header>
+      <AddressBookList>
+        <AddressBookItem
+          addressInfo={{
+            address: 'ewgewgwegew',
+            chainId: '62a8e13a-3107-40ef-ade4-58de45aa6c1f',
+            id: '62a8e13a-3107-40ef-ade4-58de45aa6c1a',
+            label: 'wegwegewg,',
+            memo: 'ewoigheowigh',
+          }}
+        />
+      </AddressBookList>
       <StyledChainPopover
         marginThreshold={0}
         currentChain={currentChain}

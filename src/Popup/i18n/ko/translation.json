@@ -17,6 +17,23 @@
         "description3": "을(를) 활성화 하시겠습니까?"
       }
     },
+    "AddressBookItem": {
+      "ManagePopover": {
+        "EditDialog": {
+          "index": {
+            "addressPlaceholder": "주소",
+            "labelPlaceholder": "라벨",
+            "memoPlaceholder": "메모",
+            "submit": "수정",
+            "title": "주소록 수정"
+          }
+        },
+        "index": {
+          "delete": "삭제",
+          "edit": "수정"
+        }
+      }
+    },
     "Header": {
       "Drawer": {
         "index": {

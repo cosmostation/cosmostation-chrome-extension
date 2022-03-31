@@ -26,3 +26,7 @@ export const StyledChainPopover = styled(ChainPopover)({
     width: '32.8rem',
   },
 });
+
+export const AddressBookList = styled('div')({
+  marginTop: '1rem',
+});

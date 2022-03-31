@@ -17,6 +17,23 @@
         "description3": "to the Cosmostation?"
       }
     },
+    "AddressBookItem": {
+      "ManagePopover": {
+        "EditDialog": {
+          "index": {
+            "addressPlaceholder": "Address",
+            "labelPlaceholder": "Label",
+            "memoPlaceholder": "Memo",
+            "submit": "Edit",
+            "title": "Edit an address"
+          }
+        },
+        "index": {
+          "delete": "Delete",
+          "edit": "Edit"
+        }
+      }
+    },
     "Header": {
       "Drawer": {
         "index": {
