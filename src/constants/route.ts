@@ -4,6 +4,7 @@ export const PATH = {
   DASHBOARD: '/dashboard',
 
   WALLET: '/wallet',
+  WALLET__SEND: '/wallet/send',
   WALLET__RECEIVE: '/wallet/receive',
 
   SETTING__CHANGE_PASSWORD: '/setting/change-password',

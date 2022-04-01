@@ -12,9 +12,10 @@ import Add24Icon from '~/images/icons/Add24.svg';
 
 type AddressBookItemProps = {
   addressInfo: AddressInfo;
+  onClick?: (addressInfo: AddressInfo) => void;
 };
 
-export default function AddressBookItem({ addressInfo }: AddressBookItemProps) {
+export default function AddressBookItem({ addressInfo, onClick }: AddressBookItemProps) {
   const { address, memo, label, chainId } = addressInfo;
 
   const chain = CHAINS.find((item) => item.id === chainId);
@@ -23,7 +24,7 @@ export default function AddressBookItem({ addressInfo }: AddressBookItemProps) {
   const isOpenPopover = Boolean(popoverAnchorEl);
 
   return (
-    <Container>
+    <Container onClick={() => onClick?.(addressInfo)} data-is-onclick={onClick ? 1 : 0}>
       <LabelContainer>
         <LabelLeftContainer>
           <StyledImage src={chain?.imageURL} />

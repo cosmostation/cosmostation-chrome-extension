@@ -37,6 +37,10 @@ export function gt(num1: number | string, num2: number | string) {
   return new Big(num1).gt(num2);
 }
 
+export function gte(num1: number | string, num2: number | string) {
+  return new Big(num1).gte(num2);
+}
+
 export function minus(num1: number | string, num2: number | string, toFix?: number) {
   if (toFix !== undefined) {
     return new Big(num1).minus(num2).toFixed(toFix, 0);
@@ -55,4 +59,27 @@ export function toDisplayDenomAmount(number: string, decimal: number) {
 
 export function toBaseDenomAmount(number: string, decimal: number) {
   return times(number, pow(10, decimal), 0);
+}
+
+export function isNumber(number: string) {
+  try {
+    Big(number);
+  } catch {
+    return false;
+  }
+  return true;
+}
+
+export function isDecimal(number: string, decimal: number) {
+  if (!isNumber(number)) {
+    return false;
+  }
+
+  const regex = new RegExp(`^([1-9][0-9]*\\.?[0-9]{0,${decimal}}|0\\.[0-9]{0,${decimal}}|0)$`);
+
+  if (!regex.test(number)) {
+    return false;
+  }
+
+  return true;
 }

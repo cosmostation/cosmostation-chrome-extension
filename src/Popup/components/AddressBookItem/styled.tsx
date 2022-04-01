@@ -2,12 +2,18 @@ import { styled } from '@mui/material/styles';
 
 import Image from '~/Popup/components/common/Image';
 
-export const Container = styled('div')(({ theme }) => ({
+type ContainerProps = {
+  'data-is-onclick': number;
+};
+
+export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => ({
   backgroundColor: theme.colors.base02,
 
   borderRadius: '0.8rem',
 
   padding: '1.2rem 0.8rem 1rem 1.6rem',
+
+  cursor: props['data-is-onclick'] ? 'pointer' : 'default',
 }));
 
 export const LabelContainer = styled('div')({
