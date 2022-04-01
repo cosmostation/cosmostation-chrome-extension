@@ -14,7 +14,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { TendermintChain } from '~/types/chain';
 
 import {
@@ -159,7 +159,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
       </FourthLineContainer>
       <ButtonContainer>
-        <Button Icon={SendIcon} typoVarient="h5" onClick={() => navigate('/wallet/send')}>
+        <Button Icon={SendIcon} typoVarient="h5" disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.tendermint.NativeChainCard.index.sendButton')}
         </Button>
         <ButtonCenterContainer />

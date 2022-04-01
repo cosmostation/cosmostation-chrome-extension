@@ -6,8 +6,12 @@ import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/common/IconButton';
 import Number from '~/Popup/components/common/Number';
 import Fee from '~/Popup/components/Fee';
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useAccountSWR } from '~/Popup/hooks/SWR/tendermint/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/tendermint/useAmountSWR';
-import { gt, gte, isDecimal, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { TendermintChain } from '~/types/chain';
 
 import {
@@ -30,7 +34,14 @@ type TendermintProps = {
 };
 
 export default function Tendermint({ chain }: TendermintProps) {
+  const { currentAccount } = useCurrentAccount();
+  const account = useAccountSWR(chain, true);
   const { vestingRelatedAvailable } = useAmountSWR(chain, true);
+  const accounts = useAccounts(true);
+
+  const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
+
+  const { enQueue } = useCurrentQueue();
 
   const { decimals, gas, gasRate } = chain;
 
@@ -51,8 +62,8 @@ export default function Tendermint({ chain }: TendermintProps) {
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
 
   const isPossibleSend = useMemo(
-    () => currentDisplayAmount && gte(displayAvailable, plus(currentDisplayAmount, DisplayFee)) && !!currentAddress,
-    [DisplayFee, currentAddress, currentDisplayAmount, displayAvailable],
+    () => currentDisplayAmount && gte(displayAvailable, plus(currentDisplayAmount, DisplayFee)) && !!currentAddress && address !== currentAddress,
+    [DisplayFee, address, currentAddress, currentDisplayAmount, displayAvailable],
   );
 
   return (
@@ -121,7 +132,40 @@ export default function Tendermint({ chain }: TendermintProps) {
         <Fee chain={chain} baseFee={currentFee} gas={currentGas} onChangeGas={(g) => setCurrentGas(g)} onChangeFee={(f) => setCurrentFee(f)} isEdit />
       </MarginTop12Div>
       <BottomContainer>
-        <Button type="button" disabled={!isPossibleSend}>
+        <Button
+          type="button"
+          disabled={!isPossibleSend}
+          onClick={async () => {
+            await enQueue({
+              messageId: '',
+              origin: '',
+              channel: 'ten_send',
+              message: {
+                method: 'ten_signAmino',
+                params: {
+                  chainName: chain.chainName,
+                  doc: {
+                    account_number: account.data.value.account_number,
+                    sequence: account.data.value.sequence || '0',
+                    chain_id: chain.chainId,
+                    fee: { amount: [{ denom: chain.baseDenom, amount: currentFee }], gas: currentGas },
+                    memo: currentMemo,
+                    msgs: [
+                      {
+                        type: chain.chainName === 'certik' ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
+                        value: {
+                          from_address: address,
+                          to_address: currentAddress,
+                          amount: [{ amount: toBaseDenomAmount(currentDisplayAmount, decimals), denom: chain.baseDenom }],
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            });
+          }}
+        >
           Send
         </Button>
       </BottomContainer>

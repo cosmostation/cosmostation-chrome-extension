@@ -57,45 +57,47 @@ export default function Entry() {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)}>
-      <Container>
-        <InputContainer>
-          <div>
-            <StyledInput48
-              placeholder={t('pages.Account.Initialize.Import.Mnemonic.entry.namePlaceholder')}
-              inputProps={register('name')}
-              error={!!errors.name}
-              helperText={errors.name?.message}
-            />
-          </div>
-          <div>
-            <StyledInput140
-              multiline
-              minRows={6}
-              placeholder={t('pages.Account.Initialize.Import.Mnemonic.entry.mnemonicPlaceholder')}
-              inputProps={register('mnemonic', { setValueAs: (v: string) => v.trim() })}
-              error={!!errors.mnemonic}
-              helperText={errors.mnemonic?.message}
-            />
-          </div>
-        </InputContainer>
-        <BottomContainer>
-          <BottomSettingButtonContainer>
-            <IconButton Icon={Setting16Icon} onClick={() => setIsOpenHDPathDialog(true)}>
-              {t('pages.Account.Initialize.Import.Mnemonic.entry.hdPathSetting')}
-            </IconButton>
-          </BottomSettingButtonContainer>
-          <Button type="submit" disabled={!isDirty}>
-            {t('pages.Account.Initialize.Import.Mnemonic.entry.next')}
-          </Button>
-        </BottomContainer>
-        <HDPathDialog
-          open={isOpenHDPathDialog}
-          currentAddressIndex={addressIndex}
-          onSubmitHdPath={(data) => setAddressIndex(data.addressIndex)}
-          onClose={() => setIsOpenHDPathDialog(false)}
-        />
-      </Container>
-    </form>
+    <>
+      <form onSubmit={handleSubmit(submit)}>
+        <Container>
+          <InputContainer>
+            <div>
+              <StyledInput48
+                placeholder={t('pages.Account.Initialize.Import.Mnemonic.entry.namePlaceholder')}
+                inputProps={register('name')}
+                error={!!errors.name}
+                helperText={errors.name?.message}
+              />
+            </div>
+            <div>
+              <StyledInput140
+                multiline
+                minRows={6}
+                placeholder={t('pages.Account.Initialize.Import.Mnemonic.entry.mnemonicPlaceholder')}
+                inputProps={register('mnemonic', { setValueAs: (v: string) => v.trim() })}
+                error={!!errors.mnemonic}
+                helperText={errors.mnemonic?.message}
+              />
+            </div>
+          </InputContainer>
+          <BottomContainer>
+            <BottomSettingButtonContainer>
+              <IconButton Icon={Setting16Icon} onClick={() => setIsOpenHDPathDialog(true)}>
+                {t('pages.Account.Initialize.Import.Mnemonic.entry.hdPathSetting')}
+              </IconButton>
+            </BottomSettingButtonContainer>
+            <Button type="submit" disabled={!isDirty}>
+              {t('pages.Account.Initialize.Import.Mnemonic.entry.next')}
+            </Button>
+          </BottomContainer>
+        </Container>
+      </form>
+      <HDPathDialog
+        open={isOpenHDPathDialog}
+        currentAddressIndex={addressIndex}
+        onSubmitHdPath={(data) => setAddressIndex(data.addressIndex)}
+        onClose={() => setIsOpenHDPathDialog(false)}
+      />
+    </>
   );
 }

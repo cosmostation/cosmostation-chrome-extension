@@ -20,7 +20,7 @@ export function useBalanceSWR(chain: TendermintChain, suspense?: boolean) {
   const fetcher = (fetchUrl: string) => get<BalancePayload>(fetchUrl);
 
   const { data, error, mutate } = useSWR<BalancePayload, AxiosError>(requestURL, fetcher, {
-    refreshInterval: 0,
+    refreshInterval: 15000,
     errorRetryCount: 5,
     errorRetryInterval: 3000,
     suspense,

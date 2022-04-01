@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import SwipeableViews from 'react-swipeable-views';
+import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
@@ -13,7 +14,8 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { getKeyPair, upperCaseFirst } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
-import { signAmino } from '~/Popup/utils/tendermint';
+import { broadcast, protoTx } from '~/Popup/utils/proto';
+import { signAmino, tendermintURL } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { TenSignAmino } from '~/types/tendermint/message';
@@ -54,8 +56,9 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { deQueue } = useCurrentQueue();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const { message, messageId, origin } = queue;
+  const { message, messageId, origin, channel } = queue;
 
   const {
     params: { doc, chainName, isEditFee, isEditMemo },
@@ -72,7 +75,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const tx = { ...doc, memo, fee: { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas } };
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
@@ -143,20 +146,43 @@ export default function Entry({ queue, chain }: EntryProps) {
 
               const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
 
-              responseToWeb({
-                response: {
-                  result: {
-                    signature: base64Signature,
-                    pub_key: { type: publicKeyType, value: base64PublicKey },
-                    signed_doc: tx,
-                  },
-                },
-                message,
-                messageId,
-                origin,
-              });
+              const pubKey = { type: publicKeyType, value: base64PublicKey };
 
-              await deQueue();
+              if (channel) {
+                try {
+                  const url = tendermintURL(chain).postBroadcast();
+                  const pTx = protoTx(tx, base64Signature, pubKey);
+
+                  const response = await broadcast(url, pTx);
+
+                  const { code } = response.data.tx_response;
+
+                  if (code === 0) {
+                    enqueueSnackbar('success');
+                  } else {
+                    throw new Error(response.data.tx_response.raw_log);
+                  }
+                } catch (e) {
+                  enqueueSnackbar((e as { message: string }).message, { variant: 'error', autoHideDuration: 3000 });
+                } finally {
+                  await deQueue();
+                }
+              } else {
+                responseToWeb({
+                  response: {
+                    result: {
+                      signature: base64Signature,
+                      pub_key: pubKey,
+                      signed_doc: tx,
+                    },
+                  },
+                  message,
+                  messageId,
+                  origin,
+                });
+
+                await deQueue();
+              }
             }}
           >
             Confirm

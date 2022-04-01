@@ -1,5 +1,6 @@
+import { isCustom, isSend } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
-import type { Msg, MsgCustom, MsgSend } from '~/types/tendermint/amino';
+import type { Msg } from '~/types/tendermint/amino';
 
 import Custom from './messages/Custom';
 import Send from './messages/Send';
@@ -15,12 +16,4 @@ export default function TxMessage({ chain, msg }: TxMessageProps) {
     return <Custom msg={msg} />;
   }
   return null;
-}
-
-function isCustom(msg: Msg): msg is Msg<MsgCustom> {
-  return true;
-}
-
-function isSend(msg: Msg): msg is Msg<MsgSend> {
-  return msg.type === 'cosmos-sdk/MsgSend';
 }

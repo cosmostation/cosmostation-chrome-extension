@@ -37,7 +37,7 @@ export type Queue<T = RequestMessage> = {
   origin: string;
   messageId: string;
   message: T;
-  channel?: string;
+  channel?: 'ten_send';
 };
 
 export type AddressInfo = {

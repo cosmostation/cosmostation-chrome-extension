@@ -8,7 +8,7 @@ import TinySecp256k1 from 'tiny-secp256k1';
 import { cosmos } from '~/proto/cosmos.js';
 import type { TendermintChain } from '~/types/chain';
 import type { SignDirectDoc } from '~/types/tendermint';
-import type { SignAminoDoc } from '~/types/tendermint/amino';
+import type { Msg, MsgCustom, MsgSend, SignAminoDoc } from '~/types/tendermint/amino';
 
 export function tendermintURL(chain: TendermintChain) {
   const { restURL } = chain;
@@ -21,6 +21,7 @@ export function tendermintURL(chain: TendermintChain) {
     getUndelegations: (address: string) => `${restURL}/staking/delegators/${address}/unbonding_delegations`,
     getAccount: (address: string) => `${restURL}/auth/accounts/${address}`,
     getWithdrawAddress: (address: string) => `${restURL}/distribution/delegators/${address}/withdraw_address`,
+    postBroadcast: () => `${restURL}/cosmos/tx/v1beta1/txs`,
   };
 }
 
@@ -53,4 +54,12 @@ export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer) {
   const signatureBuffer = TinySecp256k1.sign(Buffer.from(sha256SignDoc, 'hex'), privateKey);
 
   return signatureBuffer;
+}
+
+export function isSend(msg: Msg): msg is Msg<MsgSend> {
+  return msg.type === 'cosmos-sdk/MsgSend' || msg.type === 'bank/MsgSend';
+}
+
+export function isCustom(msg: Msg): msg is Msg<MsgCustom> {
+  return true;
 }

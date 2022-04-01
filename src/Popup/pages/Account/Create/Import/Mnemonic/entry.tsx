@@ -64,14 +64,6 @@ export default function Entry() {
     setDisposableLoading(false);
     setLoadingOverlay(true);
 
-    const mnemonicRestoreStrings = chromeStorage.accounts.filter((account) => account.type === 'MNEMONIC').map((account) => account.encryptedRestoreString);
-
-    if (mnemonicRestoreStrings.includes(sha512(data.mnemonic))) {
-      enqueueSnackbar('이미 존재하는 니모닉 입니다.', { variant: 'error' });
-      setLoadingOverlay(false);
-      return;
-    }
-
     const accountId = uuidv4();
 
     await setChromeStorage('accounts', [
@@ -96,45 +88,47 @@ export default function Entry() {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)}>
-      <Container>
-        <InputContainer>
-          <div>
-            <StyledInput48
-              placeholder={t('pages.Account.Create.Import.Mnemonic.entry.accountNamePlaceholder')}
-              inputProps={register('name')}
-              error={!!errors.name}
-              helperText={errors.name?.message}
-            />
-          </div>
-          <div>
-            <StyledInput140
-              multiline
-              minRows={6}
-              placeholder={t('pages.Account.Create.Import.Mnemonic.entry.mnemonicPlaceholder')}
-              inputProps={register('mnemonic', { setValueAs: (v: string) => v.trim() })}
-              error={!!errors.mnemonic}
-              helperText={errors.mnemonic?.message}
-            />
-          </div>
-        </InputContainer>
-        <BottomContainer>
-          <BottomSettingButtonContainer>
-            <IconButton Icon={Setting16Icon} onClick={() => setIsOpenHDPathDialog(true)}>
-              {t('pages.Account.Create.Import.Mnemonic.entry.hdPathSetting')}
-            </IconButton>
-          </BottomSettingButtonContainer>
-          <Button type="submit" disabled={!isDirty}>
-            {t('pages.Account.Create.Import.Mnemonic.entry.done')}
-          </Button>
-        </BottomContainer>
-        <HDPathDialog
-          open={isOpenHDPathDialog}
-          currentAddressIndex={addressIndex}
-          onSubmitHdPath={(data) => setAddressIndex(data.addressIndex)}
-          onClose={() => setIsOpenHDPathDialog(false)}
-        />
-      </Container>
-    </form>
+    <>
+      <form onSubmit={handleSubmit(submit)}>
+        <Container>
+          <InputContainer>
+            <div>
+              <StyledInput48
+                placeholder={t('pages.Account.Create.Import.Mnemonic.entry.accountNamePlaceholder')}
+                inputProps={register('name')}
+                error={!!errors.name}
+                helperText={errors.name?.message}
+              />
+            </div>
+            <div>
+              <StyledInput140
+                multiline
+                minRows={6}
+                placeholder={t('pages.Account.Create.Import.Mnemonic.entry.mnemonicPlaceholder')}
+                inputProps={register('mnemonic', { setValueAs: (v: string) => v.trim() })}
+                error={!!errors.mnemonic}
+                helperText={errors.mnemonic?.message}
+              />
+            </div>
+          </InputContainer>
+          <BottomContainer>
+            <BottomSettingButtonContainer>
+              <IconButton Icon={Setting16Icon} onClick={() => setIsOpenHDPathDialog(true)}>
+                {t('pages.Account.Create.Import.Mnemonic.entry.hdPathSetting')}
+              </IconButton>
+            </BottomSettingButtonContainer>
+            <Button type="submit" disabled={!isDirty}>
+              {t('pages.Account.Create.Import.Mnemonic.entry.done')}
+            </Button>
+          </BottomContainer>
+        </Container>
+      </form>
+      <HDPathDialog
+        open={isOpenHDPathDialog}
+        currentAddressIndex={addressIndex}
+        onSubmitHdPath={(data) => setAddressIndex(data.addressIndex)}
+        onClose={() => setIsOpenHDPathDialog(false)}
+      />
+    </>
   );
 }

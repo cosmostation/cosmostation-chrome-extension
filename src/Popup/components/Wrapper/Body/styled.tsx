@@ -24,7 +24,7 @@ export const Body = styled('div')(({ theme }) => ({
 
       minWidth: '29.2rem',
 
-      height: '4rem',
+      minHeight: '4rem',
 
       paddingTop: 0,
       paddingBottom: 0,
@@ -37,6 +37,9 @@ export const Body = styled('div')(({ theme }) => ({
         fill: theme.accentColors.white,
 
         marginRight: '0.4rem',
+
+        minWidth: '1.6rem',
+        height: '1.6rem',
       },
 
       '&.SnackbarItem-variantSuccess': {

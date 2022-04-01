@@ -39,7 +39,7 @@ export default function AccessRequest({ children }: AccessRequestProps) {
 
   const { t } = useTranslation();
 
-  if (currentQueue?.channel !== 'In' && currentQueue?.origin && !allowedOrigins.includes(currentQueue?.origin)) {
+  if (!currentQueue?.channel && currentQueue?.origin && !allowedOrigins.includes(currentQueue?.origin)) {
     return (
       <BaseLayout>
         <Container>

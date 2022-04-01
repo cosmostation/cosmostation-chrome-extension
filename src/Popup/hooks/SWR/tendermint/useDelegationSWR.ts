@@ -22,7 +22,7 @@ export function useDelegationSWR(chain: TendermintChain, suspense?: boolean) {
   const fetcher = (fetchUrl: string) => get<DelegationPayload | KavaDelegationPayload>(fetchUrl);
 
   const { data, error, mutate } = useSWR<DelegationPayload | KavaDelegationPayload, AxiosError>(requestURL, fetcher, {
-    refreshInterval: 0,
+    refreshInterval: 15000,
     errorRetryCount: 5,
     errorRetryInterval: 3000,
     suspense,
