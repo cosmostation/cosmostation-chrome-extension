@@ -12,6 +12,7 @@ export function useSchema() {
   const addressBookForm = Joi.object<AddressBookForm>({
     label: Joi.string()
       .required()
+      .trim()
       .min(1)
       .max(30)
       .messages({
@@ -23,6 +24,7 @@ export function useSchema() {
 
     address: Joi.string()
       .required()
+      .trim()
       .min(1)
       .messages({
         'string.base': t('schema.common.string.base'),
@@ -32,6 +34,7 @@ export function useSchema() {
 
     memo: Joi.string()
       .max(80)
+      .trim()
       .allow('')
       .optional()
       .messages({
