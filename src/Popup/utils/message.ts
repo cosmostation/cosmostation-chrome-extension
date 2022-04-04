@@ -23,7 +23,7 @@ export function responseToWeb<T, U>(data: Omit<BackgroundToContentScriptEventMes
   }
 }
 
-export function emitToWeb(data: Omit<ListenerMessage<ResponseMessage>, 'isCosmostation'>) {
+export function emitToWeb(data: Omit<ListenerMessage<ResponseMessage>, 'isCosmostation'>, origins: string[]) {
   const toContentScriptMessage: ListenerMessage<ResponseMessage> = {
     isCosmostation: true,
     line: data.line,
@@ -31,11 +31,13 @@ export function emitToWeb(data: Omit<ListenerMessage<ResponseMessage>, 'isCosmos
     type: data.type,
   };
 
-  chrome.tabs.query({ url: '<all_urls>' }, (tabs) => {
-    tabs.forEach((tab) => {
-      if (tab.id) {
-        chrome.tabs.sendMessage(tab.id, toContentScriptMessage);
-      }
+  origins.forEach((origin) => {
+    chrome.tabs.query({ url: `${origin}/*` }, (tabs) => {
+      tabs.forEach((tab) => {
+        if (tab.id) {
+          chrome.tabs.sendMessage(tab.id, toContentScriptMessage);
+        }
+      });
     });
   });
 }

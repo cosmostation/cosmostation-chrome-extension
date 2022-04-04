@@ -12,14 +12,6 @@ export function useCurrentAccount() {
 
   const name = accountName[currentAccount.id] ?? '';
 
-  const setCurrentAccount = async (id: string) => {
-    const isExist = !!chromeStorage.accounts.find((account) => account.id === id);
-
-    await setChromeStorage('selectedAccountId', isExist ? id : chromeStorage.accounts[0].id);
-
-    emitToWeb({ line: 'TENDERMINT', type: 'accountChanged' });
-  };
-
   const currentAccountAllowedOrigins = allowedOrigins
     .filter((allowedOrigin) => allowedOrigin.accountId === selectedAccountId)
     .map((allowedOrigin) => allowedOrigin.origin);
@@ -32,6 +24,17 @@ export function useCurrentAccount() {
   const removeAllowedOrigin = async (origin: string) => {
     const newAllowedOrigins = allowedOrigins.filter((allowedOrigin) => !(allowedOrigin.accountId === selectedAccountId && allowedOrigin.origin === origin));
     await setChromeStorage('allowedOrigins', newAllowedOrigins);
+  };
+
+  const setCurrentAccount = async (id: string) => {
+    const isExist = !!chromeStorage.accounts.find((account) => account.id === id);
+
+    await setChromeStorage('selectedAccountId', isExist ? id : chromeStorage.accounts[0].id);
+
+    const origins = Array.from(new Set(allowedOrigins.map((item) => item.origin)));
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    emitToWeb({ line: 'TENDERMINT', type: 'accountChanged' }, origins);
   };
 
   return {
