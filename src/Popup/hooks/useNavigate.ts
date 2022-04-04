@@ -16,11 +16,7 @@ export function useNavigate() {
   };
 
   const navigateBack = (delta = -1) => {
-    if (window.history.length + delta > 2) {
-      baseNavigate(delta);
-    } else {
-      navigate('/');
-    }
+    baseNavigate(delta);
   };
 
   return { navigate, navigateBack };
