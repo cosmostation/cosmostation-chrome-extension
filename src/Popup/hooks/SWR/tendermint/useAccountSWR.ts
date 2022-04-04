@@ -21,8 +21,9 @@ export function useAccountSWR(chain: TendermintChain, suspense?: boolean) {
   const fetcher = (url: string) => axios.get<AuthAccountsPayload>(url).then((res) => res.data);
 
   const { data, error, mutate } = useSWR<AuthAccountsPayload, AxiosError>(requestURL, fetcher, {
-    refreshInterval: 0,
-    errorRetryCount: 0,
+    refreshInterval: 15000,
+    errorRetryCount: 5,
+    errorRetryInterval: 3000,
     suspense,
     isPaused: () => !address,
   });
