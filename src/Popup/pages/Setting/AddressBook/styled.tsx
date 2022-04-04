@@ -29,6 +29,7 @@ export const StyledChainButton = styled(ChainButton)(({ theme }) => ({
 export const StyledChainPopover = styled(ChainPopover)({
   '& .MuiPaper-root > div': {
     width: '32.8rem',
+    maxHeight: '44rem',
   },
 });
 

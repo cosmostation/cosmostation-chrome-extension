@@ -103,7 +103,6 @@ export default function Entry() {
         </ButtonContainer>
 
         <StyledChainPopover
-          isVisibleAdditionalChains={false}
           marginThreshold={0}
           currentChain={currentChain}
           onClickChain={(clickedChain) => {

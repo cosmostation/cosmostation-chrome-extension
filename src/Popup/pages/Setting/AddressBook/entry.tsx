@@ -43,7 +43,6 @@ export default function Entry() {
         ))}
       </AddressBookList>
       <StyledChainPopover
-        isVisibleAdditionalChains={false}
         marginThreshold={0}
         currentChain={currentChain}
         onClickChain={(clickedChain) => {

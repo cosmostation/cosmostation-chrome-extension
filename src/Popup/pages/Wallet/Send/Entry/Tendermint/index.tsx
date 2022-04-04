@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
 
+import { DEFAULT_GAS } from '~/constants/chain';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/common/IconButton';
@@ -45,7 +46,7 @@ export default function Tendermint({ chain }: TendermintProps) {
 
   const { decimals, gas, gasRate } = chain;
 
-  const sendGas = gas.send || '80000';
+  const sendGas = gas.send || DEFAULT_GAS;
 
   const [currentGas, setCurrentGas] = useState(sendGas);
   const [currentFee, setCurrentFee] = useState(times(sendGas, gasRate.low));

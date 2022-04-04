@@ -24,9 +24,17 @@ export function useAccounts(suspense?: boolean) {
             const addresses: Record<string, string> = {};
 
             [...CHAINS, ...additionalChains].forEach((chain) => {
-              const keypair = getKeyPair(account, chain, currentPassword);
-              const address = getAddress(chain, keypair?.publicKey);
-              addresses[chain.id] = address;
+              const key = `${account.id}${chain.id}`;
+              const storageAddress = localStorage.getItem(key);
+
+              if (storageAddress) {
+                addresses[chain.id] = storageAddress;
+              } else {
+                const keypair = getKeyPair(account, chain, currentPassword);
+                const address = getAddress(chain, keypair?.publicKey);
+                addresses[chain.id] = address;
+                localStorage.setItem(key, address);
+              }
             });
             return { id: account.id, address: addresses };
           }),
