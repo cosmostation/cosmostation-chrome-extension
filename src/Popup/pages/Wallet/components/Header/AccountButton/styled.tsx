@@ -4,7 +4,11 @@ export const Container = styled('div')({
   position: 'relative',
 });
 
-export const StyledButton = styled('button')(({ theme }) => ({
+type AccountColorProps = {
+  'data-account-color'?: string;
+};
+
+export const StyledButton = styled('button')<AccountColorProps>(({ theme, ...props }) => ({
   border: 'none',
 
   padding: 0,
@@ -20,17 +24,18 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   '&:hover': {
     '& > :nth-of-type(1)': {
-      backgroundColor: theme.colors.base04,
+      backgroundColor: props['data-account-color'] ? `${props['data-account-color']}44` : theme.colors.base04,
     },
   },
 }));
-export const AccountLeftContainer = styled('div')(({ theme }) => ({
+
+export const AccountLeftContainer = styled('div')<AccountColorProps>(({ theme, ...props }) => ({
   height: '2.8rem',
   width: '2.8rem',
 
   borderRadius: '50%',
 
-  backgroundColor: theme.colors.base03,
+  backgroundColor: props['data-account-color'] ? `${props['data-account-color']}66` : theme.colors.base03,
   color: theme.accentColors.white,
 
   padding: 0,

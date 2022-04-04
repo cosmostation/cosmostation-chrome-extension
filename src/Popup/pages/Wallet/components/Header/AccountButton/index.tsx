@@ -1,4 +1,5 @@
 import { Suspense, useState } from 'react';
+import stc from 'string-to-color';
 import { Typography } from '@mui/material';
 
 import { useCurrentTab } from '~/Popup/hooks/SWR/cache/useCurrentTab';
@@ -24,10 +25,14 @@ type AccountButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTM
 };
 
 export default function AccountButton({ children, ...remainder }: AccountButtonProps) {
+  const { currentAccount } = useCurrentAccount();
+  const { id } = currentAccount;
+
+  const accountColor = stc(id);
   return (
     <Container>
-      <StyledButton {...remainder}>
-        <AccountLeftContainer>
+      <StyledButton {...remainder} data-account-color={accountColor}>
+        <AccountLeftContainer data-account-color={accountColor}>
           <Account />
         </AccountLeftContainer>
         <AccountRightContainer>
