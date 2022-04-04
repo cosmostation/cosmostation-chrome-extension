@@ -27,9 +27,14 @@ export const TotalValueContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const CountContainer = styled('div')({
+export const SubInfoContainer = styled('div')({
   marginTop: '1.6rem',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+});
 
+export const CountContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
 });
@@ -55,7 +60,8 @@ type ChainListProps = {
 };
 
 export const ChainList = styled('div')<ChainListProps>(({ ...props }) => ({
-  padding: '0.8rem 0',
+  marginTop: '1rem',
+  paddingBottom: '1rem',
 
   overflow: 'auto',
 

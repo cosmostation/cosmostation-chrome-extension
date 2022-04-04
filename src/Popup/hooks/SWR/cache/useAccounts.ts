@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 
+import { CHAINS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 
@@ -12,7 +12,6 @@ type AccountList = {
 
 export function useAccounts(suspense?: boolean) {
   const { chromeStorage } = useChromeStorage();
-  const { currentAllowedChains } = useCurrentAllowedChains();
   const { currentPassword } = useCurrentPassword();
 
   const { accounts, additionalChains } = chromeStorage;
@@ -24,7 +23,7 @@ export function useAccounts(suspense?: boolean) {
           accounts.map((account) => {
             const addresses: Record<string, string> = {};
 
-            [...currentAllowedChains, ...additionalChains].forEach((chain) => {
+            [...CHAINS, ...additionalChains].forEach((chain) => {
               const keypair = getKeyPair(account, chain, currentPassword);
               const address = getAddress(chain, keypair?.publicKey);
               addresses[chain.id] = address;
@@ -35,13 +34,13 @@ export function useAccounts(suspense?: boolean) {
       }, 500);
     });
 
-  const { data, mutate } = useSWR([accounts, currentAllowedChains, additionalChains], fetcher, {
+  const { data, mutate } = useSWR([accounts, additionalChains], fetcher, {
     suspense,
     revalidateOnFocus: false,
     revalidateOnMount: false,
     revalidateOnReconnect: false,
     revalidateIfStale: false,
-    isPaused: () => accounts.length < 1 || [...currentAllowedChains, ...additionalChains].length < 1,
+    isPaused: () => accounts.length < 1 || [...CHAINS, ...additionalChains].length < 1,
   });
 
   return { data, mutate };
