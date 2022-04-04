@@ -449,6 +449,15 @@
     }
   },
   "schema": {
+    "addressBookForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "주소가 유효하지 않습니다."
+          }
+        }
+      }
+    },
     "changeNameForm": {
       "name": {
         "any": {

@@ -55,10 +55,9 @@ export default function Init({ children }: InitType) {
         await setStorage('theme', theme);
       }
 
-      // if (!chromeStorage.password) {
-      //   await openTab();
-      //   navigate('/register/password');
-      // }
+      if (!originChromeStorage.addressBook) {
+        await setStorage('addressBook', []);
+      }
 
       setIsLoading(false);
     })();

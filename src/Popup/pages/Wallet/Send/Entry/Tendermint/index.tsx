@@ -61,9 +61,16 @@ export default function Tendermint({ chain }: TendermintProps) {
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
 
+  const addressRegex = useMemo(() => new RegExp(`^${chain.bech32Prefix.address}(.{39,39})$`), [chain.bech32Prefix.address]);
+
   const isPossibleSend = useMemo(
-    () => currentDisplayAmount && gte(displayAvailable, plus(currentDisplayAmount, DisplayFee)) && !!currentAddress && address !== currentAddress,
-    [DisplayFee, address, currentAddress, currentDisplayAmount, displayAvailable],
+    () =>
+      currentDisplayAmount &&
+      gte(displayAvailable, plus(currentDisplayAmount, DisplayFee)) &&
+      !!currentAddress &&
+      address !== currentAddress &&
+      addressRegex.test(currentAddress),
+    [DisplayFee, address, addressRegex, currentAddress, currentDisplayAmount, displayAvailable],
   );
 
   return (

@@ -7,8 +7,19 @@ export type AddressBookForm = {
   memo?: string;
 };
 
-export function useSchema() {
+type useSchemaProps = {
+  regex?: {
+    prefix: string;
+    lengths: number[];
+  };
+};
+
+export function useSchema({ regex }: useSchemaProps) {
   const { t } = useTranslation();
+
+  const regexString = regex ? `^${regex.prefix}(${regex.lengths.map((item) => `(.{${item},${item}})`).join('|')})$` : '^.*$';
+  const regExp = new RegExp(regexString);
+
   const addressBookForm = Joi.object<AddressBookForm>({
     label: Joi.string()
       .required()
@@ -26,10 +37,12 @@ export function useSchema() {
       .required()
       .trim()
       .min(1)
+      .pattern(regExp)
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
         'string.min': t('schema.common.string.min'),
+        'string.pattern.base': t('schema.addressBookForm.address.string.pattern.base'),
       }),
 
     memo: Joi.string()

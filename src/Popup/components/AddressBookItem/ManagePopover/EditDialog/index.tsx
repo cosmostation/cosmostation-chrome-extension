@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack';
 import { joiResolver } from '@hookform/resolvers/joi';
 import type { DialogProps, PopoverProps } from '@mui/material';
 
+import { CHAINS } from '~/constants/chain';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -19,13 +20,15 @@ export default function EditDialog({ onClose, addressInfo, ...remainder }: EditD
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { addressBook } = chromeStorage;
-
-  const { addressBookForm } = useSchema();
-
   const { t } = useTranslation();
+  const { addressBook } = chromeStorage;
+  const { address, label, memo, chainId } = addressInfo;
 
-  const { address, label, memo } = addressInfo;
+  const chain = CHAINS.find((item) => item.id === chainId);
+
+  const regex = chain?.line === 'TENDERMINT' ? { prefix: chain.bech32Prefix.address, lengths: [39] } : undefined;
+
+  const { addressBookForm } = useSchema({ regex });
 
   const {
     register,

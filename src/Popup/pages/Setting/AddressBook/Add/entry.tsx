@@ -24,7 +24,9 @@ export default function Entry() {
 
   const { addressBook } = chromeStorage;
 
-  const { addressBookForm } = useSchema();
+  const regex = chain.line === 'TENDERMINT' ? { prefix: chain.bech32Prefix.address, lengths: [39] } : undefined;
+
+  const { addressBookForm } = useSchema({ regex });
 
   const { t } = useTranslation();
 
