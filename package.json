@@ -8,7 +8,7 @@
     "prebuild": "rimraf dist",
     "build": "webpack --config webpack/webpack.prod.js",
     "i18next-scanner": "i18next-scanner",
-    "eslint": "eslint --max-warnings 0 ./src"
+    "eslint": "eslint --max-warnings 0 $(git diff --name-only | grep -E '.(ts|tsx)$' | xargs)"
   },
   "author": "",
   "license": "MIT",
