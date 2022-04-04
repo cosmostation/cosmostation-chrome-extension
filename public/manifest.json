@@ -3,7 +3,7 @@
 
   "name": "Cosmostation",
   "description": "Cosmostation is a non-custodial multi-chain cryptocurrency browser extension wallet",
-  "version": "0.0.1",
+  "version": "0.0.2",
 
   "action": {
     "default_icon": "icon128.png",
