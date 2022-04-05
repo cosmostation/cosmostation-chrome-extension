@@ -7,7 +7,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/IconButton';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -31,6 +31,7 @@ export default function Entry() {
   const { navigateBack } = useNavigate();
 
   const { currentPassword } = useCurrentPassword();
+  const { addAccount } = useCurrentAccount();
 
   const [addressIndex, setAddressIndex] = useState(0);
 
@@ -39,8 +40,6 @@ export default function Entry() {
   const setLoadingOverlay = useLoadingOverlay();
 
   const { enqueueSnackbar } = useSnackbar();
-
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
 
   const setDisposableLoading = useSetRecoilState(disposableLoadingState);
 
@@ -66,19 +65,15 @@ export default function Entry() {
 
     const accountId = uuidv4();
 
-    await setChromeStorage('accounts', [
-      ...chromeStorage.accounts,
-      {
-        id: accountId,
-        type: 'MNEMONIC',
-        bip44: { addressIndex: `${addressIndex}` },
-        encryptedMnemonic: aesEncrypt(data.mnemonic, currentPassword!),
-        encryptedPassword: aesEncrypt(currentPassword!, data.mnemonic),
-        encryptedRestoreString: sha512(data.mnemonic),
-      },
-    ]);
-
-    await setChromeStorage('accountName', { ...chromeStorage.accountName, [accountId]: data.name });
+    await addAccount({
+      id: accountId,
+      type: 'MNEMONIC',
+      bip44: { addressIndex: `${addressIndex}` },
+      encryptedMnemonic: aesEncrypt(data.mnemonic, currentPassword!),
+      encryptedPassword: aesEncrypt(currentPassword!, data.mnemonic),
+      encryptedRestoreString: sha512(data.mnemonic),
+      name: data.name,
+    });
 
     setLoadingOverlay(false);
 

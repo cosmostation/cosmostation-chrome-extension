@@ -6,6 +6,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -27,9 +28,11 @@ export default function Entry() {
   const setLoadingOverlay = useLoadingOverlay();
   const { currentPassword } = useCurrentPassword();
 
+  const { addAccount } = useCurrentAccount();
+
   const { enqueueSnackbar } = useSnackbar();
 
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { chromeStorage } = useChromeStorage();
 
   const setDisposableLoading = useSetRecoilState(disposableLoadingState);
 
@@ -65,18 +68,14 @@ export default function Entry() {
 
     const accountId = uuidv4();
 
-    await setChromeStorage('accounts', [
-      ...chromeStorage.accounts,
-      {
-        id: accountId,
-        type: 'PRIVATE_KEY',
-        encryptedPrivateKey: aesEncrypt(privateKey, currentPassword!),
-        encryptedPassword: aesEncrypt(currentPassword!, privateKey),
-        encryptedRestoreString: sha512(privateKey),
-      },
-    ]);
-
-    await setChromeStorage('accountName', { ...chromeStorage.accountName, [accountId]: data.name });
+    await addAccount({
+      id: accountId,
+      type: 'PRIVATE_KEY',
+      encryptedPrivateKey: aesEncrypt(privateKey, currentPassword!),
+      encryptedPassword: aesEncrypt(currentPassword!, privateKey),
+      encryptedRestoreString: sha512(privateKey),
+      name: data.name,
+    });
 
     setLoadingOverlay(false);
 

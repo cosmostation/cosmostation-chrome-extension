@@ -8,9 +8,9 @@ import { Typography } from '@mui/material';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
-import { openTab } from '~/Popup/utils/chromeTabs';
 import { sha512 } from '~/Popup/utils/crypto';
 import type { Account } from '~/types/chromeStorage';
 
@@ -22,8 +22,10 @@ import Info16Icon from '~/images/icons/Info16.svg';
 
 type ExportMnemonicDialogProps = Omit<DialogProps, 'children'> & { account: Account; popoverOnClose?: PopoverProps['onClose'] };
 
-export default function ExportMnemonicDialog({ onClose, account, ...remainder }: ExportMnemonicDialogProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+export default function DeleteDialog({ onClose, account, ...remainder }: ExportMnemonicDialogProps) {
+  const { chromeStorage } = useChromeStorage();
+
+  const { removeAccount } = useCurrentAccount();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -60,17 +62,7 @@ export default function ExportMnemonicDialog({ onClose, account, ...remainder }:
   const submit = async () => {
     setDisposableLoading(false);
 
-    if (account.id === chromeStorage.selectedAccountId) {
-      await setChromeStorage('selectedAccountId', chromeStorage.accounts?.[0]?.id ?? '');
-    }
-
-    const newAccounts = chromeStorage.accounts.filter((acc) => acc.id !== account.id);
-
-    await setChromeStorage('accounts', newAccounts);
-
-    if (newAccounts.length === 0) {
-      await openTab();
-    }
+    await removeAccount(account);
 
     handleOnClose();
 

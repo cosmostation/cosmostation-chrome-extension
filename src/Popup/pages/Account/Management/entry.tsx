@@ -22,6 +22,7 @@ export default function Entry() {
   const { accounts, accountName } = chromeStorage;
 
   const { t } = useTranslation();
+
   return (
     <Container>
       <ListContainer>

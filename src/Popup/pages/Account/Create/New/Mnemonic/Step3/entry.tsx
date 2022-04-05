@@ -7,7 +7,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -40,11 +40,11 @@ export default function Entry() {
 
   const newAccount = useRecoilValue(newMnemonicAccountState);
 
+  const { addAccount } = useCurrentAccount();
+
   const setLoadingOverlay = useLoadingOverlay();
 
   const { enqueueSnackbar } = useSnackbar();
-
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
 
   const setDisposableLoading = useSetRecoilState(disposableLoadingState);
 
@@ -101,19 +101,15 @@ export default function Entry() {
 
     const accountId = uuidv4();
 
-    await setChromeStorage('accounts', [
-      ...chromeStorage.accounts,
-      {
-        id: accountId,
-        type: 'MNEMONIC',
-        bip44: { addressIndex: `${addressIndex}` },
-        encryptedMnemonic: aesEncrypt(mnemonic, currentPassword!),
-        encryptedPassword: aesEncrypt(currentPassword!, mnemonic),
-        encryptedRestoreString: sha512(mnemonic),
-      },
-    ]);
-
-    await setChromeStorage('accountName', { ...chromeStorage.accountName, [accountId]: accountName });
+    await addAccount({
+      id: accountId,
+      type: 'MNEMONIC',
+      bip44: { addressIndex: `${addressIndex}` },
+      encryptedMnemonic: aesEncrypt(mnemonic, currentPassword!),
+      encryptedPassword: aesEncrypt(currentPassword!, mnemonic),
+      encryptedRestoreString: sha512(mnemonic),
+      name: accountName,
+    });
 
     setLoadingOverlay(false);
 
