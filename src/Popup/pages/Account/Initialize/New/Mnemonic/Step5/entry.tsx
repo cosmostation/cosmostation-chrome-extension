@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import Password from '~/Popup/pages/Account/Initialize/components/Password';
 import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
@@ -15,7 +14,6 @@ import { Container } from './styled';
 export default function Entry() {
   const { navigateBack, navigate } = useNavigate();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const setLoading = useLoadingOverlay();
 
   const newAccount = useRecoilValue(newMnemonicAccountState);
 
@@ -30,7 +28,6 @@ export default function Entry() {
     <Container>
       <Password
         onSubmit={async (data) => {
-          setLoading(true);
           const accountId = uuidv4();
 
           await setChromeStorage('encryptedPassword', sha512(data.password));
@@ -54,7 +51,6 @@ export default function Entry() {
           await setChromeStorage('selectedChainId', chromeStorage.allowedChainIds[0]);
 
           await setChromeStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
-          setLoading(false);
 
           navigate('/account/initialize/complete');
         }}

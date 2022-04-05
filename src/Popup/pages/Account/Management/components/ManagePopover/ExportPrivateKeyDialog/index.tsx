@@ -52,7 +52,9 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
   const submit = () => {
     const keyPair = getKeyPair(account, currentChain, password);
 
-    setPrivateKey(keyPair?.privateKey.toString('hex') ?? '');
+    const privatekey = keyPair?.privateKey.toString('hex');
+
+    setPrivateKey(privatekey ? `0x${privatekey}` : '');
   };
 
   const handleOnClose = () => {
