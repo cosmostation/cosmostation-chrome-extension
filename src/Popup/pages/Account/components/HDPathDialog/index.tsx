@@ -4,9 +4,12 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import type { DialogProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
+import { CHAINS } from '~/constants/chain';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
+import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { upperCaseFirst } from '~/Popup/utils/common';
 
 import {
   Container,
@@ -23,11 +26,6 @@ import {
 import type { HDPathForm } from './useSchema';
 import { useSchema } from './useSchema';
 
-const HD_PATH_INFOS = [
-  { name: 'Cosmos', path: "m/44'/118'/0'/0" },
-  { name: 'Ethereum', path: "m/44'/80'/0'/0" },
-];
-
 type HDPathDialogProps = Omit<DialogProps, 'children'> & {
   onSubmitHdPath?: (data: HDPathForm) => void;
   currentAddressIndex?: number;
@@ -36,10 +34,15 @@ type HDPathDialogProps = Omit<DialogProps, 'children'> & {
 export default function HDPathDialog({ onClose, onSubmitHdPath, currentAddressIndex, ...remainder }: HDPathDialogProps) {
   const [addressIndex, setAddressIndex] = useState(0);
 
+  const { currentAdditionalChains } = useCurrentAdditionalChains();
+
   const { hdPathForm } = useSchema();
 
   const { t } = useTranslation();
-
+  const hdPathInfos = [...CHAINS, ...currentAdditionalChains].map((item) => ({
+    name: upperCaseFirst(item.chainName),
+    path: `${item.bip44.purpose}/${item.bip44.coinType}/${item.bip44.account}/${item.bip44.change}`,
+  }));
   const {
     register,
     handleSubmit,
@@ -71,7 +74,7 @@ export default function HDPathDialog({ onClose, onSubmitHdPath, currentAddressIn
             <Typography variant="h6">{t('pages.Account.components.HDPathDialog.index.description')}</Typography>
           </DescriptionContainer>
           <InfoContainer>
-            {HD_PATH_INFOS.map((info) => (
+            {hdPathInfos.map((info) => (
               <InfoItemContainer key={info.name}>
                 <InfoItemLeftContainer>
                   <Typography variant="h5">{info.name}</Typography>
