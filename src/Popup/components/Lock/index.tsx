@@ -26,7 +26,7 @@ import type { PasswordForm } from './useSchema';
 import { useSchema } from './useSchema';
 
 import Cosmostation21Icon from '~/images/icons/Cosmostation21.svg';
-import Logo40Icon from '~/images/icons/Logo40.svg';
+import Logo40Icon from '~/images/icons/Logo40-2.svg';
 
 type LockProps = {
   children: JSX.Element;
