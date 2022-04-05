@@ -19,6 +19,7 @@ export const PATH = {
   ACCOUNT__MANAGEMENT: '/account/management',
   ACCOUNT__CREATE: '/account/create',
   ACCOUNT__INITIALIZE: '/account/initialize',
+  ACCOUNT__INITIALIZE__WELCOME: '/account/initialize/welcome',
   ACCOUNT__INITIALIZE__COMPLETE: '/account/initialize/complete',
   ACCOUNT__INITIALIZE__IMPORT: '/account/initialize/import',
   ACCOUNT__INITIALIZE__IMPORT__MNEMONIC: '/account/initialize/import/mnemonic',

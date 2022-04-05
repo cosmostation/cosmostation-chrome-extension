@@ -224,6 +224,14 @@
             }
           }
         },
+        "Welcome": {
+          "entry": {
+            "description1": "Gateway to the Interchain &",
+            "description2": "Ethereum ecosystem",
+            "startButton": "Start",
+            "title": "Welcome!"
+          }
+        },
         "components": {
           "Password": {
             "index": {

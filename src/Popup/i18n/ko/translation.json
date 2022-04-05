@@ -224,6 +224,14 @@
             }
           }
         },
+        "Welcome": {
+          "entry": {
+            "description1": "코스모스 & 이더리움 생태계를 위한",
+            "description2": "암호화폐 지갑입니다",
+            "startButton": "시작하기",
+            "title": "반갑습니다!"
+          }
+        },
         "components": {
           "Password": {
             "index": {

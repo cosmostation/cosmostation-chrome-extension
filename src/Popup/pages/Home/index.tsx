@@ -10,7 +10,7 @@ export default function HOME() {
 
   useEffect(() => {
     if (chromeStorage.accounts.length < 1) {
-      navigate('/account/initialize', { replace: true });
+      navigate('/account/initialize/welcome', { replace: true });
     } else if (rootPath) {
       navigate(rootPath, { replace: true });
     } else {

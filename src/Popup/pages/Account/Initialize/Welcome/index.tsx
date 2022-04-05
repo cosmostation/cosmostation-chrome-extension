@@ -1,7 +1,7 @@
 import Entry from './entry';
 import Layout from './layout';
 
-export default function Complete() {
+export default function Welcome() {
   return (
     <Layout>
       <Entry />

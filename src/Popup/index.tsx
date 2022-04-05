@@ -32,6 +32,7 @@ import AccountInitializeNewMnemonicStep2 from '~/Popup/pages/Account/Initialize/
 import AccountInitializeNewMnemonicStep3 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step3';
 import AccountInitializeNewMnemonicStep4 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step4';
 import AccountInitializeNewMnemonicStep5 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step5';
+import AccountInitializeWelcome from '~/Popup/pages/Account/Initialize/Welcome';
 import AccountManagement from '~/Popup/pages/Account/Management';
 import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
@@ -82,6 +83,7 @@ function Popup() {
               {chromeStorage.accounts.length === 0 ? (
                 <>
                   <Route path={PATH.ACCOUNT__INITIALIZE} element={<AccountInitialize />} />
+                  <Route path={PATH.ACCOUNT__INITIALIZE__WELCOME} element={<AccountInitializeWelcome />} />
                   <Route path={PATH.ACCOUNT__INITIALIZE__IMPORT} element={<AccountInitializeImport />} />
                   <Route path={PATH.ACCOUNT__INITIALIZE__IMPORT__MNEMONIC} element={<AccountInitializeImportMnemonic />} />
                   <Route path={PATH.ACCOUNT__INITIALIZE__IMPORT__PRIVATE_KEY} element={<AccountInitializeImportPrivateKey />} />
