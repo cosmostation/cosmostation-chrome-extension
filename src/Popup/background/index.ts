@@ -23,7 +23,7 @@ import { requestRPC } from './ethereum';
 import { tenAddChainParamsSchema, tenSignAminoParamsSchema } from './joiSchema';
 
 function background() {
-  chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, sender, sendResponse) => {
+  chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, _, sendResponse) => {
     sendResponse();
 
     if (request?.type === MESSAGE_TYPE.REQUEST__CONTENT_SCRIPT_TO_BACKGROUND) {
