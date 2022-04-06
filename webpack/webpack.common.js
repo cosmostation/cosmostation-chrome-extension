@@ -13,10 +13,6 @@ module.exports = {
     contentScript: path.join(srcDir, 'Scripts/contentScript.ts'),
     injectScript: { import: path.join(srcDir, 'Scripts/injectScript.ts') },
   },
-  output: {
-    path: path.join(__dirname, '../dist/js'),
-    filename: '[name].js',
-  },
   optimization: {
     splitChunks: {
       name: 'vendor',
