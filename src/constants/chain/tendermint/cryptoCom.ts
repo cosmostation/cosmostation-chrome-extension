@@ -15,7 +15,7 @@ export const CRYPTO_COM: TendermintChain = {
   decimals: 8,
   bip44: {
     purpose: "44'",
-    coinType: "118'",
+    coinType: "394'",
     account: "0'",
     change: '0',
   },

@@ -15,7 +15,7 @@ export const KAVA: TendermintChain = {
   decimals: 6,
   bip44: {
     purpose: "44'",
-    coinType: "118'",
+    coinType: "459'",
     account: "0'",
     change: '0',
   },

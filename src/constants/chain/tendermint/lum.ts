@@ -15,7 +15,7 @@ export const LUM: TendermintChain = {
   decimals: 6,
   bip44: {
     purpose: "44'",
-    coinType: "118'",
+    coinType: "880'",
     account: "0'",
     change: '0',
   },

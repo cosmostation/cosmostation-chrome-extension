@@ -159,12 +159,12 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
       </FourthLineContainer>
       <ButtonContainer>
-        <Button Icon={SendIcon} typoVarient="h5" disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/send')}>
-          {t('pages.Wallet.components.tendermint.NativeChainCard.index.sendButton')}
-        </Button>
-        <ButtonCenterContainer />
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
           {t('pages.Wallet.components.tendermint.NativeChainCard.index.depositButton')}
+        </Button>
+        <ButtonCenterContainer />
+        <Button Icon={SendIcon} typoVarient="h5" disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/send')}>
+          {t('pages.Wallet.components.tendermint.NativeChainCard.index.sendButton')}
         </Button>
       </ButtonContainer>
     </Container>
