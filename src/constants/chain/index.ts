@@ -59,7 +59,6 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   RIZON,
   IRIS,
   CRESCENT,
-  CERBERUS,
   STARGAZE,
   CHIHUAHUA,
   CERBERUS,
