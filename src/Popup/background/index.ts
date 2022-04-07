@@ -1,7 +1,7 @@
 import '~/Popup/i18n/background';
 
 import { TENDERMINT_CHAINS } from '~/constants/chain';
-import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
@@ -51,7 +51,7 @@ function background() {
             const tendermintAdditionalChains = additionalChains.filter((item) => item.line === 'TENDERMINT') as TendermintChain[];
 
             if (tendermintPopupMethods.includes(method)) {
-              if (method === 'ten_requestAccounts') {
+              if (method === 'ten_requestAccount') {
                 const { params } = message;
 
                 const allChains = [...TENDERMINT_CHAINS, ...tendermintAdditionalChains];
@@ -105,21 +105,6 @@ function background() {
                 }
               }
 
-              if (method === 'ten_supportedChainNames') {
-                const official = TENDERMINT_CHAINS.map((item) => item.chainName);
-
-                const unofficial = additionalChains.map((item) => item.chainName);
-
-                responseToWeb({
-                  response: {
-                    result: { official, unofficial },
-                  },
-                  message,
-                  messageId,
-                  origin,
-                });
-              }
-
               if (method === 'ten_signAmino') {
                 const { params } = message;
 
@@ -143,7 +128,59 @@ function background() {
             }
 
             if (tendermintNoPopupMethods.includes(message.method)) {
-              throw new TendermintRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
+              if (method === 'ten_supportedChainNames') {
+                const official = TENDERMINT_CHAINS.map((item) => item.chainName);
+
+                const unofficial = additionalChains.map((item) => item.chainName);
+
+                responseToWeb({
+                  response: {
+                    result: { official, unofficial },
+                  },
+                  message,
+                  messageId,
+                  origin,
+                });
+              }
+
+              if (method === 'ten_account') {
+                const { params } = message;
+
+                const allChains = [...TENDERMINT_CHAINS, ...tendermintAdditionalChains];
+
+                if (!allChains.map((item) => item.chainName).includes(params?.chainName)) {
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                }
+
+                const chain = allChains.find((item) => item.chainName === message.params.chainName);
+
+                if (
+                  chain?.id &&
+                  [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain?.id) &&
+                  currentAccountAllowedOrigins.includes(origin) &&
+                  password
+                ) {
+                  const keyPair = getKeyPair(currentAccount, chain, password);
+                  const address = getAddress(chain, keyPair?.publicKey);
+
+                  const publicKey = keyPair?.publicKey.toString('hex');
+
+                  responseToWeb({
+                    response: {
+                      result: { address, publicKey },
+                    },
+                    message,
+                    messageId,
+                    origin,
+                  });
+                } else {
+                  if (!currentAccountAllowedOrigins.includes(origin) || !password) {
+                    throw new TendermintRPCError(RPC_ERROR.UNAUTHORIZED, TENDERMINT_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED]);
+                  }
+
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                }
+              }
             }
           } catch (e) {
             if (e instanceof TendermintRPCError) {

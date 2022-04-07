@@ -80,7 +80,7 @@ import type {
 
               if (data.response?.error) {
                 rej(data.response.error);
-              } else if (data.message.method === 'ten_requestAccounts') {
+              } else if (data.message.method === 'ten_requestAccount' || data.message.method === 'ten_account') {
                 const { publicKey } = data.response.result as { publicKey: string; address: string };
 
                 res({ ...(data.response.result as { publicKey: string; address: string }), publicKey: new Uint8Array(Buffer.from(publicKey, 'hex')) });
@@ -92,28 +92,13 @@ import type {
 
           window.addEventListener('message', handler);
 
-          if (message.method === 'ten_test') {
-            const { params } = message;
-
-            const newParams = { ddd: Buffer.from(params.ddd).toString('hex') };
-            const newMessage = { ...message, params: newParams };
-
-            window.postMessage({
-              isCosmostation: true,
-              line: LINE_TYPE.TENDERMINT,
-              type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
-              messageId,
-              message: newMessage,
-            });
-          } else {
-            window.postMessage({
-              isCosmostation: true,
-              line: LINE_TYPE.TENDERMINT,
-              type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
-              messageId,
-              message,
-            });
-          }
+          window.postMessage({
+            isCosmostation: true,
+            line: LINE_TYPE.TENDERMINT,
+            type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+            messageId,
+            message,
+          });
         }),
     },
   };

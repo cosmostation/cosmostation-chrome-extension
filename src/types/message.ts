@@ -8,7 +8,7 @@ import type {
   EthSendTransactionRequestMessage,
   EthSignRequestMessage,
 } from './ethereum/message';
-import type { TenAddChain, TenRequestAccounts, TenSignAmino, TenSignDirect, TenSupportedChainNames, TenTest } from './tendermint/message';
+import type { TenAccount, TenAddChain, TenRequestAccount, TenSignAmino, TenSignDirect, TenSupportedChainNames } from './tendermint/message';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type ListenerType = ValueOf<typeof LISTENER_TYPE>;
@@ -27,7 +27,7 @@ export type EthereumRequestMessage =
   | EthGetBalanceRequestMessage
   | EthRequestAccounts;
 
-export type TendermintRequestMessage = TenRequestAccounts | TenAddChain | TenTest | TenSignAmino | TenSignDirect | TenSupportedChainNames;
+export type TendermintRequestMessage = TenRequestAccount | TenAddChain | TenSignAmino | TenSignDirect | TenSupportedChainNames | TenAccount;
 
 export type RequestMessage = EthereumRequestMessage | TendermintRequestMessage;
 

@@ -6,14 +6,24 @@ import type { SignAminoDoc } from '~/types/tendermint/amino';
 export type TendermintNoPopupMethodType = ValueOf<typeof TENDERMINT_NO_POPUP_METHOD_TYPE>;
 export type TendermintPopupMethodType = ValueOf<typeof TENDERMINT_POPUP_METHOD_TYPE>;
 
+// no popup
+
 export type TenSupportedChainNames = {
-  method: typeof TENDERMINT_POPUP_METHOD_TYPE.TEN__SUPPORTED_CHAIN_NAMES;
+  method: typeof TENDERMINT_NO_POPUP_METHOD_TYPE.TEN__SUPPORTED_CHAIN_NAMES;
   params?: undefined;
   id?: number | string;
 };
 
-export type TenRequestAccounts = {
-  method: typeof TENDERMINT_POPUP_METHOD_TYPE.TEN__REQUEST_ACCOUNTS;
+export type TenAccount = {
+  method: typeof TENDERMINT_NO_POPUP_METHOD_TYPE.TEN__ACCOUNT;
+  params: { chainName: string };
+  id?: number | string;
+};
+
+// popup
+
+export type TenRequestAccount = {
+  method: typeof TENDERMINT_POPUP_METHOD_TYPE.TEN__REQUEST_ACCOUNT;
   params: { chainName: string };
   id?: number | string;
 };
@@ -50,11 +60,5 @@ export type TenSignAmino = {
 export type TenSignDirect = {
   method: typeof TENDERMINT_POPUP_METHOD_TYPE.TEN__SIGN_DIRECT;
   params: { chainName: string; doc: SignDirectDoc };
-  id?: number | string;
-};
-
-export type TenTest = {
-  method: typeof TENDERMINT_POPUP_METHOD_TYPE.TEN__TEST;
-  params: { ddd: Uint8Array };
   id?: number | string;
 };

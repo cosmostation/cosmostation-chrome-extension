@@ -31,7 +31,7 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
   const currentTendermintAdditionalChainNames = currentTendermintAdditionalChains.map((item) => item.chainName);
 
   if (
-    currentQueue?.message.method === 'ten_requestAccounts' &&
+    currentQueue?.message.method === 'ten_requestAccount' &&
     !allowedChains.includes(currentQueue?.message.params.chainName) &&
     !currentTendermintAdditionalChainNames.includes(currentQueue?.message.params.chainName)
   ) {

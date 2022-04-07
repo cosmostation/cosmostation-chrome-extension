@@ -17,7 +17,7 @@ export default function Entry() {
   const { additionalChains } = chromeStorage;
 
   useEffect(() => {
-    if (currentQueue?.message.method === 'ten_requestAccounts' && currentPassword) {
+    if (currentQueue?.message.method === 'ten_requestAccount' && currentPassword) {
       const { message, messageId, origin } = currentQueue;
 
       const allChains = [...CHAINS, ...additionalChains];

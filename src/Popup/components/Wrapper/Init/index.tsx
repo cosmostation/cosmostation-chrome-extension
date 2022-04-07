@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 
+import { CHAINS } from '~/constants/chain';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeStorageState } from '~/Popup/recoils/chromeStorage';
@@ -17,6 +18,8 @@ export default function Init({ children }: InitType) {
   const setChromeStorage = useSetRecoilState(chromeStorageState);
 
   const { changeLanguage, language } = useTranslation();
+
+  const officialChainNames = CHAINS.map((item) => item.chainName);
 
   useEffect(() => {
     chrome.storage.onChanged.addListener(() => {
@@ -57,6 +60,12 @@ export default function Init({ children }: InitType) {
 
       if (!originChromeStorage.addressBook) {
         await setStorage('addressBook', []);
+      }
+
+      if (originChromeStorage.additionalChains.find((item) => officialChainNames.includes(item.chainName))) {
+        const newAdditionalChains = originChromeStorage.additionalChains.filter((item) => !officialChainNames.includes(item.chainName));
+
+        await setStorage('additionalChains', newAdditionalChains);
       }
 
       setIsLoading(false);

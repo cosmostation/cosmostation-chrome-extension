@@ -27,7 +27,7 @@ export default function Routes({ children }: RoutesType) {
 
   useEffect(() => {
     if (chromeStorage.queues.length > 0) {
-      if (chromeStorage.queues[0].message.method === 'ten_requestAccounts') {
+      if (chromeStorage.queues[0].message.method === 'ten_requestAccount') {
         navigate('/popup/request-account');
       }
 

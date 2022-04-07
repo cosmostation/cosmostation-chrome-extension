@@ -11,6 +11,7 @@ import { CERTIK } from './tendermint/certik';
 import { CHIHUAHUA } from './tendermint/chihuahua';
 import { COMDEX } from './tendermint/comdex';
 import { COSMOS } from './tendermint/cosmos';
+import { CRESCENT } from './tendermint/crescent';
 import { CRYPTO_COM } from './tendermint/cryptoCom';
 import { DESMOS } from './tendermint/desmos';
 import { EMONEY } from './tendermint/emoney';
@@ -57,6 +58,8 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   GRAVITY_BRIDGE,
   RIZON,
   IRIS,
+  CRESCENT,
+  CERBERUS,
   STARGAZE,
   CHIHUAHUA,
   CERBERUS,
