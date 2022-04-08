@@ -49,9 +49,8 @@
     },
     "Lock": {
       "index": {
+        "lostButton": "비밀번호를 잊어버렸나요?",
         "passwordPlaceholder": "비밀번호",
-        "restore1": "계정을",
-        "restore2": "복원하시겠습니까?",
         "unlockButton": "해제"
       }
     }

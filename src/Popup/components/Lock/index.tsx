@@ -97,10 +97,9 @@ export default function Lock({ children }: LockProps) {
 
               <ButtonContainer>
                 <RestoreContainer>
-                  <Typography variant="h6">{t('components.Lock.index.restore1')}&nbsp;</Typography>
                   <RestoreButton type="button" onClick={() => navigate('/restore')}>
                     <Typography variant="h6">
-                      <u>{t('components.Lock.index.restore2')}</u>
+                      <u>{t('components.Lock.index.lostButton')}</u>
                     </Typography>
                   </RestoreButton>
                 </RestoreContainer>

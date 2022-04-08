@@ -49,9 +49,8 @@
     },
     "Lock": {
       "index": {
+        "lostButton": "I lost my password",
         "passwordPlaceholder": "Password",
-        "restore1": "Do you need to",
-        "restore2": "restore account?",
         "unlockButton": "Unlock"
       }
     }
