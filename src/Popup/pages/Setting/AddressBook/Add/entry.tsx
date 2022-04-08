@@ -104,7 +104,7 @@ export default function Entry() {
 
         <StyledChainPopover
           marginThreshold={0}
-          currentChain={currentChain}
+          currentChain={chain}
           onClickChain={(clickedChain) => {
             setChain(clickedChain);
           }}
