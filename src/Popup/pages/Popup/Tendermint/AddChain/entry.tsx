@@ -13,7 +13,7 @@ import { upperCaseFirst } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { TendermintChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
-import type { TenAddChain } from '~/types/tendermint/message';
+import type { TenAddChain, TenAddChainResponse } from '~/types/tendermint/message';
 
 import {
   AccentSpan,
@@ -140,7 +140,7 @@ export default function Entry({ queue }: EntryProps) {
 
               responseToWeb({
                 response: {
-                  result: true,
+                  result: true as TenAddChainResponse,
                 },
                 message,
                 messageId,

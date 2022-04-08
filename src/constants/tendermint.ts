@@ -17,7 +17,7 @@ export const TENDERMINT_METHOD_TYPE = {
 
 export const PUBLIC_KEY_TYPE = {
   SECP256K1: 'tendermint/PubKeySecp256k1',
-};
+} as const;
 
 export const TENDERMINT_TYPE = {
   BASIC: '',

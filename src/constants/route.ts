@@ -48,4 +48,5 @@ export const PATH = {
   POPUP__REQUEST_ACCOUNT: '/popup/request-account',
   POPUP__TENDERMINT__ADD_CHAIN: '/popup/tendermint/add-chain',
   POPUP__TENDERMINT__SIGN__AMINO: '/popup/tendermint/sign/amino',
+  POPUP__TENDERMINT__SIGN__DIRECT: '/popup/tendermint/sign/direct',
 } as const;

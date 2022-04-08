@@ -15,12 +15,12 @@ import { responseToWeb } from '~/Popup/utils/message';
 import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType } from '~/types/chromeStorage';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
-import type { TenAddChainParams, TenSignAminoParams } from '~/types/tendermint/message';
+import type { TenAddChainParams, TenRequestAccountResponse, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
 import type { ThemeType } from '~/types/theme';
 
 import { chromeStorage } from './chromeStorage';
 import { requestRPC } from './ethereum';
-import { tenAddChainParamsSchema, tenSignAminoParamsSchema } from './joiSchema';
+import { tenAddChainParamsSchema, tenSignAminoParamsSchema, tenSignDirectParamsSchema } from './joiSchema';
 
 function background() {
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, _, sendResponse) => {
@@ -75,7 +75,7 @@ function background() {
 
                   responseToWeb({
                     response: {
-                      result: { address, publicKey },
+                      result: { address, publicKey } as unknown as TenRequestAccountResponse,
                     },
                     message,
                     messageId,
@@ -118,6 +118,27 @@ function background() {
 
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as TenSignAminoParams;
+
+                  await setStorage('queues', [...queues, { ...request, message: { ...request.message, method, params: validatedParams } }]);
+                  await openWindow();
+                } catch (err) {
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
+                }
+              }
+
+              if (method === 'ten_signDirect') {
+                const { params } = message;
+
+                const allChains = [...TENDERMINT_CHAINS, ...tendermintAdditionalChains];
+
+                const allChainNames = allChains.map((item) => item.chainName);
+
+                const chain = allChains.find((item) => item.chainName === message.params.chainName);
+
+                const schema = tenSignDirectParamsSchema(allChainNames, chain ? chain.chainId : '');
+
+                try {
+                  const validatedParams = (await schema.validateAsync(params)) as TenSignDirectParams;
 
                   await setStorage('queues', [...queues, { ...request, message: { ...request.message, method, params: validatedParams } }]);
                   await openWindow();
