@@ -174,7 +174,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
               const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
 
-              const signedDocHex = { ...doc, body_bytes: Buffer.from(bodyBytes).toString('hex'), auth_info_bytes: Buffer.from(authInfoBytes).toString() };
+              const signedDocHex = { ...doc, body_bytes: Buffer.from(bodyBytes).toString('hex'), auth_info_bytes: Buffer.from(authInfoBytes).toString('hex') };
               const pubKey = { type: publicKeyType, value: base64PublicKey };
 
               responseToWeb({

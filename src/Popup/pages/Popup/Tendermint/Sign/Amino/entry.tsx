@@ -139,7 +139,13 @@ export default function Entry({ queue, chain }: EntryProps) {
             onClick={async () => {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-              const signature = signAmino(tx, keyPair!.privateKey);
+              const signingMemo = isEditMemo ? memo : doc.memo;
+
+              const signingFee = isEditFee ? { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas } : doc.fee;
+
+              const signingDoc = { ...doc, memo: signingMemo, fee: signingFee };
+
+              const signature = signAmino(signingDoc, keyPair!.privateKey);
               const base64Signature = Buffer.from(signature).toString('base64');
 
               const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
@@ -151,7 +157,7 @@ export default function Entry({ queue, chain }: EntryProps) {
               if (channel) {
                 try {
                   const url = tendermintURL(chain).postBroadcast();
-                  const pTx = protoTx(tx, base64Signature, pubKey);
+                  const pTx = protoTx(signingDoc, base64Signature, pubKey);
 
                   const response = await broadcast(url, pTx);
 
@@ -173,7 +179,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     result: {
                       signature: base64Signature,
                       pub_key: pubKey,
-                      signed_doc: tx,
+                      signed_doc: signingDoc,
                     } as TenSignAminoResponse,
                   },
                   message,
