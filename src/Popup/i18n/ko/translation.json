@@ -48,6 +48,12 @@
       }
     },
     "Lock": {
+      "LostDialog": {
+        "index": {
+          "description": "비밀번호를 잊어버렸다면, 익스텐션을 지우고 재설치하세요. 재설치하게되면 리셋이 되니, 기존에 복원한 지갑들이 모두 사라집니다.",
+          "title": "니모닉을 반드시 백업해놓으세요!"
+        }
+      },
       "index": {
         "lostButton": "비밀번호를 잊어버렸나요?",
         "passwordPlaceholder": "비밀번호",

@@ -11,6 +11,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { sha512 } from '~/Popup/utils/crypto';
 
+import LostDialog from './LostDialog';
 import {
   ButtonContainer,
   Container,
@@ -37,6 +38,8 @@ export default function Lock({ children }: LockProps) {
   const { chromeStorage } = useChromeStorage();
   const { navigate } = useNavigate();
   const { passwordForm } = useSchema({ encryptedPassword: chromeStorage.encryptedPassword! });
+
+  const [isOpenedLostDialog, setIsOpenedLostDialog] = useState(false);
 
   const [password, setPassword] = useState('');
 
@@ -97,7 +100,7 @@ export default function Lock({ children }: LockProps) {
 
               <ButtonContainer>
                 <RestoreContainer>
-                  <RestoreButton type="button" onClick={() => navigate('/restore')}>
+                  <RestoreButton type="button" onClick={() => setIsOpenedLostDialog(true)}>
                     <Typography variant="h6">
                       <u>{t('components.Lock.index.lostButton')}</u>
                     </Typography>
@@ -107,6 +110,7 @@ export default function Lock({ children }: LockProps) {
               </ButtonContainer>
             </ContentContainer>
           </form>
+          <LostDialog open={isOpenedLostDialog} onClose={() => setIsOpenedLostDialog(false)} />
         </Container>
       </BaseLayout>
     );
