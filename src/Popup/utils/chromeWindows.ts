@@ -3,13 +3,28 @@ import { getStorage, setStorage } from './chromeStorage';
 export async function openWindow(): Promise<chrome.windows.Window | undefined> {
   const url = chrome.runtime.getURL('popup.html');
 
-  const windowId = await getStorage('windowId');
+  const queues = await getStorage('queues');
 
-  const currentWindow = windowId ? await getWindow(windowId) : undefined;
+  const currentWindowIds = queues.filter((item) => typeof item.windowId === 'number').map((item) => item.windowId) as number[];
+
+  const currentWindowId = await getStorage('windowId');
+
+  if (typeof currentWindowId === 'number') {
+    currentWindowIds.push(currentWindowId);
+  }
+
+  const windowIds = Array.from(new Set(currentWindowIds));
+
+  const currentWindows = windowIds
+    .map(async (item) => {
+      const window = await getWindow(item);
+      return window;
+    })
+    .filter((item) => item !== undefined) as Promise<chrome.windows.Window>[];
 
   return new Promise((res, rej) => {
-    if (currentWindow) {
-      res(currentWindow);
+    if (currentWindows.length > 0) {
+      res(currentWindows[0]);
       return;
     }
 

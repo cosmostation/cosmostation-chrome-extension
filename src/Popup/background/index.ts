@@ -8,12 +8,12 @@ import { PATH } from '~/constants/route';
 import { TENDERMINT_METHOD_TYPE, TENDERMINT_NO_POPUP_METHOD_TYPE, TENDERMINT_POPUP_METHOD_TYPE } from '~/constants/tendermint';
 import { getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
-import { openWindow } from '~/Popup/utils/chromeWindows';
+import { closeWindow, openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { EthereumRPCError, TendermintRPCError } from '~/Popup/utils/error';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { TendermintChain } from '~/types/chain';
-import type { CurrencyType, LanguageType } from '~/types/chromeStorage';
+import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
 import type { TenAddChainParams, TenRequestAccountResponse, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
 import type { ThemeType } from '~/types/theme';
@@ -340,14 +340,16 @@ function background() {
     }
   });
 
-  // chrome.storage.onChanged.addListener((changes) => {
-  //   // eslint-disable-next-line no-restricted-syntax
-  //   for (const [key, { newValue }] of Object.entries(changes)) {
-  //     if (key === 'queues') {
-  //       void chrome.browserAction.setBadgeText({ text: '1' });
-  //     }
-  //   }
-  // });
+  chrome.storage.onChanged.addListener((changes) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [key, { newValue }] of Object.entries(changes)) {
+      if (key === 'queues') {
+        const newQueues = newValue as Queue[] | undefined;
+        const text = newQueues ? `${newQueues.length > 0 ? newQueues.length : ''}` : '';
+        void chrome.action.setBadgeText({ text });
+      }
+    }
+  });
 
   chrome.windows.onRemoved.addListener((windowId) => {
     void (async function asyncHandler() {
@@ -378,6 +380,8 @@ function background() {
             messageId: queue.messageId,
             origin: queue.origin,
           });
+
+          void closeWindow(queue.windowId);
         });
 
         await setStorage('queues', []);
@@ -424,6 +428,9 @@ function background() {
       }
     })();
   });
+
+  void chrome.action.setBadgeBackgroundColor({ color: '#7C4FFC' });
+  void chrome.action.setBadgeText({ text: '' });
 }
 
 background();
