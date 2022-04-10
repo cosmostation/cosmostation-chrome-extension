@@ -82,8 +82,8 @@ function background() {
                     origin,
                   });
                 } else {
-                  await setStorage('queues', [...queues, request]);
-                  await openWindow();
+                  const window = await openWindow();
+                  await setStorage('queues', [...queues, { ...request, windowId: window?.id }]);
                 }
               }
 
@@ -98,8 +98,11 @@ function background() {
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as TenAddChainParams;
 
-                  await setStorage('queues', [...queues, { ...request, message: { ...request.message, method, params: validatedParams } }]);
-                  await openWindow();
+                  const window = await openWindow();
+                  await setStorage('queues', [
+                    ...queues,
+                    { ...request, message: { ...request.message, method, params: validatedParams }, windowId: window?.id },
+                  ]);
                 } catch (err) {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
                 }
@@ -119,8 +122,11 @@ function background() {
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as TenSignAminoParams;
 
-                  await setStorage('queues', [...queues, { ...request, message: { ...request.message, method, params: validatedParams } }]);
-                  await openWindow();
+                  const window = await openWindow();
+                  await setStorage('queues', [
+                    ...queues,
+                    { ...request, message: { ...request.message, method, params: validatedParams }, windowId: window?.id },
+                  ]);
                 } catch (err) {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
                 }
@@ -140,8 +146,11 @@ function background() {
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as TenSignDirectParams;
 
-                  await setStorage('queues', [...queues, { ...request, message: { ...request.message, method, params: validatedParams } }]);
-                  await openWindow();
+                  const window = await openWindow();
+                  await setStorage('queues', [
+                    ...queues,
+                    { ...request, message: { ...request.message, method, params: validatedParams }, windowId: window?.id },
+                  ]);
                 } catch (err) {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
                 }
@@ -342,12 +351,21 @@ function background() {
 
   chrome.windows.onRemoved.addListener((windowId) => {
     void (async function asyncHandler() {
+      const queues = await getStorage('queues');
+
+      const currentWindowIds = queues.filter((item) => typeof item.windowId === 'number').map((item) => item.windowId) as number[];
+
       const currentWindowId = await getStorage('windowId');
+
+      if (typeof currentWindowId === 'number') {
+        currentWindowIds.push(currentWindowId);
+      }
+
+      const windowIds = Array.from(new Set(currentWindowIds));
+
       await setStorage('windowId', null);
 
-      if (currentWindowId === windowId) {
-        const queues = await getStorage('queues');
-
+      if (windowIds.includes(windowId)) {
         queues.forEach((queue) => {
           responseToWeb({
             response: {

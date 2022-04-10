@@ -34,6 +34,7 @@ export type Account = AccountCommon & (MnemonicAccount | PrivateKeyAccount);
 
 export type Queue<T = RequestMessage> = {
   tabId?: number;
+  windowId?: number;
   origin: string;
   messageId: string;
   message: T;

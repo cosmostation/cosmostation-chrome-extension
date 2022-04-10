@@ -17,7 +17,7 @@ export function useCurrentQueue() {
     await setChromeStorage('queues', newQueues);
 
     if (newQueues.length === 0) {
-      await closeWindow();
+      await closeWindow(currentQueue?.windowId);
       navigate('/');
     }
 
