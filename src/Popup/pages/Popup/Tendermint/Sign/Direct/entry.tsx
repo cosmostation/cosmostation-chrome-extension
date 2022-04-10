@@ -3,6 +3,7 @@ import SwipeableViews from 'react-swipeable-views';
 import { Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
+import { DEFAULT_GAS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { PUBLIC_KEY_TYPE } from '~/constants/tendermint';
 import Button from '~/Popup/components/common/Button';
@@ -68,31 +69,35 @@ export default function Entry({ queue, chain }: EntryProps) {
   const decodedBodyBytes = cosmos.tx.v1beta1.TxBody.decode(body_bytes);
   const decodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.decode(auth_info_bytes);
 
-  const { messages } = decodedBodyBytes;
   const { fee } = decodedAuthInfoBytes;
 
-  const inputGas = fee?.gas_limit ? String(fee.gas_limit) : '0';
+  const inputGas = fee?.gas_limit ? String(fee.gas_limit) : DEFAULT_GAS;
   const inputFee = fee?.amount?.find((item) => item.denom === chain.baseDenom)?.amount || '0';
 
   const [gas, setGas] = useState(inputGas);
   const [baseFee, setBaseFee] = useState(inputFee);
   const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
 
-  const msgs = messages.map((item) => decodeProtobufMessage(item));
-
-  const tx = {
-    ...doc,
-    body_bytes: { ...decodedBodyBytes, memo, messages: msgs },
-    auth_info_bytes: fee
-      ? { ...decodedAuthInfoBytes, fee: { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas_limit: Number(gas) } }
-      : decodedAuthInfoBytes,
-  };
-
   const encodedBodyBytes = cosmos.tx.v1beta1.TxBody.encode({ ...decodedBodyBytes, memo }).finish();
   const encodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode({
     ...decodedAuthInfoBytes,
     fee: { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas_limit: Number(gas) },
   }).finish();
+
+  const bodyBytes = isEditMemo ? encodedBodyBytes : doc.body_bytes;
+  const authInfoBytes = isEditFee ? encodedAuthInfoBytes : doc.auth_info_bytes;
+
+  const decodedChangedBodyBytes = cosmos.tx.v1beta1.TxBody.decode(bodyBytes);
+  const decodedChangedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.decode(authInfoBytes);
+
+  const { messages } = decodedChangedBodyBytes;
+  const msgs = messages.map((item) => decodeProtobufMessage(item));
+
+  const tx = {
+    ...doc,
+    body_bytes: { ...decodedChangedBodyBytes, messages: msgs },
+    auth_info_bytes: decodedChangedAuthInfoBytes,
+  };
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -160,9 +165,6 @@ export default function Entry({ queue, chain }: EntryProps) {
           <Button
             onClick={async () => {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-
-              const bodyBytes = isEditMemo ? encodedBodyBytes : doc.body_bytes;
-              const authInfoBytes = isEditFee ? encodedAuthInfoBytes : doc.auth_info_bytes;
 
               const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
 

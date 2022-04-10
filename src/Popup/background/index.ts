@@ -343,6 +343,7 @@ function background() {
   chrome.windows.onRemoved.addListener((windowId) => {
     void (async function asyncHandler() {
       const currentWindowId = await getStorage('windowId');
+      await setStorage('windowId', null);
 
       if (currentWindowId === windowId) {
         const queues = await getStorage('queues');

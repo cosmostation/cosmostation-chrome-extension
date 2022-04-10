@@ -73,7 +73,11 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [baseFee, setBaseFee] = useState(inputFee);
   const [memo, setMemo] = useState(doc.memo);
 
-  const tx = { ...doc, memo, fee: { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas } };
+  const signingMemo = isEditMemo ? memo : doc.memo;
+
+  const signingFee = isEditFee ? { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas } : doc.fee;
+
+  const tx = { ...doc, memo: signingMemo, fee: signingFee };
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -139,13 +143,7 @@ export default function Entry({ queue, chain }: EntryProps) {
             onClick={async () => {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-              const signingMemo = isEditMemo ? memo : doc.memo;
-
-              const signingFee = isEditFee ? { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas } : doc.fee;
-
-              const signingDoc = { ...doc, memo: signingMemo, fee: signingFee };
-
-              const signature = signAmino(signingDoc, keyPair!.privateKey);
+              const signature = signAmino(tx, keyPair!.privateKey);
               const base64Signature = Buffer.from(signature).toString('base64');
 
               const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
@@ -157,7 +155,7 @@ export default function Entry({ queue, chain }: EntryProps) {
               if (channel) {
                 try {
                   const url = tendermintURL(chain).postBroadcast();
-                  const pTx = protoTx(signingDoc, base64Signature, pubKey);
+                  const pTx = protoTx(tx, base64Signature, pubKey);
 
                   const response = await broadcast(url, pTx);
 
@@ -179,7 +177,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     result: {
                       signature: base64Signature,
                       pub_key: pubKey,
-                      signed_doc: signingDoc,
+                      signed_doc: tx,
                     } as TenSignAminoResponse,
                   },
                   message,

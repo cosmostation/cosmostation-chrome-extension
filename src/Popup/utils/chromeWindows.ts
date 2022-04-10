@@ -27,6 +27,7 @@ export async function openWindow(): Promise<chrome.windows.Window | undefined> {
 
 export async function closeWindow(): Promise<void> {
   const windowId = await getStorage('windowId');
+  await setStorage('windowId', null);
 
   const currentWindow = windowId ? await getWindow(windowId) : undefined;
 
