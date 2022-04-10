@@ -1,6 +1,3 @@
-export type SignDirectDoc = {
-  chain_id: string;
-  body_bytes: Uint8Array;
-  auth_info_bytes: Uint8Array;
-  account_number: string;
-};
+import type { PUBLIC_KEY_TYPE } from '~/constants/tendermint';
+
+export type PublicKeyType = ValueOf<typeof PUBLIC_KEY_TYPE>;

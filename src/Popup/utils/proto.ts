@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-import { isSend } from '~/Popup/utils/tendermint';
+import { isAminoSend } from '~/Popup/utils/tendermint';
+import { cosmos, google } from '~/proto/cosmos.js';
 import type { PubKey, TxPayload } from '~/types/proto';
 import type { Msg, MsgSend, SignAminoDoc } from '~/types/tendermint/amino';
-
-import { cosmos, google } from '../../proto/cosmos';
+import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend } from '~/types/tendermint/proto';
 
 export function convertAminoMessageToProto(msg: Msg) {
-  if (isSend(msg)) {
+  if (isAminoSend(msg)) {
     return convertAminoSendMessageToProto(msg);
   }
 
@@ -94,4 +94,20 @@ export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey)
 
 export function broadcast(url: string, body: unknown) {
   return axios.post<TxPayload>(url, body);
+}
+
+export function decodeProtobufMessage(msg: google.protobuf.IAny) {
+  if (msg.type_url === '/cosmos.bank.v1beta1.MsgSend') {
+    return { type_url: msg.type_url, value: cosmos.bank.v1beta1.MsgSend.decode(msg.value!) } as ProtoMsg<ProtoMsgSend>;
+  }
+
+  return { ...msg, value: msg.value ? Buffer.from(msg.value).toString('hex') : '' } as ProtoMsg<string>;
+}
+
+export function isDirectSend(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgSend> {
+  return msg.type_url === '/cosmos.bank.v1beta1.MsgSend';
+}
+
+export function isDirectCustom(msg: ProtoMsg): msg is ProtoMsg {
+  return true;
 }

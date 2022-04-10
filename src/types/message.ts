@@ -43,8 +43,8 @@ export type WebToContentScriptEventMessage<T> = {
   message: T;
 };
 
-export type ContentScriptToWebEventMessage<T, U> = Omit<WebToContentScriptEventMessage<T>, 'line'> & {
-  response: U;
+export type ContentScriptToWebEventMessage<T, U> = Omit<WebToContentScriptEventMessage<U>, 'line'> & {
+  response: T;
 };
 
 /** Content Script <-> Background 통신 타입 정의 */
@@ -56,9 +56,9 @@ export type ContentScriptToBackgroundEventMessage<T> = {
   message: T;
 };
 
-export type BackgroundToContentScriptEventMessage<T, U> = Omit<ContentScriptToBackgroundEventMessage<T>, 'line'> & {
+export type BackgroundToContentScriptEventMessage<T, U> = Omit<ContentScriptToBackgroundEventMessage<U>, 'line'> & {
   tabId?: number;
-  response: U;
+  response: T;
 };
 
 /** Background <-> Popup 통신 타입 정의 */

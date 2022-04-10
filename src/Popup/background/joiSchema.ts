@@ -2,7 +2,8 @@ import Joi from '~/Popup/utils/joi';
 import type { GasRate } from '~/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint/amino';
 import type { Amount } from '~/types/tendermint/common';
-import type { TenAddChainParams, TenSignAminoParams } from '~/types/tendermint/message';
+import type { TenAddChainParams, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
+import type { SignDirectDoc } from '~/types/tendermint/proto';
 
 export const tenAddChainParamsSchema = (chainNames: string[]) =>
   Joi.object<TenAddChainParams>({
@@ -37,13 +38,17 @@ export const tenAddChainParamsSchema = (chainNames: string[]) =>
       .optional(),
   });
 
-export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) =>
-  Joi.object<TenSignAminoParams>({
+export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) => {
+  const splitedChainId = chainId.split('-');
+  const prefixChainId = splitedChainId[0] ?? '';
+  const chainIdRegex = new RegExp(`^${prefixChainId ? `${prefixChainId}-` : ''}(.*)$`);
+
+  return Joi.object<TenSignAminoParams>({
     chainName: Joi.string()
       .valid(...chainNames)
       .required(),
     doc: Joi.object<SignAminoDoc>({
-      chain_id: Joi.string().valid(chainId).required(),
+      chain_id: Joi.string().trim().pattern(chainIdRegex).required(),
       sequence: Joi.string().required(),
       account_number: Joi.string().required(),
       fee: Joi.object<Fee>({
@@ -63,3 +68,25 @@ export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) 
     isEditFee: Joi.boolean().default(false),
     isEditMemo: Joi.boolean().default(false),
   });
+};
+export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string) => {
+  const splitedChainId = chainId.split('-');
+
+  const prefixChainId = splitedChainId[0] ?? '';
+
+  const chainIdRegex = new RegExp(`^${prefixChainId ? `${prefixChainId}-` : ''}(.*)$`);
+
+  return Joi.object<TenSignDirectParams>({
+    chainName: Joi.string()
+      .valid(...chainNames)
+      .required(),
+    doc: Joi.object<SignDirectDoc>({
+      chain_id: Joi.string().trim().pattern(chainIdRegex).required(),
+      account_number: Joi.string().required(),
+      auth_info_bytes: Joi.string().hex().required(),
+      body_bytes: Joi.string().hex().required(),
+    }).required(),
+    isEditFee: Joi.boolean().default(false),
+    isEditMemo: Joi.boolean().default(false),
+  });
+};

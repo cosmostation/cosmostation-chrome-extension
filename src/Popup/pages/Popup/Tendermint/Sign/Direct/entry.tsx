@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import SwipeableViews from 'react-swipeable-views';
-import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
+import { DEFAULT_GAS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { PUBLIC_KEY_TYPE } from '~/constants/tendermint';
 import Button from '~/Popup/components/common/Button';
@@ -14,11 +14,12 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { getKeyPair, upperCaseFirst } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
-import { broadcast, protoTx } from '~/Popup/utils/proto';
-import { signAmino, tendermintURL } from '~/Popup/utils/tendermint';
+import { decodeProtobufMessage } from '~/Popup/utils/proto';
+import { signDirect } from '~/Popup/utils/tendermint';
+import { cosmos } from '~/proto/cosmos.js';
 import type { TendermintChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
-import type { TenSignAmino, TenSignAminoResponse } from '~/types/tendermint/message';
+import type { TenSignDirect, TenSignDirectResponse } from '~/types/tendermint/message';
 
 import TxMessage from './components/TxMessage';
 import {
@@ -45,7 +46,7 @@ const a11yProps = (index: number) => ({
 });
 
 type EntryProps = {
-  queue: Queue<TenSignAmino>;
+  queue: Queue<TenSignDirect>;
   chain: TendermintChain;
 };
 
@@ -56,28 +57,47 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { deQueue } = useCurrentQueue();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
-  const { enqueueSnackbar } = useSnackbar();
 
-  const { message, messageId, origin, channel } = queue;
+  const { message, messageId, origin } = queue;
 
   const {
     params: { doc, chainName, isEditFee, isEditMemo },
   } = message;
 
-  const { fee, msgs } = doc;
+  const { auth_info_bytes, body_bytes } = doc;
 
-  const inputGas = fee.gas;
-  const inputFee = fee.amount.find((item) => item.denom === chain.baseDenom)?.amount || '0';
+  const decodedBodyBytes = cosmos.tx.v1beta1.TxBody.decode(body_bytes);
+  const decodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.decode(auth_info_bytes);
+
+  const { fee } = decodedAuthInfoBytes;
+
+  const inputGas = fee?.gas_limit ? String(fee.gas_limit) : DEFAULT_GAS;
+  const inputFee = fee?.amount?.find((item) => item.denom === chain.baseDenom)?.amount || '0';
 
   const [gas, setGas] = useState(inputGas);
   const [baseFee, setBaseFee] = useState(inputFee);
-  const [memo, setMemo] = useState(doc.memo);
+  const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
 
-  const signingMemo = isEditMemo ? memo : doc.memo;
+  const encodedBodyBytes = cosmos.tx.v1beta1.TxBody.encode({ ...decodedBodyBytes, memo }).finish();
+  const encodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode({
+    ...decodedAuthInfoBytes,
+    fee: { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas_limit: Number(gas) },
+  }).finish();
 
-  const signingFee = isEditFee ? { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas } : doc.fee;
+  const bodyBytes = isEditMemo ? encodedBodyBytes : doc.body_bytes;
+  const authInfoBytes = isEditFee ? encodedAuthInfoBytes : doc.auth_info_bytes;
 
-  const tx = { ...doc, memo: signingMemo, fee: signingFee };
+  const decodedChangedBodyBytes = cosmos.tx.v1beta1.TxBody.decode(bodyBytes);
+  const decodedChangedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.decode(authInfoBytes);
+
+  const { messages } = decodedChangedBodyBytes;
+  const msgs = messages.map((item) => decodeProtobufMessage(item));
+
+  const tx = {
+    ...doc,
+    body_bytes: { ...decodedChangedBodyBytes, messages: msgs },
+    auth_info_bytes: decodedChangedAuthInfoBytes,
+  };
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -110,9 +130,12 @@ export default function Entry({ queue, chain }: EntryProps) {
           <MemoContainer>
             <Memo memo={memo} onChange={(m) => setMemo(m)} isEdit={isEditMemo} />
           </MemoContainer>
-          <FeeContainer>
-            <Fee chain={chain} baseFee={baseFee} gas={gas} onChangeFee={(f) => setBaseFee(f)} onChangeGas={(g) => setGas(g)} isEdit={isEditFee} />
-          </FeeContainer>
+
+          {fee && (
+            <FeeContainer>
+              <Fee chain={chain} baseFee={baseFee} gas={gas} onChangeFee={(f) => setBaseFee(f)} onChangeGas={(g) => setGas(g)} isEdit={isEditFee} />
+            </FeeContainer>
+          )}
         </TabPanel>
         <TabPanel value={value} index={1} dir={theme.direction}>
           <Tx tx={tx} />
@@ -143,50 +166,33 @@ export default function Entry({ queue, chain }: EntryProps) {
             onClick={async () => {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-              const signature = signAmino(tx, keyPair!.privateKey);
+              const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
+
+              const signature = signDirect(signedDoc, keyPair!.privateKey);
+
               const base64Signature = Buffer.from(signature).toString('base64');
 
               const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
 
               const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
 
+              const signedDocHex = { ...doc, body_bytes: Buffer.from(bodyBytes).toString('hex'), auth_info_bytes: Buffer.from(authInfoBytes).toString('hex') };
               const pubKey = { type: publicKeyType, value: base64PublicKey };
 
-              if (channel) {
-                try {
-                  const url = tendermintURL(chain).postBroadcast();
-                  const pTx = protoTx(tx, base64Signature, pubKey);
+              responseToWeb({
+                response: {
+                  result: {
+                    signature: base64Signature,
+                    pub_key: pubKey,
+                    signed_doc: signedDocHex,
+                  } as unknown as TenSignDirectResponse,
+                },
+                message,
+                messageId,
+                origin,
+              });
 
-                  const response = await broadcast(url, pTx);
-
-                  const { code } = response.data.tx_response;
-
-                  if (code === 0) {
-                    enqueueSnackbar('success');
-                  } else {
-                    throw new Error(response.data.tx_response.raw_log);
-                  }
-                } catch (e) {
-                  enqueueSnackbar((e as { message: string }).message, { variant: 'error', autoHideDuration: 3000 });
-                } finally {
-                  await deQueue();
-                }
-              } else {
-                responseToWeb({
-                  response: {
-                    result: {
-                      signature: base64Signature,
-                      pub_key: pubKey,
-                      signed_doc: tx,
-                    } as TenSignAminoResponse,
-                  },
-                  message,
-                  messageId,
-                  origin,
-                });
-
-                await deQueue();
-              }
+              await deQueue();
             }}
           >
             Confirm

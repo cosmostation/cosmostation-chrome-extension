@@ -7,6 +7,7 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
+import type { TenRequestAccountResponse } from '~/types/tendermint/message';
 
 export default function Entry() {
   const { currentQueue, deQueue } = useCurrentQueue();
@@ -32,7 +33,7 @@ export default function Entry() {
 
         responseToWeb({
           response: {
-            result: { address, publicKey },
+            result: { address, publicKey } as unknown as TenRequestAccountResponse,
           },
           message,
           messageId,
