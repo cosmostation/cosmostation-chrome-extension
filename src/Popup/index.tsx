@@ -42,7 +42,6 @@ import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
 import PopupTendermintAddChain from '~/Popup/pages/Popup/Tendermint/AddChain';
 import PopupTendermintSignAmino from '~/Popup/pages/Popup/Tendermint/Sign/Amino';
 import PopupTendermintSignDirect from '~/Popup/pages/Popup/Tendermint/Sign/Direct';
-import Restore from '~/Popup/pages/Restore';
 import SettingAddressBook from '~/Popup/pages/Setting/AddressBook';
 import SettingAddressBookAdd from '~/Popup/pages/Setting/AddressBook/Add';
 import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
@@ -103,8 +102,6 @@ function Popup() {
                   <Route path={PATH.WALLET} element={<Wallet />} />
                   <Route path={PATH.WALLET__SEND} element={<WalletSend />} />
                   <Route path={PATH.WALLET__RECEIVE} element={<WalletReceive />} />
-
-                  <Route path={PATH.RESTORE} element={<Restore />} />
 
                   <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />
                   <Route path={PATH.SETTING__CHANGE_LANGUAGE} element={<SettingChangeLanguage />} />

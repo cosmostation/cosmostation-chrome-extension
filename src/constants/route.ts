@@ -37,7 +37,6 @@ export const PATH = {
   ACCOUNT__CREATE__IMPORT__MNEMONIC: '/account/create/import/mnemonic',
   ACCOUNT__CREATE__IMPORT__PRIVATE_KEY: '/account/create/import/private-key',
 
-  RESTORE: '/restore',
   REGISTER: '/register',
   REGISTER__PASSWORD: '/register/password',
   REGISTER__ACCOUNT: '/register/account',

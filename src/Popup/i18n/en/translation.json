@@ -48,10 +48,15 @@
       }
     },
     "Lock": {
+      "LostDialog": {
+        "index": {
+          "description": "In case of lost password: back up your mnemonic phrase, delete Cosmostation browser extension, then re-install it. (Current imported wallets will be disconnected)",
+          "title": "SAVE YOUR MNEMONICS!"
+        }
+      },
       "index": {
+        "lostButton": "I lost my password",
         "passwordPlaceholder": "Password",
-        "restore1": "Do you need to",
-        "restore2": "restore account?",
         "unlockButton": "Unlock"
       }
     }
