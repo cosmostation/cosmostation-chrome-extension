@@ -19,7 +19,8 @@ export const ValueContainer = styled('div')(({ theme }) => ({
 }));
 
 export const AmountInfoContainer = styled('div')({
-  marginTop: '1.6rem',
+  paddingTop: '0.4rem',
+  paddingBottom: '0.4rem',
   display: 'flex',
   justifyContent: 'space-between',
 });
