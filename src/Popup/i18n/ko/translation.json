@@ -303,20 +303,22 @@
                 "index": {
                   "copied": "복사되었습니다",
                   "done": "완료",
-                  "title": "개인키 추출"
+                  "title": "개인키 확인"
                 }
               },
               "index": {
                 "confirm": "확인",
+                "mnemonicWarning1": "이 개인키는",
+                "mnemonicWarning2": "지갑을 불러오는 데에만 사용됩니다.",
                 "placeholder": "비밀번호",
-                "title": "개인키 추출"
+                "title": "개인키 확인"
               }
             },
             "index": {
               "delete": "계정 삭제",
               "rename": "계정 이름 변경",
               "viewMnemonic": "니모닉 확인",
-              "viewPrivateKey": "개인키 추출"
+              "viewPrivateKey": "개인키 확인"
             }
           }
         },

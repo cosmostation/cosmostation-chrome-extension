@@ -14,9 +14,9 @@ type ChainButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<
   children?: string;
 };
 
-export default function ChainButton({ children, imgSrc, isActive = false, ...remainder }: ChainButtonProps) {
+export default function ChainButton({ children, imgSrc, type = 'button', isActive = false, ...remainder }: ChainButtonProps) {
   return (
-    <StyledButton {...remainder}>
+    <StyledButton {...remainder} type={type}>
       <ContentContainer>
         <ContentLeftImageContainer>
           <Image src={imgSrc} />
