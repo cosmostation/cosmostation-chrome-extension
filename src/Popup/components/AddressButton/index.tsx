@@ -8,7 +8,7 @@ export default function SelectButton({
   children,
   ...remainder
 }: Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & { children?: string }) {
-  const address = shorterAddress(children, 30);
+  const address = shorterAddress(children, 24);
 
   return (
     <StyledButton {...remainder}>
