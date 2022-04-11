@@ -308,8 +308,10 @@
               },
               "index": {
                 "confirm": "Confirm",
+                "mnemonicWarning1": "This private key can only be used to import your ",
+                "mnemonicWarning2": "wallet.",
                 "placeholder": "Password",
-                "title": "Export Private Key"
+                "title": "View Private Key"
               }
             },
             "index": {
