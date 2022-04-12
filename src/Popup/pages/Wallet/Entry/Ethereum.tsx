@@ -24,7 +24,7 @@ export default function Ethereum({ chain }: EthereumProps) {
           </Suspense>
         </ErrorBoundary>
       </NativeChainCardContainer>
-      {/* <IbcTokenList /> */}
+      {/* <IbcCoinList /> */}
     </Container>
   );
 }

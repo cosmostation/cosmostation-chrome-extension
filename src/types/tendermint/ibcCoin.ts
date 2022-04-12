@@ -4,7 +4,7 @@ type CounterParty = {
   port_id: string;
 };
 
-export type IbcToken = {
+export type IbcCoin = {
   hash: string;
   base_denom: string;
   display_denom?: string;
@@ -16,6 +16,6 @@ export type IbcToken = {
   auth?: boolean;
 };
 
-export type IbcTokenPayload = {
-  ibc_tokens: IbcToken[];
+export type IbcCoinPayload = {
+  ibc_tokens: IbcCoin[];
 };

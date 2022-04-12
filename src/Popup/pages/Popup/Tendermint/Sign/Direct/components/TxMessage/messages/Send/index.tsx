@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
-import { useIbcTokenSWR } from '~/Popup/hooks/SWR/tendermint/useIbcTokenSWR';
+import { useIbcCoinSWR } from '~/Popup/hooks/SWR/tendermint/useIbcCoinSWR';
 import { useMarketPriceSWR } from '~/Popup/hooks/SWR/tendermint/useMarketPriceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -32,7 +32,7 @@ type SendProps = {
 export default function Send({ msg, chain }: SendProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const ibcToken = useIbcTokenSWR(chain);
+  const ibcCoin = useIbcCoinSWR(chain);
   const marketPrice = useMarketPriceSWR();
 
   const { currency } = chromeStorage;
@@ -66,15 +66,15 @@ export default function Send({ msg, chain }: SendProps) {
           const itemBaseAmount = item.amount;
           const itemBaseDenom = item.denom;
 
-          const ibcTokenInfo = ibcToken.data?.ibc_tokens?.find((token) => token.hash === item.denom.replace('ibc/', ''));
+          const ibcCoinInfo = ibcCoin.data?.ibc_tokens?.find((token) => token.hash === item.denom.replace('ibc/', ''));
 
           const itemDisplayAmount = (function getDisplayAmount() {
             if (itemBaseDenom === baseDenom) {
               return toDisplayDenomAmount(itemBaseAmount, decimals);
             }
 
-            if (ibcTokenInfo?.decimal) {
-              return toDisplayDenomAmount(itemBaseAmount, ibcTokenInfo.decimal);
+            if (ibcCoinInfo?.decimal) {
+              return toDisplayDenomAmount(itemBaseAmount, ibcCoinInfo.decimal);
             }
 
             return itemBaseAmount || '0';
@@ -85,8 +85,8 @@ export default function Send({ msg, chain }: SendProps) {
               return displayDenom.toUpperCase();
             }
 
-            if (ibcTokenInfo?.display_denom) {
-              return ibcTokenInfo.display_denom.toUpperCase();
+            if (ibcCoinInfo?.display_denom) {
+              return ibcCoinInfo.display_denom.toUpperCase();
             }
 
             return item.denom.length > 5 ? `${item.denom.substring(0, 5)}...` : item.denom;
@@ -98,9 +98,9 @@ export default function Send({ msg, chain }: SendProps) {
               return times(itemDisplayAmount, chainPrice);
             }
 
-            if (ibcTokenInfo?.base_denom) {
+            if (ibcCoinInfo?.base_denom) {
               const chainPrice =
-                marketPrice.data?.find((p) => p.denom === ibcTokenInfo.base_denom)?.prices?.find((p) => p.currency === 'usd')?.current_price || 0;
+                marketPrice.data?.find((p) => p.denom === ibcCoinInfo.base_denom)?.prices?.find((p) => p.currency === 'usd')?.current_price || 0;
               const tetherPrice = coinGeckoPrice.data?.tether?.[currency] || 0;
 
               return times(itemDisplayAmount, chainPrice * tetherPrice, 2);

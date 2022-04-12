@@ -5,7 +5,7 @@ import Empty from '~/Popup/components/common/Empty';
 import type { TendermintChain } from '~/types/chain';
 
 import Header from '../components/Header';
-import IbcTokenList from '../components/tendermint/IbcTokenList';
+import IbcCoinList from '../components/tendermint/IbcCoinList';
 import NativeChainCard, { NativeChainCardSkeleton } from '../components/tendermint/NativeChainCard';
 import { Container, HeaderContainer, NativeChainCardContainer } from '../styled';
 
@@ -28,7 +28,7 @@ export default function Tendermint({ chain }: TendermintProps) {
       </NativeChainCardContainer>
       <ErrorBoundary fallback={<Empty />}>
         <Suspense fallback={null}>
-          <IbcTokenList chain={chain} />
+          <IbcCoinList chain={chain} />
         </Suspense>
       </ErrorBoundary>
     </Container>

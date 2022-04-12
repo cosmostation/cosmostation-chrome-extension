@@ -1,8 +1,8 @@
 import { Typography } from '@mui/material';
 
 import { useBalanceSWR } from '~/Popup/hooks/SWR/tendermint/useBalanceSWR';
-import { useIbcTokenSWR } from '~/Popup/hooks/SWR/tendermint/useIbcTokenSWR';
-import IbcTokenItem from '~/Popup/pages/Wallet/components/tendermint/IbcTokenList/components/IbcTokenItem';
+import { useIbcCoinSWR } from '~/Popup/hooks/SWR/tendermint/useIbcCoinSWR';
+import IbcCoinItem from '~/Popup/pages/Wallet/components/tendermint/IbcCoinList/components/IbcCoinItem';
 import type { TendermintChain } from '~/types/chain';
 
 import { Container, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
@@ -11,17 +11,17 @@ type EntryProps = {
   chain: TendermintChain;
 };
 
-export default function IbcTokenList({ chain }: EntryProps) {
+export default function IbcCoinList({ chain }: EntryProps) {
   const balance = useBalanceSWR(chain, true);
-  const ibcToken = useIbcTokenSWR(chain, true);
+  const ibcCoin = useIbcCoinSWR(chain, true);
 
-  const ibcTokenArray = ibcToken.data?.ibc_tokens?.map((token) => token.hash) || [];
+  const ibcCoinArray = ibcCoin.data?.ibc_tokens?.map((token) => token.hash) || [];
 
   const tokens =
     balance.data?.balance
-      ?.filter((token) => ibcTokenArray.includes(token.denom.replace('ibc/', '')))
+      ?.filter((token) => ibcCoinArray.includes(token.denom.replace('ibc/', '')))
       .map((token) => {
-        const tokenInfo = ibcToken.data?.ibc_tokens?.find((item) => item.hash === token.denom.replace('ibc/', ''));
+        const tokenInfo = ibcCoin.data?.ibc_tokens?.find((item) => item.hash === token.denom.replace('ibc/', ''));
         return { balance: token, tokenInfo };
       }) || [];
 
@@ -45,7 +45,7 @@ export default function IbcTokenList({ chain }: EntryProps) {
       </ListTitleContainer>
       <ListContainer>
         {sortedTokens.map((token) => (
-          <IbcTokenItem
+          <IbcCoinItem
             key={token.tokenInfo?.hash}
             amount={token.balance.amount}
             channel={token.tokenInfo?.channel_id}
