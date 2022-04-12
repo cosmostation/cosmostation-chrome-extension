@@ -1,7 +1,6 @@
 import { Typography } from '@mui/material';
 
-import { useBalanceSWR } from '~/Popup/hooks/SWR/tendermint/useBalanceSWR';
-import { useIbcCoinSWR } from '~/Popup/hooks/SWR/tendermint/useIbcCoinSWR';
+import { useCoinListSWR } from '~/Popup/hooks/SWR/tendermint/useCoinListSWR';
 import IbcCoinItem from '~/Popup/pages/Wallet/components/tendermint/IbcCoinList/components/IbcCoinItem';
 import type { TendermintChain } from '~/types/chain';
 
@@ -12,47 +11,36 @@ type EntryProps = {
 };
 
 export default function IbcCoinList({ chain }: EntryProps) {
-  const balance = useBalanceSWR(chain, true);
-  const ibcCoin = useIbcCoinSWR(chain, true);
+  const { coins, ibcCoins } = useCoinListSWR(chain, true);
 
-  const ibcCoinArray = ibcCoin.data?.ibc_tokens?.map((token) => token.hash) || [];
+  const sortedCoins = [...coins, ...ibcCoins.sort((item) => (item.auth ? -1 : 1))];
 
-  const tokens =
-    balance.data?.balance
-      ?.filter((token) => ibcCoinArray.includes(token.denom.replace('ibc/', '')))
-      .map((token) => {
-        const tokenInfo = ibcCoin.data?.ibc_tokens?.find((item) => item.hash === token.denom.replace('ibc/', ''));
-        return { balance: token, tokenInfo };
-      }) || [];
+  const coinLength = sortedCoins.length;
 
-  const tokensLength = tokens.length;
-
-  if (tokensLength < 1) {
+  if (coinLength < 1) {
     return null;
   }
-
-  const sortedTokens = tokens.sort((a) => (a.tokenInfo?.auth ? -1 : 1));
 
   return (
     <Container>
       <ListTitleContainer>
         <ListTitleLeftContainer>
-          <Typography variant="h6">IBC Tokens</Typography>
+          <Typography variant="h6">Coins</Typography>
         </ListTitleLeftContainer>
         <ListTitleRightContainer>
-          <Typography variant="h6">{tokensLength}</Typography>
+          <Typography variant="h6">{coinLength}</Typography>
         </ListTitleRightContainer>
       </ListTitleContainer>
       <ListContainer>
-        {sortedTokens.map((token) => (
+        {sortedCoins.map((item) => (
           <IbcCoinItem
-            key={token.tokenInfo?.hash}
-            amount={token.balance.amount}
-            channel={token.tokenInfo?.channel_id}
-            decimals={token.tokenInfo?.decimal}
-            baseDenom={token.tokenInfo?.base_denom}
-            displayDenom={token.tokenInfo?.display_denom}
-            imageURL={token.tokenInfo?.moniker}
+            key={item.baseDenom}
+            amount={item.totalAmount}
+            channel={item.channelId}
+            decimals={item.decimals}
+            baseDenom={item.baseDenom}
+            displayDenom={item.displayDenom}
+            imageURL={item.imageURL}
           />
         ))}
       </ListContainer>

@@ -1,5 +1,7 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import hardImg from '~/images/symbols/hard.png';
 import kavaImg from '~/images/symbols/kava.png';
+import swpImg from '~/images/symbols/swp.png';
 import type { TendermintChain } from '~/types/chain';
 
 export const KAVA: TendermintChain = {
@@ -29,3 +31,50 @@ export const KAVA: TendermintChain = {
   },
   gas: { send: '400000' },
 };
+
+const imageURL = 'https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/kava/';
+
+export const KAVA_COINS = [
+  {
+    baseDenom: 'hard',
+    decimals: 6,
+    displayDenom: 'hard',
+    imageURL: hardImg,
+  },
+  {
+    baseDenom: 'swp',
+    decimals: 6,
+    displayDenom: 'swp',
+    imageURL: swpImg,
+  },
+  {
+    baseDenom: 'udsx',
+    decimals: 6,
+    displayDenom: 'udsx',
+    imageURL: `${imageURL}/udsx.png`,
+  },
+  {
+    baseDenom: 'busd',
+    decimals: 8,
+    displayDenom: 'busd',
+    imageURL: `${imageURL}/busd.png`,
+  },
+  {
+    baseDenom: 'xrpb',
+    decimals: 8,
+    displayDenom: 'xrpb',
+    imageURL: `${imageURL}/xrpb.png`,
+  },
+  {
+    baseDenom: 'btcb',
+    decimals: 8,
+    displayDenom: 'btcb',
+    imageURL: `${imageURL}/btcb.png`,
+  },
+  {
+    baseDenom: 'bnb',
+    decimals: 8,
+    displayDenom: 'bnb',
+    imageURL: `${imageURL}/bnb.png`,
+  },
+] as const;
