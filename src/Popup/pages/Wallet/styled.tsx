@@ -21,3 +21,11 @@ export const NativeChainCardContainer = styled('div')({
 
   flexShrink: 0,
 });
+
+export const BottomContainer = styled('div')({
+  marginTop: '1.6rem',
+
+  display: 'flex',
+  flexDirection: 'column',
+  overflow: 'hidden',
+});

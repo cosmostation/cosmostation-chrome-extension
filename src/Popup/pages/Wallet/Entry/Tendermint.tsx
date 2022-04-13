@@ -7,7 +7,7 @@ import type { TendermintChain } from '~/types/chain';
 import Header from '../components/Header';
 import IbcCoinList from '../components/tendermint/IbcCoinList';
 import NativeChainCard, { NativeChainCardSkeleton } from '../components/tendermint/NativeChainCard';
-import { Container, HeaderContainer, NativeChainCardContainer } from '../styled';
+import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
 
 type TendermintProps = {
   chain: TendermintChain;
@@ -26,11 +26,13 @@ export default function Tendermint({ chain }: TendermintProps) {
           </Suspense>
         </ErrorBoundary>
       </NativeChainCardContainer>
-      <ErrorBoundary fallback={<Empty />}>
-        <Suspense fallback={null}>
-          <IbcCoinList chain={chain} />
-        </Suspense>
-      </ErrorBoundary>
+      <BottomContainer>
+        <ErrorBoundary fallback={<Empty />}>
+          <Suspense fallback={null}>
+            <IbcCoinList chain={chain} />
+          </Suspense>
+        </ErrorBoundary>
+      </BottomContainer>
     </Container>
   );
 }
