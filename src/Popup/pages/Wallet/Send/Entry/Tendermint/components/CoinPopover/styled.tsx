@@ -19,6 +19,7 @@ export const Container = styled('div')({
   display: 'grid',
   gridTemplateColumns: '1fr',
   rowGap: '0.8rem',
+  overflow: 'auto',
 });
 
 type CoinButtonProps = {
@@ -41,6 +42,10 @@ export const CoinButton = styled('button')<CoinButtonProps>(({ theme, ...props }
   alignItems: 'center',
 
   cursor: 'pointer',
+
+  '&:hover': {
+    backgroundColor: theme.colors.base03,
+  },
 }));
 
 export const CoinLeftContainer = styled('div')({
@@ -77,6 +82,7 @@ export const CoinRightContainer = styled('div')(({ theme }) => ({
   '& > svg': {
     '& > path': {
       stroke: theme.colors.base06,
+      fill: theme.colors.base06,
     },
   },
 }));

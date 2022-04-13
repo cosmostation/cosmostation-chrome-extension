@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
@@ -23,6 +24,14 @@ import Check16Icon from '~/images/icons/Check16.svg';
 type CoinPopoverProps = Omit<PopoverProps, 'children'> & { currentCoinInfo: CoinInfo; coinInfos: CoinInfo[]; onClickCoin?: (coinInfo: CoinInfo) => void };
 
 export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, onClose, ...remainder }: CoinPopoverProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (remainder.open) {
+      setTimeout(() => ref.current?.scrollIntoView(), 0);
+    }
+  }, [remainder.open]);
+
   return (
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
@@ -37,6 +46,7 @@ export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, o
               type="button"
               key={item.baseDenom}
               data-is-active={isActive ? 1 : 0}
+              ref={isActive ? ref : undefined}
               onClick={() => {
                 onClickCoin?.(item);
                 onClose?.({}, 'backdropClick');

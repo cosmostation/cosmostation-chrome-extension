@@ -12,7 +12,19 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   borderRadius: '0.8rem',
 
-  // cursor: 'pointer',
+  cursor: 'pointer',
+
+  '&:disabled': {
+    cursor: 'default',
+
+    '&:hover': {
+      backgroundColor: theme.colors.base02,
+    },
+  },
+
+  '&:hover': {
+    backgroundColor: theme.colors.base03,
+  },
 
   // '&:hover': {
   //   border: `0.1rem solid ${theme.colors.base04}`,

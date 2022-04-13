@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { DEFAULT_GAS } from '~/constants/chain';
@@ -51,6 +52,7 @@ export default function Tendermint({ chain }: TendermintProps) {
   const coinList = useCoinListSWR(chain, true);
   const accounts = useAccounts(true);
   const { enQueue } = useCurrentQueue();
+  const params = useParams();
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
@@ -77,7 +79,7 @@ export default function Tendermint({ chain }: TendermintProps) {
     ...filteredCoinList,
   ];
 
-  const [currentCoinBaseDenom, setCurrentCoinBaseDenom] = useState(chain.baseDenom);
+  const [currentCoinBaseDenom, setCurrentCoinBaseDenom] = useState(params.coin || chain.baseDenom);
 
   const [currentGas, setCurrentGas] = useState(sendGas);
   const [currentFee, setCurrentFee] = useState(times(sendGas, gasRate.low));
