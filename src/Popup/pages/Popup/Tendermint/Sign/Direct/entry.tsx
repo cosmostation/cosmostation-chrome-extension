@@ -20,6 +20,7 @@ import { cosmos } from '~/proto/cosmos.js';
 import type { TendermintChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { TenSignDirect, TenSignDirectResponse } from '~/types/tendermint/message';
+import type { SignDirectDoc } from '~/types/tendermint/proto';
 
 import TxMessage from './components/TxMessage';
 import {
@@ -179,13 +180,15 @@ export default function Entry({ queue, chain }: EntryProps) {
               const signedDocHex = { ...doc, body_bytes: Buffer.from(bodyBytes).toString('hex'), auth_info_bytes: Buffer.from(authInfoBytes).toString('hex') };
               const pubKey = { type: publicKeyType, value: base64PublicKey };
 
+              const result: TenSignDirectResponse = {
+                signature: base64Signature,
+                pub_key: pubKey,
+                signed_doc: signedDocHex as unknown as SignDirectDoc,
+              };
+
               responseToWeb({
                 response: {
-                  result: {
-                    signature: base64Signature,
-                    pub_key: pubKey,
-                    signed_doc: signedDocHex,
-                  } as unknown as TenSignDirectResponse,
+                  result,
                 },
                 message,
                 messageId,

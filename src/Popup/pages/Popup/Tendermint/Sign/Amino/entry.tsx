@@ -172,13 +172,15 @@ export default function Entry({ queue, chain }: EntryProps) {
                   await deQueue();
                 }
               } else {
+                const result: TenSignAminoResponse = {
+                  signature: base64Signature,
+                  pub_key: pubKey,
+                  signed_doc: tx,
+                };
+
                 responseToWeb({
                   response: {
-                    result: {
-                      signature: base64Signature,
-                      pub_key: pubKey,
-                      signed_doc: tx,
-                    } as TenSignAminoResponse,
+                    result,
                   },
                   message,
                   messageId,
