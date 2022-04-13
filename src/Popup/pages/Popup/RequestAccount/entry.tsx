@@ -31,9 +31,11 @@ export default function Entry() {
 
         const publicKey = keyPair?.publicKey.toString('hex');
 
+        const result: TenRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccount.name };
+
         responseToWeb({
           response: {
-            result: { address, publicKey } as unknown as TenRequestAccountResponse,
+            result,
           },
           message,
           messageId,

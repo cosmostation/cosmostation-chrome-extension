@@ -138,9 +138,11 @@ export default function Entry({ queue }: EntryProps) {
 
               await setChromeStorage('additionalChains', [...filteredAdditionalChains, newChain]);
 
+              const result: TenAddChainResponse = true;
+
               responseToWeb({
                 response: {
-                  result: true as TenAddChainResponse,
+                  result,
                 },
                 message,
                 messageId,

@@ -8,6 +8,7 @@ export async function chromeStorage() {
 
   const {
     accounts,
+    accountName,
     selectedAccountId,
     additionalEthereumNetworks,
     encryptedPassword,
@@ -19,6 +20,7 @@ export async function chromeStorage() {
   } = storage;
 
   const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
+  const currentAccountName = accountName[selectedAccountId];
 
   const currentEthereumNetwork = (() => {
     const ethereumNetworks = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks];
@@ -62,6 +64,7 @@ export async function chromeStorage() {
     accounts,
     storage,
     currentAccount,
+    currentAccountName,
     currentEthereumNetwork,
     currentAllowedChains,
     currentAccountAllowedOrigins,

@@ -21,7 +21,7 @@ export type TenAccount = {
   id?: number | string;
 };
 
-export type TenAccountResponse = { publicKey: Uint8Array; address: string };
+export type TenAccountResponse = { publicKey: Uint8Array; address: string; name: string };
 
 // popup
 

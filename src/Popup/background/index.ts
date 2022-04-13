@@ -15,7 +15,7 @@ import { responseToWeb } from '~/Popup/utils/message';
 import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
-import type { TenAddChainParams, TenRequestAccountResponse, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
+import type { TenAccountResponse, TenAddChainParams, TenRequestAccountResponse, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
 import type { ThemeType } from '~/types/theme';
 
 import { chromeStorage } from './chromeStorage';
@@ -42,7 +42,8 @@ function background() {
 
             const { method } = message;
 
-            const { currentAccount, additionalChains, queues, currentAllowedChains, currentAccountAllowedOrigins, password, accounts } = await chromeStorage();
+            const { currentAccount, currentAccountName, additionalChains, queues, currentAllowedChains, currentAccountAllowedOrigins, password, accounts } =
+              await chromeStorage();
 
             if (accounts.length === 0) {
               throw new TendermintRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
@@ -73,9 +74,11 @@ function background() {
 
                   const publicKey = keyPair?.publicKey.toString('hex');
 
+                  const result: TenRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
+
                   responseToWeb({
                     response: {
-                      result: { address, publicKey } as unknown as TenRequestAccountResponse,
+                      result,
                     },
                     message,
                     messageId,
@@ -195,9 +198,11 @@ function background() {
 
                   const publicKey = keyPair?.publicKey.toString('hex');
 
+                  const result: TenAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
+
                   responseToWeb({
                     response: {
-                      result: { address, publicKey },
+                      result,
                     },
                     message,
                     messageId,
