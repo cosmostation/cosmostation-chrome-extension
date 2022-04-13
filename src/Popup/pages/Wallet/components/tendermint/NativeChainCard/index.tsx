@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
@@ -24,6 +24,7 @@ import {
   ButtonCenterContainer,
   ButtonContainer,
   Container,
+  ExpandedButton,
   FirstLineContainer,
   FirstLineLeftContainer,
   FirstLineRightContainer,
@@ -36,10 +37,14 @@ import {
   SecondLineLeftImageContainer,
   SecondLineLeftTextContainer,
   SecondLineRightContainer,
+  StyledAccordion,
+  StyledAccordionDetails,
+  StyledAccordionSummary,
   StyledIconButton,
   ThirdLineContainer,
 } from './styled';
 
+import BottomArrow20Icon from '~/images/icons/BottomArrow20.svg';
 import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import SendIcon from '~/images/icons/Send.svg';
@@ -48,12 +53,18 @@ type NativeChainCardProps = {
   chain: TendermintChain;
 };
 
+const EXPANDED_KEY = 'wallet-tendermint-expanded';
+
 export default function NativeChainCard({ chain }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
   const accounts = useAccounts(true);
   const { totalAmount, delegationAmount, rewardAmount, unbondingAmount, vestingNotDelegate, vestingRelatedAvailable } = useAmountSWR(chain, true);
   const { data } = useCoinGeckoPriceSWR();
+
+  const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
+
+  const [expanded, setExpanded] = useState(storageExpanded);
 
   const { t } = useTranslation();
 
@@ -109,58 +120,65 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
           {value}
         </Number>
       </ThirdLineContainer>
-      <FourthLineContainer>
-        <FourthLineContainerItem>
-          <FourthLineContainerItemLeft>
-            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.available')}</Typography>
-          </FourthLineContainerItemLeft>
-          <FourthLineContainerItemRight>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
-              {toDisplayDenomAmount(vestingRelatedAvailable, decimals)}
-            </Number>
-          </FourthLineContainerItemRight>
-        </FourthLineContainerItem>
-        <FourthLineContainerItem>
-          <FourthLineContainerItemLeft>
-            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.delegated')}</Typography>
-          </FourthLineContainerItemLeft>
-          <FourthLineContainerItemRight>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
-              {toDisplayDenomAmount(delegationAmount, decimals)}
-            </Number>
-          </FourthLineContainerItemRight>
-        </FourthLineContainerItem>
-        <FourthLineContainerItem>
-          <FourthLineContainerItemLeft>
-            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.unbonding')}</Typography>
-          </FourthLineContainerItemLeft>
-          <FourthLineContainerItemRight>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
-              {toDisplayDenomAmount(unbondingAmount, decimals)}
-            </Number>
-          </FourthLineContainerItemRight>
-        </FourthLineContainerItem>
-        <FourthLineContainerItem>
-          <FourthLineContainerItemLeft>
-            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.reward')}</Typography>
-          </FourthLineContainerItemLeft>
-          <FourthLineContainerItemRight>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
-              {toDisplayDenomAmount(rewardAmount, decimals)}
-            </Number>
-          </FourthLineContainerItemRight>
-        </FourthLineContainerItem>
-        <FourthLineContainerItem>
-          <FourthLineContainerItemLeft>
-            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.vesting')}</Typography>
-          </FourthLineContainerItemLeft>
-          <FourthLineContainerItemRight>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
-              {toDisplayDenomAmount(vestingNotDelegate, decimals)}
-            </Number>
-          </FourthLineContainerItemRight>
-        </FourthLineContainerItem>
-      </FourthLineContainer>
+
+      <StyledAccordion expanded={expanded}>
+        <StyledAccordionSummary />
+        <StyledAccordionDetails>
+          <FourthLineContainer>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.available')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
+                  {toDisplayDenomAmount(vestingRelatedAvailable, decimals)}
+                </Number>
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.delegated')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
+                  {toDisplayDenomAmount(delegationAmount, decimals)}
+                </Number>
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.unbonding')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
+                  {toDisplayDenomAmount(unbondingAmount, decimals)}
+                </Number>
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.reward')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
+                  {toDisplayDenomAmount(rewardAmount, decimals)}
+                </Number>
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.vesting')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
+                  {toDisplayDenomAmount(vestingNotDelegate, decimals)}
+                </Number>
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+          </FourthLineContainer>
+        </StyledAccordionDetails>
+      </StyledAccordion>
+
       <ButtonContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
           {t('pages.Wallet.components.tendermint.NativeChainCard.index.depositButton')}
@@ -170,6 +188,19 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
           {t('pages.Wallet.components.tendermint.NativeChainCard.index.sendButton')}
         </Button>
       </ButtonContainer>
+
+      <ExpandedButton
+        data-is-expanded={expanded ? 1 : 0}
+        type="button"
+        onClick={() => {
+          setExpanded((prev) => {
+            localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
+            return !prev;
+          });
+        }}
+      >
+        <BottomArrow20Icon />
+      </ExpandedButton>
     </Container>
   );
 }
@@ -182,6 +213,8 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
   const { currentPassword } = useCurrentPassword();
 
   const { explorerURL } = chain;
+
+  const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -235,48 +268,55 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
       <ThirdLineContainer>
         <Skeleton width="8rem" height="1.9rem" />
       </ThirdLineContainer>
-      <FourthLineContainer>
-        <FourthLineContainerItem>
-          <FourthLineContainerItemLeft>
-            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.available')}</Typography>
-          </FourthLineContainerItemLeft>
-          <FourthLineContainerItemRight>
-            <Skeleton width="8rem" height="1.9rem" />
-          </FourthLineContainerItemRight>
-        </FourthLineContainerItem>
-        <FourthLineContainerItem>
-          <FourthLineContainerItemLeft>
-            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.delegated')}</Typography>
-          </FourthLineContainerItemLeft>
-          <FourthLineContainerItemRight>
-            <Skeleton width="8rem" height="1.9rem" />
-          </FourthLineContainerItemRight>
-        </FourthLineContainerItem>
-        <FourthLineContainerItem>
-          <FourthLineContainerItemLeft>
-            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.unbonding')}</Typography>
-          </FourthLineContainerItemLeft>
-          <FourthLineContainerItemRight>
-            <Skeleton width="8rem" height="1.9rem" />
-          </FourthLineContainerItemRight>
-        </FourthLineContainerItem>
-        <FourthLineContainerItem>
-          <FourthLineContainerItemLeft>
-            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.reward')}</Typography>
-          </FourthLineContainerItemLeft>
-          <FourthLineContainerItemRight>
-            <Skeleton width="8rem" height="1.9rem" />
-          </FourthLineContainerItemRight>
-        </FourthLineContainerItem>
-        <FourthLineContainerItem>
-          <FourthLineContainerItemLeft>
-            <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.vesting')}</Typography>
-          </FourthLineContainerItemLeft>
-          <FourthLineContainerItemRight>
-            <Skeleton width="8rem" height="1.9rem" />
-          </FourthLineContainerItemRight>
-        </FourthLineContainerItem>
-      </FourthLineContainer>
+
+      <StyledAccordion expanded={storageExpanded}>
+        <StyledAccordionSummary />
+        <StyledAccordionDetails>
+          <FourthLineContainer>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.available')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.delegated')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.unbonding')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.reward')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.vesting')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+          </FourthLineContainer>
+        </StyledAccordionDetails>
+      </StyledAccordion>
+
       <ButtonContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.tendermint.NativeChainCard.index.depositButton')}
@@ -286,6 +326,10 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
           {t('pages.Wallet.components.tendermint.NativeChainCard.index.sendButton')}
         </Button>
       </ButtonContainer>
+
+      <ExpandedButton data-is-expanded={storageExpanded ? 1 : 0} type="button">
+        <BottomArrow20Icon />
+      </ExpandedButton>
     </Container>
   );
 }
