@@ -100,7 +100,9 @@ function Popup() {
                   <Route path={PATH.DASHBOARD} element={<Dashboard />} />
 
                   <Route path={PATH.WALLET} element={<Wallet />} />
-                  <Route path={PATH.WALLET__SEND} element={<WalletSend />} />
+                  <Route path={PATH.WALLET__SEND} element={<WalletSend />}>
+                    <Route path=":coin" element={<WalletSend />} />
+                  </Route>
                   <Route path={PATH.WALLET__RECEIVE} element={<WalletReceive />} />
 
                   <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />

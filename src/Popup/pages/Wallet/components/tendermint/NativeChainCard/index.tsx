@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
@@ -12,9 +13,11 @@ import { useAmountSWR } from '~/Popup/hooks/SWR/tendermint/useAmountSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import type { TendermintChain } from '~/types/chain';
 
 import {
@@ -174,13 +177,47 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
 export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
   const { t } = useTranslation();
 
+  const { currentAccount } = useCurrentAccount();
+
+  const { currentPassword } = useCurrentPassword();
+
+  const { explorerURL } = chain;
+
+  const address = useMemo(() => {
+    const key = `${currentAccount.id}${chain.id}`;
+
+    const storageAddress = localStorage.getItem(key);
+
+    if (storageAddress) {
+      return storageAddress;
+    }
+
+    const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+
+    return getAddress(chain, keyPair?.publicKey);
+  }, [chain, currentAccount, currentPassword]);
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleOnClickCopy = () => {
+    if (copy(address)) {
+      enqueueSnackbar(t('pages.Wallet.components.tendermint.NativeChainCard.index.copied'));
+    }
+  };
+
   return (
     <Container>
       <FirstLineContainer>
         <FirstLineLeftContainer>
-          <Skeleton width="12rem" height="2.4rem" />
+          <AddressButton onClick={handleOnClickCopy}>{address}</AddressButton>
         </FirstLineLeftContainer>
-        <FirstLineRightContainer />
+        <FirstLineRightContainer>
+          {explorerURL && (
+            <StyledIconButton onClick={() => window.open(`${explorerURL}/account/${address}`)}>
+              <ExplorerIcon />
+            </StyledIconButton>
+          )}
+        </FirstLineRightContainer>
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
@@ -241,12 +278,12 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
         </FourthLineContainerItem>
       </FourthLineContainer>
       <ButtonContainer>
-        <Button Icon={SendIcon} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.tendermint.NativeChainCard.index.sendButton')}
-        </Button>
-        <ButtonCenterContainer />
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.tendermint.NativeChainCard.index.depositButton')}
+        </Button>
+        <ButtonCenterContainer />
+        <Button Icon={SendIcon} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.tendermint.NativeChainCard.index.sendButton')}
         </Button>
       </ButtonContainer>
     </Container>

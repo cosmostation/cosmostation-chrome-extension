@@ -29,9 +29,10 @@ type ChainItemProps = {
   channel?: string;
   imageURL?: string;
   onClick?: () => void;
+  disabled?: boolean;
 };
 
-export default function ChainItem({ imageURL, amount, decimals = 0, baseDenom, displayDenom, channel, onClick }: ChainItemProps) {
+export default function ChainItem({ disabled, imageURL, amount, decimals = 0, baseDenom, displayDenom, channel, onClick }: ChainItemProps) {
   const { chromeStorage } = useChromeStorage();
   const { data } = useCoinGeckoPriceSWR(true);
 
@@ -46,7 +47,7 @@ export default function ChainItem({ imageURL, amount, decimals = 0, baseDenom, d
   const value = times(displayAmount, chainPrice * tetherPrice, 2);
 
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton onClick={onClick} disabled={disabled}>
       <LeftContainer>
         <LeftImageContainer>
           <Image src={imageURL} defaultImgSrc={ibcUnauthImg} />

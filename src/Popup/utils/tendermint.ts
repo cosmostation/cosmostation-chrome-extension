@@ -11,7 +11,7 @@ import type { Msg, MsgCustom, MsgSend, SignAminoDoc } from '~/types/tendermint/a
 import type { SignDirectDoc } from '~/types/tendermint/proto';
 
 export function tendermintURL(chain: TendermintChain) {
-  const { restURL } = chain;
+  const { restURL, chainName } = chain;
 
   return {
     getNodeInfo: () => `${restURL}/node_info`,
@@ -21,6 +21,7 @@ export function tendermintURL(chain: TendermintChain) {
     getUndelegations: (address: string) => `${restURL}/staking/delegators/${address}/unbonding_delegations`,
     getAccount: (address: string) => `${restURL}/auth/accounts/${address}`,
     getWithdrawAddress: (address: string) => `${restURL}/distribution/delegators/${address}/withdraw_address`,
+    getIncentive: (address: string) => (chainName === 'kava' ? `${restURL}/incentive/rewards?owner=${address}` : ''),
     postBroadcast: () => `${restURL}/cosmos/tx/v1beta1/txs`,
   };
 }

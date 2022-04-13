@@ -1,8 +1,6 @@
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
-  marginTop: '1.6rem',
-
   display: 'flex',
   paddingBottom: '1.6rem',
   flexDirection: 'column',

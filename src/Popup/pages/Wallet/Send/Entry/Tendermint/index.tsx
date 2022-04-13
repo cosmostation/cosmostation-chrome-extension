@@ -1,25 +1,35 @@
 import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { DEFAULT_GAS } from '~/constants/chain';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/common/IconButton';
+import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Fee from '~/Popup/components/Fee';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/tendermint/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/tendermint/useAmountSWR';
+import type { CoinInfo } from '~/Popup/hooks/SWR/tendermint/useCoinListSWR';
+import { useCoinListSWR } from '~/Popup/hooks/SWR/tendermint/useCoinListSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { TendermintChain } from '~/types/chain';
 
+import CoinPopover from './components/CoinPopover';
 import {
-  AvailableContainer,
   BottomContainer,
+  CoinButton,
+  CoinLeftAvailableContainer,
+  CoinLeftContainer,
+  CoinLeftDisplayDenomContainer,
+  CoinLeftImageContainer,
+  CoinLeftInfoContainer,
+  CoinRightContainer,
   Container,
-  DisplayDenomContainer,
   MarginTop8Div,
   MarginTop12Div,
   MarginTop16Div,
@@ -29,6 +39,7 @@ import {
 } from './styled';
 
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
+import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
 
 type TendermintProps = {
   chain: TendermintChain;
@@ -37,16 +48,38 @@ type TendermintProps = {
 export default function Tendermint({ chain }: TendermintProps) {
   const { currentAccount } = useCurrentAccount();
   const account = useAccountSWR(chain, true);
-  const { vestingRelatedAvailable } = useAmountSWR(chain, true);
+  const { vestingRelatedAvailable, totalAmount } = useAmountSWR(chain, true);
+  const coinList = useCoinListSWR(chain, true);
   const accounts = useAccounts(true);
+  const { enQueue } = useCurrentQueue();
+  const params = useParams();
+
+  const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const isOpenPopover = Boolean(popoverAnchorEl);
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
-
-  const { enQueue } = useCurrentQueue();
 
   const { decimals, gas, gasRate } = chain;
 
   const sendGas = gas.send || DEFAULT_GAS;
+
+  const authIbcCoins = coinList.ibcCoins.filter((item) => item.auth);
+
+  const filteredCoinList = [...coinList.coins, ...authIbcCoins].filter((item) => gt(item.availableAmount, '0'));
+
+  const availableCoinList: CoinInfo[] = [
+    {
+      availableAmount: vestingRelatedAvailable,
+      totalAmount,
+      decimals: chain.decimals,
+      imageURL: chain.imageURL,
+      displayDenom: chain.displayDenom,
+      baseDenom: chain.baseDenom,
+    },
+    ...filteredCoinList,
+  ];
+
+  const [currentCoinBaseDenom, setCurrentCoinBaseDenom] = useState(params.coin || chain.baseDenom);
 
   const [currentGas, setCurrentGas] = useState(sendGas);
   const [currentFee, setCurrentFee] = useState(times(sendGas, gasRate.low));
@@ -64,14 +97,35 @@ export default function Tendermint({ chain }: TendermintProps) {
 
   const addressRegex = useMemo(() => new RegExp(`^${chain.bech32Prefix.address}(.{39,39})$`), [chain.bech32Prefix.address]);
 
+  const currentCoin = availableCoinList.find((item) => item.baseDenom === currentCoinBaseDenom)!;
+
+  const currentCoinDisplayDenom = currentCoin.displayDenom?.toUpperCase();
+  const currentCoinDisplayAmount = toDisplayDenomAmount(currentCoin.availableAmount, currentCoin.decimals || 0);
+
   const isPossibleSend = useMemo(
     () =>
-      currentDisplayAmount &&
-      gte(displayAvailable, plus(currentDisplayAmount, DisplayFee)) &&
-      !!currentAddress &&
-      address !== currentAddress &&
+      ((chain.baseDenom === currentCoin.baseDenom &&
+        currentDisplayAmount &&
+        gte(displayAvailable, plus(currentDisplayAmount, DisplayFee)) &&
+        !!currentAddress &&
+        address !== currentAddress) ||
+        (chain.baseDenom !== currentCoin.baseDenom &&
+          currentDisplayAmount &&
+          gte(displayAvailable, DisplayFee) &&
+          gte(currentCoinDisplayAmount, currentDisplayAmount))) &&
+      gt(currentDisplayAmount, '0') &&
       addressRegex.test(currentAddress),
-    [DisplayFee, address, addressRegex, currentAddress, currentDisplayAmount, displayAvailable],
+    [
+      DisplayFee,
+      address,
+      addressRegex,
+      currentAddress,
+      currentDisplayAmount,
+      currentCoinDisplayAmount,
+      displayAvailable,
+      chain.baseDenom,
+      currentCoin.baseDenom,
+    ],
   );
 
   return (
@@ -91,16 +145,44 @@ export default function Tendermint({ chain }: TendermintProps) {
         />
       </div>
       <MarginTop8Div>
+        <CoinButton
+          type="button"
+          onClick={(event) => {
+            setPopoverAnchorEl(event.currentTarget);
+          }}
+        >
+          <CoinLeftContainer>
+            <CoinLeftImageContainer>
+              <Image src={currentCoin.imageURL} />
+            </CoinLeftImageContainer>
+            <CoinLeftInfoContainer>
+              <CoinLeftDisplayDenomContainer>
+                <Typography variant="h5">{currentCoinDisplayDenom}</Typography>
+              </CoinLeftDisplayDenomContainer>
+              <CoinLeftAvailableContainer>
+                <Typography variant="h6n">Available :</Typography>{' '}
+                <Number typoOfDecimals="h8n" typoOfIntegers="h6n">
+                  {currentCoinDisplayAmount}
+                </Number>{' '}
+                <Typography variant="h6n">{currentCoinDisplayDenom}</Typography>
+              </CoinLeftAvailableContainer>
+            </CoinLeftInfoContainer>
+          </CoinLeftContainer>
+          <CoinRightContainer data-is-active={isOpenPopover ? 1 : 0}>
+            <BottomArrow24Icon />
+          </CoinRightContainer>
+        </CoinButton>
+      </MarginTop8Div>
+      <MarginTop8Div>
         <StyledInput
           endAdornment={
             <InputAdornment position="end">
-              <DisplayDenomContainer>
-                <Typography variant="h6">{chain.displayDenom.toUpperCase()}</Typography>
-              </DisplayDenomContainer>
               <MaxButton
                 type="button"
                 onClick={() => {
-                  if (gt(maxDisplayAmount, '0')) {
+                  if (chain.baseDenom !== currentCoin.baseDenom) {
+                    setCurrentDisplayAmount(currentCoinDisplayAmount);
+                  } else if (chain.baseDenom === currentCoin.baseDenom && gt(maxDisplayAmount, '0')) {
                     setCurrentDisplayAmount(maxDisplayAmount);
                   } else {
                     setCurrentDisplayAmount('0');
@@ -112,7 +194,7 @@ export default function Tendermint({ chain }: TendermintProps) {
             </InputAdornment>
           }
           onChange={(e) => {
-            if (!isDecimal(e.currentTarget.value, decimals) && e.currentTarget.value) {
+            if (!isDecimal(e.currentTarget.value, currentCoin.decimals || 0) && e.currentTarget.value) {
               return;
             }
 
@@ -122,15 +204,6 @@ export default function Tendermint({ chain }: TendermintProps) {
           placeholder="Amount"
         />
       </MarginTop8Div>
-
-      <AvailableContainer>
-        <Typography variant="h6n">Available :&nbsp;</Typography>
-        <Number typoOfIntegers="h6n" typoOfDecimals="h8n">
-          {displayAvailable}
-        </Number>
-
-        <Typography variant="h6n">&nbsp;{chain.displayDenom.toUpperCase()}</Typography>
-      </AvailableContainer>
 
       <MarginTop16Div>
         <StyledTextarea multiline minRows={3} maxRows={3} placeholder="Memo" onChange={(e) => setCurrentMemo(e.currentTarget.value)} value={currentMemo} />
@@ -164,7 +237,7 @@ export default function Tendermint({ chain }: TendermintProps) {
                         value: {
                           from_address: address,
                           to_address: currentAddress,
-                          amount: [{ amount: toBaseDenomAmount(currentDisplayAmount, decimals), denom: chain.baseDenom }],
+                          amount: [{ amount: toBaseDenomAmount(currentDisplayAmount, currentCoin.decimals || 0), denom: currentCoin.baseDenom }],
                         },
                       },
                     ],
@@ -184,6 +257,27 @@ export default function Tendermint({ chain }: TendermintProps) {
         onClickAddress={(a) => {
           setCurrentAddress(a.address);
           setCurrentMemo(a.memo || '');
+        }}
+      />
+
+      <CoinPopover
+        marginThreshold={0}
+        currentCoinInfo={currentCoin}
+        coinInfos={availableCoinList}
+        onClickCoin={(clickedCoin) => {
+          setCurrentCoinBaseDenom(clickedCoin.baseDenom!);
+          setCurrentDisplayAmount('');
+        }}
+        open={isOpenPopover}
+        onClose={() => setPopoverAnchorEl(null)}
+        anchorEl={popoverAnchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
         }}
       />
     </Container>
