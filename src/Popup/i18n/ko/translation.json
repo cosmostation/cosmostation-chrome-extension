@@ -350,7 +350,7 @@
           }
         },
         "entry": {
-          "addChain": "체인 추가",
+          "addChain": "사용자 체인 추가",
           "chainManagement": "체인 관리"
         },
         "layout": {

@@ -14,7 +14,7 @@ export default function Entry() {
         <MenuButton onClick={() => navigate('/chain/management/use', { isDuplicateCheck: true })}>
           {t('pages.Chain.Management.entry.chainManagement')}
         </MenuButton>
-        <MenuButton>{t('pages.Chain.Management.entry.addChain')}</MenuButton>
+        {/* <MenuButton>{t('pages.Chain.Management.entry.addChain')}</MenuButton> */}
       </ListContainer>
     </Container>
   );

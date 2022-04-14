@@ -350,7 +350,7 @@
           }
         },
         "entry": {
-          "addChain": "Add chains",
+          "addChain": "Add custom chain",
           "chainManagement": "Chain management"
         },
         "layout": {
