@@ -1,14 +1,14 @@
-import { MINTSCAN_DEV_URL } from '~/constants/common';
+import { MINTSCAN_URL } from '~/constants/common';
 import crescentImg from '~/images/symbols/crescent.png';
 import type { TendermintChain } from '~/types/chain';
 
 export const CRESCENT: TendermintChain = {
-  id: '38e4ed3f-c49c-44b0-9ff4-0ea22bb61e8e',
+  id: 'c4c9e553-24a2-487d-a3a9-106b0f70b4ce',
   line: 'TENDERMINT',
   type: '',
-  chainId: 'mooncat-1-1',
+  chainId: 'crescent-1',
   chainName: 'crescent',
-  restURL: 'https://lcd-office.cosmostation.io/mooncat-1-1',
+  restURL: 'https://lcd-crescent.cosmostation.io',
   imageURL: crescentImg,
   baseDenom: 'ucre',
   displayDenom: 'cre',
@@ -20,11 +20,11 @@ export const CRESCENT: TendermintChain = {
     change: '0',
   },
   bech32Prefix: { address: 'cre' },
-  explorerURL: `${MINTSCAN_DEV_URL}/crescent`,
+  explorerURL: `${MINTSCAN_URL}/crescent`,
   gasRate: {
-    tiny: '0.00025',
-    low: '0.0025',
-    average: '0.025',
+    tiny: '0',
+    low: '0',
+    average: '0',
   },
-  gas: {},
+  gas: { send: '100000' },
 };
