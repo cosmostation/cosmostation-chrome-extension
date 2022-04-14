@@ -34,6 +34,8 @@ export default function Entry() {
           await setChromeStorage('encryptedPassword', sha512(data.password));
 
           if (newMnemonicAccount.accountName && newMnemonicAccount.mnemonic) {
+            navigate('/account/initialize/complete');
+
             await setChromeStorage('accounts', [
               ...chromeStorage.accounts,
               {
@@ -54,6 +56,8 @@ export default function Entry() {
 
             await setChromeStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
           } else if (newPrivateKeyAccount.accountName && newPrivateKeyAccount.privateKey) {
+            navigate('/account/initialize/complete');
+
             await setChromeStorage('accounts', [
               ...chromeStorage.accounts,
               {
@@ -75,8 +79,6 @@ export default function Entry() {
           } else {
             navigateBack(-3);
           }
-
-          navigate('/account/initialize/complete');
         }}
       />
     </Container>

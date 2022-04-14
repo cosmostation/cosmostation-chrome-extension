@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useResetRecoilState } from 'recoil';
 
+import { CHAINS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -37,7 +38,7 @@ export default function Entry() {
     void setChromeStorage('encryptedPassword', null);
     void setChromeStorage('selectedAccountId', '');
 
-    void setChromeStorage('allowedChainIds', ['62a8e13a-3107-40ef-ade4-58de45aa6c1f']);
+    void setChromeStorage('allowedChainIds', [CHAINS[0].id]);
     void setChromeStorage('allowedOrigins', []);
     void setChromeStorage('selectedChainId', '');
     void setChromeStorage('selectedEthereumNetworkId', '');
