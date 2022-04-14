@@ -46,7 +46,7 @@ export default function Entry() {
     if (checked) {
       await addAllowedChainId(chain.id);
     } else if (allowedChainIds.length < 2) {
-      enqueueSnackbar('1개 이상 선택하셔야 됩니다.', { variant: 'error' });
+      enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
     } else {
       await removeAllowedChainId(chain.id);
     }

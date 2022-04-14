@@ -247,7 +247,8 @@
           },
           "SelectChain": {
             "index": {
-              "placeholder": "체인 검색"
+              "placeholder": "체인 검색",
+              "removeAllowedChainError": "1개 이상 선택하셔야 됩니다."
             }
           }
         },
@@ -343,6 +344,7 @@
       "Management": {
         "Use": {
           "entry": {
+            "removeAllowedChainError": "1개 이상 선택하셔야 됩니다.",
             "searchPlaceholder": "체인 검색"
           },
           "layout": {

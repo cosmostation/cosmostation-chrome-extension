@@ -247,7 +247,8 @@
           },
           "SelectChain": {
             "index": {
-              "placeholder": "Search a chain"
+              "placeholder": "Search a chain",
+              "removeAllowedChainError": "Please select more than 1 chain"
             }
           }
         },
@@ -343,6 +344,7 @@
       "Management": {
         "Use": {
           "entry": {
+            "removeAllowedChainError": "Please select more than 1 chain",
             "searchPlaceholder": "Search chain"
           },
           "layout": {
