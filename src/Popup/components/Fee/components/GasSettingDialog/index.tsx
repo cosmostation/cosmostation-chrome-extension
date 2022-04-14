@@ -4,6 +4,7 @@ import type { DialogProps } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import { Container, InputContainer, StyledButton, StyledInput } from './styled';
 import type { GasForm } from './useSchema';
@@ -16,6 +17,8 @@ type GasSettingDialogProps = Omit<DialogProps, 'children'> & {
 
 export default function GasSettingDialog({ onClose, onSubmitGas, currentGas, ...remainder }: GasSettingDialogProps) {
   const { gasForm } = useSchema();
+
+  const { t } = useTranslation();
 
   const {
     register,
@@ -41,7 +44,7 @@ export default function GasSettingDialog({ onClose, onSubmitGas, currentGas, ...
 
   return (
     <Dialog {...remainder} onClose={handleOnClose}>
-      <DialogHeader onClose={handleOnClose}>Gas settings</DialogHeader>
+      <DialogHeader onClose={handleOnClose}>{t('components.Fee.components.GasSettingDialog.index.gasSettings')}</DialogHeader>
       <form onSubmit={handleSubmit(submit)}>
         <Container>
           <InputContainer>
@@ -54,7 +57,7 @@ export default function GasSettingDialog({ onClose, onSubmitGas, currentGas, ...
             />
           </InputContainer>
           <StyledButton type="submit" disabled={!isDirty}>
-            Submit
+            {t('components.Fee.components.GasSettingDialog.index.submitButton')}
           </StyledButton>
         </Container>
       </form>

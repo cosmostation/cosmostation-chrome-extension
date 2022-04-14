@@ -98,7 +98,7 @@ export default function Entry() {
 
         <ButtonContainer>
           <Button type="submit" disabled={!isDirty}>
-            {t('pages.Setting.AddressBook.Add.entry.done')}
+            {t('pages.Setting.AddressBook.Add.entry.save')}
           </Button>
         </ButtonContainer>
 

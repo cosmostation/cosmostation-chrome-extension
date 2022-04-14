@@ -16,6 +16,7 @@ import type { CoinInfo } from '~/Popup/hooks/SWR/tendermint/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/tendermint/useCoinListSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { TendermintChain } from '~/types/chain';
 
@@ -53,6 +54,8 @@ export default function Tendermint({ chain }: TendermintProps) {
   const accounts = useAccounts(true);
   const { enQueue } = useCurrentQueue();
   const params = useParams();
+
+  const { t } = useTranslation();
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
@@ -139,7 +142,7 @@ export default function Tendermint({ chain }: TendermintProps) {
               </IconButton>
             </InputAdornment>
           }
-          placeholder="Address"
+          placeholder={t('pages.Wallet.Send.Entry.Tendermint.index.recipientAddressPlaceholder')}
           onChange={(e) => setCurrentAddress(e.currentTarget.value)}
           value={currentAddress}
         />
@@ -160,7 +163,7 @@ export default function Tendermint({ chain }: TendermintProps) {
                 <Typography variant="h5">{currentCoinDisplayDenom}</Typography>
               </CoinLeftDisplayDenomContainer>
               <CoinLeftAvailableContainer>
-                <Typography variant="h6n">Available :</Typography>{' '}
+                <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Tendermint.index.available')} :</Typography>{' '}
                 <Number typoOfDecimals="h8n" typoOfIntegers="h6n">
                   {currentCoinDisplayAmount}
                 </Number>{' '}
@@ -201,12 +204,19 @@ export default function Tendermint({ chain }: TendermintProps) {
             setCurrentDisplayAmount(e.currentTarget.value);
           }}
           value={currentDisplayAmount}
-          placeholder="Amount"
+          placeholder={t('pages.Wallet.Send.Entry.Tendermint.index.amountPlaceholder')}
         />
       </MarginTop8Div>
 
       <MarginTop16Div>
-        <StyledTextarea multiline minRows={3} maxRows={3} placeholder="Memo" onChange={(e) => setCurrentMemo(e.currentTarget.value)} value={currentMemo} />
+        <StyledTextarea
+          multiline
+          minRows={3}
+          maxRows={3}
+          placeholder={t('pages.Wallet.Send.Entry.Tendermint.index.memoPlaceholder')}
+          onChange={(e) => setCurrentMemo(e.currentTarget.value)}
+          value={currentMemo}
+        />
       </MarginTop16Div>
 
       <MarginTop12Div>
@@ -247,7 +257,7 @@ export default function Tendermint({ chain }: TendermintProps) {
             });
           }}
         >
-          Send
+          {t('pages.Wallet.Send.Entry.Tendermint.index.sendButton')}
         </Button>
       </BottomContainer>
 

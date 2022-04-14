@@ -12,6 +12,7 @@ import Fee from '~/Popup/components/Fee';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { getKeyPair, upperCaseFirst } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import { decodeProtobufMessage } from '~/Popup/utils/proto';
@@ -58,6 +59,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { deQueue } = useCurrentQueue();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
+
+  const { t } = useTranslation();
 
   const { message, messageId, origin } = queue;
 
@@ -115,8 +118,8 @@ export default function Entry({ queue, chain }: EntryProps) {
       </TitleContainer>
       <TabContainer>
         <Tabs value={value} onChange={handleChange} textColor="inherit" variant="fullWidth" indicatorColor="primary">
-          <Tab label="Details" {...a11yProps(0)} />
-          <Tab label="Data" {...a11yProps(1)} />
+          <Tab label={t('pages.Popup.Tendermint.Sign.Direct.entry.detailTab')} {...a11yProps(0)} />
+          <Tab label={t('pages.Popup.Tendermint.Sign.Direct.entry.dataTab')} {...a11yProps(1)} />
         </Tabs>
         <TabIndicatorContainer />
       </TabContainer>
@@ -161,7 +164,7 @@ export default function Entry({ queue, chain }: EntryProps) {
               await deQueue();
             }}
           >
-            Cancel
+            {t('pages.Popup.Tendermint.Sign.Direct.entry.cancelButton')}
           </OutlineButton>
           <Button
             onClick={async () => {
@@ -198,7 +201,7 @@ export default function Entry({ queue, chain }: EntryProps) {
               await deQueue();
             }}
           >
-            Confirm
+            {t('pages.Popup.Tendermint.Sign.Direct.entry.confirmButton')}
           </Button>
         </BottomButtonContainer>
       </BottomContainer>

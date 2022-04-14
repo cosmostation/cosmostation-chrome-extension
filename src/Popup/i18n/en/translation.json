@@ -17,6 +17,12 @@
         "description3": "to the Cosmostation?"
       }
     },
+    "AddressBookBottomSheet": {
+      "index": {
+        "addAddressButton": "Add address",
+        "title": "Address Book"
+      }
+    },
     "AddressBookItem": {
       "ManagePopover": {
         "EditDialog": {
@@ -30,8 +36,26 @@
         },
         "index": {
           "delete": "Delete",
+          "deleteSnackbar": "Your address has been deleted",
           "edit": "Edit"
         }
+      }
+    },
+    "Fee": {
+      "components": {
+        "GasSettingDialog": {
+          "index": {
+            "gasSettings": "Gas settings",
+            "submitButton": "Submit"
+          }
+        }
+      },
+      "index": {
+        "average": "Average",
+        "fee": "Fee",
+        "gasSettings": "Gas settings",
+        "low": "Low",
+        "tiny": "Tiny"
       }
     },
     "Header": {
@@ -67,10 +91,10 @@
         "Import": {
           "Mnemonic": {
             "entry": {
-              "accountNamePlaceholder": "account name",
+              "accountNamePlaceholder": "Account name",
               "done": "Done",
               "hdPathSetting": "HD path setting",
-              "mnemonicPlaceholder": "To restore wallet, please enter mnemonic phrases"
+              "mnemonicPlaceholder": "Mnemonic phrase"
             },
             "layout": {
               "title": "Import mnemonics"
@@ -101,7 +125,7 @@
                 "seedPhrase": "Seed phrase"
               },
               "layout": {
-                "title": "Mnemonic Phrases"
+                "title": "Mnemonic Phrase"
               }
             },
             "Step3": {
@@ -127,16 +151,16 @@
       "Initialize": {
         "Complete": {
           "entry": {
-            "description": "You can use the extension now.",
+            "description": "Welcome to the Interchain.",
             "done": "Done",
-            "title": "Registration complete!"
+            "title": "Complete!"
           }
         },
         "Import": {
           "Mnemonic": {
             "entry": {
               "hdPathSetting": "HD path setting",
-              "mnemonicPlaceholder": "To restore with mnemonic, please enter your mnemonic phrases from Cosmostation Wallet.",
+              "mnemonicPlaceholder": "Mnemonic phrase",
               "namePlaceholder": "Account name",
               "next": "Next"
             },
@@ -165,7 +189,7 @@
           },
           "Step3": {
             "layout": {
-              "description": "Please enter a password for your wallet",
+              "description": "Please enter at least 8 characters for your wallet password.",
               "title": "Create password"
             }
           },
@@ -200,7 +224,7 @@
                 "seedPhrase": "Seed phrase"
               },
               "layout": {
-                "title": "Mnemonic phrases"
+                "title": "Mnemonic phrase"
               }
             },
             "Step3": {
@@ -218,7 +242,7 @@
               },
               "layout": {
                 "description": "Select chains to use with cosmostation wallet.",
-                "title": "Select a chain"
+                "title": "Select chains"
               }
             },
             "Step5": {
@@ -234,6 +258,8 @@
             "description1": "Gateway to the Interchain &",
             "description2": "Ethereum ecosystem",
             "startButton": "Start",
+            "termsAgreement1": "I have read and agree to the ",
+            "termsAgreement2": "Terms of use",
             "title": "Welcome!"
           }
         },
@@ -304,7 +330,7 @@
                 "index": {
                   "copied": "Copied",
                   "done": "Done",
-                  "title": "Export Private Key"
+                  "title": "View Private Key"
                 }
               },
               "index": {
@@ -319,7 +345,7 @@
               "delete": "Delete account",
               "rename": "Rename account",
               "viewMnemonic": "View mnemonics",
-              "viewPrivateKey": "Export private key"
+              "viewPrivateKey": "View private key"
             }
           }
         },
@@ -333,8 +359,8 @@
       "components": {
         "HDPathDialog": {
           "index": {
-            "confirm": "Confirm",
-            "description": "Below are derivation paths for Cosmos and Ethereum",
+            "confirm": "Done",
+            "description": "Below are the derivation paths for supported blockchains.",
             "title": "HD path setting"
           }
         }
@@ -369,6 +395,58 @@
             "description3": "to Cosmostation wallet.",
             "description4": ""
           }
+        },
+        "Sign": {
+          "Amino": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "Send": {
+                    "index": {
+                      "amount": "Amount",
+                      "fromAddress": "From address",
+                      "toAddress": "To address"
+                    }
+                  }
+                }
+              }
+            },
+            "entry": {
+              "cancelButton": "Cancel",
+              "confirmButton": "Confirm",
+              "dataTab": "Data",
+              "detailTab": "Details"
+            }
+          },
+          "Direct": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "Send": {
+                    "index": {
+                      "amount": "Amount",
+                      "fromAddress": "From address",
+                      "toAddress": "To address"
+                    }
+                  }
+                }
+              }
+            },
+            "entry": {
+              "cancelButton": "Cancel",
+              "confirmButton": "Confirm",
+              "dataTab": "Data",
+              "detailTab": "Details"
+            }
+          },
+          "components": {
+            "Memo": {
+              "index": {
+                "memo": "Memo",
+                "memoPlaceholder": "Memo (option)"
+              }
+            }
+          }
         }
       }
     },
@@ -388,13 +466,29 @@
         "Add": {
           "entry": {
             "addressPlaceholder": "Address",
-            "done": "Done",
             "labelPlaceholder": "Label",
-            "memoPlaceholder": "Memo (option)"
+            "memoPlaceholder": "Memo (option)",
+            "save": "Save"
           },
           "layout": {
             "title": "Add address"
           }
+        },
+        "entry": {
+          "addAddressButton": "Add address"
+        },
+        "layout": {
+          "title": "Address book"
+        }
+      },
+      "ChangeCurrency": {
+        "layout": {
+          "title": "Currency"
+        }
+      },
+      "ChangeLanguage": {
+        "layout": {
+          "title": "Language"
         }
       },
       "ChangePassword": {
@@ -414,8 +508,36 @@
       "Receive": {
         "Entry": {
           "Tendermint": {
-            "copied": "Copied"
+            "address": "Address",
+            "copied": "Copied",
+            "scanQrCode": "Scan QR code"
           }
+        },
+        "layout": {
+          "title": "Deposit"
+        }
+      },
+      "Send": {
+        "Entry": {
+          "Tendermint": {
+            "components": {
+              "CoinPopover": {
+                "index": {
+                  "available": "Available"
+                }
+              }
+            },
+            "index": {
+              "amountPlaceholder": "Amount",
+              "available": "Available",
+              "memoPlaceholder": "Memo (option)",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          }
+        },
+        "layout": {
+          "title": "Send"
         }
       },
       "components": {
