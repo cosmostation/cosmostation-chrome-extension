@@ -1,6 +1,6 @@
 import '~/Popup/i18n/background';
 
-import { TENDERMINT_CHAINS } from '~/constants/chain';
+import { CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -423,7 +423,7 @@ function background() {
         await setStorage('language', '' as LanguageType);
         await setStorage('currency', '' as CurrencyType);
 
-        await setStorage('allowedChainIds', []);
+        await setStorage('allowedChainIds', [CHAINS[0].id]);
         await setStorage('allowedOrigins', []);
         await setStorage('selectedChainId', '');
         await setStorage('selectedEthereumNetworkId', '');
