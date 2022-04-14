@@ -352,7 +352,7 @@
           }
         },
         "entry": {
-          "addChain": "사용자 체인 추가",
+          "addChain": "커스텀 체인 추가",
           "chainManagement": "체인 관리"
         },
         "layout": {
@@ -443,7 +443,7 @@
           },
           "ChainPopover": {
             "index": {
-              "betaSupport": "베타 지원",
+              "betaSupport": "커스텀 체인",
               "title": "체인 선택"
             }
           }

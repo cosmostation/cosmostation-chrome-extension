@@ -352,7 +352,7 @@
           }
         },
         "entry": {
-          "addChain": "Add custom chain",
+          "addChain": "Add a custom chain",
           "chainManagement": "Chain management"
         },
         "layout": {
@@ -443,7 +443,7 @@
           },
           "ChainPopover": {
             "index": {
-              "betaSupport": "Beta support",
+              "betaSupport": "custom chains",
               "title": "Select a chain"
             }
           }
