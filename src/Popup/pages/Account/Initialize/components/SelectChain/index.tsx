@@ -10,6 +10,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { upperCaseFirst } from '~/Popup/utils/common';
+import type { Chain } from '~/types/chain';
 
 import {
   ChainContainer,
@@ -42,6 +43,16 @@ export default function SelectChain() {
     : TENDERMINT_CHAINS;
   const filteredEthereumChains = search ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : ETHEREUM_CHAINS;
 
+  const handleOnChange = async (checked: boolean, chain: Chain) => {
+    if (checked) {
+      await addAllowedChainId(chain.id);
+    } else if (allowedChainIds.length < 2) {
+      enqueueSnackbar('1개 이상 선택하셔야 됩니다.', { variant: 'error' });
+    } else {
+      await removeAllowedChainId(chain.id);
+    }
+  };
+
   return (
     <Container>
       <StyledInput
@@ -63,13 +74,7 @@ export default function SelectChain() {
               switchProps={{
                 checked: allowedChainIds.includes(chain.id),
                 onChange: async (_, checked) => {
-                  if (checked) {
-                    await addAllowedChainId(chain.id);
-                  } else if (allowedChainIds.length < 2) {
-                    enqueueSnackbar('1개 이상 선택하셔야 됩니다.', { variant: 'error' });
-                  } else {
-                    await removeAllowedChainId(chain.id);
-                  }
+                  await handleOnChange(checked, chain);
                 },
               }}
             >
@@ -92,13 +97,7 @@ export default function SelectChain() {
               switchProps={{
                 checked: allowedChainIds.includes(chain.id),
                 onChange: async (_, checked) => {
-                  if (checked) {
-                    await addAllowedChainId(chain.id);
-                  } else if (allowedChainIds.length < 2) {
-                    enqueueSnackbar('1개 이상 선택하셔야 됩니다.', { variant: 'error' });
-                  } else {
-                    await removeAllowedChainId(chain.id);
-                  }
+                  await handleOnChange(checked, chain);
                 },
               }}
             >
