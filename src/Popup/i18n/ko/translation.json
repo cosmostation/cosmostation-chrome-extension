@@ -17,6 +17,12 @@
         "description3": "을(를) 활성화 하시겠습니까?"
       }
     },
+    "AddressBookBottomSheet": {
+      "index": {
+        "addAddressButton": "주소 추가",
+        "title": "주소록"
+      }
+    },
     "AddressBookItem": {
       "ManagePopover": {
         "EditDialog": {
@@ -30,8 +36,26 @@
         },
         "index": {
           "delete": "삭제",
+          "deleteSnackbar": "주소가 삭제되었습니다.",
           "edit": "수정"
         }
+      }
+    },
+    "Fee": {
+      "components": {
+        "GasSettingDialog": {
+          "index": {
+            "gasSettings": "가스량 설정",
+            "submitButton": "완료"
+          }
+        }
+      },
+      "index": {
+        "average": "평균",
+        "fee": "수수료",
+        "gasSettings": "가스량 설정",
+        "low": "낮음",
+        "tiny": "최소"
       }
     },
     "Header": {
@@ -57,7 +81,7 @@
       "index": {
         "lostButton": "비밀번호를 잊어버렸나요?",
         "passwordPlaceholder": "비밀번호",
-        "unlockButton": "해제"
+        "unlockButton": "잠금 해제"
       }
     }
   },
@@ -70,7 +94,7 @@
               "accountNamePlaceholder": "계정 이름",
               "done": "확인",
               "hdPathSetting": "HD path 세팅",
-              "mnemonicPlaceholder": "지갑을 복원하기 위해서 니모닉 구문을 입력하세요"
+              "mnemonicPlaceholder": "니모닉 구문"
             },
             "layout": {
               "title": "니모닉 가져오기"
@@ -127,28 +151,28 @@
       "Initialize": {
         "Complete": {
           "entry": {
-            "description": "지금부터 익스텐션을 사용할 수 있습니다.",
+            "description": "Welcome to the Interchain.",
             "done": "완료",
-            "title": "모두 완료되었습니다!"
+            "title": "완료되었습니다!"
           }
         },
         "Import": {
           "Mnemonic": {
             "entry": {
               "hdPathSetting": "HD path 세팅",
-              "mnemonicPlaceholder": "니모닉으로 복원하기 위해서는 코스모스테이션 지갑의 니모닉을 입력해주세요.",
+              "mnemonicPlaceholder": "니모닉 구문",
               "namePlaceholder": "계정 이름",
               "next": "다음"
             },
             "layout": {
-              "title": "니모닉으로 복원하기"
+              "title": "니모닉으로 복원"
             }
           },
           "PrivateKey": {
             "entry": {
               "accountName": "계정 이름",
               "next": "다음",
-              "privateKey": "개인키(프라이빗키)로 복원하기 위해, 코스모스테이션 지갑의 개인키를 입력해주세요. (개인키는 0x 로 시작하는 66자리 문자열입니다)"
+              "privateKey": "개인키로 복원하기 위해, 코스모스테이션 지갑의 개인키를 입력해주세요. (개인키는 0x 로 시작하는 66자리 문자열입니다)"
             },
             "layout": {
               "title": "개인키로 복원"
@@ -165,7 +189,7 @@
           },
           "Step3": {
             "layout": {
-              "description": "지갑에 사용할 비밀번호를 입력해주세요",
+              "description": "최소 8자 이상의 비밀번호를 입력해주세요.",
               "title": "비밀번호 생성"
             }
           },
@@ -174,7 +198,7 @@
             "privateKey": "개인키로 복원"
           },
           "layout": {
-            "title": "지갑 가져오기"
+            "title": "지갑 불러오기"
           }
         },
         "New": {
@@ -217,7 +241,7 @@
                 "next": "다음"
               },
               "layout": {
-                "description": "코스모스 지갑에서 사용할 체인을 선택해주세요",
+                "description": "코스모스테이션 지갑에서 사용할 체인을 선택해주세요.",
                 "title": "체인을 선택하세요"
               }
             },
@@ -234,6 +258,8 @@
             "description1": "코스모스 & 이더리움 생태계를 위한",
             "description2": "암호화폐 지갑입니다",
             "startButton": "시작하기",
+            "termsAgreement1": "서비스 이용약관 및 이용안내",
+            "termsAgreement2": "에 동의합니다",
             "title": "반갑습니다!"
           }
         },
@@ -253,7 +279,7 @@
           }
         },
         "entry": {
-          "createWallet": "지갑 생성",
+          "createWallet": "새 지갑 생성",
           "importWallet": "지갑 가져오기"
         }
       },
@@ -333,8 +359,8 @@
       "components": {
         "HDPathDialog": {
           "index": {
-            "confirm": "승인",
-            "description": "코스모스와 이더리움 derivation path 입니다.",
+            "confirm": "완료",
+            "description": "코스모스테이션에서 지원되는 체인들의 derivation path 입니다.",
             "title": "HD path 세팅"
           }
         }
@@ -352,7 +378,7 @@
           }
         },
         "entry": {
-          "addChain": "사용자 체인 추가",
+          "addChain": "커스텀 체인 추가",
           "chainManagement": "체인 관리"
         },
         "layout": {
@@ -368,6 +394,58 @@
             "description2": "코스모스테이션에",
             "description3": "블록체인",
             "description4": "을 추가합니다."
+          }
+        },
+        "Sign": {
+          "Amino": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "Send": {
+                    "index": {
+                      "amount": "수량",
+                      "fromAddress": "보내는 주소",
+                      "toAddress": "받는 주소"
+                    }
+                  }
+                }
+              }
+            },
+            "entry": {
+              "cancelButton": "취소",
+              "confirmButton": "승인",
+              "dataTab": "데이터",
+              "detailTab": "상세 내역"
+            }
+          },
+          "Direct": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "Send": {
+                    "index": {
+                      "amount": "수량",
+                      "fromAddress": "보내는 주소",
+                      "toAddress": "받는 주소"
+                    }
+                  }
+                }
+              }
+            },
+            "entry": {
+              "cancelButton": "취소",
+              "confirmButton": "승인",
+              "dataTab": "데이터",
+              "detailTab": "상세 내역"
+            }
+          },
+          "components": {
+            "Memo": {
+              "index": {
+                "memo": "메모",
+                "memoPlaceholder": "메모 (선택)"
+              }
+            }
           }
         }
       }
@@ -388,13 +466,29 @@
         "Add": {
           "entry": {
             "addressPlaceholder": "주소",
-            "done": "추가",
             "labelPlaceholder": "라벨",
-            "memoPlaceholder": "메모 (선택사항)"
+            "memoPlaceholder": "메모 (선택사항)",
+            "save": "저장"
           },
           "layout": {
             "title": "주소록 추가"
           }
+        },
+        "entry": {
+          "addAddressButton": "주소 추가"
+        },
+        "layout": {
+          "title": "주소록"
+        }
+      },
+      "ChangeCurrency": {
+        "layout": {
+          "title": "통화"
+        }
+      },
+      "ChangeLanguage": {
+        "layout": {
+          "title": "언어"
         }
       },
       "ChangePassword": {
@@ -414,8 +508,36 @@
       "Receive": {
         "Entry": {
           "Tendermint": {
-            "copied": "복사되었습니다"
+            "address": "주소",
+            "copied": "복사되었습니다",
+            "scanQrCode": "QR코드 스캔"
           }
+        },
+        "layout": {
+          "title": "입금"
+        }
+      },
+      "Send": {
+        "Entry": {
+          "Tendermint": {
+            "components": {
+              "CoinPopover": {
+                "index": {
+                  "available": "사용 가능 수량"
+                }
+              }
+            },
+            "index": {
+              "amountPlaceholder": "수량",
+              "available": "사용 가능 수량",
+              "memoPlaceholder": "메모 (선택)",
+              "recipientAddressPlaceholder": "입금 주소",
+              "sendButton": "보내기"
+            }
+          }
+        },
+        "layout": {
+          "title": "보내기"
         }
       },
       "components": {
@@ -443,7 +565,7 @@
           },
           "ChainPopover": {
             "index": {
-              "betaSupport": "베타 지원",
+              "betaSupport": "커스텀 체인",
               "title": "체인 선택"
             }
           }
@@ -451,14 +573,14 @@
         "tendermint": {
           "NativeChainCard": {
             "index": {
-              "available": "전송가능수량",
+              "available": "전송 가능 수량",
               "copied": "복사되었습니다",
               "delegated": "위임 수량",
               "depositButton": "입금",
               "reward": "이자 수량",
               "sendButton": "보내기",
-              "unbonding": "위임해제 수량",
-              "vesting": "위임가능 수량"
+              "unbonding": "위임 해제 수량",
+              "vesting": "위임 가능 수량"
             }
           }
         }

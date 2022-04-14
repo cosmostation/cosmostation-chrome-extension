@@ -1,7 +1,6 @@
-import { useTranslation } from 'react-i18next';
-
 import BaseLayout from '~/Popup/components/BaseLayout';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 type LayoutProps = {
   children: JSX.Element;

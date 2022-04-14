@@ -29,7 +29,7 @@ export default function ManagePopover({ addressInfo, onClose, ...remainder }: Ma
 
             await setChromeStorage('addressBook', newAddressBook);
 
-            enqueueSnackbar('delete', { variant: 'error' });
+            enqueueSnackbar(t('components.AddressBookItem.ManagePopover.index.deleteSnackbar'), { variant: 'error' });
 
             onClose?.({}, 'backdropClick');
           }}

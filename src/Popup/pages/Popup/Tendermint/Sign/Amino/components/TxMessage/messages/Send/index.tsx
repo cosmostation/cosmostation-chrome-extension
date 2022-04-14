@@ -5,6 +5,7 @@ import { useIbcCoinSWR } from '~/Popup/hooks/SWR/tendermint/useIbcCoinSWR';
 import { useMarketPriceSWR } from '~/Popup/hooks/SWR/tendermint/useMarketPriceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { shorterAddress } from '~/Popup/utils/common';
 import type { TendermintChain } from '~/types/chain';
@@ -34,6 +35,7 @@ export default function Send({ msg, chain }: SendProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const ibcCoin = useIbcCoinSWR(chain);
   const marketPrice = useMarketPriceSWR();
+  const { t } = useTranslation();
 
   const { currency } = chromeStorage;
   const { displayDenom, baseDenom, decimals, coinGeckoId } = chain;
@@ -47,7 +49,7 @@ export default function Send({ msg, chain }: SendProps) {
       <ContentContainer>
         <AddressContainer>
           <LabelContainer>
-            <Typography variant="h5">from address</Typography>
+            <Typography variant="h5">{t('pages.Popup.Tendermint.Sign.Amino.components.TxMessage.messages.Send.index.fromAddress')}</Typography>
           </LabelContainer>
           <ValueContainer>
             <Typography variant="h5">{shorterAddress(from_address, 32)}</Typography>
@@ -56,7 +58,7 @@ export default function Send({ msg, chain }: SendProps) {
 
         <AddressContainer sx={{ marginTop: '0.4rem', paddingBottom: '1.2rem' }}>
           <LabelContainer>
-            <Typography variant="h5">to address</Typography>
+            <Typography variant="h5">{t('pages.Popup.Tendermint.Sign.Amino.components.TxMessage.messages.Send.index.toAddress')}</Typography>
           </LabelContainer>
           <ValueContainer>
             <Typography variant="h5">{shorterAddress(to_address, 32)}</Typography>
@@ -113,7 +115,7 @@ export default function Send({ msg, chain }: SendProps) {
             // eslint-disable-next-line react/no-array-index-key
             <AmountInfoContainer key={`${item.denom}${idx}`}>
               <LeftContainer>
-                <Typography variant="h5">Amount</Typography>
+                <Typography variant="h5">{t('pages.Popup.Tendermint.Sign.Amino.components.TxMessage.messages.Send.index.amount')}</Typography>
               </LeftContainer>
               <RightContainer>
                 <RightColumnContainer>

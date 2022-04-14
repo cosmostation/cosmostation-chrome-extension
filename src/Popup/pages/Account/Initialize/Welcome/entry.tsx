@@ -56,14 +56,29 @@ export default function Entry() {
       <BottomContainer>
         <TermContainer>
           <Checkbox onChange={(e) => setChecked(e.currentTarget.checked)} checked={checked} />
-          <TermTextContainer>
-            <Typography variant="h5">I have read and agree to the&nbsp;</Typography>
-          </TermTextContainer>
-          <TermButton type="button" onClick={() => window.open(`https://cosmostation.io/service_${language === 'ko' ? 'kr' : 'en'}`)}>
-            <Typography variant="h5">
-              <u>Terms of use</u>
-            </Typography>
-          </TermButton>
+          {language === 'ko' ? (
+            <>
+              <TermButton type="button" onClick={() => window.open(`https://cosmostation.io/service_${language === 'ko' ? 'kr' : 'en'}`)}>
+                <Typography variant="h5">
+                  <u>{t('pages.Account.Initialize.Welcome.entry.termsAgreement1')}</u>
+                </Typography>
+              </TermButton>
+              <TermTextContainer>
+                <Typography variant="h5">{t('pages.Account.Initialize.Welcome.entry.termsAgreement2')}</Typography>
+              </TermTextContainer>
+            </>
+          ) : (
+            <>
+              <TermTextContainer>
+                <Typography variant="h5">{t('pages.Account.Initialize.Welcome.entry.termsAgreement1')}</Typography>
+              </TermTextContainer>
+              <TermButton type="button" onClick={() => window.open(`https://cosmostation.io/service_${language === 'ko' ? 'kr' : 'en'}`)}>
+                <Typography variant="h5">
+                  <u>{t('pages.Account.Initialize.Welcome.entry.termsAgreement2')}</u>
+                </Typography>
+              </TermButton>
+            </>
+          )}
         </TermContainer>
         <Button onClick={() => navigate('/account/initialize')} disabled={!checked}>
           {t('pages.Account.Initialize.Welcome.entry.startButton')}

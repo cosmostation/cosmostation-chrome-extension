@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
@@ -9,6 +8,7 @@ import Image from '~/Popup/components/common/Image';
 import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { upperCaseFirst } from '~/Popup/utils/common';
 import type { Chain } from '~/types/chain';
 

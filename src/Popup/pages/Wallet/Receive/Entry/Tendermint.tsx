@@ -48,7 +48,7 @@ export default function Tendermint({ chain }: TendermintProps) {
       <Panel>
         <TitleAreaContainer>
           <TitleContainer>
-            <Typography variant="h6">Address</Typography>
+            <Typography variant="h6">{t('pages.Wallet.Receive.Entry.Tendermint.address')}</Typography>
           </TitleContainer>
           <ButtonContainer>
             {explorerURL && (
@@ -68,7 +68,7 @@ export default function Tendermint({ chain }: TendermintProps) {
       <Panel>
         <TitleAreaContainer>
           <TitleContainer>
-            <Typography variant="h6">Scan QR code</Typography>
+            <Typography variant="h6">{t('pages.Wallet.Receive.Entry.Tendermint.scanQrCode')}</Typography>
           </TitleContainer>
           <ButtonContainer />
         </TitleAreaContainer>

@@ -5,6 +5,7 @@ import AddressBookItem from '~/Popup/components/AddressBookItem';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import { AddressBookList, Container, Header, StyledChainButton, StyledChainPopover } from './styled';
 
@@ -13,6 +14,8 @@ export default function Entry() {
   const { currentChain } = useCurrentChain();
 
   const { addressBook } = chromeStorage;
+
+  const { t } = useTranslation();
 
   const [chain, setChain] = useState(currentChain);
 
@@ -35,7 +38,7 @@ export default function Entry() {
         >
           {chain.chainName}
         </StyledChainButton>
-        <AddButton onClick={() => navigate('/setting/address-book/add')}>Add address</AddButton>
+        <AddButton onClick={() => navigate('/setting/address-book/add')}>{t('pages.Setting.AddressBook.entry.addAddressButton')}</AddButton>
       </Header>
       <AddressBookList>
         {filteredAddressBook.map((item) => (

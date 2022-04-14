@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import type { CoinInfo } from '~/Popup/hooks/SWR/tendermint/useCoinListSWR';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
 
 import {
@@ -25,6 +26,8 @@ type CoinPopoverProps = Omit<PopoverProps, 'children'> & { currentCoinInfo: Coin
 
 export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, onClose, ...remainder }: CoinPopoverProps) {
   const ref = useRef<HTMLButtonElement>(null);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (remainder.open) {
@@ -61,7 +64,7 @@ export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, o
                     <Typography variant="h5">{displayDenom}</Typography>
                   </CoinLeftDisplayDenomContainer>
                   <CoinLeftAvailableContainer>
-                    <Typography variant="h6n">Available :</Typography>{' '}
+                    <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Tendermint.components.CoinPopover.index.available')} :</Typography>{' '}
                     <Number typoOfDecimals="h8n" typoOfIntegers="h6n">
                       {displayAmount}
                     </Number>{' '}

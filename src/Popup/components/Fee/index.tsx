@@ -4,6 +4,7 @@ import { Typography } from '@mui/material';
 import Number from '~/Popup/components/common/Number';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { divide, equal, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { TendermintChain } from '~/types/chain';
 
@@ -38,6 +39,8 @@ export default function Fee({ isEdit = false, baseFee, gas, onChangeFee, onChang
   const { gasRate, decimals, displayDenom, coinGeckoId } = chain;
   const { average, tiny, low } = gasRate;
 
+  const { t } = useTranslation();
+
   const [isOpenGasDialog, setIsOpenGasDialog] = useState(false);
 
   const { currency } = chromeStorage;
@@ -58,7 +61,7 @@ export default function Fee({ isEdit = false, baseFee, gas, onChangeFee, onChang
         <Container>
           <FeeInfoContainer>
             <LeftContainer>
-              <Typography variant="h5">Fee</Typography>
+              <Typography variant="h5">{t('components.Fee.index.fee')}</Typography>
             </LeftContainer>
             <RightContainer>
               <RightColumnContainer>
@@ -80,19 +83,19 @@ export default function Fee({ isEdit = false, baseFee, gas, onChangeFee, onChang
           <EditContainer>
             <EditLeftContainer>
               <GasButton type="button" onClick={() => setIsOpenGasDialog(true)}>
-                <Typography variant="h6">Gas Settings</Typography>
+                <Typography variant="h6">{t('components.Fee.index.gasSettings')}</Typography>
               </GasButton>
             </EditLeftContainer>
             <EditRightContainer>
               <FeeButtonContainer>
                 <FeeButton type="button" onClick={() => onChangeFee?.(times(tiny, gas))} data-is-active={equal(currentGasRate, tiny) ? 1 : 0}>
-                  Tiny
+                  {t('components.Fee.index.tiny')}
                 </FeeButton>
                 <FeeButton type="button" onClick={() => onChangeFee?.(times(low, gas))} data-is-active={equal(currentGasRate, low) ? 1 : 0}>
-                  Low
+                  {t('components.Fee.index.low')}
                 </FeeButton>
                 <FeeButton type="button" onClick={() => onChangeFee?.(times(average, gas))} data-is-active={equal(currentGasRate, average) ? 1 : 0}>
-                  Average
+                  {t('components.Fee.index.average')}
                 </FeeButton>
               </FeeButtonContainer>
             </EditRightContainer>
@@ -116,7 +119,7 @@ export default function Fee({ isEdit = false, baseFee, gas, onChangeFee, onChang
     <Container>
       <FeeInfoContainer>
         <LeftContainer>
-          <Typography variant="h5">Fee</Typography>
+          <Typography variant="h5">{t('components.Fee.index.fee')}</Typography>
         </LeftContainer>
         <RightContainer>
           <RightColumnContainer>

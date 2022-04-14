@@ -78,6 +78,8 @@ export const TermContainer = styled('div')({
 
 export const TermTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+
+  whiteSpace: 'pre',
 }));
 
 export const TermButton = styled('button')(({ theme }) => ({
