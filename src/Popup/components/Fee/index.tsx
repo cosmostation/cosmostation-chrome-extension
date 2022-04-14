@@ -119,7 +119,7 @@ export default function Fee({ isEdit = false, baseFee, gas, onChangeFee, onChang
     <Container>
       <FeeInfoContainer>
         <LeftContainer>
-          <Typography variant="h5">Fee</Typography>
+          <Typography variant="h5">{t('components.Fee.index.fee')}</Typography>
         </LeftContainer>
         <RightContainer>
           <RightColumnContainer>
