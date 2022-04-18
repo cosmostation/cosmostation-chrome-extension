@@ -237,8 +237,8 @@ export default function Tendermint({ chain }: TendermintProps) {
                 params: {
                   chainName: chain.chainName,
                   doc: {
-                    account_number: account.data.value.account_number,
-                    sequence: account.data.value.sequence || '0',
+                    account_number: String(account.data.value.account_number ?? ''),
+                    sequence: String(account.data.value.sequence ?? '0'),
                     chain_id: chain.chainId,
                     fee: { amount: [{ denom: chain.baseDenom, amount: currentFee }], gas: currentGas },
                     memo: currentMemo,

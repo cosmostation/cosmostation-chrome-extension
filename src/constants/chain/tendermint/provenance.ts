@@ -27,5 +27,5 @@ export const PROVENANCE: TendermintChain = {
     low: '2000',
     average: '2000',
   },
-  gas: { send: '100000' },
+  gas: { send: '200000' },
 };

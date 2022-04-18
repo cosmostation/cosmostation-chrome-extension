@@ -23,9 +23,9 @@ export const SIF: TendermintChain = {
   coinGeckoId: 'sifchain',
   explorerURL: `${MINTSCAN_URL}/sifchain`,
   gasRate: {
-    tiny: '0.5',
-    low: '0.5',
-    average: '0.5',
+    tiny: '1000000000000',
+    low: '2000000000000',
+    average: '3000000000000',
   },
   gas: { send: '100000' },
 };
