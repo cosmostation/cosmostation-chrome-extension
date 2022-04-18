@@ -117,7 +117,8 @@ export default function Tendermint({ chain }: TendermintProps) {
           gte(displayAvailable, DisplayFee) &&
           gte(currentCoinDisplayAmount, currentDisplayAmount))) &&
       gt(currentDisplayAmount, '0') &&
-      addressRegex.test(currentAddress),
+      addressRegex.test(currentAddress) &&
+      address !== currentAddress,
     [
       DisplayFee,
       address,

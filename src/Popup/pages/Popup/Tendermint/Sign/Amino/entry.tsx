@@ -170,7 +170,13 @@ export default function Entry({ queue, chain }: EntryProps) {
                     throw new Error(response.data.tx_response.raw_log);
                   }
                 } catch (e) {
-                  enqueueSnackbar((e as { message: string }).message, { variant: 'error', autoHideDuration: 3000 });
+                  enqueueSnackbar(
+                    (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Tendermint.Sign.Amino.entry.failedTransfer'),
+                    {
+                      variant: 'error',
+                      autoHideDuration: 3000,
+                    },
+                  );
                 } finally {
                   await deQueue();
                 }

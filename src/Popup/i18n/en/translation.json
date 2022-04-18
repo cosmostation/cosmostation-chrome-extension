@@ -415,7 +415,8 @@
               "cancelButton": "Cancel",
               "confirmButton": "Confirm",
               "dataTab": "Data",
-              "detailTab": "Details"
+              "detailTab": "Details",
+              "failedTransfer": "Failed to transfer"
             }
           },
           "Direct": {
