@@ -75,7 +75,7 @@ export default function Entry() {
           </div>
         </InputContainer>
         <BottomContainer>
-          <Button type="submit" disabled={!isDirty}>
+          <Button type="submit" disabled={!isDirty && !newAccount.accountName}>
             {t('pages.Account.Initialize.Import.PrivateKey.entry.next')}
           </Button>
         </BottomContainer>

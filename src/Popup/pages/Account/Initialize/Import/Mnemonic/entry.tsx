@@ -26,7 +26,7 @@ export default function Entry() {
 
   const [newAccount, setNewAccount] = useRecoilState(newMnemonicAccountState);
 
-  const [addressIndex, setAddressIndex] = useState(0);
+  const [addressIndex, setAddressIndex] = useState(Number(newAccount.addressIndex ?? '0'));
 
   const [isOpenHDPathDialog, setIsOpenHDPathDialog] = useState(false);
 
@@ -51,7 +51,7 @@ export default function Entry() {
   });
 
   const submit = (data: MnemonicForm) => {
-    setNewAccount((prev) => ({ ...prev, accountName: data.name, mnemonic: data.mnemonic }));
+    setNewAccount((prev) => ({ ...prev, accountName: data.name, mnemonic: data.mnemonic, addressIndex: String(addressIndex) }));
     navigate('/account/initialize/import/step2');
     reset();
   };
@@ -86,7 +86,7 @@ export default function Entry() {
                 {t('pages.Account.Initialize.Import.Mnemonic.entry.hdPathSetting')}
               </IconButton>
             </BottomSettingButtonContainer>
-            <Button type="submit" disabled={!isDirty}>
+            <Button type="submit" disabled={!isDirty && !newAccount.accountName}>
               {t('pages.Account.Initialize.Import.Mnemonic.entry.next')}
             </Button>
           </BottomContainer>
