@@ -20,7 +20,7 @@ export const CERBERUS: TendermintChain = {
     change: '0',
   },
   bech32Prefix: { address: 'cerberus' },
-  coinGeckoId: 'cerberus',
+  coinGeckoId: 'cerberus-2',
   explorerURL: `${MINTSCAN_URL}/cerberus`,
   gasRate: {
     tiny: '0',
