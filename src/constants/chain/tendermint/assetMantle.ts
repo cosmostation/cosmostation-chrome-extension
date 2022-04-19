@@ -1,0 +1,30 @@
+import { MINTSCAN_URL } from '~/constants/common';
+import crescentImg from '~/images/symbols/crescent.png';
+import type { TendermintChain } from '~/types/chain';
+
+export const ASSET_MANTLE: TendermintChain = {
+  id: 'e454710a-f239-4dbc-a94d-efb2baeac688',
+  line: 'TENDERMINT',
+  type: '',
+  chainId: 'mantle-1',
+  chainName: 'asset mantle',
+  restURL: 'https://lcd-asset-mantle.cosmostation.io',
+  imageURL: crescentImg,
+  baseDenom: 'umntl',
+  displayDenom: 'mntl',
+  decimals: 6,
+  bip44: {
+    purpose: "44'",
+    coinType: "118'",
+    account: "0'",
+    change: '0',
+  },
+  bech32Prefix: { address: 'mantle' },
+  explorerURL: `${MINTSCAN_URL}/asset-mantle`,
+  gasRate: {
+    tiny: '0',
+    low: '0',
+    average: '0',
+  },
+  gas: { send: '100000' },
+};
