@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { DEFAULT_GAS } from '~/constants/chain';
+import { CERTIK } from '~/constants/chain/tendermint/certik';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/common/IconButton';
@@ -244,7 +245,7 @@ export default function Tendermint({ chain }: TendermintProps) {
                     memo: currentMemo,
                     msgs: [
                       {
-                        type: chain.chainName === 'certik' ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
+                        type: chain.chainName === CERTIK.chainName ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
                         value: {
                           from_address: address,
                           to_address: currentAddress,

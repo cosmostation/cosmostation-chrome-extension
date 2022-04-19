@@ -6,7 +6,6 @@ import Skeleton from '~/Popup/components/common/Skeleton';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { upperCaseFirst } from '~/Popup/utils/common';
 
 import {
   LeftContainer,
@@ -53,7 +52,7 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>
-            <Typography variant="h5">{upperCaseFirst(chainName)}</Typography>
+            <Typography variant="h5">{chainName}</Typography>
           </LeftTextChainContainer>
           <LeftTextChainAmountContainer>
             <Number typoOfIntegers="h6n" typoOfDecimals="h8n" fixed={decimals}>
@@ -95,7 +94,7 @@ export function ChainItemSkeleton({ chainName, imageURL, onClick }: ChainItemSke
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>
-            <Typography variant="h5">{upperCaseFirst(chainName)}</Typography>
+            <Typography variant="h5">{chainName}</Typography>
           </LeftTextChainContainer>
           <LeftTextChainAmountContainer>
             <Skeleton variant="text" width={40} sx={{ color: 'red' }} />

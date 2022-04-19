@@ -7,7 +7,7 @@ export const KI: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'kichain-2',
-  chainName: 'kichain',
+  chainName: 'Kichain',
   restURL: 'https://lcd-kichain.cosmostation.io',
   imageURL: kiImg,
   baseDenom: 'uxki',

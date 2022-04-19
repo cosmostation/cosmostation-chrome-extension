@@ -9,7 +9,6 @@ import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { upperCaseFirst } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { TendermintChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
@@ -61,14 +60,14 @@ export default function Entry({ queue }: EntryProps) {
             <br />
             {t('pages.Popup.Tendermint.AddChain.entry.description2')}
             <br />
-            {t('pages.Popup.Tendermint.AddChain.entry.description3')} <AccentSpan>{upperCaseFirst(message.params.chainName)}</AccentSpan>{' '}
+            {t('pages.Popup.Tendermint.AddChain.entry.description3')} <AccentSpan>{message.params.chainName}</AccentSpan>{' '}
             {t('pages.Popup.Tendermint.AddChain.entry.description4')}
           </Typography>
         ) : (
           <Typography variant="h4">
             {origin} {t('pages.Popup.Tendermint.AddChain.entry.description1')}
             <br />
-            {t('pages.Popup.Tendermint.AddChain.entry.description2')} <AccentSpan>{upperCaseFirst(message.params.chainName)}</AccentSpan>
+            {t('pages.Popup.Tendermint.AddChain.entry.description2')} <AccentSpan>{message.params.chainName}</AccentSpan>
             <br />
             {t('pages.Popup.Tendermint.AddChain.entry.description3')}
           </Typography>
@@ -111,7 +110,7 @@ export default function Entry({ queue }: EntryProps) {
               const { addressPrefix, baseDenom, chainId, chainName, displayDenom, restURL, coinGeckoId, coinType, decimals, gasRate, imageURL, sendGas } =
                 params;
 
-              const filteredAdditionalChains = additionalChains.filter((item) => item.chainName !== params.chainName);
+              const filteredAdditionalChains = additionalChains.filter((item) => item.chainName.toLowerCase() !== chainName.toLowerCase());
 
               const newChain: TendermintChain = {
                 id: uuidv4(),

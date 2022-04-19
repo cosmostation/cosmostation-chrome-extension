@@ -7,7 +7,7 @@ export const BITCANNA: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'bitcanna-1',
-  chainName: 'bitcanna',
+  chainName: 'Bitcanna',
   restURL: 'https://lcd-bitcanna.cosmostation.io',
   imageURL: bitcannaImg,
   baseDenom: 'ubcna',

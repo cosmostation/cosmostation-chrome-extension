@@ -7,7 +7,7 @@ export const LUM: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'lum-network-1',
-  chainName: 'lum',
+  chainName: 'Lum',
   restURL: 'https://lcd-lum.cosmostation.io',
   imageURL: lumImg,
   baseDenom: 'ulum',

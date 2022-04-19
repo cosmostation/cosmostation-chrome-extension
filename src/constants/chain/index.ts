@@ -90,7 +90,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
 export const ETHEREUM_CHAINS: EthereumChain[] = [
   // {
   //   id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
-  //   chainName: 'ethereum',
+  //   chainName: 'Ethereum',
   //   imageURL: ethereumImg,
   //   line: LINE_TYPE.ETHEREUM,
   //   bip44: {

@@ -45,6 +45,7 @@ export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) 
 
   return Joi.object<TenSignAminoParams>({
     chainName: Joi.string()
+      .lowercase()
       .valid(...chainNames)
       .required(),
     doc: Joi.object<SignAminoDoc>({
@@ -78,6 +79,7 @@ export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string)
 
   return Joi.object<TenSignDirectParams>({
     chainName: Joi.string()
+      .lowercase()
       .valid(...chainNames)
       .required(),
     doc: Joi.object<SignDirectDoc>({

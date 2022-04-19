@@ -9,7 +9,6 @@ import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { upperCaseFirst } from '~/Popup/utils/common';
 import type { Chain } from '~/types/chain';
 
 import {
@@ -117,7 +116,7 @@ function Item({ children, imageProps, switchProps }: ItemProps) {
           <Image {...imageProps} />
         </ItemLeftImageContainer>
         <ItemLeftTextContainer>
-          <Typography variant="h5">{upperCaseFirst(children)}</Typography>
+          <Typography variant="h5">{children}</Typography>
         </ItemLeftTextContainer>
       </ItemLeftContainer>
       <ItemRightContainer>

@@ -7,7 +7,7 @@ export const BAND: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'laozi-mainnet',
-  chainName: 'band',
+  chainName: 'Band',
   restURL: 'https://lcd-band.cosmostation.io',
   imageURL: bandImg,
   baseDenom: 'uband',

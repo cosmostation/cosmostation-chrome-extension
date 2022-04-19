@@ -7,7 +7,7 @@ export const FETCH_AI: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'fetchhub-4',
-  chainName: 'fetch.ai',
+  chainName: 'Fetch.ai',
   restURL: 'https://lcd-fetchai.cosmostation.io',
   imageURL: fetchaiImg,
   baseDenom: 'afet',

@@ -7,7 +7,7 @@ export const GRAVITY_BRIDGE: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'gravity-bridge-3',
-  chainName: 'gravity bridge',
+  chainName: 'Gravity Bridge',
   restURL: 'https://lcd-gravity-bridge.cosmostation.io',
   imageURL: gravitybridgeImg,
   baseDenom: 'ugraviton',

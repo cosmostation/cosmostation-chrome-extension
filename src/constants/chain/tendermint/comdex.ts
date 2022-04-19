@@ -7,7 +7,7 @@ export const COMDEX: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'comdex-1',
-  chainName: 'comdex',
+  chainName: 'Comdex',
   restURL: 'https://lcd-comdex.cosmostation.io',
   imageURL: comdexImg,
   baseDenom: 'ucmdx',

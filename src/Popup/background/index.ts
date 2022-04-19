@@ -57,11 +57,11 @@ function background() {
 
                 const allChains = [...TENDERMINT_CHAINS, ...tendermintAdditionalChains];
 
-                if (!allChains.map((item) => item.chainName).includes(params?.chainName)) {
+                if (!allChains.map((item) => item.chainName.toLowerCase()).includes(params?.chainName?.toLowerCase())) {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
                 }
 
-                const chain = allChains.find((item) => item.chainName === message.params.chainName);
+                const chain = allChains.find((item) => item.chainName.toLowerCase() === message.params.chainName.toLowerCase());
 
                 if (
                   chain?.id &&
@@ -86,7 +86,10 @@ function background() {
                   });
                 } else {
                   const window = await openWindow();
-                  await setStorage('queues', [...queues, { ...request, windowId: window?.id }]);
+                  await setStorage('queues', [
+                    ...queues,
+                    { ...request, message: { ...request.message, method, params: { chainName: chain!.chainName } }, windowId: window?.id },
+                  ]);
                 }
               }
 
@@ -94,7 +97,7 @@ function background() {
                 const { params } = message;
 
                 const allChains = [...TENDERMINT_CHAINS];
-                const allChainsName = allChains.map((item) => item.chainName);
+                const allChainsName = allChains.map((item) => item.chainName.toLowerCase());
 
                 const schema = tenAddChainParamsSchema(allChainsName);
 
@@ -104,7 +107,11 @@ function background() {
                   const window = await openWindow();
                   await setStorage('queues', [
                     ...queues,
-                    { ...request, message: { ...request.message, method, params: validatedParams }, windowId: window?.id },
+                    {
+                      ...request,
+                      message: { ...request.message, method, params: { ...validatedParams, chainName: params.chainName } as TenAddChainParams },
+                      windowId: window?.id,
+                    },
                   ]);
                 } catch (err) {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
@@ -116,9 +123,9 @@ function background() {
 
                 const allChains = [...TENDERMINT_CHAINS, ...tendermintAdditionalChains];
 
-                const allChainNames = allChains.map((item) => item.chainName);
+                const allChainNames = allChains.map((item) => item.chainName.toLowerCase());
 
-                const chain = allChains.find((item) => item.chainName === message.params.chainName);
+                const chain = allChains.find((item) => item.chainName.toLowerCase() === message.params.chainName?.toLowerCase());
 
                 const schema = tenSignAminoParamsSchema(allChainNames, chain ? chain.chainId : '');
 
@@ -128,7 +135,11 @@ function background() {
                   const window = await openWindow();
                   await setStorage('queues', [
                     ...queues,
-                    { ...request, message: { ...request.message, method, params: validatedParams }, windowId: window?.id },
+                    {
+                      ...request,
+                      message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as TenSignAminoParams },
+                      windowId: window?.id,
+                    },
                   ]);
                 } catch (err) {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
@@ -140,9 +151,9 @@ function background() {
 
                 const allChains = [...TENDERMINT_CHAINS, ...tendermintAdditionalChains];
 
-                const allChainNames = allChains.map((item) => item.chainName);
+                const allChainNames = allChains.map((item) => item.chainName.toLowerCase());
 
-                const chain = allChains.find((item) => item.chainName === message.params.chainName);
+                const chain = allChains.find((item) => item.chainName.toLowerCase() === message.params.chainName?.toLowerCase());
 
                 const schema = tenSignDirectParamsSchema(allChainNames, chain ? chain.chainId : '');
 
@@ -152,7 +163,11 @@ function background() {
                   const window = await openWindow();
                   await setStorage('queues', [
                     ...queues,
-                    { ...request, message: { ...request.message, method, params: validatedParams }, windowId: window?.id },
+                    {
+                      ...request,
+                      message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as TenSignDirectParams },
+                      windowId: window?.id,
+                    },
                   ]);
                 } catch (err) {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
@@ -162,9 +177,9 @@ function background() {
 
             if (tendermintNoPopupMethods.includes(message.method)) {
               if (method === 'ten_supportedChainNames') {
-                const official = TENDERMINT_CHAINS.map((item) => item.chainName);
+                const official = TENDERMINT_CHAINS.map((item) => item.chainName.toLowerCase());
 
-                const unofficial = additionalChains.map((item) => item.chainName);
+                const unofficial = additionalChains.map((item) => item.chainName.toLowerCase());
 
                 responseToWeb({
                   response: {
@@ -181,11 +196,11 @@ function background() {
 
                 const allChains = [...TENDERMINT_CHAINS, ...tendermintAdditionalChains];
 
-                if (!allChains.map((item) => item.chainName).includes(params?.chainName)) {
+                if (!allChains.map((item) => item.chainName.toLowerCase()).includes(params?.chainName.toLowerCase())) {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
                 }
 
-                const chain = allChains.find((item) => item.chainName === message.params.chainName);
+                const chain = allChains.find((item) => item.chainName.toLowerCase() === message.params.chainName?.toLowerCase());
 
                 if (
                   chain?.id &&

@@ -7,7 +7,7 @@ export const COSMOS: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'cosmoshub-4',
-  chainName: 'cosmos',
+  chainName: 'Cosmos',
   restURL: 'https://lcd-cosmos.cosmostation.io',
   imageURL: cosmosImg,
   baseDenom: 'uatom',

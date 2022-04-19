@@ -7,7 +7,7 @@ export const OMNIFLIX: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'omniflixhub-1',
-  chainName: 'omniflix',
+  chainName: 'Omniflix',
   restURL: 'https://lcd-omniflix.cosmostation.io',
   imageURL: omniflixImg,
   baseDenom: 'uflix',

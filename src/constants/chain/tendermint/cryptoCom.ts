@@ -7,7 +7,7 @@ export const CRYPTO_COM: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'crypto-org-chain-mainnet-1',
-  chainName: 'crypto.com',
+  chainName: 'Crypto.com',
   restURL: 'https://lcd-cryptocom.cosmostation.io',
   imageURL: cryptocomImg,
   baseDenom: 'basecro',

@@ -7,7 +7,7 @@ export const RIZON: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'titan-1',
-  chainName: 'rizon',
+  chainName: 'Rizon',
   restURL: 'https://lcd-rizon.cosmostation.io',
   imageURL: rizonImg,
   baseDenom: 'uatolo',

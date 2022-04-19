@@ -7,7 +7,7 @@ export const REGEN: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'regen-1',
-  chainName: 'regen',
+  chainName: 'Regen',
   restURL: 'https://lcd-regen.cosmostation.io',
   imageURL: regenImg,
   baseDenom: 'uregen',

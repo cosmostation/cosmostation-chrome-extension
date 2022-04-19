@@ -7,7 +7,7 @@ export const SENTINEL: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'sentinelhub-2',
-  chainName: 'sentinel',
+  chainName: 'Sentinel',
   restURL: 'https://lcd-sentinel.cosmostation.io',
   imageURL: sentinelImg,
   baseDenom: 'udvpn',

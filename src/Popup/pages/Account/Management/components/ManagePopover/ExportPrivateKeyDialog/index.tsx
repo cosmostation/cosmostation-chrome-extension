@@ -10,7 +10,7 @@ import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { getKeyPair, upperCaseFirst } from '~/Popup/utils/common';
+import { getKeyPair } from '~/Popup/utils/common';
 import { sha512 } from '~/Popup/utils/crypto';
 import type { Account } from '~/types/chromeStorage';
 
@@ -139,7 +139,7 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
                   <DescriptionTextContainer>
                     <Typography variant="h6">
                       {t('pages.Account.Management.components.ManagePopover.ExportPrivateKeyDialog.index.mnemonicWarning1')}{' '}
-                      <AccentText>{upperCaseFirst(chain.chainName)}</AccentText>{' '}
+                      <AccentText>{chain.chainName}</AccentText>{' '}
                       {t('pages.Account.Management.components.ManagePopover.ExportPrivateKeyDialog.index.mnemonicWarning2')}
                     </Typography>
                   </DescriptionTextContainer>

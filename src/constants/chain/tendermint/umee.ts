@@ -7,7 +7,7 @@ export const UMEE: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'umee-1',
-  chainName: 'umee',
+  chainName: 'Umee',
   restURL: 'https://lcd-umee.cosmostation.io',
   imageURL: umeeImg,
   baseDenom: 'uumee',

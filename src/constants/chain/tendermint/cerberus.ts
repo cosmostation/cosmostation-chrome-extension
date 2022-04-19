@@ -7,7 +7,7 @@ export const CERBERUS: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'cerberus-chain-1',
-  chainName: 'cerberus',
+  chainName: 'Cerberus',
   restURL: 'https://lcd-cerberus.cosmostation.io',
   imageURL: cerberusImg,
   baseDenom: 'ucrbrus',
