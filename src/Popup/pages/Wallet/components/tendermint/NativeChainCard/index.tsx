@@ -78,7 +78,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
 
   const displayAmount = toDisplayDenomAmount(totalAmount, decimals);
 
-  const value = times(displayAmount, price, 2);
+  const value = times(displayAmount, price);
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
 
@@ -116,7 +116,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>
-        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={2} currency={chromeStorage.currency}>
+        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={chromeStorage.currency}>
           {value}
         </Number>
       </ThirdLineContainer>

@@ -16,5 +16,11 @@ export type SimplePrice = Record<
     cny?: number;
     cny_24h_change?: number;
     cny_market_cap?: number;
+    btc?: number;
+    btc_24h_change?: number;
+    btc_market_cap?: number;
+    eth?: number;
+    eth_24h_change?: number;
+    eth_market_cap?: number;
   }
 >;

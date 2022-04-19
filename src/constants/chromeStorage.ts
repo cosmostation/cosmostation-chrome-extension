@@ -14,4 +14,6 @@ export const CURRENCY_TYPE = {
   EUR: 'eur',
   JPY: 'jpy',
   CNY: 'cny',
+  BTC: 'btc',
+  ETH: 'eth',
 } as const;

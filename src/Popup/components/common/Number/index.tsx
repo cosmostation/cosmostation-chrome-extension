@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 
-import { CURRENCY_SYMBOL } from '~/constants/currency';
+import { CURRENCY_DECIMALS, CURRENCY_SYMBOL } from '~/constants/currency';
 import { fix } from '~/Popup/utils/big';
 import type { CurrencyType } from '~/types/chromeStorage';
 import type { NumberTypos } from '~/types/theme';
@@ -13,10 +13,8 @@ type NumberProps = {
   currency?: CurrencyType;
 };
 
-// TODO: 통화 기호 prefix optional 하게 추가 하기
-
 export default function Number({ children, typoOfIntegers = 'h3n', typoOfDecimals = 'h4n', fixed, currency }: NumberProps) {
-  const number = children ? (fixed !== undefined ? fix(children, fixed) : children) : '';
+  const number = children ? (fixed !== undefined ? fix(children, fixed) : currency ? fix(children, CURRENCY_DECIMALS[currency]) : children) : '';
 
   const splitedNumber = number.split('.');
 

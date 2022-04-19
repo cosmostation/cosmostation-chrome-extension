@@ -43,7 +43,7 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
 
   const displayAmount = toDisplayDenomAmount(amount, decimals);
 
-  const value = times(displayAmount, price, 2);
+  const value = times(displayAmount, price);
 
   return (
     <StyledButton onClick={onClick}>
