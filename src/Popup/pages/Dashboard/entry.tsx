@@ -54,7 +54,7 @@ export default function Entry() {
           <Typography variant="h5">Total Value</Typography>
         </TotalValueTextContainer>
         <TotalValueContainer>
-          <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={chromeStorage.currency} fixed={2}>
+          <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={chromeStorage.currency}>
             {totalAmount}
           </Number>
         </TotalValueContainer>

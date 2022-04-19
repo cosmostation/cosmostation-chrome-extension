@@ -44,7 +44,7 @@ export default function ChainItem({ disabled, imageURL, amount, decimals = 0, ba
 
   const displayAmount = toDisplayDenomAmount(amount, decimals);
 
-  const value = times(displayAmount, chainPrice * tetherPrice, 2);
+  const value = times(displayAmount, chainPrice * tetherPrice);
 
   return (
     <StyledButton onClick={onClick} disabled={disabled}>
@@ -70,7 +70,7 @@ export default function ChainItem({ disabled, imageURL, amount, decimals = 0, ba
           </RightTextValueContainer>
 
           <RightTextChangeRateContainer>
-            <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={chromeStorage.currency} fixed={2}>
+            <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={chromeStorage.currency}>
               {value}
             </Number>
           </RightTextChangeRateContainer>

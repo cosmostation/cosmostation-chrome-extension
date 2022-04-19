@@ -103,7 +103,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>
-        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={2} currency={chromeStorage.currency}>
+        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={chromeStorage.currency}>
           {value}
         </Number>
       </ThirdLineContainer>
