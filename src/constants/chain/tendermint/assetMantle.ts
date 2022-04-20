@@ -1,15 +1,15 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import crescentImg from '~/images/symbols/crescent.png';
+import assetmantleImg from '~/images/symbols/assetmantle.png';
 import type { TendermintChain } from '~/types/chain';
 
 export const ASSET_MANTLE: TendermintChain = {
-  id: 'e454710a-f239-4dbc-a94d-efb2baeac688',
+  id: 'e45dbc17-1233-40e9-92c0-59152b79750d',
   line: 'TENDERMINT',
   type: '',
   chainId: 'mantle-1',
-  chainName: 'asset mantle',
+  chainName: 'AssetMantle',
   restURL: 'https://lcd-asset-mantle.cosmostation.io',
-  imageURL: crescentImg,
+  imageURL: assetmantleImg,
   baseDenom: 'umntl',
   displayDenom: 'mntl',
   decimals: 6,
