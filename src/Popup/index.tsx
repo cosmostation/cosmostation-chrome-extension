@@ -3,6 +3,7 @@ import '~/Popup/styles/normalize.css';
 
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
 import { RecoilRoot } from 'recoil';
@@ -143,7 +144,9 @@ function Popup() {
 ReactDOM.render(
   <StrictMode>
     <RecoilRoot>
-      <Popup />
+      <HelmetProvider>
+        <Popup />
+      </HelmetProvider>
     </RecoilRoot>
   </StrictMode>,
   document.getElementById('root'),

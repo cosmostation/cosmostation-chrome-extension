@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useSetRecoilState } from 'recoil';
+import { Helmet } from 'react-helmet-async';
+import { useRecoilState } from 'recoil';
 
 import { CHAINS } from '~/constants/chain';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
@@ -15,7 +16,7 @@ type InitType = {
 export default function Init({ children }: InitType) {
   const [isLoading, setIsLoading] = useState(true);
 
-  const setChromeStorage = useSetRecoilState(chromeStorageState);
+  const [chromeStorage, setChromeStorage] = useRecoilState(chromeStorageState);
 
   const { changeLanguage, language } = useTranslation();
 
@@ -82,5 +83,12 @@ export default function Init({ children }: InitType) {
     return null;
   }
 
-  return children;
+  return (
+    <>
+      {children}
+      <Helmet>
+        <link rel="icon" href={`favicon${chromeStorage.theme === 'LIGHT' ? '' : '-dark'}.ico`} />
+      </Helmet>
+    </>
+  );
 }
