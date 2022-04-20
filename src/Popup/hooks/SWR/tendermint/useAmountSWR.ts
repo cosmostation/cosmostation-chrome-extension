@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import Big from 'big.js';
 
+import { KAVA } from '~/constants/chain/tendermint/kava';
+import { PERSISTENCE } from '~/constants/chain/tendermint/persistence';
 import { useAccountSWR } from '~/Popup/hooks/SWR/tendermint/useAccountSWR';
 import { useDelegationSWR } from '~/Popup/hooks/SWR/tendermint/useDelegationSWR';
 import { useRewardSWR } from '~/Popup/hooks/SWR/tendermint/useRewardSWR';
@@ -43,7 +45,7 @@ export function useAmountSWR(chain: TendermintChain, suspense?: boolean) {
   const vestingRemained = useMemo(() => getVestingRemained(account?.data, chain.baseDenom), [account?.data, chain.baseDenom]);
   const delegatedVestingTotal = useMemo(
     () =>
-      chain.chainName === 'kava'
+      chain.chainName === KAVA.chainName
         ? getDelegatedVestingTotal(account?.data, chain.baseDenom)
         : calculatingDelegatedVestingTotal(vestingRemained, delegationAmount),
     [account?.data, chain.baseDenom, chain.chainName, delegationAmount, vestingRemained],
@@ -56,7 +58,7 @@ export function useAmountSWR(chain: TendermintChain, suspense?: boolean) {
 
   const [vestingRelatedAvailable, vestingNotDelegate] = useMemo(() => {
     if (gt(vestingRemained, '0')) {
-      if (chain.chainName === 'persistence') {
+      if (chain.chainName === PERSISTENCE.chainName) {
         return getPersistenceVestingRelatedBalances(availableAmount, vestingRemained);
       }
 

@@ -9,8 +9,8 @@ export const tenAddChainParamsSchema = (chainNames: string[]) =>
   Joi.object<TenAddChainParams>({
     chainId: Joi.string().required(),
     chainName: Joi.string()
-      .invalid(...chainNames)
       .lowercase()
+      .invalid(...chainNames)
       .required(),
     restURL: Joi.string().required(),
     imageURL: Joi.string().optional(),
