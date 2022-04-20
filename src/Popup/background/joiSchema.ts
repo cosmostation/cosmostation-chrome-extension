@@ -41,7 +41,7 @@ export const tenAddChainParamsSchema = (chainNames: string[]) =>
 export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) => {
   const splitedChainId = chainId.split('-');
   const prefixChainId = splitedChainId[0] ?? '';
-  const chainIdRegex = new RegExp(`^${prefixChainId ? `${prefixChainId}-` : ''}(.*)$`);
+  const chainIdRegex = new RegExp(`^${prefixChainId || ''}(.*)$`);
 
   return Joi.object<TenSignAminoParams>({
     chainName: Joi.string()
