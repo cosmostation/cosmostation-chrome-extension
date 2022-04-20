@@ -353,6 +353,11 @@ function background() {
         const text = newQueues ? `${newQueues.length > 0 ? newQueues.length : ''}` : '';
         void chrome.action.setBadgeText({ text });
       }
+
+      if (key === 'theme') {
+        const newTheme = newValue as ThemeType;
+        void chrome.action.setIcon({ path: newTheme === 'LIGHT' ? '/icon128.png' : '/icon128-dark.png' });
+      }
     }
   });
 
