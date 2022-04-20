@@ -99,9 +99,9 @@ function background() {
               if (method === 'ten_addChain') {
                 const { params } = message;
 
-                const allChainsName = TENDERMINT_CHAINS.map((item) => item.chainName.toLowerCase());
+                const tendermintLowercaseChainNames = TENDERMINT_CHAINS.map((item) => item.chainName.toLowerCase());
 
-                const schema = tenAddChainParamsSchema(allChainsName);
+                const schema = tenAddChainParamsSchema(tendermintLowercaseChainNames);
 
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as TenAddChainParams;
