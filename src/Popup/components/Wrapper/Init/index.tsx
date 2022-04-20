@@ -19,7 +19,7 @@ export default function Init({ children }: InitType) {
 
   const { changeLanguage, language } = useTranslation();
 
-  const officialChainNames = CHAINS.map((item) => item.chainName);
+  const officialChainLowercaseNames = CHAINS.map((item) => item.chainName.toLowerCase());
 
   useEffect(() => {
     chrome.storage.onChanged.addListener(() => {
@@ -62,8 +62,8 @@ export default function Init({ children }: InitType) {
         await setStorage('addressBook', []);
       }
 
-      if (originChromeStorage.additionalChains.find((item) => officialChainNames.includes(item.chainName))) {
-        const newAdditionalChains = originChromeStorage.additionalChains.filter((item) => !officialChainNames.includes(item.chainName));
+      if (originChromeStorage.additionalChains.find((item) => officialChainLowercaseNames.includes(item.chainName.toLowerCase()))) {
+        const newAdditionalChains = originChromeStorage.additionalChains.filter((item) => !officialChainLowercaseNames.includes(item.chainName.toLowerCase()));
 
         await setStorage('additionalChains', newAdditionalChains);
       }

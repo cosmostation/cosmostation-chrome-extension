@@ -7,7 +7,7 @@ export const JUNO: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'juno-1',
-  chainName: 'juno',
+  chainName: 'Juno',
   restURL: 'https://lcd-juno.cosmostation.io',
   imageURL: junoImg,
   baseDenom: 'ujuno',

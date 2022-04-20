@@ -7,7 +7,7 @@ export const STARGAZE: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'stargaze-1',
-  chainName: 'stargaze',
+  chainName: 'Stargaze',
   restURL: 'https://lcd-stargaze.cosmostation.io',
   imageURL: stargazeImg,
   coinGeckoId: 'stargaze',

@@ -38,7 +38,7 @@ export async function chromeStorage() {
 
   const getPairKey = (chainName: string, password: string) => {
     const chains = Object.values(CHAINS);
-    const selectedChain = chains.find((chain) => chain.chainName === chainName);
+    const selectedChain = chains.find((chain) => chain.chainName.toLowerCase() === chainName.toLowerCase());
 
     if (!selectedChain) {
       throw new Error('not exist chain');

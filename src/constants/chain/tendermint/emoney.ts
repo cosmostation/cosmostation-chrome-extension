@@ -7,7 +7,7 @@ export const EMONEY: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'emoney-3',
-  chainName: 'emoney',
+  chainName: 'Emoney',
   restURL: 'https://lcd-emoney.cosmostation.io',
   imageURL: emoneyImg,
   baseDenom: 'ungm',

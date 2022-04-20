@@ -7,7 +7,7 @@ export const KONSTELLATION: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'darchub',
-  chainName: 'konstellation',
+  chainName: 'Konstellation',
   restURL: 'https://lcd-konstellation.cosmostation.io',
   imageURL: konstellationImg,
   baseDenom: 'udarc',

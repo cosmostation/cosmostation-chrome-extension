@@ -7,7 +7,7 @@ export const PROVENANCE: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'pio-mainnet-1',
-  chainName: 'provenance',
+  chainName: 'Provenance',
   restURL: 'https://lcd-provenance.cosmostation.io',
   imageURL: provenanceImg,
   baseDenom: 'nhash',

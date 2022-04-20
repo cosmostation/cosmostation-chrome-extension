@@ -7,7 +7,7 @@ export const SIF: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'sifchain-1',
-  chainName: 'sif',
+  chainName: 'Sif',
   restURL: 'https://lcd-sifchain.cosmostation.io',
   imageURL: sifImg,
   baseDenom: 'rowan',

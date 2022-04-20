@@ -5,6 +5,7 @@ import sha256 from 'crypto-js/sha256';
 import sortKeys from 'sort-keys';
 import TinySecp256k1 from 'tiny-secp256k1';
 
+import { KAVA } from '~/constants/chain/tendermint/kava';
 import { cosmos } from '~/proto/cosmos.js';
 import type { TendermintChain } from '~/types/chain';
 import type { Msg, MsgCustom, MsgSend, SignAminoDoc } from '~/types/tendermint/amino';
@@ -21,7 +22,7 @@ export function tendermintURL(chain: TendermintChain) {
     getUndelegations: (address: string) => `${restURL}/staking/delegators/${address}/unbonding_delegations`,
     getAccount: (address: string) => `${restURL}/auth/accounts/${address}`,
     getWithdrawAddress: (address: string) => `${restURL}/distribution/delegators/${address}/withdraw_address`,
-    getIncentive: (address: string) => (chainName === 'kava' ? `${restURL}/incentive/rewards?owner=${address}` : ''),
+    getIncentive: (address: string) => (chainName === KAVA.chainName ? `${restURL}/incentive/rewards?owner=${address}` : ''),
     postBroadcast: () => `${restURL}/cosmos/tx/v1beta1/txs`,
   };
 }

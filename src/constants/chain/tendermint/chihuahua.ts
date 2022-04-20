@@ -7,7 +7,7 @@ export const CHIHUAHUA: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'chihuahua-1',
-  chainName: 'chihuahua',
+  chainName: 'Chihuahua',
   restURL: 'https://lcd-chihuahua.cosmostation.io',
   imageURL: chihuahuaImg,
   baseDenom: 'uhuahua',

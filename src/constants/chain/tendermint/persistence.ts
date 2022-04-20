@@ -7,7 +7,7 @@ export const PERSISTENCE: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'core-1',
-  chainName: 'persistence',
+  chainName: 'Persistence',
   restURL: 'https://lcd-persistence.cosmostation.io',
   imageURL: persistenceImg,
   baseDenom: 'uxprt',

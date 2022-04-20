@@ -7,7 +7,7 @@ export const CERTIK: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'shentu-2.2',
-  chainName: 'certik',
+  chainName: 'Certik',
   restURL: 'https://lcd-certik.cosmostation.io',
   imageURL: certikImg,
   baseDenom: 'uctk',

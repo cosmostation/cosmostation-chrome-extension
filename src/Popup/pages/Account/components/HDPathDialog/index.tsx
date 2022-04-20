@@ -9,7 +9,6 @@ import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { upperCaseFirst } from '~/Popup/utils/common';
 
 import {
   Container,
@@ -40,7 +39,7 @@ export default function HDPathDialog({ onClose, onSubmitHdPath, currentAddressIn
 
   const { t } = useTranslation();
   const hdPathInfos = [...CHAINS, ...currentAdditionalChains].map((item) => ({
-    name: upperCaseFirst(item.chainName),
+    name: item.chainName,
     path: `${item.bip44.purpose}/${item.bip44.coinType}/${item.bip44.account}/${item.bip44.change}`,
   }));
   const {

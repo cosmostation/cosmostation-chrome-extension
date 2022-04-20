@@ -7,7 +7,7 @@ export const DESMOS: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'desmos-mainnet',
-  chainName: 'desmos',
+  chainName: 'Desmos',
   restURL: 'https://lcd-desmos.cosmostation.io',
   imageURL: desmosImg,
   baseDenom: 'udsm',

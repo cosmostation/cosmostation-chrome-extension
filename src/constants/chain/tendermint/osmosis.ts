@@ -7,7 +7,7 @@ export const OSMOSIS: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'osmosis-1',
-  chainName: 'osmosis',
+  chainName: 'Osmosis',
   restURL: 'https://lcd-osmosis.cosmostation.io',
   imageURL: osmosisImg,
   baseDenom: 'uosmo',

@@ -7,7 +7,7 @@ export const AKASH: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'akashnet-2',
-  chainName: 'akash',
+  chainName: 'Akash',
   restURL: 'https://lcd-akash.cosmostation.io',
   imageURL: akashImg,
   baseDenom: 'uakt',

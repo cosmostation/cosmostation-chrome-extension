@@ -1,7 +1,6 @@
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
-import { upperCaseFirst } from '~/Popup/utils/common';
 
 import {
   ContentContainer,
@@ -29,7 +28,7 @@ export default function ChainButton({ children, imgSrc, type = 'button', isActiv
             <Image src={imgSrc} />
           </ContentLeftImageContainer>
           <ContentLeftTextContainer>
-            <Typography variant="h5">{upperCaseFirst(children)}</Typography>
+            <Typography variant="h5">{children}</Typography>
           </ContentLeftTextContainer>
         </ContentLeftContainer>
         <ContentRightImageContainer>{isActive ? <StyledUpArrow /> : <StyledBottomArrow />}</ContentRightImageContainer>

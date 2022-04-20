@@ -7,7 +7,7 @@ export const IRIS: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'irishub-1',
-  chainName: 'iris',
+  chainName: 'Iris',
   restURL: 'https://lcd-iris.cosmostation.io',
   imageURL: irisImg,
   baseDenom: 'uiris',

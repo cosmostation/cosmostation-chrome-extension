@@ -7,7 +7,7 @@ export const MEDIBLOC: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'panacea-3',
-  chainName: 'medibloc',
+  chainName: 'Medibloc',
   restURL: 'https://lcd-medibloc.cosmostation.io',
   imageURL: mediblocImg,
   baseDenom: 'umed',

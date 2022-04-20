@@ -13,7 +13,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { getKeyPair, upperCaseFirst } from '~/Popup/utils/common';
+import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, protoTx } from '~/Popup/utils/proto';
 import { signAmino, tendermintURL } from '~/Popup/utils/tendermint';
@@ -93,7 +93,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   return (
     <Container>
       <TitleContainer>
-        <Typography variant="h3">{upperCaseFirst(chainName)}</Typography>
+        <Typography variant="h3">{chainName}</Typography>
       </TitleContainer>
       <TabContainer>
         <Tabs value={value} onChange={handleChange} textColor="inherit" variant="fullWidth" indicatorColor="primary">

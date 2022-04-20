@@ -7,7 +7,7 @@ export const AXELAR: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'axelar-dojo-1',
-  chainName: 'axelar',
+  chainName: 'Axelar',
   restURL: 'https://lcd-axelar.cosmostation.io',
   imageURL: axelarImg,
   baseDenom: 'uaxl',

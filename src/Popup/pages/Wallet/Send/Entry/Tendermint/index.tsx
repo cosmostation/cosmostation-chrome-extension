@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { DEFAULT_GAS } from '~/constants/chain';
+import { CERTIK } from '~/constants/chain/tendermint/certik';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/common/IconButton';
@@ -14,6 +15,7 @@ import { useAccountSWR } from '~/Popup/hooks/SWR/tendermint/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/tendermint/useAmountSWR';
 import type { CoinInfo } from '~/Popup/hooks/SWR/tendermint/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/tendermint/useCoinListSWR';
+import { useNodeInfoSWR } from '~/Popup/hooks/SWR/tendermint/useNodeinfoSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -52,6 +54,7 @@ export default function Tendermint({ chain }: TendermintProps) {
   const { vestingRelatedAvailable, totalAmount } = useAmountSWR(chain, true);
   const coinList = useCoinListSWR(chain, true);
   const accounts = useAccounts(true);
+  const nodeInfo = useNodeInfoSWR(chain);
   const { enQueue } = useCurrentQueue();
   const params = useParams();
 
@@ -239,12 +242,12 @@ export default function Tendermint({ chain }: TendermintProps) {
                   doc: {
                     account_number: String(account.data.value.account_number ?? ''),
                     sequence: String(account.data.value.sequence ?? '0'),
-                    chain_id: chain.chainId,
+                    chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
                     fee: { amount: [{ denom: chain.baseDenom, amount: currentFee }], gas: currentGas },
                     memo: currentMemo,
                     msgs: [
                       {
-                        type: chain.chainName === 'certik' ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
+                        type: chain.chainName === CERTIK.chainName ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
                         value: {
                           from_address: address,
                           to_address: currentAddress,

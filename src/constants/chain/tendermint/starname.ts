@@ -7,7 +7,7 @@ export const STARNAME: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'iov-mainnet-ibc',
-  chainName: 'starname',
+  chainName: 'Starname',
   restURL: 'https://lcd-iov.cosmostation.io',
   imageURL: starnameImg,
   baseDenom: 'uiov',

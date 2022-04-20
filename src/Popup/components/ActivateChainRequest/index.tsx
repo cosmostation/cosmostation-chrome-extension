@@ -11,7 +11,6 @@ import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentA
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { upperCaseFirst } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 
 import { AccentSpan, BottomContainer, ChainImageContainer, Container, DescriptionContainer, LogoContainer, StyledDivider, TitleContainer } from './styled';
@@ -57,7 +56,7 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
             <Typography variant="h4">
               {t('components.ActivateChainRequest.index.description1')}
               <br />
-              {t('components.ActivateChainRequest.index.description2')} <AccentSpan>{upperCaseFirst(message.params.chainName)}</AccentSpan>{' '}
+              {t('components.ActivateChainRequest.index.description2')} <AccentSpan>{message.params.chainName}</AccentSpan>{' '}
               {t('components.ActivateChainRequest.index.description3')}
             </Typography>
           </DescriptionContainer>

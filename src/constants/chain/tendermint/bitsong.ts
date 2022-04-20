@@ -7,7 +7,7 @@ export const BITSONG: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'bitsong-2b',
-  chainName: 'bitsong',
+  chainName: 'Bitsong',
   restURL: 'https://lcd-bitsong.cosmostation.io',
   imageURL: bitsongImg,
   baseDenom: 'ubtsg',

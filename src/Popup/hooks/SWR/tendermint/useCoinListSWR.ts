@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import Big from 'big.js';
 
-import { KAVA_COINS } from '~/constants/chain/tendermint/kava';
+import { KAVA, KAVA_COINS } from '~/constants/chain/tendermint/kava';
 import { useAccountSWR } from '~/Popup/hooks/SWR/tendermint/useAccountSWR';
 import { useDelegationSWR } from '~/Popup/hooks/SWR/tendermint/useDelegationSWR';
 import { useRewardSWR } from '~/Popup/hooks/SWR/tendermint/useRewardSWR';
@@ -40,7 +40,7 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
   const coins: CoinInfo[] = useMemo(
     () =>
       balance.data?.balance
-        ?.filter((coin) => chain.chainName === 'kava' && kavaCoinArray.includes(coin.denom))
+        ?.filter((coin) => chain.chainName === KAVA.chainName && kavaCoinArray.includes(coin.denom))
         .map((coin) => {
           const coinInfo = KAVA_COINS.find((item) => item.baseDenom === coin.denom)!;
 
@@ -55,7 +55,7 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
 
           const vestingRemained = getVestingRemained(account?.data, coin.denom);
           const delegatedVestingTotal =
-            chain.chainName === 'kava'
+            chain.chainName === KAVA.chainName
               ? getDelegatedVestingTotal(account?.data, coin.denom)
               : calculatingDelegatedVestingTotal(vestingRemained, delegationAmount);
 

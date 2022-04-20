@@ -7,7 +7,7 @@ export const CRESCENT: TendermintChain = {
   line: 'TENDERMINT',
   type: '',
   chainId: 'crescent-1',
-  chainName: 'crescent',
+  chainName: 'Crescent',
   restURL: 'https://lcd-crescent.cosmostation.io',
   imageURL: crescentImg,
   baseDenom: 'ucre',
