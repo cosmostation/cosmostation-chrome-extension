@@ -2,6 +2,7 @@ import ethereumImg from '~/images/symbols/ethereum.png';
 import type { EthereumChain, EthereumNetwork, TendermintChain } from '~/types/chain';
 
 import { AKASH } from './tendermint/akash';
+import { ASSET_MANTLE } from './tendermint/assetMantle';
 import { AXELAR } from './tendermint/axelar';
 import { BAND } from './tendermint/band';
 import { BITCANNA } from './tendermint/bitcanna';
@@ -51,6 +52,7 @@ export const DEFAULT_GAS = '100000';
 export const TENDERMINT_CHAINS: TendermintChain[] = [
   COSMOS,
   AKASH,
+  ASSET_MANTLE,
   AXELAR,
   BAND,
   BITCANNA,
