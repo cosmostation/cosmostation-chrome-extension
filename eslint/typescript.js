@@ -51,10 +51,13 @@ module.exports = {
         '@typescript-eslint/camelcase': 'off',
         camelcase: 'off',
 
+        // void를 반환하는 함수로 예상되는 JSX 속성으로 전달된 비동기 함수 검사를 비활성화
         '@typescript-eslint/no-misused-promises': [
           'error',
           {
-            checksVoidReturn: false,
+            checksVoidReturn: {
+              attributes: false,
+            },
           },
         ],
       },

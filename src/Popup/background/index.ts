@@ -27,7 +27,7 @@ function background() {
     sendResponse();
 
     if (request?.type === MESSAGE_TYPE.REQUEST__CONTENT_SCRIPT_TO_BACKGROUND) {
-      void (async function asyncHandler() {
+      void (async () => {
         if (request.line === 'TENDERMINT') {
           const tendermintMethods = Object.values(TENDERMINT_METHOD_TYPE) as string[];
           const tendermintPopupMethods = Object.values(TENDERMINT_POPUP_METHOD_TYPE) as string[];
@@ -371,7 +371,7 @@ function background() {
   });
 
   chrome.windows.onRemoved.addListener((windowId) => {
-    void (async function asyncHandler() {
+    void (async () => {
       const queues = await getStorage('queues');
 
       const currentWindowIds = queues.filter((item) => typeof item.windowId === 'number').map((item) => item.windowId) as number[];
@@ -409,7 +409,7 @@ function background() {
   });
 
   chrome.runtime.onStartup.addListener(() => {
-    void (async function async() {
+    void (async () => {
       await setStorage('queues', []);
       await setStorage('windowId', null);
       await setStorage('password', null);
@@ -417,7 +417,7 @@ function background() {
   });
 
   chrome.runtime.onInstalled.addListener((details) => {
-    void (async function async() {
+    void (async () => {
       if (details.reason === 'install') {
         await setStorage('queues', []);
         await setStorage('windowId', null);

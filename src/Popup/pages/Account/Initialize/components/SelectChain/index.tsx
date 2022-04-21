@@ -72,8 +72,8 @@ export default function SelectChain() {
               imageProps={{ alt: chain.chainName, src: chain.imageURL }}
               switchProps={{
                 checked: allowedChainIds.includes(chain.id),
-                onChange: async (_, checked) => {
-                  await handleOnChange(checked, chain);
+                onChange: (_, checked) => {
+                  void handleOnChange(checked, chain);
                 },
               }}
             >
@@ -95,8 +95,8 @@ export default function SelectChain() {
               imageProps={{ alt: chain.chainName, src: chain.imageURL }}
               switchProps={{
                 checked: allowedChainIds.includes(chain.id),
-                onChange: async (_, checked) => {
-                  await handleOnChange(checked, chain);
+                onChange: (_, checked) => {
+                  void handleOnChange(checked, chain);
                 },
               }}
             >

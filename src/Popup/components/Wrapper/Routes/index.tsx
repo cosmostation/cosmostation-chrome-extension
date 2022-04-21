@@ -15,7 +15,7 @@ export default function Routes({ children }: RoutesType) {
   const { navigate } = useNavigate();
 
   useEffect(() => {
-    void (async function async() {
+    void (async () => {
       if (chromeStorage.accounts.length < 1) {
         await openTab();
       }

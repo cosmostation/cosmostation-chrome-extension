@@ -22,14 +22,16 @@ export default function Init({ children }: InitType) {
 
   const officialChainLowercaseNames = CHAINS.map((item) => item.chainName.toLowerCase());
 
-  useEffect(() => {
-    chrome.storage.onChanged.addListener(() => {
-      void (async function async() {
-        setChromeStorage(await getAllStorage());
-      })();
-    });
+  const handleOnStorageChange = () => {
+    void (async () => {
+      setChromeStorage(await getAllStorage());
+    })();
+  };
 
-    void (async function async() {
+  useEffect(() => {
+    chrome.storage.onChanged.addListener(handleOnStorageChange);
+
+    void (async () => {
       const originChromeStorage = await getAllStorage();
 
       setChromeStorage(originChromeStorage);
@@ -75,6 +77,10 @@ export default function Init({ children }: InitType) {
 
       setIsLoading(false);
     })();
+
+    return () => {
+      chrome.storage.onChanged.removeListener(handleOnStorageChange);
+    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
