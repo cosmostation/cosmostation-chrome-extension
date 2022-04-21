@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import SwipeableViews from 'react-swipeable-views';
 import { Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 
 import { DEFAULT_GAS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -42,11 +40,6 @@ import Memo from '../components/Memo';
 import Pagination from '../components/Pagination';
 import Tx from '../components/Tx';
 
-const a11yProps = (index: number) => ({
-  id: `full-width-tab-${index}`,
-  'aria-controls': `full-width-tabpanel-${index}`,
-});
-
 type EntryProps = {
   queue: Queue<TenSignDirect>;
   chain: TendermintChain;
@@ -54,7 +47,6 @@ type EntryProps = {
 
 export default function Entry({ queue, chain }: EntryProps) {
   const [value, setValue] = useState(0);
-  const theme = useTheme();
   const [txMsgPage, setTxMsgPage] = useState(1);
   const { deQueue } = useCurrentQueue();
   const { currentAccount } = useCurrentAccount();
@@ -107,10 +99,6 @@ export default function Entry({ queue, chain }: EntryProps) {
     setValue(newValue);
   };
 
-  const handleChangeIndex = (index: number) => {
-    setValue(index);
-  };
-
   return (
     <Container>
       <TitleContainer>
@@ -118,33 +106,31 @@ export default function Entry({ queue, chain }: EntryProps) {
       </TitleContainer>
       <TabContainer>
         <Tabs value={value} onChange={handleChange} textColor="inherit" variant="fullWidth" indicatorColor="primary">
-          <Tab label={t('pages.Popup.Tendermint.Sign.Direct.entry.detailTab')} {...a11yProps(0)} />
-          <Tab label={t('pages.Popup.Tendermint.Sign.Direct.entry.dataTab')} {...a11yProps(1)} />
+          <Tab label={t('pages.Popup.Tendermint.Sign.Direct.entry.detailTab')} />
+          <Tab label={t('pages.Popup.Tendermint.Sign.Direct.entry.dataTab')} />
         </Tabs>
         <TabIndicatorContainer />
       </TabContainer>
-      <SwipeableViews axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'} index={value} onChangeIndex={handleChangeIndex}>
-        <TabPanel value={value} index={0} dir={theme.direction}>
-          <TxMessage msg={msgs[txMsgPage - 1]} chain={chain} />
-          {msgs.length > 1 && (
-            <PaginationContainer>
-              <Pagination currentPage={txMsgPage} totalPage={msgs.length} onChange={(page) => setTxMsgPage(page)} />
-            </PaginationContainer>
-          )}
-          <MemoContainer>
-            <Memo memo={memo} onChange={(m) => setMemo(m)} isEdit={isEditMemo} />
-          </MemoContainer>
+      <TabPanel value={value} index={0}>
+        <TxMessage msg={msgs[txMsgPage - 1]} chain={chain} />
+        {msgs.length > 1 && (
+          <PaginationContainer>
+            <Pagination currentPage={txMsgPage} totalPage={msgs.length} onChange={(page) => setTxMsgPage(page)} />
+          </PaginationContainer>
+        )}
+        <MemoContainer>
+          <Memo memo={memo} onChange={(m) => setMemo(m)} isEdit={isEditMemo} />
+        </MemoContainer>
 
-          {fee && (
-            <FeeContainer>
-              <Fee chain={chain} baseFee={baseFee} gas={gas} onChangeFee={(f) => setBaseFee(f)} onChangeGas={(g) => setGas(g)} isEdit={isEditFee} />
-            </FeeContainer>
-          )}
-        </TabPanel>
-        <TabPanel value={value} index={1} dir={theme.direction}>
-          <Tx tx={tx} />
-        </TabPanel>
-      </SwipeableViews>
+        {fee && (
+          <FeeContainer>
+            <Fee chain={chain} baseFee={baseFee} gas={gas} onChangeFee={(f) => setBaseFee(f)} onChangeGas={(g) => setGas(g)} isEdit={isEditFee} />
+          </FeeContainer>
+        )}
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <Tx tx={tx} />
+      </TabPanel>
       <BottomContainer>
         <BottomButtonContainer>
           <OutlineButton

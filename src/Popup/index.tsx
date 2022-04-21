@@ -2,7 +2,7 @@ import '~/Popup/i18n';
 import '~/Popup/styles/normalize.css';
 
 import { StrictMode } from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import { SnackbarProvider } from 'notistack';
@@ -141,7 +141,9 @@ function Popup() {
   );
 }
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById('root')!);
+
+root.render(
   <StrictMode>
     <RecoilRoot>
       <HelmetProvider>
@@ -149,5 +151,4 @@ ReactDOM.render(
       </HelmetProvider>
     </RecoilRoot>
   </StrictMode>,
-  document.getElementById('root'),
 );

@@ -50,6 +50,13 @@ module.exports = {
         '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/camelcase': 'off',
         camelcase: 'off',
+
+        '@typescript-eslint/no-misused-promises': [
+          'error',
+          {
+            checksVoidReturn: false,
+          },
+        ],
       },
     },
   ],
