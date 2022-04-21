@@ -8,7 +8,7 @@ module.exports = merge(common, {
   mode: 'development',
   plugins: [new Dotenv({ path: './.env.development' })],
   output: {
-    path: path.join(__dirname, '../dev/js'),
+    path: path.join(__dirname, '../build/dev/js'),
     filename: '[name].js',
   },
 });

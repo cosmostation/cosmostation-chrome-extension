@@ -5,8 +5,9 @@
   "scripts": {
     "postinstall": "git config --local core.hooksPath ./git-hooks",
     "start": "webpack --config webpack/webpack.dev.js --watch",
-    "prebuild": "rimraf prod",
+    "prebuild": "rimraf build/prod",
     "build": "webpack --config webpack/webpack.prod.js",
+    "postbuild": "mkdir -p build/zip && cd build/prod && zip -r ../zip/extension-$(date +'%Y%m%dT%H%M%S').zip .",
     "i18next-scanner": "i18next-scanner",
     "eslint": "eslint --max-warnings 0 $(git diff --name-only --diff-filter=AMRC HEAD | grep -E '.(ts|tsx)$' | xargs)"
   },
@@ -109,6 +110,7 @@
     "typescript": "^4.5.2",
     "webpack": "^5.64.4",
     "webpack-cli": "^4.9.1",
-    "webpack-merge": "^5.8.0"
+    "webpack-merge": "^5.8.0",
+    "zip-webpack-plugin": "^4.0.1"
   }
 }

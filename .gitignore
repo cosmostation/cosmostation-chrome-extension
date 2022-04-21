@@ -5,4 +5,5 @@ dist/
 dev/
 prod/
 tmp/
+build/
 .DS_Store

@@ -7,7 +7,7 @@ module.exports = merge(common, {
   mode: 'production',
   plugins: [new Dotenv()],
   output: {
-    path: path.join(__dirname, '../prod/js'),
+    path: path.join(__dirname, '../build/prod/js'),
     filename: '[name].js',
   },
 });
