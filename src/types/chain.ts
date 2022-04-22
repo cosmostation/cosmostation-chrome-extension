@@ -46,6 +46,13 @@ export type TendermintChain = {
   gas: Gas;
 } & CommonChain;
 
+export type Coin = {
+  baseDenom: string;
+  decimals: number;
+  displayDenom: string;
+  imageURL: string;
+};
+
 export type EthereumChain = {
   line: typeof LINE_TYPE.ETHEREUM;
   chainName: string;

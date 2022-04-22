@@ -1,6 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
 import crescentImg from '~/images/symbols/crescent.png';
-import type { TendermintChain } from '~/types/chain';
+import type { Coin, TendermintChain } from '~/types/chain';
 
 export const CRESCENT: TendermintChain = {
   id: 'c4c9e553-24a2-487d-a3a9-106b0f70b4ce',
@@ -28,3 +28,14 @@ export const CRESCENT: TendermintChain = {
   },
   gas: { send: '100000' },
 };
+
+const imageURL = 'https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image';
+
+export const CRESCENT_COINS: Coin[] = [
+  {
+    baseDenom: 'ubcre',
+    decimals: 6,
+    displayDenom: 'bcre',
+    imageURL: `${imageURL}/tokens/token-bcre.svg`,
+  },
+];

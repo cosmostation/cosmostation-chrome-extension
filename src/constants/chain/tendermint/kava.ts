@@ -2,7 +2,7 @@ import { MINTSCAN_URL } from '~/constants/common';
 import hardImg from '~/images/symbols/hard.png';
 import kavaImg from '~/images/symbols/kava.png';
 import swpImg from '~/images/symbols/swp.png';
-import type { TendermintChain } from '~/types/chain';
+import type { Coin, TendermintChain } from '~/types/chain';
 
 export const KAVA: TendermintChain = {
   id: '634e5e88-0a26-4ef5-92b5-dbf4cf040a8a',
@@ -34,7 +34,7 @@ export const KAVA: TendermintChain = {
 
 const imageURL = 'https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/kava/';
 
-export const KAVA_COINS = [
+export const KAVA_COINS: Coin[] = [
   {
     baseDenom: 'hard',
     decimals: 6,
@@ -77,4 +77,4 @@ export const KAVA_COINS = [
     displayDenom: 'bnb',
     imageURL: `${imageURL}/bnb.png`,
   },
-] as const;
+];

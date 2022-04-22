@@ -2,11 +2,17 @@ import { CHAINS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import type { Chain } from '~/types/chain';
 
+import { useCurrentAllowedChains } from './useCurrentAllowedChains';
+
 export function useCurrentChain() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
-  const { additionalChains, allowedChainIds, selectedChainId } = chromeStorage;
+  const { currentAllowedChains } = useCurrentAllowedChains();
+
+  const { additionalChains, selectedChainId } = chromeStorage;
   const additionalChainIds = additionalChains.map((item) => item.id);
+
+  const allowedChainIds = currentAllowedChains.map((item) => item.id);
 
   const allChains = [...CHAINS, ...additionalChains];
 
