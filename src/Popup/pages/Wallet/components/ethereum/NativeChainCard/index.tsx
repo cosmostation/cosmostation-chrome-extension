@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
@@ -13,8 +14,10 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import type { EthereumChain } from '~/types/chain';
 
 import {
@@ -122,16 +125,49 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
 
 export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
   const { currentNetwork } = useCurrentNetwork();
+  const { currentAccount } = useCurrentAccount();
+  const { currentPassword } = useCurrentPassword();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { explorerURL, displayDenom } = currentNetwork;
+
+  const address = useMemo(() => {
+    const key = `${currentAccount.id}${chain.id}`;
+
+    const storageAddress = localStorage.getItem(key);
+
+    if (storageAddress) {
+      return storageAddress;
+    }
+
+    const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+
+    return getAddress(chain, keyPair?.publicKey);
+  }, [chain, currentAccount, currentPassword]);
+
+  const handleOnClickCopy = () => {
+    if (copy(address)) {
+      enqueueSnackbar(`copied!`);
+    }
+  };
+
   return (
     <Container>
       <FirstLineContainer>
         <FirstLineLeftContainer>
-          <Skeleton width="12rem" height="2.4rem" />
+          <AddressButton onClick={handleOnClickCopy}>{address}</AddressButton>
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
-          <StyledIconButton>
-            <ExplorerIcon />
-          </StyledIconButton>
+          {explorerURL && (
+            <StyledIconButton
+              onClick={() => {
+                window.open(`${explorerURL}/address/${address}`);
+              }}
+            >
+              <ExplorerIcon />
+            </StyledIconButton>
+          )}
         </FirstLineRightContainer>
       </FirstLineContainer>
       <SecondLineContainer>
@@ -140,7 +176,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
             <Image src={chain.imageURL} />
           </SecondLineLeftImageContainer>
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{currentNetwork.displayDenom}</Typography>
+            <Typography variant="h3">{displayDenom}</Typography>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>

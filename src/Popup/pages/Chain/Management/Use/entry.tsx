@@ -64,7 +64,7 @@ export default function Entry() {
         onChange={(event) => setSearch(event.currentTarget.value)}
       />
       <ListContainer>
-        {filteredTendermintChains.map((chain) => (
+        {filteredEthereumChains.map((chain) => (
           <Item
             key={chain.id}
             imageProps={{ alt: chain.chainName, src: chain.imageURL }}
@@ -83,7 +83,7 @@ export default function Entry() {
             <Divider />
           </DividerContainer>
         )}
-        {filteredEthereumChains.map((chain) => (
+        {filteredTendermintChains.map((chain) => (
           <Item
             key={chain.id}
             imageProps={{ alt: chain.chainName, src: chain.imageURL }}
