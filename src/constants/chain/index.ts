@@ -1,6 +1,7 @@
-import ethereumImg from '~/images/symbols/ethereum.png';
 import type { EthereumChain, EthereumNetwork, TendermintChain } from '~/types/chain';
 
+import { ETHEREUM } from './ethereum/ethereum';
+import { MAINNET as ETHEREUM_NETWORK_MAINNET } from './ethereum/network/mainnet';
 import { AKASH } from './tendermint/akash';
 import { ASSET_MANTLE } from './tendermint/assetMantle';
 import { AXELAR } from './tendermint/axelar';
@@ -87,36 +88,8 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   UMEE,
 ];
 
-export const ETHEREUM_CHAINS: EthereumChain[] = [
-  // {
-  //   id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
-  //   chainName: 'Ethereum',
-  //   imageURL: ethereumImg,
-  //   line: LINE_TYPE.ETHEREUM,
-  //   bip44: {
-  //     purpose: "44'",
-  //     coinType: "60'",
-  //     account: "0'",
-  //     change: '0',
-  //   },
-  // },
-];
+export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 
-export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
-  {
-    id: '63c2c3dd-7ab1-47d7-9ec8-c70c64729cc6',
-    ethereumChainId: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
-    chainId: '1',
-    networkName: 'mainnet',
-    // rpcURL: 'http://61.74.179.193:50001',
-    rpcURL: 'https://api.mycryptoapi.com/eth',
-    imageURL: ethereumImg,
-    baseDenom: 'weth',
-    displayDenom: 'eth',
-    decimals: 18,
-    explorerURL: 'https://etherscan.io',
-    coinGeckoId: 'ethereum',
-  },
-];
+export const ETHEREUM_NETWORKS: EthereumNetwork[] = [ETHEREUM_NETWORK_MAINNET];
 
 export const CHAINS = [...ETHEREUM_CHAINS, ...TENDERMINT_CHAINS];
