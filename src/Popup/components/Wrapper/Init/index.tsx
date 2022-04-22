@@ -21,6 +21,7 @@ export default function Init({ children }: InitType) {
   const { changeLanguage, language } = useTranslation();
 
   const officialChainLowercaseNames = CHAINS.map((item) => item.chainName.toLowerCase());
+  const officialChainIds = CHAINS.map((item) => item.id);
 
   const handleOnStorageChange = () => {
     void (async () => {
@@ -71,7 +72,7 @@ export default function Init({ children }: InitType) {
         await setStorage('additionalChains', newAdditionalChains);
       }
 
-      if (!originChromeStorage.allowedChainIds?.length) {
+      if (!originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).length) {
         await setStorage('allowedChainIds', [CHAINS[0].id]);
       }
 
