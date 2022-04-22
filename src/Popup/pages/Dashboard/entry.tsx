@@ -12,6 +12,7 @@ import EthereumChainItem, { EthereumChainItemSkeleton } from '~/Popup/pages/Dash
 import TendermintChainItem, { TendermintChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/TendermintChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { plus } from '~/Popup/utils/big';
+import type { Chain, EthereumChain, TendermintChain } from '~/types/chain';
 
 import {
   ChainList,
@@ -23,6 +24,13 @@ import {
   TotalValueContainer,
   TotalValueTextContainer,
 } from './styled';
+
+type ChainItem<T = Chain> = {
+  chain: T;
+  amount: string;
+};
+
+type ChainList<T = Chain> = ChainItem<T>[];
 
 export default function Entry() {
   const { chromeStorage } = useChromeStorage();
@@ -37,7 +45,7 @@ export default function Entry() {
 
   const listHeight = `calc(100% - ${divHeight / 10}rem - 1rem)`;
 
-  const chainList = currentAllowedChains.map((chain) => ({ chain, amount: '0', isLoading: true }));
+  const chainList: ChainList = currentAllowedChains.map((chain) => ({ chain, amount: '0' }));
 
   const totalAmount = Object.values(dashboard).reduce((acc, cur) => plus(acc, cur), '0');
 
@@ -71,22 +79,30 @@ export default function Entry() {
         </SubInfoContainer>
       </div>
       <ChainList data-height={listHeight}>
-        {chainList.map((item) =>
-          item.chain.line === 'TENDERMINT' ? (
-            <ErrorBoundary key={item.chain.id} fallback={<TendermintChainItemSkeleton chain={item.chain} />}>
-              <Suspense fallback={<TendermintChainItemSkeleton chain={item.chain} />}>
-                <TendermintChainItem chain={item.chain} />
-              </Suspense>
-            </ErrorBoundary>
-          ) : (
-            <ErrorBoundary key={item.chain.id} fallback={<EthereumChainItemSkeleton chain={item.chain} />}>
-              <Suspense fallback={<EthereumChainItemSkeleton chain={item.chain} />}>
-                <EthereumChainItem key={item.chain.id} chain={item.chain} />
-              </Suspense>
-            </ErrorBoundary>
-          ),
-        )}
+        {chainList.filter(isEthereum).map((item) => (
+          <ErrorBoundary key={item.chain.id} fallback={<EthereumChainItemSkeleton chain={item.chain} />}>
+            <Suspense fallback={<EthereumChainItemSkeleton chain={item.chain} />}>
+              <EthereumChainItem key={item.chain.id} chain={item.chain} />
+            </Suspense>
+          </ErrorBoundary>
+        ))}
+
+        {chainList.filter(isTendermint).map((item) => (
+          <ErrorBoundary key={item.chain.id} fallback={<TendermintChainItemSkeleton chain={item.chain} />}>
+            <Suspense fallback={<TendermintChainItemSkeleton chain={item.chain} />}>
+              <TendermintChainItem chain={item.chain} />
+            </Suspense>
+          </ErrorBoundary>
+        ))}
       </ChainList>
     </Container>
   );
+}
+
+function isTendermint(item: ChainItem): item is ChainItem<TendermintChain> {
+  return item.chain.line === 'TENDERMINT';
+}
+
+function isEthereum(item: ChainItem): item is ChainItem<EthereumChain> {
+  return item.chain.line === 'ETHEREUM';
 }
