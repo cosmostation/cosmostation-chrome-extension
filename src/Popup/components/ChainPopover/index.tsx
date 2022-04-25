@@ -19,12 +19,11 @@ import {
   BodyContainer,
   ChainListContainer,
   Container,
-  EthereumChainListContainer,
   HeaderContainer,
   HeaderLeftContainer,
   HeaderRightContainer,
+  StyledDivider,
   StyledIconButton,
-  TendermintChainListContainer,
 } from './styled';
 
 import SettingIcon24 from '~/images/icons/Setting24.svg';
@@ -62,44 +61,40 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isVi
         </HeaderContainer>
         <Divider />
         <BodyContainer>
-          {allowedTendermintChain.length > 0 && (
-            <TendermintChainListContainer>
-              <ChainListContainer>
-                {allowedTendermintChain.map((chain) => (
-                  <ChainItemButton
-                    key={chain.id}
-                    isActive={currentChain.id === chain.id}
-                    imgSrc={chain.imageURL}
-                    onClick={() => {
-                      onClickChain?.(chain);
-                      onClose?.({}, 'backdropClick');
-                    }}
-                  >
-                    {chain.chainName}
-                  </ChainItemButton>
-                ))}
-              </ChainListContainer>
-            </TendermintChainListContainer>
-          )}
-          {allowedTendermintChain.length > 0 && allowedEthereumChain.length > 0 && <Divider />}
           {allowedEthereumChain.length > 0 && (
-            <EthereumChainListContainer>
-              <ChainListContainer>
-                {allowedEthereumChain.map((chain) => (
-                  <ChainItemButton
-                    key={chain.id}
-                    isActive={currentChain.id === chain.id}
-                    imgSrc={chain.imageURL}
-                    onClick={() => {
-                      onClickChain?.(chain);
-                      onClose?.({}, 'backdropClick');
-                    }}
-                  >
-                    {chain.chainName}
-                  </ChainItemButton>
-                ))}
-              </ChainListContainer>
-            </EthereumChainListContainer>
+            <ChainListContainer>
+              {allowedEthereumChain.map((chain) => (
+                <ChainItemButton
+                  key={chain.id}
+                  isActive={currentChain.id === chain.id}
+                  imgSrc={chain.imageURL}
+                  onClick={() => {
+                    onClickChain?.(chain);
+                    onClose?.({}, 'backdropClick');
+                  }}
+                >
+                  {chain.chainName}
+                </ChainItemButton>
+              ))}
+            </ChainListContainer>
+          )}
+          {allowedTendermintChain.length > 0 && allowedEthereumChain.length > 0 && <StyledDivider />}
+          {allowedTendermintChain.length > 0 && (
+            <ChainListContainer>
+              {allowedTendermintChain.map((chain) => (
+                <ChainItemButton
+                  key={chain.id}
+                  isActive={currentChain.id === chain.id}
+                  imgSrc={chain.imageURL}
+                  onClick={() => {
+                    onClickChain?.(chain);
+                    onClose?.({}, 'backdropClick');
+                  }}
+                >
+                  {chain.chainName}
+                </ChainItemButton>
+              ))}
+            </ChainListContainer>
           )}
 
           {isVisibleAdditionalChains && additionalChains.length > 0 && (
