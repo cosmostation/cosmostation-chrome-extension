@@ -5,6 +5,9 @@ export const Container = styled('div')({
 
   height: '100%',
   overflow: 'hidden',
+
+  display: 'flex',
+  flexDirection: 'column',
 });
 
 export const TotalValueTextContainer = styled('div')(({ theme }) => ({
@@ -13,6 +16,8 @@ export const TotalValueTextContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+
+  flexShrink: 0,
 
   color: theme.colors.text02,
 }));
@@ -24,6 +29,8 @@ export const TotalValueContainer = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   alignItems: 'center',
 
+  flexShrink: 0,
+
   color: theme.colors.text01,
 }));
 
@@ -32,6 +39,8 @@ export const SubInfoContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
+
+  flexShrink: 0,
 });
 
 export const CountContainer = styled('div')({
@@ -55,19 +64,20 @@ export const CountRightContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-type ChainListProps = {
-  'data-height': string;
-};
-
-export const ChainList = styled('div')<ChainListProps>(({ ...props }) => ({
+export const ChainListContainer = styled('div')({
   marginTop: '1rem',
+
+  overflow: 'hidden',
+
+  display: 'flex',
+  flexDirection: 'column',
+
   paddingBottom: '1rem',
+});
 
+export const ChainList = styled('div')({
   overflow: 'auto',
-
-  maxHeight: props['data-height'],
-
   display: 'grid',
   gridTemplateColumns: '1fr',
   rowGap: '0.8rem',
-}));
+});
