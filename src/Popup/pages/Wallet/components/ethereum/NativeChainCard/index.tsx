@@ -102,7 +102,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <Number fixed={6}>{displayAmount}</Number>
+          <Number>{displayAmount}</Number>
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>
@@ -111,12 +111,12 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
         </Number>
       </ThirdLineContainer>
       <FourthLineContainer>
-        <Button Icon={SendIcon} typoVarient="h5" disabled>
-          Send
-        </Button>
-        <FourthLineCenterContainer />
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
           Receive
+        </Button>
+        <FourthLineCenterContainer />
+        <Button Icon={SendIcon} typoVarient="h5" disabled>
+          Send
         </Button>
       </FourthLineContainer>
     </Container>
@@ -187,12 +187,12 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
         <Skeleton width="8rem" height="1.9rem" />
       </ThirdLineContainer>
       <FourthLineContainer>
-        <Button Icon={SendIcon} typoVarient="h5" disabled>
-          Send
-        </Button>
-        <FourthLineCenterContainer />
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           Receive
+        </Button>
+        <FourthLineCenterContainer />
+        <Button Icon={SendIcon} typoVarient="h5" disabled>
+          Send
         </Button>
       </FourthLineContainer>
     </Container>
