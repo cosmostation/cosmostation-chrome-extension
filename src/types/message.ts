@@ -1,13 +1,7 @@
 import type { LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
-import type {
-  EthGetBalanceRequestMessage,
-  EthRequestAccounts,
-  EthRPCRequestMessage,
-  EthSendTransactionRequestMessage,
-  EthSignRequestMessage,
-} from './ethereum/message';
+import type { EthAddNetwork, EthGetBalanceRequest, EthRequestAccounts, EthRPCRequest, EthSendTransactionRequest, EthSignRequest } from './ethereum/message';
 import type { TenAccount, TenAddChain, TenRequestAccount, TenSignAmino, TenSignDirect, TenSupportedChainNames } from './tendermint/message';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
@@ -20,12 +14,7 @@ export type ResponseMessage = {
   result?: unknown | null;
 };
 
-export type EthereumRequestMessage =
-  | EthRPCRequestMessage
-  | EthSignRequestMessage
-  | EthSendTransactionRequestMessage
-  | EthGetBalanceRequestMessage
-  | EthRequestAccounts;
+export type EthereumRequestMessage = EthRPCRequest | EthSignRequest | EthSendTransactionRequest | EthGetBalanceRequest | EthRequestAccounts | EthAddNetwork;
 
 export type TendermintRequestMessage = TenRequestAccount | TenAddChain | TenSignAmino | TenSignDirect | TenSupportedChainNames | TenAccount;
 

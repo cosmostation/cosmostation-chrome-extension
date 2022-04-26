@@ -387,6 +387,21 @@
       }
     },
     "Popup": {
+      "Ethereum": {
+        "AddNetwork": {
+          "entry": {
+            "cancelButton": "취소",
+            "chainId": "체인 ID",
+            "confirmButton": "승인",
+            "displayDenom": "통화 기호",
+            "explorerURL": "블록 탐색기 URL",
+            "networkName": "네트워크 이름",
+            "networkURL": "네트워크 URL",
+            "question": "이 사이트가 네트워크를 추가하도록 허용할까요?",
+            "warning": "Cosmostation은 맞춤형 네트워크를 검증하지 않습니다."
+          }
+        }
+      },
       "Tendermint": {
         "AddChain": {
           "entry": {
@@ -568,6 +583,21 @@
             "index": {
               "betaSupport": "커스텀 체인",
               "title": "체인 선택"
+            }
+          },
+          "NetworkPopover": {
+            "index": {
+              "customNetwork": "커스텀 네트워크",
+              "title": "네트워크 선택"
+            }
+          }
+        },
+        "ethereum": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "복사되었습니다",
+              "depositButton": "입금",
+              "sendButton": "보내기"
             }
           }
         },

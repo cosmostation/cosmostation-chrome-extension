@@ -6,7 +6,7 @@ export class EthereumRPCError extends Error {
 
   public rpcMessage: unknown;
 
-  constructor(code: number, message: string, id?: string | number) {
+  constructor(code: number, message: string, id?: string | number, data?: unknown) {
     super(message);
     this.name = 'EthereumRPCError';
     this.code = code;
@@ -16,16 +16,13 @@ export class EthereumRPCError extends Error {
       error: {
         code,
         message,
+        data,
       },
+      id,
       jsonrpc: '2.0',
     };
 
-    this.rpcMessage = id
-      ? {
-          ...errorMessage,
-          id,
-        }
-      : errorMessage;
+    this.rpcMessage = errorMessage;
 
     Object.setPrototypeOf(this, EthereumRPCError.prototype);
   }

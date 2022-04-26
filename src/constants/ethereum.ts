@@ -8,6 +8,9 @@ export const ETHEREUM_POPUP_METHOD_TYPE = {
   ETH__SIGN_TYPED_DATA_V3: 'eth_signTypedData_v3',
   ETH__SIGN_TYPED_DATA_V4: 'eth_signTypedData_v4',
   PERSONAL_SIGN: 'personal_sign',
+
+  // custom
+  ETH__ADD_NETWORK: 'eth_addNetwork',
 } as const;
 
 export const ETHEREUM_NO_POPUP_METHOD_TYPE = {

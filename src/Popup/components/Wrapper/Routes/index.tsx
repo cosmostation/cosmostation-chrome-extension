@@ -42,6 +42,10 @@ export default function Routes({ children }: RoutesType) {
       if (chromeStorage.queues[0].message.method === 'ten_signDirect') {
         navigate('/popup/tendermint/sign/direct');
       }
+
+      if (chromeStorage.queues[0].message.method === 'eth_addNetwork') {
+        navigate('/popup/ethereum/add-network');
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
