@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 
-import { CHAINS } from '~/constants/chain';
+import { CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import logoImg from '~/images/etc/logo.png';
 import BaseLayout from '~/Popup/components/BaseLayout';
@@ -12,6 +12,8 @@ import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllo
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { responseToWeb } from '~/Popup/utils/message';
+import type { Queue } from '~/types/chromeStorage';
+import type { RequestMessage } from '~/types/message';
 
 import { AccentSpan, BottomContainer, ChainImageContainer, Container, DescriptionContainer, LogoContainer, StyledDivider, TitleContainer } from './styled';
 
@@ -29,16 +31,24 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
   const allowedChains = currentAllowedChains.map((item) => item.chainName);
   const currentTendermintAdditionalChainNames = currentTendermintAdditionalChains.map((item) => item.chainName);
 
-  if (
-    (currentQueue?.message.method === 'ten_requestAccount' ||
-      currentQueue?.message.method === 'ten_signAmino' ||
-      currentQueue?.message.method === 'ten_signDirect') &&
-    !allowedChains.includes(currentQueue?.message.params.chainName) &&
-    !currentTendermintAdditionalChainNames.includes(currentQueue?.message.params.chainName)
-  ) {
-    const { message } = currentQueue;
+  const chain = (() => {
+    if (
+      isTendermint(currentQueue) &&
+      !!currentQueue?.message?.params?.chainName &&
+      !allowedChains.includes(currentQueue.message.params.chainName) &&
+      !currentTendermintAdditionalChainNames.includes(currentQueue.message.params.chainName)
+    ) {
+      return CHAINS.find((item) => item.chainName === currentQueue.message.params.chainName);
+    }
 
-    const chain = CHAINS.find((item) => item.chainName === message.params.chainName);
+    if (currentQueue?.message?.method?.startsWith('eth_') && !allowedChains.includes(ETHEREUM_CHAINS[0].chainName)) {
+      return ETHEREUM_CHAINS[0];
+    }
+
+    return undefined;
+  })();
+
+  if (chain && currentQueue) {
     return (
       <BaseLayout>
         <Container>
@@ -51,14 +61,14 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
           <StyledDivider />
 
           <ChainImageContainer>
-            <Image src={chain?.imageURL} />
+            <Image src={chain.imageURL} />
           </ChainImageContainer>
 
           <DescriptionContainer>
             <Typography variant="h4">
               {t('components.ActivateChainRequest.index.description1')}
               <br />
-              {t('components.ActivateChainRequest.index.description2')} <AccentSpan>{message.params.chainName}</AccentSpan>{' '}
+              {t('components.ActivateChainRequest.index.description2')} <AccentSpan>{chain.chainName}</AccentSpan>{' '}
               {t('components.ActivateChainRequest.index.description3')}
             </Typography>
           </DescriptionContainer>
@@ -85,7 +95,7 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
             </OutlineButton>
             <Button
               onClick={async () => {
-                const chainId = chain?.id;
+                const chainId = chain.id;
                 if (chainId) await addAllowedChainId(chainId);
               }}
             >
@@ -97,4 +107,11 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
     );
   }
   return children;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Message = { method: any; params: { chainName?: string }; id?: number | string };
+
+function isTendermint(queue: Queue<RequestMessage> | null): queue is Queue<Message> {
+  return !!queue?.message?.method?.startsWith('ten_');
 }
