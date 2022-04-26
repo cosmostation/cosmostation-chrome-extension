@@ -23,8 +23,8 @@ export const CRESCENT: TendermintChain = {
   explorerURL: `${MINTSCAN_URL}/crescent`,
   gasRate: {
     tiny: '0',
-    low: '0',
-    average: '0',
+    low: '0.1',
+    average: '0.1',
   },
   gas: { send: '100000' },
 };
