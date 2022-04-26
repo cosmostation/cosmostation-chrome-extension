@@ -16,6 +16,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import type { EthereumChain } from '~/types/chain';
@@ -52,6 +53,8 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
   const accounts = useAccounts(true);
   const balance = useBalanceSWR(chain, true);
 
+  const { t } = useTranslation();
+
   const { navigate } = useNavigate();
 
   const { coinGeckoId, decimals, explorerURL } = currentNetwork;
@@ -70,7 +73,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
-      enqueueSnackbar(`copied!`);
+      enqueueSnackbar(t('pages.Wallet.components.ethereum.NativeChainCard.index.copied'));
     }
   };
 
@@ -112,11 +115,11 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
       </ThirdLineContainer>
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
-          Receive
+          {t('pages.Wallet.components.ethereum.NativeChainCard.index.depositButton')}
         </Button>
         <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
-          Send
+          {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
         </Button>
       </FourthLineContainer>
     </Container>
@@ -129,6 +132,8 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
   const { currentPassword } = useCurrentPassword();
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { t } = useTranslation();
 
   const { explorerURL, displayDenom } = currentNetwork;
 
@@ -188,11 +193,11 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
       </ThirdLineContainer>
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
-          Receive
+          {t('pages.Wallet.components.ethereum.NativeChainCard.index.depositButton')}
         </Button>
         <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
-          Send
+          {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
         </Button>
       </FourthLineContainer>
     </Container>

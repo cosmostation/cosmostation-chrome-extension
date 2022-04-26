@@ -10,10 +10,10 @@ import { chromeStorage } from './chromeStorage';
 
 const abiInterface = new Interface(ERC20_ABI);
 
-export async function requestRPC<T>(method: string, params: unknown, id?: string | number) {
+export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
   const { currentEthereumNetwork } = await chromeStorage();
 
-  const { rpcURL } = currentEthereumNetwork;
+  const rpcURL = url ?? currentEthereumNetwork.rpcURL;
 
   const rpcId = id ?? new Date().getTime();
 
