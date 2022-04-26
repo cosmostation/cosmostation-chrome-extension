@@ -2,7 +2,7 @@ import '~/Popup/i18n/background';
 
 import { CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
-import { ETHEREUM_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
+import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
 import { TENDERMINT_METHOD_TYPE, TENDERMINT_NO_POPUP_METHOD_TYPE, TENDERMINT_POPUP_METHOD_TYPE } from '~/constants/tendermint';
@@ -14,13 +14,15 @@ import { EthereumRPCError, TendermintRPCError } from '~/Popup/utils/error';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
+import type { EthAddNetworkParams } from '~/types/ethereum/message';
+import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
 import type { TenAccountResponse, TenAddChainParams, TenRequestAccountResponse, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
 import type { ThemeType } from '~/types/theme';
 
 import { chromeStorage } from './chromeStorage';
 import { requestRPC } from './ethereum';
-import { tenAddChainParamsSchema, tenSignAminoParamsSchema, tenSignDirectParamsSchema } from './joiSchema';
+import { ethAddNetworkParamsSchema, tenAddChainParamsSchema, tenSignAminoParamsSchema, tenSignDirectParamsSchema } from './joiSchema';
 
 function background() {
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, _, sendResponse) => {
@@ -61,7 +63,7 @@ function background() {
                 const { params } = message;
 
                 if (!allChainLowercaseNames.includes(params?.chainName?.toLowerCase())) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
                 }
 
                 const chain = getChain(message.params.chainName)!;
@@ -116,7 +118,7 @@ function background() {
                     },
                   ]);
                 } catch (err) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
                 }
               }
 
@@ -140,7 +142,7 @@ function background() {
                     },
                   ]);
                 } catch (err) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
                 }
               }
 
@@ -164,12 +166,10 @@ function background() {
                     },
                   ]);
                 } catch (err) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
                 }
               }
-            }
-
-            if (tendermintNoPopupMethods.includes(message.method)) {
+            } else if (tendermintNoPopupMethods.includes(message.method)) {
               if (method === 'ten_supportedChainNames') {
                 const official = TENDERMINT_CHAINS.map((item) => item.chainName.toLowerCase());
 
@@ -191,7 +191,7 @@ function background() {
                 const paramsLowercaseChainName = params?.chainName?.toLowerCase();
 
                 if (!allChainLowercaseNames.includes(paramsLowercaseChainName)) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
                 }
 
                 const chain = getChain(paramsLowercaseChainName);
@@ -225,6 +225,8 @@ function background() {
                   throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
                 }
               }
+            } else {
+              throw new TendermintRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
             }
           } catch (e) {
             if (e instanceof TendermintRPCError) {
@@ -254,6 +256,9 @@ function background() {
         if (request.line === 'ETHEREUM') {
           const ethereumMethods = Object.values(ETHEREUM_METHOD_TYPE) as string[];
           const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
+          const ethereumNoPopupMethods = Object.values(ETHEREUM_NO_POPUP_METHOD_TYPE) as string[];
+
+          const { queues, password } = await chromeStorage();
 
           const { message, messageId, origin } = request;
 
@@ -264,11 +269,46 @@ function background() {
 
             const { method, id } = message;
 
-            const { password } = await chromeStorage();
-
             if (ethereumPopupMethods.includes(method)) {
               if (!password) {
                 throw new EthereumRPCError(RPC_ERROR.UNAUTHORIZED, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+              }
+
+              if (method === 'eth_addNetwork') {
+                const { params } = message;
+
+                const schema = ethAddNetworkParamsSchema();
+
+                try {
+                  const validatedParams = (await schema.validateAsync(params)) as EthAddNetworkParams;
+
+                  const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], message.id, validatedParams[0].rpcURL);
+
+                  if (validatedParams[0].chainId !== response.result) {
+                    throw new EthereumRPCError(
+                      RPC_ERROR.INVALID_PARAMS,
+                      `Chain ID returned by RPC URL ${validatedParams[0].rpcURL} does not match ${validatedParams[0].chainId}`,
+                      message.id,
+                      { chainId: response.result },
+                    );
+                  }
+
+                  const window = await openWindow();
+                  await setStorage('queues', [
+                    ...queues,
+                    {
+                      ...request,
+                      message: { ...request.message, method, params: [...validatedParams] as EthAddNetworkParams },
+                      windowId: window?.id,
+                    },
+                  ]);
+                } catch (err) {
+                  if (err instanceof EthereumRPCError) {
+                    throw err;
+                  }
+
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+                }
               }
 
               // const keyPair = getPairKey('ethereum', password);
@@ -319,11 +359,13 @@ function background() {
               //   const { params } = message;
 
               // }
-            } else {
+            } else if (ethereumNoPopupMethods.includes(method)) {
               const params = method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
 
               const response = await requestRPC(method, params, id);
               responseToWeb({ response, message, messageId, origin });
+            } else {
+              throw new EthereumRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST], message.id);
             }
           } catch (e) {
             if (e instanceof EthereumRPCError) {

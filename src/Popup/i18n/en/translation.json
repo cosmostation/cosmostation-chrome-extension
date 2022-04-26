@@ -387,6 +387,21 @@
       }
     },
     "Popup": {
+      "Ethereum": {
+        "AddNetwork": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "chainId": "Chain ID",
+            "confirmButton": "Confirm",
+            "displayDenom": "Currency symbol",
+            "explorerURL": "Block explorer URL",
+            "networkName": "Network name",
+            "networkURL": "Network URL",
+            "question": "Allow this site to add the network?",
+            "warning": "Cosmostation does not validate custom network."
+          }
+        }
+      },
       "Tendermint": {
         "AddChain": {
           "entry": {
@@ -568,6 +583,21 @@
             "index": {
               "betaSupport": "custom chains",
               "title": "Select a chain"
+            }
+          },
+          "NetworkPopover": {
+            "index": {
+              "customNetwork": "Custom network",
+              "title": "Select a network"
+            }
+          }
+        },
+        "ethereum": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "Copied",
+              "depositButton": "Deposit",
+              "sendButton": "Send"
             }
           }
         },

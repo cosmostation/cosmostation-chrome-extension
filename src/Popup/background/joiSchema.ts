@@ -1,5 +1,6 @@
 import Joi from '~/Popup/utils/joi';
 import type { GasRate } from '~/types/chain';
+import type { EthAddNetwork } from '~/types/ethereum/message';
 import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint/amino';
 import type { Amount } from '~/types/tendermint/common';
 import type { TenAddChainParams, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
@@ -70,6 +71,7 @@ export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) 
     isEditMemo: Joi.boolean().default(false),
   });
 };
+
 export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string) => {
   const splitedChainId = chainId.split('-');
 
@@ -92,3 +94,21 @@ export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string)
     isEditMemo: Joi.boolean().default(false),
   });
 };
+
+export const ethAddNetworkParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.object<EthAddNetwork['params'][0]>({
+        baseDenom: Joi.string().trim().required(),
+        displayDenom: Joi.string().trim().required(),
+        chainId: Joi.string().trim().required(),
+        decimals: Joi.number().required(),
+        networkName: Joi.string().trim().required(),
+        rpcURL: Joi.string().trim().required(),
+        imageURL: Joi.string().trim().optional(),
+        explorerURL: Joi.string().trim().optional(),
+        coinGeckoId: Joi.string().trim().optional(),
+      }).required(),
+    );
