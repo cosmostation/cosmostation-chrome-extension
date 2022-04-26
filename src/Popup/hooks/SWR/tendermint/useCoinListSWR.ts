@@ -9,7 +9,7 @@ import { useDelegationSWR } from '~/Popup/hooks/SWR/tendermint/useDelegationSWR'
 import { useRewardSWR } from '~/Popup/hooks/SWR/tendermint/useRewardSWR';
 import { useUndelegationSWR } from '~/Popup/hooks/SWR/tendermint/useUndelegationSWR';
 import { plus } from '~/Popup/utils/big';
-import { calculatingDelegatedVestingTotal, getDelegatedVestingTotal, getVestingRelatedBalances, getVestingRemained } from '~/Popup/utils/tendermintVesting';
+import { getDelegatedVestingTotal, getVestingRelatedBalances, getVestingRemained } from '~/Popup/utils/tendermintVesting';
 import type { TendermintChain } from '~/types/chain';
 
 import { useBalanceSWR } from './useBalanceSWR';
@@ -76,14 +76,16 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
             const unbondingAmount = undelegation?.data?.reduce((ac, cu) => plus(ac, cu.entries.balance), '0').toString() || '0';
 
             const vestingRemained = getVestingRemained(account?.data, coin.denom);
-            const delegatedVestingTotal =
-              chain.chainName === KAVA.chainName
-                ? getDelegatedVestingTotal(account?.data, coin.denom)
-                : calculatingDelegatedVestingTotal(vestingRemained, delegationAmount);
+            const delegatedVestingTotal = chain.chainName === KAVA.chainName ? getDelegatedVestingTotal(account?.data, coin.denom) : delegationAmount;
 
             const rewardAmount = reward?.data?.result?.total?.find((item) => item.denom === coin.denom)?.amount || '0';
 
-            const [vestingRelatedAvailable, vestingNotDelegate] = getVestingRelatedBalances(availableAmount, vestingRemained, delegatedVestingTotal);
+            const [vestingRelatedAvailable, vestingNotDelegate] = getVestingRelatedBalances(
+              availableAmount,
+              vestingRemained,
+              delegatedVestingTotal,
+              unbondingAmount,
+            );
 
             const incentiveAmount = incentive?.data?.[coin.denom] || '0';
 
