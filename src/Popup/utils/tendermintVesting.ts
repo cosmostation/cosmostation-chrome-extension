@@ -6,13 +6,13 @@ import { gt, minus, plus } from '~/Popup/utils/big';
 import type { AuthAccount, VestingType } from '~/types/tendermint/account';
 import type { Amount } from '~/types/tendermint/common';
 
-export interface IVesting {
+export type Vesting = {
   originAmount?: Amount;
   amount: Amount;
   startAt?: string;
   releaseAt: string;
   type: VestingType;
-}
+};
 
 const getOriginalVestingTotal = (vestingAccount: AuthAccount, denom: string): string => {
   const originVesting = vestingAccount.value.original_vesting || [];
@@ -29,7 +29,7 @@ const getPeriodicVestingRemained = (vestingAccount: AuthAccount, denom: string):
     let vestingBaseTime = Number(start_time);
 
     const remained = vesting_periods.filter(({ length }) => {
-      const _length = Number(length);
+      const _length = length === undefined ? 0 : Number(length);
       vestingBaseTime += _length;
 
       return vestingBaseTime > now;
@@ -79,15 +79,26 @@ const getContinuousVestingRemained = (vestingAccount: AuthAccount, denom: string
   return minus(originalVestingTotal, vested, 0);
 };
 
-const buildPeriodicVestingArray = (account: AuthAccount): IVesting[] => {
+const buildPeriodicVestingArray = (account: AuthAccount): Vesting[] => {
   const now = dayjs();
   let lastTime = dayjs(Number(account.value.start_time) * 1000);
 
   const vestingPeriods = account.value.vesting_periods || [];
 
-  return vestingPeriods.reduce<IVesting[]>((acc, cur) => {
+  return vestingPeriods.reduce<Vesting[]>((acc, cur) => {
     if (!cur.amount.length) {
       return acc;
+    }
+
+    if (cur.length === undefined) {
+      return [
+        ...acc,
+        ...(cur.amount.map((amount) => ({
+          type: 'PeriodicVestingAccount',
+          amount,
+          releaseAt: lastTime.toString(),
+        })) as Vesting[]),
+      ];
     }
 
     lastTime = lastTime.add(dayjs(Number(cur.length) * 1000).valueOf());
@@ -98,7 +109,7 @@ const buildPeriodicVestingArray = (account: AuthAccount): IVesting[] => {
           type: 'PeriodicVestingAccount',
           amount,
           releaseAt: lastTime.toString(),
-        })) as IVesting[]),
+        })) as Vesting[]),
       ];
     }
 
@@ -106,7 +117,7 @@ const buildPeriodicVestingArray = (account: AuthAccount): IVesting[] => {
   }, []);
 };
 
-const buildDelayedVestingArray = (account: AuthAccount): IVesting[] => {
+const buildDelayedVestingArray = (account: AuthAccount): Vesting[] => {
   const endTime = account.value.end_time;
   const originalVesting = account.value.original_vesting || [];
 
@@ -121,7 +132,7 @@ const buildDelayedVestingArray = (account: AuthAccount): IVesting[] => {
   return [];
 };
 
-const buildContinuousVestingArray = (account: AuthAccount): IVesting[] => {
+const buildContinuousVestingArray = (account: AuthAccount): Vesting[] => {
   const startTime = Number(account.value.start_time);
   const endTime = Number(account.value.end_time);
 
@@ -169,14 +180,6 @@ export const isDelayedVestingAccount = (account: AuthAccount): boolean => {
 export const isVestingAccount = (account: AuthAccount): boolean =>
   isPeriodicVestingAccount(account) || isContinuousVestingAccount(account) || isDelayedVestingAccount(account);
 
-export const calculatingDelegatedVestingTotal = (vestingRemained: string, delegateAmount: string): string => {
-  if (gt(vestingRemained, delegateAmount)) {
-    return delegateAmount;
-  }
-
-  return vestingRemained;
-};
-
 export const getDelegatedVestingTotal = (vestingAccount: AuthAccount, denom: string): string => {
   const delegatedVesting = vestingAccount?.value?.delegated_vesting || [];
   const denomDelegatedVesting = delegatedVesting.filter((item) => item.denom === denom);
@@ -204,7 +207,7 @@ export const getVestingRemained = (account: AuthAccount, denom: string): string 
   }
 };
 
-export const getVestings = (account: AuthAccount): IVesting[] | undefined => {
+export const getVestings = (account: AuthAccount): Vesting[] | undefined => {
   if (isPeriodicVestingAccount(account)) {
     return buildPeriodicVestingArray(account);
   }
@@ -230,10 +233,11 @@ export const getVestings = (account: AuthAccount): IVesting[] | undefined => {
  *
  * @returns [available count, vesting count without delegate]
  */
-export const getVestingRelatedBalances = (bankBalance: string, vestingRemained: string, delegatedVestingTotal: string): string[] => {
+export const getVestingRelatedBalances = (bankBalance: string, vestingRemained: string, delegatedVestingTotal: string, unbondingBalance: string): string[] => {
   let available = bankBalance;
 
-  const delegatableVesting = Math.max(0, Number(minus(vestingRemained, delegatedVestingTotal, 0)));
+  const notLockVestingValue = minus(vestingRemained, unbondingBalance, 0);
+  const delegatableVesting = Math.max(0, Number(minus(notLockVestingValue, delegatedVestingTotal, 0)));
 
   if (gt(delegatableVesting, '0')) {
     available = Math.max(0, Number(minus(bankBalance, delegatableVesting, 0))).toString();

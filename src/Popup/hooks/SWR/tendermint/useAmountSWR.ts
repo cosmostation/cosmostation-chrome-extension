@@ -8,13 +8,7 @@ import { useDelegationSWR } from '~/Popup/hooks/SWR/tendermint/useDelegationSWR'
 import { useRewardSWR } from '~/Popup/hooks/SWR/tendermint/useRewardSWR';
 import { useUndelegationSWR } from '~/Popup/hooks/SWR/tendermint/useUndelegationSWR';
 import { gt, plus } from '~/Popup/utils/big';
-import {
-  calculatingDelegatedVestingTotal,
-  getDelegatedVestingTotal,
-  getPersistenceVestingRelatedBalances,
-  getVestingRelatedBalances,
-  getVestingRemained,
-} from '~/Popup/utils/tendermintVesting';
+import { getDelegatedVestingTotal, getPersistenceVestingRelatedBalances, getVestingRelatedBalances, getVestingRemained } from '~/Popup/utils/tendermintVesting';
 import type { TendermintChain } from '~/types/chain';
 
 import { useBalanceSWR } from './useBalanceSWR';
@@ -44,11 +38,8 @@ export function useAmountSWR(chain: TendermintChain, suspense?: boolean) {
 
   const vestingRemained = useMemo(() => getVestingRemained(account?.data, chain.baseDenom), [account?.data, chain.baseDenom]);
   const delegatedVestingTotal = useMemo(
-    () =>
-      chain.chainName === KAVA.chainName
-        ? getDelegatedVestingTotal(account?.data, chain.baseDenom)
-        : calculatingDelegatedVestingTotal(vestingRemained, delegationAmount),
-    [account?.data, chain.baseDenom, chain.chainName, delegationAmount, vestingRemained],
+    () => (chain.chainName === KAVA.chainName ? getDelegatedVestingTotal(account?.data, chain.baseDenom) : delegationAmount),
+    [account?.data, chain.baseDenom, chain.chainName, delegationAmount],
   );
 
   const rewardAmount = useMemo(
@@ -62,11 +53,11 @@ export function useAmountSWR(chain: TendermintChain, suspense?: boolean) {
         return getPersistenceVestingRelatedBalances(availableAmount, vestingRemained);
       }
 
-      return getVestingRelatedBalances(availableAmount, vestingRemained, delegatedVestingTotal);
+      return getVestingRelatedBalances(availableAmount, vestingRemained, delegatedVestingTotal, unbondingAmount);
     }
 
     return [availableAmount, '0'];
-  }, [availableAmount, chain.chainName, delegatedVestingTotal, vestingRemained]);
+  }, [availableAmount, chain.chainName, delegatedVestingTotal, vestingRemained, unbondingAmount]);
 
   return {
     delegationAmount,
