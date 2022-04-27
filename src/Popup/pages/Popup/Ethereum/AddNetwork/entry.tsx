@@ -12,7 +12,7 @@ import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { EthereumNetwork } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthcAddNetwork } from '~/types/ethereum/message';
+import type { EthcAddNetwork, EthcAddNetworkResponse } from '~/types/ethereum/message';
 
 import {
   BottomButtonContainer,
@@ -146,9 +146,11 @@ export default function Entry({ queue }: EntryProps) {
 
               await setChromeStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
 
+              const result: EthcAddNetworkResponse = null;
+
               responseToWeb({
                 response: {
-                  result: true,
+                  result,
                 },
                 message,
                 messageId,

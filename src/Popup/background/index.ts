@@ -1,6 +1,6 @@
 import '~/Popup/i18n/background';
 
-import { CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -14,7 +14,7 @@ import { EthereumRPCError, TendermintRPCError } from '~/Popup/utils/error';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
-import type { EthAddNetworkParams } from '~/types/ethereum/message';
+import type { EthAddNetworkParams, EthcSwitchNetworkParams, EthcSwitchNetworkResponse } from '~/types/ethereum/message';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
 import type { TenAccountResponse, TenAddChainParams, TenRequestAccountResponse, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
@@ -22,7 +22,13 @@ import type { ThemeType } from '~/types/theme';
 
 import { chromeStorage } from './chromeStorage';
 import { requestRPC } from './ethereum';
-import { ethAddNetworkParamsSchema, tenAddChainParamsSchema, tenSignAminoParamsSchema, tenSignDirectParamsSchema } from './joiSchema';
+import {
+  ethcAddNetworkParamsSchema,
+  ethcSwitchNetworkParamsSchema,
+  tenAddChainParamsSchema,
+  tenSignAminoParamsSchema,
+  tenSignDirectParamsSchema,
+} from './joiSchema';
 
 function background() {
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, _, sendResponse) => {
@@ -258,7 +264,7 @@ function background() {
           const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
           const ethereumNoPopupMethods = Object.values(ETHEREUM_NO_POPUP_METHOD_TYPE) as string[];
 
-          const { queues, password } = await chromeStorage();
+          const { queues, additionalEthereumNetworks, currentEthereumNetwork } = await chromeStorage();
 
           const { message, messageId, origin } = request;
 
@@ -270,14 +276,10 @@ function background() {
             const { method, id } = message;
 
             if (ethereumPopupMethods.includes(method)) {
-              if (!password) {
-                throw new EthereumRPCError(RPC_ERROR.UNAUTHORIZED, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
-              }
-
               if (method === 'ethc_addNetwork') {
                 const { params } = message;
 
-                const schema = ethAddNetworkParamsSchema();
+                const schema = ethcAddNetworkParamsSchema();
 
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as EthAddNetworkParams;
@@ -299,6 +301,49 @@ function background() {
                     {
                       ...request,
                       message: { ...request.message, method, params: [...validatedParams] as EthAddNetworkParams },
+                      windowId: window?.id,
+                    },
+                  ]);
+                } catch (err) {
+                  if (err instanceof EthereumRPCError) {
+                    throw err;
+                  }
+
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+                }
+              }
+
+              if (method === 'ethc_switchNetwork') {
+                const { params } = message;
+
+                const networkChainIds = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks].map((item) => item.chainId);
+
+                const schema = ethcSwitchNetworkParamsSchema(networkChainIds);
+
+                try {
+                  const validatedParams = (await schema.validateAsync(params)) as EthcSwitchNetworkParams;
+
+                  if (params[0] === currentEthereumNetwork.chainId) {
+                    const result: EthcSwitchNetworkResponse = null;
+
+                    responseToWeb({
+                      response: {
+                        result,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
+
+                    return;
+                  }
+
+                  const window = await openWindow();
+                  await setStorage('queues', [
+                    ...queues,
+                    {
+                      ...request,
+                      message: { ...request.message, method, params: [...validatedParams] as EthcSwitchNetworkParams },
                       windowId: window?.id,
                     },
                   ]);

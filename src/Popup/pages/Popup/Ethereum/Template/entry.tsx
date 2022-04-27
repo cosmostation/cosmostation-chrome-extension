@@ -5,12 +5,12 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthAddNetwork } from '~/types/ethereum/message';
+import type { EthcAddNetwork } from '~/types/ethereum/message';
 
 import { BottomButtonContainer, BottomContainer, Container, ContentContainer } from './styled';
 
 type EntryProps = {
-  queue: Queue<EthAddNetwork>;
+  queue: Queue<EthcAddNetwork>;
 };
 
 export default function Entry({ queue }: EntryProps) {

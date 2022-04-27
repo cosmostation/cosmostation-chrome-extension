@@ -71,6 +71,18 @@ export type EthcAddNetwork = {
   id?: number | string;
 };
 
+export type EthcAddNetworkResponse = null;
+
+export type EthcSwitchNetworkParams = [string];
+
+export type EthcSwitchNetwork = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETHC__SWITCH_NETWORK;
+  params: EthcSwitchNetworkParams;
+  id?: number | string;
+};
+
+export type EthcSwitchNetworkResponse = null;
+
 export type EthRPCRequest = {
   method: Exclude<EthereumNoPopupMethodType, typeof ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE>;
   params: unknown;

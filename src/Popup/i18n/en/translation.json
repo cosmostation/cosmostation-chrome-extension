@@ -400,6 +400,12 @@
             "question": "Allow this site to add the network?",
             "warning": "Cosmostation does not validate custom network."
           }
+        },
+        "SwitchNetwork": {
+          "entry": {
+            "description": "This will switch the selected network within Cosmostation to a previously selected network.",
+            "question": "Allow this site to switch the network?"
+          }
         }
       },
       "Tendermint": {

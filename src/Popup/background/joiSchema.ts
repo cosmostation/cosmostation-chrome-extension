@@ -95,7 +95,7 @@ export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string)
   });
 };
 
-export const ethAddNetworkParamsSchema = () =>
+export const ethcAddNetworkParamsSchema = () =>
   Joi.array()
     .label('params')
     .required()
@@ -111,4 +111,15 @@ export const ethAddNetworkParamsSchema = () =>
         explorerURL: Joi.string().trim().optional(),
         coinGeckoId: Joi.string().trim().optional(),
       }).required(),
+    );
+
+export const ethcSwitchNetworkParamsSchema = (chainIds: string[]) =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.string()
+        .label('chainId')
+        .valid(...chainIds)
+        .required(),
     );
