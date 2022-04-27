@@ -24,8 +24,8 @@ export const CERBERUS: TendermintChain = {
   explorerURL: `${MINTSCAN_URL}/cerberus`,
   gasRate: {
     tiny: '0',
-    low: '0',
-    average: '0',
+    low: '0.025',
+    average: '0.25',
   },
   gas: { send: '100000' },
 };

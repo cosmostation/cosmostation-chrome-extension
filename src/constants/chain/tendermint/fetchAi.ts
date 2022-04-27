@@ -24,8 +24,8 @@ export const FETCH_AI: TendermintChain = {
   explorerURL: `${MINTSCAN_URL}/fetchai`,
   gasRate: {
     tiny: '0',
-    low: '0',
-    average: '0',
+    low: '0.025',
+    average: '0.25',
   },
   gas: { send: '100000' },
 };

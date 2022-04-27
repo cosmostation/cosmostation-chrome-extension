@@ -22,8 +22,8 @@ export const CRESCENT: TendermintChain = {
   bech32Prefix: { address: 'cre' },
   explorerURL: `${MINTSCAN_URL}/crescent`,
   gasRate: {
-    tiny: '0',
-    low: '0.1',
+    tiny: '0.01',
+    low: '0.02',
     average: '0.1',
   },
   gas: { send: '100000' },

@@ -32,6 +32,7 @@ import Close24Icon from '~/images/icons/Close24.svg';
 import Cosmostation14Icon from '~/images/icons/Cosmostation14.svg';
 import Currency24Icon from '~/images/icons/Currency24.svg';
 import DarkMode24Icon from '~/images/icons/DarkMode24.svg';
+import Guide24Icon from '~/images/icons/Guide24.svg';
 import HelpIcon from '~/images/icons/Help.svg';
 import LanguageChangeIcon from '~/images/icons/LanguageChange.svg';
 import Lock16 from '~/images/icons/Lock16.svg';
@@ -101,6 +102,10 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
 
       <ItemButton Icon={Currency24Icon} onClick={() => navigate('/setting/change-currency', { isDuplicateCheck: true })}>
         {t('components.Header.Drawer.index.currency')}
+      </ItemButton>
+
+      <ItemButton Icon={Guide24Icon} onClick={() => window.open('https://docs.cosmostation.io/docs/User%20Guide/Cosmostation%20Extension/introduction')}>
+        {t('components.Header.Drawer.index.guide')}
       </ItemButton>
 
       <ItemButton Icon={HelpIcon} onClick={() => window.open('https://cosmostation.io/about#contact')}>

@@ -23,8 +23,8 @@ export const ASSET_MANTLE: TendermintChain = {
   explorerURL: `${MINTSCAN_URL}/asset-mantle`,
   gasRate: {
     tiny: '0',
-    low: '0',
-    average: '0',
+    low: '0.025',
+    average: '0.25',
   },
   gas: { send: '100000' },
 };
