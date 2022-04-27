@@ -1,6 +1,6 @@
 import Joi from '~/Popup/utils/joi';
 import type { GasRate } from '~/types/chain';
-import type { EthAddNetwork } from '~/types/ethereum/message';
+import type { EthcAddNetwork } from '~/types/ethereum/message';
 import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint/amino';
 import type { Amount } from '~/types/tendermint/common';
 import type { TenAddChainParams, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
@@ -95,12 +95,12 @@ export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string)
   });
 };
 
-export const ethAddNetworkParamsSchema = () =>
+export const ethcAddNetworkParamsSchema = () =>
   Joi.array()
     .label('params')
     .required()
     .items(
-      Joi.object<EthAddNetwork['params'][0]>({
+      Joi.object<EthcAddNetwork['params'][0]>({
         baseDenom: Joi.string().trim().required(),
         displayDenom: Joi.string().trim().required(),
         chainId: Joi.string().trim().required(),
@@ -111,4 +111,15 @@ export const ethAddNetworkParamsSchema = () =>
         explorerURL: Joi.string().trim().optional(),
         coinGeckoId: Joi.string().trim().optional(),
       }).required(),
+    );
+
+export const ethcSwitchNetworkParamsSchema = (chainIds: string[]) =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.string()
+        .label('chainId')
+        .valid(...chainIds)
+        .required(),
     );
