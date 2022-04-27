@@ -11,7 +11,11 @@ import AccountPopover from './AccountPopover';
 import NetworkPopover from './NetworkPopover';
 import { Container, LeftContentContainer, NetworkButton, RightContentContainer } from './styled';
 
-export default function WalletHeader() {
+type SelectSubHeaderProps = {
+  isShowChain?: boolean;
+};
+
+export default function SelectSubHeader({ isShowChain = true }: SelectSubHeaderProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentChain, setCurrentChain } = useCurrentChain();
   const { currentNetwork } = useCurrentNetwork();
@@ -34,26 +38,30 @@ export default function WalletHeader() {
         </AccountButton>
       </LeftContentContainer>
       <RightContentContainer>
-        {currentChain.line === 'ETHEREUM' && (
-          <NetworkButton
-            onClick={(event) => {
-              setPopover('network');
-              setPopoverAnchorEl(event.currentTarget);
-            }}
-          >
-            {currentNetwork.networkName}
-          </NetworkButton>
+        {isShowChain && (
+          <>
+            {currentChain.line === 'ETHEREUM' && (
+              <NetworkButton
+                onClick={(event) => {
+                  setPopover('network');
+                  setPopoverAnchorEl(event.currentTarget);
+                }}
+              >
+                {currentNetwork.networkName}
+              </NetworkButton>
+            )}
+            <ChainButton
+              imgSrc={currentChain.imageURL}
+              onClick={(event) => {
+                setPopover('chain');
+                setPopoverAnchorEl(event.currentTarget);
+              }}
+              isActive={isOpenPopover && popover === 'chain'}
+            >
+              {currentChain.chainName}
+            </ChainButton>
+          </>
         )}
-        <ChainButton
-          imgSrc={currentChain.imageURL}
-          onClick={(event) => {
-            setPopover('chain');
-            setPopoverAnchorEl(event.currentTarget);
-          }}
-          isActive={isOpenPopover && popover === 'chain'}
-        >
-          {currentChain.chainName}
-        </ChainButton>
       </RightContentContainer>
 
       <ChainPopover

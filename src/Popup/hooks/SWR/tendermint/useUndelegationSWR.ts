@@ -22,6 +22,7 @@ export function useUndelegationSWR(chain: TendermintChain, suspense?: boolean) {
   const fetcher = (fetchUrl: string) => get<UnbondingPayload>(fetchUrl);
 
   const { data, error, mutate } = useSWR<UnbondingPayload, AxiosError>(requestURL, fetcher, {
+    dedupingInterval: 14000,
     refreshInterval: 15000,
     errorRetryCount: 5,
     errorRetryInterval: 3000,

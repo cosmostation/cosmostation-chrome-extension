@@ -10,9 +10,23 @@ export const Container = styled('div')({
   flexDirection: 'column',
 });
 
-export const TotalValueTextContainer = styled('div')(({ theme }) => ({
-  paddingTop: '0.8rem',
+export const HeaderContainer = styled('div')({
+  marginTop: '0.4rem',
 
+  flexShrink: 0,
+});
+
+export const TotalContainer = styled('div')(({ theme }) => ({
+  marginTop: '1.6rem',
+
+  padding: '1.6rem 0',
+
+  borderRadius: '0.8rem',
+
+  backgroundColor: theme.colors.base02,
+}));
+
+export const TotalValueTextContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -35,7 +49,7 @@ export const TotalValueContainer = styled('div')(({ theme }) => ({
 }));
 
 export const SubInfoContainer = styled('div')({
-  marginTop: '1.6rem',
+  marginTop: '1.1rem',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',

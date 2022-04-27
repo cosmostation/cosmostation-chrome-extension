@@ -16,6 +16,7 @@ export function useIbcCoinSWR(chain: TendermintChain, suspense?: boolean) {
   const requestURL = `https://api-utility.cosmostation.io/v1/ibc/tokens/${chainId || ''}`;
 
   const { data, error, mutate } = useSWR<IbcCoinPayload, AxiosError>(requestURL, fetcher, {
+    dedupingInterval: 14000,
     refreshInterval: 0,
     errorRetryCount: 5,
     errorRetryInterval: 3000,

@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
+import Header from '~/Popup/components/SelectSubHeader';
 import type { EthereumChain } from '~/types/chain';
 
 import NativeChainCard, { NativeChainCardSkeleton } from '../components/ethereum/NativeChainCard';
-import Header from '../components/Header';
 import { Container, HeaderContainer, NativeChainCardContainer } from '../styled';
 
 type EthereumProps = {

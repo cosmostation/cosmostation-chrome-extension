@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 
 import AddButton from '~/Popup/components/AddButton';
 import Number from '~/Popup/components/common/Number';
+import Header from '~/Popup/components/SelectSubHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -20,7 +21,9 @@ import {
   CountContainer,
   CountLeftContainer,
   CountRightContainer,
+  HeaderContainer,
   SubInfoContainer,
+  TotalContainer,
   TotalValueContainer,
   TotalValueTextContainer,
 } from './styled';
@@ -38,14 +41,19 @@ export default function Entry() {
 
   return (
     <Container>
-      <TotalValueTextContainer>
-        <Typography variant="h5">Total Value</Typography>
-      </TotalValueTextContainer>
-      <TotalValueContainer>
-        <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={chromeStorage.currency}>
-          {totalAmount}
-        </Number>
-      </TotalValueContainer>
+      <HeaderContainer>
+        <Header isShowChain={false} />
+      </HeaderContainer>
+      <TotalContainer>
+        <TotalValueTextContainer>
+          <Typography variant="h5">Total Value</Typography>
+        </TotalValueTextContainer>
+        <TotalValueContainer>
+          <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={chromeStorage.currency}>
+            {totalAmount}
+          </Number>
+        </TotalValueContainer>
+      </TotalContainer>
       <SubInfoContainer>
         <CountContainer>
           <CountLeftContainer>
