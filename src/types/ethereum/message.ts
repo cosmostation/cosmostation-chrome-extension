@@ -65,8 +65,8 @@ export type EthAddNetworkParam1 = Omit<EthereumNetwork, 'id' | 'ethereumChainId'
 
 export type EthAddNetworkParams = [EthAddNetworkParam1];
 
-export type EthAddNetwork = {
-  method: typeof ETHEREUM_METHOD_TYPE.ETH__ADD_NETWORK;
+export type EthcAddNetwork = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETHC__ADD_NETWORK;
   params: EthAddNetworkParams;
   id?: number | string;
 };

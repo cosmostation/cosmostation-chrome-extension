@@ -43,7 +43,7 @@ export default function Routes({ children }: RoutesType) {
         navigate('/popup/tendermint/sign/direct');
       }
 
-      if (chromeStorage.queues[0].message.method === 'eth_addNetwork') {
+      if (chromeStorage.queues[0].message.method === 'ethc_addNetwork') {
         navigate('/popup/ethereum/add-network');
       }
     }

@@ -10,7 +10,7 @@ export const ETHEREUM_POPUP_METHOD_TYPE = {
   PERSONAL_SIGN: 'personal_sign',
 
   // custom
-  ETH__ADD_NETWORK: 'eth_addNetwork',
+  ETHC__ADD_NETWORK: 'ethc_addNetwork',
 } as const;
 
 export const ETHEREUM_NO_POPUP_METHOD_TYPE = {

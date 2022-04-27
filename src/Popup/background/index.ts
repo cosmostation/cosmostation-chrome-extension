@@ -274,7 +274,7 @@ function background() {
                 throw new EthereumRPCError(RPC_ERROR.UNAUTHORIZED, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
               }
 
-              if (method === 'eth_addNetwork') {
+              if (method === 'ethc_addNetwork') {
                 const { params } = message;
 
                 const schema = ethAddNetworkParamsSchema();
