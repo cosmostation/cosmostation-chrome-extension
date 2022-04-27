@@ -403,8 +403,10 @@
         },
         "SwitchNetwork": {
           "entry": {
+            "cancelButton": "취소",
             "description": "이는 Cosmostation에서 선택된 네트워크를 이전에 선택된 네트워크로 전환하게 됩니다.",
-            "question": "이 사이트가 네트워크를 전환하도록 허용할까요?"
+            "question": "이 사이트가 네트워크를 전환하도록 허용할까요?",
+            "switchButton": "전환"
           }
         }
       },

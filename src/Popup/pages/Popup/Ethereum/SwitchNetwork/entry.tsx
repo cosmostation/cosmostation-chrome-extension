@@ -82,7 +82,7 @@ export default function Entry({ queue }: EntryProps) {
               await deQueue();
             }}
           >
-            Cancel
+            {t('pages.Popup.Ethereum.SwitchNetwork.entry.cancelButton')}
           </OutlineButton>
           <Button
             onClick={async () => {
@@ -103,7 +103,7 @@ export default function Entry({ queue }: EntryProps) {
               await deQueue();
             }}
           >
-            Switch
+            {t('pages.Popup.Ethereum.SwitchNetwork.entry.switchButton')}
           </Button>
         </BottomButtonContainer>
       </BottomContainer>
