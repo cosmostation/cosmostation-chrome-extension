@@ -21,6 +21,7 @@ export function useRewardSWR(chain: TendermintChain, suspense?: boolean) {
   const fetcher = (fetchUrl: string) => get<RewardPayload>(fetchUrl);
 
   const { data, error, mutate } = useSWR<RewardPayload, AxiosError>(requestURL, fetcher, {
+    dedupingInterval: 14000,
     refreshInterval: 15000,
     errorRetryCount: 5,
     errorRetryInterval: 3000,

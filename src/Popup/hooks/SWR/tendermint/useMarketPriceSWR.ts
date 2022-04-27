@@ -10,6 +10,7 @@ export function useMarketPriceSWR(suspense?: boolean) {
   const requestURL = `https://api-utility.cosmostation.io/v1/market/prices`;
 
   const { data, error, mutate } = useSWR<MarketPricePayload, AxiosError>(requestURL, fetcher, {
+    dedupingInterval: 14000,
     refreshInterval: 15000,
     errorRetryCount: 5,
     errorRetryInterval: 3000,

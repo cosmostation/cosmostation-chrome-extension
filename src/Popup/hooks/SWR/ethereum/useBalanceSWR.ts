@@ -31,7 +31,8 @@ export function useBalanceSWR(chain: EthereumChain, suspense?: boolean) {
     { url: rpcURL, body: { method: 'eth_getBalance', params: [address, 'latest'] } },
     fetcher,
     {
-      refreshInterval: 0,
+      dedupingInterval: 14000,
+      refreshInterval: 15000,
       errorRetryCount: 5,
       errorRetryInterval: 3000,
       isPaused: () => !address,

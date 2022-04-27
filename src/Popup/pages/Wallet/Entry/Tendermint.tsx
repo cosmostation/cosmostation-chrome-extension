@@ -2,9 +2,9 @@ import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Empty from '~/Popup/components/common/Empty';
+import Header from '~/Popup/components/SelectSubHeader';
 import type { TendermintChain } from '~/types/chain';
 
-import Header from '../components/Header';
 import IbcCoinList from '../components/tendermint/IbcCoinList';
 import NativeChainCard, { NativeChainCardSkeleton } from '../components/tendermint/NativeChainCard';
 import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
