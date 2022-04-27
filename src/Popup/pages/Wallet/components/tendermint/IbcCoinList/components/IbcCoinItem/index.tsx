@@ -21,7 +21,7 @@ import {
   StyledButton,
 } from './styled';
 
-type ChainItemProps = {
+type IbcCoinItemProps = {
   amount: string;
   decimals?: number;
   baseDenom?: string;
@@ -32,7 +32,7 @@ type ChainItemProps = {
   disabled?: boolean;
 };
 
-export default function ChainItem({ disabled, imageURL, amount, decimals = 0, baseDenom, displayDenom, channel, onClick }: ChainItemProps) {
+export default function IbcCoinItem({ disabled, imageURL, amount, decimals = 0, baseDenom, displayDenom, channel, onClick }: IbcCoinItemProps) {
   const { chromeStorage } = useChromeStorage();
   const { data } = useCoinGeckoPriceSWR(true);
 
