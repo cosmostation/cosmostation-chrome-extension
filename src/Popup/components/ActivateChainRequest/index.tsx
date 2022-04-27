@@ -41,7 +41,10 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
       return CHAINS.find((item) => item.chainName === currentQueue.message.params.chainName);
     }
 
-    if (currentQueue?.message?.method?.startsWith('eth_') && !allowedChains.includes(ETHEREUM_CHAINS[0].chainName)) {
+    if (
+      (currentQueue?.message?.method?.startsWith('eth_') || currentQueue?.message?.method?.startsWith('ethc_')) &&
+      !allowedChains.includes(ETHEREUM_CHAINS[0].chainName)
+    ) {
       return ETHEREUM_CHAINS[0];
     }
 

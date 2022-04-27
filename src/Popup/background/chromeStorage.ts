@@ -13,8 +13,6 @@ export async function chromeStorage() {
     additionalEthereumNetworks,
     encryptedPassword,
     selectedEthereumNetworkId,
-    additionalChains,
-    queues,
     allowedOrigins,
     allowedChainIds,
   } = storage;
@@ -61,17 +59,13 @@ export async function chromeStorage() {
   const password = storage.password ? aesDecrypt(storage.password, ENCTYPT_KEY) : null;
 
   return {
-    accounts,
-    storage,
+    ...storage,
     currentAccount,
     currentAccountName,
     currentEthereumNetwork,
     currentAllowedChains,
     currentAccountAllowedOrigins,
-    additionalChains,
-    allowedOrigins,
     password,
-    queues,
     getPairKey,
   };
 }
