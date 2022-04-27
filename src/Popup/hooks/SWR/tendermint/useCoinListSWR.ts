@@ -19,6 +19,7 @@ import { useIncentiveSWR } from './useIncentiveSWR';
 export type CoinInfo = {
   auth?: boolean;
   decimals?: number;
+  originBaseDenom?: string;
   baseDenom?: string;
   displayDenom?: string;
   imageURL?: string;
@@ -92,6 +93,7 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
             return {
               decimals: coinInfo.decimals,
               baseDenom: coinInfo.baseDenom,
+              originBaseDenom: coinInfo.baseDenom,
               displayDenom: coinInfo.displayDenom,
               imageURL: coinInfo.imageURL,
               availableAmount: vestingRelatedAvailable,
@@ -119,6 +121,7 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
         return {
           auth: !!coinInfo?.auth,
           decimals: coinInfo?.decimal,
+          originBaseDenom: coinInfo?.base_denom,
           baseDenom: coin.denom,
           displayDenom: coinInfo?.display_denom,
           imageURL: coinInfo?.moniker,

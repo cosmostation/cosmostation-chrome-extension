@@ -47,7 +47,7 @@ export default function IbcCoinList({ chain }: EntryProps) {
             amount={item.totalAmount}
             channel={item.channelId}
             decimals={item.decimals}
-            baseDenom={item.baseDenom}
+            baseDenom={item.originBaseDenom}
             displayDenom={item.displayDenom}
             imageURL={item.imageURL}
           />
