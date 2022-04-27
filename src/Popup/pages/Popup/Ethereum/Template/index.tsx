@@ -3,7 +3,7 @@ import ActivateChainRequest from '~/Popup/components/ActivateChainRequest';
 import Lock from '~/Popup/components/Lock';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthAddNetwork } from '~/types/ethereum/message';
+import type { EthcAddNetwork } from '~/types/ethereum/message';
 
 import Entry from './entry';
 import Layout from './layout';
@@ -11,7 +11,7 @@ import Layout from './layout';
 export default function AddNetwork() {
   const { currentQueue } = useCurrentQueue();
 
-  if (currentQueue && isEthAddNetwork(currentQueue)) {
+  if (currentQueue && isEthcAddNetwork(currentQueue)) {
     return (
       <Lock>
         <AccessRequest>
@@ -27,6 +27,6 @@ export default function AddNetwork() {
   return null;
 }
 
-function isEthAddNetwork(queue: Queue): queue is Queue<EthAddNetwork> {
-  return queue?.message?.method === 'eth_addNetwork';
+function isEthcAddNetwork(queue: Queue): queue is Queue<EthcAddNetwork> {
+  return queue?.message?.method === 'ethc_addNetwork';
 }
