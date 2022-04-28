@@ -56,9 +56,9 @@ export type TenAddChain = {
 
 export type TenAddChainResponse = boolean;
 
-export type TenSignEdit = { isEditMemo?: boolean; isEditFee?: boolean };
+export type TenSignOptions = { isEditMemo?: boolean; isEditFee?: boolean };
 
-export type TenSignAminoParams = { chainName: string; doc: SignAminoDoc } & TenSignEdit;
+export type TenSignAminoParams = { chainName: string; doc: SignAminoDoc } & TenSignOptions;
 
 export type TenSignAmino = {
   method: typeof TENDERMINT_POPUP_METHOD_TYPE.TEN__SIGN_AMINO;
@@ -75,7 +75,7 @@ export type TenSignAminoResponse = {
   signed_doc: SignAminoDoc;
 };
 
-export type TenSignDirectParams = { chainName: string; doc: SignDirectDoc } & TenSignEdit;
+export type TenSignDirectParams = { chainName: string; doc: SignDirectDoc } & TenSignOptions;
 
 export type TenSignDirect = {
   method: typeof TENDERMINT_POPUP_METHOD_TYPE.TEN__SIGN_DIRECT;
