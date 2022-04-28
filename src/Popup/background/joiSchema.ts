@@ -75,7 +75,7 @@ export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string)
 
   const prefixChainId = splitedChainId[0] ?? '';
 
-  const chainIdRegex = new RegExp(`^${prefixChainId ? `${prefixChainId}-` : ''}(.*)$`);
+  const chainIdRegex = new RegExp(`^${prefixChainId || ''}(.*)$`);
 
   return Joi.object<TenSignDirectParams>({
     chainName: Joi.string()
