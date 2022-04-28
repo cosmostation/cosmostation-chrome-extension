@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 
-import { CHAINS } from '~/constants/chain';
+import { CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
+import type { EthcRequestAccountsResponse } from '~/types/ethereum/message';
 import type { TenRequestAccountResponse } from '~/types/tendermint/message';
 
 export default function Entry() {
@@ -44,6 +45,27 @@ export default function Entry() {
 
         void deQueue();
       }
+    }
+
+    if (currentQueue?.message.method === 'ethc_requestAccounts' && currentPassword) {
+      const { message, messageId, origin } = currentQueue;
+      const chain = ETHEREUM_CHAINS[0];
+
+      const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+      const address = getAddress(chain, keyPair?.publicKey);
+
+      const result: EthcRequestAccountsResponse = [address];
+
+      responseToWeb({
+        response: {
+          result,
+        },
+        message,
+        messageId,
+        origin,
+      });
+
+      void deQueue();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

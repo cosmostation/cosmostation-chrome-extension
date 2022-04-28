@@ -37,11 +37,13 @@ export type EthereumTxParams = {
   hardfork?: string;
 };
 
-export type EthRequestAccounts = {
-  method: typeof ETHEREUM_METHOD_TYPE.ETH__REQUEST_ACCOUNTS;
+export type EthcRequestAccounts = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETHC__REQUEST_ACCOUNTS;
   params: unknown;
   id?: number | string;
 };
+
+export type EthcRequestAccountsResponse = string[];
 
 export type EthSignRequest = {
   method: typeof ETHEREUM_METHOD_TYPE.ETH__SIGN | typeof ETHEREUM_METHOD_TYPE.PERSONAL_SIGN;
