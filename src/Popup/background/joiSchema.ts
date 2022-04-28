@@ -36,7 +36,9 @@ export const tenAddChainParamsSchema = (chainNames: string[]) =>
     sendGas: Joi.string()
       .regex(/^[0-9]+$/)
       .optional(),
-  });
+  })
+    .label('params')
+    .required();
 
 export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) => {
   const splitedChainId = chainId.split('-');
@@ -68,7 +70,9 @@ export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) 
     }).required(),
     isEditFee: Joi.boolean().default(false),
     isEditMemo: Joi.boolean().default(false),
-  });
+  })
+    .label('params')
+    .required();
 };
 export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string) => {
   const splitedChainId = chainId.split('-');
@@ -90,5 +94,7 @@ export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string)
     }).required(),
     isEditFee: Joi.boolean().default(false),
     isEditMemo: Joi.boolean().default(false),
-  });
+  })
+    .label('params')
+    .required();
 };
