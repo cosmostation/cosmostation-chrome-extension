@@ -56,7 +56,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { message, messageId, origin, channel } = queue;
 
   const {
-    params: { doc, chainName, isEditFee, isEditMemo },
+    params: { doc, chainName, isEditFee, isEditMemo, gasRate },
   } = message;
 
   const { fee, msgs } = doc;
@@ -101,7 +101,15 @@ export default function Entry({ queue, chain }: EntryProps) {
           <Memo memo={memo} onChange={(m) => setMemo(m)} isEdit={isEditMemo} />
         </MemoContainer>
         <FeeContainer>
-          <Fee chain={chain} baseFee={baseFee} gas={gas} onChangeFee={(f) => setBaseFee(f)} onChangeGas={(g) => setGas(g)} isEdit={isEditFee} />
+          <Fee
+            chain={chain}
+            baseFee={baseFee}
+            customGasRate={gasRate}
+            gas={gas}
+            onChangeFee={(f) => setBaseFee(f)}
+            onChangeGas={(g) => setGas(g)}
+            isEdit={isEditFee}
+          />
         </FeeContainer>
       </TabPanel>
       <TabPanel value={value} index={1}>

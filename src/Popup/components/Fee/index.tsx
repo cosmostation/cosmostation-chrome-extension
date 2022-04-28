@@ -6,7 +6,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { divide, equal, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import type { TendermintChain } from '~/types/chain';
+import type { GasRate, TendermintChain } from '~/types/chain';
 
 import GasSettingDialog from './components/GasSettingDialog';
 import {
@@ -30,13 +30,16 @@ type FeeProps = {
   isEdit?: boolean;
   baseFee: string;
   gas: string;
+  customGasRate?: GasRate;
   onChangeFee?: (fee: string) => void;
   onChangeGas?: (gas: string) => void;
 };
 
-export default function Fee({ isEdit = false, baseFee, gas, onChangeFee, onChangeGas, chain }: FeeProps) {
+export default function Fee({ isEdit = false, customGasRate, baseFee, gas, onChangeFee, onChangeGas, chain }: FeeProps) {
   const { chromeStorage } = useChromeStorage();
-  const { gasRate, decimals, displayDenom, coinGeckoId } = chain;
+  const { decimals, displayDenom, coinGeckoId } = chain;
+
+  const gasRate = customGasRate || chain.gasRate;
   const { average, tiny, low } = gasRate;
 
   const { t } = useTranslation();

@@ -56,7 +56,7 @@ export type TenAddChain = {
 
 export type TenAddChainResponse = boolean;
 
-export type TenSignOptions = { isEditMemo?: boolean; isEditFee?: boolean };
+export type TenSignOptions = { isEditMemo?: boolean; isEditFee?: boolean; gasRate?: GasRate };
 
 export type TenSignAminoParams = { chainName: string; doc: SignAminoDoc } & TenSignOptions;
 
