@@ -5,6 +5,8 @@ import type { Amount } from '~/types/tendermint/common';
 import type { TenAddChainParams, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
 import type { SignDirectDoc } from '~/types/tendermint/proto';
 
+const numberRegex = /^([0-9]+|[0-9]+(\.[0-9]+))$/;
+
 export const tenAddChainParamsSchema = (chainNames: string[]) =>
   Joi.object<TenAddChainParams>({
     chainId: Joi.string().required(),
@@ -70,6 +72,11 @@ export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) 
     }).required(),
     isEditFee: Joi.boolean().default(false),
     isEditMemo: Joi.boolean().default(false),
+    gasRate: Joi.object<GasRate>({
+      average: Joi.string().required().pattern(numberRegex),
+      low: Joi.string().required().pattern(numberRegex),
+      tiny: Joi.string().required().pattern(numberRegex),
+    }).optional(),
   })
     .label('params')
     .required();
@@ -94,6 +101,11 @@ export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string)
     }).required(),
     isEditFee: Joi.boolean().default(false),
     isEditMemo: Joi.boolean().default(false),
+    gasRate: Joi.object<GasRate>({
+      average: Joi.string().required().pattern(numberRegex),
+      low: Joi.string().required().pattern(numberRegex),
+      tiny: Joi.string().required().pattern(numberRegex),
+    }).optional(),
   })
     .label('params')
     .required();

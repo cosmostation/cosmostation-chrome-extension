@@ -113,7 +113,7 @@ import type { SignDirectDoc } from '~/types/tendermint/proto';
           if (message.method === 'ten_signDirect') {
             const { params } = message;
 
-            const { doc } = params;
+            const doc = params?.doc;
 
             const newDoc: SignDirectDoc = doc
               ? {
@@ -123,7 +123,7 @@ import type { SignDirectDoc } from '~/types/tendermint/proto';
                 }
               : doc;
 
-            const newParams: TenSignDirectParams = { ...params, doc: newDoc };
+            const newParams: TenSignDirectParams = params ? { ...params, doc: newDoc } : params;
             const newMessage = { ...message, params: newParams };
 
             window.postMessage({
