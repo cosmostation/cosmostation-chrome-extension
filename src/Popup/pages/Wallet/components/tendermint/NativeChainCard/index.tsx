@@ -216,6 +216,8 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
 
   const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
 
+  const [expanded, setExpanded] = useState(storageExpanded);
+
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
 
@@ -269,7 +271,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
         <Skeleton width="8rem" height="1.9rem" />
       </ThirdLineContainer>
 
-      <StyledAccordion expanded={storageExpanded}>
+      <StyledAccordion expanded={expanded}>
         <StyledAccordionSummary />
         <StyledAccordionDetails>
           <FourthLineContainer>
@@ -327,7 +329,16 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
         </Button>
       </ButtonContainer>
 
-      <ExpandedButton data-is-expanded={storageExpanded ? 1 : 0} type="button">
+      <ExpandedButton
+        data-is-expanded={expanded ? 1 : 0}
+        type="button"
+        onClick={() => {
+          setExpanded((prev) => {
+            localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
+            return !prev;
+          });
+        }}
+      >
         <BottomArrow20Icon />
       </ExpandedButton>
     </Container>
