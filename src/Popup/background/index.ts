@@ -1,6 +1,6 @@
 import '~/Popup/i18n/background';
 
-import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -14,7 +14,7 @@ import { EthereumRPCError, TendermintRPCError } from '~/Popup/utils/error';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
-import type { EthAddNetworkParams, EthcSwitchNetworkParams, EthcSwitchNetworkResponse } from '~/types/ethereum/message';
+import type { EthAddNetworkParams, EthcRequestAccountsResponse, EthcSwitchNetworkParams, EthcSwitchNetworkResponse } from '~/types/ethereum/message';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
 import type { TenAccountResponse, TenAddChainParams, TenRequestAccountResponse, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
@@ -296,7 +296,8 @@ function background() {
           const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
           const ethereumNoPopupMethods = Object.values(ETHEREUM_NO_POPUP_METHOD_TYPE) as string[];
 
-          const { queues, additionalEthereumNetworks, currentEthereumNetwork } = await chromeStorage();
+          const { queues, additionalEthereumNetworks, currentEthereumNetwork, password, currentAccountAllowedOrigins, currentAllowedChains, currentAccount } =
+            await chromeStorage();
 
           const { message, messageId, origin } = request;
 
@@ -308,6 +309,27 @@ function background() {
             const { method, id } = message;
 
             if (ethereumPopupMethods.includes(method)) {
+              if (method === 'ethc_requestAccounts') {
+                const chain = ETHEREUM_CHAINS[0];
+                if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
+                  const keyPair = getKeyPair(currentAccount, chain, password);
+                  const address = getAddress(chain, keyPair?.publicKey);
+
+                  const result: EthcRequestAccountsResponse = [address];
+
+                  responseToWeb({
+                    response: {
+                      result,
+                    },
+                    message,
+                    messageId,
+                    origin,
+                  });
+                } else {
+                  const window = await openWindow();
+                  await setStorage('queues', [...queues, { ...request, message: { ...request.message, method }, windowId: window?.id }]);
+                }
+              }
               if (method === 'ethc_addNetwork') {
                 const { params } = message;
 
@@ -437,10 +459,39 @@ function background() {
 
               // }
             } else if (ethereumNoPopupMethods.includes(method)) {
-              const params = method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
+              if (method === 'eth_accounts') {
+                const chain = ETHEREUM_CHAINS[0];
+                if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
+                  const keyPair = getKeyPair(currentAccount, chain, password);
+                  const address = getAddress(chain, keyPair?.publicKey);
 
-              const response = await requestRPC(method, params, id);
-              responseToWeb({ response, message, messageId, origin });
+                  const result: EthcRequestAccountsResponse = [address];
+
+                  responseToWeb({
+                    response: {
+                      result,
+                    },
+                    message,
+                    messageId,
+                    origin,
+                  });
+                } else {
+                  const result: EthcRequestAccountsResponse = [];
+                  responseToWeb({
+                    response: {
+                      result,
+                    },
+                    message,
+                    messageId,
+                    origin,
+                  });
+                }
+              } else {
+                const params = method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
+
+                const response = await requestRPC(method, params, id);
+                responseToWeb({ response, message, messageId, origin });
+              }
             } else {
               throw new EthereumRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST], message.id);
             }
