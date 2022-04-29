@@ -2,6 +2,7 @@ import type { AccordionProps } from '@mui/material';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import AbsoluteLoading from '~/Popup/components/AbsoluteLoading';
 import IconButton from '~/Popup/components/common/IconButton';
 
 export const Container = styled('div')(({ theme }) => ({
@@ -12,6 +13,8 @@ export const Container = styled('div')(({ theme }) => ({
   borderRadius: '0.8rem',
 
   padding: '1.6rem 1.6rem 0',
+
+  position: 'relative',
 }));
 
 export const FirstLineContainer = styled('div')({
@@ -126,7 +129,7 @@ export const ButtonContainer = styled('div')({
   justifyContent: 'space-between',
   alignItems: 'center',
 
-  paddingTop: '1rem',
+  padding: '1rem 0',
 });
 
 export const ButtonCenterContainer = styled('div')({
@@ -162,7 +165,7 @@ type ExpandedButtonProps = {
 
 export const ExpandedButton = styled('button')<ExpandedButtonProps>(({ theme, ...props }) => ({
   border: 0,
-  padding: '1rem 0',
+  paddingBottom: '1rem',
 
   backgroundColor: 'transparent',
   width: '100%',
@@ -189,3 +192,22 @@ export const ExpandedButton = styled('button')<ExpandedButtonProps>(({ theme, ..
     },
   },
 }));
+
+export const StyledRetryIconButton = styled(IconButton)(({ theme }) => ({
+  marginRight: '-0.8rem',
+
+  '& svg': {
+    fill: theme.colors.base05,
+    '& > path': {
+      fill: theme.colors.base05,
+    },
+  },
+}));
+
+export const ErrorDescriptionContainer = styled('div')(({ theme }) => ({
+  color: theme.accentColors.red,
+}));
+
+export const StyledAbsoluteLoading = styled(AbsoluteLoading)({
+  borderRadius: '0.8rem',
+});
