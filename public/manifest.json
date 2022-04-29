@@ -3,7 +3,7 @@
 
   "name": "Cosmostation",
   "description": "Non-custodial multi-chain extension wallet powered by Cosmostation, the interchain validator.",
-  "version": "0.0.8",
+  "version": "0.0.9",
 
   "action": {
     "default_icon": "icon128-dark.png",
