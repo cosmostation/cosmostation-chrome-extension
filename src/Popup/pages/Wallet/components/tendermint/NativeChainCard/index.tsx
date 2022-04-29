@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import type { FallbackProps } from 'react-error-boundary';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
@@ -24,6 +25,7 @@ import {
   ButtonCenterContainer,
   ButtonContainer,
   Container,
+  ErrorDescriptionContainer,
   ExpandedButton,
   FirstLineContainer,
   FirstLineLeftContainer,
@@ -37,16 +39,19 @@ import {
   SecondLineLeftImageContainer,
   SecondLineLeftTextContainer,
   SecondLineRightContainer,
+  StyledAbsoluteLoading,
   StyledAccordion,
   StyledAccordionDetails,
   StyledAccordionSummary,
   StyledIconButton,
+  StyledRetryIconButton,
   ThirdLineContainer,
 } from './styled';
 
 import BottomArrow20Icon from '~/images/icons/BottomArrow20.svg';
 import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
+import RetryIcon from '~/images/icons/Retry.svg';
 import SendIcon from '~/images/icons/Send.svg';
 
 type NativeChainCardProps = {
@@ -341,6 +346,99 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
       >
         <BottomArrow20Icon />
       </ExpandedButton>
+    </Container>
+  );
+}
+
+export function NativeChainCardError({ chain, resetErrorBoundary }: NativeChainCardProps & FallbackProps) {
+  useAmountSWR(chain);
+
+  const [isLoading, setIsloading] = useState(false);
+
+  const { t } = useTranslation();
+
+  const { currentAccount } = useCurrentAccount();
+
+  const { currentPassword } = useCurrentPassword();
+
+  const { explorerURL } = chain;
+
+  const address = useMemo(() => {
+    const key = `${currentAccount.id}${chain.id}`;
+
+    const storageAddress = localStorage.getItem(key);
+
+    if (storageAddress) {
+      return storageAddress;
+    }
+
+    const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+
+    return getAddress(chain, keyPair?.publicKey);
+  }, [chain, currentAccount, currentPassword]);
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleOnClickCopy = () => {
+    if (copy(address)) {
+      enqueueSnackbar(t('pages.Wallet.components.tendermint.NativeChainCard.index.copied'));
+    }
+  };
+
+  return (
+    <Container>
+      <FirstLineContainer>
+        <FirstLineLeftContainer>
+          <AddressButton onClick={handleOnClickCopy}>{address}</AddressButton>
+        </FirstLineLeftContainer>
+        <FirstLineRightContainer>
+          {explorerURL && (
+            <StyledIconButton onClick={() => window.open(`${explorerURL}/account/${address}`)}>
+              <ExplorerIcon />
+            </StyledIconButton>
+          )}
+        </FirstLineRightContainer>
+      </FirstLineContainer>
+      <SecondLineContainer>
+        <SecondLineLeftContainer>
+          <SecondLineLeftImageContainer>
+            <Image src={chain.imageURL} />
+          </SecondLineLeftImageContainer>
+          <SecondLineLeftTextContainer>
+            <Typography variant="h3">{chain.displayDenom.toUpperCase()}</Typography>
+          </SecondLineLeftTextContainer>
+        </SecondLineLeftContainer>
+        <SecondLineRightContainer>
+          <StyledRetryIconButton
+            onClick={() => {
+              setIsloading(true);
+
+              setTimeout(() => {
+                resetErrorBoundary();
+                setIsloading(false);
+              }, 500);
+            }}
+          >
+            <RetryIcon />
+          </StyledRetryIconButton>
+        </SecondLineRightContainer>
+      </SecondLineContainer>
+      <ThirdLineContainer>
+        <ErrorDescriptionContainer>
+          <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.networkError')}</Typography>
+        </ErrorDescriptionContainer>
+      </ThirdLineContainer>
+
+      <ButtonContainer>
+        <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.tendermint.NativeChainCard.index.depositButton')}
+        </Button>
+        <ButtonCenterContainer />
+        <Button Icon={SendIcon} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.tendermint.NativeChainCard.index.sendButton')}
+        </Button>
+      </ButtonContainer>
+      {isLoading && <StyledAbsoluteLoading size="2.5rem" />}
     </Container>
   );
 }

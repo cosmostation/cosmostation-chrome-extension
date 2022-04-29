@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
@@ -5,20 +6,28 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 
 import {
+  ButtonContainer,
   LeftContainer,
   LeftImageContainer,
   LeftTextChainAmountContainer,
   LeftTextChainContainer,
   LeftTextContainer,
+  LeftTextErrorContainer,
+  RightButtonContainer,
   RightContainer,
   RightTextChangeRateContainer,
   RightTextContainer,
   RightTextValueContainer,
+  StyledAbsoluteLoading,
   StyledButton,
+  StyledIconButton,
 } from './styled';
+
+import RetryIcon from '~/images/icons/Retry.svg';
 
 type ChainItemProps = {
   chainName: string;
@@ -97,7 +106,7 @@ export function ChainItemSkeleton({ chainName, imageURL, onClick }: ChainItemSke
             <Typography variant="h5">{chainName}</Typography>
           </LeftTextChainContainer>
           <LeftTextChainAmountContainer>
-            <Skeleton variant="text" width={40} sx={{ color: 'red' }} />
+            <Skeleton variant="text" width={40} />
           </LeftTextChainAmountContainer>
         </LeftTextContainer>
       </LeftContainer>
@@ -113,5 +122,48 @@ export function ChainItemSkeleton({ chainName, imageURL, onClick }: ChainItemSke
         </RightTextContainer>
       </RightContainer>
     </StyledButton>
+  );
+}
+
+type ChainItemErrorProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'> & { onClickRetry?: () => void };
+
+export function ChainItemError({ chainName, imageURL, onClick, onClickRetry }: ChainItemErrorProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { t } = useTranslation();
+  return (
+    <ButtonContainer>
+      <StyledButton onClick={onClick}>
+        <LeftContainer>
+          <LeftImageContainer>
+            <Image src={imageURL} />
+          </LeftImageContainer>
+          <LeftTextContainer>
+            <LeftTextChainContainer>
+              <Typography variant="h5">{chainName}</Typography>
+            </LeftTextChainContainer>
+            <LeftTextErrorContainer>
+              <Typography variant="h6">{t('pages.Dashboard.components.ChainItem.index.networkError')}</Typography>
+            </LeftTextErrorContainer>
+          </LeftTextContainer>
+        </LeftContainer>
+        <RightContainer />
+      </StyledButton>
+      <RightButtonContainer>
+        <StyledIconButton
+          onClick={() => {
+            setIsLoading(true);
+
+            setTimeout(() => {
+              onClickRetry?.();
+              setIsLoading(false);
+            }, 500);
+          }}
+        >
+          <RetryIcon />
+        </StyledIconButton>
+      </RightButtonContainer>
+      {isLoading && <StyledAbsoluteLoading size="2rem" />}
+    </ButtonContainer>
   );
 }

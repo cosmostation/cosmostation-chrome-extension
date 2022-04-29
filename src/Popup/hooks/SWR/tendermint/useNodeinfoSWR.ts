@@ -14,10 +14,10 @@ export function useNodeInfoSWR(chain: TendermintChain, suspense?: boolean) {
   const fetcher = (fetchUrl: string) => get<NodeInfoPayload>(fetchUrl);
 
   const { data, error, mutate } = useSWR<NodeInfoPayload, AxiosError>(requestURL, fetcher, {
+    revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 0,
-    errorRetryCount: 5,
-    errorRetryInterval: 3000,
+    errorRetryCount: 0,
     suspense,
     isPaused: () => !chain,
   });

@@ -4,6 +4,7 @@ import { useSetRecoilState } from 'recoil';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -19,6 +20,7 @@ type EthereumChainItemProps = {
 export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
   const { currentNetwork } = useCurrentNetwork();
   const { chromeStorage } = useChromeStorage();
+  const { currentAccount } = useCurrentAccount();
   const { setCurrentChain } = useCurrentChain();
   const { navigate } = useNavigate();
   const { data: coinGeckoData } = useCoinGeckoPriceSWR();
@@ -33,10 +35,12 @@ export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
 
   useEffect(() => {
     setDashboard((prev) => ({
-      ...prev,
-      [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[chromeStorage.currency]) || 0) || '0',
+      [currentAccount.id]: {
+        ...prev?.[currentAccount.id],
+        [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[chromeStorage.currency]) || 0) || '0',
+      },
     }));
-  }, [chain.id, chromeStorage.currency, coinGeckoId, coinGeckoData, decimals, setDashboard, totalAmount]);
+  }, [chain.id, chromeStorage.currency, coinGeckoId, coinGeckoData, decimals, setDashboard, totalAmount, currentAccount.id]);
 
   const handleOnClick = () => {
     void setCurrentChain(chain);

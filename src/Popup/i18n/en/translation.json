@@ -387,6 +387,15 @@
         }
       }
     },
+    "Dashboard": {
+      "components": {
+        "ChainItem": {
+          "index": {
+            "networkError": "Network Error"
+          }
+        }
+      }
+    },
     "Popup": {
       "Tendermint": {
         "AddChain": {
@@ -579,6 +588,7 @@
               "copied": "Copied",
               "delegated": "Delegated",
               "depositButton": "Deposit",
+              "networkError": "Network Error",
               "reward": "Reward",
               "sendButton": "Send",
               "unbonding": "Unbonding",

@@ -25,10 +25,11 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const fetcher = (fetchUrl: string) => get<SimplePrice>(fetchUrl);
 
   const { data, error, mutate } = useSWR<SimplePrice, AxiosError>(requestURL, fetcher, {
+    revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,
-    errorRetryCount: 5,
-    errorRetryInterval: 3000,
+    errorRetryCount: 3,
+    errorRetryInterval: 5000,
     suspense,
   });
 
