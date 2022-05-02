@@ -3,15 +3,12 @@ import { styled } from '@mui/material/styles';
 import Divider from '~/Popup/components/common/Divider';
 
 export const Container = styled('div')({
-  padding: '1.6rem',
-
   position: 'relative',
 
   height: '100%',
 });
 
 export const SwitchIconContainer = styled('div')({
-  marginTop: '2rem',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -54,13 +51,16 @@ export const StyledDivider = styled(Divider)({
 });
 
 export const ContentContainer = styled('div')({
-  height: 'calc(100% - 6.4rem)',
+  height: 'calc(100% - 16.8rem)',
+
+  padding: '2rem 1.6rem 0',
 });
 
 export const BottomContainer = styled('div')({
   position: 'absolute',
 
   bottom: '1.6rem',
+  left: '1.6rem',
 
   width: 'calc(100% - 3.2rem)',
 });

@@ -49,8 +49,8 @@ export default function Entry({ queue }: EntryProps) {
 
   return (
     <Container>
+      <Header chain={ETHEREUM_CHAINS[0]} origin={origin} />
       <ContentContainer>
-        <Header chainName={ETHEREUM_CHAINS[0].chainName} origin={origin} />
         <QuestionContainer>
           <Typography variant="h2">{t('pages.Popup.Ethereum.AddNetwork.entry.question')}</Typography>
         </QuestionContainer>

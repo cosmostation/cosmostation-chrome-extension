@@ -47,8 +47,8 @@ export default function Entry({ queue }: EntryProps) {
 
   return (
     <Container>
+      <Header chain={ETHEREUM_CHAINS[0]} network={currentNetwork} origin={origin} />
       <ContentContainer>
-        <Header chainName={`${ETHEREUM_CHAINS[0].chainName} ${currentNetwork.networkName}`} origin={origin} />
         <SwitchIconContainer>
           <Switch60Icon />
         </SwitchIconContainer>
