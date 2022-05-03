@@ -18,22 +18,22 @@ export const TitleContainer = styled('div')(({ theme }) => ({
   textAlign: 'center',
 }));
 
-export const WarningContainer = styled('div')({
+export const WarningContainer = styled('div')(({ theme }) => ({
   marginTop: '1.6rem',
 
   padding: '1.2rem 1.6rem',
   display: 'flex',
 
-  backgroundColor: 'rgba(205, 26, 26, 0.15)',
+  backgroundColor: theme.colors.base02,
 
   borderRadius: '0.8rem',
-});
+}));
 
 export const WarningIconContainer = styled('div')(({ theme }) => ({
   '& > svg': {
-    fill: theme.accentColors.red,
+    fill: theme.colors.text01,
     '& > path': {
-      fill: theme.accentColors.red,
+      fill: theme.colors.text01,
     },
   },
 }));
@@ -41,8 +41,7 @@ export const WarningIconContainer = styled('div')(({ theme }) => ({
 export const WarningTextContainer = styled('div')(({ theme }) => ({
   marginLeft: '0.4rem',
   wordBreak: 'break-word',
-  color: theme.accentColors.red,
-
+  color: theme.colors.text01,
   alignSelf: 'center',
 }));
 
@@ -60,6 +59,8 @@ export const MessageTitleContainer = styled('div')(({ theme }) => ({
 
 export const MessageContentContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+
+  wordBreak: 'break-word',
 
   marginTop: '0.8rem',
 

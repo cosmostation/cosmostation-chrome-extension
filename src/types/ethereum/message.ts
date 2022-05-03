@@ -55,6 +55,16 @@ export type EthSign = {
 
 export type EthSignResponse = string;
 
+export type PersonalSignParams = [string, string];
+
+export type PersonalSign = {
+  method: typeof ETHEREUM_METHOD_TYPE.PERSONAL_SIGN;
+  params: EthSignParams;
+  id?: number | string;
+};
+
+export type PersonalSignResponse = string;
+
 export type EthSendTransaction = {
   method: typeof ETHEREUM_METHOD_TYPE.ETH__SEND_TRANSACTION;
   params: [EthereumTxParams];

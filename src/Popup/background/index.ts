@@ -20,6 +20,7 @@ import type {
   EthcSwitchNetworkParams,
   EthcSwitchNetworkResponse,
   EthSignParams,
+  PersonalSignParams,
 } from '~/types/ethereum/message';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
@@ -32,6 +33,7 @@ import {
   ethcAddNetworkParamsSchema,
   ethcSwitchNetworkParamsSchema,
   ethSignParamsSchema,
+  personalSignParamsSchema,
   tenAddChainParamsSchema,
   tenSignAminoParamsSchema,
   tenSignDirectParamsSchema,
@@ -348,6 +350,43 @@ function background() {
                     {
                       ...request,
                       message: { ...request.message, method, params: [...validatedParams] as EthSignParams },
+                      windowId: window?.id,
+                    },
+                  ]);
+                } catch (err) {
+                  if (err instanceof EthereumRPCError) {
+                    throw err;
+                  }
+
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+                }
+              }
+
+              if (method === 'personal_sign') {
+                const chain = ETHEREUM_CHAINS[0];
+
+                const { params } = message;
+
+                const schema = personalSignParamsSchema();
+
+                try {
+                  const validatedParams = (await schema.validateAsync(params)) as PersonalSignParams;
+
+                  if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
+                    const keyPair = getKeyPair(currentAccount, chain, password);
+                    const address = getAddress(chain, keyPair?.publicKey);
+
+                    if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
+                      throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                    }
+                  }
+
+                  const window = await openWindow();
+                  await setStorage('queues', [
+                    ...queues,
+                    {
+                      ...request,
+                      message: { ...request.message, method, params: [...validatedParams] as PersonalSignParams },
                       windowId: window?.id,
                     },
                   ]);
