@@ -4,6 +4,7 @@
   "description": "chrome extension cosmos wallet",
   "scripts": {
     "postinstall": "git config --local core.hooksPath ./git-hooks",
+    "prestart": "rimraf build/dev",
     "start": "webpack --config webpack/webpack.dev.js --watch",
     "prebuild": "rimraf build/prod",
     "build": "webpack --config webpack/webpack.prod.js",
