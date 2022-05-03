@@ -40,6 +40,7 @@ import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
 import PopupEthereumAddNetwork from '~/Popup/pages/Popup/Ethereum/AddNetwork';
+import PopupEthereumPersonalSign from '~/Popup/pages/Popup/Ethereum/PersonalSign';
 import PopupEthereumSign from '~/Popup/pages/Popup/Ethereum/Sign';
 import PopupEthereumSwitchNetwork from '~/Popup/pages/Popup/Ethereum/SwitchNetwork';
 import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
@@ -131,6 +132,7 @@ function Popup() {
                   <Route path={PATH.POPUP__ETHEREUM__ADD_NETWORK} element={<PopupEthereumAddNetwork />} />
                   <Route path={PATH.POPUP__ETHEREUM__SWITCH_NETWORK} element={<PopupEthereumSwitchNetwork />} />
                   <Route path={PATH.POPUP__ETHEREUM__SIGN} element={<PopupEthereumSign />} />
+                  <Route path={PATH.POPUP__ETHEREUM__PERSONAL_SIGN} element={<PopupEthereumPersonalSign />} />
 
                   <Route path={PATH.POPUP__TENDERMINT__ADD_CHAIN} element={<PopupTendermintAddChain />} />
                   <Route path={PATH.POPUP__TENDERMINT__SIGN__AMINO} element={<PopupTendermintSignAmino />} />

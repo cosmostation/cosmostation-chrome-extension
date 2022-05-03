@@ -161,3 +161,5 @@ export const ethSignParamsSchema = () =>
         .required(),
       Joi.string().label('dataToSign').required(),
     );
+
+export const personalSignParamsSchema = ethSignParamsSchema;

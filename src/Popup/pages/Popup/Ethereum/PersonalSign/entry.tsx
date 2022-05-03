@@ -12,10 +12,10 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { sign, toHex, toUTF8 } from '~/Popup/utils/ethereum';
+import { personalSign, toHex, toUTF8 } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthSign, EthSignResponse } from '~/types/ethereum/message';
+import type { PersonalSign, PersonalSignResponse } from '~/types/ethereum/message';
 
 import {
   BottomButtonContainer,
@@ -34,7 +34,7 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 
 type EntryProps = {
-  queue: Queue<EthSign>;
+  queue: Queue<PersonalSign>;
 };
 
 export default function Entry({ queue }: EntryProps) {
@@ -84,19 +84,19 @@ export default function Entry({ queue }: EntryProps) {
       <Header chain={chain} network={currentNetwork} origin={origin} />
       <ContentContainer>
         <TitleContainer>
-          <Typography variant="h2">{t('pages.Popup.Ethereum.Sign.entry.signatureRequest')}</Typography>
+          <Typography variant="h2">{t('pages.Popup.Ethereum.PersonalSign.entry.signatureRequest')}</Typography>
         </TitleContainer>
         <WarningContainer>
           <WarningIconContainer>
             <Info16Icon />
           </WarningIconContainer>
           <WarningTextContainer>
-            <Typography variant="h5">{t('pages.Popup.Ethereum.Sign.entry.warningText')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Ethereum.PersonalSign.entry.warningText')}</Typography>
           </WarningTextContainer>
         </WarningContainer>
         <MessageContainer>
           <MessageTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.Ethereum.Sign.entry.message')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Ethereum.PersonalSign.entry.message')}</Typography>
           </MessageTitleContainer>
           <MessageContentContainer>
             <Typography variant="h6">{hexToUTF8}</Typography>
@@ -122,11 +122,11 @@ export default function Entry({ queue }: EntryProps) {
               await deQueue();
             }}
           >
-            {t('pages.Popup.Ethereum.Sign.entry.cancelButton')}
+            {t('pages.Popup.Ethereum.PersonalSign.entry.cancelButton')}
           </OutlineButton>
           <Button
             onClick={async () => {
-              const result: EthSignResponse = sign(dataToHex, keyPair!.privateKey);
+              const result: PersonalSignResponse = personalSign(dataToHex, keyPair!.privateKey);
 
               responseToWeb({
                 response: {
@@ -140,7 +140,7 @@ export default function Entry({ queue }: EntryProps) {
               await deQueue();
             }}
           >
-            {t('pages.Popup.Ethereum.Sign.entry.signButton')}
+            {t('pages.Popup.Ethereum.PersonalSign.entry.signButton')}
           </Button>
         </BottomButtonContainer>
       </BottomContainer>
