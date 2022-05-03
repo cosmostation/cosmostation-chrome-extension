@@ -141,3 +141,15 @@ export const ethcSwitchNetworkParamsSchema = (chainIds: string[]) =>
         .valid(...chainIds)
         .required(),
     );
+
+export const ethSignParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.string()
+        .label('address')
+        .pattern(/^0x[a-fA-F0-9]{40}$/)
+        .required(),
+      Joi.string().label('dataToSign').required(),
+    );
