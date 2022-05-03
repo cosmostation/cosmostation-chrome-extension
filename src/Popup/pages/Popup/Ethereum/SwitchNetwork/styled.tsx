@@ -20,7 +20,7 @@ export const QuestionContainer = styled('div')(({ theme }) => ({
 
   textAlign: 'center',
 
-  wordBreak: 'keep-all',
+  wordBreak: 'break-word',
 
   padding: '0 4rem',
 }));
@@ -31,7 +31,7 @@ export const DescriptionContainer = styled('div')(({ theme }) => ({
 
   textAlign: 'center',
 
-  wordBreak: 'keep-all',
+  wordBreak: 'break-word',
 
   padding: '0 2rem',
 }));

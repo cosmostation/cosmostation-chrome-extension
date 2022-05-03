@@ -58,6 +58,10 @@ export const AccountIcon = styled('div')<AccountIconProps>(({ theme, ...props })
     '& > path': {
       fill: theme.colors.base06,
     },
+
+    '& > circle': {
+      fill: theme.colors.base06,
+    },
   },
 }));
 
