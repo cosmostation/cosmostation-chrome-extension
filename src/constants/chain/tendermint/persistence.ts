@@ -11,7 +11,7 @@ export const PERSISTENCE: TendermintChain = {
   restURL: 'https://lcd-persistence.cosmostation.io',
   imageURL: persistenceImg,
   baseDenom: 'uxprt',
-  displayDenom: 'xprt',
+  displayDenom: 'XPRT',
   decimals: 6,
   bip44: {
     purpose: "44'",

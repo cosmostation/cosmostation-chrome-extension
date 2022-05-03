@@ -39,7 +39,7 @@ export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, o
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
         {coinInfos.map((item) => {
-          const displayDenom = item.displayDenom ? item.displayDenom.toUpperCase() : 'UNKNOWN';
+          const displayDenom = item.displayDenom ? item.displayDenom : 'UNKNOWN';
 
           const displayAmount = toDisplayDenomAmount(item.availableAmount, item.decimals ?? 0);
 

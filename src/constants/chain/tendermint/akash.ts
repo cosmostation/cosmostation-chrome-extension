@@ -11,7 +11,7 @@ export const AKASH: TendermintChain = {
   restURL: 'https://lcd-akash.cosmostation.io',
   imageURL: akashImg,
   baseDenom: 'uakt',
-  displayDenom: 'akt',
+  displayDenom: 'AKT',
   decimals: 6,
   bip44: {
     purpose: "44'",

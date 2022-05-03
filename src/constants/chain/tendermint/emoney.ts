@@ -11,7 +11,7 @@ export const EMONEY: TendermintChain = {
   restURL: 'https://lcd-emoney.cosmostation.io',
   imageURL: emoneyImg,
   baseDenom: 'ungm',
-  displayDenom: 'ngm',
+  displayDenom: 'NGM',
   decimals: 6,
   bip44: {
     purpose: "44'",
@@ -36,31 +36,31 @@ export const EMONEY_COINS: Coin[] = [
   {
     baseDenom: 'eeur',
     decimals: 6,
-    displayDenom: 'eeur',
+    displayDenom: 'EEUR',
     imageURL: `${imageURL}/eeur.png`,
   },
   {
     baseDenom: 'edkk',
     decimals: 6,
-    displayDenom: 'edkk',
+    displayDenom: 'EDKK',
     imageURL: `${imageURL}/edkk.png`,
   },
   {
     baseDenom: 'esek',
     decimals: 6,
-    displayDenom: 'esek',
+    displayDenom: 'ESEK',
     imageURL: `${imageURL}/esek.png`,
   },
   {
     baseDenom: 'enok',
     decimals: 6,
-    displayDenom: 'enok',
+    displayDenom: 'ENOK',
     imageURL: `${imageURL}/enok.png`,
   },
   {
     baseDenom: 'echf',
     decimals: 6,
-    displayDenom: 'echf',
+    displayDenom: 'ECHF',
     imageURL: `${imageURL}/echf.png`,
   },
 ];

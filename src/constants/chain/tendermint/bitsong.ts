@@ -11,7 +11,7 @@ export const BITSONG: TendermintChain = {
   restURL: 'https://lcd-bitsong.cosmostation.io',
   imageURL: bitsongImg,
   baseDenom: 'ubtsg',
-  displayDenom: 'btsg',
+  displayDenom: 'BTSG',
   decimals: 6,
   bip44: {
     purpose: "44'",

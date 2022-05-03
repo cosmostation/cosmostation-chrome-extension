@@ -11,7 +11,7 @@ export const AXELAR: TendermintChain = {
   restURL: 'https://lcd-axelar.cosmostation.io',
   imageURL: axelarImg,
   baseDenom: 'uaxl',
-  displayDenom: 'axl',
+  displayDenom: 'AXL',
   decimals: 6,
   bip44: {
     purpose: "44'",

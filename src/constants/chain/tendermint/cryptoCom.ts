@@ -11,7 +11,7 @@ export const CRYPTO_COM: TendermintChain = {
   restURL: 'https://lcd-cryptocom.cosmostation.io',
   imageURL: cryptocomImg,
   baseDenom: 'basecro',
-  displayDenom: 'cro',
+  displayDenom: 'CRO',
   decimals: 8,
   bip44: {
     purpose: "44'",

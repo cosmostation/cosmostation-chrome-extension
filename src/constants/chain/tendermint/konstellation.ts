@@ -11,7 +11,7 @@ export const KONSTELLATION: TendermintChain = {
   restURL: 'https://lcd-konstellation.cosmostation.io',
   imageURL: konstellationImg,
   baseDenom: 'udarc',
-  displayDenom: 'darc',
+  displayDenom: 'DARC',
   decimals: 6,
   bip44: {
     purpose: "44'",

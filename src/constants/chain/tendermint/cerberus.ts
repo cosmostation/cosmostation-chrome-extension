@@ -11,7 +11,7 @@ export const CERBERUS: TendermintChain = {
   restURL: 'https://lcd-cerberus.cosmostation.io',
   imageURL: cerberusImg,
   baseDenom: 'ucrbrus',
-  displayDenom: 'crbrus',
+  displayDenom: 'CRBRUS',
   decimals: 6,
   bip44: {
     purpose: "44'",

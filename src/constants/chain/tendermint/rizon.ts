@@ -11,7 +11,7 @@ export const RIZON: TendermintChain = {
   restURL: 'https://lcd-rizon.cosmostation.io',
   imageURL: rizonImg,
   baseDenom: 'uatolo',
-  displayDenom: 'atolo',
+  displayDenom: 'ATOLO',
   decimals: 6,
   bip44: {
     purpose: "44'",

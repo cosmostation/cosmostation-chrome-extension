@@ -11,7 +11,7 @@ export const GRAVITY_BRIDGE: TendermintChain = {
   restURL: 'https://lcd-gravity-bridge.cosmostation.io',
   imageURL: gravitybridgeImg,
   baseDenom: 'ugraviton',
-  displayDenom: 'graviton',
+  displayDenom: 'GRAVITON',
   decimals: 6,
   bip44: {
     purpose: "44'",

@@ -11,7 +11,7 @@ export const LUM: TendermintChain = {
   restURL: 'https://lcd-lum.cosmostation.io',
   imageURL: lumImg,
   baseDenom: 'ulum',
-  displayDenom: 'lum',
+  displayDenom: 'LUM',
   decimals: 6,
   bip44: {
     purpose: "44'",

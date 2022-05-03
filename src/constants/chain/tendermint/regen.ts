@@ -11,7 +11,7 @@ export const REGEN: TendermintChain = {
   restURL: 'https://lcd-regen.cosmostation.io',
   imageURL: regenImg,
   baseDenom: 'uregen',
-  displayDenom: 'regen',
+  displayDenom: 'REGEN',
   decimals: 6,
   bip44: {
     purpose: "44'",

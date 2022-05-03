@@ -11,7 +11,7 @@ export const OMNIFLIX: TendermintChain = {
   restURL: 'https://lcd-omniflix.cosmostation.io',
   imageURL: omniflixImg,
   baseDenom: 'uflix',
-  displayDenom: 'flix',
+  displayDenom: 'FLIX',
   decimals: 6,
   bip44: {
     purpose: "44'",

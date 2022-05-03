@@ -11,7 +11,7 @@ export const COSMOS: TendermintChain = {
   restURL: 'https://lcd-cosmos.cosmostation.io',
   imageURL: cosmosImg,
   baseDenom: 'uatom',
-  displayDenom: 'atom',
+  displayDenom: 'ATOM',
   decimals: 6,
   bip44: {
     purpose: "44'",

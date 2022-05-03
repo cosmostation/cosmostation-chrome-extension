@@ -11,7 +11,7 @@ export const ASSET_MANTLE: TendermintChain = {
   restURL: 'https://lcd-asset-mantle.cosmostation.io',
   imageURL: assetmantleImg,
   baseDenom: 'umntl',
-  displayDenom: 'mntl',
+  displayDenom: 'MNTL',
   decimals: 6,
   bip44: {
     purpose: "44'",

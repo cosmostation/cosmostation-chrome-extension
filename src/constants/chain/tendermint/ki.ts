@@ -11,7 +11,7 @@ export const KI: TendermintChain = {
   restURL: 'https://lcd-kichain.cosmostation.io',
   imageURL: kiImg,
   baseDenom: 'uxki',
-  displayDenom: 'xki',
+  displayDenom: 'XKI',
   decimals: 6,
   bip44: {
     purpose: "44'",

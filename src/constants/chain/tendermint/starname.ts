@@ -11,7 +11,7 @@ export const STARNAME: TendermintChain = {
   restURL: 'https://lcd-iov.cosmostation.io',
   imageURL: starnameImg,
   baseDenom: 'uiov',
-  displayDenom: 'iov',
+  displayDenom: 'IOV',
   decimals: 6,
   bip44: {
     purpose: "44'",

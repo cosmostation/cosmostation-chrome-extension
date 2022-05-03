@@ -11,7 +11,7 @@ export const UMEE: TendermintChain = {
   restURL: 'https://lcd-umee.cosmostation.io',
   imageURL: umeeImg,
   baseDenom: 'uumee',
-  displayDenom: 'umee',
+  displayDenom: 'UMEE',
   decimals: 6,
   bip44: {
     purpose: "44'",

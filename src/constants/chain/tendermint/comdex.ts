@@ -11,7 +11,7 @@ export const COMDEX: TendermintChain = {
   restURL: 'https://lcd-comdex.cosmostation.io',
   imageURL: comdexImg,
   baseDenom: 'ucmdx',
-  displayDenom: 'cmdx',
+  displayDenom: 'CMDX',
   decimals: 6,
   bip44: {
     purpose: "44'",

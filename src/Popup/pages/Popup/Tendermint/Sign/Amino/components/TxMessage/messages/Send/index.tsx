@@ -84,7 +84,7 @@ export default function Send({ msg, chain }: SendProps) {
 
           const itemDisplayDenom = (function getDisplayDenom() {
             if (itemBaseDenom === baseDenom) {
-              return displayDenom.toUpperCase();
+              return displayDenom;
             }
 
             if (ibcCoinInfo?.display_denom) {

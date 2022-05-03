@@ -105,7 +105,7 @@ export default function Tendermint({ chain }: TendermintProps) {
 
   const currentCoin = availableCoinList.find((item) => item.baseDenom === currentCoinBaseDenom)!;
 
-  const currentCoinDisplayDenom = currentCoin.displayDenom?.toUpperCase();
+  const currentCoinDisplayDenom = currentCoin.displayDenom;
   const currentCoinDisplayAmount = toDisplayDenomAmount(currentCoin.availableAmount, currentCoin.decimals || 0);
 
   const isPossibleSend = useMemo(

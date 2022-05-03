@@ -11,7 +11,7 @@ export const BITCANNA: TendermintChain = {
   restURL: 'https://lcd-bitcanna.cosmostation.io',
   imageURL: bitcannaImg,
   baseDenom: 'ubcna',
-  displayDenom: 'bcna',
+  displayDenom: 'BCNA',
   decimals: 6,
   bip44: {
     purpose: "44'",

@@ -11,7 +11,7 @@ export const CRESCENT: TendermintChain = {
   restURL: 'https://lcd-crescent.cosmostation.io',
   imageURL: crescentImg,
   baseDenom: 'ucre',
-  displayDenom: 'cre',
+  displayDenom: 'CRE',
   decimals: 6,
   bip44: {
     purpose: "44'",
@@ -35,7 +35,7 @@ export const CRESCENT_COINS: Coin[] = [
   {
     baseDenom: 'ubcre',
     decimals: 6,
-    displayDenom: 'bcre',
+    displayDenom: 'bCRE',
     imageURL: `${imageURL}/tokens/token-bcre.svg`,
   },
 ];

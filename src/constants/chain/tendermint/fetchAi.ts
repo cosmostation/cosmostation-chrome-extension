@@ -11,7 +11,7 @@ export const FETCH_AI: TendermintChain = {
   restURL: 'https://lcd-fetchai.cosmostation.io',
   imageURL: fetchaiImg,
   baseDenom: 'afet',
-  displayDenom: 'fet',
+  displayDenom: 'FET',
   decimals: 18,
   bip44: {
     purpose: "44'",

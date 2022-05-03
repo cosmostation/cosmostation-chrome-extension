@@ -73,7 +73,7 @@ export default function Fee({ isEdit = false, customGasRate, baseFee, gas, onCha
                     {displayFee}
                   </Number>
                   &nbsp;
-                  <Typography variant="h5n">{displayDenom.toUpperCase()}</Typography>
+                  <Typography variant="h5n">{displayDenom}</Typography>
                 </RightAmountContainer>
                 <RightValueContainer>
                   <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
@@ -131,7 +131,7 @@ export default function Fee({ isEdit = false, customGasRate, baseFee, gas, onCha
                 {displayFee}
               </Number>
               &nbsp;
-              <Typography variant="h5n">{displayDenom.toUpperCase()}</Typography>
+              <Typography variant="h5n">{displayDenom}</Typography>
             </RightAmountContainer>
             <RightValueContainer>
               <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>

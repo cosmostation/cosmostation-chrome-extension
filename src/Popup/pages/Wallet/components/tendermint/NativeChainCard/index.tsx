@@ -113,7 +113,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
             <Image src={chain.imageURL} />
           </SecondLineLeftImageContainer>
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{chain.displayDenom.toUpperCase()}</Typography>
+            <Typography variant="h3">{chain.displayDenom}</Typography>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
@@ -265,7 +265,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
             <Image src={chain.imageURL} />
           </SecondLineLeftImageContainer>
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{chain.displayDenom.toUpperCase()}</Typography>
+            <Typography variant="h3">{chain.displayDenom}</Typography>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
@@ -405,7 +405,7 @@ export function NativeChainCardError({ chain, resetErrorBoundary }: NativeChainC
             <Image src={chain.imageURL} />
           </SecondLineLeftImageContainer>
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{chain.displayDenom.toUpperCase()}</Typography>
+            <Typography variant="h3">{chain.displayDenom}</Typography>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>

@@ -11,7 +11,7 @@ export const MEDIBLOC: TendermintChain = {
   restURL: 'https://lcd-medibloc.cosmostation.io',
   imageURL: mediblocImg,
   baseDenom: 'umed',
-  displayDenom: 'med',
+  displayDenom: 'MED',
   decimals: 6,
   bip44: {
     purpose: "44'",

@@ -12,7 +12,7 @@ export const STARGAZE: TendermintChain = {
   imageURL: stargazeImg,
   coinGeckoId: 'stargaze',
   baseDenom: 'ustars',
-  displayDenom: 'stars',
+  displayDenom: 'STARS',
   decimals: 6,
   bip44: {
     purpose: "44'",

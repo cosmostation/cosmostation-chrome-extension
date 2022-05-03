@@ -11,7 +11,7 @@ export const JUNO: TendermintChain = {
   restURL: 'https://lcd-juno.cosmostation.io',
   imageURL: junoImg,
   baseDenom: 'ujuno',
-  displayDenom: 'juno',
+  displayDenom: 'JUNO',
   decimals: 6,
   bip44: {
     purpose: "44'",

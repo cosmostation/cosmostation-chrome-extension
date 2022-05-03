@@ -11,7 +11,7 @@ export const PROVENANCE: TendermintChain = {
   restURL: 'https://lcd-provenance.cosmostation.io',
   imageURL: provenanceImg,
   baseDenom: 'nhash',
-  displayDenom: 'hash',
+  displayDenom: 'HASH',
   decimals: 9,
   bip44: {
     purpose: "44'",

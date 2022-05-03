@@ -11,7 +11,7 @@ export const BAND: TendermintChain = {
   restURL: 'https://lcd-band.cosmostation.io',
   imageURL: bandImg,
   baseDenom: 'uband',
-  displayDenom: 'band',
+  displayDenom: 'BAND',
   decimals: 6,
   bip44: {
     purpose: "44'",

@@ -112,7 +112,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
     rpcURL: 'https://api.mycryptoapi.com/eth',
     imageURL: ethereumImg,
     baseDenom: 'weth',
-    displayDenom: 'eth',
+    displayDenom: 'ETH',
     decimals: 18,
     explorerURL: 'https://etherscan.io',
     coinGeckoId: 'ethereum',

@@ -11,7 +11,7 @@ export const IRIS: TendermintChain = {
   restURL: 'https://lcd-iris.cosmostation.io',
   imageURL: irisImg,
   baseDenom: 'uiris',
-  displayDenom: 'iris',
+  displayDenom: 'IRIS',
   decimals: 6,
   bip44: {
     purpose: "44'",

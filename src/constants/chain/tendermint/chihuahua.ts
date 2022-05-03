@@ -11,7 +11,7 @@ export const CHIHUAHUA: TendermintChain = {
   restURL: 'https://lcd-chihuahua.cosmostation.io',
   imageURL: chihuahuaImg,
   baseDenom: 'uhuahua',
-  displayDenom: 'huahua',
+  displayDenom: 'HUAHUA',
   decimals: 6,
   bip44: {
     purpose: "44'",

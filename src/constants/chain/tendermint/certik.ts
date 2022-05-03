@@ -11,7 +11,7 @@ export const CERTIK: TendermintChain = {
   restURL: 'https://lcd-certik.cosmostation.io',
   imageURL: certikImg,
   baseDenom: 'uctk',
-  displayDenom: 'ctk',
+  displayDenom: 'CTK',
   decimals: 6,
   bip44: {
     purpose: "44'",

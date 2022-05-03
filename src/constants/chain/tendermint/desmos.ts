@@ -11,7 +11,7 @@ export const DESMOS: TendermintChain = {
   restURL: 'https://lcd-desmos.cosmostation.io',
   imageURL: desmosImg,
   baseDenom: 'udsm',
-  displayDenom: 'dsm',
+  displayDenom: 'DSM',
   decimals: 6,
   bip44: {
     purpose: "44'",

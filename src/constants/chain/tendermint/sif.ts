@@ -11,7 +11,7 @@ export const SIF: TendermintChain = {
   restURL: 'https://lcd-sifchain.cosmostation.io',
   imageURL: sifImg,
   baseDenom: 'rowan',
-  displayDenom: 'rowan',
+  displayDenom: 'ROWAN',
   decimals: 18,
   bip44: {
     purpose: "44'",

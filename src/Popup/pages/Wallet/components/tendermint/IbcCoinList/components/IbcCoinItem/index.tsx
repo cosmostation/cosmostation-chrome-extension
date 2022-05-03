@@ -54,7 +54,7 @@ export default function IbcCoinItem({ disabled, imageURL, amount, decimals = 0, 
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>
-            <Typography variant="h5">{displayDenom ? displayDenom.toUpperCase() : 'Unknown'}</Typography>
+            <Typography variant="h5">{displayDenom || 'Unknown'}</Typography>
           </LeftTextChainContainer>
           <LeftTextChainAmountContainer>
             <Typography variant="h6">{channel}</Typography>
