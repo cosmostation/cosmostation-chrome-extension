@@ -50,6 +50,10 @@ export default function Routes({ children }: RoutesType) {
       if (chromeStorage.queues[0].message.method === 'ethc_switchNetwork') {
         navigate('/popup/ethereum/switch-network');
       }
+
+      if (chromeStorage.queues[0].message.method === 'eth_sign') {
+        navigate('/popup/ethereum/sign');
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

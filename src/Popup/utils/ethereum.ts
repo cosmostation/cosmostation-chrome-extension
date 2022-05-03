@@ -1,14 +1,17 @@
-import {
-  Address,
-  ecsign,
-  hashPersonalMessage,
-  isHexString,
-  stripHexPrefix,
-  toBuffer,
-  toChecksumAddress,
-  toRpcSig,
-} from 'ethereumjs-util';
+import { Address, ecsign, hashPersonalMessage, isHexString, stripHexPrefix, toBuffer, toChecksumAddress, toRpcSig } from 'ethereumjs-util';
 import * as TinySecp256k1 from 'tiny-secp256k1';
+
+export function toHex(data: string) {
+  if (data.startsWith('0x')) {
+    return data;
+  }
+
+  return `0x${Buffer.from(data, 'utf8').toString('hex')}`;
+}
+
+export function toUTF8(hex: string) {
+  return Buffer.from(stripHexPrefix(hex), 'hex').toString('utf8');
+}
 
 export function getAddress(publicKey: Buffer) {
   const uncompressedPublicKey = Buffer.from(TinySecp256k1.pointCompress(publicKey, false).slice(1));
