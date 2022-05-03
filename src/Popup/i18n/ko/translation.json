@@ -411,6 +411,12 @@
             "warning": "Cosmostation은 맞춤형 네트워크를 검증하지 않습니다."
           }
         },
+        "Sign": {
+          "entry": {
+            "cancelButton": "취소",
+            "signButton": "서명"
+          }
+        },
         "SwitchNetwork": {
           "entry": {
             "cancelButton": "취소",

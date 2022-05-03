@@ -411,6 +411,12 @@
             "warning": "Cosmostation does not validate custom network."
           }
         },
+        "Sign": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "signButton": "Sign"
+          }
+        },
         "SwitchNetwork": {
           "entry": {
             "cancelButton": "Cancel",

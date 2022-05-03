@@ -45,19 +45,23 @@ export type EthcRequestAccounts = {
 
 export type EthcRequestAccountsResponse = string[];
 
-export type EthSignRequest = {
-  method: typeof ETHEREUM_METHOD_TYPE.ETH__SIGN | typeof ETHEREUM_METHOD_TYPE.PERSONAL_SIGN;
-  params: string[];
+export type EthSignParams = [string, string];
+
+export type EthSign = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETH__SIGN;
+  params: EthSignParams;
   id?: number | string;
 };
 
-export type EthSendTransactionRequest = {
+export type EthSignResponse = string;
+
+export type EthSendTransaction = {
   method: typeof ETHEREUM_METHOD_TYPE.ETH__SEND_TRANSACTION;
   params: [EthereumTxParams];
   id?: number | string;
 };
 
-export type EthGetBalanceRequest = {
+export type EthGetBalance = {
   method: typeof ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE;
   params: string[];
   id?: number | string;
