@@ -123,7 +123,7 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
           decimals: coinInfo?.decimal,
           originBaseDenom: coinInfo?.base_denom,
           baseDenom: coin.denom,
-          displayDenom: coinInfo?.display_denom,
+          displayDenom: displayDenomUppercase(coinInfo?.display_denom),
           imageURL: coinInfo?.moniker,
           channelId: coinInfo?.channel_id,
           availableAmount: coin.amount,
@@ -132,4 +132,12 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
       }) || [];
 
   return { coins, ibcCoins };
+}
+
+function displayDenomUppercase(displayDenom?: string) {
+  if (displayDenom?.toLowerCase() === 'bcre') {
+    return 'bCRE';
+  }
+
+  return displayDenom?.toUpperCase();
 }
