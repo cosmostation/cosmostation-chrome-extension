@@ -2,8 +2,10 @@ import { bech32 } from 'bech32';
 import encHex from 'crypto-js/enc-hex';
 import ripemd160 from 'crypto-js/ripemd160';
 import sha256 from 'crypto-js/sha256';
+import { Address, toChecksumAddress } from 'ethereumjs-util';
 import sortKeys from 'sort-keys';
 import TinySecp256k1 from 'tiny-secp256k1';
+import { keccak256 } from '@ethersproject/keccak256';
 
 import { KAVA } from '~/constants/chain/tendermint/kava';
 import { cosmos } from '~/proto/cosmos.js';
@@ -38,20 +40,42 @@ export function getAddress(publicKey: Buffer, prefix: string) {
   return result;
 }
 
-export function signAmino(signDoc: SignAminoDoc, privateKey: Buffer) {
-  const sha256SignDoc = sha256(JSON.stringify(sortKeys(signDoc, { deep: true }))).toString(encHex);
+export function getAddressForEthermint(publicKey: Buffer, prefix: string) {
+  const uncompressedPublicKey = Buffer.from(TinySecp256k1.pointCompress(publicKey, false).slice(1));
+
+  const address = toChecksumAddress(Address.fromPublicKey(uncompressedPublicKey).toString());
+
+  const words = bech32.toWords(Buffer.from(address.substring(2), 'hex'));
+  const result = bech32.encode(prefix, words);
+
+  return result;
+}
+
+export function signAmino(signDoc: SignAminoDoc, privateKey: Buffer, chain: TendermintChain) {
+  const sha256SignDoc = (() => {
+    if (chain.type === 'ETHERMINT') {
+      return keccak256(Buffer.from(JSON.stringify(sortKeys(signDoc, { deep: true })))).substring(2);
+    }
+
+    return sha256(JSON.stringify(sortKeys(signDoc, { deep: true }))).toString(encHex);
+  })();
 
   const signatureBuffer = TinySecp256k1.sign(Buffer.from(sha256SignDoc, 'hex'), privateKey);
 
   return signatureBuffer;
 }
 
-export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer) {
+export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer, chain: TendermintChain) {
   const txSignDoc = new cosmos.tx.v1beta1.SignDoc({ ...signDoc, account_number: Number(signDoc.account_number) });
 
   const txSignDocHex = Buffer.from(cosmos.tx.v1beta1.SignDoc.encode(txSignDoc).finish()).toString('hex');
 
-  const sha256SignDoc = sha256(encHex.parse(txSignDocHex)).toString(encHex);
+  const sha256SignDoc = (() => {
+    if (chain.type === 'ETHERMINT') {
+      return keccak256(Buffer.from(txSignDocHex, 'hex')).substring(2);
+    }
+    return sha256(encHex.parse(txSignDocHex)).toString(encHex);
+  })();
 
   const signatureBuffer = TinySecp256k1.sign(Buffer.from(sha256SignDoc, 'hex'), privateKey);
 

@@ -1,6 +1,6 @@
 import { aesDecrypt, mnemonicToPair, privateKeyToPair } from '~/Popup/utils/crypto';
 import { getAddress as getEthereumAddress } from '~/Popup/utils/ethereum';
-import { getAddress as getBech32Address } from '~/Popup/utils/tendermint';
+import { getAddress as getBech32Address, getAddressForEthermint } from '~/Popup/utils/tendermint';
 import type { Chain } from '~/types/chain';
 import type { Account } from '~/types/chromeStorage';
 
@@ -9,6 +9,9 @@ export function getAddress(chain: Chain, publicKey?: Buffer) {
     return '';
   }
   if (chain.line === 'TENDERMINT') {
+    if (chain.type === 'ETHERMINT') {
+      return getAddressForEthermint(publicKey, chain.bech32Prefix.address);
+    }
     return getBech32Address(publicKey, chain.bech32Prefix.address);
   }
 

@@ -52,9 +52,21 @@ export function getAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey) {
 export function getSignerInfo(signed: SignAminoDoc, pubKey: PubKey) {
   const publicKey = getPubKey(pubKey);
 
+  const typeURL = (() => {
+    if (pubKey.type === 'ethermint/PubKeyEthSecp256k1') {
+      return '/ethermint.crypto.v1.ethsecp256k1.PubKey';
+    }
+
+    if (pubKey.type === 'injective/PubKeyEthSecp256k1') {
+      return '/injective.crypto.v1beta1.ethsecp256k1.PubKey';
+    }
+
+    return '/cosmos.crypto.secp256k1.PubKey';
+  })();
+
   return new cosmos.tx.v1beta1.SignerInfo({
     public_key: new google.protobuf.Any({
-      type_url: '/cosmos.crypto.secp256k1.PubKey',
+      type_url: typeURL,
       value: cosmos.crypto.secp256k1.PubKey.encode(publicKey).finish(),
     }),
     mode_info: {

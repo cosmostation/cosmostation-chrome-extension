@@ -166,7 +166,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
               const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
 
-              const signature = signDirect(signedDoc, keyPair!.privateKey);
+              const signature = signDirect(signedDoc, keyPair!.privateKey, chain);
 
               const base64Signature = Buffer.from(signature).toString('base64');
 
