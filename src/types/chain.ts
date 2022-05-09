@@ -48,6 +48,7 @@ export type TendermintChain = {
 } & CommonChain;
 
 export type Coin = {
+  originBaseDenom: string;
   baseDenom: string;
   decimals: number;
   displayDenom: string;

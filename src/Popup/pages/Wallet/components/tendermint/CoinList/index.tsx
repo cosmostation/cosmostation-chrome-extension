@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 
 import { useCoinListSWR } from '~/Popup/hooks/SWR/tendermint/useCoinListSWR';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import IbcCoinItem from '~/Popup/pages/Wallet/components/tendermint/IbcCoinList/components/IbcCoinItem';
+import IbcCoinItem from '~/Popup/pages/Wallet/components/tendermint/CoinList/components/IbcCoinItem';
 import { gt } from '~/Popup/utils/big';
 import type { TendermintChain } from '~/types/chain';
 import type { Path } from '~/types/route';
@@ -13,7 +13,7 @@ type EntryProps = {
   chain: TendermintChain;
 };
 
-export default function IbcCoinList({ chain }: EntryProps) {
+export default function CoinList({ chain }: EntryProps) {
   const { coins, ibcCoins } = useCoinListSWR(chain, true);
 
   const sortedCoins = [...coins, ...ibcCoins.reverse().sort((item) => (item.auth ? -1 : 1))];

@@ -41,6 +41,7 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
   const modifiedAssets: Coin[] = useMemo(
     () =>
       assets?.data?.map((item) => ({
+        originBaseDenom: item.origin_denom || '',
         baseDenom: item.denom.toLowerCase(),
         displayDenom: item.origin_symbol,
         decimals: item.decimal,
@@ -52,7 +53,7 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
   const coins: CoinInfo[] = useMemo(() => {
     const chainCoins = modifiedAssets || [];
 
-    const coinArray = chainCoins.map((item) => item.baseDenom.toLowerCase());
+    const coinArray = chainCoins.map((item) => item.baseDenom);
     return (
       balance.data?.balance
         ?.filter((coin) => coinArray.includes(coin.denom.toLowerCase()))
@@ -85,7 +86,7 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
           return {
             decimals: coinInfo.decimals,
             baseDenom: coin.denom,
-            originBaseDenom: coinInfo.baseDenom,
+            originBaseDenom: coinInfo.originBaseDenom,
             displayDenom: coinInfo.displayDenom,
             imageURL: coinInfo.imageURL,
             availableAmount: vestingRelatedAvailable,
