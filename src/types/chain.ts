@@ -1,4 +1,5 @@
-import type { LINE_TYPE, TENDERMINT_TYPE } from '~/constants/chain';
+import type { LINE_TYPE } from '~/constants/chain';
+import type { TENDERMINT_TYPE } from '~/constants/tendermint';
 
 export type LineType = ValueOf<typeof LINE_TYPE>;
 

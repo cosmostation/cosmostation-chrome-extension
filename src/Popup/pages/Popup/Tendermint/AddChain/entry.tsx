@@ -107,7 +107,7 @@ export default function Entry({ queue }: EntryProps) {
             onClick={async () => {
               const { params } = message;
 
-              const { addressPrefix, baseDenom, chainId, chainName, displayDenom, restURL, coinGeckoId, coinType, decimals, gasRate, imageURL, sendGas } =
+              const { addressPrefix, baseDenom, chainId, chainName, displayDenom, restURL, coinGeckoId, coinType, decimals, gasRate, imageURL, sendGas, type } =
                 params;
 
               const filteredAdditionalChains = additionalChains.filter((item) => item.chainName.toLowerCase() !== chainName.toLowerCase());
@@ -115,7 +115,7 @@ export default function Entry({ queue }: EntryProps) {
               const newChain: TendermintChain = {
                 id: uuidv4(),
                 line: 'TENDERMINT',
-                type: '',
+                type: type || '',
                 chainId,
                 chainName,
                 displayDenom,

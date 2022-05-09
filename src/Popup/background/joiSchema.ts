@@ -1,3 +1,4 @@
+import { TENDERMINT_TYPE } from '~/constants/tendermint';
 import Joi from '~/Popup/utils/joi';
 import type { GasRate } from '~/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint/amino';
@@ -7,8 +8,13 @@ import type { SignDirectDoc } from '~/types/tendermint/proto';
 
 const numberRegex = /^([0-9]+|[0-9]+(\.[0-9]+))$/;
 
+const tendermintType = Object.values(TENDERMINT_TYPE);
+
 export const tenAddChainParamsSchema = (chainNames: string[]) =>
   Joi.object<TenAddChainParams>({
+    type: Joi.string()
+      .valid(...tendermintType)
+      .default(''),
     chainId: Joi.string().required(),
     chainName: Joi.string()
       .lowercase()
