@@ -13,7 +13,7 @@ import { CHIHUAHUA } from './tendermint/chihuahua';
 import { COMDEX } from './tendermint/comdex';
 import { COSMOS } from './tendermint/cosmos';
 import { CRESCENT } from './tendermint/crescent';
-import { CRYPTO_COM } from './tendermint/cryptoCom';
+import { CRONOS } from './tendermint/cronos';
 import { DESMOS } from './tendermint/desmos';
 import { EMONEY } from './tendermint/emoney';
 import { EVMOS } from './tendermint/evmos';
@@ -44,11 +44,6 @@ export const LINE_TYPE = {
   ETHEREUM: 'ETHEREUM',
 } as const;
 
-export const TENDERMINT_TYPE = {
-  BASIC: '',
-  ETHERMINT: 'ETHERMINT',
-} as const;
-
 export const DEFAULT_GAS = '100000';
 
 export const TENDERMINT_CHAINS: TendermintChain[] = [
@@ -64,7 +59,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   CHIHUAHUA,
   COMDEX,
   CRESCENT,
-  CRYPTO_COM,
+  CRONOS,
   DESMOS,
   EMONEY,
   EVMOS,

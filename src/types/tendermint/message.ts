@@ -1,5 +1,5 @@
 import type { TENDERMINT_NO_POPUP_METHOD_TYPE, TENDERMINT_POPUP_METHOD_TYPE } from '~/constants/tendermint';
-import type { GasRate } from '~/types/chain';
+import type { GasRate, TendermintType } from '~/types/chain';
 import type { PublicKeyType } from '~/types/tendermint';
 import type { SignAminoDoc } from '~/types/tendermint/amino';
 import type { SignDirectDoc } from '~/types/tendermint/proto';
@@ -34,6 +34,7 @@ export type TenRequestAccount = {
 export type TenRequestAccountResponse = TenAccountResponse;
 
 export type TenAddChainParams = {
+  type?: TendermintType;
   chainId: string;
   chainName: string;
   restURL: string;
