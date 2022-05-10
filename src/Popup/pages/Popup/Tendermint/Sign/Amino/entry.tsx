@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import { INJECTIVE } from '~/constants/chain/tendermint/injective';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { PUBLIC_KEY_TYPE } from '~/constants/tendermint';
 import Button from '~/Popup/components/common/Button';
@@ -140,12 +141,22 @@ export default function Entry({ queue, chain }: EntryProps) {
             onClick={async () => {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-              const signature = signAmino(tx, keyPair!.privateKey);
+              const signature = signAmino(tx, keyPair!.privateKey, chain);
               const base64Signature = Buffer.from(signature).toString('base64');
 
               const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
 
-              const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
+              const publicKeyType = (() => {
+                if (chain.chainName === INJECTIVE.chainName) {
+                  return PUBLIC_KEY_TYPE.INJ_SECP256K1;
+                }
+
+                if (chain.type === 'ETHERMINT') {
+                  return PUBLIC_KEY_TYPE.ETH_SECP256K1;
+                }
+
+                return PUBLIC_KEY_TYPE.SECP256K1;
+              })();
 
               const pubKey = { type: publicKeyType, value: base64PublicKey };
 

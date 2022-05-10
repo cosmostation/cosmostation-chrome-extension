@@ -6,7 +6,7 @@ import Header from '~/Popup/components/SelectSubHeader';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import type { TendermintChain } from '~/types/chain';
 
-import IbcCoinList from '../components/tendermint/IbcCoinList';
+import IbcCoinList from '../components/tendermint/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/tendermint/NativeChainCard';
 import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
 

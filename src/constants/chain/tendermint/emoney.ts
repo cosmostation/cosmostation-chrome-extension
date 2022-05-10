@@ -1,6 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
 import emoneyImg from '~/images/symbols/emoney.png';
-import type { Coin, TendermintChain } from '~/types/chain';
+import type { TendermintChain } from '~/types/chain';
 
 export const EMONEY: TendermintChain = {
   id: 'b6b1f158-9d6c-4779-a40d-9be657555612',
@@ -29,38 +29,3 @@ export const EMONEY: TendermintChain = {
   },
   gas: { send: '100000' },
 };
-
-const imageURL = 'https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/coin_image/emoney';
-
-export const EMONEY_COINS: Coin[] = [
-  {
-    baseDenom: 'eeur',
-    decimals: 6,
-    displayDenom: 'EEUR',
-    imageURL: `${imageURL}/eeur.png`,
-  },
-  {
-    baseDenom: 'edkk',
-    decimals: 6,
-    displayDenom: 'EDKK',
-    imageURL: `${imageURL}/edkk.png`,
-  },
-  {
-    baseDenom: 'esek',
-    decimals: 6,
-    displayDenom: 'ESEK',
-    imageURL: `${imageURL}/esek.png`,
-  },
-  {
-    baseDenom: 'enok',
-    decimals: 6,
-    displayDenom: 'ENOK',
-    imageURL: `${imageURL}/enok.png`,
-  },
-  {
-    baseDenom: 'echf',
-    decimals: 6,
-    displayDenom: 'ECHF',
-    imageURL: `${imageURL}/echf.png`,
-  },
-];

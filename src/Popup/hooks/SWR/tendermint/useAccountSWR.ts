@@ -87,6 +87,16 @@ export function useAccountSWR(chain: TendermintChain, suspense?: boolean) {
         } as AuthAccount;
       }
 
+      if (data.result.base_account) {
+        return {
+          value: {
+            ...data.result.base_account,
+            code_hash: data.result.code_hash,
+          },
+          type: data.result.type?.split('/')[1],
+        } as AuthAccount;
+      }
+
       return {
         ...data.result,
         type: data.result.type?.split('/')[1],

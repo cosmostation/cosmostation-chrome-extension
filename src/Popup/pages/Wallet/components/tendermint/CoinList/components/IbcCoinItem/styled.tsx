@@ -25,10 +25,6 @@ export const StyledButton = styled('button')(({ theme }) => ({
   '&:hover': {
     backgroundColor: theme.colors.base03,
   },
-
-  // '&:hover': {
-  //   border: `0.1rem solid ${theme.colors.base04}`,
-  // },
 }));
 
 export const LeftContainer = styled('div')({

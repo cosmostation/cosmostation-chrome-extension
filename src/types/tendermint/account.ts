@@ -30,9 +30,10 @@ export type AuthAccountValue = {
   end_time?: string;
   start_time?: string;
   vesting_periods?: VestingPeriod[];
+  code_hash?: string;
 };
 
-type BaseAccount = {
+export type BaseAccount = {
   address: string;
   public_key: AuthAccountPubKey;
   account_number: string;
@@ -62,13 +63,21 @@ export type AuthBaseWithStartAndPeriod = {
   vesting_periods: VestingPeriod[];
 };
 
+export type AuthBaseAccount = {
+  account_number: string;
+  address: string;
+  sequence?: string;
+};
+
 export type AuthAccountResult = {
+  base_account?: AuthBaseAccount;
   type?: VestingType;
   value: AuthAccountValue | AuthBaseVestingAccount | AuthBaseWithStartAndPeriod;
   account_number?: string;
   sequence?: string;
   address?: string;
   public_key?: AuthAccountPubKey;
+  code_hash?: string;
 };
 
 export type AuthAccountsPayload = {

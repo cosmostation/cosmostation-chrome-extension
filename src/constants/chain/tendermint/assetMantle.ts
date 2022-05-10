@@ -20,7 +20,7 @@ export const ASSET_MANTLE: TendermintChain = {
     change: '0',
   },
   bech32Prefix: { address: 'mantle' },
-  coinGeckoId: 'mantle',
+  coinGeckoId: 'assetmantle',
   explorerURL: `${MINTSCAN_URL}/asset-mantle`,
   gasRate: {
     tiny: '0',
