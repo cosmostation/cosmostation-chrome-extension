@@ -33,6 +33,8 @@ With Cosmostation, users can create personal crypto wallets, safely sign on-chai
 
 - [Official Website](https://www.cosmostation.io)
 - [Mintscan Explorer](https://www.mintscan.io)
+- [Android Wallet](https://play.google.com/store/apps/details?id=wannabit.io.cosmostaion)
+- [iOS Wallet](https://apps.apple.com/us/app/cosmostation/id1459830339)
 - [Web Wallet](https://wallet.cosmostation.io)
 - [Telegram - International](https://t.me/cosmostation)
 - [Kakao - Korean](https://open.kakao.com/o/g6KKSe5)
