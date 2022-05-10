@@ -2,12 +2,12 @@ import { MINTSCAN_URL } from '~/constants/common';
 import cryptocomImg from '~/images/symbols/cryptocom.png';
 import type { TendermintChain } from '~/types/chain';
 
-export const CRONOS: TendermintChain = {
+export const CRYPTO_ORG: TendermintChain = {
   id: 'b006dccc-ff1e-4c5a-95ad-94f313029d93',
   line: 'TENDERMINT',
   type: '',
   chainId: 'crypto-org-chain-mainnet-1',
-  chainName: 'Cronos',
+  chainName: 'Crypto.org',
   restURL: 'https://lcd-cryptocom.cosmostation.io',
   imageURL: cryptocomImg,
   baseDenom: 'basecro',

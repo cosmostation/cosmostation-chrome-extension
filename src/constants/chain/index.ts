@@ -13,7 +13,7 @@ import { CHIHUAHUA } from './tendermint/chihuahua';
 import { COMDEX } from './tendermint/comdex';
 import { COSMOS } from './tendermint/cosmos';
 import { CRESCENT } from './tendermint/crescent';
-import { CRONOS } from './tendermint/cronos';
+import { CRYPTO_ORG } from './tendermint/cryptoOrg';
 import { DESMOS } from './tendermint/desmos';
 import { EMONEY } from './tendermint/emoney';
 import { EVMOS } from './tendermint/evmos';
@@ -59,7 +59,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   CHIHUAHUA,
   COMDEX,
   CRESCENT,
-  CRONOS,
+  CRYPTO_ORG,
   DESMOS,
   EMONEY,
   EVMOS,
