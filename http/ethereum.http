@@ -90,7 +90,7 @@ content-type: application/json
 {
     "jsonrpc": "2.0",
     "method": "eth_getBlockByHash",
-    "params": ["0xb3b20624f8f0f86eb50dd04688409e5cea4bd02d700bf6e79e9384d47d6a5a35", true],
+    "params": ["0xb47e05ab333e436bec1f062d480e604d2323b12afe5212bf6e2b78fdd2c4e7d2", true],
     "id": 1
 }
 
@@ -102,7 +102,7 @@ content-type: application/json
 {
     "jsonrpc": "2.0",
     "method": "eth_getBlockTransactionCountByHash",
-    "params": ["0xb3b20624f8f0f86eb50dd4688409e5cea4bd02d700bf6e79e9384d47d6a5a35"],
+    "params": ["0xb47e05ab333e436bec1f062d480e604d2323b12afe5212bf6e2b78fdd2c4e7d2"],
     "id": 1
 }
 
@@ -120,15 +120,16 @@ content-type: application/json
 
 ### eth_getTransactionCount (get nonce)
 
+### 0xb47e05ab333e436bec1f062d480e604d2323b12afe5212bf6e2b78fdd2c4e7d2
+
 POST {{rpcURL}}
 content-type: application/json
 
 {
     "jsonrpc": "2.0",
-    "method": "eth_getTransactionCount",
+    "method": "eth_getTransactionByHash",
     "params": [
-        "0xE4A7e953486D01d4Fdc76986a0c88fa4F87B30e5",
-        "latest"
+        "0xb47e05ab333e436bec1f062d480e604d2323b12afe5212bf6e2b78fdd2c4e7d2"
     ],
     "id": 0
 }
@@ -159,6 +160,20 @@ content-type: application/json
     "params": [
         "0xa4108aa1ec4967f8b52220a4f7e94a8201f2d906",
         "latest"
+    ],
+    "id": 0
+}
+
+### "0x02f86901050a82012c82520894dddf66022c8307222dc8a118f4de97e131c179368502540be40080c080a0cf3e6e4df3c5d2d33d3a39fecfb632e829ca7fd3c9a11777314f5680ad8a2a29a02b6fb83f2ea230b0283d3d3bcc9412a264d1fd4f3444d34099dd4e14e5601574"
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_sendRawTransaction",
+    "params": [
+        "0x02f86901050a82012c82520894dddf66022c8307222dc8a118f4de97e131c179368502540be40080c080a0cf3e6e4df3c5d2d33d3a39fecfb632e829ca7fd3c9a11777314f5680ad8a2a29a02b6fb83f2ea230b0283d3d3bcc9412a264d1fd4f3444d34099dd4e14e5601574"
     ],
     "id": 0
 }

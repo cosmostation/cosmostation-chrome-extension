@@ -429,6 +429,13 @@
             "warningText": "이 메세지에 서명하는 것은 위험할 수 있습니다. 이 서명을 통해 계정을 대신하여 요청된 사이트의 자산 제어를 포함한 모든 작업을 수행할 수 있습니다. 요청 사이트를 완전히 신뢰하는 경우에만 이 메세지에 서명하십시오."
           }
         },
+        "SignTransaction": {
+          "entry": {
+            "cancelButton": "취소",
+            "signButton": "서명",
+            "signatureRequest": "서명 요청"
+          }
+        },
         "SwitchNetwork": {
           "entry": {
             "cancelButton": "취소",

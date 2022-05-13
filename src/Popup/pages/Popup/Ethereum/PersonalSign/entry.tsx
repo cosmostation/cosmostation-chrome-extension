@@ -11,8 +11,8 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
-import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { personalSign, toHex, toUTF8 } from '~/Popup/utils/ethereum';
+import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
+import { personalSign, toUTF8 } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
 import type { PersonalSign, PersonalSignResponse } from '~/types/ethereum/message';
@@ -53,7 +53,7 @@ export default function Entry({ queue }: EntryProps) {
   const { message, messageId, origin } = queue;
   const { params } = message;
 
-  const dataToHex = toHex(params[1]);
+  const dataToHex = toHex(params[1], { addPrefix: true });
   const hexToUTF8 = toUTF8(dataToHex);
 
   useEffect(() => {

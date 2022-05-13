@@ -1,4 +1,7 @@
 import { useEffect } from 'react';
+// import { useSnackbar } from 'notistack';
+// import Web3 from 'web3';
+// import type { TransactionConfig } from 'web3-core';
 import { Typography } from '@mui/material';
 
 import { ETHEREUM_CHAINS } from '~/constants/chain';
@@ -11,34 +14,21 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
-import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
-import { sign, toUTF8 } from '~/Popup/utils/ethereum';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthSign, EthSignResponse } from '~/types/ethereum/message';
+import type { EthSignTransaction } from '~/types/ethereum/message';
 
-import {
-  BottomButtonContainer,
-  BottomContainer,
-  Container,
-  ContentContainer,
-  MessageContainer,
-  MessageContentContainer,
-  MessageTitleContainer,
-  TitleContainer,
-  WarningContainer,
-  WarningIconContainer,
-  WarningTextContainer,
-} from './styled';
-
-import Info16Icon from '~/images/icons/Info16.svg';
+import { BottomButtonContainer, BottomContainer, Container, ContentContainer, TitleContainer } from './styled';
 
 type EntryProps = {
-  queue: Queue<EthSign>;
+  queue: Queue<EthSignTransaction>;
 };
 
 export default function Entry({ queue }: EntryProps) {
   const { deQueue } = useCurrentQueue();
+
+  // const { enqueueSnackbar } = useSnackbar();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -53,14 +43,16 @@ export default function Entry({ queue }: EntryProps) {
   const { message, messageId, origin } = queue;
   const { params } = message;
 
-  const dataToHex = toHex(params[1], { addPrefix: true });
-  const hexToUTF8 = toUTF8(dataToHex);
+  // const originEthereumTx = params[0];
+
+  // const nonce = originEthereumTx.nonce !== undefined ? parseInt(toHex(originEthereumTx.nonce), 16) : undefined;
+  // const chainId = originEthereumTx.chainId !== undefined ? parseInt(toHex(originEthereumTx.chainId), 16) : undefined;
 
   useEffect(() => {
     void (async () => {
       const address = getAddress(chain, keyPair?.publicKey);
 
-      if (address.toLowerCase() !== params[0].toLowerCase()) {
+      if (address.toLowerCase() !== params[0].from) {
         responseToWeb({
           response: {
             error: {
@@ -84,24 +76,8 @@ export default function Entry({ queue }: EntryProps) {
       <Header chain={chain} network={currentNetwork} origin={origin} />
       <ContentContainer>
         <TitleContainer>
-          <Typography variant="h2">{t('pages.Popup.Ethereum.Sign.entry.signatureRequest')}</Typography>
+          <Typography variant="h2">{t('pages.Popup.Ethereum.SignTransaction.entry.signatureRequest')}</Typography>
         </TitleContainer>
-        <WarningContainer>
-          <WarningIconContainer>
-            <Info16Icon />
-          </WarningIconContainer>
-          <WarningTextContainer>
-            <Typography variant="h5">{t('pages.Popup.Ethereum.Sign.entry.warningText')}</Typography>
-          </WarningTextContainer>
-        </WarningContainer>
-        <MessageContainer>
-          <MessageTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.Ethereum.Sign.entry.message')}</Typography>
-          </MessageTitleContainer>
-          <MessageContentContainer>
-            <Typography variant="h6">{hexToUTF8}</Typography>
-          </MessageContentContainer>
-        </MessageContainer>
       </ContentContainer>
       <BottomContainer>
         <BottomButtonContainer>
@@ -122,25 +98,30 @@ export default function Entry({ queue }: EntryProps) {
               await deQueue();
             }}
           >
-            {t('pages.Popup.Ethereum.Sign.entry.cancelButton')}
+            {t('pages.Popup.Ethereum.SignTransaction.entry.cancelButton')}
           </OutlineButton>
           <Button
-            onClick={async () => {
-              const result: EthSignResponse = sign(dataToHex, keyPair!.privateKey);
+          // onClick={async () => {
+          //   try {
+          //     const web3 = new Web3(currentNetwork.rpcURL);
 
-              responseToWeb({
-                response: {
-                  result,
-                },
-                message,
-                messageId,
-                origin,
-              });
+          //     const account = web3.eth.accounts.privateKeyToAccount(keyPair!.privateKey.toString('hex'));
 
-              await deQueue();
-            }}
+          //     const ethereumTx: TransactionConfig = {
+          //       ...originEthereumTx,
+          //       nonce,
+          //       chainId,
+          //     };
+
+          //     const signed = await account.signTransaction(ethereumTx);
+
+          //     const estimatedGas = await web3.eth.estimateGas(ethereumTx);
+          //   } catch (e) {
+          //     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+          //   }
+          // }}
           >
-            {t('pages.Popup.Ethereum.Sign.entry.signButton')}
+            {t('pages.Popup.Ethereum.SignTransaction.entry.signButton')}
           </Button>
         </BottomButtonContainer>
       </BottomContainer>

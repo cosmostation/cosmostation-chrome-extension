@@ -58,6 +58,10 @@ export default function Routes({ children }: RoutesType) {
       if (chromeStorage.queues[0].message.method === 'personal_sign') {
         navigate('/popup/ethereum/personal-sign');
       }
+
+      if (chromeStorage.queues[0].message.method === 'eth_signTransaction') {
+        navigate('/popup/ethereum/sign-transaction');
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

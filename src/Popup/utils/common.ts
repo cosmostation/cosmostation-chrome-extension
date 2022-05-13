@@ -60,3 +60,30 @@ export function getChainIdRegex(chainId: string) {
 
   return chainIdRegex;
 }
+
+type toHexOptions = {
+  addPrefix?: boolean;
+};
+
+export function toHex(datum?: number | string, options?: toHexOptions) {
+  const result = (() => {
+    if (typeof datum === 'number') {
+      return datum.toString(16);
+    }
+
+    if (typeof datum === 'string') {
+      if (datum.startsWith('0x')) {
+        return datum.substring(2);
+      }
+      return Buffer.from(datum, 'utf8').toString('hex');
+    }
+
+    return '';
+  })();
+
+  if (options?.addPrefix) {
+    return `0x${result}`;
+  }
+
+  return result;
+}

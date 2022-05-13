@@ -4,7 +4,7 @@ import { ERC20_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
-import type { EthereumTxParams } from '~/types/ethereum/message';
+import type { EthereumTx } from '~/types/ethereum/message';
 
 import { chromeStorage } from './chromeStorage';
 
@@ -38,7 +38,7 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
   }
 }
 
-export async function determineTxType(txParams: EthereumTxParams) {
+export async function determineTxType(txParams: EthereumTx) {
   const { data, to } = txParams;
   let name: undefined | string;
   try {

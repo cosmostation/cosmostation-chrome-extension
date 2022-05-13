@@ -1,7 +1,7 @@
 import { TENDERMINT_TYPE } from '~/constants/tendermint';
 import Joi from '~/Popup/utils/joi';
 import type { GasRate } from '~/types/chain';
-import type { EthcAddNetwork } from '~/types/ethereum/message';
+import type { CustomChain, EthcAddNetwork, EthereumTxCommon, EthSignTransaction } from '~/types/ethereum/message';
 import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint/amino';
 import type { Amount } from '~/types/tendermint/common';
 import type { TenAddChainParams, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
@@ -10,6 +10,7 @@ import type { SignDirectDoc } from '~/types/tendermint/proto';
 import { getChainIdRegex } from '../utils/common';
 
 const numberRegex = /^([0-9]+|[0-9]+(\.[0-9]+))$/;
+const ethereumAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 
 const tendermintType = Object.values(TENDERMINT_TYPE);
 
@@ -154,12 +155,34 @@ export const ethSignParamsSchema = () =>
   Joi.array()
     .label('params')
     .required()
-    .items(
-      Joi.string()
-        .label('address')
-        .pattern(/^0x[a-fA-F0-9]{40}$/)
-        .required(),
-      Joi.string().label('dataToSign').required(),
-    );
+    .items(Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.string().label('dataToSign').required());
 
 export const personalSignParamsSchema = ethSignParamsSchema;
+
+export const ethSignTransactionParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.object<EthSignTransaction['params'][0]>({
+        from: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        to: Joi.string().optional(),
+        nonce: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        chainId: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        data: Joi.string().optional(),
+        maxFeePerGas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        maxPriorityFeePerGas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        value: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        gas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        gasPrice: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        chain: Joi.string().optional(),
+        hardfork: Joi.string().optional(),
+        common: Joi.object<EthereumTxCommon>({
+          customChain: Joi.object<CustomChain>({
+            name: Joi.string().optional(),
+            networkId: Joi.number().required(),
+            chainId: Joi.number().required(),
+          }).required(),
+        }).optional(),
+      }).required(),
+    );
