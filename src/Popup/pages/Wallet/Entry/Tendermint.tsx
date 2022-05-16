@@ -4,6 +4,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import Empty from '~/Popup/components/common/Empty';
 import Header from '~/Popup/components/SelectSubHeader';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import type { TendermintChain } from '~/types/chain';
 
 import IbcCoinList from '../components/tendermint/CoinList';
@@ -17,8 +18,10 @@ type TendermintProps = {
 export default function Tendermint({ chain }: TendermintProps) {
   useCoinGeckoPriceSWR();
 
+  const { currentAccount } = useCurrentAccount();
+
   return (
-    <Container>
+    <Container key={`${chain.id}-${currentAccount.id}`}>
       <HeaderContainer>
         <Header />
       </HeaderContainer>

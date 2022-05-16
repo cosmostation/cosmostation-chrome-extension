@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Header from '~/Popup/components/SelectSubHeader';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import type { EthereumChain } from '~/types/chain';
 
 import NativeChainCard, { NativeChainCardSkeleton } from '../components/ethereum/NativeChainCard';
@@ -12,8 +14,11 @@ type EthereumProps = {
 };
 
 export default function Ethereum({ chain }: EthereumProps) {
+  const { currentAccount } = useCurrentAccount();
+  const { currentNetwork } = useCurrentNetwork();
+
   return (
-    <Container>
+    <Container key={`${currentAccount.id}-${currentNetwork.id}`}>
       <HeaderContainer>
         <Header />
       </HeaderContainer>
