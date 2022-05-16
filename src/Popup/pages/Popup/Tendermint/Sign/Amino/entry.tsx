@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
@@ -12,6 +12,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { fix } from '~/Popup/utils/big';
 import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, protoTx } from '~/Popup/utils/proto';
@@ -71,7 +72,9 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const signingMemo = isEditMemo ? memo : doc.memo;
 
-  const signingFee = isEditFee ? { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas } : doc.fee;
+  const fixedBaseFee = useMemo(() => fix(baseFee, 0, 0), [baseFee]);
+
+  const signingFee = isEditFee ? { amount: [{ denom: chain.baseDenom, amount: fixedBaseFee }], gas } : doc.fee;
 
   const tx = { ...doc, memo: signingMemo, fee: signingFee };
 
