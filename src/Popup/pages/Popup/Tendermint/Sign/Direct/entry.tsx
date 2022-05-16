@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Typography } from '@mui/material';
 
 import { DEFAULT_GAS } from '~/constants/chain';
@@ -11,6 +11,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { fix } from '~/Popup/utils/big';
 import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import { decodeProtobufMessage } from '~/Popup/utils/proto';
@@ -74,10 +75,12 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [baseFee, setBaseFee] = useState(inputFee);
   const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
 
+  const fixedBaseFee = useMemo(() => fix(baseFee, 0, 0), [baseFee]);
+
   const encodedBodyBytes = cosmos.tx.v1beta1.TxBody.encode({ ...decodedBodyBytes, memo }).finish();
   const encodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode({
     ...decodedAuthInfoBytes,
-    fee: { amount: [{ denom: chain.baseDenom, amount: baseFee }], gas_limit: Number(gas) },
+    fee: { amount: [{ denom: chain.baseDenom, amount: fixedBaseFee }], gas_limit: Number(gas) },
   }).finish();
 
   const bodyBytes = isEditMemo ? encodedBodyBytes : doc.body_bytes;
