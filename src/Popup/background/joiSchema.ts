@@ -6,19 +6,26 @@ import type { Amount } from '~/types/tendermint/common';
 import type { TenAddChainParams, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
 import type { SignDirectDoc } from '~/types/tendermint/proto';
 
+import { getChainIdRegex } from '../utils/common';
+
 const numberRegex = /^([0-9]+|[0-9]+(\.[0-9]+))$/;
 
 const tendermintType = Object.values(TENDERMINT_TYPE);
 
-export const tenAddChainParamsSchema = (chainNames: string[]) =>
-  Joi.object<TenAddChainParams>({
+export const tenAddChainParamsSchema = (chainNames: string[], chainIds: string[]) => {
+  const invalidChainNames = [...chainNames, ...chainIds];
+
+  return Joi.object<TenAddChainParams>({
     type: Joi.string()
       .valid(...tendermintType)
       .default(''),
-    chainId: Joi.string().required(),
+    chainId: Joi.string()
+      .lowercase()
+      .invalid(...chainIds)
+      .required(),
     chainName: Joi.string()
       .lowercase()
-      .invalid(...chainNames)
+      .invalid(...invalidChainNames)
       .required(),
     restURL: Joi.string().required(),
     imageURL: Joi.string().optional(),
@@ -47,11 +54,10 @@ export const tenAddChainParamsSchema = (chainNames: string[]) =>
   })
     .label('params')
     .required();
+};
 
 export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) => {
-  const splitedChainId = chainId.split('-');
-  const prefixChainId = splitedChainId[0] ?? '';
-  const chainIdRegex = new RegExp(`^${prefixChainId || ''}(.*)$`);
+  const chainIdRegex = getChainIdRegex(chainId);
 
   return Joi.object<TenSignAminoParams>({
     chainName: Joi.string()
@@ -88,11 +94,7 @@ export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) 
     .required();
 };
 export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string) => {
-  const splitedChainId = chainId.split('-');
-
-  const prefixChainId = splitedChainId[0] ?? '';
-
-  const chainIdRegex = new RegExp(`^${prefixChainId || ''}(.*)$`);
+  const chainIdRegex = getChainIdRegex(chainId);
 
   return Joi.object<TenSignDirectParams>({
     chainName: Joi.string()
