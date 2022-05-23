@@ -12,8 +12,8 @@ const numberRegex = /^([0-9]+|[0-9]+(\.[0-9]+))$/;
 
 const tendermintType = Object.values(TENDERMINT_TYPE);
 
-export const tenAddChainParamsSchema = (chainNames: string[], chainIds: string[]) => {
-  const invalidChainNames = [...chainNames, ...chainIds];
+export const tenAddChainParamsSchema = (chainNames: string[], officialChainIds: string[], unofficialChainIds: string[]) => {
+  const invalidChainNames = [...chainNames, ...officialChainIds, ...unofficialChainIds];
 
   return Joi.object<TenAddChainParams>({
     type: Joi.string()
@@ -21,7 +21,7 @@ export const tenAddChainParamsSchema = (chainNames: string[], chainIds: string[]
       .default(''),
     chainId: Joi.string()
       .lowercase()
-      .invalid(...chainIds)
+      .invalid(...officialChainIds)
       .required(),
     chainName: Joi.string()
       .lowercase()

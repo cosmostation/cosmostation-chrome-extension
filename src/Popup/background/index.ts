@@ -62,10 +62,10 @@ function background() {
 
                 const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
 
-                const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName.toLowerCase();
+                const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
 
                 if (!allChainLowercaseNames.includes(chainName)) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
                 }
 
                 const chain = getChain(chainName)!;
@@ -104,12 +104,25 @@ function background() {
                 const { params } = message;
 
                 const tendermintLowercaseChainNames = TENDERMINT_CHAINS.map((item) => item.chainName.toLowerCase());
-                const tendermintLowercaseChainIds = TENDERMINT_CHAINS.map((item) => item.chainId.toLowerCase());
+                const officialTendermintLowercaseChainIds = TENDERMINT_CHAINS.map((item) => item.chainId.toLowerCase());
+                const unofficialTendermintLowercaseChainIds = tendermintAdditionalChains.map((item) => item.chainId.toLowerCase());
 
-                const schema = tenAddChainParamsSchema(tendermintLowercaseChainNames, tendermintLowercaseChainIds);
+                const schema = tenAddChainParamsSchema(
+                  tendermintLowercaseChainNames,
+                  officialTendermintLowercaseChainIds,
+                  unofficialTendermintLowercaseChainIds,
+                );
 
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as TenAddChainParams;
+
+                  const filteredTendermintLowercaseChainIds = tendermintAdditionalChains
+                    .filter((item) => item.chainName.toLowerCase() !== validatedParams.chainName)
+                    .map((item) => item.chainId.toLowerCase());
+
+                  if (filteredTendermintLowercaseChainIds.includes(validatedParams.chainId)) {
+                    throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]}: 'chainId' is a duplicate`);
+                  }
 
                   const window = await openWindow();
                   await setStorage('queues', [
@@ -121,7 +134,11 @@ function background() {
                     },
                   ]);
                 } catch (err) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
+                  if (err instanceof TendermintRPCError) {
+                    throw err;
+                  }
+
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
                 }
               }
 
@@ -149,7 +166,7 @@ function background() {
                     },
                   ]);
                 } catch (err) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
                 }
               }
 
@@ -177,7 +194,7 @@ function background() {
                     },
                   ]);
                 } catch (err) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, `${err as string}`);
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
                 }
               }
             }
@@ -203,10 +220,10 @@ function background() {
 
                 const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
 
-                const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName.toLowerCase();
+                const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
 
                 if (!allChainLowercaseNames.includes(chainName)) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
                 }
 
                 const chain = getChain(chainName);
