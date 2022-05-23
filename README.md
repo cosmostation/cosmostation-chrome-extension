@@ -7,7 +7,7 @@
 <h1 align="center">Cosmostation Chrome Extension</h1>
 <h3 align="center">Welcome to Cosmostation's Open Source Chrome Extension!</h3>
 
-[![MIT](https://img.shields.io/apm/l/vim-mode.svg)](https://github.com/cosmostation/cosmostation-chrome-extension/blob/feature/WEBWL-118-evmos-injective/LICENSE)
+[![MIT](https://img.shields.io/apm/l/vim-mode.svg)](https://github.com/cosmostation/cosmostation-chrome-extension/blob/develop/LICENSE)
 [![Twitter Follow](https://img.shields.io/twitter/follow/CosmostationVD.svg?label=Follow&style=social)](https://twitter.com/CosmostationVD)
 
 _:rocket: Developed / Developing by [Cosmostation](https://www.cosmostation.io/)_

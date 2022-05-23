@@ -52,3 +52,11 @@ export function shorterAddress(address?: string, maxLength = 25) {
 export function equalsIgnoringCase(a?: string, b?: string) {
   return typeof a === 'string' && typeof b === 'string' && a.toLowerCase() === b.toLowerCase();
 }
+
+export function getChainIdRegex(chainId: string) {
+  const splitedChainId = chainId.split('-');
+  const prefixChainId = splitedChainId[0] ?? '';
+  const chainIdRegex = new RegExp(`^${prefixChainId || ''}(.*)$`);
+
+  return chainIdRegex;
+}

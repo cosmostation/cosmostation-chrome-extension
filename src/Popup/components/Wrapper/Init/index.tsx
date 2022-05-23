@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useRecoilState } from 'recoil';
 
-import { CHAINS } from '~/constants/chain';
+import { CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeStorageState } from '~/Popup/recoils/chromeStorage';
 import { getAllStorage, setStorage } from '~/Popup/utils/chromeStorage';
+import type { Chain, TendermintChain } from '~/types/chain';
 import type { LanguageType } from '~/types/chromeStorage';
 
 type InitType = {
@@ -22,6 +23,8 @@ export default function Init({ children }: InitType) {
 
   const officialChainLowercaseNames = CHAINS.map((item) => item.chainName.toLowerCase());
   const officialChainIds = CHAINS.map((item) => item.id);
+
+  const officialTendermintLowercaseChainIds = TENDERMINT_CHAINS.map((item) => item.chainId.toLowerCase());
 
   const handleOnStorageChange = () => {
     void (async () => {
@@ -72,6 +75,14 @@ export default function Init({ children }: InitType) {
         await setStorage('additionalChains', newAdditionalChains);
       }
 
+      if (originChromeStorage.additionalChains.filter(isTendermint).find((item) => officialTendermintLowercaseChainIds.includes(item.chainId.toLowerCase()))) {
+        const newAdditionalChains = originChromeStorage.additionalChains.filter(
+          (item) => !(item.line === 'TENDERMINT' && officialTendermintLowercaseChainIds.includes(item.chainId)),
+        );
+
+        await setStorage('additionalChains', newAdditionalChains);
+      }
+
       if (!originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).length) {
         await setStorage('allowedChainIds', [CHAINS[0].id]);
       }
@@ -98,4 +109,8 @@ export default function Init({ children }: InitType) {
       </Helmet>
     </>
   );
+}
+
+function isTendermint(item: Chain): item is TendermintChain {
+  return item.line === 'TENDERMINT';
 }
