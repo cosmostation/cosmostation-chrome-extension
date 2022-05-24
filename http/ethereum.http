@@ -70,18 +70,6 @@ content-type: application/json
     "id": 1
 }
 
-### eth_gasPrice
-
-POST {{rpcURL}}
-content-type: application/json
-
-{
-    "jsonrpc": "2.0",
-    "method": "eth_gasPrice",
-    "params": [],
-    "id": 1
-}
-
 ### eth_getBlockByHash
 
 POST {{rpcURL}}
@@ -186,13 +174,12 @@ content-type: application/json
     "jsonrpc": "2.0",
     "method": "eth_feeHistory",
     "params": [
-        "0x4", "pending", [10, 30, 50]
+        20, "pending", [10, 30, 50]
     ],
     "id": 0
 }
 
 ###
-
 
 POST {{rpcURL}}
 content-type: application/json
@@ -202,4 +189,28 @@ content-type: application/json
     "method": "eth_blockNumber",
     "params": [],
     "id": 0
+}
+
+###
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_getBlockByNumber",
+    "params": ["pending", false],
+    "id": 0
+}
+
+### eth_gasPrice
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_gasPrice",
+    "params": [],
+    "id": 1
 }

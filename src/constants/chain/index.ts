@@ -91,4 +91,6 @@ export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 
 export const ETHEREUM_NETWORKS: EthereumNetwork[] = [ETHEREUM_NETWORK_MAINNET];
 
+export const NETWORKS = [...ETHEREUM_NETWORKS];
+
 export const CHAINS = [...ETHEREUM_CHAINS, ...TENDERMINT_CHAINS];

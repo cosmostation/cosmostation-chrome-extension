@@ -1,5 +1,6 @@
 import { Suspense, useState } from 'react';
 
+import { ETHEREUM_CHAINS } from '~/constants/chain';
 import ChainButton from '~/Popup/components/ChainButton';
 import ChainPopover from '~/Popup/components/ChainPopover';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -18,7 +19,7 @@ type SelectSubHeaderProps = {
 export default function SelectSubHeader({ isShowChain = true }: SelectSubHeaderProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentChain, setCurrentChain } = useCurrentChain();
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentNetwork(currentChain.line === 'ETHEREUM' ? currentChain : ETHEREUM_CHAINS[0]);
 
   const [popover, setPopover] = useState<'chain' | 'network' | 'account' | null>(null);
 
@@ -82,19 +83,22 @@ export default function SelectSubHeader({ isShowChain = true }: SelectSubHeaderP
           horizontal: 'right',
         }}
       />
-      <NetworkPopover
-        open={isOpenPopover && popover === 'network'}
-        onClose={() => setPopoverAnchorEl(null)}
-        anchorEl={popoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      />
+      {currentChain.line === 'ETHEREUM' && (
+        <NetworkPopover
+          chain={currentChain}
+          open={isOpenPopover && popover === 'network'}
+          onClose={() => setPopoverAnchorEl(null)}
+          anchorEl={popoverAnchorEl}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        />
+      )}
       <Suspense fallback={null}>
         <AccountPopover
           marginThreshold={0}

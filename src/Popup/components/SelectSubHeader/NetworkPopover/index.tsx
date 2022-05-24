@@ -7,6 +7,7 @@ import Popover from '~/Popup/components/common/Popover';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import type { EthereumChain } from '~/types/chain';
 
 import NetworkItemButton from './NetworkItemButton';
 import {
@@ -21,15 +22,17 @@ import {
   NetworkListContainer,
 } from './styled';
 
-type NetworkPopoverProps = Omit<PopoverProps, 'children'>;
+type NetworkPopoverProps = Omit<PopoverProps, 'children'> & {
+  chain: EthereumChain;
+};
 
-export default function NetworkPopover({ onClose, ...remainder }: NetworkPopoverProps) {
+export default function NetworkPopover({ chain, onClose, ...remainder }: NetworkPopoverProps) {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { currentNetwork, setCurrentNetwork } = useCurrentNetwork();
+  const { currentNetwork, setCurrentNetwork } = useCurrentNetwork(chain);
 
   const { t } = useTranslation();
 
-  const { additionalEthereumNetworks } = chromeStorage;
+  const { additionalNetworks } = chromeStorage;
 
   return (
     <Popover {...remainder} onClose={onClose}>
@@ -58,14 +61,14 @@ export default function NetworkPopover({ onClose, ...remainder }: NetworkPopover
             ))}
           </NetworkListContainer>
 
-          {additionalEthereumNetworks.length > 0 && (
+          {additionalNetworks.length > 0 && (
             <BetaNetworkContainer>
               <BetaNetworkTitleContainer>
                 <Typography variant="h6">{t('pages.Wallet.components.Header.NetworkPopover.index.customNetwork')}</Typography>
               </BetaNetworkTitleContainer>
               <BetaNetworkListContainer>
                 <NetworkListContainer>
-                  {additionalEthereumNetworks.map((network) => (
+                  {additionalNetworks.map((network) => (
                     <NetworkItemButton
                       key={network.id}
                       onClickDelete={async () => {
@@ -73,11 +76,11 @@ export default function NetworkPopover({ onClose, ...remainder }: NetworkPopover
                           await setCurrentNetwork(ETHEREUM_NETWORKS[0]);
                         }
 
-                        const currentAdditionalEthereumNetworks = chromeStorage.additionalEthereumNetworks;
+                        const currentadditionalNetworks = chromeStorage.additionalNetworks;
 
-                        const newAdditionalEthereumNetworks = currentAdditionalEthereumNetworks.filter((item) => item.id !== network.id);
+                        const newadditionalNetworks = currentadditionalNetworks.filter((item) => item.id !== network.id);
 
-                        await setChromeStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
+                        await setChromeStorage('additionalNetworks', newadditionalNetworks);
                       }}
                       onClick={async () => {
                         await setCurrentNetwork(network);

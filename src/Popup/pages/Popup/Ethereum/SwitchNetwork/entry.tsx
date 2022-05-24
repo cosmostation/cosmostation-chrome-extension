@@ -35,19 +35,21 @@ export default function Entry({ queue }: EntryProps) {
   const { chromeStorage } = useChromeStorage();
   const { deQueue } = useCurrentQueue();
 
-  const { currentNetwork, setCurrentNetwork } = useCurrentNetwork();
+  const chain = ETHEREUM_CHAINS[0];
+
+  const { currentNetwork, setCurrentNetwork } = useCurrentNetwork(chain);
 
   const { t } = useTranslation();
 
   const { message, messageId, origin } = queue;
 
-  const allEthereumNetworks = [...ETHEREUM_NETWORKS, ...chromeStorage.additionalEthereumNetworks];
+  const allEthereumNetworks = [...ETHEREUM_NETWORKS, ...chromeStorage.additionalNetworks];
 
   const requestNetwork = allEthereumNetworks.find((item) => item.chainId === message.params[0]);
 
   return (
     <Container>
-      <Header chain={ETHEREUM_CHAINS[0]} network={currentNetwork} origin={origin} />
+      <Header chain={chain} network={currentNetwork} origin={origin} />
       <ContentContainer>
         <SwitchIconContainer>
           <Switch60Icon />

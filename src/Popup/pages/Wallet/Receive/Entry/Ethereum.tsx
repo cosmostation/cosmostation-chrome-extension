@@ -28,7 +28,7 @@ type EthereumProps = {
 export default function Ethereum({ chain }: EthereumProps) {
   const accounts = useAccounts(true);
   const { currentAccount } = useCurrentAccount();
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentNetwork(chain);
 
   const { explorerURL } = currentNetwork;
 

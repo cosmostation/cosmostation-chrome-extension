@@ -18,7 +18,7 @@ type EthereumChainItemProps = {
 };
 
 export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentNetwork(chain);
   const { chromeStorage } = useChromeStorage();
   const { currentAccount } = useCurrentAccount();
   const { setCurrentChain } = useCurrentChain();
@@ -64,7 +64,7 @@ export function EthereumChainItemSkeleton({ chain }: EthereumChainItemProps) {
   const { setCurrentChain } = useCurrentChain();
   const { navigate } = useNavigate();
 
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentNetwork(chain);
 
   const handleOnClick = () => {
     void setCurrentChain(chain);

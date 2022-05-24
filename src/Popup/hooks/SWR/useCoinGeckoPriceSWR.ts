@@ -1,22 +1,28 @@
 import type { AxiosError } from 'axios';
 import useSWR from 'swr';
 
+import { NETWORKS } from '~/constants/chain';
 import { CURRENCY_TYPE } from '~/constants/chromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { get } from '~/Popup/utils/axios';
 import type { TendermintChain } from '~/types/chain';
 import type { SimplePrice } from '~/types/coinGecko';
 
+import { useChromeStorage } from '../useChromeStorage';
+
 export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const { currentAllowedChains } = useCurrentAllowedChains();
-  const { currentNetwork } = useCurrentNetwork();
 
-  const ethereumCoinGeckoId = currentNetwork.coinGeckoId ? `,${currentNetwork.coinGeckoId}` : '';
+  const { chromeStorage } = useChromeStorage();
+
+  const { additionalNetworks } = chromeStorage;
+  const networkCoingeckoIds = [...NETWORKS, ...additionalNetworks].filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId);
+
+  const joinedNetworkCoingeckoIds = networkCoingeckoIds.length > 0 ? `,${networkCoingeckoIds.join(',')}` : '';
 
   const coinGeckoIds = `${(currentAllowedChains.filter((chain) => chain.line === 'TENDERMINT' && chain.coinGeckoId) as TendermintChain[])
     .map((chain) => chain.coinGeckoId)
-    .join(',')}${ethereumCoinGeckoId},tether`;
+    .join(',')}${joinedNetworkCoingeckoIds},tether`;
 
   const currencySymbols = Object.values(CURRENCY_TYPE).join(',');
 

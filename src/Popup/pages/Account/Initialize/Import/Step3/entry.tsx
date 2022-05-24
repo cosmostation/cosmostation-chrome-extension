@@ -54,7 +54,7 @@ export default function Entry() {
 
             await setChromeStorage('selectedChainId', chromeStorage.allowedChainIds[0]);
 
-            await setChromeStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
+            await setChromeStorage('selectedNetworkId', { [ETHEREUM_NETWORKS[0].parentId]: ETHEREUM_NETWORKS[0].id });
           } else if (newPrivateKeyAccount.accountName && newPrivateKeyAccount.privateKey) {
             navigate('/account/initialize/complete');
 
@@ -75,7 +75,7 @@ export default function Entry() {
 
             await setChromeStorage('selectedChainId', chromeStorage.allowedChainIds[0]);
 
-            await setChromeStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
+            await setChromeStorage('selectedNetworkId', { [ETHEREUM_NETWORKS[0].parentId]: ETHEREUM_NETWORKS[0].id });
           } else {
             navigateBack(-3);
           }

@@ -2,31 +2,24 @@ import { CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { ENCTYPT_KEY } from '~/constants/common';
 import { getAllStorage } from '~/Popup/utils/chromeStorage';
 import { aesDecrypt, mnemonicToPair, privateKeyToPair, sha512 } from '~/Popup/utils/crypto';
+import type { EthereumChain } from '~/types/chain';
 
 export async function chromeStorage() {
   const storage = await getAllStorage();
 
-  const {
-    accounts,
-    accountName,
-    selectedAccountId,
-    additionalEthereumNetworks,
-    encryptedPassword,
-    selectedEthereumNetworkId,
-    allowedOrigins,
-    allowedChainIds,
-  } = storage;
+  const { accounts, accountName, selectedAccountId, additionalNetworks, encryptedPassword, selectedNetworkId, allowedOrigins, allowedChainIds } = storage;
 
   const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
   const currentAccountName = accountName[selectedAccountId];
 
-  const currentEthereumNetwork = (() => {
-    const ethereumNetworks = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks];
+  const currentEthereumNetwork = (chain: EthereumChain) => {
+    const parentId = chain.id;
+    const ethereumNetworks = [...ETHEREUM_NETWORKS, ...additionalNetworks].filter((item) => item.parentId === parentId);
 
-    const networkId = selectedEthereumNetworkId ?? ETHEREUM_NETWORKS[1].id;
+    const networkId = selectedNetworkId?.[parentId] ?? ETHEREUM_NETWORKS[1].id;
 
-    return ethereumNetworks.find((network) => network.id === networkId) ?? ETHEREUM_NETWORKS[1];
-  })();
+    return ethereumNetworks.find((network) => network.id === networkId) ?? ethereumNetworks[0];
+  };
 
   const currentAllowedChains = CHAINS.filter((chain) => allowedChainIds.includes(chain.id));
 

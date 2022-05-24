@@ -34,14 +34,14 @@ export default function Entry() {
     void setChromeStorage('accounts', []);
     void setChromeStorage('accountName', {});
     void setChromeStorage('additionalChains', []);
-    void setChromeStorage('additionalEthereumNetworks', []);
+    void setChromeStorage('additionalNetworks', []);
     void setChromeStorage('encryptedPassword', null);
     void setChromeStorage('selectedAccountId', '');
 
     void setChromeStorage('allowedChainIds', [CHAINS[0].id]);
     void setChromeStorage('allowedOrigins', []);
     void setChromeStorage('selectedChainId', '');
-    void setChromeStorage('selectedEthereumNetworkId', '');
+    void setChromeStorage('selectedNetworkId', {});
     void setChromeStorage('encryptedPassword', null);
 
     void setCurrentPassword(null);

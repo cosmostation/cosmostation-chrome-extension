@@ -87,6 +87,10 @@ export default function Init({ children }: InitType) {
         await setStorage('allowedChainIds', [CHAINS[0].id]);
       }
 
+      if (!originChromeStorage.additionalNetworks) {
+        await setStorage('additionalNetworks', []);
+      }
+
       setIsLoading(false);
     })();
 

@@ -4,16 +4,17 @@ import { ERC20_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
+import type { EthereumChain } from '~/types/chain';
 import type { EthereumTx } from '~/types/ethereum/message';
 
 import { chromeStorage } from './chromeStorage';
 
 const abiInterface = new Interface(ERC20_ABI);
 
-export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
+export async function requestRPC<T>(chain: EthereumChain, method: string, params: unknown, id?: string | number, url?: string) {
   const { currentEthereumNetwork } = await chromeStorage();
 
-  const rpcURL = url ?? currentEthereumNetwork.rpcURL;
+  const rpcURL = url ?? currentEthereumNetwork(chain).rpcURL;
 
   const rpcId = id ?? new Date().getTime();
 
@@ -38,7 +39,7 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
   }
 }
 
-export async function determineTxType(txParams: EthereumTx) {
+export async function determineTxType(chain: EthereumChain, txParams: EthereumTx) {
   const { data, to } = txParams;
   let name: undefined | string;
   try {
@@ -61,7 +62,7 @@ export async function determineTxType(txParams: EthereumTx) {
   let contractCode: string | null = null;
 
   if (!result && to) {
-    const { contractCode: resultCode, isContractAddress } = await readAddressAsContract(to);
+    const { contractCode: resultCode, isContractAddress } = await readAddressAsContract(chain, to);
 
     contractCode = resultCode;
 
@@ -84,10 +85,10 @@ export function isEqualString(value1?: string, value2?: string) {
   return value1.toLowerCase() === value2.toLowerCase();
 }
 
-export async function readAddressAsContract(address: string) {
+export async function readAddressAsContract(chain: EthereumChain, address: string) {
   let contractCode;
   try {
-    contractCode = (await requestRPC<{ result?: string }>('eth_getCode', [address, 'latest'])).result ?? null;
+    contractCode = (await requestRPC<{ result?: string }>(chain, 'eth_getCode', [address, 'latest'])).result ?? null;
   } catch {
     contractCode = null;
   }

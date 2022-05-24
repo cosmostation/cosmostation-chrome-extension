@@ -19,7 +19,7 @@ type FetchParams = {
 export function useBalanceSWR(chain: EthereumChain, suspense?: boolean) {
   const accounts = useAccounts();
   const { chromeStorage } = useChromeStorage();
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentNetwork(chain);
 
   const { rpcURL } = currentNetwork;
 

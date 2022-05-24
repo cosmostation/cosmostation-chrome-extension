@@ -1,20 +1,23 @@
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import type { EthereumNetwork } from '~/types/chain';
+import type { EthereumChain, EthereumNetwork } from '~/types/chain';
 
-export function useCurrentNetwork() {
+export function useCurrentNetwork(chain: EthereumChain) {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
-  const { selectedEthereumNetworkId, additionalEthereumNetworks } = chromeStorage;
+  const { selectedNetworkId, additionalNetworks } = chromeStorage;
 
-  const allNetworks = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks];
+  const parentId = chain.id;
 
-  const currentAccountSelectedNetworkId = selectedEthereumNetworkId ?? ETHEREUM_NETWORKS[0].id;
+  const allNetworks = [...ETHEREUM_NETWORKS, ...additionalNetworks].filter((item) => item.parentId === parentId);
+
+  const currentAccountSelectedNetworkId = selectedNetworkId?.[parentId] ?? allNetworks[0].id;
 
   const currentNetwork = allNetworks.find((network) => network.id === currentAccountSelectedNetworkId)!;
 
   const setCurrentNetwork = async (network: EthereumNetwork) => {
-    await setChromeStorage('selectedEthereumNetworkId', network.id);
+    const newSelectedNetworkId = { ...selectedNetworkId, [network.parentId]: network.id };
+    await setChromeStorage('selectedNetworkId', newSelectedNetworkId);
   };
 
   return { currentNetwork, setCurrentNetwork };

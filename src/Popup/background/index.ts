@@ -306,11 +306,13 @@ function background() {
         }
 
         if (request.line === 'ETHEREUM') {
+          const chain = ETHEREUM_CHAINS[0];
+
           const ethereumMethods = Object.values(ETHEREUM_METHOD_TYPE) as string[];
           const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
           const ethereumNoPopupMethods = Object.values(ETHEREUM_NO_POPUP_METHOD_TYPE) as string[];
 
-          const { queues, additionalEthereumNetworks, currentEthereumNetwork, password, currentAccountAllowedOrigins, currentAllowedChains, currentAccount } =
+          const { queues, additionalNetworks, currentEthereumNetwork, password, currentAccountAllowedOrigins, currentAllowedChains, currentAccount } =
             await chromeStorage();
 
           const { message, messageId, origin } = request;
@@ -324,8 +326,6 @@ function background() {
 
             if (ethereumPopupMethods.includes(method)) {
               if (method === 'eth_sign') {
-                const chain = ETHEREUM_CHAINS[0];
-
                 const { params } = message;
 
                 const schema = ethSignParamsSchema();
@@ -361,8 +361,6 @@ function background() {
               }
 
               if (method === 'personal_sign') {
-                const chain = ETHEREUM_CHAINS[0];
-
                 const { params } = message;
 
                 const schema = personalSignParamsSchema();
@@ -398,8 +396,6 @@ function background() {
               }
 
               if (method === 'eth_signTransaction') {
-                const chain = ETHEREUM_CHAINS[0];
-
                 const { params } = message;
 
                 const schema = ethSignTransactionParamsSchema();
@@ -423,7 +419,7 @@ function background() {
                   const chainId = originEthereumTx.chainId !== undefined ? parseInt(toHex(originEthereumTx.chainId), 16) : undefined;
 
                   try {
-                    const web3 = new Web3(currentEthereumNetwork.rpcURL);
+                    const web3 = new Web3(currentEthereumNetwork(chain).rpcURL);
 
                     const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY_FOR_TEST);
 
@@ -451,7 +447,6 @@ function background() {
               }
 
               if (method === 'eth_requestAccounts') {
-                const chain = ETHEREUM_CHAINS[0];
                 if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
                   const keyPair = getKeyPair(currentAccount, chain, password);
                   const address = getAddress(chain, keyPair?.publicKey);
@@ -480,7 +475,7 @@ function background() {
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as EthcAddNetworkParams;
 
-                  const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], message.id, validatedParams[0].rpcURL);
+                  const response = await requestRPC<ResponseRPC<string>>(chain, 'eth_chainId', [], message.id, validatedParams[0].rpcURL);
 
                   if (validatedParams[0].chainId !== response.result) {
                     throw new EthereumRPCError(
@@ -512,14 +507,14 @@ function background() {
               if (method === 'ethc_switchNetwork') {
                 const { params } = message;
 
-                const networkChainIds = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks].map((item) => item.chainId);
+                const networkChainIds = [...ETHEREUM_NETWORKS, ...additionalNetworks].filter((item) => item.parentId === chain.id).map((item) => item.chainId);
 
                 const schema = ethcSwitchNetworkParamsSchema(networkChainIds);
 
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as EthcSwitchNetworkParams;
 
-                  if (params[0] === currentEthereumNetwork.chainId) {
+                  if (params[0] === currentEthereumNetwork(chain).chainId) {
                     const result: EthcSwitchNetworkResponse = null;
 
                     responseToWeb({
@@ -602,7 +597,6 @@ function background() {
               // }
             } else if (ethereumNoPopupMethods.includes(method)) {
               if (method === 'eth_accounts') {
-                const chain = ETHEREUM_CHAINS[0];
                 if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
                   const keyPair = getKeyPair(currentAccount, chain, password);
                   const address = getAddress(chain, keyPair?.publicKey);
@@ -631,7 +625,7 @@ function background() {
               } else {
                 const params = method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
 
-                const response = await requestRPC(method, params, id);
+                const response = await requestRPC(chain, method, params, id);
                 responseToWeb({ response, message, messageId, origin });
               }
             } else {
@@ -736,7 +730,7 @@ function background() {
         await setStorage('accounts', []);
         await setStorage('accountName', {});
         await setStorage('additionalChains', []);
-        await setStorage('additionalEthereumNetworks', []);
+        await setStorage('additionalNetworks', []);
         await setStorage('encryptedPassword', null);
         await setStorage('selectedAccountId', '');
 
@@ -752,7 +746,7 @@ function background() {
         await setStorage('allowedChainIds', [CHAINS[0].id]);
         await setStorage('allowedOrigins', []);
         await setStorage('selectedChainId', '');
-        await setStorage('selectedEthereumNetworkId', '');
+        await setStorage('selectedNetworkId', {});
 
         await setStorage('password', null);
         await openTab();

@@ -135,16 +135,16 @@ export default function Entry({ queue }: EntryProps) {
           <Button
             onClick={async () => {
               const id = uuidv4();
-              const ethereumChainId = ETHEREUM_CHAINS[0].id;
+              const parentId = ETHEREUM_CHAINS[0].id;
 
-              const currentAdditionalEthereumNetworks = chromeStorage.additionalEthereumNetworks;
+              const currentadditionalNetworks = chromeStorage.additionalNetworks;
 
-              const newAdditionalEthereumNetworks: EthereumNetwork[] = [
-                ...currentAdditionalEthereumNetworks.filter((item) => item.chainId !== params.chainId),
-                { ...params, ethereumChainId, id },
+              const newadditionalNetworks: EthereumNetwork[] = [
+                ...currentadditionalNetworks.filter((item) => item.chainId !== params.chainId),
+                { ...params, parentId, id },
               ];
 
-              await setChromeStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
+              await setChromeStorage('additionalNetworks', newadditionalNetworks);
 
               const result: EthcAddNetworkResponse = null;
 

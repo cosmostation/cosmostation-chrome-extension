@@ -48,7 +48,7 @@ type NativeChainCardProps = {
 export default function NativeChainCard({ chain }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentNetwork(chain);
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
   const balance = useBalanceSWR(chain, true);
@@ -127,7 +127,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
 }
 
 export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentNetwork(chain);
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 

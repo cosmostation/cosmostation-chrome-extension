@@ -15,7 +15,7 @@ type EthereumProps = {
 
 export default function Ethereum({ chain }: EthereumProps) {
   const { currentAccount } = useCurrentAccount();
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentNetwork(chain);
 
   return (
     <Container key={`${currentAccount.id}-${currentNetwork.id}`}>

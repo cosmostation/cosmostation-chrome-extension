@@ -34,7 +34,7 @@ export default function Entry({ queue }: EntryProps) {
   const { currentPassword } = useCurrentPassword();
   const chain = ETHEREUM_CHAINS[0];
 
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentNetwork(chain);
 
   const { t } = useTranslation();
 

@@ -60,9 +60,13 @@ export type EthereumChain = {
   chainName: string;
 } & CommonChain;
 
-export type EthereumNetwork = {
+export type CommonNetwork = {
   id: string;
-  ethereumChainId: string;
+  parentId: string;
+  coinGeckoId?: string;
+};
+
+export type EthereumNetwork = {
   chainId: string;
   networkName: string;
   baseDenom: string;
@@ -71,8 +75,7 @@ export type EthereumNetwork = {
   rpcURL: string;
   imageURL?: string;
   explorerURL?: string;
-  coinGeckoId?: string;
-};
+} & CommonNetwork;
 
 export type EthereumToken = {
   id: string;
@@ -85,3 +88,5 @@ export type EthereumToken = {
 };
 
 export type Chain = TendermintChain | EthereumChain;
+
+export type Network = EthereumNetwork;
