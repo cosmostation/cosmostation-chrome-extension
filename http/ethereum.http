@@ -177,3 +177,29 @@ content-type: application/json
     ],
     "id": 0
 }
+
+### 
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_feeHistory",
+    "params": [
+        "0x4", "pending", [10, 30, 50]
+    ],
+    "id": 0
+}
+
+###
+
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_blockNumber",
+    "params": [],
+    "id": 0
+}
