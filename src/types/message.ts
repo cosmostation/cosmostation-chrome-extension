@@ -3,9 +3,9 @@ import type { LineType } from '~/types/chain';
 
 import type {
   EthcAddNetwork,
-  EthcRequestAccounts,
   EthcSwitchNetwork,
   EthGetBalance,
+  EthRequestAccounts,
   EthRPCRequest,
   EthSendTransaction,
   EthSign,
@@ -28,7 +28,7 @@ export type EthereumRequestMessage =
   | EthSign
   | EthSendTransaction
   | EthGetBalance
-  | EthcRequestAccounts
+  | EthRequestAccounts
   | EthcAddNetwork
   | EthcSwitchNetwork
   | PersonalSign;
