@@ -7,7 +7,7 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { EthcRequestAccountsResponse } from '~/types/ethereum/message';
+import type { EthRequestAccountsResponse } from '~/types/ethereum/message';
 import type { TenRequestAccountResponse } from '~/types/tendermint/message';
 
 export default function Entry() {
@@ -47,14 +47,14 @@ export default function Entry() {
       }
     }
 
-    if (currentQueue?.message.method === 'ethc_requestAccounts' && currentPassword) {
+    if (currentQueue?.message.method === 'eth_requestAccounts' && currentPassword) {
       const { message, messageId, origin } = currentQueue;
       const chain = ETHEREUM_CHAINS[0];
 
       const keyPair = getKeyPair(currentAccount, chain, currentPassword);
       const address = getAddress(chain, keyPair?.publicKey);
 
-      const result: EthcRequestAccountsResponse = [address];
+      const result: EthRequestAccountsResponse = [address];
 
       responseToWeb({
         response: {

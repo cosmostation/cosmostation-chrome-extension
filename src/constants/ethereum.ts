@@ -1,4 +1,5 @@
 export const ETHEREUM_POPUP_METHOD_TYPE = {
+  ETH__REQUEST_ACCOUNTS: 'eth_requestAccounts',
   ETH__SEND_TRANSACTION: 'eth_sendTransaction',
   ETH__SIGN: 'eth_sign',
   ETH__SIGN_TRANSACTION: 'eth_signTransaction',
@@ -11,7 +12,6 @@ export const ETHEREUM_POPUP_METHOD_TYPE = {
   // custom
   ETHC__ADD_NETWORK: 'ethc_addNetwork',
   ETHC__SWITCH_NETWORK: 'ethc_switchNetwork',
-  ETHC__REQUEST_ACCOUNTS: 'ethc_requestAccounts',
 } as const;
 
 export const ETHEREUM_NO_POPUP_METHOD_TYPE = {

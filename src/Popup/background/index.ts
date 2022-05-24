@@ -16,9 +16,9 @@ import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
 import type {
   EthAddNetworkParams,
-  EthcRequestAccountsResponse,
   EthcSwitchNetworkParams,
   EthcSwitchNetworkResponse,
+  EthRequestAccountsResponse,
   EthSignParams,
   PersonalSignParams,
 } from '~/types/ethereum/message';
@@ -399,13 +399,13 @@ function background() {
                 }
               }
 
-              if (method === 'ethc_requestAccounts') {
+              if (method === 'eth_requestAccounts') {
                 const chain = ETHEREUM_CHAINS[0];
                 if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
                   const keyPair = getKeyPair(currentAccount, chain, password);
                   const address = getAddress(chain, keyPair?.publicKey);
 
-                  const result: EthcRequestAccountsResponse = [address];
+                  const result: EthRequestAccountsResponse = [address];
 
                   responseToWeb({
                     response: {
@@ -556,7 +556,7 @@ function background() {
                   const keyPair = getKeyPair(currentAccount, chain, password);
                   const address = getAddress(chain, keyPair?.publicKey);
 
-                  const result: EthcRequestAccountsResponse = [address];
+                  const result: EthRequestAccountsResponse = [address];
 
                   responseToWeb({
                     response: {
@@ -567,7 +567,7 @@ function background() {
                     origin,
                   });
                 } else {
-                  const result: EthcRequestAccountsResponse = [];
+                  const result: EthRequestAccountsResponse = [];
                   responseToWeb({
                     response: {
                       result,
