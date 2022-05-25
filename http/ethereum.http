@@ -108,6 +108,18 @@ content-type: application/json
 
 ### eth_getTransactionCount (get nonce)
 
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_getTransactionCount",
+    "params": [
+        "0xE4A7e953486D01d4Fdc76986a0c88fa4F87B30e5", "latest"
+    ],
+    "id": 0
+}
+
 ### 0xb47e05ab333e436bec1f062d480e604d2323b12afe5212bf6e2b78fdd2c4e7d2
 
 POST {{rpcURL}}
@@ -161,7 +173,7 @@ content-type: application/json
     "jsonrpc": "2.0",
     "method": "eth_sendRawTransaction",
     "params": [
-        "0x02f86901050a82012c82520894dddf66022c8307222dc8a118f4de97e131c179368502540be40080c080a0cf3e6e4df3c5d2d33d3a39fecfb632e829ca7fd3c9a11777314f5680ad8a2a29a02b6fb83f2ea230b0283d3d3bcc9412a264d1fd4f3444d34099dd4e14e5601574"
+        "0xf86b0a85038b440fb082520894dddf66022c8307222dc8a118f4de97e131c1793687038d7ea4c680008026a07e48ed1fe9da100ce2b50a286d18d89e330b18d53be6fc02dc1278f368a20f8fa04f084d629c699213a6c54edd3076d62832e0d430c03835155e0dcadc249a9818"
     ],
     "id": 0
 }

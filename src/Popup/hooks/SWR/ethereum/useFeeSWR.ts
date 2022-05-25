@@ -9,9 +9,9 @@ import { useGasPriceSWR } from './useGasPriceSWR';
 import { useGetBlockByNumberSWR } from './useGetBlockByNumberSWR';
 
 export function useFeeSWR(chain: EthereumChain, suspense?: boolean) {
+  const block = useGetBlockByNumberSWR(chain, ['pending', false], suspense);
   const feeHistory = useFeeHistorySWR(chain, [20, 'pending', [10, 30, 50, 70, 90]], suspense);
   const gasPrice = useGasPriceSWR(chain, suspense);
-  const block = useGetBlockByNumberSWR(chain, ['pending', false], suspense);
 
   const type: FeeType = block.data?.result?.baseFeePerGas ? 'EIP-1559' : 'BASIC';
 
@@ -50,9 +50,14 @@ export function useFeeSWR(chain: EthereumChain, suspense?: boolean) {
     };
   }, [feeHistory, block]);
 
-  return {
-    type,
-    currentGasPrice,
-    currentFee,
-  };
+  const returnData = useMemo(
+    () => ({
+      type,
+      currentGasPrice,
+      currentFee,
+    }),
+    [type, currentGasPrice, currentFee],
+  );
+
+  return returnData;
 }
