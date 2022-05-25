@@ -6,7 +6,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { post } from '~/Popup/utils/axios';
 import type { EthereumChain } from '~/types/chain';
-import type { BalancePayload } from '~/types/ethereum/balance';
+import type { BalancePayload } from '~/types/ethereum/rpc';
 
 type FetchParams = {
   url: string;

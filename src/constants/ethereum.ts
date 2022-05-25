@@ -84,3 +84,8 @@ export const ETHEREUM_TX_TYPE = {
   SIGN_TYPED_DATA: 'signTypedData',
   PERSONAL_SIGN: 'personalSign',
 } as const;
+
+export const FEE_TYPE = {
+  BASIC: 'BASIC',
+  EIP_1559: 'EIP-1559',
+} as const;
