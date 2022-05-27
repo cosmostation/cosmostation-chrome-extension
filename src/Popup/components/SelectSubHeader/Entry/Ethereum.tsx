@@ -4,7 +4,7 @@ import ChainButton from '~/Popup/components/ChainButton';
 import ChainPopover from '~/Popup/components/ChainPopover';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import type { EthereumChain } from '~/types/chain';
 
 import AccountButton from '../components/AccountButton';
@@ -18,7 +18,7 @@ type EthereumProps = {
 };
 
 export default function Ethereum({ chain, isShowChain }: EthereumProps) {
-  const { currentNetwork } = useCurrentNetwork(chain);
+  const { currentNetwork } = useCurrentEthereumNetwork();
   const { currentAccount } = useCurrentAccount();
   const { setCurrentChain } = useCurrentChain();
 
@@ -83,7 +83,6 @@ export default function Ethereum({ chain, isShowChain }: EthereumProps) {
         }}
       />
       <NetworkPopover
-        chain={chain}
         open={isOpenPopover && popover === 'network'}
         onClose={() => setPopoverAnchorEl(null)}
         anchorEl={popoverAnchorEl}

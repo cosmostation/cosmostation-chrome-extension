@@ -1,11 +1,8 @@
 import ethereumImg from '~/images/symbols/ethereum.png';
 import type { EthereumNetwork } from '~/types/chain';
 
-import { ETHEREUM } from '../ethereum';
-
 export const MAINNET: EthereumNetwork = {
   id: '63c2c3dd-7ab1-47d7-9ec8-c70c64729cc6',
-  parentId: ETHEREUM.id,
   chainId: '0x1',
   networkName: 'Mainnet',
   // rpcURL: 'http://61.74.179.193:50001',

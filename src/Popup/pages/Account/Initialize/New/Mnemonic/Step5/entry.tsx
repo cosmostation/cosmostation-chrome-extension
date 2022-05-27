@@ -50,7 +50,7 @@ export default function Entry() {
 
           await setChromeStorage('selectedChainId', chromeStorage.allowedChainIds[0]);
 
-          await setChromeStorage('selectedNetworkId', { [ETHEREUM_NETWORKS[0].parentId]: ETHEREUM_NETWORKS[0].id });
+          await setChromeStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
 
           navigate('/account/initialize/complete');
         }}

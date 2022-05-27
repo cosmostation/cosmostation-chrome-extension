@@ -12,10 +12,10 @@ import { chromeStorage } from './chromeStorage';
 
 const erc20Interface = new Interface(ERC20_ABI);
 
-export async function requestRPC<T>(chain: EthereumChain, method: string, params: unknown, id?: string | number, url?: string) {
+export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
   const { currentEthereumNetwork } = await chromeStorage();
 
-  const rpcURL = url ?? currentEthereumNetwork(chain).rpcURL;
+  const rpcURL = url ?? currentEthereumNetwork().rpcURL;
 
   const rpcId = id ?? new Date().getTime();
 
@@ -68,7 +68,7 @@ export async function determineTxType(chain: EthereumChain, txParams: EthereumTx
   let contractCode: string | null = null;
 
   if (!result && to) {
-    const { contractCode: resultCode, isContractAddress } = await readAddressAsContract(chain, to);
+    const { contractCode: resultCode, isContractAddress } = await readAddressAsContract(to);
 
     contractCode = resultCode;
 
@@ -87,10 +87,10 @@ export function isEqualString(value1?: string, value2?: string) {
   return value1.toLowerCase() === value2.toLowerCase();
 }
 
-export async function readAddressAsContract(chain: EthereumChain, address: string) {
+export async function readAddressAsContract(address: string) {
   let contractCode;
   try {
-    contractCode = (await requestRPC<{ result?: string }>(chain, 'eth_getCode', [address, 'latest'])).result ?? null;
+    contractCode = (await requestRPC<{ result?: string }>('eth_getCode', [address, 'latest'])).result ?? null;
   } catch {
     contractCode = null;
   }

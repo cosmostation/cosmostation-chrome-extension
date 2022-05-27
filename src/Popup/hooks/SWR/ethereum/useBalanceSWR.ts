@@ -3,7 +3,7 @@ import useSWR from 'swr';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { post } from '~/Popup/utils/axios';
 import type { EthereumChain } from '~/types/chain';
 import type { BalancePayload } from '~/types/ethereum/rpc';
@@ -19,7 +19,7 @@ type FetchParams = {
 export function useBalanceSWR(chain: EthereumChain, suspense?: boolean) {
   const accounts = useAccounts();
   const { chromeStorage } = useChromeStorage();
-  const { currentNetwork } = useCurrentNetwork(chain);
+  const { currentNetwork } = useCurrentEthereumNetwork();
 
   const { rpcURL } = currentNetwork;
 

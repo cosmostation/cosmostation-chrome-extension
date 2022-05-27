@@ -15,8 +15,8 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
 
   const { chromeStorage } = useChromeStorage();
 
-  const { additionalNetworks } = chromeStorage;
-  const networkCoingeckoIds = [...NETWORKS, ...additionalNetworks].filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId);
+  const { additionalEthereumNetworks } = chromeStorage;
+  const networkCoingeckoIds = [...NETWORKS, ...additionalEthereumNetworks].filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId);
 
   const joinedNetworkCoingeckoIds = networkCoingeckoIds.length > 0 ? `,${networkCoingeckoIds.join(',')}` : '';
 

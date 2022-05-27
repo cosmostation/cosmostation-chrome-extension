@@ -2,7 +2,8 @@ import '~/Popup/i18n/background';
 
 import Web3 from 'web3';
 
-import { CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { PRIVATE_KEY_FOR_TEST } from '~/constants/common';
 import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
@@ -306,13 +307,13 @@ function background() {
         }
 
         if (request.line === 'ETHEREUM') {
-          const chain = ETHEREUM_CHAINS[0];
+          const chain = ETHEREUM;
 
           const ethereumMethods = Object.values(ETHEREUM_METHOD_TYPE) as string[];
           const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
           const ethereumNoPopupMethods = Object.values(ETHEREUM_NO_POPUP_METHOD_TYPE) as string[];
 
-          const { queues, additionalNetworks, currentEthereumNetwork, password, currentAccountAllowedOrigins, currentAllowedChains, currentAccount } =
+          const { queues, additionalEthereumNetworks, currentEthereumNetwork, password, currentAccountAllowedOrigins, currentAllowedChains, currentAccount } =
             await chromeStorage();
 
           const { message, messageId, origin } = request;
@@ -419,7 +420,7 @@ function background() {
                   const chainId = originEthereumTx.chainId !== undefined ? parseInt(toHex(originEthereumTx.chainId), 16) : undefined;
 
                   try {
-                    const web3 = new Web3(currentEthereumNetwork(chain).rpcURL);
+                    const web3 = new Web3(currentEthereumNetwork().rpcURL);
 
                     const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY_FOR_TEST);
 
@@ -475,7 +476,7 @@ function background() {
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as EthcAddNetworkParams;
 
-                  const response = await requestRPC<ResponseRPC<string>>(chain, 'eth_chainId', [], message.id, validatedParams[0].rpcURL);
+                  const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], message.id, validatedParams[0].rpcURL);
 
                   if (validatedParams[0].chainId !== response.result) {
                     throw new EthereumRPCError(
@@ -507,14 +508,14 @@ function background() {
               if (method === 'ethc_switchNetwork') {
                 const { params } = message;
 
-                const networkChainIds = [...ETHEREUM_NETWORKS, ...additionalNetworks].filter((item) => item.parentId === chain.id).map((item) => item.chainId);
+                const networkChainIds = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks].map((item) => item.chainId);
 
                 const schema = ethcSwitchNetworkParamsSchema(networkChainIds);
 
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as EthcSwitchNetworkParams;
 
-                  if (params[0] === currentEthereumNetwork(chain).chainId) {
+                  if (params[0] === currentEthereumNetwork().chainId) {
                     const result: EthcSwitchNetworkResponse = null;
 
                     responseToWeb({
@@ -625,7 +626,7 @@ function background() {
               } else {
                 const params = method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
 
-                const response = await requestRPC(chain, method, params, id);
+                const response = await requestRPC(method, params, id);
                 responseToWeb({ response, message, messageId, origin });
               }
             } else {
@@ -730,7 +731,7 @@ function background() {
         await setStorage('accounts', []);
         await setStorage('accountName', {});
         await setStorage('additionalChains', []);
-        await setStorage('additionalNetworks', []);
+        await setStorage('additionalEthereumNetworks', []);
         await setStorage('encryptedPassword', null);
         await setStorage('selectedAccountId', '');
 
@@ -746,7 +747,7 @@ function background() {
         await setStorage('allowedChainIds', [CHAINS[0].id]);
         await setStorage('allowedOrigins', []);
         await setStorage('selectedChainId', '');
-        await setStorage('selectedNetworkId', {});
+        await setStorage('selectedEthereumNetworkId', '');
 
         await setStorage('password', null);
         await openTab();

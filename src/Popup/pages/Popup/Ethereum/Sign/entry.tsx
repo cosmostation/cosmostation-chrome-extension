@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { Typography } from '@mui/material';
 
-import { ETHEREUM_CHAINS } from '~/constants/chain';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -42,9 +42,9 @@ export default function Entry({ queue }: EntryProps) {
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
-  const chain = ETHEREUM_CHAINS[0];
+  const chain = ETHEREUM;
 
-  const { currentNetwork } = useCurrentNetwork(chain);
+  const { currentNetwork } = useCurrentEthereumNetwork();
 
   const { t } = useTranslation();
 

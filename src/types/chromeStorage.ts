@@ -49,8 +49,6 @@ export type AddressInfo = {
   memo?: string;
 };
 
-export type SelectedNetworkId = Record<Network['parentId'], string>;
-
 export type ChromeStorage = {
   encryptedPassword: string | null;
   accounts: Account[];
@@ -60,7 +58,7 @@ export type ChromeStorage = {
   currency: CurrencyType;
   windowId: number | null;
   additionalChains: Chain[];
-  additionalNetworks: Network[];
+  additionalEthereumNetworks: Network[];
   language: LanguageType;
   addressBook: AddressInfo[];
 
@@ -71,7 +69,7 @@ export type ChromeStorage = {
   allowedOrigins: AllowedOrigin[];
   allowedChainIds: string[];
   selectedChainId: string;
-  selectedNetworkId: SelectedNetworkId;
+  selectedEthereumNetworkId: string;
 
   password: string | null;
 };

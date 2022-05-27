@@ -13,7 +13,7 @@ import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -48,7 +48,7 @@ type NativeChainCardProps = {
 export default function NativeChainCard({ chain }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
-  const { currentNetwork } = useCurrentNetwork(chain);
+  const { currentNetwork } = useCurrentEthereumNetwork();
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
   const balance = useBalanceSWR(chain, true);
@@ -127,7 +127,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
 }
 
 export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
-  const { currentNetwork } = useCurrentNetwork(chain);
+  const { currentNetwork } = useCurrentEthereumNetwork();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import Web3 from 'web3';
 
-import { ETHEREUM_CHAINS } from '~/constants/chain';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { requestRPC } from '~/Popup/background/ethereum';
 import Button from '~/Popup/components/common/Button';
@@ -14,7 +14,7 @@ import { useDetermintTxTypeSWR } from '~/Popup/hooks/SWR/ethereum/useDetermintTx
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useTransactionCountSWR } from '~/Popup/hooks/SWR/ethereum/useTransactionCountSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -33,16 +33,16 @@ type EntryProps = {
 };
 
 export default function Entry({ queue }: EntryProps) {
-  const chain = ETHEREUM_CHAINS[0];
+  const chain = ETHEREUM;
   const { deQueue } = useCurrentQueue();
 
   const { enqueueSnackbar } = useSnackbar();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
-  const currentFee = useFeeSWR(chain);
+  const currentFee = useFeeSWR();
 
-  const { currentNetwork } = useCurrentNetwork(chain);
+  const { currentNetwork } = useCurrentEthereumNetwork();
 
   const { t } = useTranslation();
 
@@ -50,7 +50,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
   const address = getAddress(chain, keyPair?.publicKey);
-  const transactionCount = useTransactionCountSWR(chain, [address, 'latest']);
+  const transactionCount = useTransactionCountSWR([address, 'latest']);
 
   const { message, messageId, origin } = queue;
   const { params } = message;
@@ -168,7 +168,7 @@ export default function Entry({ queue }: EntryProps) {
                 const signed = await account.signTransaction(ethereumTx);
                 console.log(signed);
 
-                const response = await requestRPC<ResponseRPC<string>>(chain, 'eth_sendRawTransaction', [signed.rawTransaction]);
+                const response = await requestRPC<ResponseRPC<string>>('eth_sendRawTransaction', [signed.rawTransaction]);
 
                 if (response.error) {
                   enqueueSnackbar(`${response.error.message} (${response.error.code})`, { variant: 'error' });

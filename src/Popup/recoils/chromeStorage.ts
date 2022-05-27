@@ -12,7 +12,7 @@ export const chromeStorageState = atom<ChromeStorage>({
     accountName: {},
     queues: [],
     additionalChains: [],
-    additionalNetworks: [],
+    additionalEthereumNetworks: [],
     encryptedPassword: null,
     windowId: null,
     selectedAccountId: '',
@@ -27,7 +27,7 @@ export const chromeStorageState = atom<ChromeStorage>({
     allowedChainIds: [],
     allowedOrigins: [],
     selectedChainId: '',
-    selectedNetworkId: {},
+    selectedEthereumNetworkId: '',
 
     password: null,
   },

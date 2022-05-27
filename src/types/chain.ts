@@ -60,13 +60,8 @@ export type EthereumChain = {
   chainName: string;
 } & CommonChain;
 
-export type CommonNetwork = {
-  id: string;
-  parentId: string;
-  coinGeckoId?: string;
-};
-
 export type EthereumNetwork = {
+  id: string;
   chainId: string;
   networkName: string;
   baseDenom: string;
@@ -75,7 +70,8 @@ export type EthereumNetwork = {
   rpcURL: string;
   imageURL?: string;
   explorerURL?: string;
-} & CommonNetwork;
+  coinGeckoId?: string;
+};
 
 export type EthereumToken = {
   id: string;

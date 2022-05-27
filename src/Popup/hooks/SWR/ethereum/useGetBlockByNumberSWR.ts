@@ -1,9 +1,8 @@
 import type { AxiosError } from 'axios';
 import useSWR from 'swr';
 
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { post } from '~/Popup/utils/axios';
-import type { EthereumChain } from '~/types/chain';
 import type { GetBlockPayload } from '~/types/ethereum/rpc';
 
 type BodyParams = [string, boolean];
@@ -16,8 +15,8 @@ type FetchParams = {
   };
 };
 
-export function useGetBlockByNumberSWR(chain: EthereumChain, bodyParams: BodyParams, suspense?: boolean) {
-  const { currentNetwork } = useCurrentNetwork(chain);
+export function useGetBlockByNumberSWR(bodyParams: BodyParams, suspense?: boolean) {
+  const { currentNetwork } = useCurrentEthereumNetwork();
 
   const { rpcURL } = currentNetwork;
 

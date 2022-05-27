@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import type { EthereumChain } from '~/types/chain';
 
 import {
@@ -28,7 +28,7 @@ type EthereumProps = {
 export default function Ethereum({ chain }: EthereumProps) {
   const accounts = useAccounts(true);
   const { currentAccount } = useCurrentAccount();
-  const { currentNetwork } = useCurrentNetwork(chain);
+  const { currentNetwork } = useCurrentEthereumNetwork();
 
   const { explorerURL } = currentNetwork;
 
