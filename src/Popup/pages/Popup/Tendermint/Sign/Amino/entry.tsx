@@ -76,7 +76,7 @@ export default function Entry({ queue, chain }: EntryProps) {
         <Typography variant="h3">{chainName}</Typography>
       </TitleContainer>
       <TabContainer>
-        <Tabs value={value} onChange={handleChange} textColor="inherit" variant="fullWidth" indicatorColor="primary">
+        <Tabs value={value} onChange={handleChange} variant="fullWidth">
           <Tab label={t('pages.Popup.Tendermint.Sign.Amino.entry.detailTab')} />
           <Tab label={t('pages.Popup.Tendermint.Sign.Amino.entry.dataTab')} />
         </Tabs>

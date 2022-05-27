@@ -5,11 +5,12 @@ import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
 import type { EthereumChain } from '~/types/chain';
+import type { EthereumTxType } from '~/types/ethereum/common';
 import type { EthereumTx } from '~/types/ethereum/message';
 
 import { chromeStorage } from './chromeStorage';
 
-const abiInterface = new Interface(ERC20_ABI);
+const erc20Interface = new Interface(ERC20_ABI);
 
 export async function requestRPC<T>(chain: EthereumChain, method: string, params: unknown, id?: string | number, url?: string) {
   const { currentEthereumNetwork } = await chromeStorage();
@@ -39,11 +40,16 @@ export async function requestRPC<T>(chain: EthereumChain, method: string, params
   }
 }
 
-export async function determineTxType(chain: EthereumChain, txParams: EthereumTx) {
+export type DetermineTxType = {
+  type: EthereumTxType;
+  getCodeResponse: string | null;
+};
+
+export async function determineTxType(chain: EthereumChain, txParams: EthereumTx): Promise<DetermineTxType> {
   const { data, to } = txParams;
   let name: undefined | string;
   try {
-    name = data && abiInterface.parseTransaction({ data }).name;
+    name = data && erc20Interface.parseTransaction({ data }).name;
     // eslint-disable-next-line no-empty
   } catch {}
 
@@ -51,7 +57,7 @@ export async function determineTxType(chain: EthereumChain, txParams: EthereumTx
     (methodName) => isEqualString(methodName, name),
   );
 
-  let result = '';
+  let result: EthereumTxType = ETHEREUM_TX_TYPE.SIMPLE_SEND;
 
   if (data && tokenMethodName) {
     result = tokenMethodName;
@@ -69,10 +75,6 @@ export async function determineTxType(chain: EthereumChain, txParams: EthereumTx
     if (isContractAddress) {
       result = ETHEREUM_TX_TYPE.CONTRACT_INTERACTION;
     }
-  }
-
-  if (!result) {
-    result = ETHEREUM_TX_TYPE.SIMPLE_SEND;
   }
 
   return { type: result, getCodeResponse: contractCode };

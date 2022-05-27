@@ -14,6 +14,7 @@ export const StyledTabs = styled(Tabs)(({ theme }) => ({
 export const StyledTab = styled(Tab)(({ theme }) => ({
   '&.MuiTab-root': {
     textTransform: 'none',
+    color: theme.colors.text02,
 
     fontFamily: theme.typography.h5.fontFamily,
     fontStyle: theme.typography.h5.fontStyle,
@@ -39,7 +40,7 @@ export const TabsIndicator = styled('div')(({ theme }) => ({
   backgroundColor: theme.colors.base03,
 }));
 
-export const TabsContainer = styled('div')(({ theme }) => ({ color: theme.colors.text02, position: 'relative' }));
+export const TabsContainer = styled('div')({ position: 'relative' });
 
 export const TabPanelContainer = styled('div')({
   marginTop: '1.6rem',

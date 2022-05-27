@@ -17,16 +17,17 @@ export function Tab(props: TabProps) {
 
 type TabPanelProps = {
   children?: React.ReactNode;
+  className?: string;
   dir?: string;
   index: number;
   value: number;
 };
 
 export function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+  const { children, value, index, ...remainder } = props;
 
   return (
-    <TabPanelContainer role="tabpanel" hidden={value !== index} id={`full-width-tabpanel-${index}`} aria-labelledby={`full-width-tab-${index}`} {...other}>
+    <TabPanelContainer role="tabpanel" hidden={value !== index} id={`full-width-tabpanel-${index}`} aria-labelledby={`full-width-tab-${index}`} {...remainder}>
       {value === index && children}
     </TabPanelContainer>
   );
