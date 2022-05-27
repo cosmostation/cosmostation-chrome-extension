@@ -173,7 +173,7 @@ content-type: application/json
     "jsonrpc": "2.0",
     "method": "eth_sendRawTransaction",
     "params": [
-        "0xf86b0a85038b440fb082520894dddf66022c8307222dc8a118f4de97e131c1793687038d7ea4c680008026a07e48ed1fe9da100ce2b50a286d18d89e330b18d53be6fc02dc1278f368a20f8fa04f084d629c699213a6c54edd3076d62832e0d430c03835155e0dcadc249a9818"
+ "0xf86b0b85069bb7c9ce82520894dddf66022c8307222dc8a118f4de97e131c1793687038d7ea4c680008025a0ea657665756d2cbd78f4e01fc35d3624e564c8d04d4e0142828d31ede3b9aa81a06079e5325d8a941f495f7eb985dcd202c4ff805eb31f99a3036ea23280361079"
     ],
     "id": 0
 }
@@ -224,5 +224,17 @@ content-type: application/json
     "jsonrpc": "2.0",
     "method": "eth_gasPrice",
     "params": [],
+    "id": 1
+}
+
+### eth_getTransactionReceipt
+
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_getTransactionReceipt",
+    "params": ["0x43c88fc54a7e2fcc25c6e813a0d532cb0688072db052e065199ce103436e7e77"],
     "id": 1
 }

@@ -23,8 +23,8 @@ export function useGasPriceSWR(chain: EthereumChain, suspense?: boolean) {
 
   const { data, error, mutate } = useSWR<GasPricePayload, AxiosError>({ url: rpcURL, body: { method: 'eth_gasPrice', params: [] } }, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
+    dedupingInterval: 9000,
+    refreshInterval: 10000,
     errorRetryCount: 0,
     suspense,
   });

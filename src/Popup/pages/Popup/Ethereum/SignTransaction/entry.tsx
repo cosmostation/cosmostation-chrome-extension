@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useEffect } from 'react';
 import { useSnackbar } from 'notistack';
 import Web3 from 'web3';
@@ -6,9 +7,11 @@ import { Typography } from '@mui/material';
 
 import { ETHEREUM_CHAINS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import { requestRPC } from '~/Popup/background/ethereum';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
+import { useTransactionCountSWR } from '~/Popup/hooks/SWR/ethereum/useTransactionCountSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -19,6 +22,7 @@ import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
 import type { EthSignTransaction } from '~/types/ethereum/message';
+import type { ResponseRPC } from '~/types/ethereum/rpc';
 
 import { BottomButtonContainer, BottomContainer, Container, ContentContainer, TitleContainer } from './styled';
 
@@ -41,20 +45,25 @@ export default function Entry({ queue }: EntryProps) {
   const { t } = useTranslation();
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+  const address = getAddress(chain, keyPair?.publicKey);
+  const transactionCount = useTransactionCountSWR(chain, [address, 'latest']);
 
   const { message, messageId, origin } = queue;
   const { params } = message;
 
   const originEthereumTx = params[0];
 
-  const nonce = originEthereumTx.nonce !== undefined ? parseInt(toHex(originEthereumTx.nonce), 16) : undefined;
+  const nonce =
+    originEthereumTx.nonce !== undefined
+      ? parseInt(toHex(originEthereumTx.nonce), 16)
+      : transactionCount.data?.result
+      ? parseInt(transactionCount.data.result, 16)
+      : undefined;
   const chainId = originEthereumTx.chainId !== undefined ? parseInt(toHex(originEthereumTx.chainId), 16) : undefined;
   const data = originEthereumTx.data || '0x';
 
   useEffect(() => {
     void (async () => {
-      const address = getAddress(chain, keyPair?.publicKey);
-
       if (address.toLowerCase() !== params[0].from) {
         responseToWeb({
           response: {
@@ -110,28 +119,28 @@ export default function Entry({ queue }: EntryProps) {
 
                 const account = web3.eth.accounts.privateKeyToAccount(keyPair!.privateKey.toString('hex'));
 
-                // const fee =
-                //   currentFee.type === 'EIP-1559'
-                //     ? {
-                //         gasPrice: undefined,
-                //         maxPriorityFeePerGas:
-                //           (currentFee.currentFee?.tiny.maxPriorityFeePerGas && `0x${BigInt(currentFee.currentFee.tiny.maxPriorityFeePerGas).toString(16)}`) ||
-                //           undefined,
-                //         maxFeePerGas:
-                //           (currentFee.currentFee?.tiny.maxBaseFeePerGas && `0x${BigInt(currentFee.currentFee.tiny.maxBaseFeePerGas).toString(16)}`) ||
-                //           undefined,
-                //       }
-                //     : {
-                //         gasPrice: (currentFee.currentGasPrice && `0x${BigInt(currentFee.currentGasPrice).toString(16)}`) || undefined,
-                //         maxPriorityFeePerGas: undefined,
-                //         maxFeePerGas: undefined,
-                //       };
+                const fee =
+                  currentFee.type === 'EIP-1559'
+                    ? {
+                        gasPrice: undefined,
+                        maxPriorityFeePerGas:
+                          (currentFee.currentFee?.tiny.maxPriorityFeePerGas && `0x${BigInt(currentFee.currentFee.tiny.maxPriorityFeePerGas).toString(16)}`) ||
+                          undefined,
+                        maxFeePerGas:
+                          (currentFee.currentFee?.tiny.maxBaseFeePerGas && `0x${BigInt(currentFee.currentFee.tiny.maxBaseFeePerGas).toString(16)}`) ||
+                          undefined,
+                      }
+                    : {
+                        gasPrice: (currentFee.currentGasPrice && `0x${BigInt(currentFee.currentGasPrice).toString(16)}`) || undefined,
+                        maxPriorityFeePerGas: undefined,
+                        maxFeePerGas: undefined,
+                      };
 
-                const fee = {
-                  gasPrice: (currentFee.currentGasPrice && `0x${BigInt(currentFee.currentGasPrice).toString(16)}`) || undefined,
-                  maxPriorityFeePerGas: undefined,
-                  maxFeePerGas: undefined,
-                };
+                // const fee = {
+                //   gasPrice: (currentFee.currentGasPrice && `0x${BigInt(currentFee.currentGasPrice).toString(16)}`) || undefined,
+                //   maxPriorityFeePerGas: undefined,
+                //   maxFeePerGas: undefined,
+                // };
 
                 const ethereumTx: TransactionConfig = {
                   ...originEthereumTx,
@@ -143,6 +152,15 @@ export default function Entry({ queue }: EntryProps) {
 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const signed = await account.signTransaction(ethereumTx);
+                console.log(signed);
+
+                const response = await requestRPC<ResponseRPC<string>>(chain, 'eth_sendRawTransaction', [signed.rawTransaction]);
+
+                if (response.error) {
+                  enqueueSnackbar(`${response.error.message} (${response.error.code})`, { variant: 'error' });
+                }
+
+                console.log(response);
 
                 // const receipt = await web3.eth.sendSignedTransaction(signed.rawTransaction!);
                 // console.log(receipt);

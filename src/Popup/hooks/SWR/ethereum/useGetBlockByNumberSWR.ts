@@ -25,8 +25,8 @@ export function useGetBlockByNumberSWR(chain: EthereumChain, bodyParams: BodyPar
 
   const { data, error, mutate } = useSWR<GetBlockPayload, AxiosError>({ url: rpcURL, body: { method: 'eth_getBlockByNumber', params: bodyParams } }, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
+    dedupingInterval: 9000,
+    refreshInterval: 10000,
     errorRetryCount: 0,
     suspense,
   });

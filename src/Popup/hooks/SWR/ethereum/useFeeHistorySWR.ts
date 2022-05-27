@@ -29,8 +29,8 @@ export function useFeeHistorySWR(chain: EthereumChain, bodyParams: BodyParams, s
 
   const { data, error, mutate } = useSWR<FeeHistoryPayload, AxiosError>({ url: rpcURL, body: { method: 'eth_feeHistory', params: bodyParams } }, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
+    dedupingInterval: 9000,
+    refreshInterval: 10000,
     errorRetryCount: 0,
     suspense,
   });

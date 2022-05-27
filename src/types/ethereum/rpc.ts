@@ -9,6 +9,7 @@ export type ResponseRPC<T> = {
 };
 
 export type BalancePayload = ResponseRPC<string>;
+export type TransactionCountPayload = ResponseRPC<string>;
 
 export type FeeHistory = { oldestBlock: string; reward?: string[][]; gasUsedRatio: number[]; baseFeePerGas: string[] };
 
