@@ -6,7 +6,7 @@ export const KAVA: TendermintChain = {
   id: '634e5e88-0a26-4ef5-92b5-dbf4cf040a8a',
   line: 'TENDERMINT',
   type: '',
-  chainId: 'kava-9',
+  chainId: 'kava_2222-10',
   chainName: 'Kava',
   restURL: 'https://lcd-kava.cosmostation.io',
   imageURL: kavaImg,
