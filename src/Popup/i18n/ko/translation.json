@@ -430,6 +430,19 @@
           }
         },
         "SignTransaction": {
+          "components": {
+            "TxMessage": {
+              "messages": {
+                "Send": {
+                  "index": {
+                    "amount": "수량",
+                    "fromAddress": "보내는 주소",
+                    "toAddress": "받는 주소"
+                  }
+                }
+              }
+            }
+          },
           "entry": {
             "cancelButton": "취소",
             "signButton": "서명",

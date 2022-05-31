@@ -4,7 +4,6 @@ import { ERC20_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
-import type { EthereumChain } from '~/types/chain';
 import type { EthereumTxType } from '~/types/ethereum/common';
 import type { EthereumTx } from '~/types/ethereum/message';
 
@@ -45,7 +44,7 @@ export type DetermineTxType = {
   getCodeResponse: string | null;
 };
 
-export async function determineTxType(chain: EthereumChain, txParams: EthereumTx): Promise<DetermineTxType> {
+export async function determineTxType(txParams: EthereumTx): Promise<DetermineTxType> {
   const { data, to } = txParams;
   let name: undefined | string;
   try {

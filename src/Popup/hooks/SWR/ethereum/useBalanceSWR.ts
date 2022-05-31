@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios';
+import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
@@ -16,7 +17,7 @@ type FetchParams = {
   };
 };
 
-export function useBalanceSWR(chain: EthereumChain, suspense?: boolean) {
+export function useBalanceSWR(chain: EthereumChain, config?: SWRConfiguration) {
   const accounts = useAccounts();
   const { chromeStorage } = useChromeStorage();
   const { currentNetwork } = useCurrentEthereumNetwork();
@@ -36,7 +37,7 @@ export function useBalanceSWR(chain: EthereumChain, suspense?: boolean) {
       refreshInterval: 15000,
       errorRetryCount: 0,
       isPaused: () => !address,
-      suspense,
+      ...config,
     },
   );
 

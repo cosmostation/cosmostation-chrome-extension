@@ -430,6 +430,19 @@
           }
         },
         "SignTransaction": {
+          "components": {
+            "TxMessage": {
+              "messages": {
+                "Send": {
+                  "index": {
+                    "amount": "Amount",
+                    "fromAddress": "From address",
+                    "toAddress": "To address"
+                  }
+                }
+              }
+            }
+          },
           "entry": {
             "cancelButton": "Cancel",
             "signButton": "Sign",

@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios';
+import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
@@ -15,7 +16,7 @@ type FetchParams = {
   };
 };
 
-export function useTransactionCountSWR(bodyParams: BodyParams, suspense?: boolean) {
+export function useTransactionCountSWR(bodyParams: BodyParams, config?: SWRConfiguration) {
   const { currentNetwork } = useCurrentEthereumNetwork();
 
   const { rpcURL } = currentNetwork;
@@ -30,7 +31,7 @@ export function useTransactionCountSWR(bodyParams: BodyParams, suspense?: boolea
       dedupingInterval: 19000,
       refreshInterval: 20000,
       errorRetryCount: 0,
-      suspense,
+      ...config,
     },
   );
 

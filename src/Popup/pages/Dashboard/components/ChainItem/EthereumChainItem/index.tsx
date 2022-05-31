@@ -26,7 +26,7 @@ export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
   const { data: coinGeckoData } = useCoinGeckoPriceSWR();
 
   const setDashboard = useSetRecoilState(dashboardState);
-  const { data } = useBalanceSWR(chain, true);
+  const { data } = useBalanceSWR(chain, { suspense: true });
 
   const totalAmount = BigInt(data?.result || '0').toString();
 

@@ -63,6 +63,7 @@ export function getChainIdRegex(chainId: string) {
 
 type toHexOptions = {
   addPrefix?: boolean;
+  isStringNumber?: boolean;
 };
 
 export function toHex(datum?: number | string, options?: toHexOptions) {
@@ -72,6 +73,10 @@ export function toHex(datum?: number | string, options?: toHexOptions) {
     }
 
     if (typeof datum === 'string') {
+      if (/^[0-9]+$/.test(datum) && options?.isStringNumber) {
+        return BigInt(datum).toString(16);
+      }
+
       if (datum.startsWith('0x')) {
         return datum.substring(2);
       }

@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import type { SWRConfiguration } from 'swr';
 
 import { divide, plus } from '~/Popup/utils/big';
 import type { FeeType } from '~/types/ethereum/common';
@@ -7,12 +8,10 @@ import { useFeeHistorySWR } from './useFeeHistorySWR';
 import { useGasPriceSWR } from './useGasPriceSWR';
 import { useGetBlockByNumberSWR } from './useGetBlockByNumberSWR';
 
-export function useFeeSWR(suspense?: boolean) {
-  const block = useGetBlockByNumberSWR(['pending', false], suspense);
-  const feeHistory = useFeeHistorySWR([20, 'pending', [10, 30, 50, 70, 90]], suspense);
-  const gasPrice = useGasPriceSWR(suspense);
-
-  const type: FeeType = block.data?.result?.baseFeePerGas ? 'EIP-1559' : 'BASIC';
+export function useFeeSWR(config?: SWRConfiguration) {
+  const block = useGetBlockByNumberSWR(['pending', false], config);
+  const feeHistory = useFeeHistorySWR([20, 'pending', [10, 30, 50, 70, 90]], config);
+  const gasPrice = useGasPriceSWR(config);
 
   const currentGasPrice = gasPrice.data?.result ? plus(parseInt(gasPrice.data.result, 16), '1000') : null;
 
@@ -49,13 +48,28 @@ export function useFeeSWR(suspense?: boolean) {
     };
   }, [feeHistory, block]);
 
+  const type: FeeType | null = (() => {
+    if (!currentFee && !currentGasPrice) {
+      return null;
+    }
+
+    return currentFee ? 'EIP-1559' : 'BASIC';
+  })();
+
+  const mutate = useCallback(async () => {
+    await block.mutate();
+    await feeHistory.mutate();
+    await gasPrice.mutate();
+  }, [block, feeHistory, gasPrice]);
+
   const returnData = useMemo(
     () => ({
       type,
       currentGasPrice,
       currentFee,
+      mutate,
     }),
-    [type, currentGasPrice, currentFee],
+    [type, currentGasPrice, currentFee, mutate],
   );
 
   return returnData;

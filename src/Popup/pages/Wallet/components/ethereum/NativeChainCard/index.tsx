@@ -51,7 +51,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
   const { currentNetwork } = useCurrentEthereumNetwork();
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
-  const balance = useBalanceSWR(chain, true);
+  const balance = useBalanceSWR(chain, { suspense: true });
 
   const { t } = useTranslation();
 

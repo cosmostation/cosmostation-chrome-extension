@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios';
+import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
@@ -13,7 +14,7 @@ type FetchParams = {
   };
 };
 
-export function useGasPriceSWR(suspense?: boolean) {
+export function useGasPriceSWR(config?: SWRConfiguration) {
   const { currentNetwork } = useCurrentEthereumNetwork();
 
   const { rpcURL } = currentNetwork;
@@ -25,7 +26,7 @@ export function useGasPriceSWR(suspense?: boolean) {
     dedupingInterval: 9000,
     refreshInterval: 10000,
     errorRetryCount: 0,
-    suspense,
+    ...config,
   });
 
   return { data, error, mutate };
