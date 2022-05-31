@@ -17,7 +17,7 @@
     "postminor": "yarn run update:version",
     "major": "yarn version --major --no-git-tag-version",
     "postmajor": "yarn run update:version",
-    "update:manifest": "cat public/manifest.json | jq --arg version \"$(cat package.json | jq '.version' | sed 's/\"//g')\" '.version = $version' > public/manifest.json",
+    "update:manifest": "sed -i \"\" -e \"/\\\"version\\\":/s/:.*/: $(cat package.json | jq '.version'),/\" public/manifest.json",
     "update:env": "sed -i \"\" -e \"/^VERSION=/s/=.*/=$(cat package.json | jq '.version' | sed 's/\"//g')/\" .env",
     "update:env:dev": "sed -i \"\" -e \"/^VERSION=/s/=.*/=$(cat package.json | jq '.version' | sed 's/\"//g')/\" .env.development",
     "update:version": "yarn run update:manifest && yarn run update:env"
