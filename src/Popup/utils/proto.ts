@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import { post } from '~/Popup/utils/axios';
 import { isAminoSend } from '~/Popup/utils/tendermint';
 import { cosmos, google } from '~/proto/cosmos.js';
 import type { PubKey, TxPayload } from '~/types/proto';
@@ -105,7 +104,7 @@ export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey)
 }
 
 export function broadcast(url: string, body: unknown) {
-  return axios.post<TxPayload>(url, body);
+  return post<TxPayload>(url, body);
 }
 
 export function decodeProtobufMessage(msg: google.protobuf.IAny) {

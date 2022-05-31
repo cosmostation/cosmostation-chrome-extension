@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
-import axios from 'axios';
 import useSWR from 'swr';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { get } from '~/Popup/utils/axios';
 import { tendermintURL } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
 import type { AuthAccount, AuthAccountsPayload, AuthAccountValue, AuthBaseVestingAccount, AuthBaseWithStartAndPeriod } from '~/types/tendermint/account';
@@ -18,7 +18,7 @@ export function useAccountSWR(chain: TendermintChain, suspense?: boolean) {
 
   const requestURL = getAccount(address);
 
-  const fetcher = (url: string) => axios.get<AuthAccountsPayload>(url).then((res) => res.data);
+  const fetcher = (url: string) => get<AuthAccountsPayload>(url);
 
   const { data, error, mutate } = useSWR<AuthAccountsPayload, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,

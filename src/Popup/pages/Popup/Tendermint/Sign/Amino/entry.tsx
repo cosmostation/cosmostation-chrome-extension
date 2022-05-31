@@ -170,12 +170,12 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                   const response = await broadcast(url, pTx);
 
-                  const { code } = response.data.tx_response;
+                  const { code } = response.tx_response;
 
                   if (code === 0) {
                     enqueueSnackbar('success');
                   } else {
-                    throw new Error(response.data.tx_response.raw_log);
+                    throw new Error(response.tx_response.raw_log);
                   }
                 } catch (e) {
                   enqueueSnackbar(
