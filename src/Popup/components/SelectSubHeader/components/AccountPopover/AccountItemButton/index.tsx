@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 
-import { shorterAddress } from '~/Popup/utils/common';
+import { shorterAddress } from '~/Popup/utils/string';
 
 import {
   ConnectBadge,

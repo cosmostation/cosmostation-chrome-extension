@@ -3,7 +3,8 @@ import { Typography } from '@mui/material';
 
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
-import { getAddress, getKeyPair, shorterAddress } from '~/Popup/utils/common';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumChain, EthereumNetwork } from '~/types/chain';
 
 import { AccountContainer, AccountIcon, AccountText, ChainNameContainer, Container, OriginContainer, StyledDivider } from './styled';

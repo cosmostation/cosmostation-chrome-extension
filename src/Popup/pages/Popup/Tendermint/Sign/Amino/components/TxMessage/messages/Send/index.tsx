@@ -8,7 +8,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { equalsIgnoringCase, shorterAddress } from '~/Popup/utils/common';
+import { isEqualsIgnoringCase, shorterAddress } from '~/Popup/utils/string';
 import type { TendermintChain } from '~/types/chain';
 import type { Msg, MsgSend } from '~/types/tendermint/amino';
 
@@ -70,7 +70,7 @@ export default function Send({ msg, chain }: SendProps) {
           const itemBaseAmount = item.amount;
           const itemBaseDenom = item.denom;
 
-          const assetCoinInfo = assets.data?.find((coin) => equalsIgnoringCase(coin.denom, item.denom));
+          const assetCoinInfo = assets.data?.find((coin) => isEqualsIgnoringCase(coin.denom, item.denom));
           const ibcCoinInfo = ibcCoin.data?.ibc_tokens?.find((coin) => coin.hash === item.denom.replace('ibc/', ''));
 
           const itemDisplayAmount = (function getDisplayAmount() {
@@ -113,7 +113,8 @@ export default function Send({ msg, chain }: SendProps) {
 
             if (assetCoinInfo?.denom) {
               const chainPrice =
-                marketPrice.data?.find((p) => equalsIgnoringCase(p.denom, assetCoinInfo.denom))?.prices?.find((p) => p.currency === 'usd')?.current_price || 0;
+                marketPrice.data?.find((p) => isEqualsIgnoringCase(p.denom, assetCoinInfo.denom))?.prices?.find((p) => p.currency === 'usd')?.current_price ||
+                0;
               const tetherPrice = coinGeckoPrice.data?.tether?.[currency] || 0;
 
               return times(itemDisplayAmount, chainPrice * tetherPrice, 2);

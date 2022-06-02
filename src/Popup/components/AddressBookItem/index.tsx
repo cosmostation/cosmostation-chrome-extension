@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Typography } from '@mui/material';
 
 import { CHAINS } from '~/constants/chain';
-import { shorterAddress } from '~/Popup/utils/common';
+import { shorterAddress } from '~/Popup/utils/string';
 import type { AddressInfo } from '~/types/chromeStorage';
 
 import ManagePopover from './ManagePopover';

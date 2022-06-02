@@ -6,8 +6,8 @@ import Web3 from 'web3';
 import { Typography } from '@mui/material';
 
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { ERC20Tokens } from '~/constants/chain/ethereum/token/erc20';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
-import { requestRPC } from '~/Popup/background/ethereum';
 import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -26,6 +26,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
+import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
 import type { EthSignTransaction } from '~/types/ethereum/message';
@@ -40,6 +41,7 @@ import {
   ContentContainer,
   FeeButton,
   FeeContainer,
+  FeeEditButton,
   FeeEditContainer,
   FeeEditLeftContainer,
   FeeEditRightContainer,
@@ -53,6 +55,8 @@ import {
   StyledCircularProgress,
   StyledTabPanel,
 } from './styled';
+
+import Setting16Icon from '~/images/icons/Setting16.svg';
 
 type EntryProps = {
   queue: Queue<EthSignTransaction>;
@@ -92,6 +96,8 @@ export default function Entry({ queue }: EntryProps) {
   const originEthereumTx = params[0];
 
   const txType = useDetermintTxTypeSWR(originEthereumTx);
+
+  console.log(txType);
 
   const isCustomFee = !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas));
 
@@ -238,9 +244,9 @@ export default function Entry({ queue }: EntryProps) {
                   <FeeButton type="button" onClick={() => setFeeMode('average')} data-is-active={feeMode === 'average' ? 1 : 0}>
                     {t('components.Fee.index.average')}
                   </FeeButton>
-                  {/* <FeeButton type="button" onClick={() => setFeeMode('average')} data-is-active={feeMode === 'average' ? 1 : 0}>
-                      {t('components.Fee.index.average')}
-                    </FeeButton> */}
+                  <FeeEditButton>
+                    <Setting16Icon />
+                  </FeeEditButton>
                 </FeeEditRightContainer>
               </FeeEditContainer>
             </FeeContainer>

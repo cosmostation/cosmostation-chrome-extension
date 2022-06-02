@@ -10,11 +10,12 @@ import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_MET
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
 import { TENDERMINT_METHOD_TYPE, TENDERMINT_NO_POPUP_METHOD_TYPE, TENDERMINT_POPUP_METHOD_TYPE } from '~/constants/tendermint';
-import { getStorage, setStorage } from '~/Popup/utils/chromeStorage';
+import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
 import { closeWindow, openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
 import { EthereumRPCError, TendermintRPCError } from '~/Popup/utils/error';
+import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
@@ -32,8 +33,6 @@ import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/ty
 import type { TenAccountResponse, TenAddChainParams, TenRequestAccountResponse, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
 import type { ThemeType } from '~/types/theme';
 
-import { chromeStorage } from './chromeStorage';
-import { requestRPC } from './ethereum';
 import {
   ethcAddNetworkParamsSchema,
   ethcSwitchNetworkParamsSchema,

@@ -74,7 +74,7 @@ export const FeeEditRightContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
 
-  '& > :nth-of-type(n + 1)': { marginLeft: '0.6rem' },
+  '& > :nth-of-type(n + 1)': { marginLeft: '0.4rem' },
 });
 
 export const FeeGasButton = styled('button')(({ theme }) => ({
@@ -105,6 +105,16 @@ export const FeeButton = styled('button')<FeeButtonProps>(({ theme, ...props }) 
 
   cursor: 'pointer',
 }));
+
+export const FeeEditButton = styled(FeeButton)({
+  minWidth: '2rem',
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  borderRadius: '10rem',
+});
 
 export const BottomContainer = styled('div')({
   position: 'absolute',
