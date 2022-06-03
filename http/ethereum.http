@@ -1,4 +1,5 @@
-@rpcURL=https://api.mycryptoapi.com/eth
+# @rpcURL=https://api.mycryptoapi.com/eth
+@rpcURL=https://eth-mainnet.public.blastapi.io
 
 ### eth_accounts
 
@@ -158,7 +159,7 @@ content-type: application/json
     "jsonrpc": "2.0",
     "method": "eth_getCode",
     "params": [
-        "0xa4108aa1ec4967f8b52220a4f7e94a8201f2d906",
+        "0x7f268357A8c2552623316e2562D90e642bB538E5",
         "latest"
     ],
     "id": 0

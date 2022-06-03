@@ -25,9 +25,9 @@ import {
 import Container from '../../components/Container';
 import type { TxMessageProps } from '../../index';
 
-type TransferProps = TxMessageProps;
+type TransferFromProps = TxMessageProps;
 
-export default function Transfer({ tx, determineTxType }: TransferProps) {
+export default function TransferFrom({ tx, determineTxType }: TransferFromProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const assets = useAssetsSWR();
@@ -42,8 +42,9 @@ export default function Transfer({ tx, determineTxType }: TransferProps) {
   const price = (token?.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0;
 
   const tokenAddress = token?.displayDenom || shorterAddress(to, 32);
-  const grantedAddress = (determineTxType?.erc20?.args?.[0] as undefined | string) || '';
-  const amount = (determineTxType?.erc20?.args?.[1] as BigNumber | undefined)?.toString(10) || '';
+  const fromAddress = (determineTxType?.erc20?.args?.[0] as undefined | string) || '';
+  const toAddress = (determineTxType?.erc20?.args?.[1] as undefined | string) || '';
+  const amount = (determineTxType?.erc20?.args?.[2] as BigNumber | undefined)?.toString(10) || '';
 
   const displayAmount = useMemo(() => {
     try {
@@ -56,29 +57,38 @@ export default function Transfer({ tx, determineTxType }: TransferProps) {
   const value = times(displayAmount, price);
 
   return (
-    <Container title="Transfer (ERC20)">
+    <Container title="TransferFrom (ERC20)">
       <ContentContainer>
         <AddressContainer>
           <LabelContainer>
-            <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.Transfer.index.tokenAddress')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.TransferFrom.index.tokenAddress')}</Typography>
           </LabelContainer>
           <ValueContainer>
             <Typography variant="h5">{tokenAddress}</Typography>
           </ValueContainer>
         </AddressContainer>
 
-        <AddressContainer sx={{ marginTop: '0.8rem', marginBottom: '0.4rem' }}>
+        <AddressContainer sx={{ marginTop: '0.8rem' }}>
           <LabelContainer>
-            <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.Transfer.index.toAddress')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.TransferFrom.index.fromAddress')}</Typography>
           </LabelContainer>
           <ValueContainer>
-            <Typography variant="h5">{shorterAddress(grantedAddress, 32)}</Typography>
+            <Typography variant="h5">{shorterAddress(fromAddress, 32)}</Typography>
           </ValueContainer>
         </AddressContainer>
 
-        <AmountInfoContainer>
+        <AddressContainer sx={{ marginTop: '0.4rem' }}>
+          <LabelContainer>
+            <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.TransferFrom.index.toAddress')}</Typography>
+          </LabelContainer>
+          <ValueContainer>
+            <Typography variant="h5">{shorterAddress(toAddress, 32)}</Typography>
+          </ValueContainer>
+        </AddressContainer>
+
+        <AmountInfoContainer sx={{ marginTop: '0.4rem' }}>
           <LeftContainer>
-            <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.Transfer.index.amount')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.TransferFrom.index.amount')}</Typography>
           </LeftContainer>
           <RightContainer>
             <RightColumnContainer>

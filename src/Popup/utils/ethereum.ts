@@ -114,8 +114,6 @@ export async function determineTxType(txParams: EthereumTx): Promise<DetermineTx
   const erc20 = erc20Parse(txParams);
   const name = erc20?.name;
 
-  // console.log(erc20);
-
   const tokenMethodName = [ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM].find(
     (methodName) => isEqualsIgnoringCase(methodName, name),
   );
@@ -130,7 +128,7 @@ export async function determineTxType(txParams: EthereumTx): Promise<DetermineTx
 
   let contractCode: string | null = null;
 
-  if (!result && to) {
+  if (result === ETHEREUM_TX_TYPE.SIMPLE_SEND && to) {
     const { contractCode: resultCode, isContractAddress } = await readAddressAsContract(to);
 
     contractCode = resultCode;

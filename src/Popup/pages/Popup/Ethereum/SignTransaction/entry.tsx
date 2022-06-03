@@ -24,7 +24,7 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
-import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
 import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
@@ -32,6 +32,8 @@ import type { Queue } from '~/types/chromeStorage';
 import type { EthSignTransaction } from '~/types/ethereum/message';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 
+import FeeEIP1559Dialog from './components/FeeEIP1559Dialog';
+import GasPriceDialog from './components/GasPriceDialog';
 import Tx from './components/Tx';
 import TxMessage from './components/TxMessage';
 import {
@@ -85,6 +87,8 @@ export default function Entry({ queue }: EntryProps) {
   const [value, setValue] = useState(0);
   const [isLoadingFee, setIsLoadingFee] = useState(false);
   const [isOpenGasDialog, setIsOpenGasDialog] = useState(false);
+  const [isOpenGasPriceDialog, setIsOpenGasPriceDialog] = useState(false);
+  const [isOpenEIP1559Dialog, setIsOpenEIP1559Dialog] = useState(false);
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
   const address = getAddress(chain, keyPair?.publicKey);
@@ -103,6 +107,12 @@ export default function Entry({ queue }: EntryProps) {
 
   const [feeMode, setFeeMode] = useState<'tiny' | 'low' | 'average' | 'custom'>(isCustomFee ? 'custom' : 'low');
   const [gas, setGas] = useState(originEthereumTx.gas ? BigInt(toHex(originEthereumTx.gas, { addPrefix: true, isStringNumber: true })).toString(10) : '21000');
+
+  const [gasPrice, setGasPrice] = useState(BigInt(toHex(originEthereumTx.gasPrice || '0', { addPrefix: true, isStringNumber: true })).toString(10));
+  const [maxFeePerGas, setMaxFeePerGas] = useState(BigInt(toHex(originEthereumTx.maxFeePerGas || '0', { addPrefix: true, isStringNumber: true })).toString(10));
+  const [maxPriorityFeePerGas, setMaxPriorityFeePerGas] = useState(
+    BigInt(toHex(originEthereumTx.maxPriorityFeePerGas || '0', { addPrefix: true, isStringNumber: true })).toString(10),
+  );
 
   const ethereumTx = useMemo(() => {
     const nonce =
@@ -133,8 +143,26 @@ export default function Entry({ queue }: EntryProps) {
       };
     }
 
+    if (feeMode === 'custom' && currentFee.type === 'BASIC') {
+      return {
+        ...mixedEthereumTx,
+        gasPrice: toHex(gasPrice, { addPrefix: true, isStringNumber: true }),
+        maxPriorityFeePerGas: undefined,
+        maxFeePerGas: undefined,
+      };
+    }
+
+    if (feeMode === 'custom' && currentFee.type === 'EIP-1559') {
+      return {
+        ...mixedEthereumTx,
+        gasPrice: undefined,
+        maxPriorityFeePerGas: toHex(maxPriorityFeePerGas, { addPrefix: true, isStringNumber: true }),
+        maxFeePerGas: toHex(maxFeePerGas, { addPrefix: true, isStringNumber: true }),
+      };
+    }
+
     return mixedEthereumTx;
-  }, [originEthereumTx, feeMode, transactionCount, currentFee, gas]);
+  }, [originEthereumTx, feeMode, transactionCount, currentFee, gas, gasPrice, maxFeePerGas, maxPriorityFeePerGas]);
 
   const baseFee = useMemo(() => {
     if (ethereumTx.maxFeePerGas) {
@@ -203,7 +231,7 @@ export default function Entry({ queue }: EntryProps) {
             <Tab label="Data" />
           </Tabs>
           <StyledTabPanel value={value} index={0}>
-            <TxMessage determineTxType={txType.data} tx={ethereumTx} />
+            <TxMessage determineTxType={txType.data} tx={originEthereumTx} />
 
             <FeeContainer>
               <FeeInfoContainer>
@@ -244,7 +272,7 @@ export default function Entry({ queue }: EntryProps) {
                   <FeeButton type="button" onClick={() => setFeeMode('average')} data-is-active={feeMode === 'average' ? 1 : 0}>
                     {t('components.Fee.index.average')}
                   </FeeButton>
-                  <FeeEditButton>
+                  <FeeEditButton type="button" onClick={() => setIsOpenEIP1559Dialog(true)} data-is-active={feeMode === 'custom' ? 1 : 0}>
                     <Setting16Icon />
                   </FeeEditButton>
                 </FeeEditRightContainer>
@@ -313,6 +341,26 @@ export default function Entry({ queue }: EntryProps) {
         onClose={() => setIsOpenGasDialog(false)}
         onSubmitGas={(gasData) => {
           setGas(String(gasData.gas));
+        }}
+      />
+      <GasPriceDialog
+        open={isOpenGasPriceDialog}
+        currentGasPrice={gasPrice}
+        onClose={() => setIsOpenGasPriceDialog(false)}
+        onSubmitGas={(gasData) => {
+          setGasPrice(String(gasData.gasPrice));
+          setFeeMode('custom');
+        }}
+      />
+      <FeeEIP1559Dialog
+        open={isOpenEIP1559Dialog}
+        currentMaxFeePerGas={maxFeePerGas}
+        currentMaxPriorityFeePerGas={maxPriorityFeePerGas}
+        onClose={() => setIsOpenEIP1559Dialog(false)}
+        onSubmitGas={(data) => {
+          setMaxFeePerGas(toBaseDenomAmount(data.maxFeePerGas, 9));
+          setMaxPriorityFeePerGas(toBaseDenomAmount(data.maxPriorityFeePerGas, 9));
+          setFeeMode('custom');
         }}
       />
     </>

@@ -431,13 +431,58 @@
         },
         "SignTransaction": {
           "components": {
+            "FeeEIP1559Dialog": {
+              "index": {
+                "maxFeePerGasSetting": "가스 당 최대 수수료 세팅",
+                "submitButton": "저장"
+              }
+            },
+            "GasPriceDialog": {
+              "index": {
+                "gasPriceSetting": "가스 가격 세팅",
+                "submitButton": "저장"
+              }
+            },
             "TxMessage": {
               "messages": {
+                "Approve": {
+                  "index": {
+                    "amount": "수량",
+                    "grantedAddress": "승인 할 주소",
+                    "tokenAddress": "토큰"
+                  }
+                },
+                "Deploy": {
+                  "index": {
+                    "data": "데이터"
+                  }
+                },
+                "Interact": {
+                  "index": {
+                    "contractAddress": "계약 주소",
+                    "data": "데이터"
+                  }
+                },
                 "Send": {
                   "index": {
                     "amount": "수량",
                     "fromAddress": "보내는 주소",
                     "toAddress": "받는 주소"
+                  }
+                },
+                "Transfer": {
+                  "index": {
+                    "amount": "수량",
+                    "toAddress": "받는 주소",
+                    "tokenAddress": "토큰"
+                  }
+                },
+                "TransferFrom": {
+                  "index": {
+                    "amount": "수량",
+                    "fromAddress": "보내는 주소",
+                    "toAddress": "받는 주소",
+                    "tokenAddress": "토큰"
                   }
                 }
               }
@@ -711,7 +756,9 @@
       "number": {
         "base": "숫자를 입력하세요.",
         "max": "{#limit} 이하의 값을 입력하셔야 합니다.",
-        "min": "{#limit} 이상의 값을 입력하셔야 합니다."
+        "min": "{#limit} 이상의 값을 입력하셔야 합니다.",
+        "greater": "{#limit} 보다 큰 값을 입력하셔야 합니다.",
+        "less": "{#limit} 보다 작은 값을 입력하셔야 합니다."
       },
       "string": {
         "base": "문자를 입력하세요.",

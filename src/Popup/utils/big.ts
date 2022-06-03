@@ -57,7 +57,7 @@ export function toDisplayDenomAmount(number: string, decimal: number) {
   return times(number, pow(10, -decimal), decimal);
 }
 
-export function toBaseDenomAmount(number: string, decimal: number) {
+export function toBaseDenomAmount(number: string | number, decimal: number) {
   return times(number, pow(10, decimal), 0);
 }
 

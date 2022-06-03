@@ -431,13 +431,58 @@
         },
         "SignTransaction": {
           "components": {
+            "FeeEIP1559Dialog": {
+              "index": {
+                "maxFeePerGasSetting": "Max Fee Per Gas Setting",
+                "submitButton": "Save"
+              }
+            },
+            "GasPriceDialog": {
+              "index": {
+                "gasPriceSetting": "Gas Price Setting",
+                "submitButton": "Save"
+              }
+            },
             "TxMessage": {
               "messages": {
+                "Approve": {
+                  "index": {
+                    "amount": "Amount",
+                    "grantedAddress": "Granted to",
+                    "tokenAddress": "Token"
+                  }
+                },
+                "Deploy": {
+                  "index": {
+                    "data": "Data"
+                  }
+                },
+                "Interact": {
+                  "index": {
+                    "contractAddress": "Contract address",
+                    "data": "Data"
+                  }
+                },
                 "Send": {
                   "index": {
                     "amount": "Amount",
                     "fromAddress": "From address",
                     "toAddress": "To address"
+                  }
+                },
+                "Transfer": {
+                  "index": {
+                    "amount": "Amount",
+                    "toAddress": "To address",
+                    "tokenAddress": "Token"
+                  }
+                },
+                "TransferFrom": {
+                  "index": {
+                    "amount": "Amount",
+                    "fromAddress": "From address",
+                    "toAddress": "To address",
+                    "tokenAddress": "Token"
                   }
                 }
               }
@@ -711,7 +756,9 @@
       "number": {
         "base": "Please enter numbers.",
         "max": "Please enter a number less than {#limit}",
-        "min": "Please enter at least {#limit} or more numbers."
+        "min": "Please enter at least {#limit} or more numbers.",
+        "greater": "Please enter a number greater than {#limit}.",
+        "less": "Please enter a number less than {#limit}."
       },
       "string": {
         "base": "Please enter characters.",
