@@ -26,9 +26,27 @@ export const ContentContainer = styled('div')({
   justifyContent: 'space-between',
 });
 
+export const ContentLeftImageContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  padding: '0 0.4rem 0 0.8rem',
+
+  '& > img': {
+    width: '1.6rem',
+    height: '1.6rem',
+  },
+});
+
 export const ContentCenterTextContainer = styled('div')(({ theme }) => ({
-  paddingLeft: '0.8rem',
+  maxWidth: '6rem',
   color: theme.colors.text01,
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const ContentRightImageContainer = styled('div')(({ theme }) => ({

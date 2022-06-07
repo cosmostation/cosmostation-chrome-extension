@@ -11,6 +11,7 @@ export const AddressContainer = styled('div')({});
 
 export const LabelContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
+  display: 'flex',
 }));
 
 export const ValueContainer = styled('div')(({ theme }) => ({
@@ -50,4 +51,20 @@ export const RightValueContainer = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 
   color: theme.colors.text02,
+}));
+
+export const CopyButton = styled('button')(({ theme }) => ({
+  backgroundColor: 'transparent',
+  cursor: 'pointer',
+  border: 0,
+  padding: '0',
+  marginLeft: '0.4rem',
+
+  '& > svg': {
+    fill: theme.colors.text02,
+
+    '& > path': {
+      fill: theme.colors.text02,
+    },
+  },
 }));

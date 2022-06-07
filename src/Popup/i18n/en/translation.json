@@ -448,24 +448,28 @@
                 "Approve": {
                   "index": {
                     "amount": "Amount",
+                    "copied": "Copied",
                     "grantedAddress": "Granted to",
                     "tokenAddress": "Token"
                   }
                 },
                 "Deploy": {
                   "index": {
+                    "copied": "Copied",
                     "data": "Data"
                   }
                 },
                 "Interact": {
                   "index": {
                     "contractAddress": "Contract address",
+                    "copied": "Copied",
                     "data": "Data"
                   }
                 },
                 "Send": {
                   "index": {
                     "amount": "Amount",
+                    "copied": "Copied",
                     "fromAddress": "From address",
                     "toAddress": "To address"
                   }
@@ -473,6 +477,7 @@
                 "Transfer": {
                   "index": {
                     "amount": "Amount",
+                    "copied": "Copied",
                     "toAddress": "To address",
                     "tokenAddress": "Token"
                   }
@@ -489,9 +494,15 @@
             }
           },
           "entry": {
+            "average": "Average",
             "cancelButton": "Cancel",
+            "current": "Current",
+            "fee": "Max fee",
+            "gasSettings": "Gas settings",
+            "low": "Low",
             "signButton": "Sign",
-            "signatureRequest": "Signature reqeust"
+            "signatureRequest": "Signature reqeust",
+            "tiny": "Tiny"
           }
         },
         "SwitchNetwork": {
@@ -755,10 +766,10 @@
       },
       "number": {
         "base": "Please enter numbers.",
-        "max": "Please enter a number less than {#limit}",
-        "min": "Please enter at least {#limit} or more numbers.",
         "greater": "Please enter a number greater than {#limit}.",
-        "less": "Please enter a number less than {#limit}."
+        "less": "Please enter a number less than {#limit}.",
+        "max": "Please enter a number less than {#limit}",
+        "min": "Please enter at least {#limit} or more numbers."
       },
       "string": {
         "base": "Please enter characters.",

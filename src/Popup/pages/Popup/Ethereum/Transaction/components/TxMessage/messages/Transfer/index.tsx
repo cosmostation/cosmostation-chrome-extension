@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 import type { BigNumber } from 'bignumber.js';
+import copy from 'copy-to-clipboard';
+import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
@@ -14,6 +16,7 @@ import {
   AddressContainer,
   AmountInfoContainer,
   ContentContainer,
+  CopyButton,
   LabelContainer,
   LeftContainer,
   RightAmountContainer,
@@ -25,6 +28,8 @@ import {
 import Container from '../../components/Container';
 import type { TxMessageProps } from '../../index';
 
+import Copy16Icon from '~/images/icons/Copy16.svg';
+
 type TransferProps = TxMessageProps;
 
 export default function Transfer({ tx, determineTxType }: TransferProps) {
@@ -32,6 +37,7 @@ export default function Transfer({ tx, determineTxType }: TransferProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const assets = useAssetsSWR();
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { currency } = chromeStorage;
 
@@ -61,6 +67,17 @@ export default function Transfer({ tx, determineTxType }: TransferProps) {
         <AddressContainer>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.Transfer.index.tokenAddress')}</Typography>
+
+            <CopyButton
+              type="button"
+              onClick={() => {
+                if (to && copy(to)) {
+                  enqueueSnackbar(t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.Transfer.index.copied'));
+                }
+              }}
+            >
+              <Copy16Icon />
+            </CopyButton>
           </LabelContainer>
           <ValueContainer>
             <Typography variant="h5">{tokenAddress}</Typography>
@@ -70,6 +87,17 @@ export default function Transfer({ tx, determineTxType }: TransferProps) {
         <AddressContainer sx={{ marginTop: '0.8rem', marginBottom: '0.4rem' }}>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.Transfer.index.toAddress')}</Typography>
+
+            <CopyButton
+              type="button"
+              onClick={() => {
+                if (grantedAddress && copy(grantedAddress)) {
+                  enqueueSnackbar(t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.Transfer.index.copied'));
+                }
+              }}
+            >
+              <Copy16Icon />
+            </CopyButton>
           </LabelContainer>
           <ValueContainer>
             <Typography variant="h5">{shorterAddress(grantedAddress, 32)}</Typography>

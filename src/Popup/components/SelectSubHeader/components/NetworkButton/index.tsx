@@ -1,18 +1,25 @@
 import { Typography } from '@mui/material';
 
-import { ContentCenterTextContainer, ContentContainer, ContentRightImageContainer, StyledButton } from './styled';
+import Image from '~/Popup/components/common/Image';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+
+import { ContentCenterTextContainer, ContentContainer, ContentLeftImageContainer, ContentRightImageContainer, StyledButton } from './styled';
 
 import Change from '~/images/icons/Change.svg';
 
 type NetworkButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & { children?: string };
 
 export default function NetworkButton({ children, ...remainder }: NetworkButtonProps) {
-  const networkName = children ? `${children.substring(0, 1).toUpperCase()}${children.substring(1).toLowerCase()}` : '';
+  const { currentNetwork } = useCurrentEthereumNetwork();
+
   return (
     <StyledButton {...remainder}>
       <ContentContainer>
+        <ContentLeftImageContainer>
+          <Image src={currentNetwork.imageURL} />
+        </ContentLeftImageContainer>
         <ContentCenterTextContainer>
-          <Typography variant="h6">{networkName}</Typography>
+          <Typography variant="h6">{children}</Typography>
         </ContentCenterTextContainer>
         <ContentRightImageContainer>
           <Change />

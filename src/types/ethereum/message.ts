@@ -55,6 +55,11 @@ export type EthSignTransaction = {
   id?: number | string;
 };
 
+export type EthSignTransactionResponse = {
+  raw: string;
+  tx: EthereumTx;
+};
+
 export type EthSendTransactionParam1 = EthereumTx;
 
 export type EthSendTransactionParams = [EthereumTx];
@@ -64,6 +69,8 @@ export type EthSendTransaction = {
   params: EthSendTransactionParams;
   id?: number | string;
 };
+
+export type EthSendTransactionResponse = string;
 
 export type EthGetBalance = {
   method: typeof ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE;

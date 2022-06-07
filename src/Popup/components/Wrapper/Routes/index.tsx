@@ -60,7 +60,11 @@ export default function Routes({ children }: RoutesType) {
       }
 
       if (chromeStorage.queues[0].message.method === 'eth_signTransaction') {
-        navigate('/popup/ethereum/sign-transaction');
+        navigate('/popup/ethereum/transaction');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'eth_sendTransaction') {
+        navigate('/popup/ethereum/transaction');
       }
     }
 

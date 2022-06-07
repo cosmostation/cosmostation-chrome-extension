@@ -1,6 +1,7 @@
 import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import Divider from '~/Popup/components/common/Divider';
 import { TabPanel } from '~/Popup/components/common/Tab';
 
 export const Container = styled('div')({
@@ -16,6 +17,7 @@ export const ContentContainer = styled('div')({
 });
 
 export const StyledTabPanel = styled(TabPanel)({
+  marginTop: '1.2rem',
   height: 'calc(100% - 5.2rem)',
 });
 
@@ -121,7 +123,45 @@ export const FeeEditButton = styled(FeeButton)({
   alignItems: 'center',
 
   borderRadius: '10rem',
+
+  padding: '0 0.4rem',
 });
+
+export const StyledDivider = styled(Divider)({
+  margin: '1.2rem 0',
+});
+
+export const TotalContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+});
+
+export const TotalLeftContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+
+  color: theme.colors.text02,
+}));
+
+export const TotalRightContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+
+  color: theme.colors.text01,
+}));
+
+export const TotalAmountContainer = styled('div')(({ theme }) => ({
+  marginTop: '0.6rem',
+
+  display: 'flex',
+  justifyContent: 'flex-end',
+  color: theme.colors.text01,
+
+  wordBreak: 'break-all',
+}));
 
 export const BottomContainer = styled('div')({
   position: 'absolute',

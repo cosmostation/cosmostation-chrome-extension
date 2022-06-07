@@ -52,7 +52,7 @@
       },
       "index": {
         "average": "평균",
-        "fee": "수수료",
+        "fee": "최대 수수료",
         "gasSettings": "가스량 설정",
         "low": "낮음",
         "tiny": "최소"
@@ -118,7 +118,7 @@
               "entry": {
                 "12Words": "12 단어",
                 "24Words": "24 단어",
-                "copied": "복사되었습니다",
+                "copied": "복사 되었습니다.",
                 "copy": "복사",
                 "description": "니모닉 구문은 계정을 복구 할 수 있는 유일한 방법입니다. 절대로 니모닉을 다른 사람과 공유하지 마세요. 니모닉을 잃어버리면 자산의 손실로 이어집니다.",
                 "hdPathSetting": "HD path 세팅",
@@ -218,7 +218,7 @@
               "entry": {
                 "12Words": "12 단어",
                 "24Words": "24 단어",
-                "copied": "복사되었습니다",
+                "copied": "복사 되었습니다.",
                 "copy": "복사",
                 "hdPathSetting": "HD path 세팅",
                 "next": "다음",
@@ -310,7 +310,7 @@
                   }
                 },
                 "index": {
-                  "copied": "복사되었습니다",
+                  "copied": "복사 되었습니다.",
                   "done": "완료",
                   "title": "니모닉 구문"
                 }
@@ -329,7 +329,7 @@
                   }
                 },
                 "index": {
-                  "copied": "복사되었습니다",
+                  "copied": "복사 되었습니다.",
                   "done": "완료",
                   "title": "개인키 확인"
                 }
@@ -448,24 +448,28 @@
                 "Approve": {
                   "index": {
                     "amount": "수량",
+                    "copied": "복사 되었습니다.",
                     "grantedAddress": "승인 할 주소",
                     "tokenAddress": "토큰"
                   }
                 },
                 "Deploy": {
                   "index": {
+                    "copied": "복사 되었습니다.",
                     "data": "데이터"
                   }
                 },
                 "Interact": {
                   "index": {
                     "contractAddress": "계약 주소",
+                    "copied": "복사 되었습니다.",
                     "data": "데이터"
                   }
                 },
                 "Send": {
                   "index": {
                     "amount": "수량",
+                    "copied": "복사 되었습니다.",
                     "fromAddress": "보내는 주소",
                     "toAddress": "받는 주소"
                   }
@@ -473,6 +477,7 @@
                 "Transfer": {
                   "index": {
                     "amount": "수량",
+                    "copied": "복사 되었습니다.",
                     "toAddress": "받는 주소",
                     "tokenAddress": "토큰"
                   }
@@ -489,9 +494,15 @@
             }
           },
           "entry": {
+            "average": "평균",
             "cancelButton": "취소",
+            "current": "현재",
+            "fee": "최대 수수료",
+            "gasSettings": "가스량 설정",
+            "low": "낮음",
             "signButton": "서명",
-            "signatureRequest": "서명 요청"
+            "signatureRequest": "서명 요청",
+            "tiny": "최소"
           }
         },
         "SwitchNetwork": {
@@ -626,7 +637,7 @@
         "Entry": {
           "Tendermint": {
             "address": "주소",
-            "copied": "복사되었습니다",
+            "copied": "복사 되었습니다.",
             "scanQrCode": "QR코드 스캔"
           }
         },
@@ -696,7 +707,7 @@
         "ethereum": {
           "NativeChainCard": {
             "index": {
-              "copied": "복사되었습니다",
+              "copied": "복사 되었습니다.",
               "depositButton": "입금",
               "sendButton": "보내기"
             }
@@ -706,7 +717,7 @@
           "NativeChainCard": {
             "index": {
               "available": "전송 가능 수량",
-              "copied": "복사되었습니다",
+              "copied": "복사 되었습니다.",
               "delegated": "위임 수량",
               "depositButton": "입금",
               "networkError": "네트워크 오류",
@@ -755,10 +766,10 @@
       },
       "number": {
         "base": "숫자를 입력하세요.",
-        "max": "{#limit} 이하의 값을 입력하셔야 합니다.",
-        "min": "{#limit} 이상의 값을 입력하셔야 합니다.",
         "greater": "{#limit} 보다 큰 값을 입력하셔야 합니다.",
-        "less": "{#limit} 보다 작은 값을 입력하셔야 합니다."
+        "less": "{#limit} 보다 작은 값을 입력하셔야 합니다.",
+        "max": "{#limit} 이하의 값을 입력하셔야 합니다.",
+        "min": "{#limit} 이상의 값을 입력하셔야 합니다."
       },
       "string": {
         "base": "문자를 입력하세요.",

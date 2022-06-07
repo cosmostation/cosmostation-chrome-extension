@@ -128,7 +128,6 @@ export const ethcAddNetworkParamsSchema = () =>
     .required()
     .items(
       Joi.object<EthcAddNetwork['params'][0]>({
-        baseDenom: Joi.string().trim().required(),
         displayDenom: Joi.string().trim().required(),
         chainId: Joi.string().trim().required(),
         decimals: Joi.number().required(),

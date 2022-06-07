@@ -65,7 +65,6 @@ export type EthereumNetwork = {
   id: string;
   chainId: string;
   networkName: string;
-  baseDenom: string;
   displayDenom: string;
   decimals: number;
   rpcURL: string;

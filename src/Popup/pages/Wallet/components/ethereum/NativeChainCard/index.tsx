@@ -57,7 +57,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
 
   const { navigate } = useNavigate();
 
-  const { coinGeckoId, decimals, explorerURL } = currentNetwork;
+  const { coinGeckoId, decimals, explorerURL, imageURL } = currentNetwork;
 
   const { data } = useCoinGeckoPriceSWR();
 
@@ -98,7 +98,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
       <SecondLineContainer>
         <SecondLineLeftContainer>
           <SecondLineLeftImageContainer>
-            <Image src={chain.imageURL} />
+            <Image src={imageURL} />
           </SecondLineLeftImageContainer>
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{currentNetwork.displayDenom}</Typography>
@@ -135,7 +135,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
 
   const { t } = useTranslation();
 
-  const { explorerURL, displayDenom } = currentNetwork;
+  const { explorerURL, displayDenom, imageURL } = currentNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -178,7 +178,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
       <SecondLineContainer>
         <SecondLineLeftContainer>
           <SecondLineLeftImageContainer>
-            <Image src={chain.imageURL} />
+            <Image src={imageURL} />
           </SecondLineLeftImageContainer>
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{displayDenom}</Typography>

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
 import { useEffect, useMemo, useState } from 'react';
+import type BigNumber from 'bignumber.js';
 import { useSnackbar } from 'notistack';
 import Web3 from 'web3';
 import { Typography } from '@mui/material';
@@ -13,6 +14,7 @@ import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import GasSettingDialog from '~/Popup/components/GasSettingDialog';
+import { useAssetsSWR } from '~/Popup/hooks/SWR/ethereum/useAssetsSWR';
 import { useDetermintTxTypeSWR } from '~/Popup/hooks/SWR/ethereum/useDetermintTxTypeSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useTransactionCountSWR } from '~/Popup/hooks/SWR/ethereum/useTransactionCountSWR';
@@ -24,12 +26,13 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
-import { times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
 import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthSignTransaction } from '~/types/ethereum/message';
+import type { EthSendTransaction, EthSendTransactionResponse, EthSignTransaction, EthSignTransactionResponse } from '~/types/ethereum/message';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 
 import FeeEIP1559Dialog from './components/FeeEIP1559Dialog';
@@ -55,17 +58,23 @@ import {
   FeeRightContainer,
   FeeRightValueContainer,
   StyledCircularProgress,
+  StyledDivider,
   StyledTabPanel,
+  TotalAmountContainer,
+  TotalContainer,
+  TotalLeftContainer,
+  TotalRightContainer,
 } from './styled';
 
 import Setting16Icon from '~/images/icons/Setting16.svg';
 
 type EntryProps = {
-  queue: Queue<EthSignTransaction>;
+  queue: Queue<EthSignTransaction | EthSendTransaction>;
 };
 
 export default function Entry({ queue }: EntryProps) {
   const chain = ETHEREUM;
+  const assets = useAssetsSWR();
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
@@ -80,11 +89,11 @@ export default function Entry({ queue }: EntryProps) {
 
   const { currentNetwork } = useCurrentEthereumNetwork();
 
-  const { displayDenom, coinGeckoId } = currentNetwork;
+  const { displayDenom, coinGeckoId, decimals } = currentNetwork;
 
   const { t } = useTranslation();
 
-  const [value, setValue] = useState(0);
+  const [tabValue, setTabValue] = useState(0);
   const [isLoadingFee, setIsLoadingFee] = useState(false);
   const [isOpenGasDialog, setIsOpenGasDialog] = useState(false);
   const [isOpenGasPriceDialog, setIsOpenGasPriceDialog] = useState(false);
@@ -100,8 +109,6 @@ export default function Entry({ queue }: EntryProps) {
   const originEthereumTx = params[0];
 
   const txType = useDetermintTxTypeSWR(originEthereumTx);
-
-  console.log(txType);
 
   const isCustomFee = !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas));
 
@@ -178,12 +185,53 @@ export default function Entry({ queue }: EntryProps) {
 
   const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
 
-  const displayFee = toDisplayDenomAmount(baseFee, currentNetwork.decimals);
+  const displayFee = toDisplayDenomAmount(baseFee, decimals);
 
   const displayValue = times(displayFee, price);
 
-  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const token = useMemo(
+    () => (txType.data?.type === 'transfer' ? assets.data.find((item) => isEqualsIgnoringCase(ethereumTx.to, item.address)) : null),
+    [assets, ethereumTx, txType],
+  );
+
+  const totalDisplayAmount = useMemo(() => {
+    if (txType.data?.type === 'simpleSend') {
+      try {
+        return toDisplayDenomAmount(BigInt(toHex(ethereumTx.value || '0x0', { addPrefix: true, isStringNumber: true })).toString(10), decimals);
+      } catch {
+        return '0';
+      }
+    }
+
+    if (txType.data?.type === 'transfer') {
+      const amount = (txType?.data?.erc20?.args?.[1] as BigNumber | undefined)?.toString(10) || '';
+
+      try {
+        return toDisplayDenomAmount(BigInt(amount).toString(10), token?.decimals || 0);
+      } catch {
+        return '0';
+      }
+    }
+
+    return '';
+  }, [decimals, ethereumTx, txType, token]);
+
+  const totalDisplayDenom = useMemo(() => {
+    if (txType.data?.type === 'simpleSend') {
+      return currentNetwork.displayDenom;
+    }
+
+    if (txType.data?.type === 'transfer') {
+      return token?.displayDenom || '';
+    }
+
+    return '';
+  }, [currentNetwork, txType, token]);
+
+  const loadingFee = useMemo(() => feeMode !== 'custom' && isLoadingFee, [feeMode, isLoadingFee]);
+
+  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+    setTabValue(newTabValue);
   };
 
   useEffect(() => {
@@ -226,18 +274,18 @@ export default function Entry({ queue }: EntryProps) {
       <Container>
         <Header chain={chain} network={currentNetwork} origin={origin} />
         <ContentContainer>
-          <Tabs value={value} onChange={handleChange} variant="fullWidth">
+          <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
             <Tab label="Detail" />
             <Tab label="Data" />
           </Tabs>
-          <StyledTabPanel value={value} index={0}>
+          <StyledTabPanel value={tabValue} index={0}>
             <TxMessage determineTxType={txType.data} tx={originEthereumTx} />
 
             <FeeContainer>
               <FeeInfoContainer>
                 <FeeLeftContainer>
-                  <Typography variant="h5">{t('components.Fee.index.fee')}</Typography>
-                  {isLoadingFee && <StyledCircularProgress size="1.8rem" />}
+                  <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.entry.fee')}</Typography>
+                  {loadingFee && <StyledCircularProgress size="1.8rem" />}
                 </FeeLeftContainer>
                 <FeeRightContainer>
                   <FeeRightColumnContainer>
@@ -259,27 +307,91 @@ export default function Entry({ queue }: EntryProps) {
               <FeeEditContainer>
                 <FeeEditLeftContainer>
                   <FeeGasButton type="button" onClick={() => setIsOpenGasDialog(true)}>
-                    <Typography variant="h6">{t('components.Fee.index.gasSettings')}</Typography>
+                    <Typography variant="h6">{t('pages.Popup.Ethereum.SignTransaction.entry.gasSettings')}</Typography>
                   </FeeGasButton>
                 </FeeEditLeftContainer>
                 <FeeEditRightContainer>
-                  <FeeButton type="button" onClick={() => setFeeMode('tiny')} data-is-active={feeMode === 'tiny' ? 1 : 0}>
-                    {t('components.Fee.index.tiny')}
-                  </FeeButton>
-                  <FeeButton type="button" onClick={() => setFeeMode('low')} data-is-active={feeMode === 'low' ? 1 : 0}>
-                    {t('components.Fee.index.low')}
-                  </FeeButton>
-                  <FeeButton type="button" onClick={() => setFeeMode('average')} data-is-active={feeMode === 'average' ? 1 : 0}>
-                    {t('components.Fee.index.average')}
-                  </FeeButton>
-                  <FeeEditButton type="button" onClick={() => setIsOpenEIP1559Dialog(true)} data-is-active={feeMode === 'custom' ? 1 : 0}>
+                  {currentFee.type === 'EIP-1559' && (
+                    <>
+                      <FeeButton type="button" onClick={() => setFeeMode('tiny')} data-is-active={feeMode === 'tiny' ? 1 : 0}>
+                        {t('pages.Popup.Ethereum.SignTransaction.entry.tiny')}
+                      </FeeButton>
+                      <FeeButton type="button" onClick={() => setFeeMode('low')} data-is-active={feeMode === 'low' ? 1 : 0}>
+                        {t('pages.Popup.Ethereum.SignTransaction.entry.low')}
+                      </FeeButton>
+                      <FeeButton type="button" onClick={() => setFeeMode('average')} data-is-active={feeMode === 'average' ? 1 : 0}>
+                        {t('pages.Popup.Ethereum.SignTransaction.entry.average')}
+                      </FeeButton>
+                    </>
+                  )}
+
+                  {currentFee.type === 'BASIC' && (
+                    <FeeButton type="button" onClick={() => setFeeMode('low')} data-is-active={feeMode === 'low' ? 1 : 0}>
+                      {t('pages.Popup.Ethereum.SignTransaction.entry.current')}
+                    </FeeButton>
+                  )}
+                  <FeeEditButton
+                    type="button"
+                    onClick={() => {
+                      if (currentFee.type === 'EIP-1559') {
+                        setIsOpenEIP1559Dialog(true);
+                      }
+
+                      if (currentFee.type === 'BASIC') {
+                        setIsOpenGasPriceDialog(true);
+                      }
+                    }}
+                    data-is-active={feeMode === 'custom' ? 1 : 0}
+                  >
                     <Setting16Icon />
                   </FeeEditButton>
                 </FeeEditRightContainer>
               </FeeEditContainer>
+              <StyledDivider />
+              <TotalContainer>
+                <TotalLeftContainer>
+                  <Typography variant="h5">Total</Typography>
+                </TotalLeftContainer>
+                <TotalRightContainer>
+                  <Typography variant="h7">{['transfer', 'simpleSend'].includes(txType.data?.type || '') ? 'Amount + Max fee' : 'Max fee'}</Typography>
+                </TotalRightContainer>
+              </TotalContainer>
+
+              <TotalAmountContainer>
+                {txType.data?.type === 'transfer' ? (
+                  <>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={token?.decimals ? 8 : 0}>
+                      {totalDisplayAmount}
+                    </Number>
+                    &nbsp;
+                    <Typography variant="h5">{totalDisplayDenom}</Typography>&nbsp;<Typography variant="h5">+</Typography>&nbsp;
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={8}>
+                      {displayFee}
+                    </Number>
+                    &nbsp;
+                    <Typography variant="h5n">{displayDenom}</Typography>
+                  </>
+                ) : txType.data?.type === 'simpleSend' ? (
+                  <>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                      {plus(displayFee, totalDisplayAmount, currentNetwork.decimals)}
+                    </Number>
+                    &nbsp;
+                    <Typography variant="h5">{displayDenom}</Typography>
+                  </>
+                ) : (
+                  <>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                      {displayFee}
+                    </Number>
+                    &nbsp;
+                    <Typography variant="h5n">{displayDenom}</Typography>
+                  </>
+                )}
+              </TotalAmountContainer>
             </FeeContainer>
           </StyledTabPanel>
-          <StyledTabPanel value={value} index={1}>
+          <StyledTabPanel value={tabValue} index={1}>
             <Tx tx={ethereumTx} />
           </StyledTabPanel>
         </ContentContainer>
@@ -305,7 +417,7 @@ export default function Entry({ queue }: EntryProps) {
               {t('pages.Popup.Ethereum.SignTransaction.entry.cancelButton')}
             </OutlineButton>
             <Button
-              disabled={isLoadingFee}
+              disabled={loadingFee}
               onClick={async () => {
                 try {
                   const web3 = new Web3(currentNetwork.rpcURL);
@@ -315,16 +427,40 @@ export default function Entry({ queue }: EntryProps) {
                   const signed = await account.signTransaction(ethereumTx);
                   console.log(signed);
 
-                  // const response = await requestRPC<ResponseRPC<string>>('eth_sendRawTransaction', [signed.rawTransaction]);
+                  if (message.method === 'eth_signTransaction') {
+                    const result: EthSignTransactionResponse = {
+                      raw: signed.rawTransaction!,
+                      tx: ethereumTx,
+                    };
 
-                  // if (response.error) {
-                  //   enqueueSnackbar(`${response.error.message} (${response.error.code})`, { variant: 'error' });
-                  // }
+                    responseToWeb({
+                      response: {
+                        result,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
 
-                  // console.log(response);
+                    await deQueue();
+                  }
 
-                  // const receipt = await web3.eth.sendSignedTransaction(signed.rawTransaction!);
-                  // console.log(receipt);
+                  if (message.method === 'eth_sendTransaction') {
+                    const response = await requestRPC<ResponseRPC<string>>('eth_sendRawTransaction', [signed.rawTransaction]);
+
+                    const result: EthSendTransactionResponse = response.result!;
+
+                    responseToWeb({
+                      response: {
+                        result,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
+
+                    await deQueue();
+                  }
                 } catch (e) {
                   enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                 }
@@ -348,7 +484,7 @@ export default function Entry({ queue }: EntryProps) {
         currentGasPrice={gasPrice}
         onClose={() => setIsOpenGasPriceDialog(false)}
         onSubmitGas={(gasData) => {
-          setGasPrice(String(gasData.gasPrice));
+          setGasPrice(toBaseDenomAmount(gasData.gasPrice, 9));
           setFeeMode('custom');
         }}
       />

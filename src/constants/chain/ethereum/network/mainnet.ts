@@ -7,7 +7,6 @@ export const MAINNET: EthereumNetwork = {
   networkName: 'Mainnet',
   rpcURL: 'https://eth-mainnet.public.blastapi.io',
   imageURL: ethereumImg,
-  baseDenom: 'weth',
   displayDenom: 'ETH',
   decimals: 18,
   explorerURL: 'https://etherscan.io',

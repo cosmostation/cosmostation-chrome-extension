@@ -3,15 +3,15 @@ import ActivateChainRequest from '~/Popup/components/ActivateChainRequest';
 import Lock from '~/Popup/components/Lock';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthSignTransaction } from '~/types/ethereum/message';
+import type { EthSendTransaction, EthSignTransaction } from '~/types/ethereum/message';
 
 import Entry from './entry';
 import Layout from './layout';
 
-export default function SignTransaction() {
+export default function Transaction() {
   const { currentQueue } = useCurrentQueue();
 
-  if (currentQueue && isEthSignTransaction(currentQueue)) {
+  if (currentQueue && isEthTransaction(currentQueue)) {
     return (
       <Lock>
         <AccessRequest>
@@ -24,9 +24,10 @@ export default function SignTransaction() {
       </Lock>
     );
   }
+
   return null;
 }
 
-function isEthSignTransaction(queue: Queue): queue is Queue<EthSignTransaction> {
-  return queue?.message?.method === 'eth_signTransaction';
+function isEthTransaction(queue: Queue): queue is Queue<EthSignTransaction | EthSendTransaction> {
+  return queue?.message?.method === 'eth_signTransaction' || queue?.message?.method === 'eth_sendTransaction';
 }

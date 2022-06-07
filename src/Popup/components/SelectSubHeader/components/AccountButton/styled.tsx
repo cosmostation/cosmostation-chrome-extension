@@ -58,6 +58,14 @@ export const AccountRightContainer = styled('div')({
 export const AccountRightFirstContainer = styled('div')(({ theme }) => ({
   height: '1.5rem',
   color: theme.colors.text01,
+
+  maxWidth: '9rem',
+
+  '& > *': {
+    wordBreak: 'keep-all',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const ConnectButton = styled('button')(({ theme }) => ({

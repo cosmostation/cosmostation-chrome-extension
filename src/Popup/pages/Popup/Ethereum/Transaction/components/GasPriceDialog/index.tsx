@@ -6,6 +6,7 @@ import { Typography } from '@mui/material';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { toDisplayDenomAmount } from '~/Popup/utils/big';
 
 import { Container, InputContainer, LabelButton, LabelContainer, LabelText, StyledButton, StyledInput } from './styled';
 import type { GasPriceForm } from './useSchema';
@@ -62,7 +63,7 @@ export default function GasPriceDialog({ onClose, onSubmitGas, currentGasPrice, 
             <StyledInput
               inputProps={register('gasPrice')}
               type="text"
-              placeholder={`${currentGasPrice || '0'}`}
+              placeholder={`${toDisplayDenomAmount(currentGasPrice || '0', 9)}`}
               error={!!errors.gasPrice}
               helperText={errors.gasPrice?.message}
             />

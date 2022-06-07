@@ -1,7 +1,8 @@
 import type { EthereumChain, EthereumNetwork, TendermintChain } from '~/types/chain';
 
 import { ETHEREUM } from './ethereum/ethereum';
-import { MAINNET as ETHEREUM_NETWORK_MAINNET } from './ethereum/network/mainnet';
+import { EVMOS as NETWORK_EVMOS } from './ethereum/network/evmos';
+import { MAINNET as NETWORK_MAINNET } from './ethereum/network/mainnet';
 import { AKASH } from './tendermint/akash';
 import { ASSET_MANTLE } from './tendermint/assetMantle';
 import { AXELAR } from './tendermint/axelar';
@@ -89,7 +90,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
 
 export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 
-export const ETHEREUM_NETWORKS: EthereumNetwork[] = [ETHEREUM_NETWORK_MAINNET];
+export const ETHEREUM_NETWORKS: EthereumNetwork[] = [NETWORK_MAINNET, NETWORK_EVMOS];
 
 export const NETWORKS = [...ETHEREUM_NETWORKS];
 

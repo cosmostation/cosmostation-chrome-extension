@@ -40,8 +40,18 @@ export const ContentLeftImageContainer = styled('div')({
   },
 });
 
-export const ContentCenterTextContainer = styled('div')(({ theme }) => ({
+type ContentCenterTextContainerProps = {
+  'data-is-with-network'?: number;
+};
+
+export const ContentCenterTextContainer = styled('div')<ContentCenterTextContainerProps>(({ theme, ...props }) => ({
   color: theme.colors.text01,
+  maxWidth: props['data-is-with-network'] ? '3.5rem' : '10rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const ContentRightImageContainer = styled('div')(({ theme }) => ({
