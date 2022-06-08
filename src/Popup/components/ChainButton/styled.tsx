@@ -48,6 +48,9 @@ export const ContentCenterTextContainer = styled('div')<ContentCenterTextContain
   color: theme.colors.text01,
   maxWidth: props['data-is-with-network'] ? '3.5rem' : '10rem',
 
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
   '& > *': {
     overflow: 'hidden',
     textOverflow: 'ellipsis',

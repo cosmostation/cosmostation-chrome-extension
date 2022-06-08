@@ -18,19 +18,3 @@ export const ValueContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
   marginTop: '0.4rem',
 }));
-
-export const CopyButton = styled('button')(({ theme }) => ({
-  backgroundColor: 'transparent',
-  cursor: 'pointer',
-  border: 0,
-  padding: '0',
-  marginLeft: '0.4rem',
-
-  '& > svg': {
-    fill: theme.colors.text02,
-
-    '& > path': {
-      fill: theme.colors.text02,
-    },
-  },
-}));

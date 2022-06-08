@@ -2,7 +2,7 @@
 # @rpcURL=https://eth-mainnet.public.blastapi.io
 # @rpcURL=222.106.187.14:50001
 
-@rpcURL=https://lcd-evmos.cosmostation.io:8545
+@rpcURL=http://lcd-evmos.cosmostation.io:8545/
 
 ### eth_accounts
 

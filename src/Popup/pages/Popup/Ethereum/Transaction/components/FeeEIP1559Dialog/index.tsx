@@ -6,6 +6,7 @@ import { Typography } from '@mui/material';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import Number from '~/Popup/components/common/Number';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -59,9 +60,14 @@ export default function FeeEIP1559Dialog({ onClose, onSubmitGas, currentMaxFeePe
             <LabelText>
               <Typography variant="h6">Max base fee per gas (GWEI)</Typography>
             </LabelText>
-            <LabelButton type="button">
-              <Info16Icon />
-            </LabelButton>
+            <Tooltip
+              title="When your transaction gets included in the block, any difference between your max base fee and the actual base fee will be refunded. Total amount is calculated as max base fee (in GWEI) * gas limit."
+              arrow
+            >
+              <LabelButton type="button">
+                <Info16Icon />
+              </LabelButton>
+            </Tooltip>
           </LabelContainer>
           <InputContainer>
             <StyledInput
@@ -91,9 +97,11 @@ export default function FeeEIP1559Dialog({ onClose, onSubmitGas, currentMaxFeePe
             <LabelText>
               <Typography variant="h6">Max priority fee per gas (GWEI)</Typography>
             </LabelText>
-            <LabelButton type="button">
-              <Info16Icon />
-            </LabelButton>
+            <Tooltip title="Priority fee (aka “miner top“) goes directly to minors and incentivizes them to prioritize your transaction." arrow>
+              <LabelButton type="button">
+                <Info16Icon />
+              </LabelButton>
+            </Tooltip>
           </LabelContainer>
           <InputContainer>
             <StyledInput

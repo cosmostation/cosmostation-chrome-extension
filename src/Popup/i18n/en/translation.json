@@ -448,28 +448,24 @@
                 "Approve": {
                   "index": {
                     "amount": "Amount",
-                    "copied": "Copied",
                     "grantedAddress": "Granted to",
                     "tokenAddress": "Token"
                   }
                 },
                 "Deploy": {
                   "index": {
-                    "copied": "Copied",
                     "data": "Data"
                   }
                 },
                 "Interact": {
                   "index": {
                     "contractAddress": "Contract address",
-                    "copied": "Copied",
                     "data": "Data"
                   }
                 },
                 "Send": {
                   "index": {
                     "amount": "Amount",
-                    "copied": "Copied",
                     "fromAddress": "From address",
                     "toAddress": "To address"
                   }
@@ -477,7 +473,6 @@
                 "Transfer": {
                   "index": {
                     "amount": "Amount",
-                    "copied": "Copied",
                     "toAddress": "To address",
                     "tokenAddress": "Token"
                   }
@@ -502,7 +497,8 @@
             "low": "Low",
             "signButton": "Sign",
             "signatureRequest": "Signature reqeust",
-            "tiny": "Tiny"
+            "tiny": "Tiny",
+            "total": "Total"
           }
         },
         "SwitchNetwork": {
@@ -511,6 +507,19 @@
             "description": "This will switch the selected network within Cosmostation to a previously selected network.",
             "question": "Allow this site to switch the network?",
             "switchButton": "Switch"
+          }
+        },
+        "Transaction": {
+          "components": {
+            "TxMessage": {
+              "components": {
+                "CopyButton": {
+                  "index": {
+                    "copied": "Copied"
+                  }
+                }
+              }
+            }
           }
         }
       },

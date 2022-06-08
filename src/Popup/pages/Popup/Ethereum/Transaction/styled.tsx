@@ -17,8 +17,8 @@ export const ContentContainer = styled('div')({
 });
 
 export const StyledTabPanel = styled(TabPanel)({
-  marginTop: '1.2rem',
-  height: 'calc(100% - 5.2rem)',
+  marginTop: '1.6rem',
+  height: 'calc(100% - 4.8rem)',
 });
 
 export const FeeContainer = styled('div')(({ theme }) => ({

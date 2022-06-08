@@ -60,9 +60,10 @@ export const AccountRightFirstContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 
   maxWidth: '9rem',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
 
   '& > *': {
-    wordBreak: 'keep-all',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },

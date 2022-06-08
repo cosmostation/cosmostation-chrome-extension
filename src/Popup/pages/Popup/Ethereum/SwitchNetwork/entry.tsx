@@ -1,7 +1,6 @@
 import { Typography } from '@mui/material';
 
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
-import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -36,8 +35,6 @@ export default function Entry({ queue }: EntryProps) {
   const { chromeStorage } = useChromeStorage();
   const { deQueue } = useCurrentQueue();
 
-  const chain = ETHEREUM;
-
   const { currentNetwork, setCurrentNetwork } = useCurrentEthereumNetwork();
 
   const { t } = useTranslation();
@@ -50,7 +47,7 @@ export default function Entry({ queue }: EntryProps) {
 
   return (
     <Container>
-      <Header chain={chain} network={currentNetwork} origin={origin} />
+      <Header network={currentNetwork} origin={origin} />
       <ContentContainer>
         <SwitchIconContainer>
           <Switch60Icon />

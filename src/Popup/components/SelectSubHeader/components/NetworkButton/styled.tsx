@@ -40,8 +40,11 @@ export const ContentLeftImageContainer = styled('div')({
 });
 
 export const ContentCenterTextContainer = styled('div')(({ theme }) => ({
-  maxWidth: '6rem',
   color: theme.colors.text01,
+
+  maxWidth: '6rem',
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
 
   '& > *': {
     overflow: 'hidden',

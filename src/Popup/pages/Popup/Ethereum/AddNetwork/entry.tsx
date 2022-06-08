@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Typography } from '@mui/material';
 
-import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -38,7 +37,6 @@ type EntryProps = {
 };
 
 export default function Entry({ queue }: EntryProps) {
-  const chain = ETHEREUM;
   const { deQueue } = useCurrentQueue();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
@@ -50,7 +48,7 @@ export default function Entry({ queue }: EntryProps) {
 
   return (
     <Container>
-      <Header chain={chain} origin={origin} />
+      <Header origin={origin} />
       <ContentContainer>
         <QuestionContainer>
           <Typography variant="h2">{t('pages.Popup.Ethereum.AddNetwork.entry.question')}</Typography>

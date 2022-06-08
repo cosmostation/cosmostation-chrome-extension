@@ -395,7 +395,7 @@ function background() {
                 }
               }
 
-              if (method === 'eth_signTransaction') {
+              if (method === 'eth_signTransaction' || method === 'eth_sendTransaction') {
                 const { params } = message;
 
                 const schema = ethSignTransactionParamsSchema();

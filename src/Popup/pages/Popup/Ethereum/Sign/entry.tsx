@@ -81,7 +81,7 @@ export default function Entry({ queue }: EntryProps) {
 
   return (
     <Container>
-      <Header chain={chain} network={currentNetwork} origin={origin} />
+      <Header network={currentNetwork} origin={origin} />
       <ContentContainer>
         <TitleContainer>
           <Typography variant="h2">{t('pages.Popup.Ethereum.Sign.entry.signatureRequest')}</Typography>

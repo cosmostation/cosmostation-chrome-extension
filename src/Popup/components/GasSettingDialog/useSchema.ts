@@ -7,16 +7,17 @@ export type GasForm = {
 
 export function useSchema() {
   const { t } = useTranslation();
-  const gasForm = Joi.object<GasForm>({
-    gas: Joi.number()
-      .required()
-      .min(0)
-      .messages({
-        'any.required': t('schema.common.any.required'),
-        'number.base': t('schema.common.number.base'),
-        'number.min': t('schema.common.number.min'),
-      }),
-  });
+  const gasForm = (min: number) =>
+    Joi.object<GasForm>({
+      gas: Joi.number()
+        .required()
+        .min(min)
+        .messages({
+          'any.required': t('schema.common.any.required'),
+          'number.base': t('schema.common.number.base'),
+          'number.min': t('schema.common.number.min'),
+        }),
+    });
 
   return { gasForm };
 }

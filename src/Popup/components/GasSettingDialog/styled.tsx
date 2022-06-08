@@ -20,3 +20,32 @@ export const StyledButton = styled(Button)({
   marginTop: '2.4rem',
   height: '4rem',
 });
+
+export const LabelContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+
+  marginBottom: '0.8rem',
+});
+
+export const LabelText = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  color: theme.colors.text02,
+}));
+
+export const LabelButton = styled('button')(({ theme }) => ({
+  padding: 0,
+  border: 0,
+
+  background: 'inherit',
+
+  display: 'flex',
+  alignItems: 'center',
+
+  marginLeft: '0.4rem',
+
+  '& > svg': {
+    fill: theme.colors.text02,
+  },
+}));

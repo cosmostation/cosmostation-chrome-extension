@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-console */
 import { useEffect, useMemo, useState } from 'react';
 import type BigNumber from 'bignumber.js';
 import { useSnackbar } from 'notistack';
@@ -7,7 +5,6 @@ import Web3 from 'web3';
 import { Typography } from '@mui/material';
 
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { ERC20Tokens } from '~/constants/chain/ethereum/token/erc20';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
@@ -24,6 +21,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useInterval } from '~/Popup/hooks/useInterval';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -97,7 +95,6 @@ export default function Entry({ queue }: EntryProps) {
   const [isLoadingFee, setIsLoadingFee] = useState(false);
   const [isOpenGasDialog, setIsOpenGasDialog] = useState(false);
   const [isOpenGasPriceDialog, setIsOpenGasPriceDialog] = useState(false);
-  const [isOpenEIP1559Dialog, setIsOpenEIP1559Dialog] = useState(false);
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
   const address = getAddress(chain, keyPair?.publicKey);
@@ -228,8 +225,6 @@ export default function Entry({ queue }: EntryProps) {
     return '';
   }, [currentNetwork, txType, token]);
 
-  const loadingFee = useMemo(() => feeMode !== 'custom' && isLoadingFee, [feeMode, isLoadingFee]);
-
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
   };
@@ -253,26 +248,23 @@ export default function Entry({ queue }: EntryProps) {
       }
     })();
 
-    const interval = setInterval(() => {
-      void (async () => {
-        if (feeMode !== 'custom') {
-          setIsLoadingFee(true);
-          await currentFee.mutate();
-          setIsLoadingFee(false);
-        }
-      })();
-    }, 10000);
-
-    return () => {
-      clearInterval(interval);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useInterval(() => {
+    void (async () => {
+      if (feeMode !== 'custom') {
+        setIsLoadingFee(true);
+        await currentFee.mutate();
+        setIsLoadingFee(false);
+      }
+    })();
+  }, 10000);
 
   return (
     <>
       <Container>
-        <Header chain={chain} network={currentNetwork} origin={origin} />
+        <Header network={currentNetwork} origin={origin} />
         <ContentContainer>
           <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
             <Tab label="Detail" />
@@ -285,7 +277,7 @@ export default function Entry({ queue }: EntryProps) {
               <FeeInfoContainer>
                 <FeeLeftContainer>
                   <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.entry.fee')}</Typography>
-                  {loadingFee && <StyledCircularProgress size="1.8rem" />}
+                  {isLoadingFee && <StyledCircularProgress size="1.8rem" />}
                 </FeeLeftContainer>
                 <FeeRightContainer>
                   <FeeRightColumnContainer>
@@ -330,19 +322,7 @@ export default function Entry({ queue }: EntryProps) {
                       {t('pages.Popup.Ethereum.SignTransaction.entry.current')}
                     </FeeButton>
                   )}
-                  <FeeEditButton
-                    type="button"
-                    onClick={() => {
-                      if (currentFee.type === 'EIP-1559') {
-                        setIsOpenEIP1559Dialog(true);
-                      }
-
-                      if (currentFee.type === 'BASIC') {
-                        setIsOpenGasPriceDialog(true);
-                      }
-                    }}
-                    data-is-active={feeMode === 'custom' ? 1 : 0}
-                  >
+                  <FeeEditButton type="button" onClick={() => setIsOpenGasPriceDialog(true)} data-is-active={feeMode === 'custom' ? 1 : 0}>
                     <Setting16Icon />
                   </FeeEditButton>
                 </FeeEditRightContainer>
@@ -350,7 +330,7 @@ export default function Entry({ queue }: EntryProps) {
               <StyledDivider />
               <TotalContainer>
                 <TotalLeftContainer>
-                  <Typography variant="h5">Total</Typography>
+                  <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.entry.total')}</Typography>
                 </TotalLeftContainer>
                 <TotalRightContainer>
                   <Typography variant="h7">{['transfer', 'simpleSend'].includes(txType.data?.type || '') ? 'Amount + Max fee' : 'Max fee'}</Typography>
@@ -364,7 +344,7 @@ export default function Entry({ queue }: EntryProps) {
                       {totalDisplayAmount}
                     </Number>
                     &nbsp;
-                    <Typography variant="h5">{totalDisplayDenom}</Typography>&nbsp;<Typography variant="h5">+</Typography>&nbsp;
+                    <Typography variant="h5n">{totalDisplayDenom}</Typography>&nbsp;<Typography variant="h5">+</Typography>&nbsp;
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={8}>
                       {displayFee}
                     </Number>
@@ -377,7 +357,7 @@ export default function Entry({ queue }: EntryProps) {
                       {plus(displayFee, totalDisplayAmount, currentNetwork.decimals)}
                     </Number>
                     &nbsp;
-                    <Typography variant="h5">{displayDenom}</Typography>
+                    <Typography variant="h5n">{displayDenom}</Typography>
                   </>
                 ) : (
                   <>
@@ -417,7 +397,7 @@ export default function Entry({ queue }: EntryProps) {
               {t('pages.Popup.Ethereum.SignTransaction.entry.cancelButton')}
             </OutlineButton>
             <Button
-              disabled={loadingFee}
+              disabled={isLoadingFee}
               onClick={async () => {
                 try {
                   const web3 = new Web3(currentNetwork.rpcURL);
@@ -425,7 +405,6 @@ export default function Entry({ queue }: EntryProps) {
                   const account = web3.eth.accounts.privateKeyToAccount(keyPair!.privateKey.toString('hex'));
 
                   const signed = await account.signTransaction(ethereumTx);
-                  console.log(signed);
 
                   if (message.method === 'eth_signTransaction') {
                     const result: EthSignTransactionResponse = {
@@ -478,9 +457,11 @@ export default function Entry({ queue }: EntryProps) {
         onSubmitGas={(gasData) => {
           setGas(String(gasData.gas));
         }}
+        min={21000}
+        line="ETHEREUM"
       />
       <GasPriceDialog
-        open={isOpenGasPriceDialog}
+        open={currentFee.type === 'BASIC' && isOpenGasPriceDialog}
         currentGasPrice={gasPrice}
         onClose={() => setIsOpenGasPriceDialog(false)}
         onSubmitGas={(gasData) => {
@@ -489,10 +470,10 @@ export default function Entry({ queue }: EntryProps) {
         }}
       />
       <FeeEIP1559Dialog
-        open={isOpenEIP1559Dialog}
+        open={currentFee.type === 'EIP-1559' && isOpenGasPriceDialog}
         currentMaxFeePerGas={maxFeePerGas}
         currentMaxPriorityFeePerGas={maxPriorityFeePerGas}
-        onClose={() => setIsOpenEIP1559Dialog(false)}
+        onClose={() => setIsOpenGasPriceDialog(false)}
         onSubmitGas={(data) => {
           setMaxFeePerGas(toBaseDenomAmount(data.maxFeePerGas, 9));
           setMaxPriorityFeePerGas(toBaseDenomAmount(data.maxPriorityFeePerGas, 9));

@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
 
@@ -55,9 +56,14 @@ export default function GasPriceDialog({ onClose, onSubmitGas, currentGasPrice, 
             <LabelText>
               <Typography variant="h6">Gas price (GWEI)</Typography>
             </LabelText>
-            <LabelButton type="button">
-              <Info16Icon />
-            </LabelButton>
+            <Tooltip
+              title="This network requires a “Gas price” field when submitting a transaction. Gas price is the amount you will pay pay per unit of gas."
+              arrow
+            >
+              <LabelButton type="button">
+                <Info16Icon />
+              </LabelButton>
+            </Tooltip>
           </LabelContainer>
           <InputContainer>
             <StyledInput
