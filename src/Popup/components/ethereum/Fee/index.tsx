@@ -62,7 +62,7 @@ export default function Fee({ customGasRate, baseFee, gas, onChangeFee, onChange
       <Container>
         <FeeInfoContainer>
           <LeftContainer>
-            <Typography variant="h5">{t('components.Fee.index.fee')}</Typography>
+            <Typography variant="h5">{t('components.ethereum.Fee.index.fee')}</Typography>
           </LeftContainer>
           <RightContainer>
             <RightColumnContainer>
@@ -84,19 +84,19 @@ export default function Fee({ customGasRate, baseFee, gas, onChangeFee, onChange
         <EditContainer>
           <EditLeftContainer>
             <GasButton type="button" onClick={() => setIsOpenGasDialog(true)}>
-              <Typography variant="h6">{t('components.Fee.index.gasSettings')}</Typography>
+              <Typography variant="h6">{t('components.ethereum.Fee.index.gasSettings')}</Typography>
             </GasButton>
           </EditLeftContainer>
           <EditRightContainer>
             <FeeButtonContainer>
               <FeeButton type="button" onClick={() => onChangeFee?.(times(tiny, gas))} data-is-active={equal(currentGasRate, tiny) ? 1 : 0}>
-                {t('components.Fee.index.tiny')}
+                {t('components.ethereum.Fee.index.tiny')}
               </FeeButton>
               <FeeButton type="button" onClick={() => onChangeFee?.(times(low, gas))} data-is-active={equal(currentGasRate, low) ? 1 : 0}>
-                {t('components.Fee.index.low')}
+                {t('components.ethereum.Fee.index.low')}
               </FeeButton>
               <FeeButton type="button" onClick={() => onChangeFee?.(times(average, gas))} data-is-active={equal(currentGasRate, average) ? 1 : 0}>
-                {t('components.Fee.index.average')}
+                {t('components.ethereum.Fee.index.average')}
               </FeeButton>
             </FeeButtonContainer>
           </EditRightContainer>

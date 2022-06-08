@@ -52,7 +52,7 @@
       },
       "index": {
         "average": "평균",
-        "fee": "최대 수수료",
+        "fee": "수수료",
         "gasSettings": "가스량 설정",
         "low": "낮음",
         "tiny": "최소"
@@ -83,6 +83,17 @@
         "lostButton": "비밀번호를 잊어버렸나요?",
         "passwordPlaceholder": "비밀번호",
         "unlockButton": "잠금 해제"
+      }
+    },
+    "ethereum": {
+      "Fee": {
+        "index": {
+          "average": "평균",
+          "fee": "최대 수수료",
+          "gasSettings": "가스량 설정",
+          "low": "낮음",
+          "tiny": "최소"
+        }
       }
     }
   },
@@ -644,6 +655,11 @@
     "Wallet": {
       "Receive": {
         "Entry": {
+          "Ethereum": {
+            "address": "주소",
+            "copied": "복사 되었습니다.",
+            "scanQrCode": "QR코드 스캔"
+          },
           "Tendermint": {
             "address": "주소",
             "copied": "복사 되었습니다.",

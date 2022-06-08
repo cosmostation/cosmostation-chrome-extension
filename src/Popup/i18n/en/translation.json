@@ -84,6 +84,17 @@
         "passwordPlaceholder": "Password",
         "unlockButton": "Unlock"
       }
+    },
+    "ethereum": {
+      "Fee": {
+        "index": {
+          "average": "Average",
+          "fee": "Max fee",
+          "gasSettings": "Gas settings",
+          "low": "Low",
+          "tiny": "Tiny"
+        }
+      }
     }
   },
   "pages": {
@@ -644,6 +655,11 @@
     "Wallet": {
       "Receive": {
         "Entry": {
+          "Ethereum": {
+            "address": "Address",
+            "copied": "Copied",
+            "scanQrCode": "Scan QR code"
+          },
           "Tendermint": {
             "address": "Address",
             "copied": "Copied",

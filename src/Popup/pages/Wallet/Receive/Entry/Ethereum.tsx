@@ -1,9 +1,12 @@
+import copy from 'copy-to-clipboard';
+import { useSnackbar } from 'notistack';
 import QRCode from 'qrcode.react';
 import { Typography } from '@mui/material';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { EthereumChain } from '~/types/chain';
 
 import {
@@ -27,18 +30,27 @@ type EthereumProps = {
 
 export default function Ethereum({ chain }: EthereumProps) {
   const accounts = useAccounts(true);
+  const { enqueueSnackbar } = useSnackbar();
   const { currentAccount } = useCurrentAccount();
   const { currentNetwork } = useCurrentEthereumNetwork();
+
+  const { t } = useTranslation();
 
   const { explorerURL } = currentNetwork;
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
+
+  const handleOnClickCopy = () => {
+    if (copy(currentAddress)) {
+      enqueueSnackbar(t('pages.Wallet.Receive.Entry.Ethereum.copied'));
+    }
+  };
   return (
     <Container>
       <Panel>
         <TitleAreaContainer>
           <TitleContainer>
-            <Typography variant="h6">Address</Typography>
+            <Typography variant="h6">{t('pages.Wallet.Receive.Entry.Ethereum.address')}</Typography>
           </TitleContainer>
           <ButtonContainer>
             {explorerURL && (
@@ -46,7 +58,7 @@ export default function Ethereum({ chain }: EthereumProps) {
                 <ExplorerIcon />
               </StyledIconButton>
             )}
-            <StyledIconButton>
+            <StyledIconButton onClick={handleOnClickCopy}>
               <Copy24Icon />
             </StyledIconButton>
           </ButtonContainer>
@@ -58,7 +70,7 @@ export default function Ethereum({ chain }: EthereumProps) {
       <Panel>
         <TitleAreaContainer>
           <TitleContainer>
-            <Typography variant="h6">Scan QR code</Typography>
+            <Typography variant="h6">{t('pages.Wallet.Receive.Entry.Ethereum.scanQrCode')}</Typography>
           </TitleContainer>
           <ButtonContainer />
         </TitleAreaContainer>
