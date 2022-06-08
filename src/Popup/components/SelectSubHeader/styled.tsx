@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles';
 
-import BaseNetworkButton from './NetworkButton';
+import BaseNetworkButton from './components/NetworkButton';
 
 export const Container = styled('div')({
   width: '100%',

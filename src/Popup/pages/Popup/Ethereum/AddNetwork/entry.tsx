@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Typography } from '@mui/material';
 
-import { ETHEREUM_CHAINS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -49,7 +48,7 @@ export default function Entry({ queue }: EntryProps) {
 
   return (
     <Container>
-      <Header chain={ETHEREUM_CHAINS[0]} origin={origin} />
+      <Header origin={origin} />
       <ContentContainer>
         <QuestionContainer>
           <Typography variant="h2">{t('pages.Popup.Ethereum.AddNetwork.entry.question')}</Typography>
@@ -135,13 +134,12 @@ export default function Entry({ queue }: EntryProps) {
           <Button
             onClick={async () => {
               const id = uuidv4();
-              const ethereumChainId = ETHEREUM_CHAINS[0].id;
 
-              const currentAdditionalEthereumNetworks = chromeStorage.additionalEthereumNetworks;
+              const currentadditionalEthereumNetworks = chromeStorage.additionalEthereumNetworks;
 
               const newAdditionalEthereumNetworks: EthereumNetwork[] = [
-                ...currentAdditionalEthereumNetworks.filter((item) => item.chainId !== params.chainId),
-                { ...params, ethereumChainId, id },
+                ...currentadditionalEthereumNetworks.filter((item) => item.chainId !== params.chainId),
+                { ...params, id },
               ];
 
               await setChromeStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);

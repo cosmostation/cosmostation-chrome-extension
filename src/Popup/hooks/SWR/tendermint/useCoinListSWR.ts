@@ -6,7 +6,7 @@ import { useAccountSWR } from '~/Popup/hooks/SWR/tendermint/useAccountSWR';
 import { useDelegationSWR } from '~/Popup/hooks/SWR/tendermint/useDelegationSWR';
 import { useRewardSWR } from '~/Popup/hooks/SWR/tendermint/useRewardSWR';
 import { plus } from '~/Popup/utils/big';
-import { equalsIgnoringCase } from '~/Popup/utils/common';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import { getDelegatedVestingTotal, getVestingRelatedBalances, getVestingRemained } from '~/Popup/utils/tendermintVesting';
 import type { Coin, TendermintChain } from '~/types/chain';
 
@@ -58,7 +58,7 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
       balance.data?.balance
         ?.filter((coin) => coinArray.includes(coin.denom.toLowerCase()))
         .map((coin) => {
-          const coinInfo = chainCoins.find((item) => equalsIgnoringCase(item.baseDenom, coin.denom))!;
+          const coinInfo = chainCoins.find((item) => isEqualsIgnoringCase(item.baseDenom, coin.denom))!;
 
           const availableAmount = balance?.data?.balance?.find((item) => item.denom === coin.denom)?.amount || '0';
           const delegationAmount =

@@ -2,7 +2,7 @@ import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chr
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
 
-import type { BIP44, Chain, CommonChain, EthereumNetwork } from './chain';
+import type { BIP44, Chain, CommonChain, Network } from './chain';
 import type { RequestMessage } from './message';
 
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
@@ -58,7 +58,7 @@ export type ChromeStorage = {
   currency: CurrencyType;
   windowId: number | null;
   additionalChains: Chain[];
-  additionalEthereumNetworks: EthereumNetwork[];
+  additionalEthereumNetworks: Network[];
   language: LanguageType;
   addressBook: AddressInfo[];
 

@@ -3,7 +3,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import Header from '~/Popup/components/SelectSubHeader';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import type { EthereumChain } from '~/types/chain';
 
 import NativeChainCard, { NativeChainCardSkeleton } from '../components/ethereum/NativeChainCard';
@@ -15,7 +15,7 @@ type EthereumProps = {
 
 export default function Ethereum({ chain }: EthereumProps) {
   const { currentAccount } = useCurrentAccount();
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentEthereumNetwork();
 
   return (
     <Container key={`${currentAccount.id}-${currentNetwork.id}`}>

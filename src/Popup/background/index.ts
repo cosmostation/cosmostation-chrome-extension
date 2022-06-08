@@ -1,25 +1,31 @@
 import '~/Popup/i18n/background';
 
-import { CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
+import Web3 from 'web3';
+
+import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { PRIVATE_KEY_FOR_TEST } from '~/constants/common';
 import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
 import { TENDERMINT_METHOD_TYPE, TENDERMINT_NO_POPUP_METHOD_TYPE, TENDERMINT_POPUP_METHOD_TYPE } from '~/constants/tendermint';
-import { getStorage, setStorage } from '~/Popup/utils/chromeStorage';
+import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
 import { closeWindow, openWindow } from '~/Popup/utils/chromeWindows';
-import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
 import { EthereumRPCError, TendermintRPCError } from '~/Popup/utils/error';
+import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
 import type {
-  EthAddNetworkParams,
+  EthcAddNetworkParams,
   EthcSwitchNetworkParams,
   EthcSwitchNetworkResponse,
   EthRequestAccountsResponse,
   EthSignParams,
+  EthSignTransactionParams,
   PersonalSignParams,
 } from '~/types/ethereum/message';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
@@ -27,18 +33,16 @@ import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/ty
 import type { TenAccountResponse, TenAddChainParams, TenRequestAccountResponse, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
 import type { ThemeType } from '~/types/theme';
 
-import { chromeStorage } from './chromeStorage';
-import { requestRPC } from './ethereum';
 import {
   ethcAddNetworkParamsSchema,
   ethcSwitchNetworkParamsSchema,
   ethSignParamsSchema,
+  ethSignTransactionParamsSchema,
   personalSignParamsSchema,
   tenAddChainParamsSchema,
   tenSignAminoParamsSchema,
   tenSignDirectParamsSchema,
 } from './joiSchema';
-import { toHex } from '../utils/ethereum';
 
 function background() {
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, _, sendResponse) => {
@@ -302,6 +306,8 @@ function background() {
         }
 
         if (request.line === 'ETHEREUM') {
+          const chain = ETHEREUM;
+
           const ethereumMethods = Object.values(ETHEREUM_METHOD_TYPE) as string[];
           const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
           const ethereumNoPopupMethods = Object.values(ETHEREUM_NO_POPUP_METHOD_TYPE) as string[];
@@ -320,20 +326,12 @@ function background() {
 
             if (ethereumPopupMethods.includes(method)) {
               if (method === 'eth_sign') {
-                const chain = ETHEREUM_CHAINS[0];
-
                 const { params } = message;
 
                 const schema = ethSignParamsSchema();
 
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as EthSignParams;
-
-                  const dataToHex = toHex(validatedParams[1]);
-
-                  if (dataToHex.length < 66 || dataToHex.length > 67) {
-                    throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'eth_sign requires 32 byte message hash', message.id);
-                  }
 
                   if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
                     const keyPair = getKeyPair(currentAccount, chain, password);
@@ -363,8 +361,6 @@ function background() {
               }
 
               if (method === 'personal_sign') {
-                const chain = ETHEREUM_CHAINS[0];
-
                 const { params } = message;
 
                 const schema = personalSignParamsSchema();
@@ -399,8 +395,58 @@ function background() {
                 }
               }
 
+              if (method === 'eth_signTransaction' || method === 'eth_sendTransaction') {
+                const { params } = message;
+
+                const schema = ethSignTransactionParamsSchema();
+
+                try {
+                  const validatedParams = (await schema.validateAsync(params)) as EthSignTransactionParams;
+
+                  if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
+                    const keyPair = getKeyPair(currentAccount, chain, password);
+
+                    const address = getAddress(chain, keyPair?.publicKey);
+
+                    if (address.toLowerCase() !== validatedParams[0].from) {
+                      throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                    }
+                  }
+
+                  const originEthereumTx = validatedParams[0];
+
+                  const nonce = originEthereumTx.nonce !== undefined ? parseInt(toHex(originEthereumTx.nonce), 16) : undefined;
+                  const chainId = originEthereumTx.chainId !== undefined ? parseInt(toHex(originEthereumTx.chainId), 16) : undefined;
+
+                  try {
+                    const web3 = new Web3(currentEthereumNetwork().rpcURL);
+
+                    const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY_FOR_TEST);
+
+                    await account.signTransaction({ ...validatedParams[0], nonce, chainId });
+                  } catch (e) {
+                    throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, (e as { message: string }).message, message.id);
+                  }
+
+                  const window = await openWindow();
+                  await setStorage('queues', [
+                    ...queues,
+                    {
+                      ...request,
+                      message: { ...request.message, method, params: [...validatedParams] as EthSignTransactionParams },
+                      windowId: window?.id,
+                    },
+                  ]);
+                } catch (err) {
+                  if (err instanceof EthereumRPCError) {
+                    throw err;
+                  }
+
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+                }
+              }
+
               if (method === 'eth_requestAccounts') {
-                const chain = ETHEREUM_CHAINS[0];
                 if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
                   const keyPair = getKeyPair(currentAccount, chain, password);
                   const address = getAddress(chain, keyPair?.publicKey);
@@ -427,7 +473,7 @@ function background() {
                 const schema = ethcAddNetworkParamsSchema();
 
                 try {
-                  const validatedParams = (await schema.validateAsync(params)) as EthAddNetworkParams;
+                  const validatedParams = (await schema.validateAsync(params)) as EthcAddNetworkParams;
 
                   const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], message.id, validatedParams[0].rpcURL);
 
@@ -445,7 +491,7 @@ function background() {
                     ...queues,
                     {
                       ...request,
-                      message: { ...request.message, method, params: [...validatedParams] as EthAddNetworkParams },
+                      message: { ...request.message, method, params: [...validatedParams] as EthcAddNetworkParams },
                       windowId: window?.id,
                     },
                   ]);
@@ -468,7 +514,7 @@ function background() {
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as EthcSwitchNetworkParams;
 
-                  if (params[0] === currentEthereumNetwork.chainId) {
+                  if (params[0] === currentEthereumNetwork().chainId) {
                     const result: EthcSwitchNetworkResponse = null;
 
                     responseToWeb({
@@ -551,7 +597,6 @@ function background() {
               // }
             } else if (ethereumNoPopupMethods.includes(method)) {
               if (method === 'eth_accounts') {
-                const chain = ETHEREUM_CHAINS[0];
                 if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
                   const keyPair = getKeyPair(currentAccount, chain, password);
                   const address = getAddress(chain, keyPair?.publicKey);

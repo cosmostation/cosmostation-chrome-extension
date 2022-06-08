@@ -1,23 +1,26 @@
 import stc from 'string-to-color';
 import { Typography } from '@mui/material';
 
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { MAINNET } from '~/constants/chain/ethereum/network/mainnet';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
-import { getAddress, getKeyPair, shorterAddress } from '~/Popup/utils/common';
-import type { EthereumChain, EthereumNetwork } from '~/types/chain';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { shorterAddress } from '~/Popup/utils/string';
+import type { EthereumNetwork } from '~/types/chain';
 
 import { AccountContainer, AccountIcon, AccountText, ChainNameContainer, Container, OriginContainer, StyledDivider } from './styled';
 
 import Account from '~/images/icons/Account10.svg';
 
 type HeaderProps = {
-  chain: EthereumChain;
   network?: EthereumNetwork;
   origin?: string;
   className?: string;
 };
 
-export default function Header({ chain, network, origin, className }: HeaderProps) {
+export default function Header({ network, origin, className }: HeaderProps) {
+  const chain = ETHEREUM;
   const { currentAccount } = useCurrentAccount();
 
   const { currentPassword } = useCurrentPassword();
@@ -27,7 +30,17 @@ export default function Header({ chain, network, origin, className }: HeaderProp
 
   const shortAddress = shorterAddress(address, 12) || '';
 
-  const chainName = network ? `${chain.chainName} ${network.networkName}` : chain.chainName;
+  const chainName = (() => {
+    if (network?.id === MAINNET.id) {
+      return `${chain.chainName} ${network.networkName}`;
+    }
+
+    if (network) {
+      return network.networkName;
+    }
+
+    return chain.chainName;
+  })();
 
   const accountColor = stc(currentAccount.id);
   return (

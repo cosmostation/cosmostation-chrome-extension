@@ -9,6 +9,7 @@ import type {
   EthRPCRequest,
   EthSendTransaction,
   EthSign,
+  EthSignTransaction,
   PersonalSign,
 } from './ethereum/message';
 import type { TenAccount, TenAddChain, TenRequestAccount, TenSignAmino, TenSignDirect, TenSupportedChainNames } from './tendermint/message';
@@ -26,6 +27,7 @@ export type ResponseMessage = {
 export type EthereumRequestMessage =
   | EthRPCRequest
   | EthSign
+  | EthSignTransaction
   | EthSendTransaction
   | EthGetBalance
   | EthRequestAccounts

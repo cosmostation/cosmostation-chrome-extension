@@ -13,7 +13,7 @@ import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -48,16 +48,16 @@ type NativeChainCardProps = {
 export default function NativeChainCard({ chain }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentEthereumNetwork();
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
-  const balance = useBalanceSWR(chain, true);
+  const balance = useBalanceSWR(chain, { suspense: true });
 
   const { t } = useTranslation();
 
   const { navigate } = useNavigate();
 
-  const { coinGeckoId, decimals, explorerURL } = currentNetwork;
+  const { coinGeckoId, decimals, explorerURL, imageURL } = currentNetwork;
 
   const { data } = useCoinGeckoPriceSWR();
 
@@ -98,7 +98,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
       <SecondLineContainer>
         <SecondLineLeftContainer>
           <SecondLineLeftImageContainer>
-            <Image src={chain.imageURL} />
+            <Image src={imageURL} />
           </SecondLineLeftImageContainer>
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{currentNetwork.displayDenom}</Typography>
@@ -127,7 +127,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
 }
 
 export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentEthereumNetwork();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
@@ -135,7 +135,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
 
   const { t } = useTranslation();
 
-  const { explorerURL, displayDenom } = currentNetwork;
+  const { explorerURL, displayDenom, imageURL } = currentNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -178,7 +178,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
       <SecondLineContainer>
         <SecondLineLeftContainer>
           <SecondLineLeftImageContainer>
-            <Image src={chain.imageURL} />
+            <Image src={imageURL} />
           </SecondLineLeftImageContainer>
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{displayDenom}</Typography>

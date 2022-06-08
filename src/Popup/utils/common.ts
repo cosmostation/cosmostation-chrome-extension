@@ -39,24 +39,42 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
   return null;
 }
 
-export function shorterAddress(address?: string, maxLength = 25) {
-  const length = Math.floor(maxLength / 2);
-
-  if ((address?.length || Infinity) <= maxLength) {
-    return address;
-  }
-
-  return address ? `${address.substring(0, length)}...${address.substring(address.length - length, address.length)}` : '';
-}
-
-export function equalsIgnoringCase(a?: string, b?: string) {
-  return typeof a === 'string' && typeof b === 'string' && a.toLowerCase() === b.toLowerCase();
-}
-
 export function getChainIdRegex(chainId: string) {
   const splitedChainId = chainId.split('-');
   const prefixChainId = splitedChainId[0] ?? '';
   const chainIdRegex = new RegExp(`^${prefixChainId || ''}(.*)$`);
 
   return chainIdRegex;
+}
+
+type toHexOptions = {
+  addPrefix?: boolean;
+  isStringNumber?: boolean;
+};
+
+export function toHex(datum?: number | string, options?: toHexOptions) {
+  const result = (() => {
+    if (typeof datum === 'number') {
+      return datum.toString(16);
+    }
+
+    if (typeof datum === 'string') {
+      if (/^[0-9]+$/.test(datum) && options?.isStringNumber) {
+        return BigInt(datum).toString(16);
+      }
+
+      if (datum.startsWith('0x')) {
+        return datum.substring(2);
+      }
+      return Buffer.from(datum, 'utf8').toString('hex');
+    }
+
+    return '';
+  })();
+
+  if (options?.addPrefix) {
+    return `0x${result}`;
+  }
+
+  return result;
 }

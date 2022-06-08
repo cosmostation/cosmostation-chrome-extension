@@ -1,3 +1,5 @@
+import type { Common, CustomChainParams, TransactionConfig } from 'web3-core';
+
 import type { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 
 import type { EthereumNetwork } from '../chain';
@@ -5,36 +7,14 @@ import type { EthereumNetwork } from '../chain';
 export type EthereumNoPopupMethodType = ValueOf<typeof ETHEREUM_NO_POPUP_METHOD_TYPE>;
 export type EthereumPopupMethodType = ValueOf<typeof ETHEREUM_POPUP_METHOD_TYPE>;
 
-export type BaseChain = 'mainnet' | 'goerli' | 'kovan' | 'rinkeby' | 'ropsten';
+export type CustomChain = CustomChainParams;
+export type EthereumTxCommon = Common;
 
-export type HardFork = 'chainstart' | 'homestead' | 'dao' | 'tangerineWhistle' | 'spuriousDragon' | 'byzantium' | 'constantinople' | 'petersburg' | 'istanbul';
-
-export interface CustomChainParams {
-  name?: string;
-  networkId: number;
-  chainId: number;
-}
-
-export interface Common {
-  customChain: CustomChainParams;
-  baseChain?: BaseChain;
-  hardfork?: HardFork;
-}
-
-export type EthereumTxParams = {
-  from?: string;
-  to?: string;
-  value?: string;
-  gas?: string;
-  gasPrice?: string;
-  maxPriorityFeePerGas?: string;
-  maxFeePerGas?: string;
-  data?: string;
-  nonce?: number;
-  chainId?: number;
-  common?: Common;
-  chain?: string;
-  hardfork?: string;
+export type EthereumTx = Omit<TransactionConfig, 'value' | 'gasPrice' | 'maxPriorityFeePerGas' | 'maxFeePerGas'> & {
+  value?: string | number;
+  gasPrice?: string | number;
+  maxPriorityFeePerGas?: string | number;
+  maxFeePerGas?: string | number;
 };
 
 export type EthRequestAccounts = {
@@ -65,11 +45,32 @@ export type PersonalSign = {
 
 export type PersonalSignResponse = string;
 
-export type EthSendTransaction = {
-  method: typeof ETHEREUM_METHOD_TYPE.ETH__SEND_TRANSACTION;
-  params: [EthereumTxParams];
+export type EthSignTransactionParam1 = EthereumTx;
+
+export type EthSignTransactionParams = [EthereumTx];
+
+export type EthSignTransaction = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETH__SIGN_TRANSACTION;
+  params: EthSignTransactionParams;
   id?: number | string;
 };
+
+export type EthSignTransactionResponse = {
+  raw: string;
+  tx: EthereumTx;
+};
+
+export type EthSendTransactionParam1 = EthereumTx;
+
+export type EthSendTransactionParams = [EthereumTx];
+
+export type EthSendTransaction = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETH__SEND_TRANSACTION;
+  params: EthSendTransactionParams;
+  id?: number | string;
+};
+
+export type EthSendTransactionResponse = string;
 
 export type EthGetBalance = {
   method: typeof ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE;
@@ -77,13 +78,13 @@ export type EthGetBalance = {
   id?: number | string;
 };
 
-export type EthAddNetworkParam1 = Omit<EthereumNetwork, 'id' | 'ethereumChainId'>;
+export type EthcAddNetworkParam1 = Omit<EthereumNetwork, 'id' | 'ethereumChainId'>;
 
-export type EthAddNetworkParams = [EthAddNetworkParam1];
+export type EthcAddNetworkParams = [EthcAddNetworkParam1];
 
 export type EthcAddNetwork = {
   method: typeof ETHEREUM_METHOD_TYPE.ETHC__ADD_NETWORK;
-  params: EthAddNetworkParams;
+  params: EthcAddNetworkParams;
   id?: number | string;
 };
 

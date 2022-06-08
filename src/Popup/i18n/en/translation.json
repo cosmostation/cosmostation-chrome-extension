@@ -84,6 +84,17 @@
         "passwordPlaceholder": "Password",
         "unlockButton": "Unlock"
       }
+    },
+    "ethereum": {
+      "Fee": {
+        "index": {
+          "average": "Average",
+          "fee": "Max fee",
+          "gasSettings": "Gas settings",
+          "low": "Low",
+          "tiny": "Tiny"
+        }
+      }
     }
   },
   "pages": {
@@ -429,12 +440,97 @@
             "warningText": "Signing this message can be dangerous. This signature could potentially perform any operation on your account's behalf, including granting complete control of your account and all of its assets to the requesting site. Only sign this message if you know what you're doing or completely trust the requesting site."
           }
         },
+        "SignTransaction": {
+          "components": {
+            "FeeEIP1559Dialog": {
+              "index": {
+                "maxFeePerGasSetting": "Max Fee Per Gas Setting",
+                "submitButton": "Save"
+              }
+            },
+            "GasPriceDialog": {
+              "index": {
+                "gasPriceSetting": "Gas Price Setting",
+                "submitButton": "Save"
+              }
+            },
+            "TxMessage": {
+              "messages": {
+                "Approve": {
+                  "index": {
+                    "amount": "Amount",
+                    "grantedAddress": "Granted to",
+                    "tokenAddress": "Token"
+                  }
+                },
+                "Deploy": {
+                  "index": {
+                    "data": "Data"
+                  }
+                },
+                "Interact": {
+                  "index": {
+                    "contractAddress": "Contract address",
+                    "data": "Data"
+                  }
+                },
+                "Send": {
+                  "index": {
+                    "amount": "Amount",
+                    "fromAddress": "From address",
+                    "toAddress": "To address"
+                  }
+                },
+                "Transfer": {
+                  "index": {
+                    "amount": "Amount",
+                    "toAddress": "To address",
+                    "tokenAddress": "Token"
+                  }
+                },
+                "TransferFrom": {
+                  "index": {
+                    "amount": "Amount",
+                    "fromAddress": "From address",
+                    "toAddress": "To address",
+                    "tokenAddress": "Token"
+                  }
+                }
+              }
+            }
+          },
+          "entry": {
+            "average": "Average",
+            "cancelButton": "Cancel",
+            "current": "Current",
+            "fee": "Max fee",
+            "gasSettings": "Gas settings",
+            "low": "Low",
+            "signButton": "Sign",
+            "signatureRequest": "Signature reqeust",
+            "tiny": "Tiny",
+            "total": "Total"
+          }
+        },
         "SwitchNetwork": {
           "entry": {
             "cancelButton": "Cancel",
             "description": "This will switch the selected network within Cosmostation to a previously selected network.",
             "question": "Allow this site to switch the network?",
             "switchButton": "Switch"
+          }
+        },
+        "Transaction": {
+          "components": {
+            "TxMessage": {
+              "components": {
+                "CopyButton": {
+                  "index": {
+                    "copied": "Copied"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -559,6 +655,11 @@
     "Wallet": {
       "Receive": {
         "Entry": {
+          "Ethereum": {
+            "address": "Address",
+            "copied": "Copied",
+            "scanQrCode": "Scan QR code"
+          },
           "Tendermint": {
             "address": "Address",
             "copied": "Copied",
@@ -690,6 +791,8 @@
       },
       "number": {
         "base": "Please enter numbers.",
+        "greater": "Please enter a number greater than {#limit}.",
+        "less": "Please enter a number less than {#limit}.",
         "max": "Please enter a number less than {#limit}",
         "min": "Please enter at least {#limit} or more numbers."
       },

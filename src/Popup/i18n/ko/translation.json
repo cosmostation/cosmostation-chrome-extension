@@ -84,6 +84,17 @@
         "passwordPlaceholder": "비밀번호",
         "unlockButton": "잠금 해제"
       }
+    },
+    "ethereum": {
+      "Fee": {
+        "index": {
+          "average": "평균",
+          "fee": "최대 수수료",
+          "gasSettings": "가스량 설정",
+          "low": "낮음",
+          "tiny": "최소"
+        }
+      }
     }
   },
   "pages": {
@@ -118,7 +129,7 @@
               "entry": {
                 "12Words": "12 단어",
                 "24Words": "24 단어",
-                "copied": "복사되었습니다",
+                "copied": "복사 되었습니다.",
                 "copy": "복사",
                 "description": "니모닉 구문은 계정을 복구 할 수 있는 유일한 방법입니다. 절대로 니모닉을 다른 사람과 공유하지 마세요. 니모닉을 잃어버리면 자산의 손실로 이어집니다.",
                 "hdPathSetting": "HD path 세팅",
@@ -218,7 +229,7 @@
               "entry": {
                 "12Words": "12 단어",
                 "24Words": "24 단어",
-                "copied": "복사되었습니다",
+                "copied": "복사 되었습니다.",
                 "copy": "복사",
                 "hdPathSetting": "HD path 세팅",
                 "next": "다음",
@@ -310,7 +321,7 @@
                   }
                 },
                 "index": {
-                  "copied": "복사되었습니다",
+                  "copied": "복사 되었습니다.",
                   "done": "완료",
                   "title": "니모닉 구문"
                 }
@@ -329,7 +340,7 @@
                   }
                 },
                 "index": {
-                  "copied": "복사되었습니다",
+                  "copied": "복사 되었습니다.",
                   "done": "완료",
                   "title": "개인키 확인"
                 }
@@ -429,12 +440,97 @@
             "warningText": "이 메세지에 서명하는 것은 위험할 수 있습니다. 이 서명을 통해 계정을 대신하여 요청된 사이트의 자산 제어를 포함한 모든 작업을 수행할 수 있습니다. 요청 사이트를 완전히 신뢰하는 경우에만 이 메세지에 서명하십시오."
           }
         },
+        "SignTransaction": {
+          "components": {
+            "FeeEIP1559Dialog": {
+              "index": {
+                "maxFeePerGasSetting": "가스 당 최대 수수료 세팅",
+                "submitButton": "저장"
+              }
+            },
+            "GasPriceDialog": {
+              "index": {
+                "gasPriceSetting": "가스 가격 세팅",
+                "submitButton": "저장"
+              }
+            },
+            "TxMessage": {
+              "messages": {
+                "Approve": {
+                  "index": {
+                    "amount": "수량",
+                    "grantedAddress": "승인 할 주소",
+                    "tokenAddress": "토큰"
+                  }
+                },
+                "Deploy": {
+                  "index": {
+                    "data": "데이터"
+                  }
+                },
+                "Interact": {
+                  "index": {
+                    "contractAddress": "계약 주소",
+                    "data": "데이터"
+                  }
+                },
+                "Send": {
+                  "index": {
+                    "amount": "수량",
+                    "fromAddress": "보내는 주소",
+                    "toAddress": "받는 주소"
+                  }
+                },
+                "Transfer": {
+                  "index": {
+                    "amount": "수량",
+                    "toAddress": "받는 주소",
+                    "tokenAddress": "토큰"
+                  }
+                },
+                "TransferFrom": {
+                  "index": {
+                    "amount": "수량",
+                    "fromAddress": "보내는 주소",
+                    "toAddress": "받는 주소",
+                    "tokenAddress": "토큰"
+                  }
+                }
+              }
+            }
+          },
+          "entry": {
+            "average": "평균",
+            "cancelButton": "취소",
+            "current": "현재",
+            "fee": "최대 수수료",
+            "gasSettings": "가스량 설정",
+            "low": "낮음",
+            "signButton": "서명",
+            "signatureRequest": "서명 요청",
+            "tiny": "최소",
+            "total": "전체"
+          }
+        },
         "SwitchNetwork": {
           "entry": {
             "cancelButton": "취소",
             "description": "이는 Cosmostation에서 선택된 네트워크를 이전에 선택된 네트워크로 전환하게 됩니다.",
             "question": "이 사이트가 네트워크를 전환하도록 허용할까요?",
             "switchButton": "전환"
+          }
+        },
+        "Transaction": {
+          "components": {
+            "TxMessage": {
+              "components": {
+                "CopyButton": {
+                  "index": {
+                    "copied": "복사 되었습니다."
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -559,9 +655,14 @@
     "Wallet": {
       "Receive": {
         "Entry": {
+          "Ethereum": {
+            "address": "주소",
+            "copied": "복사 되었습니다.",
+            "scanQrCode": "QR코드 스캔"
+          },
           "Tendermint": {
             "address": "주소",
-            "copied": "복사되었습니다",
+            "copied": "복사 되었습니다.",
             "scanQrCode": "QR코드 스캔"
           }
         },
@@ -631,7 +732,7 @@
         "ethereum": {
           "NativeChainCard": {
             "index": {
-              "copied": "복사되었습니다",
+              "copied": "복사 되었습니다.",
               "depositButton": "입금",
               "sendButton": "보내기"
             }
@@ -641,7 +742,7 @@
           "NativeChainCard": {
             "index": {
               "available": "전송 가능 수량",
-              "copied": "복사되었습니다",
+              "copied": "복사 되었습니다.",
               "delegated": "위임 수량",
               "depositButton": "입금",
               "networkError": "네트워크 오류",
@@ -690,6 +791,8 @@
       },
       "number": {
         "base": "숫자를 입력하세요.",
+        "greater": "{#limit} 보다 큰 값을 입력하셔야 합니다.",
+        "less": "{#limit} 보다 작은 값을 입력하셔야 합니다.",
         "max": "{#limit} 이하의 값을 입력하셔야 합니다.",
         "min": "{#limit} 이상의 값을 입력하셔야 합니다."
       },

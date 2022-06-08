@@ -1,6 +1,7 @@
 import { Typography } from '@mui/material';
 
-import { CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
+import { CHAINS } from '~/constants/chain';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import logoImg from '~/images/etc/logo.png';
 import BaseLayout from '~/Popup/components/BaseLayout';
@@ -43,9 +44,9 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
 
     if (
       (currentQueue?.message?.method?.startsWith('eth_') || currentQueue?.message?.method?.startsWith('ethc_')) &&
-      !allowedChains.includes(ETHEREUM_CHAINS[0].chainName)
+      !allowedChains.includes(ETHEREUM.chainName)
     ) {
-      return ETHEREUM_CHAINS[0];
+      return ETHEREUM;
     }
 
     return undefined;

@@ -6,7 +6,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
@@ -18,7 +18,7 @@ type EthereumChainItemProps = {
 };
 
 export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentEthereumNetwork();
   const { chromeStorage } = useChromeStorage();
   const { currentAccount } = useCurrentAccount();
   const { setCurrentChain } = useCurrentChain();
@@ -26,7 +26,7 @@ export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
   const { data: coinGeckoData } = useCoinGeckoPriceSWR();
 
   const setDashboard = useSetRecoilState(dashboardState);
-  const { data } = useBalanceSWR(chain, true);
+  const { data } = useBalanceSWR(chain, { suspense: true });
 
   const totalAmount = BigInt(data?.result || '0').toString();
 
@@ -64,7 +64,7 @@ export function EthereumChainItemSkeleton({ chain }: EthereumChainItemProps) {
   const { setCurrentChain } = useCurrentChain();
   const { navigate } = useNavigate();
 
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentNetwork } = useCurrentEthereumNetwork();
 
   const handleOnClick = () => {
     void setCurrentChain(chain);

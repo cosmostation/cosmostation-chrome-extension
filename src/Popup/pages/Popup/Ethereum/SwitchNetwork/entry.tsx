@@ -1,11 +1,11 @@
 import { Typography } from '@mui/material';
 
-import { ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
@@ -35,7 +35,7 @@ export default function Entry({ queue }: EntryProps) {
   const { chromeStorage } = useChromeStorage();
   const { deQueue } = useCurrentQueue();
 
-  const { currentNetwork, setCurrentNetwork } = useCurrentNetwork();
+  const { currentNetwork, setCurrentNetwork } = useCurrentEthereumNetwork();
 
   const { t } = useTranslation();
 
@@ -47,7 +47,7 @@ export default function Entry({ queue }: EntryProps) {
 
   return (
     <Container>
-      <Header chain={ETHEREUM_CHAINS[0]} network={currentNetwork} origin={origin} />
+      <Header network={currentNetwork} origin={origin} />
       <ContentContainer>
         <SwitchIconContainer>
           <Switch60Icon />

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
-import { CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
+import { CHAINS } from '~/constants/chain';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -49,7 +50,7 @@ export default function Entry() {
 
     if (currentQueue?.message.method === 'eth_requestAccounts' && currentPassword) {
       const { message, messageId, origin } = currentQueue;
-      const chain = ETHEREUM_CHAINS[0];
+      const chain = ETHEREUM;
 
       const keyPair = getKeyPair(currentAccount, chain, currentPassword);
       const address = getAddress(chain, keyPair?.publicKey);
