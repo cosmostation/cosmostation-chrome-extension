@@ -2,11 +2,11 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { post } from '~/Popup/utils/axios';
-import type { EthereumChain } from '~/types/chain';
 import type { BalancePayload } from '~/types/ethereum/rpc';
 
 type FetchParams = {
@@ -17,7 +17,8 @@ type FetchParams = {
   };
 };
 
-export function useBalanceSWR(chain: EthereumChain, config?: SWRConfiguration) {
+export function useBalanceSWR(config?: SWRConfiguration) {
+  const chain = ETHEREUM;
   const accounts = useAccounts();
   const { chromeStorage } = useChromeStorage();
   const { currentNetwork } = useCurrentEthereumNetwork();

@@ -1,16 +1,18 @@
 import { styled } from '@mui/material/styles';
 
+import AbsoluteLoading from '~/Popup/components/AbsoluteLoading';
 import IconButton from '~/Popup/components/common/IconButton';
 
 export const Container = styled('div')(({ theme }) => ({
   backgroundColor: theme.colors.base02,
 
   width: '100%',
-  height: '16.5rem',
 
   borderRadius: '0.8rem',
 
   padding: '1.6rem',
+
+  position: 'relative',
 }));
 
 export const FirstLineContainer = styled('div')({
@@ -99,4 +101,23 @@ export const FourthLineContainer = styled('div')({
 export const FourthLineCenterContainer = styled('div')({
   width: '0.8rem',
   flexShrink: 0,
+});
+
+export const StyledRetryIconButton = styled(IconButton)(({ theme }) => ({
+  marginRight: '-0.8rem',
+
+  '& svg': {
+    fill: theme.colors.base05,
+    '& > path': {
+      fill: theme.colors.base05,
+    },
+  },
+}));
+
+export const ErrorDescriptionContainer = styled('div')(({ theme }) => ({
+  color: theme.accentColors.red,
+}));
+
+export const StyledAbsoluteLoading = styled(AbsoluteLoading)({
+  borderRadius: '0.8rem',
 });

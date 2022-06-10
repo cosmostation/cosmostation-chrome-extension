@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import type { FallbackProps } from 'react-error-boundary';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
@@ -23,6 +24,7 @@ import type { EthereumChain } from '~/types/chain';
 
 import {
   Container,
+  ErrorDescriptionContainer,
   FirstLineContainer,
   FirstLineLeftContainer,
   FirstLineRightContainer,
@@ -33,12 +35,15 @@ import {
   SecondLineLeftImageContainer,
   SecondLineLeftTextContainer,
   SecondLineRightContainer,
+  StyledAbsoluteLoading,
   StyledIconButton,
+  StyledRetryIconButton,
   ThirdLineContainer,
 } from './styled';
 
 import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
+import RetryIcon from '~/images/icons/Retry.svg';
 import SendIcon from '~/images/icons/Send.svg';
 
 type NativeChainCardProps = {
@@ -51,7 +56,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
   const { currentNetwork } = useCurrentEthereumNetwork();
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
-  const balance = useBalanceSWR(chain, { suspense: true });
+  const balance = useBalanceSWR({ suspense: true });
 
   const { t } = useTranslation();
 
@@ -200,6 +205,102 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
           {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
         </Button>
       </FourthLineContainer>
+    </Container>
+  );
+}
+
+export function NativeChainCardError({ chain, resetErrorBoundary }: NativeChainCardProps & FallbackProps) {
+  useBalanceSWR();
+
+  const [isLoading, setIsloading] = useState(false);
+
+  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentAccount } = useCurrentAccount();
+  const { currentPassword } = useCurrentPassword();
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { t } = useTranslation();
+
+  const { explorerURL, displayDenom, imageURL } = currentNetwork;
+
+  const address = useMemo(() => {
+    const key = `${currentAccount.id}${chain.id}`;
+
+    const storageAddress = localStorage.getItem(key);
+
+    if (storageAddress) {
+      return storageAddress;
+    }
+
+    const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+
+    return getAddress(chain, keyPair?.publicKey);
+  }, [chain, currentAccount, currentPassword]);
+
+  const handleOnClickCopy = () => {
+    if (copy(address)) {
+      enqueueSnackbar(`copied!`);
+    }
+  };
+
+  return (
+    <Container>
+      <FirstLineContainer>
+        <FirstLineLeftContainer>
+          <AddressButton onClick={handleOnClickCopy}>{address}</AddressButton>
+        </FirstLineLeftContainer>
+        <FirstLineRightContainer>
+          {explorerURL && (
+            <StyledIconButton
+              onClick={() => {
+                window.open(`${explorerURL}/address/${address}`);
+              }}
+            >
+              <ExplorerIcon />
+            </StyledIconButton>
+          )}
+        </FirstLineRightContainer>
+      </FirstLineContainer>
+      <SecondLineContainer>
+        <SecondLineLeftContainer>
+          <SecondLineLeftImageContainer>
+            <Image src={imageURL} />
+          </SecondLineLeftImageContainer>
+          <SecondLineLeftTextContainer>
+            <Typography variant="h3">{displayDenom}</Typography>
+          </SecondLineLeftTextContainer>
+        </SecondLineLeftContainer>
+        <SecondLineRightContainer>
+          <StyledRetryIconButton
+            onClick={() => {
+              setIsloading(true);
+
+              setTimeout(() => {
+                resetErrorBoundary();
+                setIsloading(false);
+              }, 500);
+            }}
+          >
+            <RetryIcon />
+          </StyledRetryIconButton>
+        </SecondLineRightContainer>
+      </SecondLineContainer>
+      <ThirdLineContainer>
+        <ErrorDescriptionContainer>
+          <Typography variant="h6">{t('pages.Wallet.components.ethereum.NativeChainCard.index.networkError')}</Typography>
+        </ErrorDescriptionContainer>
+      </ThirdLineContainer>
+      <FourthLineContainer>
+        <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.ethereum.NativeChainCard.index.depositButton')}
+        </Button>
+        <FourthLineCenterContainer />
+        <Button Icon={SendIcon} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
+        </Button>
+      </FourthLineContainer>
+      {isLoading && <StyledAbsoluteLoading size="2.5rem" />}
     </Container>
   );
 }

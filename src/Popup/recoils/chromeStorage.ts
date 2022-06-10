@@ -29,6 +29,8 @@ export const chromeStorageState = atom<ChromeStorage>({
     selectedChainId: '',
     selectedEthereumNetworkId: '',
 
+    ethereumTokens: [],
+
     password: null,
   },
 });

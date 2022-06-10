@@ -11,9 +11,9 @@ import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import GasSettingDialog from '~/Popup/components/GasSettingDialog';
-import { useAssetsSWR } from '~/Popup/hooks/SWR/ethereum/useAssetsSWR';
 import { useDetermintTxTypeSWR } from '~/Popup/hooks/SWR/ethereum/useDetermintTxTypeSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
+import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useTransactionCountSWR } from '~/Popup/hooks/SWR/ethereum/useTransactionCountSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -72,7 +72,7 @@ type EntryProps = {
 
 export default function Entry({ queue }: EntryProps) {
   const chain = ETHEREUM;
-  const assets = useAssetsSWR();
+  const tokens = useTokensSWR();
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
@@ -187,8 +187,8 @@ export default function Entry({ queue }: EntryProps) {
   const displayValue = times(displayFee, price);
 
   const token = useMemo(
-    () => (txType.data?.type === 'transfer' ? assets.data.find((item) => isEqualsIgnoringCase(ethereumTx.to, item.address)) : null),
-    [assets, ethereumTx, txType],
+    () => (txType.data?.type === 'transfer' ? tokens.data.find((item) => isEqualsIgnoringCase(ethereumTx.to, item.address)) : null),
+    [tokens, ethereumTx, txType],
   );
 
   const totalDisplayAmount = useMemo(() => {

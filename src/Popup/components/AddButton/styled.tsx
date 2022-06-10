@@ -14,8 +14,6 @@ export const Button = styled('button')(({ theme }) => ({
   cursor: 'pointer',
 }));
 
-export const IconContainer = styled('div')({});
-
 export const TextContainer = styled('div')(({ theme }) => ({
   marginLeft: '0.2rem',
 

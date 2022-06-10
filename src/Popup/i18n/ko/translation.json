@@ -652,6 +652,23 @@
         }
       }
     },
+    "Token": {
+      "Add": {
+        "ERC20": {
+          "entry": {
+            "addTokenSnackbar": "토큰이 추가 되었습니다.",
+            "addressPlaceholder": "토큰 계약 주소",
+            "decimalsPlaceholder": "토큰 십진수",
+            "displayDenomPlaceholder": "토큰 기호",
+            "submitButton": "커스텀 토큰 추가",
+            "warning": "기존 토큰의 가짜 버전 생성을 포함하여 누구나 토큰을 생성할 수 있습니다. 사기 및 보안 위험에 대해 주의하세요."
+          },
+          "layout": {
+            "title": "토큰 가져오기"
+          }
+        }
+      }
+    },
     "Wallet": {
       "Receive": {
         "Entry": {
@@ -734,7 +751,21 @@
             "index": {
               "copied": "복사 되었습니다.",
               "depositButton": "입금",
+              "networkError": "네트워크 오류",
               "sendButton": "보내기"
+            }
+          },
+          "TokenList": {
+            "components": {
+              "TokenItem": {
+                "index": {
+                  "networkError": "네트워크 오류"
+                }
+              }
+            },
+            "index": {
+              "importTokenButton": "토큰 가져오기",
+              "token": "토큰"
             }
           }
         },
@@ -801,6 +832,15 @@
         "empty": "필수 값 입니다.",
         "max": "최대 {#limit}자까지 입력할 수 있습니다.",
         "min": "최소 {#limit}자 이상 입력하셔야 합니다."
+      }
+    },
+    "importTokenForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "토큰 주소가 유효하지 않습니다."
+          }
+        }
       }
     },
     "ledgerForm": {

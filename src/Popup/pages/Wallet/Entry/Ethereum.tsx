@@ -6,8 +6,9 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import type { EthereumChain } from '~/types/chain';
 
-import NativeChainCard, { NativeChainCardSkeleton } from '../components/ethereum/NativeChainCard';
-import { Container, HeaderContainer, NativeChainCardContainer } from '../styled';
+import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/ethereum/NativeChainCard';
+import TokenList from '../components/ethereum/TokenList';
+import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
 
 type EthereumProps = {
   chain: EthereumChain;
@@ -23,13 +24,18 @@ export default function Ethereum({ chain }: EthereumProps) {
         <Header />
       </HeaderContainer>
       <NativeChainCardContainer>
-        <ErrorBoundary fallback={<NativeChainCardSkeleton chain={chain} />}>
+        <ErrorBoundary
+          // eslint-disable-next-line react/no-unstable-nested-components
+          FallbackComponent={(props) => <NativeChainCardError chain={chain} {...props} />}
+        >
           <Suspense fallback={<NativeChainCardSkeleton chain={chain} />}>
             <NativeChainCard chain={chain} />
           </Suspense>
         </ErrorBoundary>
       </NativeChainCardContainer>
-      {/* <IbcCoinList /> */}
+      <BottomContainer>
+        <TokenList />
+      </BottomContainer>
     </Container>
   );
 }

@@ -1,5 +1,6 @@
 import { TENDERMINT_TYPE } from '~/constants/tendermint';
 import Joi from '~/Popup/utils/joi';
+import { ethereumAddressRegex } from '~/Popup/utils/regex';
 import type { GasRate } from '~/types/chain';
 import type { CustomChain, EthcAddNetwork, EthereumTxCommon, EthSignTransaction } from '~/types/ethereum/message';
 import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint/amino';
@@ -10,7 +11,6 @@ import type { SignDirectDoc } from '~/types/tendermint/proto';
 import { getChainIdRegex } from '../utils/common';
 
 const numberRegex = /^([0-9]+|[0-9]+(\.[0-9]+))$/;
-const ethereumAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 
 const tendermintType = Object.values(TENDERMINT_TYPE);
 

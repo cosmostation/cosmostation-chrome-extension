@@ -69,6 +69,10 @@ export default function Init({ children }: InitType) {
         await setStorage('addressBook', []);
       }
 
+      if (!originChromeStorage.ethereumTokens) {
+        await setStorage('ethereumTokens', []);
+      }
+
       if (originChromeStorage.additionalChains.find((item) => officialChainLowercaseNames.includes(item.chainName.toLowerCase()))) {
         const newAdditionalChains = originChromeStorage.additionalChains.filter((item) => !officialChainLowercaseNames.includes(item.chainName.toLowerCase()));
 

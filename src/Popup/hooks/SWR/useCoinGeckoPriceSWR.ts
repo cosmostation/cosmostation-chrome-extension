@@ -15,14 +15,16 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
 
   const { chromeStorage } = useChromeStorage();
 
-  const { additionalEthereumNetworks } = chromeStorage;
-  const networkCoingeckoIds = [...NETWORKS, ...additionalEthereumNetworks].filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId);
+  const { additionalEthereumNetworks, ethereumTokens } = chromeStorage;
+  const networkCoinGeckoIds = [...NETWORKS, ...additionalEthereumNetworks].filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId);
+  const ethereumTokenCoinGeckoIds = Array.from(new Set(ethereumTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!)));
 
-  const joinedNetworkCoingeckoIds = networkCoingeckoIds.length > 0 ? `,${networkCoingeckoIds.join(',')}` : '';
+  const joinedNetworkCoinGeckoIds = networkCoinGeckoIds.length > 0 ? `,${networkCoinGeckoIds.join(',')}` : '';
+  const joinedEthereumTokenCoinGeckoIds = ethereumTokenCoinGeckoIds.length > 0 ? `,${ethereumTokenCoinGeckoIds.join(',')}` : '';
 
   const coinGeckoIds = `${(currentAllowedChains.filter((chain) => chain.line === 'TENDERMINT' && chain.coinGeckoId) as TendermintChain[])
     .map((chain) => chain.coinGeckoId)
-    .join(',')}${joinedNetworkCoingeckoIds},tether`;
+    .join(',')}${joinedNetworkCoinGeckoIds}${joinedEthereumTokenCoinGeckoIds},tether`;
 
   const currencySymbols = Object.values(CURRENCY_TYPE).join(',');
 
