@@ -6,6 +6,7 @@ import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain'
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { PRIVATE_KEY_FOR_TEST } from '~/constants/common';
 import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
+import type { TOKEN_TYPE } from '~/constants/ethereum';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
@@ -21,6 +22,7 @@ import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
 import type {
   EthcAddNetworkParams,
+  EthcAddTokensParam,
   EthcAddTokensParams,
   EthcSwitchNetworkParams,
   EthcSwitchNetworkResponse,
@@ -28,6 +30,10 @@ import type {
   EthSignParams,
   EthSignTransactionParams,
   PersonalSignParams,
+  WalletAddEthereumChainParams,
+  WalletSwitchEthereumChainParams,
+  WalletSwitchEthereumChainResponse,
+  WalletWatchAssetParams,
 } from '~/types/ethereum/message';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
@@ -44,6 +50,9 @@ import {
   tenAddChainParamsSchema,
   tenSignAminoParamsSchema,
   tenSignDirectParamsSchema,
+  walletAddEthereumChainParamsSchema,
+  walletSwitchEthereumChainParamsSchema,
+  WalletWatchAssetParamsSchema,
 } from './joiSchema';
 
 function background() {
@@ -563,6 +572,133 @@ function background() {
                     {
                       ...request,
                       message: { ...request.message, method, params: [...validatedParams] as EthcAddTokensParams },
+                      windowId: window?.id,
+                    },
+                  ]);
+                } catch (err) {
+                  if (err instanceof EthereumRPCError) {
+                    throw err;
+                  }
+
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+                }
+              }
+
+              if (method === 'wallet_watchAsset') {
+                const { params } = message;
+
+                const schema = WalletWatchAssetParamsSchema();
+
+                try {
+                  const validatedParams = (await schema.validateAsync(params)) as WalletWatchAssetParams;
+
+                  const addTokenParam: EthcAddTokensParam = {
+                    tokenType: validatedParams.type as typeof TOKEN_TYPE.ERC20,
+                    address: validatedParams.options.address,
+                    decimals: validatedParams.options.decimals,
+                    displayDenom: validatedParams.options.symbol,
+                    imageURL: validatedParams.options.image,
+                  };
+
+                  const window = await openWindow();
+
+                  await setStorage('queues', [
+                    ...queues,
+                    {
+                      ...request,
+                      message: { ...request.message, method: 'ethc_addTokens', params: [addTokenParam] as EthcAddTokensParams },
+                      windowId: window?.id,
+                    },
+                  ]);
+                } catch (err) {
+                  if (err instanceof EthereumRPCError) {
+                    throw err;
+                  }
+
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+                }
+              }
+
+              if (method === 'wallet_addEthereumChain') {
+                const { params } = message;
+
+                const schema = walletAddEthereumChainParamsSchema();
+
+                try {
+                  const validatedParams = (await schema.validateAsync(params)) as WalletAddEthereumChainParams;
+
+                  const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], message.id, validatedParams[0].rpcUrls[0]);
+
+                  if (validatedParams[0].chainId !== response.result) {
+                    throw new EthereumRPCError(
+                      RPC_ERROR.INVALID_PARAMS,
+                      `Chain ID returned by RPC URL ${validatedParams[0].rpcUrls[0]} does not match ${validatedParams[0].chainId}`,
+                      message.id,
+                      { chainId: response.result },
+                    );
+                  }
+
+                  const param = validatedParams[0];
+
+                  const addNetworkParam: EthcAddNetworkParams[0] = {
+                    chainId: param.chainId,
+                    decimals: param.nativeCurrency.decimals,
+                    displayDenom: param.nativeCurrency.symbol,
+                    networkName: param.chainName,
+                    rpcURL: param.rpcUrls[0],
+                    explorerURL: param.blockExplorerUrls?.[0],
+                    imageURL: param.iconUrls?.[0],
+                  };
+
+                  const window = await openWindow();
+                  await setStorage('queues', [
+                    ...queues,
+                    {
+                      ...request,
+                      message: { ...request.message, method: 'ethc_addNetwork', params: [addNetworkParam] as EthcAddNetworkParams },
+                      windowId: window?.id,
+                    },
+                  ]);
+                } catch (err) {
+                  if (err instanceof EthereumRPCError) {
+                    throw err;
+                  }
+
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+                }
+              }
+
+              if (method === 'wallet_switchEthereumChain') {
+                const { params } = message;
+
+                const networkChainIds = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks].map((item) => item.chainId);
+
+                const schema = walletSwitchEthereumChainParamsSchema(networkChainIds);
+
+                try {
+                  const validatedParams = (await schema.validateAsync(params)) as WalletSwitchEthereumChainParams;
+
+                  if (params[0] === currentEthereumNetwork().chainId) {
+                    const result: WalletSwitchEthereumChainResponse = null;
+
+                    responseToWeb({
+                      response: {
+                        result,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
+
+                    return;
+                  }
+
+                  const window = await openWindow();
+                  await setStorage('queues', [
+                    ...queues,
+                    {
+                      ...request,
+                      message: { ...request.message, method: 'ethc_switchNetwork', params: [...validatedParams] as EthcSwitchNetworkParams },
                       windowId: window?.id,
                     },
                   ]);

@@ -12,7 +12,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthcAddTokens, EthcAddTokensParams } from '~/types/ethereum/message';
+import type { EthcAddTokens, EthcAddTokensParams, EthcAddTokensResponse } from '~/types/ethereum/message';
 
 import TokenItem from './components/TokenItem';
 import {
@@ -112,6 +112,17 @@ export default function Entry({ queue }: EntryProps) {
           <Button
             onClick={async () => {
               await addEthereumTokens(tokens);
+
+              const result: EthcAddTokensResponse = null;
+
+              responseToWeb({
+                response: {
+                  result,
+                },
+                message,
+                messageId,
+                origin,
+              });
 
               await deQueue();
             }}

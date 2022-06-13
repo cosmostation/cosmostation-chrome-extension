@@ -9,6 +9,15 @@ export const ETHEREUM_POPUP_METHOD_TYPE = {
   ETH__SIGN_TYPED_DATA_V4: 'eth_signTypedData_v4',
   PERSONAL_SIGN: 'personal_sign',
 
+  // https://eips.ethereum.org/EIPS/eip-3326
+  WALLET__SWITCH_ETHEREUM_CHAIN: 'wallet_switchEthereumChain',
+
+  // https://eips.ethereum.org/EIPS/eip-3085
+  WALLET__ADD_ETHEREUM_CHAIN: 'wallet_addEthereumChain',
+
+  // https://eips.ethereum.org/EIPS/eip-747
+  WALLET__WATCH_ASSET: 'wallet_watchAsset',
+
   // custom
   ETHC__ADD_NETWORK: 'ethc_addNetwork',
   ETHC__SWITCH_NETWORK: 'ethc_switchNetwork',
@@ -59,7 +68,6 @@ export const ETHEREUM_NO_POPUP_METHOD_TYPE = {
   NET_PEERCOUNT: 'net_peerCount',
   NET_VERSION: 'net_version',
   PERSONAL_EC_RECOVER: 'personal_ecRecover',
-  WALLET_WATCH_ASSET: 'wallet_watchAsset',
   WEB3_CLIENT_VERSION: 'web3_clientVersion',
   WEB3_SHA3: 'web3_sha3',
 } as const;

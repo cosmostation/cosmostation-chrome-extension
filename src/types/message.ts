@@ -12,6 +12,9 @@ import type {
   EthSign,
   EthSignTransaction,
   PersonalSign,
+  WalletAddEthereumChain,
+  WalletSwitchEthereumChain,
+  WalletWatchAsset,
 } from './ethereum/message';
 import type { TenAccount, TenAddChain, TenRequestAccount, TenSignAmino, TenSignDirect, TenSupportedChainNames } from './tendermint/message';
 
@@ -35,7 +38,10 @@ export type EthereumRequestMessage =
   | EthcAddNetwork
   | EthcSwitchNetwork
   | PersonalSign
-  | EthcAddTokens;
+  | EthcAddTokens
+  | WalletSwitchEthereumChain
+  | WalletAddEthereumChain
+  | WalletWatchAsset;
 
 export type TendermintRequestMessage = TenRequestAccount | TenAddChain | TenSignAmino | TenSignDirect | TenSupportedChainNames | TenAccount;
 

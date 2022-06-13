@@ -9,9 +9,9 @@ export function useCurrentEthereumNetwork() {
 
   const allNetworks = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks];
 
-  const currentAccountselectedEthereumNetworkId = selectedEthereumNetworkId ?? allNetworks[0].id;
+  const currentAccountSelectedEthereumNetworkId = allNetworks.find((network) => network.id === selectedEthereumNetworkId)?.id ?? allNetworks[0].id;
 
-  const currentNetwork = allNetworks.find((network) => network.id === currentAccountselectedEthereumNetworkId)!;
+  const currentNetwork = allNetworks.find((network) => network.id === currentAccountSelectedEthereumNetworkId)!;
 
   const setCurrentNetwork = async (network: EthereumNetwork) => {
     const newselectedEthereumNetworkId = network.id;

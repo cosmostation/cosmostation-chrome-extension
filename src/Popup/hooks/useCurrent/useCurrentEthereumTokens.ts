@@ -25,9 +25,11 @@ export function useCurrentEthereumTokens() {
   };
 
   const addEthereumTokens = async (tokens: AddEthereumTokenParams[]) => {
-    const tokensAddress = tokens.map((token) => token.address.toLowerCase());
+    const filteredTokens = tokens.filter((token, idx, self) => self.findIndex((item) => item.address.toLowerCase() === token.address.toLowerCase()) === idx);
 
-    const newTokens = tokens.map((token) => ({ ...token, id: uuidv4(), ethereumNetworkId: currentNetwork.id }));
+    const tokensAddress = filteredTokens.map((token) => token.address.toLowerCase());
+
+    const newTokens = filteredTokens.map((token) => ({ ...token, id: uuidv4(), ethereumNetworkId: currentNetwork.id }));
 
     const newEthereumTokens = [
       ...ethereumTokens.filter((item) => !(tokensAddress.includes(item.address.toLowerCase()) && item.ethereumNetworkId === currentNetwork.id)),

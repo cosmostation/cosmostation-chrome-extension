@@ -90,6 +90,29 @@ export type EthcAddNetwork = {
 
 export type EthcAddNetworkResponse = null;
 
+export type WalletAddEthereumChainParam1 = {
+  chainId: string;
+  chainName: string;
+  blockExplorerUrls?: string[];
+  iconUrls?: string[];
+  nativeCurrency: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+  rpcUrls: string[];
+};
+
+export type WalletAddEthereumChainParams = [WalletAddEthereumChainParam1];
+
+export type WalletAddEthereumChain = {
+  method: typeof ETHEREUM_METHOD_TYPE.WALLET__ADD_ETHEREUM_CHAIN;
+  params: WalletAddEthereumChainParams;
+  id?: number | string;
+};
+
+export type WalletAddEthereumChainResponse = null;
+
 export type EthcSwitchNetworkParams = [string];
 
 export type EthcSwitchNetwork = {
@@ -99,6 +122,16 @@ export type EthcSwitchNetwork = {
 };
 
 export type EthcSwitchNetworkResponse = null;
+
+export type WalletSwitchEthereumChainParams = [string];
+
+export type WalletSwitchEthereumChain = {
+  method: typeof ETHEREUM_METHOD_TYPE.WALLET__SWITCH_ETHEREUM_CHAIN;
+  params: WalletSwitchEthereumChainParams;
+  id?: number | string;
+};
+
+export type WalletSwitchEthereumChainResponse = null;
 
 export type EthcAddTokensParam = Omit<EthereumToken, 'id' | 'ethereumNetworkId'>;
 
@@ -111,6 +144,26 @@ export type EthcAddTokens = {
 };
 
 export type EthcAddTokensResponse = null;
+
+export type WalletWatchAssetParam = {
+  type: string;
+  options: {
+    address: string;
+    symbol: string;
+    decimals: number;
+    image?: string;
+  };
+};
+
+export type WalletWatchAssetParams = WalletWatchAssetParam;
+
+export type WalletWatchAsset = {
+  method: typeof ETHEREUM_METHOD_TYPE.WALLET__WATCH_ASSET;
+  params: WalletWatchAssetParams;
+  id?: number | string;
+};
+
+export type WalletWatchAssetResponse = null;
 
 export type EthRPCRequest = {
   method: Exclude<EthereumNoPopupMethodType, typeof ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE>;

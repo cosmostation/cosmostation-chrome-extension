@@ -3,7 +3,15 @@ import { TENDERMINT_TYPE } from '~/constants/tendermint';
 import Joi from '~/Popup/utils/joi';
 import { ethereumAddressRegex } from '~/Popup/utils/regex';
 import type { GasRate } from '~/types/chain';
-import type { CustomChain, EthcAddNetwork, EthcAddTokens, EthereumTxCommon, EthSignTransaction } from '~/types/ethereum/message';
+import type {
+  CustomChain,
+  EthcAddNetwork,
+  EthcAddTokens,
+  EthereumTxCommon,
+  EthSignTransaction,
+  WalletAddEthereumChain,
+  WalletWatchAsset,
+} from '~/types/ethereum/message';
 import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint/amino';
 import type { Amount } from '~/types/tendermint/common';
 import type { TenAddChainParams, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
@@ -140,7 +148,40 @@ export const ethcAddNetworkParamsSchema = () =>
       }).required(),
     );
 
+export const walletAddEthereumChainParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .items(
+      Joi.object<WalletAddEthereumChain['params'][0]>({
+        chainId: Joi.string().label('chainId').trim().required(),
+        chainName: Joi.string().label('chainName').trim().required(),
+        rpcUrls: Joi.array().label('rpcUrls').items(Joi.string().required()).length(1).required(),
+        blockExplorerUrls: Joi.array().label('blockExplorerUrls').items(Joi.string().required()).length(1).optional(),
+        iconUrls: Joi.array().label('iconUrls').items(Joi.string().required()).length(1).optional(),
+        nativeCurrency: Joi.object<WalletAddEthereumChain['params'][0]['nativeCurrency']>({
+          name: Joi.string().required(),
+          symbol: Joi.string().required(),
+          decimals: Joi.number().required(),
+        })
+          .label('nativeCurrency')
+          .required(),
+      }).required(),
+    )
+    .length(1)
+    .required();
+
 export const ethcSwitchNetworkParamsSchema = (chainIds: string[]) =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.string()
+        .label('chainId')
+        .valid(...chainIds)
+        .required(),
+    );
+
+export const walletSwitchEthereumChainParamsSchema = (chainIds: string[]) =>
   Joi.array()
     .label('params')
     .required()
@@ -194,7 +235,7 @@ export const ethcAddTokensParamsSchema = () =>
     .items(
       Joi.object<EthcAddTokens['params'][0]>({
         tokenType: Joi.string().valid(TOKEN_TYPE.ERC20),
-        address: Joi.string().label('address').pattern(ethereumAddressRegex).required(),
+        address: Joi.string().pattern(ethereumAddressRegex).required(),
         displayDenom: Joi.string().required(),
         decimals: Joi.number().required(),
         imageURL: Joi.string().optional(),
@@ -202,3 +243,14 @@ export const ethcAddTokensParamsSchema = () =>
         name: Joi.string().optional(),
       }).required(),
     );
+
+export const WalletWatchAssetParamsSchema = () =>
+  Joi.object<WalletWatchAsset['params']>({
+    type: Joi.string().valid(TOKEN_TYPE.ERC20),
+    options: Joi.object<WalletWatchAsset['params']['options']>({
+      address: Joi.string().pattern(ethereumAddressRegex).required(),
+      decimals: Joi.number().required(),
+      symbol: Joi.string().required(),
+      image: Joi.string().optional(),
+    }),
+  }).required();
