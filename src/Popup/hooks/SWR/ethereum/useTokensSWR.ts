@@ -8,7 +8,7 @@ import type { AssetPayload } from '~/types/ethereum/asset';
 
 import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNetwork';
 
-export function useAssetsSWR(config?: SWRConfiguration) {
+export function useTokensSWR(config?: SWRConfiguration) {
   const { currentNetwork } = useCurrentEthereumNetwork();
 
   const requestURL = currentNetwork.id === MAINNET.id ? `https://api.mintscan.io/v1/assets/ethereum` : '';

@@ -16,6 +16,8 @@ export const PATH = {
   CHAIN__MANAGEMENT: '/chain/management',
   CHAIN__MANAGEMENT__USE: '/chain/management/use',
 
+  TOKEN__ADD__ERC20: '/token/add/erc20',
+
   ACCOUNT__MANAGEMENT: '/account/management',
   ACCOUNT__CREATE: '/account/create',
   ACCOUNT__INITIALIZE: '/account/initialize',

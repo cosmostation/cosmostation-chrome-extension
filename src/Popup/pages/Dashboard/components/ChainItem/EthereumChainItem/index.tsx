@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import type { FallbackProps } from 'react-error-boundary';
 import { useSetRecoilState } from 'recoil';
 
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
@@ -8,7 +9,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import ChainItem, { ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
+import ChainItem, { ChainItemError, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { EthereumChain } from '~/types/chain';
@@ -26,7 +27,7 @@ export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
   const { data: coinGeckoData } = useCoinGeckoPriceSWR();
 
   const setDashboard = useSetRecoilState(dashboardState);
-  const { data } = useBalanceSWR(chain, { suspense: true });
+  const { data } = useBalanceSWR({ suspense: true });
 
   const totalAmount = BigInt(data?.result || '0').toString();
 
@@ -74,4 +75,19 @@ export function EthereumChainItemSkeleton({ chain }: EthereumChainItemProps) {
   const { networkName } = currentNetwork;
   const { chainName, imageURL } = chain;
   return <ChainItemSkeleton chainName={`${chainName} (${networkName})`} imageURL={imageURL} onClick={handleOnClick} />;
+}
+
+export function EthereumChainItemError({ chain, resetErrorBoundary }: EthereumChainItemProps & FallbackProps) {
+  useBalanceSWR();
+  const { setCurrentChain } = useCurrentChain();
+  const { navigate } = useNavigate();
+
+  const handleOnClick = () => {
+    void setCurrentChain(chain);
+    navigate('/wallet');
+  };
+
+  const { chainName, imageURL } = chain;
+
+  return <ChainItemError onClick={handleOnClick} chainName={chainName} imageURL={imageURL} onClickRetry={() => resetErrorBoundary()} />;
 }

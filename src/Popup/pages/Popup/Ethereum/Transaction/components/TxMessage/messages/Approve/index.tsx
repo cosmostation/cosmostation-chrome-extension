@@ -3,7 +3,7 @@ import type { BigNumber } from 'bignumber.js';
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
-import { useAssetsSWR } from '~/Popup/hooks/SWR/ethereum/useAssetsSWR';
+import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -31,14 +31,14 @@ type ApproveProps = TxMessageProps;
 export default function Approve({ tx, determineTxType }: ApproveProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const assets = useAssetsSWR();
+  const tokens = useTokensSWR();
   const { t } = useTranslation();
 
   const { currency } = chromeStorage;
 
   const { to } = tx;
 
-  const token = assets.data.find((item) => isEqualsIgnoringCase(to, item.address));
+  const token = tokens.data.find((item) => isEqualsIgnoringCase(to, item.address));
 
   const price = (token?.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0;
 

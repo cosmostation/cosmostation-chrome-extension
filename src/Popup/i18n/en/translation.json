@@ -652,6 +652,23 @@
         }
       }
     },
+    "Token": {
+      "Add": {
+        "ERC20": {
+          "entry": {
+            "addTokenSnackbar": "Token added",
+            "addressPlaceholder": "Token contract address",
+            "decimalsPlaceholder": "Token decimals",
+            "displayDenomPlaceholder": "Token symbol",
+            "submitButton": "Add custom token",
+            "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
+          },
+          "layout": {
+            "title": "Import tokens"
+          }
+        }
+      }
+    },
     "Wallet": {
       "Receive": {
         "Entry": {
@@ -734,7 +751,22 @@
             "index": {
               "copied": "Copied",
               "depositButton": "Deposit",
+              "networkError": "Network error",
               "sendButton": "Send"
+            }
+          },
+          "TokenList": {
+            "components": {
+              "TokenItem": {
+                "index": {
+                  "invalidError": "Invalid token",
+                  "networkError": "Network error"
+                }
+              }
+            },
+            "index": {
+              "importTokenButton": "Import token",
+              "token": "Token"
             }
           }
         },
@@ -801,6 +833,15 @@
         "empty": "required",
         "max": "Please enter less than {#limit} characters.",
         "min": "Please enter at least {#limit} or more characters."
+      }
+    },
+    "importTokenForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "Invalid token address"
+          }
+        }
       }
     },
     "ledgerForm": {

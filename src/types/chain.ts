@@ -87,4 +87,4 @@ export type EthereumERC20Token = {
 
 export type Chain = TendermintChain | EthereumChain;
 
-export type Network = EthereumNetwork;
+export type EthereumToken = EthereumERC20Token;

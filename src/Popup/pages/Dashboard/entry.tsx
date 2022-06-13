@@ -10,7 +10,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import EthereumChainItem, { EthereumChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/EthereumChainItem';
+import EthereumChainItem, { EthereumChainItemError, EthereumChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/EthereumChainItem';
 import TendermintChainItem, { TendermintChainItemError, TendermintChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/TendermintChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { plus } from '~/Popup/utils/big';
@@ -79,7 +79,13 @@ export default function Entry() {
       <ChainListContainer>
         <ChainList>
           {chainList.filter(isEthereum).map((item) => (
-            <ErrorBoundary key={`${currentAccount.id}${item.chain.id}`} fallback={<EthereumChainItemSkeleton chain={item.chain} />}>
+            <ErrorBoundary
+              key={`${currentAccount.id}${item.chain.id}`}
+              FallbackComponent={
+                // eslint-disable-next-line react/no-unstable-nested-components
+                (props) => <EthereumChainItemError {...props} chain={item.chain} />
+              }
+            >
               <Suspense fallback={<EthereumChainItemSkeleton chain={item.chain} />}>
                 <EthereumChainItem key={item.chain.id} chain={item.chain} />
               </Suspense>
