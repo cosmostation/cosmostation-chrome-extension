@@ -20,7 +20,7 @@ type FetcherParams = {
   address: string;
 };
 
-export function useTokenBalance(token: EthereumToken, config?: SWRConfiguration) {
+export function useTokenBalance(token: Omit<EthereumToken, 'id' | 'ethereumNetworkId'>, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
   const accounts = useAccounts(true);
   const { currentNetwork } = useCurrentEthereumNetwork();

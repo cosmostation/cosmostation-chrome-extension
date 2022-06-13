@@ -21,6 +21,7 @@ import type { TendermintChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
 import type {
   EthcAddNetworkParams,
+  EthcAddTokensParams,
   EthcSwitchNetworkParams,
   EthcSwitchNetworkResponse,
   EthRequestAccountsResponse,
@@ -35,6 +36,7 @@ import type { ThemeType } from '~/types/theme';
 
 import {
   ethcAddNetworkParamsSchema,
+  ethcAddTokensParamsSchema,
   ethcSwitchNetworkParamsSchema,
   ethSignParamsSchema,
   ethSignTransactionParamsSchema,
@@ -535,6 +537,32 @@ function background() {
                     {
                       ...request,
                       message: { ...request.message, method, params: [...validatedParams] as EthcSwitchNetworkParams },
+                      windowId: window?.id,
+                    },
+                  ]);
+                } catch (err) {
+                  if (err instanceof EthereumRPCError) {
+                    throw err;
+                  }
+
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+                }
+              }
+
+              if (method === 'ethc_addTokens') {
+                const { params } = message;
+
+                const schema = ethcAddTokensParamsSchema();
+
+                try {
+                  const validatedParams = (await schema.validateAsync(params)) as EthcAddTokensParams;
+
+                  const window = await openWindow();
+                  await setStorage('queues', [
+                    ...queues,
+                    {
+                      ...request,
+                      message: { ...request.message, method, params: [...validatedParams] as EthcAddTokensParams },
                       windowId: window?.id,
                     },
                   ]);

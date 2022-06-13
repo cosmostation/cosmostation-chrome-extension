@@ -3,6 +3,7 @@ import type { LineType } from '~/types/chain';
 
 import type {
   EthcAddNetwork,
+  EthcAddTokens,
   EthcSwitchNetwork,
   EthGetBalance,
   EthRequestAccounts,
@@ -33,7 +34,8 @@ export type EthereumRequestMessage =
   | EthRequestAccounts
   | EthcAddNetwork
   | EthcSwitchNetwork
-  | PersonalSign;
+  | PersonalSign
+  | EthcAddTokens;
 
 export type TendermintRequestMessage = TenRequestAccount | TenAddChain | TenSignAmino | TenSignDirect | TenSupportedChainNames | TenAccount;
 
