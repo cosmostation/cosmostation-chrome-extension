@@ -113,11 +113,13 @@ export function TokenItemSkeleton({ token }: TokenItemSkeletonProps) {
   );
 }
 
-type TokenItemErrorProps = Pick<TokenItemProps, 'token'> & FallbackProps;
+type TokenItemErrorProps = Pick<TokenItemProps, 'token' | 'onClickDelete'> & FallbackProps;
 
-export function TokenItemError({ token, resetErrorBoundary }: TokenItemErrorProps) {
-  useTokenBalance(token);
+export function TokenItemError({ token, onClickDelete, resetErrorBoundary }: TokenItemErrorProps) {
+  const tokenBalance = useTokenBalance(token);
   const [isLoading, setIsLoading] = useState(false);
+
+  const isInvalid = tokenBalance.error?.message.startsWith("Returned values aren't valid") || false;
 
   const { t } = useTranslation();
 
@@ -132,22 +134,30 @@ export function TokenItemError({ token, resetErrorBoundary }: TokenItemErrorProp
             <Typography variant="h5">{token.displayDenom}</Typography>
           </LeftTextChainContainer>
           <LeftTextErrorContainer>
-            <Typography variant="h6">{t('pages.Wallet.components.ethereum.TokenList.components.TokenItem.index.networkError')}</Typography>
+            <Typography variant="h6">
+              {isInvalid
+                ? t('pages.Wallet.components.ethereum.TokenList.components.TokenItem.index.invalidError')
+                : t('pages.Wallet.components.ethereum.TokenList.components.TokenItem.index.networkError')}
+            </Typography>
           </LeftTextErrorContainer>
         </LeftTextContainer>
       </LeftContainer>
       <RightButtonContainer>
         <StyledIconButton
           onClick={() => {
-            setIsLoading(true);
+            if (isInvalid) {
+              onClickDelete?.();
+            } else {
+              setIsLoading(true);
 
-            setTimeout(() => {
-              resetErrorBoundary();
-              setIsLoading(false);
-            }, 500);
+              setTimeout(() => {
+                resetErrorBoundary();
+                setIsLoading(false);
+              }, 500);
+            }
           }}
         >
-          <RetryIcon />
+          {isInvalid ? <Close16Icon /> : <RetryIcon />}
         </StyledIconButton>
       </RightButtonContainer>
       {isLoading && <StyledAbsoluteLoading size="2rem" />}

@@ -759,6 +759,7 @@
             "components": {
               "TokenItem": {
                 "index": {
+                  "invalidError": "Invalid token",
                   "networkError": "Network error"
                 }
               }

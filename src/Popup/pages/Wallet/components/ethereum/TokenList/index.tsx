@@ -51,24 +51,25 @@ export default function TokenList() {
       </ListTitleContainer>
       <ListContainer>
         {isExistToken ? (
-          currentEthereumTokens.map((token) => (
-            <ErrorBoundary
-              key={token.id}
-              FallbackComponent={
-                // eslint-disable-next-line react/no-unstable-nested-components
-                (props) => <TokenItemError {...props} token={token} />
-              }
-            >
-              <Suspense fallback={<TokenItemSkeleton token={token} />}>
-                <TokenItem
-                  token={token}
-                  onClickDelete={async () => {
-                    await removeEthereumToken(token);
-                  }}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          ))
+          currentEthereumTokens.map((token) => {
+            const handleOnClickDelete = async () => {
+              await removeEthereumToken(token);
+            };
+
+            return (
+              <ErrorBoundary
+                key={token.id}
+                FallbackComponent={
+                  // eslint-disable-next-line react/no-unstable-nested-components
+                  (props) => <TokenItemError {...props} token={token} onClickDelete={handleOnClickDelete} />
+                }
+              >
+                <Suspense fallback={<TokenItemSkeleton token={token} />}>
+                  <TokenItem token={token} onClickDelete={handleOnClickDelete} />
+                </Suspense>
+              </ErrorBoundary>
+            );
+          })
         ) : (
           <AddTokenButton type="button" onClick={() => navigate('/token/add/erc20')}>
             <Plus16Icon />

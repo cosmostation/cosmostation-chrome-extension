@@ -759,6 +759,7 @@
             "components": {
               "TokenItem": {
                 "index": {
+                  "invalidError": "유효하지 않은 토큰",
                   "networkError": "네트워크 오류"
                 }
               }
