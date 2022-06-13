@@ -47,6 +47,10 @@ export default function Routes({ children }: RoutesType) {
         navigate('/popup/ethereum/add-network');
       }
 
+      if (chromeStorage.queues[0].message.method === 'ethc_addTokens') {
+        navigate('/popup/ethereum/add-tokens');
+      }
+
       if (chromeStorage.queues[0].message.method === 'ethc_switchNetwork') {
         navigate('/popup/ethereum/switch-network');
       }

@@ -7,7 +7,7 @@ export const StyledButton = styled('button')(({ theme }) => ({
   position: 'relative',
 
   backgroundColor: theme.colors.base02,
-  border: `0.1rem solid ${theme.colors.base02}`,
+  border: 0,
 
   padding: '1.2rem',
 

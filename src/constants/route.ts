@@ -60,4 +60,5 @@ export const PATH = {
   POPUP__ETHEREUM__SIGN: '/popup/ethereum/sign',
   POPUP__ETHEREUM__PERSONAL_SIGN: '/popup/ethereum/personal-sign',
   POPUP__ETHEREUM__TRANSACTION: '/popup/ethereum/transaction',
+  POPUP__ETHEREUM__ADD_TOKENS: '/popup/ethereum/add-tokens',
 } as const;

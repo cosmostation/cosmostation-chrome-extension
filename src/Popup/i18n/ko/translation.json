@@ -422,6 +422,14 @@
             "warning": "Cosmostation은 맞춤형 네트워크를 검증하지 않습니다."
           }
         },
+        "AddTokens": {
+          "entry": {
+            "addButton": "토큰 가져오기",
+            "addTokens": "토큰 가져오기",
+            "cancelButton": "취소",
+            "question": "토큰들을 가져오시겠습니까?"
+          }
+        },
         "PersonalSign": {
           "entry": {
             "cancelButton": "취소",

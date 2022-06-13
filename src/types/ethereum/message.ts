@@ -2,7 +2,7 @@ import type { Common, CustomChainParams, TransactionConfig } from 'web3-core';
 
 import type { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 
-import type { EthereumNetwork } from '../chain';
+import type { EthereumNetwork, EthereumToken } from '../chain';
 
 export type EthereumNoPopupMethodType = ValueOf<typeof ETHEREUM_NO_POPUP_METHOD_TYPE>;
 export type EthereumPopupMethodType = ValueOf<typeof ETHEREUM_POPUP_METHOD_TYPE>;
@@ -99,6 +99,18 @@ export type EthcSwitchNetwork = {
 };
 
 export type EthcSwitchNetworkResponse = null;
+
+export type EthcAddTokensParam = Omit<EthereumToken, 'id' | 'ethereumNetworkId'>;
+
+export type EthcAddTokensParams = EthcAddTokensParam[];
+
+export type EthcAddTokens = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETHC__ADD_TOKENS;
+  params: EthcAddTokensParams;
+  id?: number | string;
+};
+
+export type EthcAddTokensResponse = null;
 
 export type EthRPCRequest = {
   method: Exclude<EthereumNoPopupMethodType, typeof ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE>;

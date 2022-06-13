@@ -12,6 +12,7 @@ export const ETHEREUM_POPUP_METHOD_TYPE = {
   // custom
   ETHC__ADD_NETWORK: 'ethc_addNetwork',
   ETHC__SWITCH_NETWORK: 'ethc_switchNetwork',
+  ETHC__ADD_TOKENS: 'ethc_addTokens',
 } as const;
 
 export const ETHEREUM_NO_POPUP_METHOD_TYPE = {

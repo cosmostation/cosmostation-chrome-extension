@@ -1,8 +1,9 @@
+import { TOKEN_TYPE } from '~/constants/ethereum';
 import { TENDERMINT_TYPE } from '~/constants/tendermint';
 import Joi from '~/Popup/utils/joi';
 import { ethereumAddressRegex } from '~/Popup/utils/regex';
 import type { GasRate } from '~/types/chain';
-import type { CustomChain, EthcAddNetwork, EthereumTxCommon, EthSignTransaction } from '~/types/ethereum/message';
+import type { CustomChain, EthcAddNetwork, EthcAddTokens, EthereumTxCommon, EthSignTransaction } from '~/types/ethereum/message';
 import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint/amino';
 import type { Amount } from '~/types/tendermint/common';
 import type { TenAddChainParams, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
@@ -183,5 +184,21 @@ export const ethSignTransactionParamsSchema = () =>
             chainId: Joi.number().required(),
           }).required(),
         }).optional(),
+      }).required(),
+    );
+
+export const ethcAddTokensParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.object<EthcAddTokens['params'][0]>({
+        tokenType: Joi.string().valid(TOKEN_TYPE.ERC20),
+        address: Joi.string().label('address').pattern(ethereumAddressRegex).required(),
+        displayDenom: Joi.string().required(),
+        decimals: Joi.number().required(),
+        imageURL: Joi.string().optional(),
+        coinGeckoId: Joi.string().optional(),
+        name: Joi.string().optional(),
       }).required(),
     );

@@ -24,11 +24,24 @@ export function useCurrentEthereumTokens() {
     await setChromeStorage('ethereumTokens', newEthereumTokens);
   };
 
+  const addEthereumTokens = async (tokens: AddEthereumTokenParams[]) => {
+    const tokensAddress = tokens.map((token) => token.address.toLowerCase());
+
+    const newTokens = tokens.map((token) => ({ ...token, id: uuidv4(), ethereumNetworkId: currentNetwork.id }));
+
+    const newEthereumTokens = [
+      ...ethereumTokens.filter((item) => !(tokensAddress.includes(item.address.toLowerCase()) && item.ethereumNetworkId === currentNetwork.id)),
+      ...newTokens,
+    ];
+
+    await setChromeStorage('ethereumTokens', newEthereumTokens);
+  };
+
   const removeEthereumToken = async (token: EthereumToken) => {
     const newEthereumTokens = ethereumTokens.filter((item) => item.id !== token.id);
 
     await setChromeStorage('ethereumTokens', newEthereumTokens);
   };
 
-  return { currentEthereumTokens, addEthereumToken, removeEthereumToken };
+  return { currentEthereumTokens, addEthereumToken, removeEthereumToken, addEthereumTokens };
 }
