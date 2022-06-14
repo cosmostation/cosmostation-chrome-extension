@@ -51,7 +51,7 @@ export default function Entry() {
 
       await addEthereumToken({ ...newToken, tokenType: 'ERC20' });
 
-      enqueueSnackbar(t('pages.Token.Add.ERC20.entry.addTokenSnackbar'));
+      enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.ERC20.entry.addTokenSnackbar'));
     } finally {
       reset();
     }
@@ -64,14 +64,14 @@ export default function Entry() {
             <Info16Icon />
           </WarningIconContainer>
           <WarningTextContainer>
-            <Typography variant="h6">{t('pages.Token.Add.ERC20.entry.warning')}</Typography>
+            <Typography variant="h6">{t('pages.Chain.Ethereum.Token.Add.ERC20.entry.warning')}</Typography>
           </WarningTextContainer>
         </WarningContainer>
         <Div sx={{ marginBottom: '0.8rem' }}>
           <Input
             type="text"
             inputProps={register('address')}
-            placeholder={t('pages.Token.Add.ERC20.entry.addressPlaceholder')}
+            placeholder={t('pages.Chain.Ethereum.Token.Add.ERC20.entry.addressPlaceholder')}
             error={!!errors.address}
             helperText={errors.address?.message}
           />
@@ -82,7 +82,7 @@ export default function Entry() {
             inputProps={register('displayDenom')}
             error={!!errors.displayDenom}
             helperText={errors.displayDenom?.message}
-            placeholder={t('pages.Token.Add.ERC20.entry.displayDenomPlaceholder')}
+            placeholder={t('pages.Chain.Ethereum.Token.Add.ERC20.entry.displayDenomPlaceholder')}
           />
         </Div>
         <Div sx={{ marginBottom: '0.8rem' }}>
@@ -91,12 +91,12 @@ export default function Entry() {
             inputProps={register('decimals')}
             error={!!errors.decimals}
             helperText={errors.decimals?.message}
-            placeholder={t('pages.Token.Add.ERC20.entry.decimalsPlaceholder')}
+            placeholder={t('pages.Chain.Ethereum.Token.Add.ERC20.entry.decimalsPlaceholder')}
           />
         </Div>
         <ButtonContainer>
           <Button type="submit" disabled={!isDirty}>
-            {t('pages.Token.Add.ERC20.entry.submitButton')}
+            {t('pages.Chain.Ethereum.Token.Add.ERC20.entry.submitButton')}
           </Button>
         </ButtonContainer>
       </Container>

@@ -37,7 +37,7 @@ export default function Entry({ queue }: EntryProps) {
   const { deQueue } = useCurrentQueue();
   const { addEthereumTokens } = useCurrentEthereumTokens();
 
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const officialTokens = useTokensSWR();
 
   const { t } = useTranslation();
@@ -69,7 +69,7 @@ export default function Entry({ queue }: EntryProps) {
 
   return (
     <Container>
-      <Header network={currentNetwork} origin={origin} />
+      <Header network={currentEthereumNetwork} origin={origin} />
       <ContentContainer>
         <SwitchIconContainer>
           <Token60Icon />

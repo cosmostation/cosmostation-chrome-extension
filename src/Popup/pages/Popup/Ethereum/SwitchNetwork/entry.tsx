@@ -35,7 +35,7 @@ export default function Entry({ queue }: EntryProps) {
   const { chromeStorage } = useChromeStorage();
   const { deQueue } = useCurrentQueue();
 
-  const { currentNetwork, setCurrentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { t } = useTranslation();
 
@@ -47,7 +47,7 @@ export default function Entry({ queue }: EntryProps) {
 
   return (
     <Container>
-      <Header network={currentNetwork} origin={origin} />
+      <Header network={currentEthereumNetwork} origin={origin} />
       <ContentContainer>
         <SwitchIconContainer>
           <Switch60Icon />
@@ -87,7 +87,7 @@ export default function Entry({ queue }: EntryProps) {
           <Button
             onClick={async () => {
               if (requestNetwork) {
-                await setCurrentNetwork(requestNetwork);
+                await setCurrentEthereumNetwork(requestNetwork);
               }
 
               const result: EthcSwitchNetworkResponse = null;

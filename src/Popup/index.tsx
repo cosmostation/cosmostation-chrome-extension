@@ -35,6 +35,8 @@ import AccountInitializeNewMnemonicStep4 from '~/Popup/pages/Account/Initialize/
 import AccountInitializeNewMnemonicStep5 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step5';
 import AccountInitializeWelcome from '~/Popup/pages/Account/Initialize/Welcome';
 import AccountManagement from '~/Popup/pages/Account/Management';
+import ChainEthereumNetworkAdd from '~/Popup/pages/Chain/Ethereum/Network/Add';
+import ChainEthereumTokenAddERC20 from '~/Popup/pages/Chain/Ethereum/Token/Add/ERC20';
 import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
@@ -54,7 +56,6 @@ import SettingAddressBookAdd from '~/Popup/pages/Setting/AddressBook/Add';
 import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
 import SettingChangeLanguage from '~/Popup/pages/Setting/ChangeLanguage';
 import SettingChangePassword from '~/Popup/pages/Setting/ChangePassword';
-import TokenAddERC20 from '~/Popup/pages/Token/Add/ERC20';
 import Wallet from '~/Popup/pages/Wallet';
 import WalletReceive from '~/Popup/pages/Wallet/Receive';
 import WalletSend from '~/Popup/pages/Wallet/Send';
@@ -130,7 +131,8 @@ function Popup() {
                   <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
                   <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
 
-                  <Route path={PATH.TOKEN__ADD__ERC20} element={<TokenAddERC20 />} />
+                  <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__ERC20} element={<ChainEthereumTokenAddERC20 />} />
+                  <Route path={PATH.CHAIN__ETHEREUM__NETWORK__ADD} element={<ChainEthereumNetworkAdd />} />
 
                   <Route path={PATH.POPUP__REQUEST_ACCOUNT} element={<PopupRequestAccount />} />
 

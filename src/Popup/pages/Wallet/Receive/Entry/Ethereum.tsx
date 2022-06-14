@@ -32,11 +32,11 @@ export default function Ethereum({ chain }: EthereumProps) {
   const accounts = useAccounts(true);
   const { enqueueSnackbar } = useSnackbar();
   const { currentAccount } = useCurrentAccount();
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { t } = useTranslation();
 
-  const { explorerURL } = currentNetwork;
+  const { explorerURL } = currentEthereumNetwork;
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
 

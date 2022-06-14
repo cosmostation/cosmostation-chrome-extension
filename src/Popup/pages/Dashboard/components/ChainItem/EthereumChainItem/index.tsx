@@ -19,7 +19,7 @@ type EthereumChainItemProps = {
 };
 
 export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { chromeStorage } = useChromeStorage();
   const { currentAccount } = useCurrentAccount();
   const { setCurrentChain } = useCurrentChain();
@@ -31,7 +31,7 @@ export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
 
   const totalAmount = BigInt(data?.result || '0').toString();
 
-  const { decimals, networkName, coinGeckoId, displayDenom, imageURL } = currentNetwork;
+  const { decimals, networkName, coinGeckoId, displayDenom, imageURL } = currentEthereumNetwork;
   const { chainName } = chain;
 
   useEffect(() => {
@@ -65,14 +65,14 @@ export function EthereumChainItemSkeleton({ chain }: EthereumChainItemProps) {
   const { setCurrentChain } = useCurrentChain();
   const { navigate } = useNavigate();
 
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const handleOnClick = () => {
     void setCurrentChain(chain);
     navigate('/wallet');
   };
 
-  const { networkName, imageURL } = currentNetwork;
+  const { networkName, imageURL } = currentEthereumNetwork;
   const { chainName } = chain;
   return <ChainItemSkeleton chainName={`${chainName} (${networkName})`} imageURL={imageURL} onClick={handleOnClick} />;
 }

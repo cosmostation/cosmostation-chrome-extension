@@ -47,6 +47,8 @@ export const ContentLeftContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
+
+  width: '100%',
 });
 
 export const ContentLeftImageContainer = styled('div')({
@@ -64,6 +66,16 @@ export const ContentLeftImageContainer = styled('div')({
 
 export const ContentLeftTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+
+  textAlign: 'left',
+  maxWidth: '9.5rem',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'auto',
+  },
 }));
 
 export const ContentRightContainer = styled('div')({

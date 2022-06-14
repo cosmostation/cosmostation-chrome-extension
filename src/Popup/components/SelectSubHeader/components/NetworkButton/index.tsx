@@ -10,13 +10,13 @@ import Change from '~/images/icons/Change.svg';
 type NetworkButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & { children?: string };
 
 export default function NetworkButton({ children, ...remainder }: NetworkButtonProps) {
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   return (
     <StyledButton {...remainder}>
       <ContentContainer>
         <ContentLeftImageContainer>
-          <Image src={currentNetwork.imageURL} />
+          <Image src={currentEthereumNetwork.imageURL} />
         </ContentLeftImageContainer>
         <ContentCenterTextContainer>
           <Typography variant="h6">{children}</Typography>

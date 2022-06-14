@@ -43,7 +43,7 @@ export default function TokenList() {
         </ListTitleLeftContainer>
         <ListTitleRightContainer>
           {isExistToken && (
-            <AddButton type="button" onClick={() => navigate('/token/add/erc20')}>
+            <AddButton type="button" onClick={() => navigate('/chain/ethereum/token/add/erc20')}>
               {t('pages.Wallet.components.ethereum.TokenList.index.importTokenButton')}
             </AddButton>
           )}
@@ -71,7 +71,7 @@ export default function TokenList() {
             );
           })
         ) : (
-          <AddTokenButton type="button" onClick={() => navigate('/token/add/erc20')}>
+          <AddTokenButton type="button" onClick={() => navigate('/chain/ethereum/token/add/erc20')}>
             <Plus16Icon />
             <AddTokenTextContainer>
               <Typography variant="h6">{t('pages.Wallet.components.ethereum.TokenList.index.importTokenButton')}</Typography>
