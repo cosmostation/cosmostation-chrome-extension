@@ -8,6 +8,7 @@ import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { ethereumAddressRegex } from '~/Popup/utils/regex';
 import type { AddressInfo } from '~/types/chromeStorage';
 
 import ChainButton from './components/ChainButton';
@@ -24,7 +25,17 @@ export default function Entry() {
 
   const { addressBook } = chromeStorage;
 
-  const regex = chain.line === 'TENDERMINT' ? { prefix: chain.bech32Prefix.address, lengths: [39] } : undefined;
+  const regex = (() => {
+    if (chain.line === 'TENDERMINT') {
+      return new RegExp(`^${chain.bech32Prefix.address}(${[39].map((item) => `(.{${item},${item}})`).join('|')})$`);
+    }
+
+    if (chain.line === 'ETHEREUM') {
+      return ethereumAddressRegex;
+    }
+
+    return /^.*$/;
+  })();
 
   const { addressBookForm } = useSchema({ regex });
 
