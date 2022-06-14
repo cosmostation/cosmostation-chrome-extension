@@ -1,5 +1,7 @@
 import { styled } from '@mui/material/styles';
 
+import IconButton from '~/Popup/components/common/IconButton';
+
 export const Container = styled('div')(({ theme }) => ({
   width: '18rem',
   maxHeight: '49.7rem',
@@ -54,3 +56,14 @@ export const BetaNetworkTitleContainer = styled('div')(({ theme }) => ({
 export const BetaNetworkListContainer = styled('div')({
   marginTop: '0.8rem',
 });
+
+export const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  marginRight: '-0.4rem',
+  padding: 0,
+  '& svg': {
+    fill: theme.colors.base05,
+    '& > path': {
+      fill: theme.colors.base05,
+    },
+  },
+}));

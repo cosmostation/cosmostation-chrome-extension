@@ -18,7 +18,10 @@ import {
   HeaderLeftContainer,
   HeaderRightContainer,
   NetworkListContainer,
+  StyledIconButton,
 } from './styled';
+
+import Plus24Icon from '~/images/icons/Plus24.svg';
 
 type NetworkPopoverProps = Omit<PopoverProps, 'children'>;
 
@@ -34,7 +37,11 @@ export default function NetworkPopover({ onClose, ...remainder }: NetworkPopover
           <HeaderLeftContainer>
             <Typography variant="h5">{t('pages.Wallet.components.Header.NetworkPopover.index.title')}</Typography>
           </HeaderLeftContainer>
-          <HeaderRightContainer />
+          <HeaderRightContainer>
+            <StyledIconButton>
+              <Plus24Icon />
+            </StyledIconButton>
+          </HeaderRightContainer>
         </HeaderContainer>
         <Divider />
         <BodyContainer>
