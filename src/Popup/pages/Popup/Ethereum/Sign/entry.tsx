@@ -44,7 +44,7 @@ export default function Entry({ queue }: EntryProps) {
   const { currentPassword } = useCurrentPassword();
   const chain = ETHEREUM;
 
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { t } = useTranslation();
 
@@ -81,7 +81,7 @@ export default function Entry({ queue }: EntryProps) {
 
   return (
     <Container>
-      <Header network={currentNetwork} origin={origin} />
+      <Header network={currentEthereumNetwork} origin={origin} />
       <ContentContainer>
         <TitleContainer>
           <Typography variant="h2">{t('pages.Popup.Ethereum.Sign.entry.signatureRequest')}</Typography>

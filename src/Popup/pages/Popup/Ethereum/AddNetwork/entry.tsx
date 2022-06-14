@@ -1,15 +1,13 @@
-import { v4 as uuidv4 } from 'uuid';
 import { Typography } from '@mui/material';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { EthereumNetwork } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { EthcAddNetwork, EthcAddNetworkResponse } from '~/types/ethereum/message';
 
@@ -38,7 +36,7 @@ type EntryProps = {
 
 export default function Entry({ queue }: EntryProps) {
   const { deQueue } = useCurrentQueue();
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { addEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { t } = useTranslation();
 
@@ -133,18 +131,7 @@ export default function Entry({ queue }: EntryProps) {
           </OutlineButton>
           <Button
             onClick={async () => {
-              const id = uuidv4();
-
-              const currentAdditionalEthereumNetworks = chromeStorage.additionalEthereumNetworks;
-
-              const beforeNetwork = currentAdditionalEthereumNetworks.find((item) => item.chainId === params.chainId);
-
-              const newAdditionalEthereumNetworks: EthereumNetwork[] = [
-                ...currentAdditionalEthereumNetworks.filter((item) => item.chainId !== params.chainId),
-                { ...params, id: beforeNetwork?.id || id },
-              ];
-
-              await setChromeStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
+              await addEthereumNetwork(params);
 
               const result: EthcAddNetworkResponse = null;
 

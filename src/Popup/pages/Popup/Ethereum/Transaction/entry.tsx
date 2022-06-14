@@ -85,9 +85,9 @@ export default function Entry({ queue }: EntryProps) {
   const { currentPassword } = useCurrentPassword();
   const currentFee = useFeeSWR({ refreshInterval: 0 });
 
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const { displayDenom, coinGeckoId, decimals } = currentNetwork;
+  const { displayDenom, coinGeckoId, decimals } = currentEthereumNetwork;
 
   const { t } = useTranslation();
 
@@ -215,7 +215,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const totalDisplayDenom = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
-      return currentNetwork.displayDenom;
+      return currentEthereumNetwork.displayDenom;
     }
 
     if (txType.data?.type === 'transfer') {
@@ -223,7 +223,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return '';
-  }, [currentNetwork, txType, token]);
+  }, [currentEthereumNetwork, txType, token]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -264,7 +264,7 @@ export default function Entry({ queue }: EntryProps) {
   return (
     <>
       <Container>
-        <Header network={currentNetwork} origin={origin} />
+        <Header network={currentEthereumNetwork} origin={origin} />
         <ContentContainer>
           <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
             <Tab label="Detail" />
@@ -354,7 +354,7 @@ export default function Entry({ queue }: EntryProps) {
                 ) : txType.data?.type === 'simpleSend' ? (
                   <>
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                      {plus(displayFee, totalDisplayAmount, currentNetwork.decimals)}
+                      {plus(displayFee, totalDisplayAmount, currentEthereumNetwork.decimals)}
                     </Number>
                     &nbsp;
                     <Typography variant="h5n">{displayDenom}</Typography>
@@ -400,7 +400,7 @@ export default function Entry({ queue }: EntryProps) {
               disabled={isLoadingFee}
               onClick={async () => {
                 try {
-                  const web3 = new Web3(currentNetwork.rpcURL);
+                  const web3 = new Web3(currentEthereumNetwork.rpcURL);
 
                   const account = web3.eth.accounts.privateKeyToAccount(keyPair!.privateKey.toString('hex'));
 

@@ -9,16 +9,16 @@ type AddEthereumTokenParams = Omit<EthereumToken, 'id' | 'ethereumNetworkId'>;
 
 export function useCurrentEthereumTokens() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { ethereumTokens } = chromeStorage;
 
-  const currentEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentNetwork.id);
+  const currentEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentEthereumNetwork.id);
 
   const addEthereumToken = async (token: AddEthereumTokenParams) => {
     const newEthereumTokens = [
-      ...ethereumTokens.filter((item) => !(item.address.toLowerCase() === token.address.toLowerCase() && item.ethereumNetworkId === currentNetwork.id)),
-      { ...token, id: uuidv4(), ethereumNetworkId: currentNetwork.id },
+      ...ethereumTokens.filter((item) => !(item.address.toLowerCase() === token.address.toLowerCase() && item.ethereumNetworkId === currentEthereumNetwork.id)),
+      { ...token, id: uuidv4(), ethereumNetworkId: currentEthereumNetwork.id },
     ];
 
     await setChromeStorage('ethereumTokens', newEthereumTokens);
@@ -29,10 +29,10 @@ export function useCurrentEthereumTokens() {
 
     const tokensAddress = filteredTokens.map((token) => token.address.toLowerCase());
 
-    const newTokens = filteredTokens.map((token) => ({ ...token, id: uuidv4(), ethereumNetworkId: currentNetwork.id }));
+    const newTokens = filteredTokens.map((token) => ({ ...token, id: uuidv4(), ethereumNetworkId: currentEthereumNetwork.id }));
 
     const newEthereumTokens = [
-      ...ethereumTokens.filter((item) => !(tokensAddress.includes(item.address.toLowerCase()) && item.ethereumNetworkId === currentNetwork.id)),
+      ...ethereumTokens.filter((item) => !(tokensAddress.includes(item.address.toLowerCase()) && item.ethereumNetworkId === currentEthereumNetwork.id)),
       ...newTokens,
     ];
 

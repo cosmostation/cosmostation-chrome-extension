@@ -21,9 +21,9 @@ export function useBalanceSWR(config?: SWRConfiguration) {
   const chain = ETHEREUM;
   const accounts = useAccounts();
   const { chromeStorage } = useChromeStorage();
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const { rpcURL } = currentNetwork;
+  const { rpcURL } = currentEthereumNetwork;
 
   const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
 

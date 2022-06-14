@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import type { EthereumNetwork } from '~/types/chain';
@@ -11,12 +13,33 @@ export function useCurrentEthereumNetwork() {
 
   const currentAccountSelectedEthereumNetworkId = allNetworks.find((network) => network.id === selectedEthereumNetworkId)?.id ?? allNetworks[0].id;
 
-  const currentNetwork = allNetworks.find((network) => network.id === currentAccountSelectedEthereumNetworkId)!;
+  const currentEthereumNetwork = allNetworks.find((network) => network.id === currentAccountSelectedEthereumNetworkId)!;
 
-  const setCurrentNetwork = async (network: EthereumNetwork) => {
-    const newselectedEthereumNetworkId = network.id;
-    await setChromeStorage('selectedEthereumNetworkId', newselectedEthereumNetworkId);
+  const setCurrentEthereumNetwork = async (network: EthereumNetwork) => {
+    const newSelectedEthereumNetworkId = network.id;
+    await setChromeStorage('selectedEthereumNetworkId', newSelectedEthereumNetworkId);
   };
 
-  return { currentNetwork, setCurrentNetwork };
+  const removeEthereumNetwork = async (network: EthereumNetwork) => {
+    if (currentEthereumNetwork.id === network.id) {
+      await setCurrentEthereumNetwork(ETHEREUM_NETWORKS[0]);
+    }
+
+    const newAdditionalEthereumNetworks = additionalEthereumNetworks.filter((item) => item.id !== network.id);
+
+    await setChromeStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
+  };
+
+  const addEthereumNetwork = async (network: Omit<EthereumNetwork, 'id'>) => {
+    const beforeNetwork = additionalEthereumNetworks.find((item) => item.chainId === network.chainId);
+
+    const newAdditionalEthereumNetworks: EthereumNetwork[] = [
+      ...additionalEthereumNetworks.filter((item) => item.chainId !== network.chainId),
+      { ...network, id: beforeNetwork?.id || uuidv4() },
+    ];
+
+    await setChromeStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
+  };
+
+  return { ethereumNetworks: additionalEthereumNetworks, currentEthereumNetwork, setCurrentEthereumNetwork, removeEthereumNetwork, addEthereumNetwork };
 }

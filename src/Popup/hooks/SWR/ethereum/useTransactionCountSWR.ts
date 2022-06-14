@@ -17,9 +17,9 @@ type FetchParams = {
 };
 
 export function useTransactionCountSWR(bodyParams: BodyParams, config?: SWRConfiguration) {
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const { rpcURL } = currentNetwork;
+  const { rpcURL } = currentEthereumNetwork;
 
   const fetcher = (params: FetchParams) => post<TransactionCountPayload>(params.url, { ...params.body, id: 1, jsonrpc: '2.0' });
 

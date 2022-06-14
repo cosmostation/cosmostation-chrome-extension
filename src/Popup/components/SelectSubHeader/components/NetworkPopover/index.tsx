@@ -4,7 +4,6 @@ import { Typography } from '@mui/material';
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
@@ -24,12 +23,9 @@ import {
 type NetworkPopoverProps = Omit<PopoverProps, 'children'>;
 
 export default function NetworkPopover({ onClose, ...remainder }: NetworkPopoverProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { currentNetwork, setCurrentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork, setCurrentEthereumNetwork, removeEthereumNetwork, ethereumNetworks } = useCurrentEthereumNetwork();
 
   const { t } = useTranslation();
-
-  const { additionalEthereumNetworks } = chromeStorage;
 
   return (
     <Popover {...remainder} onClose={onClose}>
@@ -47,10 +43,10 @@ export default function NetworkPopover({ onClose, ...remainder }: NetworkPopover
               <NetworkItemButton
                 key={network.id}
                 onClick={async () => {
-                  await setCurrentNetwork(network);
+                  await setCurrentEthereumNetwork(network);
                   onClose?.({}, 'backdropClick');
                 }}
-                isActive={network.id === currentNetwork.id}
+                isActive={network.id === currentEthereumNetwork.id}
                 imgSrc={network.imageURL}
               >
                 {network.networkName}
@@ -58,32 +54,24 @@ export default function NetworkPopover({ onClose, ...remainder }: NetworkPopover
             ))}
           </NetworkListContainer>
 
-          {additionalEthereumNetworks.length > 0 && (
+          {ethereumNetworks.length > 0 && (
             <BetaNetworkContainer>
               <BetaNetworkTitleContainer>
                 <Typography variant="h6">{t('pages.Wallet.components.Header.NetworkPopover.index.customNetwork')}</Typography>
               </BetaNetworkTitleContainer>
               <BetaNetworkListContainer>
                 <NetworkListContainer>
-                  {additionalEthereumNetworks.map((network) => (
+                  {ethereumNetworks.map((network) => (
                     <NetworkItemButton
                       key={network.id}
                       onClickDelete={async () => {
-                        if (network.id === currentNetwork.id) {
-                          await setCurrentNetwork(ETHEREUM_NETWORKS[0]);
-                        }
-
-                        const currentadditionalEthereumNetworks = chromeStorage.additionalEthereumNetworks;
-
-                        const newadditionalEthereumNetworks = currentadditionalEthereumNetworks.filter((item) => item.id !== network.id);
-
-                        await setChromeStorage('additionalEthereumNetworks', newadditionalEthereumNetworks);
+                        await removeEthereumNetwork(network);
                       }}
                       onClick={async () => {
-                        await setCurrentNetwork(network);
+                        await setCurrentEthereumNetwork(network);
                         onClose?.({}, 'backdropClick');
                       }}
-                      isActive={network.id === currentNetwork.id}
+                      isActive={network.id === currentEthereumNetwork.id}
                       imgSrc={network.imageURL}
                     >
                       {network.networkName}

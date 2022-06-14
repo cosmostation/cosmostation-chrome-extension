@@ -23,7 +23,7 @@ type FetcherParams = {
 export function useTokenBalance(token: Omit<EthereumToken, 'id' | 'ethereumNetworkId'>, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
   const accounts = useAccounts(true);
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { currentAccount } = useCurrentAccount();
 
@@ -38,7 +38,7 @@ export function useTokenBalance(token: Omit<EthereumToken, 'id' | 'ethereumNetwo
   };
 
   const { data, error, mutate } = useSWR<ERC20ContractBalanceOfPayload, AxiosError>(
-    { rpcURL: currentNetwork.rpcURL, tokenAddress: token.address, address },
+    { rpcURL: currentEthereumNetwork.rpcURL, tokenAddress: token.address, address },
     fetcher,
     {
       revalidateOnFocus: false,

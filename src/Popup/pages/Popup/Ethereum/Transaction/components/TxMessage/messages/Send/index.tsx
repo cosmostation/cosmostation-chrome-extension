@@ -32,11 +32,11 @@ type SendProps = TxMessageProps;
 export default function Send({ tx }: SendProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { t } = useTranslation();
 
   const { currency } = chromeStorage;
-  const { displayDenom, coinGeckoId } = currentNetwork;
+  const { displayDenom, coinGeckoId } = currentEthereumNetwork;
   const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
 
   const { from, to } = tx;
@@ -48,11 +48,11 @@ export default function Send({ tx }: SendProps) {
 
   const displayAmount = useMemo(() => {
     try {
-      return toDisplayDenomAmount(BigInt(amount).toString(10), currentNetwork.decimals);
+      return toDisplayDenomAmount(BigInt(amount).toString(10), currentEthereumNetwork.decimals);
     } catch {
       return '0';
     }
-  }, [amount, currentNetwork]);
+  }, [amount, currentEthereumNetwork]);
 
   const value = times(displayAmount, price);
 

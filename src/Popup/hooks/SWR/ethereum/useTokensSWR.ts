@@ -9,9 +9,9 @@ import type { AssetPayload } from '~/types/ethereum/asset';
 import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNetwork';
 
 export function useTokensSWR(config?: SWRConfiguration) {
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const requestURL = currentNetwork.id === MAINNET.id ? `https://api.mintscan.io/v1/assets/ethereum` : '';
+  const requestURL = currentEthereumNetwork.id === MAINNET.id ? `https://api.mintscan.io/v1/assets/ethereum` : '';
 
   const fetcher = (fetchUrl: string) => get<AssetPayload>(fetchUrl);
 
@@ -19,7 +19,7 @@ export function useTokensSWR(config?: SWRConfiguration) {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    isPaused: () => currentNetwork.id !== MAINNET.id,
+    isPaused: () => currentEthereumNetwork.id !== MAINNET.id,
     ...config,
   });
 

@@ -18,7 +18,7 @@ type EthereumProps = {
 };
 
 export default function Ethereum({ chain, isShowChain }: EthereumProps) {
-  const { currentNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { currentAccount } = useCurrentAccount();
   const { setCurrentChain } = useCurrentChain();
 
@@ -48,7 +48,7 @@ export default function Ethereum({ chain, isShowChain }: EthereumProps) {
                 setPopoverAnchorEl(event.currentTarget);
               }}
             >
-              {currentNetwork.networkName}
+              {currentEthereumNetwork.networkName}
             </NetworkButton>
             <ChainButton
               imgSrc={chain.imageURL}
