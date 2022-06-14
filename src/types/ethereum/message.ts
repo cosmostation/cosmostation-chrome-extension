@@ -101,6 +101,7 @@ export type WalletAddEthereumChainParam1 = {
     decimals: number;
   };
   rpcUrls: string[];
+  coinGeckoId?: string;
 };
 
 export type WalletAddEthereumChainParams = [WalletAddEthereumChainParam1];
@@ -152,6 +153,7 @@ export type WalletWatchAssetParam = {
     symbol: string;
     decimals: number;
     image?: string;
+    coinGeckoId?: string;
   };
 };
 

@@ -598,6 +598,7 @@ function background() {
                     decimals: validatedParams.options.decimals,
                     displayDenom: validatedParams.options.symbol,
                     imageURL: validatedParams.options.image,
+                    coinGeckoId: validatedParams.options.coinGeckoId,
                   };
 
                   const window = await openWindow();
@@ -648,6 +649,7 @@ function background() {
                     rpcURL: param.rpcUrls[0],
                     explorerURL: param.blockExplorerUrls?.[0],
                     imageURL: param.iconUrls?.[0],
+                    coinGeckoId: param.coinGeckoId,
                   };
 
                   const window = await openWindow();

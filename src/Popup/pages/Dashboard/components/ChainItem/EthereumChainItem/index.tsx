@@ -31,8 +31,8 @@ export default function EthereumChainItem({ chain }: EthereumChainItemProps) {
 
   const totalAmount = BigInt(data?.result || '0').toString();
 
-  const { decimals, networkName, coinGeckoId, displayDenom } = currentNetwork;
-  const { chainName, imageURL } = chain;
+  const { decimals, networkName, coinGeckoId, displayDenom, imageURL } = currentNetwork;
+  const { chainName } = chain;
 
   useEffect(() => {
     setDashboard((prev) => ({
@@ -72,8 +72,8 @@ export function EthereumChainItemSkeleton({ chain }: EthereumChainItemProps) {
     navigate('/wallet');
   };
 
-  const { networkName } = currentNetwork;
-  const { chainName, imageURL } = chain;
+  const { networkName, imageURL } = currentNetwork;
+  const { chainName } = chain;
   return <ChainItemSkeleton chainName={`${chainName} (${networkName})`} imageURL={imageURL} onClick={handleOnClick} />;
 }
 

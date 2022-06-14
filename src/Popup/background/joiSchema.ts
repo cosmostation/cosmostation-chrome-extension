@@ -165,6 +165,7 @@ export const walletAddEthereumChainParamsSchema = () =>
         })
           .label('nativeCurrency')
           .required(),
+        coinGeckoId: Joi.string().optional(),
       }).required(),
     )
     .length(1)
@@ -252,5 +253,6 @@ export const WalletWatchAssetParamsSchema = () =>
       decimals: Joi.number().required(),
       symbol: Joi.string().required(),
       image: Joi.string().optional(),
+      coinGeckoId: Joi.string().optional(),
     }),
   }).required();
