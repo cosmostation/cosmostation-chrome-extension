@@ -379,6 +379,44 @@
       }
     },
     "Chain": {
+      "Ethereum": {
+        "Network": {
+          "Add": {
+            "entry": {
+              "addNetworkSnackbar": "네트워크가 추가 되었습니다.",
+              "chainIdPlaceholder": "체인 ID (예: 0x1)",
+              "coinGeckoIdPlaceholder": "Coingecko API id (선택)",
+              "displayDenomPlaceholder": "통화 기호 (선택)",
+              "explorerURLPlaceholder": "블록 탐색기 URL (선택)",
+              "imageURLPlaceholder": "통화 기호 이미지 URL (선택)",
+              "networkNamePlaceholder": "네트워크 이름",
+              "rpcURLPlaceholder": "RPC URL",
+              "submitButton": "네트워크 추가",
+              "warning": "악의적인 네트워크 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 네트워크만 추가하세요."
+            },
+            "layout": {
+              "title": "네트워크 추가"
+            }
+          }
+        },
+        "Token": {
+          "Add": {
+            "ERC20": {
+              "entry": {
+                "addTokenSnackbar": "토큰이 추가 되었습니다.",
+                "addressPlaceholder": "토큰 계약 주소",
+                "decimalsPlaceholder": "토큰 십진수",
+                "displayDenomPlaceholder": "토큰 기호",
+                "submitButton": "커스텀 토큰 추가",
+                "warning": "기존 토큰의 가짜 버전 생성을 포함하여 누구나 토큰을 생성할 수 있습니다. 사기 및 보안 위험에 대해 주의하세요."
+              },
+              "layout": {
+                "title": "토큰 가져오기"
+              }
+            }
+          }
+        }
+      },
       "Management": {
         "Use": {
           "entry": {
@@ -660,23 +698,6 @@
         }
       }
     },
-    "Token": {
-      "Add": {
-        "ERC20": {
-          "entry": {
-            "addTokenSnackbar": "토큰이 추가 되었습니다.",
-            "addressPlaceholder": "토큰 계약 주소",
-            "decimalsPlaceholder": "토큰 십진수",
-            "displayDenomPlaceholder": "토큰 기호",
-            "submitButton": "커스텀 토큰 추가",
-            "warning": "기존 토큰의 가짜 버전 생성을 포함하여 누구나 토큰을 생성할 수 있습니다. 사기 및 보안 위험에 대해 주의하세요."
-          },
-          "layout": {
-            "title": "토큰 가져오기"
-          }
-        }
-      }
-    },
     "Wallet": {
       "Receive": {
         "Entry": {
@@ -797,6 +818,15 @@
     }
   },
   "schema": {
+    "addNetworkForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "16진수로 입력하셔야 합니다. (예: 0x1)"
+          }
+        }
+      }
+    },
     "addressBookForm": {
       "address": {
         "string": {

@@ -379,6 +379,44 @@
       }
     },
     "Chain": {
+      "Ethereum": {
+        "Network": {
+          "Add": {
+            "entry": {
+              "addNetworkSnackbar": "Network added",
+              "chainIdPlaceholder": "Chain id (eg. 0x1)",
+              "coinGeckoIdPlaceholder": "Coingecko API id (option)",
+              "displayDenomPlaceholder": "Currency symbol (option)",
+              "explorerURLPlaceholder": "Explorer URL (option)",
+              "imageURLPlaceholder": "Symbol image URL (option)",
+              "networkNamePlaceholder": "Network name",
+              "rpcURLPlaceholder": "RPC URL",
+              "submitButton": "Add a network",
+              "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust."
+            },
+            "layout": {
+              "title": "Add a network"
+            }
+          }
+        },
+        "Token": {
+          "Add": {
+            "ERC20": {
+              "entry": {
+                "addTokenSnackbar": "Token added",
+                "addressPlaceholder": "Token contract address",
+                "decimalsPlaceholder": "Token decimals",
+                "displayDenomPlaceholder": "Token symbol",
+                "submitButton": "Add custom token",
+                "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
+              },
+              "layout": {
+                "title": "Import tokens"
+              }
+            }
+          }
+        }
+      },
       "Management": {
         "Use": {
           "entry": {
@@ -660,23 +698,6 @@
         }
       }
     },
-    "Token": {
-      "Add": {
-        "ERC20": {
-          "entry": {
-            "addTokenSnackbar": "Token added",
-            "addressPlaceholder": "Token contract address",
-            "decimalsPlaceholder": "Token decimals",
-            "displayDenomPlaceholder": "Token symbol",
-            "submitButton": "Add custom token",
-            "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
-          },
-          "layout": {
-            "title": "Import tokens"
-          }
-        }
-      }
-    },
     "Wallet": {
       "Receive": {
         "Entry": {
@@ -797,6 +818,15 @@
     }
   },
   "schema": {
+    "addNetworkForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "Must be entered in hexadecimal (eg. 0x1)"
+          }
+        }
+      }
+    },
     "addressBookForm": {
       "address": {
         "string": {

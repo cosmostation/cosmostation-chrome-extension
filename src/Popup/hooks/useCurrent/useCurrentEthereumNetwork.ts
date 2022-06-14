@@ -31,6 +31,10 @@ export function useCurrentEthereumNetwork() {
   };
 
   const addEthereumNetwork = async (network: Omit<EthereumNetwork, 'id'>) => {
+    const officialChainId = ETHEREUM_NETWORKS.map((item) => item.chainId);
+
+    if (officialChainId.includes(network.chainId)) return;
+
     const beforeNetwork = additionalEthereumNetworks.find((item) => item.chainId === network.chainId);
 
     const newAdditionalEthereumNetworks: EthereumNetwork[] = [

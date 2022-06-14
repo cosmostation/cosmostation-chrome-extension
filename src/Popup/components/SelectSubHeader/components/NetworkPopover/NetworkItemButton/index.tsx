@@ -23,7 +23,7 @@ type ChainItemButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttribu
   onClickDelete?: () => void;
 };
 
-export default function ChainItemButton({ children, imgSrc, isActive = false, onClickDelete, ...remainder }: ChainItemButtonProps) {
+export default function NetworkItemButton({ children, imgSrc, isActive = false, onClickDelete, ...remainder }: ChainItemButtonProps) {
   return (
     <StyledButton {...remainder} data-is-active={isActive ? 1 : 0}>
       <ContentContainer>

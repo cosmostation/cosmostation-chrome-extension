@@ -10,8 +10,9 @@ export default function Layout({ children }: LayoutProps) {
   const { navigateBack } = useNavigate();
 
   const { t } = useTranslation();
+
   return (
-    <BaseLayout useHeader={{}} useSubHeader={{ title: t('pages.Chain.Ethereum.Token.Add.ERC20.layout.title'), onClick: () => navigateBack() }}>
+    <BaseLayout useHeader={{}} useSubHeader={{ title: t('pages.Chain.Ethereum.Network.Add.layout.title'), onClick: () => navigateBack() }}>
       {children}
     </BaseLayout>
   );

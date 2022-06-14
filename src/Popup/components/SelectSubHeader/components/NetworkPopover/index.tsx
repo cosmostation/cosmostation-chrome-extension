@@ -5,6 +5,7 @@ import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import NetworkItemButton from './NetworkItemButton';
@@ -28,6 +29,7 @@ type NetworkPopoverProps = Omit<PopoverProps, 'children'>;
 export default function NetworkPopover({ onClose, ...remainder }: NetworkPopoverProps) {
   const { currentEthereumNetwork, setCurrentEthereumNetwork, removeEthereumNetwork, ethereumNetworks } = useCurrentEthereumNetwork();
 
+  const { navigate } = useNavigate();
   const { t } = useTranslation();
 
   return (
@@ -38,7 +40,7 @@ export default function NetworkPopover({ onClose, ...remainder }: NetworkPopover
             <Typography variant="h5">{t('pages.Wallet.components.Header.NetworkPopover.index.title')}</Typography>
           </HeaderLeftContainer>
           <HeaderRightContainer>
-            <StyledIconButton>
+            <StyledIconButton onClick={() => navigate('/chain/ethereum/network/add')}>
               <Plus24Icon />
             </StyledIconButton>
           </HeaderRightContainer>
