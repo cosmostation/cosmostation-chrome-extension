@@ -9,6 +9,7 @@ const lightThemeColors: Colors = {
   base06: '#1A1D26',
   text01: '#1A1D26',
   text02: '#96A6BF',
+  red01: '#FFF2F2',
 };
 
 const darkThemeColors: Colors = {
@@ -20,6 +21,7 @@ const darkThemeColors: Colors = {
   base06: '#FFFFFF',
   text01: '#FFFFFF',
   text02: '#727E91',
+  red01: '#3F0303',
 };
 
 const accentColors: AccentColors = {

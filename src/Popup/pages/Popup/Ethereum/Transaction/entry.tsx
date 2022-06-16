@@ -76,10 +76,10 @@ export default function Entry({ queue }: EntryProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const { currency } = chromeStorage;
   const { deQueue } = useCurrentQueue();
-
-  const { enqueueSnackbar } = useSnackbar();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -143,7 +143,7 @@ export default function Entry({ queue }: EntryProps) {
         ...mixedEthereumTx,
         gasPrice: undefined,
         maxPriorityFeePerGas: toHex(currentFee.currentFee[feeMode].maxPriorityFeePerGas, { addPrefix: true, isStringNumber: true }),
-        maxFeePerGas: toHex(currentFee.currentFee[feeMode].maxBaseFeePerGas, { addPrefix: true, isStringNumber: true }),
+        maxFeePerGas: toHex(times(currentFee.currentFee[feeMode].maxBaseFeePerGas, '1.2', 0), { addPrefix: true, isStringNumber: true }),
       };
     }
 
@@ -231,7 +231,9 @@ export default function Entry({ queue }: EntryProps) {
 
   useEffect(() => {
     void (async () => {
-      if (address.toLowerCase() !== params[0].from) {
+      const from = toHex(params[0].from, { addPrefix: true });
+
+      if (address.toLowerCase() !== from.toLowerCase()) {
         responseToWeb({
           response: {
             error: {
@@ -344,7 +346,7 @@ export default function Entry({ queue }: EntryProps) {
                       {totalDisplayAmount}
                     </Number>
                     &nbsp;
-                    <Typography variant="h5n">{totalDisplayDenom}</Typography>&nbsp;<Typography variant="h5">+</Typography>&nbsp;
+                    <Typography variant="h5n">{totalDisplayDenom}</Typography>&nbsp;<Typography variant="h5n">+</Typography>&nbsp;
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={8}>
                       {displayFee}
                     </Number>
@@ -437,6 +439,10 @@ export default function Entry({ queue }: EntryProps) {
                       messageId,
                       origin,
                     });
+
+                    if (queue.channel === 'inApp') {
+                      enqueueSnackbar('success');
+                    }
 
                     await deQueue();
                   }

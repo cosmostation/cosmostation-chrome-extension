@@ -13,6 +13,8 @@ export function responseToWeb<T, U>(data: Omit<BackgroundToContentScriptEventMes
   if (data.tabId) {
     chrome.tabs.sendMessage(data.tabId, toContentScriptMessage);
   } else {
+    if (!data.origin) return;
+
     chrome.tabs.query({ url: `${data.origin}/*` }, (tabs) => {
       tabs.forEach((tab) => {
         if (tab.id) {

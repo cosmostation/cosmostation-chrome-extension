@@ -31,7 +31,7 @@ export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, o
 
   useEffect(() => {
     if (remainder.open) {
-      setTimeout(() => ref.current?.scrollIntoView(), 0);
+      setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0);
     }
   }, [remainder.open]);
 

@@ -718,6 +718,33 @@
       },
       "Send": {
         "Entry": {
+          "Ethereum": {
+            "components": {
+              "CoinButton": {
+                "index": {
+                  "available": "Available"
+                }
+              },
+              "CoinPopover": {
+                "components": {
+                  "CoinItem": {
+                    "index": {
+                      "available": "Available"
+                    }
+                  }
+                }
+              }
+            },
+            "index": {
+              "amountPlaceholder": "Amount",
+              "insufficientAmount": "Insufficient amount",
+              "insufficientFee": "Insufficient fee",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          },
           "Tendermint": {
             "components": {
               "CoinPopover": {

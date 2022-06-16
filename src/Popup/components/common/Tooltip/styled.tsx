@@ -2,15 +2,23 @@ import { styled } from '@mui/material/styles';
 import type { TooltipProps } from '@mui/material/Tooltip';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 
-export const StyledTooltip = styled(({ className, ...props }: TooltipProps) => <Tooltip {...props} arrow classes={{ popper: className }} />)(({ theme }) => ({
+import type { ToolTipVarient } from './index';
+
+type StyledTooltipProps = {
+  'data-varient': ToolTipVarient;
+};
+
+export const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} arrow classes={{ popper: className }} />
+))<StyledTooltipProps>(({ theme, ...props }) => ({
   [`& .${tooltipClasses.arrow}`]: {
-    color: theme.colors.base01,
+    color: props['data-varient'] === 'error' ? theme.colors.red01 : theme.colors.base01,
   },
   [`& .${tooltipClasses.tooltip}`]: {
     marginTop: '1rem !important',
 
-    backgroundColor: theme.colors.base01,
-    color: theme.colors.text01,
+    backgroundColor: props['data-varient'] === 'error' ? theme.colors.red01 : theme.colors.base01,
+    color: props['data-varient'] === 'error' ? theme.accentColors.red : theme.colors.text01,
     padding: '0.8rem',
 
     textAlign: 'center',

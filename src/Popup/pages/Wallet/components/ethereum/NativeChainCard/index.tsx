@@ -123,7 +123,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
           {t('pages.Wallet.components.ethereum.NativeChainCard.index.depositButton')}
         </Button>
         <FourthLineCenterContainer />
-        <Button Icon={SendIcon} typoVarient="h5" disabled>
+        <Button Icon={SendIcon} typoVarient="h5" onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
         </Button>
       </FourthLineContainer>

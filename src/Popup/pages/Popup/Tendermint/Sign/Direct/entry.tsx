@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Typography } from '@mui/material';
 
-import { DEFAULT_GAS } from '~/constants/chain';
+import { TENDERMINT_DEFAULT_GAS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { PUBLIC_KEY_TYPE } from '~/constants/tendermint';
 import Button from '~/Popup/components/common/Button';
@@ -56,7 +56,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { fee } = decodedAuthInfoBytes;
 
-  const inputGas = fee?.gas_limit ? String(fee.gas_limit) : DEFAULT_GAS;
+  const inputGas = fee?.gas_limit ? String(fee.gas_limit) : TENDERMINT_DEFAULT_GAS;
   const inputFee = fee?.amount?.find((item) => item.denom === chain.baseDenom)?.amount || '0';
 
   const [gas, setGas] = useState(inputGas);
