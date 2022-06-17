@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useDebouncedCallback } from 'use-debounce';
 import Web3 from 'web3';
 import type { AbiItem } from 'web3-utils';
@@ -16,6 +17,7 @@ import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -38,6 +40,8 @@ type EthereumProps = {
 export default function Ethereum({ chain }: EthereumProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumTokens } = useCurrentEthereumTokens();
+  const params = useParams();
 
   const { enQueue } = useCurrentQueue();
 
@@ -47,7 +51,7 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const [isDisabled, setIsDisabled] = useState(false);
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
-  const [currentToken, setCurrentToken] = useState<Token>(null);
+  const [currentToken, setCurrentToken] = useState<Token>(currentEthereumTokens.find((item) => item.id === params.coin) || null);
 
   const fee = useFeeSWR();
 
@@ -123,6 +127,10 @@ export default function Ethereum({ chain }: EthereumProps) {
       return t('pages.Wallet.Send.Entry.Ethereum.index.invalidAddress');
     }
 
+    if (address.toLowerCase() === currentAddress.toLowerCase()) {
+      return t('pages.Wallet.Send.Entry.Ethereum.index.invalidAddress');
+    }
+
     if (baseAmount === '0') {
       return t('pages.Wallet.Send.Entry.Ethereum.index.invalidAmount');
     }
@@ -144,7 +152,7 @@ export default function Ethereum({ chain }: EthereumProps) {
     }
 
     return '';
-  }, [baseBalance, baseAmount, baseFee, currentToken, baseTokenBalance, currentAddress, t]);
+  }, [baseBalance, baseAmount, baseFee, currentToken, baseTokenBalance, currentAddress, address, t]);
 
   const handleOnClickMax = () => {
     if (currentToken === null) {

@@ -3,11 +3,13 @@ import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
+import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import type { Token } from '~/types/ethereum/common';
 
 import { Button, LeftAvailableContainer, LeftContainer, LeftDisplayDenomContainer, LeftImageContainer, LeftInfoContainer, RightContainer } from './styled';
@@ -28,11 +30,13 @@ export default function CoinButton({ currentToken, isActive, ...remainder }: Coi
 
   const isNative = currentToken === null;
 
+  const decimals = isNative ? currentEthereumNetwork.decimals : currentToken.decimals;
+
+  const baseAmount = isNative ? BigInt(balance.data?.result || '0').toString(10) : BigInt(tokenBalace.data || '0').toString(10);
+
   const imageURL = isNative ? currentEthereumNetwork.imageURL : currentToken.imageURL;
   const displayDenom = isNative ? currentEthereumNetwork.displayDenom : currentToken.displayDenom;
-  const displayAmount = isNative
-    ? toDisplayDenomAmount(BigInt(balance.data?.result || '0').toString(10), currentEthereumNetwork.decimals)
-    : toDisplayDenomAmount(BigInt(tokenBalace.data || '0').toString(10), currentToken.decimals);
+  const displayAmount = toDisplayDenomAmount(baseAmount, decimals);
 
   return (
     <Button type="button" {...remainder}>
@@ -46,10 +50,13 @@ export default function CoinButton({ currentToken, isActive, ...remainder }: Coi
           </LeftDisplayDenomContainer>
           <LeftAvailableContainer>
             <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Ethereum.components.CoinButton.index.available')} :</Typography>{' '}
-            <Number typoOfDecimals="h8n" typoOfIntegers="h6n">
-              {displayAmount}
-            </Number>{' '}
-            <Typography variant="h6n">{displayDenom}</Typography>
+            <Tooltip title={displayAmount} placement="top" arrow>
+              <span>
+                <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={getDisplayMaxDecimals(decimals)}>
+                  {displayAmount}
+                </Number>{' '}
+              </span>
+            </Tooltip>
           </LeftAvailableContainer>
         </LeftInfoContainer>
       </LeftContainer>

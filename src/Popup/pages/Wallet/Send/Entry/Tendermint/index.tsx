@@ -9,6 +9,7 @@ import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/common/IconButton';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/tendermint/useAccountSWR';
@@ -20,6 +21,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getTendermintAddressRegex } from '~/Popup/utils/regex';
 import type { TendermintChain } from '~/types/chain';
 
@@ -106,8 +108,12 @@ export default function Tendermint({ chain }: TendermintProps) {
 
   const currentCoin = availableCoinList.find((item) => item.baseDenom === currentCoinBaseDenom)!;
 
+  const currentDecimals = currentCoin.decimals || 0;
+
   const currentCoinDisplayDenom = currentCoin.displayDenom;
-  const currentCoinDisplayAmount = toDisplayDenomAmount(currentCoin.availableAmount, currentCoin.decimals || 0);
+  const currentCoinDisplayAmount = toDisplayDenomAmount(currentCoin.availableAmount, currentDecimals);
+
+  const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentDecimals);
 
   const isPossibleSend = useMemo(
     () =>
@@ -169,10 +175,13 @@ export default function Tendermint({ chain }: TendermintProps) {
               </CoinLeftDisplayDenomContainer>
               <CoinLeftAvailableContainer>
                 <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Tendermint.index.available')} :</Typography>{' '}
-                <Number typoOfDecimals="h8n" typoOfIntegers="h6n">
-                  {currentCoinDisplayAmount}
-                </Number>{' '}
-                <Typography variant="h6n">{currentCoinDisplayDenom}</Typography>
+                <Tooltip title={currentCoinDisplayAmount} arrow placement="top">
+                  <span>
+                    <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
+                      {currentCoinDisplayAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
               </CoinLeftAvailableContainer>
             </CoinLeftInfoContainer>
           </CoinLeftContainer>

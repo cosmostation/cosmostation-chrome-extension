@@ -9,6 +9,7 @@ import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -19,7 +20,7 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import type { EthereumChain } from '~/types/chain';
 
 import {
@@ -110,7 +111,11 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <Number>{displayAmount}</Number>
+          <Tooltip title={displayAmount} arrow placement="bottom-end">
+            <span>
+              <Number fixed={getDisplayMaxDecimals(decimals)}>{displayAmount}</Number>
+            </span>
+          </Tooltip>
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>

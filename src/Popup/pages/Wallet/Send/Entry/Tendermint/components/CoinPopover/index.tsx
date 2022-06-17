@@ -4,9 +4,11 @@ import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import type { CoinInfo } from '~/Popup/hooks/SWR/tendermint/useCoinListSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
+import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 
 import {
   CoinButton,
@@ -41,7 +43,11 @@ export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, o
         {coinInfos.map((item) => {
           const displayDenom = item.displayDenom ? item.displayDenom : 'UNKNOWN';
 
-          const displayAmount = toDisplayDenomAmount(item.availableAmount, item.decimals ?? 0);
+          const decimals = item.decimals ?? 0;
+
+          const displayMaxDecimals = getDisplayMaxDecimals(decimals);
+
+          const displayAmount = toDisplayDenomAmount(item.availableAmount, decimals);
 
           const isActive = currentCoinInfo.baseDenom === item.baseDenom;
           return (
@@ -65,10 +71,13 @@ export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, o
                   </CoinLeftDisplayDenomContainer>
                   <CoinLeftAvailableContainer>
                     <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Tendermint.components.CoinPopover.index.available')} :</Typography>{' '}
-                    <Number typoOfDecimals="h8n" typoOfIntegers="h6n">
-                      {displayAmount}
-                    </Number>{' '}
-                    <Typography variant="h6n">{displayDenom}</Typography>
+                    <Tooltip title={displayAmount} arrow placement="top">
+                      <span>
+                        <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={displayMaxDecimals}>
+                          {displayAmount}
+                        </Number>
+                      </span>
+                    </Tooltip>
                   </CoinLeftAvailableContainer>
                 </CoinLeftInfoContainer>
               </CoinLeftContainer>
