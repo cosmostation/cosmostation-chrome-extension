@@ -1,13 +1,18 @@
 import cloneDeep from 'lodash/cloneDeep';
 
 import { CHAINS } from '~/constants/chain';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { emitToWeb } from '~/Popup/utils/message';
 import type { Account } from '~/types/chromeStorage';
 
+import { useCurrentPassword } from './useCurrentPassword';
+
 export function useCurrentAccount() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { currentPassword } = useCurrentPassword();
 
   const { selectedAccountId, accounts, accountName, allowedOrigins, additionalChains } = chromeStorage;
 
@@ -34,12 +39,25 @@ export function useCurrentAccount() {
   const setCurrentAccount = async (id: string) => {
     const isExist = !!chromeStorage.accounts.find((account) => account.id === id);
 
-    await setChromeStorage('selectedAccountId', isExist ? id : chromeStorage.accounts[0].id);
+    const newAccountId = isExist ? id : chromeStorage.accounts[0].id;
+
+    await setChromeStorage('selectedAccountId', newAccountId);
 
     const origins = Array.from(new Set(allowedOrigins.map((item) => item.origin)));
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     emitToWeb({ line: 'TENDERMINT', type: 'accountChanged' }, origins);
+
+    const keyPair = getKeyPair(accounts.find((item) => item.id === newAccountId)!, ETHEREUM, currentPassword);
+    const address = getAddress(ETHEREUM, keyPair?.publicKey);
+
+    const currentAccountOrigins = Array.from(new Set(allowedOrigins.filter((item) => item.accountId === newAccountId).map((item) => item.origin)));
+    const currentAccountNotOrigins = Array.from(new Set(allowedOrigins.filter((item) => item.accountId !== newAccountId).map((item) => item.origin)));
+
+    emitToWeb({ line: 'ETHEREUM', type: 'accountsChanged', message: { result: [address] } }, currentAccountOrigins);
+    emitToWeb(
+      { line: 'ETHEREUM', type: 'accountsChanged', message: { result: [] } },
+      currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
+    );
   };
 
   const addAccount = async (accountInfo: Account & { name: string }) => {

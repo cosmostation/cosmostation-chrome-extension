@@ -19,7 +19,7 @@ type FetchParams = {
 
 export function useBalanceSWR(config?: SWRConfiguration) {
   const chain = ETHEREUM;
-  const accounts = useAccounts();
+  const accounts = useAccounts(config?.suspense);
   const { chromeStorage } = useChromeStorage();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 

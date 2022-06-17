@@ -551,6 +551,7 @@
             "current": "현재",
             "fee": "최대 수수료",
             "gasSettings": "가스량 설정",
+            "insufficientAmount": "수량이 부족합니다.",
             "low": "낮음",
             "signButton": "서명",
             "signatureRequest": "서명 요청",
@@ -718,6 +719,33 @@
       },
       "Send": {
         "Entry": {
+          "Ethereum": {
+            "components": {
+              "CoinButton": {
+                "index": {
+                  "available": "사용 가능 수량"
+                }
+              },
+              "CoinPopover": {
+                "components": {
+                  "CoinItem": {
+                    "index": {
+                      "available": "사용 가능 수량"
+                    }
+                  }
+                }
+              }
+            },
+            "index": {
+              "amountPlaceholder": "수량",
+              "insufficientAmount": "수량이 부족합니다.",
+              "insufficientFee": "수수료가 부족합니다.",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "invalidAmount": "수량을 입력하세요.",
+              "recipientAddressPlaceholder": "입금 주소",
+              "sendButton": "보내기"
+            }
+          },
           "Tendermint": {
             "components": {
               "CoinPopover": {

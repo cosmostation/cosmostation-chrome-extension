@@ -6,6 +6,7 @@ import AddButton from '~/Popup/components/AddButton';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import type { Path } from '~/types/route';
 
 import TokenItem, { TokenItemError, TokenItemSkeleton } from './components/TokenItem';
 import {
@@ -65,7 +66,7 @@ export default function TokenList() {
                 }
               >
                 <Suspense fallback={<TokenItemSkeleton token={token} />}>
-                  <TokenItem token={token} onClickDelete={handleOnClickDelete} />
+                  <TokenItem token={token} onClickDelete={handleOnClickDelete} onClick={() => navigate(`/wallet/send/${token.id}` as unknown as Path)} />
                 </Suspense>
               </ErrorBoundary>
             );

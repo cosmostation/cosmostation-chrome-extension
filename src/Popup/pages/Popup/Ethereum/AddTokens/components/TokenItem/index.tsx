@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
-import { useTokenBalance } from '~/Popup/hooks/SWR/ethereum/useTokenBalance';
+import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { EthcAddTokensParam } from '~/types/ethereum/message';
 
@@ -24,7 +24,7 @@ type TokenItemProps = {
 };
 
 export default function TokenItem({ token, disabled, onClick }: TokenItemProps) {
-  const tokenBalance = useTokenBalance(token);
+  const tokenBalance = useTokenBalanceSWR(token);
 
   const amount = tokenBalance.data || '0';
   const displayAmount = toDisplayDenomAmount(amount, token.decimals);

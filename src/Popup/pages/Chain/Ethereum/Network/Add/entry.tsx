@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
 
+import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
@@ -40,6 +41,10 @@ export default function Entry() {
 
       if (response.result !== data.chainId) {
         throw Error(`Chain ID returned by RPC URL ${data.rpcURL} does not match ${data.chainId} (result: ${response.result || ''})`);
+      }
+
+      if (ETHEREUM_NETWORKS.map((item) => item.chainId).includes(data.chainId)) {
+        throw Error(`Can't add ${data.chainId}`);
       }
 
       await addEthereumNetwork({ ...data, decimals: 18 });

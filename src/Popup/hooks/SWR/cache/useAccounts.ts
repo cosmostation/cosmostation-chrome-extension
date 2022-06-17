@@ -45,7 +45,6 @@ export function useAccounts(suspense?: boolean) {
   const { data, mutate } = useSWR([accounts, additionalChains], fetcher, {
     suspense,
     revalidateOnFocus: false,
-    revalidateOnMount: false,
     revalidateOnReconnect: false,
     revalidateIfStale: false,
     isPaused: () => accounts.length < 1 || [...CHAINS, ...additionalChains].length < 1,

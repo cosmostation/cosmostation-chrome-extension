@@ -5,7 +5,7 @@ import { Typography } from '@mui/material';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
-import { useTokenBalance } from '~/Popup/hooks/SWR/ethereum/useTokenBalance';
+import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -42,7 +42,7 @@ type TokenItemProps = {
 export default function TokenItem({ token, disabled, onClick, onClickDelete }: TokenItemProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const tokenBalance = useTokenBalance(token, { suspense: true });
+  const tokenBalance = useTokenBalanceSWR(token, { suspense: true });
 
   const { currency } = chromeStorage;
   const amount = tokenBalance.data || '0';
@@ -116,7 +116,7 @@ export function TokenItemSkeleton({ token }: TokenItemSkeletonProps) {
 type TokenItemErrorProps = Pick<TokenItemProps, 'token' | 'onClickDelete'> & FallbackProps;
 
 export function TokenItemError({ token, onClickDelete, resetErrorBoundary }: TokenItemErrorProps) {
-  const tokenBalance = useTokenBalance(token);
+  const tokenBalance = useTokenBalanceSWR(token);
   const [isLoading, setIsLoading] = useState(false);
 
   const isInvalid = tokenBalance.error?.message.startsWith("Returned values aren't valid") || false;

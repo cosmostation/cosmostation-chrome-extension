@@ -6,6 +6,8 @@ export type ERC20ContractMethods = {
   decimals: () => ContractSendMethod;
   symbol: () => ContractSendMethod;
   approve: (spender: string, amount: string) => ContractSendMethod;
+  transfer: (to: string, amount: string) => ContractSendMethod;
+  transferFrom: (from: string, to: string, amount: string) => ContractSendMethod;
 };
 
 export type ERC20ContractBalanceOfPayload = string;

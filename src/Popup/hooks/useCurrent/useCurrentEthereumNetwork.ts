@@ -2,12 +2,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { emitToWeb } from '~/Popup/utils/message';
 import type { EthereumNetwork } from '~/types/chain';
 
 export function useCurrentEthereumNetwork() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
-  const { selectedEthereumNetworkId, additionalEthereumNetworks } = chromeStorage;
+  const { selectedEthereumNetworkId, additionalEthereumNetworks, allowedOrigins } = chromeStorage;
 
   const allNetworks = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks];
 
@@ -17,7 +18,11 @@ export function useCurrentEthereumNetwork() {
 
   const setCurrentEthereumNetwork = async (network: EthereumNetwork) => {
     const newSelectedEthereumNetworkId = network.id;
+
     await setChromeStorage('selectedEthereumNetworkId', newSelectedEthereumNetworkId);
+
+    const origins = Array.from(new Set(allowedOrigins.map((item) => item.origin)));
+    emitToWeb({ line: 'ETHEREUM', type: 'chainChanged', message: { result: network.chainId } }, origins);
   };
 
   const removeEthereumNetwork = async (network: EthereumNetwork) => {

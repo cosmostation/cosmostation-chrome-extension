@@ -46,7 +46,7 @@ export const LINE_TYPE = {
   ETHEREUM: 'ETHEREUM',
 } as const;
 
-export const DEFAULT_GAS = '100000';
+export const TENDERMINT_DEFAULT_GAS = '100000';
 
 export const TENDERMINT_CHAINS: TendermintChain[] = [
   COSMOS,

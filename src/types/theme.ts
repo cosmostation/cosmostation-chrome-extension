@@ -42,6 +42,7 @@ export type Colors = {
   base06: string;
   text01: string;
   text02: string;
+  red01: string;
 };
 
 export type AccentColors = {

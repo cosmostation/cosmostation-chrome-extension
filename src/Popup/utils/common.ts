@@ -52,6 +52,14 @@ type toHexOptions = {
   isStringNumber?: boolean;
 };
 
+export function getDisplayMaxDecimals(decimals?: number) {
+  const maxDisplayDecimals = 8;
+
+  if (decimals === undefined) return 0;
+
+  return decimals < maxDisplayDecimals ? decimals : maxDisplayDecimals;
+}
+
 export function toHex(datum?: number | string, options?: toHexOptions) {
   const result = (() => {
     if (typeof datum === 'number') {

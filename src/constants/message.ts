@@ -7,11 +7,11 @@ export const MESSAGE_TYPE = {
   RESPONSE__BACKGROUND_TO_POPUP: 'RESPONSE__BACKGROUND_TO_POPUP',
 } as const;
 
-export const LISTENER_TYPE = {
+export const TENDERMINT_LISTENER_TYPE = {
   ACCOUNT_CHANGED: 'accountChanged',
 } as const;
 
 export const ETHEREUM_LISTENER_TYPE = {
   ACCOUNTS_CHANGED: 'accountsChanged',
   CHAIN_CHANGED: 'chainChanged',
-};
+} as const;
