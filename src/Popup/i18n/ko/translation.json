@@ -551,6 +551,7 @@
             "current": "현재",
             "fee": "최대 수수료",
             "gasSettings": "가스량 설정",
+            "insufficientAmount": "수량이 부족합니다.",
             "low": "낮음",
             "signButton": "서명",
             "signatureRequest": "서명 요청",

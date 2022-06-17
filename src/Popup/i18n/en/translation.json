@@ -551,6 +551,7 @@
             "current": "Current",
             "fee": "Max fee",
             "gasSettings": "Gas settings",
+            "insufficientAmount": "Insufficient amount",
             "low": "Low",
             "signButton": "Sign",
             "signatureRequest": "Signature reqeust",

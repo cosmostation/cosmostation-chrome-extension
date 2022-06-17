@@ -10,7 +10,9 @@ import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import GasSettingDialog from '~/Popup/components/GasSettingDialog';
+import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useDetermintTxTypeSWR } from '~/Popup/hooks/SWR/ethereum/useDetermintTxTypeSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
@@ -24,7 +26,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useInterval } from '~/Popup/hooks/useInterval';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
-import { plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { gt, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
 import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
@@ -75,6 +77,8 @@ export default function Entry({ queue }: EntryProps) {
   const tokens = useTokensSWR();
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
+
+  const balance = useBalanceSWR();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -191,7 +195,7 @@ export default function Entry({ queue }: EntryProps) {
     [tokens, ethereumTx, txType],
   );
 
-  const totalDisplayAmount = useMemo(() => {
+  const sendDisplayAmount = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
       try {
         return toDisplayDenomAmount(BigInt(toHex(ethereumTx.value || '0x0', { addPrefix: true, isStringNumber: true })).toString(10), decimals);
@@ -210,10 +214,10 @@ export default function Entry({ queue }: EntryProps) {
       }
     }
 
-    return '';
+    return '0';
   }, [decimals, ethereumTx, txType, token]);
 
-  const totalDisplayDenom = useMemo(() => {
+  const sendDisplayDenom = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
       return currentEthereumNetwork.displayDenom;
     }
@@ -224,6 +228,24 @@ export default function Entry({ queue }: EntryProps) {
 
     return '';
   }, [currentEthereumNetwork, txType, token]);
+
+  const totalDisplayAmount = useMemo(() => {
+    if (txType.data?.type === 'simpleSend') {
+      return plus(sendDisplayAmount, displayFee);
+    }
+
+    return displayFee;
+  }, [txType, displayFee, sendDisplayAmount]);
+
+  const totalBaseAmount = toBaseDenomAmount(totalDisplayAmount, decimals);
+
+  const baseBalance = BigInt(balance.data?.result || '0').toString(10);
+  const errorMessage = useMemo(() => {
+    if (gt(totalBaseAmount, baseBalance)) {
+      return t('pages.Popup.Ethereum.SignTransaction.entry.insufficientAmount');
+    }
+    return '';
+  }, [baseBalance, t, totalBaseAmount]);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -343,10 +365,10 @@ export default function Entry({ queue }: EntryProps) {
                 {txType.data?.type === 'transfer' ? (
                   <>
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={token?.decimals ? 8 : 0}>
-                      {totalDisplayAmount}
+                      {sendDisplayAmount}
                     </Number>
                     &nbsp;
-                    <Typography variant="h5n">{totalDisplayDenom}</Typography>&nbsp;<Typography variant="h5n">+</Typography>&nbsp;
+                    <Typography variant="h5n">{sendDisplayDenom}</Typography>&nbsp;<Typography variant="h5n">+</Typography>&nbsp;
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={8}>
                       {displayFee}
                     </Number>
@@ -356,7 +378,7 @@ export default function Entry({ queue }: EntryProps) {
                 ) : txType.data?.type === 'simpleSend' ? (
                   <>
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                      {plus(displayFee, totalDisplayAmount, currentEthereumNetwork.decimals)}
+                      {plus(displayFee, sendDisplayAmount, currentEthereumNetwork.decimals)}
                     </Number>
                     &nbsp;
                     <Typography variant="h5n">{displayDenom}</Typography>
@@ -398,61 +420,65 @@ export default function Entry({ queue }: EntryProps) {
             >
               {t('pages.Popup.Ethereum.SignTransaction.entry.cancelButton')}
             </OutlineButton>
-            <Button
-              disabled={isLoadingFee}
-              onClick={async () => {
-                try {
-                  const web3 = new Web3(currentEthereumNetwork.rpcURL);
+            <Tooltip title={errorMessage} varient="error" placement="top">
+              <div>
+                <Button
+                  disabled={isLoadingFee || !!errorMessage}
+                  onClick={async () => {
+                    try {
+                      const web3 = new Web3(currentEthereumNetwork.rpcURL);
 
-                  const account = web3.eth.accounts.privateKeyToAccount(keyPair!.privateKey.toString('hex'));
+                      const account = web3.eth.accounts.privateKeyToAccount(keyPair!.privateKey.toString('hex'));
 
-                  const signed = await account.signTransaction(ethereumTx);
+                      const signed = await account.signTransaction(ethereumTx);
 
-                  if (message.method === 'eth_signTransaction') {
-                    const result: EthSignTransactionResponse = {
-                      raw: signed.rawTransaction!,
-                      tx: ethereumTx,
-                    };
+                      if (message.method === 'eth_signTransaction') {
+                        const result: EthSignTransactionResponse = {
+                          raw: signed.rawTransaction!,
+                          tx: ethereumTx,
+                        };
 
-                    responseToWeb({
-                      response: {
-                        result,
-                      },
-                      message,
-                      messageId,
-                      origin,
-                    });
+                        responseToWeb({
+                          response: {
+                            result,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
 
-                    await deQueue();
-                  }
+                        await deQueue();
+                      }
 
-                  if (message.method === 'eth_sendTransaction') {
-                    const response = await requestRPC<ResponseRPC<string>>('eth_sendRawTransaction', [signed.rawTransaction]);
+                      if (message.method === 'eth_sendTransaction') {
+                        const response = await requestRPC<ResponseRPC<string>>('eth_sendRawTransaction', [signed.rawTransaction]);
 
-                    const result: EthSendTransactionResponse = response.result!;
+                        const result: EthSendTransactionResponse = response.result!;
 
-                    responseToWeb({
-                      response: {
-                        result,
-                      },
-                      message,
-                      messageId,
-                      origin,
-                    });
+                        responseToWeb({
+                          response: {
+                            result,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
 
-                    if (queue.channel === 'inApp') {
-                      enqueueSnackbar('success');
+                        if (queue.channel === 'inApp') {
+                          enqueueSnackbar('success');
+                        }
+
+                        await deQueue();
+                      }
+                    } catch (e) {
+                      enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                     }
-
-                    await deQueue();
-                  }
-                } catch (e) {
-                  enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
-                }
-              }}
-            >
-              {t('pages.Popup.Ethereum.SignTransaction.entry.signButton')}
-            </Button>
+                  }}
+                >
+                  {t('pages.Popup.Ethereum.SignTransaction.entry.signButton')}
+                </Button>
+              </div>
+            </Tooltip>
           </BottomButtonContainer>
         </BottomContainer>
       </Container>
