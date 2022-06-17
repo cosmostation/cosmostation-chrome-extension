@@ -497,6 +497,10 @@ function background() {
                     );
                   }
 
+                  if (ETHEREUM_NETWORKS.map((item) => item.chainId).includes(validatedParams[0].chainId)) {
+                    throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `Can't add ${validatedParams[0].chainId}`, message.id, { chainId: response.result });
+                  }
+
                   const window = await openWindow();
                   await setStorage('queues', [
                     ...queues,
@@ -637,6 +641,10 @@ function background() {
                       message.id,
                       { chainId: response.result },
                     );
+                  }
+
+                  if (ETHEREUM_NETWORKS.map((item) => item.chainId).includes(validatedParams[0].chainId)) {
+                    throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `Can't add ${validatedParams[0].chainId}`, message.id, { chainId: response.result });
                   }
 
                   const param = validatedParams[0];

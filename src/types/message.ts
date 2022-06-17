@@ -1,4 +1,4 @@
-import type { LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
+import type { ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE, TENDERMINT_LISTENER_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
 import type {
@@ -19,7 +19,9 @@ import type {
 import type { TenAccount, TenAddChain, TenRequestAccount, TenSignAmino, TenSignDirect, TenSupportedChainNames } from './tendermint/message';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
-export type ListenerType = ValueOf<typeof LISTENER_TYPE>;
+export type TendermintListenerType = ValueOf<typeof TENDERMINT_LISTENER_TYPE>;
+export type EthereumListenerType = ValueOf<typeof ETHEREUM_LISTENER_TYPE>;
+export type ListenerType = TendermintListenerType | EthereumListenerType;
 
 /** Web Page <-> Content Script 통신 타입 정의 */
 

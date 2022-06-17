@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useRecoilState } from 'recoil';
 
-import { CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeStorageState } from '~/Popup/recoils/chromeStorage';
@@ -25,6 +25,7 @@ export default function Init({ children }: InitType) {
   const officialChainIds = CHAINS.map((item) => item.id);
 
   const officialTendermintLowercaseChainIds = TENDERMINT_CHAINS.map((item) => item.chainId.toLowerCase());
+  const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
 
   const handleOnStorageChange = () => {
     void (async () => {
@@ -85,6 +86,14 @@ export default function Init({ children }: InitType) {
         );
 
         await setStorage('additionalChains', newAdditionalChains);
+      }
+
+      if (originChromeStorage.additionalEthereumNetworks.find((item) => officialEthereumNetworkChainIds.includes(item.chainId))) {
+        const newAdditionalEthereumNetworks = originChromeStorage.additionalEthereumNetworks.filter(
+          (item) => !officialEthereumNetworkChainIds.includes(item.chainId),
+        );
+
+        await setStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
       }
 
       if (!originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).length) {

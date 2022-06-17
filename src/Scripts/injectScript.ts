@@ -4,10 +4,11 @@ import { LINE_TYPE } from '~/constants/chain';
 import { MESSAGE_TYPE } from '~/constants/message';
 import type {
   ContentScriptToWebEventMessage,
+  EthereumListenerType,
   EthereumRequestMessage,
   ListenerMessage,
-  ListenerType,
   ResponseMessage,
+  TendermintListenerType,
   TendermintRequestMessage,
 } from '~/types/message';
 import type { TenRequestAccountResponse, TenSignDirectParams, TenSignDirectResponse } from '~/types/tendermint/message';
@@ -16,16 +17,20 @@ import type { SignDirectDoc } from '~/types/tendermint/proto';
 (function injectScript() {
   window.cosmostation = {
     ethereum: {
-      on: (eventName: ListenerType, eventHandler: (data: unknown) => void) => {
-        const handler = (event: MessageEvent<ListenerMessage>) => {
+      on: (eventName: EthereumListenerType, eventHandler: (data: unknown) => void) => {
+        const handler = (event: MessageEvent<ListenerMessage<ResponseMessage>>) => {
           if (event.data?.isCosmostation && event.data?.type === eventName && event.data?.line === 'ETHEREUM') {
-            eventHandler(event.data?.message);
+            eventHandler(event.data?.message?.result);
           }
         };
 
         window.addEventListener('message', handler);
-      },
 
+        return handler;
+      },
+      off: (handler: (event: MessageEvent<ListenerMessage>) => void) => {
+        window.removeEventListener('message', handler);
+      },
       request: (message: EthereumRequestMessage) =>
         new Promise((res, rej) => {
           const messageId = uuidv4();
@@ -56,7 +61,7 @@ import type { SignDirectDoc } from '~/types/tendermint/proto';
         }),
     },
     tendermint: {
-      on: (eventName: ListenerType, eventHandler: (data: unknown) => void) => {
+      on: (eventName: TendermintListenerType, eventHandler: (data: unknown) => void) => {
         const handler = (event: MessageEvent<ListenerMessage>) => {
           if (event.data?.isCosmostation && event.data?.type === eventName && event.data?.line === 'TENDERMINT') {
             eventHandler(event.data?.message);
