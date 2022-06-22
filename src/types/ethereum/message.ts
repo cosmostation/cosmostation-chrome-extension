@@ -124,7 +124,9 @@ export type EthcSwitchNetwork = {
 
 export type EthcSwitchNetworkResponse = null;
 
-export type WalletSwitchEthereumChainParams = [string];
+export type WalletSwitchEthereumChainParam1 = { chainId: string };
+
+export type WalletSwitchEthereumChainParams = [WalletSwitchEthereumChainParam1];
 
 export type WalletSwitchEthereumChain = {
   method: typeof ETHEREUM_METHOD_TYPE.WALLET__SWITCH_ETHEREUM_CHAIN;

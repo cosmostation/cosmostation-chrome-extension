@@ -10,6 +10,7 @@ import type {
   EthereumTxCommon,
   EthSignTransaction,
   WalletAddEthereumChain,
+  WalletSwitchEthereumChainParam1,
   WalletWatchAsset,
 } from '~/types/ethereum/message';
 import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint/amino';
@@ -187,19 +188,24 @@ export const walletSwitchEthereumChainParamsSchema = (chainIds: string[]) =>
     .label('params')
     .required()
     .items(
-      Joi.string()
-        .label('chainId')
-        .valid(...chainIds)
-        .required(),
+      Joi.object<WalletSwitchEthereumChainParam1>({
+        chainId: Joi.string()
+          .valid(...chainIds)
+          .required(),
+      }),
     );
 
 export const ethSignParamsSchema = () =>
   Joi.array()
     .label('params')
     .required()
-    .items(Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.string().label('dataToSign').required());
+    .items(Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.string().label('dataToSign').required(), Joi.optional());
 
-export const personalSignParamsSchema = ethSignParamsSchema;
+export const personalSignParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(Joi.string().label('dataToSign').required(), Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.optional());
 
 export const ethSignTransactionParamsSchema = () =>
   Joi.array()

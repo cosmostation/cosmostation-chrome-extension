@@ -399,7 +399,7 @@ function background() {
 
                     const chainId = param2?.domain?.chainId;
 
-                    if (chainId && toHex(chainId) !== currentNetwork.chainId) {
+                    if (chainId && toHex(chainId, { addPrefix: true }) !== currentNetwork.chainId) {
                       throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid chainId', message.id);
                     }
 
@@ -444,7 +444,7 @@ function background() {
                     const keyPair = getKeyPair(currentAccount, chain, password);
                     const address = getAddress(chain, keyPair?.publicKey);
 
-                    if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
+                    if (address.toLowerCase() !== validatedParams[1].toLowerCase()) {
                       throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
                     }
                   }
@@ -749,7 +749,7 @@ function background() {
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as WalletSwitchEthereumChainParams;
 
-                  if (params[0] === currentEthereumNetwork().chainId) {
+                  if (validatedParams[0].chainId === currentEthereumNetwork().chainId) {
                     const result: WalletSwitchEthereumChainResponse = null;
 
                     responseToWeb({
@@ -769,7 +769,7 @@ function background() {
                     ...queues,
                     {
                       ...request,
-                      message: { ...request.message, method: 'ethc_switchNetwork', params: [...validatedParams] as EthcSwitchNetworkParams },
+                      message: { ...request.message, method: 'ethc_switchNetwork', params: [validatedParams[0].chainId] as EthcSwitchNetworkParams },
                       windowId: window?.id,
                     },
                   ]);

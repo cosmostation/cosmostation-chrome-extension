@@ -53,14 +53,14 @@ export default function Entry({ queue }: EntryProps) {
   const { message, messageId, origin } = queue;
   const { params } = message;
 
-  const dataToHex = toHex(params[1], { addPrefix: true });
+  const dataToHex = toHex(params[0], { addPrefix: true });
   const hexToUTF8 = toUTF8(dataToHex);
 
   useEffect(() => {
     void (async () => {
       const address = getAddress(chain, keyPair?.publicKey);
 
-      if (address.toLowerCase() !== params[0].toLowerCase()) {
+      if (address.toLowerCase() !== params[1].toLowerCase()) {
         responseToWeb({
           response: {
             error: {
