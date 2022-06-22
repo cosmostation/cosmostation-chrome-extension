@@ -167,6 +167,16 @@ export type WalletWatchAsset = {
 
 export type WalletWatchAssetResponse = null;
 
+export type EthSignTypedDataParams = [string, string];
+
+export type EthSignTypedData = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETH__SIGN_TYPED_DATA_V3 | typeof ETHEREUM_METHOD_TYPE.ETH__SIGN_TYPED_DATA_V4;
+  params: EthSignTypedDataParams;
+  id?: number | string;
+};
+
+export type EthSignTypedDataResponse = string;
+
 export type EthRPCRequest = {
   method: Exclude<EthereumNoPopupMethodType, typeof ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE>;
   params: unknown;

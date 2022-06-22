@@ -11,6 +11,7 @@ import type {
   EthSendTransaction,
   EthSign,
   EthSignTransaction,
+  EthSignTypedData,
   PersonalSign,
   WalletAddEthereumChain,
   WalletSwitchEthereumChain,
@@ -35,6 +36,7 @@ export type EthereumRequestMessage =
   | EthSign
   | EthSignTransaction
   | EthSendTransaction
+  | EthSignTypedData
   | EthGetBalance
   | EthRequestAccounts
   | EthcAddNetwork

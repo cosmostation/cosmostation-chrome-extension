@@ -1,6 +1,6 @@
 # @rpcURL=https://api.mycryptoapi.com/eth
-@rpcURL=https://eth-mainnet.public.blastapi.io
-# @rpcURL=222.106.187.14:50001
+# @rpcURL=https://eth-mainnet.public.blastapi.io
+@rpcURL=http://222.106.187.14:50001
 
 # @rpcURL=http://lcd-evmos.cosmostation.io:8545/
 
@@ -13,9 +13,9 @@ content-type: application/json
     "jsonrpc": "2.0",
     "method": "eth_estimateGas",
     "params": [{
-        "from": "0xE4A7e953486D01d4Fdc76986a0c88fa4F87B30e5",
+        "from": "0xe4a7e953486d01d4fdc76986a0c88fa4f87b30e5",
         "to": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "data": "0xa9059cbb000000000000000000000000dddf66022c8307222dc8a118f4de97e131c17936000000000000000000000000000000000000000000000000000000f3107a4000"
+        "data": "0xa9059cbb000000000000000000000000e4a7e953486d01d4fdc76986a0c88fa4f87b30e5000000000000000000000000000000000000000000000000000009184e72a000"
     }],
     "id": 1
 }

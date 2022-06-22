@@ -256,3 +256,9 @@ export const WalletWatchAssetParamsSchema = () =>
       coinGeckoId: Joi.string().optional(),
     }),
   }).required();
+
+export const ethSignTypedDataParamsSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.string().label('dataToSign').required());
