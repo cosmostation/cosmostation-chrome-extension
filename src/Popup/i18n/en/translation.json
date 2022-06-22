@@ -7,7 +7,8 @@
         "downItem2": "Request signatures for transactions",
         "downItem3": "Encrypt/Decrypt messages",
         "upDescription1": "is",
-        "upDescription2": "requesting to connect to your Cosmostation wallet"
+        "upDescription2": "requesting to connect to your ",
+        "upDescription3": " account"
       }
     },
     "ActivateChainRequest": {
