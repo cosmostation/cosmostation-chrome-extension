@@ -40,13 +40,9 @@ export const ContentLeftImageContainer = styled('div')({
   },
 });
 
-type ContentCenterTextContainerProps = {
-  'data-is-with-network'?: number;
-};
-
-export const ContentCenterTextContainer = styled('div')<ContentCenterTextContainerProps>(({ theme, ...props }) => ({
+export const ContentCenterTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
-  maxWidth: props['data-is-with-network'] ? '3.5rem' : '10rem',
+  maxWidth: '20rem',
 
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',

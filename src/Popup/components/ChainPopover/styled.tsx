@@ -54,19 +54,15 @@ export const ChainListContainer = styled('div')({
   rowGap: '0.4rem',
 });
 
-export const BetaChainContainer = styled('div')({
-  marginTop: '2.4rem',
-  width: '100%',
-});
-
-export const BetaChainTitleContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text02,
-}));
-
-export const BetaChainListContainer = styled('div')({
-  marginTop: '0.8rem',
-});
-
 export const StyledDivider = styled(Divider)({
   margin: '1.2rem 0',
 });
+
+export const ChainTitleContainer = styled('div')(({ theme }) => ({
+  marginBottom: '0.8rem',
+
+  color: theme.accentColors.purple01,
+
+  display: 'flex',
+  alignItems: 'center',
+}));

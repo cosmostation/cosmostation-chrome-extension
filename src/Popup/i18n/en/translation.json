@@ -430,6 +430,7 @@
         },
         "entry": {
           "addChain": "Add a custom chain",
+          "addEthereumNetwork": "Add a custom EVM network",
           "chainManagement": "Chain management"
         },
         "layout": {
@@ -801,7 +802,6 @@
           },
           "ChainPopover": {
             "index": {
-              "betaSupport": "custom chains",
               "title": "Select a chain"
             }
           },

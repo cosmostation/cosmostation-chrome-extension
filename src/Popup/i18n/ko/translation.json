@@ -430,6 +430,7 @@
         },
         "entry": {
           "addChain": "커스텀 체인 추가",
+          "addEthereumNetwork": "커스텀 EVM 네트워크 추가",
           "chainManagement": "체인 관리"
         },
         "layout": {
@@ -801,7 +802,6 @@
           },
           "ChainPopover": {
             "index": {
-              "betaSupport": "커스텀 체인",
               "title": "체인 선택"
             }
           },

@@ -9,8 +9,7 @@ import type { EthereumChain } from '~/types/chain';
 
 import AccountButton from '../components/AccountButton';
 import AccountPopover from '../components/AccountPopover';
-import NetworkPopover from '../components/NetworkPopover';
-import { Container, LeftContentContainer, NetworkButton, RightContentContainer } from '../styled';
+import { Container, LeftContentContainer, RightContentContainer } from '../styled';
 
 type EthereumProps = {
   isShowChain: boolean;
@@ -41,26 +40,16 @@ export default function Ethereum({ chain, isShowChain }: EthereumProps) {
       </LeftContentContainer>
       <RightContentContainer>
         {isShowChain && (
-          <>
-            <NetworkButton
-              onClick={(event) => {
-                setPopover('network');
-                setPopoverAnchorEl(event.currentTarget);
-              }}
-            >
-              {currentEthereumNetwork.networkName}
-            </NetworkButton>
-            <ChainButton
-              imgSrc={chain.imageURL}
-              onClick={(event) => {
-                setPopover('chain');
-                setPopoverAnchorEl(event.currentTarget);
-              }}
-              isActive={isOpenPopover && popover === 'chain'}
-            >
-              {chain.chainName}
-            </ChainButton>
-          </>
+          <ChainButton
+            imgSrc={currentEthereumNetwork.imageURL}
+            onClick={(event) => {
+              setPopover('chain');
+              setPopoverAnchorEl(event.currentTarget);
+            }}
+            isActive={isOpenPopover && popover === 'chain'}
+          >
+            {currentEthereumNetwork.networkName}
+          </ChainButton>
         )}
       </RightContentContainer>
 
@@ -82,19 +71,7 @@ export default function Ethereum({ chain, isShowChain }: EthereumProps) {
           horizontal: 'right',
         }}
       />
-      <NetworkPopover
-        open={isOpenPopover && popover === 'network'}
-        onClose={() => setPopoverAnchorEl(null)}
-        anchorEl={popoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-      />
+
       <Suspense fallback={null}>
         <AccountPopover
           marginThreshold={0}

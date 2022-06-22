@@ -46,6 +46,7 @@ export default function Entry() {
         ))}
       </AddressBookList>
       <StyledChainPopover
+        isOnlyChain
         marginThreshold={0}
         currentChain={chain}
         onClickChain={(clickedChain) => {

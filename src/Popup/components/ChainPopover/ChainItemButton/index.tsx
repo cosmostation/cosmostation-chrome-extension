@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 import Image from '~/Popup/components/common/Image';
 
 import {
+  BackgroundActive,
   ContentContainer,
   ContentLeftContainer,
   ContentLeftImageContainer,
@@ -19,11 +20,13 @@ import Close16Icon from '~/images/icons/Close16.svg';
 type ChainItemButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
   imgSrc?: string;
   isActive?: boolean;
+  isBackgroundActive?: boolean;
   children?: string;
   onClickDelete?: () => void;
 };
 
-export default function ChainItemButton({ children, imgSrc, isActive = false, onClickDelete, ...remainder }: ChainItemButtonProps) {
+export default function ChainItemButton({ children, imgSrc, isActive = false, isBackgroundActive = false, onClickDelete, ...remainder }: ChainItemButtonProps) {
+  const isBackActive = !isActive && isBackgroundActive;
   return (
     <StyledButton {...remainder} data-is-active={isActive ? 1 : 0}>
       <ContentContainer>
@@ -38,7 +41,10 @@ export default function ChainItemButton({ children, imgSrc, isActive = false, on
           </ContentLeftTextContainer>
         </ContentLeftContainer>
         <ContentRightContainer>
-          <ContentRightImageContainer>{isActive && <Check16Icon />}</ContentRightImageContainer>
+          <ContentRightImageContainer>
+            {isActive && <Check16Icon />}
+            {isBackActive && <BackgroundActive />}
+          </ContentRightImageContainer>
         </ContentRightContainer>
         {onClickDelete && (
           <DeleteContainer

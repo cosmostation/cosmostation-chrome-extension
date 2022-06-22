@@ -76,7 +76,13 @@ export default function TokenItem({ token, disabled, onClick, onClickDelete }: T
             </Number>
           </RightTextChangeRateContainer>
         </RightTextContainer>
-        <DeleteButton id="deleteButton" onClick={onClickDelete}>
+        <DeleteButton
+          id="deleteButton"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClickDelete?.();
+          }}
+        >
           <Close16Icon />
         </DeleteButton>
       </RightContainer>
