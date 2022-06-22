@@ -45,6 +45,7 @@ import PopupEthereumAddNetwork from '~/Popup/pages/Popup/Ethereum/AddNetwork';
 import PopupEthereumAddTokens from '~/Popup/pages/Popup/Ethereum/AddTokens';
 import PopupEthereumPersonalSign from '~/Popup/pages/Popup/Ethereum/PersonalSign';
 import PopupEthereumSign from '~/Popup/pages/Popup/Ethereum/Sign';
+import PopupEthereumSignTypedData from '~/Popup/pages/Popup/Ethereum/SignTypedData';
 import PopupEthereumSwitchNetwork from '~/Popup/pages/Popup/Ethereum/SwitchNetwork';
 import PopupEthereumTransaction from '~/Popup/pages/Popup/Ethereum/Transaction';
 import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
@@ -140,6 +141,7 @@ function Popup() {
                   <Route path={PATH.POPUP__ETHEREUM__ADD_TOKENS} element={<PopupEthereumAddTokens />} />
                   <Route path={PATH.POPUP__ETHEREUM__SWITCH_NETWORK} element={<PopupEthereumSwitchNetwork />} />
                   <Route path={PATH.POPUP__ETHEREUM__SIGN} element={<PopupEthereumSign />} />
+                  <Route path={PATH.POPUP__ETHEREUM__SIGN_TYPED_DATA} element={<PopupEthereumSignTypedData />} />
                   <Route path={PATH.POPUP__ETHEREUM__PERSONAL_SIGN} element={<PopupEthereumPersonalSign />} />
                   <Route path={PATH.POPUP__ETHEREUM__TRANSACTION} element={<PopupEthereumTransaction />} />
 

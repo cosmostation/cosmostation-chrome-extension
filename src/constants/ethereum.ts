@@ -3,8 +3,6 @@ export const ETHEREUM_POPUP_METHOD_TYPE = {
   ETH__SEND_TRANSACTION: 'eth_sendTransaction',
   ETH__SIGN: 'eth_sign',
   ETH__SIGN_TRANSACTION: 'eth_signTransaction',
-  ETH__SIGN_TYPED_DATA: 'eth_signTypedData',
-  ETH__SIGN_TYPED_DATA_V1: 'eth_signTypedData_v1',
   ETH__SIGN_TYPED_DATA_V3: 'eth_signTypedData_v3',
   ETH__SIGN_TYPED_DATA_V4: 'eth_signTypedData_v4',
   PERSONAL_SIGN: 'personal_sign',

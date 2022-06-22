@@ -1,6 +1,8 @@
 import '~/Popup/i18n/background';
 
 import Web3 from 'web3';
+import type { MessageTypes, TypedMessage } from '@metamask/eth-sig-util';
+import { signTypedData, SignTypedDataVersion } from '@metamask/eth-sig-util';
 
 import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -29,6 +31,7 @@ import type {
   EthRequestAccountsResponse,
   EthSignParams,
   EthSignTransactionParams,
+  EthSignTypedDataParams,
   PersonalSignParams,
   WalletAddEthereumChainParams,
   WalletSwitchEthereumChainParams,
@@ -46,6 +49,7 @@ import {
   ethcSwitchNetworkParamsSchema,
   ethSignParamsSchema,
   ethSignTransactionParamsSchema,
+  ethSignTypedDataParamsSchema,
   personalSignParamsSchema,
   tenAddChainParamsSchema,
   tenSignAminoParamsSchema,
@@ -359,6 +363,63 @@ function background() {
                     {
                       ...request,
                       message: { ...request.message, method, params: [...validatedParams] as EthSignParams },
+                      windowId: window?.id,
+                    },
+                  ]);
+                } catch (err) {
+                  if (err instanceof EthereumRPCError) {
+                    throw err;
+                  }
+
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+                }
+              }
+
+              if (method === 'eth_signTypedData_v3' || method === 'eth_signTypedData_v4') {
+                const { params } = message;
+
+                const schema = ethSignTypedDataParamsSchema();
+
+                try {
+                  const validatedParams = (await schema.validateAsync(params)) as EthSignTypedDataParams;
+
+                  if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
+                    const keyPair = getKeyPair(currentAccount, chain, password);
+                    const address = getAddress(chain, keyPair?.publicKey);
+
+                    if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
+                      throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                    }
+                  }
+
+                  try {
+                    const param2 = JSON.parse(validatedParams[1]) as TypedMessage<MessageTypes>;
+
+                    const currentNetwork = currentEthereumNetwork();
+
+                    const chainId = param2?.domain?.chainId;
+
+                    if (chainId && toHex(chainId) !== currentNetwork.chainId) {
+                      throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid chainId', message.id);
+                    }
+
+                    const version = method === 'eth_signTypedData_v3' ? SignTypedDataVersion.V3 : SignTypedDataVersion.V4;
+
+                    signTypedData({ version, privateKey: Buffer.from(PRIVATE_KEY_FOR_TEST, 'hex'), data: param2 });
+                  } catch (err) {
+                    if (err instanceof EthereumRPCError) {
+                      throw err;
+                    }
+
+                    throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid data', message.id);
+                  }
+
+                  const window = await openWindow();
+                  await setStorage('queues', [
+                    ...queues,
+                    {
+                      ...request,
+                      message: { ...request.message, method, params: [...validatedParams] as EthSignTypedDataParams },
                       windowId: window?.id,
                     },
                   ]);

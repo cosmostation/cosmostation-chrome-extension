@@ -473,7 +473,7 @@
             "cancelButton": "Cancel",
             "message": "Message",
             "signButton": "Sign",
-            "signatureRequest": "Signature reqeust",
+            "signatureRequest": "Signature request",
             "warningText": "You are signing."
           }
         },
@@ -482,7 +482,7 @@
             "cancelButton": "Cancel",
             "message": "Message",
             "signButton": "Sign",
-            "signatureRequest": "Signature reqeust",
+            "signatureRequest": "Signature request",
             "warningText": "Signing this message can be dangerous. This signature could potentially perform any operation on your account's behalf, including granting complete control of your account and all of its assets to the requesting site. Only sign this message if you know what you're doing or completely trust the requesting site."
           }
         },
@@ -554,9 +554,17 @@
             "insufficientAmount": "Insufficient amount",
             "low": "Low",
             "signButton": "Sign",
-            "signatureRequest": "Signature reqeust",
+            "signatureRequest": "Signature request",
             "tiny": "Tiny",
             "total": "Total"
+          }
+        },
+        "SignTypedData": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "message": "Message",
+            "signButton": "Sign",
+            "signatureRequest": "Signature request"
           }
         },
         "SwitchNetwork": {

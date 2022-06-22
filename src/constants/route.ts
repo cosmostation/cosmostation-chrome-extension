@@ -59,6 +59,7 @@ export const PATH = {
   POPUP__ETHEREUM__ADD_NETWORK: '/popup/ethereum/add-network',
   POPUP__ETHEREUM__SWITCH_NETWORK: '/popup/ethereum/switch-network',
   POPUP__ETHEREUM__SIGN: '/popup/ethereum/sign',
+  POPUP__ETHEREUM__SIGN_TYPED_DATA: '/popup/ethereum/sign-typed-data',
   POPUP__ETHEREUM__PERSONAL_SIGN: '/popup/ethereum/personal-sign',
   POPUP__ETHEREUM__TRANSACTION: '/popup/ethereum/transaction',
   POPUP__ETHEREUM__ADD_TOKENS: '/popup/ethereum/add-tokens',

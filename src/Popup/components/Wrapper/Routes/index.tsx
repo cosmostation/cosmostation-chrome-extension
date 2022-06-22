@@ -70,6 +70,10 @@ export default function Routes({ children }: RoutesType) {
       if (chromeStorage.queues[0].message.method === 'eth_sendTransaction') {
         navigate('/popup/ethereum/transaction');
       }
+
+      if (chromeStorage.queues[0].message.method === 'eth_signTypedData_v3' || chromeStorage.queues[0].message.method === 'eth_signTypedData_v4') {
+        navigate('/popup/ethereum/sign-typed-data');
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

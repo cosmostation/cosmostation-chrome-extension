@@ -559,6 +559,14 @@
             "total": "전체"
           }
         },
+        "SignTypedData": {
+          "entry": {
+            "cancelButton": "취소",
+            "message": "메세지",
+            "signButton": "서명",
+            "signatureRequest": "서명 요청"
+          }
+        },
         "SwitchNetwork": {
           "entry": {
             "cancelButton": "취소",
