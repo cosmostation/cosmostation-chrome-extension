@@ -100,7 +100,7 @@ export const FeeButton = styled('button')<FeeButtonProps>(({ theme, ...props }) 
 
   borderRadius: '5rem',
 
-  minWidth: '5.6rem',
+  minWidth: '5rem',
 
   backgroundColor: props['data-is-active'] ? theme.accentColors.purple01 : theme.colors.base03,
   color: props['data-is-active'] ? theme.colors.text01 : theme.colors.text02,

@@ -55,13 +55,13 @@ export const ChainListContainer = styled('div')({
 });
 
 export const StyledDivider = styled(Divider)({
-  margin: '1.2rem 0',
+  margin: '1.6rem 0',
 });
 
 export const ChainTitleContainer = styled('div')(({ theme }) => ({
-  marginBottom: '0.8rem',
+  marginBottom: '1.6rem',
 
-  color: theme.accentColors.purple01,
+  color: theme.colors.text02,
 
   display: 'flex',
   alignItems: 'center',

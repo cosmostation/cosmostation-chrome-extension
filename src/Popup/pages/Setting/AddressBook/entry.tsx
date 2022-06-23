@@ -3,6 +3,7 @@ import { useState } from 'react';
 import AddButton from '~/Popup/components/AddButton';
 import AddressBookItem from '~/Popup/components/AddressBookItem';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -12,8 +13,11 @@ import { AddressBookList, Container, Header, StyledChainButton, StyledChainPopov
 export default function Entry() {
   const { chromeStorage } = useChromeStorage();
   const { currentChain } = useCurrentChain();
+  const { currentAdditionalChains } = useCurrentAdditionalChains();
 
   const { addressBook } = chromeStorage;
+
+  const [isCustom, setIsCustom] = useState(!!currentAdditionalChains.find((item) => item.id === currentChain.id));
 
   const { t } = useTranslation();
 
@@ -35,6 +39,7 @@ export default function Entry() {
             setPopoverAnchorEl(event.currentTarget);
           }}
           isActive={isOpenPopover}
+          isCustom={isCustom}
         >
           {chain.chainName}
         </StyledChainButton>
@@ -49,8 +54,9 @@ export default function Entry() {
         isOnlyChain
         marginThreshold={0}
         currentChain={chain}
-        onClickChain={(clickedChain) => {
+        onClickChain={(clickedChain, clickedIsCustom) => {
           setChain(clickedChain);
+          setIsCustom(!!clickedIsCustom);
         }}
         open={isOpenPopover}
         onClose={() => setPopoverAnchorEl(null)}

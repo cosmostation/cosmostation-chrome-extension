@@ -29,7 +29,7 @@ import SettingIcon24 from '~/images/icons/Setting24.svg';
 
 type ChainPopoverProps = Omit<PopoverProps, 'children'> & {
   currentChain: Chain;
-  onClickChain?: (chain: Chain) => void;
+  onClickChain?: (chain: Chain, isCustom?: boolean) => void;
   isOnlyChain?: boolean;
 };
 
@@ -64,7 +64,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
           {allowedEthereumChain.length > 0 && (
             <>
               <ChainTitleContainer>
-                <Typography variant="h5">EVM Chains</Typography>
+                <Typography variant="h6">EVM networks</Typography>
               </ChainTitleContainer>
               <ChainListContainer>
                 {allowedEthereumChain.map((chain) => {
@@ -86,7 +86,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
                   return [
                     ...ETHEREUM_NETWORKS.map((network) => (
                       <ChainItemButton
-                        key={chain.id}
+                        key={`${chain.id}-${network.id}`}
                         isActive={currentChain.id === chain.id && currentEthereumNetwork.id === network.id}
                         isBackgroundActive={currentEthereumNetwork.id === network.id}
                         imgSrc={network.imageURL}
@@ -101,18 +101,19 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
                     )),
                     ...additionalEthereumNetworks.map((network) => (
                       <ChainItemButton
-                        key={chain.id}
+                        key={`${chain.id}-${network.id}`}
                         isActive={currentChain.id === chain.id && currentEthereumNetwork.id === network.id}
                         isBackgroundActive={currentEthereumNetwork.id === network.id}
                         imgSrc={network.imageURL}
                         onClick={async () => {
                           await setCurrentEthereumNetwork(network);
-                          onClickChain?.(chain);
+                          onClickChain?.(chain, true);
                           onClose?.({}, 'backdropClick');
                         }}
                         onClickDelete={async () => {
                           await removeEthereumNetwork(network);
                         }}
+                        isCustom
                       >
                         {network.networkName}
                       </ChainItemButton>
@@ -128,7 +129,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
           {allowedTendermintChain.length > 0 && (
             <>
               <ChainTitleContainer>
-                <Typography variant="h5">Tendermint Chains</Typography>
+                <Typography variant="h6">Cosmos ecosystem</Typography>
               </ChainTitleContainer>
               <ChainListContainer>
                 {allowedTendermintChain.map((chain) => (
@@ -147,8 +148,9 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
                 {additionalChains.map((chain) => (
                   <ChainItemButton
                     key={chain.id}
+                    isActive={currentChain.id === chain.id}
                     onClick={() => {
-                      onClickChain?.(chain);
+                      onClickChain?.(chain, true);
                       onClose?.({}, 'backdropClick');
                     }}
                     onClickDelete={async () => {
@@ -160,6 +162,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
                       await setChromeStorage('additionalChains', newAdditionalChains);
                     }}
                     imgSrc={chain.imageURL}
+                    isCustom
                   >
                     {chain.chainName}
                   </ChainItemButton>

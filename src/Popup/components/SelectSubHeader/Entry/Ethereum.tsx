@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 
 import ChainButton from '~/Popup/components/ChainButton';
 import ChainPopover from '~/Popup/components/ChainPopover';
@@ -17,7 +17,7 @@ type EthereumProps = {
 };
 
 export default function Ethereum({ chain, isShowChain }: EthereumProps) {
-  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
   const { currentAccount } = useCurrentAccount();
   const { setCurrentChain } = useCurrentChain();
 
@@ -25,6 +25,11 @@ export default function Ethereum({ chain, isShowChain }: EthereumProps) {
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
+
+  const isCustom = useMemo(
+    () => !!additionalEthereumNetworks.find((item) => item.id === currentEthereumNetwork.id),
+    [additionalEthereumNetworks, currentEthereumNetwork],
+  );
 
   return (
     <Container>
@@ -47,6 +52,7 @@ export default function Ethereum({ chain, isShowChain }: EthereumProps) {
               setPopoverAnchorEl(event.currentTarget);
             }}
             isActive={isOpenPopover && popover === 'chain'}
+            isCustom={isCustom}
           >
             {currentEthereumNetwork.networkName}
           </ChainButton>

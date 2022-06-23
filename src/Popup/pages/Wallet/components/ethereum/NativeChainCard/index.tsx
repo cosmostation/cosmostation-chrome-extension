@@ -4,6 +4,7 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
@@ -32,6 +33,7 @@ import {
   FourthLineCenterContainer,
   FourthLineContainer,
   SecondLineContainer,
+  SecondLineLeftAbsoluteImageContainer,
   SecondLineLeftContainer,
   SecondLineLeftImageContainer,
   SecondLineLeftTextContainer,
@@ -49,9 +51,10 @@ import SendIcon from '~/images/icons/Send.svg';
 
 type NativeChainCardProps = {
   chain: EthereumChain;
+  isCustom?: boolean;
 };
 
-export default function NativeChainCard({ chain }: NativeChainCardProps) {
+export default function NativeChainCard({ chain, isCustom }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
@@ -103,9 +106,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImageContainer>
-            <Image src={imageURL} />
-          </SecondLineLeftImageContainer>
+          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{currentEthereumNetwork.displayDenom}</Typography>
           </SecondLineLeftTextContainer>
@@ -136,7 +137,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
   );
 }
 
-export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
+export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProps) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -187,9 +188,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImageContainer>
-            <Image src={imageURL} />
-          </SecondLineLeftImageContainer>
+          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{displayDenom}</Typography>
           </SecondLineLeftTextContainer>
@@ -214,7 +213,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
   );
 }
 
-export function NativeChainCardError({ chain, resetErrorBoundary }: NativeChainCardProps & FallbackProps) {
+export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: NativeChainCardProps & FallbackProps) {
   useBalanceSWR();
 
   const [isLoading, setIsloading] = useState(false);
@@ -269,9 +268,7 @@ export function NativeChainCardError({ chain, resetErrorBoundary }: NativeChainC
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImageContainer>
-            <Image src={imageURL} />
-          </SecondLineLeftImageContainer>
+          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{displayDenom}</Typography>
           </SecondLineLeftTextContainer>
@@ -307,5 +304,25 @@ export function NativeChainCardError({ chain, resetErrorBoundary }: NativeChainC
       </FourthLineContainer>
       {isLoading && <StyledAbsoluteLoading size="2.5rem" />}
     </Container>
+  );
+}
+
+type DisplayDenomImageProps = {
+  imageURL?: string;
+  isCustom?: boolean;
+};
+
+function SecondLineLeftImage({ imageURL, isCustom = false }: DisplayDenomImageProps) {
+  return (
+    <SecondLineLeftImageContainer>
+      <SecondLineLeftAbsoluteImageContainer>
+        <Image src={imageURL} />
+      </SecondLineLeftAbsoluteImageContainer>
+      {isCustom && (
+        <SecondLineLeftAbsoluteImageContainer>
+          <Image src={customBeltImg} />
+        </SecondLineLeftAbsoluteImageContainer>
+      )}
+    </SecondLineLeftImageContainer>
   );
 }

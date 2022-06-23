@@ -6,6 +6,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ethereumAddressRegex, getTendermintAddressRegex } from '~/Popup/utils/regex';
@@ -19,6 +20,9 @@ import { useSchema } from './useSchema';
 export default function Entry() {
   const { currentChain } = useCurrentChain();
   const [chain, setChain] = useState(currentChain);
+
+  const { currentAdditionalChains } = useCurrentAdditionalChains();
+  const [isCustom, setIsCustom] = useState(!!currentAdditionalChains.find((item) => item.id === currentChain.id));
 
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { enqueueSnackbar } = useSnackbar();
@@ -73,6 +77,7 @@ export default function Entry() {
             setPopoverAnchorEl(event.currentTarget);
           }}
           isActive={isOpenPopover}
+          isCustom={isCustom}
         >
           {chain.chainName}
         </ChainButton>
@@ -117,8 +122,9 @@ export default function Entry() {
           isOnlyChain
           marginThreshold={0}
           currentChain={chain}
-          onClickChain={(clickedChain) => {
+          onClickChain={(clickedChain, clickedIsCustom) => {
             setChain(clickedChain);
+            setIsCustom(!!clickedIsCustom);
           }}
           open={isOpenPopover}
           onClose={() => setPopoverAnchorEl(null)}
