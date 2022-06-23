@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Typography } from '@mui/material';
 
 import { CHAINS } from '~/constants/chain';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { AddressInfo } from '~/types/chromeStorage';
 
@@ -42,7 +43,9 @@ export default function AddressBookItem({ addressInfo, onClick }: AddressBookIte
         </LabelRightContainer>
       </LabelContainer>
       <AddressContainer>
-        <Typography variant="h6">{shorterAddress(address, 30)}</Typography>
+        <Tooltip title={address} placement="top" arrow>
+          <Typography variant="h6">{shorterAddress(address, 30)}</Typography>
+        </Tooltip>
       </AddressContainer>
       {memo && (
         <MemoContainer>

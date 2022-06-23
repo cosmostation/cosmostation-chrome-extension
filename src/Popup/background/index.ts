@@ -4,8 +4,9 @@ import Web3 from 'web3';
 import type { MessageTypes, TypedMessage } from '@metamask/eth-sig-util';
 import { signTypedData, SignTypedDataVersion } from '@metamask/eth-sig-util';
 
-import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { COSMOS } from '~/constants/chain/tendermint/cosmos';
 import { PRIVATE_KEY_FOR_TEST } from '~/constants/common';
 import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
 import type { TOKEN_TYPE } from '~/constants/ethereum';
@@ -978,7 +979,7 @@ function background() {
         await setStorage('language', '' as LanguageType);
         await setStorage('currency', '' as CurrencyType);
 
-        await setStorage('allowedChainIds', [CHAINS[0].id]);
+        await setStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id]);
         await setStorage('allowedOrigins', []);
         await setStorage('selectedChainId', '');
         await setStorage('selectedEthereumNetworkId', '');
