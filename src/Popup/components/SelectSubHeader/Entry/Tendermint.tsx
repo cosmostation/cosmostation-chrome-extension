@@ -1,8 +1,9 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 
 import ChainButton from '~/Popup/components/ChainButton';
 import ChainPopover from '~/Popup/components/ChainPopover';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import type { TendermintChain } from '~/types/chain';
 
@@ -18,6 +19,9 @@ type TendermintProps = {
 export default function Tendermint({ chain, isShowChain }: TendermintProps) {
   const { currentAccount } = useCurrentAccount();
   const { setCurrentChain } = useCurrentChain();
+
+  const { currentTendermintAdditionalChains } = useCurrentAdditionalChains();
+  const isCustom = useMemo(() => !!currentTendermintAdditionalChains.find((item) => item.id === chain.id), [chain.id, currentTendermintAdditionalChains]);
 
   const [popover, setPopover] = useState<'chain' | 'network' | 'account' | null>(null);
 
@@ -45,6 +49,7 @@ export default function Tendermint({ chain, isShowChain }: TendermintProps) {
               setPopoverAnchorEl(event.currentTarget);
             }}
             isActive={isOpenPopover && popover === 'chain'}
+            isCustom={isCustom}
           >
             {chain.chainName}
           </ChainButton>

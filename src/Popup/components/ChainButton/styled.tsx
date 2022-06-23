@@ -25,6 +25,8 @@ export const ContentContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
+
+  paddingLeft: '0.8rem',
 });
 
 export const ContentLeftImageContainer = styled('div')({
@@ -32,7 +34,18 @@ export const ContentLeftImageContainer = styled('div')({
   justifyContent: 'center',
   alignItems: 'center',
 
-  padding: '0 0.4rem 0 0.8rem',
+  marginRight: '0.4rem',
+
+  width: '1.6rem',
+  height: '1.6rem',
+  position: 'relative',
+});
+
+export const ContentLeftAbsoluteImageContainer = styled('div')({
+  position: 'absolute',
+
+  width: '1.6rem',
+  height: '1.6rem',
 
   '& > img': {
     width: '1.6rem',
@@ -40,13 +53,9 @@ export const ContentLeftImageContainer = styled('div')({
   },
 });
 
-type ContentCenterTextContainerProps = {
-  'data-is-with-network'?: number;
-};
-
-export const ContentCenterTextContainer = styled('div')<ContentCenterTextContainerProps>(({ theme, ...props }) => ({
+export const ContentCenterTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
-  maxWidth: props['data-is-with-network'] ? '3.5rem' : '10rem',
+  maxWidth: '20rem',
 
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',

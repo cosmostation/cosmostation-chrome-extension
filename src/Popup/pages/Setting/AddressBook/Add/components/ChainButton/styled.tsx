@@ -40,7 +40,17 @@ export const ContentLeftImageContainer = styled('div')({
   justifyContent: 'center',
   alignItems: 'center',
 
-  // padding: '0 0.4rem 0 0.8rem',
+  position: 'relative',
+
+  width: '2rem',
+  height: '2rem',
+});
+
+export const ContentLeftAbsoluteImageContainer = styled('div')({
+  position: 'absolute',
+
+  width: '2rem',
+  height: '2rem',
 
   '& > img': {
     width: '2rem',

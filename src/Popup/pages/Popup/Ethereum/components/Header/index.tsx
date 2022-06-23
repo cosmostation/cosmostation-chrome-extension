@@ -2,7 +2,6 @@ import stc from 'string-to-color';
 import { Typography } from '@mui/material';
 
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { MAINNET } from '~/constants/chain/ethereum/network/mainnet';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
@@ -31,10 +30,6 @@ export default function Header({ network, origin, className }: HeaderProps) {
   const shortAddress = shorterAddress(address, 12) || '';
 
   const chainName = (() => {
-    if (network?.id === MAINNET.id) {
-      return `${chain.chainName} ${network.networkName}`;
-    }
-
     if (network) {
       return network.networkName;
     }

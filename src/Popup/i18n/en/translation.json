@@ -7,7 +7,8 @@
         "downItem2": "Request signatures for transactions",
         "downItem3": "Encrypt/Decrypt messages",
         "upDescription1": "is",
-        "upDescription2": "requesting to connect to your Cosmostation wallet"
+        "upDescription2": "requesting to connect to your ",
+        "upDescription3": " account"
       }
     },
     "ActivateChainRequest": {
@@ -429,6 +430,7 @@
         },
         "entry": {
           "addChain": "Add a custom chain",
+          "addEthereumNetwork": "Add a custom EVM network",
           "chainManagement": "Chain management"
         },
         "layout": {
@@ -800,7 +802,6 @@
           },
           "ChainPopover": {
             "index": {
-              "betaSupport": "custom chains",
               "title": "Select a chain"
             }
           },

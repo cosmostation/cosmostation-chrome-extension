@@ -50,5 +50,12 @@ export function useCurrentEthereumNetwork() {
     await setChromeStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
   };
 
-  return { ethereumNetworks: additionalEthereumNetworks, currentEthereumNetwork, setCurrentEthereumNetwork, removeEthereumNetwork, addEthereumNetwork };
+  return {
+    ethereumNetworks: allNetworks,
+    additionalEthereumNetworks,
+    currentEthereumNetwork,
+    setCurrentEthereumNetwork,
+    removeEthereumNetwork,
+    addEthereumNetwork,
+  };
 }

@@ -1,9 +1,12 @@
 import { Typography } from '@mui/material';
 
+import customBeltImg from '~/images/etc/customBelt.png';
 import Image from '~/Popup/components/common/Image';
 
 import {
+  BackgroundActive,
   ContentContainer,
+  ContentLeftAbsoluteImageContainer,
   ContentLeftContainer,
   ContentLeftImageContainer,
   ContentLeftTextContainer,
@@ -19,26 +22,45 @@ import Close16Icon from '~/images/icons/Close16.svg';
 type ChainItemButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
   imgSrc?: string;
   isActive?: boolean;
+  isBackgroundActive?: boolean;
+  isCustom?: boolean;
   children?: string;
   onClickDelete?: () => void;
 };
 
-export default function ChainItemButton({ children, imgSrc, isActive = false, onClickDelete, ...remainder }: ChainItemButtonProps) {
+export default function ChainItemButton({
+  children,
+  imgSrc,
+  isActive = false,
+  isBackgroundActive = false,
+  isCustom = false,
+  onClickDelete,
+  ...remainder
+}: ChainItemButtonProps) {
+  const isBackActive = !isActive && isBackgroundActive;
   return (
-    <StyledButton {...remainder} data-is-active={isActive ? 1 : 0}>
+    <StyledButton {...remainder} data-is-active={isActive || isBackActive ? 1 : 0}>
       <ContentContainer>
         <ContentLeftContainer>
-          {imgSrc && (
-            <ContentLeftImageContainer>
+          <ContentLeftImageContainer>
+            <ContentLeftAbsoluteImageContainer>
               <Image src={imgSrc} />
-            </ContentLeftImageContainer>
-          )}
+            </ContentLeftAbsoluteImageContainer>
+            {isCustom && (
+              <ContentLeftAbsoluteImageContainer>
+                <Image src={customBeltImg} />
+              </ContentLeftAbsoluteImageContainer>
+            )}
+          </ContentLeftImageContainer>
           <ContentLeftTextContainer>
             <Typography variant="h6">{children}</Typography>
           </ContentLeftTextContainer>
         </ContentLeftContainer>
         <ContentRightContainer>
-          <ContentRightImageContainer>{isActive && <Check16Icon />}</ContentRightImageContainer>
+          <ContentRightImageContainer data-is-background-active={isBackActive ? 1 : 0}>
+            {isActive && <Check16Icon />}
+            {isBackActive && <BackgroundActive />}
+          </ContentRightImageContainer>
         </ContentRightContainer>
         {onClickDelete && (
           <DeleteContainer

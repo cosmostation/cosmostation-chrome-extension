@@ -3,6 +3,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useRecoilValue } from 'recoil';
 import { Typography } from '@mui/material';
 
+import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import AddButton from '~/Popup/components/AddButton';
 import Number from '~/Popup/components/common/Number';
 import Header from '~/Popup/components/SelectSubHeader';
@@ -47,6 +48,11 @@ export default function Entry() {
 
   const chainList: ChainList = currentAllowedChains.map((chain) => ({ chain, amount: '0' }));
 
+  const tendermintChainList = chainList.filter(isTendermint);
+  const ethereumChainList = chainList.filter(isEthereum);
+
+  const tendermintChainNames = tendermintChainList.map((item) => item.chain.chainName);
+
   const totalAmount =
     typeof dashboard?.[currentAccount.id] === 'object' ? Object.values(dashboard[currentAccount.id]).reduce((acc, cur) => plus(acc, cur), '0') : '0';
 
@@ -78,21 +84,23 @@ export default function Entry() {
       </SubInfoContainer>
       <ChainListContainer>
         <ChainList>
-          {chainList.filter(isEthereum).map((item) => (
-            <ErrorBoundary
-              key={`${currentAccount.id}${item.chain.id}`}
-              FallbackComponent={
-                // eslint-disable-next-line react/no-unstable-nested-components
-                (props) => <EthereumChainItemError {...props} chain={item.chain} />
-              }
-            >
-              <Suspense fallback={<EthereumChainItemSkeleton chain={item.chain} />}>
-                <EthereumChainItem key={item.chain.id} chain={item.chain} />
-              </Suspense>
-            </ErrorBoundary>
-          ))}
+          {ethereumChainList.map((item) =>
+            ETHEREUM_NETWORKS.filter((network) => !tendermintChainNames.includes(network.networkName)).map((network) => (
+              <ErrorBoundary
+                key={`${currentAccount.id}${item.chain.id}`}
+                FallbackComponent={
+                  // eslint-disable-next-line react/no-unstable-nested-components
+                  (props) => <EthereumChainItemError {...props} chain={item.chain} network={network} />
+                }
+              >
+                <Suspense fallback={<EthereumChainItemSkeleton chain={item.chain} network={network} />}>
+                  <EthereumChainItem key={item.chain.id} chain={item.chain} network={network} />
+                </Suspense>
+              </ErrorBoundary>
+            )),
+          )}
 
-          {chainList.filter(isTendermint).map((item) => (
+          {tendermintChainList.map((item) => (
             <ErrorBoundary
               key={`${currentAccount.id}${item.chain.id}`}
               FallbackComponent={

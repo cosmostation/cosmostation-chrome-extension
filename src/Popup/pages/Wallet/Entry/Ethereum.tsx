@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Header from '~/Popup/components/SelectSubHeader';
@@ -16,7 +16,12 @@ type EthereumProps = {
 
 export default function Ethereum({ chain }: EthereumProps) {
   const { currentAccount } = useCurrentAccount();
-  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
+  const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
+
+  const isCustom = useMemo(
+    () => !!additionalEthereumNetworks.find((item) => item.id === currentEthereumNetwork.id),
+    [additionalEthereumNetworks, currentEthereumNetwork],
+  );
 
   return (
     <Container key={`${currentAccount.id}-${currentEthereumNetwork.id}`}>
@@ -26,10 +31,10 @@ export default function Ethereum({ chain }: EthereumProps) {
       <NativeChainCardContainer>
         <ErrorBoundary
           // eslint-disable-next-line react/no-unstable-nested-components
-          FallbackComponent={(props) => <NativeChainCardError chain={chain} {...props} />}
+          FallbackComponent={(props) => <NativeChainCardError chain={chain} isCustom={isCustom} {...props} />}
         >
-          <Suspense fallback={<NativeChainCardSkeleton chain={chain} />}>
-            <NativeChainCard chain={chain} />
+          <Suspense fallback={<NativeChainCardSkeleton chain={chain} isCustom={isCustom} />}>
+            <NativeChainCard chain={chain} isCustom={isCustom} />
           </Suspense>
         </ErrorBoundary>
       </NativeChainCardContainer>

@@ -6,8 +6,9 @@
         "downItem1": "계정 주소 확인",
         "downItem2": "트랜잭션 서명 요청",
         "downItem3": "메세지 암호화 / 보호화",
-        "upDescription1": "가",
-        "upDescription2": "접근을 요청합니다."
+        "upDescription1": "가 ",
+        "upDescription2": " 계정에 접근을 요청합니다.",
+        "upDescription3": ""
       }
     },
     "ActivateChainRequest": {
@@ -429,6 +430,7 @@
         },
         "entry": {
           "addChain": "커스텀 체인 추가",
+          "addEthereumNetwork": "커스텀 EVM 네트워크 추가",
           "chainManagement": "체인 관리"
         },
         "layout": {
@@ -800,7 +802,6 @@
           },
           "ChainPopover": {
             "index": {
-              "betaSupport": "커스텀 체인",
               "title": "체인 선택"
             }
           },

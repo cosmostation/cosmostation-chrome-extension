@@ -58,6 +58,17 @@ export const SecondLineLeftImageContainer = styled('div')({
   justifyContent: 'center',
   alignItems: 'center',
 
+  position: 'relative',
+  width: '2.4rem',
+  height: '2.4rem',
+});
+
+export const SecondLineLeftAbsoluteImageContainer = styled('div')({
+  position: 'absolute',
+
+  width: '2.4rem',
+  height: '2.4rem',
+
   '& > img': {
     width: '2.4rem',
     height: '2.4rem',

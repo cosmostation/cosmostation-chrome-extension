@@ -54,7 +54,20 @@ export const ContentLeftImageContainer = styled('div')({
   justifyContent: 'center',
   alignItems: 'center',
 
-  padding: '0 0.4rem 0 0',
+  padding: '0',
+  marginRight: '0.4rem',
+
+  position: 'relative',
+
+  width: '1.6rem',
+  height: '1.6rem',
+});
+
+export const ContentLeftAbsoluteImageContainer = styled('div')({
+  position: 'absolute',
+
+  width: '1.6rem',
+  height: '1.6rem',
 
   '& > img': {
     width: '1.6rem',
@@ -72,12 +85,16 @@ export const ContentRightContainer = styled('div')({
   justifyContent: 'flex-end',
 });
 
-export const ContentRightImageContainer = styled('div')(({ theme }) => ({
+type ContentRightImageContainerProps = {
+  'data-is-background-active'?: number;
+};
+
+export const ContentRightImageContainer = styled('div')<ContentRightImageContainerProps>(({ theme, ...props }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
 
-  paddingRight: '0.6rem',
+  paddingRight: props['data-is-background-active'] ? '1.5rem' : '0.6rem',
 
   '& > svg > path': {
     fill: theme.colors.base06,
@@ -96,4 +113,11 @@ export const DeleteContainer = styled('div')(({ theme }) => ({
   '& > svg': {
     fill: theme.colors.base05,
   },
+}));
+
+export const BackgroundActive = styled('div')(({ theme }) => ({
+  width: '0.6rem',
+  height: '0.6rem',
+  borderRadius: '50%',
+  backgroundColor: theme.accentColors.green,
 }));
