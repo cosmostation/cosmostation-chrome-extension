@@ -87,7 +87,7 @@ export default function Entry() {
           {ethereumChainList.map((item) =>
             ETHEREUM_NETWORKS.filter((network) => !tendermintChainNames.includes(network.networkName)).map((network) => (
               <ErrorBoundary
-                key={`${currentAccount.id}${item.chain.id}`}
+                key={`${currentAccount.id}${item.chain.id}${network.id}`}
                 FallbackComponent={
                   // eslint-disable-next-line react/no-unstable-nested-components
                   (props) => <EthereumChainItemError {...props} chain={item.chain} network={network} />
