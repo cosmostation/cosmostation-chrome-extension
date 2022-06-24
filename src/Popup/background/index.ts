@@ -967,6 +967,7 @@ function background() {
         await setStorage('accountName', {});
         await setStorage('additionalChains', []);
         await setStorage('additionalEthereumNetworks', []);
+        await setStorage('ethereumTokens', []);
         await setStorage('encryptedPassword', null);
         await setStorage('selectedAccountId', '');
 
@@ -982,7 +983,7 @@ function background() {
         await setStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id]);
         await setStorage('allowedOrigins', []);
         await setStorage('selectedChainId', '');
-        await setStorage('selectedEthereumNetworkId', '');
+        await setStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
 
         await setStorage('password', null);
         await openTab();

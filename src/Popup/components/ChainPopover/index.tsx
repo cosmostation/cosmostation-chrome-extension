@@ -129,7 +129,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
           {allowedTendermintChain.length > 0 && (
             <>
               <ChainTitleContainer>
-                <Typography variant="h6">Cosmos ecosystem</Typography>
+                <Typography variant="h6">Cosmos chains</Typography>
               </ChainTitleContainer>
               <ChainListContainer>
                 {allowedTendermintChain.map((chain) => (
