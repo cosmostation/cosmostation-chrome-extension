@@ -28,10 +28,16 @@ export const TitleContainer = styled('div')(({ theme }) => ({
 }));
 
 export const DescriptionContainer = styled('div')(({ theme }) => ({
+  wordBreak: 'break-all',
+
   marginTop: '1.2rem',
   color: theme.colors.text01,
 
   textAlign: 'center',
+}));
+
+export const AccentNameContainer = styled('span')(({ theme }) => ({
+  color: theme.accentColors.purple01,
 }));
 
 export const StyledDivider = styled(Divider)({

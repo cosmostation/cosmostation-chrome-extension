@@ -1,38 +1,20 @@
+import type { Common, CustomChainParams, TransactionConfig } from 'web3-core';
+
 import type { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
+
+import type { EthereumNetwork, EthereumToken } from '../chain';
 
 export type EthereumNoPopupMethodType = ValueOf<typeof ETHEREUM_NO_POPUP_METHOD_TYPE>;
 export type EthereumPopupMethodType = ValueOf<typeof ETHEREUM_POPUP_METHOD_TYPE>;
 
-export type BaseChain = 'mainnet' | 'goerli' | 'kovan' | 'rinkeby' | 'ropsten';
+export type CustomChain = CustomChainParams;
+export type EthereumTxCommon = Common;
 
-export type HardFork = 'chainstart' | 'homestead' | 'dao' | 'tangerineWhistle' | 'spuriousDragon' | 'byzantium' | 'constantinople' | 'petersburg' | 'istanbul';
-
-export interface CustomChainParams {
-  name?: string;
-  networkId: number;
-  chainId: number;
-}
-
-export interface Common {
-  customChain: CustomChainParams;
-  baseChain?: BaseChain;
-  hardfork?: HardFork;
-}
-
-export type EthereumTxParams = {
-  from?: string;
-  to?: string;
-  value?: string;
-  gas?: string;
-  gasPrice?: string;
-  maxPriorityFeePerGas?: string;
-  maxFeePerGas?: string;
-  data?: string;
-  nonce?: number;
-  chainId?: number;
-  common?: Common;
-  chain?: string;
-  hardfork?: string;
+export type EthereumTx = Omit<TransactionConfig, 'value' | 'gasPrice' | 'maxPriorityFeePerGas' | 'maxFeePerGas'> & {
+  value?: string | number;
+  gasPrice?: string | number;
+  maxPriorityFeePerGas?: string | number;
+  maxFeePerGas?: string | number;
 };
 
 export type EthRequestAccounts = {
@@ -41,25 +23,163 @@ export type EthRequestAccounts = {
   id?: number | string;
 };
 
-export type EthSignRequestMessage = {
-  method: typeof ETHEREUM_METHOD_TYPE.ETH__SIGN | typeof ETHEREUM_METHOD_TYPE.PERSONAL_SIGN;
-  params: string[];
+export type EthRequestAccountsResponse = string[];
+
+export type EthSignParams = [string, string];
+
+export type EthSign = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETH__SIGN;
+  params: EthSignParams;
   id?: number | string;
 };
 
-export type EthSendTransactionRequestMessage = {
+export type EthSignResponse = string;
+
+export type PersonalSignParams = [string, string];
+
+export type PersonalSign = {
+  method: typeof ETHEREUM_METHOD_TYPE.PERSONAL_SIGN;
+  params: EthSignParams;
+  id?: number | string;
+};
+
+export type PersonalSignResponse = string;
+
+export type EthSignTransactionParam1 = EthereumTx;
+
+export type EthSignTransactionParams = [EthereumTx];
+
+export type EthSignTransaction = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETH__SIGN_TRANSACTION;
+  params: EthSignTransactionParams;
+  id?: number | string;
+};
+
+export type EthSignTransactionResponse = {
+  raw: string;
+  tx: EthereumTx;
+};
+
+export type EthSendTransactionParam1 = EthereumTx;
+
+export type EthSendTransactionParams = [EthereumTx];
+
+export type EthSendTransaction = {
   method: typeof ETHEREUM_METHOD_TYPE.ETH__SEND_TRANSACTION;
-  params: [EthereumTxParams];
+  params: EthSendTransactionParams;
   id?: number | string;
 };
 
-export type EthGetBalanceRequestMessage = {
+export type EthSendTransactionResponse = string;
+
+export type EthGetBalance = {
   method: typeof ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE;
   params: string[];
   id?: number | string;
 };
 
-export type EthRPCRequestMessage = {
+export type EthcAddNetworkParam1 = Omit<EthereumNetwork, 'id' | 'ethereumChainId'>;
+
+export type EthcAddNetworkParams = [EthcAddNetworkParam1];
+
+export type EthcAddNetwork = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETHC__ADD_NETWORK;
+  params: EthcAddNetworkParams;
+  id?: number | string;
+};
+
+export type EthcAddNetworkResponse = null;
+
+export type WalletAddEthereumChainParam1 = {
+  chainId: string;
+  chainName: string;
+  blockExplorerUrls?: string[];
+  iconUrls?: string[];
+  nativeCurrency: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+  rpcUrls: string[];
+  coinGeckoId?: string;
+};
+
+export type WalletAddEthereumChainParams = [WalletAddEthereumChainParam1];
+
+export type WalletAddEthereumChain = {
+  method: typeof ETHEREUM_METHOD_TYPE.WALLET__ADD_ETHEREUM_CHAIN;
+  params: WalletAddEthereumChainParams;
+  id?: number | string;
+};
+
+export type WalletAddEthereumChainResponse = null;
+
+export type EthcSwitchNetworkParams = [string];
+
+export type EthcSwitchNetwork = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETHC__SWITCH_NETWORK;
+  params: EthcSwitchNetworkParams;
+  id?: number | string;
+};
+
+export type EthcSwitchNetworkResponse = null;
+
+export type WalletSwitchEthereumChainParam1 = { chainId: string };
+
+export type WalletSwitchEthereumChainParams = [WalletSwitchEthereumChainParam1];
+
+export type WalletSwitchEthereumChain = {
+  method: typeof ETHEREUM_METHOD_TYPE.WALLET__SWITCH_ETHEREUM_CHAIN;
+  params: WalletSwitchEthereumChainParams;
+  id?: number | string;
+};
+
+export type WalletSwitchEthereumChainResponse = null;
+
+export type EthcAddTokensParam = Omit<EthereumToken, 'id' | 'ethereumNetworkId'>;
+
+export type EthcAddTokensParams = EthcAddTokensParam[];
+
+export type EthcAddTokens = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETHC__ADD_TOKENS;
+  params: EthcAddTokensParams;
+  id?: number | string;
+};
+
+export type EthcAddTokensResponse = null;
+
+export type WalletWatchAssetParam = {
+  type: string;
+  options: {
+    address: string;
+    symbol: string;
+    decimals: number;
+    image?: string;
+    coinGeckoId?: string;
+  };
+};
+
+export type WalletWatchAssetParams = WalletWatchAssetParam;
+
+export type WalletWatchAsset = {
+  method: typeof ETHEREUM_METHOD_TYPE.WALLET__WATCH_ASSET;
+  params: WalletWatchAssetParams;
+  id?: number | string;
+};
+
+export type WalletWatchAssetResponse = null;
+
+export type EthSignTypedDataParams = [string, string];
+
+export type EthSignTypedData = {
+  method: typeof ETHEREUM_METHOD_TYPE.ETH__SIGN_TYPED_DATA_V3 | typeof ETHEREUM_METHOD_TYPE.ETH__SIGN_TYPED_DATA_V4;
+  params: EthSignTypedDataParams;
+  id?: number | string;
+};
+
+export type EthSignTypedDataResponse = string;
+
+export type EthRPCRequest = {
   method: Exclude<EthereumNoPopupMethodType, typeof ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE>;
   params: unknown;
   id?: number | string;

@@ -35,10 +35,19 @@ import AccountInitializeNewMnemonicStep4 from '~/Popup/pages/Account/Initialize/
 import AccountInitializeNewMnemonicStep5 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step5';
 import AccountInitializeWelcome from '~/Popup/pages/Account/Initialize/Welcome';
 import AccountManagement from '~/Popup/pages/Account/Management';
+import ChainEthereumNetworkAdd from '~/Popup/pages/Chain/Ethereum/Network/Add';
+import ChainEthereumTokenAddERC20 from '~/Popup/pages/Chain/Ethereum/Token/Add/ERC20';
 import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
+import PopupEthereumAddNetwork from '~/Popup/pages/Popup/Ethereum/AddNetwork';
+import PopupEthereumAddTokens from '~/Popup/pages/Popup/Ethereum/AddTokens';
+import PopupEthereumPersonalSign from '~/Popup/pages/Popup/Ethereum/PersonalSign';
+import PopupEthereumSign from '~/Popup/pages/Popup/Ethereum/Sign';
+import PopupEthereumSignTypedData from '~/Popup/pages/Popup/Ethereum/SignTypedData';
+import PopupEthereumSwitchNetwork from '~/Popup/pages/Popup/Ethereum/SwitchNetwork';
+import PopupEthereumTransaction from '~/Popup/pages/Popup/Ethereum/Transaction';
 import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
 import PopupTendermintAddChain from '~/Popup/pages/Popup/Tendermint/AddChain';
 import PopupTendermintSignAmino from '~/Popup/pages/Popup/Tendermint/Sign/Amino';
@@ -123,7 +132,19 @@ function Popup() {
                   <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
                   <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
 
+                  <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__ERC20} element={<ChainEthereumTokenAddERC20 />} />
+                  <Route path={PATH.CHAIN__ETHEREUM__NETWORK__ADD} element={<ChainEthereumNetworkAdd />} />
+
                   <Route path={PATH.POPUP__REQUEST_ACCOUNT} element={<PopupRequestAccount />} />
+
+                  <Route path={PATH.POPUP__ETHEREUM__ADD_NETWORK} element={<PopupEthereumAddNetwork />} />
+                  <Route path={PATH.POPUP__ETHEREUM__ADD_TOKENS} element={<PopupEthereumAddTokens />} />
+                  <Route path={PATH.POPUP__ETHEREUM__SWITCH_NETWORK} element={<PopupEthereumSwitchNetwork />} />
+                  <Route path={PATH.POPUP__ETHEREUM__SIGN} element={<PopupEthereumSign />} />
+                  <Route path={PATH.POPUP__ETHEREUM__SIGN_TYPED_DATA} element={<PopupEthereumSignTypedData />} />
+                  <Route path={PATH.POPUP__ETHEREUM__PERSONAL_SIGN} element={<PopupEthereumPersonalSign />} />
+                  <Route path={PATH.POPUP__ETHEREUM__TRANSACTION} element={<PopupEthereumTransaction />} />
+
                   <Route path={PATH.POPUP__TENDERMINT__ADD_CHAIN} element={<PopupTendermintAddChain />} />
                   <Route path={PATH.POPUP__TENDERMINT__SIGN__AMINO} element={<PopupTendermintSignAmino />} />
                   <Route path={PATH.POPUP__TENDERMINT__SIGN__DIRECT} element={<PopupTendermintSignDirect />} />

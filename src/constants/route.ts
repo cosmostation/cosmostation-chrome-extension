@@ -16,6 +16,9 @@ export const PATH = {
   CHAIN__MANAGEMENT: '/chain/management',
   CHAIN__MANAGEMENT__USE: '/chain/management/use',
 
+  CHAIN__ETHEREUM__TOKEN__ADD__ERC20: '/chain/ethereum/token/add/erc20',
+  CHAIN__ETHEREUM__NETWORK__ADD: '/chain/ethereum/network/add',
+
   ACCOUNT__MANAGEMENT: '/account/management',
   ACCOUNT__CREATE: '/account/create',
   ACCOUNT__INITIALIZE: '/account/initialize',
@@ -44,8 +47,20 @@ export const PATH = {
   REGISTER__ACCOUNT__PRIVATE_KEY: '/register/account/private-key',
   REGISTER__ACCOUNT__NEW: '/register/account/new',
 
+  // popup common
   POPUP__REQUEST_ACCOUNT: '/popup/request-account',
+
+  // popup tendermint
   POPUP__TENDERMINT__ADD_CHAIN: '/popup/tendermint/add-chain',
   POPUP__TENDERMINT__SIGN__AMINO: '/popup/tendermint/sign/amino',
   POPUP__TENDERMINT__SIGN__DIRECT: '/popup/tendermint/sign/direct',
+
+  // popup ethereum
+  POPUP__ETHEREUM__ADD_NETWORK: '/popup/ethereum/add-network',
+  POPUP__ETHEREUM__SWITCH_NETWORK: '/popup/ethereum/switch-network',
+  POPUP__ETHEREUM__SIGN: '/popup/ethereum/sign',
+  POPUP__ETHEREUM__SIGN_TYPED_DATA: '/popup/ethereum/sign-typed-data',
+  POPUP__ETHEREUM__PERSONAL_SIGN: '/popup/ethereum/personal-sign',
+  POPUP__ETHEREUM__TRANSACTION: '/popup/ethereum/transaction',
+  POPUP__ETHEREUM__ADD_TOKENS: '/popup/ethereum/add-tokens',
 } as const;

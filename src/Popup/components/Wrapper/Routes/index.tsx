@@ -27,7 +27,7 @@ export default function Routes({ children }: RoutesType) {
 
   useEffect(() => {
     if (chromeStorage.queues.length > 0) {
-      if (chromeStorage.queues[0].message.method === 'ten_requestAccount') {
+      if (chromeStorage.queues[0].message.method === 'ten_requestAccount' || chromeStorage.queues[0].message.method === 'eth_requestAccounts') {
         navigate('/popup/request-account');
       }
 
@@ -41,6 +41,38 @@ export default function Routes({ children }: RoutesType) {
 
       if (chromeStorage.queues[0].message.method === 'ten_signDirect') {
         navigate('/popup/tendermint/sign/direct');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'ethc_addNetwork') {
+        navigate('/popup/ethereum/add-network');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'ethc_addTokens') {
+        navigate('/popup/ethereum/add-tokens');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'ethc_switchNetwork') {
+        navigate('/popup/ethereum/switch-network');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'eth_sign') {
+        navigate('/popup/ethereum/sign');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'personal_sign') {
+        navigate('/popup/ethereum/personal-sign');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'eth_signTransaction') {
+        navigate('/popup/ethereum/transaction');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'eth_sendTransaction') {
+        navigate('/popup/ethereum/transaction');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'eth_signTypedData_v3' || chromeStorage.queues[0].message.method === 'eth_signTypedData_v4') {
+        navigate('/popup/ethereum/sign-typed-data');
       }
     }
 

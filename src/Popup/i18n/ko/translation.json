@@ -6,8 +6,9 @@
         "downItem1": "계정 주소 확인",
         "downItem2": "트랜잭션 서명 요청",
         "downItem3": "메세지 암호화 / 보호화",
-        "upDescription1": "가",
-        "upDescription2": "접근을 요청합니다."
+        "upDescription1": "가 ",
+        "upDescription2": " 계정에 접근을 요청합니다.",
+        "upDescription3": ""
       }
     },
     "ActivateChainRequest": {
@@ -84,6 +85,17 @@
         "passwordPlaceholder": "비밀번호",
         "unlockButton": "잠금 해제"
       }
+    },
+    "ethereum": {
+      "Fee": {
+        "index": {
+          "average": "평균",
+          "fee": "최대 수수료",
+          "gasSettings": "가스량 설정",
+          "low": "낮음",
+          "tiny": "최소"
+        }
+      }
     }
   },
   "pages": {
@@ -118,7 +130,7 @@
               "entry": {
                 "12Words": "12 단어",
                 "24Words": "24 단어",
-                "copied": "복사되었습니다",
+                "copied": "복사 되었습니다.",
                 "copy": "복사",
                 "description": "니모닉 구문은 계정을 복구 할 수 있는 유일한 방법입니다. 절대로 니모닉을 다른 사람과 공유하지 마세요. 니모닉을 잃어버리면 자산의 손실로 이어집니다.",
                 "hdPathSetting": "HD path 세팅",
@@ -218,7 +230,7 @@
               "entry": {
                 "12Words": "12 단어",
                 "24Words": "24 단어",
-                "copied": "복사되었습니다",
+                "copied": "복사 되었습니다.",
                 "copy": "복사",
                 "hdPathSetting": "HD path 세팅",
                 "next": "다음",
@@ -310,7 +322,7 @@
                   }
                 },
                 "index": {
-                  "copied": "복사되었습니다",
+                  "copied": "복사 되었습니다.",
                   "done": "완료",
                   "title": "니모닉 구문"
                 }
@@ -329,7 +341,7 @@
                   }
                 },
                 "index": {
-                  "copied": "복사되었습니다",
+                  "copied": "복사 되었습니다.",
                   "done": "완료",
                   "title": "개인키 확인"
                 }
@@ -368,6 +380,44 @@
       }
     },
     "Chain": {
+      "Ethereum": {
+        "Network": {
+          "Add": {
+            "entry": {
+              "addNetworkSnackbar": "네트워크가 추가 되었습니다.",
+              "chainIdPlaceholder": "체인 ID (예: 0x1)",
+              "coinGeckoIdPlaceholder": "Coingecko API id (선택)",
+              "displayDenomPlaceholder": "통화 기호 (선택)",
+              "explorerURLPlaceholder": "블록 탐색기 URL (선택)",
+              "imageURLPlaceholder": "통화 기호 이미지 URL (선택)",
+              "networkNamePlaceholder": "네트워크 이름",
+              "rpcURLPlaceholder": "RPC URL",
+              "submitButton": "네트워크 추가",
+              "warning": "악의적인 네트워크 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 네트워크만 추가하세요."
+            },
+            "layout": {
+              "title": "네트워크 추가"
+            }
+          }
+        },
+        "Token": {
+          "Add": {
+            "ERC20": {
+              "entry": {
+                "addTokenSnackbar": "토큰이 추가 되었습니다.",
+                "addressPlaceholder": "토큰 계약 주소",
+                "decimalsPlaceholder": "토큰 십진수",
+                "displayDenomPlaceholder": "토큰 기호",
+                "submitButton": "커스텀 토큰 추가",
+                "warning": "기존 토큰의 가짜 버전 생성을 포함하여 누구나 토큰을 생성할 수 있습니다. 사기 및 보안 위험에 대해 주의하세요."
+              },
+              "layout": {
+                "title": "토큰 가져오기"
+              }
+            }
+          }
+        }
+      },
       "Management": {
         "Use": {
           "entry": {
@@ -380,6 +430,7 @@
         },
         "entry": {
           "addChain": "커스텀 체인 추가",
+          "addEthereumNetwork": "커스텀 EVM 네트워크 추가",
           "chainManagement": "체인 관리"
         },
         "layout": {
@@ -397,6 +448,149 @@
       }
     },
     "Popup": {
+      "Ethereum": {
+        "AddNetwork": {
+          "entry": {
+            "cancelButton": "취소",
+            "chainId": "체인 ID",
+            "confirmButton": "승인",
+            "displayDenom": "통화 기호",
+            "explorerURL": "블록 탐색기 URL",
+            "networkName": "네트워크 이름",
+            "networkURL": "네트워크 URL",
+            "question": "이 사이트가 네트워크를 추가하도록 허용할까요?",
+            "warning": "Cosmostation은 맞춤형 네트워크를 검증하지 않습니다."
+          }
+        },
+        "AddTokens": {
+          "entry": {
+            "addButton": "토큰 가져오기",
+            "addTokens": "토큰 가져오기",
+            "cancelButton": "취소",
+            "question": "토큰들을 가져오시겠습니까?"
+          }
+        },
+        "PersonalSign": {
+          "entry": {
+            "cancelButton": "취소",
+            "message": "메세지",
+            "signButton": "서명",
+            "signatureRequest": "서명 요청",
+            "warningText": "서명 중입니다."
+          }
+        },
+        "Sign": {
+          "entry": {
+            "cancelButton": "취소",
+            "message": "메세지",
+            "signButton": "서명",
+            "signatureRequest": "서명 요청",
+            "warningText": "이 메세지에 서명하는 것은 위험할 수 있습니다. 이 서명을 통해 계정을 대신하여 요청된 사이트의 자산 제어를 포함한 모든 작업을 수행할 수 있습니다. 요청 사이트를 완전히 신뢰하는 경우에만 이 메세지에 서명하십시오."
+          }
+        },
+        "SignTransaction": {
+          "components": {
+            "FeeEIP1559Dialog": {
+              "index": {
+                "maxFeePerGasSetting": "가스 당 최대 수수료 세팅",
+                "submitButton": "저장"
+              }
+            },
+            "GasPriceDialog": {
+              "index": {
+                "gasPriceSetting": "가스 가격 세팅",
+                "submitButton": "저장"
+              }
+            },
+            "TxMessage": {
+              "messages": {
+                "Approve": {
+                  "index": {
+                    "amount": "수량",
+                    "grantedAddress": "승인 할 주소",
+                    "tokenAddress": "토큰"
+                  }
+                },
+                "Deploy": {
+                  "index": {
+                    "data": "데이터"
+                  }
+                },
+                "Interact": {
+                  "index": {
+                    "contractAddress": "계약 주소",
+                    "data": "데이터"
+                  }
+                },
+                "Send": {
+                  "index": {
+                    "amount": "수량",
+                    "fromAddress": "보내는 주소",
+                    "toAddress": "받는 주소"
+                  }
+                },
+                "Transfer": {
+                  "index": {
+                    "amount": "수량",
+                    "toAddress": "받는 주소",
+                    "tokenAddress": "토큰"
+                  }
+                },
+                "TransferFrom": {
+                  "index": {
+                    "amount": "수량",
+                    "fromAddress": "보내는 주소",
+                    "toAddress": "받는 주소",
+                    "tokenAddress": "토큰"
+                  }
+                }
+              }
+            }
+          },
+          "entry": {
+            "average": "평균",
+            "cancelButton": "취소",
+            "current": "현재",
+            "fee": "최대 수수료",
+            "gasSettings": "가스량 설정",
+            "insufficientAmount": "수량이 부족합니다.",
+            "low": "낮음",
+            "signButton": "서명",
+            "signatureRequest": "서명 요청",
+            "tiny": "최소",
+            "total": "전체"
+          }
+        },
+        "SignTypedData": {
+          "entry": {
+            "cancelButton": "취소",
+            "message": "메세지",
+            "signButton": "서명",
+            "signatureRequest": "서명 요청"
+          }
+        },
+        "SwitchNetwork": {
+          "entry": {
+            "cancelButton": "취소",
+            "description": "이는 Cosmostation에서 선택된 네트워크를 이전에 선택된 네트워크로 전환하게 됩니다.",
+            "question": "이 사이트가 네트워크를 전환하도록 허용할까요?",
+            "switchButton": "전환"
+          }
+        },
+        "Transaction": {
+          "components": {
+            "TxMessage": {
+              "components": {
+                "CopyButton": {
+                  "index": {
+                    "copied": "복사 되었습니다."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "Tendermint": {
         "AddChain": {
           "entry": {
@@ -518,9 +712,14 @@
     "Wallet": {
       "Receive": {
         "Entry": {
+          "Ethereum": {
+            "address": "주소",
+            "copied": "복사 되었습니다.",
+            "scanQrCode": "QR코드 스캔"
+          },
           "Tendermint": {
             "address": "주소",
-            "copied": "복사되었습니다",
+            "copied": "복사 되었습니다.",
             "scanQrCode": "QR코드 스캔"
           }
         },
@@ -530,6 +729,33 @@
       },
       "Send": {
         "Entry": {
+          "Ethereum": {
+            "components": {
+              "CoinButton": {
+                "index": {
+                  "available": "사용 가능 수량"
+                }
+              },
+              "CoinPopover": {
+                "components": {
+                  "CoinItem": {
+                    "index": {
+                      "available": "사용 가능 수량"
+                    }
+                  }
+                }
+              }
+            },
+            "index": {
+              "amountPlaceholder": "수량",
+              "insufficientAmount": "수량이 부족합니다.",
+              "insufficientFee": "수수료가 부족합니다.",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "invalidAmount": "수량을 입력하세요.",
+              "recipientAddressPlaceholder": "입금 주소",
+              "sendButton": "보내기"
+            }
+          },
           "Tendermint": {
             "components": {
               "CoinPopover": {
@@ -576,8 +802,37 @@
           },
           "ChainPopover": {
             "index": {
-              "betaSupport": "커스텀 체인",
               "title": "체인 선택"
+            }
+          },
+          "NetworkPopover": {
+            "index": {
+              "customNetwork": "커스텀 네트워크",
+              "title": "네트워크 선택"
+            }
+          }
+        },
+        "ethereum": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "복사 되었습니다.",
+              "depositButton": "입금",
+              "networkError": "네트워크 오류",
+              "sendButton": "보내기"
+            }
+          },
+          "TokenList": {
+            "components": {
+              "TokenItem": {
+                "index": {
+                  "invalidError": "유효하지 않은 토큰",
+                  "networkError": "네트워크 오류"
+                }
+              }
+            },
+            "index": {
+              "importTokenButton": "토큰 가져오기",
+              "token": "토큰"
             }
           }
         },
@@ -585,7 +840,7 @@
           "NativeChainCard": {
             "index": {
               "available": "전송 가능 수량",
-              "copied": "복사되었습니다",
+              "copied": "복사 되었습니다.",
               "delegated": "위임 수량",
               "depositButton": "입금",
               "networkError": "네트워크 오류",
@@ -600,6 +855,15 @@
     }
   },
   "schema": {
+    "addNetworkForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "16진수로 입력하셔야 합니다. (예: 0x1)"
+          }
+        }
+      }
+    },
     "addressBookForm": {
       "address": {
         "string": {
@@ -634,6 +898,8 @@
       },
       "number": {
         "base": "숫자를 입력하세요.",
+        "greater": "{#limit} 보다 큰 값을 입력하셔야 합니다.",
+        "less": "{#limit} 보다 작은 값을 입력하셔야 합니다.",
         "max": "{#limit} 이하의 값을 입력하셔야 합니다.",
         "min": "{#limit} 이상의 값을 입력하셔야 합니다."
       },
@@ -642,6 +908,15 @@
         "empty": "필수 값 입니다.",
         "max": "최대 {#limit}자까지 입력할 수 있습니다.",
         "min": "최소 {#limit}자 이상 입력하셔야 합니다."
+      }
+    },
+    "importTokenForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "토큰 주소가 유효하지 않습니다."
+          }
+        }
       }
     },
     "ledgerForm": {

@@ -9,11 +9,11 @@ import type { Path } from '~/types/route';
 
 import { Container, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
 
-type EntryProps = {
+type CoinListProps = {
   chain: TendermintChain;
 };
 
-export default function CoinList({ chain }: EntryProps) {
+export default function CoinList({ chain }: CoinListProps) {
   const { coins, ibcCoins } = useCoinListSWR(chain, true);
 
   const sortedCoins = [...coins, ...ibcCoins.reverse().sort((item) => (item.auth ? -1 : 1))];

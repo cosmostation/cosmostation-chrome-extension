@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useRecoilState } from 'recoil';
 
-import { CHAINS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { COSMOS } from '~/constants/chain/tendermint/cosmos';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { chromeStorageState } from '~/Popup/recoils/chromeStorage';
+import { chromeStorageDefault, chromeStorageState } from '~/Popup/recoils/chromeStorage';
 import { getAllStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import type { Chain, TendermintChain } from '~/types/chain';
 import type { LanguageType } from '~/types/chromeStorage';
@@ -25,10 +27,11 @@ export default function Init({ children }: InitType) {
   const officialChainIds = CHAINS.map((item) => item.id);
 
   const officialTendermintLowercaseChainIds = TENDERMINT_CHAINS.map((item) => item.chainId.toLowerCase());
+  const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
 
   const handleOnStorageChange = () => {
     void (async () => {
-      setChromeStorage(await getAllStorage());
+      setChromeStorage({ ...chromeStorageDefault, ...(await getAllStorage()) });
     })();
   };
 
@@ -38,7 +41,7 @@ export default function Init({ children }: InitType) {
     void (async () => {
       const originChromeStorage = await getAllStorage();
 
-      setChromeStorage(originChromeStorage);
+      setChromeStorage({ ...chromeStorageDefault, ...originChromeStorage });
 
       if (language && !originChromeStorage.currency) {
         const newCurrency = language.startsWith('ko')
@@ -65,10 +68,6 @@ export default function Init({ children }: InitType) {
         await setStorage('theme', theme);
       }
 
-      if (!originChromeStorage.addressBook) {
-        await setStorage('addressBook', []);
-      }
-
       if (originChromeStorage.additionalChains.find((item) => officialChainLowercaseNames.includes(item.chainName.toLowerCase()))) {
         const newAdditionalChains = originChromeStorage.additionalChains.filter((item) => !officialChainLowercaseNames.includes(item.chainName.toLowerCase()));
 
@@ -83,8 +82,16 @@ export default function Init({ children }: InitType) {
         await setStorage('additionalChains', newAdditionalChains);
       }
 
+      if (originChromeStorage.additionalEthereumNetworks.find((item) => officialEthereumNetworkChainIds.includes(item.chainId))) {
+        const newAdditionalEthereumNetworks = originChromeStorage.additionalEthereumNetworks.filter(
+          (item) => !officialEthereumNetworkChainIds.includes(item.chainId),
+        );
+
+        await setStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
+      }
+
       if (!originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).length) {
-        await setStorage('allowedChainIds', [CHAINS[0].id]);
+        await setStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id]);
       }
 
       setIsLoading(false);

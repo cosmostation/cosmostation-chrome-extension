@@ -8,6 +8,7 @@ import ChainButton from '~/Popup/components/ChainButton';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { getKeyPair } from '~/Popup/utils/common';
@@ -39,6 +40,10 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
   const { chromeStorage } = useChromeStorage();
 
   const { currentChain } = useCurrentChain();
+
+  const { currentAdditionalChains } = useCurrentAdditionalChains();
+
+  const [isCustom, setIsCustom] = useState(!!currentAdditionalChains.find((item) => item.id === currentChain.id));
 
   const [chain, setChain] = useState(currentChain);
 
@@ -108,6 +113,7 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
                       setPopoverAnchorEl(event.currentTarget);
                     }}
                     isActive={isOpenPopover}
+                    isCustom={isCustom}
                   >
                     {chain.chainName}
                   </ChainButton>
@@ -152,10 +158,12 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
             </form>
           </Container>
           <StyledChainPopover
+            isOnlyChain
             marginThreshold={0}
             currentChain={chain}
-            onClickChain={(clickedChain) => {
+            onClickChain={(clickedChain, clickedIsCustom) => {
               setChain(clickedChain);
+              setIsCustom(!!clickedIsCustom);
             }}
             open={isOpenPopover}
             onClose={() => setPopoverAnchorEl(null)}

@@ -1,17 +1,28 @@
-import type { LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
+import type { ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE, TENDERMINT_LISTENER_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
 import type {
-  EthGetBalanceRequestMessage,
+  EthcAddNetwork,
+  EthcAddTokens,
+  EthcSwitchNetwork,
+  EthGetBalance,
   EthRequestAccounts,
-  EthRPCRequestMessage,
-  EthSendTransactionRequestMessage,
-  EthSignRequestMessage,
+  EthRPCRequest,
+  EthSendTransaction,
+  EthSign,
+  EthSignTransaction,
+  EthSignTypedData,
+  PersonalSign,
+  WalletAddEthereumChain,
+  WalletSwitchEthereumChain,
+  WalletWatchAsset,
 } from './ethereum/message';
 import type { TenAccount, TenAddChain, TenRequestAccount, TenSignAmino, TenSignDirect, TenSupportedChainNames } from './tendermint/message';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
-export type ListenerType = ValueOf<typeof LISTENER_TYPE>;
+export type TendermintListenerType = ValueOf<typeof TENDERMINT_LISTENER_TYPE>;
+export type EthereumListenerType = ValueOf<typeof ETHEREUM_LISTENER_TYPE>;
+export type ListenerType = TendermintListenerType | EthereumListenerType;
 
 /** Web Page <-> Content Script 통신 타입 정의 */
 
@@ -21,11 +32,20 @@ export type ResponseMessage = {
 };
 
 export type EthereumRequestMessage =
-  | EthRPCRequestMessage
-  | EthSignRequestMessage
-  | EthSendTransactionRequestMessage
-  | EthGetBalanceRequestMessage
-  | EthRequestAccounts;
+  | EthRPCRequest
+  | EthSign
+  | EthSignTransaction
+  | EthSendTransaction
+  | EthSignTypedData
+  | EthGetBalance
+  | EthRequestAccounts
+  | EthcAddNetwork
+  | EthcSwitchNetwork
+  | PersonalSign
+  | EthcAddTokens
+  | WalletSwitchEthereumChain
+  | WalletAddEthereumChain
+  | WalletWatchAsset;
 
 export type TendermintRequestMessage = TenRequestAccount | TenAddChain | TenSignAmino | TenSignDirect | TenSupportedChainNames | TenAccount;
 

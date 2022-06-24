@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react';
 import { Typography } from '@mui/material';
 
-import { DEFAULT_GAS } from '~/constants/chain';
+import { TENDERMINT_DEFAULT_GAS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { PUBLIC_KEY_TYPE } from '~/constants/tendermint';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
+import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
 import Fee from '~/Popup/components/Fee';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -23,20 +24,7 @@ import type { TenSignDirect, TenSignDirectResponse } from '~/types/tendermint/me
 import type { SignDirectDoc } from '~/types/tendermint/proto';
 
 import TxMessage from './components/TxMessage';
-import {
-  BottomButtonContainer,
-  BottomContainer,
-  Container,
-  FeeContainer,
-  MemoContainer,
-  PaginationContainer,
-  Tab,
-  TabContainer,
-  TabIndicatorContainer,
-  TabPanelContainer,
-  Tabs,
-  TitleContainer,
-} from './styled';
+import { BottomButtonContainer, BottomContainer, Container, FeeContainer, MemoContainer, PaginationContainer, TabContainer, TitleContainer } from './styled';
 import Memo from '../components/Memo';
 import Pagination from '../components/Pagination';
 import Tx from '../components/Tx';
@@ -68,7 +56,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { fee } = decodedAuthInfoBytes;
 
-  const inputGas = fee?.gas_limit ? String(fee.gas_limit) : DEFAULT_GAS;
+  const inputGas = fee?.gas_limit ? String(fee.gas_limit) : TENDERMINT_DEFAULT_GAS;
   const inputFee = fee?.amount?.find((item) => item.denom === chain.baseDenom)?.amount || '0';
 
   const [gas, setGas] = useState(inputGas);
@@ -108,11 +96,10 @@ export default function Entry({ queue, chain }: EntryProps) {
         <Typography variant="h3">{chainName}</Typography>
       </TitleContainer>
       <TabContainer>
-        <Tabs value={value} onChange={handleChange} textColor="inherit" variant="fullWidth" indicatorColor="primary">
+        <Tabs value={value} onChange={handleChange} variant="fullWidth">
           <Tab label={t('pages.Popup.Tendermint.Sign.Direct.entry.detailTab')} />
           <Tab label={t('pages.Popup.Tendermint.Sign.Direct.entry.dataTab')} />
         </Tabs>
-        <TabIndicatorContainer />
       </TabContainer>
       <TabPanel value={value} index={0}>
         <TxMessage msg={msgs[txMsgPage - 1]} chain={chain} />
@@ -203,22 +190,5 @@ export default function Entry({ queue, chain }: EntryProps) {
         </BottomButtonContainer>
       </BottomContainer>
     </Container>
-  );
-}
-
-type TabPanelProps = {
-  children?: React.ReactNode;
-  dir?: string;
-  index: number;
-  value: number;
-};
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <TabPanelContainer role="tabpanel" hidden={value !== index} id={`full-width-tabpanel-${index}`} aria-labelledby={`full-width-tab-${index}`} {...other}>
-      {value === index && children}
-    </TabPanelContainer>
   );
 }

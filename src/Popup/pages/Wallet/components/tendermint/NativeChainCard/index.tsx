@@ -4,11 +4,13 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAmountSWR } from '~/Popup/hooks/SWR/tendermint/useAmountSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -18,7 +20,7 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import type { TendermintChain } from '~/types/chain';
 
 import {
@@ -35,6 +37,7 @@ import {
   FourthLineContainerItemLeft,
   FourthLineContainerItemRight,
   SecondLineContainer,
+  SecondLineLeftAbsoluteImageContainer,
   SecondLineLeftContainer,
   SecondLineLeftImageContainer,
   SecondLineLeftTextContainer,
@@ -56,11 +59,12 @@ import SendIcon from '~/images/icons/Send.svg';
 
 type NativeChainCardProps = {
   chain: TendermintChain;
+  isCustom?: boolean;
 };
 
 const EXPANDED_KEY = 'wallet-tendermint-expanded';
 
-export default function NativeChainCard({ chain }: NativeChainCardProps) {
+export default function NativeChainCard({ chain, isCustom = false }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
   const accounts = useAccounts(true);
@@ -93,6 +97,14 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
     }
   };
 
+  const displayVestingAmount = toDisplayDenomAmount(vestingRelatedAvailable, decimals);
+  const displayDelegationAmount = toDisplayDenomAmount(delegationAmount, decimals);
+  const displayUnDelegationAmount = toDisplayDenomAmount(unbondingAmount, decimals);
+  const displayRewardAmount = toDisplayDenomAmount(rewardAmount, decimals);
+  const displayVestingNotDelegationAmount = toDisplayDenomAmount(vestingNotDelegate, decimals);
+
+  const displayMaxDecimals = getDisplayMaxDecimals(decimals);
+
   return (
     <Container>
       <FirstLineContainer>
@@ -109,15 +121,17 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImageContainer>
-            <Image src={chain.imageURL} />
-          </SecondLineLeftImageContainer>
+          <SecondLineLeftImage imageURL={chain.imageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{chain.displayDenom}</Typography>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <Number fixed={6}>{displayAmount}</Number>
+          <Tooltip title={displayAmount} arrow placement="bottom-end">
+            <span>
+              <Number fixed={displayMaxDecimals}>{displayAmount}</Number>
+            </span>
+          </Tooltip>
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>
@@ -135,9 +149,13 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
                 <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.available')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
-                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
-                  {toDisplayDenomAmount(vestingRelatedAvailable, decimals)}
-                </Number>
+                <Tooltip title={displayVestingAmount} arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                      {displayVestingAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
               </FourthLineContainerItemRight>
             </FourthLineContainerItem>
             <FourthLineContainerItem>
@@ -145,9 +163,13 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
                 <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.delegated')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
-                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
-                  {toDisplayDenomAmount(delegationAmount, decimals)}
-                </Number>
+                <Tooltip title={displayDelegationAmount} arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                      {displayDelegationAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
               </FourthLineContainerItemRight>
             </FourthLineContainerItem>
             <FourthLineContainerItem>
@@ -155,9 +177,13 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
                 <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.unbonding')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
-                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
-                  {toDisplayDenomAmount(unbondingAmount, decimals)}
-                </Number>
+                <Tooltip title={displayUnDelegationAmount} arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                      {displayUnDelegationAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
               </FourthLineContainerItemRight>
             </FourthLineContainerItem>
             <FourthLineContainerItem>
@@ -165,9 +191,13 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
                 <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.reward')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
-                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
-                  {toDisplayDenomAmount(rewardAmount, decimals)}
-                </Number>
+                <Tooltip title={displayRewardAmount} arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                      {displayRewardAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
               </FourthLineContainerItemRight>
             </FourthLineContainerItem>
             <FourthLineContainerItem>
@@ -175,9 +205,13 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
                 <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.vesting')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
-                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={6}>
-                  {toDisplayDenomAmount(vestingNotDelegate, decimals)}
-                </Number>
+                <Tooltip title={displayVestingNotDelegationAmount} arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                      {displayVestingNotDelegationAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
               </FourthLineContainerItemRight>
             </FourthLineContainerItem>
           </FourthLineContainer>
@@ -210,7 +244,7 @@ export default function NativeChainCard({ chain }: NativeChainCardProps) {
   );
 }
 
-export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
+export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProps) {
   const { t } = useTranslation();
 
   const { currentAccount } = useCurrentAccount();
@@ -261,9 +295,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImageContainer>
-            <Image src={chain.imageURL} />
-          </SecondLineLeftImageContainer>
+          <SecondLineLeftImage imageURL={chain.imageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{chain.displayDenom}</Typography>
           </SecondLineLeftTextContainer>
@@ -350,7 +382,7 @@ export function NativeChainCardSkeleton({ chain }: NativeChainCardProps) {
   );
 }
 
-export function NativeChainCardError({ chain, resetErrorBoundary }: NativeChainCardProps & FallbackProps) {
+export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: NativeChainCardProps & FallbackProps) {
   useAmountSWR(chain);
 
   const [isLoading, setIsloading] = useState(false);
@@ -401,9 +433,7 @@ export function NativeChainCardError({ chain, resetErrorBoundary }: NativeChainC
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImageContainer>
-            <Image src={chain.imageURL} />
-          </SecondLineLeftImageContainer>
+          <SecondLineLeftImage imageURL={chain.imageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{chain.displayDenom}</Typography>
           </SecondLineLeftTextContainer>
@@ -440,5 +470,25 @@ export function NativeChainCardError({ chain, resetErrorBoundary }: NativeChainC
       </ButtonContainer>
       {isLoading && <StyledAbsoluteLoading size="2.5rem" />}
     </Container>
+  );
+}
+
+type DisplayDenomImageProps = {
+  imageURL?: string;
+  isCustom?: boolean;
+};
+
+function SecondLineLeftImage({ imageURL, isCustom = false }: DisplayDenomImageProps) {
+  return (
+    <SecondLineLeftImageContainer>
+      <SecondLineLeftAbsoluteImageContainer>
+        <Image src={imageURL} />
+      </SecondLineLeftAbsoluteImageContainer>
+      {isCustom && (
+        <SecondLineLeftAbsoluteImageContainer>
+          <Image src={customBeltImg} />
+        </SecondLineLeftAbsoluteImageContainer>
+      )}
+    </SecondLineLeftImageContainer>
   );
 }

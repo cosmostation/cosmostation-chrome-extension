@@ -3,11 +3,23 @@ export const ETHEREUM_POPUP_METHOD_TYPE = {
   ETH__SEND_TRANSACTION: 'eth_sendTransaction',
   ETH__SIGN: 'eth_sign',
   ETH__SIGN_TRANSACTION: 'eth_signTransaction',
-  ETH__SIGN_TYPED_DATA: 'eth_signTypedData',
-  ETH__SIGN_TYPED_DATA_V1: 'eth_signTypedData_v1',
   ETH__SIGN_TYPED_DATA_V3: 'eth_signTypedData_v3',
   ETH__SIGN_TYPED_DATA_V4: 'eth_signTypedData_v4',
   PERSONAL_SIGN: 'personal_sign',
+
+  // https://eips.ethereum.org/EIPS/eip-3326
+  WALLET__SWITCH_ETHEREUM_CHAIN: 'wallet_switchEthereumChain',
+
+  // https://eips.ethereum.org/EIPS/eip-3085
+  WALLET__ADD_ETHEREUM_CHAIN: 'wallet_addEthereumChain',
+
+  // https://eips.ethereum.org/EIPS/eip-747
+  WALLET__WATCH_ASSET: 'wallet_watchAsset',
+
+  // custom
+  ETHC__ADD_NETWORK: 'ethc_addNetwork',
+  ETHC__SWITCH_NETWORK: 'ethc_switchNetwork',
+  ETHC__ADD_TOKENS: 'ethc_addTokens',
 } as const;
 
 export const ETHEREUM_NO_POPUP_METHOD_TYPE = {
@@ -54,7 +66,6 @@ export const ETHEREUM_NO_POPUP_METHOD_TYPE = {
   NET_PEERCOUNT: 'net_peerCount',
   NET_VERSION: 'net_version',
   PERSONAL_EC_RECOVER: 'personal_ecRecover',
-  WALLET_WATCH_ASSET: 'wallet_watchAsset',
   WEB3_CLIENT_VERSION: 'web3_clientVersion',
   WEB3_SHA3: 'web3_sha3',
 } as const;
@@ -79,4 +90,15 @@ export const ETHEREUM_TX_TYPE = {
   SIGN: 'sign',
   SIGN_TYPED_DATA: 'signTypedData',
   PERSONAL_SIGN: 'personalSign',
+} as const;
+
+export const FEE_TYPE = {
+  BASIC: 'BASIC',
+  EIP_1559: 'EIP-1559',
+} as const;
+
+export const TOKEN_TYPE = {
+  ERC20: 'ERC20',
+  ERC721: 'ERC721',
+  ERC1155: 'ERC1155',
 } as const;

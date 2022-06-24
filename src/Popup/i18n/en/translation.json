@@ -7,7 +7,8 @@
         "downItem2": "Request signatures for transactions",
         "downItem3": "Encrypt/Decrypt messages",
         "upDescription1": "is",
-        "upDescription2": "requesting to connect to your Cosmostation wallet"
+        "upDescription2": "requesting to connect to your ",
+        "upDescription3": " account"
       }
     },
     "ActivateChainRequest": {
@@ -83,6 +84,17 @@
         "lostButton": "I lost my password",
         "passwordPlaceholder": "Password",
         "unlockButton": "Unlock"
+      }
+    },
+    "ethereum": {
+      "Fee": {
+        "index": {
+          "average": "Average",
+          "fee": "Max fee",
+          "gasSettings": "Gas settings",
+          "low": "Low",
+          "tiny": "Tiny"
+        }
       }
     }
   },
@@ -368,6 +380,44 @@
       }
     },
     "Chain": {
+      "Ethereum": {
+        "Network": {
+          "Add": {
+            "entry": {
+              "addNetworkSnackbar": "Network added",
+              "chainIdPlaceholder": "Chain id (eg. 0x1)",
+              "coinGeckoIdPlaceholder": "Coingecko API id (option)",
+              "displayDenomPlaceholder": "Currency symbol (option)",
+              "explorerURLPlaceholder": "Explorer URL (option)",
+              "imageURLPlaceholder": "Symbol image URL (option)",
+              "networkNamePlaceholder": "Network name",
+              "rpcURLPlaceholder": "RPC URL",
+              "submitButton": "Add a network",
+              "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust."
+            },
+            "layout": {
+              "title": "Add a network"
+            }
+          }
+        },
+        "Token": {
+          "Add": {
+            "ERC20": {
+              "entry": {
+                "addTokenSnackbar": "Token added",
+                "addressPlaceholder": "Token contract address",
+                "decimalsPlaceholder": "Token decimals",
+                "displayDenomPlaceholder": "Token symbol",
+                "submitButton": "Add custom token",
+                "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
+              },
+              "layout": {
+                "title": "Import tokens"
+              }
+            }
+          }
+        }
+      },
       "Management": {
         "Use": {
           "entry": {
@@ -380,6 +430,7 @@
         },
         "entry": {
           "addChain": "Add a custom chain",
+          "addEthereumNetwork": "Add a custom EVM network",
           "chainManagement": "Chain management"
         },
         "layout": {
@@ -397,6 +448,149 @@
       }
     },
     "Popup": {
+      "Ethereum": {
+        "AddNetwork": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "chainId": "Chain ID",
+            "confirmButton": "Confirm",
+            "displayDenom": "Currency symbol",
+            "explorerURL": "Block explorer URL",
+            "networkName": "Network name",
+            "networkURL": "Network URL",
+            "question": "Allow this site to add the network?",
+            "warning": "Cosmostation does not validate custom network."
+          }
+        },
+        "AddTokens": {
+          "entry": {
+            "addButton": "Add tokens",
+            "addTokens": "Add Suggested Tokens",
+            "cancelButton": "Cancel",
+            "question": "Would you like to import these tokens?"
+          }
+        },
+        "PersonalSign": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "message": "Message",
+            "signButton": "Sign",
+            "signatureRequest": "Signature request",
+            "warningText": "You are signing."
+          }
+        },
+        "Sign": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "message": "Message",
+            "signButton": "Sign",
+            "signatureRequest": "Signature request",
+            "warningText": "Signing this message can be dangerous. This signature could potentially perform any operation on your account's behalf, including granting complete control of your account and all of its assets to the requesting site. Only sign this message if you know what you're doing or completely trust the requesting site."
+          }
+        },
+        "SignTransaction": {
+          "components": {
+            "FeeEIP1559Dialog": {
+              "index": {
+                "maxFeePerGasSetting": "Max Fee Per Gas Setting",
+                "submitButton": "Save"
+              }
+            },
+            "GasPriceDialog": {
+              "index": {
+                "gasPriceSetting": "Gas Price Setting",
+                "submitButton": "Save"
+              }
+            },
+            "TxMessage": {
+              "messages": {
+                "Approve": {
+                  "index": {
+                    "amount": "Amount",
+                    "grantedAddress": "Granted to",
+                    "tokenAddress": "Token"
+                  }
+                },
+                "Deploy": {
+                  "index": {
+                    "data": "Data"
+                  }
+                },
+                "Interact": {
+                  "index": {
+                    "contractAddress": "Contract address",
+                    "data": "Data"
+                  }
+                },
+                "Send": {
+                  "index": {
+                    "amount": "Amount",
+                    "fromAddress": "From address",
+                    "toAddress": "To address"
+                  }
+                },
+                "Transfer": {
+                  "index": {
+                    "amount": "Amount",
+                    "toAddress": "To address",
+                    "tokenAddress": "Token"
+                  }
+                },
+                "TransferFrom": {
+                  "index": {
+                    "amount": "Amount",
+                    "fromAddress": "From address",
+                    "toAddress": "To address",
+                    "tokenAddress": "Token"
+                  }
+                }
+              }
+            }
+          },
+          "entry": {
+            "average": "Average",
+            "cancelButton": "Cancel",
+            "current": "Current",
+            "fee": "Max fee",
+            "gasSettings": "Gas settings",
+            "insufficientAmount": "Insufficient amount",
+            "low": "Low",
+            "signButton": "Sign",
+            "signatureRequest": "Signature request",
+            "tiny": "Tiny",
+            "total": "Total"
+          }
+        },
+        "SignTypedData": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "message": "Message",
+            "signButton": "Sign",
+            "signatureRequest": "Signature request"
+          }
+        },
+        "SwitchNetwork": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "description": "This will switch the selected network within Cosmostation to a previously selected network.",
+            "question": "Allow this site to switch the network?",
+            "switchButton": "Switch"
+          }
+        },
+        "Transaction": {
+          "components": {
+            "TxMessage": {
+              "components": {
+                "CopyButton": {
+                  "index": {
+                    "copied": "Copied"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "Tendermint": {
         "AddChain": {
           "entry": {
@@ -518,6 +712,11 @@
     "Wallet": {
       "Receive": {
         "Entry": {
+          "Ethereum": {
+            "address": "Address",
+            "copied": "Copied",
+            "scanQrCode": "Scan QR code"
+          },
           "Tendermint": {
             "address": "Address",
             "copied": "Copied",
@@ -530,6 +729,33 @@
       },
       "Send": {
         "Entry": {
+          "Ethereum": {
+            "components": {
+              "CoinButton": {
+                "index": {
+                  "available": "Available"
+                }
+              },
+              "CoinPopover": {
+                "components": {
+                  "CoinItem": {
+                    "index": {
+                      "available": "Available"
+                    }
+                  }
+                }
+              }
+            },
+            "index": {
+              "amountPlaceholder": "Amount",
+              "insufficientAmount": "Insufficient amount",
+              "insufficientFee": "Insufficient fee",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          },
           "Tendermint": {
             "components": {
               "CoinPopover": {
@@ -576,8 +802,37 @@
           },
           "ChainPopover": {
             "index": {
-              "betaSupport": "custom chains",
               "title": "Select a chain"
+            }
+          },
+          "NetworkPopover": {
+            "index": {
+              "customNetwork": "Custom network",
+              "title": "Select a network"
+            }
+          }
+        },
+        "ethereum": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "Copied",
+              "depositButton": "Deposit",
+              "networkError": "Network error",
+              "sendButton": "Send"
+            }
+          },
+          "TokenList": {
+            "components": {
+              "TokenItem": {
+                "index": {
+                  "invalidError": "Invalid token",
+                  "networkError": "Network error"
+                }
+              }
+            },
+            "index": {
+              "importTokenButton": "Import token",
+              "token": "Token"
             }
           }
         },
@@ -600,6 +855,15 @@
     }
   },
   "schema": {
+    "addNetworkForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "Must be entered in hexadecimal (eg. 0x1)"
+          }
+        }
+      }
+    },
     "addressBookForm": {
       "address": {
         "string": {
@@ -634,6 +898,8 @@
       },
       "number": {
         "base": "Please enter numbers.",
+        "greater": "Please enter a number greater than {#limit}.",
+        "less": "Please enter a number less than {#limit}.",
         "max": "Please enter a number less than {#limit}",
         "min": "Please enter at least {#limit} or more numbers."
       },
@@ -642,6 +908,15 @@
         "empty": "required",
         "max": "Please enter less than {#limit} characters.",
         "min": "Please enter at least {#limit} or more characters."
+      }
+    },
+    "importTokenForm": {
+      "address": {
+        "string": {
+          "pattern": {
+            "base": "Invalid token address"
+          }
+        }
       }
     },
     "ledgerForm": {

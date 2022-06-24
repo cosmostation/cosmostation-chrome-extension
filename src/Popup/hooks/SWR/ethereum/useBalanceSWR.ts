@@ -1,12 +1,14 @@
 import type { AxiosError } from 'axios';
+import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useCurrentNetwork } from '~/Popup/hooks/useCurrent/useCurrentNetwork';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { post } from '~/Popup/utils/axios';
-import type { EthereumChain } from '~/types/chain';
-import type { BalancePayload } from '~/types/ethereum/balance';
+import type { EthereumNetwork } from '~/types/chain';
+import type { BalancePayload } from '~/types/ethereum/rpc';
 
 type FetchParams = {
   url: string;
@@ -16,12 +18,13 @@ type FetchParams = {
   };
 };
 
-export function useBalanceSWR(chain: EthereumChain, suspense?: boolean) {
-  const accounts = useAccounts();
+export function useBalanceSWR(network?: EthereumNetwork, config?: SWRConfiguration) {
+  const chain = ETHEREUM;
+  const accounts = useAccounts(config?.suspense);
   const { chromeStorage } = useChromeStorage();
-  const { currentNetwork } = useCurrentNetwork();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const { rpcURL } = currentNetwork;
+  const { rpcURL } = network || currentEthereumNetwork;
 
   const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
 
@@ -36,7 +39,7 @@ export function useBalanceSWR(chain: EthereumChain, suspense?: boolean) {
       refreshInterval: 15000,
       errorRetryCount: 0,
       isPaused: () => !address,
-      suspense,
+      ...config,
     },
   );
 

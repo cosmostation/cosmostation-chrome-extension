@@ -2,7 +2,7 @@ import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chr
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
 
-import type { BIP44, Chain, CommonChain, EthereumNetwork } from './chain';
+import type { BIP44, Chain, CommonChain, EthereumNetwork, EthereumToken } from './chain';
 import type { RequestMessage } from './message';
 
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
@@ -38,7 +38,7 @@ export type Queue<T = RequestMessage> = {
   origin: string;
   messageId: string;
   message: T;
-  channel?: 'ten_send';
+  channel?: 'inApp';
 };
 
 export type AddressInfo = {
@@ -58,7 +58,6 @@ export type ChromeStorage = {
   currency: CurrencyType;
   windowId: number | null;
   additionalChains: Chain[];
-  additionalEthereumNetworks: EthereumNetwork[];
   language: LanguageType;
   addressBook: AddressInfo[];
 
@@ -69,7 +68,10 @@ export type ChromeStorage = {
   allowedOrigins: AllowedOrigin[];
   allowedChainIds: string[];
   selectedChainId: string;
+
+  additionalEthereumNetworks: EthereumNetwork[];
   selectedEthereumNetworkId: string;
+  ethereumTokens: EthereumToken[];
 
   password: string | null;
 };

@@ -6,8 +6,10 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { ethereumAddressRegex, getTendermintAddressRegex } from '~/Popup/utils/regex';
 import type { AddressInfo } from '~/types/chromeStorage';
 
 import ChainButton from './components/ChainButton';
@@ -19,12 +21,25 @@ export default function Entry() {
   const { currentChain } = useCurrentChain();
   const [chain, setChain] = useState(currentChain);
 
+  const { currentAdditionalChains } = useCurrentAdditionalChains();
+  const [isCustom, setIsCustom] = useState(!!currentAdditionalChains.find((item) => item.id === currentChain.id));
+
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { enqueueSnackbar } = useSnackbar();
 
   const { addressBook } = chromeStorage;
 
-  const regex = chain.line === 'TENDERMINT' ? { prefix: chain.bech32Prefix.address, lengths: [39] } : undefined;
+  const regex = (() => {
+    if (chain.line === 'TENDERMINT') {
+      return getTendermintAddressRegex(chain.bech32Prefix.address, [39]);
+    }
+
+    if (chain.line === 'ETHEREUM') {
+      return ethereumAddressRegex;
+    }
+
+    return /^.*$/;
+  })();
 
   const { addressBookForm } = useSchema({ regex });
 
@@ -62,6 +77,7 @@ export default function Entry() {
             setPopoverAnchorEl(event.currentTarget);
           }}
           isActive={isOpenPopover}
+          isCustom={isCustom}
         >
           {chain.chainName}
         </ChainButton>
@@ -103,10 +119,12 @@ export default function Entry() {
         </ButtonContainer>
 
         <StyledChainPopover
+          isOnlyChain
           marginThreshold={0}
           currentChain={chain}
-          onClickChain={(clickedChain) => {
+          onClickChain={(clickedChain, clickedIsCustom) => {
             setChain(clickedChain);
+            setIsCustom(!!clickedIsCustom);
           }}
           open={isOpenPopover}
           onClose={() => setPopoverAnchorEl(null)}

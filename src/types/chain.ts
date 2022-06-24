@@ -1,4 +1,5 @@
 import type { LINE_TYPE } from '~/constants/chain';
+import type { TOKEN_TYPE } from '~/constants/ethereum';
 import type { TENDERMINT_TYPE } from '~/constants/tendermint';
 
 export type LineType = ValueOf<typeof LINE_TYPE>;
@@ -62,10 +63,8 @@ export type EthereumChain = {
 
 export type EthereumNetwork = {
   id: string;
-  ethereumChainId: string;
   chainId: string;
   networkName: string;
-  baseDenom: string;
   displayDenom: string;
   decimals: number;
   rpcURL: string;
@@ -74,14 +73,18 @@ export type EthereumNetwork = {
   coinGeckoId?: string;
 };
 
-export type EthereumToken = {
+export type EthereumERC20Token = {
   id: string;
-  accountId: string;
   ethereumNetworkId: string;
+  tokenType: typeof TOKEN_TYPE.ERC20;
   address: string;
-  tokenName: string;
+  name?: string;
+  displayDenom: string;
   decimals: number;
   imageURL?: string;
+  coinGeckoId?: string;
 };
 
 export type Chain = TendermintChain | EthereumChain;
+
+export type EthereumToken = EthereumERC20Token;

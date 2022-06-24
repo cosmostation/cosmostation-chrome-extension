@@ -12,6 +12,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { responseToWeb } from '~/Popup/utils/message';
 
 import {
+  AccentNameContainer,
   BottomContainer,
   CheckContainer,
   CheckItemContainer,
@@ -35,9 +36,9 @@ export default function AccessRequest({ children }: AccessRequestProps) {
   const { currentQueue, deQueue } = useCurrentQueue();
   const { currentAccount, addAllowedOrigin } = useCurrentAccount();
 
-  const { allowedOrigins } = currentAccount;
+  const { allowedOrigins, name } = currentAccount;
 
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   if (!currentQueue?.channel && currentQueue?.origin && !allowedOrigins.includes(currentQueue?.origin)) {
     return (
@@ -50,11 +51,23 @@ export default function AccessRequest({ children }: AccessRequestProps) {
             <Typography variant="h2">Access request</Typography>
           </TitleContainer>
           <DescriptionContainer>
-            <Typography variant="h4">
-              {currentQueue.origin} {t('components.AccessRequest.index.upDescription1')}
-              <br />
-              {t('components.AccessRequest.index.upDescription2')}
-            </Typography>
+            {language === 'ko' ? (
+              <Typography variant="h4">
+                {currentQueue.origin} {t('components.AccessRequest.index.upDescription1')}
+                <br />
+                <AccentNameContainer>{name}</AccentNameContainer>
+                {t('components.AccessRequest.index.upDescription2')}
+              </Typography>
+            ) : (
+              <Typography variant="h4">
+                {currentQueue.origin} {t('components.AccessRequest.index.upDescription1')}
+                <br />
+                {t('components.AccessRequest.index.upDescription2')}
+                <br />
+                <AccentNameContainer>{name}</AccentNameContainer>
+                {t('components.AccessRequest.index.upDescription3')}
+              </Typography>
+            )}
           </DescriptionContainer>
           <StyledDivider />
           <Description2Container>

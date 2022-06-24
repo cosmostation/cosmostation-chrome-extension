@@ -1,9 +1,10 @@
-import { LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
+import { ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE, TENDERMINT_LISTENER_TYPE } from '~/constants/message';
 import type {
   BackgroundToContentScriptEventMessage,
   ContentScriptToBackgroundEventMessage,
   ContentScriptToWebEventMessage,
   ListenerMessage,
+  ListenerType,
   RequestMessage,
   ResponseMessage,
   WebToContentScriptEventMessage,
@@ -48,7 +49,13 @@ chrome.runtime.onMessage.addListener((request: BackgroundToContentScriptEventMes
 
 // On Message
 chrome.runtime.onMessage.addListener((request: ListenerMessage<ResponseMessage>, _, sendResponse) => {
-  const types = Object.values(LISTENER_TYPE);
+  const types = (() => {
+    if (request.line === 'TENDERMINT') return Object.values(TENDERMINT_LISTENER_TYPE);
+    if (request.line === 'ETHEREUM') return Object.values(ETHEREUM_LISTENER_TYPE);
+
+    return [];
+  })() as ListenerType[];
+
   if (types.includes(request?.type)) {
     sendResponse();
 

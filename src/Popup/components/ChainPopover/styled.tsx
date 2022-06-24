@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles';
 
+import Divider from '~/Popup/components/common/Divider';
 import IconButton from '~/Popup/components/common/IconButton';
 
 export const Container = styled('div')(({ theme }) => ({
@@ -53,22 +54,15 @@ export const ChainListContainer = styled('div')({
   rowGap: '0.4rem',
 });
 
-export const TendermintChainListContainer = styled('div')({
-  marginBottom: '1.2rem',
-});
-export const EthereumChainListContainer = styled('div')({
-  marginTop: '1.2rem',
+export const StyledDivider = styled(Divider)({
+  margin: '1.6rem 0',
 });
 
-export const BetaChainContainer = styled('div')({
-  marginTop: '2.4rem',
-  width: '100%',
-});
+export const ChainTitleContainer = styled('div')(({ theme }) => ({
+  marginBottom: '1.6rem',
 
-export const BetaChainTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
-}));
 
-export const BetaChainListContainer = styled('div')({
-  marginTop: '0.8rem',
-});
+  display: 'flex',
+  alignItems: 'center',
+}));

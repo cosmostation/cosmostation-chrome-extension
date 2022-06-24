@@ -2,13 +2,14 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { DEFAULT_GAS } from '~/constants/chain';
+import { TENDERMINT_DEFAULT_GAS } from '~/constants/chain';
 import { CERTIK } from '~/constants/chain/tendermint/certik';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/common/IconButton';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/tendermint/useAccountSWR';
@@ -20,6 +21,8 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { getTendermintAddressRegex } from '~/Popup/utils/regex';
 import type { TendermintChain } from '~/types/chain';
 
 import CoinPopover from './components/CoinPopover';
@@ -67,7 +70,7 @@ export default function Tendermint({ chain }: TendermintProps) {
 
   const { decimals, gas, gasRate } = chain;
 
-  const sendGas = gas.send || DEFAULT_GAS;
+  const sendGas = gas.send || TENDERMINT_DEFAULT_GAS;
 
   const authIbcCoins = coinList.ibcCoins.filter((item) => item.auth);
 
@@ -101,12 +104,16 @@ export default function Tendermint({ chain }: TendermintProps) {
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
 
-  const addressRegex = useMemo(() => new RegExp(`^${chain.bech32Prefix.address}(.{39,39})$`), [chain.bech32Prefix.address]);
+  const addressRegex = useMemo(() => getTendermintAddressRegex(chain.bech32Prefix.address, [39]), [chain]);
 
   const currentCoin = availableCoinList.find((item) => item.baseDenom === currentCoinBaseDenom)!;
 
+  const currentDecimals = currentCoin.decimals || 0;
+
   const currentCoinDisplayDenom = currentCoin.displayDenom;
-  const currentCoinDisplayAmount = toDisplayDenomAmount(currentCoin.availableAmount, currentCoin.decimals || 0);
+  const currentCoinDisplayAmount = toDisplayDenomAmount(currentCoin.availableAmount, currentDecimals);
+
+  const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentDecimals);
 
   const isPossibleSend = useMemo(
     () =>
@@ -168,10 +175,13 @@ export default function Tendermint({ chain }: TendermintProps) {
               </CoinLeftDisplayDenomContainer>
               <CoinLeftAvailableContainer>
                 <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Tendermint.index.available')} :</Typography>{' '}
-                <Number typoOfDecimals="h8n" typoOfIntegers="h6n">
-                  {currentCoinDisplayAmount}
-                </Number>{' '}
-                <Typography variant="h6n">{currentCoinDisplayDenom}</Typography>
+                <Tooltip title={currentCoinDisplayAmount} arrow placement="top">
+                  <span>
+                    <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
+                      {currentCoinDisplayAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
               </CoinLeftAvailableContainer>
             </CoinLeftInfoContainer>
           </CoinLeftContainer>
@@ -234,7 +244,7 @@ export default function Tendermint({ chain }: TendermintProps) {
             await enQueue({
               messageId: '',
               origin: '',
-              channel: 'ten_send',
+              channel: 'inApp',
               message: {
                 method: 'ten_signAmino',
                 params: {
