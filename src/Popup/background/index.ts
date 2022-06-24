@@ -782,55 +782,6 @@ function background() {
                   throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
                 }
               }
-
-              // const keyPair = getPairKey('ethereum', password);
-
-              // if (method === ETHEREUM_POPUP_METHOD_TYPE.ETH__SIGN) {
-              //   const { params } = message;
-
-              //   if (params?.[0].toLowerCase() !== getAddress(keyPair.publicKey).toLowerCase()) {
-              //     throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]} (must provide an Account address.)`, id);
-              //   }
-
-              //   const dataToSign = params?.[1] ? stripHexPrefix(params[1].startsWith('0x') ? params[1] : Buffer.from(params[1]).toString('hex')) : undefined;
-
-              //   if (!dataToSign) {
-              //     throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]} (must provide data to sign)`, id);
-              //   }
-
-              //   if (dataToSign.length < 66 || dataToSign.length > 67) {
-              //     throw new EthereumRPCError(
-              //       RPC_ERROR.INVALID_PARAMS,
-              //       `${ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]} (eth_sign requires 32 byte message hash)`,
-              //       id,
-              //     );
-              //   }
-
-              //   responseToWeb({
-              //     message: rpcResponse(sign(dataToSign, keyPair.privateKey), id),
-              //     messageId,
-              //     origin,
-              //   });
-              // } else if (method === ETHEREUM_POPUP_METHOD_TYPE.PERSONAL_SIGN) {
-              //   const { params } = message;
-
-              //   if (params?.[1].toLowerCase() !== getAddress(keyPair.publicKey).toLowerCase()) {
-              //     throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]} (must provide an Account address.)`, id);
-              //   }
-
-              //   if (!params?.[0]) {
-              //     throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]} (must provide data to sign)`, id);
-              //   }
-
-              //   responseToWeb({
-              //     message: rpcResponse(personalSign(params[0], keyPair.privateKey), id),
-              //     messageId,
-              //     origin,
-              //   });
-              // } else if (method === ETHEREUM_POPUP_METHOD_TYPE.ETH__SEND_TRANSACTION) {
-              //   const { params } = message;
-
-              // }
             } else if (ethereumNoPopupMethods.includes(method)) {
               if (method === 'eth_accounts') {
                 if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
