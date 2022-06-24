@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil';
 import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { chromeStorageState } from '~/Popup/recoils/chromeStorage';
+import { chromeStorageDefault, chromeStorageState } from '~/Popup/recoils/chromeStorage';
 import { getAllStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import type { Chain, TendermintChain } from '~/types/chain';
 import type { LanguageType } from '~/types/chromeStorage';
@@ -29,7 +29,7 @@ export default function Init({ children }: InitType) {
 
   const handleOnStorageChange = () => {
     void (async () => {
-      setChromeStorage(await getAllStorage());
+      setChromeStorage({ ...chromeStorageDefault, ...(await getAllStorage()) });
     })();
   };
 
@@ -39,7 +39,7 @@ export default function Init({ children }: InitType) {
     void (async () => {
       const originChromeStorage = await getAllStorage();
 
-      setChromeStorage(originChromeStorage);
+      setChromeStorage({ ...chromeStorageDefault, ...originChromeStorage });
 
       if (language && !originChromeStorage.currency) {
         const newCurrency = language.startsWith('ko')
@@ -64,14 +64,6 @@ export default function Init({ children }: InitType) {
         const theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'DARK' : 'LIGHT';
 
         await setStorage('theme', theme);
-      }
-
-      if (!originChromeStorage.addressBook) {
-        await setStorage('addressBook', []);
-      }
-
-      if (!originChromeStorage.ethereumTokens) {
-        await setStorage('ethereumTokens', []);
       }
 
       if (originChromeStorage.additionalChains.find((item) => officialChainLowercaseNames.includes(item.chainName.toLowerCase()))) {
