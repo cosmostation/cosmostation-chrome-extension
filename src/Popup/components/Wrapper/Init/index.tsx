@@ -3,6 +3,8 @@ import { Helmet } from 'react-helmet-async';
 import { useRecoilState } from 'recoil';
 
 import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { COSMOS } from '~/constants/chain/tendermint/cosmos';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeStorageDefault, chromeStorageState } from '~/Popup/recoils/chromeStorage';
@@ -89,7 +91,7 @@ export default function Init({ children }: InitType) {
       }
 
       if (!originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).length) {
-        await setStorage('allowedChainIds', [CHAINS[0].id]);
+        await setStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id]);
       }
 
       setIsLoading(false);

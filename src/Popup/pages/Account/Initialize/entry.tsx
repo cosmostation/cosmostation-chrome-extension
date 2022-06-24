@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { useResetRecoilState } from 'recoil';
 
-import { CHAINS } from '~/constants/chain';
+import { ETHEREUM_NETWORKS } from '~/constants/chain';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { COSMOS } from '~/constants/chain/tendermint/cosmos';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -38,10 +40,10 @@ export default function Entry() {
     void setChromeStorage('encryptedPassword', null);
     void setChromeStorage('selectedAccountId', '');
 
-    void setChromeStorage('allowedChainIds', [CHAINS[0].id]);
+    void setChromeStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id]);
     void setChromeStorage('allowedOrigins', []);
     void setChromeStorage('selectedChainId', '');
-    void setChromeStorage('selectedEthereumNetworkId', '');
+    void setChromeStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
     void setChromeStorage('encryptedPassword', null);
 
     void setCurrentPassword(null);

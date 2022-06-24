@@ -2,7 +2,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { MAINNET } from '~/constants/chain/ethereum/network/mainnet';
+import { ETHEREUM as NETWORK_ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { get } from '~/Popup/utils/axios';
 import type { AssetPayload } from '~/types/ethereum/asset';
 
@@ -11,7 +11,7 @@ import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNe
 export function useTokensSWR(config?: SWRConfiguration) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const requestURL = currentEthereumNetwork.id === MAINNET.id ? `https://api.mintscan.io/v1/assets/ethereum` : '';
+  const requestURL = currentEthereumNetwork.id === NETWORK_ETHEREUM.id ? `https://api.mintscan.io/v1/assets/ethereum` : '';
 
   const fetcher = (fetchUrl: string) => get<AssetPayload>(fetchUrl);
 
@@ -19,7 +19,7 @@ export function useTokensSWR(config?: SWRConfiguration) {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    isPaused: () => currentEthereumNetwork.id !== MAINNET.id,
+    isPaused: () => currentEthereumNetwork.id !== NETWORK_ETHEREUM.id,
     ...config,
   });
 
