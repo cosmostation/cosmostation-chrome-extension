@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Typography } from '@mui/material';
 
 import AddButton from '~/Popup/components/AddButton';
 import AddressBookItem from '~/Popup/components/AddressBookItem';
@@ -8,7 +9,18 @@ import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
-import { AddressBookList, Container, Header, StyledChainButton, StyledChainPopover } from './styled';
+import {
+  AddAddressBookButton,
+  AddAddressBookImage,
+  AddAddressBookText,
+  AddressBookList,
+  Container,
+  Header,
+  StyledChainButton,
+  StyledChainPopover,
+} from './styled';
+
+import Plus16Icon from '~/images/icons/Plus16.svg';
 
 export default function Entry() {
   const { chromeStorage } = useChromeStorage();
@@ -43,9 +55,21 @@ export default function Entry() {
         >
           {chain.chainName}
         </StyledChainButton>
-        <AddButton onClick={() => navigate('/setting/address-book/add')}>{t('pages.Setting.AddressBook.entry.addAddressButton')}</AddButton>
+        {filteredAddressBook.length > 0 && (
+          <AddButton onClick={() => navigate('/setting/address-book/add')}>{t('pages.Setting.AddressBook.entry.addAddressButton')}</AddButton>
+        )}
       </Header>
       <AddressBookList>
+        {filteredAddressBook.length === 0 && (
+          <AddAddressBookButton onClick={() => navigate('/setting/address-book/add')} type="button">
+            <AddAddressBookImage>
+              <Plus16Icon />
+            </AddAddressBookImage>
+            <AddAddressBookText>
+              <Typography variant="h5">{t('pages.Setting.AddressBook.entry.addAddressButton')}</Typography>
+            </AddAddressBookText>
+          </AddAddressBookButton>
+        )}
         {filteredAddressBook.map((item) => (
           <AddressBookItem key={item.id} addressInfo={item} />
         ))}

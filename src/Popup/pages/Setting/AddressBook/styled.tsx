@@ -46,3 +46,43 @@ export const AddressBookList = styled('div')({
 
   overflow: 'auto',
 });
+
+export const AddAddressBookButton = styled('button')(({ theme }) => ({
+  padding: 0,
+  border: 0,
+  margin: 0,
+
+  width: '100%',
+  height: '9.2rem',
+
+  borderRadius: '0.8rem',
+
+  backgroundColor: theme.colors.base02,
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  '&:hover': {
+    backgroundColor: theme.colors.base03,
+    cursor: 'pointer',
+  },
+}));
+
+export const AddAddressBookImage = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  marginRight: '0.4rem',
+
+  '& > svg': {
+    '& > path': {
+      fill: theme.accentColors.purple01,
+    },
+  },
+}));
+
+export const AddAddressBookText = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+}));
