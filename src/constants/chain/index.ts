@@ -16,6 +16,7 @@ import { COMDEX } from './tendermint/comdex';
 import { COSMOS } from './tendermint/cosmos';
 import { CRESCENT } from './tendermint/crescent';
 import { CRYPTO_ORG } from './tendermint/cryptoOrg';
+import { CUDOS } from './tendermint/cudos';
 import { DESMOS } from './tendermint/desmos';
 import { EMONEY } from './tendermint/emoney';
 import { EVMOS } from './tendermint/evmos';
@@ -62,6 +63,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   COMDEX,
   CRESCENT,
   CRYPTO_ORG,
+  CUDOS,
   DESMOS,
   EMONEY,
   EVMOS,
