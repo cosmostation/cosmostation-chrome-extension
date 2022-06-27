@@ -23,9 +23,9 @@ export const CUDOS: TendermintChain = {
   coinGeckoId: 'cudos',
   explorerURL: `${MINTSCAN_URL}/cudos`,
   gasRate: {
-    tiny: '5400000000000',
+    tiny: '5000000000000',
     low: '7000000000000',
-    average: '10000000000000',
+    average: '9000000000000',
   },
   gas: { send: '100000' },
 };
