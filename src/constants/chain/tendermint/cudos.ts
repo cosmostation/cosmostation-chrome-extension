@@ -24,8 +24,8 @@ export const CUDOS: TendermintChain = {
   explorerURL: `${MINTSCAN_URL}/cudos`,
   gasRate: {
     tiny: '5000000000000',
-    low: '7000000000000',
-    average: '9000000000000',
+    low: '6000000000000',
+    average: '7000000000000',
   },
   gas: { send: '100000' },
 };
