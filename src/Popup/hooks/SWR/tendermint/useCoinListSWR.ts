@@ -72,7 +72,7 @@ export function useCoinListSWR(chain: TendermintChain, suspense?: boolean) {
           const vestingRemained = getVestingRemained(account?.data, coin.denom);
           const delegatedVestingTotal = chain.chainName === KAVA.chainName ? getDelegatedVestingTotal(account?.data, coin.denom) : delegationAmount;
 
-          const rewardAmount = reward?.data?.result?.total?.find((item) => item.denom === coin.denom)?.amount || '0';
+          const rewardAmount = reward?.data?.total?.find((item) => item.denom === coin.denom)?.amount || '0';
 
           const [vestingRelatedAvailable, vestingNotDelegate] = getVestingRelatedBalances(
             availableAmount,

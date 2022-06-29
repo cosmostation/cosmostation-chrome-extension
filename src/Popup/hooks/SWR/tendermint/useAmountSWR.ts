@@ -12,6 +12,7 @@ import { getDelegatedVestingTotal, getPersistenceVestingRelatedBalances, getVest
 import type { TendermintChain } from '~/types/chain';
 
 import { useBalanceSWR } from './useBalanceSWR';
+import { useIncentiveSWR } from './useIncentiveSWR';
 
 export function useAmountSWR(chain: TendermintChain, suspense?: boolean) {
   const account = useAccountSWR(chain, suspense);
@@ -19,6 +20,7 @@ export function useAmountSWR(chain: TendermintChain, suspense?: boolean) {
   const undelegation = useUndelegationSWR(chain, suspense);
   const reward = useRewardSWR(chain, suspense);
   const balance = useBalanceSWR(chain, suspense);
+  const incentive = useIncentiveSWR(chain, suspense);
 
   const availableAmount = useMemo(
     () => balance?.data?.balance?.find((item) => item.denom === chain.baseDenom)?.amount || '0',
@@ -43,8 +45,8 @@ export function useAmountSWR(chain: TendermintChain, suspense?: boolean) {
   );
 
   const rewardAmount = useMemo(
-    () => reward?.data?.result?.total?.find((item) => item.denom === chain.baseDenom)?.amount || '0',
-    [chain.baseDenom, reward?.data?.result?.total],
+    () => reward?.data?.total?.find((item) => item.denom === chain.baseDenom)?.amount || '0',
+    [chain.baseDenom, reward?.data?.total],
   );
 
   const [vestingRelatedAvailable, vestingNotDelegate] = useMemo(() => {
@@ -59,12 +61,21 @@ export function useAmountSWR(chain: TendermintChain, suspense?: boolean) {
     return [availableAmount, '0'];
   }, [availableAmount, chain.chainName, delegatedVestingTotal, vestingRemained, unbondingAmount]);
 
+  const incentiveAmount = incentive?.data?.[chain.baseDenom] || '0';
+
   return {
     delegationAmount,
     unbondingAmount,
     rewardAmount,
+    incentiveAmount,
     vestingNotDelegate,
     vestingRelatedAvailable,
-    totalAmount: new Big(delegationAmount).plus(unbondingAmount).plus(rewardAmount).plus(vestingNotDelegate).plus(vestingRelatedAvailable).toString(),
+    totalAmount: new Big(delegationAmount)
+      .plus(unbondingAmount)
+      .plus(rewardAmount)
+      .plus(vestingNotDelegate)
+      .plus(vestingRelatedAvailable)
+      .plus(incentiveAmount)
+      .toString(),
   };
 }

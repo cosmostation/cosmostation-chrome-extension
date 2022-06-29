@@ -4,6 +4,7 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import { KAVA } from '~/constants/chain/tendermint/kava';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
@@ -68,7 +69,10 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
   const accounts = useAccounts(true);
-  const { totalAmount, delegationAmount, rewardAmount, unbondingAmount, vestingNotDelegate, vestingRelatedAvailable } = useAmountSWR(chain, true);
+  const { totalAmount, delegationAmount, rewardAmount, unbondingAmount, vestingNotDelegate, vestingRelatedAvailable, incentiveAmount } = useAmountSWR(
+    chain,
+    true,
+  );
   const { data } = useCoinGeckoPriceSWR();
 
   const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
@@ -102,6 +106,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const displayUnDelegationAmount = toDisplayDenomAmount(unbondingAmount, decimals);
   const displayRewardAmount = toDisplayDenomAmount(rewardAmount, decimals);
   const displayVestingNotDelegationAmount = toDisplayDenomAmount(vestingNotDelegate, decimals);
+  const displayIncentiveAmount = toDisplayDenomAmount(incentiveAmount, decimals);
 
   const displayMaxDecimals = getDisplayMaxDecimals(decimals);
 
@@ -214,6 +219,22 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                 </Tooltip>
               </FourthLineContainerItemRight>
             </FourthLineContainerItem>
+            {chain.id === KAVA.id && (
+              <FourthLineContainerItem>
+                <FourthLineContainerItemLeft>
+                  <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.incentive')}</Typography>
+                </FourthLineContainerItemLeft>
+                <FourthLineContainerItemRight>
+                  <Tooltip title={displayIncentiveAmount} arrow placement="bottom-end">
+                    <span>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                        {displayIncentiveAmount}
+                      </Number>
+                    </span>
+                  </Tooltip>
+                </FourthLineContainerItemRight>
+              </FourthLineContainerItem>
+            )}
           </FourthLineContainer>
         </StyledAccordionDetails>
       </StyledAccordion>
@@ -352,6 +373,16 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
                 <Skeleton width="8rem" height="1.9rem" />
               </FourthLineContainerItemRight>
             </FourthLineContainerItem>
+            {chain.id === KAVA.id && (
+              <FourthLineContainerItem>
+                <FourthLineContainerItemLeft>
+                  <Typography variant="h6">{t('pages.Wallet.components.tendermint.NativeChainCard.index.incentive')}</Typography>
+                </FourthLineContainerItemLeft>
+                <FourthLineContainerItemRight>
+                  <Skeleton width="8rem" height="1.9rem" />
+                </FourthLineContainerItemRight>
+              </FourthLineContainerItem>
+            )}
           </FourthLineContainer>
         </StyledAccordionDetails>
       </StyledAccordion>

@@ -4,7 +4,7 @@ import useSWR from 'swr';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { get } from '~/Popup/utils/axios';
+import { get, isAxiosError } from '~/Popup/utils/axios';
 import { tendermintURL } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
 import type { Delegation, DelegationPayload, KavaDelegationPayload } from '~/types/tendermint/delegation';
@@ -19,9 +19,20 @@ export function useDelegationSWR(chain: TendermintChain, suspense?: boolean) {
 
   const requestURL = getDelegations(address);
 
-  const fetcher = (fetchUrl: string) => get<DelegationPayload | KavaDelegationPayload>(fetchUrl);
+  const fetcher = async (fetchUrl: string) => {
+    try {
+      return await get<DelegationPayload | KavaDelegationPayload>(fetchUrl);
+    } catch (e: unknown) {
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
+          return null;
+        }
+      }
+      throw e;
+    }
+  };
 
-  const { data, error, mutate } = useSWR<DelegationPayload | KavaDelegationPayload, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<DelegationPayload | KavaDelegationPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,

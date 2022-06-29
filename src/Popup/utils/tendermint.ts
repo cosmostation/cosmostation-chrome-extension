@@ -16,14 +16,14 @@ import type { SignDirectDoc } from '~/types/tendermint/proto';
 export function tendermintURL(chain: TendermintChain) {
   const { restURL, chainName } = chain;
 
+  // reward 중첩 typing!
   return {
     getNodeInfo: () => `${restURL}/node_info`,
-    getBalance: (address: string) => `${restURL}/bank/balances/${address}`,
-    getDelegations: (address: string) => `${restURL}/staking/delegators/${address}/delegations`,
-    getRewards: (address: string) => `${restURL}/distribution/delegators/${address}/rewards`,
-    getUndelegations: (address: string) => `${restURL}/staking/delegators/${address}/unbonding_delegations`,
-    getAccount: (address: string) => `${restURL}/auth/accounts/${address}`,
-    getWithdrawAddress: (address: string) => `${restURL}/distribution/delegators/${address}/withdraw_address`,
+    getBalance: (address: string) => `${restURL}/cosmos/bank/v1beta1/balances/${address}`,
+    getDelegations: (address: string) => `${restURL}/cosmos/staking/v1beta1/delegations/${address}`,
+    getRewards: (address: string) => `${restURL}/cosmos/distribution/v1beta1/delegators/${address}/rewards`,
+    getUndelegations: (address: string) => `${restURL}/cosmos/staking/v1beta1/delegators/${address}/unbonding_delegations`,
+    getAccount: (address: string) => `${restURL}/cosmos/auth/v1beta1/accounts/${address}`,
     getIncentive: (address: string) => (chainName === KAVA.chainName ? `${restURL}/incentive/rewards?owner=${address}` : ''),
     postBroadcast: () => `${restURL}/cosmos/tx/v1beta1/txs`,
   };

@@ -6,7 +6,9 @@ export type Reward = {
 };
 
 export type RewardPayload = {
-  result: {
+  rewards?: Reward[];
+  total?: Amount[];
+  result?: {
     rewards: Reward[];
     total: Amount[];
   };

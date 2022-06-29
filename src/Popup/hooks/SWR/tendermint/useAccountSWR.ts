@@ -4,10 +4,22 @@ import useSWR from 'swr';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { get } from '~/Popup/utils/axios';
+import { get, isAxiosError } from '~/Popup/utils/axios';
 import { tendermintURL } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
-import type { AuthAccount, AuthAccountsPayload, AuthAccountValue, AuthBaseVestingAccount, AuthBaseWithStartAndPeriod } from '~/types/tendermint/account';
+import type {
+  AuthAccount,
+  AuthAccountPubKey,
+  AuthAccountsPayload,
+  AuthAccountValue,
+  AuthBaseVestingAccount,
+  AuthBaseWithStartAndPeriod,
+  DesmosAccount,
+  DesmosAuthAccount,
+  DesmosAuthAccountsPayload,
+  DesmosBaseAccount,
+  DesmosModuleAccount,
+} from '~/types/tendermint/account';
 
 export function useAccountSWR(chain: TendermintChain, suspense?: boolean) {
   const accounts = useAccounts(suspense);
@@ -18,9 +30,20 @@ export function useAccountSWR(chain: TendermintChain, suspense?: boolean) {
 
   const requestURL = getAccount(address);
 
-  const fetcher = (url: string) => get<AuthAccountsPayload>(url);
+  const fetcher = async (url: string) => {
+    try {
+      return await get<AuthAccountsPayload>(url);
+    } catch (e: unknown) {
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
+          return null;
+        }
+      }
+      throw e;
+    }
+  };
 
-  const { data, error, mutate } = useSWR<AuthAccountsPayload, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<AuthAccountsPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,
@@ -37,8 +60,90 @@ export function useAccountSWR(chain: TendermintChain, suspense?: boolean) {
     (payload as AuthBaseWithStartAndPeriod).start_time !== undefined &&
     (payload as AuthBaseWithStartAndPeriod).vesting_periods !== undefined;
 
+  const isDesmosPayload = (payload: DesmosAuthAccountsPayload | AuthAccountsPayload): payload is DesmosAuthAccountsPayload =>
+    (payload as DesmosAuthAccountsPayload).account !== undefined && (payload as DesmosAuthAccountsPayload).account['@type'] !== undefined;
+
+  const isDesmosBasePayload = (payload: DesmosAuthAccount | DesmosAccount | DesmosModuleAccount): payload is DesmosAccount =>
+    (payload as DesmosAccount)['@type'] !== '/desmos.profiles.v1beta1.Profile' && (payload as DesmosAccount).base_vesting_account !== undefined;
+
+  const isDesmosModulePayload = (payload: DesmosAuthAccount | DesmosAccount | DesmosModuleAccount): payload is DesmosModuleAccount =>
+    (payload as DesmosModuleAccount)['@type'] !== '/cosmos.auth.v1beta1.ModuleAccount' && (payload as DesmosModuleAccount).base_account !== undefined;
+
+  const isDesmosBaseAccount = (account: DesmosAccount | DesmosBaseAccount | DesmosModuleAccount): account is DesmosBaseAccount =>
+    (account as DesmosBaseAccount).address !== undefined && (account as DesmosBaseAccount).pub_key !== undefined;
+
+  const isDesmosModuleAccount = (account: DesmosAccount | DesmosModuleAccount): account is DesmosModuleAccount =>
+    account['@type'] === '/cosmos.auth.v1beta1.ModuleAccount';
+
   const result = useMemo(() => {
     if (data) {
+      if (isDesmosPayload(data)) {
+        const account = isDesmosBasePayload(data.account) || isDesmosModulePayload(data.account) ? data.account : data.account.account || data.account;
+
+        if (isDesmosBaseAccount(account)) {
+          const basePubKey = {
+            type: account.pub_key?.['@type'],
+            value: account.pub_key?.key,
+          } as AuthAccountPubKey;
+
+          const typeArray = account['@type'].split('.');
+
+          return {
+            type: typeArray[typeArray.length - 1],
+            value: {
+              address: account.address,
+              public_key: basePubKey,
+              account_number: account.account_number,
+              sequence: account.sequence,
+            },
+          } as AuthAccount;
+        }
+
+        if (isDesmosModuleAccount(account)) {
+          const basePubKey = {
+            type: account.base_account.pub_key?.['@type'],
+            value: account.base_account?.pub_key?.key,
+          } as AuthAccountPubKey;
+
+          const typeArray = account['@type'].split('.');
+
+          return {
+            type: typeArray[typeArray.length - 1],
+            value: {
+              address: account.base_account.address,
+              public_key: basePubKey,
+              account_number: account.base_account.account_number,
+              sequence: account.base_account.sequence,
+            },
+          } as AuthAccount;
+        }
+
+        const baseVestingAccount = account.base_vesting_account;
+
+        const pubKey = {
+          type: baseVestingAccount?.base_account.pub_key?.['@type'],
+          value: baseVestingAccount?.base_account.pub_key?.key,
+        } as AuthAccountPubKey;
+
+        const typeArray = account['@type'].split('.');
+
+        return {
+          type: typeArray[typeArray.length - 1],
+          value: {
+            address: baseVestingAccount?.base_account.address,
+            public_key: pubKey,
+            account_number: baseVestingAccount?.base_account.account_number,
+            sequence: baseVestingAccount?.base_account.sequence,
+            original_vesting: baseVestingAccount?.original_vesting,
+            delegated_free: baseVestingAccount?.delegated_free,
+            delegated_vesting: baseVestingAccount?.delegated_vesting,
+            start_time: account.start_time,
+            vesting_periods: account.vesting_periods,
+            end_time: baseVestingAccount?.end_time,
+          },
+        } as AuthAccount;
+      }
+
       const value = data.result.value || data.result;
 
       if (isBaseWithStartAndPeriod(value)) {
@@ -101,6 +206,10 @@ export function useAccountSWR(chain: TendermintChain, suspense?: boolean) {
         ...data.result,
         type: data.result.type?.split('/')[1],
       } as AuthAccount;
+    }
+
+    if (!data) {
+      return undefined;
     }
 
     return data as unknown as AuthAccount;

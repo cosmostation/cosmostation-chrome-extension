@@ -8,12 +8,12 @@ export type VestingType =
   | 'PeriodicVestingAccount'
   | 'PermanentLockedAccount';
 
-type AuthAccountPubKey = {
+export type AuthAccountPubKey = {
   type: string;
   value: string;
 };
 
-type VestingPeriod = {
+export type VestingPeriod = {
   length: string;
   amount: Amount[];
 };
@@ -88,4 +88,53 @@ export type AuthAccountsPayload = {
 export type AuthAccount = {
   type: VestingType;
   value: AuthAccountValue;
+};
+
+type DesmosAuthAccountPubKey = {
+  '@type': string;
+  key: string;
+};
+
+export type DesmosBaseAccount = {
+  '@type': string;
+  address: string;
+  pub_key: DesmosAuthAccountPubKey;
+  account_number: string;
+  sequence: string;
+};
+
+export type DesmosAccount = {
+  '@type': string;
+  base_vesting_account: {
+    base_account: DesmosBaseAccount;
+    original_vesting: Amount[];
+    delegated_free: Amount[];
+    delegated_vesting: Amount[];
+    end_time: string;
+  };
+  start_time: string;
+  vesting_periods: VestingPeriod[];
+};
+
+export type DesmosAuthAccount = {
+  '@type': string;
+  account: DesmosAccount | DesmosBaseAccount;
+  dtag: string;
+  nickname: string;
+  bio: string;
+  pictures: {
+    profile: string;
+    cover: string;
+  };
+  creation_date: string;
+};
+
+export type DesmosModuleAccount = {
+  '@type': string;
+  base_account: DesmosBaseAccount;
+  name: string;
+};
+
+export type DesmosAuthAccountsPayload = {
+  account: DesmosAuthAccount | DesmosAccount | DesmosModuleAccount;
 };
