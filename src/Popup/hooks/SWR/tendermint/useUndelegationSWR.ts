@@ -4,10 +4,10 @@ import useSWR from 'swr';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { get } from '~/Popup/utils/axios';
+import { get, isAxiosError } from '~/Popup/utils/axios';
 import { tendermintURL } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
-import type { Unbonding, UnbondingPayload } from '~/types/tendermint/undelegation';
+import type { UnbondingPayload } from '~/types/tendermint/undelegation';
 
 export function useUndelegationSWR(chain: TendermintChain, suspense?: boolean) {
   const accounts = useAccounts(suspense);
@@ -19,9 +19,20 @@ export function useUndelegationSWR(chain: TendermintChain, suspense?: boolean) {
 
   const requestURL = getUndelegations(address);
 
-  const fetcher = (fetchUrl: string) => get<UnbondingPayload>(fetchUrl);
+  const fetcher = async (fetchUrl: string) => {
+    try {
+      return await get<UnbondingPayload>(fetchUrl);
+    } catch (e: unknown) {
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
+          return null;
+        }
+      }
+      throw e;
+    }
+  };
 
-  const { data, error, mutate } = useSWR<UnbondingPayload, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<UnbondingPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,
@@ -30,7 +41,7 @@ export function useUndelegationSWR(chain: TendermintChain, suspense?: boolean) {
     isPaused: () => !address,
   });
 
-  const returnData: Unbonding[][] | undefined = useMemo(() => {
+  const returnData = useMemo(() => {
     if (data) {
       if (data.unbonding_responses) {
         return data.unbonding_responses?.map((item) =>

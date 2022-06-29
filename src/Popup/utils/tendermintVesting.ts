@@ -162,43 +162,36 @@ const buildContinuousVestingArray = (account: AuthAccount): Vesting[] => {
   return [];
 };
 
-export const isPeriodicVestingAccount = (account: AuthAccount): boolean => {
-  const { type } = account;
-  return type === 'PeriodicVestingAccount';
-};
+export const isPeriodicVestingAccount = (account?: AuthAccount): boolean => account?.type === 'PeriodicVestingAccount';
 
-export const isContinuousVestingAccount = (account: AuthAccount): boolean => {
-  const { type } = account;
-  return type === 'ContinuousVestingAccount';
-};
+export const isContinuousVestingAccount = (account?: AuthAccount): boolean => account?.type === 'ContinuousVestingAccount';
 
-export const isDelayedVestingAccount = (account: AuthAccount): boolean => {
-  const { type } = account;
-  return type === 'DelayedVestingAccount';
-};
+export const isDelayedVestingAccount = (account?: AuthAccount): boolean => account?.type === 'DelayedVestingAccount';
 
 export const isVestingAccount = (account: AuthAccount): boolean =>
   isPeriodicVestingAccount(account) || isContinuousVestingAccount(account) || isDelayedVestingAccount(account);
 
-export const getDelegatedVestingTotal = (vestingAccount: AuthAccount, denom: string): string => {
+export const getDelegatedVestingTotal = (vestingAccount?: AuthAccount, denom?: string): string => {
   const delegatedVesting = vestingAccount?.value?.delegated_vesting || [];
   const denomDelegatedVesting = delegatedVesting.filter((item) => item.denom === denom);
 
   return denomDelegatedVesting.reduce((acc, cur) => plus(acc, cur.amount, 0), '0');
 };
 
-export const getVestingRemained = (account: AuthAccount, denom: string): string => {
+export const getVestingRemained = (account: AuthAccount | undefined, denom: string): string => {
   try {
-    if (isPeriodicVestingAccount(account)) {
-      return getPeriodicVestingRemained(account, denom);
-    }
+    if (account) {
+      if (isPeriodicVestingAccount(account)) {
+        return getPeriodicVestingRemained(account, denom);
+      }
 
-    if (isDelayedVestingAccount(account)) {
-      return getDelayedVestingRemained(account, denom);
-    }
+      if (isDelayedVestingAccount(account)) {
+        return getDelayedVestingRemained(account, denom);
+      }
 
-    if (isContinuousVestingAccount(account)) {
-      return getContinuousVestingRemained(account, denom);
+      if (isContinuousVestingAccount(account)) {
+        return getContinuousVestingRemained(account, denom);
+      }
     }
 
     return '0';

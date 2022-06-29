@@ -3,7 +3,7 @@ import useSWR from 'swr';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { get } from '~/Popup/utils/axios';
+import { get, isAxiosError } from '~/Popup/utils/axios';
 import { tendermintURL } from '~/Popup/utils/tendermint';
 import type { TendermintChain } from '~/types/chain';
 import type { BalancePayload } from '~/types/tendermint/balance';
@@ -17,9 +17,20 @@ export function useBalanceSWR(chain: TendermintChain, suspense?: boolean) {
 
   const requestURL = getBalance(address);
 
-  const fetcher = (fetchUrl: string) => get<BalancePayload>(fetchUrl);
+  const fetcher = async (fetchUrl: string) => {
+    try {
+      return await get<BalancePayload>(fetchUrl);
+    } catch (e: unknown) {
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
+          return null;
+        }
+      }
+      throw e;
+    }
+  };
 
-  const { data, error, mutate } = useSWR<BalancePayload, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<BalancePayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,

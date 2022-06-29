@@ -1,3 +1,4 @@
+import type { AxiosError } from 'axios';
 import axios from 'axios';
 
 export async function get<T>(path: string): Promise<T> {
@@ -16,4 +17,10 @@ export async function post<T>(path: string, body?: unknown): Promise<T> {
     },
   });
   return data;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isAxiosError(e: any): e is AxiosError {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return typeof e?.response?.status === 'number';
 }
