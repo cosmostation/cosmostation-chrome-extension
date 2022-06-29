@@ -40,6 +40,7 @@ import { SENTINEL } from './tendermint/sentinel';
 import { SIF } from './tendermint/sif';
 import { STARGAZE } from './tendermint/stargaze';
 import { STARNAME } from './tendermint/starname';
+import { TGRADE } from './tendermint/tgrade';
 import { UMEE } from './tendermint/umee';
 
 export const LINE_TYPE = {
@@ -87,6 +88,7 @@ export const TENDERMINT_CHAINS: TendermintChain[] = [
   SIF,
   STARGAZE,
   STARNAME,
+  TGRADE,
   UMEE,
 ];
 
