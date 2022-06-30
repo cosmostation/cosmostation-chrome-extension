@@ -12,6 +12,7 @@ module.exports = {
     background: path.join(srcDir, 'Popup/background/index.ts'),
     contentScript: path.join(srcDir, 'Scripts/contentScript.ts'),
     injectScript: { import: path.join(srcDir, 'Scripts/injectScript.ts') },
+    warningScript: { import: path.join(srcDir, 'Scripts/warningScript.ts') },
   },
   optimization: {
     splitChunks: {
