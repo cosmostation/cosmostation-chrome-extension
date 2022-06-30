@@ -3,7 +3,7 @@ import tgradeImg from '~/images/symbols/tgrade.png';
 import type { TendermintChain } from '~/types/chain';
 
 export const TGRADE: TendermintChain = {
-  id: '47869edc-e6a2-4663-82f3-874422cd0df2',
+  id: '8a4cc90b-fc6b-4fcb-b297-e4eddcbe8723',
   line: 'TENDERMINT',
   type: '',
   chainId: 'tgrade-mainnet-1',
@@ -22,9 +22,9 @@ export const TGRADE: TendermintChain = {
   bech32Prefix: { address: 'tgrade' },
   explorerURL: `${MINTSCAN_URL}/tgrade`,
   gasRate: {
-    tiny: '0.00025',
-    low: '0.0025',
-    average: '0.025',
+    tiny: '0.005',
+    low: '0.0075',
+    average: '0.01',
   },
   gas: {},
 };
