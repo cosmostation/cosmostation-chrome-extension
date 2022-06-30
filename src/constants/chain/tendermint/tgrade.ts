@@ -1,4 +1,3 @@
-import { MINTSCAN_URL } from '~/constants/common';
 import tgradeImg from '~/images/symbols/tgrade.png';
 import type { TendermintChain } from '~/types/chain';
 
@@ -20,7 +19,6 @@ export const TGRADE: TendermintChain = {
     change: '0',
   },
   bech32Prefix: { address: 'tgrade' },
-  explorerURL: `${MINTSCAN_URL}/tgrade`,
   gasRate: {
     tiny: '0.005',
     low: '0.0075',
