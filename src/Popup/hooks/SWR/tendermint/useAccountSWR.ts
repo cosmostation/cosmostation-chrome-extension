@@ -73,7 +73,7 @@ export function useAccountSWR(chain: TendermintChain, suspense?: boolean) {
     (account as DesmosBaseAccount).address !== undefined && (account as DesmosBaseAccount).pub_key !== undefined;
 
   const isDesmosModuleAccount = (account: DesmosAccount | DesmosModuleAccount): account is DesmosModuleAccount =>
-    account['@type'] === '/cosmos.auth.v1beta1.ModuleAccount';
+    (account as DesmosAccount).base_vesting_account === undefined && (account as DesmosModuleAccount).base_account !== undefined;
 
   const result = useMemo(() => {
     if (data) {

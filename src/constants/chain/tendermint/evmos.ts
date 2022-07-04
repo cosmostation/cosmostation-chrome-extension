@@ -23,9 +23,9 @@ export const EVMOS: TendermintChain = {
   coinGeckoId: 'evmos',
   explorerURL: `${MINTSCAN_URL}/evmos`,
   gasRate: {
-    tiny: '2000000000',
-    low: '20000000000',
-    average: '200000000000',
+    tiny: '20000000000',
+    low: '25000000000',
+    average: '30000000000',
   },
   gas: { send: '150000' },
 };
