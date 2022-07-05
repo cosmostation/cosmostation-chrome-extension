@@ -491,12 +491,16 @@ function background() {
                   const nonce = originEthereumTx.nonce !== undefined ? parseInt(toHex(originEthereumTx.nonce), 16) : undefined;
                   const chainId = originEthereumTx.chainId !== undefined ? parseInt(toHex(originEthereumTx.chainId), 16) : undefined;
 
+                  let gas: string | number = 0;
+
                   try {
                     const web3 = new Web3(currentEthereumNetwork().rpcURL);
 
                     const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY_FOR_TEST);
 
-                    await account.signTransaction({ ...validatedParams[0], nonce, chainId });
+                    gas = validatedParams[0].gas ? validatedParams[0].gas : await web3.eth.estimateGas({ ...validatedParams[0], nonce, chainId });
+
+                    await account.signTransaction({ ...validatedParams[0], nonce, chainId, gas });
                   } catch (e) {
                     throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, (e as { message: string }).message, message.id);
                   }
@@ -506,7 +510,7 @@ function background() {
                     ...queues,
                     {
                       ...request,
-                      message: { ...request.message, method, params: [...validatedParams] as EthSignTransactionParams },
+                      message: { ...request.message, method, params: [{ ...validatedParams[0], gas }] as EthSignTransactionParams },
                       windowId: window?.id,
                     },
                   ]);
