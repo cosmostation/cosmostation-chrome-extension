@@ -68,7 +68,6 @@ export default function Entry() {
 
       void deQueue();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [additionalChains, currentAccount, currentPassword, currentQueue, deQueue]);
   return null;
 }
