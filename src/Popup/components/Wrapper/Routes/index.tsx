@@ -32,15 +32,15 @@ export default function Routes({ children }: RoutesType) {
       }
 
       if (chromeStorage.queues[0].message.method === 'ten_addChain') {
-        navigate('/popup/tendermint/add-chain');
+        navigate('/popup/cosmos/add-chain');
       }
 
       if (chromeStorage.queues[0].message.method === 'ten_signAmino') {
-        navigate('/popup/tendermint/sign/amino');
+        navigate('/popup/cosmos/sign/amino');
       }
 
       if (chromeStorage.queues[0].message.method === 'ten_signDirect') {
-        navigate('/popup/tendermint/sign/direct');
+        navigate('/popup/cosmos/sign/direct');
       }
 
       if (chromeStorage.queues[0].message.method === 'ethc_addNetwork') {

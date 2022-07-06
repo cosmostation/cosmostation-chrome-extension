@@ -50,10 +50,10 @@ export const PATH = {
   // popup common
   POPUP__REQUEST_ACCOUNT: '/popup/request-account',
 
-  // popup tendermint
-  POPUP__TENDERMINT__ADD_CHAIN: '/popup/tendermint/add-chain',
-  POPUP__TENDERMINT__SIGN__AMINO: '/popup/tendermint/sign/amino',
-  POPUP__TENDERMINT__SIGN__DIRECT: '/popup/tendermint/sign/direct',
+  // popup cosmos
+  POPUP__COSMOS__ADD_CHAIN: '/popup/cosmos/add-chain',
+  POPUP__COSMOS__SIGN__AMINO: '/popup/cosmos/sign/amino',
+  POPUP__COSMOS__SIGN__DIRECT: '/popup/cosmos/sign/direct',
 
   // popup ethereum
   POPUP__ETHEREUM__ADD_NETWORK: '/popup/ethereum/add-network',

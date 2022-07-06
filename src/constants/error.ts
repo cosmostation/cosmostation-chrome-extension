@@ -41,7 +41,7 @@ export const ETHEREUM_RPC_ERROR_MESSAGE = {
   [RPC_ERROR.CHAIN_DISCONNECTED]: 'The provider is disconnected from the specified chain.',
 } as const;
 
-export const TENDERMINT_RPC_ERROR_MESSAGE = {
+export const COSMOS_RPC_ERROR_MESSAGE = {
   [RPC_ERROR.UNAUTHORIZED]: 'The requested account and/or method has not been authorized by the user.',
   [RPC_ERROR.UNSUPPORTED_METHOD]: 'The requested method is not supported by this Ethereum provider.',
   [RPC_ERROR.DISCONNECTED]: 'The provider is disconnected from all chains.',

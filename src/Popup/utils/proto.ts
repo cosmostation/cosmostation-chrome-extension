@@ -1,9 +1,9 @@
 import { post } from '~/Popup/utils/axios';
-import { isAminoSend } from '~/Popup/utils/tendermint';
+import { isAminoSend } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos.js';
+import type { Msg, MsgSend, SignAminoDoc } from '~/types/cosmos/amino';
+import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend } from '~/types/cosmos/proto';
 import type { PubKey, TxPayload } from '~/types/proto';
-import type { Msg, MsgSend, SignAminoDoc } from '~/types/tendermint/amino';
-import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend } from '~/types/tendermint/proto';
 
 export function convertAminoMessageToProto(msg: Msg) {
   if (isAminoSend(msg)) {

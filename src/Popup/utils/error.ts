@@ -28,7 +28,7 @@ export class EthereumRPCError extends Error {
   }
 }
 
-export class TendermintRPCError extends Error {
+export class CosmosRPCError extends Error {
   public code: number;
 
   public id?: string | number;
@@ -37,7 +37,7 @@ export class TendermintRPCError extends Error {
 
   constructor(code: number, message: string) {
     super(message);
-    this.name = 'TendermintRPCError';
+    this.name = 'CosmosRPCError';
     this.code = code;
 
     const errorMessage = {
@@ -49,6 +49,6 @@ export class TendermintRPCError extends Error {
 
     this.rpcMessage = errorMessage;
 
-    Object.setPrototypeOf(this, TendermintRPCError.prototype);
+    Object.setPrototypeOf(this, CosmosRPCError.prototype);
   }
 }

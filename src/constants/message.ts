@@ -7,7 +7,7 @@ export const MESSAGE_TYPE = {
   RESPONSE__BACKGROUND_TO_POPUP: 'RESPONSE__BACKGROUND_TO_POPUP',
 } as const;
 
-export const TENDERMINT_LISTENER_TYPE = {
+export const COSMOS_LISTENER_TYPE = {
   ACCOUNT_CHANGED: 'accountChanged',
 } as const;
 

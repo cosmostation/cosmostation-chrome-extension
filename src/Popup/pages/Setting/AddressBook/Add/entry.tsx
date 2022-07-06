@@ -9,7 +9,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ethereumAddressRegex, getTendermintAddressRegex } from '~/Popup/utils/regex';
+import { ethereumAddressRegex, getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { AddressInfo } from '~/types/chromeStorage';
 
 import ChainButton from './components/ChainButton';
@@ -30,8 +30,8 @@ export default function Entry() {
   const { addressBook } = chromeStorage;
 
   const regex = (() => {
-    if (chain.line === 'TENDERMINT') {
-      return getTendermintAddressRegex(chain.bech32Prefix.address, [39]);
+    if (chain.line === 'COSMOS') {
+      return getCosmosAddressRegex(chain.bech32Prefix.address, [39]);
     }
 
     if (chain.line === 'ETHEREUM') {

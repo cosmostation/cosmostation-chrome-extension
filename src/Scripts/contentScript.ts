@@ -1,4 +1,4 @@
-import { ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE, TENDERMINT_LISTENER_TYPE } from '~/constants/message';
+import { COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import type {
   BackgroundToContentScriptEventMessage,
   ContentScriptToBackgroundEventMessage,
@@ -50,7 +50,7 @@ chrome.runtime.onMessage.addListener((request: BackgroundToContentScriptEventMes
 // On Message
 chrome.runtime.onMessage.addListener((request: ListenerMessage<ResponseMessage>, _, sendResponse) => {
   const types = (() => {
-    if (request.line === 'TENDERMINT') return Object.values(TENDERMINT_LISTENER_TYPE);
+    if (request.line === 'COSMOS') return Object.values(COSMOS_LISTENER_TYPE);
     if (request.line === 'ETHEREUM') return Object.values(ETHEREUM_LISTENER_TYPE);
 
     return [];

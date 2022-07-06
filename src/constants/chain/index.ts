@@ -1,56 +1,56 @@
-import type { EthereumChain, EthereumNetwork, TendermintChain } from '~/types/chain';
+import type { CosmosChain, EthereumChain, EthereumNetwork } from '~/types/chain';
 
+import { AKASH } from './cosmos/akash';
+import { ASSET_MANTLE } from './cosmos/assetMantle';
+import { AXELAR } from './cosmos/axelar';
+import { BAND } from './cosmos/band';
+import { BITCANNA } from './cosmos/bitcanna';
+import { BITSONG } from './cosmos/bitsong';
+import { CERBERUS } from './cosmos/cerberus';
+import { CERTIK } from './cosmos/certik';
+import { CHIHUAHUA } from './cosmos/chihuahua';
+import { COMDEX } from './cosmos/comdex';
+import { COSMOS } from './cosmos/cosmos';
+import { CRESCENT } from './cosmos/crescent';
+import { CRYPTO_ORG } from './cosmos/cryptoOrg';
+import { CUDOS } from './cosmos/cudos';
+import { DESMOS } from './cosmos/desmos';
+import { EMONEY } from './cosmos/emoney';
+import { EVMOS } from './cosmos/evmos';
+import { FETCH_AI } from './cosmos/fetchAi';
+import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
+import { INJECTIVE } from './cosmos/injective';
+import { IRIS } from './cosmos/iris';
+import { JUNO } from './cosmos/juno';
+import { KAVA } from './cosmos/kava';
+import { KI } from './cosmos/ki';
+import { KONSTELLATION } from './cosmos/konstellation';
+import { LUM } from './cosmos/lum';
+import { MEDIBLOC } from './cosmos/medibloc';
+import { OMNIFLIX } from './cosmos/omniflix';
+import { OSMOSIS } from './cosmos/osmosis';
+import { PERSISTENCE } from './cosmos/persistence';
+import { PROVENANCE } from './cosmos/provenance';
+import { REGEN } from './cosmos/regen';
+import { RIZON } from './cosmos/rizon';
+import { SENTINEL } from './cosmos/sentinel';
+import { SIF } from './cosmos/sif';
+import { STARGAZE } from './cosmos/stargaze';
+import { STARNAME } from './cosmos/starname';
+import { TGRADE } from './cosmos/tgrade';
+import { UMEE } from './cosmos/umee';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ETHEREUM as NETWORK_ETHEREUM } from './ethereum/network/ethereum';
 import { EVMOS as NETWORK_EVMOS } from './ethereum/network/evmos';
-import { AKASH } from './tendermint/akash';
-import { ASSET_MANTLE } from './tendermint/assetMantle';
-import { AXELAR } from './tendermint/axelar';
-import { BAND } from './tendermint/band';
-import { BITCANNA } from './tendermint/bitcanna';
-import { BITSONG } from './tendermint/bitsong';
-import { CERBERUS } from './tendermint/cerberus';
-import { CERTIK } from './tendermint/certik';
-import { CHIHUAHUA } from './tendermint/chihuahua';
-import { COMDEX } from './tendermint/comdex';
-import { COSMOS } from './tendermint/cosmos';
-import { CRESCENT } from './tendermint/crescent';
-import { CRYPTO_ORG } from './tendermint/cryptoOrg';
-import { CUDOS } from './tendermint/cudos';
-import { DESMOS } from './tendermint/desmos';
-import { EMONEY } from './tendermint/emoney';
-import { EVMOS } from './tendermint/evmos';
-import { FETCH_AI } from './tendermint/fetchAi';
-import { GRAVITY_BRIDGE } from './tendermint/gravityBridge';
-import { INJECTIVE } from './tendermint/injective';
-import { IRIS } from './tendermint/iris';
-import { JUNO } from './tendermint/juno';
-import { KAVA } from './tendermint/kava';
-import { KI } from './tendermint/ki';
-import { KONSTELLATION } from './tendermint/konstellation';
-import { LUM } from './tendermint/lum';
-import { MEDIBLOC } from './tendermint/medibloc';
-import { OMNIFLIX } from './tendermint/omniflix';
-import { OSMOSIS } from './tendermint/osmosis';
-import { PERSISTENCE } from './tendermint/persistence';
-import { PROVENANCE } from './tendermint/provenance';
-import { REGEN } from './tendermint/regen';
-import { RIZON } from './tendermint/rizon';
-import { SENTINEL } from './tendermint/sentinel';
-import { SIF } from './tendermint/sif';
-import { STARGAZE } from './tendermint/stargaze';
-import { STARNAME } from './tendermint/starname';
-import { TGRADE } from './tendermint/tgrade';
-import { UMEE } from './tendermint/umee';
 
 export const LINE_TYPE = {
-  TENDERMINT: 'TENDERMINT',
+  COSMOS: 'COSMOS',
   ETHEREUM: 'ETHEREUM',
 } as const;
 
-export const TENDERMINT_DEFAULT_GAS = '100000';
+export const COSMOS_DEFAULT_GAS = '100000';
 
-export const TENDERMINT_CHAINS: TendermintChain[] = [
+export const COSMOS_CHAINS: CosmosChain[] = [
   COSMOS,
   AKASH,
   ASSET_MANTLE,
@@ -98,4 +98,4 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [NETWORK_ETHEREUM, NETWORK_E
 
 export const NETWORKS = [...ETHEREUM_NETWORKS];
 
-export const CHAINS = [...ETHEREUM_CHAINS, ...TENDERMINT_CHAINS];
+export const CHAINS = [...ETHEREUM_CHAINS, ...COSMOS_CHAINS];

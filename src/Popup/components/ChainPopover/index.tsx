@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
-import { ETHEREUM_CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { COSMOS_CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -43,7 +43,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
 
   const { allowedChainIds, additionalChains, additionalEthereumNetworks } = chromeStorage;
 
-  const allowedTendermintChain = useMemo(() => TENDERMINT_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
+  const allowedCosmosChain = useMemo(() => COSMOS_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
   const allowedEthereumChain = useMemo(() => ETHEREUM_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
 
   return (
@@ -124,15 +124,15 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
             </>
           )}
 
-          {allowedEthereumChain.length > 0 && allowedTendermintChain.length > 0 && <StyledDivider />}
+          {allowedEthereumChain.length > 0 && allowedCosmosChain.length > 0 && <StyledDivider />}
 
-          {allowedTendermintChain.length > 0 && (
+          {allowedCosmosChain.length > 0 && (
             <>
               <ChainTitleContainer>
                 <Typography variant="h6">Cosmos chains</Typography>
               </ChainTitleContainer>
               <ChainListContainer>
-                {allowedTendermintChain.map((chain) => (
+                {allowedCosmosChain.map((chain) => (
                   <ChainItemButton
                     key={chain.id}
                     isActive={currentChain.id === chain.id}
@@ -155,7 +155,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
                     }}
                     onClickDelete={async () => {
                       if (currentChain.id === chain.id) {
-                        await setCurrentChain([...allowedTendermintChain, ...allowedEthereumChain][0]);
+                        await setCurrentChain([...allowedCosmosChain, ...allowedEthereumChain][0]);
                       }
                       const newAdditionalChains = additionalChains.filter((item) => item.id !== chain.id);
 

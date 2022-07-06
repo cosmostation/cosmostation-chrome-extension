@@ -1,8 +1,61 @@
-# @rpcURL=https://api.mycryptoapi.com/eth
+@rpcURL=https://api.mycryptoapi.com/eth
 # @rpcURL=https://eth-mainnet.public.blastapi.io
-@rpcURL=http://222.106.187.14:50001
+# @rpcURL=http://222.106.187.14:50001
 
 # @rpcURL=http://lcd-evmos.cosmostation.io:8545/
+
+### 
+POST https://eth-mainnet.public.blastapi.io
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_feeHistory",
+    "params": [
+        20, "pending", [10, 30, 50]
+    ],
+    "id": 0
+}
+
+### 
+POST https://api.mycryptoapi.com/eth
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_feeHistory",
+    "params": [
+        20, "pending", [10, 30, 50]
+    ],
+    "id": 0
+}
+
+### 
+POST http://222.106.187.14:50001
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_feeHistory",
+    "params": [
+        20, "pending", [10, 30, 50]
+    ],
+    "id": 0
+}
+
+### 
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "eth_feeHistory",
+    "params": [
+        20, "pending", [10, 30, 50]
+    ],
+    "id": 0
+}
+
 
 ### eth_estimateGas
 
@@ -214,18 +267,6 @@ content-type: application/json
     "id": 0
 }
 
-### 
-POST {{rpcURL}}
-content-type: application/json
-
-{
-    "jsonrpc": "2.0",
-    "method": "eth_feeHistory",
-    "params": [
-        20, "pending", [10, 30, 50]
-    ],
-    "id": 0
-}
 
 ###
 

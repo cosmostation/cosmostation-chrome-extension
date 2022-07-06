@@ -45,7 +45,7 @@ export function useCurrentAccount() {
 
     const origins = Array.from(new Set(allowedOrigins.map((item) => item.origin)));
 
-    emitToWeb({ line: 'TENDERMINT', type: 'accountChanged' }, origins);
+    emitToWeb({ line: 'COSMOS', type: 'accountChanged' }, origins);
 
     const keyPair = getKeyPair(accounts.find((item) => item.id === newAccountId)!, ETHEREUM, currentPassword);
     const address = getAddress(ETHEREUM, keyPair?.publicKey);

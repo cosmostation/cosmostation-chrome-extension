@@ -6,9 +6,14 @@ interface Window {
       on: (eventName: import('~/types/message').EthereumListenerType, eventHandler: (event?: unknown) => void) => void;
       off: (handler: (event: MessageEvent<ListenerMessage>) => void) => void;
     };
+    cosmos: {
+      request: (message: import('~/types/message').CosmosRequestMessage) => Promise<T>;
+      on: (eventName: import('~/types/message').CosmosListenerType, eventHandler: (event?: unknown) => void) => void;
+      off: (handler: (event: MessageEvent<ListenerMessage>) => void) => void;
+    };
     tendermint: {
-      request: (message: import('~/types/message').TendermintRequestMessage) => Promise<T>;
-      on: (eventName: import('~/types/message').TendermintListenerType, eventHandler: (event?: unknown) => void) => void;
+      request: (message: import('~/types/message').CosmosRequestMessage) => Promise<T>;
+      on: (eventName: import('~/types/message').CosmosListenerType, eventHandler: (event?: unknown) => void) => void;
       off: (handler: (event: MessageEvent<ListenerMessage>) => void) => void;
     };
   };

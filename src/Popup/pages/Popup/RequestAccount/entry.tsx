@@ -8,8 +8,8 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
+import type { TenRequestAccountResponse } from '~/types/cosmos/message';
 import type { EthRequestAccountsResponse } from '~/types/ethereum/message';
-import type { TenRequestAccountResponse } from '~/types/tendermint/message';
 
 export default function Entry() {
   const { currentQueue, deQueue } = useCurrentQueue();

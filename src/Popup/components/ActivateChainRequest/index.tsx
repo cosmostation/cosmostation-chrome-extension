@@ -25,19 +25,19 @@ type AccessRequestProps = {
 export default function ActivateChainRequest({ children }: AccessRequestProps) {
   const { currentQueue, deQueue } = useCurrentQueue();
   const { currentAllowedChains, addAllowedChainId } = useCurrentAllowedChains();
-  const { currentTendermintAdditionalChains } = useCurrentAdditionalChains();
+  const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
   const { t } = useTranslation();
 
   const allowedChains = currentAllowedChains.map((item) => item.chainName);
-  const currentTendermintAdditionalChainNames = currentTendermintAdditionalChains.map((item) => item.chainName);
+  const currentCosmosAdditionalChainNames = currentCosmosAdditionalChains.map((item) => item.chainName);
 
   const chain = (() => {
     if (
-      isTendermint(currentQueue) &&
+      isCosmos(currentQueue) &&
       !!currentQueue?.message?.params?.chainName &&
       !allowedChains.includes(currentQueue.message.params.chainName) &&
-      !currentTendermintAdditionalChainNames.includes(currentQueue.message.params.chainName)
+      !currentCosmosAdditionalChainNames.includes(currentQueue.message.params.chainName)
     ) {
       return CHAINS.find((item) => item.chainName === currentQueue.message.params.chainName);
     }
@@ -116,6 +116,6 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Message = { method: any; params: { chainName?: string }; id?: number | string };
 
-function isTendermint(queue: Queue<RequestMessage> | null): queue is Queue<Message> {
+function isCosmos(queue: Queue<RequestMessage> | null): queue is Queue<Message> {
   return !!queue?.message?.method?.startsWith('ten_');
 }
