@@ -62,12 +62,12 @@ export const ETHEREUM_NO_POPUP_METHOD_TYPE = {
   ETH__SUBMIT_WORK: 'eth_submitWork',
   ETH__SYNCING: 'eth_syncing',
   ETH__UNINSTALL_FILTER: 'eth_uninstallFilter',
-  NET_LISTENING: 'net_listening',
-  NET_PEERCOUNT: 'net_peerCount',
-  NET_VERSION: 'net_version',
-  PERSONAL_EC_RECOVER: 'personal_ecRecover',
-  WEB3_CLIENT_VERSION: 'web3_clientVersion',
-  WEB3_SHA3: 'web3_sha3',
+  NET__LISTENING: 'net_listening',
+  NET__PEERCOUNT: 'net_peerCount',
+  NET__VERSION: 'net_version',
+  PERSONAL__EC_RECOVER: 'personal_ecRecover',
+  WEB3__CLIENT_VERSION: 'web3_clientVersion',
+  WEB3__SHA3: 'web3_sha3',
 } as const;
 
 export const ETHEREUM_METHOD_TYPE = {

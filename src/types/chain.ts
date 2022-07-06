@@ -1,10 +1,10 @@
 import type { LINE_TYPE } from '~/constants/chain';
+import type { COSMOS_TYPE } from '~/constants/cosmos';
 import type { TOKEN_TYPE } from '~/constants/ethereum';
-import type { TENDERMINT_TYPE } from '~/constants/tendermint';
 
 export type LineType = ValueOf<typeof LINE_TYPE>;
 
-export type TendermintType = ValueOf<typeof TENDERMINT_TYPE>;
+export type CosmosType = ValueOf<typeof COSMOS_TYPE>;
 
 export type BIP44 = {
   purpose: string;
@@ -30,9 +30,9 @@ export type Gas = {
   send?: string;
 };
 
-export type TendermintChain = {
-  line: typeof LINE_TYPE.TENDERMINT;
-  type: TendermintType;
+export type CosmosChain = {
+  line: typeof LINE_TYPE.COSMOS;
+  type: CosmosType;
   chainId: string;
   chainName: string;
   baseDenom: string;
@@ -85,6 +85,6 @@ export type EthereumERC20Token = {
   coinGeckoId?: string;
 };
 
-export type Chain = TendermintChain | EthereumChain;
+export type Chain = CosmosChain | EthereumChain;
 
 export type EthereumToken = EthereumERC20Token;

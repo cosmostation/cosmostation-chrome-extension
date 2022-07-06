@@ -41,6 +41,9 @@ import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
+import PopupCosmosAddChain from '~/Popup/pages/Popup/Cosmos/AddChain';
+import PopupCosmosSignAmino from '~/Popup/pages/Popup/Cosmos/Sign/Amino';
+import PopupCosmosSignDirect from '~/Popup/pages/Popup/Cosmos/Sign/Direct';
 import PopupEthereumAddNetwork from '~/Popup/pages/Popup/Ethereum/AddNetwork';
 import PopupEthereumAddTokens from '~/Popup/pages/Popup/Ethereum/AddTokens';
 import PopupEthereumPersonalSign from '~/Popup/pages/Popup/Ethereum/PersonalSign';
@@ -49,9 +52,6 @@ import PopupEthereumSignTypedData from '~/Popup/pages/Popup/Ethereum/SignTypedDa
 import PopupEthereumSwitchNetwork from '~/Popup/pages/Popup/Ethereum/SwitchNetwork';
 import PopupEthereumTransaction from '~/Popup/pages/Popup/Ethereum/Transaction';
 import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
-import PopupTendermintAddChain from '~/Popup/pages/Popup/Tendermint/AddChain';
-import PopupTendermintSignAmino from '~/Popup/pages/Popup/Tendermint/Sign/Amino';
-import PopupTendermintSignDirect from '~/Popup/pages/Popup/Tendermint/Sign/Direct';
 import SettingAddressBook from '~/Popup/pages/Setting/AddressBook';
 import SettingAddressBookAdd from '~/Popup/pages/Setting/AddressBook/Add';
 import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
@@ -145,9 +145,9 @@ function Popup() {
                   <Route path={PATH.POPUP__ETHEREUM__PERSONAL_SIGN} element={<PopupEthereumPersonalSign />} />
                   <Route path={PATH.POPUP__ETHEREUM__TRANSACTION} element={<PopupEthereumTransaction />} />
 
-                  <Route path={PATH.POPUP__TENDERMINT__ADD_CHAIN} element={<PopupTendermintAddChain />} />
-                  <Route path={PATH.POPUP__TENDERMINT__SIGN__AMINO} element={<PopupTendermintSignAmino />} />
-                  <Route path={PATH.POPUP__TENDERMINT__SIGN__DIRECT} element={<PopupTendermintSignDirect />} />
+                  <Route path={PATH.POPUP__COSMOS__ADD_CHAIN} element={<PopupCosmosAddChain />} />
+                  <Route path={PATH.POPUP__COSMOS__SIGN__AMINO} element={<PopupCosmosSignAmino />} />
+                  <Route path={PATH.POPUP__COSMOS__SIGN__DIRECT} element={<PopupCosmosSignDirect />} />
                 </>
               )}
               <Route path={PATH.HOME} element={<Home />} />

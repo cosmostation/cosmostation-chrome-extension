@@ -4,25 +4,26 @@ import Web3 from 'web3';
 import type { MessageTypes, TypedMessage } from '@metamask/eth-sig-util';
 import { signTypedData, SignTypedDataVersion } from '@metamask/eth-sig-util';
 
-import { ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { COSMOS } from '~/constants/chain/tendermint/cosmos';
 import { PRIVATE_KEY_FOR_TEST } from '~/constants/common';
-import { ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE, TENDERMINT_RPC_ERROR_MESSAGE } from '~/constants/error';
+import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/cosmos';
+import { COSMOS_RPC_ERROR_MESSAGE, ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import type { TOKEN_TYPE } from '~/constants/ethereum';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
-import { TENDERMINT_METHOD_TYPE, TENDERMINT_NO_POPUP_METHOD_TYPE, TENDERMINT_POPUP_METHOD_TYPE } from '~/constants/tendermint';
 import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
 import { closeWindow, openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
-import { EthereumRPCError, TendermintRPCError } from '~/Popup/utils/error';
+import { CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
 import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { TendermintChain } from '~/types/chain';
+import type { CosmosChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
+import type { CosAccountResponse, CosAddChainParams, CosRequestAccountResponse, CosSignAminoParams, CosSignDirectParams } from '~/types/cosmos/message';
 import type {
   EthcAddNetworkParams,
   EthcAddTokensParam,
@@ -41,7 +42,6 @@ import type {
 } from '~/types/ethereum/message';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
-import type { TenAccountResponse, TenAddChainParams, TenRequestAccountResponse, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
 import type { ThemeType } from '~/types/theme';
 
 import {
@@ -66,16 +66,16 @@ function background() {
 
     if (request?.type === MESSAGE_TYPE.REQUEST__CONTENT_SCRIPT_TO_BACKGROUND) {
       void (async () => {
-        if (request.line === 'TENDERMINT') {
-          const tendermintMethods = Object.values(TENDERMINT_METHOD_TYPE) as string[];
-          const tendermintPopupMethods = Object.values(TENDERMINT_POPUP_METHOD_TYPE) as string[];
-          const tendermintNoPopupMethods = Object.values(TENDERMINT_NO_POPUP_METHOD_TYPE) as string[];
+        if (request.line === 'COSMOS') {
+          const cosmosMethods = Object.values(COSMOS_METHOD_TYPE) as string[];
+          const cosmosPopupMethods = Object.values(COSMOS_POPUP_METHOD_TYPE) as string[];
+          const cosmosNoPopupMethods = Object.values(COSMOS_NO_POPUP_METHOD_TYPE) as string[];
 
           const { message, messageId, origin } = request;
 
           try {
-            if (!message?.method || !tendermintMethods.includes(message.method)) {
-              throw new TendermintRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
+            if (!message?.method || !cosmosMethods.includes(message.method)) {
+              throw new CosmosRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
             }
 
             const { method } = message;
@@ -84,18 +84,18 @@ function background() {
               await chromeStorage();
 
             if (accounts.length === 0) {
-              throw new TendermintRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
+              throw new CosmosRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
             }
 
-            const tendermintAdditionalChains = additionalChains.filter((item) => item.line === 'TENDERMINT') as TendermintChain[];
+            const cosmosAdditionalChains = additionalChains.filter((item) => item.line === 'COSMOS') as CosmosChain[];
 
-            const allChains = [...TENDERMINT_CHAINS, ...tendermintAdditionalChains];
+            const allChains = [...COSMOS_CHAINS, ...cosmosAdditionalChains];
             const allChainLowercaseNames = allChains.map((item) => item.chainName.toLowerCase());
 
             const getChain = (chainName?: string) => allChains.find((item) => item.chainName.toLowerCase() === chainName?.toLowerCase());
 
-            if (tendermintPopupMethods.includes(method)) {
-              if (method === 'ten_requestAccount') {
+            if (cosmosPopupMethods.includes(method)) {
+              if (method === 'cos_requestAccount' || method === 'ten_requestAccount') {
                 const { params } = message;
 
                 const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -103,7 +103,7 @@ function background() {
                 const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
 
                 if (!allChainLowercaseNames.includes(chainName)) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+                  throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
                 }
 
                 const chain = getChain(chainName)!;
@@ -119,7 +119,7 @@ function background() {
 
                   const publicKey = keyPair?.publicKey.toString('hex');
 
-                  const result: TenRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
+                  const result: CosRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
 
                   responseToWeb({
                     response: {
@@ -138,28 +138,24 @@ function background() {
                 }
               }
 
-              if (method === 'ten_addChain') {
+              if (method === 'cos_addChain' || method === 'ten_addChain') {
                 const { params } = message;
 
-                const tendermintLowercaseChainNames = TENDERMINT_CHAINS.map((item) => item.chainName.toLowerCase());
-                const officialTendermintLowercaseChainIds = TENDERMINT_CHAINS.map((item) => item.chainId.toLowerCase());
-                const unofficialTendermintLowercaseChainIds = tendermintAdditionalChains.map((item) => item.chainId.toLowerCase());
+                const cosmosLowercaseChainNames = COSMOS_CHAINS.map((item) => item.chainName.toLowerCase());
+                const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
+                const unofficialCosmosLowercaseChainIds = cosmosAdditionalChains.map((item) => item.chainId.toLowerCase());
 
-                const schema = tenAddChainParamsSchema(
-                  tendermintLowercaseChainNames,
-                  officialTendermintLowercaseChainIds,
-                  unofficialTendermintLowercaseChainIds,
-                );
+                const schema = tenAddChainParamsSchema(cosmosLowercaseChainNames, officialCosmosLowercaseChainIds, unofficialCosmosLowercaseChainIds);
 
                 try {
-                  const validatedParams = (await schema.validateAsync(params)) as TenAddChainParams;
+                  const validatedParams = (await schema.validateAsync(params)) as CosAddChainParams;
 
-                  const filteredTendermintLowercaseChainIds = tendermintAdditionalChains
+                  const filteredCosmosLowercaseChainIds = cosmosAdditionalChains
                     .filter((item) => item.chainName.toLowerCase() !== validatedParams.chainName)
                     .map((item) => item.chainId.toLowerCase());
 
-                  if (filteredTendermintLowercaseChainIds.includes(validatedParams.chainId)) {
-                    throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]}: 'chainId' is a duplicate`);
+                  if (filteredCosmosLowercaseChainIds.includes(validatedParams.chainId)) {
+                    throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]}: 'chainId' is a duplicate`);
                   }
 
                   const window = await openWindow();
@@ -167,20 +163,20 @@ function background() {
                     ...queues,
                     {
                       ...request,
-                      message: { ...request.message, method, params: { ...validatedParams, chainName: params.chainName } as TenAddChainParams },
+                      message: { ...request.message, method, params: { ...validatedParams, chainName: params.chainName } as CosAddChainParams },
                       windowId: window?.id,
                     },
                   ]);
                 } catch (err) {
-                  if (err instanceof TendermintRPCError) {
+                  if (err instanceof CosmosRPCError) {
                     throw err;
                   }
 
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+                  throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
                 }
               }
 
-              if (method === 'ten_signAmino') {
+              if (method === 'cos_signAmino' || method === 'ten_signAmino') {
                 const { params } = message;
 
                 const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -192,23 +188,23 @@ function background() {
                 const schema = tenSignAminoParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
 
                 try {
-                  const validatedParams = (await schema.validateAsync({ ...params, chainName })) as TenSignAminoParams;
+                  const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignAminoParams;
 
                   const window = await openWindow();
                   await setStorage('queues', [
                     ...queues,
                     {
                       ...request,
-                      message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as TenSignAminoParams },
+                      message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignAminoParams },
                       windowId: window?.id,
                     },
                   ]);
                 } catch (err) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+                  throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
                 }
               }
 
-              if (method === 'ten_signDirect') {
+              if (method === 'cos_signDirect' || method === 'ten_signDirect') {
                 const { params } = message;
 
                 const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -220,24 +216,24 @@ function background() {
                 const schema = tenSignDirectParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
 
                 try {
-                  const validatedParams = (await schema.validateAsync({ ...params, chainName })) as TenSignDirectParams;
+                  const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignDirectParams;
 
                   const window = await openWindow();
                   await setStorage('queues', [
                     ...queues,
                     {
                       ...request,
-                      message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as TenSignDirectParams },
+                      message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignDirectParams },
                       windowId: window?.id,
                     },
                   ]);
                 } catch (err) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+                  throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
                 }
               }
-            } else if (tendermintNoPopupMethods.includes(message.method)) {
-              if (method === 'ten_supportedChainNames') {
-                const official = TENDERMINT_CHAINS.map((item) => item.chainName.toLowerCase());
+            } else if (cosmosNoPopupMethods.includes(message.method)) {
+              if (method === 'cos_supportedChainNames' || method === 'ten_supportedChainNames') {
+                const official = COSMOS_CHAINS.map((item) => item.chainName.toLowerCase());
 
                 const unofficial = additionalChains.map((item) => item.chainName.toLowerCase());
 
@@ -251,7 +247,7 @@ function background() {
                 });
               }
 
-              if (method === 'ten_account') {
+              if (method === 'cos_account' || method === 'ten_account') {
                 const { params } = message;
 
                 const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -259,7 +255,7 @@ function background() {
                 const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
 
                 if (!allChainLowercaseNames.includes(chainName)) {
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+                  throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
                 }
 
                 const chain = getChain(chainName);
@@ -275,7 +271,7 @@ function background() {
 
                   const publicKey = keyPair?.publicKey.toString('hex');
 
-                  const result: TenAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
+                  const result: CosAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
 
                   responseToWeb({
                     response: {
@@ -287,17 +283,17 @@ function background() {
                   });
                 } else {
                   if (!currentAccountAllowedOrigins.includes(origin) || !password) {
-                    throw new TendermintRPCError(RPC_ERROR.UNAUTHORIZED, TENDERMINT_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED]);
+                    throw new CosmosRPCError(RPC_ERROR.UNAUTHORIZED, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED]);
                   }
 
-                  throw new TendermintRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                  throw new CosmosRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
                 }
               }
             } else {
-              throw new TendermintRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
+              throw new CosmosRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
             }
           } catch (e) {
-            if (e instanceof TendermintRPCError) {
+            if (e instanceof CosmosRPCError) {
               responseToWeb({
                 response: e.rpcMessage,
                 message,

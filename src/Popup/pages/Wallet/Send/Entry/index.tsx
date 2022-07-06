@@ -1,13 +1,13 @@
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 
+import Cosmos from './Cosmos';
 import Ethereum from './Ethereum';
-import Tendermint from './Tendermint';
 
 export default function Entry() {
   const { currentChain } = useCurrentChain();
 
-  if (currentChain.line === 'TENDERMINT') {
-    return <Tendermint chain={currentChain} />;
+  if (currentChain.line === 'COSMOS') {
+    return <Cosmos chain={currentChain} />;
   }
 
   if (currentChain.line === 'ETHEREUM') {

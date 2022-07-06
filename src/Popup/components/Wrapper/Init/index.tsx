@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useRecoilState } from 'recoil';
 
-import { CHAINS, ETHEREUM_NETWORKS, TENDERMINT_CHAINS } from '~/constants/chain';
+import { CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { COSMOS } from '~/constants/chain/tendermint/cosmos';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeStorageDefault, chromeStorageState } from '~/Popup/recoils/chromeStorage';
 import { getAllStorage, setStorage } from '~/Popup/utils/chromeStorage';
-import type { Chain, TendermintChain } from '~/types/chain';
+import type { Chain, CosmosChain } from '~/types/chain';
 import type { LanguageType } from '~/types/chromeStorage';
 
 type InitType = {
@@ -26,7 +26,7 @@ export default function Init({ children }: InitType) {
   const officialChainLowercaseNames = CHAINS.map((item) => item.chainName.toLowerCase());
   const officialChainIds = CHAINS.map((item) => item.id);
 
-  const officialTendermintLowercaseChainIds = TENDERMINT_CHAINS.map((item) => item.chainId.toLowerCase());
+  const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
   const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
 
   const handleOnStorageChange = () => {
@@ -74,10 +74,17 @@ export default function Init({ children }: InitType) {
         await setStorage('additionalChains', newAdditionalChains);
       }
 
-      if (originChromeStorage.additionalChains.filter(isTendermint).find((item) => officialTendermintLowercaseChainIds.includes(item.chainId.toLowerCase()))) {
+      if (originChromeStorage.additionalChains.filter(isCosmos).find((item) => officialCosmosLowercaseChainIds.includes(item.chainId.toLowerCase()))) {
         const newAdditionalChains = originChromeStorage.additionalChains.filter(
-          (item) => !(item.line === 'TENDERMINT' && officialTendermintLowercaseChainIds.includes(item.chainId)),
+          (item) => !(item.line === 'COSMOS' && officialCosmosLowercaseChainIds.includes(item.chainId)),
         );
+
+        await setStorage('additionalChains', newAdditionalChains);
+      }
+
+      // 한달 후 삭제 코드
+      if (originChromeStorage.additionalChains.filter((item) => item.line === ('TENDERMINT' as 'COSMOS')).length > 0) {
+        const newAdditionalChains = originChromeStorage.additionalChains.map((item) => ({ ...item, line: 'COSMOS' })) as CosmosChain[];
 
         await setStorage('additionalChains', newAdditionalChains);
       }
@@ -118,6 +125,6 @@ export default function Init({ children }: InitType) {
   );
 }
 
-function isTendermint(item: Chain): item is TendermintChain {
-  return item.line === 'TENDERMINT';
+function isCosmos(item: Chain): item is CosmosChain {
+  return item.line === 'COSMOS';
 }

@@ -11,11 +11,11 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import CosmosChainItem, { CosmosChainItemError, CosmosChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/CosmosChainItem';
 import EthereumChainItem, { EthereumChainItemError, EthereumChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/EthereumChainItem';
-import TendermintChainItem, { TendermintChainItemError, TendermintChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/TendermintChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { plus } from '~/Popup/utils/big';
-import type { Chain, EthereumChain, TendermintChain } from '~/types/chain';
+import type { Chain, CosmosChain, EthereumChain } from '~/types/chain';
 
 import {
   ChainList,
@@ -48,10 +48,10 @@ export default function Entry() {
 
   const chainList: ChainList = currentAllowedChains.map((chain) => ({ chain, amount: '0' }));
 
-  const tendermintChainList = chainList.filter(isTendermint);
+  const cosmosChainList = chainList.filter(isCosmos);
   const ethereumChainList = chainList.filter(isEthereum);
 
-  const tendermintChainNames = tendermintChainList.map((item) => item.chain.chainName);
+  const cosmosChainNames = cosmosChainList.map((item) => item.chain.chainName);
 
   const totalAmount =
     typeof dashboard?.[currentAccount.id] === 'object' ? Object.values(dashboard[currentAccount.id]).reduce((acc, cur) => plus(acc, cur), '0') : '0';
@@ -85,7 +85,7 @@ export default function Entry() {
       <ChainListContainer>
         <ChainList>
           {ethereumChainList.map((item) =>
-            ETHEREUM_NETWORKS.filter((network) => !tendermintChainNames.includes(network.networkName)).map((network) => (
+            ETHEREUM_NETWORKS.filter((network) => !cosmosChainNames.includes(network.networkName)).map((network) => (
               <ErrorBoundary
                 key={`${currentAccount.id}${item.chain.id}${network.id}`}
                 FallbackComponent={
@@ -100,16 +100,16 @@ export default function Entry() {
             )),
           )}
 
-          {tendermintChainList.map((item) => (
+          {cosmosChainList.map((item) => (
             <ErrorBoundary
               key={`${currentAccount.id}${item.chain.id}`}
               FallbackComponent={
                 // eslint-disable-next-line react/no-unstable-nested-components
-                (props) => <TendermintChainItemError {...props} chain={item.chain} />
+                (props) => <CosmosChainItemError {...props} chain={item.chain} />
               }
             >
-              <Suspense fallback={<TendermintChainItemSkeleton chain={item.chain} />}>
-                <TendermintChainItem chain={item.chain} />
+              <Suspense fallback={<CosmosChainItemSkeleton chain={item.chain} />}>
+                <CosmosChainItem chain={item.chain} />
               </Suspense>
             </ErrorBoundary>
           ))}
@@ -119,8 +119,8 @@ export default function Entry() {
   );
 }
 
-function isTendermint(item: ChainItem): item is ChainItem<TendermintChain> {
-  return item.chain.line === 'TENDERMINT';
+function isCosmos(item: ChainItem): item is ChainItem<CosmosChain> {
+  return item.chain.line === 'COSMOS';
 }
 
 function isEthereum(item: ChainItem): item is ChainItem<EthereumChain> {

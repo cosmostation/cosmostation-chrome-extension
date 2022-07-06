@@ -8,8 +8,8 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
+import type { CosRequestAccountResponse } from '~/types/cosmos/message';
 import type { EthRequestAccountsResponse } from '~/types/ethereum/message';
-import type { TenRequestAccountResponse } from '~/types/tendermint/message';
 
 export default function Entry() {
   const { currentQueue, deQueue } = useCurrentQueue();
@@ -20,7 +20,7 @@ export default function Entry() {
   const { additionalChains } = chromeStorage;
 
   useEffect(() => {
-    if (currentQueue?.message.method === 'ten_requestAccount' && currentPassword) {
+    if ((currentQueue?.message.method === 'cos_requestAccount' || currentQueue?.message.method === 'ten_requestAccount') && currentPassword) {
       const { message, messageId, origin } = currentQueue;
 
       const allChains = [...CHAINS, ...additionalChains];
@@ -33,7 +33,7 @@ export default function Entry() {
 
         const publicKey = keyPair?.publicKey.toString('hex');
 
-        const result: TenRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccount.name };
+        const result: CosRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccount.name };
 
         responseToWeb({
           response: {

@@ -1,6 +1,7 @@
-import type { ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE, TENDERMINT_LISTENER_TYPE } from '~/constants/message';
+import type { COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
+import type { CosAccount, CosAddChain, CosRequestAccount, CosSignAmino, CosSignDirect, CosSupportedChainNames } from './cosmos/message';
 import type {
   EthcAddNetwork,
   EthcAddTokens,
@@ -17,12 +18,11 @@ import type {
   WalletSwitchEthereumChain,
   WalletWatchAsset,
 } from './ethereum/message';
-import type { TenAccount, TenAddChain, TenRequestAccount, TenSignAmino, TenSignDirect, TenSupportedChainNames } from './tendermint/message';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
-export type TendermintListenerType = ValueOf<typeof TENDERMINT_LISTENER_TYPE>;
+export type CosmosListenerType = ValueOf<typeof COSMOS_LISTENER_TYPE>;
 export type EthereumListenerType = ValueOf<typeof ETHEREUM_LISTENER_TYPE>;
-export type ListenerType = TendermintListenerType | EthereumListenerType;
+export type ListenerType = CosmosListenerType | EthereumListenerType;
 
 /** Web Page <-> Content Script 통신 타입 정의 */
 
@@ -47,9 +47,9 @@ export type EthereumRequestMessage =
   | WalletAddEthereumChain
   | WalletWatchAsset;
 
-export type TendermintRequestMessage = TenRequestAccount | TenAddChain | TenSignAmino | TenSignDirect | TenSupportedChainNames | TenAccount;
+export type CosmosRequestMessage = CosRequestAccount | CosAddChain | CosSignAmino | CosSignDirect | CosSupportedChainNames | CosAccount;
 
-export type RequestMessage = EthereumRequestMessage | TendermintRequestMessage;
+export type RequestMessage = EthereumRequestMessage | CosmosRequestMessage;
 
 // window.postMessage 통신
 // isCosmostation: extension 확인 플래그

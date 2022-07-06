@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useResetRecoilState } from 'recoil';
 
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
+import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { COSMOS } from '~/constants/chain/tendermint/cosmos';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';

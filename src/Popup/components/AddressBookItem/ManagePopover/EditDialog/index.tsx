@@ -8,7 +8,7 @@ import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ethereumAddressRegex, getTendermintAddressRegex } from '~/Popup/utils/regex';
+import { ethereumAddressRegex, getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { AddressInfo } from '~/types/chromeStorage';
 
 import { Container, MarginTop8Div, StyledButton, StyledInput, StyledTextArea } from './styled';
@@ -28,8 +28,8 @@ export default function EditDialog({ onClose, addressInfo, ...remainder }: EditD
   const chain = CHAINS.find((item) => item.id === chainId);
 
   const regex = (() => {
-    if (chain?.line === 'TENDERMINT') {
-      return getTendermintAddressRegex(chain.bech32Prefix.address, [39]);
+    if (chain?.line === 'COSMOS') {
+      return getCosmosAddressRegex(chain.bech32Prefix.address, [39]);
     }
 
     if (chain?.line === 'ETHEREUM') {

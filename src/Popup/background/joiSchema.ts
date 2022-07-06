@@ -1,8 +1,12 @@
+import { COSMOS_TYPE } from '~/constants/cosmos';
 import { TOKEN_TYPE } from '~/constants/ethereum';
-import { TENDERMINT_TYPE } from '~/constants/tendermint';
 import Joi from '~/Popup/utils/joi';
 import { ethereumAddressRegex } from '~/Popup/utils/regex';
 import type { GasRate } from '~/types/chain';
+import type { Fee, Msg, SignAminoDoc } from '~/types/cosmos/amino';
+import type { Amount } from '~/types/cosmos/common';
+import type { CosAddChainParams, CosSignAminoParams, CosSignDirectParams } from '~/types/cosmos/message';
+import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type {
   CustomChain,
   EthcAddNetwork,
@@ -13,23 +17,19 @@ import type {
   WalletSwitchEthereumChainParam1,
   WalletWatchAsset,
 } from '~/types/ethereum/message';
-import type { Fee, Msg, SignAminoDoc } from '~/types/tendermint/amino';
-import type { Amount } from '~/types/tendermint/common';
-import type { TenAddChainParams, TenSignAminoParams, TenSignDirectParams } from '~/types/tendermint/message';
-import type { SignDirectDoc } from '~/types/tendermint/proto';
 
 import { getChainIdRegex } from '../utils/common';
 
 const numberRegex = /^([0-9]+|[0-9]+(\.[0-9]+))$/;
 
-const tendermintType = Object.values(TENDERMINT_TYPE);
+const cosmosType = Object.values(COSMOS_TYPE);
 
 export const tenAddChainParamsSchema = (chainNames: string[], officialChainIds: string[], unofficialChainIds: string[]) => {
   const invalidChainNames = [...chainNames, ...officialChainIds, ...unofficialChainIds];
 
-  return Joi.object<TenAddChainParams>({
+  return Joi.object<CosAddChainParams>({
     type: Joi.string()
-      .valid(...tendermintType)
+      .valid(...cosmosType)
       .default(''),
     chainId: Joi.string()
       .lowercase()
@@ -71,7 +71,7 @@ export const tenAddChainParamsSchema = (chainNames: string[], officialChainIds: 
 export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) => {
   const chainIdRegex = getChainIdRegex(chainId);
 
-  return Joi.object<TenSignAminoParams>({
+  return Joi.object<CosSignAminoParams>({
     chainName: Joi.string()
       .lowercase()
       .valid(...chainNames)
@@ -109,7 +109,7 @@ export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) 
 export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string) => {
   const chainIdRegex = getChainIdRegex(chainId);
 
-  return Joi.object<TenSignDirectParams>({
+  return Joi.object<CosSignDirectParams>({
     chainName: Joi.string()
       .lowercase()
       .valid(...chainNames)

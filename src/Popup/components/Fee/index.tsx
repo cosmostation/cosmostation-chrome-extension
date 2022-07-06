@@ -6,7 +6,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { divide, equal, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import type { GasRate, TendermintChain } from '~/types/chain';
+import type { CosmosChain, GasRate } from '~/types/chain';
 
 import GasSettingDialog from './components/GasSettingDialog';
 import {
@@ -26,7 +26,7 @@ import {
 } from './styled';
 
 type FeeProps = {
-  chain: TendermintChain;
+  chain: CosmosChain;
   isEdit?: boolean;
   baseFee: string;
   gas: string;

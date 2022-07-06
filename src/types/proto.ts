@@ -1,4 +1,4 @@
-import type { PublicKeyType } from './tendermint';
+import type { PublicKeyType } from './cosmos';
 
 export type PubKey = { type: PublicKeyType; value: string };
 
