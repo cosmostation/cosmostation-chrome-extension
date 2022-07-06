@@ -20,7 +20,7 @@ import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, protoTx } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
-import type { TenSignAmino, TenSignAminoResponse } from '~/types/cosmos/message';
+import type { CosSignAmino, CosSignAminoResponse } from '~/types/cosmos/message';
 
 import TxMessage from './components/TxMessage';
 import { BottomButtonContainer, BottomContainer, Container, FeeContainer, MemoContainer, PaginationContainer, TabContainer, TitleContainer } from './styled';
@@ -29,7 +29,7 @@ import Pagination from '../components/Pagination';
 import Tx from '../components/Tx';
 
 type EntryProps = {
-  queue: Queue<TenSignAmino>;
+  queue: Queue<CosSignAmino>;
   chain: CosmosChain;
 };
 
@@ -176,7 +176,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                   await deQueue();
                 }
               } else {
-                const result: TenSignAminoResponse = {
+                const result: CosSignAminoResponse = {
                   signature: base64Signature,
                   pub_key: pubKey,
                   signed_doc: tx,

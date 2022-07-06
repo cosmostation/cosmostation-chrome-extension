@@ -20,7 +20,7 @@ import { decodeProtobufMessage } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos.js';
 import type { CosmosChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
-import type { TenSignDirect, TenSignDirectResponse } from '~/types/cosmos/message';
+import type { CosSignDirect, CosSignDirectResponse } from '~/types/cosmos/message';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 import TxMessage from './components/TxMessage';
@@ -30,7 +30,7 @@ import Pagination from '../components/Pagination';
 import Tx from '../components/Tx';
 
 type EntryProps = {
-  queue: Queue<TenSignDirect>;
+  queue: Queue<CosSignDirect>;
   chain: CosmosChain;
 };
 
@@ -167,7 +167,7 @@ export default function Entry({ queue, chain }: EntryProps) {
               const signedDocHex = { ...doc, body_bytes: Buffer.from(bodyBytes).toString('hex'), auth_info_bytes: Buffer.from(authInfoBytes).toString('hex') };
               const pubKey = { type: publicKeyType, value: base64PublicKey };
 
-              const result: TenSignDirectResponse = {
+              const result: CosSignDirectResponse = {
                 signature: base64Signature,
                 pub_key: pubKey,
                 signed_doc: signedDocHex as unknown as SignDirectDoc,

@@ -27,19 +27,23 @@ export default function Routes({ children }: RoutesType) {
 
   useEffect(() => {
     if (chromeStorage.queues.length > 0) {
-      if (chromeStorage.queues[0].message.method === 'ten_requestAccount' || chromeStorage.queues[0].message.method === 'eth_requestAccounts') {
+      if (
+        chromeStorage.queues[0].message.method === 'cos_requestAccount' ||
+        chromeStorage.queues[0].message.method === 'eth_requestAccounts' ||
+        chromeStorage.queues[0].message.method === 'ten_requestAccount'
+      ) {
         navigate('/popup/request-account');
       }
 
-      if (chromeStorage.queues[0].message.method === 'ten_addChain') {
+      if (chromeStorage.queues[0].message.method === 'cos_addChain' || chromeStorage.queues[0].message.method === 'ten_addChain') {
         navigate('/popup/cosmos/add-chain');
       }
 
-      if (chromeStorage.queues[0].message.method === 'ten_signAmino') {
+      if (chromeStorage.queues[0].message.method === 'cos_signAmino' || chromeStorage.queues[0].message.method === 'ten_signAmino') {
         navigate('/popup/cosmos/sign/amino');
       }
 
-      if (chromeStorage.queues[0].message.method === 'ten_signDirect') {
+      if (chromeStorage.queues[0].message.method === 'cos_signDirect' || chromeStorage.queues[0].message.method === 'ten_signDirect') {
         navigate('/popup/cosmos/sign/direct');
       }
 

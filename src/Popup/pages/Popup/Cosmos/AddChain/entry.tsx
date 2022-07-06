@@ -12,7 +12,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CosmosChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
-import type { TenAddChain, TenAddChainResponse } from '~/types/cosmos/message';
+import type { CosAddChain, CosAddChainResponse } from '~/types/cosmos/message';
 
 import {
   AccentSpan,
@@ -31,7 +31,7 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 
 type EntryProps = {
-  queue: Queue<TenAddChain>;
+  queue: Queue<CosAddChain>;
 };
 
 export default function Entry({ queue }: EntryProps) {
@@ -137,7 +137,7 @@ export default function Entry({ queue }: EntryProps) {
 
               await setChromeStorage('additionalChains', [...filteredAdditionalChains, newChain]);
 
-              const result: TenAddChainResponse = true;
+              const result: CosAddChainResponse = true;
 
               responseToWeb({
                 response: {

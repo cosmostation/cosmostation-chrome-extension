@@ -5,7 +5,7 @@ import Lock from '~/Popup/components/Lock';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { TenSignDirect } from '~/types/cosmos/message';
+import type { CosSignDirect } from '~/types/cosmos/message';
 
 import Entry from './entry';
 import Layout from './layout';
@@ -14,7 +14,7 @@ export default function AddChain() {
   const { currentQueue } = useCurrentQueue();
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
-  if (currentQueue && isTenSignDirect(currentQueue)) {
+  if (currentQueue && isCosSignDirect(currentQueue)) {
     const selecteChain = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
 
     const { message } = currentQueue;
@@ -47,6 +47,6 @@ export default function AddChain() {
   return null;
 }
 
-function isTenSignDirect(queue: Queue): queue is Queue<TenSignDirect> {
-  return queue?.message?.method === 'ten_signDirect';
+function isCosSignDirect(queue: Queue): queue is Queue<CosSignDirect> {
+  return queue?.message?.method === 'cos_signDirect' || queue?.message?.method === 'ten_signDirect';
 }

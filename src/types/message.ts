@@ -1,7 +1,7 @@
 import type { COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
-import type { TenAccount, TenAddChain, TenRequestAccount, TenSignAmino, TenSignDirect, TenSupportedChainNames } from './cosmos/message';
+import type { CosAccount, CosAddChain, CosRequestAccount, CosSignAmino, CosSignDirect, CosSupportedChainNames } from './cosmos/message';
 import type {
   EthcAddNetwork,
   EthcAddTokens,
@@ -47,7 +47,7 @@ export type EthereumRequestMessage =
   | WalletAddEthereumChain
   | WalletWatchAsset;
 
-export type CosmosRequestMessage = TenRequestAccount | TenAddChain | TenSignAmino | TenSignDirect | TenSupportedChainNames | TenAccount;
+export type CosmosRequestMessage = CosRequestAccount | CosAddChain | CosSignAmino | CosSignDirect | CosSupportedChainNames | CosAccount;
 
 export type RequestMessage = EthereumRequestMessage | CosmosRequestMessage;
 

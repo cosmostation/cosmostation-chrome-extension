@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { LINE_TYPE } from '~/constants/chain';
 import { MESSAGE_TYPE } from '~/constants/message';
-import type { TenRequestAccountResponse, TenSignDirectParams, TenSignDirectResponse } from '~/types/cosmos/message';
+import type { CosRequestAccountResponse, CosSignDirectParams, CosSignDirectResponse } from '~/types/cosmos/message';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type {
   ContentScriptToWebEventMessage,
@@ -87,17 +87,22 @@ import type {
 
               if (data.response?.error) {
                 rej(data.response.error);
-              } else if (data.message.method === 'ten_requestAccount' || data.message.method === 'ten_account') {
-                const { publicKey } = data.response.result as TenRequestAccountResponse;
+              } else if (
+                data.message.method === 'cos_requestAccount' ||
+                data.message.method === 'cos_account' ||
+                data.message.method === 'ten_requestAccount' ||
+                data.message.method === 'ten_account'
+              ) {
+                const { publicKey } = data.response.result as CosRequestAccountResponse;
 
                 res({
                   ...(data.response.result as { publicKey: string; address: string }),
                   publicKey: new Uint8Array(Buffer.from(publicKey as unknown as string, 'hex')),
                 });
-              } else if (data.message.method === 'ten_signDirect') {
-                const result = data.response.result as TenSignDirectResponse;
+              } else if (data.message.method === 'cos_signDirect' || data.message.method === 'ten_signDirect') {
+                const result = data.response.result as CosSignDirectResponse;
 
-                const response: TenSignDirectResponse = {
+                const response: CosSignDirectResponse = {
                   ...result,
                   signed_doc: {
                     ...result.signed_doc,
@@ -115,7 +120,7 @@ import type {
 
           window.addEventListener('message', handler);
 
-          if (message.method === 'ten_signDirect') {
+          if (message.method === 'cos_signDirect' || message.method === 'ten_signDirect') {
             const { params } = message;
 
             const doc = params?.doc;
@@ -128,7 +133,7 @@ import type {
                 }
               : doc;
 
-            const newParams: TenSignDirectParams = params ? { ...params, doc: newDoc } : params;
+            const newParams: CosSignDirectParams = params ? { ...params, doc: newDoc } : params;
             const newMessage = { ...message, params: newParams };
 
             window.postMessage({
@@ -176,17 +181,22 @@ import type {
 
               if (data.response?.error) {
                 rej(data.response.error);
-              } else if (data.message.method === 'ten_requestAccount' || data.message.method === 'ten_account') {
-                const { publicKey } = data.response.result as TenRequestAccountResponse;
+              } else if (
+                data.message.method === 'cos_requestAccount' ||
+                data.message.method === 'cos_account' ||
+                data.message.method === 'ten_requestAccount' ||
+                data.message.method === 'ten_account'
+              ) {
+                const { publicKey } = data.response.result as CosRequestAccountResponse;
 
                 res({
                   ...(data.response.result as { publicKey: string; address: string }),
                   publicKey: new Uint8Array(Buffer.from(publicKey as unknown as string, 'hex')),
                 });
-              } else if (data.message.method === 'ten_signDirect') {
-                const result = data.response.result as TenSignDirectResponse;
+              } else if (data.message.method === 'cos_signDirect' || data.message.method === 'ten_signDirect') {
+                const result = data.response.result as CosSignDirectResponse;
 
-                const response: TenSignDirectResponse = {
+                const response: CosSignDirectResponse = {
                   ...result,
                   signed_doc: {
                     ...result.signed_doc,
@@ -204,7 +214,7 @@ import type {
 
           window.addEventListener('message', handler);
 
-          if (message.method === 'ten_signDirect') {
+          if (message.method === 'cos_signDirect' || message.method === 'ten_signDirect') {
             const { params } = message;
 
             const doc = params?.doc;
@@ -217,7 +227,7 @@ import type {
                 }
               : doc;
 
-            const newParams: TenSignDirectParams = params ? { ...params, doc: newDoc } : params;
+            const newParams: CosSignDirectParams = params ? { ...params, doc: newDoc } : params;
             const newMessage = { ...message, params: newParams };
 
             window.postMessage({

@@ -9,31 +9,31 @@ export type CosmosPopupMethodType = ValueOf<typeof COSMOS_POPUP_METHOD_TYPE>;
 
 // no popup
 
-export type TenSupportedChainNames = {
-  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.TEN__SUPPORTED_CHAIN_NAMES;
+export type CosSupportedChainNames = {
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__SUPPORTED_CHAIN_NAMES | typeof COSMOS_NO_POPUP_METHOD_TYPE.TEN__SUPPORTED_CHAIN_NAMES;
   params?: undefined;
   id?: number | string;
 };
 
-export type TenAccount = {
-  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.TEN__ACCOUNT;
+export type CosAccount = {
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__ACCOUNT | typeof COSMOS_NO_POPUP_METHOD_TYPE.TEN__ACCOUNT;
   params: { chainName: string };
   id?: number | string;
 };
 
-export type TenAccountResponse = { publicKey: Uint8Array; address: string; name: string };
+export type CosAccountResponse = { publicKey: Uint8Array; address: string; name: string };
 
 // popup
 
-export type TenRequestAccount = {
-  method: typeof COSMOS_POPUP_METHOD_TYPE.TEN__REQUEST_ACCOUNT;
+export type CosRequestAccount = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__REQUEST_ACCOUNT | typeof COSMOS_POPUP_METHOD_TYPE.TEN__REQUEST_ACCOUNT;
   params: { chainName: string };
   id?: number | string;
 };
 
-export type TenRequestAccountResponse = TenAccountResponse;
+export type CosRequestAccountResponse = CosAccountResponse;
 
-export type TenAddChainParams = {
+export type CosAddChainParams = {
   type?: CosmosType;
   chainId: string;
   chainName: string;
@@ -49,25 +49,25 @@ export type TenAddChainParams = {
   sendGas?: string;
 };
 
-export type TenAddChain = {
-  method: typeof COSMOS_POPUP_METHOD_TYPE.TEN__ADD_CHAIN;
-  params: TenAddChainParams;
+export type CosAddChain = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__ADD_CHAIN | typeof COSMOS_POPUP_METHOD_TYPE.TEN__ADD_CHAIN;
+  params: CosAddChainParams;
   id?: number | string;
 };
 
-export type TenAddChainResponse = boolean;
+export type CosAddChainResponse = boolean;
 
-export type TenSignOptions = { isEditMemo?: boolean; isEditFee?: boolean; gasRate?: GasRate };
+export type CosSignOptions = { isEditMemo?: boolean; isEditFee?: boolean; gasRate?: GasRate };
 
-export type TenSignAminoParams = { chainName: string; doc: SignAminoDoc } & TenSignOptions;
+export type CosSignAminoParams = { chainName: string; doc: SignAminoDoc } & CosSignOptions;
 
-export type TenSignAmino = {
-  method: typeof COSMOS_POPUP_METHOD_TYPE.TEN__SIGN_AMINO;
-  params: TenSignAminoParams;
+export type CosSignAmino = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__SIGN_AMINO | typeof COSMOS_POPUP_METHOD_TYPE.TEN__SIGN_AMINO;
+  params: CosSignAminoParams;
   id?: number | string;
 };
 
-export type TenSignAminoResponse = {
+export type CosSignAminoResponse = {
   signature: string;
   pub_key: {
     type: PublicKeyType;
@@ -76,15 +76,15 @@ export type TenSignAminoResponse = {
   signed_doc: SignAminoDoc;
 };
 
-export type TenSignDirectParams = { chainName: string; doc: SignDirectDoc } & TenSignOptions;
+export type CosSignDirectParams = { chainName: string; doc: SignDirectDoc } & CosSignOptions;
 
-export type TenSignDirect = {
-  method: typeof COSMOS_POPUP_METHOD_TYPE.TEN__SIGN_DIRECT;
-  params: TenSignDirectParams;
+export type CosSignDirect = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__SIGN_DIRECT | typeof COSMOS_POPUP_METHOD_TYPE.TEN__SIGN_DIRECT;
+  params: CosSignDirectParams;
   id?: number | string;
 };
 
-export type TenSignDirectResponse = {
+export type CosSignDirectResponse = {
   signature: string;
   pub_key: {
     type: PublicKeyType;

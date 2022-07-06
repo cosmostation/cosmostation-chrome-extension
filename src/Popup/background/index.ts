@@ -23,7 +23,7 @@ import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CosmosChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
-import type { TenAccountResponse, TenAddChainParams, TenRequestAccountResponse, TenSignAminoParams, TenSignDirectParams } from '~/types/cosmos/message';
+import type { CosAccountResponse, CosAddChainParams, CosRequestAccountResponse, CosSignAminoParams, CosSignDirectParams } from '~/types/cosmos/message';
 import type {
   EthcAddNetworkParams,
   EthcAddTokensParam,
@@ -95,7 +95,7 @@ function background() {
             const getChain = (chainName?: string) => allChains.find((item) => item.chainName.toLowerCase() === chainName?.toLowerCase());
 
             if (cosmosPopupMethods.includes(method)) {
-              if (method === 'ten_requestAccount') {
+              if (method === 'cos_requestAccount' || method === 'ten_requestAccount') {
                 const { params } = message;
 
                 const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -119,7 +119,7 @@ function background() {
 
                   const publicKey = keyPair?.publicKey.toString('hex');
 
-                  const result: TenRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
+                  const result: CosRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
 
                   responseToWeb({
                     response: {
@@ -138,7 +138,7 @@ function background() {
                 }
               }
 
-              if (method === 'ten_addChain') {
+              if (method === 'cos_addChain' || method === 'ten_addChain') {
                 const { params } = message;
 
                 const cosmosLowercaseChainNames = COSMOS_CHAINS.map((item) => item.chainName.toLowerCase());
@@ -148,7 +148,7 @@ function background() {
                 const schema = tenAddChainParamsSchema(cosmosLowercaseChainNames, officialCosmosLowercaseChainIds, unofficialCosmosLowercaseChainIds);
 
                 try {
-                  const validatedParams = (await schema.validateAsync(params)) as TenAddChainParams;
+                  const validatedParams = (await schema.validateAsync(params)) as CosAddChainParams;
 
                   const filteredCosmosLowercaseChainIds = cosmosAdditionalChains
                     .filter((item) => item.chainName.toLowerCase() !== validatedParams.chainName)
@@ -163,7 +163,7 @@ function background() {
                     ...queues,
                     {
                       ...request,
-                      message: { ...request.message, method, params: { ...validatedParams, chainName: params.chainName } as TenAddChainParams },
+                      message: { ...request.message, method, params: { ...validatedParams, chainName: params.chainName } as CosAddChainParams },
                       windowId: window?.id,
                     },
                   ]);
@@ -176,7 +176,7 @@ function background() {
                 }
               }
 
-              if (method === 'ten_signAmino') {
+              if (method === 'cos_signAmino' || method === 'ten_signAmino') {
                 const { params } = message;
 
                 const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -188,14 +188,14 @@ function background() {
                 const schema = tenSignAminoParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
 
                 try {
-                  const validatedParams = (await schema.validateAsync({ ...params, chainName })) as TenSignAminoParams;
+                  const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignAminoParams;
 
                   const window = await openWindow();
                   await setStorage('queues', [
                     ...queues,
                     {
                       ...request,
-                      message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as TenSignAminoParams },
+                      message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignAminoParams },
                       windowId: window?.id,
                     },
                   ]);
@@ -204,7 +204,7 @@ function background() {
                 }
               }
 
-              if (method === 'ten_signDirect') {
+              if (method === 'cos_signDirect' || method === 'ten_signDirect') {
                 const { params } = message;
 
                 const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -216,14 +216,14 @@ function background() {
                 const schema = tenSignDirectParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
 
                 try {
-                  const validatedParams = (await schema.validateAsync({ ...params, chainName })) as TenSignDirectParams;
+                  const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignDirectParams;
 
                   const window = await openWindow();
                   await setStorage('queues', [
                     ...queues,
                     {
                       ...request,
-                      message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as TenSignDirectParams },
+                      message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignDirectParams },
                       windowId: window?.id,
                     },
                   ]);
@@ -232,7 +232,7 @@ function background() {
                 }
               }
             } else if (cosmosNoPopupMethods.includes(message.method)) {
-              if (method === 'ten_supportedChainNames') {
+              if (method === 'cos_supportedChainNames' || method === 'ten_supportedChainNames') {
                 const official = COSMOS_CHAINS.map((item) => item.chainName.toLowerCase());
 
                 const unofficial = additionalChains.map((item) => item.chainName.toLowerCase());
@@ -247,7 +247,7 @@ function background() {
                 });
               }
 
-              if (method === 'ten_account') {
+              if (method === 'cos_account' || method === 'ten_account') {
                 const { params } = message;
 
                 const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -271,7 +271,7 @@ function background() {
 
                   const publicKey = keyPair?.publicKey.toString('hex');
 
-                  const result: TenAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
+                  const result: CosAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
 
                   responseToWeb({
                     response: {

@@ -246,7 +246,7 @@ export default function Cosmos({ chain }: CosmosProps) {
               origin: '',
               channel: 'inApp',
               message: {
-                method: 'ten_signAmino',
+                method: 'cos_signAmino',
                 params: {
                   chainName: chain.chainName,
                   doc: {

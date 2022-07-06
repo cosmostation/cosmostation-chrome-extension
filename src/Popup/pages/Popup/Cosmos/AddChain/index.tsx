@@ -2,7 +2,7 @@ import AccessRequest from '~/Popup/components/AccessRequest';
 import Lock from '~/Popup/components/Lock';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { TenAddChain } from '~/types/cosmos/message';
+import type { CosAddChain } from '~/types/cosmos/message';
 
 import Entry from './entry';
 import Layout from './layout';
@@ -10,7 +10,7 @@ import Layout from './layout';
 export default function AddChain() {
   const { currentQueue } = useCurrentQueue();
 
-  if (currentQueue && isTenAddChain(currentQueue)) {
+  if (currentQueue && isCosAddChain(currentQueue)) {
     return (
       <Lock>
         <AccessRequest>
@@ -24,6 +24,6 @@ export default function AddChain() {
   return null;
 }
 
-function isTenAddChain(queue: Queue): queue is Queue<TenAddChain> {
-  return queue?.message?.method === 'ten_addChain';
+function isCosAddChain(queue: Queue): queue is Queue<CosAddChain> {
+  return queue?.message?.method === 'cos_addChain' || queue?.message?.method === 'ten_addChain';
 }

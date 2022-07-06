@@ -5,7 +5,7 @@ import Lock from '~/Popup/components/Lock';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { TenSignAmino } from '~/types/cosmos/message';
+import type { CosSignAmino } from '~/types/cosmos/message';
 
 import Entry from './entry';
 import Layout from './layout';
@@ -14,7 +14,7 @@ export default function AddChain() {
   const { currentQueue } = useCurrentQueue();
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
-  if (currentQueue && isTenSignAmino(currentQueue)) {
+  if (currentQueue && isCosSignAmino(currentQueue)) {
     const selecteChain = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
 
     if (selecteChain) {
@@ -35,6 +35,6 @@ export default function AddChain() {
   return null;
 }
 
-function isTenSignAmino(queue: Queue): queue is Queue<TenSignAmino> {
-  return queue?.message?.method === 'ten_signAmino';
+function isCosSignAmino(queue: Queue): queue is Queue<CosSignAmino> {
+  return queue?.message?.method === 'cos_signAmino' || queue?.message?.method === 'ten_signAmino';
 }
