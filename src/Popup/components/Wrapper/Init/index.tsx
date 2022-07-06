@@ -82,6 +82,13 @@ export default function Init({ children }: InitType) {
         await setStorage('additionalChains', newAdditionalChains);
       }
 
+      // 한달 후 삭제 코드
+      if (originChromeStorage.additionalChains.filter((item) => item.line === ('TENDERMINT' as 'COSMOS')).length > 0) {
+        const newAdditionalChains = originChromeStorage.additionalChains.map((item) => ({ ...item, line: 'COSMOS' })) as CosmosChain[];
+
+        await setStorage('additionalChains', newAdditionalChains);
+      }
+
       if (originChromeStorage.additionalEthereumNetworks.find((item) => officialEthereumNetworkChainIds.includes(item.chainId))) {
         const newAdditionalEthereumNetworks = originChromeStorage.additionalEthereumNetworks.filter(
           (item) => !officialEthereumNetworkChainIds.includes(item.chainId),
