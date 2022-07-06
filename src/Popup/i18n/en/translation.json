@@ -448,6 +448,69 @@
       }
     },
     "Popup": {
+      "Cosmos": {
+        "AddChain": {
+          "entry": {
+            "description1": "would",
+            "description2": "like to add blockchain",
+            "description3": "to Cosmostation wallet.",
+            "description4": ""
+          }
+        },
+        "Sign": {
+          "Amino": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "Send": {
+                    "index": {
+                      "amount": "Amount",
+                      "fromAddress": "From address",
+                      "toAddress": "To address"
+                    }
+                  }
+                }
+              }
+            },
+            "entry": {
+              "cancelButton": "Cancel",
+              "confirmButton": "Confirm",
+              "dataTab": "Data",
+              "detailTab": "Details",
+              "failedTransfer": "Failed to transfer"
+            }
+          },
+          "Direct": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "Send": {
+                    "index": {
+                      "amount": "Amount",
+                      "fromAddress": "From address",
+                      "toAddress": "To address"
+                    }
+                  }
+                }
+              }
+            },
+            "entry": {
+              "cancelButton": "Cancel",
+              "confirmButton": "Confirm",
+              "dataTab": "Data",
+              "detailTab": "Details"
+            }
+          },
+          "components": {
+            "Memo": {
+              "index": {
+                "memo": "Memo",
+                "memoPlaceholder": "Memo (option)"
+              }
+            }
+          }
+        }
+      },
       "Ethereum": {
         "AddNetwork": {
           "entry": {
@@ -590,69 +653,6 @@
             }
           }
         }
-      },
-      "Cosmos": {
-        "AddChain": {
-          "entry": {
-            "description1": "would",
-            "description2": "like to add blockchain",
-            "description3": "to Cosmostation wallet.",
-            "description4": ""
-          }
-        },
-        "Sign": {
-          "Amino": {
-            "components": {
-              "TxMessage": {
-                "messages": {
-                  "Send": {
-                    "index": {
-                      "amount": "Amount",
-                      "fromAddress": "From address",
-                      "toAddress": "To address"
-                    }
-                  }
-                }
-              }
-            },
-            "entry": {
-              "cancelButton": "Cancel",
-              "confirmButton": "Confirm",
-              "dataTab": "Data",
-              "detailTab": "Details",
-              "failedTransfer": "Failed to transfer"
-            }
-          },
-          "Direct": {
-            "components": {
-              "TxMessage": {
-                "messages": {
-                  "Send": {
-                    "index": {
-                      "amount": "Amount",
-                      "fromAddress": "From address",
-                      "toAddress": "To address"
-                    }
-                  }
-                }
-              }
-            },
-            "entry": {
-              "cancelButton": "Cancel",
-              "confirmButton": "Confirm",
-              "dataTab": "Data",
-              "detailTab": "Details"
-            }
-          },
-          "components": {
-            "Memo": {
-              "index": {
-                "memo": "Memo",
-                "memoPlaceholder": "Memo (option)"
-              }
-            }
-          }
-        }
       }
     },
     "Restore": {
@@ -712,12 +712,12 @@
     "Wallet": {
       "Receive": {
         "Entry": {
-          "Ethereum": {
+          "Cosmos": {
             "address": "Address",
             "copied": "Copied",
             "scanQrCode": "Scan QR code"
           },
-          "Cosmos": {
+          "Ethereum": {
             "address": "Address",
             "copied": "Copied",
             "scanQrCode": "Scan QR code"
@@ -729,6 +729,22 @@
       },
       "Send": {
         "Entry": {
+          "Cosmos": {
+            "components": {
+              "CoinPopover": {
+                "index": {
+                  "available": "Available"
+                }
+              }
+            },
+            "index": {
+              "amountPlaceholder": "Amount",
+              "available": "Available",
+              "memoPlaceholder": "Memo (option)",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          },
           "Ethereum": {
             "components": {
               "CoinButton": {
@@ -752,22 +768,6 @@
               "insufficientFee": "Insufficient fee",
               "invalidAddress": "Invalid address",
               "invalidAmount": "Invalid amount",
-              "recipientAddressPlaceholder": "Recipient address",
-              "sendButton": "Send"
-            }
-          },
-          "Cosmos": {
-            "components": {
-              "CoinPopover": {
-                "index": {
-                  "available": "Available"
-                }
-              }
-            },
-            "index": {
-              "amountPlaceholder": "Amount",
-              "available": "Available",
-              "memoPlaceholder": "Memo (option)",
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"
             }
@@ -812,6 +812,22 @@
             }
           }
         },
+        "cosmos": {
+          "NativeChainCard": {
+            "index": {
+              "available": "Available",
+              "copied": "Copied",
+              "delegated": "Delegated",
+              "depositButton": "Deposit",
+              "incentive": "Incentive",
+              "networkError": "Network Error",
+              "reward": "Reward",
+              "sendButton": "Send",
+              "unbonding": "Unbonding",
+              "vesting": "Vesting"
+            }
+          }
+        },
         "ethereum": {
           "NativeChainCard": {
             "index": {
@@ -833,22 +849,6 @@
             "index": {
               "importTokenButton": "Import token",
               "token": "Token"
-            }
-          }
-        },
-        "cosmos": {
-          "NativeChainCard": {
-            "index": {
-              "available": "Available",
-              "copied": "Copied",
-              "delegated": "Delegated",
-              "depositButton": "Deposit",
-              "incentive": "Incentive",
-              "networkError": "Network Error",
-              "reward": "Reward",
-              "sendButton": "Send",
-              "unbonding": "Unbonding",
-              "vesting": "Vesting"
             }
           }
         }

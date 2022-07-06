@@ -448,6 +448,69 @@
       }
     },
     "Popup": {
+      "Cosmos": {
+        "AddChain": {
+          "entry": {
+            "description1": "는",
+            "description2": "코스모스테이션에",
+            "description3": "블록체인",
+            "description4": "을 추가합니다."
+          }
+        },
+        "Sign": {
+          "Amino": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "Send": {
+                    "index": {
+                      "amount": "수량",
+                      "fromAddress": "보내는 주소",
+                      "toAddress": "받는 주소"
+                    }
+                  }
+                }
+              }
+            },
+            "entry": {
+              "cancelButton": "취소",
+              "confirmButton": "승인",
+              "dataTab": "데이터",
+              "detailTab": "상세 내역",
+              "failedTransfer": "보내기를 실패했습니다."
+            }
+          },
+          "Direct": {
+            "components": {
+              "TxMessage": {
+                "messages": {
+                  "Send": {
+                    "index": {
+                      "amount": "수량",
+                      "fromAddress": "보내는 주소",
+                      "toAddress": "받는 주소"
+                    }
+                  }
+                }
+              }
+            },
+            "entry": {
+              "cancelButton": "취소",
+              "confirmButton": "승인",
+              "dataTab": "데이터",
+              "detailTab": "상세 내역"
+            }
+          },
+          "components": {
+            "Memo": {
+              "index": {
+                "memo": "메모",
+                "memoPlaceholder": "메모 (선택)"
+              }
+            }
+          }
+        }
+      },
       "Ethereum": {
         "AddNetwork": {
           "entry": {
@@ -590,69 +653,6 @@
             }
           }
         }
-      },
-      "Cosmos": {
-        "AddChain": {
-          "entry": {
-            "description1": "는",
-            "description2": "코스모스테이션에",
-            "description3": "블록체인",
-            "description4": "을 추가합니다."
-          }
-        },
-        "Sign": {
-          "Amino": {
-            "components": {
-              "TxMessage": {
-                "messages": {
-                  "Send": {
-                    "index": {
-                      "amount": "수량",
-                      "fromAddress": "보내는 주소",
-                      "toAddress": "받는 주소"
-                    }
-                  }
-                }
-              }
-            },
-            "entry": {
-              "cancelButton": "취소",
-              "confirmButton": "승인",
-              "dataTab": "데이터",
-              "detailTab": "상세 내역",
-              "failedTransfer": "보내기를 실패했습니다."
-            }
-          },
-          "Direct": {
-            "components": {
-              "TxMessage": {
-                "messages": {
-                  "Send": {
-                    "index": {
-                      "amount": "수량",
-                      "fromAddress": "보내는 주소",
-                      "toAddress": "받는 주소"
-                    }
-                  }
-                }
-              }
-            },
-            "entry": {
-              "cancelButton": "취소",
-              "confirmButton": "승인",
-              "dataTab": "데이터",
-              "detailTab": "상세 내역"
-            }
-          },
-          "components": {
-            "Memo": {
-              "index": {
-                "memo": "메모",
-                "memoPlaceholder": "메모 (선택)"
-              }
-            }
-          }
-        }
       }
     },
     "Restore": {
@@ -712,12 +712,12 @@
     "Wallet": {
       "Receive": {
         "Entry": {
-          "Ethereum": {
+          "Cosmos": {
             "address": "주소",
             "copied": "복사 되었습니다.",
             "scanQrCode": "QR코드 스캔"
           },
-          "Cosmos": {
+          "Ethereum": {
             "address": "주소",
             "copied": "복사 되었습니다.",
             "scanQrCode": "QR코드 스캔"
@@ -729,6 +729,22 @@
       },
       "Send": {
         "Entry": {
+          "Cosmos": {
+            "components": {
+              "CoinPopover": {
+                "index": {
+                  "available": "사용 가능 수량"
+                }
+              }
+            },
+            "index": {
+              "amountPlaceholder": "수량",
+              "available": "사용 가능 수량",
+              "memoPlaceholder": "메모 (선택)",
+              "recipientAddressPlaceholder": "입금 주소",
+              "sendButton": "보내기"
+            }
+          },
           "Ethereum": {
             "components": {
               "CoinButton": {
@@ -752,22 +768,6 @@
               "insufficientFee": "수수료가 부족합니다.",
               "invalidAddress": "유효하지 않은 주소입니다.",
               "invalidAmount": "수량을 입력하세요.",
-              "recipientAddressPlaceholder": "입금 주소",
-              "sendButton": "보내기"
-            }
-          },
-          "Cosmos": {
-            "components": {
-              "CoinPopover": {
-                "index": {
-                  "available": "사용 가능 수량"
-                }
-              }
-            },
-            "index": {
-              "amountPlaceholder": "수량",
-              "available": "사용 가능 수량",
-              "memoPlaceholder": "메모 (선택)",
               "recipientAddressPlaceholder": "입금 주소",
               "sendButton": "보내기"
             }
@@ -812,6 +812,22 @@
             }
           }
         },
+        "cosmos": {
+          "NativeChainCard": {
+            "index": {
+              "available": "전송 가능 수량",
+              "copied": "복사 되었습니다.",
+              "delegated": "위임 수량",
+              "depositButton": "입금",
+              "incentive": "인센티브",
+              "networkError": "네트워크 오류",
+              "reward": "이자 수량",
+              "sendButton": "보내기",
+              "unbonding": "위임 해제 수량",
+              "vesting": "위임 가능 수량"
+            }
+          }
+        },
         "ethereum": {
           "NativeChainCard": {
             "index": {
@@ -833,22 +849,6 @@
             "index": {
               "importTokenButton": "토큰 가져오기",
               "token": "토큰"
-            }
-          }
-        },
-        "cosmos": {
-          "NativeChainCard": {
-            "index": {
-              "available": "전송 가능 수량",
-              "copied": "복사 되었습니다.",
-              "delegated": "위임 수량",
-              "depositButton": "입금",
-              "incentive": "인센티브",
-              "networkError": "네트워크 오류",
-              "reward": "이자 수량",
-              "sendButton": "보내기",
-              "unbonding": "위임 해제 수량",
-              "vesting": "위임 가능 수량"
             }
           }
         }
