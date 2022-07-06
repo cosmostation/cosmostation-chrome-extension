@@ -117,5 +117,5 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
 type Message = { method: any; params: { chainName?: string }; id?: number | string };
 
 function isCosmos(queue: Queue<RequestMessage> | null): queue is Queue<Message> {
-  return !!queue?.message?.method?.startsWith('ten_') || !!queue?.message?.method?.startsWith('cos_');
+  return !!queue?.message?.method?.startsWith('cos_') || !!queue?.message?.method?.startsWith('ten_');
 }
