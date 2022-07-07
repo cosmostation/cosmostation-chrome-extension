@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import Divider from '~/Popup/components/common/Divider';
 
 export const Container = styled('div')({
-  padding: '6rem 1.6rem 1.6rem 1.6rem',
+  padding: '1.6rem 1.6rem 1.6rem 1.6rem',
 
   position: 'relative',
 
@@ -11,6 +11,8 @@ export const Container = styled('div')({
 });
 
 export const LogoContainer = styled('div')({
+  marginTop: '6rem',
+
   display: 'flex',
   justifyContent: 'center',
 

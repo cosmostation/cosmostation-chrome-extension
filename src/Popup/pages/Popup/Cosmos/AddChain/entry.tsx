@@ -6,6 +6,7 @@ import logoImg from '~/images/etc/logo.png';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
+import PopupHeader from '~/Popup/components/PopupHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -45,6 +46,7 @@ export default function Entry({ queue }: EntryProps) {
   const { message, messageId, origin } = queue;
   return (
     <Container>
+      <PopupHeader origin={origin} />
       <LogoContainer>
         <Image src={logoImg} />
       </LogoContainer>

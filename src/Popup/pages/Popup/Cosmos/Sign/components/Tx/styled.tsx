@@ -8,7 +8,7 @@ export const Container = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
   borderRadius: '0.8rem',
 
-  height: '41.2rem',
+  height: '38.5rem',
   overflow: 'auto',
 
   whiteSpace: 'pre-wrap',

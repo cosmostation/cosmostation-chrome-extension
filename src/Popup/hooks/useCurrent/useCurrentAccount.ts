@@ -6,7 +6,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { emitToWeb } from '~/Popup/utils/message';
-import type { Account } from '~/types/chromeStorage';
+import type { Account, AccountWithName } from '~/types/chromeStorage';
 
 import { useCurrentPassword } from './useCurrentPassword';
 
@@ -60,7 +60,7 @@ export function useCurrentAccount() {
     );
   };
 
-  const addAccount = async (accountInfo: Account & { name: string }) => {
+  const addAccount = async (accountInfo: AccountWithName) => {
     const { name, ...account } = accountInfo;
     await setChromeStorage('accounts', [...accounts, account]);
 
@@ -94,7 +94,8 @@ export function useCurrentAccount() {
   };
 
   return {
-    currentAccount: { ...currentAccount, name: currentAccountName, allowedOrigins: currentAccountAllowedOrigins },
+    currentAccount: { ...currentAccount, name: currentAccountName },
+    currentAccountAllowedOrigins,
     setCurrentAccount,
     addAllowedOrigin,
     removeAllowedOrigin,

@@ -43,5 +43,5 @@ export const TabsIndicator = styled('div')(({ theme }) => ({
 export const TabsContainer = styled('div')({ position: 'relative' });
 
 export const TabPanelContainer = styled('div')({
-  marginTop: '1.6rem',
+  marginTop: '1rem',
 });

@@ -34,13 +34,13 @@ type AccessRequestProps = {
 
 export default function AccessRequest({ children }: AccessRequestProps) {
   const { currentQueue, deQueue } = useCurrentQueue();
-  const { currentAccount, addAllowedOrigin } = useCurrentAccount();
+  const { currentAccount, addAllowedOrigin, currentAccountAllowedOrigins } = useCurrentAccount();
 
-  const { allowedOrigins, name } = currentAccount;
+  const { name } = currentAccount;
 
   const { t, language } = useTranslation();
 
-  if (!currentQueue?.channel && currentQueue?.origin && !allowedOrigins.includes(currentQueue?.origin)) {
+  if (!currentQueue?.channel && currentQueue?.origin && !currentAccountAllowedOrigins.includes(currentQueue?.origin)) {
     return (
       <BaseLayout>
         <Container>

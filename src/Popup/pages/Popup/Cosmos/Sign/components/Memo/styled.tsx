@@ -7,7 +7,7 @@ export const NoEditContainer = styled('div')(({ theme }) => ({
   border: `0.1rem solid ${theme.colors.base03}`,
   borderRadius: '0.8rem',
 
-  maxHeight: '7rem',
+  maxHeight: '6.4rem',
 
   overflow: 'auto',
 }));
