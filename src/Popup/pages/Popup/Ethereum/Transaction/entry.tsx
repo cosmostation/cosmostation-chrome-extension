@@ -426,7 +426,15 @@ export default function Entry({ queue }: EntryProps) {
                   disabled={isLoadingFee || !!errorMessage}
                   onClick={async () => {
                     try {
-                      const web3 = new Web3(currentEthereumNetwork.rpcURL);
+                      const provider = new Web3.providers.HttpProvider(currentEthereumNetwork.rpcURL, {
+                        headers: [
+                          {
+                            name: 'Cosmostation',
+                            value: `extension/${String(process.env.VERSION)}`,
+                          },
+                        ],
+                      });
+                      const web3 = new Web3(provider);
 
                       const account = web3.eth.accounts.privateKeyToAccount(keyPair!.privateKey.toString('hex'));
 

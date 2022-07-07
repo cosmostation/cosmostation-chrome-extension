@@ -85,7 +85,15 @@ export default function Ethereum({ chain }: EthereumProps) {
       };
     }
 
-    const web3 = new Web3(currentEthereumNetwork.rpcURL);
+    const provider = new Web3.providers.HttpProvider(currentEthereumNetwork.rpcURL, {
+      headers: [
+        {
+          name: 'Cosmostation',
+          value: `extension/${String(process.env.VERSION)}`,
+        },
+      ],
+    });
+    const web3 = new Web3(provider);
 
     const contract = new web3.eth.Contract(ERC20_ABI as AbiItem[], currentToken.address);
     const methods = contract.methods as ERC20ContractMethods;

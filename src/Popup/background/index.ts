@@ -490,7 +490,15 @@ function background() {
                   let gas: string | number = 0;
 
                   try {
-                    const web3 = new Web3(currentEthereumNetwork().rpcURL);
+                    const provider = new Web3.providers.HttpProvider(currentEthereumNetwork().rpcURL, {
+                      headers: [
+                        {
+                          name: 'Cosmostation',
+                          value: `extension/${String(process.env.VERSION)}`,
+                        },
+                      ],
+                    });
+                    const web3 = new Web3(provider);
 
                     const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY_FOR_TEST);
 

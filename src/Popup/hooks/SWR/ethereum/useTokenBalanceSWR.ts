@@ -30,7 +30,15 @@ export function useTokenBalanceSWR(token?: Omit<EthereumToken, 'id' | 'ethereumN
   const address = accounts.data?.find((account) => account.id === currentAccount.id)?.address[currentChain.id] || '';
 
   const fetcher = (params: FetcherParams) => {
-    const web3 = new Web3(params.rpcURL);
+    const provider = new Web3.providers.HttpProvider(params.rpcURL, {
+      headers: [
+        {
+          name: 'Cosmostation',
+          value: `extension/${String(process.env.VERSION)}`,
+        },
+      ],
+    });
+    const web3 = new Web3(provider);
 
     const contract = new web3.eth.Contract(ERC20_ABI as AbiItem[], params.tokenAddress);
     const methods = contract.methods as ERC20ContractMethods;
