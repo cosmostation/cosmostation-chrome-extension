@@ -1,5 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import cryptocomImg from '~/images/symbols/cryptocom.png';
+import cryptoOrgImg from '~/images/symbols/cryptoOrg.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const CRYPTO_ORG: CosmosChain = {
@@ -9,7 +9,7 @@ export const CRYPTO_ORG: CosmosChain = {
   chainId: 'crypto-org-chain-mainnet-1',
   chainName: 'Crypto.org',
   restURL: 'https://lcd-cryptocom.cosmostation.io',
-  imageURL: cryptocomImg,
+  imageURL: cryptoOrgImg,
   baseDenom: 'basecro',
   displayDenom: 'CRO',
   decimals: 8,
