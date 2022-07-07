@@ -72,6 +72,7 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Cosmostation: `extension/${String(process.env.VERSION)}`,
       },
       body: JSON.stringify({ method, params, jsonrpc: '2.0', id: rpcId }),
     });
