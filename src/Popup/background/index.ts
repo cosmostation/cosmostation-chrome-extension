@@ -477,7 +477,7 @@ function background() {
 
                     const address = getAddress(chain, keyPair?.publicKey);
 
-                    if (address.toLowerCase() !== validatedParams[0].from) {
+                    if (address.toLowerCase() !== toHex(validatedParams[0].from, { addPrefix: true }).toLowerCase()) {
                       throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
                     }
                   }

@@ -6,6 +6,7 @@ import logoImg from '~/images/etc/logo.png';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
+import PopupHeader from '~/Popup/components/PopupHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -19,6 +20,7 @@ import {
   BottomButtonContainer,
   BottomContainer,
   Container,
+  ContentsContainer,
   DescriptionContainer,
   LogoContainer,
   StyledDivider,
@@ -45,34 +47,37 @@ export default function Entry({ queue }: EntryProps) {
   const { message, messageId, origin } = queue;
   return (
     <Container>
-      <LogoContainer>
-        <Image src={logoImg} />
-      </LogoContainer>
-      <TitleContainer>
-        <Typography variant="h2">Chain add request</Typography>
-      </TitleContainer>
-      <StyledDivider />
+      <PopupHeader origin={origin} />
+      <ContentsContainer>
+        <LogoContainer>
+          <Image src={logoImg} />
+        </LogoContainer>
+        <TitleContainer>
+          <Typography variant="h2">Chain add request</Typography>
+        </TitleContainer>
+        <StyledDivider />
 
-      <DescriptionContainer>
-        {language === 'ko' ? (
-          <Typography variant="h4">
-            {origin} {t('pages.Popup.Cosmos.AddChain.entry.description1')}
-            <br />
-            {t('pages.Popup.Cosmos.AddChain.entry.description2')}
-            <br />
-            {t('pages.Popup.Cosmos.AddChain.entry.description3')} <AccentSpan>{message.params.chainName}</AccentSpan>{' '}
-            {t('pages.Popup.Cosmos.AddChain.entry.description4')}
-          </Typography>
-        ) : (
-          <Typography variant="h4">
-            {origin} {t('pages.Popup.Cosmos.AddChain.entry.description1')}
-            <br />
-            {t('pages.Popup.Cosmos.AddChain.entry.description2')} <AccentSpan>{message.params.chainName}</AccentSpan>
-            <br />
-            {t('pages.Popup.Cosmos.AddChain.entry.description3')}
-          </Typography>
-        )}
-      </DescriptionContainer>
+        <DescriptionContainer>
+          {language === 'ko' ? (
+            <Typography variant="h4">
+              {origin} {t('pages.Popup.Cosmos.AddChain.entry.description1')}
+              <br />
+              {t('pages.Popup.Cosmos.AddChain.entry.description2')}
+              <br />
+              {t('pages.Popup.Cosmos.AddChain.entry.description3')} <AccentSpan>{message.params.chainName}</AccentSpan>{' '}
+              {t('pages.Popup.Cosmos.AddChain.entry.description4')}
+            </Typography>
+          ) : (
+            <Typography variant="h4">
+              {origin} {t('pages.Popup.Cosmos.AddChain.entry.description1')}
+              <br />
+              {t('pages.Popup.Cosmos.AddChain.entry.description2')} <AccentSpan>{message.params.chainName}</AccentSpan>
+              <br />
+              {t('pages.Popup.Cosmos.AddChain.entry.description3')}
+            </Typography>
+          )}
+        </DescriptionContainer>
+      </ContentsContainer>
 
       <BottomContainer>
         <WarningContainer>

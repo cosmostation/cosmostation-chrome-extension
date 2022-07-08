@@ -55,9 +55,7 @@ function ConnectionButton() {
 
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
-  const { currentAccount } = useCurrentAccount();
-
-  const { allowedOrigins } = currentAccount;
+  const { currentAccountAllowedOrigins } = useCurrentAccount();
 
   const origin = data?.origin || '';
 
@@ -65,7 +63,7 @@ function ConnectionButton() {
     return null;
   }
 
-  const isConnected = allowedOrigins.includes(origin);
+  const isConnected = currentAccountAllowedOrigins.includes(origin);
 
   return (
     <>

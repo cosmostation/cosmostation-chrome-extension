@@ -32,6 +32,8 @@ export type PrivateKeyAccount = {
 
 export type Account = AccountCommon & (MnemonicAccount | PrivateKeyAccount);
 
+export type AccountWithName = Account & { name: string };
+
 export type Queue<T = RequestMessage> = {
   tabId?: number;
   windowId?: number;

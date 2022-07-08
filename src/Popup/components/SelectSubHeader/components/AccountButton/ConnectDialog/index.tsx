@@ -14,9 +14,7 @@ export default function ConnectDialog({ onClose, ...remainder }: ConnectDialogPr
   const { data } = useCurrentTab(true);
   const { t } = useTranslation();
 
-  const { currentAccount, addAllowedOrigin, removeAllowedOrigin } = useCurrentAccount();
-
-  const { allowedOrigins } = currentAccount;
+  const { addAllowedOrigin, removeAllowedOrigin, currentAccountAllowedOrigins } = useCurrentAccount();
 
   const origin = data?.origin || '';
 
@@ -24,7 +22,7 @@ export default function ConnectDialog({ onClose, ...remainder }: ConnectDialogPr
     return null;
   }
 
-  const isConnected = allowedOrigins.includes(origin);
+  const isConnected = currentAccountAllowedOrigins.includes(origin);
 
   const actionName = isConnected
     ? t('pages.Wallet.components.Header.AccountButton.ConnectDialog.index.disconnect')

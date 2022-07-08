@@ -8,6 +8,7 @@ import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
+import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -16,7 +17,17 @@ import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
 import type { RequestMessage } from '~/types/message';
 
-import { AccentSpan, BottomContainer, ChainImageContainer, Container, DescriptionContainer, LogoContainer, StyledDivider, TitleContainer } from './styled';
+import {
+  AccentSpan,
+  BottomContainer,
+  ChainImageContainer,
+  Container,
+  ContentsContainer,
+  DescriptionContainer,
+  LogoContainer,
+  StyledDivider,
+  TitleContainer,
+} from './styled';
 
 type AccessRequestProps = {
   children: JSX.Element;
@@ -56,26 +67,29 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
     return (
       <BaseLayout>
         <Container>
-          <LogoContainer>
-            <Image src={logoImg} />
-          </LogoContainer>
-          <TitleContainer>
-            <Typography variant="h2">Activate chain request</Typography>
-          </TitleContainer>
-          <StyledDivider />
+          <PopupHeader origin={currentQueue.origin} />
+          <ContentsContainer>
+            <LogoContainer>
+              <Image src={logoImg} />
+            </LogoContainer>
+            <TitleContainer>
+              <Typography variant="h2">Activate chain request</Typography>
+            </TitleContainer>
+            <StyledDivider />
 
-          <ChainImageContainer>
-            <Image src={chain.imageURL} />
-          </ChainImageContainer>
+            <ChainImageContainer>
+              <Image src={chain.imageURL} />
+            </ChainImageContainer>
 
-          <DescriptionContainer>
-            <Typography variant="h4">
-              {t('components.ActivateChainRequest.index.description1')}
-              <br />
-              {t('components.ActivateChainRequest.index.description2')} <AccentSpan>{chain.chainName}</AccentSpan>{' '}
-              {t('components.ActivateChainRequest.index.description3')}
-            </Typography>
-          </DescriptionContainer>
+            <DescriptionContainer>
+              <Typography variant="h4">
+                {t('components.ActivateChainRequest.index.description1')}
+                <br />
+                {t('components.ActivateChainRequest.index.description2')} <AccentSpan>{chain.chainName}</AccentSpan>{' '}
+                {t('components.ActivateChainRequest.index.description3')}
+              </Typography>
+            </DescriptionContainer>
+          </ContentsContainer>
 
           <BottomContainer>
             <OutlineButton

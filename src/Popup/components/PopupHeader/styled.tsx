@@ -10,12 +10,14 @@ export const Container = styled('div')({
 });
 
 export const ChainNameContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
   color: theme.colors.text01,
 }));
 
 export const OriginContainer = styled('div')(({ theme }) => ({
-  marginTop: '0.4rem',
-
   padding: '0.4rem 1rem',
 
   color: theme.colors.text02,
@@ -23,6 +25,16 @@ export const OriginContainer = styled('div')(({ theme }) => ({
   border: `0.1rem solid ${theme.colors.base04}`,
 
   borderRadius: '5rem',
+
+  maxWidth: '100%',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const AccountContainer = styled('div')({
@@ -68,9 +80,31 @@ export const AccountIcon = styled('div')<AccountIconProps>(({ theme, ...props })
 export const AccountText = styled('div')(({ theme }) => ({
   marginLeft: '0.4rem',
   color: theme.colors.text01,
+
+  maxWidth: '25rem',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const StyledDivider = styled(Divider)({
   marginBottom: '0.7rem',
   width: '100%',
 });
+
+export const ChainImageContainer = styled('div')({
+  width: '1.8rem',
+  height: '1.8rem',
+
+  '& > img': {
+    width: '1.8rem',
+    height: '1.8rem',
+  },
+});
+
+export const Div = styled('div')({});

@@ -8,7 +8,7 @@ export const StyledContainer = styled('div')(({ theme }) => ({
   backgroundColor: theme.colors.base02,
   borderRadius: '0.8rem',
 
-  height: '18.7rem',
+  height: '15.7rem',
   overflow: 'auto',
 }));
 
