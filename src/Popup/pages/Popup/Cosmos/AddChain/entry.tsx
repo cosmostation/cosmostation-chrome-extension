@@ -20,6 +20,7 @@ import {
   BottomButtonContainer,
   BottomContainer,
   Container,
+  ContentsContainer,
   DescriptionContainer,
   LogoContainer,
   StyledDivider,
@@ -47,34 +48,36 @@ export default function Entry({ queue }: EntryProps) {
   return (
     <Container>
       <PopupHeader origin={origin} />
-      <LogoContainer>
-        <Image src={logoImg} />
-      </LogoContainer>
-      <TitleContainer>
-        <Typography variant="h2">Chain add request</Typography>
-      </TitleContainer>
-      <StyledDivider />
+      <ContentsContainer>
+        <LogoContainer>
+          <Image src={logoImg} />
+        </LogoContainer>
+        <TitleContainer>
+          <Typography variant="h2">Chain add request</Typography>
+        </TitleContainer>
+        <StyledDivider />
 
-      <DescriptionContainer>
-        {language === 'ko' ? (
-          <Typography variant="h4">
-            {origin} {t('pages.Popup.Cosmos.AddChain.entry.description1')}
-            <br />
-            {t('pages.Popup.Cosmos.AddChain.entry.description2')}
-            <br />
-            {t('pages.Popup.Cosmos.AddChain.entry.description3')} <AccentSpan>{message.params.chainName}</AccentSpan>{' '}
-            {t('pages.Popup.Cosmos.AddChain.entry.description4')}
-          </Typography>
-        ) : (
-          <Typography variant="h4">
-            {origin} {t('pages.Popup.Cosmos.AddChain.entry.description1')}
-            <br />
-            {t('pages.Popup.Cosmos.AddChain.entry.description2')} <AccentSpan>{message.params.chainName}</AccentSpan>
-            <br />
-            {t('pages.Popup.Cosmos.AddChain.entry.description3')}
-          </Typography>
-        )}
-      </DescriptionContainer>
+        <DescriptionContainer>
+          {language === 'ko' ? (
+            <Typography variant="h4">
+              {origin} {t('pages.Popup.Cosmos.AddChain.entry.description1')}
+              <br />
+              {t('pages.Popup.Cosmos.AddChain.entry.description2')}
+              <br />
+              {t('pages.Popup.Cosmos.AddChain.entry.description3')} <AccentSpan>{message.params.chainName}</AccentSpan>{' '}
+              {t('pages.Popup.Cosmos.AddChain.entry.description4')}
+            </Typography>
+          ) : (
+            <Typography variant="h4">
+              {origin} {t('pages.Popup.Cosmos.AddChain.entry.description1')}
+              <br />
+              {t('pages.Popup.Cosmos.AddChain.entry.description2')} <AccentSpan>{message.params.chainName}</AccentSpan>
+              <br />
+              {t('pages.Popup.Cosmos.AddChain.entry.description3')}
+            </Typography>
+          )}
+        </DescriptionContainer>
+      </ContentsContainer>
 
       <BottomContainer>
         <WarningContainer>

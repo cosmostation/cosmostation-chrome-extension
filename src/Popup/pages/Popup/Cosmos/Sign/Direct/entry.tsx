@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
@@ -8,12 +7,13 @@ import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
 import Fee from '~/Popup/components/Fee';
+import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { fix } from '~/Popup/utils/big';
-import { getKeyPair } from '~/Popup/utils/common';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { decodeProtobufMessage } from '~/Popup/utils/proto';
@@ -24,7 +24,7 @@ import type { CosSignDirect, CosSignDirectResponse } from '~/types/cosmos/messag
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 import TxMessage from './components/TxMessage';
-import { BottomButtonContainer, BottomContainer, Container, FeeContainer, MemoContainer, PaginationContainer, TabContainer, TitleContainer } from './styled';
+import { BottomButtonContainer, BottomContainer, Container, ContentsContainer, FeeContainer, MemoContainer, PaginationContainer, TabContainer } from './styled';
 import Memo from '../components/Memo';
 import Pagination from '../components/Pagination';
 import Tx from '../components/Tx';
@@ -46,7 +46,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { message, messageId, origin } = queue;
 
   const {
-    params: { doc, chainName, isEditFee, isEditMemo, gasRate },
+    params: { doc, isEditFee, isEditMemo, gasRate },
   } = message;
 
   const { auth_info_bytes, body_bytes } = doc;
@@ -55,6 +55,9 @@ export default function Entry({ queue, chain }: EntryProps) {
   const decodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.decode(auth_info_bytes);
 
   const { fee } = decodedAuthInfoBytes;
+
+  const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+  const address = getAddress(chain, keyPair?.publicKey);
 
   const inputGas = fee?.gas_limit ? String(fee.gas_limit) : COSMOS_DEFAULT_GAS;
   const inputFee = fee?.amount?.find((item) => item.denom === chain.baseDenom)?.amount || '0';
@@ -92,43 +95,47 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   return (
     <Container>
-      <TitleContainer>
-        <Typography variant="h3">{chainName}</Typography>
-      </TitleContainer>
-      <TabContainer>
-        <Tabs value={value} onChange={handleChange} variant="fullWidth">
-          <Tab label={t('pages.Popup.Cosmos.Sign.Direct.entry.detailTab')} />
-          <Tab label={t('pages.Popup.Cosmos.Sign.Direct.entry.dataTab')} />
-        </Tabs>
-      </TabContainer>
-      <TabPanel value={value} index={0}>
-        <TxMessage msg={msgs[txMsgPage - 1]} chain={chain} />
-        {msgs.length > 1 && (
-          <PaginationContainer>
-            <Pagination currentPage={txMsgPage} totalPage={msgs.length} onChange={(page) => setTxMsgPage(page)} />
-          </PaginationContainer>
-        )}
-        <MemoContainer>
-          <Memo memo={memo} onChange={(m) => setMemo(m)} isEdit={isEditMemo} />
-        </MemoContainer>
+      <PopupHeader
+        account={{ id: currentAccount.id, name: currentAccount.name, address }}
+        chain={{ name: chain.chainName, imageURL: chain.imageURL }}
+        origin={origin}
+      />
+      <ContentsContainer>
+        <TabContainer>
+          <Tabs value={value} onChange={handleChange} variant="fullWidth">
+            <Tab label={t('pages.Popup.Cosmos.Sign.Direct.entry.detailTab')} />
+            <Tab label={t('pages.Popup.Cosmos.Sign.Direct.entry.dataTab')} />
+          </Tabs>
+        </TabContainer>
+        <TabPanel value={value} index={0}>
+          <TxMessage msg={msgs[txMsgPage - 1]} chain={chain} />
+          {msgs.length > 1 && (
+            <PaginationContainer>
+              <Pagination currentPage={txMsgPage} totalPage={msgs.length} onChange={(page) => setTxMsgPage(page)} />
+            </PaginationContainer>
+          )}
+          <MemoContainer>
+            <Memo memo={memo} onChange={(m) => setMemo(m)} isEdit={isEditMemo} />
+          </MemoContainer>
 
-        {fee && (
-          <FeeContainer>
-            <Fee
-              chain={chain}
-              customGasRate={gasRate}
-              baseFee={baseFee}
-              gas={gas}
-              onChangeFee={(f) => setBaseFee(f)}
-              onChangeGas={(g) => setGas(g)}
-              isEdit={isEditFee}
-            />
-          </FeeContainer>
-        )}
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <Tx tx={tx} />
-      </TabPanel>
+          {fee && (
+            <FeeContainer>
+              <Fee
+                chain={chain}
+                customGasRate={gasRate}
+                baseFee={baseFee}
+                gas={gas}
+                onChangeFee={(f) => setBaseFee(f)}
+                onChangeGas={(g) => setGas(g)}
+                isEdit={isEditFee}
+              />
+            </FeeContainer>
+          )}
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <Tx tx={tx} />
+        </TabPanel>
+      </ContentsContainer>
       <BottomContainer>
         <BottomButtonContainer>
           <OutlineButton
@@ -152,8 +159,6 @@ export default function Entry({ queue, chain }: EntryProps) {
           </OutlineButton>
           <Button
             onClick={async () => {
-              const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-
               const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
 
               const signature = signDirect(signedDoc, keyPair!.privateKey, chain);

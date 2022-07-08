@@ -6,6 +6,7 @@ import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
+import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -18,6 +19,7 @@ import {
   CheckItemContainer,
   CheckListContainer,
   Container,
+  ContentsContainer,
   Description2Container,
   DescriptionContainer,
   LogoContainer,
@@ -36,7 +38,7 @@ export default function AccessRequest({ children }: AccessRequestProps) {
   const { currentQueue, deQueue } = useCurrentQueue();
   const { currentAccount, addAllowedOrigin, currentAccountAllowedOrigins } = useCurrentAccount();
 
-  const { name } = currentAccount;
+  const { name, id } = currentAccount;
 
   const { t, language } = useTranslation();
 
@@ -44,61 +46,64 @@ export default function AccessRequest({ children }: AccessRequestProps) {
     return (
       <BaseLayout>
         <Container>
-          <LogoContainer>
-            <Image src={logoImg} />
-          </LogoContainer>
-          <TitleContainer>
-            <Typography variant="h2">Access request</Typography>
-          </TitleContainer>
-          <DescriptionContainer>
-            {language === 'ko' ? (
-              <Typography variant="h4">
-                {currentQueue.origin} {t('components.AccessRequest.index.upDescription1')}
-                <br />
-                <AccentNameContainer>{name}</AccentNameContainer>
-                {t('components.AccessRequest.index.upDescription2')}
-              </Typography>
-            ) : (
-              <Typography variant="h4">
-                {currentQueue.origin} {t('components.AccessRequest.index.upDescription1')}
-                <br />
-                {t('components.AccessRequest.index.upDescription2')}
-                <br />
-                <AccentNameContainer>{name}</AccentNameContainer>
-                {t('components.AccessRequest.index.upDescription3')}
-              </Typography>
-            )}
-          </DescriptionContainer>
-          <StyledDivider />
-          <Description2Container>
-            <Typography variant="h5">{t('components.AccessRequest.index.downDescription')}</Typography>
-          </Description2Container>
-          <CheckListContainer>
-            <CheckItemContainer>
-              <CheckContainer>
-                <Check24Icon />
-              </CheckContainer>
-              <TextContainer>
-                <Typography variant="h5">{t('components.AccessRequest.index.downItem1')}</Typography>
-              </TextContainer>
-            </CheckItemContainer>
-            <CheckItemContainer>
-              <CheckContainer>
-                <Check24Icon />
-              </CheckContainer>
-              <TextContainer>
-                <Typography variant="h5">{t('components.AccessRequest.index.downItem2')}</Typography>
-              </TextContainer>
-            </CheckItemContainer>
-            <CheckItemContainer>
-              <CheckContainer>
-                <Check24Icon />
-              </CheckContainer>
-              <TextContainer>
-                <Typography variant="h5">{t('components.AccessRequest.index.downItem3')}</Typography>
-              </TextContainer>
-            </CheckItemContainer>
-          </CheckListContainer>
+          <PopupHeader account={{ id, name }} origin={currentQueue?.origin} />
+          <ContentsContainer>
+            <LogoContainer>
+              <Image src={logoImg} />
+            </LogoContainer>
+            <TitleContainer>
+              <Typography variant="h2">Access request</Typography>
+            </TitleContainer>
+            <DescriptionContainer>
+              {language === 'ko' ? (
+                <Typography variant="h4">
+                  {currentQueue.origin} {t('components.AccessRequest.index.upDescription1')}
+                  <br />
+                  <AccentNameContainer>{name}</AccentNameContainer>
+                  {t('components.AccessRequest.index.upDescription2')}
+                </Typography>
+              ) : (
+                <Typography variant="h4">
+                  {currentQueue.origin} {t('components.AccessRequest.index.upDescription1')}
+                  <br />
+                  {t('components.AccessRequest.index.upDescription2')}
+                  <br />
+                  <AccentNameContainer>{name}</AccentNameContainer>
+                  {t('components.AccessRequest.index.upDescription3')}
+                </Typography>
+              )}
+            </DescriptionContainer>
+            <StyledDivider />
+            <Description2Container>
+              <Typography variant="h5">{t('components.AccessRequest.index.downDescription')}</Typography>
+            </Description2Container>
+            <CheckListContainer>
+              <CheckItemContainer>
+                <CheckContainer>
+                  <Check24Icon />
+                </CheckContainer>
+                <TextContainer>
+                  <Typography variant="h5">{t('components.AccessRequest.index.downItem1')}</Typography>
+                </TextContainer>
+              </CheckItemContainer>
+              <CheckItemContainer>
+                <CheckContainer>
+                  <Check24Icon />
+                </CheckContainer>
+                <TextContainer>
+                  <Typography variant="h5">{t('components.AccessRequest.index.downItem2')}</Typography>
+                </TextContainer>
+              </CheckItemContainer>
+              <CheckItemContainer>
+                <CheckContainer>
+                  <Check24Icon />
+                </CheckContainer>
+                <TextContainer>
+                  <Typography variant="h5">{t('components.AccessRequest.index.downItem3')}</Typography>
+                </TextContainer>
+              </CheckItemContainer>
+            </CheckListContainer>
+          </ContentsContainer>
           <BottomContainer>
             <OutlineButton
               onClick={async () => {

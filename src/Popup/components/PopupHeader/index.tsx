@@ -37,7 +37,7 @@ export default function Header({ account, chain, origin, className }: HeaderProp
           </AccountText>
         </AccountContainer>
       )}
-      {account && chain && <StyledDivider />}
+      {account && (chain || origin) && <StyledDivider />}
       {chain && (
         <ChainNameContainer>
           <ChainImageContainer>
