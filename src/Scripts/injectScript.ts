@@ -143,6 +143,21 @@ import type {
               messageId,
               message: newMessage,
             });
+          } else if (message.method === 'cos_sendTransaction') {
+            const { params } = message;
+
+            const txBytes = params?.txBytes && typeof params.txBytes === 'object' ? Buffer.from(params.txBytes).toString('base64') : params.txBytes;
+
+            const newParams = { ...params, txBytes };
+            const newMessage = { ...message, params: newParams };
+
+            window.postMessage({
+              isCosmostation: true,
+              line: LINE_TYPE.COSMOS,
+              type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+              messageId,
+              message: newMessage,
+            });
           } else {
             window.postMessage({
               isCosmostation: true,

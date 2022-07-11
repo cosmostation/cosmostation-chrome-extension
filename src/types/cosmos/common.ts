@@ -13,3 +13,23 @@ export type Uptime = {
   missed_blocks: number;
   over_blocks: number;
 };
+
+export type SendTransaction = {
+  code: number;
+  txhash: string;
+  raw_log?: unknown;
+  codespace?: unknown;
+  tx?: unknown;
+  log?: unknown;
+  info?: unknown;
+  height?: unknown;
+  gas_wanted?: unknown;
+  gas_used?: unknown;
+  events?: unknown;
+  data?: unknown;
+  timestamp?: unknown;
+};
+
+export type SendTransactionPayload = {
+  tx_response: SendTransaction;
+};
