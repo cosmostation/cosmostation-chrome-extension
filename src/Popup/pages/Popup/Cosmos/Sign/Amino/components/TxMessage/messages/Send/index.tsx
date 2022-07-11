@@ -94,8 +94,8 @@ export default function Send({ msg, chain }: SendProps) {
               return displayDenom;
             }
 
-            if (assetCoinInfo?.origin_symbol) {
-              return assetCoinInfo?.origin_symbol;
+            if (assetCoinInfo?.dp_denom) {
+              return assetCoinInfo.dp_denom;
             }
 
             if (ibcCoinInfo?.display_denom) {
