@@ -12,7 +12,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { fix } from '~/Popup/utils/big';
+import { fix, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
@@ -62,8 +62,18 @@ export default function Entry({ queue, chain }: EntryProps) {
   const inputGas = fee?.gas_limit ? String(fee.gas_limit) : COSMOS_DEFAULT_GAS;
   const inputFee = fee?.amount?.find((item) => item.denom === chain.baseDenom)?.amount || '0';
 
+  const baseGasRate = gasRate || chain.gasRate;
+
+  const tinyFee = times(inputGas, baseGasRate.tiny);
+  const lowFee = times(inputGas, baseGasRate.low);
+  const averageFee = times(inputGas, baseGasRate.average);
+
+  const isExistZeroFee = tinyFee === '0' || lowFee === '0' || averageFee === '0';
+
+  const initBaseFee = isEditFee && !isExistZeroFee && inputFee === '0' ? lowFee : inputFee;
+
   const [gas, setGas] = useState(inputGas);
-  const [baseFee, setBaseFee] = useState(inputFee);
+  const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
 
   const fixedBaseFee = useMemo(() => fix(baseFee, 0, 0), [baseFee]);
