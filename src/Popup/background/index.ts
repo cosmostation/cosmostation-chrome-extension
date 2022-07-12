@@ -23,6 +23,7 @@ import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CosmosChain } from '~/types/chain';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
+import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { CosAccountResponse, CosAddChainParams, CosRequestAccountResponse, CosSignAminoParams, CosSignDirectParams } from '~/types/cosmos/message';
 import type {
   EthcAddNetworkParams,
@@ -45,6 +46,10 @@ import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/ty
 import type { ThemeType } from '~/types/theme';
 
 import {
+  cosAddChainParamsSchema,
+  cosSendTransactionParamsSchema,
+  cosSignAminoParamsSchema,
+  cosSignDirectParamsSchema,
   ethcAddNetworkParamsSchema,
   ethcAddTokensParamsSchema,
   ethcSwitchNetworkParamsSchema,
@@ -52,13 +57,11 @@ import {
   ethSignTransactionParamsSchema,
   ethSignTypedDataParamsSchema,
   personalSignParamsSchema,
-  tenAddChainParamsSchema,
-  tenSignAminoParamsSchema,
-  tenSignDirectParamsSchema,
   walletAddEthereumChainParamsSchema,
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,
 } from './joiSchema';
+import { post } from '../utils/fetch';
 
 function background() {
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, _, sendResponse) => {
@@ -145,7 +148,7 @@ function background() {
                 const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
                 const unofficialCosmosLowercaseChainIds = cosmosAdditionalChains.map((item) => item.chainId.toLowerCase());
 
-                const schema = tenAddChainParamsSchema(cosmosLowercaseChainNames, officialCosmosLowercaseChainIds, unofficialCosmosLowercaseChainIds);
+                const schema = cosAddChainParamsSchema(cosmosLowercaseChainNames, officialCosmosLowercaseChainIds, unofficialCosmosLowercaseChainIds);
 
                 try {
                   const validatedParams = (await schema.validateAsync(params)) as CosAddChainParams;
@@ -185,7 +188,7 @@ function background() {
 
                 const chain = getChain(chainName);
 
-                const schema = tenSignAminoParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
+                const schema = cosSignAminoParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
 
                 try {
                   const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignAminoParams;
@@ -213,7 +216,7 @@ function background() {
 
                 const chain = getChain(chainName);
 
-                const schema = tenSignDirectParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
+                const schema = cosSignDirectParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
 
                 try {
                   const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignDirectParams;
@@ -287,6 +290,57 @@ function background() {
                   }
 
                   throw new CosmosRPCError(RPC_ERROR.INVALID_INPUT, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_INPUT]);
+                }
+              }
+
+              if (method === 'cos_sendTransaction') {
+                const { params } = message;
+
+                const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
+
+                const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
+
+                if (!allChainLowercaseNames.includes(chainName)) {
+                  throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+                }
+
+                const chain = getChain(chainName)!;
+
+                const schema = cosSendTransactionParamsSchema(allChainLowercaseNames);
+
+                try {
+                  await schema.validateAsync({ ...params, chainName });
+                } catch (err) {
+                  throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+                }
+
+                try {
+                  const response = await post<SendTransactionPayload>(`${chain.restURL}/cosmos/tx/v1beta1/txs`, {
+                    tx_bytes: params.txBytes,
+                    mode: params.mode,
+                  });
+
+                  responseToWeb({
+                    response: {
+                      result: response,
+                    },
+                    message,
+                    messageId,
+                    origin,
+                  });
+                } catch (e) {
+                  responseToWeb({
+                    response: {
+                      error: {
+                        code: RPC_ERROR.INTERNAL,
+                        message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                        data: e,
+                      },
+                    },
+                    message,
+                    messageId,
+                    origin,
+                  });
                 }
               }
             } else {

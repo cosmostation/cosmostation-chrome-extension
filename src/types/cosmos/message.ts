@@ -23,6 +23,18 @@ export type CosAccount = {
 
 export type CosAccountResponse = { publicKey: Uint8Array; address: string; name: string };
 
+export type CosSendTransactionParams = {
+  chainName: string;
+  txBytes: string;
+  mode: number;
+};
+
+export type CosSendTransaction = {
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__SEND_TRANSACTION;
+  params: CosSendTransactionParams;
+  id?: number | string;
+};
+
 // popup
 
 export type CosRequestAccount = {

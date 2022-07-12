@@ -5,7 +5,7 @@ import { ethereumAddressRegex } from '~/Popup/utils/regex';
 import type { GasRate } from '~/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Amount } from '~/types/cosmos/common';
-import type { CosAddChainParams, CosSignAminoParams, CosSignDirectParams } from '~/types/cosmos/message';
+import type { CosAddChain, CosSendTransaction, CosSignAmino, CosSignDirect } from '~/types/cosmos/message';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type {
   CustomChain,
@@ -14,7 +14,7 @@ import type {
   EthereumTxCommon,
   EthSignTransaction,
   WalletAddEthereumChain,
-  WalletSwitchEthereumChainParam1,
+  WalletSwitchEthereumChain,
   WalletWatchAsset,
 } from '~/types/ethereum/message';
 
@@ -24,10 +24,10 @@ const numberRegex = /^([0-9]+|[0-9]+(\.[0-9]+))$/;
 
 const cosmosType = Object.values(COSMOS_TYPE);
 
-export const tenAddChainParamsSchema = (chainNames: string[], officialChainIds: string[], unofficialChainIds: string[]) => {
+export const cosAddChainParamsSchema = (chainNames: string[], officialChainIds: string[], unofficialChainIds: string[]) => {
   const invalidChainNames = [...chainNames, ...officialChainIds, ...unofficialChainIds];
 
-  return Joi.object<CosAddChainParams>({
+  return Joi.object<CosAddChain['params']>({
     type: Joi.string()
       .valid(...cosmosType)
       .default(''),
@@ -68,10 +68,10 @@ export const tenAddChainParamsSchema = (chainNames: string[], officialChainIds: 
     .required();
 };
 
-export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) => {
+export const cosSignAminoParamsSchema = (chainNames: string[], chainId: string) => {
   const chainIdRegex = getChainIdRegex(chainId);
 
-  return Joi.object<CosSignAminoParams>({
+  return Joi.object<CosSignAmino['params']>({
     chainName: Joi.string()
       .lowercase()
       .valid(...chainNames)
@@ -106,10 +106,10 @@ export const tenSignAminoParamsSchema = (chainNames: string[], chainId: string) 
     .required();
 };
 
-export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string) => {
+export const cosSignDirectParamsSchema = (chainNames: string[], chainId: string) => {
   const chainIdRegex = getChainIdRegex(chainId);
 
-  return Joi.object<CosSignDirectParams>({
+  return Joi.object<CosSignDirect['params']>({
     chainName: Joi.string()
       .lowercase()
       .valid(...chainNames)
@@ -131,6 +131,18 @@ export const tenSignDirectParamsSchema = (chainNames: string[], chainId: string)
     .label('params')
     .required();
 };
+
+export const cosSendTransactionParamsSchema = (chainNames: string[]) =>
+  Joi.object<CosSendTransaction['params']>({
+    chainName: Joi.string()
+      .lowercase()
+      .valid(...chainNames)
+      .required(),
+    txBytes: Joi.string().base64().required(),
+    mode: Joi.number().required(),
+  })
+    .label('params')
+    .required();
 
 export const ethcAddNetworkParamsSchema = () =>
   Joi.array()
@@ -188,7 +200,7 @@ export const walletSwitchEthereumChainParamsSchema = (chainIds: string[]) =>
     .label('params')
     .required()
     .items(
-      Joi.object<WalletSwitchEthereumChainParam1>({
+      Joi.object<WalletSwitchEthereumChain['params'][0]>({
         chainId: Joi.string()
           .valid(...chainIds)
           .required(),

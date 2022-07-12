@@ -18,6 +18,7 @@ export const COSMOS_NO_POPUP_METHOD_TYPE = {
 
   COS__SUPPORTED_CHAIN_NAMES: 'cos_supportedChainNames',
   COS__ACCOUNT: 'cos_account',
+  COS__SEND_TRANSACTION: 'cos_sendTransaction',
 } as const;
 
 export const COSMOS_METHOD_TYPE = {
