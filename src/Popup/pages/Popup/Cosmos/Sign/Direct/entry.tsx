@@ -45,10 +45,13 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { t } = useTranslation();
 
-  const feeCoins: FeeCoin[] = [
-    { baseDenom: chain.baseDenom, displayDenom: chain.displayDenom, decimals: chain.decimals },
-    ...assets.data.map((asset) => ({ baseDenom: asset.base_denom, decimals: asset.decimal, displayDenom: asset.dp_denom })),
-  ];
+  const feeCoins: FeeCoin[] = useMemo(
+    () => [
+      { baseDenom: chain.baseDenom, displayDenom: chain.displayDenom, decimals: chain.decimals },
+      ...assets.data.map((asset) => ({ baseDenom: asset.denom, decimals: asset.decimal, displayDenom: asset.dp_denom })),
+    ],
+    [assets, chain],
+  );
 
   const { message, messageId, origin } = queue;
 
@@ -68,13 +71,28 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputGas = fee?.gas_limit ? String(fee.gas_limit) : COSMOS_DEFAULT_GAS;
 
-  const inputFee = fee?.amount?.find((item) => feeCoins.map((feeCoin) => feeCoin.baseDenom).includes(item?.denom || '')) || {
-    denom: chain.baseDenom,
-    amount: '0',
-  };
+  const inputFee = useMemo(() => {
+    const foundFee = fee?.amount?.find((item) => item?.denom && item?.amount && feeCoins.map((feeCoin) => feeCoin.baseDenom).includes(item?.denom || ''));
+
+    if (foundFee) return foundFee;
+
+    if (fee?.amount?.[0].amount && fee?.amount?.[0].denom) {
+      return fee.amount[0];
+    }
+
+    return {
+      denom: chain.baseDenom,
+      amount: '0',
+    };
+  }, [chain.baseDenom, fee, feeCoins]);
+
   const inputFeeAmount = inputFee.amount || '0';
 
-  const selectedFeeCoin = feeCoins.find((feeCoin) => feeCoin.baseDenom === inputFee.denom)!;
+  const selectedFeeCoin = feeCoins.find((feeCoin) => feeCoin.baseDenom === inputFee.denom) || {
+    decimals: 0,
+    baseDenom: inputFee.denom!,
+    displayDenom: 'UNKNOWN',
+  };
 
   const baseGasRate = gasRate || chain.gasRate;
 
