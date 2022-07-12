@@ -34,13 +34,13 @@ type IbcCoinItemProps = {
 
 export default function IbcCoinItem({ disabled, imageURL, amount, decimals = 0, baseDenom, displayDenom, channel, onClick }: IbcCoinItemProps) {
   const { chromeStorage } = useChromeStorage();
-  const { data } = useCoinGeckoPriceSWR(true);
+  const coinGeckoPrice = useCoinGeckoPriceSWR(true);
 
   const marketPrice = useMarketPriceSWR(true);
 
   const chainPrice = marketPrice.data?.find((price) => price.denom === baseDenom)?.prices?.find((price) => price.currency === 'usd')?.current_price || 0;
 
-  const tetherPrice = data?.tether?.[chromeStorage.currency] || 0;
+  const tetherPrice = coinGeckoPrice.data?.tether?.[chromeStorage.currency] || 0;
 
   const displayAmount = toDisplayDenomAmount(amount, decimals);
 

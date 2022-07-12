@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios';
+import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { CRESCENT } from '~/constants/chain/cosmos/crescent';
@@ -9,7 +10,7 @@ import { KAVA } from '~/constants/chain/cosmos/kava';
 import { SIF } from '~/constants/chain/cosmos/sif';
 import { get } from '~/Popup/utils/axios';
 import type { CosmosChain } from '~/types/chain';
-import type { AssetPayload } from '~/types/cosmos/asset';
+import type { AssetV2Payload } from '~/types/cosmos/asset';
 
 const nameMap = {
   [GRAVITY_BRIDGE.id]: 'gravity-bridge',
@@ -20,19 +21,25 @@ const nameMap = {
   [EMONEY.id]: 'emoney',
 };
 
-export function useAssetsSWR(chain: CosmosChain, suspense?: boolean) {
-  const mappingName = nameMap[chain.id];
+export function useAssetsSWR(chain: CosmosChain, config?: SWRConfiguration) {
+  const mappingName = nameMap[chain.chainName] || chain.chainName.toLowerCase();
 
-  const requestURL = `https://api.mintscan.io/v1/assets/${mappingName}`;
+  const requestURL = `https://api.mintscan.io/v2/assets/${mappingName}`;
 
-  const fetcher = (fetchUrl: string) => get<AssetPayload>(fetchUrl);
+  const fetcher = async (fetchUrl: string) => {
+    try {
+      return await get<AssetV2Payload>(fetchUrl);
+    } catch (e: unknown) {
+      return null;
+    }
+  };
 
-  const { data, error, mutate } = useSWR<AssetPayload, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<AssetV2Payload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    suspense,
     isPaused: () => !mappingName,
+    ...config,
   });
 
   const returnData = data?.assets || [];

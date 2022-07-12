@@ -73,7 +73,7 @@ export default function Send({ msg, chain }: SendProps) {
           const assetCoinInfo = assets.data?.find((coin) => isEqualsIgnoringCase(coin.denom, item.denom));
           const ibcCoinInfo = ibcCoin.data?.ibc_tokens?.find((token) => token.hash === item.denom.replace('ibc/', ''));
 
-          const itemDisplayAmount = (function getDisplayAmount() {
+          const itemDisplayAmount = (() => {
             if (itemBaseDenom === baseDenom) {
               return toDisplayDenomAmount(itemBaseAmount, decimals);
             }
@@ -89,13 +89,13 @@ export default function Send({ msg, chain }: SendProps) {
             return itemBaseAmount || '0';
           })();
 
-          const itemDisplayDenom = (function getDisplayDenom() {
+          const itemDisplayDenom = (() => {
             if (itemBaseDenom === baseDenom) {
               return displayDenom.toUpperCase();
             }
 
-            if (assetCoinInfo?.origin_symbol) {
-              return assetCoinInfo?.origin_symbol;
+            if (assetCoinInfo?.dp_denom) {
+              return assetCoinInfo.dp_denom;
             }
 
             if (ibcCoinInfo?.display_denom) {

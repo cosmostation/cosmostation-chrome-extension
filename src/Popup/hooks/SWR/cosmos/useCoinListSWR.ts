@@ -41,11 +41,11 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
   const modifiedAssets: Coin[] = useMemo(
     () =>
       assets?.data?.map((item) => ({
-        originBaseDenom: item.origin_denom || '',
+        originBaseDenom: item.base_denom || '',
         baseDenom: item.denom.toLowerCase(),
-        displayDenom: item.origin_symbol,
+        displayDenom: item.dp_denom,
         decimals: item.decimal,
-        imageURL: `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.origin_chain}/${item.logo}`,
+        imageURL: item.image ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.image}` : undefined,
       })) || [],
     [assets.data],
   );

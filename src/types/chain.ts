@@ -53,7 +53,13 @@ export type Coin = {
   baseDenom: string;
   decimals: number;
   displayDenom: string;
-  imageURL: string;
+  imageURL?: string;
+};
+
+export type FeeCoin = {
+  baseDenom: string;
+  displayDenom: string;
+  decimals: number;
 };
 
 export type EthereumChain = {

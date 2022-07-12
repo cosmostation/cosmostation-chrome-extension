@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
+import { useMarketPriceSWR } from '~/Popup/hooks/SWR/cosmos/useMarketPriceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { divide, equal, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import type { CosmosChain, GasRate } from '~/types/chain';
+import type { FeeCoin, GasRate } from '~/types/chain';
 
 import GasSettingDialog from './components/GasSettingDialog';
 import {
@@ -26,20 +27,19 @@ import {
 } from './styled';
 
 type FeeProps = {
-  chain: CosmosChain;
+  feeCoin: FeeCoin;
   isEdit?: boolean;
   baseFee: string;
   gas: string;
-  customGasRate?: GasRate;
+  gasRate: GasRate;
   onChangeFee?: (fee: string) => void;
   onChangeGas?: (gas: string) => void;
 };
 
-export default function Fee({ isEdit = false, customGasRate, baseFee, gas, onChangeFee, onChangeGas, chain }: FeeProps) {
+export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee, onChangeGas, feeCoin }: FeeProps) {
   const { chromeStorage } = useChromeStorage();
-  const { decimals, displayDenom, coinGeckoId } = chain;
+  const { decimals, displayDenom } = feeCoin;
 
-  const gasRate = customGasRate || chain.gasRate;
   const { average, tiny, low } = gasRate;
 
   const { t } = useTranslation();
@@ -48,12 +48,17 @@ export default function Fee({ isEdit = false, customGasRate, baseFee, gas, onCha
 
   const { currency } = chromeStorage;
 
-  const { data } = useCoinGeckoPriceSWR();
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
+  const marketPrice = useMarketPriceSWR();
+
+  const chainPrice =
+    marketPrice.data?.find((price) => price.denom === feeCoin.baseDenom)?.prices?.find((price) => price.currency === 'usd')?.current_price || 0;
+
+  const tetherPrice = coinGeckoPrice.data?.tether?.[chromeStorage.currency] || 0;
+
+  const price = chainPrice * tetherPrice;
 
   const displayFee = toDisplayDenomAmount(baseFee, decimals);
-
-  const price = (coinGeckoId && data?.[coinGeckoId]?.[currency]) || 0;
-
   const value = times(displayFee, price);
 
   const currentGasRate = divide(baseFee, gas);
