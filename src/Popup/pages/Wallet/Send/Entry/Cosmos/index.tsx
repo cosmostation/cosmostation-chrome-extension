@@ -234,7 +234,15 @@ export default function Cosmos({ chain }: CosmosProps) {
       </MarginTop16Div>
 
       <MarginTop12Div>
-        <Fee chain={chain} baseFee={currentFee} gas={currentGas} onChangeGas={(g) => setCurrentGas(g)} onChangeFee={(f) => setCurrentFee(f)} isEdit />
+        <Fee
+          feeCoin={chain}
+          gasRate={chain.gasRate}
+          baseFee={currentFee}
+          gas={currentGas}
+          onChangeGas={(g) => setCurrentGas(g)}
+          onChangeFee={(f) => setCurrentFee(f)}
+          isEdit
+        />
       </MarginTop12Div>
       <BottomContainer>
         <Button

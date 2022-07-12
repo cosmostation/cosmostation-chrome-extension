@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios';
+import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { CRESCENT } from '~/constants/chain/cosmos/crescent';
@@ -20,8 +21,8 @@ const nameMap = {
   [EMONEY.id]: 'emoney',
 };
 
-export function useAssetsSWR(chain: CosmosChain, suspense?: boolean) {
-  const mappingName = nameMap[chain.id];
+export function useAssetsSWR(chain: CosmosChain, config?: SWRConfiguration) {
+  const mappingName = nameMap[chain.chainName] || chain.chainName.toLowerCase();
 
   const requestURL = `https://api.mintscan.io/v2/assets/${mappingName}`;
 
@@ -37,8 +38,8 @@ export function useAssetsSWR(chain: CosmosChain, suspense?: boolean) {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    suspense,
     isPaused: () => !mappingName,
+    ...config,
   });
 
   const returnData = data?.assets || [];
