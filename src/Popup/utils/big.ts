@@ -41,6 +41,14 @@ export function gte(num1: number | string, num2: number | string) {
   return new Big(num1).gte(num2);
 }
 
+export function lt(num1: number | string, num2: number | string) {
+  return new Big(num1).lt(num2);
+}
+
+export function lte(num1: number | string, num2: number | string) {
+  return new Big(num1).lte(num2);
+}
+
 export function minus(num1: number | string, num2: number | string, toFix?: number) {
   if (toFix !== undefined) {
     return new Big(num1).minus(num2).toFixed(toFix, 0);
