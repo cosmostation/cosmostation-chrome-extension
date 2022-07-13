@@ -40,8 +40,15 @@ import { STARNAME } from './cosmos/starname';
 import { TGRADE } from './cosmos/tgrade';
 import { UMEE } from './cosmos/umee';
 import { ETHEREUM } from './ethereum/ethereum';
-import { ETHEREUM as NETWORK_ETHEREUM } from './ethereum/network/ethereum';
-import { EVMOS as NETWORK_EVMOS } from './ethereum/network/evmos';
+import { ARBITRUM as NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
+import { AVALANCHE as NETWORK__AVALANCHE } from './ethereum/network/avalanche';
+import { CRONOS as NETWORK__CRONOS } from './ethereum/network/cronos';
+import { ETHEREUM as NETWORK__ETHEREUM } from './ethereum/network/ethereum';
+import { EVMOS as NETWORK__EVMOS } from './ethereum/network/evmos';
+import { FANTOM as NETWORK__FANTOM } from './ethereum/network/fantom';
+import { HARMONY as NETWORK__HARMONY } from './ethereum/network/harmony';
+import { POLYGON as NETWORK__POLYGON } from './ethereum/network/polygon';
+import { SMART_CHAIN as NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
 
 export const LINE_TYPE = {
   COSMOS: 'COSMOS',
@@ -94,7 +101,17 @@ export const COSMOS_CHAINS: CosmosChain[] = [
 
 export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 
-export const ETHEREUM_NETWORKS: EthereumNetwork[] = [NETWORK_ETHEREUM, NETWORK_EVMOS];
+export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
+  NETWORK__ETHEREUM,
+  NETWORK__ARBITRUM,
+  NETWORK__AVALANCHE,
+  NETWORK__CRONOS,
+  NETWORK__EVMOS,
+  NETWORK__FANTOM,
+  NETWORK__HARMONY,
+  NETWORK__POLYGON,
+  NETWORK__SMART_CHAIN,
+];
 
 export const NETWORKS = [...ETHEREUM_NETWORKS];
 
