@@ -57,6 +57,7 @@ export type Coin = {
 };
 
 export type FeeCoin = {
+  originBaseDenom: string;
   baseDenom: string;
   displayDenom: string;
   decimals: number;

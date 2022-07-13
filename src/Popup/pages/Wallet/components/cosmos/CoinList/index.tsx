@@ -16,9 +16,10 @@ type CoinListProps = {
 export default function CoinList({ chain }: CoinListProps) {
   const { coins, ibcCoins } = useCoinListSWR(chain, true);
 
-  const sortedCoins = [...coins, ...ibcCoins.reverse().sort((item) => (item.auth ? -1 : 1))];
-
-  const unauthCoins = ibcCoins.filter((item) => !item.auth).map((item) => item.baseDenom);
+  const sortedCoins = [
+    ...coins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
+    ...ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
+  ];
 
   const coinLength = sortedCoins.length;
 
@@ -41,7 +42,7 @@ export default function CoinList({ chain }: CoinListProps) {
       <ListContainer>
         {sortedCoins.map((item) => (
           <IbcCoinItem
-            disabled={!gt(item.availableAmount, '0') || unauthCoins.includes(item.baseDenom)}
+            disabled={!gt(item.availableAmount, '0')}
             key={item.baseDenom}
             onClick={() => navigate(`/wallet/send/${item.baseDenom ? `${encodeURIComponent(item.baseDenom)}` : ''}` as unknown as Path)}
             amount={item.totalAmount}

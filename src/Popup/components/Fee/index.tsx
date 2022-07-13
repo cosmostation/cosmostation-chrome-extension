@@ -52,7 +52,7 @@ export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee
   const marketPrice = useMarketPriceSWR();
 
   const chainPrice =
-    marketPrice.data?.find((price) => price.denom === feeCoin.baseDenom)?.prices?.find((price) => price.currency === 'usd')?.current_price || 0;
+    marketPrice.data?.find((price) => price.denom === feeCoin.originBaseDenom)?.prices?.find((price) => price.currency === 'usd')?.current_price || 0;
 
   const tetherPrice = coinGeckoPrice.data?.tether?.[chromeStorage.currency] || 0;
 

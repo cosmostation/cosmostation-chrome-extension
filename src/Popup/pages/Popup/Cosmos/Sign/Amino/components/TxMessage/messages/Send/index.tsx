@@ -1,8 +1,7 @@
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
-import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
-import { useIbcCoinSWR } from '~/Popup/hooks/SWR/cosmos/useIbcCoinSWR';
+import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useMarketPriceSWR } from '~/Popup/hooks/SWR/cosmos/useMarketPriceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -34,8 +33,7 @@ type SendProps = {
 export default function Send({ msg, chain }: SendProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const ibcCoin = useIbcCoinSWR(chain);
-  const assets = useAssetsSWR(chain);
+  const { coins, ibcCoins } = useCoinListSWR(chain);
   const marketPrice = useMarketPriceSWR();
   const { t } = useTranslation();
 
@@ -70,59 +68,59 @@ export default function Send({ msg, chain }: SendProps) {
           const itemBaseAmount = item.amount;
           const itemBaseDenom = item.denom;
 
-          const assetCoinInfo = assets.data?.find((coin) => isEqualsIgnoringCase(coin.denom, item.denom));
-          const ibcCoinInfo = ibcCoin.data?.ibc_tokens?.find((coin) => coin.hash === item.denom.replace('ibc/', ''));
+          const assetCoinInfo = coins.find((coin) => isEqualsIgnoringCase(coin.baseDenom, item.denom));
+          const ibcCoinInfo = ibcCoins.find((coin) => coin.baseDenom === item.denom);
 
-          const itemDisplayAmount = (function getDisplayAmount() {
+          const itemDisplayAmount = (() => {
             if (itemBaseDenom === baseDenom) {
               return toDisplayDenomAmount(itemBaseAmount, decimals);
             }
 
-            if (assetCoinInfo?.decimal) {
-              return toDisplayDenomAmount(itemBaseAmount, assetCoinInfo.decimal);
+            if (assetCoinInfo?.decimals) {
+              return toDisplayDenomAmount(itemBaseAmount, assetCoinInfo.decimals);
             }
 
-            if (ibcCoinInfo?.decimal) {
-              return toDisplayDenomAmount(itemBaseAmount, ibcCoinInfo.decimal);
+            if (ibcCoinInfo?.decimals) {
+              return toDisplayDenomAmount(itemBaseAmount, ibcCoinInfo.decimals);
             }
 
             return itemBaseAmount || '0';
           })();
 
-          const itemDisplayDenom = (function getDisplayDenom() {
+          const itemDisplayDenom = (() => {
             if (itemBaseDenom === baseDenom) {
-              return displayDenom;
+              return displayDenom.toUpperCase();
             }
 
-            if (assetCoinInfo?.dp_denom) {
-              return assetCoinInfo.dp_denom;
+            if (assetCoinInfo?.displayDenom) {
+              return assetCoinInfo.displayDenom;
             }
 
-            if (ibcCoinInfo?.display_denom) {
-              return ibcCoinInfo.display_denom.toUpperCase();
+            if (ibcCoinInfo?.displayDenom) {
+              return ibcCoinInfo.displayDenom;
             }
 
             return item.denom.length > 5 ? `${item.denom.substring(0, 5)}...` : item.denom;
           })();
 
-          const itemDisplayValue = (function getDisplayValue() {
+          const itemDisplayValue = (() => {
             if (itemBaseDenom === baseDenom) {
               const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
               return times(itemDisplayAmount, chainPrice);
             }
 
-            if (assetCoinInfo?.denom) {
+            if (assetCoinInfo?.originBaseDenom) {
               const chainPrice =
-                marketPrice.data?.find((p) => isEqualsIgnoringCase(p.denom, assetCoinInfo.denom))?.prices?.find((p) => p.currency === 'usd')?.current_price ||
-                0;
+                marketPrice.data?.find((p) => isEqualsIgnoringCase(p.denom, assetCoinInfo.originBaseDenom))?.prices?.find((p) => p.currency === 'usd')
+                  ?.current_price || 0;
               const tetherPrice = coinGeckoPrice.data?.tether?.[currency] || 0;
 
               return times(itemDisplayAmount, chainPrice * tetherPrice, 2);
             }
 
-            if (ibcCoinInfo?.base_denom) {
+            if (ibcCoinInfo?.originBaseDenom) {
               const chainPrice =
-                marketPrice.data?.find((p) => p.denom === ibcCoinInfo.base_denom)?.prices?.find((p) => p.currency === 'usd')?.current_price || 0;
+                marketPrice.data?.find((p) => p.denom === ibcCoinInfo.originBaseDenom)?.prices?.find((p) => p.currency === 'usd')?.current_price || 0;
               const tetherPrice = coinGeckoPrice.data?.tether?.[currency] || 0;
 
               return times(itemDisplayAmount, chainPrice * tetherPrice, 2);

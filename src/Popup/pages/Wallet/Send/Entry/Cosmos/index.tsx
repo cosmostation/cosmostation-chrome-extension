@@ -72,9 +72,7 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const sendGas = gas.send || COSMOS_DEFAULT_GAS;
 
-  const authIbcCoins = coinList.ibcCoins.filter((item) => item.auth);
-
-  const filteredCoinList = [...coinList.coins, ...authIbcCoins].filter((item) => gt(item.availableAmount, '0'));
+  const filteredCoinList = [...coinList.coins, ...coinList.ibcCoins].filter((item) => gt(item.availableAmount, '0'));
 
   const availableCoinList: CoinInfo[] = [
     {
@@ -235,7 +233,7 @@ export default function Cosmos({ chain }: CosmosProps) {
 
       <MarginTop12Div>
         <Fee
-          feeCoin={chain}
+          feeCoin={{ ...chain, originBaseDenom: chain.baseDenom }}
           gasRate={chain.gasRate}
           baseFee={currentFee}
           gas={currentGas}
@@ -297,7 +295,7 @@ export default function Cosmos({ chain }: CosmosProps) {
         currentCoinInfo={currentCoin}
         coinInfos={availableCoinList}
         onClickCoin={(clickedCoin) => {
-          setCurrentCoinBaseDenom(clickedCoin.baseDenom!);
+          setCurrentCoinBaseDenom(clickedCoin.baseDenom);
           setCurrentDisplayAmount('');
         }}
         open={isOpenPopover}

@@ -1,6 +1,5 @@
 import { Typography } from '@mui/material';
 
-import ibcUnauthImg from '~/images/etc/ibcUnauth.png';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import { useMarketPriceSWR } from '~/Popup/hooks/SWR/cosmos/useMarketPriceSWR';
@@ -50,7 +49,7 @@ export default function IbcCoinItem({ disabled, imageURL, amount, decimals = 0, 
     <StyledButton onClick={onClick} disabled={disabled}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image src={imageURL} defaultImgSrc={ibcUnauthImg} />
+          <Image src={imageURL} />
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>

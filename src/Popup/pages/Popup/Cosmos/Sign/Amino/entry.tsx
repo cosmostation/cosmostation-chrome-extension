@@ -47,8 +47,8 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const feeCoins: FeeCoin[] = useMemo(
     () => [
-      { baseDenom: chain.baseDenom, displayDenom: chain.displayDenom, decimals: chain.decimals },
-      ...assets.data.map((asset) => ({ baseDenom: asset.denom, decimals: asset.decimal, displayDenom: asset.dp_denom })),
+      { originBaseDenom: chain.baseDenom, baseDenom: chain.baseDenom, displayDenom: chain.displayDenom, decimals: chain.decimals },
+      ...assets.data.map((asset) => ({ originBaseDenom: asset.base_denom, baseDenom: asset.denom, decimals: asset.decimal, displayDenom: asset.dp_denom })),
     ],
     [assets, chain],
   );
@@ -76,6 +76,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const selectedFeeCoin: FeeCoin = feeCoins.find((feeCoin) => feeCoin.baseDenom === inputFee.denom) || {
     decimals: 0,
     baseDenom: inputFee.denom,
+    originBaseDenom: inputFee.denom,
     displayDenom: 'UNKNOWN',
   };
 

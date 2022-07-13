@@ -12,15 +12,13 @@ import type { Coin, CosmosChain } from '~/types/chain';
 
 import { useAssetsSWR } from './useAssetsSWR';
 import { useBalanceSWR } from './useBalanceSWR';
-import { useIbcCoinSWR } from './useIbcCoinSWR';
 import { useIncentiveSWR } from './useIncentiveSWR';
 
 export type CoinInfo = {
-  auth?: boolean;
-  decimals?: number;
+  decimals: number;
   originBaseDenom?: string;
-  baseDenom?: string;
-  displayDenom?: string;
+  baseDenom: string;
+  displayDenom: string;
   imageURL?: string;
   channelId?: string;
   availableAmount: string;
@@ -32,26 +30,27 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
   const delegation = useDelegationSWR(chain, suspense);
   const reward = useRewardSWR(chain, suspense);
   const balance = useBalanceSWR(chain, suspense);
-  const ibcCoin = useIbcCoinSWR(chain, suspense);
   const incentive = useIncentiveSWR(chain, suspense);
   const assets = useAssetsSWR(chain);
 
-  const ibcCoinArray = useMemo(() => ibcCoin.data?.ibc_tokens?.map((token) => token.hash) || [], [ibcCoin.data?.ibc_tokens]);
-
-  const modifiedAssets: Coin[] = useMemo(
+  const nativeAssets: Coin[] = useMemo(
     () =>
-      assets?.data?.map((item) => ({
-        originBaseDenom: item.base_denom || '',
-        baseDenom: item.denom.toLowerCase(),
-        displayDenom: item.dp_denom,
-        decimals: item.decimal,
-        imageURL: item.image ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.image}` : undefined,
-      })) || [],
+      assets?.data
+        ?.filter((item) => item.type === 'native' || item.type === 'bridge')
+        ?.map((item) => ({
+          originBaseDenom: item.base_denom || '',
+          baseDenom: item.denom,
+          displayDenom: item.dp_denom,
+          decimals: item.decimal,
+          imageURL: item.image ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.image}` : undefined,
+        })) || [],
     [assets.data],
   );
 
+  const ibcAssets = useMemo(() => assets?.data?.filter((item) => item.type === 'ibc') || [], [assets.data]);
+
   const coins: CoinInfo[] = useMemo(() => {
-    const chainCoins = modifiedAssets || [];
+    const chainCoins = nativeAssets || [];
 
     const coinArray = chainCoins.map((item) => item.baseDenom);
     return (
@@ -100,34 +99,28 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           };
         }) || []
     );
-  }, [account, balance, chain, delegation, incentive, reward, modifiedAssets]);
+  }, [account, balance, chain, delegation, incentive, reward, nativeAssets]);
 
   const ibcCoins: CoinInfo[] =
     balance.data?.balance
-      ?.filter((coin) => ibcCoinArray.includes(coin.denom.replace('ibc/', '')))
+      ?.filter((coin) => ibcAssets.map((item) => item.denom).includes(coin.denom))
       .map((coin) => {
-        const coinInfo = ibcCoin.data?.ibc_tokens?.find((item) => item.hash === coin.denom.replace('ibc/', ''));
+        const coinInfo = ibcAssets.find((item) => item.denom === coin.denom)!;
 
         return {
-          auth: !!coinInfo?.auth,
+          auth: true,
           decimals: coinInfo?.decimal,
           originBaseDenom: coinInfo?.base_denom,
           baseDenom: coin.denom,
-          displayDenom: displayDenomUppercase(coinInfo?.display_denom),
-          imageURL: coinInfo?.moniker,
-          channelId: coinInfo?.channel_id,
+          displayDenom: coinInfo?.dp_denom,
+          imageURL: coinInfo?.image
+            ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${coinInfo.image}`
+            : undefined,
+          channelId: coinInfo?.channel,
           availableAmount: coin.amount,
           totalAmount: coin.amount,
         };
       }) || [];
 
   return { coins, ibcCoins };
-}
-
-function displayDenomUppercase(displayDenom?: string) {
-  if (displayDenom?.toLowerCase() === 'bcre') {
-    return 'bCRE';
-  }
-
-  return displayDenom?.toUpperCase();
 }
