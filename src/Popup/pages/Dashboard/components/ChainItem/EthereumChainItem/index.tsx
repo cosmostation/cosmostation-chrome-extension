@@ -38,10 +38,10 @@ export default function EthereumChainItem({ chain, network }: EthereumChainItemP
     setDashboard((prev) => ({
       [currentAccount.id]: {
         ...prev?.[currentAccount.id],
-        [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[chromeStorage.currency]) || 0) || '0',
+        [network.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[chromeStorage.currency]) || 0) || '0',
       },
     }));
-  }, [chain.id, chromeStorage.currency, coinGeckoId, coinGeckoData, decimals, setDashboard, totalAmount, currentAccount.id]);
+  }, [chromeStorage.currency, coinGeckoData, coinGeckoId, currentAccount.id, decimals, network.id, setDashboard, totalAmount]);
 
   const handleOnClick = () => {
     void setCurrentChain(chain);

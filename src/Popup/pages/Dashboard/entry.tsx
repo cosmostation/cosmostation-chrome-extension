@@ -52,6 +52,9 @@ export default function Entry() {
   const ethereumChainList = chainList.filter(isEthereum);
 
   const cosmosChainNames = cosmosChainList.map((item) => item.chain.chainName);
+  const ethereumNetworkList = ethereumChainList.length > 0 ? ETHEREUM_NETWORKS.filter((network) => !cosmosChainNames.includes(network.networkName)) : [];
+
+  const chainCnt = cosmosChainList.length + ethereumNetworkList.length;
 
   const totalAmount =
     typeof dashboard?.[currentAccount.id] === 'object' ? Object.values(dashboard[currentAccount.id]).reduce((acc, cur) => plus(acc, cur), '0') : '0';
@@ -77,7 +80,7 @@ export default function Entry() {
             <Typography variant="h6">Chain</Typography>
           </CountLeftContainer>
           <CountRightContainer>
-            <Typography variant="h6">{chainList.length}</Typography>
+            <Typography variant="h6">{chainCnt}</Typography>
           </CountRightContainer>
         </CountContainer>
         <AddButton onClick={() => navigate('/chain/management/use')}>Add chain</AddButton>
