@@ -37,6 +37,19 @@ export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
     }));
   }, [chain.id, chromeStorage.currency, coinGeckoId, data, decimals, setDashboard, totalAmount, currentAccount.id]);
 
+  useEffect(
+    () => () => {
+      setDashboard((prev) => ({
+        [currentAccount.id]: {
+          ...prev?.[currentAccount.id],
+          [chain.id]: '0',
+        },
+      }));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   const handleOnClick = () => {
     void setCurrentChain(chain);
     navigate('/wallet');

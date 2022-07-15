@@ -5,6 +5,7 @@ import { useRecoilState } from 'recoil';
 import { CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { ETHEREUM as NETWORK_ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeStorageDefault, chromeStorageState } from '~/Popup/recoils/chromeStorage';
@@ -25,6 +26,8 @@ export default function Init({ children }: InitType) {
 
   const officialChainLowercaseNames = CHAINS.map((item) => item.chainName.toLowerCase());
   const officialChainIds = CHAINS.map((item) => item.id);
+
+  const officialEthereumNetworkIds = ETHEREUM_NETWORKS.map((item) => item.id);
 
   const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
   const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
@@ -99,6 +102,11 @@ export default function Init({ children }: InitType) {
 
       if (!originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).length) {
         await setStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id]);
+        await setStorage('selectedChainId', COSMOS.id);
+      }
+
+      if (!originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length) {
+        await setStorage('shownEthereumNetworkIds', [NETWORK_ETHEREUM.id]);
       }
 
       setIsLoading(false);

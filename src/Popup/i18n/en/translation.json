@@ -422,6 +422,7 @@
         "Use": {
           "entry": {
             "removeAllowedChainError": "Please select more than 1 chain",
+            "removeShownEthereumNetworkError": "Please select more than 1 network",
             "searchPlaceholder": "Search chain"
           },
           "layout": {

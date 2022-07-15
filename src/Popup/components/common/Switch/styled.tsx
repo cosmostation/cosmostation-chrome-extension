@@ -35,6 +35,15 @@ export const StyledSwitch = styled(Switch)(({ theme }) => ({
         backgroundColor: theme.colors.base02,
       },
     },
+    '&.Mui-disabled': {
+      opacity: 0.3,
+    },
+    '&.Mui-disabled+': {
+      opacity: 0.3,
+      '&.MuiSwitch-track': {
+        opacity: 0.3,
+      },
+    },
   },
   '& .MuiSwitch-thumb': {
     boxShadow: '0 2px 4px 0 rgb(0 35 11 / 20%)',

@@ -65,14 +65,15 @@ export type ChromeStorage = {
 
   rootPath: Path;
 
-  selectedAccountId: string;
+  selectedAccountId: Account['id'];
 
   allowedOrigins: AllowedOrigin[];
-  allowedChainIds: string[];
-  selectedChainId: string;
+  allowedChainIds: Chain['id'][];
+  shownEthereumNetworkIds: EthereumNetwork['id'][];
+  selectedChainId: Chain['id'];
 
   additionalEthereumNetworks: EthereumNetwork[];
-  selectedEthereumNetworkId: string;
+  selectedEthereumNetworkId: EthereumNetwork['id'];
   ethereumTokens: EthereumToken[];
 
   password: string | null;

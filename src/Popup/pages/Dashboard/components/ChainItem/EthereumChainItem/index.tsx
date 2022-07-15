@@ -43,6 +43,19 @@ export default function EthereumChainItem({ chain, network }: EthereumChainItemP
     }));
   }, [chromeStorage.currency, coinGeckoData, coinGeckoId, currentAccount.id, decimals, network.id, setDashboard, totalAmount]);
 
+  useEffect(
+    () => () => {
+      setDashboard((prev) => ({
+        [currentAccount.id]: {
+          ...prev?.[currentAccount.id],
+          [network.id]: '0',
+        },
+      }));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
   const handleOnClick = () => {
     void setCurrentChain(chain);
     void setCurrentEthereumNetwork(network);
