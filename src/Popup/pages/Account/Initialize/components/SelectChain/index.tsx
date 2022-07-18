@@ -42,11 +42,11 @@ export default function SelectChain() {
 
   const handleOnChange = async (checked: boolean, chain: Chain) => {
     if (checked) {
-      await addAllowedChainId(chain.id);
+      await addAllowedChainId(chain);
     } else if (allowedChainIds.length < 2) {
       enqueueSnackbar(t('pages.Account.Initialize.components.SelectChain.index.removeAllowedChainError'), { variant: 'error' });
     } else {
-      await removeAllowedChainId(chain.id);
+      await removeAllowedChainId(chain);
     }
   };
 

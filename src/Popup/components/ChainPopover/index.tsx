@@ -2,12 +2,13 @@ import { useMemo } from 'react';
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Chain } from '~/types/chain';
@@ -38,6 +39,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
   const { setCurrentChain } = useCurrentChain();
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { currentEthereumNetwork, setCurrentEthereumNetwork, removeEthereumNetwork } = useCurrentEthereumNetwork();
+  const { currentShownEthereumNetwork } = useCurrentShownEthereumNetworks();
 
   const { t } = useTranslation();
 
@@ -84,7 +86,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
                     );
                   }
                   return [
-                    ...ETHEREUM_NETWORKS.map((network) => (
+                    ...currentShownEthereumNetwork.map((network) => (
                       <ChainItemButton
                         key={`${chain.id}-${network.id}`}
                         isActive={currentChain.id === chain.id && currentEthereumNetwork.id === network.id}

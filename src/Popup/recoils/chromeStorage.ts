@@ -24,6 +24,7 @@ export const chromeStorageDefault: ChromeStorage = {
 
   allowedChainIds: [],
   allowedOrigins: [],
+  shownEthereumNetworkIds: [],
   selectedChainId: '',
   selectedEthereumNetworkId: '',
 

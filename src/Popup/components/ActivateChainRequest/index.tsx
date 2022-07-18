@@ -113,8 +113,7 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
             </OutlineButton>
             <Button
               onClick={async () => {
-                const chainId = chain.id;
-                if (chainId) await addAllowedChainId(chainId);
+                await addAllowedChainId(chain);
               }}
             >
               Confirm

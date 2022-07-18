@@ -3,13 +3,13 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useRecoilValue } from 'recoil';
 import { Typography } from '@mui/material';
 
-import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import AddButton from '~/Popup/components/AddButton';
 import Number from '~/Popup/components/common/Number';
 import Header from '~/Popup/components/SelectSubHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
+import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import CosmosChainItem, { CosmosChainItemError, CosmosChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/CosmosChainItem';
 import EthereumChainItem, { EthereumChainItemError, EthereumChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/EthereumChainItem';
@@ -42,6 +42,7 @@ export default function Entry() {
   const { chromeStorage } = useChromeStorage();
   const { currentAllowedChains } = useCurrentAllowedChains();
   const { currentAccount } = useCurrentAccount();
+  const { currentShownEthereumNetwork } = useCurrentShownEthereumNetworks();
   const dashboard = useRecoilValue(dashboardState);
 
   const { navigate } = useNavigate();
@@ -52,7 +53,8 @@ export default function Entry() {
   const ethereumChainList = chainList.filter(isEthereum);
 
   const cosmosChainNames = cosmosChainList.map((item) => item.chain.chainName);
-  const ethereumNetworkList = ethereumChainList.length > 0 ? ETHEREUM_NETWORKS.filter((network) => !cosmosChainNames.includes(network.networkName)) : [];
+  const ethereumNetworkList =
+    ethereumChainList.length > 0 ? currentShownEthereumNetwork.filter((network) => !cosmosChainNames.includes(network.networkName)) : [];
 
   const chainCnt = cosmosChainList.length + ethereumNetworkList.length;
 
@@ -88,7 +90,7 @@ export default function Entry() {
       <ChainListContainer>
         <ChainList>
           {ethereumChainList.map((item) =>
-            ETHEREUM_NETWORKS.filter((network) => !cosmosChainNames.includes(network.networkName)).map((network) => (
+            ethereumNetworkList.map((network) => (
               <ErrorBoundary
                 key={`${currentAccount.id}${item.chain.id}${network.id}`}
                 FallbackComponent={
