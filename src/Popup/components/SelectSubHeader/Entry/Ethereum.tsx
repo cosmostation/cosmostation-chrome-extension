@@ -28,7 +28,7 @@ export default function Ethereum({ chain, isShowChain }: EthereumProps) {
 
   const isCustom = useMemo(
     () => !!additionalEthereumNetworks.find((item) => item.id === currentEthereumNetwork.id),
-    [additionalEthereumNetworks, currentEthereumNetwork],
+    [additionalEthereumNetworks, currentEthereumNetwork.id],
   );
 
   return (

@@ -52,7 +52,7 @@ export default function Transfer({ tx, determineTxType }: TransferProps) {
     } catch {
       return '0';
     }
-  }, [amount, token]);
+  }, [amount, token?.decimals]);
 
   const value = times(displayAmount, price);
 

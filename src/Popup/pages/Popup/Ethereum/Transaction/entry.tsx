@@ -170,7 +170,18 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return mixedEthereumTx;
-  }, [originEthereumTx, feeMode, transactionCount, currentFee, gas, gasPrice, maxFeePerGas, maxPriorityFeePerGas]);
+  }, [
+    currentFee.currentFee,
+    currentFee.currentGasPrice,
+    currentFee.type,
+    feeMode,
+    gas,
+    gasPrice,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
+    originEthereumTx,
+    transactionCount.data?.result,
+  ]);
 
   const baseFee = useMemo(() => {
     if (ethereumTx.maxFeePerGas) {
@@ -182,7 +193,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return '0';
-  }, [ethereumTx]);
+  }, [ethereumTx.gas, ethereumTx.gasPrice, ethereumTx.maxFeePerGas]);
 
   const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
 
@@ -192,7 +203,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const token = useMemo(
     () => (txType.data?.type === 'transfer' ? tokens.data.find((item) => isEqualsIgnoringCase(ethereumTx.to, item.address)) : null),
-    [tokens, ethereumTx, txType],
+    [ethereumTx.to, tokens.data, txType.data?.type],
   );
 
   const sendDisplayAmount = useMemo(() => {
@@ -215,7 +226,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return '0';
-  }, [decimals, ethereumTx, txType, token]);
+  }, [decimals, ethereumTx.value, token?.decimals, txType.data?.erc20?.args, txType.data?.type]);
 
   const sendDisplayDenom = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
@@ -227,7 +238,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return '';
-  }, [currentEthereumNetwork, txType, token]);
+  }, [currentEthereumNetwork.displayDenom, token?.displayDenom, txType.data?.type]);
 
   const totalDisplayAmount = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
@@ -235,7 +246,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return displayFee;
-  }, [txType, displayFee, sendDisplayAmount]);
+  }, [displayFee, sendDisplayAmount, txType.data?.type]);
 
   const totalBaseAmount = toBaseDenomAmount(totalDisplayAmount, decimals);
 

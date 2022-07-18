@@ -77,7 +77,7 @@ export default function Entry() {
     }
 
     return indexes.sort((a, b) => a - b);
-  }, [mnemonicLength, mnemonic]);
+  }, [mnemonic, mnemonicLength]);
 
   const checkWords: CheckWord[] = checkMnemonicIndexes.map((idx) => ({ index: idx, word: splitedMnemonic[idx] }));
 

@@ -47,7 +47,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
     [assets.data],
   );
 
-  const ibcAssets = useMemo(() => assets?.data?.filter((item) => item.type === 'ibc') || [], [assets.data]);
+  const ibcAssets = useMemo(() => assets?.data?.filter((item) => item.type === 'ibc') || [], [assets?.data]);
 
   const coins: CoinInfo[] = useMemo(() => {
     const chainCoins = nativeAssets || [];
@@ -99,7 +99,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           };
         }) || []
     );
-  }, [account, balance, chain, delegation, incentive, reward, nativeAssets]);
+  }, [account?.data, balance.data?.balance, chain.chainName, delegation?.data, incentive?.data, nativeAssets, reward?.data?.total]);
 
   const ibcCoins: CoinInfo[] =
     balance.data?.balance

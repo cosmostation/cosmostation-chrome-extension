@@ -52,7 +52,7 @@ export default function Send({ tx }: SendProps) {
     } catch {
       return '0';
     }
-  }, [amount, currentEthereumNetwork]);
+  }, [amount, currentEthereumNetwork.decimals]);
 
   const value = times(displayAmount, price);
 

@@ -59,7 +59,7 @@ export function useAmountSWR(chain: CosmosChain, suspense?: boolean) {
     }
 
     return [availableAmount, '0'];
-  }, [availableAmount, chain.chainName, delegatedVestingTotal, vestingRemained, unbondingAmount]);
+  }, [availableAmount, chain.chainName, delegatedVestingTotal, unbondingAmount, vestingRemained]);
 
   const incentiveAmount = incentive?.data?.[chain.baseDenom] || '0';
 

@@ -71,7 +71,7 @@ export default function Ethereum({ chain }: EthereumProps) {
     }
 
     return currentToken.decimals;
-  }, [currentToken, currentEthereumNetwork]);
+  }, [currentEthereumNetwork.decimals, currentToken]);
 
   const baseAmount = useMemo(() => toBaseDenomAmount(currentDisplayAmount || '0', decimals), [currentDisplayAmount, decimals]);
 
@@ -105,7 +105,7 @@ export default function Ethereum({ chain }: EthereumProps) {
       to: currentToken.address,
       data,
     };
-  }, [address, decimals, currentAddress, currentDisplayAmount, currentEthereumNetwork, currentToken]);
+  }, [address, currentAddress, currentDisplayAmount, currentEthereumNetwork.rpcURL, currentToken, decimals]);
 
   const estimateGas = useEstimateGasSWR([sendTx]);
 
@@ -120,15 +120,15 @@ export default function Ethereum({ chain }: EthereumProps) {
     if (fee.type === 'EIP-1559') return fee.currentFee?.average.maxBaseFeePerGas || '0';
 
     return '0';
-  }, [fee]);
+  }, [fee.currentFee?.average.maxBaseFeePerGas, fee.currentGasPrice, fee.type]);
 
-  const baseEstimateGas = useMemo(() => BigInt(estimateGas.data?.result || '21000').toString(10), [estimateGas]);
+  const baseEstimateGas = useMemo(() => BigInt(estimateGas.data?.result || '21000').toString(10), [estimateGas.data?.result]);
 
   const baseFee = useMemo(() => times(baseFeePerGas, baseEstimateGas), [baseFeePerGas, baseEstimateGas]);
 
-  const baseBalance = useMemo(() => BigInt(balance.data?.result || '0').toString(10), [balance]);
+  const baseBalance = useMemo(() => BigInt(balance.data?.result || '0').toString(10), [balance.data?.result]);
 
-  const baseTokenBalance = useMemo(() => BigInt(tokenBalance.data || '0').toString(10), [tokenBalance]);
+  const baseTokenBalance = useMemo(() => BigInt(tokenBalance.data || '0').toString(10), [tokenBalance.data]);
 
   const errorMessage = useMemo(() => {
     if (!ethereumAddressRegex.test(currentAddress)) {
@@ -160,7 +160,7 @@ export default function Ethereum({ chain }: EthereumProps) {
     }
 
     return '';
-  }, [baseBalance, baseAmount, baseFee, currentToken, baseTokenBalance, currentAddress, address, t]);
+  }, [address, baseAmount, baseBalance, baseFee, baseTokenBalance, currentAddress, currentToken, t]);
 
   const handleOnClickMax = () => {
     if (currentToken === null) {

@@ -50,7 +50,7 @@ export default function Entry({ queue, chain }: EntryProps) {
       { originBaseDenom: chain.baseDenom, baseDenom: chain.baseDenom, displayDenom: chain.displayDenom, decimals: chain.decimals },
       ...assets.data.map((asset) => ({ originBaseDenom: asset.base_denom, baseDenom: asset.denom, decimals: asset.decimal, displayDenom: asset.dp_denom })),
     ],
-    [assets, chain],
+    [assets.data, chain.baseDenom, chain.decimals, chain.displayDenom],
   );
 
   const { message, messageId, origin } = queue;
@@ -84,7 +84,7 @@ export default function Entry({ queue, chain }: EntryProps) {
       denom: chain.baseDenom,
       amount: '0',
     };
-  }, [chain.baseDenom, fee, feeCoins]);
+  }, [chain.baseDenom, fee?.amount, feeCoins]);
 
   const inputFeeAmount = inputFee.amount || '0';
 

@@ -22,7 +22,7 @@ const nameMap = {
 };
 
 export function useAssetsSWR(chain: CosmosChain, config?: SWRConfiguration) {
-  const mappingName = nameMap[chain.chainName] || chain.chainName.toLowerCase();
+  const mappingName = nameMap[chain.id] || chain.chainName.toLowerCase();
 
   const requestURL = `https://api.mintscan.io/v2/assets/${mappingName}`;
 

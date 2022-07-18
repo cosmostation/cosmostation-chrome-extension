@@ -69,7 +69,7 @@ export function useFeeSWR(config?: SWRConfiguration) {
       currentFee,
       mutate,
     }),
-    [type, currentGasPrice, currentFee, mutate],
+    [currentFee, currentGasPrice, mutate, type],
   );
 
   return returnData;

@@ -64,7 +64,7 @@ export default function Entry({ queue }: EntryProps) {
 
         return param;
       }),
-    [officialTokens, params],
+    [officialTokens.data, params],
   );
 
   return (

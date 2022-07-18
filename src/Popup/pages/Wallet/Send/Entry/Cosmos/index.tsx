@@ -102,7 +102,7 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
 
-  const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain]);
+  const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
 
   const currentCoin = availableCoinList.find((item) => item.baseDenom === currentCoinBaseDenom)!;
 
