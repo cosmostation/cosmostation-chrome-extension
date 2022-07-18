@@ -14,9 +14,26 @@ export const StyledTextField = styled(OutlinedInput)<StyledTextFieldProps>(({ th
   backgroundColor: theme.colors.base01,
   color: theme.colors.text01,
 
-  // height: '4.8rem',
-
   width: '100%',
+
+  '& input:-webkit-autofill': {
+    border: '0',
+    WebkitTextFillColor: theme.colors.text01,
+    WebkitBoxShadow: `0 0 0 0 ${theme.colors.base03} inset`,
+    transition: 'background-color 5000s ease-in-out 0s',
+  },
+  '& input:-webkit-autofill:hover': {
+    border: '0',
+    WebkitTextFillColor: theme.colors.text01,
+    WebkitBoxShadow: `0 0 0 0 ${theme.colors.base03} inset`,
+    transition: 'background-color 5000s ease-in-out 0s',
+  },
+  '& input:-webkit-autofill:focus': {
+    border: '0',
+    WebkitTextFillColor: theme.colors.text01,
+    WebkitBoxShadow: `0 0 0 0 ${theme.colors.base03} inset`,
+    transition: 'background-color 5000s ease-in-out 0s',
+  },
 
   '&.MuiOutlinedInput-root': {
     backgroundColor: theme.colors.base02,
