@@ -57,6 +57,7 @@ import SettingAddressBookAdd from '~/Popup/pages/Setting/AddressBook/Add';
 import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
 import SettingChangeLanguage from '~/Popup/pages/Setting/ChangeLanguage';
 import SettingChangePassword from '~/Popup/pages/Setting/ChangePassword';
+import SettingConnectedSites from '~/Popup/pages/Setting/ConnectedSites';
 import Wallet from '~/Popup/pages/Wallet';
 import WalletReceive from '~/Popup/pages/Wallet/Receive';
 import WalletSend from '~/Popup/pages/Wallet/Send';
@@ -120,6 +121,7 @@ function Popup() {
                   <Route path={PATH.SETTING__CHANGE_CURRENCY} element={<SettingChangeCurrency />} />
                   <Route path={PATH.SETTING__ADDRESS_BOOK} element={<SettingAddressBook />} />
                   <Route path={PATH.SETTING__ADDRESS_BOOK__ADD} element={<SettingAddressBookAdd />} />
+                  <Route path={PATH.SETTING__CONNECTED_SITES} element={<SettingConnectedSites />} />
 
                   <Route path={PATH.ACCOUNT__MANAGEMENT} element={<AccountManagement />} />
                   <Route path={PATH.ACCOUNT__CREATE} element={<AccountCreate />} />

@@ -63,7 +63,9 @@
       "Drawer": {
         "index": {
           "addressBook": "주소록",
+          "autoSign": "자동 서명",
           "changePassword": "비밀번호 변경",
+          "connectedSites": "연결 된 사이트",
           "currency": "통화",
           "darkMode": "다크모드",
           "guide": "가이드",
@@ -707,6 +709,11 @@
         },
         "layout": {
           "title": "비밀번호 변경"
+        }
+      },
+      "ConnectedSites": {
+        "layout": {
+          "title": "연결 된 사이트"
         }
       }
     },

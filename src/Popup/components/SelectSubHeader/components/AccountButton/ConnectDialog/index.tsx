@@ -3,11 +3,13 @@ import { Typography } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
+import Image from '~/Popup/components/common/Image';
 import { useCurrentTab } from '~/Popup/hooks/SWR/cache/useCurrentTab';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { getSiteIconURL } from '~/Popup/utils/common';
 
-import { Container, DescriptionContainer, OriginContainer, StyledButton } from './styled';
+import { Container, DescriptionContainer, OriginContainer, OriginImageContainer, OriginTextContainer, StyledButton } from './styled';
 
 type ConnectDialogProps = Omit<DialogProps, 'children'>;
 export default function ConnectDialog({ onClose, ...remainder }: ConnectDialogProps) {
@@ -38,12 +40,27 @@ export default function ConnectDialog({ onClose, ...remainder }: ConnectDialogPr
     onClose?.({}, 'backdropClick');
   };
 
+  const faviconURL = (() => {
+    try {
+      return getSiteIconURL(new URL(origin).host);
+    } catch {
+      return undefined;
+    }
+  })();
+
   return (
     <Dialog {...remainder} onClose={onClose}>
       <DialogHeader onClose={onClose}>{actionName}</DialogHeader>
       <Container>
         <OriginContainer>
-          <Typography variant="h5">{origin}</Typography>
+          {faviconURL && (
+            <OriginImageContainer>
+              <Image src={faviconURL} />
+            </OriginImageContainer>
+          )}
+          <OriginTextContainer>
+            <Typography variant="h5">{origin}</Typography>
+          </OriginTextContainer>
         </OriginContainer>
         <DescriptionContainer>
           {isConnected ? (

@@ -63,7 +63,9 @@
       "Drawer": {
         "index": {
           "addressBook": "Address Book",
+          "autoSign": "Auto sign",
           "changePassword": "Change password",
+          "connectedSites": "Connected sites",
           "currency": "Currency",
           "darkMode": "Dark mode",
           "guide": "Guide",
@@ -707,6 +709,11 @@
         },
         "layout": {
           "title": "Change password"
+        }
+      },
+      "ConnectedSites": {
+        "layout": {
+          "title": "Connected sites"
         }
       }
     },
