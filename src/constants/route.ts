@@ -12,6 +12,7 @@ export const PATH = {
   SETTING__CHANGE_CURRENCY: '/setting/change-currency',
   SETTING__ADDRESS_BOOK: '/setting/address-book',
   SETTING__ADDRESS_BOOK__ADD: '/setting/address-book/add',
+  SETTING__CONNECTED_SITES: '/setting/connected-sites',
 
   CHAIN__MANAGEMENT: '/chain/management',
   CHAIN__MANAGEMENT__USE: '/chain/management/use',

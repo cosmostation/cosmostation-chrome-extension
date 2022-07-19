@@ -86,3 +86,7 @@ export function toHex(datum?: number | string, options?: toHexOptions) {
 
   return result;
 }
+
+export function getSiteIconURL(domain: string) {
+  return `https://icon.horse/icon/${domain}?size=small`;
+}
