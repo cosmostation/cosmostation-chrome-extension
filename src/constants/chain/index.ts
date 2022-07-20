@@ -33,6 +33,7 @@ import { PERSISTENCE } from './cosmos/persistence';
 import { PROVENANCE } from './cosmos/provenance';
 import { REGEN } from './cosmos/regen';
 import { RIZON } from './cosmos/rizon';
+import { SECRET } from './cosmos/secret';
 import { SENTINEL } from './cosmos/sentinel';
 import { SIF } from './cosmos/sif';
 import { STARGAZE } from './cosmos/stargaze';
@@ -91,6 +92,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   PROVENANCE,
   REGEN,
   RIZON,
+  SECRET,
   SENTINEL,
   SIF,
   STARGAZE,
