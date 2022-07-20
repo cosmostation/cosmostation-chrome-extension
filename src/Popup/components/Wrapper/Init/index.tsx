@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
@@ -8,7 +8,9 @@ import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { ETHEREUM as NETWORK_ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { chromeSessionStorageDefault, chromeSessionStorageState } from '~/Popup/recoils/chromeSessionStorage';
 import { chromeStorageDefault, chromeStorageState } from '~/Popup/recoils/chromeStorage';
+import { getAllSessionStorage } from '~/Popup/utils/chromeSessionStorage';
 import { getAllStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import type { Chain, CosmosChain } from '~/types/chain';
 import type { LanguageType } from '~/types/chromeStorage';
@@ -21,6 +23,7 @@ export default function Init({ children }: InitType) {
   const [isLoading, setIsLoading] = useState(true);
 
   const [chromeStorage, setChromeStorage] = useRecoilState(chromeStorageState);
+  const setChromeSessionStorage = useSetRecoilState(chromeSessionStorageState);
 
   const { changeLanguage, language } = useTranslation();
 
@@ -32,18 +35,28 @@ export default function Init({ children }: InitType) {
   const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
   const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
 
-  const handleOnStorageChange = () => {
-    void (async () => {
-      setChromeStorage({ ...chromeStorageDefault, ...(await getAllStorage()) });
-    })();
+  const handleOnStorageChange = (_: unknown, areaName: 'sync' | 'local' | 'managed' | 'session') => {
+    if (areaName === 'local') {
+      void (async () => {
+        setChromeStorage({ ...chromeStorageDefault, ...(await getAllStorage()) });
+      })();
+    }
+
+    if (areaName === 'session') {
+      void (async () => {
+        setChromeSessionStorage({ ...chromeSessionStorageDefault, ...(await getAllSessionStorage()) });
+      })();
+    }
   };
 
   useEffect(() => {
     chrome.storage.onChanged.addListener(handleOnStorageChange);
 
     void (async () => {
-      const originChromeStorage = await getAllStorage();
+      const originChromeSessionStorage = await getAllSessionStorage();
+      setChromeSessionStorage({ ...chromeSessionStorageDefault, ...originChromeSessionStorage });
 
+      const originChromeStorage = await getAllStorage();
       setChromeStorage({ ...chromeStorageDefault, ...originChromeStorage });
 
       if (language && !originChromeStorage.currency) {

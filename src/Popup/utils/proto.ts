@@ -2,8 +2,8 @@ import { post } from '~/Popup/utils/axios';
 import { isAminoSend } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos.js';
 import type { Msg, MsgSend, SignAminoDoc } from '~/types/cosmos/amino';
-import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend } from '~/types/cosmos/proto';
-import type { PubKey, TxPayload } from '~/types/proto';
+import type { SendTransactionPayload } from '~/types/cosmos/common';
+import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend, PubKey } from '~/types/cosmos/proto';
 
 export function convertAminoMessageToProto(msg: Msg) {
   if (isAminoSend(msg)) {
@@ -104,7 +104,7 @@ export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey)
 }
 
 export function broadcast(url: string, body: unknown) {
-  return post<TxPayload>(url, body);
+  return post<SendTransactionPayload>(url, body);
 }
 
 export function decodeProtobufMessage(msg: google.protobuf.IAny) {

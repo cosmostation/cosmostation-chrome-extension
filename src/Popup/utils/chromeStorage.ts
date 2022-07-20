@@ -1,6 +1,4 @@
 import { CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
-import { ENCTYPT_KEY } from '~/constants/common';
-import { aesDecrypt, mnemonicToPair, privateKeyToPair, sha512 } from '~/Popup/utils/crypto';
 import type { ChromeStorage, ChromeStorageKeys } from '~/types/chromeStorage';
 
 export function getStorage<T extends ChromeStorageKeys>(key: T): Promise<ChromeStorage[T]> {
@@ -39,16 +37,7 @@ export function setStorage<T extends ChromeStorageKeys>(key: T, value: ChromeSto
 export async function chromeStorage() {
   const storage = await getAllStorage();
 
-  const {
-    accounts,
-    accountName,
-    selectedAccountId,
-    additionalEthereumNetworks,
-    encryptedPassword,
-    selectedEthereumNetworkId,
-    allowedOrigins,
-    allowedChainIds,
-  } = storage;
+  const { accounts, accountName, selectedAccountId, additionalEthereumNetworks, selectedEthereumNetworkId, allowedOrigins, allowedChainIds } = storage;
 
   const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
   const currentAccountName = accountName[selectedAccountId];
@@ -67,30 +56,6 @@ export async function chromeStorage() {
     .filter((allowedOrigin) => allowedOrigin.accountId === selectedAccountId)
     .map((allowedOrigin) => allowedOrigin.origin);
 
-  const getPairKey = (chainName: string, password: string) => {
-    const chains = Object.values(CHAINS);
-    const selectedChain = chains.find((chain) => chain.chainName.toLowerCase() === chainName.toLowerCase());
-
-    if (!selectedChain) {
-      throw new Error('not exist chain');
-    }
-
-    if (encryptedPassword !== sha512(password)) {
-      throw new Error('incorrect password');
-    }
-
-    if (currentAccount.type === 'MNEMONIC') {
-      const { purpose, coinType, account, change } = selectedChain.bip44;
-      const path = `m/${purpose}/${coinType}/${account}/${change}/${currentAccount.bip44.addressIndex}`;
-
-      return mnemonicToPair(aesDecrypt(currentAccount.encryptedMnemonic, password), path);
-    }
-
-    return privateKeyToPair(Buffer.from(aesDecrypt(currentAccount.encryptedPrivateKey, password), 'hex'));
-  };
-
-  const password = storage.password ? aesDecrypt(storage.password, ENCTYPT_KEY) : null;
-
   return {
     ...storage,
     currentAccount,
@@ -98,7 +63,5 @@ export async function chromeStorage() {
     currentEthereumNetwork,
     currentAllowedChains,
     currentAccountAllowedOrigins,
-    password,
-    getPairKey,
   };
 }

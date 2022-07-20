@@ -4,6 +4,7 @@ import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
+import { setSessionStorage } from '~/Popup/utils/chromeSessionStorage';
 import { getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
 import { closeWindow } from '~/Popup/utils/chromeWindows';
@@ -95,7 +96,8 @@ function background() {
     void (async () => {
       await setStorage('queues', []);
       await setStorage('windowId', null);
-      await setStorage('password', null);
+
+      await setSessionStorage('password', null);
     })();
   });
 
@@ -126,7 +128,8 @@ function background() {
         await setStorage('selectedChainId', '');
         await setStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
 
-        await setStorage('password', null);
+        await setSessionStorage('password', null);
+
         await openTab();
       }
     })();
