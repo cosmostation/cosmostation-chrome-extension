@@ -16,7 +16,7 @@ import type { ThemeType } from '~/types/theme';
 import { cstob } from './messageProcessor';
 
 let prevRequestTime = 0;
-const betweenTime = 500;
+const betweenTime = 200;
 
 function background() {
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, _, sendResponse) => {
