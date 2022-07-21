@@ -200,7 +200,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                   if (code === 0) {
                     enqueueSnackbar('success');
                   } else {
-                    throw new Error(response.tx_response.raw_log);
+                    throw new Error(response.tx_response.raw_log as string);
                   }
                 } catch (e) {
                   enqueueSnackbar(

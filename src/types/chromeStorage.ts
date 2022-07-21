@@ -75,8 +75,18 @@ export type ChromeStorage = {
   additionalEthereumNetworks: EthereumNetwork[];
   selectedEthereumNetworkId: EthereumNetwork['id'];
   ethereumTokens: EthereumToken[];
-
-  password: string | null;
 };
 
 export type ChromeStorageKeys = keyof ChromeStorage;
+
+export type Password = {
+  key: string;
+  value: string;
+  time: number;
+};
+
+export type ChromeSessionStorage = {
+  password: Password | null;
+};
+
+export type ChromeSessionStorageKeys = keyof ChromeSessionStorage;

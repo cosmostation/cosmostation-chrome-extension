@@ -1,4 +1,7 @@
+import type { PublicKeyType } from '.';
 import type { Amount } from './common';
+
+export type PubKey = { type: PublicKeyType; value: string };
 
 export type Msg<T = unknown> = {
   type_url: string;

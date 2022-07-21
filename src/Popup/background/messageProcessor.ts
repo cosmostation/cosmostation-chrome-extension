@@ -9,6 +9,7 @@ import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TY
 import { COSMOS_RPC_ERROR_MESSAGE, ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import type { TOKEN_TYPE } from '~/constants/ethereum';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
+import { chromeSessionStorage } from '~/Popup/utils/chromeSessionStorage';
 import { chromeStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
@@ -71,8 +72,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
       const { method } = message;
 
-      const { currentAccount, currentAccountName, additionalChains, queues, currentAllowedChains, currentAccountAllowedOrigins, password, accounts } =
+      const { currentAccount, currentAccountName, additionalChains, queues, currentAllowedChains, currentAccountAllowedOrigins, accounts } =
         await chromeStorage();
+
+      const { currentPassword } = await chromeSessionStorage();
 
       if (accounts.length === 0) {
         throw new CosmosRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
@@ -103,9 +106,9 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             chain?.id &&
             [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain?.id) &&
             currentAccountAllowedOrigins.includes(origin) &&
-            password
+            currentPassword
           ) {
-            const keyPair = getKeyPair(currentAccount, chain, password);
+            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
             const publicKey = keyPair?.publicKey.toString('hex');
@@ -255,9 +258,9 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             chain?.id &&
             [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain?.id) &&
             currentAccountAllowedOrigins.includes(origin) &&
-            password
+            currentPassword
           ) {
-            const keyPair = getKeyPair(currentAccount, chain, password);
+            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
             const publicKey = keyPair?.publicKey.toString('hex');
@@ -273,7 +276,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               origin,
             });
           } else {
-            if (!currentAccountAllowedOrigins.includes(origin) || !password) {
+            if (!currentAccountAllowedOrigins.includes(origin) || !currentPassword) {
               throw new CosmosRPCError(RPC_ERROR.UNAUTHORIZED, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED]);
             }
 
@@ -366,8 +369,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
     const ethereumNoPopupMethods = Object.values(ETHEREUM_NO_POPUP_METHOD_TYPE) as string[];
 
-    const { queues, additionalEthereumNetworks, currentEthereumNetwork, password, currentAccountAllowedOrigins, currentAllowedChains, currentAccount } =
+    const { queues, additionalEthereumNetworks, currentEthereumNetwork, currentAccountAllowedOrigins, currentAllowedChains, currentAccount } =
       await chromeStorage();
+
+    const { currentPassword } = await chromeSessionStorage();
 
     const { message, messageId, origin } = request;
 
@@ -387,8 +392,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as EthSignParams;
 
-            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
-              const keyPair = getKeyPair(currentAccount, chain, password);
+            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+              const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
 
               if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
@@ -422,8 +427,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as EthSignTypedDataParams;
 
-            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
-              const keyPair = getKeyPair(currentAccount, chain, password);
+            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+              const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
 
               if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
@@ -479,8 +484,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as PersonalSignParams;
 
-            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
-              const keyPair = getKeyPair(currentAccount, chain, password);
+            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+              const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
 
               if (address.toLowerCase() !== validatedParams[1].toLowerCase()) {
@@ -514,8 +519,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as EthSignTransactionParams;
 
-            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
-              const keyPair = getKeyPair(currentAccount, chain, password);
+            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+              const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
               const address = getAddress(chain, keyPair?.publicKey);
 
@@ -570,8 +575,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
 
         if (method === 'eth_requestAccounts') {
-          if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
-            const keyPair = getKeyPair(currentAccount, chain, password);
+          if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
             const result: EthRequestAccountsResponse = [address];
@@ -834,8 +839,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
       } else if (ethereumNoPopupMethods.includes(method)) {
         if (method === 'eth_accounts') {
-          if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && password) {
-            const keyPair = getKeyPair(currentAccount, chain, password);
+          if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
             const result: EthRequestAccountsResponse = [address];

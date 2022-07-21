@@ -29,8 +29,6 @@ export const chromeStorageDefault: ChromeStorage = {
   selectedEthereumNetworkId: '',
 
   ethereumTokens: [],
-
-  password: null,
 };
 
 export const chromeStorageState = atom<ChromeStorage>({
