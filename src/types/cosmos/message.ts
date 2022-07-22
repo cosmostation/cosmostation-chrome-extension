@@ -15,6 +15,19 @@ export type CosSupportedChainNames = {
   id?: number | string;
 };
 
+export type CosSupportedChainNamesResponse = {
+  official: string[];
+  unofficial: string[];
+};
+
+export type CosActivatedChainNames = {
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__ACTIVATED_CHAIN_NAMES;
+  params?: undefined;
+  id?: number | string;
+};
+
+export type CosActivatedChainNamesResponse = string[];
+
 export type CosAccount = {
   method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__ACCOUNT | typeof COSMOS_NO_POPUP_METHOD_TYPE.TEN__ACCOUNT;
   params: { chainName: string };

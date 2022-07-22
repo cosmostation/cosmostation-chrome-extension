@@ -1,3 +1,4 @@
+import { debounce } from 'lodash';
 import Web3 from 'web3';
 import type { MessageTypes, TypedMessage } from '@metamask/eth-sig-util';
 import { signTypedData, SignTypedDataVersion } from '@metamask/eth-sig-util';
@@ -10,15 +11,24 @@ import { COSMOS_RPC_ERROR_MESSAGE, ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ER
 import type { TOKEN_TYPE } from '~/constants/ethereum';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { chromeSessionStorage } from '~/Popup/utils/chromeSessionStorage';
-import { chromeStorage, setStorage } from '~/Popup/utils/chromeStorage';
+import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
 import { CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
 import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CosmosChain } from '~/types/chain';
+import type { Queue } from '~/types/chromeStorage';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
-import type { CosAccountResponse, CosAddChainParams, CosRequestAccountResponse, CosSignAminoParams, CosSignDirectParams } from '~/types/cosmos/message';
+import type {
+  CosAccountResponse,
+  CosActivatedChainNamesResponse,
+  CosAddChainParams,
+  CosRequestAccountResponse,
+  CosSignAminoParams,
+  CosSignDirectParams,
+  CosSupportedChainNamesResponse,
+} from '~/types/cosmos/message';
 import type {
   EthcAddNetworkParams,
   EthcAddTokensParam,
@@ -56,6 +66,25 @@ import {
 } from './joiSchema';
 import { post } from '../utils/fetch';
 
+let localQueues: Queue[] = [];
+
+const setQueues = debounce(
+  async () => {
+    const queues = localQueues;
+    localQueues = [];
+
+    const currentQueue = await getStorage('queues');
+
+    const window = await openWindow();
+    await setStorage('queues', [
+      ...currentQueue.map((item) => ({ ...item, windowId: window?.id })),
+      ...queues.map((item) => ({ ...item, windowId: window?.id })),
+    ]);
+  },
+  500,
+  { leading: true },
+);
+
 // contentScrpit to background
 export async function cstob(request: ContentScriptToBackgroundEventMessage<RequestMessage>) {
   if (request.line === 'COSMOS') {
@@ -72,8 +101,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
       const { method } = message;
 
-      const { currentAccount, currentAccountName, additionalChains, queues, currentAllowedChains, currentAccountAllowedOrigins, accounts } =
-        await chromeStorage();
+      const { currentAccount, currentAccountName, additionalChains, currentAllowedChains, currentAccountAllowedOrigins, accounts } = await chromeStorage();
 
       const { currentPassword } = await chromeSessionStorage();
 
@@ -124,11 +152,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               origin,
             });
           } else {
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              { ...request, message: { ...request.message, method, params: { chainName: chain.chainName } }, windowId: window?.id },
-            ]);
+            localQueues.push({ ...request, message: { ...request.message, method, params: { chainName: chain.chainName } } });
+            void setQueues();
           }
         }
 
@@ -152,15 +177,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]}: 'chainId' is a duplicate`);
             }
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method, params: { ...validatedParams, chainName: params.chainName } as CosAddChainParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: { ...validatedParams, chainName: params.chainName } as CosAddChainParams },
+            });
+            void setQueues();
           } catch (err) {
             if (err instanceof CosmosRPCError) {
               throw err;
@@ -184,15 +205,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignAminoParams;
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignAminoParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignAminoParams },
+            });
+            void setQueues();
           } catch (err) {
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
           }
@@ -212,15 +229,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignDirectParams;
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignDirectParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignDirectParams },
+            });
+            void setQueues();
           } catch (err) {
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
           }
@@ -231,9 +244,27 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const unofficial = additionalChains.map((item) => item.chainName.toLowerCase());
 
+          const response: CosSupportedChainNamesResponse = { official, unofficial };
+
           responseToWeb({
             response: {
-              result: { official, unofficial },
+              result: response,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        }
+
+        if (method === 'cos_activatedChainNames') {
+          const response: CosActivatedChainNamesResponse = [
+            ...currentAllowedChains.filter((item) => item.line === 'COSMOS').map((item) => item.chainName.toLowerCase()),
+            ...additionalChains.filter((item) => item.line === 'COSMOS').map((item) => item.chainName.toLowerCase()),
+          ];
+
+          responseToWeb({
+            response: {
+              result: response,
             },
             message,
             messageId,
@@ -369,8 +400,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
     const ethereumNoPopupMethods = Object.values(ETHEREUM_NO_POPUP_METHOD_TYPE) as string[];
 
-    const { queues, additionalEthereumNetworks, currentEthereumNetwork, currentAccountAllowedOrigins, currentAllowedChains, currentAccount } =
-      await chromeStorage();
+    const { additionalEthereumNetworks, currentEthereumNetwork, currentAccountAllowedOrigins, currentAllowedChains, currentAccount } = await chromeStorage();
 
     const { currentPassword } = await chromeSessionStorage();
 
@@ -401,15 +431,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               }
             }
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method, params: [...validatedParams] as EthSignParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: [...validatedParams] as EthSignParams },
+            });
+            void setQueues();
           } catch (err) {
             if (err instanceof EthereumRPCError) {
               throw err;
@@ -458,15 +484,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid data', message.id);
             }
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method, params: [...validatedParams] as EthSignTypedDataParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: [...validatedParams] as EthSignTypedDataParams },
+            });
+            void setQueues();
           } catch (err) {
             if (err instanceof EthereumRPCError) {
               throw err;
@@ -493,15 +515,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               }
             }
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method, params: [...validatedParams] as PersonalSignParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: [...validatedParams] as PersonalSignParams },
+            });
+            void setQueues();
           } catch (err) {
             if (err instanceof EthereumRPCError) {
               throw err;
@@ -556,15 +574,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, (e as { message: string }).message, message.id);
             }
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method, params: [{ ...validatedParams[0], gas }] as EthSignTransactionParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: [{ ...validatedParams[0], gas }] as EthSignTransactionParams },
+            });
+            void setQueues();
           } catch (err) {
             if (err instanceof EthereumRPCError) {
               throw err;
@@ -590,8 +604,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               origin,
             });
           } else {
-            const window = await openWindow();
-            await setStorage('queues', [...queues, { ...request, message: { ...request.message, method }, windowId: window?.id }]);
+            localQueues.push({ ...request, message: { ...request.message, method } });
+            void setQueues();
           }
         }
 
@@ -618,15 +632,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `Can't add ${validatedParams[0].chainId}`, message.id, { chainId: response.result });
             }
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method, params: [...validatedParams] as EthcAddNetworkParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: [...validatedParams] as EthcAddNetworkParams },
+            });
+            void setQueues();
           } catch (err) {
             if (err instanceof EthereumRPCError) {
               throw err;
@@ -661,15 +671,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               return;
             }
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method, params: [...validatedParams] as EthcSwitchNetworkParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: [...validatedParams] as EthcSwitchNetworkParams },
+            });
+            void setQueues();
           } catch (err) {
             if (err instanceof EthereumRPCError) {
               throw err;
@@ -687,15 +693,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as EthcAddTokensParams;
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method, params: [...validatedParams] as EthcAddTokensParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: [...validatedParams] as EthcAddTokensParams },
+            });
+            void setQueues();
           } catch (err) {
             if (err instanceof EthereumRPCError) {
               throw err;
@@ -722,16 +724,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               coinGeckoId: validatedParams.options.coinGeckoId,
             };
 
-            const window = await openWindow();
-
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method: 'ethc_addTokens', params: [addTokenParam] as EthcAddTokensParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method: 'ethc_addTokens', params: [addTokenParam] as EthcAddTokensParams },
+            });
+            void setQueues();
           } catch (err) {
             if (err instanceof EthereumRPCError) {
               throw err;
@@ -777,15 +774,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               coinGeckoId: param.coinGeckoId,
             };
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method: 'ethc_addNetwork', params: [addNetworkParam] as EthcAddNetworkParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method: 'ethc_addNetwork', params: [addNetworkParam] as EthcAddNetworkParams },
+            });
+            void setQueues();
           } catch (err) {
             if (err instanceof EthereumRPCError) {
               throw err;
@@ -820,15 +813,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               return;
             }
 
-            const window = await openWindow();
-            await setStorage('queues', [
-              ...queues,
-              {
-                ...request,
-                message: { ...request.message, method: 'ethc_switchNetwork', params: [validatedParams[0].chainId] as EthcSwitchNetworkParams },
-                windowId: window?.id,
-              },
-            ]);
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method: 'ethc_switchNetwork', params: [validatedParams[0].chainId] as EthcSwitchNetworkParams },
+            });
+            void setQueues();
           } catch (err) {
             if (err instanceof EthereumRPCError) {
               throw err;
