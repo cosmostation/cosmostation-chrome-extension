@@ -15,26 +15,12 @@ import type { ThemeType } from '~/types/theme';
 
 import { cstob } from './messageProcessor';
 
-let prevRequestTime = 0;
-const betweenTime = 200;
-
 function background() {
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, _, sendResponse) => {
     sendResponse();
 
     if (request?.type === MESSAGE_TYPE.REQUEST__CONTENT_SCRIPT_TO_BACKGROUND) {
-      const curRequestTime = new Date().getTime();
-      const betweenRequestTime = curRequestTime - prevRequestTime;
-      prevRequestTime = curRequestTime;
-
-      if (betweenRequestTime > betweenTime) {
-        void cstob(request);
-      } else {
-        const delayTime = betweenTime - betweenRequestTime;
-        setTimeout(() => {
-          void cstob(request);
-        }, delayTime);
-      }
+      void cstob(request);
     }
   });
 

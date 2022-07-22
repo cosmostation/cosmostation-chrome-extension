@@ -17,6 +17,7 @@ export const COSMOS_NO_POPUP_METHOD_TYPE = {
   TEN__ACCOUNT: 'ten_account',
 
   COS__SUPPORTED_CHAIN_NAMES: 'cos_supportedChainNames',
+  COS__ACTIVATED_CHAIN_NAMES: 'cos_activatedChainNames',
   COS__ACCOUNT: 'cos_account',
   COS__SEND_TRANSACTION: 'cos_sendTransaction',
 } as const;
