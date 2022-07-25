@@ -42,6 +42,7 @@ import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
 import PopupCosmosAddChain from '~/Popup/pages/Popup/Cosmos/AddChain';
+import PopupCosmosAutoSign from '~/Popup/pages/Popup/Cosmos/AutoSign';
 import PopupCosmosSignAmino from '~/Popup/pages/Popup/Cosmos/Sign/Amino';
 import PopupCosmosSignDirect from '~/Popup/pages/Popup/Cosmos/Sign/Direct';
 import PopupEthereumAddNetwork from '~/Popup/pages/Popup/Ethereum/AddNetwork';
@@ -148,6 +149,7 @@ function Popup() {
                   <Route path={PATH.POPUP__ETHEREUM__TRANSACTION} element={<PopupEthereumTransaction />} />
 
                   <Route path={PATH.POPUP__COSMOS__ADD_CHAIN} element={<PopupCosmosAddChain />} />
+                  <Route path={PATH.POPUP__COSMOS__AUTO_SIGN} element={<PopupCosmosAutoSign />} />
                   <Route path={PATH.POPUP__COSMOS__SIGN__AMINO} element={<PopupCosmosSignAmino />} />
                   <Route path={PATH.POPUP__COSMOS__SIGN__DIRECT} element={<PopupCosmosSignDirect />} />
                 </>

@@ -51,6 +51,15 @@ export type AddressInfo = {
   memo?: string;
 };
 
+export type AutoSign = {
+  id: string;
+  accountId: Account['id'];
+  chainId: Chain['id'];
+  origin: string;
+  startTime: number;
+  duration: number;
+};
+
 export type ChromeStorage = {
   encryptedPassword: string | null;
   accounts: Account[];
@@ -75,6 +84,8 @@ export type ChromeStorage = {
   additionalEthereumNetworks: EthereumNetwork[];
   selectedEthereumNetworkId: EthereumNetwork['id'];
   ethereumTokens: EthereumToken[];
+
+  autoSigns: AutoSign[];
 };
 
 export type ChromeStorageKeys = keyof ChromeStorage;

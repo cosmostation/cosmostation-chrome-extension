@@ -460,6 +460,14 @@
             "description4": ""
           }
         },
+        "AutoSign": {
+          "entry": {
+            "description1": "Activating Auto Sign can put your wallet at high risk of unconscious fund loss - activate ONLY on fully trusted dApps.",
+            "description2": "Cosmostation will NOT be responsible for any related accidents. Please proceed at your own risk.",
+            "question": "Do you want to activate Auto Sign?",
+            "warning": "WARNING!"
+          }
+        },
         "Sign": {
           "Amino": {
             "components": {

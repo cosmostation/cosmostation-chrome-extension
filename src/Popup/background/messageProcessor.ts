@@ -23,33 +23,34 @@ import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type {
   CosAccountResponse,
   CosActivatedChainNamesResponse,
-  CosAddChainParams,
+  CosAddChain,
   CosRequestAccountResponse,
-  CosSignAminoParams,
-  CosSignDirectParams,
+  CosSetAutoSign,
+  CosSignAmino,
+  CosSignDirect,
   CosSupportedChainNamesResponse,
 } from '~/types/cosmos/message';
 import type {
-  EthcAddNetworkParams,
-  EthcAddTokensParam,
-  EthcAddTokensParams,
-  EthcSwitchNetworkParams,
+  EthcAddNetwork,
+  EthcAddTokens,
+  EthcSwitchNetwork,
   EthcSwitchNetworkResponse,
   EthRequestAccountsResponse,
-  EthSignParams,
-  EthSignTransactionParams,
-  EthSignTypedDataParams,
-  PersonalSignParams,
-  WalletAddEthereumChainParams,
-  WalletSwitchEthereumChainParams,
+  EthSign,
+  EthSignTransaction,
+  EthSignTypedData,
+  PersonalSign,
+  WalletAddEthereumChain,
+  WalletSwitchEthereumChain,
   WalletSwitchEthereumChainResponse,
-  WalletWatchAssetParams,
+  WalletWatchAsset,
 } from '~/types/ethereum/message';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
 
 import {
   cosAddChainParamsSchema,
+  cosAutoSignParamsSchema,
   cosSendTransactionParamsSchema,
   cosSignAminoParamsSchema,
   cosSignDirectParamsSchema,
@@ -167,7 +168,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = cosAddChainParamsSchema(cosmosLowercaseChainNames, officialCosmosLowercaseChainIds, unofficialCosmosLowercaseChainIds);
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as CosAddChainParams;
+            const validatedParams = (await schema.validateAsync(params)) as CosAddChain['params'];
 
             const filteredCosmosLowercaseChainIds = cosmosAdditionalChains
               .filter((item) => item.chainName.toLowerCase() !== validatedParams.chainName)
@@ -179,7 +180,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method, params: { ...validatedParams, chainName: params.chainName } as CosAddChainParams },
+              message: { ...request.message, method, params: { ...validatedParams, chainName: params.chainName } as CosAddChain['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -187,6 +188,30 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               throw err;
             }
 
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+        }
+
+        if (method === 'cos_setAutoSign') {
+          const { params } = message;
+
+          const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName : params?.chainName;
+
+          const chain = getChain(chainName);
+
+          const schema = cosAutoSignParamsSchema(allChainLowercaseNames);
+
+          try {
+            const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSetAutoSign['params'];
+
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSetAutoSign['params'] },
+            });
+            void setQueues();
+          } catch (err) {
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
           }
         }
@@ -203,11 +228,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = cosSignAminoParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
 
           try {
-            const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignAminoParams;
+            const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignAmino['params'];
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignAminoParams },
+              message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignAmino['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -227,11 +252,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = cosSignDirectParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
 
           try {
-            const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignDirectParams;
+            const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignDirect['params'];
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignDirectParams },
+              message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignDirect['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -420,7 +445,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = ethSignParamsSchema();
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as EthSignParams;
+            const validatedParams = (await schema.validateAsync(params)) as EthSign['params'];
 
             if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
@@ -433,7 +458,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method, params: [...validatedParams] as EthSignParams },
+              message: { ...request.message, method, params: [...validatedParams] as EthSign['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -451,7 +476,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = ethSignTypedDataParamsSchema();
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as EthSignTypedDataParams;
+            const validatedParams = (await schema.validateAsync(params)) as EthSignTypedData['params'];
 
             if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
@@ -486,7 +511,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method, params: [...validatedParams] as EthSignTypedDataParams },
+              message: { ...request.message, method, params: [...validatedParams] as EthSignTypedData['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -504,7 +529,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = personalSignParamsSchema();
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as PersonalSignParams;
+            const validatedParams = (await schema.validateAsync(params)) as PersonalSign['params'];
 
             if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
@@ -517,7 +542,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method, params: [...validatedParams] as PersonalSignParams },
+              message: { ...request.message, method, params: [...validatedParams] as PersonalSign['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -535,7 +560,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = ethSignTransactionParamsSchema();
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as EthSignTransactionParams;
+            const validatedParams = (await schema.validateAsync(params)) as EthSignTransaction['params'];
 
             if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
@@ -576,7 +601,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method, params: [{ ...validatedParams[0], gas }] as EthSignTransactionParams },
+              message: { ...request.message, method, params: [{ ...validatedParams[0], gas }] as EthSignTransaction['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -615,7 +640,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = ethcAddNetworkParamsSchema();
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as EthcAddNetworkParams;
+            const validatedParams = (await schema.validateAsync(params)) as EthcAddNetwork['params'];
 
             const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], message.id, validatedParams[0].rpcURL);
 
@@ -634,7 +659,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method, params: [...validatedParams] as EthcAddNetworkParams },
+              message: { ...request.message, method, params: [...validatedParams] as EthcAddNetwork['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -654,7 +679,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = ethcSwitchNetworkParamsSchema(networkChainIds);
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as EthcSwitchNetworkParams;
+            const validatedParams = (await schema.validateAsync(params)) as EthcSwitchNetwork['params'];
 
             if (params[0] === currentEthereumNetwork().chainId) {
               const result: EthcSwitchNetworkResponse = null;
@@ -673,7 +698,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method, params: [...validatedParams] as EthcSwitchNetworkParams },
+              message: { ...request.message, method, params: [...validatedParams] as EthcSwitchNetwork['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -691,11 +716,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = ethcAddTokensParamsSchema();
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as EthcAddTokensParams;
+            const validatedParams = (await schema.validateAsync(params)) as EthcAddTokens['params'];
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method, params: [...validatedParams] as EthcAddTokensParams },
+              message: { ...request.message, method, params: [...validatedParams] as EthcAddTokens['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -713,9 +738,9 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = WalletWatchAssetParamsSchema();
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as WalletWatchAssetParams;
+            const validatedParams = (await schema.validateAsync(params)) as WalletWatchAsset['params'];
 
-            const addTokenParam: EthcAddTokensParam = {
+            const addTokenParam: EthcAddTokens['params'][0] = {
               tokenType: validatedParams.type as typeof TOKEN_TYPE.ERC20,
               address: validatedParams.options.address,
               decimals: validatedParams.options.decimals,
@@ -726,7 +751,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method: 'ethc_addTokens', params: [addTokenParam] as EthcAddTokensParams },
+              message: { ...request.message, method: 'ethc_addTokens', params: [addTokenParam] as EthcAddTokens['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -744,7 +769,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = walletAddEthereumChainParamsSchema();
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as WalletAddEthereumChainParams;
+            const validatedParams = (await schema.validateAsync(params)) as WalletAddEthereumChain['params'];
 
             const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], message.id, validatedParams[0].rpcUrls[0]);
 
@@ -763,7 +788,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             const param = validatedParams[0];
 
-            const addNetworkParam: EthcAddNetworkParams[0] = {
+            const addNetworkParam: EthcAddNetwork['params'][0] = {
               chainId: param.chainId,
               decimals: param.nativeCurrency.decimals,
               displayDenom: param.nativeCurrency.symbol,
@@ -776,7 +801,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method: 'ethc_addNetwork', params: [addNetworkParam] as EthcAddNetworkParams },
+              message: { ...request.message, method: 'ethc_addNetwork', params: [addNetworkParam] as EthcAddNetwork['params'] },
             });
             void setQueues();
           } catch (err) {
@@ -796,7 +821,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = walletSwitchEthereumChainParamsSchema(networkChainIds);
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as WalletSwitchEthereumChainParams;
+            const validatedParams = (await schema.validateAsync(params)) as WalletSwitchEthereumChain['params'];
 
             if (validatedParams[0].chainId === currentEthereumNetwork().chainId) {
               const result: WalletSwitchEthereumChainResponse = null;
@@ -815,7 +840,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             localQueues.push({
               ...request,
-              message: { ...request.message, method: 'ethc_switchNetwork', params: [validatedParams[0].chainId] as EthcSwitchNetworkParams },
+              message: { ...request.message, method: 'ethc_switchNetwork', params: [validatedParams[0].chainId] as EthcSwitchNetwork['params'] },
             });
             void setQueues();
           } catch (err) {

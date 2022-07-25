@@ -47,6 +47,10 @@ export default function Routes({ children }: RoutesType) {
         navigate('/popup/cosmos/sign/direct');
       }
 
+      if (chromeStorage.queues[0].message.method === 'cos_setAutoSign') {
+        navigate('/popup/cosmos/auto-sign');
+      }
+
       if (chromeStorage.queues[0].message.method === 'ethc_addNetwork') {
         navigate('/popup/ethereum/add-network');
       }

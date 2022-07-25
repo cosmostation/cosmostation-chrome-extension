@@ -82,6 +82,19 @@ export type CosAddChain = {
 
 export type CosAddChainResponse = boolean;
 
+export type CosSetAutoSignParams = {
+  chainName: string;
+  duration: number;
+};
+
+export type CosSetAutoSign = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__SET_AUTO_SIGN;
+  params: CosSetAutoSignParams;
+  id?: number | string;
+};
+
+export type CosSetAutoSignResponse = null;
+
 export type CosSignOptions = { isEditMemo?: boolean; isEditFee?: boolean; gasRate?: GasRate };
 
 export type CosSignAminoParams = { chainName: string; doc: SignAminoDoc } & CosSignOptions;
