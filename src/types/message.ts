@@ -5,6 +5,8 @@ import type {
   CosAccount,
   CosActivatedChainNames,
   CosAddChain,
+  CosDeleteAutoSign,
+  CosGetAutoSign,
   CosRequestAccount,
   CosSendTransaction,
   CosSetAutoSign,
@@ -61,6 +63,8 @@ export type CosmosRequestMessage =
   | CosRequestAccount
   | CosAddChain
   | CosSetAutoSign
+  | CosGetAutoSign
+  | CosDeleteAutoSign
   | CosSignAmino
   | CosSignDirect
   | CosSupportedChainNames

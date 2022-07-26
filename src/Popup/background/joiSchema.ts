@@ -5,7 +5,7 @@ import { ethereumAddressRegex } from '~/Popup/utils/regex';
 import type { GasRate } from '~/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Amount } from '~/types/cosmos/common';
-import type { CosAddChain, CosSendTransaction, CosSetAutoSign, CosSignAmino, CosSignDirect } from '~/types/cosmos/message';
+import type { CosAddChain, CosDeleteAutoSign, CosGetAutoSign, CosSendTransaction, CosSetAutoSign, CosSignAmino, CosSignDirect } from '~/types/cosmos/message';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type {
   CustomChain,
@@ -68,13 +68,33 @@ export const cosAddChainParamsSchema = (chainNames: string[], officialChainIds: 
     .required();
 };
 
-export const cosAutoSignParamsSchema = (chainNames: string[]) =>
+export const cosSetAutoSignParamsSchema = (chainNames: string[]) =>
   Joi.object<CosSetAutoSign['params']>({
     chainName: Joi.string()
       .lowercase()
       .valid(...chainNames)
       .required(),
     duration: Joi.number().min(0).max(3600).required(),
+  })
+    .label('params')
+    .required();
+
+export const cosGetAutoSignParamsSchema = (chainNames: string[]) =>
+  Joi.object<CosGetAutoSign['params']>({
+    chainName: Joi.string()
+      .lowercase()
+      .valid(...chainNames)
+      .required(),
+  })
+    .label('params')
+    .required();
+
+export const cosDeleteAutoSignParamsSchema = (chainNames: string[]) =>
+  Joi.object<CosDeleteAutoSign['params']>({
+    chainName: Joi.string()
+      .lowercase()
+      .valid(...chainNames)
+      .required(),
   })
     .label('params')
     .required();

@@ -24,6 +24,10 @@ import type {
   CosAccountResponse,
   CosActivatedChainNamesResponse,
   CosAddChain,
+  CosDeleteAutoSign,
+  CosDeleteAutoSignResponse,
+  CosGetAutoSign,
+  CosGetAutoSignResponse,
   CosRequestAccountResponse,
   CosSetAutoSign,
   CosSignAmino,
@@ -50,8 +54,8 @@ import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/ty
 
 import {
   cosAddChainParamsSchema,
-  cosAutoSignParamsSchema,
   cosSendTransactionParamsSchema,
+  cosSetAutoSignParamsSchema,
   cosSignAminoParamsSchema,
   cosSignDirectParamsSchema,
   ethcAddNetworkParamsSchema,
@@ -102,7 +106,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
       const { method } = message;
 
-      const { currentAccount, currentAccountName, additionalChains, currentAllowedChains, currentAccountAllowedOrigins, accounts } = await chromeStorage();
+      const { currentAccount, currentAccountName, additionalChains, currentAllowedChains, currentAccountAllowedOrigins, accounts, autoSigns } =
+        await chromeStorage();
 
       const { currentPassword } = await chromeSessionStorage();
 
@@ -132,8 +137,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const chain = getChain(chainName)!;
 
           if (
-            chain?.id &&
-            [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain?.id) &&
+            chain.id &&
+            [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
             currentAccountAllowedOrigins.includes(origin) &&
             currentPassword
           ) {
@@ -201,7 +206,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chain = getChain(chainName);
 
-          const schema = cosAutoSignParamsSchema(allChainLowercaseNames);
+          const schema = cosSetAutoSignParamsSchema(allChainLowercaseNames);
 
           try {
             const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSetAutoSign['params'];
@@ -211,6 +216,96 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSetAutoSign['params'] },
             });
             void setQueues();
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+        }
+
+        if (method === 'cos_getAutoSign') {
+          const { params } = message;
+
+          const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName : params?.chainName;
+
+          const schema = cosSetAutoSignParamsSchema(allChainLowercaseNames);
+
+          try {
+            const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosGetAutoSign['params'];
+
+            const chain = getChain(chainName)!;
+
+            if (
+              chain.id &&
+              [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
+              currentAccountAllowedOrigins.includes(origin) &&
+              currentPassword
+            ) {
+              const autoSign = autoSigns.find((item) => item.accountId === currentAccount.id && item.chainId === chain.id && item.origin === origin);
+
+              const result: CosGetAutoSignResponse = autoSign ? autoSign.startTime + autoSign.duration : null;
+
+              responseToWeb({
+                response: {
+                  result,
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } else {
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosGetAutoSign['params'] },
+              });
+              void setQueues();
+            }
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+        }
+
+        if (method === 'cos_deleteAutoSign') {
+          const { params } = message;
+
+          const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName : params?.chainName;
+
+          const schema = cosSetAutoSignParamsSchema(allChainLowercaseNames);
+
+          try {
+            const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosDeleteAutoSign['params'];
+
+            const chain = getChain(chainName)!;
+
+            if (
+              chain.id &&
+              [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
+              currentAccountAllowedOrigins.includes(origin) &&
+              currentPassword
+            ) {
+              const newAutoSigns = autoSigns.filter((item) => !(item.accountId === currentAccount.id && item.chainId === chain.id && item.origin === origin));
+
+              await setStorage('autoSigns', newAutoSigns);
+
+              const result: CosDeleteAutoSignResponse = null;
+
+              responseToWeb({
+                response: {
+                  result,
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } else {
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosDeleteAutoSign['params'] },
+              });
+              void setQueues();
+            }
           } catch (err) {
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
           }

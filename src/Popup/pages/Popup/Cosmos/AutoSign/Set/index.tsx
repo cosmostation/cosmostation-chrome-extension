@@ -8,7 +8,7 @@ import type { CosSetAutoSign } from '~/types/cosmos/message';
 import Entry from './entry';
 import Layout from './layout';
 
-export default function AutoSign() {
+export default function Set() {
   const { currentQueue } = useCurrentQueue();
 
   if (currentQueue && isCosSetAutoSign(currentQueue)) {

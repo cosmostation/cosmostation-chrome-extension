@@ -95,6 +95,30 @@ export type CosSetAutoSign = {
 
 export type CosSetAutoSignResponse = null;
 
+export type CosGetAutoSignParams = {
+  chainName: string;
+};
+
+export type CosGetAutoSign = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__GET_AUTO_SIGN;
+  params: CosGetAutoSignParams;
+  id?: number | string;
+};
+
+export type CosGetAutoSignResponse = number | null;
+
+export type CosDeleteAutoSignParams = {
+  chainName: string;
+};
+
+export type CosDeleteAutoSign = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__DELETE_AUTO_SIGN;
+  params: CosDeleteAutoSignParams;
+  id?: number | string;
+};
+
+export type CosDeleteAutoSignResponse = null;
+
 export type CosSignOptions = { isEditMemo?: boolean; isEditFee?: boolean; gasRate?: GasRate };
 
 export type CosSignAminoParams = { chainName: string; doc: SignAminoDoc } & CosSignOptions;

@@ -9,7 +9,9 @@ export const COSMOS_POPUP_METHOD_TYPE = {
   COS__ADD_CHAIN: 'cos_addChain',
   COS__SIGN_AMINO: 'cos_signAmino',
   COS__SIGN_DIRECT: 'cos_signDirect',
+  COS__GET_AUTO_SIGN: 'cos_getAutoSign',
   COS__SET_AUTO_SIGN: 'cos_setAutoSign',
+  COS__DELETE_AUTO_SIGN: 'cos_deleteAutoSign',
 } as const;
 
 export const COSMOS_NO_POPUP_METHOD_TYPE = {
