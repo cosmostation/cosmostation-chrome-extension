@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
-import { INJECTIVE } from '~/constants/chain/cosmos/injective';
-import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -16,7 +14,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { fix, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { cosmosURL, signAmino } from '~/Popup/utils/cosmos';
+import { cosmosURL, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, protoTx } from '~/Popup/utils/proto';
 import type { CosmosChain, FeeCoin } from '~/types/chain';
@@ -174,17 +172,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
               const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
 
-              const publicKeyType = (() => {
-                if (chain.chainName === INJECTIVE.chainName) {
-                  return PUBLIC_KEY_TYPE.INJ_SECP256K1;
-                }
-
-                if (chain.type === 'ETHERMINT') {
-                  return PUBLIC_KEY_TYPE.ETH_SECP256K1;
-                }
-
-                return PUBLIC_KEY_TYPE.SECP256K1;
-              })();
+              const publicKeyType = getPublicKeyType(chain);
 
               const pubKey = { type: publicKeyType, value: base64PublicKey };
 

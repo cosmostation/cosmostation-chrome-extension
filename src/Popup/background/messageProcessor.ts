@@ -31,7 +31,9 @@ import type {
   CosRequestAccountResponse,
   CosSetAutoSign,
   CosSignAmino,
+  CosSignAminoResponse,
   CosSignDirect,
+  CosSignDirectResponse,
   CosSupportedChainNamesResponse,
 } from '~/types/cosmos/message';
 import type {
@@ -54,6 +56,8 @@ import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/ty
 
 import {
   cosAddChainParamsSchema,
+  cosDeleteAutoSignParamsSchema,
+  cosGetAutoSignParamsSchema,
   cosSendTransactionParamsSchema,
   cosSetAutoSignParamsSchema,
   cosSignAminoParamsSchema,
@@ -69,6 +73,7 @@ import {
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,
 } from './joiSchema';
+import { getPublicKeyType, signAmino, signDirect } from '../utils/cosmos';
 import { post } from '../utils/fetch';
 
 let localQueues: Queue[] = [];
@@ -228,7 +233,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chainName = selectedChain.length === 1 ? selectedChain[0].chainName : params?.chainName;
 
-          const schema = cosSetAutoSignParamsSchema(allChainLowercaseNames);
+          const schema = cosGetAutoSignParamsSchema(allChainLowercaseNames);
 
           try {
             const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosGetAutoSign['params'];
@@ -276,7 +281,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chainName = selectedChain.length === 1 ? selectedChain[0].chainName : params?.chainName;
 
-          const schema = cosSetAutoSignParamsSchema(allChainLowercaseNames);
+          const schema = cosDeleteAutoSignParamsSchema(allChainLowercaseNames);
 
           try {
             const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosDeleteAutoSign['params'];
@@ -329,11 +334,50 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignAmino['params'];
 
-            localQueues.push({
-              ...request,
-              message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignAmino['params'] },
-            });
-            void setQueues();
+            const currentTime = new Date().getTime();
+
+            const isAutoSign = !!autoSigns.find(
+              (item) =>
+                item.accountId === currentAccount.id && item.chainId === chain?.id && item.origin === origin && item.startTime + item.duration > currentTime,
+            );
+
+            if (
+              chain?.id &&
+              [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
+              currentAccountAllowedOrigins.includes(origin) &&
+              currentPassword &&
+              isAutoSign
+            ) {
+              const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+
+              const signature = signAmino(validatedParams.doc, keyPair!.privateKey, chain);
+              const base64Signature = Buffer.from(signature).toString('base64');
+
+              const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
+              const publicKeyType = getPublicKeyType(chain);
+              const pubKey = { type: publicKeyType, value: base64PublicKey };
+
+              const response: CosSignAminoResponse = {
+                signature: base64Signature,
+                pub_key: pubKey,
+                signed_doc: validatedParams.doc,
+              };
+
+              responseToWeb({
+                response: {
+                  result: response,
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } else {
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignAmino['params'] },
+              });
+              void setQueues();
+            }
           } catch (err) {
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
           }
@@ -353,11 +397,57 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignDirect['params'];
 
-            localQueues.push({
-              ...request,
-              message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignDirect['params'] },
-            });
-            void setQueues();
+            const currentTime = new Date().getTime();
+
+            const isAutoSign = !!autoSigns.find(
+              (item) =>
+                item.accountId === currentAccount.id && item.chainId === chain?.id && item.origin === origin && item.startTime + item.duration > currentTime,
+            );
+
+            if (
+              chain?.id &&
+              [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
+              currentAccountAllowedOrigins.includes(origin) &&
+              currentPassword &&
+              isAutoSign
+            ) {
+              const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+
+              const { doc } = validatedParams;
+
+              const authInfoBytes = Buffer.from(doc.auth_info_bytes as unknown as string, 'hex');
+              const bodyBytes = Buffer.from(doc.body_bytes as unknown as string, 'hex');
+
+              const newDoc = { ...doc, auth_info_bytes: authInfoBytes, body_bytes: bodyBytes };
+
+              const signature = signDirect(newDoc, keyPair!.privateKey, chain);
+              const base64Signature = Buffer.from(signature).toString('base64');
+
+              const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
+              const publicKeyType = getPublicKeyType(chain);
+              const pubKey = { type: publicKeyType, value: base64PublicKey };
+
+              const response: CosSignDirectResponse = {
+                signature: base64Signature,
+                pub_key: pubKey,
+                signed_doc: validatedParams.doc,
+              };
+
+              responseToWeb({
+                response: {
+                  result: response,
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } else {
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignDirect['params'] },
+              });
+              void setQueues();
+            }
           } catch (err) {
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
           }
