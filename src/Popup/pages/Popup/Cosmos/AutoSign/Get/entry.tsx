@@ -29,7 +29,10 @@ export default function Entry({ queue }: EntryProps) {
   const chain = cosmosChains.find((item) => item.chainName === params.chainName);
 
   useEffect(() => {
-    const autoSign = currentAutoSigns.find((item) => item.accountId === currentAccount.id && item.chainId === chain?.id && item.origin === origin);
+    const currentTime = new Date().getTime();
+    const autoSign = currentAutoSigns.find(
+      (item) => item.accountId === currentAccount.id && item.chainId === chain?.id && item.origin === origin && item.startTime + item.duration > currentTime,
+    );
 
     const result: CosGetAutoSignResponse = autoSign ? autoSign.startTime + autoSign.duration : null;
 

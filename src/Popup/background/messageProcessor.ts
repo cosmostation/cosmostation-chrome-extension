@@ -241,7 +241,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               currentAccountAllowedOrigins.includes(origin) &&
               currentPassword
             ) {
-              const autoSign = autoSigns.find((item) => item.accountId === currentAccount.id && item.chainId === chain.id && item.origin === origin);
+              const currentTime = new Date().getTime();
+              const autoSign = autoSigns.find(
+                (item) =>
+                  item.accountId === currentAccount.id && item.chainId === chain.id && item.origin === origin && item.startTime + item.duration > currentTime,
+              );
 
               const result: CosGetAutoSignResponse = autoSign ? autoSign.startTime + autoSign.duration : null;
 

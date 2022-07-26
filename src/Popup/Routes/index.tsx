@@ -44,6 +44,7 @@ import PopupEthereumTransaction from '~/Popup/pages/Popup/Ethereum/Transaction';
 import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
 import SettingAddressBook from '~/Popup/pages/Setting/AddressBook';
 import SettingAddressBookAdd from '~/Popup/pages/Setting/AddressBook/Add';
+import SettingAutoSign from '~/Popup/pages/Setting/AutoSign';
 import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
 import SettingChangeLanguage from '~/Popup/pages/Setting/ChangeLanguage';
 import SettingChangePassword from '~/Popup/pages/Setting/ChangePassword';
@@ -88,6 +89,7 @@ export default function Routes() {
           <Route path={PATH.SETTING__ADDRESS_BOOK} element={<SettingAddressBook />} />
           <Route path={PATH.SETTING__ADDRESS_BOOK__ADD} element={<SettingAddressBookAdd />} />
           <Route path={PATH.SETTING__CONNECTED_SITES} element={<SettingConnectedSites />} />
+          <Route path={PATH.SETTING__AUTO_SIGN} element={<SettingAutoSign />} />
 
           <Route path={PATH.ACCOUNT__MANAGEMENT} element={<AccountManagement />} />
           <Route path={PATH.ACCOUNT__CREATE} element={<AccountCreate />} />

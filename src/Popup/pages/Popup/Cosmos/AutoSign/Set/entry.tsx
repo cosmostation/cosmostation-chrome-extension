@@ -13,6 +13,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useInterval } from '~/Popup/hooks/useInterval';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { responseToWeb } from '~/Popup/utils/message';
+import { timeToString } from '~/Popup/utils/string';
 import type { Queue } from '~/types/chromeStorage';
 import type { CosSetAutoSign, CosSetAutoSignResponse } from '~/types/cosmos/message';
 
@@ -79,7 +80,7 @@ export default function Entry({ queue }: EntryProps) {
             <Typography variant="h5">End Time</Typography>
           </InfoTitleContainer>
           <InfoContentContainer>
-            <Typography variant="h4">~ {new Date(endTime).toLocaleString()}</Typography>
+            <Typography variant="h4">~ {timeToString(endTime)}</Typography>
           </InfoContentContainer>
         </InfoContainer>
 

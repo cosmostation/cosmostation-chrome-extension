@@ -462,9 +462,9 @@
         },
         "AutoSign": {
           "entry": {
-            "description1": "Auto Sign(자동서명) 기능을 활성화하면 지갑이 자금 손실 위험에 빠질 수 있습니다. 온전히 신뢰할 수 있는 dApp에서만 활성화하십시오.",
+            "description1": "자동서명 기능을 활성화하면 지갑이 자금 손실 위험에 빠질 수 있습니다. 온전히 신뢰할 수 있는 dApp에서만 활성화하십시오.",
             "description2": "Cosmostation은 자동서명 기능과 관련된 위험, 손실 또는 비용에 대해 책임을 지지 않습니다.",
-            "question": "Auto Sign을 활성화 하시겠습니까?",
+            "question": "자동서명을 활성화 하시겠습니까?",
             "warning": "경고!"
           }
         },
@@ -695,6 +695,11 @@
         },
         "layout": {
           "title": "주소록"
+        }
+      },
+      "AutoSign": {
+        "layout": {
+          "title": "자동 서명"
         }
       },
       "ChangeCurrency": {

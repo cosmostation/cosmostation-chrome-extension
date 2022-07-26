@@ -62,7 +62,7 @@
     "Header": {
       "Drawer": {
         "index": {
-          "addressBook": "Address Book",
+          "addressBook": "Address book",
           "autoSign": "Auto sign",
           "changePassword": "Change password",
           "connectedSites": "Connected sites",
@@ -695,6 +695,11 @@
         },
         "layout": {
           "title": "Address book"
+        }
+      },
+      "AutoSign": {
+        "layout": {
+          "title": "Auto Sign"
         }
       },
       "ChangeCurrency": {
