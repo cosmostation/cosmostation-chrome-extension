@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
-import { CERTIK } from '~/constants/chain/cosmos/certik';
+import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/common/IconButton';
@@ -263,7 +263,7 @@ export default function Cosmos({ chain }: CosmosProps) {
                     memo: currentMemo,
                     msgs: [
                       {
-                        type: chain.chainName === CERTIK.chainName ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
+                        type: chain.chainName === SHENTU.chainName ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
                         value: {
                           from_address: address,
                           to_address: currentAddress,
