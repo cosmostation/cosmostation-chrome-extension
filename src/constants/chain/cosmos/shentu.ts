@@ -21,7 +21,7 @@ export const SHENTU: CosmosChain = {
   },
   bech32Prefix: { address: 'certik' },
   coinGeckoId: 'certik',
-  explorerURL: `${MINTSCAN_URL}/certik`,
+  explorerURL: `${MINTSCAN_URL}/shentu`,
   gasRate: {
     tiny: '0.05',
     low: '0.05',
