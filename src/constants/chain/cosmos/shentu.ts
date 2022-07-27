@@ -1,15 +1,15 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import certikImg from '~/images/symbols/certik.png';
+import shentuImg from '~/images/symbols/shentu.png';
 import type { CosmosChain } from '~/types/chain';
 
-export const CERTIK: CosmosChain = {
+export const SHENTU: CosmosChain = {
   id: '29d61a8d-6bbe-4524-afa5-6f70931bcdee',
   line: 'COSMOS',
   type: '',
   chainId: 'shentu-2.2',
-  chainName: 'Certik',
+  chainName: 'Shentu',
   restURL: 'https://lcd-certik.cosmostation.io',
-  imageURL: certikImg,
+  imageURL: shentuImg,
   baseDenom: 'uctk',
   displayDenom: 'CTK',
   decimals: 6,

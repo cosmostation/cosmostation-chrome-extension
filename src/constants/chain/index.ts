@@ -7,7 +7,6 @@ import { BAND } from './cosmos/band';
 import { BITCANNA } from './cosmos/bitcanna';
 import { BITSONG } from './cosmos/bitsong';
 import { CERBERUS } from './cosmos/cerberus';
-import { CERTIK } from './cosmos/certik';
 import { CHIHUAHUA } from './cosmos/chihuahua';
 import { COMDEX } from './cosmos/comdex';
 import { COSMOS } from './cosmos/cosmos';
@@ -35,6 +34,7 @@ import { REGEN } from './cosmos/regen';
 import { RIZON } from './cosmos/rizon';
 import { SECRET } from './cosmos/secret';
 import { SENTINEL } from './cosmos/sentinel';
+import { SHENTU } from './cosmos/shentu';
 import { SIF } from './cosmos/sif';
 import { STARGAZE } from './cosmos/stargaze';
 import { STARNAME } from './cosmos/starname';
@@ -67,7 +67,6 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   BITCANNA,
   BITSONG,
   CERBERUS,
-  CERTIK,
   CHIHUAHUA,
   COMDEX,
   CRESCENT,
@@ -94,6 +93,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   RIZON,
   SECRET,
   SENTINEL,
+  SHENTU,
   SIF,
   STARGAZE,
   STARNAME,
