@@ -37,7 +37,7 @@ export default function Entry() {
   const { accounts, accountName } = chromeStorage;
 
   const { currentAccount } = useCurrentAccount();
-  const { currentAutoSigns, removeAutoSign } = useCurrentAutoSigns();
+  const { currentAutoSigns, removeAutoSign } = useCurrentAutoSigns(true);
   const { currentAllowedChains } = useCurrentAllowedChains();
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 

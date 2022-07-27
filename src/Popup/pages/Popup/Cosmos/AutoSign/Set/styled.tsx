@@ -39,11 +39,24 @@ export const InfoContentContainer = styled('div')(({ theme }) => ({
 }));
 
 export const WarningContainer = styled('div')({
+  '@keyframes emphasis': {
+    from: {
+      backgroundColor: 'rgba(205, 26, 26, 0.2)',
+    },
+
+    to: {
+      backgroundColor: 'rgba(205, 26, 26, 0.1)',
+    },
+  },
+
+  animationDuration: '0.5s',
+  animationName: 'emphasis',
+  animationIterationCount: 'infinite',
+  animationDirection: 'alternate',
+
   marginTop: '1.2rem',
 
   borderRadius: '0.8rem',
-
-  backgroundColor: 'rgba(205, 26, 26, 0.15)',
 
   padding: '1.6rem',
 });

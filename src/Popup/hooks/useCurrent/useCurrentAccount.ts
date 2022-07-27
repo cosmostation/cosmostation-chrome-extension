@@ -14,7 +14,7 @@ export function useCurrentAccount() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { currentPassword } = useCurrentPassword();
 
-  const { selectedAccountId, accounts, accountName, allowedOrigins, additionalChains } = chromeStorage;
+  const { selectedAccountId, accounts, accountName, allowedOrigins, additionalChains, autoSigns } = chromeStorage;
 
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
 
@@ -34,6 +34,9 @@ export function useCurrentAccount() {
   const removeAllowedOrigin = async (origin: string) => {
     const newAllowedOrigins = allowedOrigins.filter((allowedOrigin) => !(allowedOrigin.accountId === selectedAccountId && allowedOrigin.origin === origin));
     await setChromeStorage('allowedOrigins', newAllowedOrigins);
+
+    const newAutoSigns = autoSigns.filter((autoSign) => !(autoSign.accountId === selectedAccountId && autoSign.origin === origin));
+    await setChromeStorage('autoSigns', newAutoSigns);
   };
 
   const setCurrentAccount = async (id: string) => {

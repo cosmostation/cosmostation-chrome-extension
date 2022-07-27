@@ -6,7 +6,7 @@ import type { AutoSign } from '~/types/chromeStorage';
 
 import { useInterval } from '../useInterval';
 
-export function useCurrentAutoSigns() {
+export function useCurrentAutoSigns(isInterval = false) {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
 
   const { autoSigns } = chromeStorage;
@@ -16,7 +16,9 @@ export function useCurrentAutoSigns() {
   const currentAutoSigns = useMemo(() => autoSigns.filter((item) => item.startTime + item.duration > currentTime), [autoSigns, currentTime]);
 
   useInterval(() => {
-    setCurrentTime(new Date().getTime());
+    if (isInterval) {
+      setCurrentTime(new Date().getTime());
+    }
   }, 1000);
 
   const addAutoSign = useCallback(

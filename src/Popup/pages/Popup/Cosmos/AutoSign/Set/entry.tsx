@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Typography } from '@mui/material';
 
 import { COSMOS_CHAINS } from '~/constants/chain';
@@ -10,7 +9,6 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentAutoSigns } from '~/Popup/hooks/useCurrent/useCurrentAutoSigns';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useInterval } from '~/Popup/hooks/useInterval';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { responseToWeb } from '~/Popup/utils/message';
 import { timeToString } from '~/Popup/utils/string';
@@ -55,14 +53,10 @@ export default function Entry({ queue }: EntryProps) {
 
   const duration = params.duration * 1000;
 
-  const [startTime, setStartTime] = useState(new Date().getTime());
+  const startTime = new Date().getTime();
   const endTime = startTime + duration;
 
   const chain = cosmosChains.find((item) => item.chainName === params.chainName);
-
-  useInterval(() => {
-    setStartTime(new Date().getTime());
-  }, 1000);
 
   if (!chain) {
     return null;
