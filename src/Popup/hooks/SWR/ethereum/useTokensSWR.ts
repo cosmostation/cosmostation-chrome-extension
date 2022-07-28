@@ -47,7 +47,7 @@ export function useTokensSWR(config?: SWRConfiguration) {
       imageURL: item.logoURI
         ? item.logoURI.startsWith('http://') || item.logoURI.startsWith('https://')
           ? item.logoURI
-          : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/ethereum/${item.logoURI}`
+          : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.logoURI}`
         : undefined,
       coinGeckoId: item.coinGeckoId,
     })) || [];
