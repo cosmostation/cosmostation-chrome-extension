@@ -2,32 +2,54 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { ETHEREUM as NETWORK_ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
+import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
+import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
 import { get } from '~/Popup/utils/axios';
-import type { AssetPayload } from '~/types/ethereum/asset';
+import { toHex } from '~/Popup/utils/common';
+import type { AssetPayload, ModifiedAsset } from '~/types/ethereum/asset';
 
 import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNetwork';
+
+const nameMap = {
+  [ETHEREUM.id]: 'ethereum',
+  [SMART_CHAIN.id]: 'smart-chain',
+};
 
 export function useTokensSWR(config?: SWRConfiguration) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const requestURL = currentEthereumNetwork.id === NETWORK_ETHEREUM.id ? `https://api.mintscan.io/v1/assets/ethereum` : '';
+  const mappingName = nameMap[currentEthereumNetwork.id] || currentEthereumNetwork.networkName.toLowerCase();
 
-  const fetcher = (fetchUrl: string) => get<AssetPayload>(fetchUrl);
+  const requestURL = `https://api.mintscan.io/v2/assets/erc20/${mappingName}`;
 
-  const { data, error, mutate } = useSWR<AssetPayload, AxiosError>(requestURL, fetcher, {
+  const fetcher = async (fetchUrl: string) => {
+    try {
+      return await get<AssetPayload>(fetchUrl);
+    } catch (e: unknown) {
+      return null;
+    }
+  };
+
+  const { data, error, mutate } = useSWR<AssetPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    isPaused: () => currentEthereumNetwork.id !== NETWORK_ETHEREUM.id,
     ...config,
   });
 
-  const returnData =
+  const returnData: ModifiedAsset[] =
     data?.assets.map((item) => ({
-      ...item,
-      imageURL:
-        (item.image && `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/ethereum/${item.image}`) || undefined,
+      chainId: toHex(item.chainId, { addPrefix: true }),
+      address: item.address,
+      decimals: item.decimals,
+      name: item.name,
+      displayDenom: item.symbol,
+      imageURL: item.logoURI
+        ? item.logoURI.startsWith('http://') || item.logoURI.startsWith('https://')
+          ? item.logoURI
+          : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/ethereum/${item.logoURI}`
+        : undefined,
+      coinGeckoId: item.coinGeckoId,
     })) || [];
 
   return { data: returnData, error, mutate };
