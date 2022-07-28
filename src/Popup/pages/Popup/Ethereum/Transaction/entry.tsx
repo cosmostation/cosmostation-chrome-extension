@@ -21,6 +21,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useInterval } from '~/Popup/hooks/useInterval';
@@ -74,9 +75,29 @@ type EntryProps = {
 
 export default function Entry({ queue }: EntryProps) {
   const chain = ETHEREUM;
-  const tokens = useTokensSWR();
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
+
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
+
+  const tokens = useTokensSWR();
+  const { currentEthereumTokens } = useCurrentEthereumTokens();
+
+  const allTokens = useMemo(
+    () => [
+      ...tokens.data,
+      ...currentEthereumTokens.map((token) => ({
+        chainId: currentEthereumNetwork.chainId,
+        displayDenom: token.displayDenom,
+        decimals: token.decimals,
+        address: token.address,
+        name: token.name,
+        imageURL: token.imageURL,
+        coinGeckoId: token.coinGeckoId,
+      })),
+    ],
+    [currentEthereumNetwork.chainId, currentEthereumTokens, tokens.data],
+  );
 
   const balance = useBalanceSWR();
 
@@ -88,8 +109,6 @@ export default function Entry({ queue }: EntryProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
   const currentFee = useFeeSWR({ refreshInterval: 0 });
-
-  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { displayDenom, coinGeckoId, decimals } = currentEthereumNetwork;
 
@@ -202,8 +221,8 @@ export default function Entry({ queue }: EntryProps) {
   const displayValue = times(displayFee, price);
 
   const token = useMemo(
-    () => (txType.data?.type === 'transfer' ? tokens.data.find((item) => isEqualsIgnoringCase(ethereumTx.to, item.address)) : null),
-    [ethereumTx.to, tokens.data, txType.data?.type],
+    () => (txType.data?.type === 'transfer' ? allTokens.find((item) => isEqualsIgnoringCase(ethereumTx.to, item.address)) : null),
+    [allTokens, ethereumTx.to, txType.data?.type],
   );
 
   const sendDisplayAmount = useMemo(() => {
@@ -375,7 +394,7 @@ export default function Entry({ queue }: EntryProps) {
               <TotalAmountContainer>
                 {txType.data?.type === 'transfer' ? (
                   <>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={token?.decimals ? 8 : 0}>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={token?.decimals ? (token.decimals > 8 ? 8 : token.decimals) : 0}>
                       {sendDisplayAmount}
                     </Number>
                     &nbsp;

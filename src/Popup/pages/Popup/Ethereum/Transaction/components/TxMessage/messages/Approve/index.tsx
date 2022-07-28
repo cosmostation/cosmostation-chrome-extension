@@ -6,6 +6,7 @@ import Number from '~/Popup/components/common/Number';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase, shorterAddress } from '~/Popup/utils/string';
@@ -31,14 +32,32 @@ type ApproveProps = TxMessageProps;
 export default function Approve({ tx, determineTxType }: ApproveProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
+
   const tokens = useTokensSWR();
+  const { currentEthereumTokens } = useCurrentEthereumTokens();
+
+  const allTokens = useMemo(
+    () => [
+      ...tokens.data,
+      ...currentEthereumTokens.map((token) => ({
+        displayDenom: token.displayDenom,
+        decimals: token.decimals,
+        address: token.address,
+        name: token.name,
+        imageURL: token.imageURL,
+        coinGeckoId: token.coinGeckoId,
+      })),
+    ],
+    [currentEthereumTokens, tokens.data],
+  );
+
   const { t } = useTranslation();
 
   const { currency } = chromeStorage;
 
   const { to } = tx;
 
-  const token = tokens.data.find((item) => isEqualsIgnoringCase(to, item.address));
+  const token = allTokens.find((item) => isEqualsIgnoringCase(to, item.address));
 
   const price = (token?.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0;
 
