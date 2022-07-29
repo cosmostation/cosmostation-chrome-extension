@@ -28,5 +28,5 @@ export default function Delete() {
 }
 
 function isCosDeleteAutoSign(queue: Queue): queue is Queue<CosDeleteAutoSign> {
-  return queue?.message?.method === 'cos_getAutoSign';
+  return queue?.message?.method === 'cos_deleteAutoSign';
 }
