@@ -81,7 +81,7 @@ export const WarningRedTextContainer = styled('div')(({ theme }) => ({
 
 export const WarningWhiteTextContainer = styled('div')(({ theme }) => ({
   textAlign: 'center',
-  color: theme.accentColors.white,
+  color: theme.colors.text01,
 }));
 
 export const BottomContainer = styled('div')({
