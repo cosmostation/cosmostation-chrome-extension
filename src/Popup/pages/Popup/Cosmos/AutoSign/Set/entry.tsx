@@ -1,14 +1,18 @@
+import { useState } from 'react';
 import { Typography } from '@mui/material';
 
 import { COSMOS_CHAINS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import warningImg from '~/images/etc/warning.gif';
 import Button from '~/Popup/components/common/Button';
+import Image from '~/Popup/components/common/Image';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentAutoSigns } from '~/Popup/hooks/useCurrent/useCurrentAutoSigns';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useInterval } from '~/Popup/hooks/useInterval';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { responseToWeb } from '~/Popup/utils/message';
 import { timeToString } from '~/Popup/utils/string';
@@ -30,11 +34,11 @@ import {
   WarningWhiteTextContainer,
 } from './styled';
 
-import Warning50Icon from '~/images/icons/Warning50.svg';
-
 type EntryProps = {
   queue: Queue<CosSetAutoSign>;
 };
+
+const currentTime = new Date().getTime();
 
 export default function Entry({ queue }: EntryProps) {
   const { deQueue } = useCurrentQueue();
@@ -53,10 +57,18 @@ export default function Entry({ queue }: EntryProps) {
 
   const duration = params.duration * 1000;
 
-  const startTime = new Date().getTime();
+  const startTime = currentTime;
   const endTime = startTime + duration;
 
   const chain = cosmosChains.find((item) => item.chainName === params.chainName);
+
+  const [count, setCount] = useState(3);
+
+  useInterval(() => {
+    if (count > 0) {
+      setCount((prev) => prev - 1);
+    }
+  }, 500);
 
   if (!chain) {
     return null;
@@ -69,6 +81,22 @@ export default function Entry({ queue }: EntryProps) {
         <QuestionTextContainer>
           <Typography variant="h2">{t('pages.Popup.Cosmos.AutoSign.entry.question')}</Typography>
         </QuestionTextContainer>
+
+        <WarningContainer>
+          <WarningImageContainer>
+            <Image src={warningImg} />
+          </WarningImageContainer>
+          <WarningRedTextContainer sx={{ marginTop: '0.4rem' }}>
+            <Typography variant="h2">{t('pages.Popup.Cosmos.AutoSign.entry.warning')}</Typography>
+          </WarningRedTextContainer>
+          <WarningWhiteTextContainer sx={{ marginTop: '0.4rem' }}>
+            <Typography variant="h5">{t('pages.Popup.Cosmos.AutoSign.entry.description1')}</Typography>
+          </WarningWhiteTextContainer>
+          <WarningWhiteTextContainer sx={{ marginTop: '1.6rem' }}>
+            <Typography variant="h5">{t('pages.Popup.Cosmos.AutoSign.entry.description2')}</Typography>
+          </WarningWhiteTextContainer>
+        </WarningContainer>
+
         <InfoContainer>
           <InfoTitleContainer>
             <Typography variant="h5">End Time</Typography>
@@ -77,21 +105,6 @@ export default function Entry({ queue }: EntryProps) {
             <Typography variant="h4">~ {timeToString(endTime)}</Typography>
           </InfoContentContainer>
         </InfoContainer>
-
-        <WarningContainer>
-          <WarningImageContainer>
-            <Warning50Icon />
-          </WarningImageContainer>
-          <WarningRedTextContainer sx={{ marginTop: '0.4rem' }}>
-            <Typography variant="h3">{t('pages.Popup.Cosmos.AutoSign.entry.warning')}</Typography>
-          </WarningRedTextContainer>
-          <WarningWhiteTextContainer sx={{ marginTop: '0.4rem' }}>
-            <Typography variant="h6">{t('pages.Popup.Cosmos.AutoSign.entry.description1')}</Typography>
-          </WarningWhiteTextContainer>
-          <WarningWhiteTextContainer sx={{ marginTop: '1.6rem' }}>
-            <Typography variant="h6">{t('pages.Popup.Cosmos.AutoSign.entry.description2')}</Typography>
-          </WarningWhiteTextContainer>
-        </WarningContainer>
       </ContentsContainer>
 
       <BottomContainer>
@@ -132,8 +145,9 @@ export default function Entry({ queue }: EntryProps) {
 
               await deQueue();
             }}
+            disabled={!!count}
           >
-            Confirm
+            {count > 0 ? count : 'Confirm'}
           </Button>
         </BottomButtonContainer>
       </BottomContainer>

@@ -19,7 +19,7 @@ export const QuestionTextContainer = styled('div')(({ theme }) => ({
 }));
 
 export const InfoContainer = styled('div')(({ theme }) => ({
-  marginTop: '2.6rem',
+  marginTop: '1.2rem',
 
   padding: '1.6rem 0',
 
@@ -38,7 +38,7 @@ export const InfoContentContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const WarningContainer = styled('div')({
+export const WarningContainer = styled('div')(({ theme }) => ({
   '@keyframes emphasis': {
     from: {
       backgroundColor: 'rgba(205, 26, 26, 0.2)',
@@ -54,17 +54,24 @@ export const WarningContainer = styled('div')({
   animationIterationCount: 'infinite',
   animationDirection: 'alternate',
 
-  marginTop: '1.2rem',
+  marginTop: '2rem',
+
+  border: `0.1rem solid ${theme.accentColors.red}`,
 
   borderRadius: '0.8rem',
 
   padding: '1.6rem',
-});
+}));
 
 export const WarningImageContainer = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
+
+  '& > img': {
+    width: '5rem',
+    height: '5rem',
+  },
 });
 
 export const WarningRedTextContainer = styled('div')(({ theme }) => ({
