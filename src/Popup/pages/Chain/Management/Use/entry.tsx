@@ -18,7 +18,7 @@ import { Container, DividerContainer, ListContainer, StyledInput, StyledSearch20
 export default function Entry() {
   const [search, setSearch] = useState('');
 
-  const { chromeStorage } = useChromeStorage();
+  const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
   const { addShownEthereumNetwork, removeShownEthereumNetwork } = useCurrentShownEthereumNetworks();
 
@@ -26,7 +26,7 @@ export default function Entry() {
 
   const { t } = useTranslation();
 
-  const { allowedChainIds, shownEthereumNetworkIds } = chromeStorage;
+  const { allowedChainIds, shownEthereumNetworkIds, autoSigns } = chromeStorage;
 
   const filteredEthereumNetworks = search
     ? ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1)
@@ -44,6 +44,9 @@ export default function Entry() {
       enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
     } else {
       await removeAllowedChainId(chain);
+
+      const newAutoSigns = autoSigns.filter((autoSign) => autoSign.chainId !== chain.id);
+      await setChromeStorage('autoSigns', newAutoSigns);
     }
   };
 

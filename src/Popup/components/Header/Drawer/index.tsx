@@ -11,23 +11,28 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
+import ItemButton from './components/ItemButton';
 import {
+  Container,
+  DownContainer,
   HeaderContainer,
   HeaderLeftContainer,
   HeaderLeftImageContainer,
   HeaderLeftTextContainer,
   HeaderRightContainer,
-  ItemButtonContainer,
   ItemContainer,
   ItemLeftContainer,
   ItemLeftImageContainer,
   ItemLeftTextContainer,
   ItemRightContainer,
+  ItemToggleContainer,
   LockButtonContainer,
   StyledDrawer,
+  UpContainer,
 } from './styled';
 
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
+import AutoSign24Icon from '~/images/icons/AutoSign24.svg';
 import Close24Icon from '~/images/icons/Close24.svg';
 import Connect24Icon from '~/images/icons/Connect24.svg';
 import Cosmostation14Icon from '~/images/icons/Cosmostation14.svg';
@@ -39,7 +44,6 @@ import LanguageChangeIcon from '~/images/icons/LanguageChange.svg';
 import Lock16 from '~/images/icons/Lock16.svg';
 import Logo24Icon from '~/images/icons/Logo28.svg';
 import PasswordChangeIcon from '~/images/icons/PasswordChange.svg';
-import RightArrowIcon from '~/images/icons/RightArrow.svg';
 
 type DrawerProps = Omit<BaseDrawerProps, 'children'>;
 
@@ -53,105 +57,91 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
 
   return (
     <StyledDrawer {...remainder} onClose={onClose}>
-      <HeaderContainer>
-        <HeaderLeftContainer>
-          <HeaderLeftImageContainer>
-            <Logo24Icon />
-          </HeaderLeftImageContainer>
-          <HeaderLeftTextContainer>
-            <Cosmostation14Icon />
-          </HeaderLeftTextContainer>
-        </HeaderLeftContainer>
-        <HeaderRightContainer>
-          <IconButton onClick={() => onClose?.({}, 'backdropClick')}>
-            <Close24Icon />
-          </IconButton>
-        </HeaderRightContainer>
-      </HeaderContainer>
-      <Divider />
+      <Container>
+        <UpContainer>
+          <HeaderContainer>
+            <HeaderLeftContainer>
+              <HeaderLeftImageContainer>
+                <Logo24Icon />
+              </HeaderLeftImageContainer>
+              <HeaderLeftTextContainer>
+                <Cosmostation14Icon />
+              </HeaderLeftTextContainer>
+            </HeaderLeftContainer>
+            <HeaderRightContainer>
+              <IconButton onClick={() => onClose?.({}, 'backdropClick')}>
+                <Close24Icon />
+              </IconButton>
+            </HeaderRightContainer>
+          </HeaderContainer>
+          <Divider />
+          <ItemContainer>
+            <ItemToggleContainer>
+              <ItemLeftContainer>
+                <ItemLeftImageContainer>
+                  <DarkMode24Icon id="darkMode" />
+                </ItemLeftImageContainer>
+                <ItemLeftTextContainer>
+                  <Typography variant="h4">{t('components.Header.Drawer.index.darkMode')}</Typography>
+                </ItemLeftTextContainer>
+              </ItemLeftContainer>
+              <ItemRightContainer>
+                <Switch
+                  checked={isDarkMode}
+                  onChange={async (event) => {
+                    await setChromeStorage('theme', event.currentTarget.checked ? THEME_TYPE.DARK : THEME_TYPE.LIGHT);
+                  }}
+                />
+              </ItemRightContainer>
+            </ItemToggleContainer>
 
-      <ItemContainer>
-        <ItemLeftContainer>
-          <ItemLeftImageContainer>
-            <DarkMode24Icon id="darkMode" />
-          </ItemLeftImageContainer>
-          <ItemLeftTextContainer>
-            <Typography variant="h4">{t('components.Header.Drawer.index.darkMode')}</Typography>
-          </ItemLeftTextContainer>
-        </ItemLeftContainer>
-        <ItemRightContainer>
-          <Switch
-            checked={isDarkMode}
-            onChange={async (event) => {
-              await setChromeStorage('theme', event.currentTarget.checked ? THEME_TYPE.DARK : THEME_TYPE.LIGHT);
-            }}
-          />
-        </ItemRightContainer>
-      </ItemContainer>
+            <ItemButton Icon={AddressBook24Icon} onClick={() => navigate('/setting/address-book', { isDuplicateCheck: true })}>
+              {t('components.Header.Drawer.index.addressBook')}
+            </ItemButton>
 
-      <ItemButton Icon={AddressBook24Icon} onClick={() => navigate('/setting/address-book', { isDuplicateCheck: true })}>
-        {t('components.Header.Drawer.index.addressBook')}
-      </ItemButton>
+            <ItemButton Icon={Connect24Icon} onClick={() => navigate('/setting/connected-sites', { isDuplicateCheck: true })}>
+              {t('components.Header.Drawer.index.connectedSites')}
+            </ItemButton>
 
-      <ItemButton Icon={Connect24Icon} onClick={() => navigate('/setting/connected-sites', { isDuplicateCheck: true })}>
-        {t('components.Header.Drawer.index.connectedSites')}
-      </ItemButton>
+            <ItemButton Icon={AutoSign24Icon} onClick={() => navigate('/setting/auto-sign', { isDuplicateCheck: true })}>
+              {t('components.Header.Drawer.index.autoSign')}
+            </ItemButton>
 
-      <ItemButton Icon={LanguageChangeIcon} onClick={() => navigate('/setting/change-language', { isDuplicateCheck: true })}>
-        {t('components.Header.Drawer.index.language')}
-      </ItemButton>
+            <ItemButton Icon={LanguageChangeIcon} onClick={() => navigate('/setting/change-language', { isDuplicateCheck: true })}>
+              {t('components.Header.Drawer.index.language')}
+            </ItemButton>
 
-      <ItemButton Icon={Currency24Icon} onClick={() => navigate('/setting/change-currency', { isDuplicateCheck: true })}>
-        {t('components.Header.Drawer.index.currency')}
-      </ItemButton>
+            <ItemButton Icon={Currency24Icon} onClick={() => navigate('/setting/change-currency', { isDuplicateCheck: true })}>
+              {t('components.Header.Drawer.index.currency')}
+            </ItemButton>
 
-      <ItemButton Icon={PasswordChangeIcon} onClick={() => navigate('/setting/change-password', { isDuplicateCheck: true })}>
-        {t('components.Header.Drawer.index.changePassword')}
-      </ItemButton>
+            <ItemButton Icon={PasswordChangeIcon} onClick={() => navigate('/setting/change-password', { isDuplicateCheck: true })}>
+              {t('components.Header.Drawer.index.changePassword')}
+            </ItemButton>
 
-      <ItemButton Icon={Guide24Icon} onClick={() => window.open('https://docs.cosmostation.io/docs/User%20Guide/Cosmostation%20Extension/introduction')}>
-        {t('components.Header.Drawer.index.guide')}
-      </ItemButton>
+            <ItemButton Icon={Guide24Icon} onClick={() => window.open('https://docs.cosmostation.io/docs/User%20Guide/Cosmostation%20Extension/introduction')}>
+              {t('components.Header.Drawer.index.guide')}
+            </ItemButton>
 
-      <ItemButton Icon={HelpIcon} onClick={() => window.open('https://cosmostation.io/about#contact')}>
-        {t('components.Header.Drawer.index.helpSupport')}
-      </ItemButton>
-
-      <LockButtonContainer>
-        <Button
-          Icon={Lock16}
-          typoVarient="h5"
-          onClick={async () => {
-            await setCurrentPassword(null);
-          }}
-        >
-          {t('components.Header.Drawer.index.lock')}
-        </Button>
-      </LockButtonContainer>
+            <ItemButton Icon={HelpIcon} onClick={() => window.open('https://cosmostation.io/about#contact')}>
+              {t('components.Header.Drawer.index.helpSupport')}
+            </ItemButton>
+          </ItemContainer>
+        </UpContainer>
+        <DownContainer>
+          <LockButtonContainer>
+            <Button
+              Icon={Lock16}
+              typoVarient="h5"
+              onClick={async () => {
+                await setCurrentPassword(null);
+              }}
+            >
+              {t('components.Header.Drawer.index.lock')}
+            </Button>
+          </LockButtonContainer>
+        </DownContainer>
+      </Container>
     </StyledDrawer>
-  );
-}
-
-type ItemButtonProps = {
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  children: string;
-  Icon: SvgElement;
-};
-
-function ItemButton({ onClick, children, Icon }: ItemButtonProps) {
-  return (
-    <ItemButtonContainer onClick={onClick}>
-      <ItemLeftContainer>
-        <ItemLeftImageContainer>
-          <Icon />
-        </ItemLeftImageContainer>
-        <ItemLeftTextContainer>
-          <Typography variant="h4">{children}</Typography>
-        </ItemLeftTextContainer>
-      </ItemLeftContainer>
-      <ItemRightContainer>
-        <RightArrowIcon />
-      </ItemRightContainer>
-    </ItemButtonContainer>
   );
 }

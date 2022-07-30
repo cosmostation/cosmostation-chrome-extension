@@ -2,6 +2,18 @@ import { Drawer } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const StyledDrawer = styled(Drawer)(({ theme }) => ({
+  '*::-webkit-scrollbar': {
+    width: '0.1rem',
+    height: '0.1rem',
+    backgroundColor: 'transparent',
+  },
+  '*::-webkit-scrollbar-thumb': {
+    backgroundColor: theme.colors.base05,
+  },
+  '*::-webkit-scrollbar-corner': {
+    backgroundColor: 'transparent',
+  },
+
   '& .MuiPaper-root': {
     backgroundColor: theme.colors.base01,
     color: theme.colors.text01,
@@ -10,7 +22,27 @@ export const StyledDrawer = styled(Drawer)(({ theme }) => ({
   },
 }));
 
+export const Container = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+
+  height: '100%',
+});
+
+export const UpContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+
+  overflow: 'hidden',
+});
+
+export const DownContainer = styled('div')({
+  flexShrink: 0,
+});
+
 export const HeaderContainer = styled('div')({
+  flexShrink: 0,
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -66,6 +98,10 @@ export const HeaderRightContainer = styled('div')(({ theme }) => ({
 }));
 
 export const ItemContainer = styled('div')({
+  overflow: 'auto',
+});
+
+export const ItemToggleContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -127,9 +163,8 @@ export const ItemRightContainer = styled('div')(({ theme }) => ({
 }));
 
 export const LockButtonContainer = styled('div')({
-  marginTop: '1.6rem',
-
-  padding: '0 1.6rem',
+  flexShrink: 0,
+  padding: '1.6rem 1.6rem',
 
   '& > button': {
     height: '4rem',

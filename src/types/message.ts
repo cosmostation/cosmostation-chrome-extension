@@ -5,8 +5,11 @@ import type {
   CosAccount,
   CosActivatedChainNames,
   CosAddChain,
+  CosDeleteAutoSign,
+  CosGetAutoSign,
   CosRequestAccount,
   CosSendTransaction,
+  CosSetAutoSign,
   CosSignAmino,
   CosSignDirect,
   CosSupportedChainNames,
@@ -59,6 +62,9 @@ export type EthereumRequestMessage =
 export type CosmosRequestMessage =
   | CosRequestAccount
   | CosAddChain
+  | CosSetAutoSign
+  | CosGetAutoSign
+  | CosDeleteAutoSign
   | CosSignAmino
   | CosSignDirect
   | CosSupportedChainNames

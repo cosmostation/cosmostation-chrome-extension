@@ -122,6 +122,13 @@ export default function Init({ children }: InitType) {
         await setStorage('shownEthereumNetworkIds', [NETWORK_ETHEREUM.id]);
       }
 
+      const currentTime = new Date().getTime();
+
+      if (originChromeStorage.autoSigns.filter((item) => item.startTime + item.duration < currentTime).length) {
+        const newAutoSigns = originChromeStorage.autoSigns.filter((item) => item.startTime + item.duration > currentTime);
+        await setStorage('autoSigns', newAutoSigns);
+      }
+
       setIsLoading(false);
     })();
 

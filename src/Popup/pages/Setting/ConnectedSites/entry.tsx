@@ -25,7 +25,7 @@ export default function Entry() {
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const { accounts, accountName, allowedOrigins } = chromeStorage;
+  const { accounts, accountName, allowedOrigins, autoSigns } = chromeStorage;
 
   const { currentAccount } = useCurrentAccount();
 
@@ -73,8 +73,10 @@ export default function Entry() {
                       <StyledIconButton
                         onClick={async () => {
                           const newAllowedOrigins = allowedOrigins.filter((item) => !(origin.accountId === item.accountId && origin.origin === item.origin));
-
                           await setChromeStorage('allowedOrigins', newAllowedOrigins);
+
+                          const newAutoSigns = autoSigns.filter((autoSign) => !(autoSign.accountId === origin.accountId && autoSign.origin === origin.origin));
+                          await setChromeStorage('autoSigns', newAutoSigns);
                         }}
                       >
                         <Close16Icon />

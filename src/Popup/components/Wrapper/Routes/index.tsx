@@ -47,6 +47,18 @@ export default function Routes({ children }: RoutesType) {
         navigate('/popup/cosmos/sign/direct');
       }
 
+      if (chromeStorage.queues[0].message.method === 'cos_setAutoSign') {
+        navigate('/popup/cosmos/auto-sign/set');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'cos_getAutoSign') {
+        navigate('/popup/cosmos/auto-sign/get');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'cos_deleteAutoSign') {
+        navigate('/popup/cosmos/auto-sign/delete');
+      }
+
       if (chromeStorage.queues[0].message.method === 'ethc_addNetwork') {
         navigate('/popup/ethereum/add-network');
       }

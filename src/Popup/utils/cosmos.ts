@@ -7,7 +7,9 @@ import sortKeys from 'sort-keys';
 import TinySecp256k1 from 'tiny-secp256k1';
 import { keccak256 } from '@ethersproject/keccak256';
 
+import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { KAVA } from '~/constants/chain/cosmos/kava';
+import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos.js';
 import type { CosmosChain } from '~/types/chain';
 import type { Msg, MsgCustom, MsgSend, SignAminoDoc } from '~/types/cosmos/amino';
@@ -81,6 +83,18 @@ export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer, chain: Co
 
   return signatureBuffer;
 }
+
+export const getPublicKeyType = (chain: CosmosChain) => {
+  if (chain.chainName === INJECTIVE.chainName) {
+    return PUBLIC_KEY_TYPE.INJ_SECP256K1;
+  }
+
+  if (chain.type === 'ETHERMINT') {
+    return PUBLIC_KEY_TYPE.ETH_SECP256K1;
+  }
+
+  return PUBLIC_KEY_TYPE.SECP256K1;
+};
 
 export function isAminoSend(msg: Msg): msg is Msg<MsgSend> {
   return msg.type === 'cosmos-sdk/MsgSend' || msg.type === 'bank/MsgSend';

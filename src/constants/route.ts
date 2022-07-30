@@ -13,6 +13,7 @@ export const PATH = {
   SETTING__ADDRESS_BOOK: '/setting/address-book',
   SETTING__ADDRESS_BOOK__ADD: '/setting/address-book/add',
   SETTING__CONNECTED_SITES: '/setting/connected-sites',
+  SETTING__AUTO_SIGN: '/setting/auto-sign',
 
   CHAIN__MANAGEMENT: '/chain/management',
   CHAIN__MANAGEMENT__USE: '/chain/management/use',
@@ -53,6 +54,9 @@ export const PATH = {
 
   // popup cosmos
   POPUP__COSMOS__ADD_CHAIN: '/popup/cosmos/add-chain',
+  POPUP__COSMOS__AUTO_SIGN__SET: '/popup/cosmos/auto-sign/set',
+  POPUP__COSMOS__AUTO_SIGN__GET: '/popup/cosmos/auto-sign/get',
+  POPUP__COSMOS__AUTO_SIGN__DELETE: '/popup/cosmos/auto-sign/delete',
   POPUP__COSMOS__SIGN__AMINO: '/popup/cosmos/sign/amino',
   POPUP__COSMOS__SIGN__DIRECT: '/popup/cosmos/sign/direct',
 

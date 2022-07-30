@@ -4,6 +4,10 @@
 
 # @rpcURL=http://lcd-evmos.cosmostation.io:8545/
 
+###
+GET https://lcd-axelar-testnet.cosmostation.io/cosmos/staking/v1beta1/delegators/tgrade1ursv4z57pw8ly2jsgn09dyjha4qrk7aec90q3a/unbonding_delegations
+Cosmostation: extension
+
 ### 
 POST https://eth-mainnet.public.blastapi.io
 content-type: application/json
