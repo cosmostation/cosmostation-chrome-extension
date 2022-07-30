@@ -114,6 +114,8 @@ function background() {
         await setStorage('selectedChainId', '');
         await setStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
 
+        await setStorage('autoSigns', []);
+
         await setSessionStorage('password', null);
 
         await openTab();
