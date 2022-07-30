@@ -124,6 +124,10 @@ export default function Init({ children }: InitType) {
 
       const currentTime = new Date().getTime();
 
+      if (!originChromeStorage.autoSigns) {
+        await setStorage('autoSigns', []);
+      }
+
       if (originChromeStorage.autoSigns?.filter((item) => item.startTime + item.duration < currentTime).length) {
         const newAutoSigns = originChromeStorage.autoSigns.filter((item) => item.startTime + item.duration > currentTime);
         await setStorage('autoSigns', newAutoSigns);
