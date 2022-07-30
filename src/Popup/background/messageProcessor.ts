@@ -247,7 +247,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               currentPassword
             ) {
               const currentTime = new Date().getTime();
-              const autoSign = autoSigns.find(
+              const autoSign = autoSigns?.find(
                 (item) =>
                   item.accountId === currentAccount.id && item.chainId === chain.id && item.origin === origin && item.startTime + item.duration > currentTime,
               );
@@ -294,7 +294,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               currentAccountAllowedOrigins.includes(origin) &&
               currentPassword
             ) {
-              const newAutoSigns = autoSigns.filter((item) => !(item.accountId === currentAccount.id && item.chainId === chain.id && item.origin === origin));
+              const newAutoSigns = autoSigns?.filter((item) => !(item.accountId === currentAccount.id && item.chainId === chain.id && item.origin === origin));
 
               await setStorage('autoSigns', newAutoSigns);
 
@@ -336,7 +336,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             const currentTime = new Date().getTime();
 
-            const isAutoSign = !!autoSigns.find(
+            const isAutoSign = !!autoSigns?.find(
               (item) =>
                 item.accountId === currentAccount.id && item.chainId === chain?.id && item.origin === origin && item.startTime + item.duration > currentTime,
             );
@@ -399,7 +399,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             const currentTime = new Date().getTime();
 
-            const isAutoSign = !!autoSigns.find(
+            const isAutoSign = !!autoSigns?.find(
               (item) =>
                 item.accountId === currentAccount.id && item.chainId === chain?.id && item.origin === origin && item.startTime + item.duration > currentTime,
             );
