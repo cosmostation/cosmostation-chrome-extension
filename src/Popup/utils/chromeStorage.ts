@@ -1,4 +1,5 @@
 import { CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { chromeStorageDefault } from '~/Popup/recoils/chromeStorage';
 import type { ChromeStorage, ChromeStorageKeys } from '~/types/chromeStorage';
 
 export function getStorage<T extends ChromeStorageKeys>(key: T): Promise<ChromeStorage[T]> {
@@ -37,7 +38,10 @@ export function setStorage<T extends ChromeStorageKeys>(key: T, value: ChromeSto
 export async function chromeStorage() {
   const storage = await getAllStorage();
 
-  const { accounts, accountName, selectedAccountId, additionalEthereumNetworks, selectedEthereumNetworkId, allowedOrigins, allowedChainIds } = storage;
+  const storageWithDefault = { ...chromeStorageDefault, ...storage };
+
+  const { accounts, accountName, selectedAccountId, additionalEthereumNetworks, selectedEthereumNetworkId, allowedOrigins, allowedChainIds } =
+    storageWithDefault;
 
   const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
   const currentAccountName = accountName[selectedAccountId];
@@ -57,7 +61,7 @@ export async function chromeStorage() {
     .map((allowedOrigin) => allowedOrigin.origin);
 
   return {
-    ...storage,
+    ...storageWithDefault,
     currentAccount,
     currentAccountName,
     currentEthereumNetwork,
