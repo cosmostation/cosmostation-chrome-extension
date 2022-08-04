@@ -1,4 +1,4 @@
-import type { CosmosChain, EthereumChain, EthereumNetwork } from '~/types/chain';
+import type { CosmosChain, CosmosFeeBaseDenom, CosmosGasRate, EthereumChain, EthereumNetwork } from '~/types/chain';
 
 import { AKASH } from './cosmos/akash';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
@@ -26,6 +26,7 @@ import { KI } from './cosmos/ki';
 import { KONSTELLATION } from './cosmos/konstellation';
 import { LUM } from './cosmos/lum';
 import { MEDIBLOC } from './cosmos/medibloc';
+import { NYX, NYX_FEE_BASE_DENOMS, NYX_GAS_RATES } from './cosmos/nyx';
 import { OMNIFLIX } from './cosmos/omniflix';
 import { OSMOSIS } from './cosmos/osmosis';
 import { PERSISTENCE } from './cosmos/persistence';
@@ -85,6 +86,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   KONSTELLATION,
   LUM,
   MEDIBLOC,
+  NYX,
   OMNIFLIX,
   OSMOSIS,
   PERSISTENCE,
@@ -100,6 +102,10 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   TGRADE,
   UMEE,
 ];
+
+export const COSMOS_FEE_BASE_DENOMS: CosmosFeeBaseDenom[] = [...NYX_FEE_BASE_DENOMS];
+
+export const COSMOS_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES];
 
 export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 
