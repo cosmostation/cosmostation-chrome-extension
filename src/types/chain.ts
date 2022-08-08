@@ -48,6 +48,22 @@ export type CosmosChain = {
   gas: Gas;
 } & CommonChain;
 
+export type CosmosFeeBaseDenom = {
+  chainId: string;
+  baseDenom: string;
+  feeBaseDenoms: string[];
+};
+
+export type CosmosGasRate = {
+  chainId: string;
+  baseDenom: string;
+  gasRate: {
+    tiny: string;
+    low: string;
+    average: string;
+  };
+};
+
 export type Coin = {
   originBaseDenom: string;
   baseDenom: string;
@@ -57,7 +73,7 @@ export type Coin = {
 };
 
 export type FeeCoin = {
-  originBaseDenom: string;
+  originBaseDenom?: string;
   baseDenom: string;
   displayDenom: string;
   decimals: number;

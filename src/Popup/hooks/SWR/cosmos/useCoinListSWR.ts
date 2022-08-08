@@ -31,7 +31,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
   const reward = useRewardSWR(chain, suspense);
   const balance = useBalanceSWR(chain, suspense);
   const incentive = useIncentiveSWR(chain, suspense);
-  const assets = useAssetsSWR(chain);
+  const assets = useAssetsSWR(chain, { suspense });
 
   const nativeAssets: Coin[] = useMemo(
     () =>
@@ -108,7 +108,6 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
         const coinInfo = ibcAssets.find((item) => item.denom === coin.denom)!;
 
         return {
-          auth: true,
           decimals: coinInfo?.decimal,
           originBaseDenom: coinInfo?.base_denom,
           baseDenom: coin.denom,

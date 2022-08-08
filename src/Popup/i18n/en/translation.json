@@ -761,6 +761,10 @@
             "index": {
               "amountPlaceholder": "Amount",
               "available": "Available",
+              "insufficientAmount": "Insufficient amount",
+              "insufficientFeeAmount": "Insufficient fee",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
               "memoPlaceholder": "Memo (option)",
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"
