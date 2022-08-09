@@ -1,3 +1,4 @@
+import { MINTSCAN_URL } from '~/constants/common';
 import tgradeImg from '~/images/symbols/tgrade.png';
 import type { CosmosChain } from '~/types/chain';
 
@@ -19,10 +20,11 @@ export const TGRADE: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'tgrade' },
+  explorerURL: `${MINTSCAN_URL}/tgrade`,
   gasRate: {
-    tiny: '0.005',
-    low: '0.0075',
-    average: '0.01',
+    tiny: '0.05',
+    low: '0.075',
+    average: '0.1',
   },
   gas: {},
 };
