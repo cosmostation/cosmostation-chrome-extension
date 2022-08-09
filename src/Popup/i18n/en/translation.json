@@ -854,6 +854,18 @@
           }
         },
         "cosmos": {
+          "CoinList": {
+            "components": {
+              "TokenItem": {
+                "index": {
+                  "networkError": "Network Error"
+                }
+              }
+            },
+            "index": {
+              "importTokenButton": "Import token"
+            }
+          },
           "NativeChainCard": {
             "index": {
               "available": "Available",

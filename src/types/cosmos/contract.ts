@@ -11,3 +11,7 @@ export type TokenInfo = {
   decimals: number;
   total_supply: string;
 };
+
+export type Balance = {
+  balance: string;
+};
