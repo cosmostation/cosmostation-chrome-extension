@@ -13,10 +13,11 @@ import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_MET
 import { chromeSessionStorage } from '~/Popup/utils/chromeSessionStorage';
 import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openWindow } from '~/Popup/utils/chromeWindows';
-import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
 import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
+import { toHex } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { SendTransactionPayload } from '~/types/cosmos/common';

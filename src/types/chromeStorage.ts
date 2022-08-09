@@ -2,7 +2,7 @@ import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chr
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
 
-import type { BIP44, Chain, CommonChain, EthereumNetwork, EthereumToken } from './chain';
+import type { BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken } from './chain';
 import type { RequestMessage } from './message';
 
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
@@ -83,6 +83,8 @@ export type ChromeStorage = {
 
   additionalEthereumNetworks: EthereumNetwork[];
   selectedEthereumNetworkId: EthereumNetwork['id'];
+
+  cosmosTokens: CosmosToken[];
   ethereumTokens: EthereumToken[];
 
   autoSigns: AutoSign[];

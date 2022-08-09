@@ -382,6 +382,22 @@
       }
     },
     "Chain": {
+      "Cosmos": {
+        "Token": {
+          "Add": {
+            "CW20": {
+              "entry": {
+                "addTokenErrorSnackbar": "Failed to add",
+                "addTokenSnackbar": "Token added",
+                "addressPlaceholder": "Token contract address",
+                "imageURLPlaceholder": "Token Logo URL (option)",
+                "submitButton": "Add custom token",
+                "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
+              }
+            }
+          }
+        }
+      },
       "Ethereum": {
         "Network": {
           "Add": {

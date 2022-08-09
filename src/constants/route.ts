@@ -18,6 +18,8 @@ export const PATH = {
   CHAIN__MANAGEMENT: '/chain/management',
   CHAIN__MANAGEMENT__USE: '/chain/management/use',
 
+  CHAIN__COSMOS__TOKEN__ADD__ERC20: '/chain/cosmos/token/add/cw20',
+
   CHAIN__ETHEREUM__TOKEN__ADD__ERC20: '/chain/ethereum/token/add/erc20',
   CHAIN__ETHEREUM__NETWORK__ADD: '/chain/ethereum/network/add',
 

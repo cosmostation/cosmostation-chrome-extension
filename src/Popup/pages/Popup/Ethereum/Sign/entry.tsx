@@ -11,9 +11,10 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
-import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { sign, toUTF8 } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
+import { toHex } from '~/Popup/utils/string';
 import type { Queue } from '~/types/chromeStorage';
 import type { EthSign, EthSignResponse } from '~/types/ethereum/message';
 
