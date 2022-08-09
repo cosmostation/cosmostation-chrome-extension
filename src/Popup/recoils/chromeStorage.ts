@@ -29,6 +29,7 @@ export const chromeStorageDefault: ChromeStorage = {
   selectedEthereumNetworkId: '',
 
   ethereumTokens: [],
+  cosmosTokens: [],
 
   autoSigns: [],
 };

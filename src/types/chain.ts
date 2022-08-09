@@ -1,6 +1,6 @@
 import type { LINE_TYPE } from '~/constants/chain';
-import type { COSMOS_TYPE } from '~/constants/cosmos';
-import type { TOKEN_TYPE } from '~/constants/ethereum';
+import type { COSMOS_TYPE, TOKEN_TYPE as COSMOS_TOKEN_TYPE } from '~/constants/cosmos';
+import type { TOKEN_TYPE as ETHEREUM_TOKEN_TYPE } from '~/constants/ethereum';
 
 export type LineType = ValueOf<typeof LINE_TYPE>;
 
@@ -46,7 +46,22 @@ export type CosmosChain = {
   explorerURL?: string;
   gasRate: GasRate;
   gas: Gas;
+  cosmWasm?: boolean;
 } & CommonChain;
+
+export type CosmosCW20Token = {
+  id: string;
+  chainId: CosmosChain['id'];
+  tokenType: typeof COSMOS_TOKEN_TYPE.CW20;
+  address: string;
+  name?: string;
+  displayDenom: string;
+  decimals: number;
+  imageURL?: string;
+  coinGeckoId?: string;
+};
+
+export type CosmosToken = CosmosCW20Token;
 
 export type CosmosFeeBaseDenom = {
   chainId: string;
@@ -99,7 +114,7 @@ export type EthereumNetwork = {
 export type EthereumERC20Token = {
   id: string;
   ethereumNetworkId: string;
-  tokenType: typeof TOKEN_TYPE.ERC20;
+  tokenType: typeof ETHEREUM_TOKEN_TYPE.ERC20;
   address: string;
   name?: string;
   displayDenom: string;

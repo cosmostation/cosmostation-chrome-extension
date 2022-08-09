@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
 import { get } from '~/Popup/utils/axios';
-import { toHex } from '~/Popup/utils/common';
+import { toHex } from '~/Popup/utils/string';
 import type { AssetPayload, ModifiedAsset } from '~/types/ethereum/asset';
 
 import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNetwork';

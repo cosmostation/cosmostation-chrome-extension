@@ -22,6 +22,7 @@ import AccountInitializeNewMnemonicStep4 from '~/Popup/pages/Account/Initialize/
 import AccountInitializeNewMnemonicStep5 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step5';
 import AccountInitializeWelcome from '~/Popup/pages/Account/Initialize/Welcome';
 import AccountManagement from '~/Popup/pages/Account/Management';
+import ChainCosmosTokenAddCW20 from '~/Popup/pages/Chain/Cosmos/Token/Add/CW20';
 import ChainEthereumNetworkAdd from '~/Popup/pages/Chain/Ethereum/Network/Add';
 import ChainEthereumTokenAddERC20 from '~/Popup/pages/Chain/Ethereum/Token/Add/ERC20';
 import ChainManagement from '~/Popup/pages/Chain/Management';
@@ -101,6 +102,8 @@ export default function Routes() {
 
           <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
           <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
+
+          <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__ERC20} element={<ChainCosmosTokenAddCW20 />} />
 
           <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__ERC20} element={<ChainEthereumTokenAddERC20 />} />
           <Route path={PATH.CHAIN__ETHEREUM__NETWORK__ADD} element={<ChainEthereumNetworkAdd />} />

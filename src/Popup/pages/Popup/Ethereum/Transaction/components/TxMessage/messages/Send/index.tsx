@@ -8,8 +8,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { toHex } from '~/Popup/utils/common';
-import { shorterAddress } from '~/Popup/utils/string';
+import { shorterAddress, toHex } from '~/Popup/utils/string';
 
 import {
   AddressContainer,

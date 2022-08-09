@@ -42,3 +42,7 @@ export const COSMOS_TYPE = {
 } as const;
 
 export const MINTSCAN_URL = 'https://www.mintscan.io';
+
+export const TOKEN_TYPE = {
+  CW20: 'CW20',
+} as const;
