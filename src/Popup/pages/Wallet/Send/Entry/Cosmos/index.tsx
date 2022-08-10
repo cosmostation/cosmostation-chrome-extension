@@ -363,6 +363,43 @@ export default function Cosmos({ chain }: CosmosProps) {
                     },
                   });
                 }
+
+                if (currentCoinOrToken.type === 'token') {
+                  await enQueue({
+                    messageId: '',
+                    origin: '',
+                    channel: 'inApp',
+                    message: {
+                      method: 'cos_signAmino',
+                      params: {
+                        chainName: chain.chainName,
+                        doc: {
+                          account_number: String(account.data?.value.account_number ?? ''),
+                          sequence: String(account.data?.value.sequence ?? '0'),
+                          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+                          fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: fix(currentFeeAmount, 0) }], gas: currentGas },
+                          memo: currentMemo,
+                          msgs: [
+                            {
+                              type: 'wasm/MsgExecuteContract',
+                              value: {
+                                sender: address,
+                                contract: currentCoinOrToken.address,
+                                msg: {
+                                  transfer: {
+                                    recipient: currentAddress,
+                                    amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
+                                  },
+                                },
+                                funds: [],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  });
+                }
               }}
             >
               {t('pages.Wallet.Send.Entry.Cosmos.index.sendButton')}

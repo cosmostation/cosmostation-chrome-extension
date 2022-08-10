@@ -10,7 +10,7 @@
     "build": "webpack --config webpack/webpack.prod.js",
     "postbuild": "mkdir -p build/zip && cd build/prod && zip -r ../zip/extension-$(date +'%Y%m%dT%H%M%S').zip .",
     "i18next-scanner": "i18next-scanner",
-    "eslint": "eslint --max-warnings 0 $(git diff --name-only --diff-filter=AMRC HEAD | grep -E '.(ts|tsx)$' | xargs)",
+    "eslint": "eslint --max-warnings 0 $(git diff --name-only --diff-filter=AMRC HEAD | grep -E '.(ts|tsx)$' | grep -vE '.d.ts$' | xargs)",
     "patch": "yarn version --patch --no-git-tag-version",
     "postpatch": "yarn run update:version",
     "minor": "yarn version --minor --no-git-tag-version",
