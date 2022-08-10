@@ -20,7 +20,7 @@ import {
   StyledButton,
 } from './styled';
 
-type IbcCoinItemProps = {
+type CoinItemProps = {
   amount: string;
   decimals?: number;
   baseDenom?: string;
@@ -31,7 +31,7 @@ type IbcCoinItemProps = {
   disabled?: boolean;
 };
 
-export default function IbcCoinItem({ disabled, imageURL, amount, decimals = 0, baseDenom, displayDenom, channel, onClick }: IbcCoinItemProps) {
+export default function CoinItem({ disabled, imageURL, amount, decimals = 0, baseDenom, displayDenom, channel, onClick }: CoinItemProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR(true);
 

@@ -37,7 +37,7 @@ export default function Entry({ chain }: EntryProps) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     reset,
   } = useForm<ImportTokenForm>({
     resolver: joiResolver(importTokenForm),
@@ -93,7 +93,7 @@ export default function Entry({ chain }: EntryProps) {
           />
         </Div>
         <ButtonContainer>
-          <Button type="submit" disabled={!tokenInfo.data}>
+          <Button type="submit" disabled={!isDirty}>
             {t('pages.Chain.Cosmos.Token.Add.CW20.entry.submitButton')}
           </Button>
         </ButtonContainer>

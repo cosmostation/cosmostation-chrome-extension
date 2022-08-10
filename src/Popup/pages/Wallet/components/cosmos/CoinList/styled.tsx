@@ -9,6 +9,7 @@ export const Container = styled('div')({
 
 export const ListTitleContainer = styled('div')({
   display: 'flex',
+  justifyContent: 'space-between',
   alignItems: 'center',
 
   flexShrink: 0,
@@ -32,3 +33,43 @@ export const ListContainer = styled('div')({
 
   overflow: 'auto',
 });
+
+export const AddTokenButton = styled('button')(({ theme }) => ({
+  padding: 0,
+  border: 0,
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  backgroundColor: theme.colors.base02,
+  borderRadius: '0.8rem',
+
+  width: '100%',
+  height: '5.8rem',
+
+  '&:hover': {
+    backgroundColor: theme.colors.base03,
+
+    cursor: 'pointer',
+  },
+
+  '&:disabled': {
+    backgroundColor: theme.colors.base02,
+
+    '&:hover': {
+      cursor: 'default',
+    },
+  },
+
+  '& > svg': {
+    fill: theme.accentColors.purple01,
+    '& > path': { fill: theme.accentColors.purple01 },
+  },
+}));
+
+export const AddTokenTextContainer = styled('div')(({ theme }) => ({
+  marginLeft: '0.4rem',
+
+  color: theme.colors.text01,
+}));

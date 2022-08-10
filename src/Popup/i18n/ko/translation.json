@@ -854,6 +854,18 @@
           }
         },
         "cosmos": {
+          "CoinList": {
+            "components": {
+              "TokenItem": {
+                "index": {
+                  "networkError": "네트워크 오류"
+                }
+              }
+            },
+            "index": {
+              "importTokenButton": "토큰 가져오기"
+            }
+          },
           "NativeChainCard": {
             "index": {
               "available": "전송 가능 수량",

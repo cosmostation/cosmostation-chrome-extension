@@ -8,7 +8,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import type { CosmosChain } from '~/types/chain';
 
-import IbcCoinList from '../components/cosmos/CoinList';
+import CoinList from '../components/cosmos/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/cosmos/NativeChainCard';
 import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
 
@@ -42,7 +42,7 @@ export default function Cosmos({ chain }: CosmosProps) {
       <BottomContainer>
         <ErrorBoundary fallback={<Empty />}>
           <Suspense fallback={null}>
-            <IbcCoinList chain={chain} />
+            <CoinList chain={chain} />
           </Suspense>
         </ErrorBoundary>
       </BottomContainer>
