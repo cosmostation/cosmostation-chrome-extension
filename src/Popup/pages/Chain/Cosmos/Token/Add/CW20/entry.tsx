@@ -6,7 +6,8 @@ import { Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
-import { useCW20TokenInfoSWR } from '~/Popup/hooks/SWR/cosmos/useCW20TokenInfoSWR';
+import { useTokenInfoSWR } from '~/Popup/hooks/SWR/cosmos/useTokenInfoSWR';
+import { useTokensSWR } from '~/Popup/hooks/SWR/cosmos/useTokensSWR';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -25,12 +26,13 @@ type EntryProps = {
 export default function Entry({ chain }: EntryProps) {
   const [contractAddress, setContractAddress] = useState('');
   const { currentChain } = useCurrentChain();
+  const tokens = useTokensSWR();
 
   const { importTokenForm } = useSchema({ chain });
   const { addCosmosToken } = useCurrentCosmosTokens();
   const { t } = useTranslation();
 
-  const tokenInfo = useCW20TokenInfoSWR(chain, contractAddress);
+  const tokenInfo = useTokenInfoSWR(chain, contractAddress);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -51,7 +53,16 @@ export default function Entry({ chain }: EntryProps) {
 
   const submit = async (data: ImportTokenForm) => {
     if (tokenInfo.data) {
-      await addCosmosToken({ ...data, decimals: tokenInfo.data.decimals, displayDenom: tokenInfo.data.symbol, tokenType: 'CW20', chainId: currentChain.id });
+      const savedTokenInfo = tokens.data.find((item) => item.contract_address === data.address);
+      await addCosmosToken({
+        address: data.address,
+        decimals: tokenInfo.data.decimals,
+        displayDenom: tokenInfo.data.symbol,
+        tokenType: 'CW20',
+        chainId: currentChain.id,
+        imageURL: savedTokenInfo?.logo ?? data.imageURL,
+        coinGeckoId: savedTokenInfo?.coingecko_id,
+      });
 
       enqueueSnackbar(t('pages.Chain.Cosmos.Token.Add.CW20.entry.addTokenSnackbar'));
 

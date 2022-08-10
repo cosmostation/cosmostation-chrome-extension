@@ -80,7 +80,7 @@ export default function Routes() {
 
           <Route path={PATH.WALLET} element={<Wallet />} />
           <Route path={PATH.WALLET__SEND} element={<WalletSend />}>
-            <Route path=":coin" element={<WalletSend />} />
+            <Route path=":id" element={<WalletSend />} />
           </Route>
           <Route path={PATH.WALLET__RECEIVE} element={<WalletReceive />} />
 

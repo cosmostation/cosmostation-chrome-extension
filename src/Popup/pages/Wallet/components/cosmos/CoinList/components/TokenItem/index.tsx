@@ -5,7 +5,7 @@ import { Typography } from '@mui/material';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
-import { useCW20BalaceSWR } from '~/Popup/hooks/SWR/cosmos/useCW20BalanceSWR';
+import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -38,26 +38,27 @@ type TokenItemProps = {
   address: string;
   onClick?: () => void;
   onClickDelete?: () => void;
-  disabled?: boolean;
 };
 
-export default function TokenItem({ chain, token, address, disabled, onClick, onClickDelete }: TokenItemProps) {
+export default function TokenItem({ chain, token, address, onClick, onClickDelete }: TokenItemProps) {
   const { chromeStorage } = useChromeStorage();
 
   const { currency } = chromeStorage;
 
   const { decimals, displayDenom, imageURL, coinGeckoId } = token;
-  const coinGeckoPrice = useCoinGeckoPriceSWR(true);
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const cw20Balance = useCW20BalaceSWR(chain, token.address, address);
+  const cw20Balance = useTokenBalanceSWR(chain, token.address, address);
 
-  const displayAmount = toDisplayDenomAmount(cw20Balance.data?.balance || '0', decimals);
+  const amount = cw20Balance.data?.balance || '0';
+
+  const displayAmount = toDisplayDenomAmount(amount, decimals);
 
   const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
   const value = times(displayAmount, price);
 
   return (
-    <StyledButton onClick={onClick} disabled={disabled}>
+    <StyledButton onClick={onClick} disabled={amount === '0'}>
       <LeftContainer>
         <LeftImageContainer>
           <Image src={imageURL} />
@@ -127,7 +128,7 @@ export function TokenItemSkeleton({ token }: TokenItemSkeletonProps) {
 type TokenItemErrorProps = Pick<TokenItemProps, 'token' | 'chain' | 'address'> & FallbackProps;
 
 export function TokenItemError({ token, chain, address, resetErrorBoundary }: TokenItemErrorProps) {
-  useCW20BalaceSWR(chain, token.address, address);
+  useTokenBalanceSWR(chain, token.address, address);
   const [isLoading, setIsLoading] = useState(false);
 
   const { t } = useTranslation();

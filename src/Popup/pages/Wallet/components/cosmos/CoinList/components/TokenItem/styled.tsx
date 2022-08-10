@@ -102,6 +102,8 @@ export const DeleteButton = styled('div')(({ theme }) => ({
   marginRight: '-1rem',
   display: 'none',
 
+  cursor: 'pointer',
+
   '& > svg': {
     fill: theme.colors.base05,
 

@@ -130,7 +130,16 @@ export default function CoinList({ chain }: CoinListProps) {
           ))}
 
         {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'cw20') &&
-          sortedTokens.map((item) => <TokenItem key={item.id} address={address} chain={chain} token={item} onClickDelete={() => removeCosmosToken(item)} />)}
+          sortedTokens.map((item) => (
+            <TokenItem
+              key={item.id}
+              address={address}
+              chain={chain}
+              token={item}
+              onClick={() => navigate(`/wallet/send/${item.address ? `${encodeURIComponent(item.address)}` : ''}` as unknown as Path)}
+              onClickDelete={() => removeCosmosToken(item)}
+            />
+          ))}
 
         {!isExistCoinOrToken && chain.cosmWasm && (
           <AddTokenButton type="button" onClick={() => navigate('/chain/cosmos/token/add/cw20')}>

@@ -5,11 +5,12 @@ import { Typography } from '@mui/material';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import type { CoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
+import type { CosmosChain } from '~/types/chain';
 
+import TokenButton from './components/TokenButton';
 import {
   CoinButton,
   CoinLeftAvailableContainer,
@@ -21,15 +22,33 @@ import {
   Container,
   StyledPopover,
 } from './styled';
+import type { CoinInfo, CoinOrTokenInfo, TokenInfo } from '../../index';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 
-type CoinPopoverProps = Omit<PopoverProps, 'children'> & { currentCoinInfo: CoinInfo; coinInfos: CoinInfo[]; onClickCoin?: (coinInfo: CoinInfo) => void };
+type CoinOrTokenPopoverProps = Omit<PopoverProps, 'children'> & {
+  currentCoinOrTokenInfo: CoinOrTokenInfo;
+  coinOrTokenInfos: CoinOrTokenInfo[];
+  onClickCoinOrToken?: (coinOrTokenInfo: CoinOrTokenInfo) => void;
+  chain: CosmosChain;
+  address: string;
+};
 
-export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, onClose, ...remainder }: CoinPopoverProps) {
+export default function CoinOrTokenPopover({
+  coinOrTokenInfos,
+  currentCoinOrTokenInfo,
+  onClickCoinOrToken,
+  onClose,
+  address,
+  chain,
+  ...remainder
+}: CoinOrTokenPopoverProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   const { t } = useTranslation();
+
+  const coinInfos = coinOrTokenInfos.filter((item) => item.type === 'coin').sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)) as CoinInfo[];
+  const tokenInfos = coinOrTokenInfos.filter((item) => item.type === 'token').sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)) as TokenInfo[];
 
   useEffect(() => {
     if (remainder.open) {
@@ -49,7 +68,7 @@ export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, o
 
           const displayAmount = toDisplayDenomAmount(item.availableAmount, decimals);
 
-          const isActive = currentCoinInfo.baseDenom === item.baseDenom;
+          const isActive = currentCoinOrTokenInfo.type === 'coin' && currentCoinOrTokenInfo.baseDenom === item.baseDenom;
           return (
             <CoinButton
               type="button"
@@ -57,7 +76,7 @@ export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, o
               data-is-active={isActive ? 1 : 0}
               ref={isActive ? ref : undefined}
               onClick={() => {
-                onClickCoin?.(item);
+                onClickCoinOrToken?.(item);
                 onClose?.({}, 'backdropClick');
               }}
             >
@@ -70,7 +89,7 @@ export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, o
                     <Typography variant="h5">{displayDenom}</Typography>
                   </CoinLeftDisplayDenomContainer>
                   <CoinLeftAvailableContainer>
-                    <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.components.CoinPopover.index.available')} :</Typography>{' '}
+                    <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.components.CoinOrTokenPopover.index.available')} :</Typography>{' '}
                     <Tooltip title={displayAmount} arrow placement="top">
                       <span>
                         <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={displayMaxDecimals}>
@@ -83,6 +102,24 @@ export default function CoinPopover({ coinInfos, currentCoinInfo, onClickCoin, o
               </CoinLeftContainer>
               <CoinRightContainer>{isActive && <Check16Icon />}</CoinRightContainer>
             </CoinButton>
+          );
+        })}
+        {tokenInfos.map((item) => {
+          const isActive = currentCoinOrTokenInfo.type === 'token' && currentCoinOrTokenInfo.address === item.address;
+
+          return (
+            <TokenButton
+              key={item.id}
+              address={address}
+              chain={chain}
+              tokenInfo={item}
+              isActive={isActive}
+              ref={isActive ? ref : undefined}
+              onClick={() => {
+                onClickCoinOrToken?.(item);
+                onClose?.({}, 'backdropClick');
+              }}
+            />
           );
         })}
       </Container>
