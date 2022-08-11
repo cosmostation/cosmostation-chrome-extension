@@ -48,6 +48,29 @@ export type CosSendTransaction = {
   id?: number | string;
 };
 
+export type CosGetBalanceCW20Params = {
+  chainName: string;
+  contractAddress: string;
+  address: string;
+};
+
+export type CosGetBalanceCW20 = {
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__GET_BALANCE_CW20;
+  params: CosGetBalanceCW20Params;
+  id?: number | string;
+};
+
+export type CosGetTokenInfoCW20Params = {
+  chainName: string;
+  contractAddress: string;
+};
+
+export type CosGetTokenInfoCW20 = {
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__GET_TOKEN_INFO_CW20;
+  params: CosGetTokenInfoCW20Params;
+  id?: number | string;
+};
+
 // popup
 
 export type CosRequestAccount = {
