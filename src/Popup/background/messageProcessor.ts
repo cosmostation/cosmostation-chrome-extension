@@ -21,6 +21,7 @@ import { toHex } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
+import type { Balance, SmartPayload, TokenInfo } from '~/types/cosmos/contract';
 import type {
   CosAccountResponse,
   CosActivatedChainNamesResponse,
@@ -59,6 +60,8 @@ import {
   cosAddChainParamsSchema,
   cosDeleteAutoSignParamsSchema,
   cosGetAutoSignParamsSchema,
+  cosGetBalanceCW20ParamsSchema,
+  cosGetTokenInfoCW20ParamsSchema,
   cosSendTransactionParamsSchema,
   cosSetAutoSignParamsSchema,
   cosSignAminoParamsSchema,
@@ -74,8 +77,8 @@ import {
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,
 } from './joiSchema';
-import { getPublicKeyType, signAmino, signDirect } from '../utils/cosmos';
-import { post } from '../utils/fetch';
+import { cosmosURL, getPublicKeyType, signAmino, signDirect } from '../utils/cosmos';
+import { FetchError, get, post } from '../utils/fetch';
 
 let localQueues: Queue[] = [];
 
@@ -541,7 +544,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
           }
 
-          const chain = getChain(chainName)!;
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
 
           const schema = cosSendTransactionParamsSchema(allChainLowercaseNames);
 
@@ -566,18 +573,176 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               origin,
             });
           } catch (e) {
+            if (e instanceof FetchError) {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                    data: { status: e.data.status, statusText: e.data.statusText, message: await e.data.text() },
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } else {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            }
+          }
+        }
+
+        if (method === 'cos_getBalanceCW20') {
+          const { params } = message;
+
+          const cosmWasmChains = allChains.filter((item) => item.cosmWasm);
+          const cosmWasmChainLowercaseNames = cosmWasmChains.map((item) => item.chainName.toLowerCase());
+
+          const selectedChain = cosmWasmChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
+
+          if (!allChainLowercaseNames.includes(chainName)) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const schema = cosGetBalanceCW20ParamsSchema(cosmWasmChainLowercaseNames, chain);
+
+          try {
+            await schema.validateAsync({ ...params, chainName });
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+
+          try {
+            const { getCW20Balance } = cosmosURL(chain);
+            const response = await get<SmartPayload>(getCW20Balance(params.contractAddress, params.address));
+
+            const amount = (JSON.parse(Buffer.from(response?.result?.smart, 'base64').toString('utf-8')) as Balance)?.balance || '0';
+
             responseToWeb({
               response: {
-                error: {
-                  code: RPC_ERROR.INTERNAL,
-                  message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
-                  data: e,
-                },
+                result: amount,
               },
               message,
               messageId,
               origin,
             });
+          } catch (e) {
+            if (e instanceof FetchError) {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                    data: { status: e.data.status, statusText: e.data.statusText, message: await e.data.text() },
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } else {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            }
+          }
+        }
+
+        if (method === 'cos_getTokenInfoCW20') {
+          const { params } = message;
+
+          const cosmWasmChains = allChains.filter((item) => item.cosmWasm);
+          const cosmWasmChainLowercaseNames = cosmWasmChains.map((item) => item.chainName.toLowerCase());
+
+          const selectedChain = cosmWasmChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
+
+          if (!allChainLowercaseNames.includes(chainName)) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const schema = cosGetTokenInfoCW20ParamsSchema(cosmWasmChainLowercaseNames, chain);
+
+          try {
+            await schema.validateAsync({ ...params, chainName });
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+
+          try {
+            const { getCW20TokenInfo } = cosmosURL(chain);
+            const response = await get<SmartPayload>(getCW20TokenInfo(params.contractAddress));
+
+            const result = JSON.parse(Buffer.from(response?.result?.smart, 'base64').toString('utf-8')) as TokenInfo;
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          } catch (e) {
+            if (e instanceof FetchError) {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                    data: { status: e.data.status, statusText: e.data.statusText, message: await e.data.text() },
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } else {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            }
           }
         }
       } else {

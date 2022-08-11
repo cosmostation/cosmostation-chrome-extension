@@ -23,6 +23,8 @@ export const COSMOS_NO_POPUP_METHOD_TYPE = {
   COS__ACTIVATED_CHAIN_NAMES: 'cos_activatedChainNames',
   COS__ACCOUNT: 'cos_account',
   COS__SEND_TRANSACTION: 'cos_sendTransaction',
+  COS__GET_BALANCE_CW20: 'cos_getBalanceCW20',
+  COS__GET_TOKEN_INFO_CW20: 'cos_getTokenInfoCW20',
 } as const;
 
 export const COSMOS_METHOD_TYPE = {
