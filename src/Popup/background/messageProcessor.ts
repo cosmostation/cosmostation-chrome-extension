@@ -612,7 +612,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
 
-          if (!cosmWasmChainLowercaseNames.includes(chainName)) {
+          if (!allChainLowercaseNames.includes(chainName)) {
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
           }
 
@@ -622,7 +622,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
           }
 
-          const schema = cosGetBalanceCW20ParamsSchema(allChainLowercaseNames, chain);
+          const schema = cosGetBalanceCW20ParamsSchema(cosmWasmChainLowercaseNames, chain);
 
           try {
             await schema.validateAsync({ ...params, chainName });
@@ -684,7 +684,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
 
-          if (!cosmWasmChainLowercaseNames.includes(chainName)) {
+          if (!allChainLowercaseNames.includes(chainName)) {
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
           }
 
@@ -694,7 +694,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
           }
 
-          const schema = cosGetTokenInfoCW20ParamsSchema(allChainLowercaseNames, chain);
+          const schema = cosGetTokenInfoCW20ParamsSchema(cosmWasmChainLowercaseNames, chain);
 
           try {
             await schema.validateAsync({ ...params, chainName });
