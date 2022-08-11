@@ -28,6 +28,7 @@ export type GasRate = {
 
 export type Gas = {
   send?: string;
+  transfer?: string;
 };
 
 export type CosmosChain = {

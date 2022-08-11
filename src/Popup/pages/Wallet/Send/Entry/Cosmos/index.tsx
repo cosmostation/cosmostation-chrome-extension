@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { COSMOS_DEFAULT_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
+import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
@@ -84,8 +84,6 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const { decimals, gas, gasRate } = chain;
 
-  const sendGas = gas.send || COSMOS_DEFAULT_GAS;
-
   const coinAll = useMemo(
     () => [
       {
@@ -112,13 +110,9 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
-  const [currentGas, setCurrentGas] = useState(sendGas);
-  const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
   const [currentAddress, setCurrentAddress] = useState('');
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
   const [currentMemo, setCurrentMemo] = useState('');
-
-  const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
 
@@ -131,6 +125,13 @@ export default function Cosmos({ chain }: CosmosProps) {
       )!,
     [availableCoinOrTokenList, currentCoinOrTokenId],
   );
+
+  const sendGas = currentCoinOrToken.type === 'coin' ? gas.send || COSMOS_DEFAULT_SEND_GAS : gas.transfer || COSMOS_DEFAULT_TRANSFER_GAS;
+
+  const [currentGas, setCurrentGas] = useState(sendGas);
+  const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
+
+  const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
 
   const tokenBalance = useTokenBalanceSWR(chain, currentCoinOrTokenId, address);
 

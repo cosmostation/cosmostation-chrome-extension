@@ -69,7 +69,9 @@ export default function CoinList({ chain }: CoinListProps) {
     return infos;
   }, [chain.cosmWasm, coinCnt, ibcCointCnt, tokenCnt]);
 
-  const [currentTypeInfo, setCurrentTypeInfo] = useState(typeInfos[0]);
+  const [currentType, setCurrentType] = useState(typeInfos[0].type);
+
+  const currentTypeInfo = useMemo(() => typeInfos.find((item) => item.type === currentType)!, [currentType, typeInfos]);
 
   const { navigate } = useNavigate();
 
@@ -155,7 +157,7 @@ export default function CoinList({ chain }: CoinListProps) {
         currentTypeInfo={currentTypeInfo}
         typeInfos={typeInfos}
         onClickType={(selectedTypeInfo) => {
-          setCurrentTypeInfo(selectedTypeInfo);
+          setCurrentType(selectedTypeInfo.type);
         }}
         open={isOpenPopover}
         onClose={() => setPopoverAnchorEl(null)}
