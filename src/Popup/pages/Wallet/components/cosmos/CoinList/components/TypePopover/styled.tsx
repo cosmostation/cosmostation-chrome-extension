@@ -54,7 +54,7 @@ export const TypeLeftContainer = styled('div')({
 });
 
 export const TypeLeftTextContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text02,
+  color: theme.colors.text01,
 }));
 
 export const TypeLeftNumberContainer = styled('div')(({ theme }) => ({
