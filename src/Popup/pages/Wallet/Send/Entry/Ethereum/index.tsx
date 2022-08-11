@@ -51,7 +51,7 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const [isDisabled, setIsDisabled] = useState(false);
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
-  const [currentToken, setCurrentToken] = useState<Token>(currentEthereumTokens.find((item) => item.id === params.coin) || null);
+  const [currentToken, setCurrentToken] = useState<Token>(currentEthereumTokens.find((item) => item.id === params.id) || null);
 
   const fee = useFeeSWR();
 

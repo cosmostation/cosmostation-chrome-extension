@@ -33,9 +33,9 @@ type CoinItemProps = {
 
 export default function CoinItem({ disabled, imageURL, amount, decimals = 0, baseDenom, displayDenom, channel, onClick }: CoinItemProps) {
   const { chromeStorage } = useChromeStorage();
-  const coinGeckoPrice = useCoinGeckoPriceSWR(true);
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const marketPrice = useMarketPriceSWR(true);
+  const marketPrice = useMarketPriceSWR();
 
   const chainPrice = marketPrice.data?.find((price) => price.denom === baseDenom)?.prices?.find((price) => price.currency === 'usd')?.current_price || 0;
 

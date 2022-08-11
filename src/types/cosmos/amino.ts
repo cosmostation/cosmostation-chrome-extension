@@ -15,6 +15,18 @@ export type MsgSend = {
   amount: Amount[];
 };
 
+export type MsgExecuteContract<T = unknown> = {
+  sender: string;
+  contract: string;
+  msg: T;
+  funds: Amount[];
+};
+
+export type ContractTransfer = {
+  recipient: string;
+  amount: string;
+};
+
 export type SignAminoDoc = {
   chain_id: string;
   sequence: string;

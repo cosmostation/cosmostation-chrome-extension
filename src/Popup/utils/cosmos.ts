@@ -10,9 +10,9 @@ import { keccak256 } from '@ethersproject/keccak256';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
-import { cosmos } from '~/proto/cosmos.js';
+import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
-import type { Msg, MsgCustom, MsgSend, SignAminoDoc } from '~/types/cosmos/amino';
+import type { Msg, MsgCustom, MsgExecuteContract, MsgSend, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 import { toHex } from './string';
@@ -103,6 +103,10 @@ export const getPublicKeyType = (chain: CosmosChain) => {
 
 export function isAminoSend(msg: Msg): msg is Msg<MsgSend> {
   return msg.type === 'cosmos-sdk/MsgSend' || msg.type === 'bank/MsgSend';
+}
+
+export function isAminoExecuteContract(msg: Msg): msg is Msg<MsgExecuteContract> {
+  return msg.type === 'wasm/MsgExecuteContract';
 }
 
 export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {

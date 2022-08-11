@@ -768,7 +768,14 @@
         "Entry": {
           "Cosmos": {
             "components": {
-              "CoinPopover": {
+              "CoinOrTokenPopover": {
+                "components": {
+                  "TokenButton": {
+                    "index": {
+                      "available": "사용 가능 수량"
+                    }
+                  }
+                },
                 "index": {
                   "available": "사용 가능 수량"
                 }

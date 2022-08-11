@@ -69,7 +69,9 @@ export default function CoinList({ chain }: CoinListProps) {
     return infos;
   }, [chain.cosmWasm, coinCnt, ibcCointCnt, tokenCnt]);
 
-  const [currentTypeInfo, setCurrentTypeInfo] = useState(typeInfos[0]);
+  const [currentType, setCurrentType] = useState(typeInfos[0].type);
+
+  const currentTypeInfo = useMemo(() => typeInfos.find((item) => item.type === currentType)!, [currentType, typeInfos]);
 
   const { navigate } = useNavigate();
 
@@ -130,7 +132,16 @@ export default function CoinList({ chain }: CoinListProps) {
           ))}
 
         {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'cw20') &&
-          sortedTokens.map((item) => <TokenItem key={item.id} address={address} chain={chain} token={item} onClickDelete={() => removeCosmosToken(item)} />)}
+          sortedTokens.map((item) => (
+            <TokenItem
+              key={item.id}
+              address={address}
+              chain={chain}
+              token={item}
+              onClick={() => navigate(`/wallet/send/${item.address ? `${encodeURIComponent(item.address)}` : ''}` as unknown as Path)}
+              onClickDelete={() => removeCosmosToken(item)}
+            />
+          ))}
 
         {!isExistCoinOrToken && chain.cosmWasm && (
           <AddTokenButton type="button" onClick={() => navigate('/chain/cosmos/token/add/cw20')}>
@@ -146,7 +157,7 @@ export default function CoinList({ chain }: CoinListProps) {
         currentTypeInfo={currentTypeInfo}
         typeInfos={typeInfos}
         onClickType={(selectedTypeInfo) => {
-          setCurrentTypeInfo(selectedTypeInfo);
+          setCurrentType(selectedTypeInfo.type);
         }}
         open={isOpenPopover}
         onClose={() => setPopoverAnchorEl(null)}

@@ -1,7 +1,8 @@
 import { post } from '~/Popup/utils/axios';
-import { isAminoSend } from '~/Popup/utils/cosmos';
-import { cosmos, google } from '~/proto/cosmos.js';
-import type { Msg, MsgSend, SignAminoDoc } from '~/types/cosmos/amino';
+import { isAminoExecuteContract, isAminoSend } from '~/Popup/utils/cosmos';
+import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
+import { cosmwasm } from '~/proto/cosmwasm-v0.28.0.js';
+import type { Msg, MsgExecuteContract, MsgSend, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend, PubKey } from '~/types/cosmos/proto';
 
@@ -10,19 +11,37 @@ export function convertAminoMessageToProto(msg: Msg) {
     return convertAminoSendMessageToProto(msg);
   }
 
+  if (isAminoExecuteContract(msg)) {
+    return convertAminoExecuteContractMessageToProto(msg);
+  }
+
   return null;
 }
 
-export function convertAminoSendMessageToProto(sendMessage: Msg<MsgSend>) {
+export function convertAminoSendMessageToProto(msg: Msg<MsgSend>) {
   const message = new cosmos.bank.v1beta1.MsgSend({
-    amount: sendMessage.value.amount,
-    from_address: sendMessage.value.from_address,
-    to_address: sendMessage.value.to_address,
+    amount: msg.value.amount,
+    from_address: msg.value.from_address,
+    to_address: msg.value.to_address,
   });
 
   return new google.protobuf.Any({
     type_url: '/cosmos.bank.v1beta1.MsgSend',
     value: cosmos.bank.v1beta1.MsgSend.encode(message).finish(),
+  });
+}
+
+export function convertAminoExecuteContractMessageToProto(msg: Msg<MsgExecuteContract>) {
+  const message = new cosmwasm.wasm.v1.MsgExecuteContract({
+    sender: msg.value.sender,
+    contract: msg.value.contract,
+    funds: msg.value.funds,
+    msg: Buffer.from(JSON.stringify(msg.value.msg)),
+  });
+
+  return new google.protobuf.Any({
+    type_url: '/cosmwasm.wasm.v1.MsgExecuteContract',
+    value: cosmwasm.wasm.v1.MsgExecuteContract.encode(message).finish(),
   });
 }
 
@@ -32,6 +51,7 @@ export function getTxBodyBytes(signed: SignAminoDoc) {
     messages,
     memo: signed.memo,
   });
+
   return cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
 }
 
@@ -87,7 +107,6 @@ export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey)
   const txBodyBytes = getTxBodyBytes(signed);
 
   const authInfoBytes = getAuthInfoBytes(signed, pubKey);
-
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
     body_bytes: txBodyBytes,
     auth_info_bytes: authInfoBytes,
