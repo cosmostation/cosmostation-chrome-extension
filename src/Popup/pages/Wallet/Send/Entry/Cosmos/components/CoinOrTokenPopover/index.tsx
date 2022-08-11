@@ -47,8 +47,8 @@ export default function CoinOrTokenPopover({
 
   const { t } = useTranslation();
 
-  const coinInfos = coinOrTokenInfos.filter((item) => item.type === 'coin').sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)) as CoinInfo[];
-  const tokenInfos = coinOrTokenInfos.filter((item) => item.type === 'token').sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)) as TokenInfo[];
+  const coinInfos = coinOrTokenInfos.filter((item) => item.type === 'coin') as CoinInfo[];
+  const tokenInfos = coinOrTokenInfos.filter((item) => item.type === 'token') as TokenInfo[];
 
   useEffect(() => {
     if (remainder.open) {

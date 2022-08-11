@@ -94,8 +94,8 @@ export default function Cosmos({ chain }: CosmosProps) {
         displayDenom: chain.displayDenom,
         baseDenom: chain.baseDenom,
       },
-      ...coinList.coins.map((item) => ({ ...item })),
-      ...coinList.ibcCoins.map((item) => ({ ...item })),
+      ...coinList.coins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
+      ...coinList.ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
     ],
     [chain.baseDenom, chain.decimals, chain.displayDenom, chain.imageURL, coinList.coins, coinList.ibcCoins, totalAmount, vestingRelatedAvailable],
   );
@@ -103,7 +103,7 @@ export default function Cosmos({ chain }: CosmosProps) {
   const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(
     () => [
       ...coinAll.filter((item) => gt(item.availableAmount, '0')).map((item) => ({ ...item, type: TYPE.COIN })),
-      ...currentCosmosTokens.map((item) => ({ ...item, type: TYPE.TOKEN })),
+      ...currentCosmosTokens.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item, type: TYPE.TOKEN })),
     ],
     [coinAll, currentCosmosTokens],
   );
