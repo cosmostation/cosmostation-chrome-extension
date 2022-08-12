@@ -476,6 +476,14 @@
             "description4": "을 추가합니다."
           }
         },
+        "AddTokens": {
+          "entry": {
+            "addButton": "토큰 가져오기",
+            "addTokens": "토큰 가져오기",
+            "cancelButton": "취소",
+            "question": "토큰들을 가져오시겠습니까?"
+          }
+        },
         "AutoSign": {
           "entry": {
             "description1": "자동서명 기능을 활성화하면 지갑이 자금 손실 위험에 빠질 수 있습니다. 온전히 신뢰할 수 있는 dApp에서만 활성화하십시오.",

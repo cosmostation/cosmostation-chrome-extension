@@ -4,18 +4,15 @@ import useSWR from 'swr';
 
 import { JUNO } from '~/constants/chain/cosmos/juno';
 import { get } from '~/Popup/utils/axios';
+import type { CosmosChain } from '~/types/chain';
 import type { CW20AssetPayload } from '~/types/cosmos/asset';
-
-import { useCurrentChain } from '../../useCurrent/useCurrentChain';
 
 const nameMap = {
   [JUNO.id]: 'juno',
 };
 
-export function useTokensSWR(config?: SWRConfiguration) {
-  const { currentChain } = useCurrentChain();
-
-  const mappingName = nameMap[currentChain.id] || currentChain.chainName.toLowerCase();
+export function useTokensSWR(chain: CosmosChain, config?: SWRConfiguration) {
+  const mappingName = nameMap[chain.id] || chain.chainName.toLowerCase();
 
   const requestURL = `https://api.mintscan.io/v2/assets/${mappingName}/cw20`;
 
@@ -31,7 +28,7 @@ export function useTokensSWR(config?: SWRConfiguration) {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    isPaused: () => !(currentChain.line === 'COSMOS' && currentChain.cosmWasm),
+    isPaused: () => !(chain.line === 'COSMOS' && chain.cosmWasm),
     ...config,
   });
 

@@ -19,7 +19,6 @@ import {
   LeftTextChainContainer,
   LeftTextContainer,
   LeftTextErrorContainer,
-  RightButtonContainer,
   RightContainer,
   RightTextChangeRateContainer,
   RightTextContainer,
@@ -48,7 +47,7 @@ export default function TokenItem({ chain, token, address, onClick, onClickDelet
   const { decimals, displayDenom, imageURL, coinGeckoId } = token;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const cw20Balance = useTokenBalanceSWR(chain, token.address, address);
+  const cw20Balance = useTokenBalanceSWR(chain, token.address, address, { suspense: true });
 
   const amount = cw20Balance.data?.balance || '0';
 
@@ -125,9 +124,9 @@ export function TokenItemSkeleton({ token }: TokenItemSkeletonProps) {
   );
 }
 
-type TokenItemErrorProps = Pick<TokenItemProps, 'token' | 'chain' | 'address'> & FallbackProps;
+type TokenItemErrorProps = Pick<TokenItemProps, 'token' | 'chain' | 'address' | 'onClickDelete'> & FallbackProps;
 
-export function TokenItemError({ token, chain, address, resetErrorBoundary }: TokenItemErrorProps) {
+export function TokenItemError({ token, chain, address, onClickDelete, resetErrorBoundary }: TokenItemErrorProps) {
   useTokenBalanceSWR(chain, token.address, address);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -148,20 +147,32 @@ export function TokenItemError({ token, chain, address, resetErrorBoundary }: To
           </LeftTextErrorContainer>
         </LeftTextContainer>
       </LeftContainer>
-      <RightButtonContainer>
-        <StyledIconButton
-          onClick={() => {
-            setIsLoading(true);
+      <RightContainer>
+        <RightTextContainer>
+          <StyledIconButton
+            onClick={() => {
+              setIsLoading(true);
 
-            setTimeout(() => {
-              resetErrorBoundary();
-              setIsLoading(false);
-            }, 500);
+              setTimeout(() => {
+                resetErrorBoundary();
+                setIsLoading(false);
+              }, 500);
+            }}
+          >
+            <RetryIcon />
+          </StyledIconButton>
+        </RightTextContainer>
+        <DeleteButton
+          id="deleteButton"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClickDelete?.();
           }}
         >
-          <RetryIcon />
-        </StyledIconButton>
-      </RightButtonContainer>
+          <Close16Icon />
+        </DeleteButton>
+      </RightContainer>
+
       {isLoading && <StyledAbsoluteLoading size="2rem" />}
     </StyledButton>
   );

@@ -26,7 +26,7 @@ type EntryProps = {
 export default function Entry({ chain }: EntryProps) {
   const [contractAddress, setContractAddress] = useState('');
   const { currentChain } = useCurrentChain();
-  const tokens = useTokensSWR();
+  const tokens = useTokensSWR(chain);
 
   const { importTokenForm } = useSchema({ chain });
   const { addCosmosToken } = useCurrentCosmosTokens();

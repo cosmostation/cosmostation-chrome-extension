@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
 import AddButton from '~/Popup/components/AddButton';
@@ -13,7 +14,7 @@ import type { CosmosChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
 import CoinItem from './components/CoinItem';
-import TokenItem from './components/TokenItem';
+import TokenItem, { TokenItemError, TokenItemSkeleton } from './components/TokenItem';
 import TypeButton from './components/TypeButton';
 import type { TypeInfo } from './components/TypePopover';
 import TypePopover from './components/TypePopover';
@@ -26,7 +27,7 @@ type CoinListProps = {
 };
 
 export default function CoinList({ chain }: CoinListProps) {
-  const { coins, ibcCoins } = useCoinListSWR(chain, true);
+  const { coins, ibcCoins } = useCoinListSWR(chain);
 
   const { chromeStorage } = useChromeStorage();
   const { t } = useTranslation();
@@ -133,14 +134,23 @@ export default function CoinList({ chain }: CoinListProps) {
 
         {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'cw20') &&
           sortedTokens.map((item) => (
-            <TokenItem
+            <ErrorBoundary
               key={item.id}
-              address={address}
-              chain={chain}
-              token={item}
-              onClick={() => navigate(`/wallet/send/${item.address ? `${encodeURIComponent(item.address)}` : ''}` as unknown as Path)}
-              onClickDelete={() => removeCosmosToken(item)}
-            />
+              FallbackComponent={
+                // eslint-disable-next-line react/no-unstable-nested-components
+                (props) => <TokenItemError {...props} address={address} chain={chain} token={item} onClickDelete={() => removeCosmosToken(item)} />
+              }
+            >
+              <Suspense fallback={<TokenItemSkeleton token={item} />}>
+                <TokenItem
+                  address={address}
+                  chain={chain}
+                  token={item}
+                  onClick={() => navigate(`/wallet/send/${item.address ? `${encodeURIComponent(item.address)}` : ''}` as unknown as Path)}
+                  onClickDelete={() => removeCosmosToken(item)}
+                />
+              </Suspense>
+            </ErrorBoundary>
           ))}
 
         {!isExistCoinOrToken && chain.cosmWasm && (

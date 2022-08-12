@@ -490,7 +490,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
         </ErrorDescriptionContainer>
       </ThirdLineContainer>
 
-      <ButtonContainer>
+      <ButtonContainer sx={{ paddingBottom: '1.6rem' }}>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.depositButton')}
         </Button>

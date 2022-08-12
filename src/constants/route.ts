@@ -56,6 +56,7 @@ export const PATH = {
 
   // popup cosmos
   POPUP__COSMOS__ADD_CHAIN: '/popup/cosmos/add-chain',
+  POPUP__COSMOS__ADD_TOKENS: '/popup/cosmos/add-tokens',
   POPUP__COSMOS__AUTO_SIGN__SET: '/popup/cosmos/auto-sign/set',
   POPUP__COSMOS__AUTO_SIGN__GET: '/popup/cosmos/auto-sign/get',
   POPUP__COSMOS__AUTO_SIGN__DELETE: '/popup/cosmos/auto-sign/delete',

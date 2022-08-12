@@ -1,5 +1,5 @@
 import type { COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/cosmos';
-import type { CosmosType, GasRate } from '~/types/chain';
+import type { CosmosToken, CosmosType, GasRate } from '~/types/chain';
 import type { PublicKeyType } from '~/types/cosmos';
 import type { SignAminoDoc } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
@@ -176,4 +176,34 @@ export type CosSignDirectResponse = {
     value: string;
   };
   signed_doc: SignDirectDoc;
+};
+
+export type CosAddTokenCW20Token = {
+  contractAddress: string;
+  imageURL?: string;
+  coinGeckoId?: string;
+};
+
+export type CosAddTokenCW20Params = {
+  chainName: string;
+  tokens: CosAddTokenCW20Token[];
+};
+
+export type CosAddTokenCW20 = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__ADD_TOKENS_CW20;
+  params: CosAddTokenCW20Params;
+  id?: number | string;
+};
+
+export type CosAddTokenCW20Response = null;
+
+export type CosAddTokenCW20InternalParams = {
+  chainName: string;
+  tokens: CosmosToken[];
+};
+
+export type CosAddTokenCW20Internal = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__ADD_TOKENS_CW20_INTERNAL;
+  params: CosAddTokenCW20InternalParams;
+  id?: number | string;
 };
