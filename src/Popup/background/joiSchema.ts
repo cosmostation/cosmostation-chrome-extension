@@ -7,6 +7,7 @@ import type { Fee, Msg, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Amount } from '~/types/cosmos/common';
 import type {
   CosAddChain,
+  CosAddTokenCW20,
   CosDeleteAutoSign,
   CosGetAutoSign,
   CosGetBalanceCW20,
@@ -236,6 +237,28 @@ export const cosGetTokenInfoCW20ParamsSchema = (chainNames: string[], chain: Cos
       .valid(...chainNames)
       .required(),
     contractAddress: Joi.string().pattern(contractAddressRegex).required(),
+  })
+    .label('params')
+    .required();
+};
+
+export const cosAddTokensCW20ParamsSchema = (chainNames: string[], chain: CosmosChain) => {
+  const contractAddressRegex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
+
+  return Joi.object<CosAddTokenCW20['params']>({
+    chainName: Joi.string()
+      .lowercase()
+      .valid(...chainNames)
+      .required(),
+    tokens: Joi.array()
+      .items(
+        Joi.object<CosAddTokenCW20['params']['tokens'][0]>({
+          contractAddress: Joi.string().pattern(contractAddressRegex).required(),
+          coinGeckoId: Joi.string().optional(),
+          imageURL: Joi.string().optional(),
+        }),
+      )
+      .required(),
   })
     .label('params')
     .required();

@@ -18,13 +18,7 @@ export function useTokenBalanceSWR(chain: CosmosChain, contractAddress: string, 
   const isValidContractAddress = regex.test(contractAddress);
   const isValidAddress = regex.test(address);
 
-  const fetcher = async (fetchUrl: string) => {
-    try {
-      return await get<SmartPayload>(fetchUrl);
-    } catch (e: unknown) {
-      return null;
-    }
-  };
+  const fetcher = (fetchUrl: string) => get<SmartPayload>(fetchUrl);
 
   const { data, error, mutate } = useSWR<SmartPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,

@@ -30,6 +30,7 @@ import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
 import PopupCosmosAddChain from '~/Popup/pages/Popup/Cosmos/AddChain';
+import PopupCosmosAddTokens from '~/Popup/pages/Popup/Cosmos/AddTokens';
 import PopupCosmosAutoSignDelete from '~/Popup/pages/Popup/Cosmos/AutoSign/Delete';
 import PopupCosmosAutoSignGet from '~/Popup/pages/Popup/Cosmos/AutoSign/Get';
 import PopupCosmosAutoSignSet from '~/Popup/pages/Popup/Cosmos/AutoSign/Set';
@@ -119,6 +120,7 @@ export default function Routes() {
           <Route path={PATH.POPUP__ETHEREUM__TRANSACTION} element={<PopupEthereumTransaction />} />
 
           <Route path={PATH.POPUP__COSMOS__ADD_CHAIN} element={<PopupCosmosAddChain />} />
+          <Route path={PATH.POPUP__COSMOS__ADD_TOKENS} element={<PopupCosmosAddTokens />} />
           <Route path={PATH.POPUP__COSMOS__AUTO_SIGN__GET} element={<PopupCosmosAutoSignGet />} />
           <Route path={PATH.POPUP__COSMOS__AUTO_SIGN__SET} element={<PopupCosmosAutoSignSet />} />
           <Route path={PATH.POPUP__COSMOS__AUTO_SIGN__DELETE} element={<PopupCosmosAutoSignDelete />} />

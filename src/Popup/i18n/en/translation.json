@@ -476,6 +476,14 @@
             "description4": ""
           }
         },
+        "AddTokens": {
+          "entry": {
+            "addButton": "Add tokens",
+            "addTokens": "Add Suggested Tokens",
+            "cancelButton": "Cancel",
+            "question": "Would you like to import these tokens?"
+          }
+        },
         "AutoSign": {
           "entry": {
             "description1": "Activating Auto Sign can put your wallet at high risk of unconscious fund loss - activate ONLY on fully trusted dApps.",

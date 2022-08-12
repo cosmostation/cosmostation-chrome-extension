@@ -48,7 +48,7 @@ export default function TokenItem({ chain, token, address, onClick, onClickDelet
   const { decimals, displayDenom, imageURL, coinGeckoId } = token;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const cw20Balance = useTokenBalanceSWR(chain, token.address, address);
+  const cw20Balance = useTokenBalanceSWR(chain, token.address, address, { suspense: true });
 
   const amount = cw20Balance.data?.balance || '0';
 

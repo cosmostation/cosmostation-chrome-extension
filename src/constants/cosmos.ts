@@ -12,6 +12,8 @@ export const COSMOS_POPUP_METHOD_TYPE = {
   COS__GET_AUTO_SIGN: 'cos_getAutoSign',
   COS__SET_AUTO_SIGN: 'cos_setAutoSign',
   COS__DELETE_AUTO_SIGN: 'cos_deleteAutoSign',
+  COS__ADD_TOKENS_CW20: 'cos_addTokensCW20',
+  COS__ADD_TOKENS_CW20_INTERNAL: 'cos_addTokensCW20Internal',
 } as const;
 
 export const COSMOS_NO_POPUP_METHOD_TYPE = {
