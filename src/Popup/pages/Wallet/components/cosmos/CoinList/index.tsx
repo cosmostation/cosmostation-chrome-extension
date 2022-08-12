@@ -138,7 +138,7 @@ export default function CoinList({ chain }: CoinListProps) {
               key={item.id}
               FallbackComponent={
                 // eslint-disable-next-line react/no-unstable-nested-components
-                (props) => <TokenItemError {...props} address={address} chain={chain} token={item} />
+                (props) => <TokenItemError {...props} address={address} chain={chain} token={item} onClickDelete={() => removeCosmosToken(item)} />
               }
             >
               <Suspense fallback={<TokenItemSkeleton token={item} />}>

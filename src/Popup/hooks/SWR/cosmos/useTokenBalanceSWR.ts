@@ -20,7 +20,7 @@ export function useTokenBalanceSWR(chain: CosmosChain, contractAddress: string, 
 
   const fetcher = (fetchUrl: string) => get<SmartPayload>(fetchUrl);
 
-  const { data, error, mutate } = useSWR<SmartPayload | null, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<SmartPayload, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,

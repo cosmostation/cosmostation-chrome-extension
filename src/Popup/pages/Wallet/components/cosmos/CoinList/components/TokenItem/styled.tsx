@@ -117,18 +117,6 @@ export const StyledAbsoluteLoading = styled(AbsoluteLoading)({
   borderRadius: '0.8rem',
 });
 
-export const RightButtonContainer = styled('div')({
-  position: 'absolute',
-
-  right: '0.6rem',
-  top: 0,
-  bottom: 0,
-
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-});
-
 export const StyledIconButton = styled(IconButton)(({ theme }) => ({
   '& svg': {
     fill: theme.colors.base05,
