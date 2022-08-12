@@ -12,6 +12,8 @@ export const COSMOS_POPUP_METHOD_TYPE = {
   COS__GET_AUTO_SIGN: 'cos_getAutoSign',
   COS__SET_AUTO_SIGN: 'cos_setAutoSign',
   COS__DELETE_AUTO_SIGN: 'cos_deleteAutoSign',
+  COS__ADD_TOKENS_CW20: 'cos_addTokensCW20',
+  COS__ADD_TOKENS_CW20_INTERNAL: 'cos_addTokensCW20Internal',
 } as const;
 
 export const COSMOS_NO_POPUP_METHOD_TYPE = {
@@ -23,6 +25,8 @@ export const COSMOS_NO_POPUP_METHOD_TYPE = {
   COS__ACTIVATED_CHAIN_NAMES: 'cos_activatedChainNames',
   COS__ACCOUNT: 'cos_account',
   COS__SEND_TRANSACTION: 'cos_sendTransaction',
+  COS__GET_BALANCE_CW20: 'cos_getBalanceCW20',
+  COS__GET_TOKEN_INFO_CW20: 'cos_getTokenInfoCW20',
 } as const;
 
 export const COSMOS_METHOD_TYPE = {
@@ -42,3 +46,7 @@ export const COSMOS_TYPE = {
 } as const;
 
 export const MINTSCAN_URL = 'https://www.mintscan.io';
+
+export const TOKEN_TYPE = {
+  CW20: 'CW20',
+} as const;

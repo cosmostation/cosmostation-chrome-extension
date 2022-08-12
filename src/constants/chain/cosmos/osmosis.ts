@@ -23,7 +23,7 @@ export const OSMOSIS: CosmosChain = {
   coinGeckoId: 'osmosis',
   explorerURL: `${MINTSCAN_URL}/osmosis`,
   gasRate: {
-    tiny: '0',
+    tiny: '0.00025',
     low: '0.0025',
     average: '0.025',
   },

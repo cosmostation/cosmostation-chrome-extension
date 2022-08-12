@@ -31,3 +31,19 @@ export type AssetV2 = {
 export type AssetV2Payload = {
   assets: AssetV2[];
 };
+
+export type CW20Asset = {
+  id: number;
+  chain: string;
+  contract_address: string;
+  denom: string;
+  decimal: number;
+  display: number;
+  logo: string;
+  total_supply: number;
+  coingecko_id?: string;
+};
+
+export type CW20AssetPayload = {
+  assets: CW20Asset[];
+};

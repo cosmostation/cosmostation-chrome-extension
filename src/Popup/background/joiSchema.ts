@@ -1,11 +1,22 @@
 import { COSMOS_TYPE } from '~/constants/cosmos';
 import { TOKEN_TYPE } from '~/constants/ethereum';
 import Joi from '~/Popup/utils/joi';
-import { ethereumAddressRegex } from '~/Popup/utils/regex';
-import type { GasRate } from '~/types/chain';
+import { ethereumAddressRegex, getCosmosAddressRegex } from '~/Popup/utils/regex';
+import type { CosmosChain, GasRate } from '~/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Amount } from '~/types/cosmos/common';
-import type { CosAddChain, CosDeleteAutoSign, CosGetAutoSign, CosSendTransaction, CosSetAutoSign, CosSignAmino, CosSignDirect } from '~/types/cosmos/message';
+import type {
+  CosAddChain,
+  CosAddTokenCW20,
+  CosDeleteAutoSign,
+  CosGetAutoSign,
+  CosGetBalanceCW20,
+  CosGetTokenInfoCW20,
+  CosSendTransaction,
+  CosSetAutoSign,
+  CosSignAmino,
+  CosSignDirect,
+} from '~/types/cosmos/message';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type {
   CustomChain,
@@ -200,6 +211,58 @@ export const cosSendTransactionParamsSchema = (chainNames: string[]) =>
   })
     .label('params')
     .required();
+
+export const cosGetBalanceCW20ParamsSchema = (chainNames: string[], chain: CosmosChain) => {
+  const contractAddressRegex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
+  const addressRegex = getCosmosAddressRegex(chain.bech32Prefix.address, [39]);
+
+  return Joi.object<CosGetBalanceCW20['params']>({
+    chainName: Joi.string()
+      .lowercase()
+      .valid(...chainNames)
+      .required(),
+    contractAddress: Joi.string().pattern(contractAddressRegex).required(),
+    address: Joi.string().pattern(addressRegex).required(),
+  })
+    .label('params')
+    .required();
+};
+
+export const cosGetTokenInfoCW20ParamsSchema = (chainNames: string[], chain: CosmosChain) => {
+  const contractAddressRegex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
+
+  return Joi.object<CosGetTokenInfoCW20['params']>({
+    chainName: Joi.string()
+      .lowercase()
+      .valid(...chainNames)
+      .required(),
+    contractAddress: Joi.string().pattern(contractAddressRegex).required(),
+  })
+    .label('params')
+    .required();
+};
+
+export const cosAddTokensCW20ParamsSchema = (chainNames: string[], chain: CosmosChain) => {
+  const contractAddressRegex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
+
+  return Joi.object<CosAddTokenCW20['params']>({
+    chainName: Joi.string()
+      .lowercase()
+      .valid(...chainNames)
+      .required(),
+    tokens: Joi.array()
+      .items(
+        Joi.object<CosAddTokenCW20['params']['tokens'][0]>({
+          contractAddress: Joi.string().pattern(contractAddressRegex).required(),
+          coinGeckoId: Joi.string().optional(),
+          imageURL: Joi.string().optional(),
+        }),
+      )
+      .required(),
+  })
+    .label('params')
+    .required();
+};
 
 export const ethcAddNetworkParamsSchema = () =>
   Joi.array()

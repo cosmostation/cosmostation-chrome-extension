@@ -12,14 +12,6 @@ import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { EthereumTxType } from '~/types/ethereum/common';
 import type { EthereumTx } from '~/types/ethereum/message';
 
-export function toHex(data: string) {
-  if (data.startsWith('0x')) {
-    return data;
-  }
-
-  return `0x${Buffer.from(data, 'utf8').toString('hex')}`;
-}
-
 export function toUTF8(hex: string) {
   return Buffer.from(stripHexPrefix(hex), 'hex').toString('utf8');
 }

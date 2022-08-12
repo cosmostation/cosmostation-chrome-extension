@@ -18,6 +18,8 @@ export const PATH = {
   CHAIN__MANAGEMENT: '/chain/management',
   CHAIN__MANAGEMENT__USE: '/chain/management/use',
 
+  CHAIN__COSMOS__TOKEN__ADD__ERC20: '/chain/cosmos/token/add/cw20',
+
   CHAIN__ETHEREUM__TOKEN__ADD__ERC20: '/chain/ethereum/token/add/erc20',
   CHAIN__ETHEREUM__NETWORK__ADD: '/chain/ethereum/network/add',
 
@@ -54,6 +56,7 @@ export const PATH = {
 
   // popup cosmos
   POPUP__COSMOS__ADD_CHAIN: '/popup/cosmos/add-chain',
+  POPUP__COSMOS__ADD_TOKENS: '/popup/cosmos/add-tokens',
   POPUP__COSMOS__AUTO_SIGN__SET: '/popup/cosmos/auto-sign/set',
   POPUP__COSMOS__AUTO_SIGN__GET: '/popup/cosmos/auto-sign/get',
   POPUP__COSMOS__AUTO_SIGN__DELETE: '/popup/cosmos/auto-sign/delete',

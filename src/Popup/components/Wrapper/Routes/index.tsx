@@ -59,6 +59,10 @@ export default function Routes({ children }: RoutesType) {
         navigate('/popup/cosmos/auto-sign/delete');
       }
 
+      if (chromeStorage.queues[0].message.method === 'cos_addTokensCW20Internal') {
+        navigate('/popup/cosmos/add-tokens');
+      }
+
       if (chromeStorage.queues[0].message.method === 'ethc_addNetwork') {
         navigate('/popup/ethereum/add-network');
       }

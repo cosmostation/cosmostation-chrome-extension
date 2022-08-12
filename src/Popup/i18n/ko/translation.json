@@ -382,6 +382,22 @@
       }
     },
     "Chain": {
+      "Cosmos": {
+        "Token": {
+          "Add": {
+            "CW20": {
+              "entry": {
+                "addTokenErrorSnackbar": "토큰 추가를 실패했습니다.",
+                "addTokenSnackbar": "토큰이 추가 되었습니다.",
+                "addressPlaceholder": "토큰 계약 주소",
+                "imageURLPlaceholder": "토큰 로고 이미지 URL (옵션)",
+                "submitButton": "커스텀 토큰 추가",
+                "warning": "기존 토큰의 가짜 버전 생성을 포함하여 누구나 토큰을 생성할 수 있습니다. 사기 및 보안 위험에 대해 주의하세요."
+              }
+            }
+          }
+        }
+      },
       "Ethereum": {
         "Network": {
           "Add": {
@@ -458,6 +474,14 @@
             "description2": "코스모스테이션에",
             "description3": "블록체인",
             "description4": "을 추가합니다."
+          }
+        },
+        "AddTokens": {
+          "entry": {
+            "addButton": "토큰 가져오기",
+            "addTokens": "토큰 가져오기",
+            "cancelButton": "취소",
+            "question": "토큰들을 가져오시겠습니까?"
           }
         },
         "AutoSign": {
@@ -752,7 +776,14 @@
         "Entry": {
           "Cosmos": {
             "components": {
-              "CoinPopover": {
+              "CoinOrTokenPopover": {
+                "components": {
+                  "TokenButton": {
+                    "index": {
+                      "available": "사용 가능 수량"
+                    }
+                  }
+                },
                 "index": {
                   "available": "사용 가능 수량"
                 }
@@ -838,6 +869,18 @@
           }
         },
         "cosmos": {
+          "CoinList": {
+            "components": {
+              "TokenItem": {
+                "index": {
+                  "networkError": "네트워크 오류"
+                }
+              }
+            },
+            "index": {
+              "importTokenButton": "토큰 가져오기"
+            }
+          },
           "NativeChainCard": {
             "index": {
               "available": "전송 가능 수량",

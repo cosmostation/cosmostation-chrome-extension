@@ -21,8 +21,8 @@ import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEth
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { toHex } from '~/Popup/utils/common';
 import { ethereumAddressRegex } from '~/Popup/utils/regex';
+import { toHex } from '~/Popup/utils/string';
 import type { EthereumChain } from '~/types/chain';
 import type { Token } from '~/types/ethereum/common';
 import type { ERC20ContractMethods } from '~/types/ethereum/contract';
@@ -51,7 +51,7 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const [isDisabled, setIsDisabled] = useState(false);
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
-  const [currentToken, setCurrentToken] = useState<Token>(currentEthereumTokens.find((item) => item.id === params.coin) || null);
+  const [currentToken, setCurrentToken] = useState<Token>(currentEthereumTokens.find((item) => item.id === params.id) || null);
 
   const fee = useFeeSWR();
 

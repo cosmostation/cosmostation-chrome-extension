@@ -15,16 +15,17 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
 
   const { chromeStorage } = useChromeStorage();
 
-  const { additionalEthereumNetworks, ethereumTokens } = chromeStorage;
+  const { additionalEthereumNetworks, ethereumTokens, cosmosTokens } = chromeStorage;
   const networkCoinGeckoIds = [...NETWORKS, ...additionalEthereumNetworks].filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId);
-  const ethereumTokenCoinGeckoIds = Array.from(new Set(ethereumTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!)));
+  const ethereumTokenCoinGeckoIds = ethereumTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!);
+  const cosmosTokenCoinGeckoIds = cosmosTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!);
 
-  const joinedNetworkCoinGeckoIds = networkCoinGeckoIds.length > 0 ? `,${networkCoinGeckoIds.join(',')}` : '';
-  const joinedEthereumTokenCoinGeckoIds = ethereumTokenCoinGeckoIds.length > 0 ? `,${ethereumTokenCoinGeckoIds.join(',')}` : '';
+  const allCoinGeckoIds = Array.from(new Set([...networkCoinGeckoIds, ethereumTokenCoinGeckoIds, cosmosTokenCoinGeckoIds]));
+  const joinedAllCoinGeckoIds = allCoinGeckoIds.length > 0 ? `,${allCoinGeckoIds.join(',')}` : '';
 
   const coinGeckoIds = `${(currentAllowedChains.filter((chain) => chain.line === 'COSMOS' && chain.coinGeckoId) as CosmosChain[])
     .map((chain) => chain.coinGeckoId)
-    .join(',')}${joinedNetworkCoinGeckoIds}${joinedEthereumTokenCoinGeckoIds},tether`;
+    .join(',')}${joinedAllCoinGeckoIds},tether`;
 
   const currencySymbols = Object.values(CURRENCY_TYPE).join(',');
 

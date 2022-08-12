@@ -22,6 +22,7 @@ import AccountInitializeNewMnemonicStep4 from '~/Popup/pages/Account/Initialize/
 import AccountInitializeNewMnemonicStep5 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step5';
 import AccountInitializeWelcome from '~/Popup/pages/Account/Initialize/Welcome';
 import AccountManagement from '~/Popup/pages/Account/Management';
+import ChainCosmosTokenAddCW20 from '~/Popup/pages/Chain/Cosmos/Token/Add/CW20';
 import ChainEthereumNetworkAdd from '~/Popup/pages/Chain/Ethereum/Network/Add';
 import ChainEthereumTokenAddERC20 from '~/Popup/pages/Chain/Ethereum/Token/Add/ERC20';
 import ChainManagement from '~/Popup/pages/Chain/Management';
@@ -29,6 +30,7 @@ import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
 import PopupCosmosAddChain from '~/Popup/pages/Popup/Cosmos/AddChain';
+import PopupCosmosAddTokens from '~/Popup/pages/Popup/Cosmos/AddTokens';
 import PopupCosmosAutoSignDelete from '~/Popup/pages/Popup/Cosmos/AutoSign/Delete';
 import PopupCosmosAutoSignGet from '~/Popup/pages/Popup/Cosmos/AutoSign/Get';
 import PopupCosmosAutoSignSet from '~/Popup/pages/Popup/Cosmos/AutoSign/Set';
@@ -79,7 +81,7 @@ export default function Routes() {
 
           <Route path={PATH.WALLET} element={<Wallet />} />
           <Route path={PATH.WALLET__SEND} element={<WalletSend />}>
-            <Route path=":coin" element={<WalletSend />} />
+            <Route path=":id" element={<WalletSend />} />
           </Route>
           <Route path={PATH.WALLET__RECEIVE} element={<WalletReceive />} />
 
@@ -102,6 +104,8 @@ export default function Routes() {
           <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
           <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
 
+          <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__ERC20} element={<ChainCosmosTokenAddCW20 />} />
+
           <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__ERC20} element={<ChainEthereumTokenAddERC20 />} />
           <Route path={PATH.CHAIN__ETHEREUM__NETWORK__ADD} element={<ChainEthereumNetworkAdd />} />
 
@@ -116,6 +120,7 @@ export default function Routes() {
           <Route path={PATH.POPUP__ETHEREUM__TRANSACTION} element={<PopupEthereumTransaction />} />
 
           <Route path={PATH.POPUP__COSMOS__ADD_CHAIN} element={<PopupCosmosAddChain />} />
+          <Route path={PATH.POPUP__COSMOS__ADD_TOKENS} element={<PopupCosmosAddTokens />} />
           <Route path={PATH.POPUP__COSMOS__AUTO_SIGN__GET} element={<PopupCosmosAutoSignGet />} />
           <Route path={PATH.POPUP__COSMOS__AUTO_SIGN__SET} element={<PopupCosmosAutoSignSet />} />
           <Route path={PATH.POPUP__COSMOS__AUTO_SIGN__DELETE} element={<PopupCosmosAutoSignDelete />} />

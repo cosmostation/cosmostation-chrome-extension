@@ -382,6 +382,22 @@
       }
     },
     "Chain": {
+      "Cosmos": {
+        "Token": {
+          "Add": {
+            "CW20": {
+              "entry": {
+                "addTokenErrorSnackbar": "Failed to add",
+                "addTokenSnackbar": "Token added",
+                "addressPlaceholder": "Token contract address",
+                "imageURLPlaceholder": "Token Logo URL (option)",
+                "submitButton": "Add custom token",
+                "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
+              }
+            }
+          }
+        }
+      },
       "Ethereum": {
         "Network": {
           "Add": {
@@ -458,6 +474,14 @@
             "description2": "like to add blockchain",
             "description3": "to Cosmostation wallet.",
             "description4": ""
+          }
+        },
+        "AddTokens": {
+          "entry": {
+            "addButton": "Add tokens",
+            "addTokens": "Add Suggested Tokens",
+            "cancelButton": "Cancel",
+            "question": "Would you like to import these tokens?"
           }
         },
         "AutoSign": {
@@ -752,7 +776,14 @@
         "Entry": {
           "Cosmos": {
             "components": {
-              "CoinPopover": {
+              "CoinOrTokenPopover": {
+                "components": {
+                  "TokenButton": {
+                    "index": {
+                      "available": "Available"
+                    }
+                  }
+                },
                 "index": {
                   "available": "Available"
                 }
@@ -838,6 +869,18 @@
           }
         },
         "cosmos": {
+          "CoinList": {
+            "components": {
+              "TokenItem": {
+                "index": {
+                  "networkError": "Network Error"
+                }
+              }
+            },
+            "index": {
+              "importTokenButton": "Import token"
+            }
+          },
           "NativeChainCard": {
             "index": {
               "available": "Available",

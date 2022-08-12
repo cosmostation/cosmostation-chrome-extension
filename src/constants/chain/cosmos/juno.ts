@@ -28,4 +28,5 @@ export const JUNO: CosmosChain = {
     average: '0.025',
   },
   gas: { send: '100000' },
+  cosmWasm: true,
 };

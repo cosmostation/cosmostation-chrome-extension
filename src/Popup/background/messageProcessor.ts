@@ -1,4 +1,5 @@
 import { debounce } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 import Web3 from 'web3';
 import type { MessageTypes, TypedMessage } from '@metamask/eth-sig-util';
 import { signTypedData, SignTypedDataVersion } from '@metamask/eth-sig-util';
@@ -13,17 +14,20 @@ import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_MET
 import { chromeSessionStorage } from '~/Popup/utils/chromeSessionStorage';
 import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openWindow } from '~/Popup/utils/chromeWindows';
-import { getAddress, getKeyPair, toHex } from '~/Popup/utils/common';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
 import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { CosmosChain } from '~/types/chain';
+import { toHex } from '~/Popup/utils/string';
+import type { CosmosChain, CosmosToken } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
+import type { Balance, SmartPayload, TokenInfo } from '~/types/cosmos/contract';
 import type {
   CosAccountResponse,
   CosActivatedChainNamesResponse,
   CosAddChain,
+  CosAddTokenCW20Internal,
   CosDeleteAutoSign,
   CosDeleteAutoSignResponse,
   CosGetAutoSign,
@@ -56,8 +60,11 @@ import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/ty
 
 import {
   cosAddChainParamsSchema,
+  cosAddTokensCW20ParamsSchema,
   cosDeleteAutoSignParamsSchema,
   cosGetAutoSignParamsSchema,
+  cosGetBalanceCW20ParamsSchema,
+  cosGetTokenInfoCW20ParamsSchema,
   cosSendTransactionParamsSchema,
   cosSetAutoSignParamsSchema,
   cosSignAminoParamsSchema,
@@ -73,8 +80,8 @@ import {
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,
 } from './joiSchema';
-import { getPublicKeyType, signAmino, signDirect } from '../utils/cosmos';
-import { post } from '../utils/fetch';
+import { cosmosURL, getPublicKeyType, signAmino, signDirect } from '../utils/cosmos';
+import { FetchError, get, post } from '../utils/fetch';
 
 let localQueues: Queue[] = [];
 
@@ -452,6 +459,82 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
           }
         }
+
+        if (method === 'cos_addTokensCW20') {
+          const { params } = message;
+
+          const cosmWasmChains = allChains.filter((item) => item.cosmWasm);
+          const cosmWasmChainLowercaseNames = cosmWasmChains.map((item) => item.chainName.toLowerCase());
+
+          const selectedChain = cosmWasmChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
+
+          if (!allChainLowercaseNames.includes(chainName)) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const schema = cosAddTokensCW20ParamsSchema(cosmWasmChainLowercaseNames, chain);
+
+          try {
+            await schema.validateAsync({ ...params, chainName });
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+
+          try {
+            const { getCW20TokenInfo } = cosmosURL(chain);
+
+            const uniqueTokens = params.tokens.filter((token, idx, arr) => arr.findIndex((item) => item.contractAddress === token.contractAddress) === idx);
+
+            const cosmosTokens = (
+              await Promise.all(
+                uniqueTokens.map(async (token) => {
+                  try {
+                    const response = await get<SmartPayload>(getCW20TokenInfo(token.contractAddress));
+                    const result = JSON.parse(Buffer.from(response?.result?.smart, 'base64').toString('utf-8')) as TokenInfo;
+                    const cosmosToken: CosmosToken = {
+                      id: uuidv4(),
+                      address: token.contractAddress,
+                      chainId: chain.id,
+                      decimals: result.decimals,
+                      displayDenom: result.symbol,
+                      tokenType: 'CW20',
+                      coinGeckoId: token.coinGeckoId,
+                      imageURL: token.imageURL,
+                    };
+
+                    return cosmosToken;
+                  } catch {
+                    return null;
+                  }
+                }),
+              )
+            ).filter((item) => item !== null) as CosmosToken[];
+
+            if (cosmosTokens.length === 0) {
+              throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+            }
+
+            localQueues.push({
+              ...request,
+              message: {
+                ...request.message,
+                method: 'cos_addTokensCW20Internal',
+                params: { chainName: chain.chainName, tokens: cosmosTokens } as CosAddTokenCW20Internal['params'],
+              },
+            });
+            void setQueues();
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+        }
       } else if (cosmosNoPopupMethods.includes(message.method)) {
         if (method === 'cos_supportedChainNames' || method === 'ten_supportedChainNames') {
           const official = COSMOS_CHAINS.map((item) => item.chainName.toLowerCase());
@@ -540,7 +623,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
           }
 
-          const chain = getChain(chainName)!;
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
 
           const schema = cosSendTransactionParamsSchema(allChainLowercaseNames);
 
@@ -565,18 +652,176 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               origin,
             });
           } catch (e) {
+            if (e instanceof FetchError) {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                    data: { status: e.data.status, statusText: e.data.statusText, message: await e.data.text() },
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } else {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            }
+          }
+        }
+
+        if (method === 'cos_getBalanceCW20') {
+          const { params } = message;
+
+          const cosmWasmChains = allChains.filter((item) => item.cosmWasm);
+          const cosmWasmChainLowercaseNames = cosmWasmChains.map((item) => item.chainName.toLowerCase());
+
+          const selectedChain = cosmWasmChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
+
+          if (!allChainLowercaseNames.includes(chainName)) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const schema = cosGetBalanceCW20ParamsSchema(cosmWasmChainLowercaseNames, chain);
+
+          try {
+            await schema.validateAsync({ ...params, chainName });
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+
+          try {
+            const { getCW20Balance } = cosmosURL(chain);
+            const response = await get<SmartPayload>(getCW20Balance(params.contractAddress, params.address));
+
+            const amount = (JSON.parse(Buffer.from(response?.result?.smart, 'base64').toString('utf-8')) as Balance)?.balance || '0';
+
             responseToWeb({
               response: {
-                error: {
-                  code: RPC_ERROR.INTERNAL,
-                  message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
-                  data: e,
-                },
+                result: amount,
               },
               message,
               messageId,
               origin,
             });
+          } catch (e) {
+            if (e instanceof FetchError) {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                    data: { status: e.data.status, statusText: e.data.statusText, message: await e.data.text() },
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } else {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            }
+          }
+        }
+
+        if (method === 'cos_getTokenInfoCW20') {
+          const { params } = message;
+
+          const cosmWasmChains = allChains.filter((item) => item.cosmWasm);
+          const cosmWasmChainLowercaseNames = cosmWasmChains.map((item) => item.chainName.toLowerCase());
+
+          const selectedChain = cosmWasmChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
+
+          if (!allChainLowercaseNames.includes(chainName)) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const schema = cosGetTokenInfoCW20ParamsSchema(cosmWasmChainLowercaseNames, chain);
+
+          try {
+            await schema.validateAsync({ ...params, chainName });
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+
+          try {
+            const { getCW20TokenInfo } = cosmosURL(chain);
+            const response = await get<SmartPayload>(getCW20TokenInfo(params.contractAddress));
+
+            const result = JSON.parse(Buffer.from(response?.result?.smart, 'base64').toString('utf-8')) as TokenInfo;
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          } catch (e) {
+            if (e instanceof FetchError) {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                    data: { status: e.data.status, statusText: e.data.statusText, message: await e.data.text() },
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } else {
+              responseToWeb({
+                response: {
+                  error: {
+                    code: RPC_ERROR.INTERNAL,
+                    message: RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL],
+                  },
+                },
+                message,
+                messageId,
+                origin,
+              });
+            }
           }
         }
       } else {

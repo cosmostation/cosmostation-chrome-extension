@@ -18,7 +18,7 @@ import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { decodeProtobufMessage } from '~/Popup/utils/proto';
-import { cosmos } from '~/proto/cosmos.js';
+import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, FeeCoin } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { CosSignDirect, CosSignDirectResponse } from '~/types/cosmos/message';

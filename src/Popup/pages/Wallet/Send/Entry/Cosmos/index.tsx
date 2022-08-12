@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { COSMOS_DEFAULT_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
+import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
@@ -14,18 +14,20 @@ import Fee from '~/Popup/components/Fee';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
-import type { CoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
+import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
+import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { fix, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
-import type { CosmosChain } from '~/types/chain';
+import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain';
 
-import CoinPopover from './components/CoinPopover';
+import CoinOrTokenPopover from './components/CoinOrTokenPopover';
 import {
   BottomContainer,
   CoinButton,
@@ -47,6 +49,16 @@ import {
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
 import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
 
+export const TYPE = {
+  COIN: 'coin',
+  TOKEN: 'token',
+} as const;
+
+export type CoinInfo = BaseCoinInfo & { type: typeof TYPE.COIN };
+export type TokenInfo = BaseCosmosToken & { type: typeof TYPE.TOKEN };
+
+export type CoinOrTokenInfo = CoinInfo | TokenInfo;
+
 type CosmosProps = {
   chain: CosmosChain;
 };
@@ -63,14 +75,14 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const { t } = useTranslation();
 
+  const { currentCosmosTokens } = useCurrentCosmosTokens();
+
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
   const { decimals, gas, gasRate } = chain;
-
-  const sendGas = gas.send || COSMOS_DEFAULT_GAS;
 
   const coinAll = useMemo(
     () => [
@@ -82,42 +94,71 @@ export default function Cosmos({ chain }: CosmosProps) {
         displayDenom: chain.displayDenom,
         baseDenom: chain.baseDenom,
       },
-      ...coinList.coins,
-      ...coinList.ibcCoins,
+      ...coinList.coins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
+      ...coinList.ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
     ],
     [chain.baseDenom, chain.decimals, chain.displayDenom, chain.imageURL, coinList.coins, coinList.ibcCoins, totalAmount, vestingRelatedAvailable],
   );
 
-  const availableCoinList: CoinInfo[] = coinAll.filter((item) => gt(item.availableAmount, '0'));
+  const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(
+    () => [
+      ...coinAll.filter((item) => gt(item.availableAmount, '0')).map((item) => ({ ...item, type: TYPE.COIN })),
+      ...currentCosmosTokens.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item, type: TYPE.TOKEN })),
+    ],
+    [coinAll, currentCosmosTokens],
+  );
 
-  const [currentCoinBaseDenom, setCurrentCoinBaseDenom] = useState(params.coin || chain.baseDenom);
+  const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
-  const [currentGas, setCurrentGas] = useState(sendGas);
-  const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
   const [currentAddress, setCurrentAddress] = useState('');
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
   const [currentMemo, setCurrentMemo] = useState('');
-
-  const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
 
   const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
 
-  const currentCoin = useMemo(() => availableCoinList.find((item) => item.baseDenom === currentCoinBaseDenom)!, [availableCoinList, currentCoinBaseDenom]);
+  const currentCoinOrToken = useMemo(
+    () =>
+      availableCoinOrTokenList.find(
+        (item) => (item.type === 'coin' && item.baseDenom === currentCoinOrTokenId) || (item.type === 'token' && item.address === currentCoinOrTokenId),
+      )!,
+    [availableCoinOrTokenList, currentCoinOrTokenId],
+  );
 
-  const currentCoinDisplayAvailableAmount = useMemo(
-    () => toDisplayDenomAmount(currentCoin.availableAmount, currentCoin.decimals),
-    [currentCoin.availableAmount, currentCoin.decimals],
+  const sendGas = currentCoinOrToken.type === 'coin' ? gas.send || COSMOS_DEFAULT_SEND_GAS : gas.transfer || COSMOS_DEFAULT_TRANSFER_GAS;
+
+  const [currentGas, setCurrentGas] = useState(sendGas);
+  const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
+
+  const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
+
+  const tokenBalance = useTokenBalanceSWR(chain, currentCoinOrTokenId, address);
+
+  const currentCoinOrTokenAvailableAmount = useMemo(() => {
+    if (currentCoinOrToken.type === 'coin') {
+      return currentCoinOrToken.availableAmount;
+    }
+
+    return tokenBalance.data?.balance || '0';
+  }, [currentCoinOrToken, tokenBalance.data?.balance]);
+
+  const currentCoinOrTokenDisplayAvailableAmount = useMemo(
+    () => toDisplayDenomAmount(currentCoinOrTokenAvailableAmount, currentCoinOrToken.decimals),
+    [currentCoinOrToken.decimals, currentCoinOrTokenAvailableAmount],
   );
 
   const feeCoins = useMemo(() => {
-    const feeBaseDenoms = COSMOS_FEE_BASE_DENOMS.find((item) => item.chainId === chain.id && item.baseDenom === currentCoin.baseDenom)?.feeBaseDenoms;
+    if (currentCoinOrToken.type === 'coin') {
+      const feeBaseDenoms = COSMOS_FEE_BASE_DENOMS.find((item) => item.chainId === chain.id && item.baseDenom === currentCoinOrToken.baseDenom)?.feeBaseDenoms;
 
-    const filteredFeeCoins = coinAll.filter((item) => feeBaseDenoms?.includes(item.baseDenom));
+      const filteredFeeCoins = coinAll.filter((item) => feeBaseDenoms?.includes(item.baseDenom));
 
-    return filteredFeeCoins.length > 0 ? filteredFeeCoins : [coinAll[0]];
-  }, [chain.id, coinAll, currentCoin.baseDenom]);
+      return filteredFeeCoins.length > 0 ? filteredFeeCoins : [coinAll[0]];
+    }
+
+    return [coinAll[0]];
+  }, [chain.id, coinAll, currentCoinOrToken]);
 
   // 복수 개가 될 때 필요
   const [currentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
@@ -135,19 +176,19 @@ export default function Cosmos({ chain }: CosmosProps) {
   );
 
   const maxDisplayAmount = useMemo(() => {
-    const maxAmount = minus(currentCoinDisplayAvailableAmount, currentDisplayFeeAmount);
-    if (currentCoin.baseDenom === currentFeeCoin.baseDenom) {
+    const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
       return gt(maxAmount, '0') ? maxAmount : '0';
     }
 
-    return currentCoinDisplayAvailableAmount;
-  }, [currentCoin.baseDenom, currentCoinDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
+    return currentCoinOrTokenDisplayAvailableAmount;
+  }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
-  const currentCoinDecimals = currentCoin.decimals || 0;
+  const currentCoinOrTokenDecimals = currentCoinOrToken.decimals || 0;
 
-  const currentCoinDisplayDenom = currentCoin.displayDenom;
+  const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
 
-  const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentCoinDecimals);
+  const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentCoinOrTokenDecimals);
 
   const errorMessage = useMemo(() => {
     if (!addressRegex.test(currentAddress) || address === currentAddress) {
@@ -158,14 +199,14 @@ export default function Cosmos({ chain }: CosmosProps) {
       return t('pages.Wallet.Send.Entry.Cosmos.index.invalidAmount');
     }
 
-    if (currentCoin.baseDenom === currentFeeCoin.baseDenom) {
-      if (!gte(currentCoinDisplayAvailableAmount, plus(currentDisplayAmount, currentDisplayFeeAmount))) {
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
+      if (!gte(currentCoinOrTokenDisplayAvailableAmount, plus(currentDisplayAmount, currentDisplayFeeAmount))) {
         return t('pages.Wallet.Send.Entry.Cosmos.index.insufficientAmount');
       }
     }
 
-    if (currentCoin.baseDenom !== currentFeeCoin.baseDenom) {
-      if (!gte(currentCoinDisplayAvailableAmount, currentDisplayAmount)) {
+    if ((currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom !== currentFeeCoin.baseDenom) || currentCoinOrToken.type === 'token') {
+      if (!gte(currentCoinOrTokenDisplayAvailableAmount, currentDisplayAmount)) {
         return t('pages.Wallet.Send.Entry.Cosmos.index.insufficientAmount');
       }
 
@@ -179,8 +220,8 @@ export default function Cosmos({ chain }: CosmosProps) {
     address,
     addressRegex,
     currentAddress,
-    currentCoin.baseDenom,
-    currentCoinDisplayAvailableAmount,
+    currentCoinOrToken,
+    currentCoinOrTokenDisplayAvailableAmount,
     currentDisplayAmount,
     currentDisplayFeeAmount,
     currentFeeCoin.baseDenom,
@@ -213,18 +254,18 @@ export default function Cosmos({ chain }: CosmosProps) {
         >
           <CoinLeftContainer>
             <CoinLeftImageContainer>
-              <Image src={currentCoin.imageURL} />
+              <Image src={currentCoinOrToken.imageURL} />
             </CoinLeftImageContainer>
             <CoinLeftInfoContainer>
               <CoinLeftDisplayDenomContainer>
-                <Typography variant="h5">{currentCoinDisplayDenom}</Typography>
+                <Typography variant="h5">{currentCoinOrTokenDisplayDenom}</Typography>
               </CoinLeftDisplayDenomContainer>
               <CoinLeftAvailableContainer>
                 <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.index.available')} :</Typography>{' '}
-                <Tooltip title={currentCoinDisplayAvailableAmount} arrow placement="top">
+                <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
                   <span>
                     <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
-                      {currentCoinDisplayAvailableAmount}
+                      {currentCoinOrTokenDisplayAvailableAmount}
                     </Number>
                   </span>
                 </Tooltip>
@@ -251,7 +292,7 @@ export default function Cosmos({ chain }: CosmosProps) {
             </InputAdornment>
           }
           onChange={(e) => {
-            if (!isDecimal(e.currentTarget.value, currentCoin.decimals || 0) && e.currentTarget.value) {
+            if (!isDecimal(e.currentTarget.value, currentCoinOrToken.decimals || 0) && e.currentTarget.value) {
               return;
             }
 
@@ -291,34 +332,75 @@ export default function Cosmos({ chain }: CosmosProps) {
               type="button"
               disabled={!!errorMessage}
               onClick={async () => {
-                await enQueue({
-                  messageId: '',
-                  origin: '',
-                  channel: 'inApp',
-                  message: {
-                    method: 'cos_signAmino',
-                    params: {
-                      chainName: chain.chainName,
-                      doc: {
-                        account_number: String(account.data?.value.account_number ?? ''),
-                        sequence: String(account.data?.value.sequence ?? '0'),
-                        chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
-                        fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: fix(currentFeeAmount, 0) }], gas: currentGas },
-                        memo: currentMemo,
-                        msgs: [
-                          {
-                            type: chain.chainName === SHENTU.chainName ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
-                            value: {
-                              from_address: address,
-                              to_address: currentAddress,
-                              amount: [{ amount: toBaseDenomAmount(currentDisplayAmount, currentCoin.decimals || 0), denom: currentCoin.baseDenom }],
+                if (currentCoinOrToken.type === 'coin') {
+                  await enQueue({
+                    messageId: '',
+                    origin: '',
+                    channel: 'inApp',
+                    message: {
+                      method: 'cos_signAmino',
+                      params: {
+                        chainName: chain.chainName,
+                        doc: {
+                          account_number: String(account.data?.value.account_number ?? ''),
+                          sequence: String(account.data?.value.sequence ?? '0'),
+                          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+                          fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: fix(currentFeeAmount, 0) }], gas: currentGas },
+                          memo: currentMemo,
+                          msgs: [
+                            {
+                              type: chain.chainName === SHENTU.chainName ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
+                              value: {
+                                from_address: address,
+                                to_address: currentAddress,
+                                amount: [
+                                  { amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0), denom: currentCoinOrToken.baseDenom },
+                                ],
+                              },
                             },
-                          },
-                        ],
+                          ],
+                        },
                       },
                     },
-                  },
-                });
+                  });
+                }
+
+                if (currentCoinOrToken.type === 'token') {
+                  await enQueue({
+                    messageId: '',
+                    origin: '',
+                    channel: 'inApp',
+                    message: {
+                      method: 'cos_signAmino',
+                      params: {
+                        chainName: chain.chainName,
+                        doc: {
+                          account_number: String(account.data?.value.account_number ?? ''),
+                          sequence: String(account.data?.value.sequence ?? '0'),
+                          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+                          fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: fix(currentFeeAmount, 0) }], gas: currentGas },
+                          memo: currentMemo,
+                          msgs: [
+                            {
+                              type: 'wasm/MsgExecuteContract',
+                              value: {
+                                sender: address,
+                                contract: currentCoinOrToken.address,
+                                msg: {
+                                  transfer: {
+                                    recipient: currentAddress,
+                                    amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
+                                  },
+                                },
+                                funds: [],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  });
+                }
               }}
             >
               {t('pages.Wallet.Send.Entry.Cosmos.index.sendButton')}
@@ -336,12 +418,14 @@ export default function Cosmos({ chain }: CosmosProps) {
         }}
       />
 
-      <CoinPopover
+      <CoinOrTokenPopover
+        chain={chain}
+        address={address}
         marginThreshold={0}
-        currentCoinInfo={currentCoin}
-        coinInfos={availableCoinList}
-        onClickCoin={(clickedCoin) => {
-          setCurrentCoinBaseDenom(clickedCoin.baseDenom);
+        currentCoinOrTokenInfo={currentCoinOrToken}
+        coinOrTokenInfos={availableCoinOrTokenList}
+        onClickCoinOrToken={(clickedCoinOrToken) => {
+          setCurrentCoinOrTokenId(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.baseDenom : clickedCoinOrToken.address);
           setCurrentDisplayAmount('');
         }}
         open={isOpenPopover}
