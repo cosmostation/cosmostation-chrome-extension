@@ -20,6 +20,7 @@ export const CRESCENT: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'cre' },
+  coinGeckoId: 'crescent-network',
   explorerURL: `${MINTSCAN_URL}/crescent`,
   gasRate: {
     tiny: '0.01',
