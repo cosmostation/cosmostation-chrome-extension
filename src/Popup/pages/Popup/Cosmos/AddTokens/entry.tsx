@@ -15,7 +15,7 @@ import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosAddTokenCW20Internal, CosAddTokenCW20Response } from '~/types/cosmos/message';
+import type { CosAddTokensCW20Internal, CosAddTokensCW20Response } from '~/types/cosmos/message';
 
 import TokenItem from './components/TokenItem';
 import {
@@ -33,7 +33,7 @@ import {
 import Token60Icon from '~/images/icons/Token60.svg';
 
 type EntryProps = {
-  queue: Queue<CosAddTokenCW20Internal>;
+  queue: Queue<CosAddTokensCW20Internal>;
   chain: CosmosChain;
 };
 
@@ -120,7 +120,7 @@ export default function Entry({ queue, chain }: EntryProps) {
             onClick={async () => {
               await addCosmosTokens(tokens);
 
-              const result: CosAddTokenCW20Response = null;
+              const result: CosAddTokensCW20Response = null;
 
               responseToWeb({
                 response: {

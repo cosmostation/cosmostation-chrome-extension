@@ -5,7 +5,7 @@ import Lock from '~/Popup/components/Lock';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosAddTokenCW20Internal } from '~/types/cosmos/message';
+import type { CosAddTokensCW20Internal } from '~/types/cosmos/message';
 
 import Entry from './entry';
 import Layout from './layout';
@@ -35,6 +35,6 @@ export default function AddTokens() {
   return null;
 }
 
-function isCosAddTokensCW20Internal(queue: Queue): queue is Queue<CosAddTokenCW20Internal> {
+function isCosAddTokensCW20Internal(queue: Queue): queue is Queue<CosAddTokensCW20Internal> {
   return queue?.message?.method === 'cos_addTokensCW20Internal';
 }

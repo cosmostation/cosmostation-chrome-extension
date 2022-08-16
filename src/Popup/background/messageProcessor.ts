@@ -27,7 +27,7 @@ import type {
   CosAccountResponse,
   CosActivatedChainNamesResponse,
   CosAddChain,
-  CosAddTokenCW20Internal,
+  CosAddTokensCW20Internal,
   CosDeleteAutoSign,
   CosDeleteAutoSignResponse,
   CosGetAutoSign,
@@ -527,7 +527,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               message: {
                 ...request.message,
                 method: 'cos_addTokensCW20Internal',
-                params: { chainName: chain.chainName, tokens: cosmosTokens } as CosAddTokenCW20Internal['params'],
+                params: { chainName: chain.chainName, tokens: cosmosTokens } as CosAddTokensCW20Internal['params'],
               },
             });
             void setQueues();

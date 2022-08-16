@@ -178,32 +178,32 @@ export type CosSignDirectResponse = {
   signed_doc: SignDirectDoc;
 };
 
-export type CosAddTokenCW20Token = {
+export type CosAddTokensCW20Token = {
   contractAddress: string;
   imageURL?: string;
   coinGeckoId?: string;
 };
 
-export type CosAddTokenCW20Params = {
+export type CosAddTokensCW20Params = {
   chainName: string;
-  tokens: CosAddTokenCW20Token[];
+  tokens: CosAddTokensCW20Token[];
 };
 
-export type CosAddTokenCW20 = {
+export type CosAddTokensCW20 = {
   method: typeof COSMOS_POPUP_METHOD_TYPE.COS__ADD_TOKENS_CW20;
-  params: CosAddTokenCW20Params;
+  params: CosAddTokensCW20Params;
   id?: number | string;
 };
 
-export type CosAddTokenCW20Response = null;
+export type CosAddTokensCW20Response = null;
 
-export type CosAddTokenCW20InternalParams = {
+export type CosAddTokensCW20InternalParams = {
   chainName: string;
   tokens: CosmosToken[];
 };
 
-export type CosAddTokenCW20Internal = {
+export type CosAddTokensCW20Internal = {
   method: typeof COSMOS_POPUP_METHOD_TYPE.COS__ADD_TOKENS_CW20_INTERNAL;
-  params: CosAddTokenCW20InternalParams;
+  params: CosAddTokensCW20InternalParams;
   id?: number | string;
 };
