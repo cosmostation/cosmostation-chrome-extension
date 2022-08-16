@@ -213,16 +213,15 @@ export const cosSendTransactionParamsSchema = (chainNames: string[]) =>
     .required();
 
 export const cosGetBalanceCW20ParamsSchema = (chainNames: string[], chain: CosmosChain) => {
-  const contractAddressRegex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
-  const addressRegex = getCosmosAddressRegex(chain.bech32Prefix.address, [39]);
+  const regex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
 
   return Joi.object<CosGetBalanceCW20['params']>({
     chainName: Joi.string()
       .lowercase()
       .valid(...chainNames)
       .required(),
-    contractAddress: Joi.string().pattern(contractAddressRegex).required(),
-    address: Joi.string().pattern(addressRegex).required(),
+    contractAddress: Joi.string().pattern(regex).required(),
+    address: Joi.string().pattern(regex).required(),
   })
     .label('params')
     .required();
