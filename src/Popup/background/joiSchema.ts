@@ -74,6 +74,7 @@ export const cosAddChainParamsSchema = (chainNames: string[], officialChainIds: 
     sendGas: Joi.string()
       .regex(/^[0-9]+$/)
       .optional(),
+    cosmWasm: Joi.boolean().optional(),
   })
     .label('params')
     .required();

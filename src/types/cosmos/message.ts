@@ -95,6 +95,7 @@ export type CosAddChainParams = {
   coinGeckoId?: string;
   gasRate?: GasRate;
   sendGas?: string;
+  cosmWasm?: boolean;
 };
 
 export type CosAddChain = {

@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Typography } from '@mui/material';
 
+import { COSMOS_DEFAULT_SEND_GAS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import logoImg from '~/images/etc/logo.png';
 import Button from '~/Popup/components/common/Button';
@@ -112,8 +113,22 @@ export default function Entry({ queue }: EntryProps) {
             onClick={async () => {
               const { params } = message;
 
-              const { addressPrefix, baseDenom, chainId, chainName, displayDenom, restURL, coinGeckoId, coinType, decimals, gasRate, imageURL, sendGas, type } =
-                params;
+              const {
+                addressPrefix,
+                baseDenom,
+                chainId,
+                chainName,
+                displayDenom,
+                restURL,
+                coinGeckoId,
+                coinType,
+                decimals,
+                gasRate,
+                imageURL,
+                sendGas,
+                type,
+                cosmWasm,
+              } = params;
 
               const filteredAdditionalChains = additionalChains.filter((item) => item.chainName.toLowerCase() !== chainName.toLowerCase());
 
@@ -137,7 +152,8 @@ export default function Entry({ queue }: EntryProps) {
                 decimals: decimals ?? 6,
                 gasRate: gasRate ?? { average: '0.025', low: '0.0025', tiny: '0.00025' },
                 imageURL,
-                gas: { send: sendGas ?? '100000' },
+                gas: { send: sendGas ?? COSMOS_DEFAULT_SEND_GAS },
+                cosmWasm,
               };
 
               await setChromeStorage('additionalChains', [...filteredAdditionalChains, newChain]);
