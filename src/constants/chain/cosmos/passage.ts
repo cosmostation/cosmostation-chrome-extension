@@ -22,9 +22,9 @@ export const PASSAGE: CosmosChain = {
   bech32Prefix: { address: 'pasg' },
   explorerURL: `${MINTSCAN_URL}/passage`,
   gasRate: {
-    tiny: '0.00025',
-    low: '0.0025',
-    average: '0.025',
+    tiny: '0',
+    low: '0.00025',
+    average: '0.0025',
   },
   gas: {},
 };
