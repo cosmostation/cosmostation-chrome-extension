@@ -39,7 +39,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
   const { enqueueSnackbar } = useSnackbar();
-  const assets = useAssetsSWR(chain, { suspense: true });
+  const assets = useAssetsSWR(chain);
 
   const { t } = useTranslation();
 

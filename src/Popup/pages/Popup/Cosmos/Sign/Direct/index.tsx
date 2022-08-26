@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import { COSMOS_CHAINS } from '~/constants/chain';
 import AccessRequest from '~/Popup/components/AccessRequest';
 import ActivateChainRequest from '~/Popup/components/ActivateChainRequest';
@@ -35,7 +37,9 @@ export default function AddChain() {
           <AccessRequest>
             <ActivateChainRequest>
               <Layout>
-                <Entry queue={newCurrentQueue} chain={selecteChain} />
+                <Suspense fallback={null}>
+                  <Entry queue={newCurrentQueue} chain={selecteChain} />
+                </Suspense>
               </Layout>
             </ActivateChainRequest>
           </AccessRequest>

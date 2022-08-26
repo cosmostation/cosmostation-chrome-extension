@@ -41,7 +41,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { deQueue } = useCurrentQueue();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
-  const assets = useAssetsSWR(chain, { suspense: true });
+  const assets = useAssetsSWR(chain);
 
   const { t } = useTranslation();
 
