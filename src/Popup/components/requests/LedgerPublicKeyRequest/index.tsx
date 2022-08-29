@@ -187,7 +187,8 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                     if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
                       const ethereumApp = new EthereumApp(transport);
 
-                      const result = await ethereumApp.getAddress("44'/60'/0'/0/0");
+                      const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}`;
+                      const result = await ethereumApp.getAddress(path);
 
                       const { publicKey } = result;
 
