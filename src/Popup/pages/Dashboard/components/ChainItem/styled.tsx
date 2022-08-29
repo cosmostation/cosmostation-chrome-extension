@@ -135,6 +135,10 @@ export const LedgerCheckConnectContainer = styled('div')(({ theme }) => ({
 
   display: 'flex',
   alignItems: 'center',
+
+  '& > svg > path': {
+    fill: theme.colors.base06,
+  },
 }));
 
 export const LedgerCheckConnectTextContainer = styled('div')(({ theme }) => ({
