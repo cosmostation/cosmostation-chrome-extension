@@ -9,10 +9,10 @@ import { Typography } from '@mui/material';
 import Button from '~/Popup/components/common/Button';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
-import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
+import { useLoading } from '~/Popup/hooks/useLoading';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
+import { disposableLoadingState } from '~/Popup/recoils/loading';
 import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
 import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
@@ -42,7 +42,7 @@ export default function Entry() {
 
   const { addAccount } = useCurrentAccount();
 
-  const setLoadingOverlay = useLoadingOverlay();
+  const { setLoadingOverlay } = useLoading();
 
   const { enqueueSnackbar } = useSnackbar();
 

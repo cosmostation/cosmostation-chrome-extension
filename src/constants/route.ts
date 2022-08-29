@@ -14,6 +14,7 @@ export const PATH = {
   SETTING__ADDRESS_BOOK__ADD: '/setting/address-book/add',
   SETTING__CONNECTED_SITES: '/setting/connected-sites',
   SETTING__AUTO_SIGN: '/setting/auto-sign',
+  SETTING__LEDGER: '/setting/ledger',
 
   CHAIN__MANAGEMENT: '/chain/management',
   CHAIN__MANAGEMENT__USE: '/chain/management/use',
@@ -41,6 +42,7 @@ export const PATH = {
   ACCOUNT__CREATE__NEW__MNEMONIC__STEP1: '/account/create/new/mnemonic/step1',
   ACCOUNT__CREATE__NEW__MNEMONIC__STEP2: '/account/create/new/mnemonic/step2',
   ACCOUNT__CREATE__NEW__MNEMONIC__STEP3: '/account/create/new/mnemonic/step3',
+  ACCOUNT__CREATE__NEW__LEDGER: '/account/create/new/ledger',
   ACCOUNT__CREATE__IMPORT__MNEMONIC: '/account/create/import/mnemonic',
   ACCOUNT__CREATE__IMPORT__PRIVATE_KEY: '/account/create/import/private-key',
 

@@ -51,6 +51,10 @@ export const MessageContainer = styled('div')(({ theme }) => ({
   borderRadius: '0.8rem',
 
   padding: '1.6rem',
+
+  maxHeight: '31rem',
+
+  overflow: 'auto',
 }));
 
 export const MessageTitleContainer = styled('div')(({ theme }) => ({

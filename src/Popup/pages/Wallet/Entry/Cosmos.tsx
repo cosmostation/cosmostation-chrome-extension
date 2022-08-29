@@ -10,6 +10,7 @@ import type { CosmosChain } from '~/types/chain';
 
 import CoinList from '../components/cosmos/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/cosmos/NativeChainCard';
+import LedgerCheck from '../components/LedgerCheck';
 import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
 
 type CosmosProps = {
@@ -29,23 +30,27 @@ export default function Cosmos({ chain }: CosmosProps) {
       <HeaderContainer>
         <Header />
       </HeaderContainer>
-      <NativeChainCardContainer>
-        <ErrorBoundary
-          // eslint-disable-next-line react/no-unstable-nested-components
-          FallbackComponent={(props) => <NativeChainCardError chain={chain} isCustom={isCustom} {...props} />}
-        >
-          <Suspense fallback={<NativeChainCardSkeleton chain={chain} isCustom={isCustom} />}>
-            <NativeChainCard chain={chain} isCustom={isCustom} />
-          </Suspense>
-        </ErrorBoundary>
-      </NativeChainCardContainer>
-      <BottomContainer>
-        <ErrorBoundary fallback={<Empty />}>
-          <Suspense fallback={null}>
-            <CoinList chain={chain} />
-          </Suspense>
-        </ErrorBoundary>
-      </BottomContainer>
+      <LedgerCheck>
+        <>
+          <NativeChainCardContainer>
+            <ErrorBoundary
+              // eslint-disable-next-line react/no-unstable-nested-components
+              FallbackComponent={(props) => <NativeChainCardError chain={chain} isCustom={isCustom} {...props} />}
+            >
+              <Suspense fallback={<NativeChainCardSkeleton chain={chain} isCustom={isCustom} />}>
+                <NativeChainCard chain={chain} isCustom={isCustom} />
+              </Suspense>
+            </ErrorBoundary>
+          </NativeChainCardContainer>
+          <BottomContainer>
+            <ErrorBoundary fallback={<Empty />}>
+              <Suspense fallback={null}>
+                <CoinList chain={chain} />
+              </Suspense>
+            </ErrorBoundary>
+          </BottomContainer>
+        </>
+      </LedgerCheck>
     </Container>
   );
 }

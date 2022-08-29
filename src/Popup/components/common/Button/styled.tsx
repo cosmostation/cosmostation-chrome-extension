@@ -17,10 +17,6 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
   cursor: 'pointer',
 
-  '& svg': {
-    fill: theme.accentColors.white,
-  },
-
   '&:hover': {
     backgroundColor: theme.accentColors.purple02,
   },
@@ -33,6 +29,10 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
     '& svg': {
       fill: theme.colors.text02,
+
+      '& > path': {
+        fill: theme.colors.text02,
+      },
     },
   },
 }));

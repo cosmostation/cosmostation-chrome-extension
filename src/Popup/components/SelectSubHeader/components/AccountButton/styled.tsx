@@ -52,6 +52,7 @@ export const AccountLeftContainer = styled('div')<AccountColorProps>(({ theme, .
 }));
 
 export const AccountRightContainer = styled('div')({
+  display: 'flex',
   marginLeft: '0.6rem',
 });
 
@@ -66,6 +67,16 @@ export const AccountRightFirstContainer = styled('div')(({ theme }) => ({
   '& > *': {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+  },
+}));
+
+export const AccountRightLedgerContainer = styled('div')(({ theme }) => ({
+  marginLeft: '0.2rem',
+  width: '1.4rem',
+  height: '1.4rem',
+
+  '& > svg > path': {
+    fill: theme.colors.base06,
   },
 }));
 

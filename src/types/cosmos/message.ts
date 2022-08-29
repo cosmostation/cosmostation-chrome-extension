@@ -34,7 +34,7 @@ export type CosAccount = {
   id?: number | string;
 };
 
-export type CosAccountResponse = { publicKey: Uint8Array; address: string; name: string };
+export type CosAccountResponse = { publicKey: Uint8Array; address: string; name: string; isLedger: boolean };
 
 export type CosSendTransactionParams = {
   chainName: string;

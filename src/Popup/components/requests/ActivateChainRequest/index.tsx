@@ -83,10 +83,10 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
 
             <DescriptionContainer>
               <Typography variant="h4">
-                {t('components.ActivateChainRequest.index.description1')}
+                {t('components.requests.ActivateChainRequest.index.description1')}
                 <br />
-                {t('components.ActivateChainRequest.index.description2')} <AccentSpan>{chain.chainName}</AccentSpan>{' '}
-                {t('components.ActivateChainRequest.index.description3')}
+                {t('components.requests.ActivateChainRequest.index.description2')} <AccentSpan>{chain.chainName}</AccentSpan>{' '}
+                {t('components.requests.ActivateChainRequest.index.description3')}
               </Typography>
             </DescriptionContainer>
           </ContentsContainer>

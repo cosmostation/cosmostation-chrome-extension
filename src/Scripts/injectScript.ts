@@ -16,6 +16,7 @@ import type {
 
 (function injectScript() {
   window.cosmostation = {
+    handlerInfos: [],
     ethereum: {
       on: (eventName: EthereumListenerType, eventHandler: (data: unknown) => void) => {
         const handler = (event: MessageEvent<ListenerMessage<ResponseMessage>>) => {
@@ -25,11 +26,27 @@ import type {
         };
 
         window.addEventListener('message', handler);
+        window.cosmostation.handlerInfos.push({ line: 'ETHEREUM', eventName, originHandler: eventHandler, handler });
 
         return handler;
       },
-      off: (handler: (event: MessageEvent<ListenerMessage>) => void) => {
-        window.removeEventListener('message', handler);
+      off: (eventName: EthereumListenerType | ((event: MessageEvent<ListenerMessage>) => void), eventHandler?: (data: unknown) => void) => {
+        if (eventHandler === undefined) {
+          window.removeEventListener('message', eventName as (event: MessageEvent<ListenerMessage>) => void);
+        } else {
+          const handlerInfos = window.cosmostation.handlerInfos.filter(
+            (item) => item.line === 'ETHEREUM' && item.eventName === eventName && item.originHandler === eventHandler,
+          );
+          const notHandlerInfos = window.cosmostation.handlerInfos.filter(
+            (item) => !(item.line === 'ETHEREUM' && item.eventName === eventName && item.originHandler === eventHandler),
+          );
+
+          handlerInfos.forEach((handlerInfo) => {
+            window.removeEventListener('message', handlerInfo.handler);
+          });
+
+          window.cosmostation.handlerInfos = notHandlerInfos;
+        }
       },
       request: (message: EthereumRequestMessage) =>
         new Promise((res, rej) => {
@@ -70,10 +87,27 @@ import type {
 
         window.addEventListener('message', handler);
 
+        window.cosmostation.handlerInfos.push({ line: 'COSMOS', eventName, originHandler: eventHandler, handler });
+
         return handler;
       },
-      off: (handler: (event: MessageEvent<ListenerMessage>) => void) => {
-        window.removeEventListener('message', handler);
+      off: (eventName: CosmosListenerType | ((event: MessageEvent<ListenerMessage>) => void), eventHandler?: (data: unknown) => void) => {
+        if (eventHandler === undefined) {
+          window.removeEventListener('message', eventName as (event: MessageEvent<ListenerMessage>) => void);
+        } else {
+          const handlerInfos = window.cosmostation.handlerInfos.filter(
+            (item) => item.line === 'COSMOS' && item.eventName === eventName && item.originHandler === eventHandler,
+          );
+          const notHandlerInfos = window.cosmostation.handlerInfos.filter(
+            (item) => !(item.line === 'COSMOS' && item.eventName === eventName && item.originHandler === eventHandler),
+          );
+
+          handlerInfos.forEach((handlerInfo) => {
+            window.removeEventListener('message', handlerInfo.handler);
+          });
+
+          window.cosmostation.handlerInfos = notHandlerInfos;
+        }
       },
       request: (message: CosmosRequestMessage) =>
         new Promise((res, rej) => {

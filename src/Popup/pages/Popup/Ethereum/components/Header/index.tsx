@@ -36,12 +36,5 @@ export default function Header({ network, origin, className }: HeaderProps) {
     return chain.imageURL;
   })();
 
-  return (
-    <PopupHeader
-      account={{ id: currentAccount.id, name: currentAccount.name, address }}
-      chain={{ name: chainName, imageURL: chainImageURL }}
-      origin={origin}
-      className={className}
-    />
-  );
+  return <PopupHeader account={{ ...currentAccount, address }} chain={{ name: chainName, imageURL: chainImageURL }} origin={origin} className={className} />;
 }

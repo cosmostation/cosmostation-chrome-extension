@@ -5,6 +5,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import AccountCreate from '~/Popup/pages/Account/Create';
 import AccountCreateImportMnemonic from '~/Popup/pages/Account/Create/Import/Mnemonic';
 import AccountCreateImportPrivateKey from '~/Popup/pages/Account/Create/Import/PrivateKey';
+import AccountCreateNewLedger from '~/Popup/pages/Account/Create/New/Ledger';
 import AccountCreateNewMnemonicStep1 from '~/Popup/pages/Account/Create/New/Mnemonic/Step1';
 import AccountCreateNewMnemonicStep2 from '~/Popup/pages/Account/Create/New/Mnemonic/Step2';
 import AccountCreateNewMnemonicStep3 from '~/Popup/pages/Account/Create/New/Mnemonic/Step3';
@@ -51,6 +52,7 @@ import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
 import SettingChangeLanguage from '~/Popup/pages/Setting/ChangeLanguage';
 import SettingChangePassword from '~/Popup/pages/Setting/ChangePassword';
 import SettingConnectedSites from '~/Popup/pages/Setting/ConnectedSites';
+import SettingLedger from '~/Popup/pages/Setting/Ledger';
 import Wallet from '~/Popup/pages/Wallet';
 import WalletReceive from '~/Popup/pages/Wallet/Receive';
 import WalletSend from '~/Popup/pages/Wallet/Send';
@@ -92,12 +94,14 @@ export default function Routes() {
           <Route path={PATH.SETTING__ADDRESS_BOOK__ADD} element={<SettingAddressBookAdd />} />
           <Route path={PATH.SETTING__CONNECTED_SITES} element={<SettingConnectedSites />} />
           <Route path={PATH.SETTING__AUTO_SIGN} element={<SettingAutoSign />} />
+          <Route path={PATH.SETTING__LEDGER} element={<SettingLedger />} />
 
           <Route path={PATH.ACCOUNT__MANAGEMENT} element={<AccountManagement />} />
           <Route path={PATH.ACCOUNT__CREATE} element={<AccountCreate />} />
           <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP1} element={<AccountCreateNewMnemonicStep1 />} />
           <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP2} element={<AccountCreateNewMnemonicStep2 />} />
           <Route path={PATH.ACCOUNT__CREATE__NEW__MNEMONIC__STEP3} element={<AccountCreateNewMnemonicStep3 />} />
+          <Route path={PATH.ACCOUNT__CREATE__NEW__LEDGER} element={<AccountCreateNewLedger />} />
           <Route path={PATH.ACCOUNT__CREATE__IMPORT__MNEMONIC} element={<AccountCreateImportMnemonic />} />
           <Route path={PATH.ACCOUNT__CREATE__IMPORT__PRIVATE_KEY} element={<AccountCreateImportPrivateKey />} />
 

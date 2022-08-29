@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import type BigNumber from 'bignumber.js';
+import { rlp } from 'ethereumjs-util';
 import { useSnackbar } from 'notistack';
-import Web3 from 'web3';
+import Common, { Hardfork } from '@ethereumjs/common';
+import { TransactionFactory } from '@ethereumjs/tx';
+import EthereumApp from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
 
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -12,9 +15,11 @@ import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import GasSettingDialog from '~/Popup/components/GasSettingDialog';
+import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
-import { useDetermintTxTypeSWR } from '~/Popup/hooks/SWR/ethereum/useDetermintTxTypeSWR';
+import { useDetermineTxTypeSWR } from '~/Popup/hooks/SWR/ethereum/useDetermineTxTypeSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
+import { useNetVersionSWR } from '~/Popup/hooks/SWR/ethereum/useNetVersionSWR';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useTransactionCountSWR } from '~/Popup/hooks/SWR/ethereum/useTransactionCountSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -25,6 +30,8 @@ import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEth
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useInterval } from '~/Popup/hooks/useInterval';
+import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
+import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { gt, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -78,6 +85,10 @@ export default function Entry({ queue }: EntryProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
+  const { setLoadingLedgerSigning } = useLoading();
+
+  const { closeTransport, createTransport } = useLedgerTransport();
+
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const tokens = useTokensSWR();
@@ -110,6 +121,8 @@ export default function Entry({ queue }: EntryProps) {
   const { currentPassword } = useCurrentPassword();
   const currentFee = useFeeSWR({ refreshInterval: 0 });
 
+  const netVersion = useNetVersionSWR();
+
   const { displayDenom, coinGeckoId, decimals } = currentEthereumNetwork;
 
   const { t } = useTranslation();
@@ -126,9 +139,11 @@ export default function Entry({ queue }: EntryProps) {
   const { message, messageId, origin } = queue;
   const { params } = message;
 
+  const [isSigningLedger, setIsSigningLedger] = useState(false);
+
   const originEthereumTx = params[0];
 
-  const txType = useDetermintTxTypeSWR(originEthereumTx);
+  const txType = useDetermineTxTypeSWR(originEthereumTx);
 
   const isCustomFee = !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas));
 
@@ -148,9 +163,20 @@ export default function Entry({ queue }: EntryProps) {
         : transactionCount.data?.result
         ? parseInt(transactionCount.data.result, 16)
         : undefined;
-    const chainId = originEthereumTx.chainId !== undefined ? parseInt(toHex(originEthereumTx.chainId), 16) : undefined;
 
-    const mixedEthereumTx = { ...originEthereumTx, nonce, chainId, gas: toHex(gas, { addPrefix: true, isStringNumber: true }) };
+    const r = originEthereumTx.r ? toHex(originEthereumTx.r, { addPrefix: true }) : undefined;
+    const s = originEthereumTx.s ? toHex(originEthereumTx.r, { addPrefix: true }) : undefined;
+    const v = originEthereumTx.v ? toHex(originEthereumTx.r, { addPrefix: true }) : undefined;
+
+    const mixedEthereumTx = {
+      ...originEthereumTx,
+      nonce,
+      r,
+      s,
+      v,
+      gas: toHex(gas, { addPrefix: true, isStringNumber: true }),
+      chainId: currentEthereumNetwork.chainId,
+    };
 
     if (feeMode !== 'custom' && currentFee.type === 'BASIC' && currentFee.currentGasPrice) {
       return {
@@ -200,6 +226,7 @@ export default function Entry({ queue }: EntryProps) {
     maxPriorityFeePerGas,
     originEthereumTx,
     transactionCount.data?.result,
+    currentEthereumNetwork.chainId,
   ]);
 
   const baseFee = useMemo(() => {
@@ -307,7 +334,7 @@ export default function Entry({ queue }: EntryProps) {
 
   useInterval(() => {
     void (async () => {
-      if (feeMode !== 'custom') {
+      if (feeMode !== 'custom' && !isSigningLedger) {
         setIsLoadingFee(true);
         await currentFee.mutate();
         setIsLoadingFee(false);
@@ -456,23 +483,73 @@ export default function Entry({ queue }: EntryProps) {
                   disabled={isLoadingFee || !!errorMessage}
                   onClick={async () => {
                     try {
-                      const provider = new Web3.providers.HttpProvider(currentEthereumNetwork.rpcURL, {
-                        headers: [
-                          {
-                            name: 'Cosmostation',
-                            value: `extension/${String(process.env.VERSION)}`,
-                          },
-                        ],
-                      });
-                      const web3 = new Web3(provider);
+                      const signedRawTx = await (async () => {
+                        const dataToSign = {
+                          ...ethereumTx,
+                          gasLimit: ethereumTx.gas,
+                          gas: undefined,
+                          from: undefined,
+                          type: currentFee.type === 'EIP-1559' ? '0x02' : undefined,
+                        };
 
-                      const account = web3.eth.accounts.privateKeyToAccount(keyPair!.privateKey.toString('hex'));
+                        const common = Common.custom({
+                          networkId: parseInt(toHex(netVersion.data?.result || '1', { addPrefix: true, isStringNumber: true }), 16),
+                          chainId: parseInt(dataToSign.chainId, 16),
+                          defaultHardfork: currentFee.type === 'EIP-1559' ? Hardfork.London : Hardfork.Berlin,
+                          name: currentEthereumNetwork.networkName,
+                        });
 
-                      const signed = await account.signTransaction(ethereumTx);
+                        const txToSign = TransactionFactory.fromTxData(dataToSign, { common });
+
+                        if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
+                          if (!keyPair?.privateKey) {
+                            throw new Error('Unknown Error');
+                          }
+
+                          const signedTx = txToSign.sign(keyPair.privateKey);
+
+                          return `0x${signedTx.serialize().toString('hex')}`;
+                        }
+
+                        if (currentAccount.type === 'LEDGER') {
+                          setLoadingLedgerSigning(true);
+                          setIsSigningLedger(true);
+                          const transport = await createTransport();
+
+                          const ethereumApp = new EthereumApp(transport);
+
+                          const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}`;
+                          const { publicKey } = await ethereumApp.getAddress(path);
+
+                          const accountAddress = currentAccount.ethereumPublicKey
+                            ? getAddress(chain, Buffer.from(currentAccount.ethereumPublicKey, 'hex'))
+                            : '';
+                          const ledgerAddress = getAddress(chain, Buffer.from(publicKey, 'hex'));
+
+                          if (!isEqualsIgnoringCase(accountAddress, ledgerAddress)) {
+                            throw new Error('Account address and Ledger address are not the same.');
+                          }
+
+                          const msgToSign = txToSign.getMessageToSign(false);
+
+                          const tx = currentFee.type === 'EIP-1559' ? msgToSign.toString('hex') : rlp.encode(msgToSign).toString('hex');
+
+                          const result = await ethereumApp.signTransaction(path, tx);
+
+                          const signedTx = TransactionFactory.fromTxData(
+                            { ...dataToSign, v: `0x${result.v}`, s: `0x${result.s}`, r: `0x${result.r}` },
+                            { common },
+                          );
+
+                          return `0x${signedTx.serialize().toString('hex')}`;
+                        }
+
+                        throw new Error('Unknown type account');
+                      })();
 
                       if (message.method === 'eth_signTransaction') {
                         const result: EthSignTransactionResponse = {
-                          raw: signed.rawTransaction!,
+                          raw: signedRawTx,
                           tx: ethereumTx,
                         };
 
@@ -489,7 +566,11 @@ export default function Entry({ queue }: EntryProps) {
                       }
 
                       if (message.method === 'eth_sendTransaction') {
-                        const response = await requestRPC<ResponseRPC<string>>('eth_sendRawTransaction', [signed.rawTransaction]);
+                        const response = await requestRPC<ResponseRPC<string>>('eth_sendRawTransaction', [signedRawTx]);
+
+                        if (response.error) {
+                          throw new Error(response.error.message);
+                        }
 
                         const result: EthSendTransactionResponse = response.result!;
 
@@ -510,6 +591,10 @@ export default function Entry({ queue }: EntryProps) {
                       }
                     } catch (e) {
                       enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+                    } finally {
+                      await closeTransport();
+                      setLoadingLedgerSigning(false);
+                      setIsSigningLedger(false);
                     }
                   }}
                 >
@@ -519,6 +604,7 @@ export default function Entry({ queue }: EntryProps) {
             </Tooltip>
           </BottomButtonContainer>
         </BottomContainer>
+        <LedgerToPopup />
       </Container>
       <GasSettingDialog
         open={isOpenGasDialog}

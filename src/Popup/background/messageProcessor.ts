@@ -1,8 +1,8 @@
 import { debounce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import Web3 from 'web3';
-import type { MessageTypes, TypedMessage } from '@metamask/eth-sig-util';
-import { signTypedData, SignTypedDataVersion } from '@metamask/eth-sig-util';
+import type { MessageTypes } from '@metamask/eth-sig-util';
+import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 
 import { COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -11,12 +11,13 @@ import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TY
 import { COSMOS_RPC_ERROR_MESSAGE, ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import type { TOKEN_TYPE } from '~/constants/ethereum';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
+import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import { chromeSessionStorage } from '~/Popup/utils/chromeSessionStorage';
 import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
-import { requestRPC } from '~/Popup/utils/ethereum';
+import { requestRPC, signTypedData } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { toHex } from '~/Popup/utils/string';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
@@ -41,6 +42,7 @@ import type {
   CosSupportedChainNamesResponse,
 } from '~/types/cosmos/message';
 import type {
+  CustomTypedMessage,
   EthcAddNetwork,
   EthcAddTokens,
   EthcSwitchNetwork,
@@ -148,6 +150,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chain = getChain(chainName)!;
 
+          if (currentAccount.type === 'LEDGER' && chain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
+          }
+
           if (
             chain.id &&
             [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
@@ -159,7 +165,12 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             const publicKey = keyPair?.publicKey.toString('hex');
 
-            const result: CosRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
+            const result: CosRequestAccountResponse = {
+              address,
+              publicKey: publicKey as unknown as Uint8Array,
+              name: currentAccountName,
+              isLedger: currentAccount.type === 'LEDGER',
+            };
 
             responseToWeb({
               response: {
@@ -210,6 +221,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
 
         if (method === 'cos_setAutoSign') {
+          if (currentAccount.type === 'LEDGER') {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_METHOD, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]);
+          }
+
           const { params } = message;
 
           const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -234,6 +249,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
 
         if (method === 'cos_getAutoSign') {
+          if (currentAccount.type === 'LEDGER') {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_METHOD, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]);
+          }
+
           const { params } = message;
 
           const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -282,6 +301,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
 
         if (method === 'cos_deleteAutoSign') {
+          if (currentAccount.type === 'LEDGER') {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_METHOD, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]);
+          }
+
           const { params } = message;
 
           const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -338,6 +361,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const schema = cosSignAminoParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
 
+          if (currentAccount.type === 'LEDGER' && chain?.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
+          }
+
           try {
             const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignAmino['params'];
 
@@ -357,10 +384,14 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             ) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-              const signature = signAmino(validatedParams.doc, keyPair!.privateKey, chain);
+              if (!keyPair?.privateKey) {
+                throw new Error(RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+              }
+
+              const signature = signAmino(validatedParams.doc, keyPair.privateKey, chain);
               const base64Signature = Buffer.from(signature).toString('base64');
 
-              const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
+              const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
               const publicKeyType = getPublicKeyType(chain);
               const pubKey = { type: publicKeyType, value: base64PublicKey };
 
@@ -391,6 +422,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
 
         if (method === 'cos_signDirect' || method === 'ten_signDirect') {
+          if (currentAccount.type === 'LEDGER') {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_METHOD, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]);
+          }
+
           const { params } = message;
 
           const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -420,6 +455,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             ) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
+              if (!keyPair?.privateKey) {
+                throw new Error(RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+              }
+
               const { doc } = validatedParams;
 
               const authInfoBytes = Buffer.from(doc.auth_info_bytes as unknown as string, 'hex');
@@ -427,10 +466,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
               const newDoc = { ...doc, auth_info_bytes: authInfoBytes, body_bytes: bodyBytes };
 
-              const signature = signDirect(newDoc, keyPair!.privateKey, chain);
+              const signature = signDirect(newDoc, keyPair.privateKey, chain);
               const base64Signature = Buffer.from(signature).toString('base64');
 
-              const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
+              const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
               const publicKeyType = getPublicKeyType(chain);
               const pubKey = { type: publicKeyType, value: base64PublicKey };
 
@@ -582,6 +621,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chain = getChain(chainName);
 
+          if (currentAccount.type === 'LEDGER' && chain?.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
+          }
+
           if (
             chain?.id &&
             [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain?.id) &&
@@ -593,7 +636,12 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             const publicKey = keyPair?.publicKey.toString('hex');
 
-            const result: CosAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
+            const result: CosAccountResponse = {
+              address,
+              publicKey: publicKey as unknown as Uint8Array,
+              name: currentAccountName,
+              isLedger: currentAccount.type === 'LEDGER',
+            };
 
             responseToWeb({
               response: {
@@ -922,7 +970,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             }
 
             try {
-              const param2 = JSON.parse(validatedParams[1]) as TypedMessage<MessageTypes>;
+              const param2 = JSON.parse(validatedParams[1]) as CustomTypedMessage<MessageTypes>;
 
               const currentNetwork = currentEthereumNetwork();
 
@@ -934,7 +982,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
               const version = method === 'eth_signTypedData_v3' ? SignTypedDataVersion.V3 : SignTypedDataVersion.V4;
 
-              signTypedData({ version, privateKey: Buffer.from(PRIVATE_KEY_FOR_TEST, 'hex'), data: param2 });
+              signTypedData(Buffer.from(PRIVATE_KEY_FOR_TEST, 'hex'), param2, version);
             } catch (err) {
               if (err instanceof EthereumRPCError) {
                 throw err;
@@ -1009,7 +1057,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             const originEthereumTx = validatedParams[0];
 
             const nonce = originEthereumTx.nonce !== undefined ? parseInt(toHex(originEthereumTx.nonce), 16) : undefined;
-            const chainId = originEthereumTx.chainId !== undefined ? parseInt(toHex(originEthereumTx.chainId), 16) : undefined;
 
             let gas: string | number = 0;
 
@@ -1024,11 +1071,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               });
               const web3 = new Web3(provider);
 
-              const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY_FOR_TEST);
-
-              gas = validatedParams[0].gas ? validatedParams[0].gas : await web3.eth.estimateGas({ ...validatedParams[0], nonce, chainId });
-
-              await account.signTransaction({ ...validatedParams[0], nonce, chainId, gas });
+              gas = validatedParams[0].gas ? validatedParams[0].gas : await web3.eth.estimateGas({ ...validatedParams[0], nonce });
             } catch (e) {
               throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, (e as { message: string }).message, message.id);
             }
@@ -1291,7 +1334,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
-            const result: EthRequestAccountsResponse = [address];
+            const result: EthRequestAccountsResponse = address ? [address] : [];
 
             responseToWeb({
               response: {

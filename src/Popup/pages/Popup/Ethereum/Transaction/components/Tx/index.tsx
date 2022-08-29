@@ -13,7 +13,6 @@ export default function Tx({ tx }: ContainerProps) {
   const modifyTx = {
     ...tx,
     nonce: tx.nonce !== undefined ? toHex(tx.nonce, { addPrefix: true }) : undefined,
-    chainId: tx.chainId !== undefined ? toHex(tx.chainId, { addPrefix: true }) : undefined,
   };
 
   return (

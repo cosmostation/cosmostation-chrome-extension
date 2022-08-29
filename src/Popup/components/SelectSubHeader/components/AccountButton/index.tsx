@@ -5,12 +5,14 @@ import { Typography } from '@mui/material';
 import { useCurrentTab } from '~/Popup/hooks/SWR/cache/useCurrentTab';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import type { AccountWithName } from '~/types/chromeStorage';
 
 import ConnectDialog from './ConnectDialog';
 import {
   AccountLeftContainer,
   AccountRightContainer,
   AccountRightFirstContainer,
+  AccountRightLedgerContainer,
   ConnectButton,
   ConnectButtonBadge,
   ConnectButtonText,
@@ -18,27 +20,33 @@ import {
   StyledButton,
 } from './styled';
 
-import Account from '~/images/icons/Account.svg';
+import AccountIcon from '~/images/icons/Account.svg';
+import Ledger14Icon from '~/images/icons/Ledger14.svg';
 
 type AccountButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   isConnected?: boolean;
+  account: AccountWithName;
 };
 
-export default function AccountButton({ children, ...remainder }: AccountButtonProps) {
-  const { currentAccount } = useCurrentAccount();
-  const { id } = currentAccount;
+export default function AccountButton({ account, ...remainder }: AccountButtonProps) {
+  const { id, name } = account;
 
   const accountColor = stc(id);
   return (
     <Container>
       <StyledButton {...remainder} data-account-color={accountColor}>
         <AccountLeftContainer data-account-color={accountColor}>
-          <Account />
+          <AccountIcon />
         </AccountLeftContainer>
         <AccountRightContainer>
           <AccountRightFirstContainer>
-            <Typography variant="h6">{children}</Typography>
+            <Typography variant="h6">{name}</Typography>
           </AccountRightFirstContainer>
+          {account.type === 'LEDGER' && (
+            <AccountRightLedgerContainer>
+              <Ledger14Icon />
+            </AccountRightLedgerContainer>
+          )}
         </AccountRightContainer>
       </StyledButton>
       <Suspense fallback={null}>

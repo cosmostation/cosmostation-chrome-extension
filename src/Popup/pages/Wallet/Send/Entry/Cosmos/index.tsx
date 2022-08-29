@@ -23,6 +23,7 @@ import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmo
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { fix, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain';
@@ -400,6 +401,11 @@ export default function Cosmos({ chain }: CosmosProps) {
                       },
                     },
                   });
+                }
+
+                if (currentAccount.type === 'LEDGER') {
+                  await openWindow();
+                  window.close();
                 }
               }}
             >

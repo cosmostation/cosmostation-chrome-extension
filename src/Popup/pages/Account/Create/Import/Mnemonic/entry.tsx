@@ -9,11 +9,11 @@ import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/IconButton';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
-import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
+import { useLoading } from '~/Popup/hooks/useLoading';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import HDPathDialog from '~/Popup/pages/Account/components/HDPathDialog';
-import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
+import { disposableLoadingState } from '~/Popup/recoils/loading';
 import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
 import { BottomContainer, BottomSettingButtonContainer, Container, InputContainer, StyledInput48, StyledInput140 } from './styled';
@@ -37,7 +37,7 @@ export default function Entry() {
 
   const [isOpenHDPathDialog, setIsOpenHDPathDialog] = useState(false);
 
-  const setLoadingOverlay = useLoadingOverlay();
+  const { setLoadingOverlay } = useLoading();
 
   const { enqueueSnackbar } = useSnackbar();
 

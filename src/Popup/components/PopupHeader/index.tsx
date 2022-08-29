@@ -3,15 +3,29 @@ import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import { shorterAddress } from '~/Popup/utils/string';
+import type { AccountType } from '~/types/chromeStorage';
 
-import { AccountContainer, AccountIcon, AccountText, ChainImageContainer, ChainNameContainer, Container, Div, OriginContainer, StyledDivider } from './styled';
+import {
+  AccountContainer,
+  AccountIcon,
+  AccountText,
+  ChainImageContainer,
+  ChainNameContainer,
+  Container,
+  Div,
+  LedgerIconContainer,
+  OriginContainer,
+  StyledDivider,
+} from './styled';
 
 import Account from '~/images/icons/Account10.svg';
+import Ledger14Icon from '~/images/icons/Ledger14.svg';
 
 type HeaderProps = {
   account?: {
     name: string;
     id: string;
+    type?: AccountType;
     address?: string;
   };
   chain?: {
@@ -35,6 +49,11 @@ export default function Header({ account, chain, origin, className }: HeaderProp
           <AccountText>
             <Typography variant="h6">{`${account.name} ${shortAddress && `(${shortAddress})`}`}</Typography>
           </AccountText>
+          {account?.type === 'LEDGER' && (
+            <LedgerIconContainer>
+              <Ledger14Icon />
+            </LedgerIconContainer>
+          )}
         </AccountContainer>
       )}
       {account && (chain || origin) && <StyledDivider />}

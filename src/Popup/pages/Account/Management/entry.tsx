@@ -28,6 +28,7 @@ export default function Entry() {
       <ListContainer>
         {accounts.map((account) => (
           <AccountItem
+            accountType={account.type}
             isActive={selectedAccount?.id === account.id && isOpenPopover}
             key={account.id}
             onClick={(event) => {

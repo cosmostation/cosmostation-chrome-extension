@@ -4,10 +4,12 @@ import { CHAINS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import type { AccountType } from '~/types/chromeStorage';
 
 type AccountList = {
   id: string;
   address: Record<string, string>;
+  type: AccountType;
 };
 
 export function useAccounts(suspense?: boolean) {
@@ -36,7 +38,7 @@ export function useAccounts(suspense?: boolean) {
                 localStorage.setItem(key, address);
               }
             });
-            return { id: account.id, address: addresses };
+            return { id: account.id, address: addresses, type: account.type };
           }),
         );
       }, 500);

@@ -10,7 +10,7 @@ import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
+import { disposableLoadingState } from '~/Popup/recoils/loading';
 import { sha512 } from '~/Popup/utils/crypto';
 import type { Account } from '~/types/chromeStorage';
 

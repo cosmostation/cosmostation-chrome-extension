@@ -33,7 +33,12 @@ export default function Entry() {
 
         const publicKey = keyPair?.publicKey.toString('hex');
 
-        const result: CosRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccount.name };
+        const result: CosRequestAccountResponse = {
+          address,
+          publicKey: publicKey as unknown as Uint8Array,
+          name: currentAccount.name,
+          isLedger: currentAccount.type === 'LEDGER',
+        };
 
         responseToWeb({
           response: {

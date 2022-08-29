@@ -38,7 +38,7 @@ export default function AccessRequest({ children }: AccessRequestProps) {
   const { currentQueue, deQueue } = useCurrentQueue();
   const { currentAccount, addAllowedOrigin, currentAccountAllowedOrigins } = useCurrentAccount();
 
-  const { name, id } = currentAccount;
+  const { name } = currentAccount;
 
   const { t, language } = useTranslation();
 
@@ -46,7 +46,7 @@ export default function AccessRequest({ children }: AccessRequestProps) {
     return (
       <BaseLayout>
         <Container>
-          <PopupHeader account={{ id, name }} origin={currentQueue?.origin} />
+          <PopupHeader account={currentAccount} origin={currentQueue?.origin} />
           <ContentsContainer>
             <LogoContainer>
               <Image src={logoImg} />
@@ -57,25 +57,25 @@ export default function AccessRequest({ children }: AccessRequestProps) {
             <DescriptionContainer>
               {language === 'ko' ? (
                 <Typography variant="h4">
-                  {currentQueue.origin} {t('components.AccessRequest.index.upDescription1')}
+                  {currentQueue.origin} {t('components.requests.AccessRequest.index.upDescription1')}
                   <br />
                   <AccentNameContainer>{name}</AccentNameContainer>
-                  {t('components.AccessRequest.index.upDescription2')}
+                  {t('components.requests.AccessRequest.index.upDescription2')}
                 </Typography>
               ) : (
                 <Typography variant="h4">
-                  {currentQueue.origin} {t('components.AccessRequest.index.upDescription1')}
+                  {currentQueue.origin} {t('components.requests.AccessRequest.index.upDescription1')}
                   <br />
-                  {t('components.AccessRequest.index.upDescription2')}
+                  {t('components.requests.AccessRequest.index.upDescription2')}
                   <br />
                   <AccentNameContainer>{name}</AccentNameContainer>
-                  {t('components.AccessRequest.index.upDescription3')}
+                  {t('components.requests.AccessRequest.index.upDescription3')}
                 </Typography>
               )}
             </DescriptionContainer>
             <StyledDivider />
             <Description2Container>
-              <Typography variant="h5">{t('components.AccessRequest.index.downDescription')}</Typography>
+              <Typography variant="h5">{t('components.requests.AccessRequest.index.downDescription')}</Typography>
             </Description2Container>
             <CheckListContainer>
               <CheckItemContainer>
@@ -83,7 +83,7 @@ export default function AccessRequest({ children }: AccessRequestProps) {
                   <Check24Icon />
                 </CheckContainer>
                 <TextContainer>
-                  <Typography variant="h5">{t('components.AccessRequest.index.downItem1')}</Typography>
+                  <Typography variant="h5">{t('components.requests.AccessRequest.index.downItem1')}</Typography>
                 </TextContainer>
               </CheckItemContainer>
               <CheckItemContainer>
@@ -91,7 +91,7 @@ export default function AccessRequest({ children }: AccessRequestProps) {
                   <Check24Icon />
                 </CheckContainer>
                 <TextContainer>
-                  <Typography variant="h5">{t('components.AccessRequest.index.downItem2')}</Typography>
+                  <Typography variant="h5">{t('components.requests.AccessRequest.index.downItem2')}</Typography>
                 </TextContainer>
               </CheckItemContainer>
               <CheckItemContainer>
@@ -99,7 +99,7 @@ export default function AccessRequest({ children }: AccessRequestProps) {
                   <Check24Icon />
                 </CheckContainer>
                 <TextContainer>
-                  <Typography variant="h5">{t('components.AccessRequest.index.downItem3')}</Typography>
+                  <Typography variant="h5">{t('components.requests.AccessRequest.index.downItem3')}</Typography>
                 </TextContainer>
               </CheckItemContainer>
             </CheckListContainer>

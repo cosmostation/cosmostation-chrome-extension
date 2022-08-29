@@ -1,8 +1,9 @@
 import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
+import type { BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken } from '~/types/chain';
+import type { TransportType } from '~/types/ledger';
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
 
-import type { BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken } from './chain';
 import type { RequestMessage } from './message';
 
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
@@ -11,8 +12,6 @@ export type CurrencyType = ValueOf<typeof CURRENCY_TYPE>;
 
 export type AccountCommon = {
   id: string;
-  encryptedPassword: string;
-  encryptedRestoreString: string;
 };
 
 export type AllowedOrigin = { accountId: AccountCommon['id']; origin: string };
@@ -23,14 +22,26 @@ export type MnemonicAccount = {
   type: typeof ACCOUNT_TYPE.MNEMONIC;
   encryptedMnemonic: string;
   bip44: Omit<BIP44, 'purpose' | 'coinType' | 'account' | 'change'>;
+  encryptedPassword: string;
+  encryptedRestoreString: string;
 };
 
 export type PrivateKeyAccount = {
   type: typeof ACCOUNT_TYPE.PRIVATE_KEY;
   encryptedPrivateKey: string;
+  encryptedPassword: string;
+  encryptedRestoreString: string;
 };
 
-export type Account = AccountCommon & (MnemonicAccount | PrivateKeyAccount);
+export type LedgerAccount = {
+  type: typeof ACCOUNT_TYPE.LEDGER;
+  bip44: Omit<BIP44, 'purpose' | 'coinType' | 'account' | 'change'>;
+
+  cosmosPublicKey?: string;
+  ethereumPublicKey?: string;
+};
+
+export type Account = AccountCommon & (MnemonicAccount | PrivateKeyAccount | LedgerAccount);
 
 export type AccountWithName = Account & { name: string };
 
@@ -88,6 +99,8 @@ export type ChromeStorage = {
   ethereumTokens: EthereumToken[];
 
   autoSigns: AutoSign[];
+
+  ledgerTransportType: TransportType;
 };
 
 export type ChromeStorageKeys = keyof ChromeStorage;

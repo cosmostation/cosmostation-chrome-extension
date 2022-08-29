@@ -1,6 +1,7 @@
-import AccessRequest from '~/Popup/components/AccessRequest';
-import ActivateChainRequest from '~/Popup/components/ActivateChainRequest';
 import Lock from '~/Popup/components/Lock';
+import AccessRequest from '~/Popup/components/requests/AccessRequest';
+import ActivateChainRequest from '~/Popup/components/requests/ActivateChainRequest';
+import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
 import type { EthSignTypedData } from '~/types/ethereum/message';
@@ -14,13 +15,15 @@ export default function SignTypedData() {
   if (currentQueue && isEthSignTypedData(currentQueue)) {
     return (
       <Lock>
-        <AccessRequest>
-          <ActivateChainRequest>
-            <Layout>
-              <Entry queue={currentQueue} />
-            </Layout>
-          </ActivateChainRequest>
-        </AccessRequest>
+        <LedgerPublicKeyRequest>
+          <AccessRequest>
+            <ActivateChainRequest>
+              <Layout>
+                <Entry queue={currentQueue} />
+              </Layout>
+            </ActivateChainRequest>
+          </AccessRequest>
+        </LedgerPublicKeyRequest>
       </Lock>
     );
   }

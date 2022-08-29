@@ -107,4 +107,15 @@ export const ChainImageContainer = styled('div')({
   },
 });
 
+export const LedgerIconContainer = styled('div')(({ theme }) => ({
+  marginLeft: '0.4rem',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  '& > svg > path': {
+    fill: theme.colors.base06,
+  },
+}));
+
 export const Div = styled('div')({});
