@@ -1,4 +1,4 @@
-import TransportWebBle from '@ledgerhq/hw-transport-web-ble';
+// import TransportWebBle from '@ledgerhq/hw-transport-web-ble';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
@@ -25,10 +25,10 @@ export async function createTransport(type: TransportType) {
     return transport;
   }
 
-  if ((await TransportWebBle.isSupported()) && type === TRANSPORT_TYPE.BLUETOOTH) {
-    const transport = await TransportWebBle.create();
-    return transport;
-  }
+  // if ((await TransportWebBle.isSupported()) && type === TRANSPORT_TYPE.BLUETOOTH) {
+  //   const transport = await TransportWebBle.create();
+  //   return transport;
+  // }
 
   throw new LedgerError(499, 'Not Supported');
 }

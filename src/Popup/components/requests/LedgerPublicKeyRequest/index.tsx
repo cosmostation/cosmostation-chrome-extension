@@ -4,7 +4,9 @@ import { Typography } from '@mui/material';
 
 import { COSMOS_CHAINS } from '~/constants/chain';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { COSMOS_POPUP_METHOD_TYPE } from '~/constants/cosmos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import { ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
@@ -62,12 +64,14 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
   const { accounts } = chromeStorage;
 
+  const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
+
   const chain = (() => {
     if (isCosmos(currentQueue) && !!currentQueue?.message?.params?.chainName) {
       return [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
     }
 
-    if (currentQueue?.message?.method?.startsWith('eth_') || currentQueue?.message?.method?.startsWith('ethc_')) {
+    if (ethereumPopupMethods.includes(currentQueue?.message?.method || '')) {
       return ETHEREUM;
     }
 
@@ -217,5 +221,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 type Message = { method: any; params: { chainName?: string }; id?: number | string };
 
 function isCosmos(queue: Queue<RequestMessage> | null): queue is Queue<Message> {
-  return !!queue?.message?.method?.startsWith('cos_') || !!queue?.message?.method?.startsWith('ten_');
+  const cosmosPopupMethods = Object.values(COSMOS_POPUP_METHOD_TYPE) as string[];
+
+  return cosmosPopupMethods.includes(queue?.message?.method || '');
 }

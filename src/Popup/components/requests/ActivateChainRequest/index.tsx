@@ -2,7 +2,9 @@ import { Typography } from '@mui/material';
 
 import { CHAINS } from '~/constants/chain';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { COSMOS_POPUP_METHOD_TYPE } from '~/constants/cosmos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import { ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import logoImg from '~/images/etc/logo.png';
 import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
@@ -43,6 +45,8 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
   const allowedChains = currentAllowedChains.map((item) => item.chainName);
   const currentCosmosAdditionalChainNames = currentCosmosAdditionalChains.map((item) => item.chainName);
 
+  const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
+
   const chain = (() => {
     if (
       isCosmos(currentQueue) &&
@@ -53,10 +57,7 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
       return CHAINS.find((item) => item.chainName === currentQueue.message.params.chainName);
     }
 
-    if (
-      (currentQueue?.message?.method?.startsWith('eth_') || currentQueue?.message?.method?.startsWith('ethc_')) &&
-      !allowedChains.includes(ETHEREUM.chainName)
-    ) {
+    if (ethereumPopupMethods.includes(currentQueue?.message?.method || '') && !allowedChains.includes(ETHEREUM.chainName)) {
       return ETHEREUM;
     }
 
@@ -130,5 +131,7 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
 type Message = { method: any; params: { chainName?: string }; id?: number | string };
 
 function isCosmos(queue: Queue<RequestMessage> | null): queue is Queue<Message> {
-  return !!queue?.message?.method?.startsWith('cos_') || !!queue?.message?.method?.startsWith('ten_');
+  const cosmosPopupMethods = Object.values(COSMOS_POPUP_METHOD_TYPE) as string[];
+
+  return cosmosPopupMethods.includes(queue?.message?.method || '');
 }

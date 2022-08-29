@@ -1,7 +1,7 @@
 export const TRANSPORT_TYPE = {
   USB: 'USB',
   HID: 'HID',
-  BLUETOOTH: 'Bluetooth',
+  // BLUETOOTH: 'Bluetooth',
 } as const;
 
 export const LEDGER_SUPPORT_COIN_TYPE = {
