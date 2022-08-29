@@ -55,6 +55,7 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
               return (
                 <AccountItemButton
                   key={account.id}
+                  accountType={account.type}
                   description={account.address[selectedChainId] || ''}
                   isActive={account.id === selectedAccountId}
                   isConnected={isConnected}

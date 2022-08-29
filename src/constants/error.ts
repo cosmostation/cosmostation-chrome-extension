@@ -16,6 +16,9 @@ export const RPC_ERROR = {
   UNSUPPORTED_METHOD: 4200,
   DISCONNECTED: 4900,
   CHAIN_DISCONNECTED: 4901,
+
+  LEDGER_UNSUPPORTED_METHOD: 5000,
+  LEDGER_UNSUPPORTED_CHAIN: 5001,
 } as const;
 
 export const RPC_ERROR_MESSAGE = {
@@ -46,4 +49,7 @@ export const COSMOS_RPC_ERROR_MESSAGE = {
   [RPC_ERROR.UNSUPPORTED_METHOD]: 'The requested method is not supported by this Ethereum provider.',
   [RPC_ERROR.DISCONNECTED]: 'The provider is disconnected from all chains.',
   [RPC_ERROR.CHAIN_DISCONNECTED]: 'The provider is disconnected from the specified chain.',
+
+  [RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]: 'The method is not supported by the ledger account.',
+  [RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]: 'The chain is not supported by the ledger account.',
 } as const;

@@ -1,23 +1,5 @@
 {
   "components": {
-    "AccessRequest": {
-      "index": {
-        "downDescription": "이 웹사이트에서 다음을 수행하려고 합니다.",
-        "downItem1": "계정 주소 확인",
-        "downItem2": "트랜잭션 서명 요청",
-        "downItem3": "메세지 암호화 / 보호화",
-        "upDescription1": "가 ",
-        "upDescription2": " 계정에 접근을 요청합니다.",
-        "upDescription3": ""
-      }
-    },
-    "ActivateChainRequest": {
-      "index": {
-        "description1": "코스모스테이션에",
-        "description2": "블록체인",
-        "description3": "을(를) 활성화 하시겠습니까?"
-      }
-    },
     "AddressBookBottomSheet": {
       "index": {
         "addAddressButton": "주소 추가",
@@ -71,7 +53,16 @@
           "guide": "가이드",
           "helpSupport": "도움 및 지원",
           "language": "언어",
+          "ledger": "Ledger",
           "lock": "잠금"
+        }
+      }
+    },
+    "Loading": {
+      "LedgerToPopup": {
+        "index": {
+          "continue": "계속하기",
+          "description": "팝업창에서 작업을 완료해주세요"
         }
       }
     },
@@ -98,6 +89,36 @@
           "tiny": "최소"
         }
       }
+    },
+    "requests": {
+      "AccessRequest": {
+        "index": {
+          "downDescription": "이 웹사이트에서 다음을 수행하려고 합니다.",
+          "downItem1": "계정 주소 확인",
+          "downItem2": "트랜잭션 서명 요청",
+          "downItem3": "메세지 암호화 / 보호화",
+          "upDescription1": "가 ",
+          "upDescription2": " 계정에 접근을 요청합니다.",
+          "upDescription3": ""
+        }
+      },
+      "ActivateChainRequest": {
+        "index": {
+          "description1": "코스모스테이션에",
+          "description2": "블록체인",
+          "description3": "을(를) 활성화 하시겠습니까?"
+        }
+      },
+      "LedgerPublicKeyRequest": {
+        "index": {
+          "cancelButton": "취소",
+          "completeButton": "완료",
+          "step1Description": "연결 후 잠금을 해제하세요",
+          "step2Description1": "Ledger에서 ",
+          "step2Description2": " 앱을 실행하세요",
+          "title": "Ledger 연결"
+        }
+      }
     }
   },
   "pages": {
@@ -117,6 +138,16 @@
           }
         },
         "New": {
+          "Ledger": {
+            "entry": {
+              "accountNamePlaceholder": "계정 이름",
+              "done": "확인",
+              "hdPathSetting": "HD path 세팅"
+            },
+            "layout": {
+              "title": "새로운 Ledger 계정 생성"
+            }
+          },
           "Mnemonic": {
             "Step1": {
               "entry": {
@@ -156,6 +187,7 @@
         },
         "entry": {
           "createAccount": "새로운 계정 생성",
+          "createLedgerAccount": "새로운 Ledger 계정 생성",
           "importMnemonic": "니모닉 가져오기",
           "importPrivateKey": "개인키 가져오기"
         },
@@ -509,10 +541,10 @@
             },
             "entry": {
               "cancelButton": "취소",
-              "confirmButton": "승인",
               "dataTab": "데이터",
               "detailTab": "상세 내역",
-              "failedTransfer": "보내기를 실패했습니다."
+              "failedTransfer": "보내기를 실패했습니다.",
+              "signButton": "서명"
             }
           },
           "Direct": {
@@ -752,6 +784,11 @@
         "layout": {
           "title": "연결 된 사이트"
         }
+      },
+      "Ledger": {
+        "layout": {
+          "title": "Ledger"
+        }
       }
     },
     "Wallet": {
@@ -866,6 +903,14 @@
               "customNetwork": "커스텀 네트워크",
               "title": "네트워크 선택"
             }
+          }
+        },
+        "LedgerCheck": {
+          "index": {
+            "connect": "연결하기",
+            "connectDescription": "컴퓨터에 Ledger 하드웨어 지갑을 연결한 후, \"연결하기\"를 누르세요.",
+            "notSupportedDescription": "해당 네트워크는 Ledger에서 지원되지 않는 네트워크입니다. 니모닉 또는 프라이빗 키로 지갑을 가져오세요.",
+            "notSupportedTitle": "Ledger 미지원"
           }
         },
         "cosmos": {

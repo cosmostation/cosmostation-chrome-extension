@@ -32,6 +32,8 @@ export const chromeStorageDefault: ChromeStorage = {
   cosmosTokens: [],
 
   autoSigns: [],
+
+  ledgerTransportType: 'USB',
 };
 
 export const chromeStorageState = atom<ChromeStorage>({

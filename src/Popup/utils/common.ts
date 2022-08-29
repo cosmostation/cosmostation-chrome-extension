@@ -1,3 +1,5 @@
+import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { getAddress as getBech32Address, getAddressForEthermint } from '~/Popup/utils/cosmos';
 import { aesDecrypt, mnemonicToPair, privateKeyToPair } from '~/Popup/utils/crypto';
 import { getAddress as getEthereumAddress } from '~/Popup/utils/ethereum';
@@ -34,6 +36,18 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
   if (account.type === 'PRIVATE_KEY') {
     const privateKey = aesDecrypt(account.encryptedPrivateKey, password);
     return privateKeyToPair(Buffer.from(privateKey, 'hex'));
+  }
+
+  if (account.type === 'LEDGER') {
+    if (chain.bip44.coinType === COSMOS.bip44.coinType && account.cosmosPublicKey) {
+      return { privateKey: null, publicKey: Buffer.from(account.cosmosPublicKey, 'hex') };
+    }
+
+    if (chain.bip44.coinType === ETHEREUM.bip44.coinType && account.ethereumPublicKey) {
+      return { privateKey: null, publicKey: Buffer.from(account.ethereumPublicKey, 'hex') };
+    }
+
+    return null;
   }
 
   return null;

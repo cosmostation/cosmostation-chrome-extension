@@ -9,3 +9,8 @@ export const disposableLoadingState = atom({
   key: 'disposableLoadingState',
   default: false,
 });
+
+export const loadingLedgerSigningState = atom({
+  key: 'loadingLedgerSigningState',
+  default: false,
+});

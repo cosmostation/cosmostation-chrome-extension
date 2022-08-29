@@ -46,12 +46,25 @@ export const ContentLeftTextContainer = styled('div')({
   justifyContent: 'center',
 });
 
-export const ContentLeftTitleContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text01,
+export const ContentLeftTitleContainer = styled('div')({
   width: 'max-content',
-
   display: 'flex',
   alignItems: 'center',
+});
+
+export const ContentLeftTitleTextContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+}));
+
+export const ContentLeftTitleLedgerContainer = styled('div')(({ theme }) => ({
+  marginLeft: '0.2rem',
+
+  height: '1.4rem',
+  width: '1.4rem',
+
+  '& > svg > path': {
+    fill: theme.colors.base06,
+  },
 }));
 
 export const ContentLeftDescriptionContainer = styled('div')(({ theme }) => ({

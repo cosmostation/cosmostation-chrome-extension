@@ -19,10 +19,8 @@ import type {
 } from '~/types/cosmos/message';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type {
-  CustomChain,
   EthcAddNetwork,
   EthcAddTokens,
-  EthereumTxCommon,
   EthSignTransaction,
   WalletAddEthereumChain,
   WalletSwitchEthereumChain,
@@ -337,7 +335,7 @@ export const personalSignParamsSchema = () =>
   Joi.array()
     .label('params')
     .required()
-    .items(Joi.string().label('dataToSign').required(), Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.optional());
+    .items(Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.string().label('dataToSign').required(), Joi.optional());
 
 export const ethSignTransactionParamsSchema = () =>
   Joi.array()
@@ -348,22 +346,15 @@ export const ethSignTransactionParamsSchema = () =>
         from: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         to: Joi.string().optional(),
         nonce: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
-        chainId: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         data: Joi.string().optional(),
         maxFeePerGas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         maxPriorityFeePerGas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         value: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         gas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         gasPrice: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
-        chain: Joi.string().optional(),
-        hardfork: Joi.string().optional(),
-        common: Joi.object<EthereumTxCommon>({
-          customChain: Joi.object<CustomChain>({
-            name: Joi.string().optional(),
-            networkId: Joi.number().required(),
-            chainId: Joi.number().required(),
-          }).required(),
-        }).optional(),
+        r: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        s: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        v: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
       }).required(),
     );
 

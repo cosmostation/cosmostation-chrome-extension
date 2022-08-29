@@ -2,15 +2,18 @@ import { useEffect } from 'react';
 import type { FallbackProps } from 'react-error-boundary';
 import { useSetRecoilState } from 'recoil';
 
+import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import ChainItem, { ChainItemError, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
+import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { openWindow } from '~/Popup/utils/chromeWindows';
 import type { CosmosChain } from '~/types/chain';
 
 type CosmosChainItemProps = {
@@ -95,4 +98,41 @@ export function CosmosChainItemError({ chain, resetErrorBoundary }: CosmosChainI
   const { chainName, imageURL } = chain;
 
   return <ChainItemError onClick={handleOnClick} chainName={chainName} imageURL={imageURL} onClickRetry={() => resetErrorBoundary()} />;
+}
+
+export function CosmosChainLedgerCheck({ chain, children }: CosmosChainItemProps & { children: JSX.Element }) {
+  const { enQueue } = useCurrentQueue();
+
+  const { currentAccount } = useCurrentAccount();
+
+  const handleOnClick = async () => {
+    await enQueue({
+      messageId: '',
+      origin: '',
+      channel: 'inApp',
+      message: {
+        method: 'cos_requestAccount',
+        params: {
+          chainName: chain.chainName,
+        },
+      },
+    });
+
+    await openWindow();
+    window.close();
+  };
+
+  const { chainName, imageURL } = chain;
+
+  if (currentAccount.type === 'LEDGER') {
+    if (!currentAccount.cosmosPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+      return <ChainItemLedgerCheck chainName={chainName} imageURL={imageURL} onClick={handleOnClick} isSupported />;
+    }
+
+    if (chain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+      return <ChainItemLedgerCheck chainName={chainName} imageURL={imageURL} isSupported={false} />;
+    }
+  }
+
+  return children;
 }

@@ -2,16 +2,19 @@ import { useEffect } from 'react';
 import type { FallbackProps } from 'react-error-boundary';
 import { useSetRecoilState } from 'recoil';
 
+import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import ChainItem, { ChainItemError, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
+import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { openWindow } from '~/Popup/utils/chromeWindows';
 import type { EthereumChain, EthereumNetwork } from '~/types/chain';
 
 type EthereumChainItemProps = {
@@ -105,4 +108,36 @@ export function EthereumChainItemError({ chain, network, resetErrorBoundary }: E
   const { imageURL, networkName } = network;
 
   return <ChainItemError onClick={handleOnClick} chainName={networkName} imageURL={imageURL} onClickRetry={() => resetErrorBoundary()} />;
+}
+
+export function EthereumChainItemLedgerCheck({ chain, network, children }: EthereumChainItemProps & { children: JSX.Element }) {
+  const { currentAccount } = useCurrentAccount();
+
+  const { enQueue } = useCurrentQueue();
+
+  const handleOnClick = async () => {
+    await enQueue({
+      messageId: '',
+      origin: '',
+      channel: 'inApp',
+      message: {
+        method: 'eth_requestAccounts',
+        params: [],
+      },
+    });
+    await openWindow();
+    window.close();
+  };
+
+  const { networkName, imageURL } = network;
+
+  if (currentAccount.type === 'LEDGER' && !currentAccount.ethereumPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
+    return <ChainItemLedgerCheck chainName={networkName} imageURL={imageURL} onClick={handleOnClick} isSupported />;
+  }
+
+  if (currentAccount.type === 'LEDGER' && chain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
+    return <ChainItemLedgerCheck chainName={networkName} imageURL={imageURL} isSupported={false} />;
+  }
+
+  return children;
 }

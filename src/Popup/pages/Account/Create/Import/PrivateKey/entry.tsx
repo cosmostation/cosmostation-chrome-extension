@@ -8,10 +8,11 @@ import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
-import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
+import { useLoading } from '~/Popup/hooks/useLoading';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
+import { disposableLoadingState } from '~/Popup/recoils/loading';
 import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
+import type { Account, AccountCommon, PrivateKeyAccount } from '~/types/chromeStorage';
 
 import { BottomContainer, Container, InputContainer, StyledInput48, StyledInput140 } from './styled';
 import type { PrivateKeyForm } from './useSchema';
@@ -25,7 +26,7 @@ export type CheckWord = {
 export default function Entry() {
   const { navigateBack } = useNavigate();
 
-  const setLoadingOverlay = useLoadingOverlay();
+  const { setLoadingOverlay } = useLoading();
   const { currentPassword } = useCurrentPassword();
 
   const { addAccount } = useCurrentAccount();
@@ -56,9 +57,7 @@ export default function Entry() {
 
     const privateKey = data.privateKey.startsWith('0x') ? data.privateKey.substring(2) : data.privateKey;
 
-    const privateKeyRestoreStrings = chromeStorage.accounts
-      .filter((account) => account.type === 'PRIVATE_KEY')
-      .map((account) => account.encryptedRestoreString);
+    const privateKeyRestoreStrings = chromeStorage.accounts.filter(isPrivateKeyAccount).map((account) => account.encryptedRestoreString);
 
     if (privateKeyRestoreStrings.includes(sha512(privateKey))) {
       enqueueSnackbar('이미 존재하는 개인키 입니다.', { variant: 'error' });
@@ -110,4 +109,8 @@ export default function Entry() {
       </Container>
     </form>
   );
+}
+
+function isPrivateKeyAccount(item: Account): item is AccountCommon & PrivateKeyAccount {
+  return item.type === 'PRIVATE_KEY';
 }

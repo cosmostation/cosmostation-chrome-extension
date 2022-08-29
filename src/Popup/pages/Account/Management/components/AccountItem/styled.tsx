@@ -17,8 +17,23 @@ export const Container = styled('div')(({ theme }) => ({
   border: 0,
 }));
 
-export const LeftContainer = styled('div')(({ theme }) => ({
+export const LeftContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+export const LeftTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+}));
+
+export const LeftLedgerContainer = styled('div')(({ theme }) => ({
+  marginLeft: '0.2rem',
+  width: '1.4rem',
+  height: '1.4rem',
+
+  '& > svg > path': {
+    fill: theme.colors.base06,
+  },
 }));
 
 export const RightContainer = styled('div')(({ theme }) => ({

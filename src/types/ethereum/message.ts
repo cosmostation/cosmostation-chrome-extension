@@ -1,4 +1,5 @@
-import type { Common, CustomChainParams, TransactionConfig } from 'web3-core';
+import type { Common, CustomChainParams } from 'web3-core';
+import type { MessageTypes } from '@metamask/eth-sig-util';
 
 import type { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 
@@ -10,11 +11,19 @@ export type EthereumPopupMethodType = ValueOf<typeof ETHEREUM_POPUP_METHOD_TYPE>
 export type CustomChain = CustomChainParams;
 export type EthereumTxCommon = Common;
 
-export type EthereumTx = Omit<TransactionConfig, 'value' | 'gasPrice' | 'maxPriorityFeePerGas' | 'maxFeePerGas'> & {
+export type EthereumTx = {
   value?: string | number;
   gasPrice?: string | number;
   maxPriorityFeePerGas?: string | number;
   maxFeePerGas?: string | number;
+  from?: string | number;
+  to?: string;
+  gas?: number | string;
+  data?: string;
+  nonce?: number;
+  v?: string | number;
+  r?: string | number;
+  s?: string | number;
 };
 
 export type EthRequestAccounts = {
@@ -183,4 +192,17 @@ export type EthRPCRequest = {
   method: Exclude<EthereumNoPopupMethodType, typeof ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE>;
   params: unknown;
   id?: number | string;
+};
+
+export type CustomTypedMessage<T extends MessageTypes> = {
+  types: T;
+  primaryType: string;
+  domain: {
+    name?: string;
+    version?: string;
+    chainId?: number;
+    verifyingContract?: string;
+    salt?: string;
+  };
+  message: Record<string, unknown>;
 };
