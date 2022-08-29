@@ -14,7 +14,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CosmosChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosAddChain, CosAddChainResponse } from '~/types/cosmos/message';
+import type { CosAddChain, CosAddChainResponse } from '~/types/message/cosmos';
 
 import {
   AccentSpan,

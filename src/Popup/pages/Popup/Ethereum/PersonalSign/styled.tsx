@@ -72,6 +72,8 @@ export const MessageContentContainer = styled('div')(({ theme }) => ({
 
   backgroundColor: theme.colors.base02,
   borderRadius: '0.8rem',
+
+  whiteSpace: 'pre-wrap',
 }));
 
 export const BottomContainer = styled('div')({

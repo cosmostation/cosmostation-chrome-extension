@@ -30,6 +30,7 @@ export default function Routes({ children }: RoutesType) {
       if (
         chromeStorage.queues[0].message.method === 'cos_requestAccount' ||
         chromeStorage.queues[0].message.method === 'eth_requestAccounts' ||
+        chromeStorage.queues[0].message.method === 'wallet_requestPermissions' ||
         chromeStorage.queues[0].message.method === 'ten_requestAccount'
       ) {
         navigate('/popup/request-account');

@@ -15,6 +15,7 @@ export const PATH = {
   SETTING__CONNECTED_SITES: '/setting/connected-sites',
   SETTING__AUTO_SIGN: '/setting/auto-sign',
   SETTING__LEDGER: '/setting/ledger',
+  SETTING__PROVIDER: '/setting/provider',
 
   CHAIN__MANAGEMENT: '/chain/management',
   CHAIN__MANAGEMENT__USE: '/chain/management/use',

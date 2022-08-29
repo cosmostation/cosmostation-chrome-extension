@@ -8,7 +8,7 @@ import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyR
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosSignAmino } from '~/types/cosmos/message';
+import type { CosSignAmino } from '~/types/message/cosmos';
 
 import Entry from './entry';
 import Layout from './layout';

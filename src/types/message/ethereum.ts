@@ -1,7 +1,7 @@
 import type { Common, CustomChainParams } from 'web3-core';
 import type { MessageTypes } from '@metamask/eth-sig-util';
 
-import type { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
+import type { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
 
 import type { EthereumNetwork, EthereumToken } from '../chain';
 
@@ -33,6 +33,14 @@ export type EthRequestAccounts = {
 };
 
 export type EthRequestAccountsResponse = string[];
+
+export type EthRequestPermissions = {
+  method: typeof ETHEREUM_METHOD_TYPE.WALLET__REQUEST_PERMISSIONS;
+  params: unknown;
+  id?: number | string;
+};
+
+export type EthRequestPermissionsResponse = string[];
 
 export type EthSignParams = [string, string];
 

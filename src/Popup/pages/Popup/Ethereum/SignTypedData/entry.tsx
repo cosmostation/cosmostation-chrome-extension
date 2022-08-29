@@ -24,7 +24,7 @@ import { signTypedData } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { Queue } from '~/types/chromeStorage';
-import type { CustomTypedMessage, EthSignTypedData, EthSignTypedDataResponse } from '~/types/ethereum/message';
+import type { CustomTypedMessage, EthSignTypedData, EthSignTypedDataResponse } from '~/types/message/ethereum';
 
 import {
   BottomButtonContainer,

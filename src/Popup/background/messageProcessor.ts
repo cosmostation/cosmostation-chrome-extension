@@ -7,16 +7,17 @@ import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { PRIVATE_KEY_FOR_TEST } from '~/constants/common';
-import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/cosmos';
 import { COSMOS_RPC_ERROR_MESSAGE, ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import type { TOKEN_TYPE } from '~/constants/ethereum';
-import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
+import { COMMON_METHOD_TYPE, COMMON_NO_POPUP_METHOD_TYPE } from '~/constants/message/common';
+import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/message/cosmos';
+import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
 import { chromeSessionStorage } from '~/Popup/utils/chromeSessionStorage';
 import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
+import { CommonRPCError, CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
 import { requestRPC, signTypedData } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { toHex } from '~/Popup/utils/string';
@@ -24,8 +25,12 @@ import type { CosmosChain, CosmosToken } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { Balance, SmartPayload, TokenInfo } from '~/types/cosmos/contract';
+import type { ResponseRPC } from '~/types/ethereum/rpc';
+import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
+import type { ComProvidersResponse } from '~/types/message/common';
 import type {
   CosAccountResponse,
+  CosActivatedChainIdsResponse,
   CosActivatedChainNamesResponse,
   CosAddChain,
   CosAddTokensCW20Internal,
@@ -34,13 +39,15 @@ import type {
   CosGetAutoSign,
   CosGetAutoSignResponse,
   CosRequestAccountResponse,
+  CosSendTransactionResponse,
   CosSetAutoSign,
   CosSignAmino,
   CosSignAminoResponse,
   CosSignDirect,
   CosSignDirectResponse,
+  CosSupportedChainIdsResponse,
   CosSupportedChainNamesResponse,
-} from '~/types/cosmos/message';
+} from '~/types/message/cosmos';
 import type {
   CustomTypedMessage,
   EthcAddNetwork,
@@ -56,9 +63,7 @@ import type {
   WalletSwitchEthereumChain,
   WalletSwitchEthereumChainResponse,
   WalletWatchAsset,
-} from '~/types/ethereum/message';
-import type { ResponseRPC } from '~/types/ethereum/rpc';
-import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
+} from '~/types/message/ethereum';
 
 import {
   cosAddChainParamsSchema,
@@ -106,6 +111,59 @@ const setQueues = debounce(
 
 // contentScrpit to background
 export async function cstob(request: ContentScriptToBackgroundEventMessage<RequestMessage>) {
+  if (request.line === 'COMMON') {
+    const commonNoPopupMethods = Object.values(COMMON_NO_POPUP_METHOD_TYPE) as string[];
+    const commonMethods = Object.values(COMMON_METHOD_TYPE) as string[];
+
+    const { message, messageId, origin } = request;
+
+    try {
+      if (!message?.method || !commonMethods.includes(message.method)) {
+        throw new CommonRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
+      }
+      const { method } = message;
+
+      const { providers } = await chromeStorage();
+
+      if (commonNoPopupMethods.includes(method)) {
+        if (method === 'com_providers') {
+          const response: ComProvidersResponse = providers;
+
+          responseToWeb({
+            response: {
+              result: response,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        }
+      }
+    } catch (e) {
+      if (e instanceof CommonRPCError) {
+        responseToWeb({
+          response: e.rpcMessage,
+          message,
+          messageId,
+          origin,
+        });
+        return;
+      }
+
+      responseToWeb({
+        response: {
+          error: {
+            code: RPC_ERROR.INTERNAL,
+            message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
+          },
+        },
+        message,
+        messageId,
+        origin,
+      });
+    }
+  }
+
   if (request.line === 'COSMOS') {
     const cosmosMethods = Object.values(COSMOS_METHOD_TYPE) as string[];
     const cosmosPopupMethods = Object.values(COSMOS_POPUP_METHOD_TYPE) as string[];
@@ -129,6 +187,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         throw new CosmosRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
       }
 
+      const cosmosCurrentAllowedChains = currentAllowedChains.filter((item) => item.line === 'COSMOS') as CosmosChain[];
       const cosmosAdditionalChains = additionalChains.filter((item) => item.line === 'COSMOS') as CosmosChain[];
 
       const allChains = [...COSMOS_CHAINS, ...cosmosAdditionalChains];
@@ -171,6 +230,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               publicKey: publicKey as unknown as Uint8Array,
               name: currentAccountName,
               isLedger: currentAccount.type === 'LEDGER',
+              isEthermint: chain.type === 'ETHERMINT',
             };
 
             responseToWeb({
@@ -579,7 +639,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         if (method === 'cos_supportedChainNames' || method === 'ten_supportedChainNames') {
           const official = COSMOS_CHAINS.map((item) => item.chainName.toLowerCase());
 
-          const unofficial = additionalChains.map((item) => item.chainName.toLowerCase());
+          const unofficial = cosmosAdditionalChains.map((item) => item.chainName.toLowerCase());
 
           const response: CosSupportedChainNamesResponse = { official, unofficial };
 
@@ -593,10 +653,43 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           });
         }
 
+        if (method === 'cos_supportedChainIds') {
+          const official = COSMOS_CHAINS.map((item) => item.chainId);
+
+          const unofficial = cosmosAdditionalChains.map((item) => item.chainId);
+
+          const response: CosSupportedChainIdsResponse = { official, unofficial };
+
+          responseToWeb({
+            response: {
+              result: response,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        }
+
         if (method === 'cos_activatedChainNames') {
           const response: CosActivatedChainNamesResponse = [
-            ...currentAllowedChains.filter((item) => item.line === 'COSMOS').map((item) => item.chainName.toLowerCase()),
-            ...additionalChains.filter((item) => item.line === 'COSMOS').map((item) => item.chainName.toLowerCase()),
+            ...cosmosCurrentAllowedChains.map((item) => item.chainName.toLowerCase()),
+            ...cosmosAdditionalChains.map((item) => item.chainName.toLowerCase()),
+          ];
+
+          responseToWeb({
+            response: {
+              result: response,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        }
+
+        if (method === 'cos_activatedChainIds') {
+          const response: CosActivatedChainIdsResponse = [
+            ...cosmosCurrentAllowedChains.map((item) => item.chainId),
+            ...cosmosAdditionalChains.map((item) => item.chainId),
           ];
 
           responseToWeb({
@@ -642,6 +735,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               publicKey: publicKey as unknown as Uint8Array,
               name: currentAccountName,
               isLedger: currentAccount.type === 'LEDGER',
+              isEthermint: chain.type === 'ETHERMINT',
             };
 
             responseToWeb({
@@ -687,7 +781,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
 
           try {
-            const response = await post<SendTransactionPayload>(`${chain.restURL}/cosmos/tx/v1beta1/txs`, {
+            const response: CosSendTransactionResponse = await post<SendTransactionPayload>(`${chain.restURL}/cosmos/tx/v1beta1/txs`, {
               tx_bytes: params.txBytes,
               mode: params.mode,
             });
@@ -1098,7 +1192,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         }
 
-        if (method === 'eth_requestAccounts') {
+        if (method === 'eth_requestAccounts' || method === 'wallet_requestPermissions') {
           if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
@@ -1225,12 +1319,24 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as WalletWatchAsset['params'];
 
+            const imageURL = (() => {
+              if (typeof validatedParams.options.image === 'string') return validatedParams.options.image;
+
+              if (Array.isArray(validatedParams.options.image) && (validatedParams.options.image as string[]).length > 0) {
+                const firstImage = validatedParams.options.image[0] as unknown;
+
+                return typeof firstImage === 'string' ? firstImage : undefined;
+              }
+
+              return undefined;
+            })();
+
             const addTokenParam: EthcAddTokens['params'][0] = {
               tokenType: validatedParams.type as typeof TOKEN_TYPE.ERC20,
               address: validatedParams.options.address,
               decimals: validatedParams.options.decimals,
               displayDenom: validatedParams.options.symbol,
-              imageURL: validatedParams.options.image,
+              imageURL,
               coinGeckoId: validatedParams.options.coinGeckoId,
             };
 
@@ -1363,6 +1469,15 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               origin,
             });
           }
+        } else if (method === 'wallet_getPermissions') {
+          responseToWeb({
+            response: {
+              result: [],
+            },
+            message,
+            messageId,
+            origin,
+          });
         } else {
           const params = method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
 

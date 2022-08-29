@@ -1,8 +1,10 @@
 import type { COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
+import type { ComProviders } from './common';
 import type {
   CosAccount,
+  CosActivatedChainIds,
   CosActivatedChainNames,
   CosAddChain,
   CosAddTokensCW20,
@@ -16,14 +18,16 @@ import type {
   CosSetAutoSign,
   CosSignAmino,
   CosSignDirect,
+  CosSupportedChainIds,
   CosSupportedChainNames,
-} from './cosmos/message';
+} from './cosmos';
 import type {
   EthcAddNetwork,
   EthcAddTokens,
   EthcSwitchNetwork,
   EthGetBalance,
   EthRequestAccounts,
+  EthRequestPermissions,
   EthRPCRequest,
   EthSendTransaction,
   EthSign,
@@ -33,7 +37,7 @@ import type {
   WalletAddEthereumChain,
   WalletSwitchEthereumChain,
   WalletWatchAsset,
-} from './ethereum/message';
+} from './ethereum';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type CosmosListenerType = ValueOf<typeof COSMOS_LISTENER_TYPE>;
@@ -55,6 +59,7 @@ export type EthereumRequestMessage =
   | EthSignTypedData
   | EthGetBalance
   | EthRequestAccounts
+  | EthRequestPermissions
   | EthcAddNetwork
   | EthcSwitchNetwork
   | PersonalSign
@@ -72,7 +77,9 @@ export type CosmosRequestMessage =
   | CosSignAmino
   | CosSignDirect
   | CosSupportedChainNames
+  | CosSupportedChainIds
   | CosActivatedChainNames
+  | CosActivatedChainIds
   | CosAccount
   | CosSendTransaction
   | CosGetBalanceCW20
@@ -80,7 +87,9 @@ export type CosmosRequestMessage =
   | CosAddTokensCW20
   | CosAddTokensCW20Internal;
 
-export type RequestMessage = EthereumRequestMessage | CosmosRequestMessage;
+export type CommonRequestMessage = ComProviders;
+
+export type RequestMessage = EthereumRequestMessage | CosmosRequestMessage | CommonRequestMessage;
 
 // window.postMessage 통신
 // isCosmostation: extension 확인 플래그

@@ -12,7 +12,7 @@ import { chromeStorage } from '~/Popup/utils/chromeStorage';
 import { EthereumRPCError } from '~/Popup/utils/error';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumTxType } from '~/types/ethereum/common';
-import type { CustomTypedMessage, EthereumTx } from '~/types/ethereum/message';
+import type { CustomTypedMessage, EthereumTx } from '~/types/message/ethereum';
 
 export function toUTF8(hex: string) {
   return Buffer.from(stripHexPrefix(hex), 'hex').toString('utf8');

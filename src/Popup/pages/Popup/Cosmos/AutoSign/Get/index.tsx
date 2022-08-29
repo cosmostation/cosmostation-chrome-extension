@@ -3,7 +3,7 @@ import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import ActivateChainRequest from '~/Popup/components/requests/ActivateChainRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosGetAutoSign } from '~/types/cosmos/message';
+import type { CosGetAutoSign } from '~/types/message/cosmos';
 
 import Entry from './entry';
 import Layout from './layout';

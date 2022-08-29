@@ -34,6 +34,8 @@ export const chromeStorageDefault: ChromeStorage = {
   autoSigns: [],
 
   ledgerTransportType: 'USB',
+
+  providers: { keplr: true, metamask: true },
 };
 
 export const chromeStorageState = atom<ChromeStorage>({
