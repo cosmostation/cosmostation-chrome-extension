@@ -4,11 +4,12 @@ import { rlp } from 'ethereumjs-util';
 import { useSnackbar } from 'notistack';
 import Common, { Hardfork } from '@ethereumjs/common';
 import { TransactionFactory } from '@ethereumjs/tx';
-import EthereumApp from '@ledgerhq/hw-app-eth';
+import EthereumApp, { ledgerService } from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
 
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -246,6 +247,11 @@ export default function Entry({ queue }: EntryProps) {
   const displayFee = toDisplayDenomAmount(baseFee, decimals);
 
   const displayValue = times(displayFee, price);
+
+  const isERC20 = useMemo(() => {
+    const erc20Types = [ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM] as string[];
+    return typeof txType.data?.type === 'string' && erc20Types.includes(txType.data?.type);
+  }, [txType.data?.type]);
 
   const token = useMemo(
     () => (txType.data?.type === 'transfer' ? allTokens.find((item) => isEqualsIgnoringCase(ethereumTx.to, item.address)) : null),
@@ -533,8 +539,9 @@ export default function Entry({ queue }: EntryProps) {
                           const msgToSign = txToSign.getMessageToSign(false);
 
                           const tx = currentFee.type === 'EIP-1559' ? msgToSign.toString('hex') : rlp.encode(msgToSign).toString('hex');
+                          const resolution = await ledgerService.resolveTransaction(tx, {}, { erc20: isERC20 });
 
-                          const result = await ethereumApp.signTransaction(path, tx);
+                          const result = await ethereumApp.signTransaction(path, tx, resolution);
 
                           const signedTx = TransactionFactory.fromTxData(
                             { ...dataToSign, v: `0x${result.v}`, s: `0x${result.s}`, r: `0x${result.r}` },

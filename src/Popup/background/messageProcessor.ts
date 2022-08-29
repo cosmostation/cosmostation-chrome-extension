@@ -158,7 +158,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             chain.id &&
             [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
             currentAccountAllowedOrigins.includes(origin) &&
-            currentPassword
+            currentPassword &&
+            (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.cosmosPublicKey))
           ) {
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
@@ -933,8 +934,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
 
-              if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
-                throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+              if ((currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey) || currentAccount.type !== 'LEDGER') {
+                if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                }
               }
             }
 
@@ -963,9 +966,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
-
-              if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
-                throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+              if ((currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey) || currentAccount.type !== 'LEDGER') {
+                if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                }
               }
             }
 
@@ -1017,8 +1021,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
 
-              if (address.toLowerCase() !== validatedParams[1].toLowerCase()) {
-                throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+              if ((currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey) || currentAccount.type !== 'LEDGER') {
+                if (address.toLowerCase() !== validatedParams[1].toLowerCase()) {
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                }
               }
             }
 
@@ -1049,8 +1055,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
               const address = getAddress(chain, keyPair?.publicKey);
 
-              if (address.toLowerCase() !== toHex(validatedParams[0].from, { addPrefix: true }).toLowerCase()) {
-                throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+              if ((currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey) || currentAccount.type !== 'LEDGER') {
+                if (address.toLowerCase() !== toHex(validatedParams[0].from, { addPrefix: true }).toLowerCase()) {
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                }
               }
             }
 
