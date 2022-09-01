@@ -7,7 +7,7 @@ export const COSMOS_POPUP_METHOD_TYPE = {
 
   COS__REQUEST_ACCOUNT: 'cos_requestAccount',
   COS__ADD_CHAIN: 'cos_addChain',
-  COS__SIGN_AMINO: 'cos_signAmino',
+  COS__SIGN_AMINO: 'cos_signAminodd',
   COS__SIGN_DIRECT: 'cos_signDirect',
   COS__GET_AUTO_SIGN: 'cos_getAutoSign',
   COS__SET_AUTO_SIGN: 'cos_setAutoSign',
