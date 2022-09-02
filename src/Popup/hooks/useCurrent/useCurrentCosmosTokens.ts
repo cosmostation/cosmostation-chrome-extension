@@ -18,8 +18,8 @@ export function useCurrentCosmosTokens() {
 
   const addCosmosToken = async (token: AddCosmosTokenParams) => {
     const newCosmosTokens = [
-      ...cosmosTokens.filter((item) => !(item.address.toLowerCase() === token.address.toLowerCase() && item.chainId === currentChain.id)),
-      { ...token, id: uuidv4(), chainId: currentChain.id },
+      ...cosmosTokens.filter((item) => !(item.address.toLowerCase() === token.address.toLowerCase() && item.chainId === token.chainId)),
+      { ...token, id: uuidv4() },
     ];
 
     await setChromeStorage('cosmosTokens', newCosmosTokens);
@@ -28,12 +28,10 @@ export function useCurrentCosmosTokens() {
   const addCosmosTokens = async (tokens: AddCosmosTokenParams[]) => {
     const filteredTokens = tokens.filter((token, idx, self) => self.findIndex((item) => item.address.toLowerCase() === token.address.toLowerCase()) === idx);
 
-    const tokensAddress = filteredTokens.map((token) => token.address.toLowerCase());
-
-    const newTokens = filteredTokens.map((token) => ({ ...token, id: uuidv4(), chainId: currentChain.id }));
+    const newTokens = filteredTokens.map((token) => ({ ...token, id: uuidv4() }));
 
     const newCosmosTokens = [
-      ...cosmosTokens.filter((item) => !(tokensAddress.includes(item.address.toLowerCase()) && item.chainId === currentChain.id)),
+      ...cosmosTokens.filter((item) => !newTokens.find((token) => item.address === token.address && item.chainId === token.chainId)),
       ...newTokens,
     ];
 
