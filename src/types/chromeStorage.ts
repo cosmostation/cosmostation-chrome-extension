@@ -71,6 +71,11 @@ export type AutoSign = {
   duration: number;
 };
 
+export type Providers = {
+  keplr: boolean;
+  metamask: boolean;
+};
+
 export type ChromeStorage = {
   encryptedPassword: string | null;
   accounts: Account[];
@@ -101,6 +106,8 @@ export type ChromeStorage = {
   autoSigns: AutoSign[];
 
   ledgerTransportType: TransportType;
+
+  providers: Providers;
 };
 
 export type ChromeStorageKeys = keyof ChromeStorage;

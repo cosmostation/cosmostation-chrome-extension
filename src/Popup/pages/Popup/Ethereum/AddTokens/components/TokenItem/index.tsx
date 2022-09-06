@@ -4,7 +4,7 @@ import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
-import type { EthcAddTokensParam } from '~/types/ethereum/message';
+import type { EthcAddTokensParam } from '~/types/message/ethereum';
 
 import {
   LeftContainer,

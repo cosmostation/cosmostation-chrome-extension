@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 
 import { toHex } from '~/Popup/utils/string';
-import type { EthereumTx } from '~/types/ethereum/message';
+import type { EthereumTx } from '~/types/message/ethereum';
 
 import { Container } from './styled';
 

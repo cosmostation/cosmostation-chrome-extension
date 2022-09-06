@@ -4,7 +4,7 @@ import ActivateChainRequest from '~/Popup/components/requests/ActivateChainReque
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { PersonalSign } from '~/types/ethereum/message';
+import type { PersonalSign } from '~/types/message/ethereum';
 
 import Entry from './entry';
 import Layout from './layout';

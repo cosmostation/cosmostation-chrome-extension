@@ -26,7 +26,7 @@ import { broadcast, protoTx } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain, FeeCoin } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosSignAmino, CosSignAminoResponse } from '~/types/cosmos/message';
+import type { CosSignAmino, CosSignAminoResponse } from '~/types/message/cosmos';
 
 import TxMessage from './components/TxMessage';
 import { BottomButtonContainer, BottomContainer, Container, ContentsContainer, FeeContainer, MemoContainer, PaginationContainer, TabContainer } from './styled';

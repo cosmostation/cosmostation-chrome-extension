@@ -53,6 +53,7 @@ import SettingChangeLanguage from '~/Popup/pages/Setting/ChangeLanguage';
 import SettingChangePassword from '~/Popup/pages/Setting/ChangePassword';
 import SettingConnectedSites from '~/Popup/pages/Setting/ConnectedSites';
 import SettingLedger from '~/Popup/pages/Setting/Ledger';
+import SettingProvider from '~/Popup/pages/Setting/Provider';
 import Wallet from '~/Popup/pages/Wallet';
 import WalletReceive from '~/Popup/pages/Wallet/Receive';
 import WalletSend from '~/Popup/pages/Wallet/Send';
@@ -95,6 +96,7 @@ export default function Routes() {
           <Route path={PATH.SETTING__CONNECTED_SITES} element={<SettingConnectedSites />} />
           <Route path={PATH.SETTING__AUTO_SIGN} element={<SettingAutoSign />} />
           <Route path={PATH.SETTING__LEDGER} element={<SettingLedger />} />
+          <Route path={PATH.SETTING__PROVIDER} element={<SettingProvider />} />
 
           <Route path={PATH.ACCOUNT__MANAGEMENT} element={<AccountManagement />} />
           <Route path={PATH.ACCOUNT__CREATE} element={<AccountCreate />} />

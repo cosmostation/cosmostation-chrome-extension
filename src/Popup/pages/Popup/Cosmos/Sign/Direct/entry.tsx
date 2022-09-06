@@ -22,8 +22,8 @@ import { decodeProtobufMessage } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, FeeCoin } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosSignDirect, CosSignDirectResponse } from '~/types/cosmos/message';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
+import type { CosSignDirect, CosSignDirectResponse } from '~/types/message/cosmos';
 
 import TxMessage from './components/TxMessage';
 import { BottomButtonContainer, BottomContainer, Container, ContentsContainer, FeeContainer, MemoContainer, PaginationContainer, TabContainer } from './styled';

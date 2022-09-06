@@ -56,6 +56,7 @@ import { SMART_CHAIN as NETWORK__SMART_CHAIN } from './ethereum/network/smartCha
 export const LINE_TYPE = {
   COSMOS: 'COSMOS',
   ETHEREUM: 'ETHEREUM',
+  COMMON: 'COMMON',
 } as const;
 
 export const COSMOS_DEFAULT_GAS = '100000';

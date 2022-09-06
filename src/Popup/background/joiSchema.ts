@@ -5,6 +5,7 @@ import { ethereumAddressRegex, getCosmosAddressRegex } from '~/Popup/utils/regex
 import type { CosmosChain, GasRate } from '~/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Amount } from '~/types/cosmos/common';
+import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type {
   CosAddChain,
   CosAddTokensCW20,
@@ -16,8 +17,7 @@ import type {
   CosSetAutoSign,
   CosSignAmino,
   CosSignDirect,
-} from '~/types/cosmos/message';
-import type { SignDirectDoc } from '~/types/cosmos/proto';
+} from '~/types/message/cosmos';
 import type {
   EthcAddNetwork,
   EthcAddTokens,
@@ -25,7 +25,7 @@ import type {
   WalletAddEthereumChain,
   WalletSwitchEthereumChain,
   WalletWatchAsset,
-} from '~/types/ethereum/message';
+} from '~/types/message/ethereum';
 
 import { getChainIdRegex } from '../utils/common';
 
@@ -335,7 +335,7 @@ export const personalSignParamsSchema = () =>
   Joi.array()
     .label('params')
     .required()
-    .items(Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.string().label('dataToSign').required(), Joi.optional());
+    .items(Joi.string().label('dataToSign').required(), Joi.optional(), Joi.string().label('address').pattern(ethereumAddressRegex).required());
 
 export const ethSignTransactionParamsSchema = () =>
   Joi.array()
@@ -381,7 +381,7 @@ export const WalletWatchAssetParamsSchema = () =>
       address: Joi.string().pattern(ethereumAddressRegex).required(),
       decimals: Joi.number().required(),
       symbol: Joi.string().required(),
-      image: Joi.string().optional(),
+      image: Joi.optional(),
       coinGeckoId: Joi.string().optional(),
     }),
   }).required();

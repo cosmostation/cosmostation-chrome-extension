@@ -4,10 +4,10 @@ import { Typography } from '@mui/material';
 
 import { COSMOS_CHAINS } from '~/constants/chain';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { COSMOS_POPUP_METHOD_TYPE } from '~/constants/cosmos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
-import { ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
+import { COSMOS_POPUP_METHOD_TYPE } from '~/constants/message/cosmos';
+import { ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
 import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
 import Divider from '~/Popup/components/common/Divider';

@@ -7,7 +7,7 @@ import { useCurrentAutoSigns } from '~/Popup/hooks/useCurrent/useCurrentAutoSign
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosGetAutoSign, CosGetAutoSignResponse } from '~/types/cosmos/message';
+import type { CosGetAutoSign, CosGetAutoSignResponse } from '~/types/message/cosmos';
 
 type EntryProps = {
   queue: Queue<CosGetAutoSign>;

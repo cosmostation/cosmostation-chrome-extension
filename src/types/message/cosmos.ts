@@ -1,7 +1,8 @@
-import type { COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/cosmos';
+import type { COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/message/cosmos';
 import type { CosmosToken, CosmosType, GasRate } from '~/types/chain';
 import type { PublicKeyType } from '~/types/cosmos';
 import type { SignAminoDoc } from '~/types/cosmos/amino';
+import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 export type CosmosNoPopupMethodType = ValueOf<typeof COSMOS_NO_POPUP_METHOD_TYPE>;
@@ -20,6 +21,17 @@ export type CosSupportedChainNamesResponse = {
   unofficial: string[];
 };
 
+export type CosSupportedChainIds = {
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__SUPPORTED_CHAIN_IDS;
+  params?: undefined;
+  id?: number | string;
+};
+
+export type CosSupportedChainIdsResponse = {
+  official: string[];
+  unofficial: string[];
+};
+
 export type CosActivatedChainNames = {
   method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__ACTIVATED_CHAIN_NAMES;
   params?: undefined;
@@ -28,13 +40,21 @@ export type CosActivatedChainNames = {
 
 export type CosActivatedChainNamesResponse = string[];
 
+export type CosActivatedChainIds = {
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__ACTIVATED_CHAIN_IDS;
+  params?: undefined;
+  id?: number | string;
+};
+
+export type CosActivatedChainIdsResponse = string[];
+
 export type CosAccount = {
   method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__ACCOUNT | typeof COSMOS_NO_POPUP_METHOD_TYPE.TEN__ACCOUNT;
   params: { chainName: string };
   id?: number | string;
 };
 
-export type CosAccountResponse = { publicKey: Uint8Array; address: string; name: string; isLedger: boolean };
+export type CosAccountResponse = { publicKey: Uint8Array; address: string; name: string; isLedger: boolean; isEthermint: boolean };
 
 export type CosSendTransactionParams = {
   chainName: string;
@@ -47,6 +67,8 @@ export type CosSendTransaction = {
   params: CosSendTransactionParams;
   id?: number | string;
 };
+
+export type CosSendTransactionResponse = SendTransactionPayload;
 
 export type CosGetBalanceCW20Params = {
   chainName: string;

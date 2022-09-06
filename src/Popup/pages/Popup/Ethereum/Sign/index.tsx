@@ -4,7 +4,7 @@ import ActivateChainRequest from '~/Popup/components/requests/ActivateChainReque
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthSign } from '~/types/ethereum/message';
+import type { EthSign } from '~/types/message/ethereum';
 
 import Entry from './entry';
 import Layout from './layout';

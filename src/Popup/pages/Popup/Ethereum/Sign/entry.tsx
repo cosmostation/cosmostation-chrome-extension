@@ -21,7 +21,7 @@ import { sign, toUTF8 } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthSign, EthSignResponse } from '~/types/ethereum/message';
+import type { EthSign, EthSignResponse } from '~/types/message/ethereum';
 
 import {
   BottomButtonContainer,

@@ -41,8 +41,8 @@ import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthSendTransaction, EthSendTransactionResponse, EthSignTransaction, EthSignTransactionResponse } from '~/types/ethereum/message';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
+import type { EthSendTransaction, EthSendTransactionResponse, EthSignTransaction, EthSignTransactionResponse } from '~/types/message/ethereum';
 
 import FeeEIP1559Dialog from './components/FeeEIP1559Dialog';
 import GasPriceDialog from './components/GasPriceDialog';

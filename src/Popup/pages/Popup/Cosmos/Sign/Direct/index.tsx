@@ -7,7 +7,7 @@ import ActivateChainRequest from '~/Popup/components/requests/ActivateChainReque
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosSignDirect } from '~/types/cosmos/message';
+import type { CosSignDirect } from '~/types/message/cosmos';
 
 import Entry from './entry';
 import Layout from './layout';

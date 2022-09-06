@@ -1,5 +1,5 @@
 import type { DetermineTxType } from '~/Popup/utils/ethereum';
-import type { EthereumTx } from '~/types/ethereum/message';
+import type { EthereumTx } from '~/types/message/ethereum';
 
 import Approve from './messages/Approve';
 import Deploy from './messages/Deploy';

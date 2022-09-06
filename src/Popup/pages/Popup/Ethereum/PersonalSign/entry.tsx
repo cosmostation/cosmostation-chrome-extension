@@ -21,7 +21,7 @@ import { personalSign, toUTF8 } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { Queue } from '~/types/chromeStorage';
-import type { PersonalSign, PersonalSignResponse } from '~/types/ethereum/message';
+import type { PersonalSign, PersonalSignResponse } from '~/types/message/ethereum';
 
 import {
   BottomButtonContainer,
@@ -64,14 +64,14 @@ export default function Entry({ queue }: EntryProps) {
   const { message, messageId, origin } = queue;
   const { params } = message;
 
-  const dataToHex = toHex(params[1]);
+  const dataToHex = toHex(params[0]);
   const hexToUTF8 = toUTF8(dataToHex);
 
   useEffect(() => {
     void (async () => {
       const address = getAddress(chain, keyPair?.publicKey);
 
-      if (address.toLowerCase() !== params[0].toLowerCase()) {
+      if (address.toLowerCase() !== params[1].toLowerCase()) {
         responseToWeb({
           response: {
             error: {
@@ -144,7 +144,7 @@ export default function Entry({ queue }: EntryProps) {
                       throw new Error('Unknown Error');
                     }
 
-                    return personalSign(dataToHex, keyPair.privateKey);
+                    return personalSign(`0x${dataToHex}`, keyPair.privateKey);
                   }
 
                   if (currentAccount.type === 'LEDGER') {

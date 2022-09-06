@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import type { DetermineTxType } from '~/Popup/utils/ethereum';
 import { determineTxType } from '~/Popup/utils/ethereum';
 import type { EthereumChain } from '~/types/chain';
-import type { EthereumTx } from '~/types/ethereum/message';
+import type { EthereumTx } from '~/types/message/ethereum';
 
 export function useDetermineTxTypeSWR(tx: EthereumTx, config?: SWRConfiguration) {
   const fetcher = (params: { ethereumChain: EthereumChain; ethereumTx: EthereumTx }) => determineTxType(params.ethereumTx);
