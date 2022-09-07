@@ -1193,7 +1193,12 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
 
         if (method === 'eth_requestAccounts' || method === 'wallet_requestPermissions') {
-          if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+          if (
+            currentAllowedChains.find((item) => item.id === chain.id) &&
+            currentAccountAllowedOrigins.includes(origin) &&
+            currentPassword &&
+            (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey))
+          ) {
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
@@ -1444,7 +1449,12 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
       } else if (ethereumNoPopupMethods.includes(method)) {
         if (method === 'eth_accounts') {
-          if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+          if (
+            currentAllowedChains.find((item) => item.id === chain.id) &&
+            currentAccountAllowedOrigins.includes(origin) &&
+            currentPassword &&
+            (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey))
+          ) {
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
