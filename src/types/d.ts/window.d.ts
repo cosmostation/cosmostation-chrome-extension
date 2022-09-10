@@ -61,6 +61,7 @@ interface Window {
 
 type Ethereum = {
   request: (message: import('~/types/message').EthereumRequestMessage) => Promise<T>;
+  send: (method: string, params: unknown) => Promise<T>;
   on: (eventName: import('~/types/message').EthereumListenerType, eventHandler: (event?: unknown) => void) => void;
   off: (
     eventName: import('~/types/message').EthereumListenerType | ((event: MessageEvent<ListenerMessage>) => void),

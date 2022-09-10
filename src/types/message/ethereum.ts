@@ -42,6 +42,8 @@ export type EthRequestPermissions = {
 
 export type EthRequestPermissionsResponse = string[];
 
+export type EthCoinbaseResponse = string | null;
+
 export type EthSignParams = [string, string];
 
 export type EthSign = {

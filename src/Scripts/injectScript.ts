@@ -139,6 +139,37 @@ void (() => {
             message,
           });
         }),
+      send: (method: string, params: unknown) =>
+        new Promise((res, rej) => {
+          const messageId = uuidv4();
+
+          const handler = (event: MessageEvent<ContentScriptToWebEventMessage<ResponseMessage, EthereumRequestMessage>>) => {
+            if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
+              window.removeEventListener('message', handler);
+
+              const { data } = event;
+
+              if (data.response?.error) {
+                rej(data.response);
+              } else {
+                res({ result: (data.response.result as string[]).map((item) => item.toLowerCase()), jsonrpc: '2.0', id: undefined });
+              }
+            }
+          };
+
+          window.addEventListener('message', handler);
+
+          window.postMessage({
+            isCosmostation: true,
+            line: LINE_TYPE.ETHEREUM,
+            type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+            messageId,
+            message: {
+              method,
+              params,
+            },
+          });
+        }),
       enable: () => window.cosmostation.ethereum.request({ method: 'eth_requestAccounts', params: [] }) as Promise<EthRequestAccountsResponse>,
     },
     cosmos: {
@@ -371,6 +402,7 @@ void (() => {
       on: window.cosmostation.ethereum.on,
       removeListener: window.cosmostation.ethereum.removeListener,
       request: window.cosmostation.ethereum.request,
+      send: window.cosmostation.ethereum.send,
     },
     keplr: {
       version: '0.0.0',

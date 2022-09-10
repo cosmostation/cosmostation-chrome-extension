@@ -27,10 +27,10 @@ export const ETHEREUM_POPUP_METHOD_TYPE = {
 
 export const ETHEREUM_NO_POPUP_METHOD_TYPE = {
   ETH__ACCOUNTS: 'eth_accounts',
+  ETH__COINBASE: 'eth_coinbase',
   ETH__BLOCK_NUMBER: 'eth_blockNumber',
   ETH__CALL: 'eth_call',
   ETH__CHAIN_ID: 'eth_chainId',
-  ETH__COINBASE: 'eth_coinbase',
   ETH__DECRYPT: 'eth_decrypt',
   ETH__ESTIMATE_GAS: 'eth_estimateGas',
   ETH__FEE_HISTORY: 'eth_feeHistory',

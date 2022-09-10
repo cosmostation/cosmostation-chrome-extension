@@ -52,6 +52,7 @@ import type {
   CustomTypedMessage,
   EthcAddNetwork,
   EthcAddTokens,
+  EthCoinbaseResponse,
   EthcSwitchNetwork,
   EthcSwitchNetworkResponse,
   EthRequestAccountsResponse,
@@ -1459,6 +1460,37 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             const address = getAddress(chain, keyPair?.publicKey);
 
             const result: EthRequestAccountsResponse = address ? [address] : [];
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          } else {
+            const result: EthRequestAccountsResponse = [];
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          }
+        } else if (method === 'eth_coinbase') {
+          if (
+            currentAllowedChains.find((item) => item.id === chain.id) &&
+            currentAccountAllowedOrigins.includes(origin) &&
+            currentPassword &&
+            (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey))
+          ) {
+            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+            const address = getAddress(chain, keyPair?.publicKey);
+
+            const result: EthCoinbaseResponse = address || null;
 
             responseToWeb({
               response: {
