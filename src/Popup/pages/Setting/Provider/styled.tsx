@@ -5,6 +5,8 @@ export const Container = styled('div')({
   height: '100%',
 
   padding: '0.8rem 1.6rem 0',
+
+  position: 'relative',
 });
 
 export const ListContainer = styled('div')({
@@ -17,3 +19,30 @@ export const ListContainer = styled('div')({
 
   overflow: 'auto',
 });
+
+export const BottomDescriptionContainer = styled('div')(({ theme }) => ({
+  backgroundColor: theme.colors.base02,
+
+  borderRadius: '0.8rem',
+
+  padding: '1.2rem 1.2rem 1.2rem 1.6rem',
+
+  display: 'flex',
+
+  columnGap: '0.4rem',
+
+  position: 'absolute',
+  bottom: '1.6rem',
+  left: '1.6rem',
+  right: '1.6rem',
+}));
+
+export const BottomDescriptionInfoIconContainer = styled('div')(({ theme }) => ({
+  '& > svg': {
+    fill: theme.accentColors.purple01,
+  },
+}));
+
+export const BottomDescriptionTextContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+}));

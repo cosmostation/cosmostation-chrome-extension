@@ -1,12 +1,19 @@
+import { Typography } from '@mui/material';
+
 import keplrImg from '~/images/etc/keplr.png';
 import metamaskImg from '~/images/etc/metamask.png';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import Item from './components/Item';
-import { Container, ListContainer } from './styled';
+import { BottomDescriptionContainer, BottomDescriptionInfoIconContainer, BottomDescriptionTextContainer, Container, ListContainer } from './styled';
+
+import Info16Icon from '~/images/icons/Info16.svg';
 
 export default function Entry() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
+
+  const { t } = useTranslation();
 
   const { providers } = chromeStorage;
 
@@ -36,6 +43,14 @@ export default function Entry() {
           Keplr
         </Item>
       </ListContainer>
+      <BottomDescriptionContainer>
+        <BottomDescriptionInfoIconContainer>
+          <Info16Icon />
+        </BottomDescriptionInfoIconContainer>
+        <BottomDescriptionTextContainer>
+          <Typography variant="h6">{t('pages.Setting.Provider.entry.description')}</Typography>
+        </BottomDescriptionTextContainer>
+      </BottomDescriptionContainer>
     </Container>
   );
 }
