@@ -4,6 +4,7 @@ import { useSnackbar } from 'notistack';
 import { useSetRecoilState } from 'recoil';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
+import { Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/IconButton';
@@ -14,7 +15,15 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import HDPathDialog from '~/Popup/pages/Account/components/HDPathDialog';
 import { disposableLoadingState } from '~/Popup/recoils/loading';
 
-import { BottomContainer, BottomSettingButtonContainer, Container, InputContainer, StyledInput48 } from './styled';
+import {
+  BottomContainer,
+  BottomGuideButton,
+  BottomGuideButtonContainer,
+  BottomSettingButtonContainer,
+  Container,
+  InputContainer,
+  StyledInput48,
+} from './styled';
 import type { LedgerForm } from './useSchema';
 import { useSchema } from './useSchema';
 
@@ -91,6 +100,14 @@ export default function Entry() {
             </div>
           </InputContainer>
           <BottomContainer>
+            <BottomGuideButtonContainer>
+              <BottomGuideButton
+                type="button"
+                onClick={() => window.open('https://docs.cosmostation.io/docs/User%20Guide/Cosmostation%20Extension/Account/add-ledger-account')}
+              >
+                <Typography variant="h5">{t('pages.Account.Create.New.Ledger.entry.guideButton')}</Typography>
+              </BottomGuideButton>
+            </BottomGuideButtonContainer>
             <BottomSettingButtonContainer>
               <IconButton Icon={Setting16Icon} onClick={() => setIsOpenHDPathDialog(true)}>
                 {t('pages.Account.Create.New.Ledger.entry.hdPathSetting')}

@@ -33,6 +33,24 @@ export const BottomSettingButtonContainer = styled('div')({
   marginBottom: '2.4rem',
 });
 
+export const BottomGuideButtonContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  marginBottom: '2.4rem',
+});
+
+export const BottomGuideButton = styled('button')(({ theme }) => ({
+  padding: 0,
+  border: 0,
+  backgroundColor: 'transparent',
+
+  borderBottom: `0.1rem solid ${theme.accentColors.purple01}`,
+
+  color: theme.accentColors.purple01,
+}));
+
 export const StyledInput48 = styled(Input)({
   height: '4.8rem',
 });

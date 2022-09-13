@@ -143,6 +143,7 @@
             "entry": {
               "accountNamePlaceholder": "계정 이름",
               "done": "확인",
+              "guideButton": "Ledger 계정 생성 가이드",
               "hdPathSetting": "HD path 세팅"
             },
             "layout": {
