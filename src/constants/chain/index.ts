@@ -40,6 +40,7 @@ import { SHENTU } from './cosmos/shentu';
 import { SIF } from './cosmos/sif';
 import { STARGAZE } from './cosmos/stargaze';
 import { STARNAME } from './cosmos/starname';
+import { STRIDE } from './cosmos/stride';
 import { TGRADE } from './cosmos/tgrade';
 import { UMEE } from './cosmos/umee';
 import { ETHEREUM } from './ethereum/ethereum';
@@ -104,6 +105,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   SIF,
   STARGAZE,
   STARNAME,
+  STRIDE,
   TGRADE,
   UMEE,
 ];
