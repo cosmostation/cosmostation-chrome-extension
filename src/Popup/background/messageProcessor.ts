@@ -1445,7 +1445,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               throw err;
             }
 
-            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+            throw new EthereumRPCError(
+              RPC_ERROR.INVALID_PARAMS,
+              `Unrecognized chain ID ${params?.[0]?.chainId}. Try adding the chain using wallet_addEthereumChain first.`,
+              message.id,
+            );
           }
         }
       } else if (ethereumNoPopupMethods.includes(method)) {
