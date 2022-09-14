@@ -38,6 +38,7 @@ import { SECRET } from './cosmos/secret';
 import { SENTINEL } from './cosmos/sentinel';
 import { SHENTU } from './cosmos/shentu';
 import { SIF } from './cosmos/sif';
+import { SOMMELIER } from './cosmos/sommelier';
 import { STARGAZE } from './cosmos/stargaze';
 import { STARNAME } from './cosmos/starname';
 import { TGRADE } from './cosmos/tgrade';
@@ -102,6 +103,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   SENTINEL,
   SHENTU,
   SIF,
+  SOMMELIER,
   STARGAZE,
   STARNAME,
   TGRADE,
