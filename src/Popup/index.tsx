@@ -11,6 +11,7 @@ import Grow from '@mui/material/Grow';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { THEME_TYPE } from '~/constants/theme';
+import LoadingLedgerSigning from '~/Popup/components/Loading/LedgerSigning';
 import LoadingOverlay from '~/Popup/components/Loading/Overlay';
 import Wrapper from '~/Popup/components/Wrapper';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -46,6 +47,7 @@ function Popup() {
           >
             <Routes />
             <LoadingOverlay />
+            <LoadingLedgerSigning />
           </SnackbarProvider>
         </Wrapper>
       </HashRouter>

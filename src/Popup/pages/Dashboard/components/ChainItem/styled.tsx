@@ -9,6 +9,8 @@ export const ButtonContainer = styled('div')({
 
 export const StyledButton = styled('button')(({ theme }) => ({
   width: '100%',
+  minHeight: '5.8rem',
+
   backgroundColor: theme.colors.base02,
   border: `0.1rem solid ${theme.colors.base02}`,
 
@@ -24,6 +26,11 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   '&:hover': {
     border: `0.1rem solid ${theme.colors.base04}`,
+  },
+
+  '&:disabled:hover': {
+    cursor: 'default',
+    border: `0.1rem solid ${theme.colors.base02}`,
   },
 }));
 
@@ -120,3 +127,27 @@ export const RightTextChangeRateContainer = styled('div')<RightTextChangeRateCon
 export const StyledAbsoluteLoading = styled(AbsoluteLoading)({
   borderRadius: '0.8rem',
 });
+
+export const LedgerCheckConnectContainer = styled('div')(({ theme }) => ({
+  padding: '0.35rem 0.8rem 0.35rem 0.6rem',
+  border: `0.1rem solid ${theme.colors.base04}`,
+  borderRadius: '5rem',
+
+  display: 'flex',
+  alignItems: 'center',
+
+  '& > svg > path': {
+    fill: theme.colors.base06,
+  },
+}));
+
+export const LedgerCheckConnectTextContainer = styled('div')(({ theme }) => ({
+  marginLeft: '0.2rem',
+
+  color: theme.colors.text01,
+}));
+
+export const LedgerCheckNotSupportedTextContainer = styled('div')(({ theme }) => ({
+  padding: '0.35rem 0.8rem',
+  color: theme.colors.text02,
+}));

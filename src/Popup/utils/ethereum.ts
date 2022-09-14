@@ -2,15 +2,17 @@ import { Address, ecsign, hashPersonalMessage, isHexString, stripHexPrefix, toBu
 import * as TinySecp256k1 from 'tiny-secp256k1';
 import type { TransactionDescription } from '@ethersproject/abi';
 import { Interface } from '@ethersproject/abi';
+import type { MessageTypes, SignTypedDataVersion, TypedMessage } from '@metamask/eth-sig-util';
+import { signTypedData as baseSignTypedData } from '@metamask/eth-sig-util';
 
 import { ERC20_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { chromeStorage } from '~/Popup/utils/chromeStorage';
 import { EthereumRPCError } from '~/Popup/utils/error';
-import { isEqualsIgnoringCase } from '~/Popup/utils/string';
+import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumTxType } from '~/types/ethereum/common';
-import type { EthereumTx } from '~/types/ethereum/message';
+import type { CustomTypedMessage, EthereumTx } from '~/types/message/ethereum';
 
 export function toUTF8(hex: string) {
   return Buffer.from(stripHexPrefix(hex), 'hex').toString('utf8');
@@ -144,4 +146,13 @@ export async function readAddressAsContract(address: string) {
 
   const isContractAddress = !!(contractCode && contractCode !== '0x' && contractCode !== '0x0');
   return { contractCode, isContractAddress };
+}
+
+export function signTypedData<T extends MessageTypes>(
+  privateKey: Buffer,
+  data: CustomTypedMessage<T>,
+  version: SignTypedDataVersion.V3 | SignTypedDataVersion.V4,
+) {
+  const dataToSign = (data.domain.salt ? { ...data, domain: { ...data.domain, salt: Buffer.from(toHex(data.domain.salt), 'hex') } } : data) as TypedMessage<T>;
+  return baseSignTypedData({ privateKey, data: dataToSign, version });
 }

@@ -5,6 +5,7 @@ import { ethereumAddressRegex, getCosmosAddressRegex } from '~/Popup/utils/regex
 import type { CosmosChain, GasRate } from '~/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Amount } from '~/types/cosmos/common';
+import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type {
   CosAddChain,
   CosAddTokensCW20,
@@ -16,18 +17,15 @@ import type {
   CosSetAutoSign,
   CosSignAmino,
   CosSignDirect,
-} from '~/types/cosmos/message';
-import type { SignDirectDoc } from '~/types/cosmos/proto';
+} from '~/types/message/cosmos';
 import type {
-  CustomChain,
   EthcAddNetwork,
   EthcAddTokens,
-  EthereumTxCommon,
   EthSignTransaction,
   WalletAddEthereumChain,
   WalletSwitchEthereumChain,
   WalletWatchAsset,
-} from '~/types/ethereum/message';
+} from '~/types/message/ethereum';
 
 import { getChainIdRegex } from '../utils/common';
 
@@ -288,15 +286,16 @@ export const walletAddEthereumChainParamsSchema = () =>
       Joi.object<WalletAddEthereumChain['params'][0]>({
         chainId: Joi.string().label('chainId').trim().required(),
         chainName: Joi.string().label('chainName').trim().required(),
-        rpcUrls: Joi.array().label('rpcUrls').items(Joi.string().required()).length(1).required(),
-        blockExplorerUrls: Joi.array().label('blockExplorerUrls').items(Joi.string().required()).length(1).optional(),
-        iconUrls: Joi.array().label('iconUrls').items(Joi.string().required()).length(1).optional(),
+        rpcUrls: Joi.array().label('rpcUrls').items(Joi.string().required()).required(),
+        blockExplorerUrls: Joi.array().label('blockExplorerUrls').items(Joi.string().required()).optional(),
+        iconUrls: Joi.array().label('iconUrls').items(Joi.string().required()).optional(),
         nativeCurrency: Joi.object<WalletAddEthereumChain['params'][0]['nativeCurrency']>({
           name: Joi.string().required(),
           symbol: Joi.string().required(),
           decimals: Joi.number().required(),
         })
           .label('nativeCurrency')
+          .unknown(true)
           .required(),
         coinGeckoId: Joi.string().optional(),
       }).required(),
@@ -337,7 +336,7 @@ export const personalSignParamsSchema = () =>
   Joi.array()
     .label('params')
     .required()
-    .items(Joi.string().label('dataToSign').required(), Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.optional());
+    .items(Joi.string().label('dataToSign').required(), Joi.optional(), Joi.string().label('address').pattern(ethereumAddressRegex).required());
 
 export const ethSignTransactionParamsSchema = () =>
   Joi.array()
@@ -348,22 +347,15 @@ export const ethSignTransactionParamsSchema = () =>
         from: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         to: Joi.string().optional(),
         nonce: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
-        chainId: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         data: Joi.string().optional(),
         maxFeePerGas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         maxPriorityFeePerGas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         value: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         gas: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         gasPrice: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
-        chain: Joi.string().optional(),
-        hardfork: Joi.string().optional(),
-        common: Joi.object<EthereumTxCommon>({
-          customChain: Joi.object<CustomChain>({
-            name: Joi.string().optional(),
-            networkId: Joi.number().required(),
-            chainId: Joi.number().required(),
-          }).required(),
-        }).optional(),
+        r: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        s: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
+        v: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
       }).required(),
     );
 
@@ -390,7 +382,7 @@ export const WalletWatchAssetParamsSchema = () =>
       address: Joi.string().pattern(ethereumAddressRegex).required(),
       decimals: Joi.number().required(),
       symbol: Joi.string().required(),
-      image: Joi.string().optional(),
+      image: Joi.optional(),
       coinGeckoId: Joi.string().optional(),
     }),
   }).required();

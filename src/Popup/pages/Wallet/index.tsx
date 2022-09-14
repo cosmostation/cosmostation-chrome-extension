@@ -1,5 +1,5 @@
-import AccessRequest from '~/Popup/components/AccessRequest';
 import Lock from '~/Popup/components/Lock';
+import AccessRequest from '~/Popup/components/requests/AccessRequest';
 
 import Entry from './Entry';
 import Layout from './layout';

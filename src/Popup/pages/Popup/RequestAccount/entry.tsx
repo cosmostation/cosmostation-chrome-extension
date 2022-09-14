@@ -8,8 +8,9 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { CosRequestAccountResponse } from '~/types/cosmos/message';
-import type { EthRequestAccountsResponse } from '~/types/ethereum/message';
+import type { CosmosChain } from '~/types/chain';
+import type { CosRequestAccountResponse } from '~/types/message/cosmos';
+import type { EthRequestAccountsResponse } from '~/types/message/ethereum';
 
 export default function Entry() {
   const { currentQueue, deQueue } = useCurrentQueue();
@@ -25,7 +26,7 @@ export default function Entry() {
 
       const allChains = [...CHAINS, ...additionalChains];
 
-      const chain = allChains.find((item) => item.chainName === message.params.chainName);
+      const chain = allChains.find((item) => item.chainName === message.params.chainName) as CosmosChain | undefined;
 
       if (chain) {
         const keyPair = getKeyPair(currentAccount, chain, currentPassword);
@@ -33,7 +34,13 @@ export default function Entry() {
 
         const publicKey = keyPair?.publicKey.toString('hex');
 
-        const result: CosRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccount.name };
+        const result: CosRequestAccountResponse = {
+          address,
+          publicKey: publicKey as unknown as Uint8Array,
+          name: currentAccount.name,
+          isLedger: currentAccount.type === 'LEDGER',
+          isEthermint: chain.type === 'ETHERMINT',
+        };
 
         responseToWeb({
           response: {
@@ -48,7 +55,7 @@ export default function Entry() {
       }
     }
 
-    if (currentQueue?.message.method === 'eth_requestAccounts' && currentPassword) {
+    if ((currentQueue?.message.method === 'eth_requestAccounts' || currentQueue?.message.method === 'wallet_requestPermissions') && currentPassword) {
       const { message, messageId, origin } = currentQueue;
       const chain = ETHEREUM;
 

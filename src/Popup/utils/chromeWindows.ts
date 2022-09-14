@@ -15,16 +15,21 @@ export async function openWindow(): Promise<chrome.windows.Window | undefined> {
 
   const windowIds = Array.from(new Set(currentWindowIds));
 
-  const currentWindows = windowIds
-    .map(async (item) => {
-      const window = await getWindow(item);
-      return window;
-    })
-    .filter((item) => item !== undefined) as Promise<chrome.windows.Window>[];
+  const currentWindows = (
+    await Promise.all(
+      windowIds.map(async (item) => {
+        const window = await getWindow(item);
+        return window;
+      }),
+    )
+  ).filter((item) => item !== undefined);
 
   return new Promise((res, rej) => {
     if (currentWindows.length > 0) {
       res(currentWindows[0]);
+      if (currentWindows[0]?.id) {
+        void chrome.windows.update(currentWindows[0].id, { focused: true });
+      }
       return;
     }
 
@@ -71,6 +76,18 @@ export function getWindow(windowId: number): Promise<chrome.windows.Window | und
 
       const specificWindow = windows.find((window) => window.id === windowId);
       res(specificWindow);
+    });
+  });
+}
+
+export function getCurrentWindow(): Promise<chrome.windows.Window | undefined> {
+  return new Promise((res, rej) => {
+    chrome.windows.getCurrent((windows) => {
+      if (chrome.runtime.lastError) {
+        rej(chrome.runtime.lastError);
+      }
+
+      res(windows);
     });
   });
 }

@@ -3,8 +3,8 @@ import { useRecoilState } from 'recoil';
 
 import BaseLayout from '~/Popup/components/BaseLayout';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { useLoadingOverlay } from '~/Popup/hooks/useLoadingOverlay';
-import { disposableLoadingState } from '~/Popup/recoils/loadingOverlay';
+import { useLoading } from '~/Popup/hooks/useLoading';
+import { disposableLoadingState } from '~/Popup/recoils/loading';
 
 type LayoutProps = {
   children: JSX.Element;
@@ -12,7 +12,7 @@ type LayoutProps = {
 
 export default function Layout({ children }: LayoutProps) {
   const [isAlready, setIsAlready] = useRecoilState(disposableLoadingState);
-  const setLoadingOverlay = useLoadingOverlay();
+  const { setLoadingOverlay } = useLoading();
 
   const { setChromeStorage } = useChromeStorage();
 

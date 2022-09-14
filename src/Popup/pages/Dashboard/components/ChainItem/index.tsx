@@ -11,6 +11,9 @@ import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 
 import {
   ButtonContainer,
+  LedgerCheckConnectContainer,
+  LedgerCheckConnectTextContainer,
+  LedgerCheckNotSupportedTextContainer,
   LeftContainer,
   LeftImageContainer,
   LeftTextChainAmountContainer,
@@ -27,6 +30,7 @@ import {
   StyledIconButton,
 } from './styled';
 
+import Ledger14Icon from '~/images/icons/Ledger14.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
 
 type ChainItemProps = {
@@ -165,5 +169,38 @@ export function ChainItemError({ chainName, imageURL, onClick, onClickRetry }: C
       </RightButtonContainer>
       {isLoading && <StyledAbsoluteLoading size="2rem" />}
     </ButtonContainer>
+  );
+}
+
+type ChainItemLedgerCheckProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'> & { isSupported?: boolean };
+
+export function ChainItemLedgerCheck({ chainName, imageURL, isSupported, onClick }: ChainItemLedgerCheckProps) {
+  return (
+    <StyledButton onClick={onClick} disabled={!isSupported}>
+      <LeftContainer>
+        <LeftImageContainer>
+          <Image src={imageURL} />
+        </LeftImageContainer>
+        <LeftTextContainer>
+          <LeftTextChainContainer>
+            <Typography variant="h5">{chainName}</Typography>
+          </LeftTextChainContainer>
+        </LeftTextContainer>
+      </LeftContainer>
+      <RightContainer>
+        {isSupported ? (
+          <LedgerCheckConnectContainer>
+            <Ledger14Icon />
+            <LedgerCheckConnectTextContainer>
+              <Typography variant="h6">Connect</Typography>
+            </LedgerCheckConnectTextContainer>
+          </LedgerCheckConnectContainer>
+        ) : (
+          <LedgerCheckNotSupportedTextContainer>
+            <Typography variant="h6">Not supported</Typography>
+          </LedgerCheckNotSupportedTextContainer>
+        )}
+      </RightContainer>
+    </StyledButton>
   );
 }

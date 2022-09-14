@@ -41,9 +41,11 @@ import DarkMode24Icon from '~/images/icons/DarkMode24.svg';
 import Guide24Icon from '~/images/icons/Guide24.svg';
 import HelpIcon from '~/images/icons/Help.svg';
 import LanguageChangeIcon from '~/images/icons/LanguageChange.svg';
+import Ledger24Icon from '~/images/icons/Ledger24.svg';
 import Lock16 from '~/images/icons/Lock16.svg';
 import Logo24Icon from '~/images/icons/Logo28.svg';
 import PasswordChangeIcon from '~/images/icons/PasswordChange.svg';
+import Provider24Icon from '~/images/icons/Provider24.svg';
 
 type DrawerProps = Omit<BaseDrawerProps, 'children'>;
 
@@ -117,6 +119,14 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
 
             <ItemButton Icon={PasswordChangeIcon} onClick={() => navigate('/setting/change-password', { isDuplicateCheck: true })}>
               {t('components.Header.Drawer.index.changePassword')}
+            </ItemButton>
+
+            <ItemButton Icon={Ledger24Icon} onClick={() => navigate('/setting/ledger', { isDuplicateCheck: true })}>
+              {t('components.Header.Drawer.index.ledger')}
+            </ItemButton>
+
+            <ItemButton Icon={Provider24Icon} onClick={() => navigate('/setting/provider', { isDuplicateCheck: true })}>
+              {t('components.Header.Drawer.index.provider')}
             </ItemButton>
 
             <ItemButton Icon={Guide24Icon} onClick={() => window.open('https://docs.cosmostation.io/docs/User%20Guide/Cosmostation%20Extension/introduction')}>

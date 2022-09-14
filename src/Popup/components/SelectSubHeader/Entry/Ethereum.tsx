@@ -35,13 +35,12 @@ export default function Ethereum({ chain, isShowChain }: EthereumProps) {
     <Container>
       <LeftContentContainer>
         <AccountButton
+          account={currentAccount}
           onClick={(event) => {
             setPopover('account');
             setPopoverAnchorEl(event.currentTarget);
           }}
-        >
-          {currentAccount.name}
-        </AccountButton>
+        />
       </LeftContentContainer>
       <RightContentContainer>
         {isShowChain && (

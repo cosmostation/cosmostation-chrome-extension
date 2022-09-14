@@ -1,23 +1,5 @@
 {
   "components": {
-    "AccessRequest": {
-      "index": {
-        "downDescription": "By approving this request, the website will:",
-        "downItem1": "Know your wallet address",
-        "downItem2": "Request signatures for transactions",
-        "downItem3": "Encrypt/Decrypt messages",
-        "upDescription1": "is",
-        "upDescription2": "requesting to connect to your ",
-        "upDescription3": " account"
-      }
-    },
-    "ActivateChainRequest": {
-      "index": {
-        "description1": "Do you want to activate",
-        "description2": "blockchain",
-        "description3": "to the Cosmostation?"
-      }
-    },
     "AddressBookBottomSheet": {
       "index": {
         "addAddressButton": "Add address",
@@ -71,7 +53,17 @@
           "guide": "Guide",
           "helpSupport": "Help & Support",
           "language": "Language",
-          "lock": "Lock"
+          "ledger": "Ledger",
+          "lock": "Lock",
+          "provider": "Provider"
+        }
+      }
+    },
+    "Loading": {
+      "LedgerToPopup": {
+        "index": {
+          "continue": "Continue",
+          "description": "Complete the process on browser pop-up"
         }
       }
     },
@@ -98,6 +90,36 @@
           "tiny": "Tiny"
         }
       }
+    },
+    "requests": {
+      "AccessRequest": {
+        "index": {
+          "downDescription": "By approving this request, the website will:",
+          "downItem1": "Know your wallet address",
+          "downItem2": "Request signatures for transactions",
+          "downItem3": "Encrypt/Decrypt messages",
+          "upDescription1": "is",
+          "upDescription2": "requesting to connect to your ",
+          "upDescription3": " account"
+        }
+      },
+      "ActivateChainRequest": {
+        "index": {
+          "description1": "Do you want to activate",
+          "description2": "blockchain",
+          "description3": "to the Cosmostation?"
+        }
+      },
+      "LedgerPublicKeyRequest": {
+        "index": {
+          "cancelButton": "Cancel",
+          "completeButton": "Complete",
+          "step1Description": "Unlock your Ledger",
+          "step2Description1": "Open ",
+          "step2Description2": " app on Ledger",
+          "title": "Connect Ledger"
+        }
+      }
     }
   },
   "pages": {
@@ -117,6 +139,17 @@
           }
         },
         "New": {
+          "Ledger": {
+            "entry": {
+              "accountNamePlaceholder": "Account name",
+              "done": "Done",
+              "guideButton": "Ledger setup guide",
+              "hdPathSetting": "HD path setting"
+            },
+            "layout": {
+              "title": "Create a new ledger account"
+            }
+          },
           "Mnemonic": {
             "Step1": {
               "entry": {
@@ -156,6 +189,7 @@
         },
         "entry": {
           "createAccount": "Create a new account",
+          "createLedgerAccount": "Create a new ledger account",
           "importMnemonic": "Import mnemonics",
           "importPrivateKey": "Import Private Key"
         },
@@ -509,10 +543,10 @@
             },
             "entry": {
               "cancelButton": "Cancel",
-              "confirmButton": "Confirm",
               "dataTab": "Data",
               "detailTab": "Details",
-              "failedTransfer": "Failed to transfer"
+              "failedTransfer": "Failed to transfer",
+              "signButton": "Sign"
             }
           },
           "Direct": {
@@ -752,6 +786,19 @@
         "layout": {
           "title": "Connected sites"
         }
+      },
+      "Ledger": {
+        "layout": {
+          "title": "Ledger"
+        }
+      },
+      "Provider": {
+        "entry": {
+          "description": "Provider service gets activated when the selected wallet extensions are switched off on chrome://extensions or not installed on your PC"
+        },
+        "layout": {
+          "title": "Provider"
+        }
       }
     },
     "Wallet": {
@@ -866,6 +913,14 @@
               "customNetwork": "Custom network",
               "title": "Select a network"
             }
+          }
+        },
+        "LedgerCheck": {
+          "index": {
+            "connect": "Connect",
+            "connectDescription": "Connect your Ledger harware wallet to your computer and press \"Connect\"",
+            "notSupportedDescription": "This network is not supported on Ledger hardware wallet. Please proceed with mnemonics or private key.",
+            "notSupportedTitle": "Not supported"
           }
         },
         "cosmos": {

@@ -52,3 +52,28 @@ export class CosmosRPCError extends Error {
     Object.setPrototypeOf(this, CosmosRPCError.prototype);
   }
 }
+
+export class CommonRPCError extends Error {
+  public code: number;
+
+  public id?: string | number;
+
+  public rpcMessage: unknown;
+
+  constructor(code: number, message: string) {
+    super(message);
+    this.name = 'CommonRPCError';
+    this.code = code;
+
+    const errorMessage = {
+      error: {
+        code,
+        message,
+      },
+    };
+
+    this.rpcMessage = errorMessage;
+
+    Object.setPrototypeOf(this, CommonRPCError.prototype);
+  }
+}

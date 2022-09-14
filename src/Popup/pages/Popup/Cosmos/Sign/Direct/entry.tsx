@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useSnackbar } from 'notistack';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
@@ -21,8 +22,8 @@ import { decodeProtobufMessage } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, FeeCoin } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosSignDirect, CosSignDirectResponse } from '~/types/cosmos/message';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
+import type { CosSignDirect, CosSignDirectResponse } from '~/types/message/cosmos';
 
 import TxMessage from './components/TxMessage';
 import { BottomButtonContainer, BottomContainer, Container, ContentsContainer, FeeContainer, MemoContainer, PaginationContainer, TabContainer } from './styled';
@@ -41,7 +42,9 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { deQueue } = useCurrentQueue();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
-  const assets = useAssetsSWR(chain);
+  const assets = useAssetsSWR(chain, { suspense: true });
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const { t } = useTranslation();
 
@@ -138,11 +141,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   return (
     <Container>
-      <PopupHeader
-        account={{ id: currentAccount.id, name: currentAccount.name, address }}
-        chain={{ name: chain.chainName, imageURL: chain.imageURL }}
-        origin={origin}
-      />
+      <PopupHeader account={{ ...currentAccount, address }} chain={{ name: chain.chainName, imageURL: chain.imageURL }} origin={origin} />
       <ContentsContainer>
         <TabContainer>
           <Tabs value={value} onChange={handleChange} variant="fullWidth">
@@ -202,35 +201,46 @@ export default function Entry({ queue, chain }: EntryProps) {
           </OutlineButton>
           <Button
             onClick={async () => {
-              const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
+              try {
+                if (!keyPair?.privateKey) {
+                  throw new Error('Unknown Error');
+                }
+                const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
 
-              const signature = signDirect(signedDoc, keyPair!.privateKey, chain);
+                const signature = signDirect(signedDoc, keyPair.privateKey, chain);
 
-              const base64Signature = Buffer.from(signature).toString('base64');
+                const base64Signature = Buffer.from(signature).toString('base64');
 
-              const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
+                const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
 
-              const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
+                const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
 
-              const signedDocHex = { ...doc, body_bytes: Buffer.from(bodyBytes).toString('hex'), auth_info_bytes: Buffer.from(authInfoBytes).toString('hex') };
-              const pubKey = { type: publicKeyType, value: base64PublicKey };
+                const signedDocHex = {
+                  ...doc,
+                  body_bytes: Buffer.from(bodyBytes).toString('hex'),
+                  auth_info_bytes: Buffer.from(authInfoBytes).toString('hex'),
+                };
+                const pubKey = { type: publicKeyType, value: base64PublicKey };
 
-              const result: CosSignDirectResponse = {
-                signature: base64Signature,
-                pub_key: pubKey,
-                signed_doc: signedDocHex as unknown as SignDirectDoc,
-              };
+                const result: CosSignDirectResponse = {
+                  signature: base64Signature,
+                  pub_key: pubKey,
+                  signed_doc: signedDocHex as unknown as SignDirectDoc,
+                };
 
-              responseToWeb({
-                response: {
-                  result,
-                },
-                message,
-                messageId,
-                origin,
-              });
+                responseToWeb({
+                  response: {
+                    result,
+                  },
+                  message,
+                  messageId,
+                  origin,
+                });
 
-              await deQueue();
+                await deQueue();
+              } catch (e) {
+                enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+              }
             }}
           >
             {t('pages.Popup.Cosmos.Sign.Direct.entry.confirmButton')}

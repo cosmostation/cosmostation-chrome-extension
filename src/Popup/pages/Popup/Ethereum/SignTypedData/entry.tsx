@@ -1,23 +1,30 @@
 import { useEffect } from 'react';
 import YAML from 'js-yaml';
-import type { MessageTypes, TypedMessage } from '@metamask/eth-sig-util';
-import { signTypedData, SignTypedDataVersion } from '@metamask/eth-sig-util';
+import { useSnackbar } from 'notistack';
+import EthereumApp from '@ledgerhq/hw-app-eth';
+import type { MessageTypes } from '@metamask/eth-sig-util';
+import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { Typography } from '@mui/material';
 
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
+import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
+import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { signTypedData } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthSignTypedData, EthSignTypedDataResponse } from '~/types/ethereum/message';
+import type { CustomTypedMessage, EthSignTypedData, EthSignTypedDataResponse } from '~/types/message/ethereum';
 
 import {
   BottomButtonContainer,
@@ -36,11 +43,17 @@ type EntryProps = {
 };
 
 export default function Entry({ queue }: EntryProps) {
+  const chain = ETHEREUM;
+
   const { deQueue } = useCurrentQueue();
+
+  const { setLoadingLedgerSigning } = useLoading();
+
+  const { closeTransport, createTransport } = useLedgerTransport();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
-  const chain = ETHEREUM;
+  const { enqueueSnackbar } = useSnackbar();
 
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
@@ -51,7 +64,7 @@ export default function Entry({ queue }: EntryProps) {
   const { message, messageId, origin } = queue;
   const { params } = message;
 
-  const param2 = JSON.parse(params[1]) as TypedMessage<MessageTypes>;
+  const param2 = JSON.parse(params[1]) as CustomTypedMessage<MessageTypes>;
   const doc = YAML.dump(param2.message, { indent: 4 });
 
   const name = param2.domain?.name;
@@ -124,26 +137,75 @@ export default function Entry({ queue }: EntryProps) {
           </OutlineButton>
           <Button
             onClick={async () => {
-              const version = message.method === 'eth_signTypedData_v3' ? SignTypedDataVersion.V3 : SignTypedDataVersion.V4;
+              try {
+                const signedTypedData = await (async () => {
+                  if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
+                    const version = message.method === 'eth_signTypedData_v3' ? SignTypedDataVersion.V3 : SignTypedDataVersion.V4;
+                    if (!keyPair?.privateKey) {
+                      throw new Error('Unknown Error');
+                    }
 
-              const result: EthSignTypedDataResponse = signTypedData({ version, privateKey: keyPair!.privateKey, data: param2 });
+                    return signTypedData(keyPair.privateKey, param2, version);
+                  }
 
-              responseToWeb({
-                response: {
-                  result,
-                },
-                message,
-                messageId,
-                origin,
-              });
+                  if (currentAccount.type === 'LEDGER') {
+                    setLoadingLedgerSigning(true);
+                    const transport = await createTransport();
 
-              await deQueue();
+                    const ethereumApp = new EthereumApp(transport);
+
+                    const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}`;
+
+                    const { publicKey } = await ethereumApp.getAddress(path);
+
+                    const accountAddress = currentAccount.ethereumPublicKey ? getAddress(chain, Buffer.from(currentAccount.ethereumPublicKey, 'hex')) : '';
+                    const ledgerAddress = getAddress(chain, Buffer.from(publicKey, 'hex'));
+
+                    if (!isEqualsIgnoringCase(accountAddress, ledgerAddress)) {
+                      throw new Error('Account address and Ledger address are not the same.');
+                    }
+
+                    const domainSeparatorHex = TypedDataUtils.hashStruct('EIP712Domain', param2.domain, param2.types, SignTypedDataVersion.V4).toString('hex');
+
+                    const hashStructMessageHex = TypedDataUtils.hashStruct(param2.primaryType, param2.message, param2.types, SignTypedDataVersion.V4).toString(
+                      'hex',
+                    );
+
+                    const result = await ethereumApp.signEIP712HashedMessage(path, domainSeparatorHex, hashStructMessageHex);
+
+                    const v = (result.v - 27).toString(16);
+
+                    return `0x${result.r}${result.s}${v.length < 2 ? `0${v}` : v}`;
+                  }
+
+                  throw new Error('Unknown type account');
+                })();
+
+                const result: EthSignTypedDataResponse = signedTypedData;
+
+                responseToWeb({
+                  response: {
+                    result,
+                  },
+                  message,
+                  messageId,
+                  origin,
+                });
+
+                await deQueue();
+              } catch (e) {
+                enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+              } finally {
+                await closeTransport();
+                setLoadingLedgerSigning(false);
+              }
             }}
           >
             {t('pages.Popup.Ethereum.SignTypedData.entry.signButton')}
           </Button>
         </BottomButtonContainer>
       </BottomContainer>
+      <LedgerToPopup />
     </Container>
   );
 }

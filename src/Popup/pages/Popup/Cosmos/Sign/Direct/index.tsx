@@ -1,13 +1,13 @@
 import { Suspense } from 'react';
 
 import { COSMOS_CHAINS } from '~/constants/chain';
-import AccessRequest from '~/Popup/components/AccessRequest';
-import ActivateChainRequest from '~/Popup/components/ActivateChainRequest';
 import Lock from '~/Popup/components/Lock';
+import AccessRequest from '~/Popup/components/requests/AccessRequest';
+import ActivateChainRequest from '~/Popup/components/requests/ActivateChainRequest';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosSignDirect } from '~/types/cosmos/message';
+import type { CosSignDirect } from '~/types/message/cosmos';
 
 import Entry from './entry';
 import Layout from './layout';

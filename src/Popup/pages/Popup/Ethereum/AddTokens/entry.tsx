@@ -12,7 +12,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
-import type { EthcAddTokens, EthcAddTokensParams, EthcAddTokensResponse } from '~/types/ethereum/message';
+import type { EthcAddTokens, EthcAddTokensParams, EthcAddTokensResponse } from '~/types/message/ethereum';
 
 import TokenItem from './components/TokenItem';
 import {

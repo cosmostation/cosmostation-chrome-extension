@@ -24,7 +24,7 @@ window.addEventListener('message', (event: MessageEvent<WebToContentScriptEventM
       messageId: data.messageId,
       message: data.message,
     };
-    chrome.runtime.sendMessage(toBackgroundMessage);
+    void chrome.runtime.sendMessage(toBackgroundMessage);
   }
 });
 

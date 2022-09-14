@@ -54,15 +54,17 @@ export default function ManagePopover({ account, onClose, ...remainder }: Manage
               {t('pages.Account.Management.components.ManagePopover.index.viewMnemonic')}
             </ManageButton>
           )}
-          <ManageButton
-            Icon={Key16Icon}
-            onClick={() => {
-              setIsOpenedExportPrivateKeyDialog(true);
-              onClose?.({}, 'backdropClick');
-            }}
-          >
-            {t('pages.Account.Management.components.ManagePopover.index.viewPrivateKey')}
-          </ManageButton>
+          {(account.type === 'MNEMONIC' || account.type === 'PRIVATE_KEY') && (
+            <ManageButton
+              Icon={Key16Icon}
+              onClick={() => {
+                setIsOpenedExportPrivateKeyDialog(true);
+                onClose?.({}, 'backdropClick');
+              }}
+            >
+              {t('pages.Account.Management.components.ManagePopover.index.viewPrivateKey')}
+            </ManageButton>
+          )}
           <ManageButton
             Icon={Delete16Icon}
             onClick={() => {

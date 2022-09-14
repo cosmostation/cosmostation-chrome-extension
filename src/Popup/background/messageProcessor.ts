@@ -1,30 +1,36 @@
 import { debounce } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import Web3 from 'web3';
-import type { MessageTypes, TypedMessage } from '@metamask/eth-sig-util';
-import { signTypedData, SignTypedDataVersion } from '@metamask/eth-sig-util';
+import type { MessageTypes } from '@metamask/eth-sig-util';
+import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 
 import { COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { PRIVATE_KEY_FOR_TEST } from '~/constants/common';
-import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/cosmos';
 import { COSMOS_RPC_ERROR_MESSAGE, ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import type { TOKEN_TYPE } from '~/constants/ethereum';
-import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/ethereum';
+import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
+import { COMMON_METHOD_TYPE, COMMON_NO_POPUP_METHOD_TYPE } from '~/constants/message/common';
+import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/message/cosmos';
+import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
 import { chromeSessionStorage } from '~/Popup/utils/chromeSessionStorage';
 import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
-import { requestRPC } from '~/Popup/utils/ethereum';
+import { CommonRPCError, CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
+import { requestRPC, signTypedData } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { toHex } from '~/Popup/utils/string';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { Balance, SmartPayload, TokenInfo } from '~/types/cosmos/contract';
+import type { ResponseRPC } from '~/types/ethereum/rpc';
+import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
+import type { ComProvidersResponse } from '~/types/message/common';
 import type {
   CosAccountResponse,
+  CosActivatedChainIdsResponse,
   CosActivatedChainNamesResponse,
   CosAddChain,
   CosAddTokensCW20Internal,
@@ -33,16 +39,20 @@ import type {
   CosGetAutoSign,
   CosGetAutoSignResponse,
   CosRequestAccountResponse,
+  CosSendTransactionResponse,
   CosSetAutoSign,
   CosSignAmino,
   CosSignAminoResponse,
   CosSignDirect,
   CosSignDirectResponse,
+  CosSupportedChainIdsResponse,
   CosSupportedChainNamesResponse,
-} from '~/types/cosmos/message';
+} from '~/types/message/cosmos';
 import type {
+  CustomTypedMessage,
   EthcAddNetwork,
   EthcAddTokens,
+  EthCoinbaseResponse,
   EthcSwitchNetwork,
   EthcSwitchNetworkResponse,
   EthRequestAccountsResponse,
@@ -54,9 +64,7 @@ import type {
   WalletSwitchEthereumChain,
   WalletSwitchEthereumChainResponse,
   WalletWatchAsset,
-} from '~/types/ethereum/message';
-import type { ResponseRPC } from '~/types/ethereum/rpc';
-import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
+} from '~/types/message/ethereum';
 
 import {
   cosAddChainParamsSchema,
@@ -104,6 +112,59 @@ const setQueues = debounce(
 
 // contentScrpit to background
 export async function cstob(request: ContentScriptToBackgroundEventMessage<RequestMessage>) {
+  if (request.line === 'COMMON') {
+    const commonNoPopupMethods = Object.values(COMMON_NO_POPUP_METHOD_TYPE) as string[];
+    const commonMethods = Object.values(COMMON_METHOD_TYPE) as string[];
+
+    const { message, messageId, origin } = request;
+
+    try {
+      if (!message?.method || !commonMethods.includes(message.method)) {
+        throw new CommonRPCError(RPC_ERROR.METHOD_NOT_SUPPORTED, RPC_ERROR_MESSAGE[RPC_ERROR.METHOD_NOT_SUPPORTED]);
+      }
+      const { method } = message;
+
+      const { providers } = await chromeStorage();
+
+      if (commonNoPopupMethods.includes(method)) {
+        if (method === 'com_providers') {
+          const response: ComProvidersResponse = providers;
+
+          responseToWeb({
+            response: {
+              result: response,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        }
+      }
+    } catch (e) {
+      if (e instanceof CommonRPCError) {
+        responseToWeb({
+          response: e.rpcMessage,
+          message,
+          messageId,
+          origin,
+        });
+        return;
+      }
+
+      responseToWeb({
+        response: {
+          error: {
+            code: RPC_ERROR.INTERNAL,
+            message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
+          },
+        },
+        message,
+        messageId,
+        origin,
+      });
+    }
+  }
+
   if (request.line === 'COSMOS') {
     const cosmosMethods = Object.values(COSMOS_METHOD_TYPE) as string[];
     const cosmosPopupMethods = Object.values(COSMOS_POPUP_METHOD_TYPE) as string[];
@@ -127,6 +188,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         throw new CosmosRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
       }
 
+      const cosmosCurrentAllowedChains = currentAllowedChains.filter((item) => item.line === 'COSMOS') as CosmosChain[];
       const cosmosAdditionalChains = additionalChains.filter((item) => item.line === 'COSMOS') as CosmosChain[];
 
       const allChains = [...COSMOS_CHAINS, ...cosmosAdditionalChains];
@@ -148,18 +210,29 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chain = getChain(chainName)!;
 
+          if (currentAccount.type === 'LEDGER' && chain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
+          }
+
           if (
             chain.id &&
             [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
             currentAccountAllowedOrigins.includes(origin) &&
-            currentPassword
+            currentPassword &&
+            (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.cosmosPublicKey))
           ) {
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
             const publicKey = keyPair?.publicKey.toString('hex');
 
-            const result: CosRequestAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
+            const result: CosRequestAccountResponse = {
+              address,
+              publicKey: publicKey as unknown as Uint8Array,
+              name: currentAccountName,
+              isLedger: currentAccount.type === 'LEDGER',
+              isEthermint: chain.type === 'ETHERMINT',
+            };
 
             responseToWeb({
               response: {
@@ -210,6 +283,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
 
         if (method === 'cos_setAutoSign') {
+          if (currentAccount.type === 'LEDGER') {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_METHOD, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]);
+          }
+
           const { params } = message;
 
           const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -234,6 +311,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
 
         if (method === 'cos_getAutoSign') {
+          if (currentAccount.type === 'LEDGER') {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_METHOD, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]);
+          }
+
           const { params } = message;
 
           const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -282,6 +363,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
 
         if (method === 'cos_deleteAutoSign') {
+          if (currentAccount.type === 'LEDGER') {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_METHOD, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]);
+          }
+
           const { params } = message;
 
           const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -338,6 +423,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const schema = cosSignAminoParamsSchema(allChainLowercaseNames, chain ? chain.chainId : '');
 
+          if (currentAccount.type === 'LEDGER' && chain?.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
+          }
+
           try {
             const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignAmino['params'];
 
@@ -357,10 +446,14 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             ) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-              const signature = signAmino(validatedParams.doc, keyPair!.privateKey, chain);
+              if (!keyPair?.privateKey) {
+                throw new Error(RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+              }
+
+              const signature = signAmino(validatedParams.doc, keyPair.privateKey, chain);
               const base64Signature = Buffer.from(signature).toString('base64');
 
-              const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
+              const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
               const publicKeyType = getPublicKeyType(chain);
               const pubKey = { type: publicKeyType, value: base64PublicKey };
 
@@ -391,6 +484,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
 
         if (method === 'cos_signDirect' || method === 'ten_signDirect') {
+          if (currentAccount.type === 'LEDGER') {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_METHOD, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]);
+          }
+
           const { params } = message;
 
           const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
@@ -420,6 +517,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             ) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
+              if (!keyPair?.privateKey) {
+                throw new Error(RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+              }
+
               const { doc } = validatedParams;
 
               const authInfoBytes = Buffer.from(doc.auth_info_bytes as unknown as string, 'hex');
@@ -427,10 +528,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
               const newDoc = { ...doc, auth_info_bytes: authInfoBytes, body_bytes: bodyBytes };
 
-              const signature = signDirect(newDoc, keyPair!.privateKey, chain);
+              const signature = signDirect(newDoc, keyPair.privateKey, chain);
               const base64Signature = Buffer.from(signature).toString('base64');
 
-              const base64PublicKey = Buffer.from(keyPair!.publicKey).toString('base64');
+              const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
               const publicKeyType = getPublicKeyType(chain);
               const pubKey = { type: publicKeyType, value: base64PublicKey };
 
@@ -539,7 +640,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         if (method === 'cos_supportedChainNames' || method === 'ten_supportedChainNames') {
           const official = COSMOS_CHAINS.map((item) => item.chainName.toLowerCase());
 
-          const unofficial = additionalChains.map((item) => item.chainName.toLowerCase());
+          const unofficial = cosmosAdditionalChains.map((item) => item.chainName.toLowerCase());
 
           const response: CosSupportedChainNamesResponse = { official, unofficial };
 
@@ -553,10 +654,43 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           });
         }
 
+        if (method === 'cos_supportedChainIds') {
+          const official = COSMOS_CHAINS.map((item) => item.chainId);
+
+          const unofficial = cosmosAdditionalChains.map((item) => item.chainId);
+
+          const response: CosSupportedChainIdsResponse = { official, unofficial };
+
+          responseToWeb({
+            response: {
+              result: response,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        }
+
         if (method === 'cos_activatedChainNames') {
           const response: CosActivatedChainNamesResponse = [
-            ...currentAllowedChains.filter((item) => item.line === 'COSMOS').map((item) => item.chainName.toLowerCase()),
-            ...additionalChains.filter((item) => item.line === 'COSMOS').map((item) => item.chainName.toLowerCase()),
+            ...cosmosCurrentAllowedChains.map((item) => item.chainName.toLowerCase()),
+            ...cosmosAdditionalChains.map((item) => item.chainName.toLowerCase()),
+          ];
+
+          responseToWeb({
+            response: {
+              result: response,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        }
+
+        if (method === 'cos_activatedChainIds') {
+          const response: CosActivatedChainIdsResponse = [
+            ...cosmosCurrentAllowedChains.map((item) => item.chainId),
+            ...cosmosAdditionalChains.map((item) => item.chainId),
           ];
 
           responseToWeb({
@@ -582,6 +716,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chain = getChain(chainName);
 
+          if (currentAccount.type === 'LEDGER' && chain?.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
+          }
+
           if (
             chain?.id &&
             [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain?.id) &&
@@ -593,7 +731,13 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             const publicKey = keyPair?.publicKey.toString('hex');
 
-            const result: CosAccountResponse = { address, publicKey: publicKey as unknown as Uint8Array, name: currentAccountName };
+            const result: CosAccountResponse = {
+              address,
+              publicKey: publicKey as unknown as Uint8Array,
+              name: currentAccountName,
+              isLedger: currentAccount.type === 'LEDGER',
+              isEthermint: chain.type === 'ETHERMINT',
+            };
 
             responseToWeb({
               response: {
@@ -638,7 +782,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
 
           try {
-            const response = await post<SendTransactionPayload>(`${chain.restURL}/cosmos/tx/v1beta1/txs`, {
+            const response: CosSendTransactionResponse = await post<SendTransactionPayload>(`${chain.restURL}/cosmos/tx/v1beta1/txs`, {
               tx_bytes: params.txBytes,
               mode: params.mode,
             });
@@ -885,8 +1029,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
 
-              if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
-                throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+              if ((currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey) || currentAccount.type !== 'LEDGER') {
+                if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                }
               }
             }
 
@@ -915,14 +1061,15 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
-
-              if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
-                throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+              if ((currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey) || currentAccount.type !== 'LEDGER') {
+                if (address.toLowerCase() !== validatedParams[0].toLowerCase()) {
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                }
               }
             }
 
             try {
-              const param2 = JSON.parse(validatedParams[1]) as TypedMessage<MessageTypes>;
+              const param2 = JSON.parse(validatedParams[1]) as CustomTypedMessage<MessageTypes>;
 
               const currentNetwork = currentEthereumNetwork();
 
@@ -934,7 +1081,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
               const version = method === 'eth_signTypedData_v3' ? SignTypedDataVersion.V3 : SignTypedDataVersion.V4;
 
-              signTypedData({ version, privateKey: Buffer.from(PRIVATE_KEY_FOR_TEST, 'hex'), data: param2 });
+              signTypedData(Buffer.from(PRIVATE_KEY_FOR_TEST, 'hex'), param2, version);
             } catch (err) {
               if (err instanceof EthereumRPCError) {
                 throw err;
@@ -969,8 +1116,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
 
-              if (address.toLowerCase() !== validatedParams[1].toLowerCase()) {
-                throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+              if ((currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey) || currentAccount.type !== 'LEDGER') {
+                if (address.toLowerCase() !== validatedParams[1].toLowerCase()) {
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                }
               }
             }
 
@@ -1001,15 +1150,16 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
               const address = getAddress(chain, keyPair?.publicKey);
 
-              if (address.toLowerCase() !== toHex(validatedParams[0].from, { addPrefix: true }).toLowerCase()) {
-                throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+              if ((currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey) || currentAccount.type !== 'LEDGER') {
+                if (address.toLowerCase() !== toHex(validatedParams[0].from, { addPrefix: true }).toLowerCase()) {
+                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                }
               }
             }
 
             const originEthereumTx = validatedParams[0];
 
             const nonce = originEthereumTx.nonce !== undefined ? parseInt(toHex(originEthereumTx.nonce), 16) : undefined;
-            const chainId = originEthereumTx.chainId !== undefined ? parseInt(toHex(originEthereumTx.chainId), 16) : undefined;
 
             let gas: string | number = 0;
 
@@ -1024,11 +1174,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               });
               const web3 = new Web3(provider);
 
-              const account = web3.eth.accounts.privateKeyToAccount(PRIVATE_KEY_FOR_TEST);
-
-              gas = validatedParams[0].gas ? validatedParams[0].gas : await web3.eth.estimateGas({ ...validatedParams[0], nonce, chainId });
-
-              await account.signTransaction({ ...validatedParams[0], nonce, chainId, gas });
+              gas = validatedParams[0].gas ? validatedParams[0].gas : await web3.eth.estimateGas({ ...validatedParams[0], nonce });
             } catch (e) {
               throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, (e as { message: string }).message, message.id);
             }
@@ -1047,8 +1193,13 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         }
 
-        if (method === 'eth_requestAccounts') {
-          if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+        if (method === 'eth_requestAccounts' || method === 'wallet_requestPermissions') {
+          if (
+            currentAllowedChains.find((item) => item.id === chain.id) &&
+            currentAccountAllowedOrigins.includes(origin) &&
+            currentPassword &&
+            (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey))
+          ) {
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
@@ -1174,12 +1325,24 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as WalletWatchAsset['params'];
 
+            const imageURL = (() => {
+              if (typeof validatedParams.options.image === 'string') return validatedParams.options.image;
+
+              if (Array.isArray(validatedParams.options.image) && (validatedParams.options.image as string[]).length > 0) {
+                const firstImage = validatedParams.options.image[0] as unknown;
+
+                return typeof firstImage === 'string' ? firstImage : undefined;
+              }
+
+              return undefined;
+            })();
+
             const addTokenParam: EthcAddTokens['params'][0] = {
               tokenType: validatedParams.type as typeof TOKEN_TYPE.ERC20,
               address: validatedParams.options.address,
               decimals: validatedParams.options.decimals,
               displayDenom: validatedParams.options.symbol,
-              imageURL: validatedParams.options.image,
+              imageURL,
               coinGeckoId: validatedParams.options.coinGeckoId,
             };
 
@@ -1282,16 +1445,25 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               throw err;
             }
 
-            throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`, message.id);
+            throw new EthereumRPCError(
+              RPC_ERROR.INVALID_PARAMS,
+              `Unrecognized chain ID ${params?.[0]?.chainId}. Try adding the chain using wallet_addEthereumChain first.`,
+              message.id,
+            );
           }
         }
       } else if (ethereumNoPopupMethods.includes(method)) {
         if (method === 'eth_accounts') {
-          if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+          if (
+            currentAllowedChains.find((item) => item.id === chain.id) &&
+            currentAccountAllowedOrigins.includes(origin) &&
+            currentPassword &&
+            (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey))
+          ) {
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
-            const result: EthRequestAccountsResponse = [address];
+            const result: EthRequestAccountsResponse = address ? [address] : [];
 
             responseToWeb({
               response: {
@@ -1312,6 +1484,46 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               origin,
             });
           }
+        } else if (method === 'eth_coinbase') {
+          if (
+            currentAllowedChains.find((item) => item.id === chain.id) &&
+            currentAccountAllowedOrigins.includes(origin) &&
+            currentPassword &&
+            (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey))
+          ) {
+            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+            const address = getAddress(chain, keyPair?.publicKey);
+
+            const result: EthCoinbaseResponse = address || null;
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          } else {
+            const result: EthRequestAccountsResponse = [];
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          }
+        } else if (method === 'wallet_getPermissions') {
+          responseToWeb({
+            response: {
+              result: [],
+            },
+            message,
+            messageId,
+            origin,
+          });
         } else {
           const params = method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
 

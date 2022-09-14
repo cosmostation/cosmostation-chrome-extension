@@ -8,6 +8,7 @@ import type { EthereumChain } from '~/types/chain';
 
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/ethereum/NativeChainCard';
 import TokenList from '../components/ethereum/TokenList';
+import LedgerCheck from '../components/LedgerCheck';
 import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
 
 type EthereumProps = {
@@ -28,19 +29,23 @@ export default function Ethereum({ chain }: EthereumProps) {
       <HeaderContainer>
         <Header />
       </HeaderContainer>
-      <NativeChainCardContainer>
-        <ErrorBoundary
-          // eslint-disable-next-line react/no-unstable-nested-components
-          FallbackComponent={(props) => <NativeChainCardError chain={chain} isCustom={isCustom} {...props} />}
-        >
-          <Suspense fallback={<NativeChainCardSkeleton chain={chain} isCustom={isCustom} />}>
-            <NativeChainCard chain={chain} isCustom={isCustom} />
-          </Suspense>
-        </ErrorBoundary>
-      </NativeChainCardContainer>
-      <BottomContainer>
-        <TokenList />
-      </BottomContainer>
+      <LedgerCheck>
+        <>
+          <NativeChainCardContainer>
+            <ErrorBoundary
+              // eslint-disable-next-line react/no-unstable-nested-components
+              FallbackComponent={(props) => <NativeChainCardError chain={chain} isCustom={isCustom} {...props} />}
+            >
+              <Suspense fallback={<NativeChainCardSkeleton chain={chain} isCustom={isCustom} />}>
+                <NativeChainCard chain={chain} isCustom={isCustom} />
+              </Suspense>
+            </ErrorBoundary>
+          </NativeChainCardContainer>
+          <BottomContainer>
+            <TokenList />
+          </BottomContainer>
+        </>
+      </LedgerCheck>
     </Container>
   );
 }

@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 
 import { toHex } from '~/Popup/utils/string';
-import type { EthereumTx } from '~/types/ethereum/message';
+import type { EthereumTx } from '~/types/message/ethereum';
 
 import { Container } from './styled';
 
@@ -13,7 +13,6 @@ export default function Tx({ tx }: ContainerProps) {
   const modifyTx = {
     ...tx,
     nonce: tx.nonce !== undefined ? toHex(tx.nonce, { addPrefix: true }) : undefined,
-    chainId: tx.chainId !== undefined ? toHex(tx.chainId, { addPrefix: true }) : undefined,
   };
 
   return (

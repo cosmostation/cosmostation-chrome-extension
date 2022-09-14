@@ -32,13 +32,12 @@ export default function Cosmos({ chain, isShowChain }: CosmosProps) {
     <Container>
       <LeftContentContainer>
         <AccountButton
+          account={currentAccount}
           onClick={(event) => {
             setPopover('account');
             setPopoverAnchorEl(event.currentTarget);
           }}
-        >
-          {currentAccount.name}
-        </AccountButton>
+        />
       </LeftContentContainer>
       <RightContentContainer>
         {isShowChain && (

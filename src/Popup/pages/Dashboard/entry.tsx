@@ -11,8 +11,16 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import CosmosChainItem, { CosmosChainItemError, CosmosChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/CosmosChainItem';
-import EthereumChainItem, { EthereumChainItemError, EthereumChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem/EthereumChainItem';
+import CosmosChainItem, {
+  CosmosChainItemError,
+  CosmosChainItemSkeleton,
+  CosmosChainLedgerCheck,
+} from '~/Popup/pages/Dashboard/components/ChainItem/components/CosmosChainItem';
+import EthereumChainItem, {
+  EthereumChainItemError,
+  EthereumChainItemLedgerCheck,
+  EthereumChainItemSkeleton,
+} from '~/Popup/pages/Dashboard/components/ChainItem/components/EthereumChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { plus } from '~/Popup/utils/big';
 import type { Chain, CosmosChain, EthereumChain } from '~/types/chain';
@@ -91,32 +99,34 @@ export default function Entry() {
         <ChainList>
           {ethereumChainList.map((item) =>
             ethereumNetworkList.map((network) => (
-              <ErrorBoundary
-                key={`${currentAccount.id}${item.chain.id}${network.id}`}
-                FallbackComponent={
-                  // eslint-disable-next-line react/no-unstable-nested-components
-                  (props) => <EthereumChainItemError {...props} chain={item.chain} network={network} />
-                }
-              >
-                <Suspense fallback={<EthereumChainItemSkeleton chain={item.chain} network={network} />}>
-                  <EthereumChainItem key={item.chain.id} chain={item.chain} network={network} />
-                </Suspense>
-              </ErrorBoundary>
+              <EthereumChainItemLedgerCheck key={`${currentAccount.id}${item.chain.id}${network.id}`} chain={item.chain} network={network}>
+                <ErrorBoundary
+                  FallbackComponent={
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    (props) => <EthereumChainItemError {...props} chain={item.chain} network={network} />
+                  }
+                >
+                  <Suspense fallback={<EthereumChainItemSkeleton chain={item.chain} network={network} />}>
+                    <EthereumChainItem key={item.chain.id} chain={item.chain} network={network} />
+                  </Suspense>
+                </ErrorBoundary>
+              </EthereumChainItemLedgerCheck>
             )),
           )}
 
           {cosmosChainList.map((item) => (
-            <ErrorBoundary
-              key={`${currentAccount.id}${item.chain.id}`}
-              FallbackComponent={
-                // eslint-disable-next-line react/no-unstable-nested-components
-                (props) => <CosmosChainItemError {...props} chain={item.chain} />
-              }
-            >
-              <Suspense fallback={<CosmosChainItemSkeleton chain={item.chain} />}>
-                <CosmosChainItem chain={item.chain} />
-              </Suspense>
-            </ErrorBoundary>
+            <CosmosChainLedgerCheck key={`${currentAccount.id}${item.chain.id}`} chain={item.chain}>
+              <ErrorBoundary
+                FallbackComponent={
+                  // eslint-disable-next-line react/no-unstable-nested-components
+                  (props) => <CosmosChainItemError {...props} chain={item.chain} />
+                }
+              >
+                <Suspense fallback={<CosmosChainItemSkeleton chain={item.chain} />}>
+                  <CosmosChainItem chain={item.chain} />
+                </Suspense>
+              </ErrorBoundary>
+            </CosmosChainLedgerCheck>
           ))}
         </ChainList>
       </ChainListContainer>

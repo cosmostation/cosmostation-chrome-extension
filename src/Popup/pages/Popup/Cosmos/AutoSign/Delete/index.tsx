@@ -1,9 +1,9 @@
-import AccessRequest from '~/Popup/components/AccessRequest';
-import ActivateChainRequest from '~/Popup/components/ActivateChainRequest';
 import Lock from '~/Popup/components/Lock';
+import AccessRequest from '~/Popup/components/requests/AccessRequest';
+import ActivateChainRequest from '~/Popup/components/requests/ActivateChainRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosDeleteAutoSign } from '~/types/cosmos/message';
+import type { CosDeleteAutoSign } from '~/types/message/cosmos';
 
 import Entry from './entry';
 import Layout from './layout';
