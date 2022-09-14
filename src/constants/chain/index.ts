@@ -24,6 +24,7 @@ import { JUNO } from './cosmos/juno';
 import { KAVA } from './cosmos/kava';
 import { KI } from './cosmos/ki';
 import { KONSTELLATION } from './cosmos/konstellation';
+import { LIKE_COIN } from './cosmos/likeCoin';
 import { LUM } from './cosmos/lum';
 import { MEDIBLOC } from './cosmos/medibloc';
 import { NYX, NYX_FEE_BASE_DENOMS, NYX_GAS_RATES } from './cosmos/nyx';
@@ -88,6 +89,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   KAVA,
   KI,
   KONSTELLATION,
+  LIKE_COIN,
   LUM,
   MEDIBLOC,
   NYX,
