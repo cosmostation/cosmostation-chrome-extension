@@ -20,6 +20,7 @@ export const LIKE_COIN: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'like' },
+  coinGeckoId: 'likecoin',
   explorerURL: `${MINTSCAN_URL}/likecoin`,
   gasRate: {
     tiny: '1',
