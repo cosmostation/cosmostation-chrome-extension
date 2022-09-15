@@ -299,8 +299,8 @@ export const walletAddEthereumChainParamsSchema = () =>
           .required(),
         coinGeckoId: Joi.string().optional(),
       }).required(),
+      Joi.optional(),
     )
-    .length(1)
     .required();
 
 export const ethcSwitchNetworkParamsSchema = (chainIds: string[]) =>
