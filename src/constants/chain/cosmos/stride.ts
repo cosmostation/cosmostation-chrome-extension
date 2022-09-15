@@ -20,6 +20,7 @@ export const STRIDE: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'stride' },
+  coinGeckoId: 'stride',
   explorerURL: `${MINTSCAN_URL}/stride`,
   gasRate: {
     tiny: '0',
