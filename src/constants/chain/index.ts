@@ -42,6 +42,7 @@ import { SIF } from './cosmos/sif';
 import { SOMMELIER } from './cosmos/sommelier';
 import { STARGAZE } from './cosmos/stargaze';
 import { STARNAME } from './cosmos/starname';
+import { STRIDE } from './cosmos/stride';
 import { TGRADE } from './cosmos/tgrade';
 import { UMEE } from './cosmos/umee';
 import { ETHEREUM } from './ethereum/ethereum';
@@ -108,6 +109,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   SOMMELIER,
   STARGAZE,
   STARNAME,
+  STRIDE,
   TGRADE,
   UMEE,
 ];
