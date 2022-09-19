@@ -3,7 +3,6 @@ import { Typography } from '@mui/material';
 import { CURRENCY_DECIMALS } from '~/constants/currency';
 import Number from '~/Popup/components/common/Number';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
-import { useMarketPriceSWR } from '~/Popup/hooks/SWR/cosmos/useMarketPriceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -35,7 +34,6 @@ export default function Send({ msg, chain }: SendProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { coins, ibcCoins } = useCoinListSWR(chain);
-  const marketPrice = useMarketPriceSWR();
   const { t } = useTranslation();
 
   const { currency } = chromeStorage;
@@ -110,21 +108,15 @@ export default function Send({ msg, chain }: SendProps) {
               return times(itemDisplayAmount, chainPrice);
             }
 
-            if (assetCoinInfo?.originBaseDenom) {
-              const chainPrice =
-                marketPrice.data?.find((p) => isEqualsIgnoringCase(p.denom, assetCoinInfo.originBaseDenom))?.prices?.find((p) => p.currency === 'usd')
-                  ?.current_price || 0;
-              const tetherPrice = coinGeckoPrice.data?.tether?.[currency] || 0;
+            if (assetCoinInfo?.coinGeckoId) {
+              const chainPrice = coinGeckoPrice.data?.[assetCoinInfo.coinGeckoId]?.[currency] || 0;
 
-              return times(itemDisplayAmount, chainPrice * tetherPrice, CURRENCY_DECIMALS[currency]);
+              return times(itemDisplayAmount, chainPrice, CURRENCY_DECIMALS[currency]);
             }
 
-            if (ibcCoinInfo?.originBaseDenom) {
-              const chainPrice =
-                marketPrice.data?.find((p) => p.denom === ibcCoinInfo.originBaseDenom)?.prices?.find((p) => p.currency === 'usd')?.current_price || 0;
-              const tetherPrice = coinGeckoPrice.data?.tether?.[currency] || 0;
-
-              return times(itemDisplayAmount, chainPrice * tetherPrice, CURRENCY_DECIMALS[currency]);
+            if (ibcCoinInfo?.coinGeckoId) {
+              const chainPrice = coinGeckoPrice.data?.[ibcCoinInfo.coinGeckoId]?.[currency] || 0;
+              return times(itemDisplayAmount, chainPrice, CURRENCY_DECIMALS[currency]);
             }
 
             return '0';

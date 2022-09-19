@@ -21,10 +21,10 @@ const nameMap = {
   [EMONEY.id]: 'emoney',
 };
 
-export function useAssetsSWR(chain: CosmosChain, config?: SWRConfiguration) {
-  const mappingName = nameMap[chain.id] || chain.chainName.toLowerCase();
+export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
+  const mappingName = chain ? nameMap[chain.id] || chain.chainName.toLowerCase() : '';
 
-  const requestURL = `https://api.mintscan.io/v2/assets/${mappingName}`;
+  const requestURL = `https://api.mintscan.io/v2/assets${mappingName ? `/${mappingName}` : ''}`;
 
   const fetcher = async (fetchUrl: string) => {
     try {
@@ -38,7 +38,6 @@ export function useAssetsSWR(chain: CosmosChain, config?: SWRConfiguration) {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    isPaused: () => !mappingName,
     ...config,
   });
 

@@ -26,6 +26,7 @@ export type AssetV2 = {
   type: string;
   base_type: string;
   decimal: number;
+  coinGeckoId?: string;
 };
 
 export type AssetV2Payload = {
