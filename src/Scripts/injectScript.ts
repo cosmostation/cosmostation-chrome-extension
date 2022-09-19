@@ -152,7 +152,7 @@ void (() => {
               if (data.response?.error) {
                 rej(data.response);
               } else {
-                res({ result: (data.response.result as string[]).map((item) => item.toLowerCase()), jsonrpc: '2.0', id: undefined });
+                res({ result: data.response.result, jsonrpc: '2.0', id: undefined });
               }
             }
           };
