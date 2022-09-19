@@ -28,6 +28,10 @@ body {
   margin: 0;
 }
 
+body::-webkit-scrollbar {
+  display: none;
+}
+
 main {
   display: block;
 }
