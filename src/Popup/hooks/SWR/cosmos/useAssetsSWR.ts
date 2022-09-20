@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -21,10 +22,10 @@ const nameMap = {
   [EMONEY.id]: 'emoney',
 };
 
-export function useAssetsSWR(chain: CosmosChain, config?: SWRConfiguration) {
-  const mappingName = nameMap[chain.id] || chain.chainName.toLowerCase();
+export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
+  const mappingName = chain ? nameMap[chain.id] || chain.chainName.toLowerCase() : '';
 
-  const requestURL = `https://api.mintscan.io/v2/assets/${mappingName}`;
+  const requestURL = 'https://api.mintscan.io/v2/assets';
 
   const fetcher = async (fetchUrl: string) => {
     try {
@@ -38,11 +39,12 @@ export function useAssetsSWR(chain: CosmosChain, config?: SWRConfiguration) {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    isPaused: () => !mappingName,
     ...config,
   });
 
-  const returnData = data?.assets || [];
+  const assets = useMemo(() => data?.assets || [], [data?.assets]);
+
+  const returnData = useMemo(() => (mappingName ? assets.filter((item) => item.chain === mappingName) : assets), [assets, mappingName]);
 
   return { data: returnData, error, mutate };
 }

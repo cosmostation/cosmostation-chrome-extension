@@ -111,9 +111,9 @@ export default function CoinList({ chain }: CoinListProps) {
               amount={item.totalAmount}
               channel={item.channelId}
               decimals={item.decimals}
-              baseDenom={item.originBaseDenom}
               displayDenom={item.displayDenom}
               imageURL={item.imageURL}
+              coinGeckoId={item.coinGeckoId}
             />
           ))}
 
@@ -126,9 +126,9 @@ export default function CoinList({ chain }: CoinListProps) {
               amount={item.totalAmount}
               channel={item.channelId}
               decimals={item.decimals}
-              baseDenom={item.originBaseDenom}
               displayDenom={item.displayDenom}
               imageURL={item.imageURL}
+              coinGeckoId={item.coinGeckoId}
             />
           ))}
 

@@ -23,6 +23,7 @@ export type CoinInfo = {
   channelId?: string;
   availableAmount: string;
   totalAmount: string;
+  coinGeckoId?: string;
 };
 
 export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
@@ -43,6 +44,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           displayDenom: item.dp_denom,
           decimals: item.decimal,
           imageURL: item.image ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.image}` : undefined,
+          coinGeckoId: item.coinGeckoId,
         })) || [],
     [assets.data],
   );
@@ -88,6 +90,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
             originBaseDenom: coinInfo.originBaseDenom,
             displayDenom: coinInfo.displayDenom,
             imageURL: coinInfo.imageURL,
+            coinGeckoId: coinInfo.coinGeckoId,
             availableAmount: vestingRelatedAvailable,
             totalAmount: new Big(delegationAmount)
               .plus(unbondingAmount)
@@ -115,6 +118,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           imageURL: coinInfo?.image
             ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${coinInfo.image}`
             : undefined,
+          coinGeckoId: coinInfo.coinGeckoId,
           channelId: coinInfo?.channel,
           availableAmount: coin.amount,
           totalAmount: coin.amount,

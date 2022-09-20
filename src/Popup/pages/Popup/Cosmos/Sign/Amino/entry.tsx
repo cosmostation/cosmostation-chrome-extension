@@ -56,10 +56,22 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const feeCoins: FeeCoin[] = useMemo(
     () => [
-      { originBaseDenom: chain.baseDenom, baseDenom: chain.baseDenom, displayDenom: chain.displayDenom, decimals: chain.decimals },
-      ...assets.data.map((asset) => ({ originBaseDenom: asset.base_denom, baseDenom: asset.denom, decimals: asset.decimal, displayDenom: asset.dp_denom })),
+      {
+        originBaseDenom: chain.baseDenom,
+        baseDenom: chain.baseDenom,
+        displayDenom: chain.displayDenom,
+        decimals: chain.decimals,
+        coinGeckoId: chain.coinGeckoId,
+      },
+      ...assets.data.map((asset) => ({
+        originBaseDenom: asset.base_denom,
+        baseDenom: asset.denom,
+        decimals: asset.decimal,
+        displayDenom: asset.dp_denom,
+        coinGeckoId: asset.coinGeckoId,
+      })),
     ],
-    [assets.data, chain.baseDenom, chain.decimals, chain.displayDenom],
+    [assets.data, chain.baseDenom, chain.coinGeckoId, chain.decimals, chain.displayDenom],
   );
 
   const { message, messageId, origin, channel } = queue;

@@ -2,7 +2,6 @@ import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
-import { useMarketPriceSWR } from '~/Popup/hooks/SWR/cosmos/useMarketPriceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -23,27 +22,23 @@ import {
 type CoinItemProps = {
   amount: string;
   decimals?: number;
-  baseDenom?: string;
   displayDenom?: string;
   channel?: string;
   imageURL?: string;
   onClick?: () => void;
   disabled?: boolean;
+  coinGeckoId?: string;
 };
 
-export default function CoinItem({ disabled, imageURL, amount, decimals = 0, baseDenom, displayDenom, channel, onClick }: CoinItemProps) {
+export default function CoinItem({ disabled, imageURL, amount, decimals = 0, displayDenom, channel, onClick, coinGeckoId }: CoinItemProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const marketPrice = useMarketPriceSWR();
-
-  const chainPrice = marketPrice.data?.find((price) => price.denom === baseDenom)?.prices?.find((price) => price.currency === 'usd')?.current_price || 0;
-
-  const tetherPrice = coinGeckoPrice.data?.tether?.[chromeStorage.currency] || 0;
+  const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
 
   const displayAmount = toDisplayDenomAmount(amount, decimals);
 
-  const value = times(displayAmount, chainPrice * tetherPrice);
+  const value = times(displayAmount, chainPrice);
 
   return (
     <StyledButton onClick={onClick} disabled={disabled}>
@@ -53,7 +48,7 @@ export default function CoinItem({ disabled, imageURL, amount, decimals = 0, bas
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>
-            <Typography variant="h5">{displayDenom || 'Unknown'}</Typography>
+            <Typography variant="h5">{displayDenom || 'UNKNOWN'}</Typography>
           </LeftTextChainContainer>
           <LeftTextChainAmountContainer>
             <Typography variant="h6">{channel}</Typography>

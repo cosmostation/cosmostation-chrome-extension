@@ -8,10 +8,13 @@ import { get } from '~/Popup/utils/axios';
 import type { CosmosChain } from '~/types/chain';
 import type { SimplePrice } from '~/types/coinGecko';
 
+import { useAssetsSWR } from './cosmos/useAssetsSWR';
 import { useChromeStorage } from '../useChromeStorage';
 
 export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const { currentAllowedChains } = useCurrentAllowedChains();
+
+  const cosmosAssets = useAssetsSWR();
 
   const { chromeStorage } = useChromeStorage();
 
@@ -19,13 +22,16 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const networkCoinGeckoIds = [...NETWORKS, ...additionalEthereumNetworks].filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId);
   const ethereumTokenCoinGeckoIds = ethereumTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!);
   const cosmosTokenCoinGeckoIds = cosmosTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!);
+  const cosmosAssetsCoinGeckoIds = cosmosAssets.data.map((item) => item.coinGeckoId);
 
-  const allCoinGeckoIds = Array.from(new Set([...networkCoinGeckoIds, ethereumTokenCoinGeckoIds, cosmosTokenCoinGeckoIds]));
+  const allCoinGeckoIds = Array.from(
+    new Set([...networkCoinGeckoIds, ...ethereumTokenCoinGeckoIds, ...cosmosTokenCoinGeckoIds, ...cosmosAssetsCoinGeckoIds]),
+  ).filter((item) => item);
   const joinedAllCoinGeckoIds = allCoinGeckoIds.length > 0 ? `,${allCoinGeckoIds.join(',')}` : '';
 
   const coinGeckoIds = `${(currentAllowedChains.filter((chain) => chain.line === 'COSMOS' && chain.coinGeckoId) as CosmosChain[])
     .map((chain) => chain.coinGeckoId)
-    .join(',')}${joinedAllCoinGeckoIds},tether`;
+    .join(',')}${joinedAllCoinGeckoIds}`;
 
   const currencySymbols = Object.values(CURRENCY_TYPE).join(',');
 

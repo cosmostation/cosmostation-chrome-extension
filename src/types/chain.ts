@@ -86,6 +86,7 @@ export type Coin = {
   decimals: number;
   displayDenom: string;
   imageURL?: string;
+  coinGeckoId?: string;
 };
 
 export type FeeCoin = {
@@ -93,6 +94,7 @@ export type FeeCoin = {
   baseDenom: string;
   displayDenom: string;
   decimals: number;
+  coinGeckoId?: string;
 };
 
 export type EthereumChain = {

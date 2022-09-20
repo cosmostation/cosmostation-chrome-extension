@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
-import { useMarketPriceSWR } from '~/Popup/hooks/SWR/cosmos/useMarketPriceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -38,7 +37,7 @@ type FeeProps = {
 
 export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee, onChangeGas, feeCoin }: FeeProps) {
   const { chromeStorage } = useChromeStorage();
-  const { decimals, displayDenom } = feeCoin;
+  const { decimals, displayDenom, coinGeckoId } = feeCoin;
 
   const { average, tiny, low } = gasRate;
 
@@ -49,17 +48,11 @@ export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee
   const { currency } = chromeStorage;
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const marketPrice = useMarketPriceSWR();
 
-  const chainPrice =
-    marketPrice.data?.find((price) => price.denom === feeCoin.originBaseDenom)?.prices?.find((price) => price.currency === 'usd')?.current_price || 0;
-
-  const tetherPrice = coinGeckoPrice.data?.tether?.[chromeStorage.currency] || 0;
-
-  const price = chainPrice * tetherPrice;
+  const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
 
   const displayFee = toDisplayDenomAmount(baseFee, decimals);
-  const value = times(displayFee, price);
+  const value = times(displayFee, chainPrice);
 
   const currentGasRate = divide(baseFee, gas);
 

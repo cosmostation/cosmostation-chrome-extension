@@ -94,11 +94,22 @@ export default function Cosmos({ chain }: CosmosProps) {
         imageURL: chain.imageURL,
         displayDenom: chain.displayDenom,
         baseDenom: chain.baseDenom,
+        coinGeckoId: chain.coinGeckoId,
       },
       ...coinList.coins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
       ...coinList.ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
     ],
-    [chain.baseDenom, chain.decimals, chain.displayDenom, chain.imageURL, coinList.coins, coinList.ibcCoins, totalAmount, vestingRelatedAvailable],
+    [
+      chain.baseDenom,
+      chain.coinGeckoId,
+      chain.decimals,
+      chain.displayDenom,
+      chain.imageURL,
+      coinList.coins,
+      coinList.ibcCoins,
+      totalAmount,
+      vestingRelatedAvailable,
+    ],
   );
 
   const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(
