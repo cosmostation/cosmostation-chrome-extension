@@ -207,6 +207,36 @@ void (() => {
             },
           });
         }),
+      sendAsync: (request, callback) => {
+        const messageId = uuidv4();
+
+        const handler = (event: MessageEvent<ContentScriptToWebEventMessage<ResponseMessage, EthereumRequestMessage>>) => {
+          if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
+            window.removeEventListener('message', handler);
+
+            const { data } = event;
+
+            if (data.response?.error) {
+              callback(data.response.error, { id: request.id, jsonrpc: '2.0', method: request.method, error: data.response.error });
+            } else {
+              callback(null, { id: request.id, jsonrpc: '2.0', method: request.method, error: data.response.error, result: data.response.result });
+            }
+          }
+        };
+
+        window.addEventListener('message', handler);
+
+        window.postMessage({
+          isCosmostation: true,
+          line: LINE_TYPE.ETHEREUM,
+          type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+          messageId,
+          message: {
+            method: request.method,
+            params: request.params,
+          },
+        });
+      },
       enable: () => window.cosmostation.ethereum.request({ method: 'eth_requestAccounts', params: [] }) as Promise<EthRequestAccountsResponse>,
     },
     cosmos: {
