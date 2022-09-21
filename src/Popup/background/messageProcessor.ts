@@ -1379,27 +1379,30 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               );
             }
 
-            if (ETHEREUM_NETWORKS.map((item) => item.chainId).includes(validatedParams[0].chainId)) {
-              throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, `Can't add ${validatedParams[0].chainId}`, message.id, { chainId: response.result });
+            if ([...ETHEREUM_NETWORKS, ...additionalEthereumNetworks].map((item) => item.chainId).includes(validatedParams[0].chainId)) {
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method: 'ethc_switchNetwork', params: [validatedParams[0].chainId] },
+              });
+            } else {
+              const param = validatedParams[0];
+
+              const addNetworkParam: EthcAddNetwork['params'][0] = {
+                chainId: param.chainId,
+                decimals: param.nativeCurrency.decimals,
+                displayDenom: param.nativeCurrency.symbol,
+                networkName: param.chainName,
+                rpcURL: param.rpcUrls[0],
+                explorerURL: param.blockExplorerUrls?.[0],
+                imageURL: param.iconUrls?.[0],
+                coinGeckoId: param.coinGeckoId,
+              };
+
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method: 'ethc_addNetwork', params: [addNetworkParam] as EthcAddNetwork['params'] },
+              });
             }
-
-            const param = validatedParams[0];
-
-            const addNetworkParam: EthcAddNetwork['params'][0] = {
-              chainId: param.chainId,
-              decimals: param.nativeCurrency.decimals,
-              displayDenom: param.nativeCurrency.symbol,
-              networkName: param.chainName,
-              rpcURL: param.rpcUrls[0],
-              explorerURL: param.blockExplorerUrls?.[0],
-              imageURL: param.iconUrls?.[0],
-              coinGeckoId: param.coinGeckoId,
-            };
-
-            localQueues.push({
-              ...request,
-              message: { ...request.message, method: 'ethc_addNetwork', params: [addNetworkParam] as EthcAddNetwork['params'] },
-            });
             void setQueues();
           } catch (err) {
             if (err instanceof EthereumRPCError) {

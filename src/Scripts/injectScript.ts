@@ -63,7 +63,20 @@ void (() => {
         }),
     },
     ethereum: {
+      isMetaMask: false,
       on: (eventName: EthereumListenerType, eventHandler: (data: unknown) => void) => {
+        const handler = (event: MessageEvent<ListenerMessage<ResponseMessage>>) => {
+          if (event.data?.isCosmostation && event.data?.type === eventName && event.data?.line === 'ETHEREUM') {
+            eventHandler(event.data?.message?.result);
+          }
+        };
+
+        window.addEventListener('message', handler);
+        window.cosmostation.handlerInfos.push({ line: 'ETHEREUM', eventName, originHandler: eventHandler, handler });
+
+        return handler;
+      },
+      addListener: (eventName: EthereumListenerType, eventHandler: (data: unknown) => void) => {
         const handler = (event: MessageEvent<ListenerMessage<ResponseMessage>>) => {
           if (event.data?.isCosmostation && event.data?.type === eventName && event.data?.line === 'ETHEREUM') {
             eventHandler(event.data?.message?.result);
@@ -395,15 +408,7 @@ void (() => {
   };
 
   window.cosmostation.providers = {
-    metamask: {
-      isMetaMask: true,
-      enable: window.cosmostation.ethereum.enable,
-      off: window.cosmostation.ethereum.off,
-      on: window.cosmostation.ethereum.on,
-      removeListener: window.cosmostation.ethereum.removeListener,
-      request: window.cosmostation.ethereum.request,
-      send: window.cosmostation.ethereum.send,
-    },
+    metamask: window.cosmostation.ethereum,
     keplr: {
       version: '0.0.0',
       mode: 'extension',
@@ -557,6 +562,15 @@ void (() => {
   };
 
   void (async () => {
+    const currentChainId = (await window.cosmostation.ethereum.request({ method: 'eth_chainId', params: [] })) as string;
+    window.cosmostation.ethereum.chainId = currentChainId;
+    window.cosmostation.ethereum.networkVersion = `${parseInt(currentChainId, 16)}`;
+
+    window.cosmostation.ethereum.on('chainChanged', (chainId) => {
+      window.cosmostation.ethereum.chainId = chainId as string;
+      window.cosmostation.ethereum.networkVersion = `${parseInt(chainId as string, 16)}`;
+    });
+
     const providers = (await window.cosmostation.common.request({ method: 'com_providers' })) as ComProvidersResponse;
 
     if (providers.keplr && !window.keplr) {
@@ -578,12 +592,8 @@ void (() => {
     }
 
     if (providers.metamask && !window.ethereum?.isMetaMask) {
+      window.cosmostation.ethereum.isMetaMask = true;
       window.ethereum = window.cosmostation.providers.metamask;
-      window.ethereum.chainId = (await window.ethereum.request({ method: 'eth_chainId', params: [] })) as string;
-
-      window.ethereum.on('chainChanged', (chainId) => {
-        if (window.ethereum) window.ethereum.chainId = chainId as string;
-      });
     }
   })();
 })();

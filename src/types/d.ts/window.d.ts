@@ -11,13 +11,6 @@ type Keplr = Omit<
   | 'signArbitrary'
   | 'verifyArbitrary'
   | 'signEthereum'
-  //
-  // | 'getOfflineSigner'
-  // | 'getOfflineSignerAuto'
-  // | 'getOfflineSignerOnlyAmino'
-  // | 'sendTx'
-  // | 'signAmino'
-  // | 'signDirect'
   | 'suggestToken'
 >;
 
@@ -67,11 +60,15 @@ type Ethereum = {
     eventName: import('~/types/message').EthereumListenerType | ((event: MessageEvent<ListenerMessage>) => void),
     eventHandler?: (event?: unknown) => void,
   ) => void;
+  addListener: (eventName: import('~/types/message').EthereumListenerType, eventHandler: (event?: unknown) => void) => void;
   removeListener: (
     eventName: import('~/types/message').EthereumListenerType | ((event: MessageEvent<ListenerMessage>) => void),
     eventHandler?: (event?: unknown) => void,
   ) => void;
   enable: () => Promise<unknown>;
+  isMetaMask: boolean;
+  chainId?: string;
+  networkVersion?: string;
 };
 
-type MetaMask = { isMetaMask: boolean; chainId?: string } & Ethereum;
+type MetaMask = Ethereum;
