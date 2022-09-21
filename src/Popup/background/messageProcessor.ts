@@ -255,30 +255,41 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
           const unofficialCosmosLowercaseChainIds = cosmosAdditionalChains.map((item) => item.chainId.toLowerCase());
 
-          const schema = cosAddChainParamsSchema(cosmosLowercaseChainNames, officialCosmosLowercaseChainIds, unofficialCosmosLowercaseChainIds);
-
-          try {
-            const validatedParams = (await schema.validateAsync(params)) as CosAddChain['params'];
-
-            const filteredCosmosLowercaseChainIds = cosmosAdditionalChains
-              .filter((item) => item.chainName.toLowerCase() !== validatedParams.chainName)
-              .map((item) => item.chainId.toLowerCase());
-
-            if (filteredCosmosLowercaseChainIds.includes(validatedParams.chainId)) {
-              throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]}: 'chainId' is a duplicate`);
-            }
-
-            localQueues.push({
-              ...request,
-              message: { ...request.message, method, params: { ...validatedParams, chainName: params.chainName } as CosAddChain['params'] },
+          if (cosmosLowercaseChainNames.includes(params.chainName) || officialCosmosLowercaseChainIds.includes(params.chainId)) {
+            responseToWeb({
+              response: {
+                result: true,
+              },
+              message,
+              messageId,
+              origin,
             });
-            void setQueues();
-          } catch (err) {
-            if (err instanceof CosmosRPCError) {
-              throw err;
-            }
+          } else {
+            try {
+              const schema = cosAddChainParamsSchema(cosmosLowercaseChainNames, officialCosmosLowercaseChainIds, unofficialCosmosLowercaseChainIds);
 
-            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+              const validatedParams = (await schema.validateAsync(params)) as CosAddChain['params'];
+
+              const filteredCosmosLowercaseChainIds = cosmosAdditionalChains
+                .filter((item) => item.chainName.toLowerCase() !== validatedParams.chainName)
+                .map((item) => item.chainId.toLowerCase());
+
+              if (filteredCosmosLowercaseChainIds.includes(validatedParams.chainId)) {
+                throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]}: 'chainId' is a duplicate`);
+              }
+
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method, params: { ...validatedParams, chainName: params.chainName } as CosAddChain['params'] },
+              });
+              void setQueues();
+            } catch (err) {
+              if (err instanceof CosmosRPCError) {
+                throw err;
+              }
+
+              throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+            }
           }
         }
 
