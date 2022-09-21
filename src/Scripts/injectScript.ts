@@ -67,7 +67,19 @@ void (() => {
       on: (eventName: EthereumListenerType, eventHandler: (data: unknown) => void) => {
         const handler = (event: MessageEvent<ListenerMessage<ResponseMessage>>) => {
           if (event.data?.isCosmostation && event.data?.type === eventName && event.data?.line === 'ETHEREUM') {
-            eventHandler(event.data?.message?.result);
+            if (eventName === 'accountsChanged' && Array.isArray(event.data?.message?.result) && event.data?.message?.result.length === 0) {
+              void (async () => {
+                try {
+                  const account = (await window.cosmostation.ethereum.request({ method: 'eth_requestAccounts', params: {} })) as EthRequestAccountsResponse;
+
+                  eventHandler(account);
+                } catch {
+                  eventHandler([]);
+                }
+              })();
+            } else {
+              eventHandler(event.data?.message?.result);
+            }
           }
         };
 
@@ -79,7 +91,19 @@ void (() => {
       addListener: (eventName: EthereumListenerType, eventHandler: (data: unknown) => void) => {
         const handler = (event: MessageEvent<ListenerMessage<ResponseMessage>>) => {
           if (event.data?.isCosmostation && event.data?.type === eventName && event.data?.line === 'ETHEREUM') {
-            eventHandler(event.data?.message?.result);
+            if (eventName === 'accountsChanged' && Array.isArray(event.data?.message?.result) && event.data?.message?.result.length === 0) {
+              void (async () => {
+                try {
+                  const account = (await window.cosmostation.ethereum.request({ method: 'eth_requestAccounts', params: {} })) as EthRequestAccountsResponse;
+
+                  eventHandler(account);
+                } catch {
+                  eventHandler([]);
+                }
+              })();
+            } else {
+              eventHandler(event.data?.message?.result);
+            }
           }
         };
 
