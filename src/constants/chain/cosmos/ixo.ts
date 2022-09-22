@@ -21,6 +21,7 @@ export const IXO: CosmosChain = {
   },
   bech32Prefix: { address: 'ixo' },
   explorerURL: `${MINTSCAN_URL}/ixo`,
+  coinGeckoId: 'ixo',
   gasRate: {
     tiny: '0.025',
     low: '0.05',
