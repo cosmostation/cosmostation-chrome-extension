@@ -63,10 +63,47 @@ void (() => {
         }),
     },
     ethereum: {
+      isMetaMask: false,
       on: (eventName: EthereumListenerType, eventHandler: (data: unknown) => void) => {
         const handler = (event: MessageEvent<ListenerMessage<ResponseMessage>>) => {
           if (event.data?.isCosmostation && event.data?.type === eventName && event.data?.line === 'ETHEREUM') {
-            eventHandler(event.data?.message?.result);
+            if (eventName === 'accountsChanged' && Array.isArray(event.data?.message?.result) && event.data?.message?.result.length === 0) {
+              void (async () => {
+                try {
+                  const account = (await window.cosmostation.ethereum.request({ method: 'eth_requestAccounts', params: {} })) as EthRequestAccountsResponse;
+
+                  eventHandler(account);
+                } catch {
+                  eventHandler([]);
+                }
+              })();
+            } else {
+              eventHandler(event.data?.message?.result);
+            }
+          }
+        };
+
+        window.addEventListener('message', handler);
+        window.cosmostation.handlerInfos.push({ line: 'ETHEREUM', eventName, originHandler: eventHandler, handler });
+
+        return handler;
+      },
+      addListener: (eventName: EthereumListenerType, eventHandler: (data: unknown) => void) => {
+        const handler = (event: MessageEvent<ListenerMessage<ResponseMessage>>) => {
+          if (event.data?.isCosmostation && event.data?.type === eventName && event.data?.line === 'ETHEREUM') {
+            if (eventName === 'accountsChanged' && Array.isArray(event.data?.message?.result) && event.data?.message?.result.length === 0) {
+              void (async () => {
+                try {
+                  const account = (await window.cosmostation.ethereum.request({ method: 'eth_requestAccounts', params: {} })) as EthRequestAccountsResponse;
+
+                  eventHandler(account);
+                } catch {
+                  eventHandler([]);
+                }
+              })();
+            } else {
+              eventHandler(event.data?.message?.result);
+            }
           }
         };
 
@@ -139,37 +176,99 @@ void (() => {
             message,
           });
         }),
-      send: (method: string, params: unknown) =>
-        new Promise((res, rej) => {
-          const messageId = uuidv4();
+      // eslint-disable-next-line consistent-return
+      send: (method, params) => {
+        const messageId = uuidv4();
+        if (typeof method === 'string') {
+          return new Promise((res, rej) => {
+            const handler = (event: MessageEvent<ContentScriptToWebEventMessage<ResponseMessage, EthereumRequestMessage>>) => {
+              if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
+                window.removeEventListener('message', handler);
 
-          const handler = (event: MessageEvent<ContentScriptToWebEventMessage<ResponseMessage, EthereumRequestMessage>>) => {
-            if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
-              window.removeEventListener('message', handler);
+                const { data } = event;
 
-              const { data } = event;
+                if (data.response?.error) {
+                  rej(data.response);
+                } else {
+                  res({ result: data.response.result, jsonrpc: '2.0', id: undefined });
+                }
+              }
+            };
 
+            window.addEventListener('message', handler);
+
+            window.postMessage({
+              isCosmostation: true,
+              line: LINE_TYPE.ETHEREUM,
+              type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+              messageId,
+              message: {
+                method,
+                params,
+              },
+            });
+          });
+        }
+
+        const handler = (event: MessageEvent<ContentScriptToWebEventMessage<ResponseMessage, EthereumRequestMessage>>) => {
+          if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
+            window.removeEventListener('message', handler);
+
+            const { data } = event;
+
+            if (typeof params === 'function') {
               if (data.response?.error) {
-                rej(data.response);
+                params(data.response.error, { id: method.id, jsonrpc: '2.0', method: method.method, error: data.response.error });
               } else {
-                res({ result: data.response.result, jsonrpc: '2.0', id: undefined });
+                params(null, { id: method.id, jsonrpc: '2.0', method: method.method, error: data.response.error, result: data.response.result });
               }
             }
-          };
+          }
+        };
 
-          window.addEventListener('message', handler);
+        window.addEventListener('message', handler);
 
-          window.postMessage({
-            isCosmostation: true,
-            line: LINE_TYPE.ETHEREUM,
-            type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
-            messageId,
-            message: {
-              method,
-              params,
-            },
-          });
-        }),
+        window.postMessage({
+          isCosmostation: true,
+          line: LINE_TYPE.ETHEREUM,
+          type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+          messageId,
+          message: {
+            method: method.method,
+            params: method.params,
+          },
+        });
+      },
+      sendAsync: (request, callback) => {
+        const messageId = uuidv4();
+
+        const handler = (event: MessageEvent<ContentScriptToWebEventMessage<ResponseMessage, EthereumRequestMessage>>) => {
+          if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
+            window.removeEventListener('message', handler);
+
+            const { data } = event;
+
+            if (data.response?.error) {
+              callback(data.response.error, { id: request.id, jsonrpc: '2.0', method: request.method, error: data.response.error });
+            } else {
+              callback(null, { id: request.id, jsonrpc: '2.0', method: request.method, error: data.response.error, result: data.response.result });
+            }
+          }
+        };
+
+        window.addEventListener('message', handler);
+
+        window.postMessage({
+          isCosmostation: true,
+          line: LINE_TYPE.ETHEREUM,
+          type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+          messageId,
+          message: {
+            method: request.method,
+            params: request.params,
+          },
+        });
+      },
       enable: () => window.cosmostation.ethereum.request({ method: 'eth_requestAccounts', params: [] }) as Promise<EthRequestAccountsResponse>,
     },
     cosmos: {
@@ -395,15 +494,7 @@ void (() => {
   };
 
   window.cosmostation.providers = {
-    metamask: {
-      isMetaMask: true,
-      enable: window.cosmostation.ethereum.enable,
-      off: window.cosmostation.ethereum.off,
-      on: window.cosmostation.ethereum.on,
-      removeListener: window.cosmostation.ethereum.removeListener,
-      request: window.cosmostation.ethereum.request,
-      send: window.cosmostation.ethereum.send,
-    },
+    metamask: window.cosmostation.ethereum,
     keplr: {
       version: '0.0.0',
       mode: 'extension',
@@ -557,6 +648,15 @@ void (() => {
   };
 
   void (async () => {
+    const currentChainId = (await window.cosmostation.ethereum.request({ method: 'eth_chainId', params: [] })) as string;
+    window.cosmostation.ethereum.chainId = currentChainId;
+    window.cosmostation.ethereum.networkVersion = `${parseInt(currentChainId, 16)}`;
+
+    window.cosmostation.ethereum.on('chainChanged', (chainId) => {
+      window.cosmostation.ethereum.chainId = chainId as string;
+      window.cosmostation.ethereum.networkVersion = `${parseInt(chainId as string, 16)}`;
+    });
+
     const providers = (await window.cosmostation.common.request({ method: 'com_providers' })) as ComProvidersResponse;
 
     if (providers.keplr && !window.keplr) {
@@ -578,12 +678,8 @@ void (() => {
     }
 
     if (providers.metamask && !window.ethereum?.isMetaMask) {
+      window.cosmostation.ethereum.isMetaMask = true;
       window.ethereum = window.cosmostation.providers.metamask;
-      window.ethereum.chainId = (await window.ethereum.request({ method: 'eth_chainId', params: [] })) as string;
-
-      window.ethereum.on('chainChanged', (chainId) => {
-        if (window.ethereum) window.ethereum.chainId = chainId as string;
-      });
     }
   })();
 })();

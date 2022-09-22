@@ -356,7 +356,9 @@ export const ethSignTransactionParamsSchema = () =>
         r: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         s: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
         v: Joi.alternatives().try(Joi.string(), Joi.number()).optional(),
-      }).required(),
+      })
+        .unknown()
+        .required(),
     );
 
 export const ethcAddTokensParamsSchema = () =>

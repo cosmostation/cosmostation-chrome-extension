@@ -11,13 +11,6 @@ type Keplr = Omit<
   | 'signArbitrary'
   | 'verifyArbitrary'
   | 'signEthereum'
-  //
-  // | 'getOfflineSigner'
-  // | 'getOfflineSignerAuto'
-  // | 'getOfflineSignerOnlyAmino'
-  // | 'sendTx'
-  // | 'signAmino'
-  // | 'signDirect'
   | 'suggestToken'
 >;
 
@@ -59,19 +52,26 @@ interface Window {
   ethereum?: MetaMask;
 }
 
+type JsonRPCRequest = { id?: string; jsonrpc: '2.0'; method: string; params?: unknown };
+
 type Ethereum = {
   request: (message: import('~/types/message').EthereumRequestMessage) => Promise<T>;
-  send: (method: string, params: unknown) => Promise<T>;
+  send: (method: string | JsonRPCRequest, params: unknown) => Promise<T> | void;
+  sendAsync: (request: JsonRPCRequest, callback: (error, response) => void) => void;
   on: (eventName: import('~/types/message').EthereumListenerType, eventHandler: (event?: unknown) => void) => void;
   off: (
     eventName: import('~/types/message').EthereumListenerType | ((event: MessageEvent<ListenerMessage>) => void),
     eventHandler?: (event?: unknown) => void,
   ) => void;
+  addListener: (eventName: import('~/types/message').EthereumListenerType, eventHandler: (event?: unknown) => void) => void;
   removeListener: (
     eventName: import('~/types/message').EthereumListenerType | ((event: MessageEvent<ListenerMessage>) => void),
     eventHandler?: (event?: unknown) => void,
   ) => void;
   enable: () => Promise<unknown>;
+  isMetaMask: boolean;
+  chainId?: string;
+  networkVersion?: string;
 };
 
-type MetaMask = { isMetaMask: boolean; chainId?: string } & Ethereum;
+type MetaMask = Ethereum;
