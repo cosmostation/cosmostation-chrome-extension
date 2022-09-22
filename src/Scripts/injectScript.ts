@@ -176,37 +176,69 @@ void (() => {
             message,
           });
         }),
-      send: (method: string, params: unknown) =>
-        new Promise((res, rej) => {
-          const messageId = uuidv4();
+      // eslint-disable-next-line consistent-return
+      send: (method, params) => {
+        const messageId = uuidv4();
+        if (typeof method === 'string') {
+          return new Promise((res, rej) => {
+            const handler = (event: MessageEvent<ContentScriptToWebEventMessage<ResponseMessage, EthereumRequestMessage>>) => {
+              if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
+                window.removeEventListener('message', handler);
 
-          const handler = (event: MessageEvent<ContentScriptToWebEventMessage<ResponseMessage, EthereumRequestMessage>>) => {
-            if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
-              window.removeEventListener('message', handler);
+                const { data } = event;
 
-              const { data } = event;
+                if (data.response?.error) {
+                  rej(data.response);
+                } else {
+                  res({ result: data.response.result, jsonrpc: '2.0', id: undefined });
+                }
+              }
+            };
 
+            window.addEventListener('message', handler);
+
+            window.postMessage({
+              isCosmostation: true,
+              line: LINE_TYPE.ETHEREUM,
+              type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+              messageId,
+              message: {
+                method,
+                params,
+              },
+            });
+          });
+        }
+
+        const handler = (event: MessageEvent<ContentScriptToWebEventMessage<ResponseMessage, EthereumRequestMessage>>) => {
+          if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
+            window.removeEventListener('message', handler);
+
+            const { data } = event;
+
+            if (typeof params === 'function') {
               if (data.response?.error) {
-                rej(data.response);
+                params(data.response.error, { id: method.id, jsonrpc: '2.0', method: method.method, error: data.response.error });
               } else {
-                res({ result: data.response.result, jsonrpc: '2.0', id: undefined });
+                params(null, { id: method.id, jsonrpc: '2.0', method: method.method, error: data.response.error, result: data.response.result });
               }
             }
-          };
+          }
+        };
 
-          window.addEventListener('message', handler);
+        window.addEventListener('message', handler);
 
-          window.postMessage({
-            isCosmostation: true,
-            line: LINE_TYPE.ETHEREUM,
-            type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
-            messageId,
-            message: {
-              method,
-              params,
-            },
-          });
-        }),
+        window.postMessage({
+          isCosmostation: true,
+          line: LINE_TYPE.ETHEREUM,
+          type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+          messageId,
+          message: {
+            method: method.method,
+            params: method.params,
+          },
+        });
+      },
       sendAsync: (request, callback) => {
         const messageId = uuidv4();
 
