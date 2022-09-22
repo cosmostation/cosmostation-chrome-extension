@@ -20,6 +20,7 @@ import { FETCH_AI } from './cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
 import { INJECTIVE } from './cosmos/injective';
 import { IRIS } from './cosmos/iris';
+import { IXO } from './cosmos/ixo';
 import { JUNO } from './cosmos/juno';
 import { KAVA } from './cosmos/kava';
 import { KI } from './cosmos/ki';
@@ -87,6 +88,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   GRAVITY_BRIDGE,
   INJECTIVE,
   IRIS,
+  IXO,
   JUNO,
   KAVA,
   KI,
