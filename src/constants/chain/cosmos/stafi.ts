@@ -24,8 +24,8 @@ export const STAFI: CosmosChain = {
   explorerURL: `${MINTSCAN_URL}/stafi`,
   gasRate: {
     tiny: '0.01',
-    low: '0.01',
-    average: '0.01',
+    low: '0.0025',
+    average: '0.025',
   },
   gas: { send: '100000' },
 };
