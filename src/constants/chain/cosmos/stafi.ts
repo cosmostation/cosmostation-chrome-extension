@@ -1,5 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import stafiImg from '~/images/symbols/fis.png';
+import stafiImg from '~/images/symbols/stafi.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const STAFI: CosmosChain = {
@@ -24,8 +24,8 @@ export const STAFI: CosmosChain = {
   explorerURL: `${MINTSCAN_URL}/stafi`,
   gasRate: {
     tiny: '0.01',
-    low: '0.0025',
-    average: '0.025',
+    low: '0.01',
+    average: '0.01',
   },
   gas: { send: '100000' },
 };
