@@ -54,6 +54,7 @@ import { ETHEREUM as NETWORK__ETHEREUM } from './ethereum/network/ethereum';
 import { EVMOS as NETWORK__EVMOS } from './ethereum/network/evmos';
 import { FANTOM as NETWORK__FANTOM } from './ethereum/network/fantom';
 import { HARMONY as NETWORK__HARMONY } from './ethereum/network/harmony';
+import { KAVA as NETWORK__KAVA } from './ethereum/network/kava';
 import { POLYGON as NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SMART_CHAIN as NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
 
@@ -130,6 +131,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   NETWORK__EVMOS,
   NETWORK__FANTOM,
   NETWORK__HARMONY,
+  NETWORK__KAVA,
   NETWORK__POLYGON,
   NETWORK__SMART_CHAIN,
 ];
