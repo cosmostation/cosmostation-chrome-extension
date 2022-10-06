@@ -34,7 +34,16 @@ export default function Entry() {
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
   });
+  // TODO useSchema 훅에 커스텀 체인용 타입 또 만들어주면 됨
+  // TODO 다국어 지원을 위해 translation.json에 새로 chain용 텍스트 작성
+  // TODO useForm, pick학습
+  // TODO inject script에 보면 cos_addChain method가 정의되어있는데 여기 param을 인풋으로 받아오면 될 것 같음.
 
+  // /Users/ahnsihun/Workspace/cosmostation-chrome-extension/src/types/message/cosmos.ts
+  // CosAddChainParams
+
+  // /Users/ahnsihun/Workspace/cosmostation-chrome-extension/src/Popup/pages/Popup/Cosmos/AddChain/entry.tsx
+  // 위 주소에서 param 어떻게 받고 어떻게 cosmoschain 타입에 집어넣는지 볼 수 있음
   const submit = async (data: AddNetworkForm) => {
     try {
       const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], '1', data.rpcURL);
