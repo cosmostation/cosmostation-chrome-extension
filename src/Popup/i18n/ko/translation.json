@@ -420,7 +420,7 @@
         "Token": {
           "Add": {
             "entry": {
-              "addNetworkSnackbar": "커스텀 체인이 추가 되었습니다.",
+              "addChainSnackbar": "커스텀 체인이 추가 되었습니다.",
               "addressPrefixPlaceHolder": "bech32 address 값",
               "baseDenomPlaceHolder": "기본 denom 명칭",
               "coinTypePlaceHolder": "bip44에 들어갈 코인 type",
