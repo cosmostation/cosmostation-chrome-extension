@@ -500,6 +500,7 @@
         },
         "entry": {
           "addChain": "Add a custom chain",
+          "addCosmosChain": "Add a custom Cosmos chain",
           "addEthereumNetwork": "Add a custom EVM network",
           "chainManagement": "Chain management"
         },
