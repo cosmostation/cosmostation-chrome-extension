@@ -420,7 +420,7 @@
         "Token": {
           "Add": {
             "entry": {
-              "addNetworkSnackbar": "Custon Chain added",
+              "addChainSnackbar": "custom Chain added",
               "addressPrefixPlaceHolder": "bech32 address",
               "baseDenomPlaceHolder": "Name of base Denom",
               "coinTypePlaceHolder": "Coin type in bip 44",
