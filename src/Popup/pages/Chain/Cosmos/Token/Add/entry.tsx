@@ -62,7 +62,7 @@ export default function Entry() {
         id: uuidv4(),
         line: 'COSMOS',
         // 이거 임의로 넣은거라 기존의 삼항연산자 그거 넣어야함
-        type: 'ETHERMINT' || '',
+        type: data.type ?? '',
         //
         chainId: data.chainId,
         chainName: data.chainName,
