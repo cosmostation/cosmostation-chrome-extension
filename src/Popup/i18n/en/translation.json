@@ -421,19 +421,20 @@
           "Add": {
             "entry": {
               "addChainSnackbar": "custom Chain added",
-              "addressPrefixPlaceHolder": "bech32 address",
-              "baseDenomPlaceHolder": "Name of base Denom",
-              "coinTypePlaceHolder": "Coin type in bip 44",
-              "chainIdPlaceholder": "Chain id (eg. 0x1)",
+              "addressPrefixPlaceholder": "bech32 address",
+              "baseDenomPlaceholder": "Name of base Denom",
+              "coinTypePlaceholder": "Coin type in bip 44 (option)",
+              "chainIdPlaceholder": "Chain id (stafi-1)",
               "chainNamePlaceholder": "Custom Chain name",
               "coinGeckoIdPlaceholder": "Coingecko API id (option)",
+              "decimalsPlaceholder": "decimal value (option)",
               "displayDenomPlaceholder": "Currency symbol (option)",
               "explorerURLPlaceholder": "Explorer URL (option)",
-              "gasRatePlaceHolder": "Gas rate",
+              "gasRatePlaceholder": "Gas rate (option)",
               "imageURLPlaceholder": "Symbol image URL (option)",
               "restURLPlaceholder": "Rest URL",
-              "sendGadPlaceholder": "Send Gas value",
-              "submitButton": "Add a network",
+              "sendGasPlaceholder": "Send Gas value (option)",
+              "submitButton": "Add a chain",
               "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust."
             },
             "CW20": {

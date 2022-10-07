@@ -1,40 +1,40 @@
+import { COSMOS_CHAINS } from '~/constants/chain';
+import { COSMOS_TYPE } from '~/constants/cosmos';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Joi from '~/Popup/utils/joi';
-import { hexRegex } from '~/Popup/utils/regex';
-import type { EthereumNetwork, GasRate } from '~/types/chain';
+import type { GasRate } from '~/types/chain';
 import type { CosAddChain } from '~/types/message/cosmos';
 
-export type AddNetworkForm = Pick<EthereumNetwork, 'chainId' | 'networkName' | 'rpcURL' | 'displayDenom' | 'explorerURL' | 'imageURL' | 'coinGeckoId'>;
 // export type AddChainForm = Pick<CosmosChain, 'chainId' | 'chainName' | 'restURL' |'baseDenom' |'coinType' | 'displayDenom' | 'explorerURL' | 'imageURL' | 'coinGeckoId'>;
 
 export function useSchema() {
   const { t } = useTranslation();
-  // TODO delete here
-  const addNetworkForm = Joi.object<AddNetworkForm>({
-    chainId: Joi.string()
-      .required()
-      .pattern(hexRegex)
-      .messages({
-        'string.base': t('schema.common.string.base'),
-        'string.empty': t('schema.common.string.empty'),
-        'string.pattern.base': t('schema.addNetworkForm.address.string.pattern.base'),
-      }),
 
-    networkName: Joi.string()
+  const cosmosType = Object.values(COSMOS_TYPE);
+  const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
+
+  const addChainForm = Joi.object<CosAddChain['params']>({
+    type: Joi.string()
+      .valid(...cosmosType)
+      .default(''),
+    chainId: Joi.string()
+      .lowercase()
+      .required()
+      .invalid(...officialCosmosLowercaseChainIds),
+    chainName: Joi.string()
       .required()
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
       }),
-    rpcURL: Joi.string()
+    restURL: Joi.string()
       .required()
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
       }),
     displayDenom: Joi.string()
-      .optional()
-      .allow('')
+      .required()
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
@@ -46,13 +46,7 @@ export function useSchema() {
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
       }),
-    explorerURL: Joi.string()
-      .optional()
-      .allow('')
-      .messages({
-        'string.base': t('schema.common.string.base'),
-        'string.empty': t('schema.common.string.empty'),
-      }),
+
     imageURL: Joi.string()
       .optional()
       .allow('')
@@ -60,46 +54,31 @@ export function useSchema() {
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
       }),
-  });
-
-  // 받아야 하는 필드
-  //  addressPrefix,
-  // baseDenom,
-  // chainId,
-  // chainName,
-  // displayDenom,
-  // restURL,
-  // coinGeckoId,
-  // coinType,
-  // decimals,
-  // gasRate,
-  // imageURL,
-  // sendGas,
-  // type,
-  // cosmWasm,
-
-  const addChainForm = Joi.object<CosAddChain['params']>({
-    type: Joi.string()
-      // .valid(...cosmosType)
-      .default(''),
-    chainId: Joi.string()
-      .lowercase()
-      // .invalid(...officialChainIds)
-      .required(),
-    chainName: Joi.string()
-      .lowercase()
-      // .invalid(...invalidChainNames)
-      .required(),
-    restURL: Joi.string().required(),
-    imageURL: Joi.string().optional(),
-    baseDenom: Joi.string().required(),
-    displayDenom: Joi.string().required(),
-    decimals: Joi.number().optional(),
+    baseDenom: Joi.string()
+      .required()
+      .messages({
+        'string.base': t('schema.common.string.base'),
+        'string.empty': t('schema.common.string.empty'),
+      }),
+    // decimals: Joi.number().optional(),
+    decimals: Joi.string()
+      .optional()
+      .allow('')
+      .messages({
+        'string.base': t('schema.common.string.base'),
+        'string.empty': t('schema.common.string.empty'),
+      }),
     coinType: Joi.string()
       .regex(/^[0-9]+$/)
+      .allow('')
       .optional(),
-    addressPrefix: Joi.string().required(),
-    coinGeckoId: Joi.string().optional(),
+
+    addressPrefix: Joi.string()
+      .required()
+      .messages({
+        'string.base': t('schema.common.string.base'),
+        'string.empty': t('schema.common.string.empty'),
+      }),
     gasRate: Joi.object<GasRate>({
       tiny: Joi.string()
         .required()
@@ -113,10 +92,12 @@ export function useSchema() {
     }).optional(),
     sendGas: Joi.string()
       .regex(/^[0-9]+$/)
+      .allow('')
       .optional(),
     cosmWasm: Joi.boolean().optional(),
-  })
-    .label('params')
-    .required();
-  return { addNetworkForm, addChainForm };
+  });
+  // .label('params')
+  // .required();
+
+  return { addChainForm };
 }
