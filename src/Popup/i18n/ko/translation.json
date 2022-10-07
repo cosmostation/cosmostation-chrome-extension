@@ -421,19 +421,20 @@
           "Add": {
             "entry": {
               "addChainSnackbar": "커스텀 체인이 추가 되었습니다.",
-              "addressPrefixPlaceHolder": "bech32 address 값",
-              "baseDenomPlaceHolder": "기본 denom 명칭",
-              "coinTypePlaceHolder": "bip44에 들어갈 코인 type",
-              "chainIdPlaceholder": "체인 ID (예: 0x1)",
+              "addressPrefixPlaceholder": "bech32 address 값",
+              "baseDenomPlaceholder": "기본 denom 명칭",
+              "coinTypePlaceholder": "bip44에 들어갈 코인 type (선택)",
+              "chainIdPlaceholder": "체인 ID (예: stafi-1)",
               "chainNamePlaceholder": "커스텀 체인 이름",
               "coinGeckoIdPlaceholder": "Coingecko API id (선택)",
-              "displayDenomPlaceholder": "통화 기호 (선택)",
+              "decimalsPlaceholder": "소수 점 몇 단위 (선택)",
+              "displayDenomPlaceholder": "통화 기호",
               "explorerURLPlaceholder": "블록 탐색기 URL (선택)",
-              "gasRatePlaceHolder": "Gas rate",
+              "gasRatePlaceholder": "Gas rate (선택)",
               "imageURLPlaceholder": "통화 기호 이미지 URL (선택)",
               "restURLPlaceholder": "Rest URL",
-              "sendGadPlaceholder": "보낼 가스량",
-              "submitButton": "네트워크 추가",
+              "sendGasPlaceholder": "보낼 가스량 (선택)",
+              "submitButton": "새 체인 추가",
               "warning": "악의적인 네트워크 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 네트워크만 추가하세요."
             },
             "CW20": {
@@ -500,7 +501,7 @@
         },
         "entry": {
           "addChain": "커스텀 체인 추가",
-          "addCosmosChain": "커스텀 Cosmos 체인 추츄가",
+          "addCosmosChain": "커스텀 Cosmos 체인 추가",
           "addEthereumNetwork": "커스텀 EVM 네트워크 추가",
           "chainManagement": "체인 관리"
         },
