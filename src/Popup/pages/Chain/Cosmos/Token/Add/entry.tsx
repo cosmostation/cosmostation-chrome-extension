@@ -19,14 +19,6 @@ import Info16Icon from '~/images/icons/Info16.svg';
 
 export default function Entry() {
   const { addChainForm } = useSchema();
-
-  // const { additionalChains } = await chromeStorage();
-  // const cosmosAdditionalChains = additionalChains.filter((item) => item.line === 'COSMOS') as CosmosChain[];
-
-  // const cosmosLowercaseChainNames = COSMOS_CHAINS.map((item) => item.chainName.toLowerCase());
-  // const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
-  // const unofficialCosmosLowercaseChainIds = cosmosAdditionalChains.map((item) => item.chainId.toLowerCase());
-
   const { addAdditionalChains } = useCurrentAdditionalChains();
   const { t } = useTranslation();
 
@@ -62,17 +54,10 @@ export default function Entry() {
 
   const submit = async (data: CosAddChainParams) => {
     try {
-      // 이 함수 어떻게 쓰이는지 확인
-      // const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], '1', data.restURL);
-
-      // if (response.result !== data.chainId) {
-      //   throw Error(`Chain ID returned by RPC URL ${data.restURL} does not match ${data.chainId} (result: ${response.result || ''})`);
-      // }
       // 중복 추가 방지
       if (COSMOS_CHAINS.map((item) => item.chainId).includes(data.chainId)) {
         throw Error(`Can't add ${data.chainId}`);
       }
-
       const newChain: CosmosChain = {
         id: uuidv4(),
         line: 'COSMOS',
@@ -123,6 +108,12 @@ export default function Entry() {
   // FIXME gasRate부분을 어떻게 인풋을 받아야할지 모르겠음, 그냥 받는거는 타입이 GasRate가 아니고 나눠서 받자니
   // CosAddChainParams에서 gasRate필드에서 타입을 gasRate로 받아서 쪼개서 넣을 수가 없음(인풋이 들어온게 파람타입 필드 참조해서 넣으니깐...gasRate타입으로 넣어야하는거여)
 
+  // FIXME 기존에 존재하는 chain의 chainID를 입력 시 "chainId" contains an invalid value
+  // 라는 헬퍼 텍스트가 출력되는데 원래는 위 onsubmit함수에서 스낵바를 띄워야하는데 아마
+  // 스키마에서 invalid를 설정해줘서 그런거같음
+  // sol: 1.useSchema의 invalid를 삭제 => 모든 인풋들이 invalid한 뒤에 submit함수가 발동되니
+  // 인풋들이 검증을 통과한다 -> onsubmit함수가 걸리면서 중복 체크를 하고 스낵바를 띄운다
+  // 근데 스키마에서 invalid 조건을 작성하면 인풋 검증 과정에서 부적합판정 뒤 헬퍼 텍스트가 출력되는거임
   return (
     <form onSubmit={handleSubmit(submit)}>
       <Container>
@@ -245,13 +236,23 @@ export default function Entry() {
               />
             </Div>
 
-            <Div>
+            <Div sx={{ marginBottom: '0.8rem' }}>
               <Input
                 type="text"
                 inputProps={register('coinGeckoId')}
                 error={!!errors.coinGeckoId}
                 helperText={errors.coinGeckoId?.message}
                 placeholder={t('pages.Chain.Cosmos.Token.Add.entry.coinGeckoIdPlaceholder')}
+              />
+            </Div>
+
+            <Div>
+              <Input
+                type="text"
+                inputProps={register('type')}
+                error={!!errors.type}
+                helperText={errors.type?.message}
+                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.typePlaceholder')}
               />
             </Div>
           </InputContainer>

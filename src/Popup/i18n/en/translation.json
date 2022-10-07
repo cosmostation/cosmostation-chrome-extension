@@ -435,6 +435,7 @@
               "restURLPlaceholder": "Rest URL",
               "sendGasPlaceholder": "Send Gas value (option)",
               "submitButton": "Add a chain",
+              "typePlaceholder": "Type of Coin",
               "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust."
             },
             "CW20": {
