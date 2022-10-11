@@ -450,6 +450,9 @@
               "submitButton": "새 체인 추가",
               "typePlaceholder": "코인 타입 (선택)",
               "warning": "악의적인 네트워크 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 네트워크만 추가하세요."
+            },
+            "layout": {
+              "title": "체인 추가"
             }
           }
         }
@@ -1003,7 +1006,7 @@
   },
   "schema": {
     "addChainForm": {
-      "address": {
+      "type": {
         "string": {
           "any": {
             "invalid": "옳지 않은 타입 명 입니다."
@@ -1062,7 +1065,7 @@
         "base": "숫자를 입력하세요.",
         "empty": "필수 값 입니다.",
         "greater": "{#limit} 보다 큰 값을 입력하셔야 합니다.",
-        "less": "{#limit} 보다 작은 값을 입력하셔야 합니다.",
+        "less": "{#limit} 보다 작은 값을 입력하CosAddChainParams셔야 합니다.",
         "max": "{#limit} 이하의 값을 입력하셔야 합니다.",
         "min": "{#limit} 이상의 값을 입력하셔야 합니다."
       },

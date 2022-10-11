@@ -2,26 +2,33 @@
 import { COSMOS_TYPE } from '~/constants/cosmos';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Joi from '~/Popup/utils/joi';
-import type { GasRate } from '~/types/chain';
-import type { CosAddChainParams } from '~/types/message/cosmos';
+import type { CosmosType } from '~/types/chain';
+
+export type AddChainForm = {
+  type?: CosmosType;
+  chainId: string;
+  chainName: string;
+  restURL: string;
+  imageURL?: string;
+  baseDenom: string;
+  displayDenom: string;
+  decimals?: number;
+  coinType?: string;
+  addressPrefix: string;
+  coinGeckoId?: string;
+  gasRateTiny?: string;
+  gasRateLow?: string;
+  gasRateAverage?: string;
+  sendGas?: string;
+  cosmWasm?: boolean;
+};
 
 export function useSchema() {
   const { t } = useTranslation();
 
   const cosmosType = Object.values(COSMOS_TYPE);
-  // const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
 
-  // FIXME 현재 옵션값 미 입력시 undefine이 아닌 ''가 입력되어서 newChain할당시에 값이 ''가 들어감
-  // -> .empty('')  엠티 필드를 오버라이딩함
-
-  // FIXME 가스 비율 인풋을 아예 비우거나 하나를 입력했을때는 모두 입력하도록 걸고 싶음
-  // -> .and() 로 해결한 듯
-  // FIXME 1개만 입력시 에러는 나는데 에러 메시지가 안나옴
-
-  // FIXME 가스레이트 값 미입력시 undefine으로 넘어가지 않음...
-
-  // TODO 가스 레이트에도 메시지 달아주기
-  const addChainForm = Joi.object<CosAddChainParams>({
+  const addChainForm = Joi.object<AddChainForm>({
     type: Joi.string()
       .optional()
       .empty('')
@@ -29,7 +36,7 @@ export function useSchema() {
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
-        'any.only': t('schema.addChainForm.address.string.any.invalid'),
+        'any.only': t('schema.addChainForm.type.string.any.invalid'),
       }),
     chainId: Joi.string()
       .required()
@@ -96,35 +103,61 @@ export function useSchema() {
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
       }),
-    gasRate: Joi.object<GasRate>({
-      tiny: Joi.string()
-        .optional()
-        .empty('')
-        .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
-        .messages({
-          'string.pattern.base': t('schema.common.decimal.base'),
-        }),
-      low: Joi.string()
-        .optional()
-        .empty('')
-        .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
-        .messages({
-          'string.pattern.base': t('schema.common.decimal.base'),
-        }),
-      average: Joi.string()
-        .optional()
-        .empty('')
-        .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
-        .messages({
-          'string.pattern.base': t('schema.common.decimal.base'),
-        }),
-    })
-      .and('tiny', 'low', 'average')
+    gasRateTiny: Joi.string()
       .optional()
       .empty('')
       .messages({
-        'object.and': t('schema.common.object.and'),
+        'string.base': t('schema.common.string.base'),
+        'string.empty': t('schema.common.string.empty'),
       }),
+    gasRateLow: Joi.string()
+      .optional()
+      .empty('')
+      .messages({
+        'string.base': t('schema.common.string.base'),
+        'string.empty': t('schema.common.string.empty'),
+      }),
+    gasRateAverage: Joi.string()
+      .optional()
+      .empty('')
+      .messages({
+        'string.base': t('schema.common.string.base'),
+        'string.empty': t('schema.common.string.empty'),
+      }),
+    // gasRate: Joi.object<GasRate>({
+    //   tiny: Joi.string()
+    //     .optional()
+    //     .empty('')
+    //     .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
+    //     .messages({
+    //       'string.pattern.base': t('schema.common.decimal.base'),
+    //       'object.and': t('schema.common.object.and'),
+    //     }),
+    //   low: Joi.string()
+    //     .optional()
+    //     .empty('')
+    //     .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
+    //     .messages({
+    //       'string.pattern.base': t('schema.common.decimal.base'),
+    //       'object.and': t('schema.common.object.and'),
+    //     }),
+    //   average: Joi.string()
+    //     .optional()
+    //     .empty('')
+    //     .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
+    //     .messages({
+    //       'string.pattern.base': t('schema.common.decimal.base'),
+    //       'object.and': t('schema.common.object.and'),
+    //     }),
+    // })
+    //   .and('tiny', 'low', 'average')
+    //   .optional()
+    //   .empty('')
+    //   .messages({
+    //     'object.base': t('schema.common.object.and'),
+    //     'object.and': t('schema.common.object.and'),
+    //     'object.missing': t('schema.common.object.and'),
+    //   }),
     sendGas: Joi.string()
       .optional()
       .empty('')
@@ -138,7 +171,11 @@ export function useSchema() {
       .messages({
         'boolean.base': t('schema.common.boolean.base'),
       }),
-  });
+  })
+    .and('gasRateTiny', 'gasRateLow', 'gasRateAverage')
+    .messages({
+      'object.and': t('schema.common.object.and'),
+    });
 
   return { addChainForm };
 }

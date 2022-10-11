@@ -450,6 +450,9 @@
               "submitButton": "Add a chain",
               "typePlaceholder": "Type of Coin (option)",
               "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust."
+            },
+            "layout": {
+              "title": "Add a Chain"
             }
           }
         }
@@ -1003,7 +1006,7 @@
   },
   "schema": {
     "addChainForm": {
-      "address": {
+      "type": {
         "string": {
           "any": {
             "invalid": "Invalid type"

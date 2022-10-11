@@ -10,9 +10,9 @@ import Input from '~/Popup/components/common/Input';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain } from '~/types/chain';
-import type { CosAddChainParams } from '~/types/message/cosmos';
 
 import { ButtonContainer, Container, ContentsContainer, Div, InputContainer, WarningContainer, WarningIconContainer, WarningTextContainer } from './styled';
+import type { AddChainForm } from './useSchema';
 import { useSchema } from './useSchema';
 
 import Info16Icon from '~/images/icons/Info16.svg';
@@ -29,18 +29,22 @@ export default function Entry() {
     handleSubmit,
     formState: { errors, isDirty },
     reset,
-  } = useForm<CosAddChainParams>({
+  } = useForm<AddChainForm>({
     resolver: joiResolver(addChainForm),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
   });
 
-  const submit = async (data: CosAddChainParams) => {
+  const submit = async (data: AddChainForm) => {
     try {
       if (COSMOS_CHAINS.map((item) => item.chainId).includes(data.chainId)) {
         throw Error(`Can't add ${data.chainId}`);
       }
-
+      // FIXME 조건 걸어서 all or nothing 조건식 세워라 아니면 스키마쪽 .and 잘 살려봐
+      if (data.gasRateAverage === undefined || data.gasRateLow === undefined || data.gasRateTiny === undefined) {
+        // console.log('셋다 모두 언디파인');
+        throw Error(`Can't add ${data.chainId}`);
+      }
       const newChain: CosmosChain = {
         id: uuidv4(),
         line: 'COSMOS',
@@ -59,13 +63,17 @@ export default function Entry() {
           coinType: data.coinType ? `${data.coinType}'` : "118'",
         },
         decimals: data.decimals ?? 6,
-        gasRate: data.gasRate ?? { average: '0.025', low: '0.0025', tiny: '0.00025' },
+        // { average: '0.025', low: '0.0025', tiny: '0.00025' }
+        gasRate: { average: '0.025', low: '0.0025', tiny: '0.00025' },
         imageURL: data.imageURL,
         gas: { send: data.sendGas ?? COSMOS_DEFAULT_SEND_GAS },
         cosmWasm: data.cosmWasm,
       };
       await addAdditionalChains(newChain);
+      // for test
       // console.log(newChain);
+      // console.log(data.gasRate);
+      // console.log(data.gasRateAverage);
       enqueueSnackbar(t('pages.Chain.Cosmos.Token.Add.entry.addChainSnackbar'));
       reset();
     } catch (e) {
@@ -170,9 +178,9 @@ export default function Entry() {
             <Div sx={{ marginBottom: '0.8rem' }}>
               <Input
                 type="text"
-                inputProps={register('gasRate.tiny')}
-                error={!!errors.gasRate?.tiny}
-                helperText={errors.gasRate?.tiny?.message}
+                inputProps={register('gasRateTiny')}
+                error={!!errors.gasRateTiny}
+                helperText={errors.gasRateTiny?.message}
                 placeholder={t('pages.Chain.Cosmos.Token.Add.entry.gasRateTinyPlaceholder')}
               />
             </Div>
@@ -180,9 +188,9 @@ export default function Entry() {
             <Div sx={{ marginBottom: '0.8rem' }}>
               <Input
                 type="text"
-                inputProps={register('gasRate.low')}
-                error={!!errors.gasRate?.low}
-                helperText={errors.gasRate?.low?.message}
+                inputProps={register('gasRateLow')}
+                error={!!errors.gasRateLow}
+                helperText={errors.gasRateLow?.message}
                 placeholder={t('pages.Chain.Cosmos.Token.Add.entry.gasRateLowPlaceholder')}
               />
             </Div>
@@ -190,9 +198,9 @@ export default function Entry() {
             <Div sx={{ marginBottom: '0.8rem' }}>
               <Input
                 type="text"
-                inputProps={register('gasRate.average')}
-                error={!!errors.gasRate}
-                helperText={errors.gasRate?.average?.message}
+                inputProps={register('gasRateAverage')}
+                error={!!errors.gasRateAverage}
+                helperText={errors.gasRateAverage?.message}
                 placeholder={t('pages.Chain.Cosmos.Token.Add.entry.gasRateAveragePlaceholder')}
               />
             </Div>
