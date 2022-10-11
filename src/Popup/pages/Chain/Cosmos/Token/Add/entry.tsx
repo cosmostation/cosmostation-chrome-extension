@@ -34,36 +34,17 @@ export default function Entry() {
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
   });
-  // TODO useSchema 훅에 커스텀 체인용 타입 또 만들어주면 됨
-  // TODO 다국어 지원을 위해 translation.json에 새로 chain용 텍스트 작성
-  // TODO useForm, pick학습
-  // TODO inject script에 보면 cos_addChain method가 정의되어있는데 여기 param을 인풋으로 받아오면 될 것 같음.
-
-  // /Users/ahnsihun/Workspace/cosmostation-chrome-extension/src/types/message/cosmos.ts
-  // CosAddChainParams
-
-  // /Users/ahnsihun/Workspace/cosmostation-chrome-extension/src/Popup/pages/Popup/Cosmos/AddChain/entry.tsx
-  // 위 주소에서 param 어떻게 받고 어떻게 cosmoschain 타입에 집어넣는지 볼 수 있음
-
-  // useCurrentAdditionalChains 훅이 추가 체인관련 훅
-  // addAdditionalChains 이 메서드가 체인 추가해주는 메서드 인듯
-
-  // 로직따서 밑에 넣고 스키마 따서 추가하고 스키마 맞춰서 인풋 필드 더 만들어 내기
-
-  // ! 어떻게 입력된 데이터가 AddNetworkForm이런 타입안에 들어가는지 모르겠는데? 이걸 useForm이 해주는건가 아님 joiresolver
 
   const submit = async (data: CosAddChainParams) => {
     try {
-      // 중복 추가 방지
       if (COSMOS_CHAINS.map((item) => item.chainId).includes(data.chainId)) {
         throw Error(`Can't add ${data.chainId}`);
       }
+
       const newChain: CosmosChain = {
         id: uuidv4(),
         line: 'COSMOS',
-        // 이거 임의로 넣은거라 기존의 삼항연산자 그거 넣어야함
         type: data.type ?? '',
-        //
         chainId: data.chainId,
         chainName: data.chainName,
         displayDenom: data.displayDenom,
@@ -78,42 +59,21 @@ export default function Entry() {
           coinType: data.coinType ? `${data.coinType}'` : "118'",
         },
         decimals: data.decimals ?? 6,
-        // 세개 필드를 어떻게 동시에 받을까..
         gasRate: data.gasRate ?? { average: '0.025', low: '0.0025', tiny: '0.00025' },
         imageURL: data.imageURL,
         gas: { send: data.sendGas ?? COSMOS_DEFAULT_SEND_GAS },
         cosmWasm: data.cosmWasm,
       };
-      // console.log(newChain); // for test
-      // 체인 추가 구문
       await addAdditionalChains(newChain);
-      // TODO await addEthereumNetwork({ ...data, decimals: 18 }); 이거가 data를 스프레드로 뿌려주고 안써도 되는 디폴트 값을 18로 준건가?
+      // console.log(newChain);
       enqueueSnackbar(t('pages.Chain.Cosmos.Token.Add.entry.addChainSnackbar'));
       reset();
     } catch (e) {
       const message = (e as { message?: string }).message ? (e as { message: string }).message : 'Failed';
-
       enqueueSnackbar(message, { variant: 'error' });
     }
   };
 
-  // TODO 인풋 순서 조정 필요
-  // TODO 로컬라이징 텍스트 수정 필요
-  // TODO joi 좀 더 공부해봐야 할 듯,
-  // .label('params')
-  // .required(); 원래 있던 스키마의 뒤에 붙어있던 메서드인데 무슨 의미인지 모르겠음
-  // 그냥 스키마에 있는 모든 메서드 다 이해하기
-  // 1순위 Joi공부해
-
-  // FIXME gasRate부분을 어떻게 인풋을 받아야할지 모르겠음, 그냥 받는거는 타입이 GasRate가 아니고 나눠서 받자니
-  // CosAddChainParams에서 gasRate필드에서 타입을 gasRate로 받아서 쪼개서 넣을 수가 없음(인풋이 들어온게 파람타입 필드 참조해서 넣으니깐...gasRate타입으로 넣어야하는거여)
-
-  // FIXME 기존에 존재하는 chain의 chainID를 입력 시 "chainId" contains an invalid value
-  // 라는 헬퍼 텍스트가 출력되는데 원래는 위 onsubmit함수에서 스낵바를 띄워야하는데 아마
-  // 스키마에서 invalid를 설정해줘서 그런거같음
-  // sol: 1.useSchema의 invalid를 삭제 => 모든 인풋들이 invalid한 뒤에 submit함수가 발동되니
-  // 인풋들이 검증을 통과한다 -> onsubmit함수가 걸리면서 중복 체크를 하고 스낵바를 띄운다
-  // 근데 스키마에서 invalid 조건을 작성하면 인풋 검증 과정에서 부적합판정 뒤 헬퍼 텍스트가 출력되는거임
   return (
     <form onSubmit={handleSubmit(submit)}>
       <Container>
@@ -136,6 +96,7 @@ export default function Entry() {
                 placeholder={t('pages.Chain.Cosmos.Token.Add.entry.chainIdPlaceholder')}
               />
             </Div>
+
             <Div sx={{ marginBottom: '0.8rem' }}>
               <Input
                 type="text"
@@ -206,15 +167,35 @@ export default function Entry() {
               />
             </Div>
 
-            {/* <Div sx={{ marginBottom: '0.8rem' }}>
+            <Div sx={{ marginBottom: '0.8rem' }}>
               <Input
                 type="text"
-                inputProps={register('gasRate')}
-                error={!!errors.gasRate}
-                // helperText={errors.gasRate?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.gasRatePlaceholder')}
+                inputProps={register('gasRate.tiny')}
+                error={!!errors.gasRate?.tiny}
+                helperText={errors.gasRate?.tiny?.message}
+                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.gasRateTinyPlaceholder')}
               />
-            </Div> */}
+            </Div>
+
+            <Div sx={{ marginBottom: '0.8rem' }}>
+              <Input
+                type="text"
+                inputProps={register('gasRate.low')}
+                error={!!errors.gasRate?.low}
+                helperText={errors.gasRate?.low?.message}
+                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.gasRateLowPlaceholder')}
+              />
+            </Div>
+
+            <Div sx={{ marginBottom: '0.8rem' }}>
+              <Input
+                type="text"
+                inputProps={register('gasRate.average')}
+                error={!!errors.gasRate}
+                helperText={errors.gasRate?.average?.message}
+                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.gasRateAveragePlaceholder')}
+              />
+            </Div>
 
             <Div sx={{ marginBottom: '0.8rem' }}>
               <Input
@@ -246,13 +227,23 @@ export default function Entry() {
               />
             </Div>
 
-            <Div>
+            <Div sx={{ marginBottom: '0.8rem' }}>
               <Input
                 type="text"
                 inputProps={register('type')}
                 error={!!errors.type}
                 helperText={errors.type?.message}
                 placeholder={t('pages.Chain.Cosmos.Token.Add.entry.typePlaceholder')}
+              />
+            </Div>
+
+            <Div>
+              <Input
+                type="text"
+                inputProps={register('cosmWasm')}
+                error={!!errors.cosmWasm}
+                helperText={errors.cosmWasm?.message}
+                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.cosmWasmPlaceholder')}
               />
             </Div>
           </InputContainer>

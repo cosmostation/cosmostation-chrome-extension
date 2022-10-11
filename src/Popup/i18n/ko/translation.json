@@ -419,25 +419,6 @@
       "Cosmos": {
         "Token": {
           "Add": {
-            "entry": {
-              "addChainSnackbar": "커스텀 체인이 추가 되었습니다.",
-              "addressPrefixPlaceholder": "bech32 address 값",
-              "baseDenomPlaceholder": "기본 denom 명칭",
-              "coinTypePlaceholder": "bip44에 들어갈 코인 type (선택)",
-              "chainIdPlaceholder": "체인 ID (예: stafi-1)",
-              "chainNamePlaceholder": "커스텀 체인 이름",
-              "coinGeckoIdPlaceholder": "Coingecko API id (선택)",
-              "decimalsPlaceholder": "소수 점 몇 단위 (선택)",
-              "displayDenomPlaceholder": "통화 기호",
-              "explorerURLPlaceholder": "블록 탐색기 URL (선택)",
-              "gasRatePlaceholder": "Gas rate (선택)",
-              "imageURLPlaceholder": "통화 기호 이미지 URL (선택)",
-              "restURLPlaceholder": "Rest URL",
-              "sendGasPlaceholder": "보낼 가스량 (선택)",
-              "submitButton": "새 체인 추가",
-              "typePlaceholder": "코인 타입",
-              "warning": "악의적인 네트워크 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 네트워크만 추가하세요."
-            },
             "CW20": {
               "entry": {
                 "addTokenErrorSnackbar": "토큰 추가를 실패했습니다.",
@@ -447,6 +428,28 @@
                 "submitButton": "커스텀 토큰 추가",
                 "warning": "기존 토큰의 가짜 버전 생성을 포함하여 누구나 토큰을 생성할 수 있습니다. 사기 및 보안 위험에 대해 주의하세요."
               }
+            },
+            "entry": {
+              "addChainSnackbar": "커스텀 체인이 추가 되었습니다.",
+              "addressPrefixPlaceholder": "bech32 address 값",
+              "baseDenomPlaceholder": "기본 denom 명칭",
+              "chainIdPlaceholder": "체인 ID (예: stafi-1)",
+              "chainNamePlaceholder": "커스텀 체인 이름",
+              "coinGeckoIdPlaceholder": "Coingecko API id (선택)",
+              "coinTypePlaceholder": "bip44에 들어갈 코인 type (선택)",
+              "cosmWasmPlaceholder": "cosmWasm 값 (선택)",
+              "decimalsPlaceholder": "소수 점 몇 단위 (선택)",
+              "displayDenomPlaceholder": "통화 기호",
+              "explorerURLPlaceholder": "블록 탐색기 URL (선택)",
+              "gasRateAveragePlaceholder": "Gas rate Average(선택)",
+              "gasRateLowPlaceholder": "Gas rate Low(선택)",
+              "gasRateTinyPlaceholder": "Gas rate Tiny(선택)",
+              "imageURLPlaceholder": "통화 기호 이미지 URL (선택)",
+              "restURLPlaceholder": "Rest URL",
+              "sendGasPlaceholder": "보낼 가스량 (선택)",
+              "submitButton": "새 체인 추가",
+              "typePlaceholder": "코인 타입 (선택)",
+              "warning": "악의적인 네트워크 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 네트워크만 추가하세요."
             }
           }
         }
@@ -999,6 +1002,15 @@
     }
   },
   "schema": {
+    "addChainForm": {
+      "address": {
+        "string": {
+          "any": {
+            "invalid": "옳지 않은 타입 명 입니다."
+          }
+        }
+      }
+    },
     "addNetworkForm": {
       "address": {
         "string": {
@@ -1040,12 +1052,22 @@
       "any": {
         "required": "필수 값 입니다."
       },
+      "boolean": {
+        "base": "불리언 값을 입력하세요."
+      },
+      "decimal": {
+        "base": "소수점을 입력해주세요"
+      },
       "number": {
         "base": "숫자를 입력하세요.",
+        "empty": "필수 값 입니다.",
         "greater": "{#limit} 보다 큰 값을 입력하셔야 합니다.",
         "less": "{#limit} 보다 작은 값을 입력하셔야 합니다.",
         "max": "{#limit} 이하의 값을 입력하셔야 합니다.",
         "min": "{#limit} 이상의 값을 입력하셔야 합니다."
+      },
+      "object": {
+        "and": "모든 gas rate 값을 입력하셔야 합니다."
       },
       "string": {
         "base": "문자를 입력하세요.",

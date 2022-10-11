@@ -419,25 +419,6 @@
       "Cosmos": {
         "Token": {
           "Add": {
-            "entry": {
-              "addChainSnackbar": "custom Chain added",
-              "addressPrefixPlaceholder": "bech32 address",
-              "baseDenomPlaceholder": "Name of base Denom",
-              "coinTypePlaceholder": "Coin type in bip 44 (option)",
-              "chainIdPlaceholder": "Chain id (stafi-1)",
-              "chainNamePlaceholder": "Custom Chain name",
-              "coinGeckoIdPlaceholder": "Coingecko API id (option)",
-              "decimalsPlaceholder": "decimal value (option)",
-              "displayDenomPlaceholder": "Currency symbol (option)",
-              "explorerURLPlaceholder": "Explorer URL (option)",
-              "gasRatePlaceholder": "Gas rate (option)",
-              "imageURLPlaceholder": "Symbol image URL (option)",
-              "restURLPlaceholder": "Rest URL",
-              "sendGasPlaceholder": "Send Gas value (option)",
-              "submitButton": "Add a chain",
-              "typePlaceholder": "Type of Coin",
-              "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust."
-            },
             "CW20": {
               "entry": {
                 "addTokenErrorSnackbar": "Failed to add",
@@ -447,6 +428,28 @@
                 "submitButton": "Add custom token",
                 "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
               }
+            },
+            "entry": {
+              "addChainSnackbar": "custom Chain added",
+              "addressPrefixPlaceholder": "bech32 address",
+              "baseDenomPlaceholder": "Name of base Denom",
+              "chainIdPlaceholder": "Chain id (stafi-1)",
+              "chainNamePlaceholder": "Custom Chain name",
+              "coinGeckoIdPlaceholder": "Coingecko API id (option)",
+              "coinTypePlaceholder": "Coin type in bip 44 (option)",
+              "cosmWasmPlaceholder": "cosmWasm value (선택)",
+              "decimalsPlaceholder": "decimal value (option)",
+              "displayDenomPlaceholder": "Currency symbol (option)",
+              "explorerURLPlaceholder": "Explorer URL (option)",
+              "gasRateAveragePlaceholder": "Gas rate Average(option)",
+              "gasRateLowPlaceholder": "Gas rate Low(option)",
+              "gasRateTinyPlaceholder": "Gas rate Tiny(option)",
+              "imageURLPlaceholder": "Symbol image URL (option)",
+              "restURLPlaceholder": "Rest URL",
+              "sendGasPlaceholder": "Send Gas value (option)",
+              "submitButton": "Add a chain",
+              "typePlaceholder": "Type of Coin (option)",
+              "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust."
             }
           }
         }
@@ -999,6 +1002,15 @@
     }
   },
   "schema": {
+    "addChainForm": {
+      "address": {
+        "string": {
+          "any": {
+            "invalid": "Invalid type"
+          }
+        }
+      }
+    },
     "addNetworkForm": {
       "address": {
         "string": {
@@ -1040,12 +1052,22 @@
       "any": {
         "required": "required"
       },
+      "boolean": {
+        "base": "Please enter boolean."
+      },
+      "decimal": {
+        "base": "Please enter decimals"
+      },
       "number": {
         "base": "Please enter numbers.",
+        "empty": "required",
         "greater": "Please enter a number greater than {#limit}.",
         "less": "Please enter a number less than {#limit}.",
         "max": "Please enter a number less than {#limit}",
         "min": "Please enter at least {#limit} or more numbers."
+      },
+      "object": {
+        "and": "Please enter whole gas rate value"
       },
       "string": {
         "base": "Please enter characters.",
