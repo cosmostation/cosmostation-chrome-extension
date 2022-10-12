@@ -106,6 +106,7 @@ export function useSchema() {
     gasRateTiny: Joi.string()
       .optional()
       .empty('')
+      .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
@@ -113,6 +114,7 @@ export function useSchema() {
     gasRateLow: Joi.string()
       .optional()
       .empty('')
+      .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
@@ -120,6 +122,7 @@ export function useSchema() {
     gasRateAverage: Joi.string()
       .optional()
       .empty('')
+      .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
@@ -171,11 +174,11 @@ export function useSchema() {
       .messages({
         'boolean.base': t('schema.common.boolean.base'),
       }),
-  })
-    .and('gasRateTiny', 'gasRateLow', 'gasRateAverage')
-    .messages({
-      'object.and': t('schema.common.object.and'),
-    });
-
+  });
+  // .and('gasRateLow', 'gasRateTiny', 'gasRateAverage')
+  // .messages({
+  //   "object.and.missing": t('schema.common.object.and'),
+  // });
+  // 엔트리에서 가스 레이트 일관성 컨트롤 하기 위해서 여기서 .and뺌
   return { addChainForm };
 }
