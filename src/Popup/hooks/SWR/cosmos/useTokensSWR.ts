@@ -32,7 +32,18 @@ export function useTokensSWR(chain: CosmosChain, config?: SWRConfiguration) {
     ...config,
   });
 
-  const returnData = data?.assets ? data?.assets : [];
+  const returnData: CW20AssetPayload['assets'] = data?.assets
+    ? [
+        ...data.assets.map((item) => ({
+          ...item,
+          logo: item.logo
+            ? item.logo.startsWith('http://') || item.logo.startsWith('https://')
+              ? item.logo
+              : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.logo}`
+            : undefined,
+        })),
+      ]
+    : [];
 
   return { data: returnData, error, mutate };
 }
