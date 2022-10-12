@@ -35,7 +35,6 @@ export function useSchema() {
       .valid(...cosmosType)
       .messages({
         'string.base': t('schema.common.string.base'),
-        'string.empty': t('schema.common.string.empty'),
         'any.only': t('schema.addChainForm.type.string.any.invalid'),
       }),
     chainId: Joi.string()
@@ -62,7 +61,6 @@ export function useSchema() {
       .empty('')
       .messages({
         'string.base': t('schema.common.string.base'),
-        'string.empty': t('schema.common.string.empty'),
       }),
     baseDenom: Joi.string()
       .required()
