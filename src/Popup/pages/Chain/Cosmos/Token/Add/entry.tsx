@@ -9,7 +9,6 @@ import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { CosmosChain } from '~/types/chain';
 
 import { ButtonContainer, Container, ContentsContainer, Div, InputContainer, WarningContainer, WarningIconContainer, WarningTextContainer } from './styled';
 import type { AddChainForm } from './useSchema';
@@ -40,22 +39,21 @@ export default function Entry() {
       if (COSMOS_CHAINS.map((item) => item.chainId).includes(data.chainId)) {
         throw Error(`Can't add ${data.chainId}`);
       }
-      // FIXME 조건 걸어서 all or nothing 조건식 세워라 아니면 스키마쪽 .and 잘 살려봐
-      if (data.gasRateAverage === undefined || data.gasRateLow === undefined || data.gasRateTiny === undefined) {
-        // console.log('셋다 모두 언디파인');
-        throw Error(`Can't add ${data.chainId}`);
+      if (
+        !(
+          typeof data.gasRateTiny === typeof data.gasRateAverage &&
+          typeof data.gasRateTiny === typeof data.gasRateLow &&
+          typeof data.gasRateAverage === typeof data.gasRateLow
+        )
+      ) {
+        throw Error(`Please enter whole Gas Rate`);
       }
-      const newChain: CosmosChain = {
+      await addAdditionalChains({
+        ...data,
         id: uuidv4(),
-        line: 'COSMOS',
         type: data.type ?? '',
-        chainId: data.chainId,
-        chainName: data.chainName,
-        displayDenom: data.displayDenom,
-        baseDenom: data.baseDenom,
+        line: 'COSMOS',
         bech32Prefix: { address: data.addressPrefix },
-        restURL: data.restURL,
-        coinGeckoId: data.coinGeckoId,
         bip44: {
           purpose: "44'",
           account: "0'",
@@ -63,17 +61,10 @@ export default function Entry() {
           coinType: data.coinType ? `${data.coinType}'` : "118'",
         },
         decimals: data.decimals ?? 6,
-        // { average: '0.025', low: '0.0025', tiny: '0.00025' }
-        gasRate: { average: '0.025', low: '0.0025', tiny: '0.00025' },
-        imageURL: data.imageURL,
+        gasRate: { average: data.gasRateAverage ?? '0.025', low: data.gasRateLow ?? '0.0025', tiny: data.gasRateTiny ?? '0.00025' },
         gas: { send: data.sendGas ?? COSMOS_DEFAULT_SEND_GAS },
-        cosmWasm: data.cosmWasm,
-      };
-      await addAdditionalChains(newChain);
-      // for test
-      // console.log(newChain);
-      // console.log(data.gasRate);
-      // console.log(data.gasRateAverage);
+      });
+
       enqueueSnackbar(t('pages.Chain.Cosmos.Token.Add.entry.addChainSnackbar'));
       reset();
     } catch (e) {
