@@ -1006,6 +1006,11 @@
   },
   "schema": {
     "addChainForm": {
+      "chainId": {
+        "any": {
+          "invalid": "Same Chain ID already registered"
+        }
+      },
       "type": {
         "string": {
           "any": {
