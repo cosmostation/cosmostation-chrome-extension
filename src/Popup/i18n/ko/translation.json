@@ -449,7 +449,8 @@
               "sendGasPlaceholder": "보낼 가스량 (선택)",
               "submitButton": "새 체인 추가",
               "typePlaceholder": "코인 타입 (선택)",
-              "warning": "악의적인 네트워크 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 네트워크만 추가하세요."
+              "warning": "악의적인 네트워크 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 네트워크만 추가하세요.",
+              "warningDuplicateChain": "Gas Rate의 모든 값을 입력해주세요"
             },
             "layout": {
               "title": "체인 추가"
