@@ -449,7 +449,8 @@
               "sendGasPlaceholder": "Send Gas value (option)",
               "submitButton": "Add a chain",
               "typePlaceholder": "Type of Coin (option)",
-              "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust."
+              "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust.",
+              "warningDuplicateChain": "Please enter whole Gas Rate value"
             },
             "layout": {
               "title": "Add a Chain"

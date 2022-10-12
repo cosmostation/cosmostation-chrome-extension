@@ -46,7 +46,7 @@ export default function Entry() {
           typeof data.gasRateAverage === typeof data.gasRateLow
         )
       ) {
-        throw Error(`Please enter whole Gas Rate`);
+        throw Error(t('pages.Chain.Cosmos.Token.Add.entry.warningDuplicateChain'));
       }
       await addAdditionalChains({
         ...data,
