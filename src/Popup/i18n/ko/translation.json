@@ -1006,6 +1006,11 @@
   },
   "schema": {
     "addChainForm": {
+      "chainId": {
+        "any": {
+          "invalid": "중복된 체인 ID입니다."
+        }
+      },
       "type": {
         "string": {
           "any": {

@@ -81,13 +81,13 @@ export function useSchema() {
       .empty('')
       .messages({
         'number.base': t('schema.common.number.base'),
-        'number.empty': t('schema.common.number.empty'),
       }),
     coinType: Joi.string()
       .optional()
       .empty('')
       .pattern(/^[0-9]+$/)
       .messages({
+        'string.base': t('schema.common.string.base'),
         'string.pattern.base': t('schema.common.number.base'),
       }),
     addressPrefix: Joi.string()
@@ -101,7 +101,6 @@ export function useSchema() {
       .empty('')
       .messages({
         'string.base': t('schema.common.string.base'),
-        'string.empty': t('schema.common.string.empty'),
       }),
     gasRateTiny: Joi.string()
       .optional()
@@ -109,7 +108,7 @@ export function useSchema() {
       .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
       .messages({
         'string.base': t('schema.common.string.base'),
-        'string.empty': t('schema.common.string.empty'),
+        'string.pattern.base': t('schema.common.decimal.base'),
       }),
     gasRateLow: Joi.string()
       .optional()
@@ -117,7 +116,7 @@ export function useSchema() {
       .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
       .messages({
         'string.base': t('schema.common.string.base'),
-        'string.empty': t('schema.common.string.empty'),
+        'string.pattern.base': t('schema.common.decimal.base'),
       }),
     gasRateAverage: Joi.string()
       .optional()
@@ -125,47 +124,14 @@ export function useSchema() {
       .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
       .messages({
         'string.base': t('schema.common.string.base'),
-        'string.empty': t('schema.common.string.empty'),
+        'string.pattern.base': t('schema.common.decimal.base'),
       }),
-    // gasRate: Joi.object<GasRate>({
-    //   tiny: Joi.string()
-    //     .optional()
-    //     .empty('')
-    //     .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
-    //     .messages({
-    //       'string.pattern.base': t('schema.common.decimal.base'),
-    //       'object.and': t('schema.common.object.and'),
-    //     }),
-    //   low: Joi.string()
-    //     .optional()
-    //     .empty('')
-    //     .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
-    //     .messages({
-    //       'string.pattern.base': t('schema.common.decimal.base'),
-    //       'object.and': t('schema.common.object.and'),
-    //     }),
-    //   average: Joi.string()
-    //     .optional()
-    //     .empty('')
-    //     .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
-    //     .messages({
-    //       'string.pattern.base': t('schema.common.decimal.base'),
-    //       'object.and': t('schema.common.object.and'),
-    //     }),
-    // })
-    //   .and('tiny', 'low', 'average')
-    //   .optional()
-    //   .empty('')
-    //   .messages({
-    //     'object.base': t('schema.common.object.and'),
-    //     'object.and': t('schema.common.object.and'),
-    //     'object.missing': t('schema.common.object.and'),
-    //   }),
     sendGas: Joi.string()
       .optional()
       .empty('')
       .pattern(/^[0-9]+$/)
       .messages({
+        'string.base': t('schema.common.string.base'),
         'string.pattern.base': t('schema.common.number.base'),
       }),
     cosmWasm: Joi.boolean()
@@ -175,10 +141,5 @@ export function useSchema() {
         'boolean.base': t('schema.common.boolean.base'),
       }),
   });
-  // .and('gasRateLow', 'gasRateTiny', 'gasRateAverage')
-  // .messages({
-  //   "object.and.missing": t('schema.common.object.and'),
-  // });
-  // 엔트리에서 가스 레이트 일관성 컨트롤 하기 위해서 여기서 .and뺌
   return { addChainForm };
 }
