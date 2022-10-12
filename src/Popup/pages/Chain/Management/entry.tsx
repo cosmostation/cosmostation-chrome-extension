@@ -21,7 +21,6 @@ export default function Entry() {
         <MenuButton onClick={() => navigate('/chain/cosmos/token/add', { isDuplicateCheck: true })}>
           {t('pages.Chain.Management.entry.addCosmosChain')}
         </MenuButton>
-        {/* <MenuButton>{t('pages.Chain.Management.entry.addChain')}</MenuButton> */}
       </ListContainer>
     </Container>
   );
