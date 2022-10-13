@@ -439,7 +439,8 @@
               "submitButton": "Add a chain",
               "typePlaceholder": "Type of Coin (option)",
               "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust.",
-              "warningDuplicateChain": "Please enter whole Gas Rate value"
+              "warningDuplicateChain": "Same Chain ID already registered",
+              "warningWholeGasRate": "Please enter whole Gas Rate value"
             }
           }
         },
@@ -1010,11 +1011,6 @@
   },
   "schema": {
     "addChainForm": {
-      "chainId": {
-        "any": {
-          "invalid": "Same Chain ID already registered"
-        }
-      },
       "type": {
         "string": {
           "any": {

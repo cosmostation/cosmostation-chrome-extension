@@ -439,7 +439,8 @@
               "submitButton": "새 체인 추가",
               "typePlaceholder": "코인 타입 (선택)",
               "warning": "악의적인 네트워크 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 네트워크만 추가하세요.",
-              "warningDuplicateChain": "Gas Rate의 모든 값을 입력해주세요"
+              "warningDuplicateChain": "중복된 체인 ID입니다.",
+              "warningWholeGasRate": "Gas Rate의 모든 값을 입력해주세요"
             }
           }
         },
@@ -455,7 +456,6 @@
                 "warning": "기존 토큰의 가짜 버전 생성을 포함하여 누구나 토큰을 생성할 수 있습니다. 사기 및 보안 위험에 대해 주의하세요."
               }
             },
-
             "layout": {
               "title": "체인 추가"
             }
@@ -1011,11 +1011,6 @@
   },
   "schema": {
     "addChainForm": {
-      "chainId": {
-        "any": {
-          "invalid": "중복된 체인 ID입니다."
-        }
-      },
       "type": {
         "string": {
           "any": {
