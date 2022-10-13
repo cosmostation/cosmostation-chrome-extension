@@ -417,18 +417,8 @@
     },
     "Chain": {
       "Cosmos": {
-        "Token": {
+        "Chain": {
           "Add": {
-            "CW20": {
-              "entry": {
-                "addTokenErrorSnackbar": "Failed to add",
-                "addTokenSnackbar": "Token added",
-                "addressPlaceholder": "Token contract address",
-                "imageURLPlaceholder": "Token Logo URL (option)",
-                "submitButton": "Add custom token",
-                "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
-              }
-            },
             "entry": {
               "addChainSnackbar": "custom Chain added",
               "addressPrefixPlaceholder": "bech32 address",
@@ -440,7 +430,6 @@
               "cosmWasmPlaceholder": "cosmWasm value (option)",
               "decimalsPlaceholder": "decimal value (option)",
               "displayDenomPlaceholder": "Currency symbol",
-              "explorerURLPlaceholder": "Explorer URL (option)",
               "gasRateAveragePlaceholder": "Gas rate Average(option)",
               "gasRateLowPlaceholder": "Gas rate Low(option)",
               "gasRateTinyPlaceholder": "Gas rate Tiny(option)",
@@ -451,6 +440,20 @@
               "typePlaceholder": "Type of Coin (option)",
               "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust.",
               "warningDuplicateChain": "Please enter whole Gas Rate value"
+            }
+          }
+        },
+        "Token": {
+          "Add": {
+            "CW20": {
+              "entry": {
+                "addTokenErrorSnackbar": "Failed to add",
+                "addTokenSnackbar": "Token added",
+                "addressPlaceholder": "Token contract address",
+                "imageURLPlaceholder": "Token Logo URL (option)",
+                "submitButton": "Add custom token",
+                "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
+              }
             },
             "layout": {
               "title": "Add a Chain"
