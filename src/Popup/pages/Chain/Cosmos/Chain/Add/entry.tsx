@@ -46,7 +46,7 @@ export default function Entry() {
           typeof data.gasRateAverage === typeof data.gasRateLow
         )
       ) {
-        throw Error(t('pages.Chain.Cosmos.Token.Add.entry.warningDuplicateChain'));
+        throw Error(t('pages.Chain.Cosmos.Chain.Add.entry.warningDuplicateChain'));
       }
       await addAdditionalChains({
         ...data,
@@ -65,7 +65,7 @@ export default function Entry() {
         gas: { send: data.sendGas ?? COSMOS_DEFAULT_SEND_GAS },
       });
 
-      enqueueSnackbar(t('pages.Chain.Cosmos.Token.Add.entry.addChainSnackbar'));
+      enqueueSnackbar(t('pages.Chain.Cosmos.Chain.Add.entry.addChainSnackbar'));
       reset();
     } catch (e) {
       const message = (e as { message?: string }).message ? (e as { message: string }).message : 'Failed';
@@ -82,7 +82,7 @@ export default function Entry() {
               <Info16Icon />
             </WarningIconContainer>
             <WarningTextContainer>
-              <Typography variant="h6">{t('pages.Chain.Cosmos.Token.Add.entry.warning')}</Typography>
+              <Typography variant="h6">{t('pages.Chain.Cosmos.Chain.Add.entry.warning')}</Typography>
             </WarningTextContainer>
           </WarningContainer>
           <InputContainer>
@@ -92,7 +92,7 @@ export default function Entry() {
                 inputProps={register('chainId')}
                 error={!!errors.chainId}
                 helperText={errors.chainId?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.chainIdPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.chainIdPlaceholder')}
               />
             </Div>
 
@@ -100,7 +100,7 @@ export default function Entry() {
               <Input
                 type="text"
                 inputProps={register('chainName')}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.chainNamePlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.chainNamePlaceholder')}
                 error={!!errors.chainName}
                 helperText={errors.chainName?.message}
               />
@@ -112,7 +112,7 @@ export default function Entry() {
                 inputProps={register('restURL')}
                 error={!!errors.restURL}
                 helperText={errors.restURL?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.restURLPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.restURLPlaceholder')}
               />
             </Div>
 
@@ -122,7 +122,7 @@ export default function Entry() {
                 inputProps={register('displayDenom')}
                 error={!!errors.displayDenom}
                 helperText={errors.displayDenom?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.displayDenomPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.displayDenomPlaceholder')}
               />
             </Div>
 
@@ -132,7 +132,7 @@ export default function Entry() {
                 inputProps={register('addressPrefix')}
                 error={!!errors.addressPrefix}
                 helperText={errors.addressPrefix?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.addressPrefixPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.addressPrefixPlaceholder')}
               />
             </Div>
 
@@ -142,7 +142,7 @@ export default function Entry() {
                 inputProps={register('baseDenom')}
                 error={!!errors.baseDenom}
                 helperText={errors.baseDenom?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.baseDenomPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.baseDenomPlaceholder')}
               />
             </Div>
 
@@ -152,7 +152,7 @@ export default function Entry() {
                 inputProps={register('coinType')}
                 error={!!errors.coinType}
                 helperText={errors.coinType?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.coinTypePlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.coinTypePlaceholder')}
               />
             </Div>
 
@@ -162,7 +162,7 @@ export default function Entry() {
                 inputProps={register('decimals')}
                 error={!!errors.decimals}
                 helperText={errors.decimals?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.decimalsPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.decimalsPlaceholder')}
               />
             </Div>
 
@@ -172,7 +172,7 @@ export default function Entry() {
                 inputProps={register('gasRateTiny')}
                 error={!!errors.gasRateTiny}
                 helperText={errors.gasRateTiny?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.gasRateTinyPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.gasRateTinyPlaceholder')}
               />
             </Div>
 
@@ -182,7 +182,7 @@ export default function Entry() {
                 inputProps={register('gasRateLow')}
                 error={!!errors.gasRateLow}
                 helperText={errors.gasRateLow?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.gasRateLowPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.gasRateLowPlaceholder')}
               />
             </Div>
 
@@ -192,7 +192,7 @@ export default function Entry() {
                 inputProps={register('gasRateAverage')}
                 error={!!errors.gasRateAverage}
                 helperText={errors.gasRateAverage?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.gasRateAveragePlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.gasRateAveragePlaceholder')}
               />
             </Div>
 
@@ -202,7 +202,7 @@ export default function Entry() {
                 inputProps={register('sendGas')}
                 error={!!errors.sendGas}
                 helperText={errors.sendGas?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.sendGasPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.sendGasPlaceholder')}
               />
             </Div>
 
@@ -212,7 +212,7 @@ export default function Entry() {
                 inputProps={register('imageURL')}
                 error={!!errors.imageURL}
                 helperText={errors.imageURL?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.imageURLPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.imageURLPlaceholder')}
               />
             </Div>
 
@@ -222,7 +222,7 @@ export default function Entry() {
                 inputProps={register('coinGeckoId')}
                 error={!!errors.coinGeckoId}
                 helperText={errors.coinGeckoId?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.coinGeckoIdPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.coinGeckoIdPlaceholder')}
               />
             </Div>
 
@@ -232,7 +232,7 @@ export default function Entry() {
                 inputProps={register('type')}
                 error={!!errors.type}
                 helperText={errors.type?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.typePlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.typePlaceholder')}
               />
             </Div>
 
@@ -242,14 +242,14 @@ export default function Entry() {
                 inputProps={register('cosmWasm')}
                 error={!!errors.cosmWasm}
                 helperText={errors.cosmWasm?.message}
-                placeholder={t('pages.Chain.Cosmos.Token.Add.entry.cosmWasmPlaceholder')}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.cosmWasmPlaceholder')}
               />
             </Div>
           </InputContainer>
         </ContentsContainer>
         <ButtonContainer>
           <Button type="submit" disabled={!isDirty}>
-            {t('pages.Chain.Cosmos.Token.Add.entry.submitButton')}
+            {t('pages.Chain.Cosmos.Chain.Add.entry.submitButton')}
           </Button>
         </ButtonContainer>
       </Container>
