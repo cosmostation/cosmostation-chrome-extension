@@ -5,6 +5,7 @@ import Joi from '~/Popup/utils/joi';
 import type { CosmosType } from '~/types/chain';
 
 export type AddChainForm = {
+  ''?: string;
   type?: CosmosType;
   chainId: string;
   chainName: string;
@@ -106,7 +107,7 @@ export function useSchema() {
       .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
       .messages({
         'string.base': t('schema.common.string.base'),
-        'string.pattern.base': t('schema.common.decimal.base'),
+        'string.pattern.base': t('schema.addChainForm.decimal.base'),
       }),
     gasRateLow: Joi.string()
       .optional()
@@ -114,7 +115,7 @@ export function useSchema() {
       .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
       .messages({
         'string.base': t('schema.common.string.base'),
-        'string.pattern.base': t('schema.common.decimal.base'),
+        'string.pattern.base': t('schema.addChainForm.decimal.base'),
       }),
     gasRateAverage: Joi.string()
       .optional()
@@ -122,7 +123,7 @@ export function useSchema() {
       .regex(/^([0-9]+\.?[0-9]*|\.[0-9]+)$/)
       .messages({
         'string.base': t('schema.common.string.base'),
-        'string.pattern.base': t('schema.common.decimal.base'),
+        'string.pattern.base': t('schema.addChainForm.decimal.base'),
       }),
     sendGas: Joi.string()
       .optional()
@@ -138,6 +139,10 @@ export function useSchema() {
       .messages({
         'boolean.base': t('schema.common.boolean.base'),
       }),
-  });
+  })
+    .and('gasRateTiny', 'gasRateLow', 'gasRateAverage')
+    .messages({
+      'object.and': t('schema.addChainForm.object.and'),
+    });
   return { addChainForm };
 }
