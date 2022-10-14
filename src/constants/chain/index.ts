@@ -41,7 +41,7 @@ import { SENTINEL } from './cosmos/sentinel';
 import { SHENTU } from './cosmos/shentu';
 import { SIF } from './cosmos/sif';
 import { SOMMELIER } from './cosmos/sommelier';
-import { STAFI } from './cosmos/stafi';
+import { STAFIHUB } from './cosmos/stafihub';
 import { STARGAZE } from './cosmos/stargaze';
 import { STARNAME } from './cosmos/starname';
 import { STRIDE } from './cosmos/stride';
@@ -110,7 +110,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   SHENTU,
   SIF,
   SOMMELIER,
-  STAFI,
+  STAFIHUB,
   STARGAZE,
   STARNAME,
   STRIDE,
