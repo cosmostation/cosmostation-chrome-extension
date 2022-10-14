@@ -12,7 +12,7 @@ export default function Layout({ children }: LayoutProps) {
   const { t } = useTranslation();
 
   return (
-    <BaseLayout useHeader={{}} useSubHeader={{ title: t('pages.Chain.Cosmos.Token.Add.layout.title'), onClick: () => navigateBack() }}>
+    <BaseLayout useHeader={{}} useSubHeader={{ title: t('pages.Chain.Cosmos.Chain.Add.layout.title'), onClick: () => navigateBack() }}>
       {children}
     </BaseLayout>
   );

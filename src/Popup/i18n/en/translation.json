@@ -421,26 +421,28 @@
           "Add": {
             "entry": {
               "addChainSnackbar": "custom Chain added",
-              "addressPrefixPlaceholder": "bech32 address",
-              "baseDenomPlaceholder": "Name of base Denom",
-              "chainIdPlaceholder": "Chain id (stafi-1)",
+              "addressPrefixPlaceholder": "Address prefix (e.g., cosmos)",
+              "baseDenomPlaceholder": "Denom (e.g., uatom)",
+              "chainIdPlaceholder": "Chain id (e.g., cosmoshub-1)",
               "chainNamePlaceholder": "Custom Chain name",
               "coinGeckoIdPlaceholder": "Coingecko API id (option)",
-              "coinTypePlaceholder": "Coin type in bip 44 (option)",
-              "cosmWasmPlaceholder": "cosmWasm value (option)",
-              "decimalsPlaceholder": "decimal value (option)",
+              "coinTypePlaceholder": "Coin type (option) (default: 118)",
+              "cosmWasmPlaceholder": "Cosmwasm (option)",
+              "decimalsPlaceholder": "Decimals (option) (default: 6)",
               "displayDenomPlaceholder": "Currency symbol",
-              "gasRateAveragePlaceholder": "Gas rate Average(option)",
-              "gasRateLowPlaceholder": "Gas rate Low(option)",
-              "gasRateTinyPlaceholder": "Gas rate Tiny(option)",
+              "gasRateAveragePlaceholder": "Gas rate Average (option)",
+              "gasRateLowPlaceholder": "Gas rate Low (option)",
+              "gasRateTinyPlaceholder": "Gas rate Tiny (option)",
               "imageURLPlaceholder": "Symbol image URL (option)",
               "restURLPlaceholder": "Rest URL",
               "sendGasPlaceholder": "Send Gas value (option)",
-              "submitButton": "Add a chain",
-              "typePlaceholder": "Type of Coin (option)",
-              "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust.",
-              "warningDuplicateChain": "Same Chain ID already registered",
-              "warningWholeGasRate": "Please enter whole Gas Rate value"
+              "submitButton": "Add a custom chain",
+              "typePlaceholder": "Chain type (option)",
+              "warning": "A malicious chain provider can lie about the state of the blockchain and record your chain activity. Only add custom chain you trust.",
+              "warningDuplicateChain": "Already registered"
+            },
+            "layout": {
+              "title": "Add a Chain"
             }
           }
         },
@@ -455,9 +457,6 @@
                 "submitButton": "Add custom token",
                 "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
               }
-            },
-            "layout": {
-              "title": "Add a Chain"
             }
           }
         }
@@ -1011,10 +1010,16 @@
   },
   "schema": {
     "addChainForm": {
+      "decimal": {
+        "base": "Please enter decimals"
+      },
+      "object": {
+        "and": "Please enter whole Gas Rate value"
+      },
       "type": {
         "string": {
           "any": {
-            "invalid": "Invalid type"
+            "invalid": "Please enter 'ETHERMINT' or empty"
           }
         }
       }
@@ -1063,19 +1068,13 @@
       "boolean": {
         "base": "Please enter boolean."
       },
-      "decimal": {
-        "base": "Please enter decimals"
-      },
       "number": {
         "base": "Please enter numbers.",
-        "empty": "required",
+        "empty": "Please enter numbers.",
         "greater": "Please enter a number greater than {#limit}.",
         "less": "Please enter a number less than {#limit}.",
         "max": "Please enter a number less than {#limit}",
         "min": "Please enter at least {#limit} or more numbers."
-      },
-      "object": {
-        "and": "Please enter whole gas rate value"
       },
       "string": {
         "base": "Please enter characters.",

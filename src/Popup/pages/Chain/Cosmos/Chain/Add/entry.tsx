@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
@@ -34,20 +35,20 @@ export default function Entry() {
     reValidateMode: 'onSubmit',
   });
 
+  const gasRateError = useMemo(() => {
+    const error = errors[''];
+    if (error?.type === 'object.and') {
+      return error.message;
+    }
+    return '';
+  }, [errors]);
+
   const submit = async (data: AddChainForm) => {
     try {
       if (COSMOS_CHAINS.map((item) => item.chainId).includes(data.chainId)) {
         throw Error(`Can't add ${data.chainId}. `.concat(t('pages.Chain.Cosmos.Chain.Add.entry.warningDuplicateChain')));
       }
-      if (
-        !(
-          typeof data.gasRateTiny === typeof data.gasRateAverage &&
-          typeof data.gasRateTiny === typeof data.gasRateLow &&
-          typeof data.gasRateAverage === typeof data.gasRateLow
-        )
-      ) {
-        throw Error(t('pages.Chain.Cosmos.Chain.Add.entry.warningWholeGasRate'));
-      }
+
       await addAdditionalChains({
         ...data,
         id: uuidv4(),
@@ -170,8 +171,8 @@ export default function Entry() {
               <Input
                 type="text"
                 inputProps={register('gasRateTiny')}
-                error={!!errors.gasRateTiny}
-                helperText={errors.gasRateTiny?.message}
+                error={!!gasRateError}
+                helperText={gasRateError}
                 placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.gasRateTinyPlaceholder')}
               />
             </Div>
@@ -180,8 +181,8 @@ export default function Entry() {
               <Input
                 type="text"
                 inputProps={register('gasRateLow')}
-                error={!!errors.gasRateLow}
-                helperText={errors.gasRateLow?.message}
+                error={!!gasRateError}
+                helperText={gasRateError}
                 placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.gasRateLowPlaceholder')}
               />
             </Div>
@@ -190,8 +191,8 @@ export default function Entry() {
               <Input
                 type="text"
                 inputProps={register('gasRateAverage')}
-                error={!!errors.gasRateAverage}
-                helperText={errors.gasRateAverage?.message}
+                error={!!gasRateError}
+                helperText={gasRateError}
                 placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.gasRateAveragePlaceholder')}
               />
             </Div>
