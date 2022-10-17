@@ -6,6 +6,7 @@ export const CUDOS: CosmosChain = {
   id: '6ecbb63e-deb9-4a8b-8f9c-48d21d7edcd6',
   line: 'COSMOS',
   type: '',
+  cosmWasm: true,
   chainId: 'cudos-1',
   chainName: 'Cudos',
   restURL: 'https://lcd-cudos.cosmostation.io',
