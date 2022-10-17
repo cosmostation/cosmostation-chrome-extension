@@ -142,7 +142,7 @@ export function useSchema() {
   })
     .and('gasRateTiny', 'gasRateLow', 'gasRateAverage')
     .messages({
-      'object.and': t('schema.addChainForm.object.and'),
+      'object.and': t('schema.addChainForm.gasRate.object.and'),
     });
   return { addChainForm };
 }
