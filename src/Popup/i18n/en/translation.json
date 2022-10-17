@@ -438,8 +438,7 @@
               "sendGasPlaceholder": "Send Gas value (option)",
               "submitButton": "Add a custom chain",
               "typePlaceholder": "Chain type (option)",
-              "warning": "A malicious chain provider can lie about the state of the blockchain and record your chain activity. Only add custom chain you trust.",
-              "warningDuplicateChain": "Already registered"
+              "warning": "A malicious chain provider can lie about the state of the blockchain and record your chain activity. Only add custom chain you trust."
             },
             "layout": {
               "title": "Add a Chain"
@@ -1010,6 +1009,16 @@
   },
   "schema": {
     "addChainForm": {
+      "chainId": {
+        "any": {
+          "invalid": "Already registered"
+        }
+      },
+      "chainName": {
+        "any": {
+          "invalid": "Already registered"
+        }
+      },
       "decimal": {
         "base": "Please enter decimals"
       },

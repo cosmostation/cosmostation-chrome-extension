@@ -438,8 +438,7 @@
               "sendGasPlaceholder": "'보내기' 가스량 (선택)",
               "submitButton": "새 체인 추가",
               "typePlaceholder": "체인 타입 (선택)",
-              "warning": "악의적인 체인 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 체인만 추가하세요.",
-              "warningDuplicateChain": "중복된 체인 ID입니다."
+              "warning": "악의적인 체인 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 체인만 추가하세요."
             },
             "layout": {
               "title": "체인 추가"
@@ -1010,6 +1009,16 @@
   },
   "schema": {
     "addChainForm": {
+      "chainId": {
+        "any": {
+          "invalid": "이미 등록된 체인입니다."
+        }
+      },
+      "chainName": {
+        "any": {
+          "invalid": "이미 등록된 체인입니다."
+        }
+      },
       "decimal": {
         "base": "소수점을 입력해주세요."
       },
