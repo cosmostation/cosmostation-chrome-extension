@@ -10,6 +10,7 @@ import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import type { CosmosChain } from '~/types/chain';
 
 import { ButtonContainer, Container, ContentsContainer, Div, InputContainer, WarningContainer, WarningIconContainer, WarningTextContainer } from './styled';
 import type { AddChainForm } from './useSchema';
@@ -21,7 +22,7 @@ export default function Entry() {
   const { addChainForm } = useSchema();
   const { addAdditionalChains } = useCurrentAdditionalChains();
   const { t } = useTranslation();
-
+  // const { additionalChains } =  chromeStorage();
   const { enqueueSnackbar } = useSnackbar();
 
   const {
@@ -48,13 +49,23 @@ export default function Entry() {
       if (COSMOS_CHAINS.map((item) => item.chainId).includes(data.chainId)) {
         throw Error(`Can't add ${data.chainId}. `.concat(t('pages.Chain.Cosmos.Chain.Add.entry.warningDuplicateChain')));
       }
-
-      await addAdditionalChains({
-        ...data,
+      if (
+        COSMOS_CHAINS.map((item) => item.chainName.toLowerCase()).includes(data.chainName.toLowerCase()) ||
+        COSMOS_CHAINS.map((item) => item.chainId.toLowerCase()).includes(data.chainName.toLowerCase())
+      ) {
+        throw Error(`Can't add ${data.chainName}. `.concat(t('pages.Chain.Cosmos.Chain.Add.entry.warningDuplicateChain')));
+      }
+      const newChain: CosmosChain = {
         id: uuidv4(),
-        type: data.type ?? '',
         line: 'COSMOS',
+        type: data.type ?? '',
+        chainId: data.chainId,
+        chainName: data.chainName,
+        displayDenom: data.displayDenom,
+        baseDenom: data.baseDenom,
         bech32Prefix: { address: data.addressPrefix },
+        restURL: data.restURL,
+        coinGeckoId: data.coinGeckoId,
         bip44: {
           purpose: "44'",
           account: "0'",
@@ -63,8 +74,11 @@ export default function Entry() {
         },
         decimals: data.decimals ?? 6,
         gasRate: { average: data.gasRateAverage ?? '0.025', low: data.gasRateLow ?? '0.0025', tiny: data.gasRateTiny ?? '0.00025' },
+        imageURL: data.imageURL,
         gas: { send: data.sendGas ?? COSMOS_DEFAULT_SEND_GAS },
-      });
+        cosmWasm: data.cosmWasm,
+      };
+      await addAdditionalChains(newChain);
 
       enqueueSnackbar(t('pages.Chain.Cosmos.Chain.Add.entry.addChainSnackbar'));
       reset();

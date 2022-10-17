@@ -1013,8 +1013,10 @@
       "decimal": {
         "base": "Please enter decimals"
       },
-      "object": {
-        "and": "Please enter whole Gas Rate value"
+      "gasRate": {
+        "object": {
+          "and": "Please enter whole Gas Rate value"
+        }
       },
       "type": {
         "string": {

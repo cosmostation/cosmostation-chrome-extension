@@ -1013,8 +1013,10 @@
       "decimal": {
         "base": "소수점을 입력해주세요."
       },
-      "object": {
-        "and": "Gas Rate의 모든 값을 입력해주세요."
+      "gasRate": {
+        "object": {
+          "and": "Gas Rate의 모든 값을 입력해주세요."
+        }
       },
       "type": {
         "string": {
