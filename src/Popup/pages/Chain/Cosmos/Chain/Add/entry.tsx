@@ -22,7 +22,6 @@ export default function Entry() {
   const { addChainForm } = useSchema();
   const { addAdditionalChains } = useCurrentAdditionalChains();
   const { t } = useTranslation();
-  // const { additionalChains } =  chromeStorage();
   const { enqueueSnackbar } = useSnackbar();
 
   const {
