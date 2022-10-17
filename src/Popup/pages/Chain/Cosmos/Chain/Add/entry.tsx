@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, COSMOS_DEFAULT_SEND_GAS } from '~/constants/chain';
+import { COSMOS_DEFAULT_SEND_GAS } from '~/constants/chain';
 import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
@@ -45,15 +45,6 @@ export default function Entry() {
 
   const submit = async (data: AddChainForm) => {
     try {
-      if (COSMOS_CHAINS.map((item) => item.chainId).includes(data.chainId)) {
-        throw Error(`Can't add ${data.chainId}. `.concat(t('pages.Chain.Cosmos.Chain.Add.entry.warningDuplicateChain')));
-      }
-      if (
-        COSMOS_CHAINS.map((item) => item.chainName.toLowerCase()).includes(data.chainName.toLowerCase()) ||
-        COSMOS_CHAINS.map((item) => item.chainId.toLowerCase()).includes(data.chainName.toLowerCase())
-      ) {
-        throw Error(`Can't add ${data.chainName}. `.concat(t('pages.Chain.Cosmos.Chain.Add.entry.warningDuplicateChain')));
-      }
       const newChain: CosmosChain = {
         id: uuidv4(),
         line: 'COSMOS',
@@ -78,7 +69,6 @@ export default function Entry() {
         cosmWasm: data.cosmWasm,
       };
       await addAdditionalChains(newChain);
-
       enqueueSnackbar(t('pages.Chain.Cosmos.Chain.Add.entry.addChainSnackbar'));
       reset();
     } catch (e) {

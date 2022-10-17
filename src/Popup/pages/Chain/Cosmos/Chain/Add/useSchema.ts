@@ -1,5 +1,7 @@
 // import { COSMOS_CHAINS } from '~/constants/chain';
+import { COSMOS_CHAINS } from '~/constants/chain';
 import { COSMOS_TYPE } from '~/constants/cosmos';
+import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Joi from '~/Popup/utils/joi';
 import type { CosmosType } from '~/types/chain';
@@ -26,8 +28,22 @@ export type AddChainForm = {
 
 export function useSchema() {
   const { t } = useTranslation();
+  const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
   const cosmosType = Object.values(COSMOS_TYPE);
+
+  const officialCosmosLowercaseChainNames = COSMOS_CHAINS.map((item) => item.chainName.toLowerCase());
+  const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
+  const unofficialCosmosLowercaseChainIds = currentCosmosAdditionalChains.map((item) => item.chainId.toLowerCase());
+  const unofficialCosmosLowercaseChainNames = currentCosmosAdditionalChains.map((item) => item.chainName.toLowerCase());
+
+  const invalidChainId = [...officialCosmosLowercaseChainIds, ...unofficialCosmosLowercaseChainIds];
+  const invalidChainNames = [
+    ...officialCosmosLowercaseChainNames,
+    ...officialCosmosLowercaseChainIds,
+    ...unofficialCosmosLowercaseChainNames,
+    ...unofficialCosmosLowercaseChainIds,
+  ];
 
   const addChainForm = Joi.object<AddChainForm>({
     type: Joi.string()
@@ -41,15 +57,20 @@ export function useSchema() {
     chainId: Joi.string()
       .required()
       .lowercase()
+      .invalid(...invalidChainId)
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
+        'any.invalid': t('schema.addChainForm.chainId.any.invalid'),
       }),
     chainName: Joi.string()
       .required()
+      .lowercase()
+      .invalid(...invalidChainNames)
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
+        'any.invalid': t('schema.addChainForm.chainName.any.invalid'),
       }),
     restURL: Joi.string()
       .required()
