@@ -1009,11 +1009,6 @@
   },
   "schema": {
     "addChainForm": {
-      "chainId": {
-        "any": {
-          "invalid": "Already registered"
-        }
-      },
       "chainName": {
         "any": {
           "invalid": "Already registered"

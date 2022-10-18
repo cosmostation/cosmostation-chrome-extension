@@ -1009,11 +1009,6 @@
   },
   "schema": {
     "addChainForm": {
-      "chainId": {
-        "any": {
-          "invalid": "이미 등록된 체인입니다."
-        }
-      },
       "chainName": {
         "any": {
           "invalid": "이미 등록된 체인입니다."

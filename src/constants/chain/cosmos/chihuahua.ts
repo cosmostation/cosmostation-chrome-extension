@@ -23,9 +23,9 @@ export const CHIHUAHUA: CosmosChain = {
   coinGeckoId: 'chihuahua-token',
   explorerURL: `${MINTSCAN_URL}/chihuahua`,
   gasRate: {
-    tiny: '0.00035',
-    low: '0.0035',
-    average: '0.035',
+    tiny: '10',
+    low: '10.5',
+    average: '11',
   },
   gas: { send: '100000' },
 };

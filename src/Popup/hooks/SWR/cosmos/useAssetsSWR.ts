@@ -9,6 +9,7 @@ import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { SIF } from '~/constants/chain/cosmos/sif';
+import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { get } from '~/Popup/utils/axios';
 import type { CosmosChain } from '~/types/chain';
 import type { AssetV2Payload } from '~/types/cosmos/asset';
@@ -20,6 +21,7 @@ const nameMap = {
   [KAVA.id]: 'kava',
   [CRESCENT.id]: 'crescent',
   [EMONEY.id]: 'emoney',
+  [STAFIHUB.id]: 'stafi',
 };
 
 export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {

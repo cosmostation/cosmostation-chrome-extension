@@ -40,7 +40,7 @@ export type CW20Asset = {
   denom: string;
   decimal: number;
   display: number;
-  logo: string;
+  logo?: string;
   total_supply: number;
   coingecko_id?: string;
 };

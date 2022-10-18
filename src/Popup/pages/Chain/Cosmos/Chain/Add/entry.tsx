@@ -72,7 +72,6 @@ export default function Entry() {
         gas: { send: data.sendGas ?? COSMOS_DEFAULT_SEND_GAS },
         cosmWasm: data.cosmWasm,
       };
-
       await addAdditionalChains(newChain);
       enqueueSnackbar(t('pages.Chain.Cosmos.Chain.Add.entry.addChainSnackbar'));
       reset();
