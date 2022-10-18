@@ -1027,6 +1027,11 @@
           "and": "Please enter whole Gas Rate value"
         }
       },
+      "restUrl": {
+        "any": {
+          "invalid": "Already registered"
+        }
+      },
       "type": {
         "string": {
           "any": {

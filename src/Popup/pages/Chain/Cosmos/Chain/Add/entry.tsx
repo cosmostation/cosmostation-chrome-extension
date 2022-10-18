@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -11,6 +12,7 @@ import Input from '~/Popup/components/common/Input';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain } from '~/types/chain';
+import type { NodeInfoPayload } from '~/types/cosmos/nodeInfo';
 
 import { ButtonContainer, Container, ContentsContainer, Div, InputContainer, WarningContainer, WarningIconContainer, WarningTextContainer } from './styled';
 import type { AddChainForm } from './useSchema';
@@ -45,11 +47,13 @@ export default function Entry() {
 
   const submit = async (data: AddChainForm) => {
     try {
+      const fetchedChainId = await axios.get<NodeInfoPayload>(data.restURL.concat('/node_info'));
+
       const newChain: CosmosChain = {
         id: uuidv4(),
         line: 'COSMOS',
         type: data.type ?? '',
-        chainId: data.chainId,
+        chainId: fetchedChainId.data.node_info.network,
         chainName: data.chainName,
         displayDenom: data.displayDenom,
         baseDenom: data.baseDenom,
@@ -68,6 +72,7 @@ export default function Entry() {
         gas: { send: data.sendGas ?? COSMOS_DEFAULT_SEND_GAS },
         cosmWasm: data.cosmWasm,
       };
+
       await addAdditionalChains(newChain);
       enqueueSnackbar(t('pages.Chain.Cosmos.Chain.Add.entry.addChainSnackbar'));
       reset();
@@ -90,16 +95,6 @@ export default function Entry() {
             </WarningTextContainer>
           </WarningContainer>
           <InputContainer>
-            <Div sx={{ marginBottom: '0.8rem' }}>
-              <Input
-                type="text"
-                inputProps={register('chainId')}
-                error={!!errors.chainId}
-                helperText={errors.chainId?.message}
-                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.chainIdPlaceholder')}
-              />
-            </Div>
-
             <Div sx={{ marginBottom: '0.8rem' }}>
               <Input
                 type="text"

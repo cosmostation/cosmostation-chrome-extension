@@ -1027,6 +1027,11 @@
           "and": "Gas Rate의 모든 값을 입력해주세요."
         }
       },
+      "restUrl": {
+        "any": {
+          "invalid": "이미 등록된 체인입니다."
+        }
+      },
       "type": {
         "string": {
           "any": {

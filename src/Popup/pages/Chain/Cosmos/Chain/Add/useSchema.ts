@@ -37,13 +37,17 @@ export function useSchema() {
   const unofficialCosmosLowercaseChainIds = currentCosmosAdditionalChains.map((item) => item.chainId.toLowerCase());
   const unofficialCosmosLowercaseChainNames = currentCosmosAdditionalChains.map((item) => item.chainName.toLowerCase());
 
-  const invalidChainId = [...officialCosmosLowercaseChainIds, ...unofficialCosmosLowercaseChainIds];
+  const officialCosmosRestUrl = COSMOS_CHAINS.map((item) => item.restURL);
+  const unofficialCosmosRestUrl = currentCosmosAdditionalChains.map((item) => item.restURL);
+
   const invalidChainNames = [
     ...officialCosmosLowercaseChainNames,
     ...officialCosmosLowercaseChainIds,
     ...unofficialCosmosLowercaseChainNames,
     ...unofficialCosmosLowercaseChainIds,
   ];
+
+  const invalidRestUrl = [...officialCosmosRestUrl, ...unofficialCosmosRestUrl];
 
   const addChainForm = Joi.object<AddChainForm>({
     type: Joi.string()
@@ -53,15 +57,6 @@ export function useSchema() {
       .messages({
         'string.base': t('schema.common.string.base'),
         'any.only': t('schema.addChainForm.type.string.any.invalid'),
-      }),
-    chainId: Joi.string()
-      .required()
-      .lowercase()
-      .invalid(...invalidChainId)
-      .messages({
-        'string.base': t('schema.common.string.base'),
-        'string.empty': t('schema.common.string.empty'),
-        'any.invalid': t('schema.addChainForm.chainId.any.invalid'),
       }),
     chainName: Joi.string()
       .required()
@@ -74,9 +69,11 @@ export function useSchema() {
       }),
     restURL: Joi.string()
       .required()
+      .invalid(...invalidRestUrl)
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
+        'any.invalid': t('schema.addChainForm.restUrl.any.invalid'),
       }),
     imageURL: Joi.string()
       .optional()
