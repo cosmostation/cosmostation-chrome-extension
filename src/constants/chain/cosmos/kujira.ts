@@ -3,7 +3,7 @@ import kujiraImg from '~/images/symbols/kujira.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const KUJIRA: CosmosChain = {
-  id: 'b869bcf8-f489-443a-9be4-56cac21f6f53',
+  id: 'fa7a1907-662f-497c-95fb-2383e88341fd',
   line: 'COSMOS',
   type: '',
   chainId: 'kaiyo-1',
