@@ -23,11 +23,9 @@ export const KUJIRA: CosmosChain = {
   coinGeckoId: 'kujira',
   explorerURL: `${MINTSCAN_URL}/kujira`,
   gasRate: {
-    tiny: '0.00025',
-    low: '0.0025',
-    average: '0.025',
+    tiny: '0.00119',
+    low: '0.00119ukuji',
+    average: '0.00119ukuji',
   },
-  gas: {},
+  gas: { send: '100000' },
 };
-
-// //decimal : 1 kuji = 1000000 ukuji micro (1,000,000 | exponent 6)
