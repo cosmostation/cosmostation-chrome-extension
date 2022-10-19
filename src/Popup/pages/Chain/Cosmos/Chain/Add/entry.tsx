@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
@@ -11,6 +10,7 @@ import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { get, isAxiosError } from '~/Popup/utils/axios';
 import type { CosmosChain } from '~/types/chain';
 import type { NodeInfoPayload } from '~/types/cosmos/nodeInfo';
 
@@ -47,13 +47,13 @@ export default function Entry() {
 
   const submit = async (data: AddChainForm) => {
     try {
-      const fetchedChainId = await axios.get<NodeInfoPayload>(data.restURL.concat('/node_info'));
+      const fetchedChainId = await get<NodeInfoPayload>(`${data.restURL}/node_infod`);
 
       const newChain: CosmosChain = {
         id: uuidv4(),
         line: 'COSMOS',
         type: data.type ?? '',
-        chainId: fetchedChainId.data.node_info.network,
+        chainId: fetchedChainId.node_info.network,
         chainName: data.chainName,
         displayDenom: data.displayDenom,
         baseDenom: data.baseDenom,
@@ -76,8 +76,16 @@ export default function Entry() {
       enqueueSnackbar(t('pages.Chain.Cosmos.Chain.Add.entry.addChainSnackbar'));
       reset();
     } catch (e) {
-      const message = (e as { message?: string }).message ? (e as { message: string }).message : 'Failed';
-      enqueueSnackbar(message, { variant: 'error' });
+      if (isAxiosError(e)) {
+        if (e.response?.status) {
+          enqueueSnackbar(`${t('pages.Chain.Cosmos.Chain.Add.entry.error')} ${e.response?.status}, ${t('pages.Chain.Cosmos.Chain.Add.entry.axios501Error')}`, {
+            variant: 'error',
+          });
+        }
+      } else {
+        const message = (e as { message?: string }).message ? (e as { message: string }).message : 'Failed';
+        enqueueSnackbar(message, { variant: 'error' });
+      }
     }
   };
 

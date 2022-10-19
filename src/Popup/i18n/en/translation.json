@@ -422,6 +422,7 @@
             "entry": {
               "addChainSnackbar": "custom Chain added",
               "addressPrefixPlaceholder": "Address prefix (e.g., cosmos)",
+              "axios501Error": "Make sure you enterd Rest URL correctly",
               "baseDenomPlaceholder": "Denom (e.g., uatom)",
               "chainIdPlaceholder": "Chain id (e.g., cosmoshub-1)",
               "chainNamePlaceholder": "Custom Chain name",
@@ -430,6 +431,7 @@
               "cosmWasmPlaceholder": "Cosmwasm (option)",
               "decimalsPlaceholder": "Decimals (option) (default: 6)",
               "displayDenomPlaceholder": "Currency symbol",
+              "error": "Error",
               "gasRateAveragePlaceholder": "Gas rate Average (option)",
               "gasRateLowPlaceholder": "Gas rate Low (option)",
               "gasRateTinyPlaceholder": "Gas rate Tiny (option)",
