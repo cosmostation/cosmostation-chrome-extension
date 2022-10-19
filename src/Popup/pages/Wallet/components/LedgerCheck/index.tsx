@@ -54,7 +54,7 @@ export default function LedgerCheck({ children }: LedgerCheckProps) {
   };
 
   if (currentAccount.type === 'LEDGER') {
-    if (currentChain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS && currentChain.line === 'COSMOS') {
+    if ((currentChain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS && currentChain.line === 'COSMOS') || currentChain.line === 'APTOS') {
       return (
         <Container>
           <LedgerWarningIcon />

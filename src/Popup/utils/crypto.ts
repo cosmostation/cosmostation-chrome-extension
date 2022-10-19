@@ -1,3 +1,4 @@
+import { AptosAccount, derivePath } from 'aptos';
 import BIP32Factory from 'bip32';
 import * as bip39 from 'bip39';
 import aes from 'crypto-js/aes';
@@ -51,6 +52,17 @@ export function mnemonicToPair(mnemonic: string, path: string) {
   const child = node.derivePath(path);
 
   return { privateKey: child.privateKey!, publicKey: child.publicKey };
+}
+
+export function mnemonicToAptosPair(mnemonic: string, path: string) {
+  const seed = bip39.mnemonicToSeedSync(mnemonic);
+  const node = derivePath(path, Buffer.from(seed).toString('hex'));
+  const account = new AptosAccount(node.key);
+
+  const privateKey = Buffer.from(node.key);
+  const publicKey = Buffer.from(account.pubKey().toUint8Array());
+
+  return { privateKey, publicKey };
 }
 
 export function privateKeyToPair(privateKey: Buffer) {

@@ -416,6 +416,20 @@
       }
     },
     "Chain": {
+      "Aptos": {
+        "Coin": {
+          "Add": {
+            "entry": {
+              "addressPlaceholder": "Coin address",
+              "decimals": "Decimals",
+              "name": "Name",
+              "submitButton": "Submit",
+              "symbol": "Symbol",
+              "warning": "Anyone can create a coin, including creating fake versions of existing coins. Take extra cautions on scams and security risks."
+            }
+          }
+        }
+      },
       "Cosmos": {
         "Chain": {
           "Add": {
@@ -507,6 +521,7 @@
         "Use": {
           "entry": {
             "removeAllowedChainError": "Please select more than 1 chain",
+            "removeShownAptosNetworkError": "Please select more than 1 network",
             "removeShownEthereumNetworkError": "Please select more than 1 network",
             "searchPlaceholder": "Search chain"
           },
@@ -535,6 +550,24 @@
       }
     },
     "Popup": {
+      "Aptos": {
+        "Sign": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "message": "Message",
+            "signButton": "Sign",
+            "signatureRequest": "Signature request"
+          }
+        },
+        "Transaction": {
+          "entry": {
+            "average": "Average",
+            "high": "High",
+            "low": "Low",
+            "maxFee": "Max fee"
+          }
+        }
+      },
       "Cosmos": {
         "AddChain": {
           "entry": {
@@ -838,6 +871,11 @@
     "Wallet": {
       "Receive": {
         "Entry": {
+          "Aptos": {
+            "address": "Address",
+            "copied": "Copied",
+            "scanQrCode": "Scan QR code"
+          },
           "Cosmos": {
             "address": "Address",
             "copied": "Copied",
@@ -855,6 +893,16 @@
       },
       "Send": {
         "Entry": {
+          "Aptos": {
+            "index": {
+              "amountPlaceholder": "Amount",
+              "insufficientAmount": "Insufficient amount",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          },
           "Cosmos": {
             "components": {
               "CoinOrTokenPopover": {
@@ -955,6 +1003,14 @@
             "connectDescription": "Connect your Ledger harware wallet to your computer and press \"Connect\"",
             "notSupportedDescription": "This network is not supported on Ledger hardware wallet. Please proceed with mnemonics or private key.",
             "notSupportedTitle": "Not supported"
+          }
+        },
+        "aptos": {
+          "CoinList": {
+            "index": {
+              "addCoinButton": "Add coin",
+              "coin": "Coin"
+            }
           }
         },
         "cosmos": {

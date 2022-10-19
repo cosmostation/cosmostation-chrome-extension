@@ -23,6 +23,7 @@ import AccountInitializeNewMnemonicStep4 from '~/Popup/pages/Account/Initialize/
 import AccountInitializeNewMnemonicStep5 from '~/Popup/pages/Account/Initialize/New/Mnemonic/Step5';
 import AccountInitializeWelcome from '~/Popup/pages/Account/Initialize/Welcome';
 import AccountManagement from '~/Popup/pages/Account/Management';
+import ChainAptosCoinAdd from '~/Popup/pages/Chain/Aptos/Coin/Add';
 import ChainCosmosChainAdd from '~/Popup/pages/Chain/Cosmos/Chain/Add';
 import ChainCosmosTokenAddCW20 from '~/Popup/pages/Chain/Cosmos/Token/Add/CW20';
 import ChainEthereumNetworkAdd from '~/Popup/pages/Chain/Ethereum/Network/Add';
@@ -31,6 +32,8 @@ import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
 import Home from '~/Popup/pages/Home';
+import PopupAptosSignMessage from '~/Popup/pages/Popup/Aptos/SignMessage';
+import PopupAptosTransaction from '~/Popup/pages/Popup/Aptos/Transaction';
 import PopupCosmosAddChain from '~/Popup/pages/Popup/Cosmos/AddChain';
 import PopupCosmosAddTokens from '~/Popup/pages/Popup/Cosmos/AddTokens';
 import PopupCosmosAutoSignDelete from '~/Popup/pages/Popup/Cosmos/AutoSign/Delete';
@@ -117,6 +120,8 @@ export default function Routes() {
           <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__ERC20} element={<ChainEthereumTokenAddERC20 />} />
           <Route path={PATH.CHAIN__ETHEREUM__NETWORK__ADD} element={<ChainEthereumNetworkAdd />} />
 
+          <Route path={PATH.CHAIN__APTOS__COIN__ADD} element={<ChainAptosCoinAdd />} />
+
           <Route path={PATH.POPUP__REQUEST_ACCOUNT} element={<PopupRequestAccount />} />
 
           <Route path={PATH.POPUP__ETHEREUM__ADD_NETWORK} element={<PopupEthereumAddNetwork />} />
@@ -134,6 +139,9 @@ export default function Routes() {
           <Route path={PATH.POPUP__COSMOS__AUTO_SIGN__DELETE} element={<PopupCosmosAutoSignDelete />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__AMINO} element={<PopupCosmosSignAmino />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__DIRECT} element={<PopupCosmosSignDirect />} />
+
+          <Route path={PATH.POPUP__APTOS__TRANSACTION} element={<PopupAptosTransaction />} />
+          <Route path={PATH.POPUP__APTOS__SIGN_MESSAGE} element={<PopupAptosSignMessage />} />
         </>
       )}
       <Route path={PATH.HOME} element={<Home />} />

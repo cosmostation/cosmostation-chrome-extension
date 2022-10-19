@@ -1,8 +1,10 @@
 import { Typography } from '@mui/material';
 
 import { CHAINS } from '~/constants/chain';
+import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import { APTOS_POPUP_METHOD_TYPE } from '~/constants/message/aptos';
 import { COSMOS_POPUP_METHOD_TYPE } from '~/constants/message/cosmos';
 import { ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
 import logoImg from '~/images/etc/logo.png';
@@ -46,6 +48,7 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
   const currentCosmosAdditionalChainNames = currentCosmosAdditionalChains.map((item) => item.chainName);
 
   const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
+  const aptosPopupMethods = Object.values(APTOS_POPUP_METHOD_TYPE) as string[];
 
   const chain = (() => {
     if (
@@ -58,6 +61,10 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
     }
 
     if (ethereumPopupMethods.includes(currentQueue?.message?.method || '') && !allowedChains.includes(ETHEREUM.chainName)) {
+      return ETHEREUM;
+    }
+
+    if (aptosPopupMethods.includes(currentQueue?.message?.method || '') && !allowedChains.includes(APTOS.chainName)) {
       return ETHEREUM;
     }
 

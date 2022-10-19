@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import Body from './Body';
 import Init from './Init';
 import Routes from './Routes';
@@ -10,7 +12,9 @@ export default function Wrapper({ children }: WrapperType) {
   return (
     <Body>
       <Init>
-        <Routes>{children}</Routes>
+        <Routes>
+          <Suspense fallback={null}>{children}</Suspense>
+        </Routes>
       </Init>
     </Body>
   );

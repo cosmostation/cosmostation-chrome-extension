@@ -1,6 +1,16 @@
-import type { COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
+import type { APTOS_LISTENER_TYPE, COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
 import type { LineType } from '~/types/chain';
 
+import type {
+  AptosAccount,
+  AptosConnect,
+  AptosDisconnect,
+  AptosIsConnected,
+  AptosNetwork,
+  AptosSignAndSubmitTransaction,
+  AptosSignMessage,
+  AptosSignTransaction,
+} from './aptos';
 import type { ComProviders } from './common';
 import type {
   CosAccount,
@@ -42,10 +52,10 @@ import type {
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type CosmosListenerType = ValueOf<typeof COSMOS_LISTENER_TYPE>;
 export type EthereumListenerType = ValueOf<typeof ETHEREUM_LISTENER_TYPE>;
-export type ListenerType = CosmosListenerType | EthereumListenerType;
+export type AptosListenerType = ValueOf<typeof APTOS_LISTENER_TYPE>;
+export type ListenerType = CosmosListenerType | EthereumListenerType | AptosListenerType;
 
 /** Web Page <-> Content Script 통신 타입 정의 */
-
 export type ResponseMessage = {
   error?: unknown | null;
   result?: unknown | null;
@@ -87,9 +97,19 @@ export type CosmosRequestMessage =
   | CosAddTokensCW20
   | CosAddTokensCW20Internal;
 
+export type AptosRequestMessage =
+  | AptosAccount
+  | AptosConnect
+  | AptosNetwork
+  | AptosDisconnect
+  | AptosIsConnected
+  | AptosSignTransaction
+  | AptosSignAndSubmitTransaction
+  | AptosSignMessage;
+
 export type CommonRequestMessage = ComProviders;
 
-export type RequestMessage = EthereumRequestMessage | CosmosRequestMessage | CommonRequestMessage;
+export type RequestMessage = CommonRequestMessage | EthereumRequestMessage | CosmosRequestMessage | AptosRequestMessage;
 
 // window.postMessage 통신
 // isCosmostation: extension 확인 플래그

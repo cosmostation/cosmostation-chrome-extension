@@ -26,6 +26,8 @@ export const PATH = {
   CHAIN__ETHEREUM__TOKEN__ADD__ERC20: '/chain/ethereum/token/add/erc20',
   CHAIN__ETHEREUM__NETWORK__ADD: '/chain/ethereum/network/add',
 
+  CHAIN__APTOS__COIN__ADD: '/chain/aptos/coin/add',
+
   ACCOUNT__MANAGEMENT: '/account/management',
   ACCOUNT__CREATE: '/account/create',
   ACCOUNT__INITIALIZE: '/account/initialize',
@@ -75,4 +77,8 @@ export const PATH = {
   POPUP__ETHEREUM__PERSONAL_SIGN: '/popup/ethereum/personal-sign',
   POPUP__ETHEREUM__TRANSACTION: '/popup/ethereum/transaction',
   POPUP__ETHEREUM__ADD_TOKENS: '/popup/ethereum/add-tokens',
+
+  // popup aptos
+  POPUP__APTOS__TRANSACTION: '/popup/aptos/transaction',
+  POPUP__APTOS__SIGN_MESSAGE: '/popup/aptos/sign-message',
 } as const;

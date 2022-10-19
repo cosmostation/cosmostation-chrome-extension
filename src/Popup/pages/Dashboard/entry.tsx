@@ -9,8 +9,14 @@ import Header from '~/Popup/components/SelectSubHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
+import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import AptosChainItem, {
+  AptosChainItemError,
+  AptosChainItemLedgerCheck,
+  AptosChainItemSkeleton,
+} from '~/Popup/pages/Dashboard/components/ChainItem/components/AptosChainItem';
 import CosmosChainItem, {
   CosmosChainItemError,
   CosmosChainItemSkeleton,
@@ -23,7 +29,7 @@ import EthereumChainItem, {
 } from '~/Popup/pages/Dashboard/components/ChainItem/components/EthereumChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { plus } from '~/Popup/utils/big';
-import type { Chain, CosmosChain, EthereumChain } from '~/types/chain';
+import type { AptosChain, Chain, CosmosChain, EthereumChain } from '~/types/chain';
 
 import {
   ChainList,
@@ -51,6 +57,7 @@ export default function Entry() {
   const { currentAllowedChains } = useCurrentAllowedChains();
   const { currentAccount } = useCurrentAccount();
   const { currentShownEthereumNetwork } = useCurrentShownEthereumNetworks();
+  const { currentShownAptosNetwork } = useCurrentShownAptosNetworks();
   const dashboard = useRecoilValue(dashboardState);
 
   const { navigate } = useNavigate();
@@ -59,12 +66,14 @@ export default function Entry() {
 
   const cosmosChainList = chainList.filter(isCosmos);
   const ethereumChainList = chainList.filter(isEthereum);
+  const aptosChainList = chainList.filter(isAptos);
 
   const cosmosChainNames = cosmosChainList.map((item) => item.chain.chainName);
   const ethereumNetworkList =
     ethereumChainList.length > 0 ? currentShownEthereumNetwork.filter((network) => !cosmosChainNames.includes(network.networkName)) : [];
+  const aptosNetworkList = aptosChainList.length > 0 ? currentShownAptosNetwork : [];
 
-  const chainCnt = cosmosChainList.length + ethereumNetworkList.length;
+  const chainCnt = cosmosChainList.length + ethereumNetworkList.length + aptosNetworkList.length;
 
   const totalAmount =
     typeof dashboard?.[currentAccount.id] === 'object' ? Object.values(dashboard[currentAccount.id]).reduce((acc, cur) => plus(acc, cur), '0') : '0';
@@ -128,6 +137,23 @@ export default function Entry() {
               </ErrorBoundary>
             </CosmosChainLedgerCheck>
           ))}
+
+          {aptosChainList.map((item) =>
+            aptosNetworkList.map((network) => (
+              <AptosChainItemLedgerCheck key={`${currentAccount.id}${item.chain.id}${network.id}`} network={network}>
+                <ErrorBoundary
+                  FallbackComponent={
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    (props) => <AptosChainItemError {...props} chain={item.chain} network={network} />
+                  }
+                >
+                  <Suspense fallback={<AptosChainItemSkeleton chain={item.chain} network={network} />}>
+                    <AptosChainItem key={item.chain.id} chain={item.chain} network={network} />
+                  </Suspense>
+                </ErrorBoundary>
+              </AptosChainItemLedgerCheck>
+            )),
+          )}
         </ChainList>
       </ChainListContainer>
     </Container>
@@ -140,4 +166,8 @@ function isCosmos(item: ChainItem): item is ChainItem<CosmosChain> {
 
 function isEthereum(item: ChainItem): item is ChainItem<EthereumChain> {
   return item.chain.line === 'ETHEREUM';
+}
+
+function isAptos(item: ChainItem): item is ChainItem<AptosChain> {
+  return item.chain.line === 'APTOS';
 }

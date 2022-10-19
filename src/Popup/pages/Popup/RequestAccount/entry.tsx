@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 
 import { CHAINS } from '~/constants/chain';
+import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -9,6 +10,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CosmosChain } from '~/types/chain';
+import type { AptosAccountResponse } from '~/types/message/aptos';
 import type { CosRequestAccountResponse } from '~/types/message/cosmos';
 import type { EthRequestAccountsResponse } from '~/types/message/ethereum';
 
@@ -63,6 +65,27 @@ export default function Entry() {
       const address = getAddress(chain, keyPair?.publicKey);
 
       const result: EthRequestAccountsResponse = [address];
+
+      responseToWeb({
+        response: {
+          result,
+        },
+        message,
+        messageId,
+        origin,
+      });
+
+      void deQueue();
+    }
+
+    if ((currentQueue?.message.method === 'aptos_account' || currentQueue?.message.method === 'aptos_connect') && currentPassword) {
+      const { message, messageId, origin } = currentQueue;
+      const chain = APTOS;
+
+      const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+      const address = getAddress(chain, keyPair?.publicKey);
+
+      const result: AptosAccountResponse = { address, publicKey: `0x${keyPair!.publicKey.toString('hex')}` };
 
       responseToWeb({
         response: {

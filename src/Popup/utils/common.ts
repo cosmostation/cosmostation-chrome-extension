@@ -1,7 +1,8 @@
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { getAddress as getAptosAddress } from '~/Popup/utils/aptos';
 import { getAddress as getBech32Address, getAddressForEthermint } from '~/Popup/utils/cosmos';
-import { aesDecrypt, mnemonicToPair, privateKeyToPair } from '~/Popup/utils/crypto';
+import { aesDecrypt, mnemonicToAptosPair, mnemonicToPair, privateKeyToPair } from '~/Popup/utils/crypto';
 import { getAddress as getEthereumAddress } from '~/Popup/utils/ethereum';
 import type { Chain } from '~/types/chain';
 import type { Account } from '~/types/chromeStorage';
@@ -21,6 +22,10 @@ export function getAddress(chain: Chain, publicKey?: Buffer) {
     return getEthereumAddress(publicKey);
   }
 
+  if (chain.line === 'APTOS') {
+    return getAptosAddress(publicKey);
+  }
+
   return '';
 }
 
@@ -29,6 +34,12 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
 
   if (account.type === 'MNEMONIC') {
     const mnemonic = aesDecrypt(account.encryptedMnemonic, password);
+
+    if (chain.line === 'APTOS') {
+      const path = `m/${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${account.bip44.addressIndex}'`;
+      return mnemonicToAptosPair(mnemonic, path);
+    }
+
     const path = `m/${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${account.bip44.addressIndex}`;
     return mnemonicToPair(mnemonic, path);
   }

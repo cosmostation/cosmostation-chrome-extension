@@ -1,0 +1,10 @@
+@rpcURL=https://rpc.mainnet.aptos.fernlabs.xyz
+
+### 
+GET {{rpcURL}}/v1/accounts/0xfe9745184145e348f0faebb84a480a49cee01ad55356bf597aebc8ed181d3894/resources
+
+###
+GET {{rpcURL}}/v1/accounts/0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa/resources
+
+###
+GET {{rpcURL}}/v1/accounts/0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa/resource/0x1::coin::CoinInfo%3C0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC%3E

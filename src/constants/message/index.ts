@@ -15,3 +15,8 @@ export const ETHEREUM_LISTENER_TYPE = {
   ACCOUNTS_CHANGED: 'accountsChanged',
   CHAIN_CHANGED: 'chainChanged',
 } as const;
+
+export const APTOS_LISTENER_TYPE = {
+  ACCOUNT_CHANGED: 'accountChange',
+  CHAIN_CHANGED: 'networkChange',
+} as const;

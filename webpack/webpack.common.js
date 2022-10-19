@@ -11,7 +11,7 @@ module.exports = {
     popup: path.join(srcDir, 'Popup/index.tsx'),
     background: path.join(srcDir, 'Popup/background/index.ts'),
     contentScript: path.join(srcDir, 'Scripts/contentScript.ts'),
-    injectScript: { import: path.join(srcDir, 'Scripts/injectScript.ts') },
+    injectScript: { import: path.join(srcDir, 'Scripts/injectScript/index.ts') },
     warningScript: { import: path.join(srcDir, 'Scripts/warningScript.ts') },
   },
   optimization: {
