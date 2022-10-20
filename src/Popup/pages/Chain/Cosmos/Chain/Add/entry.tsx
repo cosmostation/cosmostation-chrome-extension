@@ -62,6 +62,7 @@ export default function Entry() {
         baseDenom: data.baseDenom,
         bech32Prefix: { address: data.addressPrefix },
         restURL: data.restURL,
+        explorerURL: data.explorerURL,
         coinGeckoId: data.coinGeckoId,
         bip44: {
           purpose: "44'",
@@ -158,6 +159,26 @@ export default function Entry() {
             <Div sx={{ marginBottom: '0.8rem' }}>
               <Input
                 type="text"
+                inputProps={register('imageURL')}
+                error={!!errors.imageURL}
+                helperText={errors.imageURL?.message}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.imageURLPlaceholder')}
+              />
+            </Div>
+
+            <Div sx={{ marginBottom: '0.8rem' }}>
+              <Input
+                type="text"
+                inputProps={register('explorerURL')}
+                error={!!errors.explorerURL}
+                helperText={errors.explorerURL?.message}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.explorerURLPlaceholder')}
+              />
+            </Div>
+
+            <Div sx={{ marginBottom: '0.8rem' }}>
+              <Input
+                type="text"
                 inputProps={register('coinType')}
                 error={!!errors.coinType}
                 helperText={errors.coinType?.message}
@@ -212,16 +233,6 @@ export default function Entry() {
                 error={!!errors.sendGas}
                 helperText={errors.sendGas?.message}
                 placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.sendGasPlaceholder')}
-              />
-            </Div>
-
-            <Div sx={{ marginBottom: '0.8rem' }}>
-              <Input
-                type="text"
-                inputProps={register('imageURL')}
-                error={!!errors.imageURL}
-                helperText={errors.imageURL?.message}
-                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.imageURLPlaceholder')}
               />
             </Div>
 

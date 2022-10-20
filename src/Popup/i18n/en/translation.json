@@ -430,6 +430,7 @@
               "cosmWasmPlaceholder": "Cosmwasm (option)",
               "decimalsPlaceholder": "Decimals (option) (default: 6)",
               "displayDenomPlaceholder": "Currency symbol",
+              "explorerURLPlaceholder": "Explorer URL (option)",
               "gasRateAveragePlaceholder": "Gas rate Average (option)",
               "gasRateLowPlaceholder": "Gas rate Low (option)",
               "gasRateTinyPlaceholder": "Gas rate Tiny (option)",
@@ -1017,6 +1018,11 @@
       },
       "decimal": {
         "base": "Please enter decimals"
+      },
+      "explorerURL": {
+        "any": {
+          "invalid": "Already registered"
+        }
       },
       "gasRate": {
         "object": {

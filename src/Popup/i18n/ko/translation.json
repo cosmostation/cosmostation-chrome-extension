@@ -430,6 +430,7 @@
               "cosmWasmPlaceholder": "cosmwasm 여부 (선택) (default: false)",
               "decimalsPlaceholder": "decimals (선택) (default: 6)",
               "displayDenomPlaceholder": "통화 기호",
+              "explorerURLPlaceholder": "블록 탐색기 URL (선택)",
               "gasRateAveragePlaceholder": "Gas rate Average (선택)",
               "gasRateLowPlaceholder": "Gas rate Low (선택)",
               "gasRateTinyPlaceholder": "Gas rate Tiny (선택)",
@@ -1017,6 +1018,11 @@
       },
       "decimal": {
         "base": "소수점을 입력해주세요."
+      },
+      "explorerURL": {
+        "any": {
+          "invalid": "이미 등록된 블록 탐색기 URL입니다."
+        }
       },
       "gasRate": {
         "object": {
