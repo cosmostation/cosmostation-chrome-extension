@@ -454,6 +454,17 @@
         },
         "Token": {
           "Add": {
+            "SEARCHTOKEN": {
+              "entry": {
+                "addTokenSnackbar": "토큰이 추가 되었습니다.",
+                "addressPlaceholder": "토큰을 검색하세요",
+                "submitButton": "토큰 가져오기",
+                "warning": " Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click 'Import a custom token'. "
+              },
+              "layout": {
+                "title": "토큰 가져오기"
+              }
+            },
             "ERC20": {
               "entry": {
                 "addTokenSnackbar": "토큰이 추가 되었습니다.",
