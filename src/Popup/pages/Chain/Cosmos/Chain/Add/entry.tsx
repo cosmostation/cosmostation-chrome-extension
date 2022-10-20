@@ -47,13 +47,16 @@ export default function Entry() {
 
   const submit = async (data: AddChainForm) => {
     try {
-      const fetchedChainId = await get<NodeInfoPayload>(`${data.restURL}/node_infod`);
+      const nodeInfo = await get<NodeInfoPayload>(`${data.restURL}/node_info`);
 
+      if (!nodeInfo?.node_info?.network) {
+        throw new Error(t('pages.Chain.Cosmos.Chain.Add.entry.restURLError'));
+      }
       const newChain: CosmosChain = {
         id: uuidv4(),
         line: 'COSMOS',
         type: data.type ?? '',
-        chainId: fetchedChainId.node_info.network,
+        chainId: nodeInfo.node_info.network,
         chainName: data.chainName,
         displayDenom: data.displayDenom,
         baseDenom: data.baseDenom,
@@ -78,7 +81,7 @@ export default function Entry() {
     } catch (e) {
       if (isAxiosError(e)) {
         if (e.response?.status) {
-          enqueueSnackbar(`${t('pages.Chain.Cosmos.Chain.Add.entry.error')} ${e.response?.status}, ${t('pages.Chain.Cosmos.Chain.Add.entry.axios501Error')}`, {
+          enqueueSnackbar(t('pages.Chain.Cosmos.Chain.Add.entry.restURLError'), {
             variant: 'error',
           });
         }
