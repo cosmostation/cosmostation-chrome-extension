@@ -24,8 +24,8 @@ export const KUJIRA: CosmosChain = {
   explorerURL: `${MINTSCAN_URL}/kujira`,
   gasRate: {
     tiny: '0.00119',
-    low: '0.00119ukuji',
-    average: '0.00119ukuji',
+    low: '0.00119',
+    average: '0.00119',
   },
   gas: { send: '100000' },
 };
