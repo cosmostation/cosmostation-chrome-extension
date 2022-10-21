@@ -34,7 +34,7 @@ export const StyledTabs = styled(Tabs)(({ theme }) => ({
       bottom: 4,
       borderRadius: '5rem',
       backgroundColor: theme.accentColors.purple01,
-      boxShadow: '0 4px 12px 0 rgba(0,0,0,0.16)',
+      // boxShadow: '0 4px 12px 0 rgba(0,0,0,0.16)',
     },
   },
 }));
@@ -43,7 +43,6 @@ export const StyledTab = styled(Tab)(({ theme }) => ({
   zIndex: 2,
   // marginTop: spacing(0.5),
   backgroundColor: theme.colors.base01,
-
   '&.MuiTab-root': {
     '&:hover': {
       opacity: 1,
@@ -57,16 +56,13 @@ export const StyledTab = styled(Tab)(({ theme }) => ({
     letterSpacing: theme.typography.h5.letterSpacing,
     backgroundColor: 'transparent',
     opacity: 1,
-
     minHeight: 0,
-    padding: '1.2rem 1.6rem',
   },
-
   '&.Mui-selected': { opacity: 1, color: theme.colors.text01 },
 }));
 
 export const TabsContainer = styled('div')({ position: 'relative' });
-
+// NOTE 이러면 서큐러 탭의 탭패널만 마진탑이 다른데... 이거 상관없나?
 export const TabPanelContainer = styled('div')({
   marginTop: '1.4rem',
 });
