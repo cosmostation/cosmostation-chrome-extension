@@ -1019,11 +1019,6 @@
       "decimal": {
         "base": "소수점을 입력해주세요."
       },
-      "explorerURL": {
-        "any": {
-          "invalid": "이미 등록된 블록 탐색기 URL입니다."
-        }
-      },
       "gasRate": {
         "object": {
           "and": "Gas Rate의 모든 값을 입력해주세요."

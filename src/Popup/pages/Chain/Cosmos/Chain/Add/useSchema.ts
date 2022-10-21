@@ -87,7 +87,6 @@ export function useSchema() {
       .empty('')
       .messages({
         'string.base': t('schema.common.string.base'),
-        'any.invalid': t('schema.addChainForm.explorerURL.any.invalid'),
       }),
     baseDenom: Joi.string()
       .required()

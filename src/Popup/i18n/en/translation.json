@@ -1019,11 +1019,6 @@
       "decimal": {
         "base": "Please enter decimals"
       },
-      "explorerURL": {
-        "any": {
-          "invalid": "Already registered"
-        }
-      },
       "gasRate": {
         "object": {
           "and": "Please enter whole Gas Rate value"
