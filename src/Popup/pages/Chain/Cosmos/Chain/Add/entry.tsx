@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
 
-import { COSMOS_DEFAULT_SEND_GAS } from '~/constants/chain';
+import { COSMOS_CHAINS, COSMOS_DEFAULT_SEND_GAS } from '~/constants/chain';
 import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
@@ -22,9 +22,14 @@ import Info16Icon from '~/images/icons/Info16.svg';
 
 export default function Entry() {
   const { addChainForm } = useSchema();
+  const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
   const { addAdditionalChains } = useCurrentAdditionalChains();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+
+  const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
+  const unofficialCosmosLowercaseChainIds = currentCosmosAdditionalChains.map((item) => item.chainId.toLowerCase());
+  const invalidChainIds = [...officialCosmosLowercaseChainIds, ...unofficialCosmosLowercaseChainIds];
 
   const {
     register,
@@ -51,6 +56,9 @@ export default function Entry() {
 
       if (!nodeInfo?.node_info?.network) {
         throw new Error(t('pages.Chain.Cosmos.Chain.Add.entry.restURLError'));
+      }
+      if (invalidChainIds.includes(nodeInfo?.node_info?.network)) {
+        throw new Error(t('pages.Chain.Cosmos.Chain.Add.entry.chainID.invalid'));
       }
       const newChain: CosmosChain = {
         id: uuidv4(),

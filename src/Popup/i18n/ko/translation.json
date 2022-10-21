@@ -423,6 +423,9 @@
               "addChainSnackbar": "커스텀 체인이 추가 되었습니다.",
               "addressPrefixPlaceholder": "address prefix (예: cosmos)",
               "baseDenomPlaceholder": "denom (예: uatom)",
+              "chainID": {
+                "invalid": "이미 등록된 체인입니다."
+              },
               "chainIdPlaceholder": "체인 ID (예: cosmoshub-1)",
               "chainNamePlaceholder": "커스텀 체인 이름",
               "coinGeckoIdPlaceholder": "Coingecko API id (선택)",

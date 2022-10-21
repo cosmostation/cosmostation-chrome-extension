@@ -423,6 +423,9 @@
               "addChainSnackbar": "custom Chain added",
               "addressPrefixPlaceholder": "Address prefix (e.g., cosmos)",
               "baseDenomPlaceholder": "Denom (e.g., uatom)",
+              "chainID": {
+                "invalid": "Already registered"
+              },
               "chainIdPlaceholder": "Chain id (e.g., cosmoshub-1)",
               "chainNamePlaceholder": "Custom Chain name",
               "coinGeckoIdPlaceholder": "Coingecko API id (option)",
