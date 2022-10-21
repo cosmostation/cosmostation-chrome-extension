@@ -24,8 +24,8 @@ export const CHIHUAHUA: CosmosChain = {
   explorerURL: `${MINTSCAN_URL}/chihuahua`,
   gasRate: {
     tiny: '10',
-    low: '10.5',
-    average: '11',
+    low: '50',
+    average: '100',
   },
   gas: { send: '100000' },
 };
