@@ -12,6 +12,8 @@ export type AssetPayload = {
   assets: Asset[];
 };
 
+//
+
 export type AssetV2 = {
   chain: string;
   denom: string;
@@ -33,6 +35,35 @@ export type AssetV2Payload = {
   assets: AssetV2[];
 };
 
+type CounterParty = {
+  channel: string;
+  port: string;
+  denom: string;
+};
+
+export type Ibc = {
+  description?: string;
+  base_denom: string;
+  base_type: string;
+  chain: string;
+  channel?: string;
+  coinGeckoId?: string;
+  counter_party?: CounterParty;
+  decimal: number;
+  denom: string;
+  dp_denom: string;
+  image?: string;
+  contract?: string;
+  website?: string;
+  origin_chain: string;
+  path?: string;
+  port?: string;
+  type: string;
+};
+
+export type AssetV2IbcPayload = {
+  assets: Ibc[];
+};
 export type CW20Asset = {
   id: number;
   chain: string;

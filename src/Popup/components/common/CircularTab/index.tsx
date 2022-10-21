@@ -1,12 +1,12 @@
 import type { TabProps, TabsProps } from '@mui/material';
 
-import { StyledTab, StyledTabs, TabPanelContainer, TabsContainer } from './styled';
+import { StyledTab, StyledTabs, TabPanelContainer } from './styled';
 
 export function Tabs(props: TabsProps) {
   return (
-    <TabsContainer>
-      <StyledTabs {...props} />
-    </TabsContainer>
+    // <TabsContainer>
+    <StyledTabs {...props} />
+    // </TabsContainer>
   );
 }
 

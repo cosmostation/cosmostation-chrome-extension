@@ -16,6 +16,7 @@ import { BackButton } from '~/Popup/components/SubHeader/styled';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+// import { useCoinAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useCoinAssetsSWR';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
@@ -49,6 +50,7 @@ import {
   StyledInput,
   StyledTextarea,
   TabContainer,
+  TopContainer,
 } from './styled';
 
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
@@ -76,6 +78,17 @@ export default function Cosmos({ chain }: CosmosProps) {
   const { vestingRelatedAvailable, totalAmount } = useAmountSWR(chain, true);
   const coinList = useCoinListSWR(chain, true);
   const accounts = useAccounts(true);
+  // NOTE 전체 asset 가져오기 - 기준 토큰 send시 상대 이거로 뽑아내기
+  // const allCosmosAssets = useCoinAssetsSWR();
+  // NOTE 기준 체인의 asset 가져오기 - 기준 토큰 send시 상대 이거로 뽑아내기
+  // const currnetChainAssets = useCoinAssetsSWR(chain);
+  // NOTE 현재 체인의 asset중 counter_party필드를 가지고 있는 값들의 denom들의 배열
+  // 현재 체인에서 ibc 코인을 ibc_send가 가능한 ibc코인의 denom
+  // const filteredCurrentChainAssets = currnetChainAssets.data.filter((item) => item.counter_party).map((item) => item.counter_party?.denom);
+  // NOTE 현재 체인에서 Native코인을 ibc_send 수신이 가능한 체인들의 이름
+  // const filteredNativeOkAssetsChainNameList = allCosmosAssets.data.filter((item) => item.counter_party?.denom === chain.baseDenom).map((item) => item.chain);
+  // const filteredBaseDenom = COSMOS_CHAINS.map((item) => item.chainName).filter((item) => filteredNativeOkAssetsChainNameList.includes(item));
+
   const nodeInfo = useNodeInfoSWR(chain);
   const { enQueue } = useCurrentQueue();
   const params = useParams();
@@ -91,7 +104,7 @@ export default function Cosmos({ chain }: CosmosProps) {
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
   const { decimals, gas, gasRate } = chain;
-
+  // NOTE 보유중인 모든 코인
   const coinAll = useMemo(
     () => [
       {
@@ -119,6 +132,7 @@ export default function Cosmos({ chain }: CosmosProps) {
     ],
   );
 
+  // NOTE 현재 선택된 체인에 보유중인 코인 리스트
   const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(
     () => [
       ...coinAll.filter((item) => gt(item.availableAmount, '0')).map((item) => ({ ...item, type: TYPE.COIN })),
@@ -126,6 +140,15 @@ export default function Cosmos({ chain }: CosmosProps) {
     ],
     [coinAll, currentCosmosTokens],
   );
+  // NOTE available의 disD를 가지고 맵핑해서 baseDenom을 가져와야하나?
+  // console.log('현재 선택가능한 코인들의 dd');
+  // console.log(availableCoinOrTokenList.map((item) => item.displayDenom));
+  // NOTE 기준 체인에서 IBC인놈을 보낼때
+  // const OkSendIBC = availableCoinOrTokenList.filter((item) => item.type === 'coin').filter((item) => filteredCurrentChainAssets.includes(item.displayDenom));
+  // NOTE 기준 체인에서 Native인놈을 보낼때
+  // const OkSendNative = availableCoinOrTokenList.map((item) => item.displayDenom).filter((item) => filteredNativeOkAssetsChainNameList.includes(item.));
+
+  // console.log(OkSendNative);
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
@@ -136,7 +159,7 @@ export default function Cosmos({ chain }: CosmosProps) {
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
 
   const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
-
+  // NOTE 현재 선택된 코인의 정보
   const currentCoinOrToken = useMemo(
     () =>
       availableCoinOrTokenList.find(
@@ -204,9 +227,8 @@ export default function Cosmos({ chain }: CosmosProps) {
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
   const currentCoinOrTokenDecimals = currentCoinOrToken.decimals || 0;
-
+  // NOTE 현재 선택된 코인의 정보
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
-
   const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentCoinOrTokenDecimals);
 
   const errorMessage = useMemo(() => {
@@ -252,15 +274,18 @@ export default function Cosmos({ chain }: CosmosProps) {
   };
   return (
     <Container>
-      <BackButton onClick={() => navigateBack()}>
-        <LeftArrow16Icon />
-      </BackButton>
-      <TabContainer>
-        <Tabs value={value} onChange={handleChange}>
-          <Tab label={t('pages.Wallet.Send.Entry.Cosmos.index.send')} />
-          <Tab label={t('pages.Wallet.Send.Entry.Cosmos.index.ibcSend')} />
-        </Tabs>
-      </TabContainer>
+      <TopContainer>
+        <BackButton onClick={() => navigateBack()}>
+          <LeftArrow16Icon />
+        </BackButton>
+        <TabContainer>
+          <Tabs value={value} onChange={handleChange}>
+            <Tab label={t('pages.Wallet.Send.Entry.Cosmos.index.send')} />
+            <Tab label={t('pages.Wallet.Send.Entry.Cosmos.index.ibcSend')} />
+          </Tabs>
+        </TabContainer>
+      </TopContainer>
+
       <TabPanel value={value} index={0}>
         <div>
           <StyledInput
@@ -358,7 +383,136 @@ export default function Cosmos({ chain }: CosmosProps) {
         </MarginTop12Div>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        hello
+        {/* 보낼 코인 */}
+        <MarginTop8Div>
+          <CoinButton
+            type="button"
+            onClick={(event) => {
+              setPopoverAnchorEl(event.currentTarget);
+            }}
+          >
+            <CoinLeftContainer>
+              <CoinLeftImageContainer>
+                <Image src={currentCoinOrToken.imageURL} />
+              </CoinLeftImageContainer>
+              <CoinLeftInfoContainer>
+                <CoinLeftDisplayDenomContainer>
+                  <Typography variant="h5">{currentCoinOrTokenDisplayDenom}</Typography>
+                </CoinLeftDisplayDenomContainer>
+                <CoinLeftAvailableContainer>
+                  <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.index.available')} :</Typography>{' '}
+                  <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
+                    <span>
+                      <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
+                        {currentCoinOrTokenDisplayAvailableAmount}
+                      </Number>
+                    </span>
+                  </Tooltip>
+                </CoinLeftAvailableContainer>
+              </CoinLeftInfoContainer>
+            </CoinLeftContainer>
+            <CoinRightContainer data-is-active={isOpenPopover ? 1 : 0}>
+              <BottomArrow24Icon />
+            </CoinRightContainer>
+          </CoinButton>
+        </MarginTop8Div>
+        {/* 기준 체인 */}
+        <MarginTop8Div>
+          <CoinButton
+            type="button"
+            onClick={(event) => {
+              setPopoverAnchorEl(event.currentTarget);
+            }}
+          >
+            <CoinLeftContainer>
+              <CoinLeftImageContainer>
+                <Image src={currentCoinOrToken.imageURL} />
+              </CoinLeftImageContainer>
+              <CoinLeftInfoContainer>
+                <CoinLeftDisplayDenomContainer>
+                  <Typography variant="h5">{currentCoinOrTokenDisplayDenom}</Typography>
+                </CoinLeftDisplayDenomContainer>
+                <CoinLeftAvailableContainer>
+                  <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.index.available')} :</Typography>{' '}
+                  <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
+                    <span>
+                      <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
+                        {currentCoinOrTokenDisplayAvailableAmount}
+                      </Number>
+                    </span>
+                  </Tooltip>
+                </CoinLeftAvailableContainer>
+              </CoinLeftInfoContainer>
+            </CoinLeftContainer>
+            <CoinRightContainer data-is-active={isOpenPopover ? 1 : 0}>
+              <BottomArrow24Icon />
+            </CoinRightContainer>
+          </CoinButton>
+        </MarginTop8Div>
+        {/* 수신인주소 */}
+        <MarginTop8Div>
+          <StyledInput
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
+                  <AddressBook24Icon />
+                </IconButton>
+              </InputAdornment>
+            }
+            placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.recipientAddressPlaceholder')}
+            onChange={(e) => setCurrentAddress(e.currentTarget.value)}
+            value={currentAddress}
+          />
+        </MarginTop8Div>
+
+        <MarginTop8Div>
+          <StyledInput
+            endAdornment={
+              <InputAdornment position="end">
+                <MaxButton
+                  type="button"
+                  onClick={() => {
+                    setCurrentDisplayAmount(maxDisplayAmount);
+                  }}
+                >
+                  <Typography variant="h7">MAX</Typography>
+                </MaxButton>
+              </InputAdornment>
+            }
+            onChange={(e) => {
+              if (!isDecimal(e.currentTarget.value, currentCoinOrToken.decimals || 0) && e.currentTarget.value) {
+                return;
+              }
+
+              setCurrentDisplayAmount(e.currentTarget.value);
+            }}
+            value={currentDisplayAmount}
+            placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.amountPlaceholder')}
+          />
+        </MarginTop8Div>
+        {/* FIXME Overflow error */}
+        <MarginTop8Div>
+          <StyledTextarea
+            multiline
+            minRows={1}
+            maxRows={1}
+            placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.memoPlaceholder')}
+            onChange={(e) => setCurrentMemo(e.currentTarget.value)}
+            value={currentMemo}
+          />
+        </MarginTop8Div>
+
+        <MarginTop12Div>
+          <Fee
+            feeCoin={{ ...currentFeeCoin, originBaseDenom: currentFeeCoin.originBaseDenom }}
+            gasRate={currentFeeGasRate}
+            baseFee={currentFeeAmount}
+            gas={currentGas}
+            onChangeGas={(g) => setCurrentGas(g)}
+            onChangeFee={(f) => setCurrentFeeAmount(f)}
+            isEdit
+          />
+        </MarginTop12Div>
       </TabPanel>
       <BottomContainer>
         <Tooltip varient="error" title={errorMessage} placement="top" arrow>

@@ -9,7 +9,19 @@ export const Container = styled('div')({
 
   position: 'relative',
 });
-export const TabContainer = styled('div')({ marginTop: '0 rem', display: 'flex', justifyContent: 'center' });
+export const TopContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  position: 'relative',
+
+  // margin: '0.8rem 1.6rem',
+
+  backgroundColor: 'transparent',
+});
+export const TabContainer = styled('div')({ display: 'flex', justifyContent: 'center' });
+
 export const MaxButton = styled('button')(({ theme }) => ({
   padding: '0.4rem 0.8rem',
   border: 0,
