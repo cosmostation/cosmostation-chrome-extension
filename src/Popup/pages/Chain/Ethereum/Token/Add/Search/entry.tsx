@@ -7,20 +7,34 @@ import { InputAdornment, Typography } from '@mui/material';
 import Button from '~/Popup/components/common/Button';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
-import { ButtonContainer, Container, Div, StyledInput, StyledSearch20Icon, WarningContainer, WarningIconContainer, WarningTextContainer } from './styled';
+import {
+  ButtonContainer,
+  Container,
+  Div,
+  ImportCustomTokenButton,
+  ImportCustomTokenImage,
+  ImportCustomTokenText,
+  StyledInput,
+  StyledSearch20Icon,
+  WarningContainer,
+  WarningIconContainer,
+  WarningTextContainer,
+} from './styled';
 import type { ImportTokenForm } from './useSchema';
 import { useSchema } from './useSchema';
 
 import Info16Icon from '~/images/icons/Info16.svg';
+import Plus16Icon from '~/images/icons/Plus16.svg';
 
 export default function Entry() {
   const [search, setSearch] = useState('');
   const { importTokenForm } = useSchema();
   const { addEthereumToken } = useCurrentEthereumTokens();
   const { t } = useTranslation();
-
+  const { navigate } = useNavigate();
   const tokens = useTokensSWR();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -63,6 +77,16 @@ export default function Entry() {
             <Typography variant="h6">{t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.warning')}</Typography>
           </WarningTextContainer>
         </WarningContainer>
+        <Div sx={{ marginBottom: '1.2rem' }}>
+          <ImportCustomTokenButton onClick={() => navigate('/chain/ethereum/token/add/erc20')} type="button">
+            <ImportCustomTokenImage>
+              <Plus16Icon />
+            </ImportCustomTokenImage>
+            <ImportCustomTokenText>
+              <Typography variant="h5">{t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.importCustomTokenButton')}</Typography>
+            </ImportCustomTokenText>
+          </ImportCustomTokenButton>
+        </Div>
         <Div sx={{ marginBottom: '0.8rem' }}>
           <StyledInput
             startAdornment={
