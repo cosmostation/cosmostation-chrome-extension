@@ -1,5 +1,9 @@
 import { styled } from '@mui/material/styles';
 
+import Input from '~/Popup/components/common/Input';
+
+import Search20Icon from '~/images/icons/Search20.svg';
+
 export const Container = styled('div')({
   width: '100%',
   height: '100%',
@@ -41,4 +45,12 @@ export const ButtonContainer = styled('div')({
   width: 'calc(100% - 3.2rem)',
 
   bottom: '1.6rem',
+});
+
+export const StyledSearch20Icon = styled(Search20Icon)(({ theme }) => ({
+  fill: theme.colors.base05,
+}));
+
+export const StyledInput = styled(Input)({
+  height: '4rem',
 });

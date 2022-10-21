@@ -457,7 +457,7 @@
             "SEARCHTOKEN": {
               "entry": {
                 "addTokenSnackbar": "Token added ",
-                "addressPlaceholder": "Search tokens",
+                "searchPlaceholder": "Search tokens",
                 "submitButton": "Import token",
                 "warning": " Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click 'Import a custom token'. "
               },

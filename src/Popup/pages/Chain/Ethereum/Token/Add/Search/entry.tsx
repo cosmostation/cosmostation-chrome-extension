@@ -1,21 +1,22 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import { joiResolver } from '@hookform/resolvers/joi';
-import { Typography } from '@mui/material';
+import { InputAdornment, Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
-import Input from '~/Popup/components/common/Input';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
-import { ButtonContainer, Container, Div, WarningContainer, WarningIconContainer, WarningTextContainer } from './styled';
+import { ButtonContainer, Container, Div, StyledInput, StyledSearch20Icon, WarningContainer, WarningIconContainer, WarningTextContainer } from './styled';
 import type { ImportTokenForm } from './useSchema';
 import { useSchema } from './useSchema';
 
 import Info16Icon from '~/images/icons/Info16.svg';
 
 export default function Entry() {
+  const [search, setSearch] = useState('');
   const { importTokenForm } = useSchema();
   const { addEthereumToken } = useCurrentEthereumTokens();
   const { t } = useTranslation();
@@ -24,12 +25,7 @@ export default function Entry() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isDirty },
-    reset,
-  } = useForm<ImportTokenForm>({
+  const { handleSubmit, reset } = useForm<ImportTokenForm>({
     resolver: joiResolver(importTokenForm),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
@@ -68,18 +64,19 @@ export default function Entry() {
           </WarningTextContainer>
         </WarningContainer>
         <Div sx={{ marginBottom: '0.8rem' }}>
-          <Input
-            type="text"
-            inputProps={register('address')}
-            placeholder={t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.addressPlaceholder')}
-            error={!!errors.address}
-            helperText={errors.address?.message}
+          <StyledInput
+            startAdornment={
+              <InputAdornment position="start">
+                <StyledSearch20Icon />
+              </InputAdornment>
+            }
+            placeholder={t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.searchPlaceholder')}
+            value={search}
+            onChange={(event) => setSearch(event.currentTarget.value)}
           />
         </Div>
         <ButtonContainer>
-          <Button type="submit" disabled={!isDirty}>
-            {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.submitButton')}
-          </Button>
+          <Button type="submit">{t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.submitButton')}</Button>
         </ButtonContainer>
       </Container>
     </form>
