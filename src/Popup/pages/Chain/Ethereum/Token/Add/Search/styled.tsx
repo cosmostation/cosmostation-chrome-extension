@@ -87,6 +87,16 @@ export const ButtonContainer = styled('div')({
   bottom: '1.6rem',
 });
 
+export const ListContainer = styled('div')({
+  marginTop: '0.9rem',
+
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  rowGap: '0.8rem',
+
+  overflow: 'auto',
+});
+
 export const StyledSearch20Icon = styled(Search20Icon)(({ theme }) => ({
   fill: theme.colors.base05,
 }));

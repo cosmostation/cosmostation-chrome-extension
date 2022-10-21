@@ -10,6 +10,7 @@ import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEth
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
+import TokenItem from './component/index';
 import {
   ButtonContainer,
   Container,
@@ -17,6 +18,7 @@ import {
   ImportCustomTokenButton,
   ImportCustomTokenImage,
   ImportCustomTokenText,
+  ListContainer,
   StyledInput,
   StyledSearch20Icon,
   WarningContainer,
@@ -39,12 +41,17 @@ export default function Entry() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { handleSubmit, reset } = useForm<ImportTokenForm>({
+  const {
+    handleSubmit,
+    formState: { isDirty },
+    reset,
+  } = useForm<ImportTokenForm>({
     resolver: joiResolver(importTokenForm),
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
   });
-
+  const { currentEthereumTokens } = useCurrentEthereumTokens();
+  const isExistToken = currentEthereumTokens.length;
   const submit = async (data: ImportTokenForm) => {
     try {
       const foundToken = tokens.data.find((item) => item.address.toLowerCase() === data.address.toLowerCase());
@@ -99,8 +106,14 @@ export default function Entry() {
             onChange={(event) => setSearch(event.currentTarget.value)}
           />
         </Div>
+        <ListContainer>
+          <TokenItem token={tokens} onClick={() => navigate('/wallet')} />;
+        </ListContainer>
+        {/* navigate 임시방편 */}
         <ButtonContainer>
-          <Button type="submit">{t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.submitButton')}</Button>
+          <Button type="button" onClick={() => navigate('/wallet')} disabled={!isDirty}>
+            {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.submitButton')}
+          </Button>
         </ButtonContainer>
       </Container>
     </form>
