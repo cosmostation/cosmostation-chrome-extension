@@ -6,11 +6,13 @@ import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_D
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
+import { Tab, TabPanel, Tabs } from '~/Popup/components/common/CircularTab';
 import IconButton from '~/Popup/components/common/IconButton';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
+import { BackButton } from '~/Popup/components/SubHeader/styled';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
@@ -21,6 +23,7 @@ import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR'
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { fix, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
@@ -45,10 +48,12 @@ import {
   MaxButton,
   StyledInput,
   StyledTextarea,
+  TabContainer,
 } from './styled';
 
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
 import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
+import LeftArrow16Icon from '~/images/icons/LeftArrow16.svg';
 
 export const TYPE = {
   COIN: 'coin',
@@ -65,6 +70,7 @@ type CosmosProps = {
 };
 
 export default function Cosmos({ chain }: CosmosProps) {
+  const [value, setValue] = useState(0);
   const { currentAccount } = useCurrentAccount();
   const account = useAccountSWR(chain, true);
   const { vestingRelatedAvailable, totalAmount } = useAmountSWR(chain, true);
@@ -73,6 +79,7 @@ export default function Cosmos({ chain }: CosmosProps) {
   const nodeInfo = useNodeInfoSWR(chain);
   const { enQueue } = useCurrentQueue();
   const params = useParams();
+  const { navigateBack } = useNavigate();
 
   const { t } = useTranslation();
 
@@ -240,103 +247,119 @@ export default function Cosmos({ chain }: CosmosProps) {
     currentFeeCoinDisplayAvailableAmount,
     t,
   ]);
-
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
   return (
     <Container>
-      <div>
-        <StyledInput
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
-                <AddressBook24Icon />
-              </IconButton>
-            </InputAdornment>
-          }
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.recipientAddressPlaceholder')}
-          onChange={(e) => setCurrentAddress(e.currentTarget.value)}
-          value={currentAddress}
-        />
-      </div>
-      <MarginTop8Div>
-        <CoinButton
-          type="button"
-          onClick={(event) => {
-            setPopoverAnchorEl(event.currentTarget);
-          }}
-        >
-          <CoinLeftContainer>
-            <CoinLeftImageContainer>
-              <Image src={currentCoinOrToken.imageURL} />
-            </CoinLeftImageContainer>
-            <CoinLeftInfoContainer>
-              <CoinLeftDisplayDenomContainer>
-                <Typography variant="h5">{currentCoinOrTokenDisplayDenom}</Typography>
-              </CoinLeftDisplayDenomContainer>
-              <CoinLeftAvailableContainer>
-                <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.index.available')} :</Typography>{' '}
-                <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
-                  <span>
-                    <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
-                      {currentCoinOrTokenDisplayAvailableAmount}
-                    </Number>
-                  </span>
-                </Tooltip>
-              </CoinLeftAvailableContainer>
-            </CoinLeftInfoContainer>
-          </CoinLeftContainer>
-          <CoinRightContainer data-is-active={isOpenPopover ? 1 : 0}>
-            <BottomArrow24Icon />
-          </CoinRightContainer>
-        </CoinButton>
-      </MarginTop8Div>
-      <MarginTop8Div>
-        <StyledInput
-          endAdornment={
-            <InputAdornment position="end">
-              <MaxButton
-                type="button"
-                onClick={() => {
-                  setCurrentDisplayAmount(maxDisplayAmount);
-                }}
-              >
-                <Typography variant="h7">MAX</Typography>
-              </MaxButton>
-            </InputAdornment>
-          }
-          onChange={(e) => {
-            if (!isDecimal(e.currentTarget.value, currentCoinOrToken.decimals || 0) && e.currentTarget.value) {
-              return;
+      <BackButton onClick={() => navigateBack()}>
+        <LeftArrow16Icon />
+      </BackButton>
+      <TabContainer>
+        <Tabs value={value} onChange={handleChange}>
+          <Tab label={t('pages.Wallet.Send.Entry.Cosmos.index.send')} />
+          <Tab label={t('pages.Wallet.Send.Entry.Cosmos.index.ibcSend')} />
+        </Tabs>
+      </TabContainer>
+      <TabPanel value={value} index={0}>
+        <div>
+          <StyledInput
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
+                  <AddressBook24Icon />
+                </IconButton>
+              </InputAdornment>
             }
+            placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.recipientAddressPlaceholder')}
+            onChange={(e) => setCurrentAddress(e.currentTarget.value)}
+            value={currentAddress}
+          />
+        </div>
+        <MarginTop8Div>
+          <CoinButton
+            type="button"
+            onClick={(event) => {
+              setPopoverAnchorEl(event.currentTarget);
+            }}
+          >
+            <CoinLeftContainer>
+              <CoinLeftImageContainer>
+                <Image src={currentCoinOrToken.imageURL} />
+              </CoinLeftImageContainer>
+              <CoinLeftInfoContainer>
+                <CoinLeftDisplayDenomContainer>
+                  <Typography variant="h5">{currentCoinOrTokenDisplayDenom}</Typography>
+                </CoinLeftDisplayDenomContainer>
+                <CoinLeftAvailableContainer>
+                  <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.index.available')} :</Typography>{' '}
+                  <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
+                    <span>
+                      <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
+                        {currentCoinOrTokenDisplayAvailableAmount}
+                      </Number>
+                    </span>
+                  </Tooltip>
+                </CoinLeftAvailableContainer>
+              </CoinLeftInfoContainer>
+            </CoinLeftContainer>
+            <CoinRightContainer data-is-active={isOpenPopover ? 1 : 0}>
+              <BottomArrow24Icon />
+            </CoinRightContainer>
+          </CoinButton>
+        </MarginTop8Div>
+        <MarginTop8Div>
+          <StyledInput
+            endAdornment={
+              <InputAdornment position="end">
+                <MaxButton
+                  type="button"
+                  onClick={() => {
+                    setCurrentDisplayAmount(maxDisplayAmount);
+                  }}
+                >
+                  <Typography variant="h7">MAX</Typography>
+                </MaxButton>
+              </InputAdornment>
+            }
+            onChange={(e) => {
+              if (!isDecimal(e.currentTarget.value, currentCoinOrToken.decimals || 0) && e.currentTarget.value) {
+                return;
+              }
 
-            setCurrentDisplayAmount(e.currentTarget.value);
-          }}
-          value={currentDisplayAmount}
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.amountPlaceholder')}
-        />
-      </MarginTop8Div>
+              setCurrentDisplayAmount(e.currentTarget.value);
+            }}
+            value={currentDisplayAmount}
+            placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.amountPlaceholder')}
+          />
+        </MarginTop8Div>
 
-      <MarginTop16Div>
-        <StyledTextarea
-          multiline
-          minRows={3}
-          maxRows={3}
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.memoPlaceholder')}
-          onChange={(e) => setCurrentMemo(e.currentTarget.value)}
-          value={currentMemo}
-        />
-      </MarginTop16Div>
+        <MarginTop16Div>
+          <StyledTextarea
+            multiline
+            minRows={3}
+            maxRows={3}
+            placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.memoPlaceholder')}
+            onChange={(e) => setCurrentMemo(e.currentTarget.value)}
+            value={currentMemo}
+          />
+        </MarginTop16Div>
 
-      <MarginTop12Div>
-        <Fee
-          feeCoin={{ ...currentFeeCoin, originBaseDenom: currentFeeCoin.originBaseDenom }}
-          gasRate={currentFeeGasRate}
-          baseFee={currentFeeAmount}
-          gas={currentGas}
-          onChangeGas={(g) => setCurrentGas(g)}
-          onChangeFee={(f) => setCurrentFeeAmount(f)}
-          isEdit
-        />
-      </MarginTop12Div>
+        <MarginTop12Div>
+          <Fee
+            feeCoin={{ ...currentFeeCoin, originBaseDenom: currentFeeCoin.originBaseDenom }}
+            gasRate={currentFeeGasRate}
+            baseFee={currentFeeAmount}
+            gas={currentGas}
+            onChangeGas={(g) => setCurrentGas(g)}
+            onChangeFee={(f) => setCurrentFeeAmount(f)}
+            isEdit
+          />
+        </MarginTop12Div>
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        hello
+      </TabPanel>
       <BottomContainer>
         <Tooltip varient="error" title={errorMessage} placement="top" arrow>
           <div>

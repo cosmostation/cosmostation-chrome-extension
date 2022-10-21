@@ -839,12 +839,14 @@
             "index": {
               "amountPlaceholder": "Amount",
               "available": "Available",
+              "ibcSend": "IBC Send",
               "insufficientAmount": "Insufficient amount",
               "insufficientFeeAmount": "Insufficient fee",
               "invalidAddress": "Invalid address",
               "invalidAmount": "Invalid amount",
               "memoPlaceholder": "Memo (option)",
               "recipientAddressPlaceholder": "Recipient address",
+              "send": "Send",
               "sendButton": "Send"
             }
           },

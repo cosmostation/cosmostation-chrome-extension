@@ -839,12 +839,14 @@
             "index": {
               "amountPlaceholder": "수량",
               "available": "사용 가능 수량",
+              "ibcSend": "IBC Send",
               "insufficientAmount": "수량이 부족합니다.",
               "insufficientFeeAmount": "수수료가 부족합니다.",
               "invalidAddress": "유효하지 않은 주소입니다.",
               "invalidAmount": "수량을 입력하세요.",
               "memoPlaceholder": "메모 (선택)",
               "recipientAddressPlaceholder": "입금 주소",
+              "send": "Send",
               "sendButton": "보내기"
             }
           },
