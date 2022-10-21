@@ -417,6 +417,39 @@
     },
     "Chain": {
       "Cosmos": {
+        "Chain": {
+          "Add": {
+            "entry": {
+              "addChainSnackbar": "custom Chain added",
+              "addressPrefixPlaceholder": "Address prefix (e.g., cosmos)",
+              "baseDenomPlaceholder": "Denom (e.g., uatom)",
+              "chainID": {
+                "invalid": "Already registered"
+              },
+              "chainIdPlaceholder": "Chain id (e.g., cosmoshub-1)",
+              "chainNamePlaceholder": "Custom Chain name",
+              "coinGeckoIdPlaceholder": "Coingecko API id (option)",
+              "coinTypePlaceholder": "Coin type (option) (default: 118)",
+              "cosmWasmPlaceholder": "Cosmwasm (option)",
+              "decimalsPlaceholder": "Decimals (option) (default: 6)",
+              "displayDenomPlaceholder": "Currency symbol",
+              "explorerURLPlaceholder": "Explorer URL (option)",
+              "gasRateAveragePlaceholder": "Gas rate Average (option)",
+              "gasRateLowPlaceholder": "Gas rate Low (option)",
+              "gasRateTinyPlaceholder": "Gas rate Tiny (option)",
+              "imageURLPlaceholder": "Symbol image URL (option)",
+              "restURLError": "Invalid Rest URL",
+              "restURLPlaceholder": "Rest URL",
+              "sendGasPlaceholder": "Send Gas value (option)",
+              "submitButton": "Add a custom chain",
+              "typePlaceholder": "Chain type (option)",
+              "warning": "A malicious chain provider can lie about the state of the blockchain and record your chain activity. Only add custom chain you trust."
+            },
+            "layout": {
+              "title": "Add a Chain"
+            }
+          }
+        },
         "Token": {
           "Add": {
             "CW20": {
@@ -483,6 +516,7 @@
         },
         "entry": {
           "addChain": "Add a custom chain",
+          "addCosmosChain": "Add a custom Cosmos chain",
           "addEthereumNetwork": "Add a custom EVM network",
           "chainManagement": "Chain management"
         },
@@ -979,6 +1013,33 @@
     }
   },
   "schema": {
+    "addChainForm": {
+      "chainName": {
+        "any": {
+          "invalid": "Already registered"
+        }
+      },
+      "decimal": {
+        "base": "Please enter decimals"
+      },
+      "gasRate": {
+        "object": {
+          "and": "Please enter whole Gas Rate value"
+        }
+      },
+      "restUrl": {
+        "any": {
+          "invalid": "Already registered"
+        }
+      },
+      "type": {
+        "string": {
+          "any": {
+            "invalid": "Please enter 'ETHERMINT' or empty"
+          }
+        }
+      }
+    },
     "addNetworkForm": {
       "address": {
         "string": {
@@ -1020,8 +1081,12 @@
       "any": {
         "required": "required"
       },
+      "boolean": {
+        "base": "Please enter boolean."
+      },
       "number": {
         "base": "Please enter numbers.",
+        "empty": "Please enter numbers.",
         "greater": "Please enter a number greater than {#limit}.",
         "less": "Please enter a number less than {#limit}.",
         "max": "Please enter a number less than {#limit}",
