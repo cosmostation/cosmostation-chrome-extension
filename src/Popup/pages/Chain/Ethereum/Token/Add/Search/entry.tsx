@@ -50,8 +50,18 @@ export default function Entry() {
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
   });
-  const { currentEthereumTokens } = useCurrentEthereumTokens();
-  const isExistToken = currentEthereumTokens.length;
+  // const { currentEthereumTokens } = useCurrentEthereumTokens();
+  // const isExistToken = currentEthereumTokens.length;
+  //  const filteredEthereumNetworks = search
+  //     ? ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+  //   : ETHEREUM_NETWORKS;
+  //   const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
+  //   const filteredEthereumChains =
+  //     filteredEthereumNetworks.length === 0 && search
+  //       ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+  //       : ETHEREUM_CHAINS;
+  // management/use의 search 파트 연구 필요!!!
+
   const submit = async (data: ImportTokenForm) => {
     try {
       const foundToken = tokens.data.find((item) => item.address.toLowerCase() === data.address.toLowerCase());
@@ -119,3 +129,20 @@ export default function Entry() {
     </form>
   );
 }
+
+// {filteredEthereumNetworks.map((network) => (
+//   <SubItem
+//     key={network.id}
+//     imageProps={{ alt: network.networkName, src: network.imageURL }}
+//     switchProps={{
+//       checked: shownEthereumNetworkIds.includes(network.id),
+//       onChange: (_, checked) => {
+//         void handleOnChangeNetwork(checked, network);
+//       },
+//       disabled: !allowedChainIds.includes(ETHEREUM.id),
+//     }}
+//   >
+//     {network.networkName}
+//   </SubItem>
+// ))}
+// 참고 및 연구할 부분

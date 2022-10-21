@@ -3,7 +3,7 @@ import kujiraImg from '~/images/symbols/kujira.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const KUJIRA: CosmosChain = {
-  id: 'b869bcf8-f489-443a-9be4-56cac21f6f53',
+  id: 'fa7a1907-662f-497c-95fb-2383e88341fd',
   line: 'COSMOS',
   type: '',
   chainId: 'kaiyo-1',
@@ -23,11 +23,9 @@ export const KUJIRA: CosmosChain = {
   coinGeckoId: 'kujira',
   explorerURL: `${MINTSCAN_URL}/kujira`,
   gasRate: {
-    tiny: '0.00025',
-    low: '0.0025',
-    average: '0.025',
+    tiny: '0.00119',
+    low: '0.00119',
+    average: '0.00119',
   },
-  gas: {},
+  gas: { send: '100000' },
 };
-
-// //decimal : 1 kuji = 1000000 ukuji micro (1,000,000 | exponent 6)

@@ -7,19 +7,22 @@ import { LeftContainer, LeftImageContainer, LeftTextChainContainer, LeftTextCont
 
 type TokenItemProps = {
   token: EthereumToken;
+  imageProps?: React.ComponentProps<typeof Image>;
+  children?: string;
   onClick?: () => void;
   disabled?: boolean;
 };
-export default function TokenItem({ token, disabled, onClick }: TokenItemProps) {
+
+export default function TokenItem({ imageProps, children, disabled, onClick }: TokenItemProps) {
   return (
     <StyledButton onClick={onClick} disabled={disabled}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image src={token.imageURL} />
+          <Image {...imageProps} />
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>
-            <Typography variant="h5">{token.displayDenom}</Typography>
+            <Typography variant="h5">{children}</Typography>
           </LeftTextChainContainer>
         </LeftTextContainer>
       </LeftContainer>
