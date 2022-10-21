@@ -41,9 +41,6 @@ export function useSchema() {
   const officialCosmosRestUrl = COSMOS_CHAINS.map((item) => item.restURL);
   const unofficialCosmosRestUrl = currentCosmosAdditionalChains.map((item) => item.restURL);
 
-  const officialCosmosExplorerURL = COSMOS_CHAINS.map((item) => item.explorerURL);
-  const unofficialCosmosExplorerURL = currentCosmosAdditionalChains.map((item) => item.explorerURL);
-
   const invalidChainNames = [
     ...officialCosmosLowercaseChainNames,
     ...officialCosmosLowercaseChainIds,
@@ -52,8 +49,6 @@ export function useSchema() {
   ];
 
   const invalidRestUrl = [...officialCosmosRestUrl, ...unofficialCosmosRestUrl];
-
-  const invalidExplorerURL = [...officialCosmosExplorerURL, ...unofficialCosmosExplorerURL];
 
   const addChainForm = Joi.object<AddChainForm>({
     type: Joi.string()
@@ -89,7 +84,6 @@ export function useSchema() {
       }),
     explorerURL: Joi.string()
       .optional()
-      .invalid(...invalidExplorerURL)
       .empty('')
       .messages({
         'string.base': t('schema.common.string.base'),
