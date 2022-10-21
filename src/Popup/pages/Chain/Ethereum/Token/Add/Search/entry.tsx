@@ -51,7 +51,7 @@ export default function Entry() {
 
       await addEthereumToken({ ...newToken, tokenType: 'ERC20' });
 
-      enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.SEARCH.entry.addTokenSnackbar'));
+      enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.addTokenSnackbar'));
     } finally {
       reset();
     }
@@ -64,21 +64,21 @@ export default function Entry() {
             <Info16Icon />
           </WarningIconContainer>
           <WarningTextContainer>
-            <Typography variant="h6">{t('pages.Chain.Ethereum.Token.Add.SEARCH.entry.warning')}</Typography>
+            <Typography variant="h6">{t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.warning')}</Typography>
           </WarningTextContainer>
         </WarningContainer>
         <Div sx={{ marginBottom: '0.8rem' }}>
           <Input
             type="text"
             inputProps={register('address')}
-            placeholder={t('pages.Chain.Ethereum.Token.Add.SEARCH.entry.addressPlaceholder')}
+            placeholder={t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.addressPlaceholder')}
             error={!!errors.address}
             helperText={errors.address?.message}
           />
         </Div>
         <ButtonContainer>
           <Button type="submit" disabled={!isDirty}>
-            {t('pages.Chain.Ethereum.Token.Add.SEARCH.entry.submitButton')}
+            {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.submitButton')}
           </Button>
         </ButtonContainer>
       </Container>

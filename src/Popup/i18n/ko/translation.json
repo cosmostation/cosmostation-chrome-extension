@@ -459,7 +459,7 @@
                 "addTokenSnackbar": "토큰이 추가 되었습니다.",
                 "addressPlaceholder": "토큰을 검색하세요",
                 "submitButton": "토큰 가져오기",
-                "warning": " Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click 'Import a custom token'. "
+                "warning": " 코스모스테이션은 다중 네트워크 중, 일부 토큰들의 리스트만을 제공합니다. 찾고 계신 토큰이 리스트에 없다면 '커스텀 토큰 추가하기'를 눌러주세요. "
               },
               "layout": {
                 "title": "토큰 가져오기"

@@ -462,7 +462,7 @@
                 "warning": " Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click 'Import a custom token'. "
               },
               "layout": {
-                "title": "Import tokens "
+                "title": "Import tokens"
               }
             },
             "ERC20": {
