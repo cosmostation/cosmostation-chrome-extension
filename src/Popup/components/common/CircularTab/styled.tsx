@@ -59,7 +59,7 @@ export const StyledTab = styled(Tab)(({ theme }) => ({
     opacity: 1,
 
     minHeight: 0,
-    // padding: '1.2rem 1.6rem',
+    padding: '1.2rem 1.6rem',
   },
 
   '&.Mui-selected': { opacity: 1, color: theme.colors.text01 },
@@ -68,5 +68,5 @@ export const StyledTab = styled(Tab)(({ theme }) => ({
 export const TabsContainer = styled('div')({ position: 'relative' });
 
 export const TabPanelContainer = styled('div')({
-  marginTop: '1rem',
+  marginTop: '1.4rem',
 });
