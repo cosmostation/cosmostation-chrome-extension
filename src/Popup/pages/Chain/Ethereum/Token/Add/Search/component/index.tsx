@@ -1,28 +1,26 @@
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
+import type { EthereumToken } from '~/types/chain';
 
 import { LeftContainer, LeftImageContainer, LeftTextChainContainer, LeftTextContainer, StyledButton } from './styled';
 
 type TokenItemProps = {
-  imageProps?: React.ComponentProps<typeof Image>;
-  children?: string;
+  token: EthereumToken;
   onClick?: () => void;
   disabled?: boolean;
 };
 
-// 토큰 name, 이미지,
-
-export default function TokenItem({ imageProps, children, disabled, onClick }: TokenItemProps) {
+export default function TokenItem({ token, disabled, onClick }: TokenItemProps) {
   return (
     <StyledButton onClick={onClick} disabled={disabled}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image {...imageProps} />
+          <Image src={token.imageURL} />
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>
-            <Typography variant="h5">{children}</Typography>
+            <Typography variant="h5">{token.displayDenom}</Typography>
           </LeftTextChainContainer>
         </LeftTextContainer>
       </LeftContainer>

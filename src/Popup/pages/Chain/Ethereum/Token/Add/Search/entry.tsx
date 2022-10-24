@@ -6,7 +6,6 @@ import { useSchema } from 'Popup/pages/Chain/Ethereum/Token/Add/ERC20/useSchema'
 import { joiResolver } from '@hookform/resolvers/joi';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import Button from '~/Popup/components/common/Button';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
@@ -52,12 +51,14 @@ export default function Entry() {
     reValidateMode: 'onSubmit',
   });
 
-  // const { currentEthereumTokens } = useCurrentEthereumTokens();
-  // const isExistToken = currentEthereumTokens.length;
+  const { currentEthereumTokens } = useCurrentEthereumTokens();
+  // const filteredTokens = search
+  //   ? ETHEREUM_Token.filter((token) => network.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+  //   : ETHEREUM_NETWORKS;
 
-  const filteredEthereumNetworks = search
-    ? ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1)
-    : ETHEREUM_NETWORKS;
+  // const filteredEthereumNetworks = search
+  //   ? ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+  //   : ETHEREUM_NETWORKS;
   // management/use의 search 파트 연구 필요!!!
 
   const submit = async (data: ImportTokenForm) => {
@@ -115,10 +116,8 @@ export default function Entry() {
           />
         </Div>
         <ListContainer>
-          {filteredEthereumNetworks.map((network) => (
-            <TokenItem key={network.id} imageProps={{ alt: network.networkName, src: network.imageURL }} onClick={() => navigate('/wallet')}>
-              {network.networkName}
-            </TokenItem>
+          {currentEthereumTokens.map((token) => (
+            <TokenItem token={token} onClick={() => navigate('/wallet')} />
           ))}
         </ListContainer>
         {/* navigate 임시방편 */}
@@ -133,19 +132,4 @@ export default function Entry() {
   );
 }
 
-// {filteredEthereumNetworks.map((network) => (
-//   <SubItem
-//     key={network.id}
-//     imageProps={{ alt: network.networkName, src: network.imageURL }}
-//     switchProps={{
-//       checked: shownEthereumNetworkIds.includes(network.id),
-//       onChange: (_, checked) => {
-//         void handleOnChangeNetwork(checked, network);
-//       },
-//       disabled: !allowedChainIds.includes(ETHEREUM.id),
-//     }}
-//   >
-//     {network.networkName}
-//   </SubItem>
-// ))}
 // 참고 및 연구할 부분
