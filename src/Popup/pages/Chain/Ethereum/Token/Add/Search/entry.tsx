@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
+import type { ImportTokenForm } from 'Popup/pages/Chain/Ethereum/Token/Add/ERC20/useSchema';
+import { useSchema } from 'Popup/pages/Chain/Ethereum/Token/Add/ERC20/useSchema';
 import { joiResolver } from '@hookform/resolvers/joi';
 import { InputAdornment, Typography } from '@mui/material';
 
+import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import Button from '~/Popup/components/common/Button';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
@@ -25,8 +28,6 @@ import {
   WarningIconContainer,
   WarningTextContainer,
 } from './styled';
-import type { ImportTokenForm } from './useSchema';
-import { useSchema } from './useSchema';
 
 import Info16Icon from '~/images/icons/Info16.svg';
 import Plus16Icon from '~/images/icons/Plus16.svg';
@@ -50,16 +51,13 @@ export default function Entry() {
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
   });
+
   // const { currentEthereumTokens } = useCurrentEthereumTokens();
   // const isExistToken = currentEthereumTokens.length;
-  //  const filteredEthereumNetworks = search
-  //     ? ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1)
-  //   : ETHEREUM_NETWORKS;
-  //   const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
-  //   const filteredEthereumChains =
-  //     filteredEthereumNetworks.length === 0 && search
-  //       ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
-  //       : ETHEREUM_CHAINS;
+
+  const filteredEthereumNetworks = search
+    ? ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+    : ETHEREUM_NETWORKS;
   // management/use의 search 파트 연구 필요!!!
 
   const submit = async (data: ImportTokenForm) => {
@@ -117,11 +115,16 @@ export default function Entry() {
           />
         </Div>
         <ListContainer>
-          <TokenItem token={tokens} onClick={() => navigate('/wallet')} />;
+          {filteredEthereumNetworks.map((network) => (
+            <TokenItem key={network.id} imageProps={{ alt: network.networkName, src: network.imageURL }} onClick={() => navigate('/wallet')}>
+              {network.networkName}
+            </TokenItem>
+          ))}
         </ListContainer>
         {/* navigate 임시방편 */}
         <ButtonContainer>
           <Button type="button" onClick={() => navigate('/wallet')} disabled={!isDirty}>
+            {/* disable -> 리스트에서 1개 이상 선택 시 */}
             {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.submitButton')}
           </Button>
         </ButtonContainer>
