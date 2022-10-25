@@ -10,6 +10,7 @@ export const Container = styled('div')({
 
   padding: '0.9rem 1.6rem 0',
   position: 'relative',
+  overflow: 'hidden',
 });
 
 export const Div = styled('div')({});
@@ -88,6 +89,11 @@ export const ButtonContainer = styled('div')({
 });
 
 export const ListContainer = styled('div')({
+  overflow: 'auto',
+  height: '22rem',
+});
+
+export const TokenList = styled('div')({
   marginTop: '0.9rem',
 
   display: 'grid',

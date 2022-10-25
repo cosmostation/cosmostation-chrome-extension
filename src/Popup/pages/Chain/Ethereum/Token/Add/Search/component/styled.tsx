@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 export const StyledButton = styled('button')(({ theme }) => ({
   position: 'relative',
 
-  backgroundColor: theme.colors.base02,
+  backgroundColor: theme.colors.base01,
   border: 0,
 
   padding: '1.2rem',
@@ -25,11 +25,10 @@ export const StyledButton = styled('button')(({ theme }) => ({
   },
 
   '&:hover': {
-    backgroundColor: theme.colors.base03,
-
-    '#deleteButton': {
-      display: 'block',
-    },
+    backgroundColor: theme.colors.base02,
+  },
+  '&:clicked': {
+    backgroundColor: theme.colors.base02,
   },
 }));
 

@@ -23,6 +23,7 @@ import {
   ListContainer,
   StyledInput,
   StyledSearch20Icon,
+  TokenList,
   WarningContainer,
   WarningIconContainer,
   WarningTextContainer,
@@ -51,15 +52,7 @@ export default function Entry() {
     reValidateMode: 'onSubmit',
   });
 
-  const { currentEthereumTokens } = useCurrentEthereumTokens();
-  // const filteredTokens = search
-  //   ? ETHEREUM_Token.filter((token) => network.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1)
-  //   : ETHEREUM_NETWORKS;
-
-  // const filteredEthereumNetworks = search
-  //   ? ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1)
-  //   : ETHEREUM_NETWORKS;
-  // management/use의 search 파트 연구 필요!!!
+  const filteredTokens = search ? tokens.data.filter((item) => item.name.toLowerCase().indexOf(search.toLowerCase()) > -1) : tokens.data;
 
   const submit = async (data: ImportTokenForm) => {
     try {
@@ -82,6 +75,7 @@ export default function Entry() {
       reset();
     }
   };
+
   return (
     <form onSubmit={handleSubmit(submit)}>
       <Container>
@@ -103,7 +97,7 @@ export default function Entry() {
             </ImportCustomTokenText>
           </ImportCustomTokenButton>
         </Div>
-        <Div sx={{ marginBottom: '0.8rem' }}>
+        <Div>
           <StyledInput
             startAdornment={
               <InputAdornment position="start">
@@ -116,13 +110,21 @@ export default function Entry() {
           />
         </Div>
         <ListContainer>
-          {currentEthereumTokens.map((token) => (
-            <TokenItem token={token} />
-          ))}
+          <TokenList>
+            {filteredTokens.map((item) => (
+              <TokenItem
+                key={item.chainId}
+                imageProps={{ alt: item.chainId, src: item.imageURL }}
+                // isActive={  === network.id}
+                // onClick={(isActive) => isActive}
+                name={item.name}
+                symbol={item.displayDenom}
+              />
+            ))}
+          </TokenList>
         </ListContainer>
         <ButtonContainer>
           <Button type="button" onClick={() => navigate('/wallet')} disabled={!isSubmitted}>
-            {/* disable -> 리스트에서 1개 이상 선택 시 */}
             {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.submitButton')}
           </Button>
         </ButtonContainer>
