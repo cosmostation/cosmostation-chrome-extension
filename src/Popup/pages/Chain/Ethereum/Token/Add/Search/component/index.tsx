@@ -3,17 +3,19 @@ import { Typography } from '@mui/material';
 import Image from '~/Popup/components/common/Image';
 import type { EthereumToken } from '~/types/chain';
 
-import { LeftContainer, LeftImageContainer, LeftTextChainContainer, LeftTextContainer, StyledButton } from './styled';
+import { LeftContainer, LeftImageContainer, LeftTextChainContainer, LeftTextContainer, RightContainer, StyledButton } from './styled';
+
+import Check24Icon from '~/images/icons/Check24.svg';
 
 type TokenItemProps = {
   token: EthereumToken;
-  onClick?: () => void;
+  isActive?: () => void;
   disabled?: boolean;
 };
 
-export default function TokenItem({ token, disabled, onClick }: TokenItemProps) {
+export default function TokenItem({ token, disabled, isActive }: TokenItemProps) {
   return (
-    <StyledButton onClick={onClick} disabled={disabled}>
+    <StyledButton disabled={disabled}>
       <LeftContainer>
         <LeftImageContainer>
           <Image src={token.imageURL} />
@@ -24,6 +26,7 @@ export default function TokenItem({ token, disabled, onClick }: TokenItemProps) 
           </LeftTextChainContainer>
         </LeftTextContainer>
       </LeftContainer>
+      <RightContainer>{isActive && <Check24Icon />}</RightContainer>
     </StyledButton>
   );
 }

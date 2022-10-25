@@ -43,7 +43,7 @@ export default function Entry() {
 
   const {
     handleSubmit,
-    formState: { isDirty },
+    formState: { isSubmitted },
     reset,
   } = useForm<ImportTokenForm>({
     resolver: joiResolver(importTokenForm),
@@ -117,12 +117,11 @@ export default function Entry() {
         </Div>
         <ListContainer>
           {currentEthereumTokens.map((token) => (
-            <TokenItem token={token} onClick={() => navigate('/wallet')} />
+            <TokenItem token={token} />
           ))}
         </ListContainer>
-        {/* navigate 임시방편 */}
         <ButtonContainer>
-          <Button type="button" onClick={() => navigate('/wallet')} disabled={!isDirty}>
+          <Button type="button" onClick={() => navigate('/wallet')} disabled={!isSubmitted}>
             {/* disable -> 리스트에서 1개 이상 선택 시 */}
             {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.submitButton')}
           </Button>

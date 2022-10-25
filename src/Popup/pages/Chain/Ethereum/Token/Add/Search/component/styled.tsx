@@ -69,3 +69,13 @@ export const LeftTextChainContainer = styled('div')(({ theme }) => ({
 export const LeftTextErrorContainer = styled('div')(({ theme }) => ({
   color: theme.accentColors.red,
 }));
+
+export const RightContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  '& > svg > path': {
+    fill: theme.colors.base05,
+  },
+}));
