@@ -18,16 +18,12 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   '&:disabled': {
     cursor: 'default',
-
-    '&:hover': {
-      backgroundColor: theme.colors.base02,
-    },
   },
 
   '&:hover': {
     backgroundColor: theme.colors.base02,
   },
-  '&:clicked': {
+  '&:focus': {
     backgroundColor: theme.colors.base02,
   },
 }));

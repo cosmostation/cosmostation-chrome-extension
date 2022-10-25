@@ -90,15 +90,15 @@ export const ButtonContainer = styled('div')({
 
 export const ListContainer = styled('div')({
   overflow: 'auto',
-  height: '22rem',
+  height: '22.7rem',
 });
 
 export const TokenList = styled('div')({
-  marginTop: '0.9rem',
+  marginTop: '1.2rem',
 
   display: 'grid',
   gridTemplateColumns: '1fr',
-  rowGap: '0.8rem',
+  rowGap: '0.4rem',
 
   overflow: 'auto',
 });
