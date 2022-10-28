@@ -3,11 +3,7 @@ import type { TabProps, TabsProps } from '@mui/material';
 import { StyledTab, StyledTabs, TabPanelContainer } from './styled';
 
 export function Tabs(props: TabsProps) {
-  return (
-    // <TabsContainer>
-    <StyledTabs {...props} />
-    // </TabsContainer>
-  );
+  return <StyledTabs {...props} />;
 }
 
 export function Tab(props: TabProps) {

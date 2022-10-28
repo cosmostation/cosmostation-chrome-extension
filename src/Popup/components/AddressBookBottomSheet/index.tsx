@@ -17,7 +17,7 @@ type AddressBookBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottom
 export default function AddressBookBottomSheet({ onClickAddress, onClose, ...remainder }: AddressBookBottomSheetProps) {
   const { chromeStorage } = useChromeStorage();
   const { currentChain } = useCurrentChain();
-
+  // TODO current 대신 선택된 체인의 값을 받도록 하자
   const { t } = useTranslation();
 
   const { addressBook } = chromeStorage;
@@ -35,6 +35,7 @@ export default function AddressBookBottomSheet({ onClickAddress, onClose, ...rem
           <AddButton onClick={() => navigate('/setting/address-book/add')}>{t('components.AddressBookBottomSheet.index.addAddressButton')}</AddButton>
         </Header>
         <AddressList>
+          fdsfds
           {filteredAddressBook.map((item) => (
             <AddressBookItem
               key={item.id}

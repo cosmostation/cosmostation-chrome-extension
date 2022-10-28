@@ -1,4 +1,4 @@
-type CounterParty = {
+export type CounterParty = {
   chain_id: string;
   channel_id: string;
   port_id: string;
@@ -18,4 +18,14 @@ export type IbcCoin = {
 
 export type IbcCoinPayload = {
   ibc_tokens: IbcCoin[];
+};
+// NOTE 기준:내가 보낼 / counter_party:받을
+export type IbcSend = {
+  chain_name: string;
+  base_denom: string;
+  display_denom: string;
+  channel_id: string;
+  port_id: string;
+  counter_party: CounterParty;
+  img_Url: string;
 };
