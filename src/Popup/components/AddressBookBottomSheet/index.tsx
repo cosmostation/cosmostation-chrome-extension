@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 
+import { COSMOS_CHAINS } from '~/constants/chain';
 import AddButton from '~/Popup/components/AddButton';
 import AddressBookItem from '~/Popup/components/AddressBookItem';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -7,14 +8,16 @@ import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { AddressInfo } from '~/types/chromeStorage';
+import type { IbcSend } from '~/types/cosmos/ibcCoin';
 
 import { AddressList, Container, Header, HeaderTitle, StyledBottomSheet } from './styled';
 
 type AddressBookBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   onClickAddress?: (address: AddressInfo) => void;
+  selectedCanGetChain?: IbcSend | undefined;
 };
 
-export default function AddressBookBottomSheet({ onClickAddress, onClose, ...remainder }: AddressBookBottomSheetProps) {
+export default function AddressBookBottomSheet({ selectedCanGetChain, onClickAddress, onClose, ...remainder }: AddressBookBottomSheetProps) {
   const { chromeStorage } = useChromeStorage();
   const { currentChain } = useCurrentChain();
   // TODO current 대신 선택된 체인의 값을 받도록 하자
@@ -23,7 +26,9 @@ export default function AddressBookBottomSheet({ onClickAddress, onClose, ...rem
   const { addressBook } = chromeStorage;
   const { navigate } = useNavigate();
 
-  const filteredAddressBook = addressBook.filter((item) => item.chainId === currentChain.id);
+  const currentCoinId = COSMOS_CHAINS.find((item) => item.displayDenom === selectedCanGetChain?.display_denom)?.id;
+
+  const filteredAddressBook = addressBook.filter((item) => (selectedCanGetChain ? item.chainId === currentCoinId : item.chainId === currentChain.id));
 
   return (
     <StyledBottomSheet {...remainder} onClose={onClose}>
@@ -35,7 +40,6 @@ export default function AddressBookBottomSheet({ onClickAddress, onClose, ...rem
           <AddButton onClick={() => navigate('/setting/address-book/add')}>{t('components.AddressBookBottomSheet.index.addAddressButton')}</AddButton>
         </Header>
         <AddressList>
-          fdsfds
           {filteredAddressBook.map((item) => (
             <AddressBookItem
               key={item.id}

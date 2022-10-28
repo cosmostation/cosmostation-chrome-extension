@@ -324,7 +324,15 @@ export default function IBCSend({ chain }: CosmosProps) {
   const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentCoinOrTokenDecimals);
 
   const errorMessage = useMemo(() => {
-    if (!addressRegex.test(currentAddress) || address === currentAddress) {
+    // FIXME 현재 address검증이 현재 체인과 동일한 체인의 주소만 받게 되어있음
+    // -> 현재 체인이 osmo면 address에 osmo만 받을 수 있게 되어있음
+    // 동일 조건 삭제조치
+    // TODO 삭제 해도 invalid에러가 팝업됨 왜?
+    if (!addressRegex.test(currentAddress)) {
+      return t('pages.Wallet.Send.Entry.Cosmos.index.invalidAddress');
+    }
+    // FIXME 원래 없는 코드임 test
+    if (address === currentAddress) {
       return t('pages.Wallet.Send.Entry.Cosmos.index.invalidAddress');
     }
 
@@ -595,6 +603,8 @@ export default function IBCSend({ chain }: CosmosProps) {
       {/* TODO 선택한 수신인의 체인의 주소목록을 불러와야함 */}
       <AddressBookBottomSheet
         open={isOpenedAddressBook}
+        // NOTE 선택한 체인의 주소를 불러오기 위한 props
+        selectedCanGetChain={selectedCanGetChain}
         onClose={() => setIsOpenedAddressBook(false)}
         onClickAddress={(a) => {
           setCurrentAddress(a.address);
