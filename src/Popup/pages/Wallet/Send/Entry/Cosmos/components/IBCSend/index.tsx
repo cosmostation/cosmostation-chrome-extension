@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import * as _ from 'lodash';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
+import { COSMOS_CHAINS, COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
@@ -141,7 +141,7 @@ export default function IBCSend({ chain }: CosmosProps) {
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
 
-  const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
+  // const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
   // NOTE 현재 선택된 코인의 정보
   const currentCoinOrToken = useMemo(
     () =>
@@ -270,7 +270,7 @@ export default function IBCSend({ chain }: CosmosProps) {
       return uniqueCanSendNative;
     }
     // FIXME undefined대신 다른거
-    return undefined;
+    return [];
   }, [currentCoinOrToken.type, currentCoinOrToken.displayDenom, avaiableIBCCoinDisplayDenomList, NativePossibleChainList, IBCOkChainList, chain.baseDenom]);
 
   // FIXME 현재 current코인이 바뀌면 canGetChain가 자동으로 안바뀌어서 그 전의 첫번째 값을 가져와서 문제가 발생
@@ -278,9 +278,18 @@ export default function IBCSend({ chain }: CosmosProps) {
   // NOTE 선택된
 
   const [selectedCanGetChain, setSelectedCurrentCoinOrTokenId] = useState(canGetChain ? canGetChain[0] : undefined);
-  // useEffect(() => {
-  //   setSelectedCurrentCoinOrTokenId(canGetChain ? canGetChain[0] : undefined);
-  // }, [canGetChain, currentCoinOrToken]);
+  // REVIEW - 계산이 반복됨. 최적화가 필요함
+  useEffect(() => {
+    setSelectedCurrentCoinOrTokenId(canGetChain ? canGetChain[0] : undefined);
+  }, [canGetChain, currentCoinOrToken]);
+  // TODO 선택된 수신 체인의 prefix를 가져와서 써먹기
+  // REVIEW 현재는 코스모스 체인의 값을 가져와서 사용하는데, 코스모스 체인이 아닌경우에는
+  // 핸들링이 안되어있음
+  const selectedPrefix = useMemo(
+    () => COSMOS_CHAINS.find((item) => selectedCanGetChain?.base_denom === item.baseDenom)?.bech32Prefix.address,
+    [selectedCanGetChain?.base_denom],
+  );
+  const addressRegex = useMemo(() => getCosmosAddressRegex(selectedPrefix || '', [39]), [selectedPrefix]);
 
   const feeCoins = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
@@ -319,20 +328,11 @@ export default function IBCSend({ chain }: CosmosProps) {
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
   const currentCoinOrTokenDecimals = currentCoinOrToken.decimals || 0;
-  // NOTE 현재 선택된 코인의 정보
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
   const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentCoinOrTokenDecimals);
 
   const errorMessage = useMemo(() => {
-    // FIXME 현재 address검증이 현재 체인과 동일한 체인의 주소만 받게 되어있음
-    // -> 현재 체인이 osmo면 address에 osmo만 받을 수 있게 되어있음
-    // 동일 조건 삭제조치
-    // TODO 삭제 해도 invalid에러가 팝업됨 왜?
     if (!addressRegex.test(currentAddress)) {
-      return t('pages.Wallet.Send.Entry.Cosmos.index.invalidAddress');
-    }
-    // FIXME 원래 없는 코드임 test
-    if (address === currentAddress) {
       return t('pages.Wallet.Send.Entry.Cosmos.index.invalidAddress');
     }
 
@@ -358,7 +358,6 @@ export default function IBCSend({ chain }: CosmosProps) {
 
     return '';
   }, [
-    address,
     addressRegex,
     currentAddress,
     currentCoinOrToken,
