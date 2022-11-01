@@ -417,6 +417,39 @@
     },
     "Chain": {
       "Cosmos": {
+        "Chain": {
+          "Add": {
+            "entry": {
+              "addChainSnackbar": "커스텀 체인이 추가 되었습니다.",
+              "addressPrefixPlaceholder": "address prefix (예: cosmos)",
+              "baseDenomPlaceholder": "denom (예: uatom)",
+              "chainID": {
+                "invalid": "이미 등록된 체인입니다."
+              },
+              "chainIdPlaceholder": "체인 ID (예: cosmoshub-1)",
+              "chainNamePlaceholder": "커스텀 체인 이름",
+              "coinGeckoIdPlaceholder": "Coingecko API id (선택)",
+              "coinTypePlaceholder": "coin type (선택) (default: 118)",
+              "cosmWasmPlaceholder": "cosmwasm 여부 (선택) (default: false)",
+              "decimalsPlaceholder": "decimals (선택) (default: 6)",
+              "displayDenomPlaceholder": "통화 기호",
+              "explorerURLPlaceholder": "블록 탐색기 URL (선택)",
+              "gasRateAveragePlaceholder": "Gas rate Average (선택)",
+              "gasRateLowPlaceholder": "Gas rate Low (선택)",
+              "gasRateTinyPlaceholder": "Gas rate Tiny (선택)",
+              "imageURLPlaceholder": "통화 기호 이미지 URL (선택)",
+              "restURLError": "유효하지 않은 'restURL' 입니다.",
+              "restURLPlaceholder": "Rest URL",
+              "sendGasPlaceholder": "'보내기' 가스량 (선택)",
+              "submitButton": "새 체인 추가",
+              "typePlaceholder": "체인 타입 (선택)",
+              "warning": "악의적인 체인 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 체인만 추가하세요."
+            },
+            "layout": {
+              "title": "체인 추가"
+            }
+          }
+        },
         "Token": {
           "Add": {
             "CW20": {
@@ -483,6 +516,7 @@
         },
         "entry": {
           "addChain": "커스텀 체인 추가",
+          "addCosmosChain": "커스텀 Cosmos 체인 추가",
           "addEthereumNetwork": "커스텀 EVM 네트워크 추가",
           "chainManagement": "체인 관리"
         },
@@ -981,6 +1015,33 @@
     }
   },
   "schema": {
+    "addChainForm": {
+      "chainName": {
+        "any": {
+          "invalid": "이미 등록된 체인입니다."
+        }
+      },
+      "decimal": {
+        "base": "소수점을 입력해주세요."
+      },
+      "gasRate": {
+        "object": {
+          "and": "Gas Rate의 모든 값을 입력해주세요."
+        }
+      },
+      "restUrl": {
+        "any": {
+          "invalid": "이미 등록된 체인입니다."
+        }
+      },
+      "type": {
+        "string": {
+          "any": {
+            "invalid": "빈 값 또는 'ETHERMINT' 를 입력하세요."
+          }
+        }
+      }
+    },
     "addNetworkForm": {
       "address": {
         "string": {
@@ -1022,8 +1083,12 @@
       "any": {
         "required": "필수 값 입니다."
       },
+      "boolean": {
+        "base": "'true' 또는 'false' 를 입력하세요."
+      },
       "number": {
         "base": "숫자를 입력하세요.",
+        "empty": "숫자를 입력하세요.",
         "greater": "{#limit} 보다 큰 값을 입력하셔야 합니다.",
         "less": "{#limit} 보다 작은 값을 입력하셔야 합니다.",
         "max": "{#limit} 이하의 값을 입력하셔야 합니다.",

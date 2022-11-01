@@ -12,7 +12,7 @@ import { KAVA } from '~/constants/chain/cosmos/kava';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
-import type { Msg, MsgCustom, MsgExecuteContract, MsgSend, SignAminoDoc } from '~/types/cosmos/amino';
+import type { Msg, MsgCustom, MsgExecuteContract, MsgSend, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 import { toHex } from './string';
@@ -103,6 +103,10 @@ export const getPublicKeyType = (chain: CosmosChain) => {
 
 export function isAminoSend(msg: Msg): msg is Msg<MsgSend> {
   return msg.type === 'cosmos-sdk/MsgSend' || msg.type === 'bank/MsgSend';
+}
+// TODO
+export function isIBCSend(msg: Msg): msg is Msg<MsgTransfer> {
+  return msg.type === 'cosmos-sdk/MsgTransfer' || msg.type === 'bank/MsgTransfer';
 }
 
 export function isAminoExecuteContract(msg: Msg): msg is Msg<MsgExecuteContract> {

@@ -22,6 +22,7 @@ export type IbcCoinPayload = {
 // NOTE 기준:내가 보낼 / counter_party:받을
 export type IbcSend = {
   chain_name: string;
+  denom: string;
   base_denom: string;
   display_denom: string;
   channel_id: string;

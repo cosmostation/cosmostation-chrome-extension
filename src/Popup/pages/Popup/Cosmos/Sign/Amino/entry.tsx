@@ -137,6 +137,7 @@ export default function Entry({ queue, chain }: EntryProps) {
             <Tab label={t('pages.Popup.Cosmos.Sign.Amino.entry.dataTab')} />
           </Tabs>
         </TabContainer>
+        {/* NOTE 좌측 json display */}
         <TabPanel value={value} index={0}>
           <TxMessage msg={msgs[txMsgPage - 1]} chain={chain} />
           {msgs.length > 1 && (
@@ -159,12 +160,14 @@ export default function Entry({ queue, chain }: EntryProps) {
             />
           </FeeContainer>
         </TabPanel>
+        {/* NOTE 우측 raw json */}
         <TabPanel value={value} index={1}>
           <Tx tx={tx} />
         </TabPanel>
       </ContentsContainer>
       <BottomContainer>
         <BottomButtonContainer>
+          {/* 취소 버튼 */}
           <OutlineButton
             onClick={async () => {
               responseToWeb({
@@ -184,6 +187,7 @@ export default function Entry({ queue, chain }: EntryProps) {
           >
             {t('pages.Popup.Cosmos.Sign.Amino.entry.cancelButton')}
           </OutlineButton>
+          {/* Sign 버튼 */}
           <Button
             onClick={async () => {
               try {

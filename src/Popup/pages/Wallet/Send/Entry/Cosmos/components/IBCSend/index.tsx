@@ -186,9 +186,7 @@ export default function IBCSend({ chain }: CosmosProps) {
 
   // NOTE available한 코인중 수신할 체인이 있는 코인리스트
   // FIXME 더블 filter는 좀 구린데 include 하면 널 세이프티 적용이 안됨
-  const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) =>
-    item.originBaseDenom ? IBCOkChainListDenom.includes(item.originBaseDenom) : undefined,
-  );
+  const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) => (item.originBaseDenom ? IBCOkChainListDenom.includes(item.originBaseDenom) : []));
 
   // TODO 스테이킹 말고 네이티브도 체크가 되고있는건가?
   // FIXME 스테이킹 말고 네이티브가 available한데 정작 수신 채널에 아무것도 안뜰 가능성이 있음
@@ -199,7 +197,6 @@ export default function IBCSend({ chain }: CosmosProps) {
       const NativeOkChainListChainName = allCosmosAssets.data
         .filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom)
         .map((item) => item.chain);
-      // FIXME emoney 체인 중복으로 잡힙
       const NativeChainList = currentChainAssets.data.filter(
         // 카운터 디놈이 긴 애들은 이미 수신 채널이 있는(그래비티, 주노)같은 놈들이라 날렸음
         (item) => NativeOkChainListChainName.includes(item.origin_chain) && (item.counter_party?.denom.length as number) < 20,
@@ -239,6 +236,7 @@ export default function IBCSend({ chain }: CosmosProps) {
               chain_name: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
               // chain_name: item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
               // chain_name: item.coinGeckoId,
+              denom: item.denom,
               base_denom: item.base_denom,
               display_denom: item.dp_denom,
               channel_id: item.counter_party?.channel,
@@ -256,6 +254,7 @@ export default function IBCSend({ chain }: CosmosProps) {
             chain_name: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
             // chain_name: item.coinGeckoId,
             // chain_name: item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
+            denom: item.denom,
             base_denom: item.base_denom,
             display_denom: item.dp_denom,
             channel_id: item.counter_party?.channel,
@@ -269,20 +268,17 @@ export default function IBCSend({ chain }: CosmosProps) {
       const uniqueCanSendNative = _.uniqBy(canSendNative, 'chain_name');
       return uniqueCanSendNative;
     }
-    // FIXME undefined대신 다른거
     return [];
   }, [currentCoinOrToken.type, currentCoinOrToken.displayDenom, avaiableIBCCoinDisplayDenomList, NativePossibleChainList, IBCOkChainList, chain.baseDenom]);
 
   // FIXME 현재 current코인이 바뀌면 canGetChain가 자동으로 안바뀌어서 그 전의 첫번째 값을 가져와서 문제가 발생
   // FIXME useMemo를 사용하여 수정할
   // NOTE 선택된
-
-  const [selectedCanGetChain, setSelectedCurrentCoinOrTokenId] = useState(canGetChain ? canGetChain[0] : undefined);
+  const [selectedCanGetChain, setSelectedCurrentCoinOrTokenId] = useState(canGetChain[0]);
   // REVIEW - 계산이 반복됨. 최적화가 필요함
   useEffect(() => {
-    setSelectedCurrentCoinOrTokenId(canGetChain ? canGetChain[0] : undefined);
-  }, [canGetChain, currentCoinOrToken]);
-  // TODO 선택된 수신 체인의 prefix를 가져와서 써먹기
+    setSelectedCurrentCoinOrTokenId(canGetChain[0]);
+  }, [canGetChain]);
   // REVIEW 현재는 코스모스 체인의 값을 가져와서 사용하는데, 코스모스 체인이 아닌경우에는
   // 핸들링이 안되어있음
   const selectedPrefix = useMemo(
@@ -368,6 +364,7 @@ export default function IBCSend({ chain }: CosmosProps) {
     currentFeeCoinDisplayAvailableAmount,
     t,
   ]);
+
   return (
     <Container>
       {/* 보낼 코인 */}
@@ -415,12 +412,10 @@ export default function IBCSend({ chain }: CosmosProps) {
             <CoinLeftImageContainer>
               <Image
                 src={
-                  // FIXME nullsafety
-                  selectedCanGetChain
-                    ? selectedCanGetChain.display_denom.substring(0, 3) === 'axl'
-                      ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/common/axl.png`
-                      : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${selectedCanGetChain.img_Url}`
-                    : undefined
+                  selectedCanGetChain.display_denom.substring(0, 3) === 'axl'
+                    ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/common/axl.png`
+                    : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${selectedCanGetChain.img_Url}`
+
                   // selectedCanGetChain?.img_Url
                   //   ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${selectedCanGetChain?.img_Url}`
                   //   : undefined
@@ -429,9 +424,7 @@ export default function IBCSend({ chain }: CosmosProps) {
             </CoinLeftImageContainer>
             <CoinLeftInfoContainer>
               <CoinLeftDisplayDenomContainer>
-                <Typography variant="h5">
-                  {selectedCanGetChain ? (selectedCanGetChain.display_denom.substring(0, 3) === 'axl' ? 'Axelar' : selectedCanGetChain.chain_name) : undefined}
-                </Typography>
+                <Typography variant="h5">{selectedCanGetChain.display_denom.substring(0, 3) === 'axl' ? 'Axelar' : selectedCanGetChain.chain_name}</Typography>
               </CoinLeftDisplayDenomContainer>
               <CoinLeftAvailableContainer>
                 <Typography variant="h6n">{selectedCanGetChain?.channel_id}</Typography>
@@ -534,13 +527,28 @@ export default function IBCSend({ chain }: CosmosProps) {
                           memo: currentMemo,
                           msgs: [
                             {
-                              type: chain.chainName === SHENTU.chainName ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
+                              type: chain.chainName === SHENTU.chainName ? 'bank/MsgTransfer' : 'cosmos-sdk/MsgTransfer',
                               value: {
-                                from_address: address,
-                                to_address: currentAddress,
-                                amount: [
-                                  { amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0), denom: currentCoinOrToken.baseDenom },
+                                // IBC Transfer
+                                // FIXME timeout_height 부분 값 어디서 fetching해오는지 파악할것
+                                receiver: currentAddress,
+                                sender: address,
+                                source_channel: selectedCanGetChain.counter_party.channel_id,
+                                source_port: selectedCanGetChain.port_id,
+                                // NOTE timeout is the block height after which this transaction will not
+                                // be processed by the chain
+                                timeout_height: [
+                                  {
+                                    revision_height: 4705034,
+                                    revision_number: 1,
+                                  },
                                 ],
+                                timeout_timestamp: 0,
+                                token: [
+                                  { amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0), denom: selectedCanGetChain.denom },
+                                ],
+                                // from_address: address,
+                                // to_address: currentAddress,
                               },
                             },
                           ],
@@ -621,7 +629,7 @@ export default function IBCSend({ chain }: CosmosProps) {
           // FIXME 다음 체인이 선택되면 그 전 체인의 값을 가져오게됨
           setCurrentCoinOrTokenId(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.baseDenom : clickedCoinOrToken.address);
           setCurrentDisplayAmount('');
-          setSelectedCurrentCoinOrTokenId(canGetChain ? canGetChain[0] : undefined);
+          setSelectedCurrentCoinOrTokenId(canGetChain[0]);
         }}
         open={isOpenPopover}
         onClose={() => setPopoverAnchorEl(null)}

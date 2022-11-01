@@ -18,7 +18,9 @@ export default function Entry() {
         <MenuButton onClick={() => navigate('/chain/ethereum/network/add', { isDuplicateCheck: true })}>
           {t('pages.Chain.Management.entry.addEthereumNetwork')}
         </MenuButton>
-        {/* <MenuButton>{t('pages.Chain.Management.entry.addChain')}</MenuButton> */}
+        <MenuButton onClick={() => navigate('/chain/cosmos/chain/add', { isDuplicateCheck: true })}>
+          {t('pages.Chain.Management.entry.addCosmosChain')}
+        </MenuButton>
       </ListContainer>
     </Container>
   );

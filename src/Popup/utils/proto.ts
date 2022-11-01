@@ -1,14 +1,20 @@
 import { post } from '~/Popup/utils/axios';
-import { isAminoExecuteContract, isAminoSend } from '~/Popup/utils/cosmos';
+import { isAminoExecuteContract, isAminoSend, isIBCSend } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
 import { cosmwasm } from '~/proto/cosmwasm-v0.28.0.js';
-import type { Msg, MsgExecuteContract, MsgSend, SignAminoDoc } from '~/types/cosmos/amino';
+import { ibc } from '~/proto/ibc-v5.0.1';
+import type { Msg, MsgExecuteContract, MsgSend, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend, PubKey } from '~/types/cosmos/proto';
 
 export function convertAminoMessageToProto(msg: Msg) {
   if (isAminoSend(msg)) {
     return convertAminoSendMessageToProto(msg);
+  }
+
+  // TODO
+  if (isIBCSend(msg)) {
+    return convertIBCAminoSendMessageToProto(msg);
   }
 
   if (isAminoExecuteContract(msg)) {
@@ -28,6 +34,24 @@ export function convertAminoSendMessageToProto(msg: Msg<MsgSend>) {
   return new google.protobuf.Any({
     type_url: '/cosmos.bank.v1beta1.MsgSend',
     value: cosmos.bank.v1beta1.MsgSend.encode(message).finish(),
+  });
+}
+
+// TODO
+export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
+  const message = new ibc.applications.transfer.v1.MsgTransfer({
+    sender: msg.value.sender,
+    receiver: msg.value.receiver,
+    source_port: msg.value.source_port,
+    source_channel: msg.value.source_channel,
+    token: msg.value.token,
+    timeout_height: msg.value.timeout_height,
+    timeout_timestamp: msg.value.timeout_timestamp,
+  });
+
+  return new google.protobuf.Any({
+    type_url: '/cosmos.bank.v1beta1.MsgTransfer',
+    value: ibc.applications.transfer.v1.MsgTransfer.encode(message).finish(),
   });
 }
 
