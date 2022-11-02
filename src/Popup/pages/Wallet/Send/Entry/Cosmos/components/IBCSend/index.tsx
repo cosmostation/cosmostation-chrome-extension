@@ -176,7 +176,6 @@ export default function IBCSend({ chain }: CosmosProps) {
     [currentCoinOrToken.decimals, currentCoinOrTokenAvailableAmount],
   );
   // SECTION - IBC send logic
-  // FIXME getChain에 체인네임을 넘겨서 해당체인의 정보값을 사용할 수 있음
   // NOTE 현재 체인의 asset중 counter_party필드를 가지고 있는 값들의 denom들의 배열
   //  현재 체인에서 ibc 코인을 ibc_send가 가능한 ibc코인의 base denom (e.g uatom)
   const IBCOkChainList = currentChainAssets.data.filter((item) => item.counter_party);
@@ -348,7 +347,6 @@ export default function IBCSend({ chain }: CosmosProps) {
   const currentCoinOrTokenDecimals = currentCoinOrToken.decimals || 0;
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
   const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentCoinOrTokenDecimals);
-  // signature verification failed; please verify account number (678795), sequence (15) and chain-id (osmosis-1): unauthorized
   const errorMessage = useMemo(() => {
     // TODO timeoutHeight error handling
     if (!timeoutHeight) {
