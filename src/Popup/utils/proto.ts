@@ -2,7 +2,7 @@ import { post } from '~/Popup/utils/axios';
 import { isAminoExecuteContract, isAminoSend, isIBCSend } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
 import { cosmwasm } from '~/proto/cosmwasm-v0.28.0.js';
-import { ibc } from '~/proto/ibc-v5.0.1';
+import { ibc } from '~/proto/ibc-v5.0.1.js';
 import type { Msg, MsgExecuteContract, MsgSend, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend, PubKey } from '~/types/cosmos/proto';
@@ -50,7 +50,7 @@ export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
   });
 
   return new google.protobuf.Any({
-    type_url: '/cosmos.bank.v1beta1.MsgTransfer',
+    type_url: '/ibc.applications.transfer.v1.MsgTransfer',
     value: ibc.applications.transfer.v1.MsgTransfer.encode(message).finish(),
   });
 }

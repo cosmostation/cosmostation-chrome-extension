@@ -11,7 +11,7 @@ type IBCSendProps = { msg: Msg<MsgTransfer> };
 export default function IBCSend({ msg }: IBCSendProps) {
   const { type, value } = msg;
   const doc = YAML.dump({ type, value }, { indent: 4 });
-
+  // TODO send 페이지 처럼 꾸미기
   return (
     <Container title="IBC Send">
       <ContentContainer>

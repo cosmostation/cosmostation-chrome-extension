@@ -881,7 +881,8 @@
               "memoPlaceholder": "메모 (선택)",
               "recipientAddressPlaceholder": "입금 주소",
               "send": "Send",
-              "sendButton": "보내기"
+              "sendButton": "보내기",
+              "timeoutHeightError": "네트워크 에러"
             }
           },
           "Ethereum": {

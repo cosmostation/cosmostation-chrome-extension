@@ -19,7 +19,6 @@ import { toHex } from './string';
 
 export function cosmosURL(chain: CosmosChain) {
   const { restURL, chainName } = chain;
-
   // reward 중첩 typing!
   return {
     getNodeInfo: () => `${restURL}/node_info`,

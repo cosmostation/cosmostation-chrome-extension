@@ -245,7 +245,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                   try {
                     const url = cosmosURL(chain).postBroadcast();
                     const pTx = protoTx(tx, base64Signature, pubKey);
-
                     const response = await broadcast(url, pTx);
 
                     const { code } = response.tx_response;
@@ -256,6 +255,11 @@ export default function Entry({ queue, chain }: EntryProps) {
                       throw new Error(response.tx_response.raw_log as string);
                     }
                   } catch (e) {
+                    // NOTE 그 cosmosURL(chain)에 파람으로 치와와 넣었을때
+                    // string could not be parsed as address: invalid Bech32 prefix; expected chihuahua, got osmo: invalid address
+                    // NOTE 단순히 그대로 가져갔을떄
+                    // signature verification failed; please verify account number (678795), sequence (17) and chain-id (osmosis-1): unauthorized
+                    // https://github.com/cosmos/cosmos-sdk/issues/6052
                     enqueueSnackbar(
                       (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
                       {
@@ -277,7 +281,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                     pub_key: pubKey,
                     signed_doc: tx,
                   };
-
                   responseToWeb({
                     response: {
                       result,

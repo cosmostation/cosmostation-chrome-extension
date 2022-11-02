@@ -881,7 +881,8 @@
               "memoPlaceholder": "Memo (option)",
               "recipientAddressPlaceholder": "Recipient address",
               "send": "Send",
-              "sendButton": "Send"
+              "sendButton": "Send",
+              "timeoutHeightError": "Network Error"
             }
           },
           "Ethereum": {

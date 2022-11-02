@@ -19,7 +19,6 @@ export default function AddChain() {
 
   if (currentQueue && isCosSignAmino(currentQueue)) {
     const selecteChain = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
-
     if (selecteChain) {
       return (
         <Lock>
