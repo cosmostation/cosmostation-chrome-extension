@@ -46,6 +46,7 @@ import { STAFIHUB } from './cosmos/stafihub';
 import { STARGAZE } from './cosmos/stargaze';
 import { STARNAME } from './cosmos/starname';
 import { STRIDE } from './cosmos/stride';
+import { TERITORI } from './cosmos/teritori';
 import { TGRADE } from './cosmos/tgrade';
 import { UMEE } from './cosmos/umee';
 import { ETHEREUM } from './ethereum/ethereum';
@@ -117,6 +118,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   STARGAZE,
   STARNAME,
   STRIDE,
+  TERITORI,
   TGRADE,
   UMEE,
 ];
