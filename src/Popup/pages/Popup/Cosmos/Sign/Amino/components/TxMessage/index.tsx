@@ -14,7 +14,7 @@ export default function TxMessage({ chain, msg }: TxMessageProps) {
   }
 
   if (isIBCSend(msg)) {
-    return <IBCSend msg={msg} />;
+    return <IBCSend msg={msg} chain={chain} />;
   }
 
   if (isAminoCustom(msg)) {

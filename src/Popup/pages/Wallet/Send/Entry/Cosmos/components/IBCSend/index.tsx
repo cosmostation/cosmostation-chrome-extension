@@ -55,7 +55,7 @@ import {
   StyledTextarea,
 } from './styled';
 import CoinOrTokenPopover from '../CoinOrTokenPopover';
-import RecipentCoinOrTokenPopover from '../RecipentCoinorTokenPopover';
+import RecipientChainPopover from '../RecipientChainPopover';
 
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
 import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
@@ -95,9 +95,9 @@ export default function IBCSend({ chain }: CosmosProps) {
   // ex weth같은거
   // NOTE 수신인 팝업 추가
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const [recipentPopoverAnchorEl, setRecipentPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [recipientPopoverAnchorEl, setRecipientPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
-  const isRecipentOpenPopover = Boolean(recipentPopoverAnchorEl);
+  const isRecipientOpenPopover = Boolean(recipientPopoverAnchorEl);
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
   const { decimals, gas, gasRate } = chain;
@@ -271,7 +271,7 @@ export default function IBCSend({ chain }: CosmosProps) {
   // FIXME 현재 current코인이 바뀌면 canGetChain가 자동으로 안바뀌어서 그 전의 첫번째 값을 가져와서 문제가 발생
   // FIXME useMemo를 사용하여 수정할
   // NOTE 선택된
-  const [selectedCanGetChain, setSelectedCurrentCoinOrTokenId] = useState(canGetChain[0]);
+  const [selectedRecipientChain, setSelectedRecipientChain] = useState(canGetChain[0] ?? []);
   // REVIEW - 계산이 반복됨. 최적화가 필요함
   // useEffect(() => {
   //   setSelectedCurrentCoinOrTokenId(canGetChain[0]);
@@ -279,8 +279,8 @@ export default function IBCSend({ chain }: CosmosProps) {
   // REVIEW 현재는 코스모스 체인의 값을 가져와서 사용하는데, 코스모스 체인이 아닌경우에는
   // 핸들링이 안되어있음
   const selectedPrefix = useMemo(
-    () => COSMOS_CHAINS.find((item) => selectedCanGetChain?.base_denom === item.baseDenom)?.bech32Prefix.address,
-    [selectedCanGetChain?.base_denom],
+    () => COSMOS_CHAINS.find((item) => selectedRecipientChain?.base_denom === item.baseDenom)?.bech32Prefix.address,
+    [selectedRecipientChain?.base_denom],
   );
   const addressRegex = useMemo(() => getCosmosAddressRegex(selectedPrefix || '', [39]), [selectedPrefix]);
   // TODO error handling
@@ -289,7 +289,7 @@ export default function IBCSend({ chain }: CosmosProps) {
   useEffect(() => {
     const getTimeout = async () => {
       const identifiedClientStateInfo =
-        await get<ibc.core.channel.v1.IQueryChannelClientStateResponse>(`https://lcd-osmosis.cosmostation.io/ibc/core/channel/v1/channels/${selectedCanGetChain.counter_party.channel_id}/ports/${selectedCanGetChain.port_id}/client_state
+        await get<ibc.core.channel.v1.IQueryChannelClientStateResponse>(`https://lcd-osmosis.cosmostation.io/ibc/core/channel/v1/channels/${selectedRecipientChain.counter_party.channel_id}/ports/${selectedRecipientChain.port_id}/client_state
         `);
 
       const clientState = identifiedClientStateInfo.identified_client_state?.client_state;
@@ -306,7 +306,7 @@ export default function IBCSend({ chain }: CosmosProps) {
       // TODO 스낵바 넣지 말고 여기에 어떤 변수를 하나 할당 set해서 아래 에러 메시지에 해당 할당된게 있으면 invalid하게 만들자
       enqueueSnackbar(message, { variant: 'error' });
     });
-  }, [enqueueSnackbar, selectedCanGetChain.counter_party.channel_id, selectedCanGetChain.port_id]);
+  }, [enqueueSnackbar, selectedRecipientChain.counter_party.channel_id, selectedRecipientChain.port_id]);
 
   const feeCoins = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
@@ -430,27 +430,29 @@ export default function IBCSend({ chain }: CosmosProps) {
         <CoinButton
           type="button"
           onClick={(event) => {
-            setRecipentPopoverAnchorEl(event.currentTarget);
+            setRecipientPopoverAnchorEl(event.currentTarget);
           }}
         >
           <CoinLeftContainer>
             <CoinLeftImageContainer>
               <Image
                 src={
-                  selectedCanGetChain.display_denom.substring(0, 3) === 'axl'
+                  selectedRecipientChain.display_denom.substring(0, 3) === 'axl'
                     ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/common/axl.png`
-                    : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${selectedCanGetChain.img_Url}`
+                    : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${selectedRecipientChain.img_Url}`
                 }
               />
             </CoinLeftImageContainer>
             <CoinLeftInfoContainer>
               <CoinLeftDisplayDenomContainer>
-                <Typography variant="h5">{selectedCanGetChain.display_denom.substring(0, 3) === 'axl' ? 'Axelar' : selectedCanGetChain.chain_name}</Typography>
+                <Typography variant="h5">
+                  {selectedRecipientChain.display_denom.substring(0, 3) === 'axl' ? 'Axelar' : selectedRecipientChain.chain_name}
+                </Typography>
               </CoinLeftDisplayDenomContainer>
               <CoinLeftAvailableContainer>
-                {/* <Typography variant="h6n">{selectedCanGetChain?.channel_id}</Typography> */}
-                <Tooltip title={selectedCanGetChain?.channel_id} arrow placement="top">
-                  <Typography variant="h6n">{selectedCanGetChain?.channel_id}</Typography>
+                {/* <Typography variant="h6n">{selectedRecipientChain?.channel_id}</Typography> */}
+                <Tooltip title={selectedRecipientChain?.channel_id} arrow placement="top">
+                  <Typography variant="h6n">{selectedRecipientChain?.channel_id}</Typography>
                 </Tooltip>
               </CoinLeftAvailableContainer>
             </CoinLeftInfoContainer>
@@ -552,14 +554,17 @@ export default function IBCSend({ chain }: CosmosProps) {
                               value: {
                                 receiver: currentAddress,
                                 sender: address,
-                                source_channel: selectedCanGetChain.counter_party.channel_id,
-                                source_port: selectedCanGetChain.port_id,
+                                source_channel: selectedRecipientChain.counter_party.channel_id,
+                                source_port: selectedRecipientChain.port_id,
                                 timeout_height: {
                                   revision_height: timeoutHeight?.revision_height,
                                   revision_number: timeoutHeight?.revision_number,
                                 },
                                 // timeout_timestamp: 0,
-                                token: { amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0), denom: selectedCanGetChain.denom },
+                                token: {
+                                  amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
+                                  denom: selectedRecipientChain.denom,
+                                },
                               },
                             },
                           ],
@@ -622,7 +627,7 @@ export default function IBCSend({ chain }: CosmosProps) {
       <AddressBookBottomSheet
         open={isOpenedAddressBook}
         // NOTE 선택한 체인의 주소를 불러오기 위한 props
-        selectedCanGetChain={selectedCanGetChain}
+        selectedRecipientChain={selectedRecipientChain}
         onClose={() => setIsOpenedAddressBook(false)}
         onClickAddress={(a) => {
           setCurrentAddress(a.address);
@@ -642,7 +647,7 @@ export default function IBCSend({ chain }: CosmosProps) {
           setCurrentDisplayAmount('');
           setCurrentAddress('');
           setCurrentMemo('');
-          setSelectedCurrentCoinOrTokenId(canGetChain[0]);
+          setSelectedRecipientChain(canGetChain[0]);
         }}
         open={isOpenPopover}
         onClose={() => setPopoverAnchorEl(null)}
@@ -656,22 +661,18 @@ export default function IBCSend({ chain }: CosmosProps) {
           horizontal: 'left',
         }}
       />
-      {/* TODO 수신가능한 리스트 팝업버튼 */}
-      {/* TODO currentCoinOrToken가 어디에 속해있는지 따라 보여주는 수신인 리스트가 달라야 할 것 */}
-      {/* TODO 선택되면 선택된 그 카운터 정보의 channel 정보를 저장하도록 하자 */}
-      <RecipentCoinOrTokenPopover
-        recipentList={canGetChain}
+
+      <RecipientChainPopover
+        recipientList={canGetChain}
         chain={chain}
         marginThreshold={0}
         currentCoinOrTokenInfo={currentCoinOrToken}
-        // 여기에 checkedList들어가면 되겠다
-        // coinOrTokenInfos={checkedAvailableCoinList}
-        onClickCoinOrToken={(clickedCoinOrToken) => {
-          setSelectedCurrentCoinOrTokenId(clickedCoinOrToken);
+        onClickChain={(clickedChain) => {
+          setSelectedRecipientChain(clickedChain);
         }}
-        open={isRecipentOpenPopover}
-        onClose={() => setRecipentPopoverAnchorEl(null)}
-        anchorEl={recipentPopoverAnchorEl}
+        open={isRecipientOpenPopover}
+        onClose={() => setRecipientPopoverAnchorEl(null)}
+        anchorEl={recipientPopoverAnchorEl}
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left',

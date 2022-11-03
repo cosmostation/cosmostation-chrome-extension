@@ -565,6 +565,18 @@
             "components": {
               "TxMessage": {
                 "messages": {
+                  "IBCSend": {
+                    "index": {
+                      "amount": "Amount",
+                      "receiver": "Receiver Address",
+                      "revisionHeight": "Revision Height",
+                      "revisionNumber": "Revision Number",
+                      "sender": "Sender Address",
+                      "sourceChannel": "Source Channel",
+                      "sourcePort": "Source Port",
+                      "timeStamp": "Time Stamp"
+                    }
+                  },
                   "Send": {
                     "index": {
                       "amount": "Amount",

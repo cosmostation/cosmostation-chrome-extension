@@ -103,7 +103,7 @@ export const getPublicKeyType = (chain: CosmosChain) => {
 export function isAminoSend(msg: Msg): msg is Msg<MsgSend> {
   return msg.type === 'cosmos-sdk/MsgSend' || msg.type === 'bank/MsgSend';
 }
-// TODO
+
 export function isIBCSend(msg: Msg): msg is Msg<MsgTransfer> {
   return msg.type === 'cosmos-sdk/MsgTransfer' || msg.type === 'bank/MsgTransfer';
 }

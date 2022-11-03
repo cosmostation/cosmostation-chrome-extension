@@ -79,7 +79,6 @@ export default function Entry({ queue, chain }: EntryProps) {
   const {
     params: { doc, isEditFee, isEditMemo, gasRate },
   } = message;
-
   const { fee, msgs } = doc;
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
@@ -122,7 +121,9 @@ export default function Entry({ queue, chain }: EntryProps) {
   const signingFee = isEditFee ? { amount: [{ denom: selectedFeeCoin.baseDenom, amount: fixedBaseFee }], gas } : doc.fee;
 
   const tx = { ...doc, memo: signingMemo, fee: signingFee };
+  console.log('tx');
 
+  console.log(tx);
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -194,7 +195,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                 if (!keyPair) {
                   throw new Error('key pair does not exist');
                 }
-
                 const signature = await (async () => {
                   if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
                     if (!keyPair.privateKey) {
@@ -293,6 +293,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                   await deQueue();
                 }
               } catch (e) {
+                console.log(e);
                 enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                 setLoadingLedgerSigning(false);
               } finally {

@@ -18,8 +18,9 @@ export default function AddChain() {
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
   if (currentQueue && isCosSignAmino(currentQueue)) {
-    const selecteChain = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
-    if (selecteChain) {
+    const selectedChain = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
+
+    if (selectedChain) {
       return (
         <Lock>
           <LedgerPublicKeyRequest>
@@ -27,7 +28,7 @@ export default function AddChain() {
               <ActivateChainRequest>
                 <Layout>
                   <Suspense fallback={null}>
-                    <Entry queue={currentQueue} chain={selecteChain} />
+                    <Entry queue={currentQueue} chain={selectedChain} />
                   </Suspense>
                 </Layout>
               </ActivateChainRequest>

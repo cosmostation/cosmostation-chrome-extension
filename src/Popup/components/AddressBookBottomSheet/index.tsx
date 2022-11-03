@@ -14,10 +14,10 @@ import { AddressList, Container, Header, HeaderTitle, StyledBottomSheet } from '
 
 type AddressBookBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   onClickAddress?: (address: AddressInfo) => void;
-  selectedCanGetChain?: IbcSend | undefined;
+  selectedRecipientChain?: IbcSend | undefined;
 };
 
-export default function AddressBookBottomSheet({ selectedCanGetChain, onClickAddress, onClose, ...remainder }: AddressBookBottomSheetProps) {
+export default function AddressBookBottomSheet({ selectedRecipientChain, onClickAddress, onClose, ...remainder }: AddressBookBottomSheetProps) {
   const { chromeStorage } = useChromeStorage();
   const { currentChain } = useCurrentChain();
   // TODO current 대신 선택된 체인의 값을 받도록 하자
@@ -26,9 +26,9 @@ export default function AddressBookBottomSheet({ selectedCanGetChain, onClickAdd
   const { addressBook } = chromeStorage;
   const { navigate } = useNavigate();
 
-  const currentCoinId = COSMOS_CHAINS.find((item) => item.displayDenom === selectedCanGetChain?.display_denom)?.id;
+  const selectedChainId = COSMOS_CHAINS.find((item) => item.displayDenom === selectedRecipientChain?.display_denom)?.id;
 
-  const filteredAddressBook = addressBook.filter((item) => (selectedCanGetChain ? item.chainId === currentCoinId : item.chainId === currentChain.id));
+  const filteredAddressBook = addressBook.filter((item) => (selectedRecipientChain ? item.chainId === selectedChainId : item.chainId === currentChain.id));
 
   return (
     <StyledBottomSheet {...remainder} onClose={onClose}>

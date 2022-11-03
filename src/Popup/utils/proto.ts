@@ -12,7 +12,6 @@ export function convertAminoMessageToProto(msg: Msg) {
     return convertAminoSendMessageToProto(msg);
   }
 
-  // TODO
   if (isIBCSend(msg)) {
     return convertIBCAminoSendMessageToProto(msg);
   }
@@ -37,7 +36,6 @@ export function convertAminoSendMessageToProto(msg: Msg<MsgSend>) {
   });
 }
 
-// TODO
 export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
   const message = new ibc.applications.transfer.v1.MsgTransfer({
     sender: msg.value.sender,
@@ -82,6 +80,8 @@ export function getTxBodyBytes(signed: SignAminoDoc) {
 export function getAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey) {
   const signerInfo = getSignerInfo(signed, pubKey);
 
+  // TODO 여기 fee가 ibc의 fee일 가능성도 있음
+  //  IFungibleTokenPacketData ibc백서보고 다시 살펴봅시다 tx 어캐 날리는지
   const fee = new cosmos.tx.v1beta1.Fee({
     amount: signed.fee.amount,
     gas_limit: Number(signed.fee.gas),

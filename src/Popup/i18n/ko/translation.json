@@ -565,6 +565,18 @@
             "components": {
               "TxMessage": {
                 "messages": {
+                  "IBCSend": {
+                    "index": {
+                      "amount": "수량",
+                      "receiver": "받는 주소",
+                      "revisionHeight": "체인의 블록 높이",
+                      "revisionNumber": "리비젼 넘버",
+                      "sender": "보내는 주소",
+                      "sourceChannel": "소스 채널",
+                      "sourcePort": "소스 포트",
+                      "timeStamp": "타임스탬프"
+                    }
+                  },
                   "Send": {
                     "index": {
                       "amount": "수량",

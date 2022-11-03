@@ -22,20 +22,14 @@ import type { CoinOrTokenInfo } from '../IBCSend';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 
-type RecipentCoinOrTokenPopoverProps = Omit<PopoverProps, 'children'> & {
-  recipentList?: IbcSend[];
+type RecipientChainPopoverProps = Omit<PopoverProps, 'children'> & {
+  recipientList?: IbcSend[];
   currentCoinOrTokenInfo: CoinOrTokenInfo;
-  onClickCoinOrToken?: (counterParty: IbcSend) => void;
+  onClickChain?: (counterParty: IbcSend) => void;
   chain: CosmosChain;
 };
 
-export default function RecipentCoinOrTokenPopover({
-  currentCoinOrTokenInfo,
-  onClickCoinOrToken,
-  onClose,
-  recipentList,
-  ...remainder
-}: RecipentCoinOrTokenPopoverProps) {
+export default function RecipientChainPopover({ currentCoinOrTokenInfo, onClickChain, onClose, recipientList, ...remainder }: RecipientChainPopoverProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -47,11 +41,12 @@ export default function RecipentCoinOrTokenPopover({
   return (
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
-        {recipentList
+        {recipientList
           ? // FIXME key값 중복값 지워서 baseDenom으로 넣어놓도록하시오
 
-            recipentList.map((item, index) => {
+            recipientList.map((item) => {
               // REVIEW - 현재 오스모시스 기준으로 만든거라 axelar 체인 기준으로 테스트 해볼것
+              // axelar기준에서는 axl로 시작하는 놈들 다 카운터 파티 애초에 없음
               // FIXME 이더리움에서 넘어온 애들인 체인명이 이더리움으로 잡힘
               // -> 원래 얘네는 axelar로 넘겨줘야함
               // if(item.display_denom.substring(0, 3) === 'axl'){
@@ -71,12 +66,11 @@ export default function RecipentCoinOrTokenPopover({
               return (
                 <CoinButton
                   type="button"
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={index}
+                  key={chainName}
                   data-is-active={isActive ? 1 : 0}
                   ref={isActive ? ref : undefined}
                   onClick={() => {
-                    onClickCoinOrToken?.(item);
+                    onClickChain?.(item);
                     onClose?.({}, 'backdropClick');
                   }}
                 >
