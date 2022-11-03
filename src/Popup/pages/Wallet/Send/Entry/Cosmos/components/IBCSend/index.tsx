@@ -70,11 +70,11 @@ export type TokenInfo = BaseCosmosToken & { type: typeof TYPE.TOKEN };
 
 export type CoinOrTokenInfo = CoinInfo | TokenInfo;
 
-type CosmosProps = {
+type IBCSendProps = {
   chain: CosmosChain;
 };
-// 이거 넘겨주면 됨
-export default function IBCSend({ chain }: CosmosProps) {
+
+export default function IBCSend({ chain }: IBCSendProps) {
   const { currentAccount } = useCurrentAccount();
   const account = useAccountSWR(chain, true);
   const { vestingRelatedAvailable, totalAmount } = useAmountSWR(chain, true);
@@ -89,11 +89,7 @@ export default function IBCSend({ chain }: CosmosProps) {
 
   const { t } = useTranslation();
   const { currentCosmosTokens } = useCurrentCosmosTokens();
-  // FIXME
-  // TODO 현재 여러여러 루트를 통해 넘어온 토큰(카운터 denom이 ibc로 시작하는)은 그냥 제외해버렸음 수정이 필요함
-  // 이런놈들은 gravityfasdikfhas이렇게 넘어옴
-  // ex weth같은거
-  // NOTE 수신인 팝업 추가
+
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [recipientPopoverAnchorEl, setRecipientPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
@@ -101,7 +97,7 @@ export default function IBCSend({ chain }: CosmosProps) {
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
   const { decimals, gas, gasRate } = chain;
-  // NOTE 보유중인 모든 코인
+
   const coinAll = useMemo(
     () => [
       {
@@ -144,8 +140,6 @@ export default function IBCSend({ chain }: CosmosProps) {
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
 
-  // const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
-  // NOTE 현재 선택된 코인의 정보
   const currentCoinOrToken = useMemo(
     () =>
       availableCoinOrTokenList.find(
@@ -176,8 +170,8 @@ export default function IBCSend({ chain }: CosmosProps) {
     [currentCoinOrToken.decimals, currentCoinOrTokenAvailableAmount],
   );
   // SECTION - IBC send logic
-  // NOTE 현재 체인의 asset중 counter_party필드를 가지고 있는 값들의 denom들의 배열
-  //  현재 체인에서 ibc 코인을 ibc_send가 가능한 ibc코인의 base denom (e.g uatom)
+  // FIXME - coin type이 token인 경우에 대한 ibc send 미구현 상태
+  // NOTE 현재 체인에서 가지고있는 ibc 코인을 ibc_send가 가능한 ibc코인의 List
   const IBCOkChainList = currentChainAssets.data.filter((item) => item.counter_party);
   const IBCOkChainListDenom = currentChainAssets.data.filter((item) => item.counter_party).map((item) => item.base_denom);
   const coinInfos = availableCoinOrTokenList.filter((item) => item.type === 'coin') as CoinInfo[];
@@ -186,40 +180,31 @@ export default function IBCSend({ chain }: CosmosProps) {
   const avaiableIBCCoinDisplayDenomList = availableIBCCoinList.map((item) => item.displayDenom);
   const availableNativeCoinList = coinInfos.filter((item) => item.baseDenom.substring(0, 3) !== 'ibc');
 
-  // NOTE available한 코인중 수신할 체인이 있는 코인리스트
+  // NOTE available한 IBC코인중 수신할 체인이 있는 available한 IBC코인리스트
   const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) => (item.originBaseDenom ? IBCOkChainListDenom.includes(item.originBaseDenom) : []));
 
-  // TODO 스테이킹 말고 네이티브도 체크가 되고있는건가?
-  // FIXME 스테이킹 말고 네이티브가 available한데 정작 수신 채널에 아무것도 안뜰 가능성이 있음
-  // 스테이킹을 먼저 체크하고 -> available리스트를 넘기고 -> 선택한 체인의 possible 수신인 리스트를 출력하는 프로세스라
-  // coinList.coin
+  // NOTE 현재 체인에서 가지고 있는 native coin을 수신 가능한 체인의 List
   const NativePossibleChainList = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
       const NativeOkChainListChainName = allCosmosAssets.data
         .filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom)
         .map((item) => item.chain);
       const NativeChainList = currentChainAssets.data.filter(
-        // 카운터 디놈이 긴 애들은 이미 수신 채널이 있는(그래비티, 주노)같은 놈들이라 날렸음
+        // couter_party필드의 denom이 긴 값은 이미 수신 채널이 정의되어있는(그래비티, 주노)있기에 임시적으로 length값으로 필터링하였음
         (item) => NativeOkChainListChainName.includes(item.origin_chain) && (item.counter_party?.denom.length as number) < 20,
       );
       return NativeChainList;
     }
     return [];
   }, [allCosmosAssets.data, currentChainAssets.data, currentCoinOrToken]);
-  // NOTE 네이티브 코인을 수신할 체인이 하나도 없는 경우 available에도 안뜨게 할려고
-
-  // const NativePossibleChainListDenom = NativePossibleChainList?.map((item) => item.base_denom);
-  // const checkedAvailableNativeCoinList = availableNativeCoinList.filter(
-  //   (item) => (item.originBaseDenom ? NativePossibleChainListDenom?.includes(item.originBaseDenom) : undefined),
-  // );
 
   // FIXME  현재 체인의 스테이킹은 check이 되는데 native는 수신 리스트가 있는지 체크가 안된 상태에서 리스트가 팝업으로 넘겨짐
   const checkedAvailableNativeCoinList = NativePossibleChainList ? [...availableNativeCoinList] : [];
-  // NOTE 보유 available체인 중에서 수신할 체인이 있는지 체크가 된 보낼 코인리스트
+  // NOTE 보유 available체인 중에서 수신할 체인이 있는지 체크가 된 보낼 코인 List
   const checkedAvailableCoinList = [...checkedAvailableIBCCoinList, ...checkedAvailableNativeCoinList];
 
   // NOTE 선택한 코인을 수신 가능한 체인 리스트
-  const canGetChain = useMemo(() => {
+  const recipientChainList = useMemo(() => {
     const nameMap = {
       [CRYPTO_ORG.baseDenom]: CRYPTO_ORG.chainName,
       [ASSET_MANTLE.baseDenom]: ASSET_MANTLE.chainName,
@@ -231,7 +216,7 @@ export default function IBCSend({ chain }: CosmosProps) {
     if (currentCoinOrToken.type === 'coin') {
       // 선택 코인이 ibc일 경우
       if (avaiableIBCCoinDisplayDenomList.includes(currentCoinOrToken.displayDenom)) {
-        const canSendIBC = IBCOkChainList.filter((item) => item.dp_denom === currentCoinOrToken.displayDenom).map(
+        const ibcRecipientChainList = IBCOkChainList.filter((item) => item.dp_denom === currentCoinOrToken.displayDenom).map(
           (item) =>
             ({
               chain_name: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
@@ -245,9 +230,9 @@ export default function IBCSend({ chain }: CosmosProps) {
               counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
             } as IbcSend),
         );
-        return canSendIBC;
+        return ibcRecipientChainList;
       }
-      const canSendNative = NativePossibleChainList.map(
+      const nativeRecipientChainList = NativePossibleChainList.map(
         (item) =>
           ({
             chain_name: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
@@ -260,31 +245,27 @@ export default function IBCSend({ chain }: CosmosProps) {
             counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
           } as IbcSend),
       );
-      // const uniqueCanSendNative = canSendNative.filter((element, index) => canSendNative.indexOf(element) === index);
       // FIXME lodash 불필요한 전체 import
-      const uniqueCanSendNative = _.uniqBy(canSendNative, 'chain_name');
-      return uniqueCanSendNative;
+      const uniqueNativeRecipientChainList = _.uniqBy(nativeRecipientChainList, 'chain_name');
+      return uniqueNativeRecipientChainList;
     }
     return [];
   }, [currentCoinOrToken.type, currentCoinOrToken.displayDenom, avaiableIBCCoinDisplayDenomList, NativePossibleChainList, IBCOkChainList, chain.baseDenom]);
 
-  // FIXME 현재 current코인이 바뀌면 canGetChain가 자동으로 안바뀌어서 그 전의 첫번째 값을 가져와서 문제가 발생
-  // FIXME useMemo를 사용하여 수정할
-  // NOTE 선택된
-  const [selectedRecipientChain, setSelectedRecipientChain] = useState(canGetChain[0] ?? []);
+  // NOTE 선택된 수신 체인
+  const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientChainList[0] ?? []);
   // REVIEW - 계산이 반복됨. 최적화가 필요함
   // useEffect(() => {
-  //   setSelectedCurrentCoinOrTokenId(canGetChain[0]);
-  // }, [canGetChain]);
-  // REVIEW 현재는 코스모스 체인의 값을 가져와서 사용하는데, 코스모스 체인이 아닌경우에는
-  // 핸들링이 안되어있음
+  //   setSelectedCurrentCoinOrTokenId(recipientChainList[0]);
+  // }, [recipientChainList]);
+  // REVIEW 현재는 코스모스 체인의 값을 가져와서 사용하는데, 코스모스 체인이 아닌경우에는 핸들링이 안되어있음
   const selectedPrefix = useMemo(
     () => COSMOS_CHAINS.find((item) => selectedRecipientChain?.base_denom === item.baseDenom)?.bech32Prefix.address,
     [selectedRecipientChain?.base_denom],
   );
   const addressRegex = useMemo(() => getCosmosAddressRegex(selectedPrefix || '', [39]), [selectedPrefix]);
-  // TODO error handling
 
+  // TODO error handling
   const [timeoutHeight, setTimeoutHeight] = useState<ibc.core.client.v1.IHeight>();
   useEffect(() => {
     const getTimeout = async () => {
@@ -293,7 +274,8 @@ export default function IBCSend({ chain }: CosmosProps) {
         `);
 
       const clientState = identifiedClientStateInfo.identified_client_state?.client_state;
-      // clientstate의 타입을 proto 수정했음
+      // ibc proto의 IIdentifiedClientState 타입을 수정했음 any -> IClientState
+      // FIXME 기존의 타입을 수정해서 tx가 post되지 않을 가능성이 있음
       const latestHeight = clientState?.latest_height ?? undefined;
       const timeoutHeightInfo = {
         revision_number: latestHeight?.revision_number,
@@ -302,8 +284,8 @@ export default function IBCSend({ chain }: CosmosProps) {
       setTimeoutHeight(timeoutHeightInfo);
     };
     getTimeout().catch((e) => {
+      // FIXME 에러 스낵바 보다 다른 에러 캐치방식을 고려해보는게 좋다고 생각합니다.
       const message = (e as { message?: string }).message ? (e as { message: string }).message : 'Failed';
-      // TODO 스낵바 넣지 말고 여기에 어떤 변수를 하나 할당 set해서 아래 에러 메시지에 해당 할당된게 있으면 invalid하게 만들자
       enqueueSnackbar(message, { variant: 'error' });
     });
   }, [enqueueSnackbar, selectedRecipientChain.counter_party.channel_id, selectedRecipientChain.port_id]);
@@ -392,7 +374,6 @@ export default function IBCSend({ chain }: CosmosProps) {
 
   return (
     <Container>
-      {/* 보낼 코인 */}
       <MarginTop8Div>
         <CoinButton
           type="button"
@@ -425,7 +406,6 @@ export default function IBCSend({ chain }: CosmosProps) {
           </CoinRightContainer>
         </CoinButton>
       </MarginTop8Div>
-      {/* 수신 체인 */}
       <MarginTop8Div>
         <CoinButton
           type="button"
@@ -433,6 +413,7 @@ export default function IBCSend({ chain }: CosmosProps) {
             setRecipientPopoverAnchorEl(event.currentTarget);
           }}
         >
+          {/* FIXME axelar를 거쳐 들어온 코인의 경우 이미지 정보가 모두 이더리움이어서 강제로 형변화 */}
           <CoinLeftContainer>
             <CoinLeftImageContainer>
               <Image
@@ -450,7 +431,6 @@ export default function IBCSend({ chain }: CosmosProps) {
                 </Typography>
               </CoinLeftDisplayDenomContainer>
               <CoinLeftAvailableContainer>
-                {/* <Typography variant="h6n">{selectedRecipientChain?.channel_id}</Typography> */}
                 <Tooltip title={selectedRecipientChain?.channel_id} arrow placement="top">
                   <Typography variant="h6n">{selectedRecipientChain?.channel_id}</Typography>
                 </Tooltip>
@@ -560,6 +540,7 @@ export default function IBCSend({ chain }: CosmosProps) {
                                   revision_height: timeoutHeight?.revision_height,
                                   revision_number: timeoutHeight?.revision_number,
                                 },
+                                // FIXME timeout값 둘중 하나만 정의해도 괜찮은것으로 이해했지만 옳은 것인지는 모르겠음
                                 // timeout_timestamp: 0,
                                 token: {
                                   amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
@@ -647,7 +628,7 @@ export default function IBCSend({ chain }: CosmosProps) {
           setCurrentDisplayAmount('');
           setCurrentAddress('');
           setCurrentMemo('');
-          setSelectedRecipientChain(canGetChain[0]);
+          setSelectedRecipientChain(recipientChainList[0]);
         }}
         open={isOpenPopover}
         onClose={() => setPopoverAnchorEl(null)}
@@ -663,7 +644,7 @@ export default function IBCSend({ chain }: CosmosProps) {
       />
 
       <RecipientChainPopover
-        recipientList={canGetChain}
+        recipientList={recipientChainList}
         chain={chain}
         marginThreshold={0}
         currentCoinOrTokenInfo={currentCoinOrToken}

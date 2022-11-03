@@ -1,6 +1,6 @@
 import { Tab, Tabs } from '@mui/material';
 import { styled } from '@mui/material/styles';
-// https://mui-treasury.com/styles/tabs/#Apple
+
 export const StyledTabs = styled(Tabs)(({ theme }) => ({
   '&.MuiTabs-root': {
     minHeight: '0',
@@ -43,15 +43,10 @@ export const StyledTab = styled(Tab)(({ theme }) => ({
   '&.Mui-unselected': {
     opacity: 1,
     color: theme.colors.text02,
-    // FIXME unselected 호버링 시 색 바뀌게할것
-    // '&:hover': {
-    //   opacity: 0.7,
-    //   color: theme.colors.red01,
-    // },
   },
 }));
 
-// NOTE 이러면 서큐러 탭의 탭패널만 마진탑이 다른데... 이거 상관없나?
+// REVIEW 기존 탭과 다르게 marginTop값을 주어 범용성이 떨어질 수 있음
 export const TabPanelContainer = styled('div')({
   marginTop: '1.4rem',
 });

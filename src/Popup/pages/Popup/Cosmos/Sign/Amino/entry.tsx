@@ -136,7 +136,6 @@ export default function Entry({ queue, chain }: EntryProps) {
             <Tab label={t('pages.Popup.Cosmos.Sign.Amino.entry.dataTab')} />
           </Tabs>
         </TabContainer>
-        {/* NOTE 좌측 json display */}
         <TabPanel value={value} index={0}>
           <TxMessage msg={msgs[txMsgPage - 1]} chain={chain} />
           {msgs.length > 1 && (
@@ -159,14 +158,12 @@ export default function Entry({ queue, chain }: EntryProps) {
             />
           </FeeContainer>
         </TabPanel>
-        {/* NOTE 우측 raw json */}
         <TabPanel value={value} index={1}>
           <Tx tx={tx} />
         </TabPanel>
       </ContentsContainer>
       <BottomContainer>
         <BottomButtonContainer>
-          {/* 취소 버튼 */}
           <OutlineButton
             onClick={async () => {
               responseToWeb({
@@ -186,7 +183,6 @@ export default function Entry({ queue, chain }: EntryProps) {
           >
             {t('pages.Popup.Cosmos.Sign.Amino.entry.cancelButton')}
           </OutlineButton>
-          {/* Sign 버튼 */}
           <Button
             onClick={async () => {
               try {
@@ -253,10 +249,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                       throw new Error(response.tx_response.raw_log as string);
                     }
                   } catch (e) {
-                    // NOTE 그 cosmosURL(chain)에 파람으로 치와와 넣었을때
-                    // string could not be parsed as address: invalid Bech32 prefix; expected chihuahua, got osmo: invalid address
-                    // NOTE 단순히 그대로 가져갔을떄
-                    // signature verification failed; please verify account number (678795), sequence (17) and chain-id (osmosis-1): unauthorized
+                    // FIXME signature verification failed; please verify account number (678795), sequence (17) and chain-id (osmosis-1): unauthorized
                     // https://github.com/cosmos/cosmos-sdk/issues/6052
                     enqueueSnackbar(
                       (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
