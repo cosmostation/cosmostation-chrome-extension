@@ -121,9 +121,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const signingFee = isEditFee ? { amount: [{ denom: selectedFeeCoin.baseDenom, amount: fixedBaseFee }], gas } : doc.fee;
 
   const tx = { ...doc, memo: signingMemo, fee: signingFee };
-  console.log('tx');
 
-  console.log(tx);
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
@@ -293,7 +291,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                   await deQueue();
                 }
               } catch (e) {
-                console.log(e);
                 enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                 setLoadingLedgerSigning(false);
               } finally {
