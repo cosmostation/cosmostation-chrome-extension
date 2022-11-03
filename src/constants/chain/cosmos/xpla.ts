@@ -6,7 +6,7 @@ export const XPLA: CosmosChain = {
   id: '4d3ffa1b-be1b-4877-92db-efeefaeb7593',
   line: 'COSMOS',
   type: 'ETHERMINT',
-  chainId: 'demension_37-1',
+  chainId: 'dimension_37-1',
   chainName: 'XPLA',
   restURL: 'https://lcd-xpla.cosmostation.io',
   imageURL: xplaImg,

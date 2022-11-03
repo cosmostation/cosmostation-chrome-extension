@@ -6,7 +6,7 @@ export const TERITORI: CosmosChain = {
   id: '61672fc9-c139-460a-9b2b-97ef3a9e98ee',
   line: 'COSMOS',
   type: '',
-  chainId: 'teritori-4',
+  chainId: 'teritori-1',
   chainName: 'Teritori',
   restURL: 'https://lcd-teritori.cosmostation.io',
   imageURL: teritoriImg,
