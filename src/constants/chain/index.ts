@@ -49,6 +49,7 @@ import { STRIDE } from './cosmos/stride';
 import { TERITORI } from './cosmos/teritori';
 import { TGRADE } from './cosmos/tgrade';
 import { UMEE } from './cosmos/umee';
+import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ARBITRUM as NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
 import { AVALANCHE as NETWORK__AVALANCHE } from './ethereum/network/avalanche';
@@ -121,6 +122,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   TERITORI,
   TGRADE,
   UMEE,
+  XPLA,
 ];
 
 export const COSMOS_FEE_BASE_DENOMS: CosmosFeeBaseDenom[] = [...NYX_FEE_BASE_DENOMS];
