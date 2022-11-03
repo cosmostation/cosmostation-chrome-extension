@@ -172,8 +172,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // SECTION - IBC send logic
   // FIXME - coin type이 token인 경우에 대한 ibc send 미구현 상태
   // NOTE 현재 체인에서 가지고있는 ibc 코인을 ibc_send가 가능한 ibc코인의 List
-  const IBCOkChainList = currentChainAssets.data.filter((item) => item.counter_party);
-  const IBCOkChainListDenom = currentChainAssets.data.filter((item) => item.counter_party).map((item) => item.base_denom);
+  const ibcPossibleChainList = currentChainAssets.data.filter((item) => item.counter_party);
+  const ibcPossibleChainListDenom = currentChainAssets.data.filter((item) => item.counter_party).map((item) => item.base_denom);
   const coinInfos = availableCoinOrTokenList.filter((item) => item.type === 'coin') as CoinInfo[];
   // NOTE 현재 보유중인 코인 중에서 available한 코인 리스트: native & ibc 구분
   const availableIBCCoinList = coinInfos.filter((item) => item.baseDenom.substring(0, 3) === 'ibc');
@@ -181,7 +181,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const availableNativeCoinList = coinInfos.filter((item) => item.baseDenom.substring(0, 3) !== 'ibc');
 
   // NOTE available한 IBC코인중 수신할 체인이 있는 available한 IBC코인리스트
-  const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) => (item.originBaseDenom ? IBCOkChainListDenom.includes(item.originBaseDenom) : []));
+  const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) =>
+    item.originBaseDenom ? ibcPossibleChainListDenom.includes(item.originBaseDenom) : [],
+  );
 
   // NOTE 현재 체인에서 가지고 있는 native coin을 수신 가능한 체인의 List
   const NativePossibleChainList = useMemo(() => {
@@ -216,20 +218,22 @@ export default function IBCSend({ chain }: IBCSendProps) {
     if (currentCoinOrToken.type === 'coin') {
       // 선택 코인이 ibc일 경우
       if (avaiableIBCCoinDisplayDenomList.includes(currentCoinOrToken.displayDenom)) {
-        const ibcRecipientChainList = IBCOkChainList.filter((item) => item.dp_denom === currentCoinOrToken.displayDenom).map(
-          (item) =>
-            ({
-              chain_name: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
-              denom: item.denom,
-              base_denom: item.base_denom,
-              display_denom: item.dp_denom,
-              channel_id: item.counter_party?.channel,
-              port_id: item.port,
-              // FIXME nullsafety
-              img_Url: item.counter_party?.denom.length && item.counter_party?.denom.substring(0, 4) === 'juno' ? 'common/juno.png' : item.image,
-              counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
-            } as IbcSend),
-        );
+        const ibcRecipientChainList = ibcPossibleChainList
+          .filter((item) => item.dp_denom === currentCoinOrToken.displayDenom)
+          .map(
+            (item) =>
+              ({
+                chain_name: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
+                denom: item.denom,
+                base_denom: item.base_denom,
+                display_denom: item.dp_denom,
+                channel_id: item.counter_party?.channel,
+                port_id: item.port,
+                // FIXME nullsafety
+                img_Url: item.counter_party?.denom.length && item.counter_party?.denom.substring(0, 4) === 'juno' ? 'common/juno.png' : item.image,
+                counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
+              } as IbcSend),
+          );
         return ibcRecipientChainList;
       }
       const nativeRecipientChainList = NativePossibleChainList.map(
@@ -250,7 +254,14 @@ export default function IBCSend({ chain }: IBCSendProps) {
       return uniqueNativeRecipientChainList;
     }
     return [];
-  }, [currentCoinOrToken.type, currentCoinOrToken.displayDenom, avaiableIBCCoinDisplayDenomList, NativePossibleChainList, IBCOkChainList, chain.baseDenom]);
+  }, [
+    currentCoinOrToken.type,
+    currentCoinOrToken.displayDenom,
+    avaiableIBCCoinDisplayDenomList,
+    NativePossibleChainList,
+    ibcPossibleChainList,
+    chain.baseDenom,
+  ]);
 
   // NOTE 선택된 수신 체인
   const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientChainList[0] ?? []);
