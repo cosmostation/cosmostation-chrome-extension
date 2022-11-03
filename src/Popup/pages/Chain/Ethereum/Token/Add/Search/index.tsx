@@ -7,7 +7,7 @@ export default function SEARCHTOKEN() {
   return (
     <Lock>
       <Layout>
-        <Entry />
+        <Entry currentTokens={null} />
       </Layout>
     </Lock>
   );

@@ -459,6 +459,8 @@
                 "addTokenSnackbar": "Token added ",
                 "importCustomTokenButton": "Import a custom token",
                 "searchPlaceholder": "Search tokens",
+                "tokenIconText1": "Add custom tokens to manage on",
+                "tokenIconText2": "Cosmostation Extension.",
                 "submitButton": "Import token",
                 "warning": " Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click `Import a custom token`. "
               },

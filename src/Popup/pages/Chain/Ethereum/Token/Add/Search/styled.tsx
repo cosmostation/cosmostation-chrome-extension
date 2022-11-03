@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import Input from '~/Popup/components/common/Input';
 
 import Search20Icon from '~/images/icons/Search20.svg';
+import Tokens from '~/images/icons/Tokens.svg';
 
 export const Container = styled('div')({
   width: '100%',
@@ -88,9 +89,31 @@ export const ButtonContainer = styled('div')({
   bottom: '1.6rem',
 });
 
+export const ContentsContainer = styled('div')({
+  height: '22.7rem',
+  display: 'flex',
+  justifyContent: 'center',
+});
+
+export const TokenIconBox = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+});
+
+export const TokensIcon = styled(Tokens)(({ theme }) => ({
+  stroke: theme.colors.base05,
+}));
+
+export const TokenIconText = styled('div')(({ theme }) => ({
+  color: theme.colors.base05,
+
+  textAlign: 'center',
+}));
+
 export const ListContainer = styled('div')({
   overflow: 'auto',
-  height: '22.7rem',
 });
 
 export const TokenList = styled('div')({
