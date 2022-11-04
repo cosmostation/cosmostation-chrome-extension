@@ -171,6 +171,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   );
   // SECTION - IBC send logic
   // FIXME - coin type이 token인 경우에 대한 ibc send 미구현 상태
+  // FIXME - 현재 기본 가스비가 부족해서 tx가 fail되도 스낵바로 success라고 뜨는 현상 발견
   // NOTE 현재 체인에서 가지고있는 ibc 코인을 ibc_send가 가능한 ibc코인의 List
   const ibcPossibleChainList = currentChainAssets.data.filter((item) => item.counter_party);
   const ibcPossibleChainListDenom = currentChainAssets.data.filter((item) => item.counter_party).map((item) => item.base_denom);
@@ -264,17 +265,24 @@ export default function IBCSend({ chain }: IBCSendProps) {
   ]);
 
   // NOTE 선택된 수신 체인
+  // REVIEW 방향성에 대해 고민할 필요가 있음
+  // 1. recipientChainList의 첫번째 요소를 자동으로 선택되도록
+  // 2. 매번 코인을 선택할 때 마다 selectedRecipientChain이 초기화 되도록
+  // recipientChainList[0] ?? []
   const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientChainList[0] ?? []);
   // REVIEW - 계산이 반복됨. 최적화가 필요함
   // useEffect(() => {
-  //   setSelectedCurrentCoinOrTokenId(recipientChainList[0]);
+  //   setSelectedRecipientChain(recipientChainList[0]);
   // }, [recipientChainList]);
-
-  const cosmosSelectedRC = useMemo(
+  // const aaa = useMemo(() => recipientChainList[0], [recipientChainList]);
+  const selectedRecipientCosmosChain = useMemo(
     () => COSMOS_CHAINS.find((item) => selectedRecipientChain?.base_denom === item.baseDenom),
     [selectedRecipientChain?.base_denom],
   );
-  const addressRegex = useMemo(() => getCosmosAddressRegex(cosmosSelectedRC?.bech32Prefix.address || '', [39]), [cosmosSelectedRC?.bech32Prefix.address]);
+  const addressRegex = useMemo(
+    () => getCosmosAddressRegex(selectedRecipientCosmosChain?.bech32Prefix.address || '', [39]),
+    [selectedRecipientCosmosChain?.bech32Prefix.address],
+  );
   // TODO error handling
   const [timeoutHeight, setTimeoutHeight] = useState<ibc.core.client.v1.IHeight>();
   // const [sample, setSample] = useState<number>();
@@ -284,17 +292,11 @@ export default function IBCSend({ chain }: IBCSendProps) {
       const identifiedClientStateInfo =
         await get<ibc.core.channel.v1.IQueryChannelClientStateResponse>(`https://lcd-osmosis.cosmostation.io/ibc/core/channel/v1/channels/${selectedRecipientChain.counter_party.channel_id}/ports/${selectedRecipientChain.port_id}/client_state
         `);
-
       const clientState = identifiedClientStateInfo.identified_client_state?.client_state as ibc.lightclients.tendermint.v1.IClientState;
-      const latestHeight = clientState?.latest_height ?? {};
       const timeoutHeightInfo = {
-        revision_number: latestHeight?.revision_number ? +latestHeight.revision_number : 0,
-        revision_height: latestHeight?.revision_height ? 1000 + +latestHeight.revision_height : 0,
+        revision_number: clientState?.latest_height?.revision_number ? clientState.latest_height.revision_number : 0,
+        revision_height: clientState?.latest_height?.revision_height ? 3000 + +clientState.latest_height.revision_height : 0,
       };
-      // REVIEW - fortest
-      // const a = (clientState.trusting_period as string) ?? 0;
-      // const b = a.slice(0, -1) as unknown as number;
-      // setSample(b);
 
       setTimeoutHeight(timeoutHeightInfo);
     };
@@ -408,6 +410,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                 <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.index.available')} :</Typography>{' '}
                 <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
                   <span>
+                    {/* FIXME 임시 방편으로 이름 바꿨음 */}
                     <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
                       {currentCoinOrTokenDisplayAvailableAmount}
                     </Number>
@@ -552,13 +555,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
                                 source_channel: selectedRecipientChain.counter_party.channel_id,
                                 source_port: selectedRecipientChain.port_id,
                                 timeout_height: {
-                                  revision_height: timeoutHeight?.revision_height ?? 0,
-                                  revision_number: timeoutHeight?.revision_number ?? 0,
+                                  revision_height: String(timeoutHeight?.revision_height ? timeoutHeight?.revision_height : 0),
+                                  revision_number: timeoutHeight?.revision_number ? timeoutHeight?.revision_number : 0,
                                 },
-                                // FIXME timeout값 둘중 하나만 정의해도 괜찮은것으로 이해했지만 옳은 것인지는 모르겠음
-                                // TimeoutHeight and TimeoutTimestamp are both zero.
-                                // timeout_timestamp: sample ?? 0,
-                                timeout_timestamp: 0,
                                 token: {
                                   amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
                                   denom: selectedRecipientChain.denom,
@@ -625,7 +624,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
       <AddressBookBottomSheet
         open={isOpenedAddressBook}
         // NOTE 선택한 체인의 주소를 불러오기 위한 props
-        selectedRecipientChain={cosmosSelectedRC}
+        selectedRecipientChain={selectedRecipientCosmosChain}
         onClose={() => setIsOpenedAddressBook(false)}
         onClickAddress={(a) => {
           setCurrentAddress(a.address);
@@ -645,7 +644,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           setCurrentDisplayAmount('');
           setCurrentAddress('');
           setCurrentMemo('');
-          setSelectedRecipientChain(recipientChainList[0]);
+          //  setSelectedRecipientChain(recipientChainList[0]);
         }}
         open={isOpenPopover}
         onClose={() => setPopoverAnchorEl(null)}

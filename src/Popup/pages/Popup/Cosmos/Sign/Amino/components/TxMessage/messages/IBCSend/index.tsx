@@ -186,8 +186,6 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
             </RightColumnContainer>
           </RightContainer>
         </AmountInfoContainer>
-
-        {/* <Typography variant="h6">{doc}</Typography> */}
       </ContentContainer>
     </Container>
   );

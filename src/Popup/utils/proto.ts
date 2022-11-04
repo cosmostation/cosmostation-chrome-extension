@@ -15,6 +15,7 @@ export function convertAminoMessageToProto(msg: Msg) {
   if (isAminoExecuteContract(msg)) {
     return convertAminoExecuteContractMessageToProto(msg);
   }
+
   if (isAminoIBCSend(msg)) {
     return convertIBCAminoSendMessageToProto(msg);
   }
@@ -37,11 +38,11 @@ export function convertAminoSendMessageToProto(msg: Msg<MsgSend>) {
 
 export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
   const message = new ibc.applications.transfer.v1.MsgTransfer({
-    sender: msg.value.sender,
-    receiver: msg.value.receiver,
     source_port: msg.value.source_port,
     source_channel: msg.value.source_channel,
     token: msg.value.token,
+    sender: msg.value.sender,
+    receiver: msg.value.receiver,
     timeout_height: msg.value.timeout_height,
     timeout_timestamp: msg.value.timeout_timestamp,
   });
@@ -80,8 +81,6 @@ export function getTxBodyBytes(signed: SignAminoDoc) {
 export function getAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey) {
   const signerInfo = getSignerInfo(signed, pubKey);
 
-  // TODO 여기 fee가 ibc의 fee일 가능성도 있음
-  //  IFungibleTokenPacketData ibc백서보고 다시 살펴봅시다 tx 어캐 날리는지
   const fee = new cosmos.tx.v1beta1.Fee({
     amount: signed.fee.amount,
     gas_limit: Number(signed.fee.gas),
@@ -114,7 +113,7 @@ export function getSignerInfo(signed: SignAminoDoc, pubKey: PubKey) {
     }),
     mode_info: {
       single: {
-        mode: cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+        mode: cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
       },
     },
     sequence: Number(signed.sequence),
