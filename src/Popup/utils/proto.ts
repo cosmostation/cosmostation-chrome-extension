@@ -1,5 +1,5 @@
 import { post } from '~/Popup/utils/axios';
-import { isAminoExecuteContract, isAminoSend, isIBCSend } from '~/Popup/utils/cosmos';
+import { isAminoExecuteContract, isAminoIBCSend, isAminoSend } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
 import { cosmwasm } from '~/proto/cosmwasm-v0.28.0.js';
 import { ibc } from '~/proto/ibc-v5.0.1.js';
@@ -12,12 +12,11 @@ export function convertAminoMessageToProto(msg: Msg) {
     return convertAminoSendMessageToProto(msg);
   }
 
-  if (isIBCSend(msg)) {
-    return convertIBCAminoSendMessageToProto(msg);
-  }
-
   if (isAminoExecuteContract(msg)) {
     return convertAminoExecuteContractMessageToProto(msg);
+  }
+  if (isAminoIBCSend(msg)) {
+    return convertIBCAminoSendMessageToProto(msg);
   }
 
   return null;
@@ -69,6 +68,7 @@ export function convertAminoExecuteContractMessageToProto(msg: Msg<MsgExecuteCon
 
 export function getTxBodyBytes(signed: SignAminoDoc) {
   const messages = signed.msgs.map((msg) => convertAminoMessageToProto(msg)).filter((item) => item !== null) as google.protobuf.Any[];
+
   const txBody = new cosmos.tx.v1beta1.TxBody({
     messages,
     memo: signed.memo,
@@ -114,7 +114,7 @@ export function getSignerInfo(signed: SignAminoDoc, pubKey: PubKey) {
     }),
     mode_info: {
       single: {
-        mode: cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
+        mode: cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
       },
     },
     sequence: Number(signed.sequence),

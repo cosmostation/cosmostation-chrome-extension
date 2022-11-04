@@ -16,4 +16,4 @@ export const TopContainer = styled('div')({
 
   backgroundColor: 'transparent',
 });
-export const TabContainer = styled('div')({ display: 'flex', justifyContent: 'center' });
+export const CircularTabContainer = styled('div')({ display: 'flex', justifyContent: 'center' });

@@ -1,4 +1,4 @@
-import { isAminoCustom, isAminoSend, isIBCSend } from '~/Popup/utils/cosmos';
+import { isAminoCustom, isAminoIBCSend, isAminoSend } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { Msg } from '~/types/cosmos/amino';
 
@@ -13,7 +13,7 @@ export default function TxMessage({ chain, msg }: TxMessageProps) {
     return <Send msg={msg} chain={chain} />;
   }
 
-  if (isIBCSend(msg)) {
+  if (isAminoIBCSend(msg)) {
     return <IBCSend msg={msg} chain={chain} />;
   }
 

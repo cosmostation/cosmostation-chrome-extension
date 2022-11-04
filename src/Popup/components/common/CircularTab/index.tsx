@@ -1,16 +1,16 @@
 import type { TabProps, TabsProps } from '@mui/material';
 
-import { StyledTab, StyledTabs, TabPanelContainer } from './styled';
+import { CircularStyledTab, CircularStyledTabs, CircularTabPanelContainer } from './styled';
 
-export function Tabs(props: TabsProps) {
-  return <StyledTabs {...props} />;
+export function CircularTabs(props: TabsProps) {
+  return <CircularStyledTabs {...props} />;
 }
 
-export function Tab(props: TabProps) {
-  return <StyledTab {...props} />;
+export function CircularTab(props: TabProps) {
+  return <CircularStyledTab {...props} />;
 }
 
-type TabPanelProps = {
+type CircularTabPanelProps = {
   children?: React.ReactNode;
   className?: string;
   dir?: string;
@@ -18,12 +18,18 @@ type TabPanelProps = {
   value: number;
 };
 
-export function TabPanel(props: TabPanelProps) {
+export function CircularTabPanel(props: CircularTabPanelProps) {
   const { children, value, index, ...remainder } = props;
 
   return (
-    <TabPanelContainer role="tabpanel" hidden={value !== index} id={`full-width-tabpanel-${index}`} aria-labelledby={`full-width-tab-${index}`} {...remainder}>
+    <CircularTabPanelContainer
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...remainder}
+    >
       {value === index && children}
-    </TabPanelContainer>
+    </CircularTabPanelContainer>
   );
 }

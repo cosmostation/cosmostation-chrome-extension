@@ -196,6 +196,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     }
 
                     return signAmino(tx, keyPair.privateKey, chain);
+                    // return signDirect(tx, keyPair.privateKey, chain);
                   }
 
                   if (currentAccount.type === 'LEDGER') {
@@ -242,7 +243,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                     const response = await broadcast(url, pTx);
 
                     const { code } = response.tx_response;
-
                     if (code === 0) {
                       enqueueSnackbar('success');
                     } else {
@@ -251,6 +251,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                   } catch (e) {
                     // FIXME signature verification failed; please verify account number (678795), sequence (17) and chain-id (osmosis-1): unauthorized
                     // https://github.com/cosmos/cosmos-sdk/issues/6052
+
                     enqueueSnackbar(
                       (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
                       {

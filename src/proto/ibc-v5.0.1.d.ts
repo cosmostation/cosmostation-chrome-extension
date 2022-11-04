@@ -12767,7 +12767,7 @@ export namespace ibc {
           client_id?: string | null;
 
           /** IdentifiedClientState client_state */
-          client_state?: ibc.lightclients.tendermint.v1.IClientState | null;
+          client_state?: google.protobuf.IAny | null;
         }
 
         /** Represents an IdentifiedClientState. */
@@ -12782,7 +12782,7 @@ export namespace ibc {
           public client_id: string;
 
           /** IdentifiedClientState client_state. */
-          public client_state?: ibc.lightclients.tendermint.v1.IClientState | null;
+          public client_state?: google.protobuf.IAny | null;
 
           /**
            * Encodes the specified IdentifiedClientState message. Does not implicitly {@link ibc.core.client.v1.IdentifiedClientState.verify|verify} messages.

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Tab, TabPanel, Tabs } from '~/Popup/components/common/CircularTab';
+import { CircularTab, CircularTabPanel, CircularTabs } from '~/Popup/components/common/CircularTab';
 import { BackButton } from '~/Popup/components/SubHeader/styled';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -9,7 +9,7 @@ import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain'
 
 import IBCSend from './components/IBCSend';
 import Send from './components/Send';
-import { Container, TabContainer, TopContainer } from './styled';
+import { CircularTabContainer, Container, TopContainer } from './styled';
 
 import LeftArrow16Icon from '~/images/icons/LeftArrow16.svg';
 
@@ -43,20 +43,20 @@ export default function Cosmos({ chain }: CosmosProps) {
         <BackButton onClick={() => navigateBack()}>
           <LeftArrow16Icon />
         </BackButton>
-        <TabContainer>
-          <Tabs value={value} onChange={handleChange}>
-            <Tab label={t('pages.Wallet.Send.Entry.Cosmos.index.send')} />
-            <Tab label={t('pages.Wallet.Send.Entry.Cosmos.index.ibcSend')} />
-          </Tabs>
-        </TabContainer>
+        <CircularTabContainer>
+          <CircularTabs value={value} onChange={handleChange}>
+            <CircularTab label={t('pages.Wallet.Send.Entry.Cosmos.index.send')} />
+            <CircularTab label={t('pages.Wallet.Send.Entry.Cosmos.index.ibcSend')} />
+          </CircularTabs>
+        </CircularTabContainer>
       </TopContainer>
 
-      <TabPanel value={value} index={0}>
+      <CircularTabPanel value={value} index={0}>
         <Send chain={chain} />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
+      </CircularTabPanel>
+      <CircularTabPanel value={value} index={1}>
         <IBCSend chain={chain} />
-      </TabPanel>
+      </CircularTabPanel>
     </Container>
   );
 }

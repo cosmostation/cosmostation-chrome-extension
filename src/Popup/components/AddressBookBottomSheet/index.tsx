@@ -1,34 +1,32 @@
 import { Typography } from '@mui/material';
 
-import { COSMOS_CHAINS } from '~/constants/chain';
 import AddButton from '~/Popup/components/AddButton';
 import AddressBookItem from '~/Popup/components/AddressBookItem';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import type { CosmosChain } from '~/types/chain';
 import type { AddressInfo } from '~/types/chromeStorage';
-import type { IbcSend } from '~/types/cosmos/ibcCoin';
 
 import { AddressList, Container, Header, HeaderTitle, StyledBottomSheet } from './styled';
 
 type AddressBookBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   onClickAddress?: (address: AddressInfo) => void;
-  selectedRecipientChain?: IbcSend | undefined;
+  selectedRecipientChain?: CosmosChain | undefined;
 };
 
 export default function AddressBookBottomSheet({ selectedRecipientChain, onClickAddress, onClose, ...remainder }: AddressBookBottomSheetProps) {
   const { chromeStorage } = useChromeStorage();
   const { currentChain } = useCurrentChain();
-  // TODO current 대신 선택된 체인의 값을 받도록 하자
   const { t } = useTranslation();
 
   const { addressBook } = chromeStorage;
   const { navigate } = useNavigate();
 
-  const selectedChainId = COSMOS_CHAINS.find((item) => item.displayDenom === selectedRecipientChain?.display_denom)?.id;
-
-  const filteredAddressBook = addressBook.filter((item) => (selectedRecipientChain ? item.chainId === selectedChainId : item.chainId === currentChain.id));
+  const filteredAddressBook = addressBook.filter((item) =>
+    selectedRecipientChain ? item.chainId === selectedRecipientChain.id : item.chainId === currentChain.id,
+  );
 
   return (
     <StyledBottomSheet {...remainder} onClose={onClose}>

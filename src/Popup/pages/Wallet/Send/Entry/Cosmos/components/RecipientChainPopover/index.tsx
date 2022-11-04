@@ -18,18 +18,17 @@ import {
   Container,
   StyledPopover,
 } from './styled';
-import type { CoinOrTokenInfo } from '../IBCSend';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 
 type RecipientChainPopoverProps = Omit<PopoverProps, 'children'> & {
   recipientList: IbcSend[];
-  currentCoinOrTokenInfo: CoinOrTokenInfo;
+  selectedRecipientChain: IbcSend;
   onClickChain?: (counterParty: IbcSend) => void;
   chain: CosmosChain;
 };
 
-export default function RecipientChainPopover({ currentCoinOrTokenInfo, onClickChain, onClose, recipientList, ...remainder }: RecipientChainPopoverProps) {
+export default function RecipientChainPopover({ selectedRecipientChain, onClickChain, onClose, recipientList, ...remainder }: RecipientChainPopoverProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -49,7 +48,8 @@ export default function RecipientChainPopover({ currentCoinOrTokenInfo, onClickC
             item.display_denom.substring(0, 3) === 'axl'
               ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/common/axl.png`
               : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.img_Url}`;
-          const isActive = currentCoinOrTokenInfo.type === 'coin' && currentCoinOrTokenInfo.baseDenom === item.base_denom;
+          // 선택한 체인에 v표시 되도록
+          const isActive = selectedRecipientChain.base_denom === item.base_denom;
           return (
             <CoinButton
               type="button"
