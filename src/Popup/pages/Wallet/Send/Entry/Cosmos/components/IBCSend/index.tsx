@@ -4,11 +4,12 @@ import * as _ from 'lodash';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
+import { COSMOS_CHAINS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
+import { JUNO } from '~/constants/chain/cosmos/juno';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
@@ -96,7 +97,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const isRecipientOpenPopover = Boolean(recipientPopoverAnchorEl);
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { decimals, gas, gasRate } = chain;
+  const { decimals, gasRate } = chain;
 
   const coinAll = useMemo(
     () => [
@@ -148,7 +149,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [availableCoinOrTokenList, currentCoinOrTokenId],
   );
 
-  const sendGas = currentCoinOrToken.type === 'coin' ? gas.send || COSMOS_DEFAULT_SEND_GAS : gas.transfer || COSMOS_DEFAULT_TRANSFER_GAS;
+  // TODO 체인별로 요구하는 가스량이 어느정도인지 테스트 해보기
+  // FIXME hard-coding: 대다수의 앱에서 가스비를 130000으로 책정하여 이를 직접 할당하였음
+  // const sendGas = currentCoinOrToken.type === 'coin' ? gas.send || COSMOS_DEFAULT_SEND_GAS : gas.transfer || COSMOS_DEFAULT_TRANSFER_GAS;
+  const sendGas = '130000';
 
   const [currentGas, setCurrentGas] = useState(sendGas);
   const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
@@ -185,24 +189,31 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) =>
     item.originBaseDenom ? ibcPossibleChainListDenom.includes(item.originBaseDenom) : [],
   );
-
+  // FIXME 변수명 정리
   // NOTE 현재 체인에서 가지고 있는 native coin을 수신 가능한 체인의 List
-  const NativePossibleChainList = useMemo(() => {
+  const nativePossibleChainList = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
-      const NativeOkChainListChainName = allCosmosAssets.data
-        .filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom)
-        .map((item) => item.chain);
+      const nativeChainNameList = allCosmosAssets.data.filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom).map((item) => item.chain);
+
+      const nativeOkChainList = allCosmosAssets.data.filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom);
       const NativeChainList = currentChainAssets.data.filter(
         // couter_party필드의 denom이 긴 값은 이미 수신 채널이 정의되어있는(그래비티, 주노)있기에 임시적으로 length값으로 필터링하였음
-        (item) => NativeOkChainListChainName.includes(item.origin_chain) && (item.counter_party?.denom.length as number) < 20,
+        (item) => nativeChainNameList.includes(item.origin_chain) && (item.counter_party?.denom.length as number) < 20,
       );
-      return NativeChainList;
+      // 원래는 denom을 넘겨서 ibc/fsdsda 이값을 넘겨줄라그랬는데 보니까 그냥 origin baseDenom값이 넘겨져서 한번 테스트 해봄
+      // const nativeChainList = NativeChainList.map((item) => ({ ...item, denom: nativeOkChainList.find((item2) => item2.chain === item.origin_chain)?.denom }));
+      const nativeChainList = NativeChainList.map((item) => ({
+        ...item,
+        denom: nativeOkChainList.find((item2) => item2.chain === item.origin_chain)?.base_denom,
+      }));
+
+      return nativeChainList;
     }
     return [];
   }, [allCosmosAssets.data, currentChainAssets.data, currentCoinOrToken]);
 
   // FIXME  현재 체인의 스테이킹은 check이 되는데 native는 수신 리스트가 있는지 체크가 안된 상태에서 리스트가 팝업으로 넘겨짐
-  const checkedAvailableNativeCoinList = NativePossibleChainList ? [...availableNativeCoinList] : [];
+  const checkedAvailableNativeCoinList = nativePossibleChainList ? [...availableNativeCoinList] : [];
   // NOTE 보유 available체인 중에서 수신할 체인이 있는지 체크가 된 보낼 코인 List
   const checkedAvailableCoinList = [...checkedAvailableIBCCoinList, ...checkedAvailableNativeCoinList];
 
@@ -215,7 +226,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
     };
     const imgURLMap = {
       [EMONEY.chainName.toLowerCase()]: 'common/ngm.png',
+      [JUNO.chainName.toLowerCase()]: 'common/juno.png',
+      // REVIEW - 모든 ethereum이 악셀러가 아닐수도
+      // 그런 케이스가 있더라고...
+      //  [ETHEREUM.chainName.toLowerCase()]: 'common/axl.png',
     };
+
     if (currentCoinOrToken.type === 'coin') {
       // 선택 코인이 ibc일 경우
       if (avaiableIBCCoinDisplayDenomList.includes(currentCoinOrToken.displayDenom)) {
@@ -231,24 +247,63 @@ export default function IBCSend({ chain }: IBCSendProps) {
                 channel_id: item.counter_party?.channel,
                 port_id: item.port,
                 // FIXME nullsafety
-                img_Url: item.counter_party?.denom.length && item.counter_party?.denom.substring(0, 4) === 'juno' ? 'common/juno.png' : item.image,
+                // img_Url: item.counter_party?.denom && item.counter_party?.denom.substring(0, 4) === 'juno' ? 'common/juno.png' : item.image,
+                // TODO 그냥 앱내 저장되어있는 값을 쓰자 common/~이런식 말고
+                img_Url: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
+                // img_Url: COSMOS_CHAINS.find((chain2) => chain2.baseDenom === item.base_denom)?.imageURL,
                 counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
               } as IbcSend),
           );
+        // .map(
+        //   (item) =>
+        //     ({
+        //       ...item,
+        //       chain: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
+        //       dp_denom: item.dp_denom,
+        //       channel: item.counter_party?.channel,
+        //       // TODO 그냥 앱내 저장되어있는 값을 쓰자 common/~이런식 말고
+        //       imgage: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
+        //       // img_Url: COSMOS_CHAINS.find((chain2) => chain2.baseDenom === item.base_denom)?.imageURL,
+        //       counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
+        //     }),
+        // );
         return ibcRecipientChainList;
       }
-      const nativeRecipientChainList = NativePossibleChainList.map(
+      const nativeRecipientChainList = nativePossibleChainList.map(
         (item) =>
           ({
+            // 선택한 수신 체인의 정보가 들어가야함
             chain_name: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
+            // ibc/dfasdf로 전달
             denom: item.denom,
+            // 원래 baseDenom으로 전달
+            // denom: item.counter_party?.denom,
             base_denom: item.base_denom,
             display_denom: item.dp_denom,
             channel_id: item.counter_party?.channel,
             port_id: item.port,
+            // img_Url: COSMOS_CHAINS.find((chain2) => chain2.baseDenom === item.base_denom)?.imageURL,
             img_Url: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
+            // 여기는 선택한 기존 체인의 정보가 들어가야함
             counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
           } as IbcSend),
+        // (item) =>
+        // ({...item,
+        //   // 선택한 수신 체인의 정보가 들어가야함
+        //   chain: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
+        //   // ibc/dfasdf로 전달
+        //   denom: item.denom,
+        //   // 원래 baseDenom으로 전달
+        //   // denom: item.counter_party?.denom,
+        //   base_denom: item.base_denom,
+        //   dp_denom: item.dp_denom,
+        //   channel: item.counter_party?.channel,
+        //   port: item.port,
+        //   // img_Url: COSMOS_CHAINS.find((chain2) => chain2.baseDenom === item.base_denom)?.imageURL,
+        //   img_Url: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
+        //   // 여기는 선택한 기존 체인의 정보가 들어가야함
+        //   counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
+        // }),
       );
       // FIXME lodash 불필요한 전체 import
       const uniqueNativeRecipientChainList = _.uniqBy(nativeRecipientChainList, 'chain_name');
@@ -259,7 +314,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     currentCoinOrToken.type,
     currentCoinOrToken.displayDenom,
     avaiableIBCCoinDisplayDenomList,
-    NativePossibleChainList,
+    nativePossibleChainList,
     ibcPossibleChainList,
     chain.baseDenom,
   ]);
@@ -410,7 +465,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
                 <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.index.available')} :</Typography>{' '}
                 <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
                   <span>
-                    {/* FIXME 임시 방편으로 이름 바꿨음 */}
                     <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
                       {currentCoinOrTokenDisplayAvailableAmount}
                     </Number>
@@ -432,6 +486,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
           }}
         >
           {/* FIXME axelar를 거쳐 들어온 코인의 경우 이미지 정보가 모두 이더리움이어서 강제로 형변화 */}
+          {/* FIXME 링크를 주지말고 앱내 저장되어있는 값을 써보도록하자 */}
+
           <CoinLeftContainer>
             <CoinLeftImageContainer>
               <Image
@@ -439,6 +495,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                   selectedRecipientChain.display_denom.substring(0, 3) === 'axl'
                     ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/common/axl.png`
                     : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${selectedRecipientChain.img_Url}`
+                  // selectedRecipientChain.display_denom.substring(0, 3) === 'axl' ? AXELAR.imageURL : selectedRecipientCosmosChain?.imageURL
                 }
               />
             </CoinLeftImageContainer>
@@ -553,6 +610,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
                                 receiver: currentAddress,
                                 sender: address,
                                 source_channel: selectedRecipientChain.counter_party.channel_id,
+                                // avaiableIBCCoinDisplayDenomList.includes(currentCoinOrToken.displayDenom)
+                                //   ? selectedRecipientChain.counter_party.channel_id
+                                //   : selectedRecipientChain.channel_id,
                                 source_port: selectedRecipientChain.port_id,
                                 timeout_height: {
                                   revision_height: String(timeoutHeight?.revision_height ? timeoutHeight?.revision_height : 0),

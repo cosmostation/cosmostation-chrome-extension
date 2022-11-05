@@ -59,6 +59,10 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
       return toDisplayDenomAmount(itemBaseAmount, ibcCoinInfo.decimals);
     }
 
+    if (chain.baseDenom === baseDenom) {
+      return toDisplayDenomAmount(itemBaseAmount, chain.decimals);
+    }
+
     return itemBaseAmount || '0';
   })();
 
@@ -73,6 +77,10 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
 
     if (ibcCoinInfo?.displayDenom) {
       return ibcCoinInfo.displayDenom;
+    }
+
+    if (chain.baseDenom === baseDenom) {
+      return chain.displayDenom;
     }
 
     return itemBaseDenom.length > 5 ? `${itemBaseDenom.substring(0, 5)}...` : itemBaseDenom;

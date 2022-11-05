@@ -70,7 +70,7 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
                   </CoinLeftDisplayDenomContainer>
                   <CoinLeftAvailableContainer>
                     <Tooltip title={channelId} arrow placement="top">
-                      <span>{channelId}</span>
+                      <Typography variant="h6n">{channelId}</Typography>
                     </Tooltip>
                   </CoinLeftAvailableContainer>
                 </CoinLeftInfoContainer>
