@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
+import { AXELAR } from '~/constants/chain/cosmos/axelar';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
@@ -37,7 +38,7 @@ import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { ibc } from '~/proto/ibc-v5.0.1';
 import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain';
-import type { IbcSend } from '~/types/cosmos/ibcCoin';
+import type { AssetV2 } from '~/types/cosmos/asset';
 
 import {
   BottomContainer,
@@ -179,17 +180,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // NOTE 현재 체인에서 가지고있는 ibc 코인을 ibc_send가 가능한 ibc코인의 List
   const ibcPossibleChainList = currentChainAssets.data.filter((item) => item.counter_party);
   const ibcPossibleChainListDenom = currentChainAssets.data.filter((item) => item.counter_party).map((item) => item.base_denom);
-  const coinInfos = availableCoinOrTokenList.filter((item) => item.type === 'coin') as CoinInfo[];
-  // NOTE 현재 보유중인 코인 중에서 available한 코인 리스트: native & ibc 구분
-  const availableIBCCoinList = coinInfos.filter((item) => item.baseDenom.substring(0, 3) === 'ibc');
-  const avaiableIBCCoinDisplayDenomList = availableIBCCoinList.map((item) => item.displayDenom);
-  const availableNativeCoinList = coinInfos.filter((item) => item.baseDenom.substring(0, 3) !== 'ibc');
-
-  // NOTE available한 IBC코인중 수신할 체인이 있는 available한 IBC코인리스트
-  const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) =>
-    item.originBaseDenom ? ibcPossibleChainListDenom.includes(item.originBaseDenom) : [],
-  );
   // FIXME 변수명 정리
+  // FIXME ibcSend -> assetv2로 타입 리팩토링 하기
   // NOTE 현재 체인에서 가지고 있는 native coin을 수신 가능한 체인의 List
   const nativePossibleChainList = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
@@ -200,19 +192,25 @@ export default function IBCSend({ chain }: IBCSendProps) {
         // couter_party필드의 denom이 긴 값은 이미 수신 채널이 정의되어있는(그래비티, 주노)있기에 임시적으로 length값으로 필터링하였음
         (item) => nativeChainNameList.includes(item.origin_chain) && (item.counter_party?.denom.length as number) < 20,
       );
-      // 원래는 denom을 넘겨서 ibc/fsdsda 이값을 넘겨줄라그랬는데 보니까 그냥 origin baseDenom값이 넘겨져서 한번 테스트 해봄
-      // const nativeChainList = NativeChainList.map((item) => ({ ...item, denom: nativeOkChainList.find((item2) => item2.chain === item.origin_chain)?.denom }));
       const nativeChainList = NativeChainList.map((item) => ({
         ...item,
-        denom: nativeOkChainList.find((item2) => item2.chain === item.origin_chain)?.base_denom,
+        denom: nativeOkChainList.find((nativeChain) => nativeChain.chain === item.origin_chain)?.base_denom,
       }));
 
       return nativeChainList;
     }
     return [];
   }, [allCosmosAssets.data, currentChainAssets.data, currentCoinOrToken]);
+  const coinInfos = availableCoinOrTokenList.filter((item) => item.type === 'coin') as CoinInfo[];
+  // NOTE 현재 보유중인 코인 중에서 available한 코인 리스트: native & ibc 구분
+  const availableIBCCoinList = coinInfos.filter((item) => item.baseDenom.substring(0, 3) === 'ibc');
+  const avaiableIBCCoinDisplayDenomList = availableIBCCoinList.map((item) => item.displayDenom);
+  const availableNativeCoinList = coinInfos.filter((item) => item.baseDenom.substring(0, 3) !== 'ibc');
 
-  // FIXME  현재 체인의 스테이킹은 check이 되는데 native는 수신 리스트가 있는지 체크가 안된 상태에서 리스트가 팝업으로 넘겨짐
+  // NOTE available한 IBC코인중 수신할 체인이 있는 available한 IBC코인리스트
+  const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) =>
+    item.originBaseDenom ? ibcPossibleChainListDenom.includes(item.originBaseDenom) : [],
+  );
   const checkedAvailableNativeCoinList = nativePossibleChainList ? [...availableNativeCoinList] : [];
   // NOTE 보유 available체인 중에서 수신할 체인이 있는지 체크가 된 보낼 코인 List
   const checkedAvailableCoinList = [...checkedAvailableIBCCoinList, ...checkedAvailableNativeCoinList];
@@ -224,12 +222,16 @@ export default function IBCSend({ chain }: IBCSendProps) {
       [ASSET_MANTLE.baseDenom]: ASSET_MANTLE.chainName,
       [GRAVITY_BRIDGE.baseDenom]: GRAVITY_BRIDGE.chainName,
     };
+    const displayDenomMap = {
+      [EMONEY.chainName.toLowerCase()]: EMONEY.displayDenom,
+      [JUNO.chainName.toLowerCase()]: JUNO.displayDenom,
+    };
+    const baseDenomMap = {
+      [EMONEY.chainName.toLowerCase()]: EMONEY.baseDenom,
+    };
     const imgURLMap = {
-      [EMONEY.chainName.toLowerCase()]: 'common/ngm.png',
-      [JUNO.chainName.toLowerCase()]: 'common/juno.png',
-      // REVIEW - 모든 ethereum이 악셀러가 아닐수도
-      // 그런 케이스가 있더라고...
-      //  [ETHEREUM.chainName.toLowerCase()]: 'common/axl.png',
+      [EMONEY.chainName.toLowerCase()]: EMONEY.imageURL,
+      [JUNO.chainName.toLowerCase()]: JUNO.imageURL,
     };
 
     if (currentCoinOrToken.type === 'coin') {
@@ -240,73 +242,32 @@ export default function IBCSend({ chain }: IBCSendProps) {
           .map(
             (item) =>
               ({
-                chain_name: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
-                denom: item.denom,
-                base_denom: item.base_denom,
-                display_denom: item.dp_denom,
-                channel_id: item.counter_party?.channel,
-                port_id: item.port,
-                // FIXME nullsafety
-                // img_Url: item.counter_party?.denom && item.counter_party?.denom.substring(0, 4) === 'juno' ? 'common/juno.png' : item.image,
-                // TODO 그냥 앱내 저장되어있는 값을 쓰자 common/~이런식 말고
-                img_Url: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
-                // img_Url: COSMOS_CHAINS.find((chain2) => chain2.baseDenom === item.base_denom)?.imageURL,
-                counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
-              } as IbcSend),
+                ...item,
+                chain: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
+                dp_denom: displayDenomMap[item.origin_chain] ? displayDenomMap[item.origin_chain] : item.dp_denom,
+                base_denom: baseDenomMap[item.origin_chain] ? baseDenomMap[item.origin_chain] : item.base_denom,
+                channel: item.counter_party?.channel,
+                image: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
+                counter_party: { denom: chain.baseDenom, channel: item.channel, port: item.counter_party?.port },
+              } as AssetV2),
           );
-        // .map(
-        //   (item) =>
-        //     ({
-        //       ...item,
-        //       chain: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
-        //       dp_denom: item.dp_denom,
-        //       channel: item.counter_party?.channel,
-        //       // TODO 그냥 앱내 저장되어있는 값을 쓰자 common/~이런식 말고
-        //       imgage: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
-        //       // img_Url: COSMOS_CHAINS.find((chain2) => chain2.baseDenom === item.base_denom)?.imageURL,
-        //       counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
-        //     }),
-        // );
         return ibcRecipientChainList;
       }
       const nativeRecipientChainList = nativePossibleChainList.map(
         (item) =>
           ({
-            // 선택한 수신 체인의 정보가 들어가야함
-            chain_name: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
-            // ibc/dfasdf로 전달
-            denom: item.denom,
-            // 원래 baseDenom으로 전달
-            // denom: item.counter_party?.denom,
-            base_denom: item.base_denom,
-            display_denom: item.dp_denom,
-            channel_id: item.counter_party?.channel,
-            port_id: item.port,
-            // img_Url: COSMOS_CHAINS.find((chain2) => chain2.baseDenom === item.base_denom)?.imageURL,
-            img_Url: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
-            // 여기는 선택한 기존 체인의 정보가 들어가야함
-            counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
-          } as IbcSend),
-        // (item) =>
-        // ({...item,
-        //   // 선택한 수신 체인의 정보가 들어가야함
-        //   chain: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
-        //   // ibc/dfasdf로 전달
-        //   denom: item.denom,
-        //   // 원래 baseDenom으로 전달
-        //   // denom: item.counter_party?.denom,
-        //   base_denom: item.base_denom,
-        //   dp_denom: item.dp_denom,
-        //   channel: item.counter_party?.channel,
-        //   port: item.port,
-        //   // img_Url: COSMOS_CHAINS.find((chain2) => chain2.baseDenom === item.base_denom)?.imageURL,
-        //   img_Url: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
-        //   // 여기는 선택한 기존 체인의 정보가 들어가야함
-        //   counter_party: { chain_id: chain.baseDenom, channel_id: item.channel, port_id: item.counter_party?.port },
-        // }),
+            ...item,
+            chain: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
+            dp_denom: displayDenomMap[item.origin_chain] ? displayDenomMap[item.origin_chain] : item.dp_denom,
+            base_denom: baseDenomMap[item.origin_chain] ? baseDenomMap[item.origin_chain] : item.base_denom,
+            channel: item.counter_party?.channel,
+            image: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
+            counter_party: { denom: chain.baseDenom, channel: item.channel, port: item.counter_party?.port },
+          } as AssetV2),
       );
+
       // FIXME lodash 불필요한 전체 import
-      const uniqueNativeRecipientChainList = _.uniqBy(nativeRecipientChainList, 'chain_name');
+      const uniqueNativeRecipientChainList = _.uniqBy(nativeRecipientChainList, 'chain');
       return uniqueNativeRecipientChainList;
     }
     return [];
@@ -325,6 +286,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // 2. 매번 코인을 선택할 때 마다 selectedRecipientChain이 초기화 되도록
   // recipientChainList[0] ?? []
   const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientChainList[0] ?? []);
+
+  //  const aselectedRecipientChainaa = useMemo(() => recipientChainList.find((item)=.), [recipientChainList]);
   // REVIEW - 계산이 반복됨. 최적화가 필요함
   // useEffect(() => {
   //   setSelectedRecipientChain(recipientChainList[0]);
@@ -334,22 +297,28 @@ export default function IBCSend({ chain }: IBCSendProps) {
     () => COSMOS_CHAINS.find((item) => selectedRecipientChain?.base_denom === item.baseDenom),
     [selectedRecipientChain?.base_denom],
   );
+
+  const selectedRecipientChainIMG = selectedRecipientChain.dp_denom.substring(0, 3) === 'axl' ? AXELAR.imageURL : selectedRecipientCosmosChain?.imageURL;
+  const selectedRecipientChainChainName =
+    selectedRecipientChain.dp_denom.substring(0, 3) === 'axl' ? AXELAR.chainName : selectedRecipientCosmosChain?.chainName;
+  const selectedRecipientChainChannel = selectedRecipientChain.channel ?? '';
   const addressRegex = useMemo(
     () => getCosmosAddressRegex(selectedRecipientCosmosChain?.bech32Prefix.address || '', [39]),
     [selectedRecipientCosmosChain?.bech32Prefix.address],
   );
   // TODO error handling
   const [timeoutHeight, setTimeoutHeight] = useState<ibc.core.client.v1.IHeight>();
-  // const [sample, setSample] = useState<number>();
 
   useEffect(() => {
     const getTimeout = async () => {
       const identifiedClientStateInfo =
-        await get<ibc.core.channel.v1.IQueryChannelClientStateResponse>(`https://lcd-osmosis.cosmostation.io/ibc/core/channel/v1/channels/${selectedRecipientChain.counter_party.channel_id}/ports/${selectedRecipientChain.port_id}/client_state
+        await get<ibc.core.channel.v1.IQueryChannelClientStateResponse>(`https://lcd-osmosis.cosmostation.io/ibc/core/channel/v1/channels/${
+          selectedRecipientChain.counter_party?.channel ?? ''
+        }/ports/${selectedRecipientChain.port ?? ''}/client_state
         `);
       const clientState = identifiedClientStateInfo.identified_client_state?.client_state as ibc.lightclients.tendermint.v1.IClientState;
       const timeoutHeightInfo = {
-        revision_number: clientState?.latest_height?.revision_number ? clientState.latest_height.revision_number : 0,
+        revision_number: clientState.latest_height?.revision_number ?? 0,
         revision_height: clientState?.latest_height?.revision_height ? 3000 + +clientState.latest_height.revision_height : 0,
       };
 
@@ -360,7 +329,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
       const message = (e as { message?: string }).message ? (e as { message: string }).message : 'Failed';
       enqueueSnackbar(message, { variant: 'error' });
     });
-  }, [enqueueSnackbar, selectedRecipientChain.counter_party.channel_id, selectedRecipientChain.port_id]);
+  }, [enqueueSnackbar, selectedRecipientChain.counter_party?.channel, selectedRecipientChain.port]);
 
   const feeCoins = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
@@ -485,29 +454,17 @@ export default function IBCSend({ chain }: IBCSendProps) {
             setRecipientPopoverAnchorEl(event.currentTarget);
           }}
         >
-          {/* FIXME axelar를 거쳐 들어온 코인의 경우 이미지 정보가 모두 이더리움이어서 강제로 형변화 */}
-          {/* FIXME 링크를 주지말고 앱내 저장되어있는 값을 써보도록하자 */}
-
           <CoinLeftContainer>
             <CoinLeftImageContainer>
-              <Image
-                src={
-                  selectedRecipientChain.display_denom.substring(0, 3) === 'axl'
-                    ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/common/axl.png`
-                    : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${selectedRecipientChain.img_Url}`
-                  // selectedRecipientChain.display_denom.substring(0, 3) === 'axl' ? AXELAR.imageURL : selectedRecipientCosmosChain?.imageURL
-                }
-              />
+              <Image src={selectedRecipientChainIMG} />
             </CoinLeftImageContainer>
             <CoinLeftInfoContainer>
               <CoinLeftDisplayDenomContainer>
-                <Typography variant="h5">
-                  {selectedRecipientChain.display_denom.substring(0, 3) === 'axl' ? 'Axelar' : selectedRecipientChain.chain_name}
-                </Typography>
+                <Typography variant="h5">{selectedRecipientChainChainName}</Typography>
               </CoinLeftDisplayDenomContainer>
               <CoinLeftAvailableContainer>
-                <Tooltip title={selectedRecipientChain?.channel_id} arrow placement="top">
-                  <Typography variant="h6n">{selectedRecipientChain?.channel_id}</Typography>
+                <Tooltip title={selectedRecipientChainChannel} arrow placement="top">
+                  <Typography variant="h6n">{selectedRecipientChainChannel}</Typography>
                 </Tooltip>
               </CoinLeftAvailableContainer>
             </CoinLeftInfoContainer>
@@ -609,11 +566,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
                               value: {
                                 receiver: currentAddress,
                                 sender: address,
-                                source_channel: selectedRecipientChain.counter_party.channel_id,
-                                // avaiableIBCCoinDisplayDenomList.includes(currentCoinOrToken.displayDenom)
-                                //   ? selectedRecipientChain.counter_party.channel_id
-                                //   : selectedRecipientChain.channel_id,
-                                source_port: selectedRecipientChain.port_id,
+                                source_channel: selectedRecipientChain.counter_party?.channel,
+                                source_port: selectedRecipientChain.port,
                                 timeout_height: {
                                   revision_height: String(timeoutHeight?.revision_height ? timeoutHeight?.revision_height : 0),
                                   revision_number: timeoutHeight?.revision_number ? timeoutHeight?.revision_number : 0,
@@ -680,10 +634,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
         </Tooltip>
       </BottomContainer>
 
-      {/* TODO 선택한 수신인의 체인의 주소목록을 불러와야함 */}
       <AddressBookBottomSheet
         open={isOpenedAddressBook}
-        // NOTE 선택한 체인의 주소를 불러오기 위한 props
         selectedRecipientChain={selectedRecipientCosmosChain}
         onClose={() => setIsOpenedAddressBook(false)}
         onClickAddress={(a) => {

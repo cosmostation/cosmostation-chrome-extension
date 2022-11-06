@@ -2,10 +2,12 @@ import { useEffect, useRef } from 'react';
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
+import { COSMOS_CHAINS } from '~/constants/chain';
+import { AXELAR } from '~/constants/chain/cosmos/axelar';
 import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import type { CosmosChain } from '~/types/chain';
-import type { IbcSend } from '~/types/cosmos/ibcCoin';
+import type { AssetV2 } from '~/types/cosmos/asset';
 
 import {
   CoinButton,
@@ -22,9 +24,9 @@ import {
 import Check16Icon from '~/images/icons/Check16.svg';
 
 type RecipientChainPopoverProps = Omit<PopoverProps, 'children'> & {
-  recipientList: IbcSend[];
-  selectedRecipientChain: IbcSend;
-  onClickChain?: (selectedRecipientChain: IbcSend) => void;
+  recipientList: AssetV2[];
+  selectedRecipientChain: AssetV2;
+  onClickChain?: (selectedRecipientChain: AssetV2) => void;
   chain: CosmosChain;
 };
 
@@ -41,14 +43,12 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
         {recipientList.map((item) => {
-          // REVIEW - 현재 오스모시스 기준으로 만든거라 axelar 체인 기준으로 테스트 해볼것
-          const chainName = item.display_denom.substring(0, 3) === 'axl' ? 'Axelar' : item.chain_name;
-          const channelId = item.channel_id ?? 'UNKNOWN';
+          const chainName = item.dp_denom.substring(0, 3) === 'axl' ? 'Axelar' : item.chain;
+          const channelId = item.channel ?? 'UNKNOWN';
           const imgURL =
-            item.display_denom.substring(0, 3) === 'axl'
-              ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/common/axl.png`
-              : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.img_Url}`;
+            item.dp_denom.substring(0, 3) === 'axl' ? AXELAR.imageURL : COSMOS_CHAINS.find((chain) => chain.baseDenom === item.base_denom)?.imageURL;
           const isActive = selectedRecipientChain.base_denom === item.base_denom;
+
           return (
             <CoinButton
               type="button"

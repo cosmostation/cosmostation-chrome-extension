@@ -240,7 +240,6 @@ export default function Send({ chain }: CosmosProps) {
     currentFeeCoinDisplayAvailableAmount,
     t,
   ]);
-
   return (
     <Container>
       <div>
