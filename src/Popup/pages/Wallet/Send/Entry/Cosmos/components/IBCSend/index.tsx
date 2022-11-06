@@ -11,7 +11,9 @@ import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { JUNO } from '~/constants/chain/cosmos/juno';
+import { KI } from '~/constants/chain/cosmos/ki';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
+import { SIF } from '~/constants/chain/cosmos/sif';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/common/IconButton';
@@ -220,11 +222,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
       [CRYPTO_ORG.baseDenom]: CRYPTO_ORG.chainName,
       [ASSET_MANTLE.baseDenom]: ASSET_MANTLE.chainName,
       [GRAVITY_BRIDGE.baseDenom]: GRAVITY_BRIDGE.chainName,
+      [SIF.baseDenom]: SIF.chainName,
+      [KI.baseDenom]: KI.chainName,
     };
-    const displayDenomMap = {
-      [EMONEY.chainName.toLowerCase()]: EMONEY.displayDenom,
-      [JUNO.chainName.toLowerCase()]: JUNO.displayDenom,
-    };
+    // const displayDenomMap = {
+    //   [EMONEY.chainName.toLowerCase()]: EMONEY.displayDenom,
+    //   [JUNO.chainName.toLowerCase()]: JUNO.displayDenom,
+    // };
     const baseDenomMap = {
       [EMONEY.chainName.toLowerCase()]: EMONEY.baseDenom,
     };
@@ -243,7 +247,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
               ({
                 ...item,
                 chain: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
-                dp_denom: displayDenomMap[item.origin_chain] ? displayDenomMap[item.origin_chain] : item.dp_denom,
+                // dp_denom: displayDenomMap[item.origin_chain] ? displayDenomMap[item.origin_chain] : item.dp_denom,
                 base_denom: baseDenomMap[item.origin_chain] ? baseDenomMap[item.origin_chain] : item.base_denom,
                 channel: item.counter_party?.channel,
                 image: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
@@ -257,7 +261,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           ({
             ...item,
             chain: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
-            dp_denom: displayDenomMap[item.origin_chain] ? displayDenomMap[item.origin_chain] : item.dp_denom,
+            // dp_denom: displayDenomMap[item.origin_chain] ? displayDenomMap[item.origin_chain] : item.dp_denom,
             base_denom: baseDenomMap[item.origin_chain] ? baseDenomMap[item.origin_chain] : item.base_denom,
             channel: item.counter_party?.channel,
             image: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
@@ -283,8 +287,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // REVIEW 방향성에 대해 고민할 필요가 있음
   // 1. recipientChainList의 첫번째 요소를 자동으로 선택되도록
   // 2. 매번 코인을 선택할 때 마다 selectedRecipientChain이 초기화 되도록
-  // recipientChainList[0] ?? []
   const [selectedRecipientChainDP, setSelectedRecipientChainDP] = useState(recipientChainList[0].dp_denom ?? '');
+
   // FIXME juno, neta, osmo선택시 에러발생 -> 내가 dp를 다르게 주면 될듯
   const selectedRecipientChain = useMemo(
     () => recipientChainList.find((item) => item.dp_denom === selectedRecipientChainDP)!,
@@ -296,13 +300,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // }, [recipientChainList]);
   // const aaa = useMemo(() => recipientChainList[0], [recipientChainList]);
   const selectedRecipientCosmosChain = useMemo(
-    () => COSMOS_CHAINS.find((item) => selectedRecipientChain?.base_denom === item.baseDenom),
-    [selectedRecipientChain?.base_denom],
+    () => COSMOS_CHAINS.find((item) => selectedRecipientChain?.chain === item.chainName),
+    [selectedRecipientChain?.chain],
   );
 
-  const selectedRecipientChainIMG = selectedRecipientChain.dp_denom.substring(0, 3) === 'axl' ? AXELAR.imageURL : selectedRecipientCosmosChain?.imageURL;
+  const selectedRecipientChainIMG = selectedRecipientChain.dp_denom.substring(0, 3) === 'axl' ? AXELAR.imageURL : selectedRecipientCosmosChain?.imageURL ?? '';
   const selectedRecipientChainChainName =
-    selectedRecipientChain.dp_denom.substring(0, 3) === 'axl' ? AXELAR.chainName : selectedRecipientCosmosChain?.chainName;
+    selectedRecipientChain.dp_denom.substring(0, 3) === 'axl' ? AXELAR.chainName : selectedRecipientCosmosChain?.chainName ?? '';
   const selectedRecipientChainChannel = selectedRecipientChain.channel ?? '';
   const addressRegex = useMemo(
     () => getCosmosAddressRegex(selectedRecipientCosmosChain?.bech32Prefix.address || '', [39]),

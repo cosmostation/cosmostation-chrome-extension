@@ -45,8 +45,7 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
         {recipientList.map((item) => {
           const chainName = item.dp_denom.substring(0, 3) === 'axl' ? 'Axelar' : item.chain;
           const channelId = item.channel ?? 'UNKNOWN';
-          const imgURL =
-            item.dp_denom.substring(0, 3) === 'axl' ? AXELAR.imageURL : COSMOS_CHAINS.find((chain) => chain.baseDenom === item.base_denom)?.imageURL;
+          const imgURL = item.dp_denom.substring(0, 3) === 'axl' ? AXELAR.imageURL : COSMOS_CHAINS.find((chain) => chain.chainName === item.chain)?.imageURL;
           const isActive = selectedRecipientChain.base_denom === item.base_denom;
 
           return (
