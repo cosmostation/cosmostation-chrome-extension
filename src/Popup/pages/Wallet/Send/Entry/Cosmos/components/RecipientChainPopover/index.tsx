@@ -26,7 +26,7 @@ import Check16Icon from '~/images/icons/Check16.svg';
 type RecipientChainPopoverProps = Omit<PopoverProps, 'children'> & {
   recipientList: AssetV2[];
   selectedRecipientChain: AssetV2;
-  onClickChain?: (selectedRecipientChain: AssetV2) => void;
+  onClickChain?: (selectedRecipientChainDP: string) => void;
   chain: CosmosChain;
 };
 
@@ -56,7 +56,7 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
               data-is-active={isActive ? 1 : 0}
               ref={isActive ? ref : undefined}
               onClick={() => {
-                onClickChain?.(item);
+                onClickChain?.(item.dp_denom);
                 onClose?.({}, 'backdropClick');
               }}
             >

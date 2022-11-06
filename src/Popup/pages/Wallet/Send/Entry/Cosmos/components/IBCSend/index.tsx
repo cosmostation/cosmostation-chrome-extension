@@ -181,7 +181,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const ibcPossibleChainList = currentChainAssets.data.filter((item) => item.counter_party);
   const ibcPossibleChainListDenom = currentChainAssets.data.filter((item) => item.counter_party).map((item) => item.base_denom);
   // FIXME 변수명 정리
-  // FIXME ibcSend -> assetv2로 타입 리팩토링 하기
   // NOTE 현재 체인에서 가지고 있는 native coin을 수신 가능한 체인의 List
   const nativePossibleChainList = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
@@ -285,9 +284,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // 1. recipientChainList의 첫번째 요소를 자동으로 선택되도록
   // 2. 매번 코인을 선택할 때 마다 selectedRecipientChain이 초기화 되도록
   // recipientChainList[0] ?? []
-  const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientChainList[0] ?? []);
-
-  //  const aselectedRecipientChainaa = useMemo(() => recipientChainList.find((item)=.), [recipientChainList]);
+  const [selectedRecipientChainDP, setSelectedRecipientChainDP] = useState(recipientChainList[0].dp_denom ?? '');
+  // FIXME juno, neta, osmo선택시 에러발생 -> 내가 dp를 다르게 주면 될듯
+  const selectedRecipientChain = useMemo(
+    () => recipientChainList.find((item) => item.dp_denom === selectedRecipientChainDP)!,
+    [recipientChainList, selectedRecipientChainDP],
+  );
   // REVIEW - 계산이 반복됨. 최적화가 필요함
   // useEffect(() => {
   //   setSelectedRecipientChain(recipientChainList[0]);
@@ -653,10 +655,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
         onClickCoinOrToken={(clickedCoinOrToken) => {
           // FIXME 다음 체인이 선택되면 그 전 체인의 값을 가져오게됨
           setCurrentCoinOrTokenId(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.baseDenom : clickedCoinOrToken.address);
+          setSelectedRecipientChainDP(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.displayDenom : '');
           setCurrentDisplayAmount('');
           setCurrentAddress('');
           setCurrentMemo('');
-          //  setSelectedRecipientChain(recipientChainList[0]);
         }}
         open={isOpenPopover}
         onClose={() => setPopoverAnchorEl(null)}
@@ -677,7 +679,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         marginThreshold={0}
         selectedRecipientChain={selectedRecipientChain}
         onClickChain={(clickedChain) => {
-          setSelectedRecipientChain(clickedChain);
+          setSelectedRecipientChainDP(clickedChain);
         }}
         open={isRecipientOpenPopover}
         onClose={() => setRecipientPopoverAnchorEl(null)}
