@@ -46,6 +46,8 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
   const assetCoinInfo = coins.find((coin) => isEqualsIgnoringCase(coin.baseDenom, itemBaseDenom));
   const ibcCoinInfo = ibcCoins.find((coin) => coin.baseDenom === itemBaseDenom);
 
+  // 함수 로 나온값을 바로 호출해서 변수에 할당하는 방식이다
+  // FIXME later/... useMemo로 바꿔보기
   const itemDisplayAmount = (() => {
     if (itemBaseDenom === baseDenom) {
       return toDisplayDenomAmount(itemBaseAmount, decimals);

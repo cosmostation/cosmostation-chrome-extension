@@ -15,6 +15,7 @@ import { useBalanceSWR } from './useBalanceSWR';
 import { useIncentiveSWR } from './useIncentiveSWR';
 
 export type CoinInfo = {
+  type: string;
   decimals: number;
   originBaseDenom?: string;
   baseDenom: string;
@@ -39,6 +40,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
       assets?.data
         ?.filter((item) => item.type === 'native' || item.type === 'bridge')
         ?.map((item) => ({
+          type: item.type,
           originBaseDenom: item.base_denom || '',
           baseDenom: item.denom,
           displayDenom: item.dp_denom,
@@ -85,6 +87,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           const incentiveAmount = incentive?.data?.[coin.denom] || '0';
 
           return {
+            type: coinInfo.type,
             decimals: coinInfo.decimals,
             baseDenom: coin.denom,
             originBaseDenom: coinInfo.originBaseDenom,
@@ -111,6 +114,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
         const coinInfo = ibcAssets.find((item) => item.denom === coin.denom)!;
 
         return {
+          type: coinInfo.type,
           decimals: coinInfo?.decimal,
           originBaseDenom: coinInfo?.base_denom,
           baseDenom: coin.denom,

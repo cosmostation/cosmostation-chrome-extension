@@ -95,6 +95,7 @@ export default function Send({ chain }: CosmosProps) {
         displayDenom: chain.displayDenom,
         baseDenom: chain.baseDenom,
         coinGeckoId: chain.coinGeckoId,
+        type: 'staking',
       },
       ...coinList.coins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
       ...coinList.ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),

@@ -107,6 +107,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
       {
         availableAmount: vestingRelatedAvailable,
         totalAmount,
+        type: 'staking',
         decimals: chain.decimals,
         imageURL: chain.imageURL,
         displayDenom: chain.displayDenom,
@@ -178,7 +179,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   );
   // SECTION - IBC send logic
   // FIXME - coin type이 token인 경우에 대한 ibc send 미구현 상태
-  // FIXME - 현재 기본 가스비가 부족해서 tx가 fail되도 스낵바로 success라고 뜨는 현상 발견
+  // FIXME - 현재 기본 가스비가 부족해서 tx가 fail되도 스낵바로 success라고 뜨는 현상 발견 -> 해결 불가능
   // NOTE 현재 체인에서 가지고있는 ibc 코인을 ibc_send가 가능한 ibc코인의 List
   const ibcPossibleChainList = currentChainAssets.data.filter((item) => item.counter_party);
   const ibcPossibleChainListDenom = currentChainAssets.data.filter((item) => item.counter_party).map((item) => item.base_denom);
@@ -191,7 +192,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
       const nativeOkChainList = allCosmosAssets.data.filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom);
       const NativeChainList = currentChainAssets.data.filter(
         // couter_party필드의 denom이 긴 값은 이미 수신 채널이 정의되어있는(그래비티, 주노)있기에 임시적으로 length값으로 필터링하였음
-        (item) => nativeChainNameList.includes(item.origin_chain) && (item.counter_party?.denom.length as number) < 20,
+        // (item) => nativeChainNameList.includes(item.origin_chain) && (item.counter_party?.denom.length as number) < 20,
+        (item) => nativeChainNameList.includes(item.origin_chain),
       );
       const nativeChainList = NativeChainList.map((item) => ({
         ...item,
@@ -204,6 +206,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
   }, [allCosmosAssets.data, currentChainAssets.data, currentCoinOrToken]);
   const coinInfos = availableCoinOrTokenList.filter((item) => item.type === 'coin') as CoinInfo[];
   // NOTE 현재 보유중인 코인 중에서 available한 코인 리스트: native & ibc 구분
+
+  // FIXME coinall 에 새로 타입정의 해서 여기서 ibc 구분짓는 로직 삭제하면 될 듯
   const availableIBCCoinList = coinInfos.filter((item) => item.baseDenom.substring(0, 3) === 'ibc');
   const avaiableIBCCoinDisplayDenomList = availableIBCCoinList.map((item) => item.displayDenom);
   const availableNativeCoinList = coinInfos.filter((item) => item.baseDenom.substring(0, 3) !== 'ibc');
@@ -282,23 +286,33 @@ export default function IBCSend({ chain }: IBCSendProps) {
     ibcPossibleChainList,
     chain.baseDenom,
   ]);
-
   // NOTE 선택된 수신 체인
   // REVIEW 방향성에 대해 고민할 필요가 있음
   // 1. recipientChainList의 첫번째 요소를 자동으로 선택되도록
   // 2. 매번 코인을 선택할 때 마다 selectedRecipientChain이 초기화 되도록
+  // ANCHOR - 수신인
   const [selectedRecipientChainDP, setSelectedRecipientChainDP] = useState(recipientChainList[0].dp_denom ?? '');
+  // legacy
+  // const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientChainList[0]?? '');
 
-  // FIXME juno, neta, osmo선택시 에러발생 -> 내가 dp를 다르게 주면 될듯
+  // FIXME 현재 당연히 수신체인에서 고르니까 오스모랑 이온이 없지 이 바보야
   const selectedRecipientChain = useMemo(
-    () => recipientChainList.find((item) => item.dp_denom === selectedRecipientChainDP)!,
-    [recipientChainList, selectedRecipientChainDP],
+    // () => recipientChainList.find((item) => item.dp_denom === selectedRecipientChainDP)!,
+    //  availableNativeCoinList((item)=> item.)
+    () =>
+      selectedRecipientChainDP !== chain.displayDenom ? recipientChainList.find((item) => item.dp_denom === selectedRecipientChainDP)! : recipientChainList[0],
+
+    [chain.displayDenom, recipientChainList, selectedRecipientChainDP],
   );
   // REVIEW - 계산이 반복됨. 최적화가 필요함
   // useEffect(() => {
   //   setSelectedRecipientChain(recipientChainList[0]);
-  // }, [recipientChainList]);
+  //   // 확실하면 린트무시처리 해도 괜찮다
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [currentCoinOrToken]);
   // const aaa = useMemo(() => recipientChainList[0], [recipientChainList]);
+
+  // FIXME 여기 없으면 아예 안뜨게해야함
   const selectedRecipientCosmosChain = useMemo(
     () => COSMOS_CHAINS.find((item) => selectedRecipientChain?.chain === item.chainName),
     [selectedRecipientChain?.chain],
@@ -314,7 +328,23 @@ export default function IBCSend({ chain }: IBCSendProps) {
   );
   // TODO error handling
   const [timeoutHeight, setTimeoutHeight] = useState<ibc.core.client.v1.IHeight>();
+  // FIXME make it hook & imple new type for get타입 자체적으로 만들기 ,swr훅으로 만들기 // 필요한 값만 타입 (string으로 정의 해야함)정의해서 쓰기 //  balance 예시 참고
+  // 서큘러탭바 클릭시 색깔 하얗게 나오는거 삭제
+  // 수신 체인 컨테이너 색 변경
+  // 팝오버 오픈 두개의 버튼이 동시 작동된다...
+  // 이더리움 레이아웃 분기 코드 작성하기 (유연성있게)
+  // tx amount 위치 상단으로 올리기
+  // 기존 가스타입에 ibc tx 용 필드 추가정의 (완벽한 기본 1500000)
+  // 서쿨러 탭 텍스트 대문자 -> 소문자로 수정
+  // 수신 체인 팝업 툴팁 삭제
 
+  // 값 특정지을떄는 되도록 denom값으로 사용할 것
+  // FIXME timeoutHeight 널세이프티 조건 더 추가하기 아래 sign+anmino쪽 확인하기
+
+  // NOTE - cw20 토큰은 ibc send가 완전히 다르니 우선 무시할것 ...
+
+  // FIXME path 값 참조해서 체인가져올수있도록 구현하기, path 값 스필릿 하고 길이값 -2 해서 그 값을 체인으로 쓰자!
+  // COMSMOS_CHAIN이 최종값이 되도록 해야함
   useEffect(() => {
     const getTimeout = async () => {
       const identifiedClientStateInfo =
@@ -325,13 +355,15 @@ export default function IBCSend({ chain }: IBCSendProps) {
       const clientState = identifiedClientStateInfo.identified_client_state?.client_state as ibc.lightclients.tendermint.v1.IClientState;
       const timeoutHeightInfo = {
         revision_number: clientState.latest_height?.revision_number ?? 0,
-        revision_height: clientState?.latest_height?.revision_height ? 3000 + +clientState.latest_height.revision_height : 0,
+        // parseInt + nullsafety
+        revision_height: clientState?.latest_height?.revision_height ? 1000 + +clientState.latest_height.revision_height : 0,
       };
 
       setTimeoutHeight(timeoutHeightInfo);
     };
     getTimeout().catch((e) => {
       // FIXME 에러 스낵바 보다 다른 에러 캐치방식을 고려해보는게 좋다고 생각합니다.
+      // 이거는 훅에서 구현할 때는 삭제하기
       const message = (e as { message?: string }).message ? (e as { message: string }).message : 'Failed';
       enqueueSnackbar(message, { variant: 'error' });
     });
@@ -377,7 +409,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
   const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentCoinOrTokenDecimals);
   const errorMessage = useMemo(() => {
-    // TODO timeoutHeight error handling
     if (!timeoutHeight) {
       return t('pages.Wallet.Send.Entry.Cosmos.index.timeoutHeightError');
     }
@@ -551,6 +582,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
               type="button"
               disabled={!!errorMessage}
               onClick={async () => {
+                // FIXME timeoutHeight 널세이프티 조건 더 추가하기
                 if (currentCoinOrToken.type === 'coin') {
                   await enQueue({
                     messageId: '',
@@ -649,7 +681,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           setCurrentMemo(a.memo || '');
         }}
       />
-
+      {/* ANCHOR - 수신인  */}
       <CoinOrTokenPopover
         chain={chain}
         address={address}
@@ -657,8 +689,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
         currentCoinOrTokenInfo={currentCoinOrToken}
         coinOrTokenInfos={checkedAvailableCoinList}
         onClickCoinOrToken={(clickedCoinOrToken) => {
-          // FIXME 다음 체인이 선택되면 그 전 체인의 값을 가져오게됨
           setCurrentCoinOrTokenId(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.baseDenom : clickedCoinOrToken.address);
+          // setSelectedRecipientChain(recipientChainList[0]);
           setSelectedRecipientChainDP(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.displayDenom : '');
           setCurrentDisplayAmount('');
           setCurrentAddress('');
