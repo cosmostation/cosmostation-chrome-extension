@@ -89,7 +89,7 @@ export const ButtonContainer = styled('div')({
   bottom: '1.6rem',
 });
 
-export const ContentsContainer = styled('div')({
+export const ContentsContainer1 = styled('div')({
   height: '22.7rem',
   display: 'flex',
   justifyContent: 'center',
@@ -104,6 +104,7 @@ export const TokenIconBox = styled('div')({
 
 export const TokensIcon = styled(Tokens)(({ theme }) => ({
   stroke: theme.colors.base05,
+  marginBottom: '0.8rem',
 }));
 
 export const TokenIconText = styled('div')(({ theme }) => ({
@@ -111,6 +112,11 @@ export const TokenIconText = styled('div')(({ theme }) => ({
 
   textAlign: 'center',
 }));
+
+export const ContentsContainer2 = styled('div')({
+  height: '22.7rem',
+  overflow: 'auto',
+});
 
 export const ListContainer = styled('div')({
   overflow: 'auto',

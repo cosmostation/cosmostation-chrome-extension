@@ -13,12 +13,11 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Token } from '~/types/ethereum/common';
 
-// import { EthereumToken } from '~/types/chain';
-import TokenItem from './component/index';
 import {
   ButtonContainer,
   Container,
-  ContentsContainer,
+  ContentsContainer1,
+  ContentsContainer2,
   Div,
   ImportCustomTokenButton,
   ImportCustomTokenImage,
@@ -33,16 +32,17 @@ import {
   WarningIconContainer,
   WarningTextContainer,
 } from './styled';
+import TokenItem from './TokenList/component/index';
 
 import Info16Icon from '~/images/icons/Info16.svg';
 import Plus16Icon from '~/images/icons/Plus16.svg';
 
 type TokenListProps = {
   currentTokens: Token;
-  onClickSelectToken?: (token: Token) => void;
+  // onClickSelectToken?: (token: Token) => void;
 };
 
-export default function Entry({ currentTokens, onClickSelectToken }: TokenListProps) {
+export default function Entry({ currentTokens }: TokenListProps) {
   const [search, setSearch] = useState('');
   const { importTokenForm } = useSchema();
   const { addEthereumToken } = useCurrentEthereumTokens();
@@ -64,6 +64,12 @@ export default function Entry({ currentTokens, onClickSelectToken }: TokenListPr
   });
 
   const filteredTokens = search ? tokens.data.filter((item) => item.name.toLowerCase().indexOf(search.toLowerCase()) > -1) : tokens.data;
+
+  const [isIconOn, setIconOn] = useState(true);
+
+  const offIcon = () => {
+    setIconOn(false);
+  };
 
   const submit = async (data: ImportTokenForm) => {
     try {
@@ -118,20 +124,25 @@ export default function Entry({ currentTokens, onClickSelectToken }: TokenListPr
             placeholder={t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.searchPlaceholder')}
             value={search}
             onChange={(event) => setSearch(event.currentTarget.value)}
+            onClick={offIcon}
           />
         </Div>
-        <ContentsContainer>
-          <TokenIconBox>
-            <TokensIcon />
-            <TokenIconText>
-              <Typography variant="h6">
-                {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.tokenIconText1')}
-                <br />
-                {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.tokenIconText2')}
-              </Typography>
-            </TokenIconText>
-          </TokenIconBox>
-          {/* <TokenList>
+        {isIconOn && (
+          <ContentsContainer1>
+            <TokenIconBox>
+              <TokensIcon />
+              <TokenIconText>
+                <Typography variant="h6">
+                  {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.tokenIconText1')}
+                  <br />
+                  {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.tokenIconText2')}
+                </Typography>
+              </TokenIconText>
+            </TokenIconBox>
+          </ContentsContainer1>
+        )}
+        <ContentsContainer2>
+          <TokenList>
             {filteredTokens.map((token) => {
               const isActive = currentTokens?.name === token?.name;
               return (
@@ -139,18 +150,18 @@ export default function Entry({ currentTokens, onClickSelectToken }: TokenListPr
                   key={token.chainId}
                   imageProps={{ alt: token.chainId, src: token.imageURL }}
                   isActive={isActive}
-                  onClick={() => {
-                    onClickSelectToken?.(token);
-                  }}
+                  // onClick={() => {
+                  //   onClickSelectToken?.(token);
+                  // }}
                   name={token.name}
                   symbol={token.displayDenom}
                 />
               );
             })}
-          </TokenList> */}
-        </ContentsContainer>
+          </TokenList>
+        </ContentsContainer2>
         <ButtonContainer>
-          <Button type="button" onClick={() => navigate('/wallet')} disabled={!isSubmitted}>
+          <Button type="submit" onClick={() => navigate('/wallet')} disabled={!isSubmitted}>
             {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.submitButton')}
           </Button>
         </ButtonContainer>
@@ -158,5 +169,3 @@ export default function Entry({ currentTokens, onClickSelectToken }: TokenListPr
     </form>
   );
 }
-
-// 참고 및 연구할 부분
