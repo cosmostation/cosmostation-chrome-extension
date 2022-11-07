@@ -37,13 +37,10 @@ export const CircularStyledTab = styled(Tab)(({ theme }) => ({
     fontSize: theme.typography.h5.fontSize,
     lineHeight: theme.typography.h5.lineHeight,
     letterSpacing: theme.typography.h5.letterSpacing,
+    textTransform: 'capitalize',
     backgroundColor: 'transparent',
   },
   '&.Mui-selected': { opacity: 1, color: theme.colors.text01, padding: '0' },
-  '&.Mui-unselected': {
-    opacity: 1,
-    color: theme.colors.text02,
-  },
 }));
 
 // REVIEW 기존 탭과 다르게 marginTop값을 주어 범용성이 떨어질 수 있음

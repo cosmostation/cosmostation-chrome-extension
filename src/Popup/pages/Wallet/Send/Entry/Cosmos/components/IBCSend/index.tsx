@@ -44,6 +44,7 @@ import type { AssetV2 } from '~/types/cosmos/asset';
 
 import {
   BottomContainer,
+  ChainButton,
   CoinButton,
   CoinLeftAvailableContainer,
   CoinLeftContainer,
@@ -287,30 +288,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
     chain.baseDenom,
   ]);
   // NOTE 선택된 수신 체인
-  // REVIEW 방향성에 대해 고민할 필요가 있음
-  // 1. recipientChainList의 첫번째 요소를 자동으로 선택되도록
-  // 2. 매번 코인을 선택할 때 마다 selectedRecipientChain이 초기화 되도록
   // ANCHOR - 수신인
-  const [selectedRecipientChainDP, setSelectedRecipientChainDP] = useState(recipientChainList[0].dp_denom ?? '');
-  // legacy
-  // const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientChainList[0]?? '');
+  const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientChainList[0] ?? '');
 
-  // FIXME 현재 당연히 수신체인에서 고르니까 오스모랑 이온이 없지 이 바보야
-  const selectedRecipientChain = useMemo(
-    // () => recipientChainList.find((item) => item.dp_denom === selectedRecipientChainDP)!,
-    //  availableNativeCoinList((item)=> item.)
-    () =>
-      selectedRecipientChainDP !== chain.displayDenom ? recipientChainList.find((item) => item.dp_denom === selectedRecipientChainDP)! : recipientChainList[0],
-
-    [chain.displayDenom, recipientChainList, selectedRecipientChainDP],
-  );
-  // REVIEW - 계산이 반복됨. 최적화가 필요함
-  // useEffect(() => {
-  //   setSelectedRecipientChain(recipientChainList[0]);
-  //   // 확실하면 린트무시처리 해도 괜찮다
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [currentCoinOrToken]);
-  // const aaa = useMemo(() => recipientChainList[0], [recipientChainList]);
+  useEffect(() => {
+    setSelectedRecipientChain(recipientChainList[0]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentCoinOrTokenId]);
 
   // FIXME 여기 없으면 아예 안뜨게해야함
   const selectedRecipientCosmosChain = useMemo(
@@ -329,14 +313,16 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // TODO error handling
   const [timeoutHeight, setTimeoutHeight] = useState<ibc.core.client.v1.IHeight>();
   // FIXME make it hook & imple new type for get타입 자체적으로 만들기 ,swr훅으로 만들기 // 필요한 값만 타입 (string으로 정의 해야함)정의해서 쓰기 //  balance 예시 참고
-  // 서큘러탭바 클릭시 색깔 하얗게 나오는거 삭제
+  // 기존 가스타입에 ibc tx 용 필드 추가정의 (완벽한 기본 1500000)
+
+  // 해결
+  // 서쿨러 탭 텍스트 대문자 -> 소문자로 수정
+  // tx amount 위치 상단으로 올리기
+  // 수신 체인 팝업 툴팁 삭제
+  // (이거 disableRipple 값을 직접줬는데 이렇게 해도되는지...)서큘러탭바 클릭시 색깔 하얗게 나오는거 삭제
   // 수신 체인 컨테이너 색 변경
   // 팝오버 오픈 두개의 버튼이 동시 작동된다...
   // 이더리움 레이아웃 분기 코드 작성하기 (유연성있게)
-  // tx amount 위치 상단으로 올리기
-  // 기존 가스타입에 ibc tx 용 필드 추가정의 (완벽한 기본 1500000)
-  // 서쿨러 탭 텍스트 대문자 -> 소문자로 수정
-  // 수신 체인 팝업 툴팁 삭제
 
   // 값 특정지을떄는 되도록 denom값으로 사용할 것
   // FIXME timeoutHeight 널세이프티 조건 더 추가하기 아래 sign+anmino쪽 확인하기
@@ -485,7 +471,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         </CoinButton>
       </MarginTop8Div>
       <MarginTop8Div>
-        <CoinButton
+        <ChainButton
           type="button"
           onClick={(event) => {
             setRecipientPopoverAnchorEl(event.currentTarget);
@@ -500,16 +486,14 @@ export default function IBCSend({ chain }: IBCSendProps) {
                 <Typography variant="h5">{selectedRecipientChainChainName}</Typography>
               </CoinLeftDisplayDenomContainer>
               <CoinLeftAvailableContainer>
-                <Tooltip title={selectedRecipientChainChannel} arrow placement="top">
-                  <Typography variant="h6n">{selectedRecipientChainChannel}</Typography>
-                </Tooltip>
+                <Typography variant="h6n">{selectedRecipientChainChannel}</Typography>
               </CoinLeftAvailableContainer>
             </CoinLeftInfoContainer>
           </CoinLeftContainer>
-          <CoinRightContainer data-is-active={isOpenPopover ? 1 : 0}>
+          <CoinRightContainer data-is-active={isRecipientOpenPopover ? 1 : 0}>
             <BottomArrow24Icon />
           </CoinRightContainer>
-        </CoinButton>
+        </ChainButton>
       </MarginTop8Div>
       <MarginTop8Div>
         <StyledInput
@@ -690,8 +674,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         coinOrTokenInfos={checkedAvailableCoinList}
         onClickCoinOrToken={(clickedCoinOrToken) => {
           setCurrentCoinOrTokenId(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.baseDenom : clickedCoinOrToken.address);
-          // setSelectedRecipientChain(recipientChainList[0]);
-          setSelectedRecipientChainDP(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.displayDenom : '');
+          setSelectedRecipientChain(recipientChainList[0]);
           setCurrentDisplayAmount('');
           setCurrentAddress('');
           setCurrentMemo('');
@@ -715,7 +698,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         marginThreshold={0}
         selectedRecipientChain={selectedRecipientChain}
         onClickChain={(clickedChain) => {
-          setSelectedRecipientChainDP(clickedChain);
+          setSelectedRecipientChain(clickedChain);
         }}
         open={isRecipientOpenPopover}
         onClose={() => setRecipientPopoverAnchorEl(null)}

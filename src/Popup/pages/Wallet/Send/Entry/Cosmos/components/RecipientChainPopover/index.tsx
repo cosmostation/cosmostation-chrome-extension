@@ -5,7 +5,6 @@ import { Typography } from '@mui/material';
 import { COSMOS_CHAINS } from '~/constants/chain';
 import { AXELAR } from '~/constants/chain/cosmos/axelar';
 import Image from '~/Popup/components/common/Image';
-import Tooltip from '~/Popup/components/common/Tooltip';
 import type { CosmosChain } from '~/types/chain';
 import type { AssetV2 } from '~/types/cosmos/asset';
 
@@ -26,7 +25,7 @@ import Check16Icon from '~/images/icons/Check16.svg';
 type RecipientChainPopoverProps = Omit<PopoverProps, 'children'> & {
   recipientList: AssetV2[];
   selectedRecipientChain: AssetV2;
-  onClickChain?: (selectedRecipientChainDP: string) => void;
+  onClickChain?: (selectedRecipientChain: AssetV2) => void;
   chain: CosmosChain;
 };
 
@@ -55,7 +54,7 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
               data-is-active={isActive ? 1 : 0}
               ref={isActive ? ref : undefined}
               onClick={() => {
-                onClickChain?.(item.dp_denom);
+                onClickChain?.(item);
                 onClose?.({}, 'backdropClick');
               }}
             >
@@ -68,9 +67,7 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
                     <Typography variant="h5">{chainName}</Typography>
                   </CoinLeftDisplayDenomContainer>
                   <CoinLeftAvailableContainer>
-                    <Tooltip title={channelId} arrow placement="top">
-                      <Typography variant="h6n">{channelId}</Typography>
-                    </Tooltip>
+                    <Typography variant="h6n">{channelId}</Typography>
                   </CoinLeftAvailableContainer>
                 </CoinLeftInfoContainer>
               </CoinLeftContainer>

@@ -128,6 +128,28 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
           </ValueContainer>
         </AddressContainer>
 
+        <AmountInfoContainer key={itemBaseDenom}>
+          <LeftContainer>
+            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.IBCSend.index.amount')}</Typography>
+          </LeftContainer>
+          <RightContainer>
+            <RightColumnContainer>
+              <RightAmountContainer>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                  {itemDisplayAmount}
+                </Number>
+                {/* &nbsp; */}
+                <Typography variant="h5n">{itemDisplayDenom}</Typography>
+              </RightAmountContainer>
+              <RightValueContainer>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                  {itemDisplayValue}
+                </Number>
+              </RightValueContainer>
+            </RightColumnContainer>
+          </RightContainer>
+        </AmountInfoContainer>
+
         <AddressContainer sx={{ marginTop: '0.4rem' }}>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.IBCSend.index.sourceChannel')}</Typography>
@@ -166,7 +188,7 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
           </ValueContainer>
         </AddressContainer>
 
-        <AddressContainer sx={{ marginTop: '0.4rem', paddingBottom: '1.2rem' }}>
+        <AddressContainer sx={{ marginTop: '0.4rem' }}>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.IBCSend.index.revisionNumber')}</Typography>
           </LabelContainer>
@@ -174,28 +196,6 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
             <Typography variant="h5">{timeout_height.revision_number}</Typography>
           </ValueContainer>
         </AddressContainer>
-
-        <AmountInfoContainer key={itemBaseDenom}>
-          <LeftContainer>
-            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.IBCSend.index.amount')}</Typography>
-          </LeftContainer>
-          <RightContainer>
-            <RightColumnContainer>
-              <RightAmountContainer>
-                <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                  {itemDisplayAmount}
-                </Number>
-                {/* &nbsp; */}
-                <Typography variant="h5n">{itemDisplayDenom}</Typography>
-              </RightAmountContainer>
-              <RightValueContainer>
-                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                  {itemDisplayValue}
-                </Number>
-              </RightValueContainer>
-            </RightColumnContainer>
-          </RightContainer>
-        </AmountInfoContainer>
       </ContentContainer>
     </Container>
   );

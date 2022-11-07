@@ -50,6 +50,24 @@ export const CoinButton = styled('button')(({ theme }) => ({
   cursor: 'pointer',
 }));
 
+export const ChainButton = styled('button')(({ theme }) => ({
+  backgroundColor: theme.colors.base01,
+  border: `0.1rem solid ${theme.colors.base03}`,
+
+  borderRadius: '0.8rem',
+
+  padding: '0.8rem 1.2rem 0.6rem 1.2rem',
+
+  height: '4.8rem',
+  width: '100%',
+
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+
+  cursor: 'pointer',
+}));
+
 export const CoinLeftContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
