@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
-  padding: '0.4rem 1.6rem 1.6rem',
+  padding: '0.6rem 1.6rem 1.6rem',
 
   height: '100%',
 

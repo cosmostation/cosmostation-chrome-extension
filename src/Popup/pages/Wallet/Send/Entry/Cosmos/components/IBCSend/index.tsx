@@ -6,10 +6,12 @@ import { InputAdornment, Typography } from '@mui/material';
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBCSEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
+import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { KI } from '~/constants/chain/cosmos/ki';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import { SIF } from '~/constants/chain/cosmos/sif';
+import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/common/IconButton';
@@ -37,6 +39,7 @@ import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain, CosmosToken as BaseCosmosToken, IBCCosmosChain } from '~/types/chain';
 import type { AssetV2 } from '~/types/cosmos/asset';
 
+import RecipientChainPopover from './components/RecipientChainPopover';
 import {
   BottomContainer,
   ChainButton,
@@ -55,7 +58,6 @@ import {
   StyledTextarea,
 } from './styled';
 import CoinOrTokenPopover from '../CoinOrTokenPopover';
-import RecipientChainPopover from '../RecipientChainPopover';
 
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
 import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
@@ -182,7 +184,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
       origin_chain: item.path ? item.path?.split('>').at(-2) : item.origin_chain,
     }));
 
-  // FIXME 변수명 정리
   // NOTE 현재 체인에서 가지고 있는 native coin을 수신 가능한 체인의 List
   const nativePossibleChainList = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
@@ -194,7 +195,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
       const nativeChainList = nativePossibleAssets.map((item) => ({
         ...item,
         denom: nativeOkChainList.find((nativeChain) => nativeChain.chain === item.origin_chain)?.base_denom,
-        origin_chain: item.path ? item.path?.split('>').at(-2) ?? item.origin_chain : item.origin_chain,
+        origin_chain: item.path ? item.path?.split('>').at(-2) || item.origin_chain : item.origin_chain,
       }));
 
       return nativeChainList;
@@ -205,11 +206,11 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // 이미 type이라는 필드명을 사용중이어서 'coinType'이라는 필드를 선언함
   // NOTE 현재 보유중인 코인 중에서 available한 코인 리스트: native & ibc 구분
   const coinInfos = availableCoinOrTokenList.filter((item) => item.type === 'coin') as CoinInfo[];
-  const ibcPossibleChainListDenom = currentChainAssets.data.filter((item) => item.counter_party).map((item) => item.base_denom);
   const availableIBCCoinList = coinInfos.filter((item) => item.coinType === 'ibc');
   const availableNativeCoinList = coinInfos.filter((item) => item.coinType === 'staking' || item.coinType === 'native');
 
   // NOTE available한 IBC코인중 수신할 체인이 있는 available한 IBC코인리스트
+  const ibcPossibleChainListDenom = currentChainAssets.data.filter((item) => item.counter_party).map((item) => item.base_denom);
   const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) =>
     item.originBaseDenom ? ibcPossibleChainListDenom.includes(item.originBaseDenom) : [],
   );
@@ -225,6 +226,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
       [GRAVITY_BRIDGE.baseDenom]: GRAVITY_BRIDGE.chainName,
       [SIF.baseDenom]: SIF.chainName,
       [KI.baseDenom]: KI.chainName,
+      [STAFIHUB.baseDenom]: STAFIHUB.chainName,
+      [FETCH_AI.baseDenom]: FETCH_AI.chainName,
     };
 
     if (currentCoinOrToken.type === 'coin') {
@@ -282,7 +285,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   }, [currentCoinOrTokenId]);
 
   const selectedRecipientChainChainName = selectedRecipientChain?.chainName ?? 'UNKNOWN';
-  const selectedRecipientChainChannel = selectedRecipientChain.counterChannelId ?? 'UNKNOWN';
+  const selectedRecipientChainChannel = selectedRecipientChain.channelId ?? 'UNKNOWN';
   const addressRegex = useMemo(
     () => getCosmosAddressRegex(selectedRecipientChain?.bech32Prefix.address || '', [39]),
     [selectedRecipientChain?.bech32Prefix.address],

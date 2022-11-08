@@ -6,13 +6,13 @@ import Image from '~/Popup/components/common/Image';
 import type { IBCCosmosChain } from '~/types/chain';
 
 import {
-  CoinButton,
-  CoinLeftAvailableContainer,
-  CoinLeftContainer,
-  CoinLeftDisplayDenomContainer,
-  CoinLeftImageContainer,
-  CoinLeftInfoContainer,
-  CoinRightContainer,
+  ChainButton,
+  ChainLeftChainNameContainer,
+  ChainLeftChannelIdContainer,
+  ChainLeftContainer,
+  ChainLeftImageContainer,
+  ChainLeftInfoContainer,
+  ChainRightContainer,
   Container,
   StyledPopover,
 } from './styled';
@@ -39,12 +39,12 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
         {recipientList.map((item) => {
           // eslint-disable-next-line prefer-destructuring
           const chainName = item.chainName;
-          const channelId = item.counterChannelId ?? 'UNKNOWN';
+          const channelId = item.channelId ?? 'UNKNOWN';
           const imgURL = item.imageURL;
           const isActive = selectedRecipientChain.baseDenom === item.baseDenom;
 
           return (
-            <CoinButton
+            <ChainButton
               type="button"
               key={chainName}
               data-is-active={isActive ? 1 : 0}
@@ -54,21 +54,21 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
                 onClose?.({}, 'backdropClick');
               }}
             >
-              <CoinLeftContainer>
-                <CoinLeftImageContainer>
+              <ChainLeftContainer>
+                <ChainLeftImageContainer>
                   <Image src={imgURL} />
-                </CoinLeftImageContainer>
-                <CoinLeftInfoContainer>
-                  <CoinLeftDisplayDenomContainer>
+                </ChainLeftImageContainer>
+                <ChainLeftInfoContainer>
+                  <ChainLeftChainNameContainer>
                     <Typography variant="h5">{chainName}</Typography>
-                  </CoinLeftDisplayDenomContainer>
-                  <CoinLeftAvailableContainer>
+                  </ChainLeftChainNameContainer>
+                  <ChainLeftChannelIdContainer>
                     <Typography variant="h6n">{channelId}</Typography>
-                  </CoinLeftAvailableContainer>
-                </CoinLeftInfoContainer>
-              </CoinLeftContainer>
-              <CoinRightContainer>{isActive && <Check16Icon />}</CoinRightContainer>
-            </CoinButton>
+                  </ChainLeftChannelIdContainer>
+                </ChainLeftInfoContainer>
+              </ChainLeftContainer>
+              <ChainRightContainer>{isActive && <Check16Icon />}</ChainRightContainer>
+            </ChainButton>
           );
         })}
       </Container>

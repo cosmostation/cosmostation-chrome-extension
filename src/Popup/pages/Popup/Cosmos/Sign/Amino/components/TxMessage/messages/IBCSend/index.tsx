@@ -138,7 +138,7 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
                 <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
                   {itemDisplayAmount}
                 </Number>
-                {/* &nbsp; */}
+                &nbsp;
                 <Typography variant="h5n">{itemDisplayDenom}</Typography>
               </RightAmountContainer>
               <RightValueContainer>

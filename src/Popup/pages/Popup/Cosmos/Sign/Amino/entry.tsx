@@ -242,7 +242,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                     const response = await broadcast(url, pTx);
 
                     const { code } = response.tx_response;
-                    // FIXME 가스 부족으로 send fail해도 두 케이스모두 코드가 0이고 txhash값이 존재해 구분지을 방법이 없음
                     if (code === 0) {
                       enqueueSnackbar('success');
                     } else {
