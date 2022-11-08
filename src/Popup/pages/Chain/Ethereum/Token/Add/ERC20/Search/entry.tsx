@@ -11,13 +11,11 @@ import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { Token } from '~/types/ethereum/common';
 
+import TokenItem from './components/TokenItem/index';
 import {
   ButtonContainer,
   Container,
-  ContentsContainer1,
-  ContentsContainer2,
   Div,
   ImportCustomTokenButton,
   ImportCustomTokenImage,
@@ -25,24 +23,20 @@ import {
   StyledInput,
   StyledSearch20Icon,
   TokenIconBox,
+  TokenIconContainer,
   TokenIconText,
   TokenList,
+  TokenListContainer,
   TokensIcon,
   WarningContainer,
   WarningIconContainer,
   WarningTextContainer,
 } from './styled';
-import TokenItem from './TokenList/component/index';
 
 import Info16Icon from '~/images/icons/Info16.svg';
 import Plus16Icon from '~/images/icons/Plus16.svg';
 
-type TokenListProps = {
-  currentTokens: Token;
-  // onClickSelectToken?: (token: Token) => void;
-};
-
-export default function Entry({ currentTokens }: TokenListProps) {
+export default function Entry() {
   const [search, setSearch] = useState('');
   const { importTokenForm } = useSchema();
   const { addEthereumToken } = useCurrentEthereumTokens();
@@ -63,13 +57,13 @@ export default function Entry({ currentTokens }: TokenListProps) {
     reValidateMode: 'onSubmit',
   });
 
-  const filteredTokens = search ? tokens.data.filter((item) => item.name.toLowerCase().indexOf(search.toLowerCase()) > -1) : tokens.data;
+  const filteredTokens = search
+    ? tokens.data.filter(
+        (item) => (item.name.toLowerCase().indexOf(search.toLowerCase()) || item.displayDenom.toLowerCase().indexOf(search.toLowerCase())) > -1,
+      )
+    : tokens.data;
 
-  const [isIconOn, setIconOn] = useState(true);
-
-  const offIcon = () => {
-    setIconOn(false);
-  };
+  // const isSearching = search.toLowerCase().length > 1 ? <TokenListContainer /> : <TokenIconContainer />;
 
   const submit = async (data: ImportTokenForm) => {
     try {
@@ -87,7 +81,7 @@ export default function Entry({ currentTokens }: TokenListProps) {
 
       await addEthereumToken({ ...newToken, tokenType: 'ERC20' });
 
-      enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.addTokenSnackbar'));
+      enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.Search.entry.addTokenSnackbar'));
     } finally {
       reset();
     }
@@ -101,7 +95,7 @@ export default function Entry({ currentTokens }: TokenListProps) {
             <Info16Icon />
           </WarningIconContainer>
           <WarningTextContainer>
-            <Typography variant="h6">{t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.warning')}</Typography>
+            <Typography variant="h6">{t('pages.Chain.Ethereum.Token.Add.Search.entry.warning')}</Typography>
           </WarningTextContainer>
         </WarningContainer>
         <Div sx={{ marginBottom: '1.2rem' }}>
@@ -110,7 +104,7 @@ export default function Entry({ currentTokens }: TokenListProps) {
               <Plus16Icon />
             </ImportCustomTokenImage>
             <ImportCustomTokenText>
-              <Typography variant="h5">{t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.importCustomTokenButton')}</Typography>
+              <Typography variant="h5">{t('pages.Chain.Ethereum.Token.Add.Search.entry.importCustomTokenButton')}</Typography>
             </ImportCustomTokenText>
           </ImportCustomTokenButton>
         </Div>
@@ -121,48 +115,38 @@ export default function Entry({ currentTokens }: TokenListProps) {
                 <StyledSearch20Icon />
               </InputAdornment>
             }
-            placeholder={t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.searchPlaceholder')}
+            placeholder={t('pages.Chain.Ethereum.Token.Add.Search.entry.searchPlaceholder')}
             value={search}
-            onChange={(event) => setSearch(event.currentTarget.value)}
-            onClick={offIcon}
+            onChange={(event) => {
+              setSearch(event.currentTarget.value);
+            }}
           />
         </Div>
-        {isIconOn && (
-          <ContentsContainer1>
-            <TokenIconBox>
-              <TokensIcon />
-              <TokenIconText>
-                <Typography variant="h6">
-                  {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.tokenIconText1')}
-                  <br />
-                  {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.tokenIconText2')}
-                </Typography>
-              </TokenIconText>
-            </TokenIconBox>
-          </ContentsContainer1>
-        )}
-        <ContentsContainer2>
+        {/* {isSearching ? ( */}
+        <TokenListContainer>
           <TokenList>
-            {filteredTokens.map((token) => {
-              const isActive = currentTokens?.name === token?.name;
-              return (
-                <TokenItem
-                  key={token.chainId}
-                  imageProps={{ alt: token.chainId, src: token.imageURL }}
-                  isActive={isActive}
-                  // onClick={() => {
-                  //   onClickSelectToken?.(token);
-                  // }}
-                  name={token.name}
-                  symbol={token.displayDenom}
-                />
-              );
-            })}
+            {filteredTokens.map((token) => (
+              <TokenItem key={token.address} item={token} />
+            ))}
           </TokenList>
-        </ContentsContainer2>
+        </TokenListContainer>
+        {/* ) : ( */}
+        <TokenIconContainer>
+          <TokenIconBox>
+            <TokensIcon />
+            <TokenIconText>
+              <Typography variant="h6">
+                {t('pages.Chain.Ethereum.Token.Add.Search.entry.tokenIconText1')}
+                <br />
+                {t('pages.Chain.Ethereum.Token.Add.Search.entry.tokenIconText2')}
+              </Typography>
+            </TokenIconText>
+          </TokenIconBox>
+        </TokenIconContainer>
+        {/* )} */}
         <ButtonContainer>
           <Button type="submit" onClick={() => navigate('/wallet')} disabled={!isSubmitted}>
-            {t('pages.Chain.Ethereum.Token.Add.SEARCHTOKEN.entry.submitButton')}
+            {t('pages.Chain.Ethereum.Token.Add.Search.entry.submitButton')}
           </Button>
         </ButtonContainer>
       </Container>

@@ -26,7 +26,7 @@ import AccountManagement from '~/Popup/pages/Account/Management';
 import ChainCosmosTokenAddCW20 from '~/Popup/pages/Chain/Cosmos/Token/Add/CW20';
 import ChainEthereumNetworkAdd from '~/Popup/pages/Chain/Ethereum/Network/Add';
 import ChainEthereumTokenAddERC20 from '~/Popup/pages/Chain/Ethereum/Token/Add/ERC20';
-import ChainEthereumTokenAddSEARCH from '~/Popup/pages/Chain/Ethereum/Token/Add/Search';
+import ChainEthereumTokenAddSearch from '~/Popup/pages/Chain/Ethereum/Token/Add/ERC20/Search';
 import ChainManagement from '~/Popup/pages/Chain/Management';
 import ChainManagementUse from '~/Popup/pages/Chain/Management/Use';
 import Dashboard from '~/Popup/pages/Dashboard';
@@ -113,7 +113,7 @@ export default function Routes() {
 
           <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__ERC20} element={<ChainCosmosTokenAddCW20 />} />
 
-          <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__SEARCH} element={<ChainEthereumTokenAddSEARCH />} />
+          <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__SEARCH} element={<ChainEthereumTokenAddSearch />} />
           <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__ERC20} element={<ChainEthereumTokenAddERC20 />} />
           <Route path={PATH.CHAIN__ETHEREUM__NETWORK__ADD} element={<ChainEthereumNetworkAdd />} />
 

@@ -89,7 +89,7 @@ export const ButtonContainer = styled('div')({
   bottom: '1.6rem',
 });
 
-export const ContentsContainer1 = styled('div')({
+export const TokenIconContainer = styled('div')({
   height: '22.7rem',
   display: 'flex',
   justifyContent: 'center',
@@ -113,18 +113,16 @@ export const TokenIconText = styled('div')(({ theme }) => ({
   textAlign: 'center',
 }));
 
-export const ContentsContainer2 = styled('div')({
-  height: '22.7rem',
+export const TokenListContainer = styled('div')({
+  height: '21.5rem',
   overflow: 'auto',
 });
 
-export const ListContainer = styled('div')({
-  overflow: 'auto',
-});
+// export const ListContainer = styled('div')({
+//   overflow: 'auto',
+// });
 
 export const TokenList = styled('div')({
-  marginTop: '1.2rem',
-
   display: 'grid',
   gridTemplateColumns: '1fr',
   rowGap: '0.4rem',
@@ -138,4 +136,5 @@ export const StyledSearch20Icon = styled(Search20Icon)(({ theme }) => ({
 
 export const StyledInput = styled(Input)({
   height: '4rem',
+  marginBottom: '1.2rem',
 });

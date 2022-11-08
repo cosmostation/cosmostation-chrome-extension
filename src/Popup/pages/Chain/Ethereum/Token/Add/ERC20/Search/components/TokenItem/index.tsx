@@ -1,31 +1,30 @@
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
+import type { EthereumToken } from '~/types/chain';
 
 import { LeftContainer, LeftImageContainer, LeftTextChainContainer, LeftTextContainer, RightContainer, StyledButton } from './styled';
 
 import Check24Icon from '~/images/icons/Check24.svg';
 
-type TokenItemProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
-  symbol: string;
-  name: string;
+type TokenItemProps = {
   isActive?: boolean;
   disabled?: boolean;
-  imageProps?: React.ComponentProps<typeof Image>;
+  item: EthereumToken;
 };
 
-export default function TokenItem({ symbol, name, disabled, isActive = false, imageProps, ...remainder }: TokenItemProps) {
+export default function TokenItem({ disabled, isActive = false, item }: TokenItemProps) {
   return (
-    <StyledButton {...remainder} disabled={disabled}>
+    <StyledButton disabled={disabled}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image {...imageProps} />
+          <Image src={item.imageURL} />
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>
-            <Typography variant="h5"> {symbol} </Typography>
+            <Typography variant="h5"> {item.displayDenom} </Typography>
             <Typography variant="h6" color="#727E91">
-              {name}
+              {item.name}
             </Typography>
           </LeftTextChainContainer>
         </LeftTextContainer>

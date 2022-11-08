@@ -454,20 +454,6 @@
         },
         "Token": {
           "Add": {
-            "SEARCHTOKEN": {
-              "entry": {
-                "addTokenSnackbar": "Token added ",
-                "importCustomTokenButton": "Import a custom token",
-                "searchPlaceholder": "Search tokens",
-                "tokenIconText1": "Add custom tokens to manage on",
-                "tokenIconText2": "Cosmostation Extension.",
-                "submitButton": "Import token",
-                "warning": " Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click `Import a custom token`. "
-              },
-              "layout": {
-                "title": "Import tokens"
-              }
-            },
             "ERC20": {
               "entry": {
                 "addTokenSnackbar": "Token added",
@@ -476,6 +462,20 @@
                 "displayDenomPlaceholder": "Token symbol",
                 "submitButton": "Add custom token",
                 "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
+              },
+              "layout": {
+                "title": "Import tokens"
+              }
+            },
+            "Search": {
+              "entry": {
+                "addTokenSnackbar": "Token added",
+                "importCustomTokenButton": "Import a custom token",
+                "searchPlaceholder": "Search tokens",
+                "submitButton": "Import token",
+                "tokenIconText1": "Add custom tokens to manage on",
+                "tokenIconText2": "Cosmostation Extension.",
+                "warning": "Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click `Import a custom token`."
               },
               "layout": {
                 "title": "Import tokens"
