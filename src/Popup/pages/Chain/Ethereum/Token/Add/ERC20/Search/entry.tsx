@@ -126,7 +126,7 @@ export default function Entry() {
           <TokenListContainer>
             <TokenList>
               {filteredTokens.map((token) => (
-                <TokenItem key={token.address} item={token} />
+                <TokenItem key={token.address} name={token.name} symbol={token.displayDenom} imageURL={token.imageURL} />
               ))}
             </TokenList>
           </TokenListContainer>
