@@ -63,7 +63,7 @@ export default function Entry() {
       )
     : tokens.data;
 
-  // const isSearching = search.toLowerCase().length > 1 ? <TokenListContainer /> : <TokenIconContainer />;
+  const isSearching = search.toLowerCase().length > 0;
 
   const submit = async (data: ImportTokenForm) => {
     try {
@@ -122,28 +122,28 @@ export default function Entry() {
             }}
           />
         </Div>
-        {/* {isSearching ? ( */}
-        <TokenListContainer>
-          <TokenList>
-            {filteredTokens.map((token) => (
-              <TokenItem key={token.address} item={token} />
-            ))}
-          </TokenList>
-        </TokenListContainer>
-        {/* ) : ( */}
-        <TokenIconContainer>
-          <TokenIconBox>
-            <TokensIcon />
-            <TokenIconText>
-              <Typography variant="h6">
-                {t('pages.Chain.Ethereum.Token.Add.Search.entry.tokenIconText1')}
-                <br />
-                {t('pages.Chain.Ethereum.Token.Add.Search.entry.tokenIconText2')}
-              </Typography>
-            </TokenIconText>
-          </TokenIconBox>
-        </TokenIconContainer>
-        {/* )} */}
+        {isSearching ? (
+          <TokenListContainer>
+            <TokenList>
+              {filteredTokens.map((token) => (
+                <TokenItem key={token.address} item={token} />
+              ))}
+            </TokenList>
+          </TokenListContainer>
+        ) : (
+          <TokenIconContainer>
+            <TokenIconBox>
+              <TokensIcon />
+              <TokenIconText>
+                <Typography variant="h6">
+                  {t('pages.Chain.Ethereum.Token.Add.Search.entry.tokenIconText1')}
+                  <br />
+                  {t('pages.Chain.Ethereum.Token.Add.Search.entry.tokenIconText2')}
+                </Typography>
+              </TokenIconText>
+            </TokenIconBox>
+          </TokenIconContainer>
+        )}
         <ButtonContainer>
           <Button type="submit" onClick={() => navigate('/wallet')} disabled={!isSubmitted}>
             {t('pages.Chain.Ethereum.Token.Add.Search.entry.submitButton')}
