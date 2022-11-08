@@ -33,14 +33,13 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
       setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0);
     }
   }, [remainder.open]);
-
   return (
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
         {recipientList.map((item) => {
           // eslint-disable-next-line prefer-destructuring
           const chainName = item.chainName;
-          const channelId = item.channelId ?? 'UNKNOWN';
+          const channelId = item.counterChannelId ?? 'UNKNOWN';
           const imgURL = item.imageURL;
           const isActive = selectedRecipientChain.baseDenom === item.baseDenom;
 
