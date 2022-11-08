@@ -23,7 +23,6 @@ export default function AddressBookBottomSheet({ selectedRecipientChain, onClick
 
   const { addressBook } = chromeStorage;
   const { navigate } = useNavigate();
-
   const filteredAddressBook = addressBook.filter((item) =>
     selectedRecipientChain ? item.chainId === selectedRecipientChain.id : item.chainId === currentChain.id,
   );

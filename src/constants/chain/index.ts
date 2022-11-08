@@ -70,6 +70,7 @@ export const LINE_TYPE = {
 
 export const COSMOS_DEFAULT_GAS = '100000';
 export const COSMOS_DEFAULT_SEND_GAS = '100000';
+export const COSMOS_DEFAULT_IBCSEND_GAS = '150000';
 export const COSMOS_DEFAULT_TRANSFER_GAS = '200000';
 
 export const COSMOS_CHAINS: CosmosChain[] = [

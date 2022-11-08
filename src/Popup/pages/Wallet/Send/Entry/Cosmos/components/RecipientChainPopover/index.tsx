@@ -2,11 +2,8 @@ import { useEffect, useRef } from 'react';
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
-import { COSMOS_CHAINS } from '~/constants/chain';
-import { AXELAR } from '~/constants/chain/cosmos/axelar';
 import Image from '~/Popup/components/common/Image';
-import type { CosmosChain } from '~/types/chain';
-import type { AssetV2 } from '~/types/cosmos/asset';
+import type { IBCCosmosChain } from '~/types/chain';
 
 import {
   CoinButton,
@@ -23,10 +20,9 @@ import {
 import Check16Icon from '~/images/icons/Check16.svg';
 
 type RecipientChainPopoverProps = Omit<PopoverProps, 'children'> & {
-  recipientList: AssetV2[];
-  selectedRecipientChain: AssetV2;
-  onClickChain?: (selectedRecipientChain: AssetV2) => void;
-  chain: CosmosChain;
+  recipientList: IBCCosmosChain[];
+  selectedRecipientChain: IBCCosmosChain;
+  onClickChain?: (selectedRecipientChain: IBCCosmosChain) => void;
 };
 
 export default function RecipientChainPopover({ selectedRecipientChain, onClickChain, onClose, recipientList, ...remainder }: RecipientChainPopoverProps) {
@@ -42,10 +38,11 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
         {recipientList.map((item) => {
-          const chainName = item.dp_denom.substring(0, 3) === 'axl' ? 'Axelar' : item.chain;
-          const channelId = item.channel ?? 'UNKNOWN';
-          const imgURL = item.dp_denom.substring(0, 3) === 'axl' ? AXELAR.imageURL : COSMOS_CHAINS.find((chain) => chain.chainName === item.chain)?.imageURL;
-          const isActive = selectedRecipientChain.base_denom === item.base_denom;
+          // eslint-disable-next-line prefer-destructuring
+          const chainName = item.chainName;
+          const channelId = item.channelId ?? 'UNKNOWN';
+          const imgURL = item.imageURL;
+          const isActive = selectedRecipientChain.baseDenom === item.baseDenom;
 
           return (
             <CoinButton

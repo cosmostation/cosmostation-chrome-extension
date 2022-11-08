@@ -27,5 +27,5 @@ export const OSMOSIS: CosmosChain = {
     low: '0.0025',
     average: '0.025',
   },
-  gas: { send: '100000' },
+  gas: { send: '100000', ibcSend: '130000' },
 };

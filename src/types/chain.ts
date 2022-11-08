@@ -28,6 +28,7 @@ export type GasRate = {
 
 export type Gas = {
   send?: string;
+  ibcSend?: string;
   transfer?: string;
 };
 
@@ -49,6 +50,8 @@ export type CosmosChain = {
   gas: Gas;
   cosmWasm?: boolean;
 } & CommonChain;
+
+export type IBCCosmosChain = CosmosChain & { channelId: string; counterChannelId: string; ibcDenom: string };
 
 export type CosmosCW20Token = {
   id: string;

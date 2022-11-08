@@ -1,16 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import _ from 'lodash';
-import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
+import { COSMOS_CHAINS, COSMOS_DEFAULT_IBCSEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
-import { AXELAR } from '~/constants/chain/cosmos/axelar';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
-import { JUNO } from '~/constants/chain/cosmos/juno';
 import { KI } from '~/constants/chain/cosmos/ki';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import { SIF } from '~/constants/chain/cosmos/sif';
@@ -25,6 +22,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
+import { useClientState } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
@@ -33,13 +31,11 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { get } from '~/Popup/utils/axios';
 import { fix, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
-import type { ibc } from '~/proto/ibc-v5.0.1';
-import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain';
+import type { CosmosChain, CosmosToken as BaseCosmosToken, IBCCosmosChain } from '~/types/chain';
 import type { AssetV2 } from '~/types/cosmos/asset';
 
 import {
@@ -87,7 +83,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const accounts = useAccounts(true);
   const allCosmosAssets = useAssetsSWR();
   const currentChainAssets = useAssetsSWR(chain);
-  const { enqueueSnackbar } = useSnackbar();
   const nodeInfo = useNodeInfoSWR(chain);
   const { enQueue } = useCurrentQueue();
   const params = useParams();
@@ -101,14 +96,14 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const isRecipientOpenPopover = Boolean(recipientPopoverAnchorEl);
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { decimals, gasRate } = chain;
+  const { decimals, gas, gasRate } = chain;
 
   const coinAll = useMemo(
     () => [
       {
         availableAmount: vestingRelatedAvailable,
         totalAmount,
-        type: 'staking',
+        coinType: 'staking',
         decimals: chain.decimals,
         imageURL: chain.imageURL,
         displayDenom: chain.displayDenom,
@@ -130,6 +125,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
       vestingRelatedAvailable,
     ],
   );
+
   const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(
     () => [
       ...coinAll.filter((item) => gt(item.availableAmount, '0')).map((item) => ({ ...item, type: TYPE.COIN })),
@@ -154,10 +150,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [availableCoinOrTokenList, currentCoinOrTokenId],
   );
 
-  // TODO 체인별로 요구하는 가스량이 어느정도인지 테스트 해보기
-  // FIXME hard-coding: 대다수의 앱에서 가스비를 130000으로 책정하여 이를 직접 할당하였음
-  // const sendGas = currentCoinOrToken.type === 'coin' ? gas.send || COSMOS_DEFAULT_SEND_GAS : gas.transfer || COSMOS_DEFAULT_TRANSFER_GAS;
-  const sendGas = '130000';
+  const sendGas = currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBCSEND_GAS : gas.transfer || COSMOS_DEFAULT_TRANSFER_GAS;
 
   const [currentGas, setCurrentGas] = useState(sendGas);
   const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
@@ -180,38 +173,41 @@ export default function IBCSend({ chain }: IBCSendProps) {
   );
   // SECTION - IBC send logic
   // FIXME - coin type이 token인 경우에 대한 ibc send 미구현 상태
-  // FIXME - 현재 기본 가스비가 부족해서 tx가 fail되도 스낵바로 success라고 뜨는 현상 발견 -> 해결 불가능
+  // REVIEW - 수신할 체인이 아예 없는, ibc send가 불가능한 케이스도 테스트해볼것
+  // NOTE - cw20 토큰은 ibc send가 완전히 다르니 우선 무시할것 ...
+
   // NOTE 현재 체인에서 가지고있는 ibc 코인을 ibc_send가 가능한 ibc코인의 List
-  const ibcPossibleChainList = currentChainAssets.data.filter((item) => item.counter_party);
+  const ibcPossibleChainList = currentChainAssets.data
+    .filter((item) => item.counter_party)
+    .map((item) => ({
+      ...item,
+      origin_chain: item.path ? item.path?.split('>').at(-2) ?? item.origin_chain : item.origin_chain,
+    }));
+
   const ibcPossibleChainListDenom = currentChainAssets.data.filter((item) => item.counter_party).map((item) => item.base_denom);
   // FIXME 변수명 정리
   // NOTE 현재 체인에서 가지고 있는 native coin을 수신 가능한 체인의 List
   const nativePossibleChainList = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
-      const nativeChainNameList = allCosmosAssets.data.filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom).map((item) => item.chain);
-
+      const nativeOkChainNameList = allCosmosAssets.data.filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom).map((item) => item.chain);
       const nativeOkChainList = allCosmosAssets.data.filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom);
-      const NativeChainList = currentChainAssets.data.filter(
-        // couter_party필드의 denom이 긴 값은 이미 수신 채널이 정의되어있는(그래비티, 주노)있기에 임시적으로 length값으로 필터링하였음
-        // (item) => nativeChainNameList.includes(item.origin_chain) && (item.counter_party?.denom.length as number) < 20,
-        (item) => nativeChainNameList.includes(item.origin_chain),
-      );
+      const NativeChainList = currentChainAssets.data.filter((item) => nativeOkChainNameList.includes(item.origin_chain));
       const nativeChainList = NativeChainList.map((item) => ({
         ...item,
         denom: nativeOkChainList.find((nativeChain) => nativeChain.chain === item.origin_chain)?.base_denom,
+        origin_chain: item.path ? item.path?.split('>').at(-2) ?? item.origin_chain : item.origin_chain,
       }));
 
       return nativeChainList;
     }
     return [];
   }, [allCosmosAssets.data, currentChainAssets.data, currentCoinOrToken]);
-  const coinInfos = availableCoinOrTokenList.filter((item) => item.type === 'coin') as CoinInfo[];
-  // NOTE 현재 보유중인 코인 중에서 available한 코인 리스트: native & ibc 구분
 
-  // FIXME coinall 에 새로 타입정의 해서 여기서 ibc 구분짓는 로직 삭제하면 될 듯
-  const availableIBCCoinList = coinInfos.filter((item) => item.baseDenom.substring(0, 3) === 'ibc');
-  const avaiableIBCCoinDisplayDenomList = availableIBCCoinList.map((item) => item.displayDenom);
-  const availableNativeCoinList = coinInfos.filter((item) => item.baseDenom.substring(0, 3) !== 'ibc');
+  // 이미 type이라는 필드명을 사용중이어서 'coinType'이라는 필드를 선언함
+  // NOTE 현재 보유중인 코인 중에서 available한 코인 리스트: native & ibc 구분
+  const coinInfos = availableCoinOrTokenList.filter((item) => item.type === 'coin') as CoinInfo[];
+  const availableIBCCoinList = coinInfos.filter((item) => item.coinType === 'ibc');
+  const availableNativeCoinList = coinInfos.filter((item) => item.coinType === 'staking' || item.coinType === 'native');
 
   // NOTE available한 IBC코인중 수신할 체인이 있는 available한 IBC코인리스트
   const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) =>
@@ -221,6 +217,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // NOTE 보유 available체인 중에서 수신할 체인이 있는지 체크가 된 보낼 코인 List
   const checkedAvailableCoinList = [...checkedAvailableIBCCoinList, ...checkedAvailableNativeCoinList];
 
+  // REVIEW 아예 타입을 COSMOS_CHAIN타입으로 변환하고 채널값만 더 추가하는 방향은 어떨까?
   // NOTE 선택한 코인을 수신 가능한 체인 리스트
   const recipientChainList = useMemo(() => {
     const nameMap = {
@@ -230,21 +227,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
       [SIF.baseDenom]: SIF.chainName,
       [KI.baseDenom]: KI.chainName,
     };
-    // const displayDenomMap = {
-    //   [EMONEY.chainName.toLowerCase()]: EMONEY.displayDenom,
-    //   [JUNO.chainName.toLowerCase()]: JUNO.displayDenom,
-    // };
     const baseDenomMap = {
       [EMONEY.chainName.toLowerCase()]: EMONEY.baseDenom,
-    };
-    const imgURLMap = {
-      [EMONEY.chainName.toLowerCase()]: EMONEY.imageURL,
-      [JUNO.chainName.toLowerCase()]: JUNO.imageURL,
     };
 
     if (currentCoinOrToken.type === 'coin') {
       // 선택 코인이 ibc일 경우
-      if (avaiableIBCCoinDisplayDenomList.includes(currentCoinOrToken.displayDenom)) {
+      if (currentCoinOrToken.coinType === 'ibc') {
         const ibcRecipientChainList = ibcPossibleChainList
           .filter((item) => item.dp_denom === currentCoinOrToken.displayDenom)
           .map(
@@ -252,10 +241,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
               ({
                 ...item,
                 chain: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
-                // dp_denom: displayDenomMap[item.origin_chain] ? displayDenomMap[item.origin_chain] : item.dp_denom,
                 base_denom: baseDenomMap[item.origin_chain] ? baseDenomMap[item.origin_chain] : item.base_denom,
                 channel: item.counter_party?.channel,
-                image: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
                 counter_party: { denom: chain.baseDenom, channel: item.channel, port: item.counter_party?.port },
               } as AssetV2),
           );
@@ -266,10 +253,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
           ({
             ...item,
             chain: nameMap[item.base_denom] ? nameMap[item.base_denom] : item.origin_chain.charAt(0).toUpperCase().concat(item.origin_chain.slice(1)),
-            // dp_denom: displayDenomMap[item.origin_chain] ? displayDenomMap[item.origin_chain] : item.dp_denom,
             base_denom: baseDenomMap[item.origin_chain] ? baseDenomMap[item.origin_chain] : item.base_denom,
             channel: item.counter_party?.channel,
-            image: imgURLMap[item.origin_chain] ? imgURLMap[item.origin_chain] : item.image,
             counter_party: { denom: chain.baseDenom, channel: item.channel, port: item.counter_party?.port },
           } as AssetV2),
       );
@@ -279,81 +264,42 @@ export default function IBCSend({ chain }: IBCSendProps) {
       return uniqueNativeRecipientChainList;
     }
     return [];
-  }, [
-    currentCoinOrToken.type,
-    currentCoinOrToken.displayDenom,
-    avaiableIBCCoinDisplayDenomList,
-    nativePossibleChainList,
-    ibcPossibleChainList,
-    chain.baseDenom,
-  ]);
+  }, [currentCoinOrToken, nativePossibleChainList, ibcPossibleChainList, chain.baseDenom]);
+  const rcListName = recipientChainList.map((item) => item.chain);
+  // TODO TYPE 선언하기
+  const recipientCosmosChainList = useMemo(
+    () =>
+      COSMOS_CHAINS.filter((item) => rcListName.includes(item.chainName)).map(
+        (item) =>
+          ({
+            ...item,
+            channelId: recipientChainList.find((item2) => item2.chain === item.chainName)?.channel,
+            counterChannelId: recipientChainList.find((item2) => item2.chain === item.chainName)?.counter_party?.channel,
+            ibcDenom: recipientChainList.find((item2) => item2.chain === item.chainName)?.denom,
+          } as IBCCosmosChain),
+      ),
+    [rcListName, recipientChainList],
+  );
   // NOTE 선택된 수신 체인
   // ANCHOR - 수신인
-  const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientChainList[0] ?? '');
+  const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientCosmosChainList[0] ?? '');
 
   useEffect(() => {
-    setSelectedRecipientChain(recipientChainList[0]);
+    setSelectedRecipientChain(recipientCosmosChainList[0]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCoinOrTokenId]);
 
-  // FIXME 여기 없으면 아예 안뜨게해야함
-  const selectedRecipientCosmosChain = useMemo(
-    () => COSMOS_CHAINS.find((item) => selectedRecipientChain?.chain === item.chainName),
-    [selectedRecipientChain?.chain],
-  );
-
-  const selectedRecipientChainIMG = selectedRecipientChain.dp_denom.substring(0, 3) === 'axl' ? AXELAR.imageURL : selectedRecipientCosmosChain?.imageURL ?? '';
-  const selectedRecipientChainChainName =
-    selectedRecipientChain.dp_denom.substring(0, 3) === 'axl' ? AXELAR.chainName : selectedRecipientCosmosChain?.chainName ?? '';
-  const selectedRecipientChainChannel = selectedRecipientChain.channel ?? '';
+  const selectedRecipientChainIMG = selectedRecipientChain?.imageURL ?? undefined;
+  const selectedRecipientChainChainName = selectedRecipientChain?.chainName ?? 'UNKNOWN';
+  const selectedRecipientChainChannel = selectedRecipientChain.channelId ?? 'UNKNOWN';
   const addressRegex = useMemo(
-    () => getCosmosAddressRegex(selectedRecipientCosmosChain?.bech32Prefix.address || '', [39]),
-    [selectedRecipientCosmosChain?.bech32Prefix.address],
+    () => getCosmosAddressRegex(selectedRecipientChain?.bech32Prefix.address || '', [39]),
+    [selectedRecipientChain?.bech32Prefix.address],
   );
-  // TODO error handling
-  const [timeoutHeight, setTimeoutHeight] = useState<ibc.core.client.v1.IHeight>();
-  // FIXME make it hook & imple new type for get타입 자체적으로 만들기 ,swr훅으로 만들기 // 필요한 값만 타입 (string으로 정의 해야함)정의해서 쓰기 //  balance 예시 참고
-  // 기존 가스타입에 ibc tx 용 필드 추가정의 (완벽한 기본 1500000)
 
-  // 해결
-  // 서쿨러 탭 텍스트 대문자 -> 소문자로 수정
-  // tx amount 위치 상단으로 올리기
-  // 수신 체인 팝업 툴팁 삭제
-  // (이거 disableRipple 값을 직접줬는데 이렇게 해도되는지...)서큘러탭바 클릭시 색깔 하얗게 나오는거 삭제
-  // 수신 체인 컨테이너 색 변경
-  // 팝오버 오픈 두개의 버튼이 동시 작동된다...
-  // 이더리움 레이아웃 분기 코드 작성하기 (유연성있게)
-
-  // 값 특정지을떄는 되도록 denom값으로 사용할 것
-  // FIXME timeoutHeight 널세이프티 조건 더 추가하기 아래 sign+anmino쪽 확인하기
-
-  // NOTE - cw20 토큰은 ibc send가 완전히 다르니 우선 무시할것 ...
-
-  // FIXME path 값 참조해서 체인가져올수있도록 구현하기, path 값 스필릿 하고 길이값 -2 해서 그 값을 체인으로 쓰자!
-  // COMSMOS_CHAIN이 최종값이 되도록 해야함
-  useEffect(() => {
-    const getTimeout = async () => {
-      const identifiedClientStateInfo =
-        await get<ibc.core.channel.v1.IQueryChannelClientStateResponse>(`https://lcd-osmosis.cosmostation.io/ibc/core/channel/v1/channels/${
-          selectedRecipientChain.counter_party?.channel ?? ''
-        }/ports/${selectedRecipientChain.port ?? ''}/client_state
-        `);
-      const clientState = identifiedClientStateInfo.identified_client_state?.client_state as ibc.lightclients.tendermint.v1.IClientState;
-      const timeoutHeightInfo = {
-        revision_number: clientState.latest_height?.revision_number ?? 0,
-        // parseInt + nullsafety
-        revision_height: clientState?.latest_height?.revision_height ? 1000 + +clientState.latest_height.revision_height : 0,
-      };
-
-      setTimeoutHeight(timeoutHeightInfo);
-    };
-    getTimeout().catch((e) => {
-      // FIXME 에러 스낵바 보다 다른 에러 캐치방식을 고려해보는게 좋다고 생각합니다.
-      // 이거는 훅에서 구현할 때는 삭제하기
-      const message = (e as { message?: string }).message ? (e as { message: string }).message : 'Failed';
-      enqueueSnackbar(message, { variant: 'error' });
-    });
-  }, [enqueueSnackbar, selectedRecipientChain.counter_party?.channel, selectedRecipientChain.port]);
+  const timeoutHeight = useClientState(selectedRecipientChain.counterChannelId ?? '');
+  const revisionHeight = String(1000 + parseInt(timeoutHeight.data?.timeoutHeight?.revision_height ?? '', 10));
+  const revisionNumber = timeoutHeight.data?.timeoutHeight?.revision_number;
 
   const feeCoins = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
@@ -566,8 +512,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
               type="button"
               disabled={!!errorMessage}
               onClick={async () => {
-                // FIXME timeoutHeight 널세이프티 조건 더 추가하기
-                if (currentCoinOrToken.type === 'coin') {
+                if (currentCoinOrToken.type === 'coin' && revisionNumber && revisionHeight) {
                   await enQueue({
                     messageId: '',
                     origin: '',
@@ -588,15 +533,15 @@ export default function IBCSend({ chain }: IBCSendProps) {
                               value: {
                                 receiver: currentAddress,
                                 sender: address,
-                                source_channel: selectedRecipientChain.counter_party?.channel,
-                                source_port: selectedRecipientChain.port,
+                                source_channel: selectedRecipientChain.counterChannelId,
+                                source_port: 'transfer',
                                 timeout_height: {
-                                  revision_height: String(timeoutHeight?.revision_height ? timeoutHeight?.revision_height : 0),
-                                  revision_number: timeoutHeight?.revision_number ? timeoutHeight?.revision_number : 0,
+                                  revision_height: revisionHeight,
+                                  revision_number: revisionNumber,
                                 },
                                 token: {
                                   amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
-                                  denom: selectedRecipientChain.denom,
+                                  denom: selectedRecipientChain.ibcDenom,
                                 },
                               },
                             },
@@ -658,7 +603,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
       <AddressBookBottomSheet
         open={isOpenedAddressBook}
-        selectedRecipientChain={selectedRecipientCosmosChain}
+        selectedRecipientChain={selectedRecipientChain}
         onClose={() => setIsOpenedAddressBook(false)}
         onClickAddress={(a) => {
           setCurrentAddress(a.address);
@@ -674,7 +619,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         coinOrTokenInfos={checkedAvailableCoinList}
         onClickCoinOrToken={(clickedCoinOrToken) => {
           setCurrentCoinOrTokenId(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.baseDenom : clickedCoinOrToken.address);
-          setSelectedRecipientChain(recipientChainList[0]);
+          setSelectedRecipientChain(recipientCosmosChainList[0]);
           setCurrentDisplayAmount('');
           setCurrentAddress('');
           setCurrentMemo('');
@@ -693,8 +638,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
       />
 
       <RecipientChainPopover
-        recipientList={recipientChainList}
-        chain={chain}
+        recipientList={recipientCosmosChainList}
         marginThreshold={0}
         selectedRecipientChain={selectedRecipientChain}
         onClickChain={(clickedChain) => {

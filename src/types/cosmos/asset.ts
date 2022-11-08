@@ -29,6 +29,7 @@ export type AssetV2 = {
   coinGeckoId?: string;
   counter_party?: CounterParty;
   port?: string;
+  path?: string;
 };
 
 export type AssetV2Payload = {
