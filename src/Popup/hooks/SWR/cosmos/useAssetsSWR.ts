@@ -4,6 +4,7 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { CRESCENT } from '~/constants/chain/cosmos/crescent';
+import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
@@ -22,6 +23,7 @@ const nameMap = {
   [CRESCENT.id]: 'crescent',
   [EMONEY.id]: 'emoney',
   [STAFIHUB.id]: 'stafi',
+  [CRYPTO_ORG.id]: 'crypto-org',
 };
 
 export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
