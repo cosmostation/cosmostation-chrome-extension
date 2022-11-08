@@ -8,15 +8,14 @@ import Check24Icon from '~/images/icons/Check24.svg';
 
 type TokenItemProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
   isActive?: boolean;
-  disabled?: boolean;
   name: string;
   symbol: string;
   imageURL?: string;
 };
 
-export default function TokenItem({ disabled, isActive = false, name, symbol, imageURL }: TokenItemProps) {
+export default function TokenItem({ isActive, name, symbol, imageURL }: TokenItemProps) {
   return (
-    <StyledButton disabled={disabled}>
+    <StyledButton>
       <LeftContainer>
         <LeftImageContainer>
           <Image src={imageURL} />

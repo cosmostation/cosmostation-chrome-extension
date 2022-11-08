@@ -37,13 +37,18 @@ import Info16Icon from '~/images/icons/Info16.svg';
 import Plus16Icon from '~/images/icons/Plus16.svg';
 
 export default function Entry() {
+  const tokens = useTokensSWR();
   const [search, setSearch] = useState('');
   const { importTokenForm } = useSchema();
   const { addEthereumToken } = useCurrentEthereumTokens();
+  const [check, setCheck] = useState('');
+
+  const onClickCheck = (selectToken: string) => {
+    setCheck(selectToken);
+  };
 
   const { t } = useTranslation();
   const { navigate } = useNavigate();
-  const tokens = useTokensSWR();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -125,9 +130,19 @@ export default function Entry() {
         {isSearching ? (
           <TokenListContainer>
             <TokenList>
-              {filteredTokens.map((token) => (
-                <TokenItem key={token.address} name={token.name} symbol={token.displayDenom} imageURL={token.imageURL} />
-              ))}
+              {filteredTokens.map((token) => {
+                const isActive = check === token.address;
+                return (
+                  <TokenItem
+                    key={token.address}
+                    name={token.name}
+                    symbol={token.displayDenom}
+                    imageURL={token.imageURL}
+                    onClick={() => onClickCheck}
+                    isActive={isActive}
+                  />
+                );
+              })}
             </TokenList>
           </TokenListContainer>
         ) : (
