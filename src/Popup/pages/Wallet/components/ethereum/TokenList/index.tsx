@@ -3,6 +3,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
 import AddButton from '~/Popup/components/AddButton';
+// import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -28,6 +29,7 @@ export default function TokenList() {
   const { t } = useTranslation();
 
   const { currentEthereumTokens, removeEthereumToken } = useCurrentEthereumTokens();
+  // const { data } = useTokensSWR();
 
   const isExistToken = !!currentEthereumTokens.length;
 
@@ -45,6 +47,7 @@ export default function TokenList() {
         <ListTitleRightContainer>
           {isExistToken && (
             <AddButton type="button" onClick={() => navigate('/chain/ethereum/token/add/search')}>
+              {/* (data === null ? navigate('/chain/ethereum/token/add/erc20') : navigate('/chain/ethereum/token/add/search')) */}
               {t('pages.Wallet.components.ethereum.TokenList.index.importTokenButton')}
             </AddButton>
           )}

@@ -130,19 +130,16 @@ export default function Entry() {
         {isSearching ? (
           <TokenListContainer>
             <TokenList>
-              {filteredTokens.map((token) => {
-                const isActive = check === token.address;
-                return (
-                  <TokenItem
-                    key={token.address}
-                    name={token.name}
-                    symbol={token.displayDenom}
-                    imageURL={token.imageURL}
-                    onClick={() => onClickCheck}
-                    isActive={isActive}
-                  />
-                );
-              })}
+              {filteredTokens.map((token) => (
+                <TokenItem
+                  key={token.address}
+                  name={token.name}
+                  symbol={token.displayDenom}
+                  imageURL={token.imageURL}
+                  onClick={() => onClickCheck}
+                  isActive={check === search}
+                />
+              ))}
             </TokenList>
           </TokenListContainer>
         ) : (
