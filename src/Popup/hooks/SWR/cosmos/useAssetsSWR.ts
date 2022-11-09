@@ -3,12 +3,15 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
 import { CRESCENT } from '~/constants/chain/cosmos/crescent';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
+import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { KAVA } from '~/constants/chain/cosmos/kava';
+import { KI } from '~/constants/chain/cosmos/ki';
 import { SIF } from '~/constants/chain/cosmos/sif';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { get } from '~/Popup/utils/axios';
@@ -24,6 +27,9 @@ const nameMap = {
   [EMONEY.id]: 'emoney',
   [STAFIHUB.id]: 'stafi',
   [CRYPTO_ORG.id]: 'crypto-org',
+  [KI.id]: 'ki-chain',
+  [ASSET_MANTLE.id]: 'asset-mantle',
+  [FETCH_AI.id]: 'fetchai',
 };
 
 export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
