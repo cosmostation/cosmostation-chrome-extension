@@ -137,7 +137,7 @@ export default function Entry() {
                   symbol={token.displayDenom}
                   imageURL={token.imageURL}
                   onClick={() => onClickCheck}
-                  isActive={check === search}
+                  isActive={check.length === search.length}
                 />
               ))}
             </TokenList>
