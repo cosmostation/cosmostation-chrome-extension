@@ -52,7 +52,6 @@ import {
   CoinRightContainer,
   Container,
   MarginTop8Div,
-  MarginTop12Div,
   MaxButton,
   StyledInput,
   StyledTextarea,
@@ -489,7 +488,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         />
       </MarginTop8Div>
 
-      <MarginTop12Div>
+      <MarginTop8Div>
         <Fee
           feeCoin={{ ...currentFeeCoin, originBaseDenom: currentFeeCoin.originBaseDenom }}
           gasRate={currentFeeGasRate}
@@ -499,7 +498,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           onChangeFee={(f) => setCurrentFeeAmount(f)}
           isEdit
         />
-      </MarginTop12Div>
+      </MarginTop8Div>
 
       <BottomContainer>
         <Tooltip varient="error" title={errorMessage} placement="top" arrow>

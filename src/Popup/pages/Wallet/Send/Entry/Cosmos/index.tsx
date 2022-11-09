@@ -45,8 +45,8 @@ export default function Cosmos({ chain }: CosmosProps) {
         </BackButton>
         <CircularTabContainer>
           <CircularTabs value={value} onChange={handleChange}>
-            <CircularTab disableRipple label={t('pages.Wallet.Send.Entry.Cosmos.index.send')} />
-            <CircularTab disableRipple label={t('pages.Wallet.Send.Entry.Cosmos.index.ibcSend')} />
+            <CircularTab label={t('pages.Wallet.Send.Entry.Cosmos.index.send')} />
+            <CircularTab label={t('pages.Wallet.Send.Entry.Cosmos.index.ibcSend')} />
           </CircularTabs>
         </CircularTabContainer>
       </TopContainer>

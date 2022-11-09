@@ -8,19 +8,18 @@ export const CircularStyledTabs = styled(Tabs)(({ theme }) => ({
     width: '17.2rem',
     height: '3.2rem',
     backgroundColor: theme.colors.base03,
-    display: 'flex',
-    alignItems: 'center',
     padding: '0.4rem',
   },
   '& .MuiTabs-indicator': {
-    minWidth: '0',
-    minHeight: '0',
-    // 중앙정렬 필요
-    top: '1.25rem',
     height: '2.4rem',
-    background: 'none',
     borderRadius: '5rem',
     backgroundColor: theme.accentColors.purple01,
+  },
+  '& .MuiTabs-flexContainer': {
+    height: '2.4rem',
+    columnGap: '0.2rem',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));
 
@@ -29,8 +28,7 @@ export const CircularStyledTab = styled(Tab)(({ theme }) => ({
   '&.MuiTab-root': {
     minWidth: '0',
     padding: '0',
-    width: '8.2rem',
-    height: '5rem',
+    width: '8rem',
     color: theme.colors.text02,
     fontFamily: theme.typography.h5.fontFamily,
     fontStyle: theme.typography.h5.fontStyle,
@@ -40,7 +38,7 @@ export const CircularStyledTab = styled(Tab)(({ theme }) => ({
     textTransform: 'capitalize',
     backgroundColor: 'transparent',
   },
-  '&.Mui-selected': { opacity: 1, color: theme.colors.text01, padding: '0' },
+  '&.Mui-selected': { opacity: 1, color: theme.colors.text01 },
 }));
 
 // REVIEW 기존 탭과 다르게 marginTop값을 주어 범용성이 떨어질 수 있음

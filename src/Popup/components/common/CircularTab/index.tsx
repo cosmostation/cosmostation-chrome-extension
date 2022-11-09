@@ -7,7 +7,7 @@ export function CircularTabs(props: TabsProps) {
 }
 
 export function CircularTab(props: TabProps) {
-  return <CircularStyledTab {...props} />;
+  return <CircularStyledTab disableRipple {...props} />;
 }
 
 type CircularTabPanelProps = {

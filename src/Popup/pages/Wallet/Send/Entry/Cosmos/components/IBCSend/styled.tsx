@@ -131,7 +131,3 @@ export const StyledTextarea = styled(Input)({});
 export const MarginTop8Div = styled('div')({
   marginTop: '0.8rem',
 });
-
-export const MarginTop12Div = styled('div')({
-  marginTop: '1.2rem',
-});
