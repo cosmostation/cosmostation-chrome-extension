@@ -1,19 +1,12 @@
 import { useMemo } from 'react';
 import Big from 'big.js';
 
-import { COSMOS_CHAINS } from '~/constants/chain';
-import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
-import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
-import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
-import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { KAVA } from '~/constants/chain/cosmos/kava';
-import { KI } from '~/constants/chain/cosmos/ki';
-import { SIF } from '~/constants/chain/cosmos/sif';
-import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useDelegationSWR } from '~/Popup/hooks/SWR/cosmos/useDelegationSWR';
 import { useRewardSWR } from '~/Popup/hooks/SWR/cosmos/useRewardSWR';
 import { plus } from '~/Popup/utils/big';
+import { convertCosmosToOriginName } from '~/Popup/utils/cosmos';
 import { getDelegatedVestingTotal, getVestingRelatedBalances, getVestingRemained } from '~/Popup/utils/cosmosVesting';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { Coin, CosmosChain } from '~/types/chain';
@@ -43,15 +36,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
   const balance = useBalanceSWR(chain, suspense);
   const incentive = useIncentiveSWR(chain, suspense);
   const assets = useAssetsSWR(chain, { suspense });
-  const nameMap = {
-    [CRYPTO_ORG.baseDenom]: CRYPTO_ORG.chainName,
-    [ASSET_MANTLE.baseDenom]: ASSET_MANTLE.chainName,
-    [GRAVITY_BRIDGE.baseDenom]: GRAVITY_BRIDGE.chainName,
-    [SIF.baseDenom]: SIF.chainName,
-    [KI.baseDenom]: KI.chainName,
-    [STAFIHUB.baseDenom]: STAFIHUB.chainName,
-    [FETCH_AI.baseDenom]: FETCH_AI.chainName,
-  };
+
   const nativeAssets: Coin[] = useMemo(
     () =>
       assets?.data
@@ -65,6 +50,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           decimals: item.decimal,
           imageURL: item.image ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.image}` : undefined,
           coinGeckoId: item.coinGeckoId,
+          originChain: item.path?.split('>').at(-2) || item.origin_chain,
         })) || [],
     [assets.data],
   );
@@ -103,11 +89,10 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           );
 
           const incentiveAmount = incentive?.data?.[coin.denom] || '0';
-
+          const originChainName = convertCosmosToOriginName(chain);
           return {
-            originChain:
-              nameMap[coinInfo.baseDenom] ??
-              COSMOS_CHAINS.find((cosmosChain) => cosmosChain.chainName.toLowerCase() === coinInfo.path?.split('>').at(-2))?.chainName,
+            originChain: originChainName,
+            // nameMap[coinInfo.baseDenom] || COSMOS_CHAINS.find((cosmosChain) => cosmosChain.chainName.toLowerCase() === coinInfo.originChain)?.chainName,
             coinType: coinInfo.type,
             decimals: coinInfo.decimals,
             baseDenom: coin.denom,
@@ -134,10 +119,12 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
       ?.filter((coin) => ibcAssets.map((item) => item.denom).includes(coin.denom))
       .map((coin) => {
         const coinInfo = ibcAssets.find((item) => item.denom === coin.denom)!;
+        const originChainName = convertCosmosToOriginName(chain);
+
         return {
-          originChain:
-            nameMap[coinInfo.base_denom] ??
-            COSMOS_CHAINS.find((cosmosChain) => cosmosChain.chainName.toLowerCase() === coinInfo.path?.split('>').at(-2))?.chainName,
+          originChain: originChainName,
+          // nameMap[coinInfo.base_denom] ??
+          // COSMOS_CHAINS.find((cosmosChain) => cosmosChain.chainName.toLowerCase() === coinInfo.path?.split('>').at(-2))?.chainName,
           coinType: coinInfo.type,
           decimals: coinInfo?.decimal,
           originBaseDenom: coinInfo?.base_denom,

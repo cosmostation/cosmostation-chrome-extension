@@ -92,6 +92,7 @@ export type Coin = {
   imageURL?: string;
   coinGeckoId?: string;
   path?: string;
+  originChain?: string;
 };
 
 export type FeeCoin = {

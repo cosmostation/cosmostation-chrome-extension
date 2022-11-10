@@ -23,14 +23,14 @@ type DropdownButtonProps = {
   leftHeaderTitle?: string;
   isOpenPopover?: boolean;
   decimals?: number;
-  setPopoverAnchorEl: (currentTarget: EventTarget & HTMLButtonElement) => void;
+  onClickDropdown: (currentTarget: EventTarget & HTMLButtonElement) => void;
 };
-export default function DropdownButton({ imgSrc, setPopoverAnchorEl, isOpenPopover, title, leftSubTitle, leftHeaderTitle, decimals }: DropdownButtonProps) {
+export default function DropdownButton({ imgSrc, onClickDropdown, isOpenPopover, title, leftSubTitle, leftHeaderTitle, decimals }: DropdownButtonProps) {
   return (
     <DropdownContainerButton
       type="button"
       onClick={(event) => {
-        setPopoverAnchorEl(event.currentTarget);
+        onClickDropdown(event.currentTarget);
       }}
     >
       <DropdownLeftContainer>

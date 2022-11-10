@@ -22,7 +22,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
-import { useClientState } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
+import { useClientStateSWR } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
@@ -110,7 +110,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
       vestingRelatedAvailable,
     ],
   );
-
   const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(
     () => [
       ...coinAll.filter((item) => gt(item.availableAmount, '0')).map((item) => ({ ...item, type: TYPE.COIN })),
@@ -197,12 +196,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // 이미 type이라는 필드명을 사용중이어서 'coinType'이라는 필드를 선언함
   // NOTE 현재 보유중인 코인 중에서 available한 코인 리스트: native & ibc 구분
   const coinInfos = availableCoinOrTokenList.filter((item) => item.type === 'coin') as CoinInfo[];
-  const availableIBCCoinList = coinInfos.filter((item) => item.coinType === 'ibc') ?? [];
-  const availableNativeCoinList = coinInfos.filter((item) => item.coinType === 'staking' || item.coinType === 'native') ?? [];
+  const availableIBCCoinList = coinInfos.filter((item) => item.coinType === 'ibc') || [];
+  const availableNativeCoinList = coinInfos.filter((item) => item.coinType === 'staking' || item.coinType === 'native') || [];
 
   // NOTE available한 IBC코인중 수신할 체인이 있는 available한 IBC코인리스트
   const cosmosChainNameList = COSMOS_CHAINS.map((item) => item.chainName);
-  const ibcPossibleChainListDenom = currentChainAssets.data.filter((item) => item.counter_party).map((item) => item.base_denom);
+  const ibcPossibleChainListDenom = ibcPossibleChainList.map((item) => item.base_denom);
   const checkedAvailableIBCCoinList = availableIBCCoinList.filter(
     (item) =>
       item.originBaseDenom
@@ -210,9 +209,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
         : [],
     // item.originBaseDenom ? ibcPossibleChainListDenom.includes(item.originBaseDenom) : [],
   );
-  const checkedAvailableNativeCoinList = availableNativeCoinList
-    ? availableNativeCoinList.filter((item) => cosmosChainNameList.includes(item.originChain ? item.originChain : '') && nativePossibleChainList)
-    : [];
+
+  const checkedAvailableNativeCoinList =
+    availableNativeCoinList.filter((item) => cosmosChainNameList.includes(item.originChain ? item.originChain : '') && nativePossibleChainList) || [];
   // const checkedAvailableNativeCoinList = nativePossibleChainList ? [...availableNativeCoinList] : [];
   // NOTE 보유 available체인 중에서 수신할 체인이 있는지 체크가 된 보낼 코인 List
   const checkedAvailableCoinList = [...checkedAvailableIBCCoinList, ...checkedAvailableNativeCoinList];
@@ -274,12 +273,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
             ibcDenom: recipientChainList.find((recipientChain) => recipientChain.chain === item.chainName)?.denom,
           } as IBCCosmosChain),
       ),
-    [recipientChainNameList, recipientChainList],
+    [recipientChainList, recipientChainNameList],
   );
 
   // NOTE 선택된 수신 체인
   // ANCHOR - 수신인
   const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientCosmosChainList ? recipientCosmosChainList[0] : undefined);
+
   // NOTE 코인 재선택시 자동으로 수신 체인 리스트 변경 반영
   useEffect(() => {
     setSelectedRecipientChain(recipientCosmosChainList[0]);
@@ -287,6 +287,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   }, [currentCoinOrTokenId]);
 
   const selectedRecipientChainChainName = selectedRecipientChain?.chainName ?? 'UNKNOWN';
+
   const selectedRecipientChainChannel = selectedRecipientChain?.channelId ?? 'UNKNOWN';
 
   const addressRegex = useMemo(
@@ -296,8 +297,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const currentChainAssetName = currentChainAssets.data.find((item) => item.base_denom === chain.baseDenom)?.origin_chain ?? chain.chainName.toLowerCase();
 
-  const timeoutHeight = useClientState(currentChainAssetName, selectedRecipientChain?.channelId ?? '');
-  const revisionHeight = String(1000 + parseInt(timeoutHeight.data?.timeoutHeight?.revision_height ?? '', 10));
+  const timeoutHeight = useClientStateSWR(currentChainAssetName, selectedRecipientChain?.channelId || '');
+  const revisionHeight = String(1000 + parseInt(timeoutHeight.data?.timeoutHeight?.revision_height || '', 10));
   const revisionNumber = timeoutHeight.data?.timeoutHeight?.revision_number;
 
   const feeCoins = useMemo(() => {
@@ -380,13 +381,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
     t,
     timeoutHeight,
   ]);
-  // TODO length보단 .empty같은 함수 찾기 & Token일경우도 예외처리
-  // TODO 순간적으로 unknown이 보이는데 이건 우짜쓰까잉
-  if (recipientCosmosChainList.length < 1) {
+
+  if (checkedAvailableCoinList.length > 1 && recipientCosmosChainList.length < 1) {
     setCurrentCoinOrTokenId(checkedAvailableCoinList[0].baseDenom);
   }
 
-  if (recipientChainList.length === 0) {
+  if (recipientCosmosChainList.length === 0) {
     return (
       <Container>
         <MarginTop8Div>No Recipient Chain</MarginTop8Div>
@@ -403,7 +403,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
           isOpenPopover={isOpenPopover}
           decimals={currentDisplayMaxDecimals}
-          setPopoverAnchorEl={setPopoverAnchorEl}
+          onClickDropdown={(currentTarget) => setPopoverAnchorEl(currentTarget)}
         />
       </MarginTop8Div>
       <MarginTop8Div>
@@ -412,7 +412,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           title={selectedRecipientChainChainName}
           leftHeaderTitle={selectedRecipientChainChannel}
           isOpenPopover={isRecipientOpenPopover}
-          setPopoverAnchorEl={setRecipientPopoverAnchorEl}
+          onClickDropdown={(currentTarget) => setRecipientPopoverAnchorEl(currentTarget)}
         />
       </MarginTop8Div>
       <MarginTop8Div>

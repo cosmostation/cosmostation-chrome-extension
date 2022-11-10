@@ -246,7 +246,7 @@ export default function Send({ chain }: CosmosProps) {
           leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
           isOpenPopover={isOpenPopover}
           decimals={currentDisplayMaxDecimals}
-          setPopoverAnchorEl={setPopoverAnchorEl}
+          onClickDropdown={(currentTarget) => setPopoverAnchorEl(currentTarget)}
         />
       </MarginTop8Div>
       <MarginTop8Div>

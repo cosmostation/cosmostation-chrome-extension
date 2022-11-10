@@ -4,8 +4,8 @@ import useSWR from 'swr';
 import { get, isAxiosError } from '~/Popup/utils/axios';
 import type { ClientStatePayload } from '~/types/cosmos/clientState';
 
-export function useClientState(chainName: string, channelId: string, suspense?: boolean) {
-  const requestURL = `https://lcd-${chainName}.cosmostation.io/ibc/core/channel/v1/channels/${channelId}/ports/transfer/client_state
+export function useClientStateSWR(chainName?: string, channelId?: string, suspense?: boolean) {
+  const requestURL = `https://lcd-${chainName || ''}.cosmostation.io/ibc/core/channel/v1/channels/${channelId || ''}/ports/transfer/client_state
   `;
   const fetcher = async (fetchUrl: string) => {
     try {
@@ -26,7 +26,7 @@ export function useClientState(chainName: string, channelId: string, suspense?: 
     refreshInterval: 15000,
     errorRetryCount: 0,
     suspense,
-    isPaused: () => !channelId && !chainName,
+    isPaused: () => !channelId || !chainName,
   });
   const returnData = data ? { timeoutHeight: data.identified_client_state?.client_state?.latest_height } : undefined;
 

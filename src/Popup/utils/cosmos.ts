@@ -7,8 +7,17 @@ import sortKeys from 'sort-keys';
 import TinySecp256k1 from 'tiny-secp256k1';
 import { keccak256 } from '@ethersproject/keccak256';
 
+import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
+import { CRESCENT } from '~/constants/chain/cosmos/crescent';
+import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
+import { EMONEY } from '~/constants/chain/cosmos/emoney';
+import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
+import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { KAVA } from '~/constants/chain/cosmos/kava';
+import { KI } from '~/constants/chain/cosmos/ki';
+import { SIF } from '~/constants/chain/cosmos/sif';
+import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
@@ -114,4 +123,42 @@ export function isAminoExecuteContract(msg: Msg): msg is Msg<MsgExecuteContract>
 
 export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {
   return true;
+}
+
+export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
+  const nameMap = {
+    [CRYPTO_ORG.id]: 'crypto-org',
+    [ASSET_MANTLE.id]: 'asset-mantle',
+    [GRAVITY_BRIDGE.id]: 'gravity-bridge',
+    [SIF.id]: 'sifchain',
+    [KI.id]: 'ki-chain',
+    [STAFIHUB.id]: 'stafi',
+    [FETCH_AI.id]: 'fetchai',
+    [INJECTIVE.id]: 'injective',
+    [KAVA.id]: 'kava',
+    [CRESCENT.id]: 'crescent',
+    [EMONEY.id]: 'emoney',
+  };
+  // const returnCosmos = {...cosmosChain, chainName: nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase()}
+  const returnCosmos = nameMap[cosmosChain.chainId] || cosmosChain.chainName.toLowerCase();
+  return returnCosmos;
+}
+
+export function convertCosmosToOriginName(cosmosChain: CosmosChain) {
+  const nameMap = {
+    [CRYPTO_ORG.id]: CRYPTO_ORG.chainName,
+    [ASSET_MANTLE.id]: ASSET_MANTLE.chainName,
+    [GRAVITY_BRIDGE.id]: GRAVITY_BRIDGE.chainName,
+    [SIF.id]: SIF.chainName,
+    [KI.id]: KI.chainName,
+    [STAFIHUB.id]: STAFIHUB.chainName,
+    [FETCH_AI.id]: FETCH_AI.chainName,
+    [INJECTIVE.id]: INJECTIVE.chainName,
+    [KAVA.id]: KAVA.chainName,
+    [CRESCENT.id]: CRESCENT.chainName,
+    [EMONEY.id]: EMONEY.chainName,
+  };
+  // const returnCosmos = {...cosmosChain, chainName: nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase()}
+  const returnCosmos = nameMap[cosmosChain.chainId] || cosmosChain.chainName;
+  return returnCosmos;
 }
