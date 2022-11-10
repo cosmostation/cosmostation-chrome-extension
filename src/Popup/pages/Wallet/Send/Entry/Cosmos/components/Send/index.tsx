@@ -6,9 +6,8 @@ import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_D
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
+import DropdownButton from '~/Popup/components/common/DropdownButton';
 import IconButton from '~/Popup/components/common/IconButton';
-import Image from '~/Popup/components/common/Image';
-import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
@@ -28,27 +27,10 @@ import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain';
 
-import {
-  BottomContainer,
-  CoinButton,
-  CoinLeftAvailableContainer,
-  CoinLeftContainer,
-  CoinLeftDisplayDenomContainer,
-  CoinLeftImageContainer,
-  CoinLeftInfoContainer,
-  CoinRightContainer,
-  Container,
-  MarginTop8Div,
-  MarginTop12Div,
-  MarginTop16Div,
-  MaxButton,
-  StyledInput,
-  StyledTextarea,
-} from './styled';
+import { BottomContainer, Container, MarginTop8Div, MarginTop12Div, MarginTop16Div, MaxButton, StyledInput, StyledTextarea } from './styled';
 import CoinOrTokenPopover from '../CoinOrTokenPopover';
 
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
-import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
 
 export const TYPE = {
   COIN: 'coin',
@@ -95,7 +77,6 @@ export default function Send({ chain }: CosmosProps) {
         displayDenom: chain.displayDenom,
         baseDenom: chain.baseDenom,
         coinGeckoId: chain.coinGeckoId,
-        coinType: 'staking',
       },
       ...coinList.coins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
       ...coinList.ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
@@ -258,36 +239,15 @@ export default function Send({ chain }: CosmosProps) {
         />
       </div>
       <MarginTop8Div>
-        <CoinButton
-          type="button"
-          onClick={(event) => {
-            setPopoverAnchorEl(event.currentTarget);
-          }}
-        >
-          <CoinLeftContainer>
-            <CoinLeftImageContainer>
-              <Image src={currentCoinOrToken.imageURL} />
-            </CoinLeftImageContainer>
-            <CoinLeftInfoContainer>
-              <CoinLeftDisplayDenomContainer>
-                <Typography variant="h5">{currentCoinOrTokenDisplayDenom}</Typography>
-              </CoinLeftDisplayDenomContainer>
-              <CoinLeftAvailableContainer>
-                <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.index.available')} :</Typography>{' '}
-                <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
-                  <span>
-                    <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
-                      {currentCoinOrTokenDisplayAvailableAmount}
-                    </Number>
-                  </span>
-                </Tooltip>
-              </CoinLeftAvailableContainer>
-            </CoinLeftInfoContainer>
-          </CoinLeftContainer>
-          <CoinRightContainer data-is-active={isOpenPopover ? 1 : 0}>
-            <BottomArrow24Icon />
-          </CoinRightContainer>
-        </CoinButton>
+        <DropdownButton
+          imgSrc={currentCoinOrToken.imageURL}
+          title={currentCoinOrTokenDisplayDenom}
+          leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.index.available')}
+          leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
+          isOpenPopover={isOpenPopover}
+          decimals={currentDisplayMaxDecimals}
+          setPopoverAnchorEl={setPopoverAnchorEl}
+        />
       </MarginTop8Div>
       <MarginTop8Div>
         <StyledInput

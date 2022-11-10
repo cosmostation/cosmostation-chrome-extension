@@ -21,7 +21,7 @@ import Check16Icon from '~/images/icons/Check16.svg';
 
 type RecipientChainPopoverProps = Omit<PopoverProps, 'children'> & {
   recipientList: IBCCosmosChain[];
-  selectedRecipientChain: IBCCosmosChain;
+  selectedRecipientChain?: IBCCosmosChain;
   onClickChain?: (selectedRecipientChain: IBCCosmosChain) => void;
 };
 
@@ -41,7 +41,7 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
           const chainName = item.chainName;
           const channelId = item.channelId ?? 'UNKNOWN';
           const imgURL = item.imageURL;
-          const isActive = selectedRecipientChain.baseDenom === item.baseDenom;
+          const isActive = selectedRecipientChain?.baseDenom === item.baseDenom;
 
           return (
             <ChainButton

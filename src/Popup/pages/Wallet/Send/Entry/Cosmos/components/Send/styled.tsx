@@ -32,67 +32,6 @@ export const MaxButton = styled('button')(({ theme }) => ({
   },
 }));
 
-export const CoinButton = styled('button')(({ theme }) => ({
-  backgroundColor: theme.colors.base02,
-  border: `0.1rem solid ${theme.colors.base03}`,
-
-  borderRadius: '0.8rem',
-
-  padding: '0.8rem 1.2rem 0.6rem 1.2rem',
-
-  height: '4.8rem',
-  width: '100%',
-
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-
-  cursor: 'pointer',
-}));
-
-export const CoinLeftContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-});
-
-export const CoinLeftImageContainer = styled('div')({
-  '& > img': {
-    width: '2.4rem',
-    height: '2.4rem',
-  },
-});
-
-export const CoinLeftInfoContainer = styled('div')({
-  marginLeft: '0.8rem',
-});
-
-export const CoinLeftDisplayDenomContainer = styled('div')(({ theme }) => ({
-  textAlign: 'left',
-  color: theme.colors.text01,
-}));
-
-export const CoinLeftAvailableContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text02,
-}));
-
-type CoinRightContainerProps = {
-  'data-is-active'?: number;
-};
-
-export const CoinRightContainer = styled('div')<CoinRightContainerProps>(({ theme, ...props }) => ({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
-
-  '& > svg': {
-    transform: props['data-is-active'] ? 'rotate(180deg)' : 'none',
-    '& > path': {
-      stroke: theme.colors.base06,
-    },
-  },
-}));
-
 export const BottomContainer = styled('div')({
   position: 'absolute',
 

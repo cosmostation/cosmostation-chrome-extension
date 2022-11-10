@@ -91,6 +91,7 @@ export type Coin = {
   displayDenom: string;
   imageURL?: string;
   coinGeckoId?: string;
+  path?: string;
 };
 
 export type FeeCoin = {
