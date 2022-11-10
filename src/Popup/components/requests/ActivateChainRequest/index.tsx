@@ -65,7 +65,7 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
     }
 
     if (aptosPopupMethods.includes(currentQueue?.message?.method || '') && !allowedChains.includes(APTOS.chainName)) {
-      return ETHEREUM;
+      return APTOS;
     }
 
     return undefined;
