@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { InputAdornment, Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
+import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
@@ -26,6 +28,7 @@ import {
   WarningIconContainer,
   WarningTextContainer,
 } from './styled';
+import type { ImportTokenForm } from '../useSchema';
 
 import Info16Icon from '~/images/icons/Info16.svg';
 import Plus16Icon from '~/images/icons/Plus16.svg';
@@ -33,9 +36,9 @@ import Plus16Icon from '~/images/icons/Plus16.svg';
 export default function Entry() {
   const tokens = useTokensSWR();
   const [search, setSearch] = useState('');
-
+  const { addEthereumToken } = useCurrentEthereumTokens();
   // 초기 값 => 새로운 값으로 업데이트
-  const [check, setCheck] = useState(0);
+  const [check, setCheck] = useState<number>();
 
   const { t } = useTranslation();
   const { navigate } = useNavigate();
@@ -47,6 +50,31 @@ export default function Entry() {
     : tokens.data;
 
   const isSearching = search.toLowerCase().length > 0;
+
+  const {
+    handleSubmit,
+    reset,
+    formState: { isSubmitted },
+  } = useForm<ImportTokenForm>({ mode: 'onSubmit', reValidateMode: 'onSubmit' });
+
+  const submit = async (data: ImportTokenForm) => {
+    try {
+      const checkedToken = tokens.data.find((item) => item.address.toLowerCase() === data.address.toLowerCase());
+      const searchedToken = checkedToken
+        ? {
+            address: checkedToken.address,
+            displayDenom: checkedToken.displayDenom,
+            decimals: checkedToken.decimals,
+            imageURL: checkedToken.imageURL,
+            coinGeckoId: checkedToken.coinGeckoId,
+          }
+        : data;
+
+      await addEthereumToken({ ...searchedToken, tokenType: 'ERC20' });
+    } finally {
+      reset();
+    }
+  };
 
   return (
     <Container>
@@ -91,7 +119,10 @@ export default function Entry() {
                 name={token.name}
                 symbol={token.displayDenom}
                 imageURL={token.imageURL}
-                onClick={() => setCheck(index)}
+                onClick={() => {
+                  setCheck(index);
+                  handleSubmit(submit);
+                }}
                 isActive={index === check}
               />
             ))}
@@ -112,7 +143,13 @@ export default function Entry() {
         </TokenIconContainer>
       )}
       <ButtonContainer>
-        <Button type="button" onClick={() => navigate('/wallet')} disabled={!setCheck}>
+        <Button
+          type="submit"
+          onClick={() => {
+            navigate('/wallet');
+          }}
+          disabled={!isSubmitted}
+        >
           {t('pages.Chain.Ethereum.Token.Add.Search.entry.submitButton')}
         </Button>
       </ButtonContainer>
