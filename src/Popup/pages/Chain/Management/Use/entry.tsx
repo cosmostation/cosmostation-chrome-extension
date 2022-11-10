@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack';
 import { InputAdornment } from '@mui/material';
 
 import { APTOS_CHAINS, APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import Divider from '~/Popup/components/common/Divider';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -175,7 +176,7 @@ export default function Entry() {
                 onChange: (_, checked) => {
                   void handleOnChangeAptosNetwork(checked, network);
                 },
-                disabled: !allowedChainIds.includes(ETHEREUM.id),
+                disabled: !allowedChainIds.includes(APTOS.id),
               }}
             >
               {network.networkName}
