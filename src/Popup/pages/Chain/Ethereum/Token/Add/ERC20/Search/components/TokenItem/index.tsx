@@ -6,17 +6,17 @@ import { LeftContainer, LeftImageContainer, LeftTextChainContainer, LeftTextCont
 
 import Check24Icon from '~/images/icons/Check24.svg';
 
-type TokenItemProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
-  // isActive?: boolean;
+type TokenItemProps = {
   name: string;
   symbol: string;
   imageURL?: string;
+  onClick?: () => void;
   isActive: boolean;
 };
 
-export default function TokenItem({ isActive, name, symbol, imageURL }: TokenItemProps) {
+export default function TokenItem({ onClick, isActive, name, symbol, imageURL }: TokenItemProps) {
   return (
-    <StyledButton onClick={() => isActive}>
+    <StyledButton type="button" onClick={() => onClick}>
       <LeftContainer>
         <LeftImageContainer>
           <Image src={imageURL} />

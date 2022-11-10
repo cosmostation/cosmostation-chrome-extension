@@ -33,6 +33,8 @@ export default function TokenList() {
 
   const isExistToken = !!currentEthereumTokens.length;
 
+  const addToken = () => navigate(data.length > 0 ? '/chain/ethereum/token/add/search' : '/chain/ethereum/token/add/erc20');
+
   return (
     <Container>
       <ListTitleContainer>
@@ -46,10 +48,7 @@ export default function TokenList() {
         </ListTitleLeftContainer>
         <ListTitleRightContainer>
           {isExistToken && (
-            <AddButton
-              type="button"
-              onClick={() => (data.length > 5 ? navigate('/chain/ethereum/token/add/search') : navigate('/chain/ethereum/token/add/erc20'))}
-            >
+            <AddButton type="button" onClick={addToken}>
               {t('pages.Wallet.components.ethereum.TokenList.index.importTokenButton')}
             </AddButton>
           )}
@@ -78,7 +77,7 @@ export default function TokenList() {
             );
           })
         ) : (
-          <AddTokenButton type="button" onClick={() => navigate('/chain/ethereum/token/add/search')}>
+          <AddTokenButton type="button" onClick={addToken}>
             <Plus16Icon />
             <AddTokenTextContainer>
               <Typography variant="h6">{t('pages.Wallet.components.ethereum.TokenList.index.importTokenButton')}</Typography>
