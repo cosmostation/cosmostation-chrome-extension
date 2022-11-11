@@ -2,7 +2,7 @@ import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { getAddress as getAptosAddress } from '~/Popup/utils/aptos';
 import { getAddress as getBech32Address, getAddressForEthermint } from '~/Popup/utils/cosmos';
-import { aesDecrypt, mnemonicToAptosPair, mnemonicToPair, privateKeyToPair } from '~/Popup/utils/crypto';
+import { aesDecrypt, mnemonicToAptosPair, mnemonicToPair, privateKeyToAptosPair, privateKeyToPair } from '~/Popup/utils/crypto';
 import { getAddress as getEthereumAddress } from '~/Popup/utils/ethereum';
 import type { Chain } from '~/types/chain';
 import type { Account } from '~/types/chromeStorage';
@@ -45,8 +45,12 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
   }
 
   if (account.type === 'PRIVATE_KEY') {
-    const privateKey = aesDecrypt(account.encryptedPrivateKey, password);
-    return privateKeyToPair(Buffer.from(privateKey, 'hex'));
+    const privateKey = Buffer.from(aesDecrypt(account.encryptedPrivateKey, password), 'hex');
+
+    if (chain.line === 'APTOS') {
+      return privateKeyToAptosPair(privateKey);
+    }
+    return privateKeyToPair(privateKey);
   }
 
   if (account.type === 'LEDGER') {

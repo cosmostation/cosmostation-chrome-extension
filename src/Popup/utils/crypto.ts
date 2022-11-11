@@ -72,3 +72,10 @@ export function privateKeyToPair(privateKey: Buffer) {
 
   return { privateKey, publicKey: ecpair.publicKey };
 }
+
+export function privateKeyToAptosPair(privateKey: Buffer) {
+  const account = new AptosAccount(privateKey);
+  const publicKey = Buffer.from(account.pubKey().toUint8Array());
+
+  return { privateKey, publicKey };
+}
