@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { InputAdornment, Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
@@ -51,14 +50,8 @@ export default function Entry() {
 
   const isSearching = search.toLowerCase().length > 0;
 
-  const {
-    handleSubmit,
-    reset,
-    formState: { isSubmitted },
-  } = useForm<ImportTokenForm>({ mode: 'onSubmit', reValidateMode: 'onSubmit' });
-
-  const submit = async (data: ImportTokenForm) => {
-    try {
+  const handelCheck = async (checked: boolean, data: ImportTokenForm) => {
+    if (checked) {
       const checkedToken = tokens.data.find((item) => item.address.toLowerCase() === data.address.toLowerCase());
       const searchedToken = checkedToken
         ? {
@@ -71,8 +64,6 @@ export default function Entry() {
         : data;
 
       await addEthereumToken({ ...searchedToken, tokenType: 'ERC20' });
-    } finally {
-      reset();
     }
   };
 
@@ -121,7 +112,7 @@ export default function Entry() {
                 imageURL={token.imageURL}
                 onClick={() => {
                   setCheck(index);
-                  handleSubmit(submit);
+                  void handelCheck(true, token);
                 }}
                 isActive={index === check}
               />
@@ -148,7 +139,6 @@ export default function Entry() {
           onClick={() => {
             navigate('/wallet');
           }}
-          disabled={!isSubmitted}
         >
           {t('pages.Chain.Ethereum.Token.Add.Search.entry.submitButton')}
         </Button>
