@@ -20,12 +20,20 @@ import {
 import Check16Icon from '~/images/icons/Check16.svg';
 
 type RecipientChainPopoverProps = Omit<PopoverProps, 'children'> & {
+  currentCoinType?: string;
   recipientList: IBCCosmosChain[];
   selectedRecipientChain?: IBCCosmosChain;
   onClickChain?: (selectedRecipientChain: IBCCosmosChain) => void;
 };
 
-export default function RecipientChainPopover({ selectedRecipientChain, onClickChain, onClose, recipientList, ...remainder }: RecipientChainPopoverProps) {
+export default function RecipientChainPopover({
+  currentCoinType,
+  selectedRecipientChain,
+  onClickChain,
+  onClose,
+  recipientList,
+  ...remainder
+}: RecipientChainPopoverProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -39,7 +47,7 @@ export default function RecipientChainPopover({ selectedRecipientChain, onClickC
         {recipientList.map((item) => {
           // eslint-disable-next-line prefer-destructuring
           const chainName = item.chainName;
-          const channelId = item.channelId ?? 'UNKNOWN';
+          const channelId = currentCoinType === 'ibc' ? item.channelId : item.counterChannelId;
           const imgURL = item.imageURL;
           const isActive = selectedRecipientChain?.baseDenom === item.baseDenom;
 

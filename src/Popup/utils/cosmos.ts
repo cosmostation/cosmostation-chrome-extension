@@ -150,9 +150,9 @@ export function convertCosmosToOriginName(chainName: string) {
     'asset-mantle': ASSET_MANTLE,
     'gravity-bridge': GRAVITY_BRIDGE,
     'crypto-org': CRYPTO_ORG,
-    cryptoorg: CRYPTO_ORG,
+    // cryptoorg: CRYPTO_ORG,
     'ki-chain': KI,
-    kichain: KI,
+    // kichain: KI,
     fetchai: FETCH_AI,
     sifchain: SIF,
   } as Record<string, CosmosChain | undefined>;

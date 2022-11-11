@@ -35,14 +35,14 @@ export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
           if (item.counter_party && item.path) {
             const splitedPath = item.path.split('>');
 
-            return splitedPath[splitedPath.length - 2];
+            return chain ? splitedPath[splitedPath.length - 2] : splitedPath[splitedPath.length - 1];
           }
 
           return '';
         })();
         return { ...item, prevChain };
       }) || [],
-    [data?.assets],
+    [chain, data?.assets],
   );
 
   const returnData = useMemo(() => (mappingName ? assets.filter((item) => item.chain === mappingName) : assets), [assets, mappingName]);

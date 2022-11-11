@@ -233,20 +233,33 @@ export default function IBCSend({ chain }: IBCSendProps) {
     return [];
   }, [currentCoinOrToken, ibcPossibleChainList, nativePossibleChainList]);
 
+  // FIXME recipientChainList의 path맨 뒷값을 사용하도록 하자
+  // 36개
+  // const recipientpathlastname = recipientChainList.map((item) => item.path?.split('>').at(-1));
+  // const recipientChainNameList = recipientpathlastname.map((item) => (item ? convertCosmosToOriginName(item)?.chainName : ''));
+  // const recipientChainNameListsample = recipientChainList.map((item) => (item ? convertCosmosToOriginName(item.chain)?.chainName : ''));
+
+  // path 뒷값을 사용한 리스트로 변경할 예정 cryptoorg값은 어차피 안쓰니까 맵핑에서 제외함
   const recipientChainNameList = recipientChainList.map((item) => item.chain);
   const recipientCosmosChainList = useMemo(
     () =>
       COSMOS_CHAINS.filter((item) => recipientChainNameList.includes(item.chainName)).map(
-        (item) =>
+        (cosmos) =>
           ({
-            ...item,
-            channelId: recipientChainList.find((recipientChain) => recipientChain.chain === item.chainName)?.channel,
-            counterChannelId: recipientChainList.find((recipientChain) => recipientChain.chain === item.chainName)?.counter_party?.channel,
-            ibcDenom: recipientChainList.find((recipientChain) => recipientChain.chain === item.chainName)?.denom,
+            ...cosmos,
+            channelId: recipientChainList.find((recipientChain) => recipientChain.chain === cosmos.chainName)?.channel,
+            counterChannelId: recipientChainList.find((recipientChain) => recipientChain.chain === cosmos.chainName)?.counter_party?.channel,
+            ibcDenom: recipientChainList.find((recipientChain) => recipientChain.chain === cosmos.chainName)?.denom,
+            asset: recipientChainList.find((item2) => item2.chain === cosmos.chainName),
           } as IBCCosmosChain),
       ),
-    [recipientChainList, recipientChainNameList],
+    [recipientChainNameList, recipientChainList],
   );
+  // console.log(recipientChainList);
+  // console.log(recipientpathlastname);
+  // console.log(recipientChainNameList);
+  // console.log(recipientChainList);
+  // console.log(recipientCosmosChainList);
 
   // NOTE 선택된 수신 체인
   // ANCHOR - 수신인
@@ -260,14 +273,20 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const selectedRecipientChainChainName = selectedRecipientChain?.chainName ?? 'UNKNOWN';
 
-  const selectedRecipientChainChannel = selectedRecipientChain?.channelId ?? 'UNKNOWN';
+  const selectedRecipientChainChannel = useMemo(
+    () =>
+      currentCoinOrToken.type === 'coin' && currentCoinOrToken.coinType === 'ibc'
+        ? selectedRecipientChain?.channelId
+        : selectedRecipientChain?.counterChannelId,
+    [currentCoinOrToken, selectedRecipientChain?.channelId, selectedRecipientChain?.counterChannelId],
+  );
 
   const addressRegex = useMemo(
     () => getCosmosAddressRegex(selectedRecipientChain?.bech32Prefix.address || '', [39]),
     [selectedRecipientChain?.bech32Prefix.address],
   );
 
-  const timeoutHeight = useClientStateSWR({ chain, channelId: selectedRecipientChain?.channelId ?? '' });
+  const timeoutHeight = useClientStateSWR({ chain, channelId: selectedRecipientChainChannel ?? '' });
   const revisionHeight = String(1000 + parseInt(timeoutHeight.data?.timeoutHeight?.revision_height || '', 10));
   const revisionNumber = timeoutHeight.data?.timeoutHeight?.revision_number;
 
@@ -477,7 +496,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                               value: {
                                 receiver: receiverAddress,
                                 sender: senderAddress,
-                                source_channel: selectedRecipientChain?.channelId,
+                                source_channel: selectedRecipientChainChannel,
                                 source_port: 'transfer',
                                 timeout_height: {
                                   revision_height: revisionHeight,
@@ -582,6 +601,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
       />
 
       <RecipientChainPopover
+        currentCoinType={currentCoinOrToken.type === 'coin' ? currentCoinOrToken.coinType : ''}
         recipientList={recipientCosmosChainList}
         marginThreshold={0}
         selectedRecipientChain={selectedRecipientChain}
