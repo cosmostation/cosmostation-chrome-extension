@@ -115,7 +115,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
       .map((coin) => {
         const coinInfo = ibcAssets.find((item) => item.denom === coin.denom)!;
 
-        const cosmosChainName = convertCosmosToOriginName({ baseDenom: coinInfo.base_denom, chainName: coinInfo.path?.split('>').at(-2) });
+        const cosmosChainName = convertCosmosToOriginName(coinInfo.prevChain)?.chainName;
         return {
           prevChain: cosmosChainName,
           coinType: coinInfo.type,

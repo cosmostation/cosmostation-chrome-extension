@@ -161,29 +161,29 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // NOTE 현재 체인에서 가지고있는 ibc 코인을 ibc_send가 가능한 ibc코인의 List
   const ibcPossibleChainList = currentChainAssets.data.filter((item) => item.counter_party);
 
-  // const nativePossibleChainList22 = cosmosChainsAssets.data.filter((item) =>
-  //   currentCoinOrToken.type === 'coin' ? item.counter_party?.denom === currentCoinOrToken.baseDenom : '',
-  // );
+  const nativePossibleChainList = cosmosChainsAssets.data.filter((item) =>
+    currentCoinOrToken.type === 'coin' ? item.counter_party?.denom === currentCoinOrToken.baseDenom : '',
+  );
   // NOTE 현재 체인에서 가지고 있는 native coin을 수신 가능한 체인의 List
 
   // legacy
-  const nativePossibleChainList = useMemo(() => {
-    if (currentCoinOrToken.type === 'coin') {
-      const nativeOkChainList = cosmosChainsAssets.data.filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom);
-      const nativeOkChainNameList = cosmosChainsAssets.data
-        .filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom)
-        .map((item) => item.chain);
-      const nativePossibleAssets = currentChainAssets.data.filter((item) => nativeOkChainNameList.includes(item.prevChain));
-      const nativeChainList = nativePossibleAssets.map((item) => ({
-        ...item,
-        denom: nativeOkChainList.find((nativeChain) => nativeChain.chain === item.prevChain)?.base_denom,
-        // origin_chain: item.path ? item.path?.split('>').at(-2) || item.origin_chain : item.origin_chain,
-      }));
+  // const nativePossibleChainList = useMemo(() => {
+  //   if (currentCoinOrToken.type === 'coin') {
+  //     const nativeOkChainList = cosmosChainsAssets.data.filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom);
+  //     const nativeOkChainNameList = cosmosChainsAssets.data
+  //       .filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom)
+  //       .map((item) => item.chain);
+  //     const nativePossibleAssets = currentChainAssets.data.filter((item) => nativeOkChainNameList.includes(item.prevChain));
+  //     const nativeChainList = nativePossibleAssets.map((item) => ({
+  //       ...item,
+  //       denom: nativeOkChainList.find((nativeChain) => nativeChain.chain === item.prevChain)?.base_denom,
+  //       // origin_chain: item.path ? item.path?.split('>').at(-2) || item.origin_chain : item.origin_chain,
+  //     }));
 
-      return nativeChainList;
-    }
-    return [];
-  }, [cosmosChainsAssets.data, currentChainAssets.data, currentCoinOrToken]);
+  //     return nativeChainList;
+  //   }
+  //   return [];
+  // }, [cosmosChainsAssets.data, currentChainAssets.data, currentCoinOrToken]);
 
   // 이미 type이라는 필드명을 사용중이어서 'coinType'이라는 필드를 선언함
   // NOTE 현재 보유중인 코인 중에서 available한 코인 리스트: native & ibc 구분
@@ -214,10 +214,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                 ({
                   ...item,
                   // 수신 체인의 타입을 COSMOS 타입으로 치환하기 위해 비교되는 값.
-                  chain: convertCosmosToOriginName({
-                    baseDenom: item.base_denom,
-                    chainName: item.prevChain,
-                  }),
+                  chain: convertCosmosToOriginName(item.prevChain)?.chainName,
                 } as AssetV2),
             ) ?? [];
         return ibcRecipientChainList;
@@ -227,10 +224,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
           (item) =>
             ({
               ...item,
-              chain: convertCosmosToOriginName({
-                baseDenom: item.base_denom,
-                chainName: item.prevChain,
-              }),
+              // base_denom하면 uosmo가 넘어가니 직접 prevChain을 맵핑할 수 있는 걸 해야함
+              chain: convertCosmosToOriginName(item.prevChain)?.chainName,
             } as AssetV2),
         ) ?? [];
       return nativeRecipientChainList;

@@ -143,25 +143,19 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
   };
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
-type convertCosmosToOriginNameProps = {
-  baseDenom: string;
-  chainName?: string;
-};
-// FIXME baseDenom이 아닌 'gravity-bridge'를 직접 받아서 수정하는 방향으로 수정할 것
-export function convertCosmosToOriginName({ baseDenom, chainName }: convertCosmosToOriginNameProps) {
-  const nameMap = {
-    [CRYPTO_ORG.baseDenom]: CRYPTO_ORG.chainName,
-    [ASSET_MANTLE.baseDenom]: ASSET_MANTLE.chainName,
-    [GRAVITY_BRIDGE.baseDenom]: GRAVITY_BRIDGE.chainName,
-    [SIF.baseDenom]: SIF.chainName,
-    [KI.baseDenom]: KI.chainName,
-    [STAFIHUB.baseDenom]: STAFIHUB.chainName,
-    [FETCH_AI.baseDenom]: FETCH_AI.chainName,
-    [INJECTIVE.baseDenom]: INJECTIVE.chainName,
-    [KAVA.baseDenom]: KAVA.chainName,
-    [CRESCENT.baseDenom]: CRESCENT.chainName,
-    [EMONEY.baseDenom]: EMONEY.chainName,
-  };
 
-  return nameMap[baseDenom] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === chainName)?.chainName;
+// FIXME baseDenom이 아닌 'gravity-bridge'를 직접 받아서 수정하는 방향으로 수정할 것
+export function convertCosmosToOriginName(chainName: string) {
+  const nameMap = {
+    'asset-mantle': ASSET_MANTLE,
+    'gravity-bridge': GRAVITY_BRIDGE,
+    'crypto-org': CRYPTO_ORG,
+    cryptoorg: CRYPTO_ORG,
+    'ki-chain': KI,
+    kichain: KI,
+    fetchai: FETCH_AI,
+    sifchain: SIF,
+  } as Record<string, CosmosChain | undefined>;
+
+  return nameMap[chainName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === chainName);
 }
