@@ -278,9 +278,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [selectedRecipientChain?.bech32Prefix.address],
   );
 
-  const currentChainAssetName = currentChainAssets.data.find((item) => item.base_denom === chain.baseDenom)?.origin_chain ?? chain.chainName.toLowerCase();
-
-  const timeoutHeight = useClientStateSWR(currentChainAssetName, selectedRecipientChain?.channelId || '');
+  // TODO 선택 코스모스 체인을 넘기기
+  // FIXME 현재 기준 체인이 아닌 선택 체인의 restUrl을 가져오고 있음
+  const timeoutHeight = useClientStateSWR(selectedRecipientChain!);
   const revisionHeight = String(1000 + parseInt(timeoutHeight.data?.timeoutHeight?.revision_height || '', 10));
   const revisionNumber = timeoutHeight.data?.timeoutHeight?.revision_number;
 

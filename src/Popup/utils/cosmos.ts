@@ -42,8 +42,7 @@ export function cosmosURL(chain: CosmosChain) {
     getCW20TokenInfo: (contractAddress: string) => `${restURL}/wasm/contract/${contractAddress}/smart/${toHex('{"token_info":{}}')}?encoding=utf-8`,
     getCW20Balance: (contractAddress: string, address: string) =>
       `${restURL}/wasm/contract/${contractAddress}/smart/${toHex(`{"balance":{"address":"${address}"}}`)}?encoding=utf-8`,
-    // TODO 여기에 chain.restURL찔러서 나온 값이랑 채널 아이디 값 하나 받아서 이걸  clientState에는 코스모스 체인을 하나만 넘기도록 하자
-    // getClientState :
+    getClientState: (channelId: string) => `${restURL}/ibc/core/channel/v1/channels/${channelId}/ports/transfer/client_state`,
   };
 }
 
@@ -150,9 +149,10 @@ type convertCosmosToOriginNameProps = {
   baseDenom?: string;
   originChainName?: string;
 };
+// FIXME 체인의 이름 맵핑이 정삭적으로 동작하지 않음
 export function convertCosmosToOriginName({ cosmosChain, chainId, baseDenom, originChainName }: convertCosmosToOriginNameProps) {
   const nameMap = {
-    [CRYPTO_ORG.id || CRYPTO_ORG.baseDenom]: CRYPTO_ORG.chainName,
+    [CRYPTO_ORG.baseDenom || CRYPTO_ORG.id]: CRYPTO_ORG.chainName,
     [ASSET_MANTLE.id || ASSET_MANTLE.baseDenom]: ASSET_MANTLE.chainName,
     [GRAVITY_BRIDGE.id || GRAVITY_BRIDGE.baseDenom]: GRAVITY_BRIDGE.chainName,
     [SIF.id || SIF.baseDenom]: SIF.chainName,
