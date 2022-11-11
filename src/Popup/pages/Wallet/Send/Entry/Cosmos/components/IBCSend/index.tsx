@@ -160,6 +160,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // NOTE - cw20 토큰은 ibc send가 완전히 다르니 우선 무시할것 ...
 
   // NOTE 현재 체인에서 가지고있는 ibc 코인을 ibc_send가 가능한 ibc코인의 List
+  // REVIEW -  available-ibc 토큰이 수신 가능한 체인이 있는지 확인을 위해서 필요합니다
   const ibcPossibleChainList = currentChainAssets.data.filter((item) => item.counter_party);
 
   const nativePossibleChainList = cosmosChainsAssets.data.filter((item) =>
@@ -174,13 +175,14 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const availableNativeCoinList = coinInfos.filter((item) => item.coinType === 'staking' || item.coinType === 'native') || [];
 
   // NOTE available한 IBC코인중 수신할 체인이 있는 available한 IBC코인리스트
-  const cosmosChainNameList = COSMOS_CHAINS.map((item) => item.chainName);
+  // REVIEW 해당 토큰이 수신 가능한 체인이 존재하는지 && 그 수신 체인이 COSMOS_CHAINS에 정의되어있는지 체크
+  // REVIEW prevChain은 해당 체인이 COSMOSCHIAN에 정의되어있지 않으면 undefined를 반환하기에 존재 여부를 조건으로 넣어놓으면 될 것으로 에상함
   const ibcPossibleChainListDenom = ibcPossibleChainList.map((item) => item.base_denom);
   const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) =>
-    item.originBaseDenom ? ibcPossibleChainListDenom.includes(item.originBaseDenom) && cosmosChainNameList.includes(item.prevChain ? item.prevChain : '') : [],
+    item.originBaseDenom ? ibcPossibleChainListDenom.includes(item.originBaseDenom) && item.prevChain : [],
   );
 
-  const checkedAvailableNativeCoinList = nativePossibleChainList ? [...availableNativeCoinList] : [];
+  const checkedAvailableNativeCoinList = nativePossibleChainList && nativePossibleChainList.map((item) => item.prevChain) ? [...availableNativeCoinList] : [];
   // NOTE 보유 available체인 중에서 수신할 체인이 있는지 체크가 된 보낼 코인 List
   const checkedAvailableCoinList = [...checkedAvailableIBCCoinList, ...checkedAvailableNativeCoinList];
 
