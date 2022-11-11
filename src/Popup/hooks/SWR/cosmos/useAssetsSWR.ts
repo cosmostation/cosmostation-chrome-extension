@@ -28,7 +28,22 @@ export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
     ...config,
   });
 
-  const assets = useMemo(() => data?.assets || [], [data?.assets]);
+  const assets = useMemo(
+    () =>
+      data?.assets.map((item) => {
+        const prevChain = (() => {
+          if (item.counter_party && item.path) {
+            const splitedPath = item.path.split('>');
+
+            return splitedPath[splitedPath.length - 2];
+          }
+
+          return '';
+        })();
+        return { ...item, prevChain };
+      }) || [],
+    [data?.assets],
+  );
 
   const returnData = useMemo(() => (mappingName ? assets.filter((item) => item.chain === mappingName) : assets), [assets, mappingName]);
 

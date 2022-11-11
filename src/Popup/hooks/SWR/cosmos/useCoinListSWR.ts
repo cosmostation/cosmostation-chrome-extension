@@ -16,7 +16,7 @@ import { useBalanceSWR } from './useBalanceSWR';
 import { useIncentiveSWR } from './useIncentiveSWR';
 
 export type CoinInfo = {
-  originChain?: string;
+  prevChain?: string;
   coinType?: string;
   decimals: number;
   originBaseDenom?: string;
@@ -42,7 +42,6 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
       assets?.data
         ?.filter((item) => item.type === 'native' || item.type === 'bridge')
         ?.map((item) => ({
-          path: item.path,
           type: item.type,
           originBaseDenom: item.base_denom || '',
           baseDenom: item.denom,
@@ -50,7 +49,6 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           decimals: item.decimal,
           imageURL: item.image ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.image}` : undefined,
           coinGeckoId: item.coinGeckoId,
-          originChain: item.path?.split('>').at(-2) || item.origin_chain,
         })) || [],
     [assets.data],
   );
@@ -89,12 +87,8 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           );
 
           const incentiveAmount = incentive?.data?.[coin.denom] || '0';
-          const originChainName = convertCosmosToOriginName({
-            baseDenom: chain.baseDenom,
-            originChainName: coinInfo.originChain,
-          });
+
           return {
-            originChain: originChainName,
             coinType: coinInfo.type,
             decimals: coinInfo.decimals,
             baseDenom: coin.denom,
@@ -120,13 +114,10 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
       ?.filter((coin) => ibcAssets.map((item) => item.denom).includes(coin.denom))
       .map((coin) => {
         const coinInfo = ibcAssets.find((item) => item.denom === coin.denom)!;
-        const originChainName = convertCosmosToOriginName({
-          baseDenom: coinInfo.base_denom,
-          originChainName: coinInfo.path?.split('>').at(-2),
-        });
 
+        const cosmosChainName = convertCosmosToOriginName({ baseDenom: coinInfo.base_denom, chainName: coinInfo.path?.split('>').at(-2) });
         return {
-          originChain: originChainName,
+          prevChain: cosmosChainName,
           coinType: coinInfo.type,
           decimals: coinInfo?.decimal,
           originBaseDenom: coinInfo?.base_denom,

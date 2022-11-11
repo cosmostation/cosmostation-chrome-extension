@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import _ from 'lodash';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, COSMOS_DEFAULT_IBCSEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
+import { COSMOS_CHAINS, COSMOS_DEFAULT_GAS, COSMOS_DEFAULT_IBCSEND_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
@@ -80,7 +79,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
         availableAmount: vestingRelatedAvailable,
         totalAmount,
         coinType: currentChainAssets.data.find((item) => item.base_denom === chain.baseDenom)?.type,
-        originChain: chain.chainName,
         decimals: chain.decimals,
         imageURL: chain.imageURL,
         displayDenom: chain.displayDenom,
@@ -92,7 +90,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
     ],
     [
       chain.baseDenom,
-      chain.chainName,
       chain.coinGeckoId,
       chain.decimals,
       chain.displayDenom,
@@ -128,7 +125,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [availableCoinOrTokenList, currentCoinOrTokenId],
   );
 
-  const sendGas = currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBCSEND_GAS : gas.transfer || COSMOS_DEFAULT_TRANSFER_GAS;
+  // REVIEW -  token 관련 코드 삭제
+  const sendGas = currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBCSEND_GAS : COSMOS_DEFAULT_GAS;
 
   const [currentGas, setCurrentGas] = useState(sendGas);
   const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
@@ -161,25 +159,25 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // NOTE - cw20 토큰은 ibc send가 완전히 다르니 우선 무시할것 ...
 
   // NOTE 현재 체인에서 가지고있는 ibc 코인을 ibc_send가 가능한 ibc코인의 List
-  const ibcPossibleChainList = currentChainAssets.data
-    .filter((item) => item.counter_party)
-    .map((item) => ({
-      ...item,
-      origin_chain: item.path ? item.path?.split('>').at(-2) : item.origin_chain,
-    }));
+  const ibcPossibleChainList = currentChainAssets.data.filter((item) => item.counter_party);
 
+  // const nativePossibleChainList22 = cosmosChainsAssets.data.filter((item) =>
+  //   currentCoinOrToken.type === 'coin' ? item.counter_party?.denom === currentCoinOrToken.baseDenom : '',
+  // );
   // NOTE 현재 체인에서 가지고 있는 native coin을 수신 가능한 체인의 List
+
+  // legacy
   const nativePossibleChainList = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
       const nativeOkChainList = cosmosChainsAssets.data.filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom);
       const nativeOkChainNameList = cosmosChainsAssets.data
         .filter((item) => item.counter_party?.denom === currentCoinOrToken.baseDenom)
         .map((item) => item.chain);
-      const nativePossibleAssets = currentChainAssets.data.filter((item) => nativeOkChainNameList.includes(item.origin_chain));
+      const nativePossibleAssets = currentChainAssets.data.filter((item) => nativeOkChainNameList.includes(item.prevChain));
       const nativeChainList = nativePossibleAssets.map((item) => ({
         ...item,
-        denom: nativeOkChainList.find((nativeChain) => nativeChain.chain === item.origin_chain)?.base_denom,
-        origin_chain: item.path ? item.path?.split('>').at(-2) || item.origin_chain : item.origin_chain,
+        denom: nativeOkChainList.find((nativeChain) => nativeChain.chain === item.prevChain)?.base_denom,
+        // origin_chain: item.path ? item.path?.split('>').at(-2) || item.origin_chain : item.origin_chain,
       }));
 
       return nativeChainList;
@@ -197,13 +195,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const cosmosChainNameList = COSMOS_CHAINS.map((item) => item.chainName);
   const ibcPossibleChainListDenom = ibcPossibleChainList.map((item) => item.base_denom);
   const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) =>
-    item.originBaseDenom
-      ? ibcPossibleChainListDenom.includes(item.originBaseDenom) && cosmosChainNameList.includes(item.originChain ? item.originChain : '')
-      : [],
+    item.originBaseDenom ? ibcPossibleChainListDenom.includes(item.originBaseDenom) && cosmosChainNameList.includes(item.prevChain ? item.prevChain : '') : [],
   );
 
-  const checkedAvailableNativeCoinList =
-    availableNativeCoinList.filter((item) => cosmosChainNameList.includes(item.originChain ? item.originChain : '') && nativePossibleChainList) || [];
+  const checkedAvailableNativeCoinList = nativePossibleChainList ? [...availableNativeCoinList] : [];
   // NOTE 보유 available체인 중에서 수신할 체인이 있는지 체크가 된 보낼 코인 List
   const checkedAvailableCoinList = [...checkedAvailableIBCCoinList, ...checkedAvailableNativeCoinList];
 
@@ -218,9 +213,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
               (item) =>
                 ({
                   ...item,
+                  // 수신 체인의 타입을 COSMOS 타입으로 치환하기 위해 비교되는 값.
                   chain: convertCosmosToOriginName({
                     baseDenom: item.base_denom,
-                    originChainName: item.origin_chain,
+                    chainName: item.prevChain,
                   }),
                 } as AssetV2),
             ) ?? [];
@@ -233,13 +229,11 @@ export default function IBCSend({ chain }: IBCSendProps) {
               ...item,
               chain: convertCosmosToOriginName({
                 baseDenom: item.base_denom,
-                originChainName: item.origin_chain,
+                chainName: item.prevChain,
               }),
             } as AssetV2),
         ) ?? [];
-
-      const uniqueNativeRecipientChainList = _.uniqBy(nativeRecipientChainList, 'chain');
-      return uniqueNativeRecipientChainList;
+      return nativeRecipientChainList;
     }
     return [];
   }, [currentCoinOrToken, ibcPossibleChainList, nativePossibleChainList]);
