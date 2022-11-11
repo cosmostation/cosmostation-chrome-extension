@@ -4,14 +4,7 @@ import _ from 'lodash';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBCSEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
-import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
-import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
-import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
-import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
-import { KI } from '~/constants/chain/cosmos/ki';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
-import { SIF } from '~/constants/chain/cosmos/sif';
-import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
 import DropdownButton from '~/Popup/components/common/DropdownButton';
@@ -34,6 +27,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { fix, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { convertCosmosToOriginName } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain, CosmosToken as BaseCosmosToken, IBCCosmosChain } from '~/types/chain';
 import type { AssetV2 } from '~/types/cosmos/asset';
@@ -202,32 +196,19 @@ export default function IBCSend({ chain }: IBCSendProps) {
   // NOTE available한 IBC코인중 수신할 체인이 있는 available한 IBC코인리스트
   const cosmosChainNameList = COSMOS_CHAINS.map((item) => item.chainName);
   const ibcPossibleChainListDenom = ibcPossibleChainList.map((item) => item.base_denom);
-  const checkedAvailableIBCCoinList = availableIBCCoinList.filter(
-    (item) =>
-      item.originBaseDenom
-        ? ibcPossibleChainListDenom.includes(item.originBaseDenom) && cosmosChainNameList.includes(item.originChain ? item.originChain : '')
-        : [],
-    // item.originBaseDenom ? ibcPossibleChainListDenom.includes(item.originBaseDenom) : [],
+  const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) =>
+    item.originBaseDenom
+      ? ibcPossibleChainListDenom.includes(item.originBaseDenom) && cosmosChainNameList.includes(item.originChain ? item.originChain : '')
+      : [],
   );
 
   const checkedAvailableNativeCoinList =
     availableNativeCoinList.filter((item) => cosmosChainNameList.includes(item.originChain ? item.originChain : '') && nativePossibleChainList) || [];
-  // const checkedAvailableNativeCoinList = nativePossibleChainList ? [...availableNativeCoinList] : [];
   // NOTE 보유 available체인 중에서 수신할 체인이 있는지 체크가 된 보낼 코인 List
   const checkedAvailableCoinList = [...checkedAvailableIBCCoinList, ...checkedAvailableNativeCoinList];
 
   // NOTE 선택한 코인을 수신 가능한 체인 리스트
   const recipientChainList = useMemo(() => {
-    const nameMap = {
-      [CRYPTO_ORG.baseDenom]: CRYPTO_ORG.chainName,
-      [ASSET_MANTLE.baseDenom]: ASSET_MANTLE.chainName,
-      [GRAVITY_BRIDGE.baseDenom]: GRAVITY_BRIDGE.chainName,
-      [SIF.baseDenom]: SIF.chainName,
-      [KI.baseDenom]: KI.chainName,
-      [STAFIHUB.baseDenom]: STAFIHUB.chainName,
-      [FETCH_AI.baseDenom]: FETCH_AI.chainName,
-    };
-
     if (currentCoinOrToken.type === 'coin') {
       if (currentCoinOrToken.coinType === 'ibc') {
         const ibcRecipientChainList =
@@ -237,9 +218,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
               (item) =>
                 ({
                   ...item,
-                  chain: nameMap[item.base_denom]
-                    ? nameMap[item.base_denom]
-                    : COSMOS_CHAINS.find((cosmosChain) => cosmosChain.chainName.toLowerCase() === item.origin_chain)?.chainName,
+                  chain: convertCosmosToOriginName({
+                    baseDenom: item.base_denom,
+                    originChainName: item.origin_chain,
+                  }),
                 } as AssetV2),
             ) ?? [];
         return ibcRecipientChainList;
@@ -249,9 +231,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
           (item) =>
             ({
               ...item,
-              chain: nameMap[item.base_denom]
-                ? nameMap[item.base_denom]
-                : COSMOS_CHAINS.find((cosmosChain) => cosmosChain.chainName.toLowerCase() === item.origin_chain)?.chainName,
+              chain: convertCosmosToOriginName({
+                baseDenom: item.base_denom,
+                originChainName: item.origin_chain,
+              }),
             } as AssetV2),
         ) ?? [];
 

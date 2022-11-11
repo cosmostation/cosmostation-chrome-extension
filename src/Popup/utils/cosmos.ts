@@ -7,6 +7,7 @@ import sortKeys from 'sort-keys';
 import TinySecp256k1 from 'tiny-secp256k1';
 import { keccak256 } from '@ethersproject/keccak256';
 
+import { COSMOS_CHAINS } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
 import { CRESCENT } from '~/constants/chain/cosmos/crescent';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
@@ -41,6 +42,8 @@ export function cosmosURL(chain: CosmosChain) {
     getCW20TokenInfo: (contractAddress: string) => `${restURL}/wasm/contract/${contractAddress}/smart/${toHex('{"token_info":{}}')}?encoding=utf-8`,
     getCW20Balance: (contractAddress: string, address: string) =>
       `${restURL}/wasm/contract/${contractAddress}/smart/${toHex(`{"balance":{"address":"${address}"}}`)}?encoding=utf-8`,
+    // TODO 여기에 chain.restURL찔러서 나온 값이랑 채널 아이디 값 하나 받아서 이걸  clientState에는 코스모스 체인을 하나만 넘기도록 하자
+    // getClientState :
   };
 }
 
@@ -139,26 +142,37 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [CRESCENT.id]: 'crescent',
     [EMONEY.id]: 'emoney',
   };
-  // const returnCosmos = {...cosmosChain, chainName: nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase()}
-  const returnCosmos = nameMap[cosmosChain.chainId] || cosmosChain.chainName.toLowerCase();
-  return returnCosmos;
+  return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
-
-export function convertCosmosToOriginName(cosmosChain: CosmosChain) {
+type convertCosmosToOriginNameProps = {
+  cosmosChain?: CosmosChain;
+  chainId?: string;
+  baseDenom?: string;
+  originChainName?: string;
+};
+export function convertCosmosToOriginName({ cosmosChain, chainId, baseDenom, originChainName }: convertCosmosToOriginNameProps) {
   const nameMap = {
-    [CRYPTO_ORG.id]: CRYPTO_ORG.chainName,
-    [ASSET_MANTLE.id]: ASSET_MANTLE.chainName,
-    [GRAVITY_BRIDGE.id]: GRAVITY_BRIDGE.chainName,
-    [SIF.id]: SIF.chainName,
-    [KI.id]: KI.chainName,
-    [STAFIHUB.id]: STAFIHUB.chainName,
-    [FETCH_AI.id]: FETCH_AI.chainName,
-    [INJECTIVE.id]: INJECTIVE.chainName,
-    [KAVA.id]: KAVA.chainName,
-    [CRESCENT.id]: CRESCENT.chainName,
-    [EMONEY.id]: EMONEY.chainName,
+    [CRYPTO_ORG.id || CRYPTO_ORG.baseDenom]: CRYPTO_ORG.chainName,
+    [ASSET_MANTLE.id || ASSET_MANTLE.baseDenom]: ASSET_MANTLE.chainName,
+    [GRAVITY_BRIDGE.id || GRAVITY_BRIDGE.baseDenom]: GRAVITY_BRIDGE.chainName,
+    [SIF.id || SIF.baseDenom]: SIF.chainName,
+    [KI.id || KI.baseDenom]: KI.chainName,
+    [STAFIHUB.id || STAFIHUB.baseDenom]: STAFIHUB.chainName,
+    [FETCH_AI.id || FETCH_AI.baseDenom]: FETCH_AI.chainName,
+    [INJECTIVE.id || INJECTIVE.baseDenom]: INJECTIVE.chainName,
+    [KAVA.id || KAVA.baseDenom]: KAVA.chainName,
+    [CRESCENT.id || CRESCENT.baseDenom]: CRESCENT.chainName,
+    [EMONEY.id || EMONEY.baseDenom]: EMONEY.chainName,
   };
-  // const returnCosmos = {...cosmosChain, chainName: nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase()}
-  const returnCosmos = nameMap[cosmosChain.chainId] || cosmosChain.chainName;
-  return returnCosmos;
+
+  if (cosmosChain) {
+    return nameMap[cosmosChain.id] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === originChainName)?.chainName;
+  }
+  if (chainId) {
+    return nameMap[chainId] || COSMOS_CHAINS.find((item) => item.id === chainId)?.chainName;
+  }
+  if (baseDenom) {
+    return nameMap[baseDenom] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === originChainName)?.chainName;
+  }
+  return undefined;
 }

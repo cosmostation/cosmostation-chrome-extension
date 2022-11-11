@@ -89,10 +89,12 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           );
 
           const incentiveAmount = incentive?.data?.[coin.denom] || '0';
-          const originChainName = convertCosmosToOriginName(chain);
+          const originChainName = convertCosmosToOriginName({
+            cosmosChain: chain,
+            originChainName: coinInfo.originChain,
+          });
           return {
             originChain: originChainName,
-            // nameMap[coinInfo.baseDenom] || COSMOS_CHAINS.find((cosmosChain) => cosmosChain.chainName.toLowerCase() === coinInfo.originChain)?.chainName,
             coinType: coinInfo.type,
             decimals: coinInfo.decimals,
             baseDenom: coin.denom,
@@ -111,20 +113,20 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           };
         }) || []
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account?.data, balance.data?.balance, chain.chainName, delegation?.data, incentive?.data, nativeAssets, reward?.data?.total]);
+  }, [account?.data, balance.data?.balance, chain, delegation?.data, incentive?.data, nativeAssets, reward?.data?.total]);
 
   const ibcCoins: CoinInfo[] =
     balance.data?.balance
       ?.filter((coin) => ibcAssets.map((item) => item.denom).includes(coin.denom))
       .map((coin) => {
         const coinInfo = ibcAssets.find((item) => item.denom === coin.denom)!;
-        const originChainName = convertCosmosToOriginName(chain);
+        const originChainName = convertCosmosToOriginName({
+          baseDenom: coinInfo.base_denom,
+          originChainName: coinInfo.path?.split('>').at(-2),
+        });
 
         return {
           originChain: originChainName,
-          // nameMap[coinInfo.base_denom] ??
-          // COSMOS_CHAINS.find((cosmosChain) => cosmosChain.chainName.toLowerCase() === coinInfo.path?.split('>').at(-2))?.chainName,
           coinType: coinInfo.type,
           decimals: coinInfo?.decimal,
           originBaseDenom: coinInfo?.base_denom,
