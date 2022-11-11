@@ -144,35 +144,23 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
 type convertCosmosToOriginNameProps = {
-  cosmosChain?: CosmosChain;
-  chainId?: string;
-  baseDenom?: string;
+  baseDenom: string;
   originChainName?: string;
 };
-// FIXME 체인의 이름 맵핑이 정삭적으로 동작하지 않음
-export function convertCosmosToOriginName({ cosmosChain, chainId, baseDenom, originChainName }: convertCosmosToOriginNameProps) {
+export function convertCosmosToOriginName({ baseDenom, originChainName }: convertCosmosToOriginNameProps) {
   const nameMap = {
-    [CRYPTO_ORG.baseDenom || CRYPTO_ORG.id]: CRYPTO_ORG.chainName,
-    [ASSET_MANTLE.id || ASSET_MANTLE.baseDenom]: ASSET_MANTLE.chainName,
-    [GRAVITY_BRIDGE.id || GRAVITY_BRIDGE.baseDenom]: GRAVITY_BRIDGE.chainName,
-    [SIF.id || SIF.baseDenom]: SIF.chainName,
-    [KI.id || KI.baseDenom]: KI.chainName,
-    [STAFIHUB.id || STAFIHUB.baseDenom]: STAFIHUB.chainName,
-    [FETCH_AI.id || FETCH_AI.baseDenom]: FETCH_AI.chainName,
-    [INJECTIVE.id || INJECTIVE.baseDenom]: INJECTIVE.chainName,
-    [KAVA.id || KAVA.baseDenom]: KAVA.chainName,
-    [CRESCENT.id || CRESCENT.baseDenom]: CRESCENT.chainName,
-    [EMONEY.id || EMONEY.baseDenom]: EMONEY.chainName,
+    [CRYPTO_ORG.baseDenom]: CRYPTO_ORG.chainName,
+    [ASSET_MANTLE.baseDenom]: ASSET_MANTLE.chainName,
+    [GRAVITY_BRIDGE.baseDenom]: GRAVITY_BRIDGE.chainName,
+    [SIF.baseDenom]: SIF.chainName,
+    [KI.baseDenom]: KI.chainName,
+    [STAFIHUB.baseDenom]: STAFIHUB.chainName,
+    [FETCH_AI.baseDenom]: FETCH_AI.chainName,
+    [INJECTIVE.baseDenom]: INJECTIVE.chainName,
+    [KAVA.baseDenom]: KAVA.chainName,
+    [CRESCENT.baseDenom]: CRESCENT.chainName,
+    [EMONEY.baseDenom]: EMONEY.chainName,
   };
 
-  if (cosmosChain) {
-    return nameMap[cosmosChain.id] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === originChainName)?.chainName;
-  }
-  if (chainId) {
-    return nameMap[chainId] || COSMOS_CHAINS.find((item) => item.id === chainId)?.chainName;
-  }
-  if (baseDenom) {
-    return nameMap[baseDenom] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === originChainName)?.chainName;
-  }
-  return undefined;
+  return nameMap[baseDenom] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === originChainName)?.chainName;
 }

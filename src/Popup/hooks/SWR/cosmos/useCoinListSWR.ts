@@ -90,7 +90,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
 
           const incentiveAmount = incentive?.data?.[coin.denom] || '0';
           const originChainName = convertCosmosToOriginName({
-            cosmosChain: chain,
+            baseDenom: chain.baseDenom,
             originChainName: coinInfo.originChain,
           });
           return {
