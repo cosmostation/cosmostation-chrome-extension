@@ -3,7 +3,8 @@ import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
-import type { IBCCosmosChain } from '~/types/chain';
+import type { CosmosChain } from '~/types/chain';
+import type { AssetV2 } from '~/types/cosmos/asset';
 
 import {
   ChainButton,
@@ -19,11 +20,16 @@ import {
 
 import Check16Icon from '~/images/icons/Check16.svg';
 
+type IBCRecipientChain = {
+  cosmos: CosmosChain;
+  asset: AssetV2 | undefined;
+};
+
 type RecipientChainPopoverProps = Omit<PopoverProps, 'children'> & {
   currentCoinType?: string;
-  recipientList: IBCCosmosChain[];
-  selectedRecipientChain?: IBCCosmosChain;
-  onClickChain?: (selectedRecipientChain: IBCCosmosChain) => void;
+  recipientList: IBCRecipientChain[];
+  selectedRecipientChain?: IBCRecipientChain;
+  onClickChain?: (selectedRecipientChain: IBCRecipientChain) => void;
 };
 
 export default function RecipientChainPopover({
@@ -45,11 +51,10 @@ export default function RecipientChainPopover({
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
         {recipientList.map((item) => {
-          // eslint-disable-next-line prefer-destructuring
-          const chainName = item.chainName;
-          const channelId = currentCoinType === 'ibc' ? item.channelId : item.counterChannelId;
-          const imgURL = item.imageURL;
-          const isActive = selectedRecipientChain?.baseDenom === item.baseDenom;
+          const { chainName } = item.cosmos;
+          const channelId = currentCoinType === 'ibc' ? item.asset?.channel : item.asset?.counter_party?.channel;
+          const imgURL = item.cosmos.imageURL;
+          const isActive = selectedRecipientChain?.cosmos.baseDenom === item.cosmos.baseDenom;
 
           return (
             <ChainButton

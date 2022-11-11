@@ -144,18 +144,15 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
 
-// FIXME baseDenom이 아닌 'gravity-bridge'를 직접 받아서 수정하는 방향으로 수정할 것
-export function convertCosmosToOriginName(chainName: string) {
+export function convertCosmosToOriginName(assetChainName: string) {
   const nameMap = {
     'asset-mantle': ASSET_MANTLE,
     'gravity-bridge': GRAVITY_BRIDGE,
     'crypto-org': CRYPTO_ORG,
-    // cryptoorg: CRYPTO_ORG,
     'ki-chain': KI,
-    // kichain: KI,
     fetchai: FETCH_AI,
     sifchain: SIF,
   } as Record<string, CosmosChain | undefined>;
 
-  return nameMap[chainName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === chainName);
+  return nameMap[assetChainName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetChainName);
 }
