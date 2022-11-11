@@ -3,13 +3,17 @@ import useSWR from 'swr';
 
 import { get, isAxiosError } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
-import type { IBCCosmosChain } from '~/types/chain';
+import type { CosmosChain } from '~/types/chain';
 import type { ClientStatePayload } from '~/types/cosmos/clientState';
 
-export function useClientStateSWR(chain: IBCCosmosChain, suspense?: boolean) {
+type UseClientStateSWRPRops = {
+  chain: CosmosChain;
+  channelId: string;
+};
+
+export function useClientStateSWR({ chain, channelId }: UseClientStateSWRPRops, suspense?: boolean) {
   const { getClientState } = cosmosURL(chain);
-  // FIXME 현재 기준 체인의 값이 아닌 선택된 체인의 값을 넣고 있어 문제가 발생함
-  const requestURL = getClientState(chain.channelId);
+  const requestURL = getClientState(channelId);
   const fetcher = async (fetchUrl: string) => {
     try {
       return await get<ClientStatePayload>(fetchUrl);
@@ -29,7 +33,7 @@ export function useClientStateSWR(chain: IBCCosmosChain, suspense?: boolean) {
     refreshInterval: 15000,
     errorRetryCount: 0,
     suspense,
-    isPaused: () => !chain,
+    isPaused: () => !chain || !channelId,
   });
   const returnData = data ? { timeoutHeight: data.identified_client_state?.client_state?.latest_height } : undefined;
 
