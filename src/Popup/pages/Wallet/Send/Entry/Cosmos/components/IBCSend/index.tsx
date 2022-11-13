@@ -118,7 +118,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
-  const [receiverAddress, setreceiverAddress] = useState('');
+  const [receiverAddress, setReceiverAddress] = useState('');
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
   const [currentMemo, setCurrentMemo] = useState('');
 
@@ -340,7 +340,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
             </InputAdornment>
           }
           placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.recipientAddressPlaceholder')}
-          onChange={(e) => setreceiverAddress(e.currentTarget.value)}
+          onChange={(e) => setReceiverAddress(e.currentTarget.value)}
           value={receiverAddress}
         />
       </MarginTop8Div>
@@ -495,7 +495,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         chain={selectedReceiverIBC?.chain}
         onClose={() => setIsOpenedAddressBook(false)}
         onClickAddress={(a) => {
-          setreceiverAddress(a.address);
+          setReceiverAddress(a.address);
           setCurrentMemo(a.memo || '');
         }}
       />
@@ -509,7 +509,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         onClickCoinOrToken={(clickedCoinOrToken) => {
           setCurrentCoinOrTokenId(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.baseDenom : clickedCoinOrToken.address);
           setCurrentDisplayAmount('');
-          setreceiverAddress('');
+          setReceiverAddress('');
           setCurrentMemo('');
         }}
         open={isOpenPopover}
@@ -532,7 +532,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         onClickChain={(clickedChain) => {
           setReceiverIBC(clickedChain);
           setCurrentDisplayAmount('');
-          setreceiverAddress('');
+          setReceiverAddress('');
           setCurrentMemo('');
         }}
         open={isRecipientOpenPopover}
