@@ -26,12 +26,11 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { fix, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { convertCosmosToOriginName } from '~/Popup/utils/cosmos';
+import { convertAssetNameToCosmos, convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain';
-import type { AssetV2 } from '~/types/cosmos/asset';
 
-import RecipientChainPopover from './components/RecipientChainPopover';
+import ReceiverIBCPopover from './components/ReceiverIBCPopover';
 import { BottomContainer, Container, MarginTop8Div, MaxButton, StyledInput, StyledTextarea } from './styled';
 import CoinOrTokenPopover from '../CoinOrTokenPopover';
 
@@ -51,6 +50,9 @@ type IBCSendProps = {
   chain: CosmosChain;
 };
 
+const cosmosAssetNames = COSMOS_CHAINS.map((item) => convertCosmosToAssetName(item));
+const cosmosBaseDenoms = COSMOS_CHAINS.map((item) => item.baseDenom);
+
 export default function IBCSend({ chain }: IBCSendProps) {
   const { currentAccount } = useCurrentAccount();
   const account = useAccountSWR(chain, true);
@@ -67,18 +69,24 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const { currentCosmosTokens } = useCurrentCosmosTokens();
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const [recipientPopoverAnchorEl, setRecipientPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [recipientPopoverAnchorEl, setReceiverIBCPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
   const isRecipientOpenPopover = Boolean(recipientPopoverAnchorEl);
   const senderAddress = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
   const { decimals, gas, gasRate } = chain;
+
+  const filteredCosmosChainAssets = useMemo(() => cosmosChainsAssets.data.filter((item) => cosmosAssetNames.includes(item.chain)), [cosmosChainsAssets.data]);
+  const filteredCurrentChainAssets = useMemo(
+    () => currentChainAssets.data.filter((item) => cosmosBaseDenoms.includes(item.base_denom)),
+    [currentChainAssets.data],
+  );
   const coinAll = useMemo(
     () => [
       {
         availableAmount: vestingRelatedAvailable,
         totalAmount,
-        coinType: currentChainAssets.data.find((item) => item.base_denom === chain.baseDenom)?.type,
+        coinType: 'staking',
         decimals: chain.decimals,
         imageURL: chain.imageURL,
         displayDenom: chain.displayDenom,
@@ -96,7 +104,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
       chain.imageURL,
       coinList.coins,
       coinList.ibcCoins,
-      currentChainAssets.data,
       totalAmount,
       vestingRelatedAvailable,
     ],
@@ -148,116 +155,59 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [currentCoinOrToken.decimals, currentCoinOrTokenAvailableAmount],
   );
 
-  // SECTION - IBC send logic
-  // FIXME - coin type이 token인 경우에 대한 ibc send 미구현 상태\
-  //
-
-  // REVIEW - 수신할 체인이 아예 없는, ibc send가 불가능한 케이스도 테스트해볼것
-  // -> 소믈리에가 그런 상태인 것 같은데, 이런 경우에는 다른 페이지를 보여줘야하나?
-  // -> 기본적인 변수에 모두 nullsafety적용하기
-  // -> recipientChain이 아예 없는 경우 다른 페이지를 보여줄것
-
-  // NOTE - cw20 토큰은 ibc send가 완전히 다르니 우선 무시할것 ...
-
-  // NOTE 현재 체인에서 가지고있는 ibc 코인을 ibc_send가 가능한 ibc코인의 List
-  // REVIEW -  available-ibc 토큰이 수신 가능한 체인이 있는지 확인을 위해서 필요합니다
-  const ibcPossibleChainList = currentChainAssets.data.filter((item) => item.counter_party);
-
-  const nativePossibleChainList = cosmosChainsAssets.data.filter((item) =>
-    currentCoinOrToken.type === 'coin' ? item.counter_party?.denom === currentCoinOrToken.baseDenom : '',
-  );
-  // NOTE 현재 체인에서 가지고 있는 native coin을 수신 가능한 체인의 List
-
-  // 이미 type이라는 필드명을 사용중이어서 'coinType'이라는 필드를 선언함
-  // NOTE 현재 보유중인 코인 중에서 available한 코인 리스트: native & ibc 구분
-  const coinInfos = availableCoinOrTokenList.filter((item) => item.type === 'coin') as CoinInfo[];
-  const availableIBCCoinList = coinInfos.filter((item) => item.coinType === 'ibc') || [];
-  const availableNativeCoinList = coinInfos.filter((item) => item.coinType === 'staking' || item.coinType === 'native') || [];
-
-  // NOTE available한 IBC코인중 수신할 체인이 있는 available한 IBC코인리스트
-  // REVIEW 해당 토큰이 수신 가능한 체인이 존재하는지 && 그 수신 체인이 COSMOS_CHAINS에 정의되어있는지 체크
-  // REVIEW prevChain은 해당 체인이 COSMOSCHIAN에 정의되어있지 않으면 undefined를 반환하기에 존재 여부를 조건으로 넣어놓으면 될 것으로 에상함
-  const ibcPossibleChainListDenom = ibcPossibleChainList.map((item) => item.base_denom);
-  const checkedAvailableIBCCoinList = availableIBCCoinList.filter((item) =>
-    item.originBaseDenom ? ibcPossibleChainListDenom.includes(item.originBaseDenom) && item.prevChain : [],
-  );
-
-  const checkedAvailableNativeCoinList = nativePossibleChainList && nativePossibleChainList.map((item) => item.prevChain) ? [...availableNativeCoinList] : [];
-  // NOTE 보유 available체인 중에서 수신할 체인이 있는지 체크가 된 보낼 코인 List
-  const checkedAvailableCoinList = [...checkedAvailableIBCCoinList, ...checkedAvailableNativeCoinList];
-
-  // NOTE 선택한 코인을 수신 가능한 체인 리스트
-  const recipientChainList = useMemo(() => {
-    if (currentCoinOrToken.type === 'coin') {
-      if (currentCoinOrToken.coinType === 'ibc') {
-        const ibcRecipientChainList =
-          ibcPossibleChainList
-            .filter((item) => item.base_denom === currentCoinOrToken.originBaseDenom)
-            .map(
-              (item) =>
-                ({
-                  ...item,
-                  chain: convertCosmosToOriginName(item.prevChain)?.chainName,
-                } as AssetV2),
-            ) ?? [];
-        return ibcRecipientChainList;
-      }
-      const nativeRecipientChainList =
-        nativePossibleChainList.map(
-          (item) =>
-            ({
-              ...item,
-              chain: convertCosmosToOriginName(item.prevChain)?.chainName,
-            } as AssetV2),
-        ) ?? [];
-      return nativeRecipientChainList;
-    }
-    // REVIEW 추후 토큰용  수신가능 체인 로직이 들어갈 예정
-    return [];
-  }, [currentCoinOrToken, ibcPossibleChainList, nativePossibleChainList]);
-
-  const recipientChainNameList = recipientChainList.map((item) => item.chain);
-
-  const recipientCosmosChainList = useMemo(
+  const senderCoinAndTokenList = useMemo(
     () =>
-      COSMOS_CHAINS.filter((item) => recipientChainNameList.includes(item.chainName)).map((cosmosChain) => ({
-        cosmos: cosmosChain,
-        asset: recipientChainList.find((recipientChain) => recipientChain.chain === cosmosChain.chainName),
-      })),
-    [recipientChainNameList, recipientChainList],
+      availableCoinOrTokenList.filter((item) => {
+        // console.log(item);
+        if (item.type === 'coin' && (item.coinType === 'native' || item.coinType === 'staking')) {
+          // console.log(filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === item.baseDenom));
+          return !!filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === item.baseDenom).length;
+        }
+
+        if (item.type === 'coin' && item.coinType === 'ibc') {
+          return !!filteredCurrentChainAssets.filter((asset) => asset.channel && asset.port && asset.denom === item.baseDenom).length;
+        }
+
+        if (item.type === 'token') {
+          return !!filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === item.address).length;
+        }
+
+        return false;
+      }),
+    [availableCoinOrTokenList, filteredCosmosChainAssets, filteredCurrentChainAssets],
   );
+
+  const receiverIBCList = useMemo(() => {
+    if (currentCoinOrToken.type === 'coin' && (currentCoinOrToken.coinType === 'native' || currentCoinOrToken.coinType === 'staking')) {
+      const assets = filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === currentCoinOrToken.baseDenom);
+      return assets.map((item) => ({ chain: convertAssetNameToCosmos(item.chain)!, channel: item.counter_party!.channel, port: item.counter_party!.port }));
+    }
+
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.coinType === 'ibc') {
+      const assets = filteredCurrentChainAssets.filter((asset) => asset.denom === currentCoinOrToken.baseDenom && asset.channel && asset.port);
+      return assets.map((item) => ({ chain: convertAssetNameToCosmos(item.prevChain || '')!, channel: item.channel!, port: item.port! }));
+    }
+
+    if (currentCoinOrToken.type === 'token') {
+      const assets = filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === currentCoinOrToken.address);
+      return assets.map((item) => ({ chain: convertAssetNameToCosmos(item.chain)!, channel: item.counter_party!.channel, port: item.counter_party!.port }));
+    }
+
+    return [];
+  }, [currentCoinOrToken, filteredCosmosChainAssets, filteredCurrentChainAssets]);
 
   // NOTE 선택된 수신 체인
-  const [selectedRecipientChain, setSelectedRecipientChain] = useState(recipientCosmosChainList ? recipientCosmosChainList[0] : undefined);
-
-  // NOTE 코인 재선택시 자동으로 수신 체인 리스트 변경 반영
-  useEffect(() => {
-    setSelectedRecipientChain(recipientCosmosChainList[0]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentCoinOrTokenId]);
-
-  const selectedRecipientChainName = selectedRecipientChain?.cosmos.chainName || 'UNKNOWN';
-  const selectedRecipientChainData = useMemo(
-    () =>
-      currentCoinOrToken.type === 'coin' && currentCoinOrToken.coinType === 'ibc'
-        ? { channel: selectedRecipientChain?.asset?.channel, tokenDenom: selectedRecipientChain?.asset?.denom }
-        : { channel: selectedRecipientChain?.asset?.counter_party?.channel, tokenDenom: selectedRecipientChain?.asset?.counter_party?.denom },
-    [
-      currentCoinOrToken,
-      selectedRecipientChain?.asset?.channel,
-      selectedRecipientChain?.asset?.counter_party?.channel,
-      selectedRecipientChain?.asset?.counter_party?.denom,
-      selectedRecipientChain?.asset?.denom,
-    ],
-  );
+  const [selectedReceiverIBC, setReceiverIBC] = useState(receiverIBCList.length ? receiverIBCList[0] : undefined);
 
   const addressRegex = useMemo(
-    () => getCosmosAddressRegex(selectedRecipientChain?.cosmos?.bech32Prefix.address || '', [39]),
-    [selectedRecipientChain?.cosmos?.bech32Prefix.address],
+    () => getCosmosAddressRegex(selectedReceiverIBC?.chain?.bech32Prefix.address || '', [39]),
+    [selectedReceiverIBC?.chain?.bech32Prefix.address],
   );
 
-  const timeoutHeight = useClientStateSWR({ chain, channelId: selectedRecipientChainData.channel ?? '' });
-  const revisionHeight = String(1000 + parseInt(timeoutHeight.data?.timeoutHeight?.revision_height || '', 10));
+  const timeoutHeight = useClientStateSWR({ chain, channelId: selectedReceiverIBC?.channel ?? '' });
+  const revisionHeight = timeoutHeight.data?.timeoutHeight?.revision_height
+    ? String(1000 + parseInt(timeoutHeight.data.timeoutHeight.revision_height, 10))
+    : undefined;
   const revisionNumber = timeoutHeight.data?.timeoutHeight?.revision_number;
 
   const feeCoins = useMemo(() => {
@@ -341,17 +291,23 @@ export default function IBCSend({ chain }: IBCSendProps) {
     timeoutHeight,
   ]);
 
-  if (checkedAvailableCoinList.length > 1 && recipientCosmosChainList.length < 1) {
-    setCurrentCoinOrTokenId(checkedAvailableCoinList[0].baseDenom);
-  }
+  useEffect(() => {
+    if (receiverIBCList.length === 0) {
+      setCurrentCoinOrTokenId(senderCoinAndTokenList[0].type === 'coin' ? senderCoinAndTokenList[0].baseDenom : senderCoinAndTokenList[0].address);
+    } else {
+      setReceiverIBC(receiverIBCList[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentCoinOrTokenId]);
 
-  if (recipientCosmosChainList.length === 0) {
+  if (senderCoinAndTokenList.length === 0) {
     return (
       <Container>
         <MarginTop8Div>No Recipient Chain</MarginTop8Div>
       </Container>
     );
   }
+
   return (
     <Container>
       <MarginTop8Div>
@@ -367,11 +323,11 @@ export default function IBCSend({ chain }: IBCSendProps) {
       </MarginTop8Div>
       <MarginTop8Div>
         <DropdownButton
-          imgSrc={selectedRecipientChain?.cosmos.imageURL}
-          title={selectedRecipientChainName}
-          leftHeaderTitle={selectedRecipientChainData.channel}
+          imgSrc={selectedReceiverIBC?.chain.imageURL}
+          title={selectedReceiverIBC?.chain.chainName || ''}
+          leftHeaderTitle={selectedReceiverIBC?.channel}
           isOpenPopover={isRecipientOpenPopover}
-          onClickDropdown={(currentTarget) => setRecipientPopoverAnchorEl(currentTarget)}
+          onClickDropdown={(currentTarget) => setReceiverIBCPopoverAnchorEl(currentTarget)}
         />
       </MarginTop8Div>
       <MarginTop8Div>
@@ -466,7 +422,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                               value: {
                                 receiver: receiverAddress,
                                 sender: senderAddress,
-                                source_channel: selectedRecipientChainData.channel,
+                                source_channel: selectedReceiverIBC?.channel,
                                 source_port: 'transfer',
                                 timeout_height: {
                                   revision_height: revisionHeight,
@@ -474,7 +430,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                                 },
                                 token: {
                                   amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
-                                  denom: selectedRecipientChainData.tokenDenom,
+                                  denom: currentCoinOrToken.baseDenom,
                                 },
                               },
                             },
@@ -536,7 +492,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
       <AddressBookBottomSheet
         open={isOpenedAddressBook}
-        selectedRecipientChain={selectedRecipientChain}
+        chain={selectedReceiverIBC?.chain}
         onClose={() => setIsOpenedAddressBook(false)}
         onClickAddress={(a) => {
           setreceiverAddress(a.address);
@@ -549,10 +505,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
         address={senderAddress}
         marginThreshold={0}
         currentCoinOrTokenInfo={currentCoinOrToken}
-        coinOrTokenInfos={checkedAvailableCoinList}
+        coinOrTokenInfos={senderCoinAndTokenList}
         onClickCoinOrToken={(clickedCoinOrToken) => {
           setCurrentCoinOrTokenId(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.baseDenom : clickedCoinOrToken.address);
-          setSelectedRecipientChain(recipientCosmosChainList[0]);
           setCurrentDisplayAmount('');
           setreceiverAddress('');
           setCurrentMemo('');
@@ -570,19 +525,18 @@ export default function IBCSend({ chain }: IBCSendProps) {
         }}
       />
 
-      <RecipientChainPopover
-        currentCoinType={currentCoinOrToken.type === 'coin' ? currentCoinOrToken.coinType : ''}
-        recipientList={recipientCosmosChainList}
+      <ReceiverIBCPopover
+        recipientList={receiverIBCList}
         marginThreshold={0}
-        selectedRecipientChain={selectedRecipientChain}
+        selectedReceiverIBC={selectedReceiverIBC}
         onClickChain={(clickedChain) => {
-          setSelectedRecipientChain(clickedChain);
+          setReceiverIBC(clickedChain);
           setCurrentDisplayAmount('');
           setreceiverAddress('');
           setCurrentMemo('');
         }}
         open={isRecipientOpenPopover}
-        onClose={() => setRecipientPopoverAnchorEl(null)}
+        onClose={() => setReceiverIBCPopoverAnchorEl(null)}
         anchorEl={recipientPopoverAnchorEl}
         anchorOrigin={{
           vertical: 'bottom',

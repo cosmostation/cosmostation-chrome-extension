@@ -8,29 +8,22 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain } from '~/types/chain';
 import type { AddressInfo } from '~/types/chromeStorage';
-import type { AssetV2 } from '~/types/cosmos/asset';
 
 import { AddressList, Container, Header, HeaderTitle, StyledBottomSheet } from './styled';
 
-type IBCRecipientChain = {
-  cosmos: CosmosChain;
-  asset: AssetV2 | undefined;
-};
 type AddressBookBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   onClickAddress?: (address: AddressInfo) => void;
-  selectedRecipientChain?: IBCRecipientChain;
+  chain?: CosmosChain;
 };
 
-export default function AddressBookBottomSheet({ selectedRecipientChain, onClickAddress, onClose, ...remainder }: AddressBookBottomSheetProps) {
+export default function AddressBookBottomSheet({ chain, onClickAddress, onClose, ...remainder }: AddressBookBottomSheetProps) {
   const { chromeStorage } = useChromeStorage();
   const { currentChain } = useCurrentChain();
   const { t } = useTranslation();
 
   const { addressBook } = chromeStorage;
   const { navigate } = useNavigate();
-  const filteredAddressBook = addressBook.filter((item) =>
-    selectedRecipientChain ? item.chainId === selectedRecipientChain.cosmos.id : item.chainId === currentChain.id,
-  );
+  const filteredAddressBook = addressBook.filter((item) => (chain ? item.chainId === chain.id : item.chainId === currentChain.id));
 
   return (
     <StyledBottomSheet {...remainder} onClose={onClose}>

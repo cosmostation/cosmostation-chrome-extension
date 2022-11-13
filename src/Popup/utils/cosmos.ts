@@ -9,9 +9,7 @@ import { keccak256 } from '@ethersproject/keccak256';
 
 import { COSMOS_CHAINS } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
-import { CRESCENT } from '~/constants/chain/cosmos/crescent';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
-import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
@@ -136,25 +134,20 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [KI.id]: 'ki-chain',
     [STAFIHUB.id]: 'stafi',
     [FETCH_AI.id]: 'fetchai',
-    [INJECTIVE.id]: 'injective',
-    [KAVA.id]: 'kava',
-    [CRESCENT.id]: 'crescent',
-    [EMONEY.id]: 'emoney',
   };
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
 
-export function convertCosmosToOriginName(assetChainName: string) {
+export function convertAssetNameToCosmos(assetName: string) {
   const nameMap = {
+    'crypto-org': CRYPTO_ORG,
     'asset-mantle': ASSET_MANTLE,
     'gravity-bridge': GRAVITY_BRIDGE,
-    'crypto-org': CRYPTO_ORG,
-    cryptoorg: CRYPTO_ORG,
-    'ki-chain': KI,
-    kichain: KI,
-    fetchai: FETCH_AI,
     sifchain: SIF,
+    'ki-chain': KI,
+    stafi: STAFIHUB,
+    fetchai: FETCH_AI,
   } as Record<string, CosmosChain | undefined>;
 
-  return nameMap[assetChainName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetChainName);
+  return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);
 }

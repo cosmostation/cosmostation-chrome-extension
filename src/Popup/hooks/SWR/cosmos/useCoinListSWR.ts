@@ -6,7 +6,6 @@ import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useDelegationSWR } from '~/Popup/hooks/SWR/cosmos/useDelegationSWR';
 import { useRewardSWR } from '~/Popup/hooks/SWR/cosmos/useRewardSWR';
 import { plus } from '~/Popup/utils/big';
-import { convertCosmosToOriginName } from '~/Popup/utils/cosmos';
 import { getDelegatedVestingTotal, getVestingRelatedBalances, getVestingRemained } from '~/Popup/utils/cosmosVesting';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { Coin, CosmosChain } from '~/types/chain';
@@ -115,9 +114,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
       .map((coin) => {
         const coinInfo = ibcAssets.find((item) => item.denom === coin.denom)!;
 
-        const cosmosChainName = convertCosmosToOriginName(coinInfo.prevChain)?.chainName;
         return {
-          prevChain: cosmosChainName,
           coinType: coinInfo.type,
           decimals: coinInfo?.decimal,
           originBaseDenom: coinInfo?.base_denom,

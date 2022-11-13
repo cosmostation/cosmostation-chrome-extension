@@ -4,7 +4,6 @@ import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import type { CosmosChain } from '~/types/chain';
-import type { AssetV2 } from '~/types/cosmos/asset';
 
 import {
   ChainButton,
@@ -20,26 +19,19 @@ import {
 
 import Check16Icon from '~/images/icons/Check16.svg';
 
-type IBCRecipientChain = {
-  cosmos: CosmosChain;
-  asset: AssetV2 | undefined;
+type ReceiverIBC = {
+  chain: CosmosChain;
+  channel: string;
+  port: string;
 };
 
-type RecipientChainPopoverProps = Omit<PopoverProps, 'children'> & {
-  currentCoinType?: string;
-  recipientList: IBCRecipientChain[];
-  selectedRecipientChain?: IBCRecipientChain;
-  onClickChain?: (selectedRecipientChain: IBCRecipientChain) => void;
+type ReceiverIBCPopoverProps = Omit<PopoverProps, 'children'> & {
+  recipientList: ReceiverIBC[];
+  selectedReceiverIBC?: ReceiverIBC;
+  onClickChain?: (selectedReceiverIBC: ReceiverIBC) => void;
 };
 
-export default function RecipientChainPopover({
-  currentCoinType,
-  selectedRecipientChain,
-  onClickChain,
-  onClose,
-  recipientList,
-  ...remainder
-}: RecipientChainPopoverProps) {
+export default function ReceiverIBCPopover({ selectedReceiverIBC, onClickChain, onClose, recipientList, ...remainder }: ReceiverIBCPopoverProps) {
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -51,10 +43,10 @@ export default function RecipientChainPopover({
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
         {recipientList.map((item) => {
-          const { chainName } = item.cosmos;
-          const channelId = currentCoinType === 'ibc' ? item.asset?.channel : item.asset?.counter_party?.channel;
-          const imgURL = item.cosmos.imageURL;
-          const isActive = selectedRecipientChain?.cosmos.baseDenom === item.cosmos.baseDenom;
+          const { chainName } = item.chain;
+          const channelId = item.channel;
+          const imgURL = item.chain.imageURL;
+          const isActive = selectedReceiverIBC?.chain.baseDenom === item.chain.baseDenom;
 
           return (
             <ChainButton
