@@ -9,11 +9,12 @@ import type { ClientStatePayload } from '~/types/cosmos/clientState';
 type UseClientStateSWRPRops = {
   chain: CosmosChain;
   channelId: string;
+  port?: string;
 };
 
-export function useClientStateSWR({ chain, channelId }: UseClientStateSWRPRops, suspense?: boolean) {
+export function useClientStateSWR({ chain, channelId, port }: UseClientStateSWRPRops, suspense?: boolean) {
   const { getClientState } = cosmosURL(chain);
-  const requestURL = getClientState(channelId);
+  const requestURL = getClientState(channelId, port);
   const fetcher = async (fetchUrl: string) => {
     try {
       return await get<ClientStatePayload>(fetchUrl);

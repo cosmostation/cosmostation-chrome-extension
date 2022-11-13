@@ -2,7 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, COSMOS_DEFAULT_GAS, COSMOS_DEFAULT_IBCSEND_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
+import {
+  COSMOS_CHAINS,
+  COSMOS_DEFAULT_GAS,
+  COSMOS_DEFAULT_IBC_SEND_GAS,
+  COSMOS_DEFAULT_IBC_TRANSFER_GAS,
+  COSMOS_FEE_BASE_DENOMS,
+  COSMOS_GAS_RATES,
+} from '~/constants/chain';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
@@ -78,7 +85,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const filteredCosmosChainAssets = useMemo(() => cosmosChainsAssets.data.filter((item) => cosmosAssetNames.includes(item.chain)), [cosmosChainsAssets.data]);
   const filteredCurrentChainAssets = useMemo(
-    () => currentChainAssets.data.filter((item) => cosmosBaseDenoms.includes(item.base_denom)),
+    () => currentChainAssets.data.filter((item) => cosmosBaseDenoms.includes(item.base_denom) || item.base_type === 'cw20'),
     [currentChainAssets.data],
   );
   const coinAll = useMemo(
@@ -133,7 +140,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
   );
 
   // REVIEW -  token 관련 코드 삭제
-  const sendGas = currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBCSEND_GAS : COSMOS_DEFAULT_GAS;
+  const sendGas =
+    currentCoinOrToken.type === 'coin'
+      ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS
+      : currentCoinOrToken.type === 'token'
+      ? gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS
+      : COSMOS_DEFAULT_GAS;
 
   const [currentGas, setCurrentGas] = useState(sendGas);
   const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
@@ -204,7 +216,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [selectedReceiverIBC?.chain?.bech32Prefix.address],
   );
 
-  const timeoutHeight = useClientStateSWR({ chain, channelId: selectedReceiverIBC?.channel ?? '' });
+  const timeoutHeight = useClientStateSWR({ chain, channelId: selectedReceiverIBC?.channel ?? '', port: selectedReceiverIBC?.port });
   const revisionHeight = timeoutHeight.data?.timeoutHeight?.revision_height
     ? String(1000 + parseInt(timeoutHeight.data.timeoutHeight.revision_height, 10))
     : undefined;
@@ -463,9 +475,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
                                 sender: senderAddress,
                                 contract: currentCoinOrToken.address,
                                 msg: {
-                                  transfer: {
-                                    recipient: receiverAddress,
+                                  send: {
                                     amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
+                                    contract: selectedReceiverIBC?.port.split('.')?.[1],
+                                    msg: Buffer.from(
+                                      JSON.stringify({ channel: selectedReceiverIBC?.channel, remote_address: receiverAddress, timeout: 900 }),
+                                      'utf8',
+                                    ).toString('base64'),
                                   },
                                 },
                                 funds: [],

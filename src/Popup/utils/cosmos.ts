@@ -40,7 +40,7 @@ export function cosmosURL(chain: CosmosChain) {
     getCW20TokenInfo: (contractAddress: string) => `${restURL}/wasm/contract/${contractAddress}/smart/${toHex('{"token_info":{}}')}?encoding=utf-8`,
     getCW20Balance: (contractAddress: string, address: string) =>
       `${restURL}/wasm/contract/${contractAddress}/smart/${toHex(`{"balance":{"address":"${address}"}}`)}?encoding=utf-8`,
-    getClientState: (channelId: string) => `${restURL}/ibc/core/channel/v1/channels/${channelId}/ports/transfer/client_state`,
+    getClientState: (channelId: string, port?: string) => `${restURL}/ibc/core/channel/v1/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
   };
 }
 

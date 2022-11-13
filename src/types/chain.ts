@@ -30,6 +30,7 @@ export type Gas = {
   send?: string;
   ibcSend?: string;
   transfer?: string;
+  ibcTransfer?: string;
 };
 
 export type CosmosChain = {
