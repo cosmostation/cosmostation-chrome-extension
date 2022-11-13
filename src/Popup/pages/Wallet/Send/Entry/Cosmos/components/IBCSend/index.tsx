@@ -58,7 +58,6 @@ type IBCSendProps = {
 };
 
 const cosmosAssetNames = COSMOS_CHAINS.map((item) => convertCosmosToAssetName(item));
-const cosmosBaseDenoms = COSMOS_CHAINS.map((item) => item.baseDenom);
 
 export default function IBCSend({ chain }: IBCSendProps) {
   const { currentAccount } = useCurrentAccount();
@@ -85,7 +84,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const filteredCosmosChainAssets = useMemo(() => cosmosChainsAssets.data.filter((item) => cosmosAssetNames.includes(item.chain)), [cosmosChainsAssets.data]);
   const filteredCurrentChainAssets = useMemo(
-    () => currentChainAssets.data.filter((item) => cosmosBaseDenoms.includes(item.base_denom) || item.base_type === 'cw20'),
+    () => currentChainAssets.data.filter((item) => convertAssetNameToCosmos(item.prevChain || '')),
     [currentChainAssets.data],
   );
   const coinAll = useMemo(
@@ -139,7 +138,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [availableCoinOrTokenList, currentCoinOrTokenId],
   );
 
-  // REVIEW -  token 관련 코드 삭제
   const sendGas =
     currentCoinOrToken.type === 'coin'
       ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS
