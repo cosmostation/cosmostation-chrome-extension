@@ -52,8 +52,6 @@ export type CosmosChain = {
   cosmWasm?: boolean;
 } & CommonChain;
 
-export type IBCCosmosChain = CosmosChain & { channelId: string; counterChannelId: string; ibcDenom: string };
-
 export type CosmosCW20Token = {
   id: string;
   chainId: CosmosChain['id'];

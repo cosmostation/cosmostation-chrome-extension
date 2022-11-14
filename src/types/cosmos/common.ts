@@ -1,6 +1,6 @@
 export type Amount = {
-  amount: string;
   denom: string;
+  amount: string;
 };
 
 export type Height = {

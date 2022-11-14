@@ -2,12 +2,7 @@ import { styled } from '@mui/material/styles';
 
 import Input from '~/Popup/components/common/Input';
 
-// REVIEW 내용이 없는 빈 div는 어떻게 처리해야할까요?
-export const Container = styled('div')({
-  // padding: '0',
-  // height: '100%',
-  // position: 'relative',
-});
+export const Container = styled('div')({});
 
 export const MaxButton = styled('button')(({ theme }) => ({
   padding: '0.4rem 0.8rem',

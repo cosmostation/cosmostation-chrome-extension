@@ -15,7 +15,6 @@ import { useBalanceSWR } from './useBalanceSWR';
 import { useIncentiveSWR } from './useIncentiveSWR';
 
 export type CoinInfo = {
-  prevChain?: string;
   coinType?: string;
   decimals: number;
   originBaseDenom?: string;

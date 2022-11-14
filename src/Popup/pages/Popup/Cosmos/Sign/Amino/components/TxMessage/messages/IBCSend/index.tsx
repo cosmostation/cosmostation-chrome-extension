@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import { CURRENCY_DECIMALS } from '~/constants/currency';
@@ -46,9 +47,7 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
   const assetCoinInfo = coins.find((coin) => isEqualsIgnoringCase(coin.baseDenom, itemBaseDenom));
   const ibcCoinInfo = ibcCoins.find((coin) => coin.baseDenom === itemBaseDenom);
 
-  // 함수 로 나온값을 바로 호출해서 변수에 할당하는 방식이다
-  // FIXME later/... useMemo로 바꿔보기
-  const itemDisplayAmount = (() => {
+  const itemDisplayAmount = useMemo(() => {
     if (itemBaseDenom === baseDenom) {
       return toDisplayDenomAmount(itemBaseAmount, decimals);
     }
@@ -66,9 +65,9 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
     }
 
     return itemBaseAmount || '0';
-  })();
+  }, [assetCoinInfo?.decimals, baseDenom, chain.baseDenom, chain.decimals, decimals, ibcCoinInfo?.decimals, itemBaseAmount, itemBaseDenom]);
 
-  const itemDisplayDenom = (() => {
+  const itemDisplayDenom = useMemo(() => {
     if (itemBaseDenom === baseDenom) {
       return displayDenom.toUpperCase();
     }
@@ -86,9 +85,9 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
     }
 
     return itemBaseDenom.length > 5 ? `${itemBaseDenom.substring(0, 5)}...` : itemBaseDenom;
-  })();
+  }, [assetCoinInfo?.displayDenom, baseDenom, chain.baseDenom, chain.displayDenom, displayDenom, ibcCoinInfo?.displayDenom, itemBaseDenom]);
 
-  const itemDisplayValue = (() => {
+  const itemDisplayValue = useMemo(() => {
     if (itemBaseDenom === baseDenom) {
       const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
       return times(itemDisplayAmount, chainPrice);
@@ -106,7 +105,8 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
     }
 
     return '0';
-  })();
+  }, [assetCoinInfo?.coinGeckoId, baseDenom, coinGeckoId, coinGeckoPrice.data, currency, ibcCoinInfo?.coinGeckoId, itemBaseDenom, itemDisplayAmount]);
+
   return (
     <Container title="IBC Send">
       <ContentContainer>

@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios';
+import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { get, isAxiosError } from '~/Popup/utils/axios';
@@ -12,7 +13,7 @@ type UseClientStateSWRPRops = {
   port?: string;
 };
 
-export function useClientStateSWR({ chain, channelId, port }: UseClientStateSWRPRops, suspense?: boolean) {
+export function useClientStateSWR({ chain, channelId, port }: UseClientStateSWRPRops, config?: SWRConfiguration) {
   const { getClientState } = cosmosURL(chain);
   const requestURL = getClientState(channelId, port);
   const fetcher = async (fetchUrl: string) => {
@@ -33,10 +34,9 @@ export function useClientStateSWR({ chain, channelId, port }: UseClientStateSWRP
     dedupingInterval: 14000,
     refreshInterval: 15000,
     errorRetryCount: 0,
-    suspense,
     isPaused: () => !chain || !channelId,
+    ...config,
   });
-  const returnData = data ? { timeoutHeight: data.identified_client_state?.client_state?.latest_height } : undefined;
 
-  return { data: returnData, error, mutate };
+  return { data, error, mutate };
 }

@@ -212,11 +212,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [selectedReceiverIBC?.chain?.bech32Prefix.address],
   );
 
-  const timeoutHeight = useClientStateSWR({ chain, channelId: selectedReceiverIBC?.channel ?? '', port: selectedReceiverIBC?.port });
-  const revisionHeight = timeoutHeight.data?.timeoutHeight?.revision_height
-    ? String(1000 + parseInt(timeoutHeight.data.timeoutHeight.revision_height, 10))
-    : undefined;
-  const revisionNumber = timeoutHeight.data?.timeoutHeight?.revision_number;
+  const clientState = useClientStateSWR({ chain, channelId: selectedReceiverIBC?.channel ?? '', port: selectedReceiverIBC?.port });
+
+  const latestHeight = clientState.data?.identified_client_state?.client_state?.latest_height;
+
+  const revisionHeight = latestHeight?.revision_height ? String(1000 + parseInt(latestHeight?.revision_height, 10)) : undefined;
+  const revisionNumber = latestHeight?.revision_number;
 
   const feeCoins = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
@@ -258,7 +259,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
   const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentCoinOrTokenDecimals);
   const errorMessage = useMemo(() => {
-    if (!timeoutHeight) {
+    if (!latestHeight) {
       return t('pages.Wallet.Send.Entry.Cosmos.index.timeoutHeightError');
     }
     if (!addressRegex.test(receiverAddress)) {
@@ -296,7 +297,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     currentFeeCoin.baseDenom,
     currentFeeCoinDisplayAvailableAmount,
     t,
-    timeoutHeight,
+    latestHeight,
   ]);
 
   useEffect(() => {

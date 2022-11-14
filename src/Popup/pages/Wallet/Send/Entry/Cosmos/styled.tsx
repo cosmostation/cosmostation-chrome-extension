@@ -7,6 +7,7 @@ export const Container = styled('div')({
 
   position: 'relative',
 });
+
 export const TopContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
@@ -16,4 +17,5 @@ export const TopContainer = styled('div')({
 
   backgroundColor: 'transparent',
 });
+
 export const CircularTabContainer = styled('div')({ display: 'flex', justifyContent: 'center' });

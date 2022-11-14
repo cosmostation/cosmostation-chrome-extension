@@ -36,7 +36,7 @@ export type AssetV2Payload = {
   assets: AssetV2[];
 };
 
-type CounterParty = {
+export type CounterParty = {
   channel: string;
   port: string;
   denom: string;

@@ -24,8 +24,8 @@ export const CircularStyledTabs = styled(Tabs)(({ theme }) => ({
 }));
 
 export const CircularStyledTab = styled(Tab)(({ theme }) => ({
-  zIndex: 2,
   '&.MuiTab-root': {
+    zIndex: 1,
     minWidth: '0',
     padding: '0',
     width: '8rem',

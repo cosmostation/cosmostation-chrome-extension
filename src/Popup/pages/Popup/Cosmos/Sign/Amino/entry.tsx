@@ -79,6 +79,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const {
     params: { doc, isEditFee, isEditMemo, gasRate },
   } = message;
+
   const { fee, msgs } = doc;
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
@@ -189,6 +190,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                 if (!keyPair) {
                   throw new Error('key pair does not exist');
                 }
+
                 const signature = await (async () => {
                   if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
                     if (!keyPair.privateKey) {
@@ -239,9 +241,11 @@ export default function Entry({ queue, chain }: EntryProps) {
                   try {
                     const url = cosmosURL(chain).postBroadcast();
                     const pTx = protoTx(tx, base64Signature, pubKey);
+
                     const response = await broadcast(url, pTx);
 
                     const { code } = response.tx_response;
+
                     if (code === 0) {
                       enqueueSnackbar('success');
                     } else {
@@ -269,6 +273,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     pub_key: pubKey,
                     signed_doc: tx,
                   };
+
                   responseToWeb({
                     response: {
                       result,
