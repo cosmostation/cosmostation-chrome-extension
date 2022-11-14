@@ -168,9 +168,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const senderCoinAndTokenList = useMemo(
     () =>
       availableCoinOrTokenList.filter((item) => {
-        // console.log(item);
         if (item.type === 'coin' && (item.coinType === 'native' || item.coinType === 'staking')) {
-          // console.log(filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === item.baseDenom));
           return !!filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === item.baseDenom).length;
         }
 
