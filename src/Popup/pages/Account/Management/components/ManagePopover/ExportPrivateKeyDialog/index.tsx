@@ -94,7 +94,11 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
 
   const isMnemonic = account.type === 'MNEMONIC';
 
-  const path = isMnemonic ? `m/${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${account.bip44.addressIndex}` : '';
+  const path = isMnemonic
+    ? `m/${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${account.bip44.addressIndex}${
+        chain.line === 'APTOS' ? "'" : ''
+      }`
+    : '';
 
   return (
     <Dialog {...remainder} onClose={handleOnClose}>

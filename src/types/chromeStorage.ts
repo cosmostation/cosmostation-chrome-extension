@@ -1,5 +1,5 @@
 import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
-import type { BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken } from '~/types/chain';
+import type { AptosNetwork, BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken } from '~/types/chain';
 import type { TransportType } from '~/types/ledger';
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
@@ -74,6 +74,7 @@ export type AutoSign = {
 export type Providers = {
   keplr: boolean;
   metamask: boolean;
+  aptos: boolean;
 };
 
 export type ChromeStorage = {
@@ -94,11 +95,17 @@ export type ChromeStorage = {
 
   allowedOrigins: AllowedOrigin[];
   allowedChainIds: Chain['id'][];
+
   shownEthereumNetworkIds: EthereumNetwork['id'][];
+  shownAptosNetworkIds: AptosNetwork['id'][];
+
   selectedChainId: Chain['id'];
 
   additionalEthereumNetworks: EthereumNetwork[];
   selectedEthereumNetworkId: EthereumNetwork['id'];
+
+  additionalAptosNetworks: AptosNetwork[];
+  selectedAptosNetworkId: AptosNetwork['id'];
 
   cosmosTokens: CosmosToken[];
   ethereumTokens: EthereumToken[];

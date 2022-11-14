@@ -5,11 +5,13 @@ import type { MessageTypes } from '@metamask/eth-sig-util';
 import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 
 import { COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { PRIVATE_KEY_FOR_TEST } from '~/constants/common';
 import { COSMOS_RPC_ERROR_MESSAGE, ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import type { TOKEN_TYPE } from '~/constants/ethereum';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
+import { APTOS_METHOD_TYPE, APTOS_NO_POPUP_METHOD_TYPE, APTOS_POPUP_METHOD_TYPE } from '~/constants/message/aptos';
 import { COMMON_METHOD_TYPE, COMMON_NO_POPUP_METHOD_TYPE } from '~/constants/message/common';
 import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/message/cosmos';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
@@ -17,7 +19,7 @@ import { chromeSessionStorage } from '~/Popup/utils/chromeSessionStorage';
 import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { CommonRPCError, CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
+import { AptosRPCError, CommonRPCError, CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
 import { requestRPC, signTypedData } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { toHex } from '~/Popup/utils/string';
@@ -27,6 +29,7 @@ import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { Balance, SmartPayload, TokenInfo } from '~/types/cosmos/contract';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
+import type { AptosConnectResponse, AptosIsConnectedResponse, AptosNetworkResponse, AptosSignMessage, AptosSignTransaction } from '~/types/message/aptos';
 import type { ComProvidersResponse } from '~/types/message/common';
 import type {
   CosAccountResponse,
@@ -67,6 +70,8 @@ import type {
 } from '~/types/message/ethereum';
 
 import {
+  aptosSignMessageSchema,
+  aptosSignTransactionSchema,
   cosAddChainParamsSchema,
   cosAddTokensCW20ParamsSchema,
   cosDeleteAutoSignParamsSchema,
@@ -1565,6 +1570,166 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
           },
           jsonrpc: '2.0',
+        },
+        message,
+        messageId,
+        origin,
+      });
+    }
+  }
+
+  if (request.line === 'APTOS') {
+    const chain = APTOS;
+
+    const aptosMethods = Object.values(APTOS_METHOD_TYPE) as string[];
+    const aptosPopupMethods = Object.values(APTOS_POPUP_METHOD_TYPE) as string[];
+    const aptosNoPopupMethods = Object.values(APTOS_NO_POPUP_METHOD_TYPE) as string[];
+
+    const { currentAccountAllowedOrigins, currentAllowedChains, currentAccount, allowedOrigins, currentAptosNetwork } = await chromeStorage();
+
+    const { currentPassword } = await chromeSessionStorage();
+
+    const { message, messageId, origin } = request;
+
+    if (currentAccount.type === 'LEDGER') {
+      throw new AptosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
+    }
+
+    try {
+      if (!message?.method || !aptosMethods.includes(message.method)) {
+        throw new AptosRPCError(RPC_ERROR.UNSUPPORTED_METHOD, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD]);
+      }
+
+      const { method } = message;
+
+      if (aptosPopupMethods.includes(method)) {
+        if (method === 'aptos_connect' || method === 'aptos_account') {
+          if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+            const address = getAddress(chain, keyPair?.publicKey);
+
+            const result: AptosConnectResponse = { address, publicKey: `0x${keyPair!.publicKey.toString('hex')}` };
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          } else {
+            localQueues.push(request);
+            void setQueues();
+          }
+        }
+
+        if (method === 'aptos_signTransaction' || method === 'aptos_signAndSubmitTransaction') {
+          const { params } = message;
+
+          try {
+            const schema = aptosSignTransactionSchema();
+
+            const validatedParams = (await schema.validateAsync(params)) as AptosSignTransaction['params'];
+
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: [...validatedParams] as AptosSignTransaction['params'] },
+            });
+            void setQueues();
+          } catch (e) {
+            if (e instanceof AptosRPCError) {
+              throw e;
+            }
+
+            throw new AptosRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`);
+          }
+        }
+
+        if (method === 'aptos_signMessage') {
+          const { params } = message;
+
+          try {
+            const schema = aptosSignMessageSchema();
+
+            const validatedParams = (await schema.validateAsync(params)) as AptosSignMessage['params'];
+
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: [...validatedParams] as AptosSignMessage['params'] },
+            });
+            void setQueues();
+          } catch (e) {
+            if (e instanceof AptosRPCError) {
+              throw e;
+            }
+
+            throw new AptosRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`);
+          }
+        }
+      } else if (aptosNoPopupMethods.includes(method)) {
+        if (method === 'aptos_isConnected') {
+          const result: AptosIsConnectedResponse = !!currentAccountAllowedOrigins.includes(origin);
+
+          responseToWeb({
+            response: {
+              result,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        }
+
+        if (method === 'aptos_disconnect') {
+          const newAllowedOrigins = allowedOrigins.filter((item) => !(item.accountId === currentAccount.id && item.origin === origin));
+
+          await setStorage('allowedOrigins', newAllowedOrigins);
+
+          const result = null;
+
+          responseToWeb({
+            response: {
+              result,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        }
+
+        if (method === 'aptos_network') {
+          const result: AptosNetworkResponse = currentAptosNetwork().networkName;
+
+          responseToWeb({
+            response: {
+              result,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        }
+      } else {
+        throw new AptosRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
+      }
+    } catch (e) {
+      if (e instanceof AptosRPCError) {
+        responseToWeb({
+          response: e.rpcMessage,
+          message,
+          messageId,
+          origin,
+        });
+        return;
+      }
+
+      responseToWeb({
+        response: {
+          error: {
+            code: RPC_ERROR.INTERNAL,
+            message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
+          },
         },
         message,
         messageId,

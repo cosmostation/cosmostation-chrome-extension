@@ -8,13 +8,15 @@ import { get } from '~/Popup/utils/axios';
 import type { CosmosChain } from '~/types/chain';
 import type { SimplePrice } from '~/types/coinGecko';
 
-import { useAssetsSWR } from './cosmos/useAssetsSWR';
+import { useAssetsSWR as useAptosAssetsSWR } from './aptos/useAssetsSWR';
+import { useAssetsSWR as useCosmosAssetsSWR } from './cosmos/useAssetsSWR';
 import { useChromeStorage } from '../useChromeStorage';
 
 export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const { currentAllowedChains } = useCurrentAllowedChains();
 
-  const cosmosAssets = useAssetsSWR();
+  const cosmosAssets = useCosmosAssetsSWR();
+  const aptosAssets = useAptosAssetsSWR();
 
   const { chromeStorage } = useChromeStorage();
 
@@ -23,9 +25,10 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const ethereumTokenCoinGeckoIds = ethereumTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!);
   const cosmosTokenCoinGeckoIds = cosmosTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!);
   const cosmosAssetsCoinGeckoIds = cosmosAssets.data.map((item) => item.coinGeckoId);
+  const aptosAssetsCoinGeckoIds = aptosAssets.data.map((item) => item.coinGeckoId);
 
   const allCoinGeckoIds = Array.from(
-    new Set([...networkCoinGeckoIds, ...ethereumTokenCoinGeckoIds, ...cosmosTokenCoinGeckoIds, ...cosmosAssetsCoinGeckoIds]),
+    new Set([...networkCoinGeckoIds, ...ethereumTokenCoinGeckoIds, ...cosmosTokenCoinGeckoIds, ...cosmosAssetsCoinGeckoIds, ...aptosAssetsCoinGeckoIds]),
   ).filter((item) => item);
   const joinedAllCoinGeckoIds = allCoinGeckoIds.length > 0 ? `,${allCoinGeckoIds.join(',')}` : '';
 
@@ -46,6 +49,7 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
     errorRetryCount: 3,
     errorRetryInterval: 5000,
     suspense,
+    isPaused: () => cosmosAssets.isLoading || aptosAssets.isLoading,
   });
 
   return { data, error, mutate };

@@ -53,6 +53,31 @@ export class CosmosRPCError extends Error {
   }
 }
 
+export class AptosRPCError extends Error {
+  public code: number;
+
+  public id?: string | number;
+
+  public rpcMessage: unknown;
+
+  constructor(code: number, message: string) {
+    super(message);
+    this.name = 'AptosRPCError';
+    this.code = code;
+
+    const errorMessage = {
+      error: {
+        code,
+        message,
+      },
+    };
+
+    this.rpcMessage = errorMessage;
+
+    Object.setPrototypeOf(this, AptosRPCError.prototype);
+  }
+}
+
 export class CommonRPCError extends Error {
   public code: number;
 

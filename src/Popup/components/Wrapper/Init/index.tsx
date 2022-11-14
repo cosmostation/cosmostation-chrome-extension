@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
-import { CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS } from '~/constants/chain/aptos/aptos';
+import { MAINNET as APTOS_NETWORK_MAINNET } from '~/constants/chain/aptos/network/mainnet';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { ETHEREUM as NETWORK_ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
+import { ETHEREUM as ETHEREUM_NETWORK_ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeSessionStorageDefault, chromeSessionStorageState } from '~/Popup/recoils/chromeSessionStorage';
@@ -13,7 +15,7 @@ import { chromeStorageDefault, chromeStorageState } from '~/Popup/recoils/chrome
 import { getAllSessionStorage } from '~/Popup/utils/chromeSessionStorage';
 import { getAllStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import type { Chain, CosmosChain } from '~/types/chain';
-import type { LanguageType } from '~/types/chromeStorage';
+import type { LanguageType, Providers } from '~/types/chromeStorage';
 
 type InitType = {
   children: JSX.Element;
@@ -31,6 +33,7 @@ export default function Init({ children }: InitType) {
   const officialChainIds = CHAINS.map((item) => item.id);
 
   const officialEthereumNetworkIds = ETHEREUM_NETWORKS.map((item) => item.id);
+  const officialAptosNetworkIds = APTOS_NETWORKS.map((item) => item.id);
 
   const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
   const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
@@ -114,12 +117,20 @@ export default function Init({ children }: InitType) {
       }
 
       if (!originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).length) {
-        await setStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id]);
+        await setStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id]);
         await setStorage('selectedChainId', COSMOS.id);
       }
 
       if (!originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length) {
-        await setStorage('shownEthereumNetworkIds', [NETWORK_ETHEREUM.id]);
+        await setStorage('shownEthereumNetworkIds', [ETHEREUM_NETWORK_ETHEREUM.id]);
+      }
+
+      if (!originChromeStorage.shownAptosNetworkIds?.filter((item) => officialAptosNetworkIds.includes(item)).length) {
+        await setStorage('shownAptosNetworkIds', [APTOS_NETWORK_MAINNET.id]);
+      }
+
+      if (!originChromeStorage.selectedAptosNetworkId) {
+        await setStorage('selectedAptosNetworkId', APTOS_NETWORK_MAINNET.id);
       }
 
       const currentTime = new Date().getTime();
@@ -127,6 +138,20 @@ export default function Init({ children }: InitType) {
       if (originChromeStorage.autoSigns?.filter((item) => item.startTime + item.duration < currentTime).length) {
         const newAutoSigns = originChromeStorage.autoSigns.filter((item) => item.startTime + item.duration > currentTime);
         await setStorage('autoSigns', newAutoSigns);
+      }
+
+      if (
+        originChromeStorage.providers?.aptos === undefined ||
+        originChromeStorage.providers?.metamask === undefined ||
+        originChromeStorage.providers?.keplr === undefined
+      ) {
+        const newProviders: Providers = {
+          aptos: originChromeStorage.providers?.aptos === undefined ? true : originChromeStorage.providers?.aptos,
+          keplr: originChromeStorage.providers?.keplr === undefined ? true : originChromeStorage.providers?.keplr,
+          metamask: originChromeStorage.providers?.metamask === undefined ? true : originChromeStorage.providers?.metamask,
+        };
+
+        await setStorage('providers', newProviders);
       }
 
       setIsLoading(false);

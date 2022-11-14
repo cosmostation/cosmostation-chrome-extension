@@ -16,18 +16,10 @@ type Keplr = Omit<
 
 interface Window {
   cosmostation: {
-    common: {
-      request: (message: import('~/types/message').CommonRequestMessage) => Promise<T>;
-    };
+    common: Common;
     ethereum: Ethereum;
-    cosmos: {
-      request: (message: import('~/types/message').CosmosRequestMessage) => Promise<T>;
-      on: (eventName: import('~/types/message').CosmosListenerType, eventHandler: (event?: unknown) => void) => void;
-      off: (
-        eventName: import('~/types/message').CosmosListenerType | ((event: MessageEvent<ListenerMessage>) => void),
-        eventHandler?: (data: unknown) => void,
-      ) => void;
-    };
+    cosmos: Cosmos;
+    aptos: Aptos;
     tendermint: {
       request: (message: import('~/types/message').CosmosRequestMessage) => Promise<T>;
       on: (eventName: import('~/types/message').CosmosListenerType, eventHandler: (event?: unknown) => void) => void;
@@ -45,14 +37,29 @@ interface Window {
     };
   };
   keplr?: Keplr;
-  getOfflineSigner: unknown;
-  getOfflineSignerOnlyAmino: unknown;
-  getOfflineSignerAuto: unknown;
+  getOfflineSigner?: unknown;
+  getOfflineSignerOnlyAmino?: unknown;
+  getOfflineSignerAuto?: unknown;
 
   ethereum?: MetaMask;
+  petra?: Aptos;
+  aptos?: Aptos;
 }
 
 type JsonRPCRequest = { id?: string; jsonrpc: '2.0'; method: string; params?: unknown };
+
+type Common = {
+  request: (message: import('~/types/message').CommonRequestMessage) => Promise<T>;
+};
+
+type Cosmos = {
+  request: (message: import('~/types/message').CosmosRequestMessage) => Promise<T>;
+  on: (eventName: import('~/types/message').CosmosListenerType, eventHandler: (event?: unknown) => void) => void;
+  off: (
+    eventName: import('~/types/message').CosmosListenerType | ((event: MessageEvent<ListenerMessage>) => void),
+    eventHandler?: (data: unknown) => void,
+  ) => void;
+};
 
 type Ethereum = {
   request: (message: import('~/types/message').EthereumRequestMessage) => Promise<T>;
@@ -72,6 +79,26 @@ type Ethereum = {
   isMetaMask: boolean;
   chainId?: string;
   networkVersion?: string;
+};
+
+type Aptos = {
+  request: (message: import('~/types/message').AptosRequestMessage) => Promise<T>;
+  on: (eventName: import('~/types/message').AptosListenerType, eventHandler: (data?: unknown) => void) => void;
+  off: (eventName: import('~/types/message').AptosListenerType, eventHandler: (data: unknown) => void) => void;
+  connect: () => Promise<import('~/types/message/aptos').AptosConnectResponse>;
+  network: () => Promise<import('~/types/message/aptos').AptosNetworkResponse>;
+  disconnect: () => Promise<import('~/types/message/aptos').AptosDisconnectResponse>;
+  isConnected: () => Promise<import('~/types/message/aptos').AptosIsConnectedResponse>;
+  account: () => Promise<import('~/types/message/aptos').AptosAccountResponse>;
+  signAndSubmitTransaction: (
+    payload: import('~/types/message/aptos').AptosSignPayload,
+  ) => Promise<import('~/types/message/aptos').AptosSignAndSubmitTransactionResponse>;
+  signTransaction: (payload: import('~/types/message/aptos').AptosSignPayload) => Promise<import('~/types/message/aptos').AptosSignTransactionResponse>;
+  signMessage: (params: import('~/types/message/aptos').AptosSignMessage['params'][0]) => Promise<import('~/types/message/aptos').AptosSignMessageResponse>;
+  onNetworkChange: (eventHandler: (data?: unknown) => void) => void;
+  offNetworkChange: (eventHandler: (data?: unknown) => void) => void;
+  onAccountChange: (eventHandler: (data?: unknown) => void) => void;
+  offAccountChange: (eventHandler: (data?: unknown) => void) => void;
 };
 
 type MetaMask = Ethereum;

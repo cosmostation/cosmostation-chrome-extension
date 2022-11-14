@@ -1,6 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 
 import { CHAINS } from '~/constants/chain';
+import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
@@ -50,15 +51,24 @@ export function useCurrentAccount() {
 
     emitToWeb({ line: 'COSMOS', type: 'accountChanged' }, origins);
 
-    const keyPair = getKeyPair(accounts.find((item) => item.id === newAccountId)!, ETHEREUM, currentPassword);
-    const address = getAddress(ETHEREUM, keyPair?.publicKey);
+    const ethereumKeyPair = getKeyPair(accounts.find((item) => item.id === newAccountId)!, ETHEREUM, currentPassword);
+    const ethereumAddress = getAddress(ETHEREUM, ethereumKeyPair?.publicKey);
 
     const currentAccountOrigins = Array.from(new Set(allowedOrigins.filter((item) => item.accountId === newAccountId).map((item) => item.origin)));
     const currentAccountNotOrigins = Array.from(new Set(allowedOrigins.filter((item) => item.accountId !== newAccountId).map((item) => item.origin)));
 
-    emitToWeb({ line: 'ETHEREUM', type: 'accountsChanged', message: { result: [address] } }, currentAccountOrigins);
+    emitToWeb({ line: 'ETHEREUM', type: 'accountsChanged', message: { result: [ethereumAddress] } }, currentAccountOrigins);
     emitToWeb(
       { line: 'ETHEREUM', type: 'accountsChanged', message: { result: [] } },
+      currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
+    );
+
+    const aptosKeyPair = getKeyPair(accounts.find((item) => item.id === newAccountId)!, APTOS, currentPassword);
+    const aptosAddress = getAddress(APTOS, aptosKeyPair?.publicKey);
+
+    emitToWeb({ line: 'APTOS', type: 'accountChange', message: { result: aptosAddress } }, currentAccountOrigins);
+    emitToWeb(
+      { line: 'APTOS', type: 'accountChange', message: { result: '' } },
       currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
     );
   };

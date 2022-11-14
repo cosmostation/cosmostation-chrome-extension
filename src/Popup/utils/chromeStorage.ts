@@ -1,4 +1,4 @@
-import { CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { chromeStorageDefault } from '~/Popup/recoils/chromeStorage';
 import type { ChromeStorage, ChromeStorageKeys } from '~/types/chromeStorage';
 
@@ -40,8 +40,17 @@ export async function chromeStorage() {
 
   const storageWithDefault = { ...chromeStorageDefault, ...storage };
 
-  const { accounts, accountName, selectedAccountId, additionalEthereumNetworks, selectedEthereumNetworkId, allowedOrigins, allowedChainIds } =
-    storageWithDefault;
+  const {
+    accounts,
+    accountName,
+    selectedAccountId,
+    additionalEthereumNetworks,
+    selectedEthereumNetworkId,
+    allowedOrigins,
+    allowedChainIds,
+    additionalAptosNetworks,
+    selectedAptosNetworkId,
+  } = storageWithDefault;
 
   const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
   const currentAccountName = accountName[selectedAccountId];
@@ -52,6 +61,14 @@ export async function chromeStorage() {
     const networkId = selectedEthereumNetworkId ?? ETHEREUM_NETWORKS[1].id;
 
     return ethereumNetworks.find((network) => network.id === networkId) ?? ethereumNetworks[0];
+  };
+
+  const currentAptosNetwork = () => {
+    const aptosNetworks = [...APTOS_NETWORKS, ...additionalAptosNetworks];
+
+    const networkId = selectedAptosNetworkId ?? APTOS_NETWORKS[1].id;
+
+    return aptosNetworks.find((network) => network.id === networkId) ?? aptosNetworks[0];
   };
 
   const currentAllowedChains = CHAINS.filter((chain) => allowedChainIds.includes(chain.id));
@@ -65,6 +82,7 @@ export async function chromeStorage() {
     currentAccount,
     currentAccountName,
     currentEthereumNetwork,
+    currentAptosNetwork,
     currentAllowedChains,
     currentAccountAllowedOrigins,
   };

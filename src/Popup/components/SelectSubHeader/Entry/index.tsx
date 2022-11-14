@@ -1,5 +1,6 @@
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 
+import Aptos from './Aptos';
 import Cosmos from './Cosmos';
 import Ethereum from './Ethereum';
 
@@ -16,6 +17,10 @@ export default function Entry({ isShowChain }: EntryProps) {
 
   if (currentChain.line === 'ETHEREUM') {
     return <Ethereum chain={currentChain} isShowChain={isShowChain} />;
+  }
+
+  if (currentChain.line === 'APTOS') {
+    return <Aptos chain={currentChain} isShowChain={isShowChain} />;
   }
 
   return null;
