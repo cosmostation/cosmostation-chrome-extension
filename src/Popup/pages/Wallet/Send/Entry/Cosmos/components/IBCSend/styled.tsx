@@ -44,3 +44,26 @@ export const StyledTextarea = styled(Input)({});
 export const MarginTop8Div = styled('div')({
   marginTop: '0.8rem',
 });
+
+export const WarningContainer = styled('div')(({ theme }) => ({
+  width: '33.6rem',
+  height: '16.6rem',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: theme.colors.base02,
+  borderRadius: '0.8rem',
+}));
+export const WarningTextContainer = styled('div')(({ theme }) => ({
+  width: '19rem',
+  // height: '100%',
+  paddinfTop: '1.2rem',
+  display: 'flex',
+  flexDirection: 'column',
+  columnGap: '0.8rem',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  color: theme.colors.text01,
+}));

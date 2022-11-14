@@ -38,10 +38,11 @@ import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain';
 
 import ReceiverIBCPopover from './components/ReceiverIBCPopover';
-import { BottomContainer, Container, MarginTop8Div, MaxButton, StyledInput, StyledTextarea } from './styled';
+import { BottomContainer, Container, MarginTop8Div, MaxButton, StyledInput, StyledTextarea, WarningContainer, WarningTextContainer } from './styled';
 import CoinOrTokenPopover from '../CoinOrTokenPopover';
 
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
+import IBCWarning from '~/images/icons/IBCWarning.svg';
 
 export const TYPE = {
   COIN: 'coin',
@@ -311,9 +312,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   if (senderCoinAndTokenList.length === 0) {
     return (
-      <Container>
-        <MarginTop8Div>No Recipient Chain</MarginTop8Div>
-      </Container>
+      <WarningContainer>
+        <IBCWarning />
+        <WarningTextContainer>
+          <Typography variant="h4">IBC Send is not supported</Typography>
+          <Typography variant="h6">This Network is not supported on Ledger Hardware wallet.</Typography>
+        </WarningTextContainer>
+      </WarningContainer>
     );
   }
 
