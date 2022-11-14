@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
+import { APTOS_CHAINS, COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Image from '~/Popup/components/common/Image';
 import Switch from '~/Popup/components/common/Switch';
@@ -39,6 +39,7 @@ export default function SelectChain() {
 
   const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
   const filteredEthereumChains = search ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : ETHEREUM_CHAINS;
+  const filteredAptosChains = search ? APTOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : APTOS_CHAINS;
 
   const handleOnChange = async (checked: boolean, chain: Chain) => {
     if (checked) {
@@ -65,6 +66,21 @@ export default function SelectChain() {
       <ChainContainer>
         <ListContainer>
           {filteredEthereumChains.map((chain) => (
+            <Item
+              key={chain.id}
+              imageProps={{ alt: chain.chainName, src: chain.imageURL }}
+              switchProps={{
+                checked: allowedChainIds.includes(chain.id),
+                onChange: (_, checked) => {
+                  void handleOnChange(checked, chain);
+                },
+              }}
+            >
+              {chain.chainName}
+            </Item>
+          ))}
+
+          {filteredAptosChains.map((chain) => (
             <Item
               key={chain.id}
               imageProps={{ alt: chain.chainName, src: chain.imageURL }}

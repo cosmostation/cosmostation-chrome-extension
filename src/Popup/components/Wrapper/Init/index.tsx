@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { APTOS_NETWORKS, CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS } from '~/constants/chain/aptos/aptos';
 import { MAINNET as APTOS_NETWORK_MAINNET } from '~/constants/chain/aptos/network/mainnet';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -116,7 +117,7 @@ export default function Init({ children }: InitType) {
       }
 
       if (!originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).length) {
-        await setStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id]);
+        await setStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id]);
         await setStorage('selectedChainId', COSMOS.id);
       }
 
