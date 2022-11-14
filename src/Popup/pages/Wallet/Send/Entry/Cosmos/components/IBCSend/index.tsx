@@ -212,6 +212,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         ) ?? [];
       return nativeRecipientChainList;
     }
+    // REVIEW 추후 토큰용  수신가능 체인 로직이 들어갈 예정
     return [];
   }, [currentCoinOrToken, ibcPossibleChainList, nativePossibleChainList]);
 
@@ -235,20 +236,27 @@ export default function IBCSend({ chain }: IBCSendProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCoinOrTokenId]);
 
-  const selectedRecipientChainChainName = selectedRecipientChain?.cosmos.chainName ?? 'UNKNOWN';
-  const selectedRecipientChainChannel = useMemo(
+  const selectedRecipientChainName = selectedRecipientChain?.cosmos.chainName || 'UNKNOWN';
+  const selectedRecipientChainData = useMemo(
     () =>
       currentCoinOrToken.type === 'coin' && currentCoinOrToken.coinType === 'ibc'
-        ? selectedRecipientChain?.asset?.channel
-        : selectedRecipientChain?.asset?.counter_party?.channel,
-    [currentCoinOrToken, selectedRecipientChain?.asset?.channel, selectedRecipientChain?.asset?.counter_party?.channel],
+        ? { channel: selectedRecipientChain?.asset?.channel, tokenDenom: selectedRecipientChain?.asset?.denom }
+        : { channel: selectedRecipientChain?.asset?.counter_party?.channel, tokenDenom: selectedRecipientChain?.asset?.counter_party?.denom },
+    [
+      currentCoinOrToken,
+      selectedRecipientChain?.asset?.channel,
+      selectedRecipientChain?.asset?.counter_party?.channel,
+      selectedRecipientChain?.asset?.counter_party?.denom,
+      selectedRecipientChain?.asset?.denom,
+    ],
   );
+
   const addressRegex = useMemo(
     () => getCosmosAddressRegex(selectedRecipientChain?.cosmos?.bech32Prefix.address || '', [39]),
     [selectedRecipientChain?.cosmos?.bech32Prefix.address],
   );
 
-  const timeoutHeight = useClientStateSWR({ chain, channelId: selectedRecipientChainChannel ?? '' });
+  const timeoutHeight = useClientStateSWR({ chain, channelId: selectedRecipientChainData.channel ?? '' });
   const revisionHeight = String(1000 + parseInt(timeoutHeight.data?.timeoutHeight?.revision_height || '', 10));
   const revisionNumber = timeoutHeight.data?.timeoutHeight?.revision_number;
 
@@ -360,8 +368,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
       <MarginTop8Div>
         <DropdownButton
           imgSrc={selectedRecipientChain?.cosmos.imageURL}
-          title={selectedRecipientChainChainName}
-          leftHeaderTitle={selectedRecipientChainChannel}
+          title={selectedRecipientChainName}
+          leftHeaderTitle={selectedRecipientChainData.channel}
           isOpenPopover={isRecipientOpenPopover}
           onClickDropdown={(currentTarget) => setRecipientPopoverAnchorEl(currentTarget)}
         />
@@ -458,7 +466,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                               value: {
                                 receiver: receiverAddress,
                                 sender: senderAddress,
-                                source_channel: selectedRecipientChainChannel,
+                                source_channel: selectedRecipientChainData.channel,
                                 source_port: 'transfer',
                                 timeout_height: {
                                   revision_height: revisionHeight,
@@ -466,7 +474,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                                 },
                                 token: {
                                   amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
-                                  denom: selectedRecipientChain?.asset?.denom,
+                                  denom: selectedRecipientChainData.tokenDenom,
                                 },
                               },
                             },
