@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 
+import aptosImg from '~/images/etc/aptos.png';
 import keplrImg from '~/images/etc/keplr.png';
 import metamaskImg from '~/images/etc/metamask.png';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -41,6 +42,18 @@ export default function Entry() {
           }}
         >
           Keplr
+        </Item>
+
+        <Item
+          imageProps={{ alt: 'Aptos', src: aptosImg }}
+          switchProps={{
+            checked: providers.aptos,
+            onChange: (_, checked) => {
+              void setChromeStorage('providers', { ...providers, aptos: checked });
+            },
+          }}
+        >
+          Aptos
         </Item>
       </ListContainer>
       <BottomDescriptionContainer>

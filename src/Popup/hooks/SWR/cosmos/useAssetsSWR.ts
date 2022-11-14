@@ -16,7 +16,7 @@ export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
   const fetcher = async (fetchUrl: string) => {
     try {
       return await get<AssetV2Payload>(fetchUrl);
-    } catch (e: unknown) {
+    } catch {
       return null;
     }
   };
@@ -32,5 +32,5 @@ export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
 
   const returnData = useMemo(() => (mappingName ? assets.filter((item) => item.chain === mappingName) : assets), [assets, mappingName]);
 
-  return { data: returnData, error, mutate };
+  return { data: returnData, error, mutate, isLoading: data === undefined };
 }

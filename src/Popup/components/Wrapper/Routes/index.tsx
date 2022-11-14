@@ -31,7 +31,9 @@ export default function Routes({ children }: RoutesType) {
         chromeStorage.queues[0].message.method === 'cos_requestAccount' ||
         chromeStorage.queues[0].message.method === 'eth_requestAccounts' ||
         chromeStorage.queues[0].message.method === 'wallet_requestPermissions' ||
-        chromeStorage.queues[0].message.method === 'ten_requestAccount'
+        chromeStorage.queues[0].message.method === 'ten_requestAccount' ||
+        chromeStorage.queues[0].message.method === 'aptos_account' ||
+        chromeStorage.queues[0].message.method === 'aptos_connect'
       ) {
         navigate('/popup/request-account');
       }
@@ -94,6 +96,18 @@ export default function Routes({ children }: RoutesType) {
 
       if (chromeStorage.queues[0].message.method === 'eth_signTypedData_v3' || chromeStorage.queues[0].message.method === 'eth_signTypedData_v4') {
         navigate('/popup/ethereum/sign-typed-data');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'aptos_signTransaction' || chromeStorage.queues[0].message.method === 'aptos_signAndSubmitTransaction') {
+        navigate('/popup/aptos/transaction');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'aptos_signTransaction' || chromeStorage.queues[0].message.method === 'aptos_signAndSubmitTransaction') {
+        navigate('/popup/aptos/transaction');
+      }
+
+      if (chromeStorage.queues[0].message.method === 'aptos_signMessage') {
+        navigate('/popup/aptos/sign-message');
       }
     }
 

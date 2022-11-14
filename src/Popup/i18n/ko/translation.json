@@ -416,6 +416,20 @@
       }
     },
     "Chain": {
+      "Aptos": {
+        "Coin": {
+          "Add": {
+            "entry": {
+              "addressPlaceholder": "코인 주소",
+              "decimals": "Decimals",
+              "name": "코인 이름",
+              "submitButton": "코인 추가",
+              "symbol": "코인 기호",
+              "warning": "기존 코인의 가짜 버전 생성을 포함하여 누구나 코인을 생성할 수 있습니다. 사기 및 보안 위험에 대해 주의하세요."
+            }
+          }
+        }
+      },
       "Cosmos": {
         "Chain": {
           "Add": {
@@ -507,6 +521,7 @@
         "Use": {
           "entry": {
             "removeAllowedChainError": "1개 이상 선택하셔야 됩니다.",
+            "removeShownAptosNetworkError": "1개 이상 선택하셔야 됩니다.",
             "removeShownEthereumNetworkError": "1개 이상 선택하셔야 됩니다.",
             "searchPlaceholder": "체인 검색"
           },
@@ -535,6 +550,24 @@
       }
     },
     "Popup": {
+      "Aptos": {
+        "Sign": {
+          "entry": {
+            "cancelButton": "취소",
+            "message": "메세지",
+            "signButton": "서명",
+            "signatureRequest": "서명 요청"
+          }
+        },
+        "Transaction": {
+          "entry": {
+            "average": "평균",
+            "high": "높음",
+            "low": "낮음",
+            "maxFee": "최대 수수료"
+          }
+        }
+      },
       "Cosmos": {
         "AddChain": {
           "entry": {
@@ -846,6 +879,11 @@
     "Wallet": {
       "Receive": {
         "Entry": {
+          "Aptos": {
+            "address": "주소",
+            "copied": "복사 되었습니다.",
+            "scanQrCode": "QR코드 스캔"
+          },
           "Cosmos": {
             "address": "주소",
             "copied": "복사 되었습니다.",
@@ -863,6 +901,16 @@
       },
       "Send": {
         "Entry": {
+          "Aptos": {
+            "index": {
+              "amountPlaceholder": "수량",
+              "insufficientAmount": "수량이 부족합니다.",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "invalidAmount": "수량을 입력하세요.",
+              "recipientAddressPlaceholder": "입금 주소",
+              "sendButton": "보내기"
+            }
+          },
           "Cosmos": {
             "components": {
               "CoinOrTokenPopover": {
@@ -983,6 +1031,14 @@
             "connectDescription": "컴퓨터에 Ledger 하드웨어 지갑을 연결한 후, \"연결하기\"를 누르세요.",
             "notSupportedDescription": "해당 네트워크는 Ledger에서 지원되지 않는 네트워크입니다. 니모닉 또는 프라이빗 키로 지갑을 가져오세요.",
             "notSupportedTitle": "Ledger 미지원"
+          }
+        },
+        "aptos": {
+          "CoinList": {
+            "index": {
+              "addCoinButton": "코인 추가하기",
+              "coin": "코인"
+            }
           }
         },
         "cosmos": {

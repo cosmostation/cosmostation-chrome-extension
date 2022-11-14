@@ -6,6 +6,7 @@ import type { CosmosChain, GasRate } from '~/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Amount } from '~/types/cosmos/common';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
+import type { AptosSignMessage, AptosSignTransaction } from '~/types/message/aptos';
 import type {
   CosAddChain,
   CosAddTokensCW20,
@@ -394,3 +395,30 @@ export const ethSignTypedDataParamsSchema = () =>
     .label('params')
     .required()
     .items(Joi.string().label('address').pattern(ethereumAddressRegex).required(), Joi.string().label('dataToSign').required());
+
+export const aptosSignTransactionSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.object<AptosSignTransaction['params'][0]>({
+        type: Joi.string().optional(),
+        function: Joi.string().required(),
+        type_arguments: Joi.array().items(Joi.string().optional()).required(),
+        arguments: Joi.array().required().items(Joi.any().optional()),
+      }).required(),
+    );
+
+export const aptosSignMessageSchema = () =>
+  Joi.array()
+    .label('params')
+    .required()
+    .items(
+      Joi.object<AptosSignMessage['params'][0]>({
+        address: Joi.boolean().optional(),
+        application: Joi.boolean().optional(),
+        chainId: Joi.boolean().optional(),
+        message: Joi.string().required(),
+        nonce: Joi.number().required(),
+      }).required(),
+    );

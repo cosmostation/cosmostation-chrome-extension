@@ -117,6 +117,21 @@ export type EthereumNetwork = {
   coinGeckoId?: string;
 };
 
+export type AptosChain = {
+  line: typeof LINE_TYPE.APTOS;
+  chainName: string;
+} & CommonChain;
+
+export type AptosNetwork = {
+  id: string;
+  chainId: number;
+  networkName: string;
+  restURL: string;
+  imageURL?: string;
+  explorerURL?: string;
+  coinGeckoId?: string;
+};
+
 export type EthereumERC20Token = {
   id: string;
   ethereumNetworkId: string;
@@ -129,6 +144,6 @@ export type EthereumERC20Token = {
   coinGeckoId?: string;
 };
 
-export type Chain = CosmosChain | EthereumChain;
+export type Chain = CosmosChain | EthereumChain | AptosChain;
 
 export type EthereumToken = EthereumERC20Token;

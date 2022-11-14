@@ -9,7 +9,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ethereumAddressRegex, getCosmosAddressRegex } from '~/Popup/utils/regex';
+import { aptosAddressRegex, ethereumAddressRegex, getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { AddressInfo } from '~/types/chromeStorage';
 
 import ChainButton from './components/ChainButton';
@@ -36,6 +36,10 @@ export default function Entry() {
 
     if (chain.line === 'ETHEREUM') {
       return ethereumAddressRegex;
+    }
+
+    if (chain.line === 'APTOS') {
+      return aptosAddressRegex;
     }
 
     return /^.*$/;

@@ -1,5 +1,9 @@
-import type { CosmosChain, CosmosFeeBaseDenom, CosmosGasRate, EthereumChain, EthereumNetwork } from '~/types/chain';
+import type { AptosChain, AptosNetwork, CosmosChain, CosmosFeeBaseDenom, CosmosGasRate, EthereumChain, EthereumNetwork } from '~/types/chain';
 
+import { APTOS } from './aptos/aptos';
+import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
+import { MAINNET as APTOS_NETWORK__MAINNET } from './aptos/network/mainnet';
+import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
 import { AKASH } from './cosmos/akash';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { AXELAR } from './cosmos/axelar';
@@ -51,20 +55,21 @@ import { TGRADE } from './cosmos/tgrade';
 import { UMEE } from './cosmos/umee';
 import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
-import { ARBITRUM as NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
-import { AVALANCHE as NETWORK__AVALANCHE } from './ethereum/network/avalanche';
-import { CRONOS as NETWORK__CRONOS } from './ethereum/network/cronos';
-import { ETHEREUM as NETWORK__ETHEREUM } from './ethereum/network/ethereum';
-import { EVMOS as NETWORK__EVMOS } from './ethereum/network/evmos';
-import { FANTOM as NETWORK__FANTOM } from './ethereum/network/fantom';
-import { HARMONY as NETWORK__HARMONY } from './ethereum/network/harmony';
-import { KAVA as NETWORK__KAVA } from './ethereum/network/kava';
-import { POLYGON as NETWORK__POLYGON } from './ethereum/network/polygon';
-import { SMART_CHAIN as NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
+import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
+import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
+import { CRONOS as ETHEREUM_NETWORK__CRONOS } from './ethereum/network/cronos';
+import { ETHEREUM as ETHEREUM_NETWORK__ETHEREUM } from './ethereum/network/ethereum';
+import { EVMOS as ETHEREUM_NETWORK__EVMOS } from './ethereum/network/evmos';
+import { FANTOM as ETHEREUM_NETWORK__FANTOM } from './ethereum/network/fantom';
+import { HARMONY as ETHEREUM_NETWORK__HARMONY } from './ethereum/network/harmony';
+import { KAVA as ETHEREUM_NETWORK__KAVA } from './ethereum/network/kava';
+import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
+import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
 
 export const LINE_TYPE = {
   COSMOS: 'COSMOS',
   ETHEREUM: 'ETHEREUM',
+  APTOS: 'APTOS',
   COMMON: 'COMMON',
 } as const;
 
@@ -134,18 +139,22 @@ export const COSMOS_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES];
 export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 
 export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
-  NETWORK__ETHEREUM,
-  NETWORK__ARBITRUM,
-  NETWORK__AVALANCHE,
-  NETWORK__CRONOS,
-  NETWORK__EVMOS,
-  NETWORK__FANTOM,
-  NETWORK__HARMONY,
-  NETWORK__KAVA,
-  NETWORK__POLYGON,
-  NETWORK__SMART_CHAIN,
+  ETHEREUM_NETWORK__ETHEREUM,
+  ETHEREUM_NETWORK__ARBITRUM,
+  ETHEREUM_NETWORK__AVALANCHE,
+  ETHEREUM_NETWORK__CRONOS,
+  ETHEREUM_NETWORK__EVMOS,
+  ETHEREUM_NETWORK__FANTOM,
+  ETHEREUM_NETWORK__HARMONY,
+  ETHEREUM_NETWORK__KAVA,
+  ETHEREUM_NETWORK__POLYGON,
+  ETHEREUM_NETWORK__SMART_CHAIN,
 ];
+
+export const APTOS_CHAINS: AptosChain[] = [APTOS];
+
+export const APTOS_NETWORKS: AptosNetwork[] = [APTOS_NETWORK__MAINNET, APTOS_NETWORK__DEVNET, APTOS_NETWORK__TESTNET];
 
 export const NETWORKS = [...ETHEREUM_NETWORKS];
 
-export const CHAINS = [...ETHEREUM_CHAINS, ...COSMOS_CHAINS];
+export const CHAINS = [...ETHEREUM_CHAINS, ...COSMOS_CHAINS, ...APTOS_CHAINS];

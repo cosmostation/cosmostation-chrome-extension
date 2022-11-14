@@ -2,12 +2,14 @@ import { useMemo } from 'react';
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
+import { APTOS_CHAINS, COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -41,12 +43,16 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
   const { currentEthereumNetwork, setCurrentEthereumNetwork, removeEthereumNetwork } = useCurrentEthereumNetwork();
   const { currentShownEthereumNetwork } = useCurrentShownEthereumNetworks();
 
+  const { currentAptosNetwork, setCurrentAptosNetwork, removeAptosNetwork } = useCurrentAptosNetwork();
+  const { currentShownAptosNetwork } = useCurrentShownAptosNetworks();
+
   const { t } = useTranslation();
 
-  const { allowedChainIds, additionalChains, additionalEthereumNetworks } = chromeStorage;
+  const { allowedChainIds, additionalChains, additionalEthereumNetworks, additionalAptosNetworks } = chromeStorage;
 
   const allowedCosmosChain = useMemo(() => COSMOS_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
   const allowedEthereumChain = useMemo(() => ETHEREUM_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
+  const allowedAptosChain = useMemo(() => APTOS_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
 
   return (
     <Popover {...remainder} onClose={onClose}>
@@ -126,10 +132,9 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
             </>
           )}
 
-          {allowedEthereumChain.length > 0 && allowedCosmosChain.length > 0 && <StyledDivider />}
-
           {allowedCosmosChain.length > 0 && (
             <>
+              {allowedEthereumChain.length > 0 && <StyledDivider />}
               <ChainTitleContainer>
                 <Typography variant="h6">Cosmos chains</Typography>
               </ChainTitleContainer>
@@ -169,6 +174,70 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
                     {chain.chainName}
                   </ChainItemButton>
                 ))}
+              </ChainListContainer>
+            </>
+          )}
+
+          {allowedAptosChain.length > 0 && (
+            <>
+              {[...allowedEthereumChain, ...allowedCosmosChain].length > 0 && <StyledDivider />}
+              <ChainTitleContainer>
+                <Typography variant="h6">APTOS networks</Typography>
+              </ChainTitleContainer>
+              <ChainListContainer>
+                {allowedAptosChain.map((chain) => {
+                  if (isOnlyChain) {
+                    return (
+                      <ChainItemButton
+                        key={chain.id}
+                        isActive={currentChain.id === chain.id}
+                        imgSrc={chain.imageURL}
+                        onClick={() => {
+                          onClickChain?.(chain);
+                          onClose?.({}, 'backdropClick');
+                        }}
+                      >
+                        {chain.chainName}
+                      </ChainItemButton>
+                    );
+                  }
+                  return [
+                    ...currentShownAptosNetwork.map((network) => (
+                      <ChainItemButton
+                        key={`${chain.id}-${network.id}`}
+                        isActive={currentChain.id === chain.id && currentAptosNetwork.id === network.id}
+                        isBackgroundActive={currentAptosNetwork.id === network.id}
+                        imgSrc={network.imageURL}
+                        onClick={async () => {
+                          await setCurrentAptosNetwork(network);
+                          onClickChain?.(chain);
+                          onClose?.({}, 'backdropClick');
+                        }}
+                      >
+                        {network.networkName}
+                      </ChainItemButton>
+                    )),
+                    ...additionalAptosNetworks.map((network) => (
+                      <ChainItemButton
+                        key={`${chain.id}-${network.id}`}
+                        isActive={currentChain.id === chain.id && currentAptosNetwork.id === network.id}
+                        isBackgroundActive={currentAptosNetwork.id === network.id}
+                        imgSrc={network.imageURL}
+                        onClick={async () => {
+                          await setCurrentAptosNetwork(network);
+                          onClickChain?.(chain, true);
+                          onClose?.({}, 'backdropClick');
+                        }}
+                        onClickDelete={async () => {
+                          await removeAptosNetwork(network);
+                        }}
+                        isCustom
+                      >
+                        {network.networkName}
+                      </ChainItemButton>
+                    )),
+                  ];
+                })}
               </ChainListContainer>
             </>
           )}
