@@ -3,6 +3,7 @@ import type { AptosChain, AptosNetwork, CosmosChain, CosmosFeeBaseDenom, CosmosG
 import { APTOS } from './aptos/aptos';
 import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
 import { MAINNET as APTOS_NETWORK__MAINNET } from './aptos/network/mainnet';
+import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
 import { AKASH } from './cosmos/akash';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { AXELAR } from './cosmos/axelar';
@@ -150,7 +151,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
 
 export const APTOS_CHAINS: AptosChain[] = [APTOS];
 
-export const APTOS_NETWORKS: AptosNetwork[] = [APTOS_NETWORK__MAINNET, APTOS_NETWORK__DEVNET];
+export const APTOS_NETWORKS: AptosNetwork[] = [APTOS_NETWORK__MAINNET, APTOS_NETWORK__DEVNET, APTOS_NETWORK__TESTNET];
 
 export const NETWORKS = [...ETHEREUM_NETWORKS];
 
