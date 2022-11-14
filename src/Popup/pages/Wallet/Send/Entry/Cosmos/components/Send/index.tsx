@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
 
@@ -122,7 +122,9 @@ export default function Send({ chain }: CosmosProps) {
 
   const sendGas = currentCoinOrToken.type === 'coin' ? gas.send || COSMOS_DEFAULT_SEND_GAS : gas.transfer || COSMOS_DEFAULT_TRANSFER_GAS;
 
-  const [currentGas, setCurrentGas] = useState(sendGas);
+  const [customGas, setCustomGas] = useState<string | undefined>();
+
+  const currentGas = useMemo(() => customGas || sendGas, [customGas, sendGas]);
   const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
 
   const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
@@ -222,6 +224,13 @@ export default function Send({ chain }: CosmosProps) {
     currentFeeCoinDisplayAvailableAmount,
     t,
   ]);
+
+  useEffect(() => {
+    if (!customGas) {
+      setCurrentFeeAmount(times(currentGas, gasRate.low));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentCoinOrTokenId]);
   return (
     <Container>
       <div>
@@ -292,7 +301,7 @@ export default function Send({ chain }: CosmosProps) {
           gasRate={currentFeeGasRate}
           baseFee={currentFeeAmount}
           gas={currentGas}
-          onChangeGas={(g) => setCurrentGas(g)}
+          onChangeGas={(g) => setCustomGas(g)}
           onChangeFee={(f) => setCurrentFeeAmount(f)}
           isEdit
         />
