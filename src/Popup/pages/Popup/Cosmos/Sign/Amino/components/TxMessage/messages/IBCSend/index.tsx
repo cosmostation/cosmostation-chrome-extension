@@ -39,7 +39,7 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
 
   const { value } = msg;
 
-  const { receiver, sender, source_channel, source_port, timeout_height, timeout_timestamp, token } = value;
+  const { receiver, sender, source_channel, token } = value;
 
   const itemBaseAmount = token.amount;
   const itemBaseDenom = token.denom;
@@ -156,44 +156,6 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
           </LabelContainer>
           <ValueContainer>
             <Typography variant="h5">{source_channel}</Typography>
-          </ValueContainer>
-        </AddressContainer>
-
-        <AddressContainer sx={{ marginTop: '0.4rem' }}>
-          <LabelContainer>
-            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.IBCSend.index.sourcePort')}</Typography>
-          </LabelContainer>
-          <ValueContainer>
-            <Typography variant="h5">{source_port}</Typography>
-          </ValueContainer>
-        </AddressContainer>
-
-        {timeout_timestamp && (
-          <AddressContainer sx={{ marginTop: '0.4rem' }}>
-            <LabelContainer>
-              <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.IBCSend.index.timeStamp')}</Typography>
-            </LabelContainer>
-            <ValueContainer>
-              <Typography variant="h5">{timeout_timestamp}</Typography>
-            </ValueContainer>
-          </AddressContainer>
-        )}
-
-        <AddressContainer sx={{ marginTop: '0.4rem' }}>
-          <LabelContainer>
-            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.IBCSend.index.revisionHeight')}</Typography>
-          </LabelContainer>
-          <ValueContainer>
-            <Typography variant="h5">{timeout_height.revision_height}</Typography>
-          </ValueContainer>
-        </AddressContainer>
-
-        <AddressContainer sx={{ marginTop: '0.4rem' }}>
-          <LabelContainer>
-            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.IBCSend.index.revisionNumber')}</Typography>
-          </LabelContainer>
-          <ValueContainer>
-            <Typography variant="h5">{timeout_height.revision_number}</Typography>
           </ValueContainer>
         </AddressContainer>
       </ContentContainer>

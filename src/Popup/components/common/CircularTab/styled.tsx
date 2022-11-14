@@ -1,7 +1,7 @@
 import { Tab, Tabs } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-export const CircularStyledTabs = styled(Tabs)(({ theme }) => ({
+export const StyledCircularTabs = styled(Tabs)(({ theme }) => ({
   '&.MuiTabs-root': {
     minHeight: '0',
     borderRadius: '5rem',
@@ -23,7 +23,7 @@ export const CircularStyledTabs = styled(Tabs)(({ theme }) => ({
   },
 }));
 
-export const CircularStyledTab = styled(Tab)(({ theme }) => ({
+export const StyledCircularTab = styled(Tab)(({ theme }) => ({
   '&.MuiTab-root': {
     zIndex: 1,
     minWidth: '0',
@@ -41,7 +41,6 @@ export const CircularStyledTab = styled(Tab)(({ theme }) => ({
   '&.Mui-selected': { opacity: 1, color: theme.colors.text01 },
 }));
 
-// REVIEW 기존 탭과 다르게 marginTop값을 주어 범용성이 떨어질 수 있음
 export const CircularTabPanelContainer = styled('div')({
   marginTop: '1.4rem',
 });

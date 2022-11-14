@@ -260,29 +260,29 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentCoinOrTokenDecimals);
   const errorMessage = useMemo(() => {
     if (!latestHeight) {
-      return t('pages.Wallet.Send.Entry.Cosmos.index.timeoutHeightError');
+      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.timeoutHeightError');
     }
     if (!addressRegex.test(receiverAddress)) {
-      return t('pages.Wallet.Send.Entry.Cosmos.index.invalidAddress');
+      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAddress');
     }
 
     if (!currentDisplayAmount || !gt(currentDisplayAmount, '0')) {
-      return t('pages.Wallet.Send.Entry.Cosmos.index.invalidAmount');
+      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAmount');
     }
 
     if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
       if (!gte(currentCoinOrTokenDisplayAvailableAmount, plus(currentDisplayAmount, currentDisplayFeeAmount))) {
-        return t('pages.Wallet.Send.Entry.Cosmos.index.insufficientAmount');
+        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
       }
     }
 
     if ((currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom !== currentFeeCoin.baseDenom) || currentCoinOrToken.type === 'token') {
       if (!gte(currentCoinOrTokenDisplayAvailableAmount, currentDisplayAmount)) {
-        return t('pages.Wallet.Send.Entry.Cosmos.index.insufficientAmount');
+        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
       }
 
       if (!gte(currentFeeCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
-        return t('pages.Wallet.Send.Entry.Cosmos.index.insufficientFeeAmount');
+        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientFeeAmount');
       }
     }
 
@@ -301,7 +301,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   ]);
 
   useEffect(() => {
-    if (receiverIBCList.length === 0) {
+    if (receiverIBCList.length === 0 && senderCoinAndTokenList.length > 0) {
       setCurrentCoinOrTokenId(senderCoinAndTokenList[0].type === 'coin' ? senderCoinAndTokenList[0].baseDenom : senderCoinAndTokenList[0].address);
     } else {
       setReceiverIBC(receiverIBCList[0]);
@@ -323,7 +323,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         <DropdownButton
           imgSrc={currentCoinOrToken.imageURL}
           title={currentCoinOrTokenDisplayDenom}
-          leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.index.available')}
+          leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.available')}
           leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
           isOpenPopover={isOpenPopover}
           decimals={currentDisplayMaxDecimals}
@@ -348,7 +348,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
               </IconButton>
             </InputAdornment>
           }
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.recipientAddressPlaceholder')}
+          placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.recipientAddressPlaceholder')}
           onChange={(e) => setReceiverAddress(e.currentTarget.value)}
           value={receiverAddress}
         />
@@ -376,7 +376,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
             setCurrentDisplayAmount(e.currentTarget.value);
           }}
           value={currentDisplayAmount}
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.amountPlaceholder')}
+          placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.amountPlaceholder')}
         />
       </MarginTop8Div>
 
@@ -385,7 +385,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           multiline
           minRows={1}
           maxRows={1}
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.memoPlaceholder')}
+          placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.memoPlaceholder')}
           onChange={(e) => setCurrentMemo(e.currentTarget.value)}
           value={currentMemo}
         />
@@ -497,7 +497,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                 }
               }}
             >
-              {t('pages.Wallet.Send.Entry.Cosmos.index.sendButton')}
+              {t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.sendButton')}
             </Button>
           </div>
         </Tooltip>

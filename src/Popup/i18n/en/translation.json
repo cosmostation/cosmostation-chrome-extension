@@ -569,12 +569,8 @@
                     "index": {
                       "amount": "Amount",
                       "receiver": "Receiver Address",
-                      "revisionHeight": "Revision Height",
-                      "revisionNumber": "Revision Number",
                       "sender": "Sender Address",
-                      "sourceChannel": "Source Channel",
-                      "sourcePort": "Source Port",
-                      "timeStamp": "Time Stamp"
+                      "sourceChannel": "Channel"
                     }
                   },
                   "Send": {
@@ -880,21 +876,38 @@
                 "index": {
                   "available": "Available"
                 }
+              },
+              "IBCSend": {
+                "index": {
+                  "amountPlaceholder": "Amount",
+                  "available": "Available",
+                  "insufficientAmount": "Insufficient amount",
+                  "insufficientFeeAmount": "Insufficient fee",
+                  "invalidAddress": "Invalid address",
+                  "invalidAmount": "Invalid amount",
+                  "memoPlaceholder": "Memo (option)",
+                  "recipientAddressPlaceholder": "Recipient address",
+                  "sendButton": "Send",
+                  "timeoutHeightError": "Network Error"
+                }
+              },
+              "Send": {
+                "index": {
+                  "amountPlaceholder": "Amount",
+                  "available": "Available",
+                  "insufficientAmount": "Insufficient amount",
+                  "insufficientFeeAmount": "Insufficient fee",
+                  "invalidAddress": "Invalid address",
+                  "invalidAmount": "Invalid amount",
+                  "memoPlaceholder": "Memo (option)",
+                  "recipientAddressPlaceholder": "Recipient address",
+                  "sendButton": "Send"
+                }
               }
             },
             "index": {
-              "amountPlaceholder": "Amount",
-              "available": "Available",
               "ibcSend": "IBC Send",
-              "insufficientAmount": "Insufficient amount",
-              "insufficientFeeAmount": "Insufficient fee",
-              "invalidAddress": "Invalid address",
-              "invalidAmount": "Invalid amount",
-              "memoPlaceholder": "Memo (option)",
-              "recipientAddressPlaceholder": "Recipient address",
-              "send": "Send",
-              "sendButton": "Send",
-              "timeoutHeightError": "Network Error"
+              "send": "Send"
             }
           },
           "Ethereum": {

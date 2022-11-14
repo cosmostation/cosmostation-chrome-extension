@@ -186,26 +186,26 @@ export default function Send({ chain }: CosmosProps) {
 
   const errorMessage = useMemo(() => {
     if (!addressRegex.test(currentAddress) || address === currentAddress) {
-      return t('pages.Wallet.Send.Entry.Cosmos.index.invalidAddress');
+      return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.invalidAddress');
     }
 
     if (!currentDisplayAmount || !gt(currentDisplayAmount, '0')) {
-      return t('pages.Wallet.Send.Entry.Cosmos.index.invalidAmount');
+      return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.invalidAmount');
     }
 
     if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
       if (!gte(currentCoinOrTokenDisplayAvailableAmount, plus(currentDisplayAmount, currentDisplayFeeAmount))) {
-        return t('pages.Wallet.Send.Entry.Cosmos.index.insufficientAmount');
+        return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.insufficientAmount');
       }
     }
 
     if ((currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom !== currentFeeCoin.baseDenom) || currentCoinOrToken.type === 'token') {
       if (!gte(currentCoinOrTokenDisplayAvailableAmount, currentDisplayAmount)) {
-        return t('pages.Wallet.Send.Entry.Cosmos.index.insufficientAmount');
+        return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.insufficientAmount');
       }
 
       if (!gte(currentFeeCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
-        return t('pages.Wallet.Send.Entry.Cosmos.index.insufficientFeeAmount');
+        return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.insufficientFeeAmount');
       }
     }
 
@@ -233,7 +233,7 @@ export default function Send({ chain }: CosmosProps) {
               </IconButton>
             </InputAdornment>
           }
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.recipientAddressPlaceholder')}
+          placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.recipientAddressPlaceholder')}
           onChange={(e) => setCurrentAddress(e.currentTarget.value)}
           value={currentAddress}
         />
@@ -242,7 +242,7 @@ export default function Send({ chain }: CosmosProps) {
         <DropdownButton
           imgSrc={currentCoinOrToken.imageURL}
           title={currentCoinOrTokenDisplayDenom}
-          leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.index.available')}
+          leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.available')}
           leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
           isOpenPopover={isOpenPopover}
           decimals={currentDisplayMaxDecimals}
@@ -271,7 +271,7 @@ export default function Send({ chain }: CosmosProps) {
             setCurrentDisplayAmount(e.currentTarget.value);
           }}
           value={currentDisplayAmount}
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.amountPlaceholder')}
+          placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.amountPlaceholder')}
         />
       </MarginTop8Div>
 
@@ -280,7 +280,7 @@ export default function Send({ chain }: CosmosProps) {
           multiline
           minRows={3}
           maxRows={3}
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.index.memoPlaceholder')}
+          placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.memoPlaceholder')}
           onChange={(e) => setCurrentMemo(e.currentTarget.value)}
           value={currentMemo}
         />
@@ -380,7 +380,7 @@ export default function Send({ chain }: CosmosProps) {
                 }
               }}
             >
-              {t('pages.Wallet.Send.Entry.Cosmos.index.sendButton')}
+              {t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.sendButton')}
             </Button>
           </div>
         </Tooltip>

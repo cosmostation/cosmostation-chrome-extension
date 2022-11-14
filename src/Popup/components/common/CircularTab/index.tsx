@@ -1,13 +1,13 @@
 import type { TabProps, TabsProps } from '@mui/material';
 
-import { CircularStyledTab, CircularStyledTabs, CircularTabPanelContainer } from './styled';
+import { CircularTabPanelContainer, StyledCircularTab, StyledCircularTabs } from './styled';
 
 export function CircularTabs(props: TabsProps) {
-  return <CircularStyledTabs {...props} />;
+  return <StyledCircularTabs {...props} />;
 }
 
 export function CircularTab(props: TabProps) {
-  return <CircularStyledTab disableRipple {...props} />;
+  return <StyledCircularTab disableRipple {...props} />;
 }
 
 type CircularTabPanelProps = {
