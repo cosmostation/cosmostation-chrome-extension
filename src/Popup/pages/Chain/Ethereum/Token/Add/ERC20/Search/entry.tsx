@@ -37,9 +37,10 @@ export default function Entry() {
 
   const [search, setSearch] = useState('');
   const [check, setCheck] = useState<ModifiedAsset>();
-  const [select, setSelect] = useState(false);
+  // const [select, setSelect] = useState(false);
+  // useState array 어떻게 하는지 알기
 
-  const { addEthereumToken, removeEthereumToken } = useCurrentEthereumTokens();
+  const { addEthereumToken } = useCurrentEthereumTokens();
 
   const { t } = useTranslation();
   const { navigate } = useNavigate();
@@ -52,9 +53,6 @@ export default function Entry() {
 
   const isSearching = search.toLowerCase().length > 0;
 
-  const handleDelete = () => {
-    void removeEthereumToken;
-  };
   const handelCheck = async (checked: boolean, data: ModifiedAsset) => {
     if (checked) {
       const checkedToken = tokens.data.find((item) => item.address.toLowerCase() === data.address.toLowerCase());
@@ -117,13 +115,10 @@ export default function Entry() {
                 symbol={token.displayDenom}
                 imageURL={token.imageURL}
                 onClick={() => {
-                  setCheck(token);
-                  setSelect(true);
-                }}
-                disabled={() => {
-                  if (onclick) {
-                    setSelect(false);
-                    void handleDelete();
+                  if (token.address === check?.address) {
+                    setCheck(undefined);
+                  } else {
+                    setCheck(token);
                   }
                 }}
                 isActive={token.address === check?.address}
@@ -149,9 +144,10 @@ export default function Entry() {
         <Button
           onClick={() => {
             void handelCheck(true, check);
+            // null safety
             navigate('/wallet');
           }}
-          disabled={!select}
+          disabled={!check}
         >
           {t('pages.Chain.Ethereum.Token.Add.Search.entry.submitButton')}
         </Button>

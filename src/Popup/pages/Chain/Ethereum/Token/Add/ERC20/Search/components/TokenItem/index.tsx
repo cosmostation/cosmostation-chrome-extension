@@ -12,12 +12,12 @@ type TokenItemProps = {
   imageURL?: string;
   onClick?: () => void;
   isActive: boolean;
-  disable?: () => void;
+  disabled?: () => void;
 };
 
-export default function TokenItem({ onClick, disable, isActive, name, symbol, imageURL }: TokenItemProps) {
+export default function TokenItem({ onClick, disabled, isActive, name, symbol, imageURL }: TokenItemProps) {
   return (
-    <StyledButton type="button" onClick={onClick || disable}>
+    <StyledButton type="button" onClick={onClick || disabled}>
       <LeftContainer>
         <LeftImageContainer>
           <Image src={imageURL} />
@@ -35,6 +35,3 @@ export default function TokenItem({ onClick, disable, isActive, name, symbol, im
     </StyledButton>
   );
 }
-
-// 클릭 횟수에 따라 선택, 해제 가능하도록(클릭 카운팅 방식 x 클릭 횟수가 안세어짐)
-// 입력 버튼 누르면 전체 내용이 전송되도록
