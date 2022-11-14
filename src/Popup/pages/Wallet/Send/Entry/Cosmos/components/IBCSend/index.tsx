@@ -2,14 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
 
-import {
-  COSMOS_CHAINS,
-  COSMOS_DEFAULT_GAS,
-  COSMOS_DEFAULT_IBC_SEND_GAS,
-  COSMOS_DEFAULT_IBC_TRANSFER_GAS,
-  COSMOS_FEE_BASE_DENOMS,
-  COSMOS_GAS_RATES,
-} from '~/constants/chain';
+import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
@@ -139,14 +132,11 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [availableCoinOrTokenList, currentCoinOrTokenId],
   );
 
-  const sendGas =
-    currentCoinOrToken.type === 'coin'
-      ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS
-      : currentCoinOrToken.type === 'token'
-      ? gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS
-      : COSMOS_DEFAULT_GAS;
+  const sendGas = currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS : gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS;
 
-  const [currentGas, setCurrentGas] = useState(sendGas);
+  const [customGas, setCustomGas] = useState<string | undefined>();
+
+  const currentGas = useMemo(() => customGas || sendGas, [customGas, sendGas]);
   const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
 
   const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
@@ -307,6 +297,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
     } else {
       setReceiverIBC(receiverIBCList[0]);
     }
+
+    if (!customGas) {
+      setCurrentFeeAmount(times(currentGas, gasRate.low));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCoinOrTokenId]);
 
@@ -402,7 +396,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           gasRate={currentFeeGasRate}
           baseFee={currentFeeAmount}
           gas={currentGas}
-          onChangeGas={(g) => setCurrentGas(g)}
+          onChangeGas={(g) => setCustomGas(g)}
           onChangeFee={(f) => setCurrentFeeAmount(f)}
           isEdit
         />
