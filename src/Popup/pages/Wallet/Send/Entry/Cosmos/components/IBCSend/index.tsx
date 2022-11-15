@@ -31,7 +31,17 @@ import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain';
 
 import ReceiverIBCPopover from './components/ReceiverIBCPopover';
-import { BottomContainer, Container, MarginTop8Div, MaxButton, StyledInput, StyledTextarea, WarningContainer, WarningTextContainer } from './styled';
+import {
+  BottomContainer,
+  Container,
+  MarginTop8Div,
+  MaxButton,
+  StyledInput,
+  StyledTextarea,
+  WarningContainer,
+  WarningContentsContainer,
+  WarningTextContainer,
+} from './styled';
 import CoinOrTokenPopover from '../CoinOrTokenPopover';
 
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
@@ -195,7 +205,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
     return [];
   }, [currentCoinOrToken, filteredCosmosChainAssets, filteredCurrentChainAssets]);
 
-  // NOTE 선택된 수신 체인
   const [selectedReceiverIBC, setReceiverIBC] = useState(receiverIBCList.length ? receiverIBCList[0] : undefined);
 
   const addressRegex = useMemo(
@@ -307,11 +316,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
   if (senderCoinAndTokenList.length === 0) {
     return (
       <WarningContainer>
-        <IBCWarning />
-        <WarningTextContainer>
-          <Typography variant="h4">IBC Send is not supported</Typography>
-          <Typography variant="h6">This Network is not supported on Ledger Hardware wallet.</Typography>
-        </WarningTextContainer>
+        <WarningContentsContainer>
+          <IBCWarning />
+          <WarningTextContainer>
+            <Typography variant="h4">IBC Send is not supported</Typography>
+            <Typography variant="h6">This Network is not supported on Ledger Hardware wallet.</Typography>
+          </WarningTextContainer>
+        </WarningContentsContainer>
       </WarningContainer>
     );
   }

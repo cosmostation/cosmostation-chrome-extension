@@ -2,7 +2,9 @@ import { styled } from '@mui/material/styles';
 
 import Input from '~/Popup/components/common/Input';
 
-export const Container = styled('div')({});
+export const Container = styled('div')({
+  padding: '0 0.4rem',
+});
 
 export const MaxButton = styled('button')(({ theme }) => ({
   padding: '0.4rem 0.8rem',

@@ -2,7 +2,9 @@ import { styled } from '@mui/material/styles';
 
 import Input from '~/Popup/components/common/Input';
 
-export const Container = styled('div')({});
+export const Container = styled('div')({
+  padding: '0 0.4rem',
+});
 
 export const MaxButton = styled('button')(({ theme }) => ({
   padding: '0.4rem 0.8rem',
@@ -48,22 +50,24 @@ export const MarginTop8Div = styled('div')({
 export const WarningContainer = styled('div')(({ theme }) => ({
   width: '33.6rem',
   height: '16.6rem',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
+  padding: '2.4rem',
   backgroundColor: theme.colors.base02,
   borderRadius: '0.8rem',
 }));
-export const WarningTextContainer = styled('div')(({ theme }) => ({
-  width: '19rem',
-  // height: '100%',
-  paddinfTop: '1.2rem',
+
+export const WarningContentsContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  columnGap: '0.8rem',
-  justifyContent: 'center',
+  justifyContent: 'space-between',
   alignItems: 'center',
+  height: '100%',
+});
 
+export const WarningTextContainer = styled('div')(({ theme }) => ({
+  width: '20rem',
+  display: 'flex',
+  flexDirection: 'column',
+  rowGap: '0.8rem',
+  textAlign: 'center',
   color: theme.colors.text01,
 }));
