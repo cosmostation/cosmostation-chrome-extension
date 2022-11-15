@@ -37,8 +37,6 @@ export default function Entry() {
 
   const [search, setSearch] = useState('');
   const [check, setCheck] = useState<ModifiedAsset>();
-  // const [select, setSelect] = useState(false);
-  // useState array 어떻게 하는지 알기
 
   const { addEthereumToken } = useCurrentEthereumTokens();
 

@@ -12,12 +12,11 @@ type TokenItemProps = {
   imageURL?: string;
   onClick?: () => void;
   isActive: boolean;
-  disabled?: () => void;
 };
 
-export default function TokenItem({ onClick, disabled, isActive, name, symbol, imageURL }: TokenItemProps) {
+export default function TokenItem({ onClick, isActive, name, symbol, imageURL }: TokenItemProps) {
   return (
-    <StyledButton type="button" onClick={onClick || disabled}>
+    <StyledButton type="button" onClick={onClick}>
       <LeftContainer>
         <LeftImageContainer>
           <Image src={imageURL} />
