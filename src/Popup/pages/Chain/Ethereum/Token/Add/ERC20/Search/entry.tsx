@@ -143,8 +143,7 @@ export default function Entry() {
       <ButtonContainer>
         <Button
           onClick={() => {
-            void handelCheck(true, check);
-            // null safety
+            void handelCheck(true, check!);
             navigate('/wallet');
           }}
           disabled={!check}
