@@ -2,20 +2,18 @@ import { Typography } from '@mui/material';
 
 import { CHAINS } from '~/constants/chain';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { shorterAddress } from '~/Popup/utils/string';
 
 import { AddressContainer, Container, LabelContainer, LabelLeftContainer, StyledImage } from './styled';
 
 type MyAddressBookItemProps = {
+  accountName: string;
   chainId: string;
   address: string;
-  onClick?: (addressInfo: string) => void;
+  onClick?: (address: string) => void;
 };
 
-export default function MyAddressBookItem({ onClick, address, chainId }: MyAddressBookItemProps) {
-  const { currentAccount } = useCurrentAccount();
-
+export default function MyAddressBookItem({ onClick, address, chainId, accountName }: MyAddressBookItemProps) {
   const chain = CHAINS.find((item) => item.id === chainId);
 
   return (
@@ -23,7 +21,7 @@ export default function MyAddressBookItem({ onClick, address, chainId }: MyAddre
       <LabelContainer>
         <LabelLeftContainer>
           <StyledImage src={chain?.imageURL} />
-          <Typography variant="h6">{currentAccount.name}</Typography>
+          <Typography variant="h6">{accountName}</Typography>
         </LabelLeftContainer>
       </LabelContainer>
       <AddressContainer>

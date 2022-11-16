@@ -10,6 +10,7 @@ import DropdownButton from '~/Popup/components/common/DropdownButton';
 import IconButton from '~/Popup/components/common/IconButton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
+import MyAddressBookBottomSheet from '~/Popup/components/MyAddressBookBottomSheet';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
@@ -30,6 +31,7 @@ import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain'
 import { BottomContainer, Container, MarginTop8Div, MarginTop12Div, MarginTop16Div, MaxButton, StyledInput, StyledTextarea } from './styled';
 import CoinOrTokenPopover from '../CoinOrTokenPopover';
 
+import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
 
 export const TYPE = {
@@ -109,6 +111,7 @@ export default function Send({ chain }: CosmosProps) {
   const [currentMemo, setCurrentMemo] = useState('');
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
+  const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
 
   const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
 
@@ -237,6 +240,9 @@ export default function Send({ chain }: CosmosProps) {
         <StyledInput
           endAdornment={
             <InputAdornment position="end">
+              <IconButton onClick={() => setIsOpenedMyAddressBook(true)} edge="end">
+                <AccountAddressIcon />
+              </IconButton>
               <IconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
                 <AddressBook24Icon />
               </IconButton>
@@ -401,6 +407,15 @@ export default function Send({ chain }: CosmosProps) {
         onClickAddress={(a) => {
           setCurrentAddress(a.address);
           setCurrentMemo(a.memo || '');
+        }}
+      />
+
+      <MyAddressBookBottomSheet
+        open={isOpenedMyAddressBook}
+        chain={chain}
+        onClose={() => setIsOpenedMyAddressBook(false)}
+        onClickAddress={(a) => {
+          setCurrentAddress(a);
         }}
       />
 

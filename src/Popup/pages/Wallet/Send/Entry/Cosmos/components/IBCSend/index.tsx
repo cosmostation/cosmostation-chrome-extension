@@ -45,8 +45,9 @@ import {
 } from './styled';
 import CoinOrTokenPopover from '../CoinOrTokenPopover';
 
+import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
-import IBCWarning from '~/images/icons/IBCWarning.svg';
+import IBCWarningIcon from '~/images/icons/IBCWarning.svg';
 
 export const TYPE = {
   COIN: 'coin',
@@ -319,7 +320,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     return (
       <WarningContainer>
         <WarningContentsContainer>
-          <IBCWarning />
+          <IBCWarningIcon />
           <WarningTextContainer>
             <Typography variant="h4">{t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.ibcWarningHeadertitle')}</Typography>
             <Typography variant="h6">{t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.ibcWarningSubtitle')}</Typography>
@@ -356,7 +357,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           endAdornment={
             <InputAdornment position="end">
               <IconButton onClick={() => setIsOpenedMyAddressBook(true)} edge="end">
-                <AddressBook24Icon />
+                <AccountAddressIcon />
               </IconButton>
               <IconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
                 <AddressBook24Icon />
@@ -531,6 +532,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
       <MyAddressBookBottomSheet
         open={isOpenedMyAddressBook}
         chain={selectedReceiverIBC?.chain}
+        isIBCSend
         onClose={() => setIsOpenedMyAddressBook(false)}
         onClickAddress={(a) => {
           setReceiverAddress(a);
