@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
@@ -34,17 +35,20 @@ import Plus16Icon from '~/images/icons/Plus16.svg';
 
 export default function Entry() {
   const tokens = useTokensSWR();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
   const [check, setCheck] = useState<ModifiedAsset>();
 
-  const { addEthereumToken } = useCurrentEthereumTokens();
+  const { addEthereumToken, currentEthereumTokens } = useCurrentEthereumTokens();
 
   const { t } = useTranslation();
   const { navigate } = useNavigate();
 
+  const exceptExistToken = tokens.data.filter((original) => !currentEthereumTokens.map((current) => current.address).includes(original.address));
+
   const filteredTokens = search
-    ? tokens.data.filter(
+    ? exceptExistToken.filter(
         (item) => (item.name.toLowerCase().indexOf(search.toLowerCase()) || item.displayDenom.toLowerCase().indexOf(search.toLowerCase())) > -1,
       )
     : tokens.data;
@@ -66,6 +70,7 @@ export default function Entry() {
         : data;
 
       await addEthereumToken({ ...searchedToken, tokenType: 'ERC20' });
+      enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.Search.entry.addTokenSnackbar'));
     }
   };
 
@@ -142,7 +147,6 @@ export default function Entry() {
         <Button
           onClick={() => {
             void handelCheck(true, check!);
-            navigate('/wallet');
           }}
           disabled={!check}
         >
