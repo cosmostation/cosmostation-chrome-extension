@@ -1,7 +1,6 @@
 import { COSMOS_CHAINS } from '~/constants/chain';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
-import ActivateChainRequest from '~/Popup/components/requests/ActivateChainRequest';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
@@ -15,17 +14,15 @@ export default function AddTokens() {
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
   if (currentQueue && isCosAddTokensCW20Internal(currentQueue)) {
-    const selecteChain = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
+    const selectedChain = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
 
-    if (selecteChain) {
+    if (selectedChain) {
       return (
         <Lock>
           <AccessRequest>
-            <ActivateChainRequest>
-              <Layout>
-                <Entry queue={currentQueue} chain={selecteChain} />
-              </Layout>
-            </ActivateChainRequest>
+            <Layout>
+              <Entry queue={currentQueue} chain={selectedChain} />
+            </Layout>
           </AccessRequest>
         </Lock>
       );

@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 import { COSMOS_CHAINS } from '~/constants/chain';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
-import ActivateChainRequest from '~/Popup/components/requests/ActivateChainRequest';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
@@ -17,7 +16,7 @@ export default function AddChain() {
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
   if (currentQueue && isCosSignDirect(currentQueue)) {
-    const selecteChain = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
+    const selectedChain = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
 
     const { message } = currentQueue;
     const { params } = message;
@@ -31,17 +30,15 @@ export default function AddChain() {
 
     const newCurrentQueue = { ...currentQueue, message: { ...message, params: { ...params, doc: newDoc } } };
 
-    if (selecteChain) {
+    if (selectedChain) {
       return (
         <Lock>
           <AccessRequest>
-            <ActivateChainRequest>
-              <Layout>
-                <Suspense fallback={null}>
-                  <Entry queue={newCurrentQueue} chain={selecteChain} />
-                </Suspense>
-              </Layout>
-            </ActivateChainRequest>
+            <Layout>
+              <Suspense fallback={null}>
+                <Entry queue={newCurrentQueue} chain={selectedChain} />
+              </Suspense>
+            </Layout>
           </AccessRequest>
         </Lock>
       );
