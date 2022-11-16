@@ -929,6 +929,8 @@
                 "index": {
                   "amountPlaceholder": "수량",
                   "available": "사용 가능 수량",
+                  "ibcWarningHeadertitle": "IBC Send를 지원하지 않습니다",
+                  "ibcWarningSubtitle": "IBC Send 로 보낼 수 있는 코인 또는 토큰이 존재하지 않습니다.",
                   "insufficientAmount": "수량이 부족합니다.",
                   "insufficientFeeAmount": "수수료가 부족합니다.",
                   "invalidAddress": "유효하지 않은 주소입니다.",

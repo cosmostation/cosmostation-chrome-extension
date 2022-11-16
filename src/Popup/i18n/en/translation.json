@@ -929,6 +929,8 @@
                 "index": {
                   "amountPlaceholder": "Amount",
                   "available": "Available",
+                  "ibcWarningHeadertitle": "IBC Send is not supported",
+                  "ibcWarningSubtitle": "No coin or token available for IBC Send.",
                   "insufficientAmount": "Insufficient amount",
                   "insufficientFeeAmount": "Insufficient fee",
                   "invalidAddress": "Invalid address",

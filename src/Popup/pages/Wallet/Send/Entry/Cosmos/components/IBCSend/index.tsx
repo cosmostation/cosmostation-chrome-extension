@@ -319,8 +319,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
         <WarningContentsContainer>
           <IBCWarning />
           <WarningTextContainer>
-            <Typography variant="h4">IBC Send is not supported</Typography>
-            <Typography variant="h6">This Network is not supported on Ledger Hardware wallet.</Typography>
+            <Typography variant="h4">{t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.ibcWarningHeadertitle')}</Typography>
+            <Typography variant="h6">{t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.ibcWarningSubtitle')}</Typography>
           </WarningTextContainer>
         </WarningContentsContainer>
       </WarningContainer>
