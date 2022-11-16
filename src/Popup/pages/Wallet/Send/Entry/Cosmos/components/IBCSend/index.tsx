@@ -10,6 +10,7 @@ import DropdownButton from '~/Popup/components/common/DropdownButton';
 import IconButton from '~/Popup/components/common/IconButton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
+import MyAddressBookBottomSheet from '~/Popup/components/MyAddressBookBottomSheet';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
@@ -133,6 +134,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const [currentMemo, setCurrentMemo] = useState('');
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
+  const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
 
   const currentCoinOrToken = useMemo(
     () =>
@@ -353,6 +355,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
         <StyledInput
           endAdornment={
             <InputAdornment position="end">
+              <IconButton onClick={() => setIsOpenedMyAddressBook(true)} edge="end">
+                <AddressBook24Icon />
+              </IconButton>
               <IconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
                 <AddressBook24Icon />
               </IconButton>
@@ -520,6 +525,15 @@ export default function IBCSend({ chain }: IBCSendProps) {
         onClickAddress={(a) => {
           setReceiverAddress(a.address);
           setCurrentMemo(a.memo || '');
+        }}
+      />
+
+      <MyAddressBookBottomSheet
+        open={isOpenedMyAddressBook}
+        chain={selectedReceiverIBC?.chain}
+        onClose={() => setIsOpenedMyAddressBook(false)}
+        onClickAddress={(a) => {
+          setReceiverAddress(a);
         }}
       />
 

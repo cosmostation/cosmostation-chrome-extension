@@ -80,6 +80,11 @@
         "unlockButton": "Unlock"
       }
     },
+    "MyAddressBookBottomSheet": {
+      "index": {
+        "title": "My account's address"
+      }
+    },
     "ethereum": {
       "Fee": {
         "index": {

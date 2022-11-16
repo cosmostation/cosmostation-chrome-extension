@@ -35,6 +35,7 @@ export default function AddressBookItem({ addressInfo, onClick }: AddressBookIte
           <StyledButton
             data-is-active={isOpenPopover ? 1 : 0}
             onClick={(event) => {
+              event.stopPropagation();
               setPopoverAnchorEl(event.currentTarget);
             }}
           >

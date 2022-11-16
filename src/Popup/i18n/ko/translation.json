@@ -80,6 +80,11 @@
         "unlockButton": "잠금 해제"
       }
     },
+    "MyAddressBookBottomSheet": {
+      "index": {
+        "title": "계정 내 주소록"
+      }
+    },
     "ethereum": {
       "Fee": {
         "index": {
