@@ -4,13 +4,13 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
+import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
 import DropdownButton from '~/Popup/components/common/DropdownButton';
 import IconButton from '~/Popup/components/common/IconButton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
-import MyAddressBookBottomSheet from '~/Popup/components/MyAddressBookBottomSheet';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
@@ -529,7 +529,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         }}
       />
 
-      <MyAddressBookBottomSheet
+      <AccountAddressBookBottomSheet
         open={isOpenedMyAddressBook}
         chain={selectedReceiverIBC?.chain}
         isIBCSend

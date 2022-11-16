@@ -7,15 +7,15 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain } from '~/types/chain';
 
 import { AddressList, Container, Header, HeaderTitle, StyledBottomSheet } from './styled';
-import MyAddressBookItem from '../MyAddressBookItem';
+import AccountAddressBookItem from '../AccountAddressBookItem';
 
-type MyAddressBookBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
+type AccountAddressBookBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   onClickAddress?: (address: string) => void;
   chain?: CosmosChain;
   isIBCSend?: boolean;
 };
 
-export default function MyAddressBookBottomSheet({ isIBCSend, chain, onClickAddress, onClose, ...remainder }: MyAddressBookBottomSheetProps) {
+export default function AccountAddressBookBottomSheet({ isIBCSend, chain, onClickAddress, onClose, ...remainder }: AccountAddressBookBottomSheetProps) {
   const { chromeStorage } = useChromeStorage();
 
   const { data } = useAccounts(true);
@@ -37,7 +37,7 @@ export default function MyAddressBookBottomSheet({ isIBCSend, chain, onClickAddr
           {data
             ?.filter((item) => isIBCSend ?? item.id !== currentAccount.id)
             .map((item) => (
-              <MyAddressBookItem
+              <AccountAddressBookItem
                 accountName={accountName[item.id]}
                 address={item.address[chain ? chain.id : '']}
                 chainId={chain ? chain.id : ''}

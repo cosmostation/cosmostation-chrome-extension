@@ -6,14 +6,14 @@ import { shorterAddress } from '~/Popup/utils/string';
 
 import { AddressContainer, Container, LabelContainer, LabelLeftContainer, StyledImage } from './styled';
 
-type MyAddressBookItemProps = {
+type AccountAddressBookItemProps = {
   accountName: string;
   chainId: string;
   address: string;
   onClick?: (address: string) => void;
 };
 
-export default function MyAddressBookItem({ onClick, address, chainId, accountName }: MyAddressBookItemProps) {
+export default function AccountAddressBookItem({ onClick, address, chainId, accountName }: AccountAddressBookItemProps) {
   const chain = CHAINS.find((item) => item.id === chainId);
 
   return (
