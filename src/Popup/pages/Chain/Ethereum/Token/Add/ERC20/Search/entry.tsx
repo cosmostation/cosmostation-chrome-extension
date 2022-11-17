@@ -68,11 +68,10 @@ export default function Entry() {
             decimals: checkedToken.find((decimals) => decimals.decimals),
             imageURL: checkedToken.find((imageURL) => imageURL.imageURL),
             coinGeckoId: checkedToken.find((coinGeckoId) => coinGeckoId.coinGeckoId),
-            tokenType: 'ERC20',
           }
         : data;
 
-      await addEthereumTokens(searchedToken);
+      await addEthereumTokens({ ...searchedToken });
       enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.Search.entry.addTokenSnackbar'));
     }
   };
@@ -131,6 +130,7 @@ export default function Entry() {
                     setCheck(undefined);
                   } else {
                     setCheck([token]);
+                    // 현재 모디파이드 에셋이랑 이더리움 토큰 에셋이랑 타입이 안맞음
                   }
                 }}
                 isActive={!!check?.filter((active) => active.address === token.address)}
