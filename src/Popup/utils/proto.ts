@@ -43,8 +43,10 @@ export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
     token: msg.value.token,
     sender: msg.value.sender,
     receiver: msg.value.receiver,
-    timeout_height: msg.value.timeout_height,
-    timeout_timestamp: msg.value.timeout_timestamp,
+    timeout_height: {
+      revision_height: Number(msg.value.timeout_height.revision_height),
+      revision_number: msg.value.timeout_height.revision_number ? Number(msg.value.timeout_height.revision_number) : 0,
+    },
   });
 
   return new google.protobuf.Any({

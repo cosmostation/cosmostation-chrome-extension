@@ -451,7 +451,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                                 source_port: 'transfer',
                                 timeout_height: {
                                   revision_height: revisionHeight,
-                                  revision_number: revisionNumber,
+                                  revision_number: revisionNumber === '0' ? undefined : revisionNumber,
                                 },
                                 token: {
                                   amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
