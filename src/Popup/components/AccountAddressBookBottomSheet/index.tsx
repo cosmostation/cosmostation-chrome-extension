@@ -48,6 +48,7 @@ export default function AccountAddressBookBottomSheet({
         <AddressList>
           {filteredAccounts.map((item) => (
             <AccountAddressBookItem
+              key={item.id}
               accountName={accountName[item.id]}
               address={chain ? item.address[chain.id] : ''}
               chain={chain}
