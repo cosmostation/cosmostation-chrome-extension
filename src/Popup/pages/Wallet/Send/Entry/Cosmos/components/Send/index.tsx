@@ -412,6 +412,7 @@ export default function Send({ chain }: CosmosProps) {
 
       <AccountAddressBookBottomSheet
         open={isOpenedMyAddressBook}
+        hasCurrentAccount={false}
         chain={chain}
         onClose={() => setIsOpenedMyAddressBook(false)}
         onClickAddress={(a) => {

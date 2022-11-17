@@ -1,21 +1,19 @@
 import { Typography } from '@mui/material';
 
-import { CHAINS } from '~/constants/chain';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { shorterAddress } from '~/Popup/utils/string';
+import type { Chain } from '~/types/chain';
 
 import { AddressContainer, Container, LabelContainer, LabelLeftContainer, StyledImage } from './styled';
 
 type AccountAddressBookItemProps = {
   accountName: string;
-  chainId: string;
+  chain?: Chain;
   address: string;
   onClick?: (address: string) => void;
 };
 
-export default function AccountAddressBookItem({ onClick, address, chainId, accountName }: AccountAddressBookItemProps) {
-  const chain = CHAINS.find((item) => item.id === chainId);
-
+export default function AccountAddressBookItem({ onClick, address, chain, accountName }: AccountAddressBookItemProps) {
   return (
     <Container onClick={() => onClick?.(address)} data-is-onclick={onClick ? 1 : 0}>
       <LabelContainer>

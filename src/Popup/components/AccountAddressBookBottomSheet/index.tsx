@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
@@ -12,10 +13,16 @@ import AccountAddressBookItem from '../AccountAddressBookItem';
 type AccountAddressBookBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   onClickAddress?: (address: string) => void;
   chain?: CosmosChain;
-  isIBCSend?: boolean;
+  hasCurrentAccount?: boolean;
 };
 
-export default function AccountAddressBookBottomSheet({ isIBCSend, chain, onClickAddress, onClose, ...remainder }: AccountAddressBookBottomSheetProps) {
+export default function AccountAddressBookBottomSheet({
+  hasCurrentAccount = true,
+  chain,
+  onClickAddress,
+  onClose,
+  ...remainder
+}: AccountAddressBookBottomSheetProps) {
   const { chromeStorage } = useChromeStorage();
 
   const { data } = useAccounts(true);
@@ -24,6 +31,11 @@ export default function AccountAddressBookBottomSheet({ isIBCSend, chain, onClic
   const { accountName } = chromeStorage;
 
   const { t } = useTranslation();
+
+  const filteredAccounts = useMemo(
+    () => (hasCurrentAccount ? data : data?.filter((item) => item.id !== currentAccount.id)) || [],
+    [currentAccount.id, data, hasCurrentAccount],
+  );
 
   return (
     <StyledBottomSheet {...remainder} onClose={onClose}>
@@ -34,19 +46,17 @@ export default function AccountAddressBookBottomSheet({ isIBCSend, chain, onClic
           </HeaderTitle>
         </Header>
         <AddressList>
-          {data
-            ?.filter((item) => isIBCSend ?? item.id !== currentAccount.id)
-            .map((item) => (
-              <AccountAddressBookItem
-                accountName={accountName[item.id]}
-                address={item.address[chain ? chain.id : '']}
-                chainId={chain ? chain.id : ''}
-                onClick={(address) => {
-                  onClickAddress?.(address);
-                  onClose?.({}, 'backdropClick');
-                }}
-              />
-            ))}
+          {filteredAccounts.map((item) => (
+            <AccountAddressBookItem
+              accountName={accountName[item.id]}
+              address={chain ? item.address[chain.id] : ''}
+              chain={chain}
+              onClick={(address) => {
+                onClickAddress?.(address);
+                onClose?.({}, 'backdropClick');
+              }}
+            />
+          ))}
         </AddressList>
       </Container>
     </StyledBottomSheet>

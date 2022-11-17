@@ -532,7 +532,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
       <AccountAddressBookBottomSheet
         open={isOpenedMyAddressBook}
         chain={selectedReceiverIBC?.chain}
-        isIBCSend
         onClose={() => setIsOpenedMyAddressBook(false)}
         onClickAddress={(a) => {
           setReceiverAddress(a);
