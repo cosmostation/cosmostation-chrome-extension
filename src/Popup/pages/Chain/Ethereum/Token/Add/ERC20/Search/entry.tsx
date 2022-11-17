@@ -7,7 +7,7 @@ import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { ModifiedAsset } from '~/types/ethereum/asset';
+import type { EthereumToken } from '~/types/chain';
 
 import TokenItem from './components/TokenItem/index';
 import {
@@ -33,14 +33,16 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 import Plus16Icon from '~/images/icons/Plus16.svg';
 
+type EthereumTokenParams = Omit<EthereumToken, 'id' | 'ethereumNetworkId'>;
+
 export default function Entry() {
   const tokens = useTokensSWR();
   const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
-  const [check, setCheck] = useState<ModifiedAsset>();
+  const [check, setCheck] = useState<EthereumTokenParams[]>();
 
-  const { addEthereumToken, currentEthereumTokens } = useCurrentEthereumTokens();
+  const { addEthereumTokens, currentEthereumTokens } = useCurrentEthereumTokens();
 
   const { t } = useTranslation();
   const { navigate } = useNavigate();
@@ -55,24 +57,31 @@ export default function Entry() {
 
   const isSearching = search.toLowerCase().length > 0;
 
-  const handelCheck = async (checked: boolean, data: ModifiedAsset) => {
+  const handelCheck = async (checked: boolean, data: EthereumTokenParams[]) => {
     if (checked) {
-      const checkedToken = tokens.data.find((item) => item.address.toLowerCase() === data.address.toLowerCase());
-
+      const checkedToken = tokens.data.filter((original) => data.map((select) => select.address).includes(original.address));
       const searchedToken = checkedToken
         ? {
-            address: checkedToken.address,
-            displayDenom: checkedToken.displayDenom,
-            decimals: checkedToken.decimals,
-            imageURL: checkedToken.imageURL,
-            coinGeckoId: checkedToken.coinGeckoId,
+            ...data,
+            address: checkedToken.find((address) => address.address),
+            displayDenom: checkedToken.find((displayDenom) => displayDenom.displayDenom),
+            decimals: checkedToken.find((decimals) => decimals.decimals),
+            imageURL: checkedToken.find((imageURL) => imageURL.imageURL),
+            coinGeckoId: checkedToken.find((coinGeckoId) => coinGeckoId.coinGeckoId),
+            tokenType: 'ERC20',
           }
         : data;
 
-      await addEthereumToken({ ...searchedToken, tokenType: 'ERC20' });
+      await addEthereumTokens(searchedToken);
       enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.Search.entry.addTokenSnackbar'));
     }
   };
+
+  // const MultipleSelective = (selectedItem: ModifiedAsset) => {
+  //   if (check?.includes(selectedItem)) {
+  //     setCheck(check?.filter((item) => item === selectedItem));
+  //   }
+  // };
 
   return (
     <Container>
@@ -118,13 +127,13 @@ export default function Entry() {
                 symbol={token.displayDenom}
                 imageURL={token.imageURL}
                 onClick={() => {
-                  if (token.address === check?.address) {
+                  if (check?.filter((click) => click.address === token.address)) {
                     setCheck(undefined);
                   } else {
-                    setCheck(token);
+                    setCheck([token]);
                   }
                 }}
-                isActive={token.address === check?.address}
+                isActive={!!check?.filter((active) => active.address === token.address)}
               />
             ))}
           </TokenList>
