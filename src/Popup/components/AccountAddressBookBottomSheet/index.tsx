@@ -42,7 +42,7 @@ export default function AccountAddressBookBottomSheet({
       <Container>
         <Header>
           <HeaderTitle>
-            <Typography variant="h4">{t('components.MyAddressBookBottomSheet.index.title')}</Typography>
+            <Typography variant="h4">{t('components.AccountAddressBookBottomSheet.index.title')}</Typography>
           </HeaderTitle>
         </Header>
         <AddressList>

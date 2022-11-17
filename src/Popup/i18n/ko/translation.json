@@ -1,5 +1,10 @@
 {
   "components": {
+    "AccountAddressBookBottomSheet": {
+      "index": {
+        "title": "계정 내 주소"
+      }
+    },
     "AddressBookBottomSheet": {
       "index": {
         "addAddressButton": "주소 추가",
@@ -78,11 +83,6 @@
         "lostButton": "비밀번호를 잊어버렸나요?",
         "passwordPlaceholder": "비밀번호",
         "unlockButton": "잠금 해제"
-      }
-    },
-    "MyAddressBookBottomSheet": {
-      "index": {
-        "title": "계정 내 주소록"
       }
     },
     "ethereum": {

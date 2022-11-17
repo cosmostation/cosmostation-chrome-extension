@@ -1,5 +1,10 @@
 {
   "components": {
+    "AccountAddressBookBottomSheet": {
+      "index": {
+        "title": "Address within the Account"
+      }
+    },
     "AddressBookBottomSheet": {
       "index": {
         "addAddressButton": "Add address",
@@ -78,11 +83,6 @@
         "lostButton": "I lost my password",
         "passwordPlaceholder": "Password",
         "unlockButton": "Unlock"
-      }
-    },
-    "MyAddressBookBottomSheet": {
-      "index": {
-        "title": "My account's address"
       }
     },
     "ethereum": {
