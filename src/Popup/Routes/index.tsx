@@ -41,6 +41,7 @@ import PopupCosmosAutoSignGet from '~/Popup/pages/Popup/Cosmos/AutoSign/Get';
 import PopupCosmosAutoSignSet from '~/Popup/pages/Popup/Cosmos/AutoSign/Set';
 import PopupCosmosSignAmino from '~/Popup/pages/Popup/Cosmos/Sign/Amino';
 import PopupCosmosSignDirect from '~/Popup/pages/Popup/Cosmos/Sign/Direct';
+import PopupCosmosSignMessage from '~/Popup/pages/Popup/Cosmos/Sign/Message';
 import PopupEthereumAddNetwork from '~/Popup/pages/Popup/Ethereum/AddNetwork';
 import PopupEthereumAddTokens from '~/Popup/pages/Popup/Ethereum/AddTokens';
 import PopupEthereumPersonalSign from '~/Popup/pages/Popup/Ethereum/PersonalSign';
@@ -139,6 +140,7 @@ export default function Routes() {
           <Route path={PATH.POPUP__COSMOS__AUTO_SIGN__DELETE} element={<PopupCosmosAutoSignDelete />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__AMINO} element={<PopupCosmosSignAmino />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__DIRECT} element={<PopupCosmosSignDirect />} />
+          <Route path={PATH.POPUP__COSMOS__SIGN__MESSAGE} element={<PopupCosmosSignMessage />} />
 
           <Route path={PATH.POPUP__APTOS__TRANSACTION} element={<PopupAptosTransaction />} />
           <Route path={PATH.POPUP__APTOS__SIGN_MESSAGE} element={<PopupAptosSignMessage />} />

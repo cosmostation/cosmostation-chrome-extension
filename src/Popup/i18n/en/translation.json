@@ -637,6 +637,15 @@
               "detailTab": "Details"
             }
           },
+          "Message": {
+            "entry": {
+              "cancelButton": "Cancel",
+              "dataTab": "Data",
+              "detailTab": "Details",
+              "failedTransfer": "Failed to transfer",
+              "signButton": "Sign"
+            }
+          },
           "components": {
             "Memo": {
               "index": {

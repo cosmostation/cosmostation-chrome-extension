@@ -28,8 +28,10 @@ import type {
   CosSetAutoSign,
   CosSignAmino,
   CosSignDirect,
+  CosSignMessage,
   CosSupportedChainIds,
   CosSupportedChainNames,
+  CosVerifyMessage,
 } from './cosmos';
 import type {
   EthcAddNetwork,
@@ -95,7 +97,9 @@ export type CosmosRequestMessage =
   | CosGetBalanceCW20
   | CosGetTokenInfoCW20
   | CosAddTokensCW20
-  | CosAddTokensCW20Internal;
+  | CosAddTokensCW20Internal
+  | CosSignMessage
+  | CosVerifyMessage;
 
 export type AptosRequestMessage =
   | AptosAccount

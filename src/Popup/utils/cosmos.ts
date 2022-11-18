@@ -12,7 +12,7 @@ import { KAVA } from '~/constants/chain/cosmos/kava';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
-import type { Msg, MsgCustom, MsgExecuteContract, MsgSend, SignAminoDoc } from '~/types/cosmos/amino';
+import type { Msg, MsgCustom, MsgExecuteContract, MsgSend, MsgSignData, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 import { toHex } from './string';
@@ -109,6 +109,32 @@ export function isAminoExecuteContract(msg: Msg): msg is Msg<MsgExecuteContract>
   return msg.type === 'wasm/MsgExecuteContract';
 }
 
+export function isAminoMsgSignData(msg: Msg): msg is Msg<MsgSignData> {
+  return msg.type === 'sign/MsgSignData';
+}
+
 export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {
   return true;
+}
+
+export function getMsgSignData(signer: string, message: string) {
+  return {
+    account_number: '0',
+    chain_id: '',
+    fee: {
+      amount: [],
+      gas: '0',
+    },
+    memo: '',
+    msgs: [
+      {
+        type: 'sign/MsgSignData',
+        value: {
+          data: Buffer.from(message, 'utf8').toString('base64'),
+          signer,
+        },
+      },
+    ],
+    sequence: '0',
+  };
 }

@@ -11,7 +11,9 @@ import type {
   CosSignAminoResponse,
   CosSignDirectParams,
   CosSignDirectResponse,
+  CosSignMessageResponse,
   CosSupportedChainIdsResponse,
+  CosVerifyMessageResponse,
 } from '~/types/message/cosmos';
 
 export const request = (message: CosmosRequestMessage) =>
@@ -246,6 +248,23 @@ const signDirect: Keplr['signDirect'] = async (chainId, _, signDoc) => {
   };
 };
 
+const signArbitrary: Keplr['signArbitrary'] = async (chainId, signer, data) => {
+  const message = typeof data === 'string' ? data : Buffer.from(data).toString('utf8');
+  const response = (await request({ method: 'cos_signMessage', params: { chainName: chainId, signer, message } })) as CosSignMessageResponse;
+
+  return response;
+};
+
+const verifyArbitrary: Keplr['verifyArbitrary'] = async (chainId, signer, data, signature) => {
+  const message = typeof data === 'string' ? data : Buffer.from(data).toString('utf8');
+  const response = (await request({
+    method: 'cos_verifyMessage',
+    params: { chainName: chainId, signer, message, publicKey: signature.pub_key.value, signature: signature.signature },
+  })) as CosVerifyMessageResponse;
+
+  return response;
+};
+
 const sendTx: Keplr['sendTx'] = async (chainId, tx, mode) => {
   try {
     const txMode = (() => {
@@ -278,6 +297,7 @@ const getOfflineSigner: Keplr['getOfflineSigner'] = (chainId) => ({
 
     return [{ address: response.bech32Address, pubkey: response.pubKey, algo: response.algo as 'secp256k1' }];
   },
+  chainId,
 });
 
 const getOfflineSignerOnlyAmino: Keplr['getOfflineSignerOnlyAmino'] = (chainId) => ({
@@ -287,6 +307,7 @@ const getOfflineSignerOnlyAmino: Keplr['getOfflineSignerOnlyAmino'] = (chainId) 
 
     return [{ address: response.bech32Address, pubkey: response.pubKey, algo: response.algo as 'secp256k1' }];
   },
+  chainId,
 });
 
 const getOfflineSignerAuto: Keplr['getOfflineSignerAuto'] = async (chainId) => {
@@ -316,6 +337,8 @@ export const keplr: Keplr = {
   sendTx,
   signAmino,
   signDirect,
+  signArbitrary,
+  verifyArbitrary,
 };
 
 // keplr provider end

@@ -18,6 +18,8 @@ import type {
   CosSetAutoSign,
   CosSignAmino,
   CosSignDirect,
+  CosSignMessage,
+  CosVerifyMessage,
 } from '~/types/message/cosmos';
 import type {
   EthcAddNetwork,
@@ -136,6 +138,7 @@ export const cosSignAminoParamsSchema = (chainNames: string[], chainId: string) 
         }),
       ),
     }).required(),
+    signer: Joi.string().optional(),
     isEditFee: Joi.boolean().default(false),
     isEditMemo: Joi.boolean().default(false),
     gasRate: Joi.object<GasRate>({
@@ -147,6 +150,32 @@ export const cosSignAminoParamsSchema = (chainNames: string[], chainId: string) 
     .label('params')
     .required();
 };
+
+export const cosSignMessageParamsSchema = (chainNames: string[]) =>
+  Joi.object<CosSignMessage['params']>({
+    chainName: Joi.string()
+      .lowercase()
+      .valid(...chainNames)
+      .required(),
+    message: Joi.string().required(),
+    signer: Joi.string().required(),
+  })
+    .label('params')
+    .required();
+
+export const cosVerifyMessageParamsSchema = (chainNames: string[]) =>
+  Joi.object<CosVerifyMessage['params']>({
+    chainName: Joi.string()
+      .lowercase()
+      .valid(...chainNames)
+      .required(),
+    message: Joi.string().required(),
+    signer: Joi.string().required(),
+    publicKey: Joi.string().required(),
+    signature: Joi.string().required(),
+  })
+    .label('params')
+    .required();
 
 export const cosSignDirectParamsSchema = (chainNames: string[], chainId: string) => {
   const chainIdRegex = getChainIdRegex(chainId);

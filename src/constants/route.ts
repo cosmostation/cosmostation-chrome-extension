@@ -68,6 +68,7 @@ export const PATH = {
   POPUP__COSMOS__AUTO_SIGN__DELETE: '/popup/cosmos/auto-sign/delete',
   POPUP__COSMOS__SIGN__AMINO: '/popup/cosmos/sign/amino',
   POPUP__COSMOS__SIGN__DIRECT: '/popup/cosmos/sign/direct',
+  POPUP__COSMOS__SIGN__MESSAGE: '/popup/cosmos/sign/message',
 
   // popup ethereum
   POPUP__ETHEREUM__ADD_NETWORK: '/popup/ethereum/add-network',

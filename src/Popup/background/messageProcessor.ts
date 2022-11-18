@@ -1,4 +1,8 @@
+import encHex from 'crypto-js/enc-hex';
+import sha256 from 'crypto-js/sha256';
 import { debounce } from 'lodash';
+import sortKeys from 'sort-keys';
+import TinySecp256k1 from 'tiny-secp256k1';
 import { v4 as uuidv4 } from 'uuid';
 import Web3 from 'web3';
 import type { MessageTypes } from '@metamask/eth-sig-util';
@@ -48,8 +52,11 @@ import type {
   CosSignAminoResponse,
   CosSignDirect,
   CosSignDirectResponse,
+  CosSignMessage,
   CosSupportedChainIdsResponse,
   CosSupportedChainNamesResponse,
+  CosVerifyMessage,
+  CosVerifyMessageResponse,
 } from '~/types/message/cosmos';
 import type {
   CustomTypedMessage,
@@ -82,6 +89,8 @@ import {
   cosSetAutoSignParamsSchema,
   cosSignAminoParamsSchema,
   cosSignDirectParamsSchema,
+  cosSignMessageParamsSchema,
+  cosVerifyMessageParamsSchema,
   ethcAddNetworkParamsSchema,
   ethcAddTokensParamsSchema,
   ethcSwitchNetworkParamsSchema,
@@ -93,7 +102,7 @@ import {
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,
 } from './joiSchema';
-import { cosmosURL, getPublicKeyType, signAmino, signDirect } from '../utils/cosmos';
+import { cosmosURL, getMsgSignData, getPublicKeyType, signAmino, signDirect } from '../utils/cosmos';
 import { FetchError, get, post } from '../utils/fetch';
 
 let localQueues: Queue[] = [];
@@ -554,6 +563,38 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         }
 
+        if (method === 'cos_signMessage') {
+          const { params } = message;
+
+          const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName : params?.chainName;
+
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const schema = cosSignMessageParamsSchema(allChainLowercaseNames);
+
+          if (currentAccount.type === 'LEDGER' && chain?.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
+          }
+
+          try {
+            const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignMessage['params'];
+
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignMessage['params'] },
+            });
+            void setQueues();
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+        }
+
         if (method === 'cos_addTokensCW20') {
           const { params } = message;
 
@@ -954,6 +995,55 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
                 origin,
               });
             }
+          }
+        }
+
+        if (method === 'cos_verifyMessage') {
+          const { params } = message;
+
+          const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName : params?.chainName;
+
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const schema = cosVerifyMessageParamsSchema(allChainLowercaseNames);
+
+          try {
+            const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosVerifyMessage['params'];
+
+            const tx = sha256(JSON.stringify(sortKeys(getMsgSignData(validatedParams.signer, validatedParams.message), { deep: true }))).toString(encHex);
+
+            const result: CosVerifyMessageResponse = TinySecp256k1.verify(
+              Buffer.from(tx, 'hex'),
+              Buffer.from(validatedParams.publicKey, 'base64'),
+              Buffer.from(validatedParams.signature, 'base64'),
+              true,
+            );
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          } catch (err) {
+            const result: CosVerifyMessageResponse = false;
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
           }
         }
       } else {
