@@ -138,7 +138,6 @@ export const cosSignAminoParamsSchema = (chainNames: string[], chainId: string) 
         }),
       ),
     }).required(),
-    signer: Joi.string().optional(),
     isEditFee: Joi.boolean().default(false),
     isEditMemo: Joi.boolean().default(false),
     gasRate: Joi.object<GasRate>({
