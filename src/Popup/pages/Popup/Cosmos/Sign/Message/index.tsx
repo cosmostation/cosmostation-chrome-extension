@@ -7,16 +7,16 @@ import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyR
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { CosSignAmino } from '~/types/message/cosmos';
+import type { CosSignMessage } from '~/types/message/cosmos';
 
 import Entry from './entry';
 import Layout from './layout';
 
-export default function Amino() {
+export default function Message() {
   const { currentQueue } = useCurrentQueue();
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
-  if (currentQueue && isCosSignAmino(currentQueue)) {
+  if (currentQueue && isCosSignMessage(currentQueue)) {
     const selectedChain = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
 
     if (selectedChain) {
@@ -39,6 +39,6 @@ export default function Amino() {
   return null;
 }
 
-function isCosSignAmino(queue: Queue): queue is Queue<CosSignAmino> {
-  return queue?.message?.method === 'cos_signAmino' || queue?.message?.method === 'ten_signAmino';
+function isCosSignMessage(queue: Queue): queue is Queue<CosSignMessage> {
+  return queue?.message?.method === 'cos_signMessage';
 }

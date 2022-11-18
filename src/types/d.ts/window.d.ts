@@ -8,8 +8,6 @@ type Keplr = Omit<
   | 'getEnigmaPubKey'
   | 'getEnigmaUtils'
   | 'getSecret20ViewingKey'
-  | 'signArbitrary'
-  | 'verifyArbitrary'
   | 'signEthereum'
   | 'suggestToken'
 >;

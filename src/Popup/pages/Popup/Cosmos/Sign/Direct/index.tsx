@@ -11,7 +11,7 @@ import type { CosSignDirect } from '~/types/message/cosmos';
 import Entry from './entry';
 import Layout from './layout';
 
-export default function AddChain() {
+export default function Direct() {
   const { currentQueue } = useCurrentQueue();
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
