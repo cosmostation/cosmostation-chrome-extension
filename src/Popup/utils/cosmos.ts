@@ -47,6 +47,7 @@ export function cosmosURL(chain: CosmosChain) {
       `${restURL}/wasm/contract/${contractAddress}/smart/${toHex(`{"balance":{"address":"${address}"}}`)}?encoding=utf-8`,
     getClientState: (channelId: string, port?: string) =>
       `${restURL}/ibc/core/channel/${isV1BetaClientState ? 'v1beta1' : 'v1'}/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
+    simulate: () => `${restURL}/cosmos/tx/v1beta1/simulate`,
   };
 }
 

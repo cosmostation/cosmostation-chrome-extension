@@ -77,6 +77,10 @@ export function getTxBodyBytes(signed: SignAminoDoc) {
     memo: signed.memo,
   });
 
+  if (signed.msgs.length !== messages.length) {
+    return null;
+  }
+
   return cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
 }
 
@@ -130,6 +134,10 @@ export function getPubKey(pubKey: PubKey) {
 
 export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey) {
   const txBodyBytes = getTxBodyBytes(signed);
+
+  if (txBodyBytes === null) {
+    return null;
+  }
 
   const authInfoBytes = getAuthInfoBytes(signed, pubKey);
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
