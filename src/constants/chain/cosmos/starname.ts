@@ -8,7 +8,7 @@ export const STARNAME: CosmosChain = {
   type: '',
   chainId: 'iov-mainnet-ibc',
   chainName: 'Starname',
-  restURL: 'https://lcd-iov.cosmostation.io',
+  restURL: 'https://lcd-starname.cosmostation.io',
   imageURL: starnameImg,
   baseDenom: 'uiov',
   displayDenom: 'IOV',

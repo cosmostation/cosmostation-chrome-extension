@@ -8,7 +8,7 @@ export const STAFIHUB: CosmosChain = {
   type: '',
   chainId: 'stafihub-1',
   chainName: 'StaFiHub',
-  restURL: 'https://lcd-stafihub.cosmostation.io',
+  restURL: 'https://lcd-stafi.cosmostation.io',
   imageURL: stafihubImg,
   coinGeckoId: 'stafi',
   baseDenom: 'ufis',
