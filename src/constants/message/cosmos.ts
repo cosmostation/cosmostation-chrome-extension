@@ -9,6 +9,7 @@ export const COSMOS_POPUP_METHOD_TYPE = {
   COS__ADD_CHAIN: 'cos_addChain',
   COS__SIGN_AMINO: 'cos_signAmino',
   COS__SIGN_DIRECT: 'cos_signDirect',
+  COS__SIGN_MESSAGE: 'cos_signMessage',
   COS__GET_AUTO_SIGN: 'cos_getAutoSign',
   COS__SET_AUTO_SIGN: 'cos_setAutoSign',
   COS__DELETE_AUTO_SIGN: 'cos_deleteAutoSign',
@@ -29,6 +30,7 @@ export const COSMOS_NO_POPUP_METHOD_TYPE = {
   COS__SEND_TRANSACTION: 'cos_sendTransaction',
   COS__GET_BALANCE_CW20: 'cos_getBalanceCW20',
   COS__GET_TOKEN_INFO_CW20: 'cos_getTokenInfoCW20',
+  COS__VERIFY_MESSAGE: 'cos_verifyMessage',
 } as const;
 
 export const COSMOS_METHOD_TYPE = {

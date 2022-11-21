@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 import { COSMOS_CHAINS } from '~/constants/chain';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
-import ActivateChainRequest from '~/Popup/components/requests/ActivateChainRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -13,7 +12,7 @@ import type { CosSignAmino } from '~/types/message/cosmos';
 import Entry from './entry';
 import Layout from './layout';
 
-export default function AddChain() {
+export default function Amino() {
   const { currentQueue } = useCurrentQueue();
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
@@ -25,13 +24,11 @@ export default function AddChain() {
         <Lock>
           <LedgerPublicKeyRequest>
             <AccessRequest>
-              <ActivateChainRequest>
-                <Layout>
-                  <Suspense fallback={null}>
-                    <Entry queue={currentQueue} chain={selectedChain} />
-                  </Suspense>
-                </Layout>
-              </ActivateChainRequest>
+              <Layout>
+                <Suspense fallback={null}>
+                  <Entry queue={currentQueue} chain={selectedChain} />
+                </Suspense>
+              </Layout>
             </AccessRequest>
           </LedgerPublicKeyRequest>
         </Lock>

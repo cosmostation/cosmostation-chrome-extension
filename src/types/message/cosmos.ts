@@ -3,7 +3,7 @@ import type { CosmosToken, CosmosType, GasRate } from '~/types/chain';
 import type { PublicKeyType } from '~/types/cosmos';
 import type { SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
-import type { SignDirectDoc } from '~/types/cosmos/proto';
+import type { PubKey, SignDirectDoc } from '~/types/cosmos/proto';
 
 export type CosmosNoPopupMethodType = ValueOf<typeof COSMOS_NO_POPUP_METHOD_TYPE>;
 export type CosmosPopupMethodType = ValueOf<typeof COSMOS_POPUP_METHOD_TYPE>;
@@ -93,6 +93,22 @@ export type CosGetTokenInfoCW20 = {
   id?: number | string;
 };
 
+export type CosVerifyMessageParams = {
+  chainName: string;
+  message: string;
+  signer: string;
+  publicKey: string;
+  signature: string;
+};
+
+export type CosVerifyMessage = {
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__VERIFY_MESSAGE;
+  params: CosVerifyMessageParams;
+  id?: number | string;
+};
+
+export type CosVerifyMessageResponse = boolean;
+
 // popup
 
 export type CosRequestAccount = {
@@ -167,7 +183,7 @@ export type CosDeleteAutoSignResponse = null;
 
 export type CosSignOptions = { isEditMemo?: boolean; isEditFee?: boolean; gasRate?: GasRate };
 
-export type CosSignAminoParams = { chainName: string; doc: SignAminoDoc } & CosSignOptions;
+export type CosSignAminoParams = { chainName: string; doc: SignAminoDoc; signer?: string } & CosSignOptions;
 
 export type CosSignAmino = {
   method: typeof COSMOS_POPUP_METHOD_TYPE.COS__SIGN_AMINO | typeof COSMOS_POPUP_METHOD_TYPE.TEN__SIGN_AMINO;
@@ -229,4 +245,21 @@ export type CosAddTokensCW20Internal = {
   method: typeof COSMOS_POPUP_METHOD_TYPE.COS__ADD_TOKENS_CW20_INTERNAL;
   params: CosAddTokensCW20InternalParams;
   id?: number | string;
+};
+
+export type CosSignMessageParams = {
+  chainName: string;
+  message: string;
+  signer: string;
+};
+
+export type CosSignMessage = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__SIGN_MESSAGE;
+  params: CosSignMessageParams;
+  id?: number | string;
+};
+
+export type CosSignMessageResponse = {
+  signature: string;
+  pub_key: PubKey;
 };

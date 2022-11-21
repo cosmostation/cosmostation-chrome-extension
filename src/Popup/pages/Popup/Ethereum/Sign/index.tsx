@@ -1,6 +1,5 @@
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
-import ActivateChainRequest from '~/Popup/components/requests/ActivateChainRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
@@ -17,11 +16,9 @@ export default function Sign() {
       <Lock>
         <LedgerPublicKeyRequest>
           <AccessRequest>
-            <ActivateChainRequest>
-              <Layout>
-                <Entry queue={currentQueue} />
-              </Layout>
-            </ActivateChainRequest>
+            <Layout>
+              <Entry queue={currentQueue} />
+            </Layout>
           </AccessRequest>
         </LedgerPublicKeyRequest>
       </Lock>

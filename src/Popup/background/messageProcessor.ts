@@ -1,4 +1,8 @@
+import encHex from 'crypto-js/enc-hex';
+import sha256 from 'crypto-js/sha256';
 import { debounce } from 'lodash';
+import sortKeys from 'sort-keys';
+import TinySecp256k1 from 'tiny-secp256k1';
 import { v4 as uuidv4 } from 'uuid';
 import Web3 from 'web3';
 import type { MessageTypes } from '@metamask/eth-sig-util';
@@ -48,8 +52,11 @@ import type {
   CosSignAminoResponse,
   CosSignDirect,
   CosSignDirectResponse,
+  CosSignMessage,
   CosSupportedChainIdsResponse,
   CosSupportedChainNamesResponse,
+  CosVerifyMessage,
+  CosVerifyMessageResponse,
 } from '~/types/message/cosmos';
 import type {
   CustomTypedMessage,
@@ -82,6 +89,8 @@ import {
   cosSetAutoSignParamsSchema,
   cosSignAminoParamsSchema,
   cosSignDirectParamsSchema,
+  cosSignMessageParamsSchema,
+  cosVerifyMessageParamsSchema,
   ethcAddNetworkParamsSchema,
   ethcAddTokensParamsSchema,
   ethcSwitchNetworkParamsSchema,
@@ -93,7 +102,7 @@ import {
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,
 } from './joiSchema';
-import { cosmosURL, getPublicKeyType, signAmino, signDirect } from '../utils/cosmos';
+import { cosmosURL, getMsgSignData, getPublicKeyType, signAmino, signDirect } from '../utils/cosmos';
 import { FetchError, get, post } from '../utils/fetch';
 
 let localQueues: Queue[] = [];
@@ -221,7 +230,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           if (
             chain.id &&
-            [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
             currentAccountAllowedOrigins.includes(origin) &&
             currentPassword &&
             (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.cosmosPublicKey))
@@ -344,12 +352,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             const chain = getChain(chainName)!;
 
-            if (
-              chain.id &&
-              [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
-              currentAccountAllowedOrigins.includes(origin) &&
-              currentPassword
-            ) {
+            if (chain.id && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const currentTime = new Date().getTime();
               const autoSign = autoSigns.find(
                 (item) =>
@@ -396,12 +399,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             const chain = getChain(chainName)!;
 
-            if (
-              chain.id &&
-              [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
-              currentAccountAllowedOrigins.includes(origin) &&
-              currentPassword
-            ) {
+            if (chain.id && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const newAutoSigns = autoSigns.filter((item) => !(item.accountId === currentAccount.id && item.chainId === chain.id && item.origin === origin));
 
               await setStorage('autoSigns', newAutoSigns);
@@ -453,13 +451,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
                 item.accountId === currentAccount.id && item.chainId === chain?.id && item.origin === origin && item.startTime + item.duration > currentTime,
             );
 
-            if (
-              chain?.id &&
-              [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
-              currentAccountAllowedOrigins.includes(origin) &&
-              currentPassword &&
-              isAutoSign
-            ) {
+            if (chain?.id && currentAccountAllowedOrigins.includes(origin) && currentPassword && isAutoSign) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
               if (!keyPair?.privateKey) {
@@ -524,13 +516,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
                 item.accountId === currentAccount.id && item.chainId === chain?.id && item.origin === origin && item.startTime + item.duration > currentTime,
             );
 
-            if (
-              chain?.id &&
-              [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain.id) &&
-              currentAccountAllowedOrigins.includes(origin) &&
-              currentPassword &&
-              isAutoSign
-            ) {
+            if (chain?.id && currentAccountAllowedOrigins.includes(origin) && currentPassword && isAutoSign) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
               if (!keyPair?.privateKey) {
@@ -572,6 +558,38 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               });
               void setQueues();
             }
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+        }
+
+        if (method === 'cos_signMessage') {
+          const { params } = message;
+
+          const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName : params?.chainName;
+
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const schema = cosSignMessageParamsSchema(allChainLowercaseNames);
+
+          if (currentAccount.type === 'LEDGER' && chain?.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+            throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
+          }
+
+          try {
+            const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosSignMessage['params'];
+
+            localQueues.push({
+              ...request,
+              message: { ...request.message, method, params: { ...validatedParams, chainName: chain?.chainName } as CosSignMessage['params'] },
+            });
+            void setQueues();
           } catch (err) {
             throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
           }
@@ -736,12 +754,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
           }
 
-          if (
-            chain?.id &&
-            [...currentAllowedChains, ...additionalChains].map((item) => item.id).includes(chain?.id) &&
-            currentAccountAllowedOrigins.includes(origin) &&
-            currentPassword
-          ) {
+          if (chain?.id && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
@@ -984,6 +997,55 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             }
           }
         }
+
+        if (method === 'cos_verifyMessage') {
+          const { params } = message;
+
+          const selectedChain = allChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName : params?.chainName;
+
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const schema = cosVerifyMessageParamsSchema(allChainLowercaseNames);
+
+          try {
+            const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosVerifyMessage['params'];
+
+            const tx = sha256(JSON.stringify(sortKeys(getMsgSignData(validatedParams.signer, validatedParams.message), { deep: true }))).toString(encHex);
+
+            const result: CosVerifyMessageResponse = TinySecp256k1.verify(
+              Buffer.from(tx, 'hex'),
+              Buffer.from(validatedParams.publicKey, 'base64'),
+              Buffer.from(validatedParams.signature, 'base64'),
+              true,
+            );
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          } catch (err) {
+            const result: CosVerifyMessageResponse = false;
+
+            responseToWeb({
+              response: {
+                result,
+              },
+              message,
+              messageId,
+              origin,
+            });
+          }
+        }
       } else {
         throw new CosmosRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
       }
@@ -1019,7 +1081,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
     const ethereumNoPopupMethods = Object.values(ETHEREUM_NO_POPUP_METHOD_TYPE) as string[];
 
-    const { additionalEthereumNetworks, currentEthereumNetwork, currentAccountAllowedOrigins, currentAllowedChains, currentAccount } = await chromeStorage();
+    const { additionalEthereumNetworks, currentEthereumNetwork, currentAccountAllowedOrigins, currentAccount } = await chromeStorage();
 
     const { currentPassword } = await chromeSessionStorage();
 
@@ -1041,7 +1103,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as EthSign['params'];
 
-            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+            if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
 
@@ -1074,7 +1136,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as EthSignTypedData['params'];
 
-            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+            if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
               if ((currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey) || currentAccount.type !== 'LEDGER') {
@@ -1128,7 +1190,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as PersonalSign['params'];
 
-            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+            if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
               const address = getAddress(chain, keyPair?.publicKey);
 
@@ -1161,7 +1223,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as EthSignTransaction['params'];
 
-            if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+            if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
               const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
               const address = getAddress(chain, keyPair?.publicKey);
@@ -1211,7 +1273,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
         if (method === 'eth_requestAccounts' || method === 'wallet_requestPermissions') {
           if (
-            currentAllowedChains.find((item) => item.id === chain.id) &&
             currentAccountAllowedOrigins.includes(origin) &&
             currentPassword &&
             (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey))
@@ -1474,7 +1535,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
       } else if (ethereumNoPopupMethods.includes(method)) {
         if (method === 'eth_accounts') {
           if (
-            currentAllowedChains.find((item) => item.id === chain.id) &&
             currentAccountAllowedOrigins.includes(origin) &&
             currentPassword &&
             (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey))
@@ -1505,7 +1565,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         } else if (method === 'eth_coinbase') {
           if (
-            currentAllowedChains.find((item) => item.id === chain.id) &&
             currentAccountAllowedOrigins.includes(origin) &&
             currentPassword &&
             (currentAccount.type !== 'LEDGER' || (currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey))
@@ -1585,7 +1644,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const aptosPopupMethods = Object.values(APTOS_POPUP_METHOD_TYPE) as string[];
     const aptosNoPopupMethods = Object.values(APTOS_NO_POPUP_METHOD_TYPE) as string[];
 
-    const { currentAccountAllowedOrigins, currentAllowedChains, currentAccount, allowedOrigins, currentAptosNetwork } = await chromeStorage();
+    const { currentAccountAllowedOrigins, currentAccount, allowedOrigins, currentAptosNetwork } = await chromeStorage();
 
     const { currentPassword } = await chromeSessionStorage();
 
@@ -1604,7 +1663,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
       if (aptosPopupMethods.includes(method)) {
         if (method === 'aptos_connect' || method === 'aptos_account') {
-          if (currentAllowedChains.find((item) => item.id === chain.id) && currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+          if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 

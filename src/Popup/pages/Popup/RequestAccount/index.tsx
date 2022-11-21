@@ -1,6 +1,5 @@
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
-import ActivateChainRequest from '~/Popup/components/requests/ActivateChainRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
 
 import Entry from './entry';
@@ -11,11 +10,9 @@ export default function RequestAccount() {
     <Lock>
       <LedgerPublicKeyRequest>
         <AccessRequest>
-          <ActivateChainRequest>
-            <Layout>
-              <Entry />
-            </Layout>
-          </ActivateChainRequest>
+          <Layout>
+            <Entry />
+          </Layout>
         </AccessRequest>
       </LedgerPublicKeyRequest>
     </Lock>

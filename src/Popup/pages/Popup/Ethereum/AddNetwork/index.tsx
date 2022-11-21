@@ -1,6 +1,5 @@
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
-import ActivateChainRequest from '~/Popup/components/requests/ActivateChainRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
 import type { EthcAddNetwork } from '~/types/message/ethereum';
@@ -15,11 +14,9 @@ export default function AddNetwork() {
     return (
       <Lock>
         <AccessRequest>
-          <ActivateChainRequest>
-            <Layout>
-              <Entry queue={currentQueue} />
-            </Layout>
-          </ActivateChainRequest>
+          <Layout>
+            <Entry queue={currentQueue} />
+          </Layout>
         </AccessRequest>
       </Lock>
     );

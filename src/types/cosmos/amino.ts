@@ -25,6 +25,11 @@ export type MsgTransfer = {
   token: Amount;
 };
 
+export type MsgSignData = {
+  data: string;
+  signer: string;
+};
+
 export type MsgExecuteContract<T = unknown> = {
   sender: string;
   contract: string;

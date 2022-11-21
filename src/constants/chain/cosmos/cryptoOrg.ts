@@ -8,7 +8,7 @@ export const CRYPTO_ORG: CosmosChain = {
   type: '',
   chainId: 'crypto-org-chain-mainnet-1',
   chainName: 'Crypto.org',
-  restURL: 'https://lcd-cryptocom.cosmostation.io',
+  restURL: 'https://lcd-crypto-org.cosmostation.io',
   imageURL: cryptoOrgImg,
   baseDenom: 'basecro',
   displayDenom: 'CRO',

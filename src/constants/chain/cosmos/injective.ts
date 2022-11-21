@@ -8,7 +8,7 @@ export const INJECTIVE: CosmosChain = {
   type: 'ETHERMINT',
   chainId: 'injective-1',
   chainName: 'Injective',
-  restURL: 'https://lcd-inj.cosmostation.io',
+  restURL: 'https://lcd-injective.cosmostation.io',
   imageURL: injectiveImg,
   baseDenom: 'inj',
   displayDenom: 'INJ',
