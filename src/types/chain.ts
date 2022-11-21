@@ -28,7 +28,9 @@ export type GasRate = {
 
 export type Gas = {
   send?: string;
+  ibcSend?: string;
   transfer?: string;
+  ibcTransfer?: string;
 };
 
 export type CosmosChain = {
@@ -81,6 +83,7 @@ export type CosmosGasRate = {
 };
 
 export type Coin = {
+  type: string;
   originBaseDenom: string;
   baseDenom: string;
   decimals: number;

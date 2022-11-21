@@ -1,4 +1,4 @@
-type CounterParty = {
+export type CounterParty = {
   chain_id: string;
   channel_id: string;
   port_id: string;

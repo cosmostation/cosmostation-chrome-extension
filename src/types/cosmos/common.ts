@@ -3,6 +3,11 @@ export type Amount = {
   amount: string;
 };
 
+export type Height = {
+  revision_height: number;
+  revision_number: number;
+};
+
 export type Pagination = {
   next_key: string | null;
   total: string;

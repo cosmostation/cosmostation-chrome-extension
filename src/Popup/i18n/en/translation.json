@@ -1,5 +1,10 @@
 {
   "components": {
+    "AccountAddressBookBottomSheet": {
+      "index": {
+        "title": "Address within the Account"
+      }
+    },
     "AddressBookBottomSheet": {
       "index": {
         "addAddressButton": "Add address",
@@ -598,6 +603,14 @@
             "components": {
               "TxMessage": {
                 "messages": {
+                  "IBCSend": {
+                    "index": {
+                      "amount": "Amount",
+                      "receiver": "Receiver Address",
+                      "sender": "Sender Address",
+                      "sourceChannel": "Channel"
+                    }
+                  },
                   "Send": {
                     "index": {
                       "amount": "Amount",
@@ -925,18 +938,40 @@
                 "index": {
                   "available": "Available"
                 }
+              },
+              "IBCSend": {
+                "index": {
+                  "amountPlaceholder": "Amount",
+                  "available": "Available",
+                  "ibcWarningHeadertitle": "IBC Send is not supported",
+                  "ibcWarningSubtitle": "No coin or token available for IBC Send.",
+                  "insufficientAmount": "Insufficient amount",
+                  "insufficientFeeAmount": "Insufficient fee",
+                  "invalidAddress": "Invalid address",
+                  "invalidAmount": "Invalid amount",
+                  "memoPlaceholder": "Memo (option)",
+                  "recipientAddressPlaceholder": "Recipient address",
+                  "sendButton": "Send",
+                  "timeoutHeightError": "Network Error"
+                }
+              },
+              "Send": {
+                "index": {
+                  "amountPlaceholder": "Amount",
+                  "available": "Available",
+                  "insufficientAmount": "Insufficient amount",
+                  "insufficientFeeAmount": "Insufficient fee",
+                  "invalidAddress": "Invalid address",
+                  "invalidAmount": "Invalid amount",
+                  "memoPlaceholder": "Memo (option)",
+                  "recipientAddressPlaceholder": "Recipient address",
+                  "sendButton": "Send"
+                }
               }
             },
             "index": {
-              "amountPlaceholder": "Amount",
-              "available": "Available",
-              "insufficientAmount": "Insufficient amount",
-              "insufficientFeeAmount": "Insufficient fee",
-              "invalidAddress": "Invalid address",
-              "invalidAmount": "Invalid amount",
-              "memoPlaceholder": "Memo (option)",
-              "recipientAddressPlaceholder": "Recipient address",
-              "sendButton": "Send"
+              "ibcSend": "IBC Send",
+              "send": "Send"
             }
           },
           "Ethereum": {

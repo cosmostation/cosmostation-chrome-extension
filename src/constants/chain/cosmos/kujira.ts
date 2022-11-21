@@ -27,5 +27,5 @@ export const KUJIRA: CosmosChain = {
     low: '0.00119',
     average: '0.00119',
   },
-  gas: { send: '100000' },
+  gas: { send: '100000', ibcSend: '200000' },
 };

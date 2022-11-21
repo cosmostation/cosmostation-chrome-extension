@@ -1,8 +1,9 @@
 import { post } from '~/Popup/utils/axios';
-import { isAminoExecuteContract, isAminoSend } from '~/Popup/utils/cosmos';
+import { isAminoExecuteContract, isAminoIBCSend, isAminoSend } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
 import { cosmwasm } from '~/proto/cosmwasm-v0.28.0.js';
-import type { Msg, MsgExecuteContract, MsgSend, SignAminoDoc } from '~/types/cosmos/amino';
+import { ibc } from '~/proto/ibc-v5.0.1.js';
+import type { Msg, MsgExecuteContract, MsgSend, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend, PubKey } from '~/types/cosmos/proto';
 
@@ -13,6 +14,10 @@ export function convertAminoMessageToProto(msg: Msg) {
 
   if (isAminoExecuteContract(msg)) {
     return convertAminoExecuteContractMessageToProto(msg);
+  }
+
+  if (isAminoIBCSend(msg)) {
+    return convertIBCAminoSendMessageToProto(msg);
   }
 
   return null;
@@ -28,6 +33,25 @@ export function convertAminoSendMessageToProto(msg: Msg<MsgSend>) {
   return new google.protobuf.Any({
     type_url: '/cosmos.bank.v1beta1.MsgSend',
     value: cosmos.bank.v1beta1.MsgSend.encode(message).finish(),
+  });
+}
+
+export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
+  const message = new ibc.applications.transfer.v1.MsgTransfer({
+    source_port: msg.value.source_port,
+    source_channel: msg.value.source_channel,
+    token: msg.value.token,
+    sender: msg.value.sender,
+    receiver: msg.value.receiver,
+    timeout_height: {
+      revision_height: Number(msg.value.timeout_height.revision_height),
+      revision_number: msg.value.timeout_height.revision_number ? Number(msg.value.timeout_height.revision_number) : 0,
+    },
+  });
+
+  return new google.protobuf.Any({
+    type_url: '/ibc.applications.transfer.v1.MsgTransfer',
+    value: ibc.applications.transfer.v1.MsgTransfer.encode(message).finish(),
   });
 }
 
@@ -47,6 +71,7 @@ export function convertAminoExecuteContractMessageToProto(msg: Msg<MsgExecuteCon
 
 export function getTxBodyBytes(signed: SignAminoDoc) {
   const messages = signed.msgs.map((msg) => convertAminoMessageToProto(msg)).filter((item) => item !== null) as google.protobuf.Any[];
+
   const txBody = new cosmos.tx.v1beta1.TxBody({
     messages,
     memo: signed.memo,

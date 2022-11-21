@@ -1,5 +1,10 @@
 {
   "components": {
+    "AccountAddressBookBottomSheet": {
+      "index": {
+        "title": "계정 내 주소"
+      }
+    },
     "AddressBookBottomSheet": {
       "index": {
         "addAddressButton": "주소 추가",
@@ -598,6 +603,14 @@
             "components": {
               "TxMessage": {
                 "messages": {
+                  "IBCSend": {
+                    "index": {
+                      "amount": "수량",
+                      "receiver": "받는 주소",
+                      "sender": "보내는 주소",
+                      "sourceChannel": "채널"
+                    }
+                  },
                   "Send": {
                     "index": {
                       "amount": "수량",
@@ -925,18 +938,40 @@
                 "index": {
                   "available": "사용 가능 수량"
                 }
+              },
+              "IBCSend": {
+                "index": {
+                  "amountPlaceholder": "수량",
+                  "available": "사용 가능 수량",
+                  "ibcWarningHeadertitle": "IBC Send를 지원하지 않습니다",
+                  "ibcWarningSubtitle": "IBC Send 로 보낼 수 있는 코인 또는 토큰이 존재하지 않습니다.",
+                  "insufficientAmount": "수량이 부족합니다.",
+                  "insufficientFeeAmount": "수수료가 부족합니다.",
+                  "invalidAddress": "유효하지 않은 주소입니다.",
+                  "invalidAmount": "수량을 입력하세요.",
+                  "memoPlaceholder": "메모 (선택)",
+                  "recipientAddressPlaceholder": "입금 주소",
+                  "sendButton": "보내기",
+                  "timeoutHeightError": "네트워크 에러"
+                }
+              },
+              "Send": {
+                "index": {
+                  "amountPlaceholder": "수량",
+                  "available": "사용 가능 수량",
+                  "insufficientAmount": "수량이 부족합니다.",
+                  "insufficientFeeAmount": "수수료가 부족합니다.",
+                  "invalidAddress": "유효하지 않은 주소입니다.",
+                  "invalidAmount": "수량을 입력하세요.",
+                  "memoPlaceholder": "메모 (선택)",
+                  "recipientAddressPlaceholder": "입금 주소",
+                  "sendButton": "보내기"
+                }
               }
             },
             "index": {
-              "amountPlaceholder": "수량",
-              "available": "사용 가능 수량",
-              "insufficientAmount": "수량이 부족합니다.",
-              "insufficientFeeAmount": "수수료가 부족합니다.",
-              "invalidAddress": "유효하지 않은 주소입니다.",
-              "invalidAmount": "수량을 입력하세요.",
-              "memoPlaceholder": "메모 (선택)",
-              "recipientAddressPlaceholder": "입금 주소",
-              "sendButton": "보내기"
+              "ibcSend": "IBC Send",
+              "send": "Send"
             }
           },
           "Ethereum": {

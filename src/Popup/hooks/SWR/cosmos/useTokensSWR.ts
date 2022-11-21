@@ -2,17 +2,13 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { JUNO } from '~/constants/chain/cosmos/juno';
 import { get } from '~/Popup/utils/axios';
+import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { CW20AssetPayload } from '~/types/cosmos/asset';
 
-const nameMap = {
-  [JUNO.id]: 'juno',
-};
-
 export function useTokensSWR(chain: CosmosChain, config?: SWRConfiguration) {
-  const mappingName = nameMap[chain.id] || chain.chainName.toLowerCase();
+  const mappingName = convertCosmosToAssetName(chain);
 
   const requestURL = `https://api.mintscan.io/v2/assets/${mappingName}/cw20`;
 

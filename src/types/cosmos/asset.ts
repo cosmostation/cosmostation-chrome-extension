@@ -27,10 +27,19 @@ export type AssetV2 = {
   base_type: string;
   decimal: number;
   coinGeckoId?: string;
+  counter_party?: CounterParty;
+  port?: string;
+  path?: string;
 };
 
 export type AssetV2Payload = {
   assets: AssetV2[];
+};
+
+export type CounterParty = {
+  channel: string;
+  port: string;
+  denom: string;
 };
 
 export type CW20Asset = {

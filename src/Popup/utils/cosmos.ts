@@ -7,19 +7,26 @@ import sortKeys from 'sort-keys';
 import TinySecp256k1 from 'tiny-secp256k1';
 import { keccak256 } from '@ethersproject/keccak256';
 
+import { COSMOS_CHAINS } from '~/constants/chain';
+import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
+import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
+import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
+import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { KAVA } from '~/constants/chain/cosmos/kava';
+import { KI } from '~/constants/chain/cosmos/ki';
+import { SIF } from '~/constants/chain/cosmos/sif';
+import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
-import type { Msg, MsgCustom, MsgExecuteContract, MsgSend, MsgSignData, SignAminoDoc } from '~/types/cosmos/amino';
+import type { Msg, MsgCustom, MsgExecuteContract, MsgSend, MsgSignData, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 import { toHex } from './string';
 
 export function cosmosURL(chain: CosmosChain) {
   const { restURL, chainName } = chain;
-
   // reward 중첩 typing!
   return {
     getNodeInfo: () => `${restURL}/node_info`,
@@ -33,6 +40,7 @@ export function cosmosURL(chain: CosmosChain) {
     getCW20TokenInfo: (contractAddress: string) => `${restURL}/wasm/contract/${contractAddress}/smart/${toHex('{"token_info":{}}')}?encoding=utf-8`,
     getCW20Balance: (contractAddress: string, address: string) =>
       `${restURL}/wasm/contract/${contractAddress}/smart/${toHex(`{"balance":{"address":"${address}"}}`)}?encoding=utf-8`,
+    getClientState: (channelId: string, port?: string) => `${restURL}/ibc/core/channel/v1/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
   };
 }
 
@@ -105,6 +113,10 @@ export function isAminoSend(msg: Msg): msg is Msg<MsgSend> {
   return msg.type === 'cosmos-sdk/MsgSend' || msg.type === 'bank/MsgSend';
 }
 
+export function isAminoIBCSend(msg: Msg): msg is Msg<MsgTransfer> {
+  return msg.type === 'cosmos-sdk/MsgTransfer' || msg.type === 'bank/MsgTransfer';
+}
+
 export function isAminoExecuteContract(msg: Msg): msg is Msg<MsgExecuteContract> {
   return msg.type === 'wasm/MsgExecuteContract';
 }
@@ -115,6 +127,33 @@ export function isAminoMsgSignData(msg: Msg): msg is Msg<MsgSignData> {
 
 export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {
   return true;
+}
+
+export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
+  const nameMap = {
+    [CRYPTO_ORG.id]: 'cryptoorg',
+    [ASSET_MANTLE.id]: 'asset-mantle',
+    [GRAVITY_BRIDGE.id]: 'gravity-bridge',
+    [SIF.id]: 'sifchain',
+    [KI.id]: 'kichain',
+    [STAFIHUB.id]: 'stafi',
+    [FETCH_AI.id]: 'fetchai',
+  };
+  return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
+}
+
+export function convertAssetNameToCosmos(assetName: string) {
+  const nameMap = {
+    cryptoorg: CRYPTO_ORG,
+    'asset-mantle': ASSET_MANTLE,
+    'gravity-bridge': GRAVITY_BRIDGE,
+    sifchain: SIF,
+    kichain: KI,
+    stafi: STAFIHUB,
+    fetchai: FETCH_AI,
+  } as Record<string, CosmosChain | undefined>;
+
+  return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);
 }
 
 export function getMsgSignData(signer: string, message: string) {
