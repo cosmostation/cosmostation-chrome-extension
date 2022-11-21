@@ -46,7 +46,8 @@ export default function ReceiverIBCPopover({ selectedReceiverIBC, onClickChain, 
           const { chainName } = item.chain;
           const channelId = item.channel;
           const imgURL = item.chain.imageURL;
-          const isActive = selectedReceiverIBC?.chain.baseDenom === item.chain.baseDenom;
+          const isActive =
+            selectedReceiverIBC?.chain.id === item.chain.id && selectedReceiverIBC?.channel === item.channel && selectedReceiverIBC?.port === item.port;
 
           return (
             <ChainButton

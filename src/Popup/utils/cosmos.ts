@@ -10,13 +10,16 @@ import { keccak256 } from '@ethersproject/keccak256';
 import { COSMOS_CHAINS } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
+import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
+import { IXO } from '~/constants/chain/cosmos/ixo';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { KI } from '~/constants/chain/cosmos/ki';
 import { SIF } from '~/constants/chain/cosmos/sif';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
+import { STARNAME } from '~/constants/chain/cosmos/starname';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
@@ -27,6 +30,8 @@ import { toHex } from './string';
 
 export function cosmosURL(chain: CosmosChain) {
   const { restURL, chainName } = chain;
+
+  const isV1BetaClientState = [IXO.id, STARNAME.id, EMONEY.id].includes(chain.id);
   // reward 중첩 typing!
   return {
     getNodeInfo: () => `${restURL}/node_info`,
@@ -40,7 +45,8 @@ export function cosmosURL(chain: CosmosChain) {
     getCW20TokenInfo: (contractAddress: string) => `${restURL}/wasm/contract/${contractAddress}/smart/${toHex('{"token_info":{}}')}?encoding=utf-8`,
     getCW20Balance: (contractAddress: string, address: string) =>
       `${restURL}/wasm/contract/${contractAddress}/smart/${toHex(`{"balance":{"address":"${address}"}}`)}?encoding=utf-8`,
-    getClientState: (channelId: string, port?: string) => `${restURL}/ibc/core/channel/v1/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
+    getClientState: (channelId: string, port?: string) =>
+      `${restURL}/ibc/core/channel/${isV1BetaClientState ? 'v1beta1' : 'v1'}/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
   };
 }
 
