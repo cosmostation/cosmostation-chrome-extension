@@ -465,20 +465,21 @@
               },
               "layout": {
                 "title": "Import tokens"
-              }
-            },
-            "Search": {
-              "entry": {
-                "addTokenSnackbar": "Token added",
-                "importCustomTokenButton": "Import a custom token",
-                "searchPlaceholder": "Search tokens",
-                "submitButton": "Import token",
-                "tokenIconText1": "Add custom tokens to manage on",
-                "tokenIconText2": "Cosmostation Extension.",
-                "warning": "Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click `Import a custom token`."
               },
-              "layout": {
-                "title": "Import tokens"
+
+              "Search": {
+                "entry": {
+                  "addTokenSnackbar": "Token added",
+                  "importCustomTokenButton": "Import a custom token",
+                  "searchPlaceholder": "Search tokens",
+                  "submitButton": "Import token",
+                  "tokenIconText1": "Add custom tokens to manage on",
+                  "tokenIconText2": "Cosmostation Extension.",
+                  "warning": "Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click \"Import a custom token\"."
+                },
+                "layout": {
+                  "title": "Import tokens"
+                }
               }
             }
           }

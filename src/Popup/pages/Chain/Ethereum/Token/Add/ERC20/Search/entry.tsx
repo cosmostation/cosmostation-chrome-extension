@@ -40,7 +40,7 @@ export default function Entry() {
   const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
-  const [check, setCheck] = useState<EthereumTokenParams[]>([]);
+  const [checks, setChecks] = useState<EthereumTokenParams[]>([]);
 
   const { addEthereumTokens, currentEthereumTokens } = useCurrentEthereumTokens();
 
@@ -55,20 +55,12 @@ export default function Entry() {
       )
     : tokens.data;
 
-  const isSearching = search.toLowerCase().length > 0;
+  const isSearching = search.length > 0;
 
-  const handelCheck = async (data: EthereumTokenParams[]) => {
-    await addEthereumTokens(data);
-    enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.Search.entry.addTokenSnackbar'));
+  const handleCheck = async () => {
+    await addEthereumTokens(checks);
+    enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.addTokenSnackbar'));
   };
-
-  // const onSelect = (active: boolean, add: ModifiedAsset) => {
-  //   if (active) {
-  //     setCheck([...check, add]);
-  //   } else {
-  //     setCheck(check.filter((off) => off !== add));
-  //   }
-  // };
 
   return (
     <Container>
@@ -77,7 +69,7 @@ export default function Entry() {
           <Info16Icon />
         </WarningIconContainer>
         <WarningTextContainer>
-          <Typography variant="h6">{t('pages.Chain.Ethereum.Token.Add.Search.entry.warning')}</Typography>
+          <Typography variant="h6">{t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.warning')}</Typography>
         </WarningTextContainer>
       </WarningContainer>
       <Div sx={{ marginBottom: '1.2rem' }}>
@@ -86,7 +78,7 @@ export default function Entry() {
             <Plus16Icon />
           </ImportCustomTokenImage>
           <ImportCustomTokenText>
-            <Typography variant="h5">{t('pages.Chain.Ethereum.Token.Add.Search.entry.importCustomTokenButton')}</Typography>
+            <Typography variant="h5">{t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.importCustomTokenButton')}</Typography>
           </ImportCustomTokenText>
         </ImportCustomTokenButton>
       </Div>
@@ -97,7 +89,7 @@ export default function Entry() {
               <StyledSearch20Icon />
             </InputAdornment>
           }
-          placeholder={t('pages.Chain.Ethereum.Token.Add.Search.entry.searchPlaceholder')}
+          placeholder={t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.searchPlaceholder')}
           value={search}
           onChange={(event) => {
             setSearch(event.currentTarget.value);
@@ -114,13 +106,15 @@ export default function Entry() {
                 symbol={token.displayDenom}
                 imageURL={token.imageURL}
                 onClick={() => {
-                  if (check?.filter((click) => click.address === token.address)) {
-                    setCheck([...check, { ...token, tokenType: 'ERC20' }]);
+                  if (checks.find((check) => check.address === token.address)) {
+                    setChecks(checks.filter((off) => off.address !== token.address));
+                    // 무조건 false인 값
                   } else {
-                    setCheck(check.filter((off) => off.address !== token.address));
+                    setChecks([...checks, { ...token, tokenType: 'ERC20' }]);
+                    // 무조건 트루인 값
                   }
                 }}
-                isActive={!!check?.filter((active) => active.address === token.address)}
+                isActive={!!checks.filter((active) => active.address === token.address)}
               />
             ))}
           </TokenList>
@@ -131,9 +125,9 @@ export default function Entry() {
             <TokensIcon />
             <TokenIconText>
               <Typography variant="h6">
-                {t('pages.Chain.Ethereum.Token.Add.Search.entry.tokenIconText1')}
+                {t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.tokenIconText1')}
                 <br />
-                {t('pages.Chain.Ethereum.Token.Add.Search.entry.tokenIconText2')}
+                {t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.tokenIconText2')}
               </Typography>
             </TokenIconText>
           </TokenIconBox>
@@ -142,11 +136,11 @@ export default function Entry() {
       <ButtonContainer>
         <Button
           onClick={() => {
-            void handelCheck(check);
+            void handleCheck();
           }}
-          disabled={!check}
+          disabled={!checks}
         >
-          {t('pages.Chain.Ethereum.Token.Add.Search.entry.submitButton')}
+          {t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.submitButton')}
         </Button>
       </ButtonContainer>
     </Container>
