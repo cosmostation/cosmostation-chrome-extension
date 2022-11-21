@@ -334,17 +334,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
     <Container>
       <MarginTop8Div>
         <DropdownButton
-          imgSrc={currentCoinOrToken.imageURL}
-          title={currentCoinOrTokenDisplayDenom}
-          leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.available')}
-          leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
-          isOpenPopover={isOpenPopover}
-          decimals={currentDisplayMaxDecimals}
-          onClickDropdown={(currentTarget) => setPopoverAnchorEl(currentTarget)}
-        />
-      </MarginTop8Div>
-      <MarginTop8Div>
-        <DropdownButton
           imgSrc={selectedReceiverIBC?.chain.imageURL}
           title={selectedReceiverIBC?.chain.chainName || ''}
           leftHeaderTitle={selectedReceiverIBC?.channel}
@@ -369,7 +358,17 @@ export default function IBCSend({ chain }: IBCSendProps) {
           value={receiverAddress}
         />
       </MarginTop8Div>
-
+      <MarginTop8Div>
+        <DropdownButton
+          imgSrc={currentCoinOrToken.imageURL}
+          title={currentCoinOrTokenDisplayDenom}
+          leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.available')}
+          leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
+          isOpenPopover={isOpenPopover}
+          decimals={currentDisplayMaxDecimals}
+          onClickDropdown={(currentTarget) => setPopoverAnchorEl(currentTarget)}
+        />
+      </MarginTop8Div>
       <MarginTop8Div>
         <StyledInput
           endAdornment={
