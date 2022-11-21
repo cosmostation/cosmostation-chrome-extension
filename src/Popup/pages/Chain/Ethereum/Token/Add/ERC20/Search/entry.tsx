@@ -40,7 +40,7 @@ export default function Entry() {
   const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
-  const [check, setCheck] = useState<EthereumTokenParams[]>();
+  const [check, setCheck] = useState<EthereumTokenParams[]>([]);
 
   const { addEthereumTokens, currentEthereumTokens } = useCurrentEthereumTokens();
 
@@ -57,28 +57,16 @@ export default function Entry() {
 
   const isSearching = search.toLowerCase().length > 0;
 
-  const handelCheck = async (checked: boolean, data: EthereumTokenParams[]) => {
-    if (checked) {
-      const checkedToken = tokens.data.filter((original) => data.map((select) => select.address).includes(original.address));
-      const searchedToken = checkedToken
-        ? {
-            ...data,
-            address: checkedToken.find((address) => address.address),
-            displayDenom: checkedToken.find((displayDenom) => displayDenom.displayDenom),
-            decimals: checkedToken.find((decimals) => decimals.decimals),
-            imageURL: checkedToken.find((imageURL) => imageURL.imageURL),
-            coinGeckoId: checkedToken.find((coinGeckoId) => coinGeckoId.coinGeckoId),
-          }
-        : data;
-
-      await addEthereumTokens({ ...searchedToken });
-      enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.Search.entry.addTokenSnackbar'));
-    }
+  const handelCheck = async (data: EthereumTokenParams[]) => {
+    await addEthereumTokens(data);
+    enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.Search.entry.addTokenSnackbar'));
   };
 
-  // const MultipleSelective = (selectedItem: ModifiedAsset) => {
-  //   if (check?.includes(selectedItem)) {
-  //     setCheck(check?.filter((item) => item === selectedItem));
+  // const onSelect = (active: boolean, add: ModifiedAsset) => {
+  //   if (active) {
+  //     setCheck([...check, add]);
+  //   } else {
+  //     setCheck(check.filter((off) => off !== add));
   //   }
   // };
 
@@ -127,10 +115,9 @@ export default function Entry() {
                 imageURL={token.imageURL}
                 onClick={() => {
                   if (check?.filter((click) => click.address === token.address)) {
-                    setCheck(undefined);
+                    setCheck([...check, { ...token, tokenType: 'ERC20' }]);
                   } else {
-                    setCheck([token]);
-                    // 현재 모디파이드 에셋이랑 이더리움 토큰 에셋이랑 타입이 안맞음
+                    setCheck(check.filter((off) => off.address !== token.address));
                   }
                 }}
                 isActive={!!check?.filter((active) => active.address === token.address)}
@@ -155,7 +142,7 @@ export default function Entry() {
       <ButtonContainer>
         <Button
           onClick={() => {
-            void handelCheck(true, check!);
+            void handelCheck(check);
           }}
           disabled={!check}
         >
