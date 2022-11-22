@@ -178,7 +178,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
         if (item.type === 'coin' && item.coinType === 'ibc') {
           return !!(
-            filteredCurrentChainAssets.filter((asset) => asset.channel && asset.port && asset.denom === item.baseDenom).length ||
+            filteredCurrentChainAssets.filter((asset) => asset.channel && asset.port && asset.denom === item.baseDenom).length +
             filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === item.baseDenom).length
           );
         }
