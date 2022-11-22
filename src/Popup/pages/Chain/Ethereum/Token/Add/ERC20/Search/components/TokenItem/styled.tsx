@@ -12,6 +12,8 @@ export const StyledButton = styled('button')(({ theme }) => ({
   justifyContent: 'space-between',
   alignItems: 'center',
 
+  height: '5.8rem',
+
   borderRadius: '0.8rem',
 
   cursor: 'pointer',
