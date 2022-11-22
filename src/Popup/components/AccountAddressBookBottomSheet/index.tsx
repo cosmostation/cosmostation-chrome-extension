@@ -34,8 +34,8 @@ export default function AccountAddressBookBottomSheet({
 
   const filteredAccounts = useMemo(() => {
     const selectedAccount = data?.filter((item) => item.id === currentAccount.id) || [];
-    const leftAccountList = data?.filter((item) => item.id !== currentAccount.id) || [];
-    return hasCurrentAccount ? [...selectedAccount, ...leftAccountList] : leftAccountList;
+    const leftAccountsList = data?.filter((item) => item.id !== currentAccount.id) || [];
+    return hasCurrentAccount ? [...selectedAccount, ...leftAccountsList] : leftAccountsList;
   }, [currentAccount, data, hasCurrentAccount]);
 
   return (
