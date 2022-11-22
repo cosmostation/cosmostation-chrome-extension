@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
@@ -13,6 +13,7 @@ import TokenItem from './components/TokenItem/index';
 import {
   ButtonContainer,
   Container,
+  ContentsContainer,
   Div,
   ImportCustomTokenButton,
   ImportCustomTokenImage,
@@ -20,10 +21,8 @@ import {
   StyledInput,
   StyledSearch20Icon,
   TokenIconBox,
-  TokenIconContainer,
   TokenIconText,
   TokenList,
-  TokenListContainer,
   TokensIcon,
   WarningContainer,
   WarningIconContainer,
@@ -40,25 +39,24 @@ export default function Entry() {
   const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
-  const [checks, setChecks] = useState<EthereumTokenParams[]>([]);
+  const [selectedTokens, setSelectedTokens] = useState<EthereumTokenParams[]>([]);
 
   const { addEthereumTokens, currentEthereumTokens } = useCurrentEthereumTokens();
 
   const { t } = useTranslation();
   const { navigate } = useNavigate();
 
-  const exceptExistToken = tokens.data.filter((original) => !currentEthereumTokens.map((current) => current.address).includes(original.address));
+  const existTokens = currentEthereumTokens.map((current) => current.address);
 
+  const validTokens = useMemo(() => tokens.data.filter((original) => !existTokens.includes(original.address)), [existTokens, tokens.data]);
   const filteredTokens = search
-    ? exceptExistToken.filter(
+    ? validTokens.filter(
         (item) => (item.name.toLowerCase().indexOf(search.toLowerCase()) || item.displayDenom.toLowerCase().indexOf(search.toLowerCase())) > -1,
       )
-    : tokens.data;
+    : [];
 
-  const isSearching = search.length > 0;
-
-  const handleCheck = async () => {
-    await addEthereumTokens(checks);
+  const handleOnSubmit = async () => {
+    await addEthereumTokens(selectedTokens);
     enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.addTokenSnackbar'));
   };
 
@@ -96,29 +94,31 @@ export default function Entry() {
           }}
         />
       </Div>
-      {isSearching ? (
-        <TokenListContainer>
+
+      <ContentsContainer>
+        {search ? (
           <TokenList>
-            {filteredTokens.map((token) => (
-              <TokenItem
-                key={token.address}
-                name={token.name}
-                symbol={token.displayDenom}
-                imageURL={token.imageURL}
-                onClick={() => {
-                  if (checks.find((check) => check.address === token.address)) {
-                    setChecks(checks.filter((off) => off.address !== token.address));
-                  } else {
-                    setChecks([...checks, { ...token, tokenType: 'ERC20' }]);
-                  }
-                }}
-                isActive={!!checks.find((active) => active.address === token.address)}
-              />
-            ))}
+            {filteredTokens.map((token) => {
+              const isActive = selectedTokens.find((check) => check.address === token.address);
+              return (
+                <TokenItem
+                  key={token.address}
+                  name={token.name}
+                  symbol={token.displayDenom}
+                  imageURL={token.imageURL}
+                  onClick={() => {
+                    if (isActive) {
+                      setSelectedTokens(selectedTokens.filter((off) => off.address !== token.address));
+                    } else {
+                      setSelectedTokens([...selectedTokens, { ...token, tokenType: 'ERC20' }]);
+                    }
+                  }}
+                  isActive={!!isActive}
+                />
+              );
+            })}
           </TokenList>
-        </TokenListContainer>
-      ) : (
-        <TokenIconContainer>
+        ) : (
           <TokenIconBox>
             <TokensIcon />
             <TokenIconText>
@@ -129,14 +129,14 @@ export default function Entry() {
               </Typography>
             </TokenIconText>
           </TokenIconBox>
-        </TokenIconContainer>
-      )}
+        )}
+      </ContentsContainer>
       <ButtonContainer>
         <Button
           onClick={() => {
-            void handleCheck();
+            void handleOnSubmit();
           }}
-          disabled={checks.length === 0}
+          disabled={selectedTokens.length === 0}
         >
           {t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.submitButton')}
         </Button>

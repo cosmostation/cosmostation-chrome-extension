@@ -76,10 +76,11 @@ export const ButtonContainer = styled('div')({
   bottom: '1.6rem',
 });
 
-export const TokenIconContainer = styled('div')({
-  height: '22.7rem',
+export const ContentsContainer = styled('div')({
+  height: '21.5rem',
   display: 'flex',
   justifyContent: 'center',
+  overflow: 'auto',
 });
 
 export const TokenIconBox = styled('div')({
@@ -99,14 +100,10 @@ export const TokenIconText = styled('div')(({ theme }) => ({
   textAlign: 'center',
 }));
 
-export const TokenListContainer = styled('div')({
-  height: '21.5rem',
-  overflow: 'auto',
-});
-
 export const TokenList = styled('div')({
   display: 'grid',
   gridTemplateColumns: '1fr',
+  width: '32.8rem',
   rowGap: '0.4rem',
   overflow: 'auto',
 });

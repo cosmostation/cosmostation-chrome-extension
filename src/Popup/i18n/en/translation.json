@@ -455,18 +455,6 @@
         "Token": {
           "Add": {
             "ERC20": {
-              "entry": {
-                "addTokenSnackbar": "Token added",
-                "addressPlaceholder": "Token contract address",
-                "decimalsPlaceholder": "Token decimals",
-                "displayDenomPlaceholder": "Token symbol",
-                "submitButton": "Add custom token",
-                "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
-              },
-              "layout": {
-                "title": "Import tokens"
-              },
-
               "Search": {
                 "entry": {
                   "addTokenSnackbar": "Token added",
@@ -480,6 +468,17 @@
                 "layout": {
                   "title": "Import tokens"
                 }
+              },
+              "entry": {
+                "addTokenSnackbar": "Token added",
+                "addressPlaceholder": "Token contract address",
+                "decimalsPlaceholder": "Token decimals",
+                "displayDenomPlaceholder": "Token symbol",
+                "submitButton": "Add custom token",
+                "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
+              },
+              "layout": {
+                "title": "Import tokens"
               }
             }
           }

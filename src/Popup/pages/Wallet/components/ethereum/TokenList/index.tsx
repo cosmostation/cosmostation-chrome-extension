@@ -33,7 +33,7 @@ export default function TokenList() {
 
   const isExistToken = !!currentEthereumTokens.length;
 
-  const addToken = () => navigate(data.length > 0 ? '/chain/ethereum/token/add/search' : '/chain/ethereum/token/add/erc20');
+  const addToken = () => navigate(data.length > 0 ? '/chain/ethereum/token/add/erc20/search' : '/chain/ethereum/token/add/erc20');
 
   return (
     <Container>
