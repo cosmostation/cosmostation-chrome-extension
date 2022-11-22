@@ -77,7 +77,6 @@ export const ButtonContainer = styled('div')({
 });
 
 export const ContentsContainer = styled('div')({
-  maxHeight: '21.5rem',
   height: '21.5rem',
   display: 'flex',
   justifyContent: 'center',
@@ -103,6 +102,7 @@ export const TokenIconText = styled('div')(({ theme }) => ({
 
 export const TokenList = styled('div')({
   display: 'grid',
+  alignContent: 'start',
   gridTemplateColumns: '1fr',
   width: '32.8rem',
   rowGap: '0.4rem',

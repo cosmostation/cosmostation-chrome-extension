@@ -51,11 +51,9 @@ export const LeftImageContainer = styled('div')({
 
 export const LeftTextContainer = styled('div')({
   paddingLeft: '0.8rem',
-
   display: 'grid',
-
   gridTemplateColumns: '1fr',
-
+  alignContent: 'start',
   rowGap: '0.3rem',
 });
 
