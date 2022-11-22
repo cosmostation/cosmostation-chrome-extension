@@ -53,10 +53,11 @@ export default function Entry() {
     ? validTokens.filter(
         (item) => (item.name.toLowerCase().indexOf(search.toLowerCase()) || item.displayDenom.toLowerCase().indexOf(search.toLowerCase())) > -1,
       )
-    : [];
+    : validTokens;
 
   const handleOnSubmit = async () => {
     await addEthereumTokens(selectedTokens);
+    setSelectedTokens([]);
     enqueueSnackbar(t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.addTokenSnackbar'));
   };
 
@@ -96,7 +97,7 @@ export default function Entry() {
       </Div>
 
       <ContentsContainer>
-        {search ? (
+        {filteredTokens.length > 0 ? (
           <TokenList>
             {filteredTokens.map((token) => {
               const isActive = selectedTokens.find((check) => check.address === token.address);

@@ -77,6 +77,7 @@ export const ButtonContainer = styled('div')({
 });
 
 export const ContentsContainer = styled('div')({
+  maxHeight: '21.5rem',
   height: '21.5rem',
   display: 'flex',
   justifyContent: 'center',
