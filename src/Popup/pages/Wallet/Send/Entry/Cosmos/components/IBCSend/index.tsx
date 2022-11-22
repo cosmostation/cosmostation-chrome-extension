@@ -176,10 +176,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
           return !!filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === item.baseDenom).length;
         }
 
-        if (item.type === 'coin' && item.coinType === 'ibc' && currentCoinOrToken.type === 'coin') {
+        if (item.type === 'coin' && item.coinType === 'ibc') {
           return !!(
             filteredCurrentChainAssets.filter((asset) => asset.channel && asset.port && asset.denom === item.baseDenom).length ||
-            filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === currentCoinOrToken.baseDenom).length
+            filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === item.baseDenom).length
           );
         }
 
@@ -189,7 +189,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
         return false;
       }),
-    [availableCoinOrTokenList, currentCoinOrToken, filteredCosmosChainAssets, filteredCurrentChainAssets],
+    [availableCoinOrTokenList, filteredCosmosChainAssets, filteredCurrentChainAssets],
   );
 
   const receiverIBCList = useMemo(() => {
@@ -200,10 +200,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
     if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.coinType === 'ibc') {
       const assets = filteredCurrentChainAssets.filter((asset) => asset.denom === currentCoinOrToken.baseDenom && asset.channel && asset.port);
-      const crossAssets = filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === currentCoinOrToken.baseDenom);
+      const counterPartyAssets = filteredCosmosChainAssets.filter((asset) => asset.counter_party?.denom === currentCoinOrToken.baseDenom);
       return [
         ...assets.map((item) => ({ chain: convertAssetNameToCosmos(item.prevChain || '')!, channel: item.channel!, port: item.port! })),
-        ...crossAssets.map((item) => ({ chain: convertAssetNameToCosmos(item.chain || '')!, channel: item.counter_party!.channel, port: item.port! })),
+        ...counterPartyAssets.map((item) => ({ chain: convertAssetNameToCosmos(item.chain || '')!, channel: item.counter_party!.channel, port: item.port! })),
       ];
     }
 
