@@ -108,13 +108,11 @@ export default function Entry() {
                 onClick={() => {
                   if (checks.find((check) => check.address === token.address)) {
                     setChecks(checks.filter((off) => off.address !== token.address));
-                    // 무조건 false인 값
                   } else {
                     setChecks([...checks, { ...token, tokenType: 'ERC20' }]);
-                    // 무조건 트루인 값
                   }
                 }}
-                isActive={!!checks.filter((active) => active.address === token.address)}
+                isActive={!!checks.find((active) => active.address === token.address)}
               />
             ))}
           </TokenList>
@@ -138,7 +136,7 @@ export default function Entry() {
           onClick={() => {
             void handleCheck();
           }}
-          disabled={!checks}
+          disabled={checks.length === 0}
         >
           {t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.submitButton')}
         </Button>
