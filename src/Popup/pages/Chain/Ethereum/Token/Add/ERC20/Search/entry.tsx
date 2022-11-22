@@ -46,9 +46,9 @@ export default function Entry() {
   const { t } = useTranslation();
   const { navigate } = useNavigate();
 
-  const existTokens = currentEthereumTokens.map((current) => current.address);
+  const currentTokenAddresses = currentEthereumTokens.map((current) => current.address);
 
-  const validTokens = useMemo(() => tokens.data.filter((original) => !existTokens.includes(original.address)), [existTokens, tokens.data]);
+  const validTokens = useMemo(() => tokens.data.filter((original) => !currentTokenAddresses.includes(original.address)), [currentTokenAddresses, tokens.data]);
   const filteredTokens = search
     ? validTokens.filter(
         (item) => (item.name.toLowerCase().indexOf(search.toLowerCase()) || item.displayDenom.toLowerCase().indexOf(search.toLowerCase())) > -1,
@@ -108,7 +108,7 @@ export default function Entry() {
                   imageURL={token.imageURL}
                   onClick={() => {
                     if (isActive) {
-                      setSelectedTokens(selectedTokens.filter((off) => off.address !== token.address));
+                      setSelectedTokens(selectedTokens.filter((selectedToken) => selectedToken.address !== token.address));
                     } else {
                       setSelectedTokens([...selectedTokens, { ...token, tokenType: 'ERC20' }]);
                     }
@@ -132,15 +132,12 @@ export default function Entry() {
         )}
       </ContentsContainer>
       <ButtonContainer>
-        <Button
-          onClick={() => {
-            void handleOnSubmit();
-          }}
-          disabled={selectedTokens.length === 0}
-        >
+        <Button onClick={handleOnSubmit} disabled={selectedTokens.length === 0}>
           {t('pages.Chain.Ethereum.Token.Add.ERC20.Search.entry.submitButton')}
         </Button>
       </ButtonContainer>
     </Container>
   );
 }
+
+//
