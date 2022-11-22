@@ -95,7 +95,7 @@ export default function CoinList({ chain }: CoinListProps) {
         </ListTitleLeftContainer>
         <ListTitleRightContainer>
           {isExistCoinOrToken && chain.cosmWasm && (
-            <AddButton type="button" onClick={() => navigate('/chain/cosmos/token/add/cw20')}>
+            <AddButton type="button" onClick={() => navigate('/chain/cosmos/token/add/cw20/search')}>
               {t('pages.Wallet.components.cosmos.CoinList.index.importTokenButton')}
             </AddButton>
           )}
@@ -154,7 +154,7 @@ export default function CoinList({ chain }: CoinListProps) {
           ))}
 
         {!isExistCoinOrToken && chain.cosmWasm && (
-          <AddTokenButton type="button" onClick={() => navigate('/chain/cosmos/token/add/cw20')}>
+          <AddTokenButton type="button" onClick={() => navigate('/chain/cosmos/token/add/cw20/search')}>
             <Plus16Icon />
             <AddTokenTextContainer>
               <Typography variant="h6">{t('pages.Wallet.components.cosmos.CoinList.index.importTokenButton')}</Typography>

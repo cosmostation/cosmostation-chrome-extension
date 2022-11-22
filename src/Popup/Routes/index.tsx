@@ -24,6 +24,7 @@ import AccountInitializeNewMnemonicStep5 from '~/Popup/pages/Account/Initialize/
 import AccountInitializeWelcome from '~/Popup/pages/Account/Initialize/Welcome';
 import AccountManagement from '~/Popup/pages/Account/Management';
 import ChainCosmosTokenAddCW20 from '~/Popup/pages/Chain/Cosmos/Token/Add/CW20';
+import ChainCosmosTokenAddCW20Search from '~/Popup/pages/Chain/Cosmos/Token/Add/CW20/Search';
 import ChainEthereumNetworkAdd from '~/Popup/pages/Chain/Ethereum/Network/Add';
 import ChainEthereumTokenAddERC20 from '~/Popup/pages/Chain/Ethereum/Token/Add/ERC20';
 import ChainManagement from '~/Popup/pages/Chain/Management';
@@ -110,7 +111,8 @@ export default function Routes() {
           <Route path={PATH.CHAIN__MANAGEMENT} element={<ChainManagement />} />
           <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
 
-          <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__ERC20} element={<ChainCosmosTokenAddCW20 />} />
+          <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__CW20} element={<ChainCosmosTokenAddCW20 />} />
+          <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__CW20__SEARCH} element={<ChainCosmosTokenAddCW20Search />} />
 
           <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__ERC20} element={<ChainEthereumTokenAddERC20 />} />
           <Route path={PATH.CHAIN__ETHEREUM__NETWORK__ADD} element={<ChainEthereumNetworkAdd />} />

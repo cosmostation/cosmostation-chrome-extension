@@ -7,26 +7,26 @@ import { LeftContainer, LeftImageContainer, LeftTextChainContainer, LeftTextCont
 import Check24Icon from '~/images/icons/Check24.svg';
 
 type TokenItemProps = {
-  name: string;
+  // name: string;
   symbol: string;
-  imageURL?: string;
+  logo?: string;
   onClick?: () => void;
   isActive: boolean;
 };
 
-export default function TokenItem({ onClick, isActive, name, symbol, imageURL }: TokenItemProps) {
+export default function TokenItem({ onClick, isActive, symbol, logo }: TokenItemProps) {
   return (
     <StyledButton type="button" onClick={onClick}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image src={imageURL} />
+          <Image src={logo} />
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>
             <Typography variant="h5"> {symbol} </Typography>
-            <Typography variant="h6" color="#727E91">
+            {/* <Typography variant="h6" color="#727E91">
               {name}
-            </Typography>
+            </Typography> */}
           </LeftTextChainContainer>
         </LeftTextContainer>
       </LeftContainer>
