@@ -33,7 +33,10 @@ export default function AccountAddressBookBottomSheet({
   const { t } = useTranslation();
 
   const filteredAccounts = useMemo(
-    () => (hasCurrentAccount ? data : data?.filter((item) => item.id !== currentAccount.id)) || [],
+    () =>
+      (hasCurrentAccount && data
+        ? [...data.filter((item) => item.id === currentAccount.id), ...data.filter((item) => item.id !== currentAccount.id)]
+        : data?.filter((item) => item.id !== currentAccount.id)) || [],
     [currentAccount.id, data, hasCurrentAccount],
   );
 
