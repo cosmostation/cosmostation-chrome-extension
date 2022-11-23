@@ -4,7 +4,6 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { JUNO } from '~/constants/chain/cosmos/juno';
 import Button from '~/Popup/components/common/Button';
-// import { useTokenInfoSWR } from '~/Popup/hooks/SWR/cosmos/useTokenInfoSWR';
 import { useTokensSWR } from '~/Popup/hooks/SWR/cosmos/useTokensSWR';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
