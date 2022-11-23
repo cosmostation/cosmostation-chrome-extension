@@ -23,8 +23,8 @@ export const KAVA: CosmosChain = {
   coinGeckoId: 'kava',
   explorerURL: `${MINTSCAN_URL}/kava`,
   gasRate: {
-    tiny: '0',
-    low: '0.0025',
+    tiny: '0.0025',
+    low: '0.025',
     average: '0.025',
   },
   gas: { send: '400000' },
