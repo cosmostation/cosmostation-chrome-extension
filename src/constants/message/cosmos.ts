@@ -31,6 +31,7 @@ export const COSMOS_NO_POPUP_METHOD_TYPE = {
   COS__GET_BALANCE_CW20: 'cos_getBalanceCW20',
   COS__GET_TOKEN_INFO_CW20: 'cos_getTokenInfoCW20',
   COS__VERIFY_MESSAGE: 'cos_verifyMessage',
+  COS__DISCONNECT: 'cos_disconnect',
 } as const;
 
 export const COSMOS_METHOD_TYPE = {

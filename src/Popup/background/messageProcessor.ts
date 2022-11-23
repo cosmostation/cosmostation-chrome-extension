@@ -193,7 +193,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
       const { method } = message;
 
-      const { currentAccount, currentAccountName, additionalChains, currentAllowedChains, currentAccountAllowedOrigins, accounts, autoSigns } =
+      const { currentAccount, currentAccountName, additionalChains, currentAllowedChains, currentAccountAllowedOrigins, accounts, autoSigns, allowedOrigins } =
         await chromeStorage();
 
       const { currentPassword } = await chromeSessionStorage();
@@ -1045,6 +1045,23 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               origin,
             });
           }
+        }
+
+        if (method === 'cos_disconnect') {
+          const newAllowedOrigins = allowedOrigins.filter((item) => !(item.accountId === currentAccount.id && item.origin === origin));
+
+          await setStorage('allowedOrigins', newAllowedOrigins);
+
+          const result = null;
+
+          responseToWeb({
+            response: {
+              result,
+            },
+            message,
+            messageId,
+            origin,
+          });
         }
       } else {
         throw new CosmosRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
