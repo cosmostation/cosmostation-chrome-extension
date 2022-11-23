@@ -20,6 +20,7 @@ import type {
   CosAddTokensCW20,
   CosAddTokensCW20Internal,
   CosDeleteAutoSign,
+  CosDisconnect,
   CosGetAutoSign,
   CosGetBalanceCW20,
   CosGetTokenInfoCW20,
@@ -99,7 +100,8 @@ export type CosmosRequestMessage =
   | CosAddTokensCW20
   | CosAddTokensCW20Internal
   | CosSignMessage
-  | CosVerifyMessage;
+  | CosVerifyMessage
+  | CosDisconnect;
 
 export type AptosRequestMessage =
   | AptosAccount
