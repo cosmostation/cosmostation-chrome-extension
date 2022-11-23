@@ -11,7 +11,7 @@ export default function Search() {
     return (
       <Lock>
         <Layout>
-          <Entry chain={currentChain} />
+          <Entry />
         </Layout>
       </Lock>
     );

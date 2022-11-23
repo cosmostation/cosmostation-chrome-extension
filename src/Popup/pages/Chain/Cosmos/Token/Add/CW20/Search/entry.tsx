@@ -2,12 +2,15 @@ import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
+import { JUNO } from '~/constants/chain/cosmos/juno';
 import Button from '~/Popup/components/common/Button';
+import { useTokenInfoSWR } from '~/Popup/hooks/SWR/cosmos/useTokenInfoSWR';
 import { useTokensSWR } from '~/Popup/hooks/SWR/cosmos/useTokensSWR';
+import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { CosmosChain, CosmosToken } from '~/types/chain';
+import type { CosmosToken } from '~/types/chain';
 
 import TokenItem from './components/TokenItem/index';
 import {
@@ -32,20 +35,20 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 import Plus16Icon from '~/images/icons/Plus16.svg';
 
-type EntryProps = {
-  chain: CosmosChain;
-};
+type CosmosTokenParams = Omit<CosmosToken, 'id'>;
 
-type AddCosmosTokenParams = Omit<CosmosToken, 'id'>;
-
-export default function Entry({ chain }: EntryProps) {
-  const tokens = useTokensSWR(chain);
+export default function Entry() {
+  const tokens = useTokensSWR(JUNO);
+  // CW20Asset
   const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
-  const [selectedTokens, setSelectedTokens] = useState<AddCosmosTokenParams[]>([]);
+  const [selectedTokens, setSelectedTokens] = useState<CosmosTokenParams[]>([]);
+  const { currentChain } = useCurrentChain();
 
   const { addCosmosTokens, currentCosmosTokens } = useCurrentCosmosTokens();
+  const tokenInfo = useTokenInfoSWR(JUNO, '');
+  // 이해안감
 
   const { t } = useTranslation();
   const { navigate } = useNavigate();
@@ -59,9 +62,11 @@ export default function Entry({ chain }: EntryProps) {
   const filteredTokens = search ? validTokens.filter((item) => item.denom.toLowerCase().indexOf(search.toLowerCase()) > -1) : validTokens;
 
   const handleOnSubmit = async () => {
-    await addCosmosTokens(selectedTokens);
-    setSelectedTokens([]);
-    enqueueSnackbar(t('pages.Chain.Cosmos.Token.Add.CW20.Search.entry.addTokenSnackbar'));
+    if (tokenInfo.data) {
+      await addCosmosTokens(selectedTokens);
+      setSelectedTokens([]);
+      enqueueSnackbar(t('pages.Chain.Cosmos.Token.Add.CW20.Search.entry.addTokenSnackbar'));
+    }
   };
 
   return (
@@ -75,7 +80,7 @@ export default function Entry({ chain }: EntryProps) {
         </WarningTextContainer>
       </WarningContainer>
       <Div sx={{ marginBottom: '1.2rem' }}>
-        <ImportCustomTokenButton onClick={() => navigate('/chain/ethereum/token/add/erc20')}>
+        <ImportCustomTokenButton onClick={() => navigate('/chain/cosmos/token/add/cw20')}>
           <ImportCustomTokenImage>
             <Plus16Icon />
           </ImportCustomTokenImage>
@@ -114,8 +119,18 @@ export default function Entry({ chain }: EntryProps) {
                     if (isActive) {
                       setSelectedTokens(selectedTokens.filter((selectedToken) => selectedToken.address !== token.contract_address));
                     } else {
-                      setSelectedTokens(selectedTokens);
-                      // setSelectedTokens([...selectedTokens, { ...token, tokenType: 'CW20' }]);
+                      // setSelectedTokens(selectedTokens);
+                      setSelectedTokens([
+                        ...selectedTokens,
+                        {
+                          ...token,
+                          address: token.contract_address,
+                          chainId: currentChain.id,
+                          tokenType: 'CW20',
+                          displayDenom: token.denom,
+                          decimals: token.decimal,
+                        },
+                      ]);
                     }
                   }}
                   isActive={!!isActive}
