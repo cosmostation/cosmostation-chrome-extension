@@ -4,6 +4,7 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import { COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
@@ -13,16 +14,23 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+import { useRewardSWR } from '~/Popup/hooks/SWR/cosmos/useRewardSWR';
+import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
+import { getPublicKeyType } from '~/Popup/utils/cosmos';
+import { protoTx } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
+import type { MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
 
 import {
   ButtonCenterContainer,
@@ -68,7 +76,10 @@ const EXPANDED_KEY = 'wallet-cosmos-expanded';
 export default function NativeChainCard({ chain, isCustom = false }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
+  const reward = useRewardSWR(chain);
+  const account = useAccountSWR(chain);
   const accounts = useAccounts(true);
+  const { enQueue } = useCurrentQueue();
   const { totalAmount, delegationAmount, rewardAmount, unbondingAmount, vestingNotDelegate, vestingRelatedAvailable, incentiveAmount } = useAmountSWR(
     chain,
     true,
@@ -93,7 +104,34 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const value = times(displayAmount, price);
 
-  const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
+  const currentAddress = accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[chain.id] || '';
+
+  const rewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
+    if (reward.data?.rewards?.length && account.data?.value.account_number && account.data.value.sequence) {
+      return {
+        account_number: account.data.value.account_number,
+        sequence: account.data.value.sequence,
+        chain_id: chain.chainId,
+        fee: { amount: [{ amount: times(chain.gasRate.tiny, COSMOS_DEFAULT_REWARD_GAS, 0), denom: chain.baseDenom }], gas: '100000' },
+        msgs: reward.data.rewards.map((item) => ({
+          type: 'cosmos-sdk/MsgWithdrawDelegationReward',
+          value: { delegator_address: currentAddress, validator_address: item.validator_address },
+        })),
+        memo: '',
+      };
+    }
+    return undefined;
+  }, [account.data?.value.account_number, account.data?.value.sequence, chain.baseDenom, chain.chainId, chain.gasRate, currentAddress, reward.data?.rewards]);
+
+  const rewardProtoTx = useMemo(() => {
+    if (rewardAminoTx) {
+      return protoTx(rewardAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+    }
+
+    return undefined;
+  }, [chain, rewardAminoTx]);
+
+  const simulate = useSimulateSWR({ chain, txBytes: rewardProtoTx?.tx_bytes });
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
@@ -238,6 +276,32 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
           </FourthLineContainer>
         </StyledAccordionDetails>
       </StyledAccordion>
+      <button
+        type="button"
+        onClick={async () => {
+          if (rewardAminoTx && simulate.data?.gas_info.gas_used) {
+            await enQueue({
+              messageId: '',
+              origin: '',
+              channel: 'inApp',
+              message: {
+                method: 'cos_signAmino',
+                params: {
+                  chainName: chain.chainName,
+                  doc: {
+                    ...rewardAminoTx,
+                    fee: { amount: [{ amount: '0', denom: chain.baseDenom }], gas: times(simulate.data.gas_info.gas_used, '1.1', 0) },
+                  },
+                  isEditFee: true,
+                  isEditMemo: true,
+                },
+              },
+            });
+          }
+        }}
+      >
+        button
+      </button>
 
       <ButtonContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>

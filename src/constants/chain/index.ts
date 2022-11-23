@@ -78,6 +78,7 @@ export const COSMOS_DEFAULT_SEND_GAS = '100000';
 export const COSMOS_DEFAULT_IBC_SEND_GAS = '150000';
 export const COSMOS_DEFAULT_TRANSFER_GAS = '200000';
 export const COSMOS_DEFAULT_IBC_TRANSFER_GAS = '250000';
+export const COSMOS_DEFAULT_REWARD_GAS = '300000';
 
 export const COSMOS_CHAINS: CosmosChain[] = [
   COSMOS,
