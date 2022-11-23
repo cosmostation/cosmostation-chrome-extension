@@ -32,10 +32,11 @@ export default function AccountAddressBookBottomSheet({
 
   const { t } = useTranslation();
 
-  const filteredAccounts = useMemo(
-    () => (hasCurrentAccount ? data : data?.filter((item) => item.id !== currentAccount.id)) || [],
-    [currentAccount.id, data, hasCurrentAccount],
-  );
+  const filteredAccounts = useMemo(() => {
+    const selectedAccount = data?.filter((item) => item.id === currentAccount.id) || [];
+    const leftAccountsList = data?.filter((item) => item.id !== currentAccount.id) || [];
+    return hasCurrentAccount ? [...selectedAccount, ...leftAccountsList] : leftAccountsList;
+  }, [currentAccount, data, hasCurrentAccount]);
 
   return (
     <StyledBottomSheet {...remainder} onClose={onClose}>
