@@ -39,7 +39,7 @@ type CosmosTokenParams = Omit<CosmosToken, 'id'>;
 
 export default function Entry() {
   const tokens = useTokensSWR(JUNO);
-  // CW20Asset
+
   const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
@@ -47,8 +47,6 @@ export default function Entry() {
   const { currentChain } = useCurrentChain();
 
   const { addCosmosTokens, currentCosmosTokens } = useCurrentCosmosTokens();
-  // const tokenInfo = useTokenInfoSWR(JUNO, '');
-  // 이해안감
 
   const { t } = useTranslation();
   const { navigate } = useNavigate();
@@ -62,7 +60,6 @@ export default function Entry() {
   const filteredTokens = search ? validTokens.filter((item) => item.denom.toLowerCase().indexOf(search.toLowerCase()) > -1) : validTokens;
 
   const handleOnSubmit = async () => {
-    // if (tokenInfo.data) {
     await addCosmosTokens(selectedTokens);
     setSelectedTokens([]);
     enqueueSnackbar(t('pages.Chain.Cosmos.Token.Add.CW20.Search.entry.addTokenSnackbar'));
@@ -111,14 +108,12 @@ export default function Entry() {
               return (
                 <TokenItem
                   key={token.contract_address}
-                  // name={token.denom}
                   symbol={token.denom}
                   logo={token.logo}
                   onClick={() => {
                     if (isActive) {
                       setSelectedTokens(selectedTokens.filter((selectedToken) => selectedToken.address !== token.contract_address));
                     } else {
-                      // setSelectedTokens(selectedTokens);
                       setSelectedTokens([
                         ...selectedTokens,
                         {
@@ -128,6 +123,7 @@ export default function Entry() {
                           tokenType: 'CW20',
                           displayDenom: token.denom,
                           decimals: token.decimal,
+                          imageURL: token.logo,
                         },
                       ]);
                     }
