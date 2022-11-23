@@ -4,7 +4,7 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { JUNO } from '~/constants/chain/cosmos/juno';
 import Button from '~/Popup/components/common/Button';
-import { useTokenInfoSWR } from '~/Popup/hooks/SWR/cosmos/useTokenInfoSWR';
+// import { useTokenInfoSWR } from '~/Popup/hooks/SWR/cosmos/useTokenInfoSWR';
 import { useTokensSWR } from '~/Popup/hooks/SWR/cosmos/useTokensSWR';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
@@ -47,7 +47,7 @@ export default function Entry() {
   const { currentChain } = useCurrentChain();
 
   const { addCosmosTokens, currentCosmosTokens } = useCurrentCosmosTokens();
-  const tokenInfo = useTokenInfoSWR(JUNO, '');
+  // const tokenInfo = useTokenInfoSWR(JUNO, '');
   // 이해안감
 
   const { t } = useTranslation();
@@ -62,11 +62,10 @@ export default function Entry() {
   const filteredTokens = search ? validTokens.filter((item) => item.denom.toLowerCase().indexOf(search.toLowerCase()) > -1) : validTokens;
 
   const handleOnSubmit = async () => {
-    if (tokenInfo.data) {
-      await addCosmosTokens(selectedTokens);
-      setSelectedTokens([]);
-      enqueueSnackbar(t('pages.Chain.Cosmos.Token.Add.CW20.Search.entry.addTokenSnackbar'));
-    }
+    // if (tokenInfo.data) {
+    await addCosmosTokens(selectedTokens);
+    setSelectedTokens([]);
+    enqueueSnackbar(t('pages.Chain.Cosmos.Token.Add.CW20.Search.entry.addTokenSnackbar'));
   };
 
   return (
