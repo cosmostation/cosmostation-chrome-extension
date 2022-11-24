@@ -23,7 +23,7 @@ export default function TokenItem({ onClick, isActive, name, symbol, imageURL }:
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>
-            <Typography variant="h5"> {symbol} </Typography>
+            <Typography variant="h5">{symbol}</Typography>
             <Typography variant="h6" color="#727E91">
               {name}
             </Typography>

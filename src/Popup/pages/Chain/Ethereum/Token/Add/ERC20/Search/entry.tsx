@@ -100,7 +100,7 @@ export default function Entry() {
         {filteredTokens.length > 0 ? (
           <TokenList>
             {filteredTokens.map((token) => {
-              const isActive = selectedTokens.find((check) => check.address === token.address);
+              const isActive = !!selectedTokens.find((check) => check.address === token.address);
               return (
                 <TokenItem
                   key={token.address}
@@ -114,7 +114,7 @@ export default function Entry() {
                       setSelectedTokens([...selectedTokens, { ...token, tokenType: 'ERC20' }]);
                     }
                   }}
-                  isActive={!!isActive}
+                  isActive={isActive}
                 />
               );
             })}
