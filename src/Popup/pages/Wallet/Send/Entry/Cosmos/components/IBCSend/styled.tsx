@@ -3,7 +3,13 @@ import { styled } from '@mui/material/styles';
 import Input from '~/Popup/components/common/Input';
 
 export const Container = styled('div')({
+  height: '100%',
   padding: '0 0.4rem',
+});
+
+export const ContentContainer = styled('div')({
+  height: 'calc(100% - 11rem)',
+  overflow: 'auto',
 });
 
 export const MaxButton = styled('button')(({ theme }) => ({
@@ -48,8 +54,6 @@ export const MarginTop8Div = styled('div')({
 });
 
 export const WarningContainer = styled('div')(({ theme }) => ({
-  width: '33.6rem',
-  height: '16.6rem',
   padding: '2.4rem',
   backgroundColor: theme.colors.base02,
   borderRadius: '0.8rem',
@@ -70,4 +74,26 @@ export const WarningTextContainer = styled('div')(({ theme }) => ({
   rowGap: '0.8rem',
   textAlign: 'center',
   color: theme.colors.text01,
+}));
+
+export const ExchangeWarningContainer = styled('div')({
+  padding: '1.2rem 1.6rem',
+  display: 'flex',
+  backgroundColor: 'rgba(205, 26, 26, 0.15)',
+  borderRadius: '0.8rem',
+});
+
+export const ExchangeWarningTextContainer = styled('div')(({ theme }) => ({
+  marginLeft: '0.4rem',
+  color: theme.accentColors.red,
+}));
+
+export const ExchangeWarningIconContainer = styled('div')(({ theme }) => ({
+  '& > svg': {
+    fill: theme.accentColors.red,
+
+    '& > path': {
+      fill: theme.accentColors.red,
+    },
+  },
 }));

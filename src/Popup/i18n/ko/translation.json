@@ -957,6 +957,7 @@
                 "index": {
                   "amountPlaceholder": "수량",
                   "available": "사용 가능 수량",
+                  "exchangeWarning": "중앙 거래소는 IBC 입금을 지원하지 않습니다.",
                   "ibcWarningHeadertitle": "IBC Send를 지원하지 않습니다",
                   "ibcWarningSubtitle": "IBC Send 로 보낼 수 있는 코인 또는 토큰이 존재하지 않습니다.",
                   "insufficientAmount": "수량이 부족합니다.",

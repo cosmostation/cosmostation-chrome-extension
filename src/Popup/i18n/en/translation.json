@@ -957,6 +957,7 @@
                 "index": {
                   "amountPlaceholder": "Amount",
                   "available": "Available",
+                  "exchangeWarning": "IBC transactions are NOT supported on centralized exchanges.",
                   "ibcWarningHeadertitle": "IBC Send is not supported",
                   "ibcWarningSubtitle": "No coin or token available for IBC Send.",
                   "insufficientAmount": "Insufficient amount",
