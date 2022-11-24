@@ -38,7 +38,7 @@ import {
   MarginTop8Div,
   MaxButton,
   StyledInput,
-  StyledTextarea,
+  // StyledTextarea,
   WarningContainer,
   WarningContentsContainer,
   WarningTextContainer,
@@ -402,7 +402,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         />
       </MarginTop8Div>
 
-      <MarginTop8Div>
+      {/* <MarginTop8Div>
         <StyledTextarea
           multiline
           minRows={1}
@@ -411,7 +411,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           onChange={(e) => setCurrentMemo(e.currentTarget.value)}
           value={currentMemo}
         />
-      </MarginTop8Div>
+      </MarginTop8Div> */}
 
       <MarginTop8Div>
         <Fee
