@@ -35,10 +35,14 @@ import ReceiverIBCPopover from './components/ReceiverIBCPopover';
 import {
   BottomContainer,
   Container,
+  ContentContainer,
+  ExchangeWarningContainer,
+  ExchangeWarningIconContainer,
+  ExchangeWarningTextContainer,
   MarginTop8Div,
   MaxButton,
   StyledInput,
-  // StyledTextarea,
+  StyledTextarea,
   WarningContainer,
   WarningContentsContainer,
   WarningTextContainer,
@@ -48,6 +52,7 @@ import CoinOrTokenPopover from '../CoinOrTokenPopover';
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
 import IBCWarningIcon from '~/images/icons/IBCWarning.svg';
+import Info16Icon from '~/images/icons/Info16.svg';
 
 export const TYPE = {
   COIN: 'coin',
@@ -339,91 +344,102 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   return (
     <Container>
-      <MarginTop8Div>
-        <DropdownButton
-          imgSrc={selectedReceiverIBC?.chain.imageURL}
-          title={selectedReceiverIBC?.chain.chainName || ''}
-          leftHeaderTitle={selectedReceiverIBC?.channel}
-          isOpenPopover={isRecipientOpenPopover}
-          onClickDropdown={(currentTarget) => setReceiverIBCPopoverAnchorEl(currentTarget)}
-        />
-      </MarginTop8Div>
-      <MarginTop8Div>
-        <StyledInput
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton onClick={() => setIsOpenedMyAddressBook(true)} edge="end">
-                <AccountAddressIcon />
-              </IconButton>
-              <IconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
-                <AddressBook24Icon />
-              </IconButton>
-            </InputAdornment>
-          }
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.recipientAddressPlaceholder')}
-          onChange={(e) => setReceiverAddress(e.currentTarget.value)}
-          value={receiverAddress}
-        />
-      </MarginTop8Div>
-      <MarginTop8Div>
-        <DropdownButton
-          imgSrc={currentCoinOrToken.imageURL}
-          title={currentCoinOrTokenDisplayDenom}
-          leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.available')}
-          leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
-          isOpenPopover={isOpenPopover}
-          decimals={currentDisplayMaxDecimals}
-          onClickDropdown={(currentTarget) => setPopoverAnchorEl(currentTarget)}
-        />
-      </MarginTop8Div>
-      <MarginTop8Div>
-        <StyledInput
-          endAdornment={
-            <InputAdornment position="end">
-              <MaxButton
-                type="button"
-                onClick={() => {
-                  setCurrentDisplayAmount(maxDisplayAmount);
-                }}
-              >
-                <Typography variant="h7">MAX</Typography>
-              </MaxButton>
-            </InputAdornment>
-          }
-          onChange={(e) => {
-            if (!isDecimal(e.currentTarget.value, currentCoinOrToken.decimals || 0) && e.currentTarget.value) {
-              return;
+      <ContentContainer>
+        <ExchangeWarningContainer>
+          <ExchangeWarningIconContainer>
+            <Info16Icon />
+          </ExchangeWarningIconContainer>
+          <ExchangeWarningTextContainer>
+            <Typography variant="h6">{t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.exchangeWarning')}</Typography>
+          </ExchangeWarningTextContainer>
+        </ExchangeWarningContainer>
+
+        <MarginTop8Div>
+          <DropdownButton
+            imgSrc={selectedReceiverIBC?.chain.imageURL}
+            title={selectedReceiverIBC?.chain.chainName || ''}
+            leftHeaderTitle={selectedReceiverIBC?.channel}
+            isOpenPopover={isRecipientOpenPopover}
+            onClickDropdown={(currentTarget) => setReceiverIBCPopoverAnchorEl(currentTarget)}
+          />
+        </MarginTop8Div>
+        <MarginTop8Div>
+          <StyledInput
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton onClick={() => setIsOpenedMyAddressBook(true)} edge="end">
+                  <AccountAddressIcon />
+                </IconButton>
+                <IconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
+                  <AddressBook24Icon />
+                </IconButton>
+              </InputAdornment>
             }
+            placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.recipientAddressPlaceholder')}
+            onChange={(e) => setReceiverAddress(e.currentTarget.value)}
+            value={receiverAddress}
+          />
+        </MarginTop8Div>
+        <MarginTop8Div>
+          <DropdownButton
+            imgSrc={currentCoinOrToken.imageURL}
+            title={currentCoinOrTokenDisplayDenom}
+            leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.available')}
+            leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
+            isOpenPopover={isOpenPopover}
+            decimals={currentDisplayMaxDecimals}
+            onClickDropdown={(currentTarget) => setPopoverAnchorEl(currentTarget)}
+          />
+        </MarginTop8Div>
+        <MarginTop8Div>
+          <StyledInput
+            endAdornment={
+              <InputAdornment position="end">
+                <MaxButton
+                  type="button"
+                  onClick={() => {
+                    setCurrentDisplayAmount(maxDisplayAmount);
+                  }}
+                >
+                  <Typography variant="h7">MAX</Typography>
+                </MaxButton>
+              </InputAdornment>
+            }
+            onChange={(e) => {
+              if (!isDecimal(e.currentTarget.value, currentCoinOrToken.decimals || 0) && e.currentTarget.value) {
+                return;
+              }
 
-            setCurrentDisplayAmount(e.currentTarget.value);
-          }}
-          value={currentDisplayAmount}
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.amountPlaceholder')}
-        />
-      </MarginTop8Div>
+              setCurrentDisplayAmount(e.currentTarget.value);
+            }}
+            value={currentDisplayAmount}
+            placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.amountPlaceholder')}
+          />
+        </MarginTop8Div>
 
-      {/* <MarginTop8Div>
-        <StyledTextarea
-          multiline
-          minRows={1}
-          maxRows={1}
-          placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.memoPlaceholder')}
-          onChange={(e) => setCurrentMemo(e.currentTarget.value)}
-          value={currentMemo}
-        />
-      </MarginTop8Div> */}
+        <MarginTop8Div>
+          <StyledTextarea
+            multiline
+            minRows={1}
+            maxRows={1}
+            placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.memoPlaceholder')}
+            onChange={(e) => setCurrentMemo(e.currentTarget.value)}
+            value={currentMemo}
+          />
+        </MarginTop8Div>
 
-      <MarginTop8Div>
-        <Fee
-          feeCoin={{ ...currentFeeCoin, originBaseDenom: currentFeeCoin.originBaseDenom }}
-          gasRate={currentFeeGasRate}
-          baseFee={currentFeeAmount}
-          gas={currentGas}
-          onChangeGas={(g) => setCustomGas(g)}
-          onChangeFee={(f) => setCurrentFeeAmount(f)}
-          isEdit
-        />
-      </MarginTop8Div>
+        <MarginTop8Div>
+          <Fee
+            feeCoin={{ ...currentFeeCoin, originBaseDenom: currentFeeCoin.originBaseDenom }}
+            gasRate={currentFeeGasRate}
+            baseFee={currentFeeAmount}
+            gas={currentGas}
+            onChangeGas={(g) => setCustomGas(g)}
+            onChangeFee={(f) => setCurrentFeeAmount(f)}
+            isEdit
+          />
+        </MarginTop8Div>
+      </ContentContainer>
 
       <BottomContainer>
         <Tooltip varient="error" title={errorMessage} placement="top" arrow>
