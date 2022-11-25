@@ -4,7 +4,7 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
-import { COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
+import { COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
@@ -115,7 +115,10 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         account_number: account.data.value.account_number,
         sequence: account.data.value.sequence,
         chain_id: chain.chainId,
-        fee: { amount: [{ amount: times(chain.gasRate.tiny, COSMOS_DEFAULT_REWARD_GAS, 0), denom: chain.baseDenom }], gas: '100000' },
+        fee: {
+          amount: [{ amount: chain.type === 'ETHERMINT' ? times(chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '0', denom: chain.baseDenom }],
+          gas: COSMOS_DEFAULT_REWARD_GAS,
+        },
         msgs: reward.data.rewards.map((item) => ({
           type: 'cosmos-sdk/MsgWithdrawDelegationReward',
           value: { delegator_address: currentAddress, validator_address: item.validator_address },
@@ -124,7 +127,16 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
       };
     }
     return undefined;
-  }, [account.data?.value.account_number, account.data?.value.sequence, chain.baseDenom, chain.chainId, chain.gasRate, currentAddress, reward.data?.rewards]);
+  }, [
+    account.data?.value.account_number,
+    account.data?.value.sequence,
+    chain.baseDenom,
+    chain.chainId,
+    chain.gasRate.low,
+    chain.type,
+    currentAddress,
+    reward.data?.rewards,
+  ]);
 
   const rewardProtoTx = useMemo(() => {
     if (rewardAminoTx) {
@@ -152,8 +164,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const displayMaxDecimals = getDisplayMaxDecimals(decimals);
 
   const estimatedDisplayFeeAmount = useMemo(
-    () => toDisplayDenomAmount(times(chain.gasRate.average, simulate.data?.gas_info?.gas_used || '0'), decimals),
-    [chain.gasRate.average, decimals, simulate.data?.gas_info?.gas_used],
+    () => toDisplayDenomAmount(times(chain.gasRate.low, simulate.data?.gas_info?.gas_used || '0'), decimals),
+    [chain.gasRate.low, decimals, simulate.data?.gas_info?.gas_used],
   );
 
   const isPossibleClaimReward = useMemo(
@@ -303,7 +315,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                       chainName: chain.chainName,
                       doc: {
                         ...rewardAminoTx,
-                        fee: { amount: [{ amount: '0', denom: chain.baseDenom }], gas: times(simulate.data.gas_info?.gas_used, '1.1', 0) },
+                        fee: { amount: [{ amount: '0', denom: chain.baseDenom }], gas: times(simulate.data.gas_info?.gas_used, COSMOS_DEFAULT_ESTIMATE_AV, 0) },
                       },
                       isEditFee: true,
                       isEditMemo: true,
