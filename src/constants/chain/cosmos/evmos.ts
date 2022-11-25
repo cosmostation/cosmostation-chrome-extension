@@ -27,5 +27,5 @@ export const EVMOS: CosmosChain = {
     low: '25000000000',
     average: '30000000000',
   },
-  gas: { send: '150000' },
+  gas: { send: '150000', ibcSend: '180000' },
 };

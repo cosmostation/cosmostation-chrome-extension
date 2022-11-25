@@ -109,6 +109,14 @@ export type CosVerifyMessage = {
 
 export type CosVerifyMessageResponse = boolean;
 
+export type CosDisconnect = {
+  method: typeof COSMOS_NO_POPUP_METHOD_TYPE.COS__DISCONNECT;
+  params: undefined;
+  id?: number | string;
+};
+
+export type CosDisconnectResponse = null;
+
 // popup
 
 export type CosRequestAccount = {
