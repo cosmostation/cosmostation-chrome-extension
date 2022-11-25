@@ -625,6 +625,13 @@
                       "sourceChannel": "Channel"
                     }
                   },
+                  "Reward": {
+                    "index": {
+                      "delegatorAddress": "Delegator address",
+                      "title": "Claim reward",
+                      "validatorAddress": "Validator address"
+                    }
+                  },
                   "Send": {
                     "index": {
                       "amount": "Amount",
@@ -1087,6 +1094,7 @@
           "NativeChainCard": {
             "index": {
               "available": "Available",
+              "claimRewardButton": "Claim Reward",
               "copied": "Copied",
               "delegated": "Delegated",
               "depositButton": "Deposit",

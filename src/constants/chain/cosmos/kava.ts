@@ -24,7 +24,7 @@ export const KAVA: CosmosChain = {
   explorerURL: `${MINTSCAN_URL}/kava`,
   gasRate: {
     tiny: '0.0025',
-    low: '0.025',
+    low: '0.01125',
     average: '0.025',
   },
   gas: { send: '400000' },

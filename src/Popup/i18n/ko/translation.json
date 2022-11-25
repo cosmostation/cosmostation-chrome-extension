@@ -625,6 +625,13 @@
                       "sourceChannel": "채널"
                     }
                   },
+                  "Reward": {
+                    "index": {
+                      "delegatorAddress": "위임자 주소",
+                      "title": "이자 받기",
+                      "validatorAddress": "검증자 주소"
+                    }
+                  },
                   "Send": {
                     "index": {
                       "amount": "수량",
@@ -1087,6 +1094,7 @@
           "NativeChainCard": {
             "index": {
               "available": "전송 가능 수량",
+              "claimRewardButton": "이자 받기",
               "copied": "복사 되었습니다.",
               "delegated": "위임 수량",
               "depositButton": "입금",

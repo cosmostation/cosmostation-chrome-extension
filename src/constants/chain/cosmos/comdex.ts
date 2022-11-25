@@ -22,9 +22,9 @@ export const COMDEX: CosmosChain = {
   bech32Prefix: { address: 'comdex' },
   explorerURL: `${MINTSCAN_URL}/comdex`,
   gasRate: {
-    tiny: '0.025',
-    low: '0.025',
-    average: '0.025',
+    tiny: '0.03',
+    low: '0.03',
+    average: '0.03',
   },
   gas: { send: '100000' },
 };

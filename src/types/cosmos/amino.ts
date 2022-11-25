@@ -15,6 +15,11 @@ export type MsgSend = {
   amount: Amount[];
 };
 
+export type MsgReward = {
+  delegator_address: string;
+  validator_address: string;
+};
+
 export type MsgTransfer = {
   receiver: string;
   sender: string;
@@ -42,11 +47,11 @@ export type ContractTransfer = {
   amount: string;
 };
 
-export type SignAminoDoc = {
+export type SignAminoDoc<T = unknown> = {
   chain_id: string;
   sequence: string;
   account_number: string;
   fee: Fee;
   memo: string;
-  msgs: Msg[];
+  msgs: Msg<T>[];
 };
