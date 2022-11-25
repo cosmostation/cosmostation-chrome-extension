@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
@@ -19,6 +20,7 @@ import { useClientStateSWR } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
+import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
@@ -27,9 +29,10 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { fix, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { convertAssetNameToCosmos, convertCosmosToAssetName } from '~/Popup/utils/cosmos';
+import { convertAssetNameToCosmos, convertCosmosToAssetName, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { protoTx } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
-import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain';
+import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKeys } from '~/types/chain';
 
 import ReceiverIBCPopover from './components/ReceiverIBCPopover';
 import {
@@ -154,8 +157,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const [customGas, setCustomGas] = useState<string | undefined>();
 
-  const currentGas = useMemo(() => customGas || sendGas, [customGas, sendGas]);
-  const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
+  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKeys>('low');
+
+  const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate[currentGasRateKey]));
 
   const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
 
@@ -315,6 +319,124 @@ export default function IBCSend({ chain }: IBCSendProps) {
     latestHeight,
   ]);
 
+  const memoizedIBCSendAminoTx = useMemo(() => {
+    if (account.data?.value.account_number && selectedReceiverIBC && currentDisplayAmount) {
+      const sequence = String(account.data?.value.sequence || '0');
+
+      if (currentCoinOrToken.type === 'coin' && revisionNumber && revisionHeight) {
+        return {
+          account_number: String(account.data.value.account_number),
+          sequence,
+          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+          fee: {
+            amount: [
+              {
+                denom: currentFeeCoin.baseDenom,
+                amount: chain.type === 'ETHERMINT' ? times(currentFeeGasRate[currentGasRateKey], COSMOS_DEFAULT_IBC_SEND_GAS, 0) : '0',
+              },
+            ],
+            gas: COSMOS_DEFAULT_IBC_SEND_GAS,
+          },
+          memo: currentMemo,
+          msgs: [
+            {
+              type: chain.chainName === SHENTU.chainName ? 'bank/MsgTransfer' : 'cosmos-sdk/MsgTransfer',
+              value: {
+                receiver: receiverAddress,
+                sender: senderAddress,
+                source_channel: selectedReceiverIBC.channel,
+                source_port: selectedReceiverIBC.port || 'transfer',
+                timeout_height: {
+                  revision_height: revisionHeight,
+                  revision_number: revisionNumber === '0' ? undefined : revisionNumber,
+                },
+                token: {
+                  amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
+                  denom: currentCoinOrToken.baseDenom,
+                },
+              },
+            },
+          ],
+        };
+      }
+
+      if (currentCoinOrToken.type === 'token') {
+        return {
+          account_number: String(account.data.value.account_number),
+          sequence,
+          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+          fee: {
+            amount: [
+              {
+                denom: currentFeeCoin.baseDenom,
+                amount: chain.type === 'ETHERMINT' ? times(currentFeeGasRate[currentGasRateKey], COSMOS_DEFAULT_IBC_TRANSFER_GAS, 0) : '1',
+              },
+            ],
+            gas: COSMOS_DEFAULT_IBC_TRANSFER_GAS,
+          },
+          memo: currentMemo,
+          msgs: [
+            {
+              type: 'wasm/MsgExecuteContract',
+              value: {
+                sender: senderAddress,
+                contract: currentCoinOrToken.address,
+                msg: {
+                  send: {
+                    amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
+                    contract: selectedReceiverIBC.port.split('.')?.[1],
+                    msg: Buffer.from(JSON.stringify({ channel: selectedReceiverIBC.channel, remote_address: receiverAddress, timeout: 900 }), 'utf8').toString(
+                      'base64',
+                    ),
+                  },
+                },
+                funds: [],
+              },
+            },
+          ],
+        };
+      }
+    }
+
+    return undefined;
+  }, [
+    account.data?.value.account_number,
+    account.data?.value.sequence,
+    chain.chainId,
+    chain.chainName,
+    chain.type,
+    currentCoinOrToken,
+    currentDisplayAmount,
+    currentFeeCoin.baseDenom,
+    currentFeeGasRate,
+    currentGasRateKey,
+    currentMemo,
+    nodeInfo.data?.node_info?.network,
+    receiverAddress,
+    revisionHeight,
+    revisionNumber,
+    selectedReceiverIBC,
+    senderAddress,
+  ]);
+
+  const [ibcSendAminoTx] = useDebounce(memoizedIBCSendAminoTx, 1500);
+
+  const ibcSendProtoTx = useMemo(() => {
+    if (ibcSendAminoTx) {
+      return protoTx(ibcSendAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+    }
+    return null;
+  }, [chain, ibcSendAminoTx]);
+
+  const simulate = useSimulateSWR({ chain, txBytes: ibcSendProtoTx?.tx_bytes });
+
+  const simulatedGas = useMemo(
+    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
+    [chain, simulate.data?.gas_info?.gas_used],
+  );
+
+  const currentGas = useMemo(() => customGas || simulatedGas || sendGas, [customGas, sendGas, simulatedGas]);
+
   useEffect(() => {
     if (receiverIBCList.length === 0 && senderCoinAndTokenList.length > 0) {
       setCurrentCoinOrTokenId(senderCoinAndTokenList[0].type === 'coin' ? senderCoinAndTokenList[0].baseDenom : senderCoinAndTokenList[0].address);
@@ -322,11 +444,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
       setReceiverIBC(receiverIBCList[0]);
     }
 
-    if (!customGas) {
-      setCurrentFeeAmount(times(currentGas, gasRate.low));
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCoinOrTokenId]);
+
+  useEffect(() => {
+    setCurrentFeeAmount(times(currentGas, currentFeeGasRate[currentGasRateKey]));
+  }, [currentGas, currentGasRateKey, currentFeeGasRate]);
 
   if (senderCoinAndTokenList.length === 0) {
     return (
@@ -434,8 +557,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
             gasRate={currentFeeGasRate}
             baseFee={currentFeeAmount}
             gas={currentGas}
-            onChangeGas={(g) => setCustomGas(g)}
-            onChangeFee={(f) => setCurrentFeeAmount(f)}
+            onChangeGas={setCustomGas}
+            onChangeGasRateKey={setCurrentGasRateKey}
             isEdit
           />
         </MarginTop8Div>
@@ -446,9 +569,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
           <div>
             <Button
               type="button"
-              disabled={!!errorMessage}
+              disabled={!!errorMessage || !ibcSendAminoTx}
               onClick={async () => {
-                if (currentCoinOrToken.type === 'coin' && revisionNumber && revisionHeight) {
+                if (ibcSendAminoTx) {
                   await enQueue({
                     messageId: '',
                     origin: '',
@@ -458,71 +581,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
                       params: {
                         chainName: chain.chainName,
                         doc: {
-                          account_number: String(account.data?.value.account_number ?? ''),
-                          sequence: String(account.data?.value.sequence ?? '0'),
-                          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+                          ...ibcSendAminoTx,
                           fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: fix(currentFeeAmount, 0) }], gas: currentGas },
-                          memo: currentMemo,
-                          msgs: [
-                            {
-                              type: chain.chainName === SHENTU.chainName ? 'bank/MsgTransfer' : 'cosmos-sdk/MsgTransfer',
-                              value: {
-                                receiver: receiverAddress,
-                                sender: senderAddress,
-                                source_channel: selectedReceiverIBC?.channel,
-                                source_port: 'transfer',
-                                timeout_height: {
-                                  revision_height: revisionHeight,
-                                  revision_number: revisionNumber === '0' ? undefined : revisionNumber,
-                                },
-                                token: {
-                                  amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
-                                  denom: currentCoinOrToken.baseDenom,
-                                },
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    },
-                  });
-                }
-
-                if (currentCoinOrToken.type === 'token') {
-                  await enQueue({
-                    messageId: '',
-                    origin: '',
-                    channel: 'inApp',
-                    message: {
-                      method: 'cos_signAmino',
-                      params: {
-                        chainName: chain.chainName,
-                        doc: {
-                          account_number: String(account.data?.value.account_number ?? ''),
-                          sequence: String(account.data?.value.sequence ?? '0'),
-                          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
-                          fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: fix(currentFeeAmount, 0) }], gas: currentGas },
-                          memo: currentMemo,
-                          msgs: [
-                            {
-                              type: 'wasm/MsgExecuteContract',
-                              value: {
-                                sender: senderAddress,
-                                contract: currentCoinOrToken.address,
-                                msg: {
-                                  send: {
-                                    amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
-                                    contract: selectedReceiverIBC?.port.split('.')?.[1],
-                                    msg: Buffer.from(
-                                      JSON.stringify({ channel: selectedReceiverIBC?.channel, remote_address: receiverAddress, timeout: 900 }),
-                                      'utf8',
-                                    ).toString('base64'),
-                                  },
-                                },
-                                funds: [],
-                              },
-                            },
-                          ],
                         },
                       },
                     },

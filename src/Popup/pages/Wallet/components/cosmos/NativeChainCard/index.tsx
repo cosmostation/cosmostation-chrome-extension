@@ -4,7 +4,7 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
-import { COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
+import { COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
@@ -28,7 +28,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
-import { getPublicKeyType } from '~/Popup/utils/cosmos';
+import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
@@ -116,7 +116,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         sequence: account.data.value.sequence,
         chain_id: chain.chainId,
         fee: {
-          amount: [{ amount: chain.type === 'ETHERMINT' ? times(chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '0', denom: chain.baseDenom }],
+          amount: [{ amount: chain.type === 'ETHERMINT' ? times(chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1', denom: chain.baseDenom }],
           gas: COSMOS_DEFAULT_REWARD_GAS,
         },
         msgs: reward.data.rewards.map((item) => ({
@@ -315,7 +315,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                       chainName: chain.chainName,
                       doc: {
                         ...rewardAminoTx,
-                        fee: { amount: [{ amount: '0', denom: chain.baseDenom }], gas: times(simulate.data.gas_info?.gas_used, COSMOS_DEFAULT_ESTIMATE_AV, 0) },
+                        fee: { amount: [{ amount: '0', denom: chain.baseDenom }], gas: times(simulate.data.gas_info?.gas_used, getDefaultAV(chain), 0) },
                       },
                       isEditFee: true,
                       isEditMemo: true,

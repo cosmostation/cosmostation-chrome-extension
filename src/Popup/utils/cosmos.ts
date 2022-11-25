@@ -7,8 +7,9 @@ import sortKeys from 'sort-keys';
 import TinySecp256k1 from 'tiny-secp256k1';
 import { keccak256 } from '@ethersproject/keccak256';
 
-import { COSMOS_CHAINS } from '~/constants/chain';
+import { COSMOS_CHAINS, COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
+import { CHIHUAHUA } from '~/constants/chain/cosmos/chihuahua';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
@@ -17,9 +18,11 @@ import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { IXO } from '~/constants/chain/cosmos/ixo';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { KI } from '~/constants/chain/cosmos/ki';
+import { PROVENANCE } from '~/constants/chain/cosmos/provenance';
 import { SIF } from '~/constants/chain/cosmos/sif';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { STARNAME } from '~/constants/chain/cosmos/starname';
+import { TERITORI } from '~/constants/chain/cosmos/teritori';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
@@ -187,4 +190,13 @@ export function getMsgSignData(signer: string, message: string) {
     ],
     sequence: '0',
   };
+}
+
+export function getDefaultAV(chain?: CosmosChain) {
+  const exceptedChainIds = [PROVENANCE.id, TERITORI.id, CHIHUAHUA.id];
+
+  if (exceptedChainIds.includes(chain?.id || '')) {
+    return COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV;
+  }
+  return COSMOS_DEFAULT_ESTIMATE_AV;
 }
