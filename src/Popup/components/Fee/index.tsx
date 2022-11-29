@@ -6,7 +6,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { divide, equal, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import type { FeeCoin, GasRate, GasRateKeys } from '~/types/chain';
+import type { FeeCoin, GasRate, GasRateKey } from '~/types/chain';
 
 import GasSettingDialog from './components/GasSettingDialog';
 import {
@@ -31,7 +31,7 @@ type FeeProps = {
   baseFee: string;
   gas: string;
   gasRate: GasRate;
-  onChangeGasRateKey?: (key: GasRateKeys) => void;
+  onChangeGasRateKey?: (key: GasRateKey) => void;
   onChangeFee?: (fee: string) => void;
   onChangeGas?: (gas: string) => void;
 };

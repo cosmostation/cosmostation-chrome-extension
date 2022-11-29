@@ -32,7 +32,7 @@ import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, convertCosmosToAssetName, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
-import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKeys } from '~/types/chain';
+import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKey } from '~/types/chain';
 
 import ReceiverIBCPopover from './components/ReceiverIBCPopover';
 import {
@@ -157,7 +157,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const [customGas, setCustomGas] = useState<string | undefined>();
 
-  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKeys>('low');
+  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
 
   const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate[currentGasRateKey]));
 
@@ -419,7 +419,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     senderAddress,
   ]);
 
-  const [ibcSendAminoTx] = useDebounce(memoizedIBCSendAminoTx, 1500);
+  const [ibcSendAminoTx] = useDebounce(memoizedIBCSendAminoTx, 1000);
 
   const ibcSendProtoTx = useMemo(() => {
     if (ibcSendAminoTx) {

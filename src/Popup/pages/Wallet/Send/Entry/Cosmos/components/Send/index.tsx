@@ -30,7 +30,7 @@ import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
-import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKeys } from '~/types/chain';
+import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKey } from '~/types/chain';
 
 import { BottomContainer, Container, MarginTop8Div, MarginTop12Div, MarginTop16Div, MaxButton, StyledInput, StyledTextarea } from './styled';
 import CoinOrTokenPopover from '../CoinOrTokenPopover';
@@ -131,7 +131,7 @@ export default function Send({ chain }: CosmosProps) {
 
   const [customGas, setCustomGas] = useState<string | undefined>();
 
-  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKeys>('low');
+  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
 
   const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate[currentGasRateKey]));
 
@@ -319,7 +319,7 @@ export default function Send({ chain }: CosmosProps) {
     nodeInfo.data?.node_info?.network,
   ]);
 
-  const [sendAminoTx] = useDebounce(memoizedSendAminoTx, 1500);
+  const [sendAminoTx] = useDebounce(memoizedSendAminoTx, 1000);
 
   const sendProtoTx = useMemo(() => {
     if (sendAminoTx) {
