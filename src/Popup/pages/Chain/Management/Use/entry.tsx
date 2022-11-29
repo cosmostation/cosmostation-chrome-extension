@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
-import { InputAdornment } from '@mui/material';
+import { InputAdornment, Typography } from '@mui/material';
 
-import { APTOS_CHAINS, APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
+import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import Divider from '~/Popup/components/common/Divider';
+import Image from '~/Popup/components/common/Image';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
@@ -13,9 +14,19 @@ import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCur
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { AptosNetwork, Chain, EthereumNetwork } from '~/types/chain';
 
-import Item from './components/Item';
 import SubItem from './components/SubItem';
-import { Container, DividerContainer, ListContainer, StyledInput, StyledSearch20Icon } from './styled';
+import {
+  ChainAccordionContainer,
+  Container,
+  ItemLeftContainer,
+  ItemLeftImageContainer,
+  ItemLeftTextContainer,
+  StyledChainAccordion,
+  StyledChainAccordionDetails,
+  StyledChainAccordionSummary,
+  StyledInput,
+  StyledSearch20Icon,
+} from './styled';
 
 export default function Entry() {
   const [search, setSearch] = useState('');
@@ -24,7 +35,11 @@ export default function Entry() {
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
   const { addShownEthereumNetwork, removeShownEthereumNetwork } = useCurrentShownEthereumNetworks();
   const { addShownAptosNetwork, removeShownAptosNetwork } = useCurrentShownAptosNetworks();
+  const [expanded, setExpanded] = React.useState<string | false>();
 
+  const handleChange = (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+    setExpanded(newExpanded ? panel : false);
+  };
   const { enqueueSnackbar } = useSnackbar();
 
   const { t } = useTranslation();
@@ -40,15 +55,15 @@ export default function Entry() {
     : APTOS_NETWORKS;
 
   const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
-  const filteredEthereumChains =
-    filteredEthereumNetworks.length === 0 && search
-      ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
-      : ETHEREUM_CHAINS;
+  // const filteredEthereumChains =
+  //   filteredEthereumNetworks.length === 0 && search
+  //     ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+  //     : ETHEREUM_CHAINS;
 
-  const filteredAptosChains =
-    filteredAptosNetworks.length === 0 && search
-      ? APTOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
-      : APTOS_CHAINS;
+  // const filteredAptosChains =
+  //   filteredAptosNetworks.length === 0 && search
+  //     ? APTOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+  //     : APTOS_CHAINS;
 
   const handleOnChangeChain = async (checked: boolean, chain: Chain) => {
     if (checked) {
@@ -92,7 +107,7 @@ export default function Entry() {
         value={search}
         onChange={(event) => setSearch(event.currentTarget.value)}
       />
-      <ListContainer>
+      {/* <ListContainer>
         {filteredEthereumChains.map((chain) => (
           <Item
             key={chain.id}
@@ -107,6 +122,7 @@ export default function Entry() {
             {chain.chainName}
           </Item>
         ))}
+        hi 11
         {filteredEthereumNetworks.map((network) => (
           <SubItem
             key={network.id}
@@ -122,13 +138,13 @@ export default function Entry() {
             {network.networkName}
           </SubItem>
         ))}
-
         <>
           {filteredEthereumChains.length > 0 && (
             <DividerContainer>
               <Divider />
             </DividerContainer>
           )}
+          hi22
           {filteredCosmosChains.map((chain) => (
             <Item
               key={chain.id}
@@ -180,7 +196,95 @@ export default function Entry() {
             </SubItem>
           ))}
         </>
-      </ListContainer>
+      </ListContainer> */}
+      <ChainAccordionContainer>
+        <StyledChainAccordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+          <StyledChainAccordionSummary aria-controls="panel1d-content" id="panel1d-header">
+            <ItemLeftContainer>
+              <ItemLeftImageContainer>
+                <Image src={ETHEREUM.imageURL} />
+              </ItemLeftImageContainer>
+              <ItemLeftTextContainer>
+                <Typography variant="h5">EVM Networks</Typography>
+              </ItemLeftTextContainer>
+            </ItemLeftContainer>
+          </StyledChainAccordionSummary>
+          <StyledChainAccordionDetails>
+            {filteredEthereumNetworks.map((network) => (
+              <SubItem
+                key={network.id}
+                imageProps={{ alt: network.networkName, src: network.imageURL }}
+                switchProps={{
+                  checked: shownEthereumNetworkIds.includes(network.id),
+                  onChange: (_, checked) => {
+                    void handleOnChangeEthereumNetwork(checked, network);
+                  },
+                  disabled: !allowedChainIds.includes(ETHEREUM.id),
+                }}
+              >
+                {network.networkName}
+              </SubItem>
+            ))}
+          </StyledChainAccordionDetails>
+        </StyledChainAccordion>
+        <StyledChainAccordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+          <StyledChainAccordionSummary aria-controls="panel2d-content" id="panel2d-header">
+            <ItemLeftContainer>
+              <ItemLeftImageContainer>
+                <Image src={COSMOS.imageURL} />
+              </ItemLeftImageContainer>
+              <ItemLeftTextContainer>
+                <Typography variant="h5">Cosmos Chains</Typography>
+              </ItemLeftTextContainer>
+            </ItemLeftContainer>
+          </StyledChainAccordionSummary>
+          <StyledChainAccordionDetails>
+            {filteredCosmosChains.map((chain) => (
+              <SubItem
+                key={chain.id}
+                imageProps={{ alt: chain.chainName, src: chain.imageURL }}
+                switchProps={{
+                  checked: allowedChainIds.includes(chain.id),
+                  onChange: (_, checked) => {
+                    void handleOnChangeChain(checked, chain);
+                  },
+                }}
+              >
+                {chain.chainName}
+              </SubItem>
+            ))}
+          </StyledChainAccordionDetails>
+        </StyledChainAccordion>
+        <StyledChainAccordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+          <StyledChainAccordionSummary aria-controls="panel3d-content" id="panel3d-header">
+            <ItemLeftContainer>
+              <ItemLeftImageContainer>
+                <Image src={APTOS.imageURL} />
+              </ItemLeftImageContainer>
+              <ItemLeftTextContainer>
+                <Typography variant="h5">Aptos Networks</Typography>
+              </ItemLeftTextContainer>
+            </ItemLeftContainer>
+          </StyledChainAccordionSummary>
+          <StyledChainAccordionDetails>
+            {filteredAptosNetworks.map((network) => (
+              <SubItem
+                key={network.id}
+                imageProps={{ alt: network.networkName, src: network.imageURL }}
+                switchProps={{
+                  checked: shownAptosNetworkIds.includes(network.id),
+                  onChange: (_, checked) => {
+                    void handleOnChangeAptosNetwork(checked, network);
+                  },
+                  disabled: !allowedChainIds.includes(APTOS.id),
+                }}
+              >
+                {network.networkName}
+              </SubItem>
+            ))}
+          </StyledChainAccordionDetails>
+        </StyledChainAccordion>
+      </ChainAccordionContainer>
     </Container>
   );
 }

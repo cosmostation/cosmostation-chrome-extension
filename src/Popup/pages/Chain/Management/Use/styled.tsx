@@ -1,7 +1,11 @@
+import type { AccordionProps } from '@mui/material/Accordion';
+import type { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import { styled } from '@mui/material/styles';
 
+import Accordion, { AccordionDetails, AccordionSummary } from '~/Popup/components/common/Accordion';
 import Input from '~/Popup/components/common/Input';
 
+import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
 import Search20Icon from '~/images/icons/Search20.svg';
 
 export const Container = styled('div')({
@@ -29,4 +33,70 @@ export const StyledSearch20Icon = styled(Search20Icon)(({ theme }) => ({
 
 export const DividerContainer = styled('div')({
   margin: '1.2rem 0',
+});
+
+export const ItemLeftContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+});
+
+export const ItemLeftImageContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+
+  '& > img': {
+    width: '2.4rem',
+    height: '2.4rem',
+  },
+});
+
+export const ItemLeftTextContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+
+  marginLeft: '0.8rem',
+}));
+
+export const ChainAccordionContainer = styled('div')({
+  marginTop: '1.6rem',
+});
+
+export const StyledChainAccordion = styled((props: AccordionProps) => <Accordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
+  border: '0',
+  borderTop: `0.1rem solid ${theme.colors.base04}`,
+  '&:not(:last-child)': {
+    borderBottom: 0,
+  },
+  borderBottom: `0.1rem solid ${theme.colors.base04}`,
+  '&:before': {
+    display: 'none',
+  },
+  borderRadius: '0',
+}));
+
+export const StyledChainAccordionSummary = styled((props: AccordionSummaryProps) => <AccordionSummary expandIcon={<BottomArrow24Icon />} {...props} />)(
+  ({ theme }) => ({
+    // backgroundColor: theme.colors.base02,
+    height: '4.8rem',
+    // flexDirection: 'row-reverse',
+    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+      transform: 'rotate(180deg)',
+    },
+    '& .MuiAccordionSummary-content': {
+      marginLeft: '0.4rem',
+    },
+    '& .MuiAccordionSummary-expandIconWrapper': {
+      marginRight: '0.4rem',
+      '& > svg': {
+        '& > path': {
+          stroke: theme.colors.base05,
+        },
+      },
+    },
+  }),
+);
+
+export const StyledChainAccordionDetails = styled(AccordionDetails)({
+  paddingBottom: '1.1rem',
 });
