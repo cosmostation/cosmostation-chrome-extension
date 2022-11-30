@@ -35,6 +35,7 @@ import { LUM } from './cosmos/lum';
 import { MEDIBLOC } from './cosmos/medibloc';
 import { NYX, NYX_FEE_BASE_DENOMS, NYX_GAS_RATES } from './cosmos/nyx';
 import { OMNIFLIX } from './cosmos/omniflix';
+import { ONOMY_PROTOCOL } from './cosmos/onomyProtocol';
 import { OSMOSIS } from './cosmos/osmosis';
 import { PASSAGE } from './cosmos/passage';
 import { PERSISTENCE } from './cosmos/persistence';
@@ -115,6 +116,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   MEDIBLOC,
   NYX,
   OMNIFLIX,
+  ONOMY_PROTOCOL,
   OSMOSIS,
   PASSAGE,
   PERSISTENCE,
