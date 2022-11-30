@@ -43,4 +43,5 @@ export const StyledCircularTab = styled(Tab)(({ theme }) => ({
 
 export const CircularTabPanelContainer = styled('div')({
   marginTop: '1.4rem',
+  height: '100%',
 });

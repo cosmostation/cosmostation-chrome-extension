@@ -1,9 +1,9 @@
 import { post } from '~/Popup/utils/axios';
-import { isAminoExecuteContract, isAminoIBCSend, isAminoSend } from '~/Popup/utils/cosmos';
+import { isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
 import { cosmwasm } from '~/proto/cosmwasm-v0.28.0.js';
 import { ibc } from '~/proto/ibc-v5.0.1.js';
-import type { Msg, MsgExecuteContract, MsgSend, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
+import type { Msg, MsgExecuteContract, MsgReward, MsgSend, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend, PubKey } from '~/types/cosmos/proto';
 
@@ -18,6 +18,10 @@ export function convertAminoMessageToProto(msg: Msg) {
 
   if (isAminoIBCSend(msg)) {
     return convertIBCAminoSendMessageToProto(msg);
+  }
+
+  if (isAminoReward(msg)) {
+    return convertAminoRewardMessageToProto(msg);
   }
 
   return null;
@@ -69,6 +73,18 @@ export function convertAminoExecuteContractMessageToProto(msg: Msg<MsgExecuteCon
   });
 }
 
+export function convertAminoRewardMessageToProto(msg: Msg<MsgReward>) {
+  const message = new cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward({
+    delegator_address: msg.value.delegator_address,
+    validator_address: msg.value.validator_address,
+  });
+
+  return new google.protobuf.Any({
+    type_url: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+    value: cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode(message).finish(),
+  });
+}
+
 export function getTxBodyBytes(signed: SignAminoDoc) {
   const messages = signed.msgs.map((msg) => convertAminoMessageToProto(msg)).filter((item) => item !== null) as google.protobuf.Any[];
 
@@ -76,6 +92,10 @@ export function getTxBodyBytes(signed: SignAminoDoc) {
     messages,
     memo: signed.memo,
   });
+
+  if (signed.msgs.length !== messages.length) {
+    return null;
+  }
 
   return cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
 }
@@ -130,6 +150,10 @@ export function getPubKey(pubKey: PubKey) {
 
 export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey) {
   const txBodyBytes = getTxBodyBytes(signed);
+
+  if (txBodyBytes === null) {
+    return null;
+  }
 
   const authInfoBytes = getAuthInfoBytes(signed, pubKey);
   const txRaw = new cosmos.tx.v1beta1.TxRaw({

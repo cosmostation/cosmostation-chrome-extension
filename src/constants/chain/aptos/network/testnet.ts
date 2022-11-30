@@ -7,6 +7,5 @@ export const TESTNET: AptosNetwork = {
   networkName: 'Testnet',
   restURL: 'https://fullnode.testnet.aptoslabs.com',
   imageURL: aptosImg,
-  // explorerURL: 'https://arbiscan.io',
-  //   coinGeckoId: 'aptos',
+  explorerURL: 'https://testnet.aptoscan.com',
 };

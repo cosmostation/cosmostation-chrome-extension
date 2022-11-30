@@ -108,7 +108,7 @@ export const FourthLineContainer = styled('div')({
   gridTemplateColumns: '1fr',
 
   paddingTop: '1rem',
-  paddingBottom: '0.6rem',
+  paddingBottom: '1.6rem',
 
   rowGap: '0.4rem',
 });

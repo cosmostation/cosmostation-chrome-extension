@@ -23,7 +23,7 @@ import { STARNAME } from '~/constants/chain/cosmos/starname';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
-import type { Msg, MsgCustom, MsgExecuteContract, MsgSend, MsgSignData, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
+import type { Msg, MsgCustom, MsgExecuteContract, MsgReward, MsgSend, MsgSignData, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 import { toHex } from './string';
@@ -47,6 +47,7 @@ export function cosmosURL(chain: CosmosChain) {
       `${restURL}/wasm/contract/${contractAddress}/smart/${toHex(`{"balance":{"address":"${address}"}}`)}?encoding=utf-8`,
     getClientState: (channelId: string, port?: string) =>
       `${restURL}/ibc/core/channel/${isV1BetaClientState ? 'v1beta1' : 'v1'}/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
+    simulate: () => `${restURL}/cosmos/tx/v1beta1/simulate`,
   };
 }
 
@@ -121,6 +122,10 @@ export function isAminoSend(msg: Msg): msg is Msg<MsgSend> {
 
 export function isAminoIBCSend(msg: Msg): msg is Msg<MsgTransfer> {
   return msg.type === 'cosmos-sdk/MsgTransfer' || msg.type === 'bank/MsgTransfer';
+}
+
+export function isAminoReward(msg: Msg): msg is Msg<MsgReward> {
+  return msg.type === 'cosmos-sdk/MsgWithdrawDelegationReward';
 }
 
 export function isAminoExecuteContract(msg: Msg): msg is Msg<MsgExecuteContract> {

@@ -7,6 +7,5 @@ export const DEVNET: AptosNetwork = {
   networkName: 'Devnet',
   restURL: 'https://fullnode.devnet.aptoslabs.com',
   imageURL: aptosImg,
-  // explorerURL: 'https://arbiscan.io',
-  // coinGeckoId: 'aptos',
+  explorerURL: 'https://devnet.aptoscan.com',
 };

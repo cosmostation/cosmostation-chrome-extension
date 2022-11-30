@@ -2,14 +2,13 @@ import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { JUNO } from '~/constants/chain/cosmos/juno';
 import Button from '~/Popup/components/common/Button';
 import { useTokensSWR } from '~/Popup/hooks/SWR/cosmos/useTokensSWR';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { CosmosToken } from '~/types/chain';
+import type { CosmosChain, CosmosToken } from '~/types/chain';
 
 import {
   ButtonContainer,
@@ -34,10 +33,14 @@ import TokenItem from './TokenItem/index';
 import Info16Icon from '~/images/icons/Info16.svg';
 import Plus16Icon from '~/images/icons/Plus16.svg';
 
+type EntryProps = {
+  chain: CosmosChain;
+};
+
 type CosmosTokenParams = Omit<CosmosToken, 'id'>;
 
-export default function Entry() {
-  const tokens = useTokensSWR(JUNO);
+export default function Entry({ chain }: EntryProps) {
+  const tokens = useTokensSWR(chain);
 
   const { enqueueSnackbar } = useSnackbar();
 

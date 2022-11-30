@@ -63,6 +63,7 @@ import { EVMOS as ETHEREUM_NETWORK__EVMOS } from './ethereum/network/evmos';
 import { FANTOM as ETHEREUM_NETWORK__FANTOM } from './ethereum/network/fantom';
 import { HARMONY as ETHEREUM_NETWORK__HARMONY } from './ethereum/network/harmony';
 import { KAVA as ETHEREUM_NETWORK__KAVA } from './ethereum/network/kava';
+import { OKC as ETHEREUM_NETWORK__OKC } from './ethereum/network/okc';
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
 
@@ -78,6 +79,9 @@ export const COSMOS_DEFAULT_SEND_GAS = '100000';
 export const COSMOS_DEFAULT_IBC_SEND_GAS = '150000';
 export const COSMOS_DEFAULT_TRANSFER_GAS = '200000';
 export const COSMOS_DEFAULT_IBC_TRANSFER_GAS = '250000';
+export const COSMOS_DEFAULT_REWARD_GAS = '300000';
+
+export const COSMOS_DEFAULT_ESTIMATE_AV = '1.35';
 
 export const COSMOS_CHAINS: CosmosChain[] = [
   COSMOS,
@@ -147,6 +151,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__FANTOM,
   ETHEREUM_NETWORK__HARMONY,
   ETHEREUM_NETWORK__KAVA,
+  ETHEREUM_NETWORK__OKC,
   ETHEREUM_NETWORK__POLYGON,
   ETHEREUM_NETWORK__SMART_CHAIN,
 ];

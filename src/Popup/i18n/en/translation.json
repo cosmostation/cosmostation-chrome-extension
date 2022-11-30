@@ -639,6 +639,13 @@
                       "sourceChannel": "Channel"
                     }
                   },
+                  "Reward": {
+                    "index": {
+                      "delegatorAddress": "Delegator address",
+                      "title": "Claim reward",
+                      "validatorAddress": "Validator address"
+                    }
+                  },
                   "Send": {
                     "index": {
                       "amount": "Amount",
@@ -971,6 +978,7 @@
                 "index": {
                   "amountPlaceholder": "Amount",
                   "available": "Available",
+                  "exchangeWarning": "IBC transactions are NOT supported on centralized exchanges.",
                   "ibcWarningHeadertitle": "IBC Send is not supported",
                   "ibcWarningSubtitle": "No coin or token available for IBC Send.",
                   "insufficientAmount": "Insufficient amount",
@@ -1101,6 +1109,7 @@
           "NativeChainCard": {
             "index": {
               "available": "Available",
+              "claimRewardButton": "Claim Reward",
               "copied": "Copied",
               "delegated": "Delegated",
               "depositButton": "Deposit",

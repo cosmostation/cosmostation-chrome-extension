@@ -4,6 +4,7 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import { COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
@@ -13,17 +14,26 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+import { useRewardSWR } from '~/Popup/hooks/SWR/cosmos/useRewardSWR';
+import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
+import { getPublicKeyType } from '~/Popup/utils/cosmos';
+import { protoTx } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
+import type { MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
 
+import ClaimRewardButton from './components/ClaimRewardButton';
 import {
   ButtonCenterContainer,
   ButtonContainer,
@@ -56,6 +66,7 @@ import BottomArrow20Icon from '~/images/icons/BottomArrow20.svg';
 import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
+import Reward16Icon from '~/images/icons/Reward16.svg';
 import SendIcon from '~/images/icons/Send.svg';
 
 type NativeChainCardProps = {
@@ -68,7 +79,10 @@ const EXPANDED_KEY = 'wallet-cosmos-expanded';
 export default function NativeChainCard({ chain, isCustom = false }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
+  const reward = useRewardSWR(chain);
+  const account = useAccountSWR(chain);
   const accounts = useAccounts(true);
+  const { enQueue } = useCurrentQueue();
   const { totalAmount, delegationAmount, rewardAmount, unbondingAmount, vestingNotDelegate, vestingRelatedAvailable, incentiveAmount } = useAmountSWR(
     chain,
     true,
@@ -93,7 +107,46 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const value = times(displayAmount, price);
 
-  const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
+  const currentAddress = accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[chain.id] || '';
+
+  const rewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
+    if (reward.data?.rewards?.length && account.data?.value.account_number && account.data.value.sequence) {
+      return {
+        account_number: account.data.value.account_number,
+        sequence: account.data.value.sequence,
+        chain_id: chain.chainId,
+        fee: {
+          amount: [{ amount: chain.type === 'ETHERMINT' ? times(chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '0', denom: chain.baseDenom }],
+          gas: COSMOS_DEFAULT_REWARD_GAS,
+        },
+        msgs: reward.data.rewards.map((item) => ({
+          type: 'cosmos-sdk/MsgWithdrawDelegationReward',
+          value: { delegator_address: currentAddress, validator_address: item.validator_address },
+        })),
+        memo: '',
+      };
+    }
+    return undefined;
+  }, [
+    account.data?.value.account_number,
+    account.data?.value.sequence,
+    chain.baseDenom,
+    chain.chainId,
+    chain.gasRate.low,
+    chain.type,
+    currentAddress,
+    reward.data?.rewards,
+  ]);
+
+  const rewardProtoTx = useMemo(() => {
+    if (rewardAminoTx) {
+      return protoTx(rewardAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+    }
+
+    return undefined;
+  }, [chain, rewardAminoTx]);
+
+  const simulate = useSimulateSWR({ chain, txBytes: rewardProtoTx?.tx_bytes });
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
@@ -101,7 +154,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     }
   };
 
-  const displayVestingAmount = toDisplayDenomAmount(vestingRelatedAvailable, decimals);
+  const displayAvailableAmount = toDisplayDenomAmount(vestingRelatedAvailable, decimals);
   const displayDelegationAmount = toDisplayDenomAmount(delegationAmount, decimals);
   const displayUnDelegationAmount = toDisplayDenomAmount(unbondingAmount, decimals);
   const displayRewardAmount = toDisplayDenomAmount(rewardAmount, decimals);
@@ -109,6 +162,16 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const displayIncentiveAmount = toDisplayDenomAmount(incentiveAmount, decimals);
 
   const displayMaxDecimals = getDisplayMaxDecimals(decimals);
+
+  const estimatedDisplayFeeAmount = useMemo(
+    () => toDisplayDenomAmount(times(chain.gasRate.low, simulate.data?.gas_info?.gas_used || '0'), decimals),
+    [chain.gasRate.low, decimals, simulate.data?.gas_info?.gas_used],
+  );
+
+  const isPossibleClaimReward = useMemo(
+    () => !!rewardAminoTx && simulate.data?.gas_info?.gas_used && gt(displayRewardAmount, '0') && gt(displayAvailableAmount, estimatedDisplayFeeAmount),
+    [displayAvailableAmount, displayRewardAmount, estimatedDisplayFeeAmount, rewardAminoTx, simulate.data?.gas_info?.gas_used],
+  );
 
   return (
     <Container>
@@ -154,10 +217,10 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                 <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.available')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
-                <Tooltip title={displayVestingAmount} arrow placement="bottom-end">
+                <Tooltip title={displayAvailableAmount} arrow placement="bottom-end">
                   <span>
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                      {displayVestingAmount}
+                      {displayAvailableAmount}
                     </Number>
                   </span>
                 </Tooltip>
@@ -236,6 +299,39 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
               </FourthLineContainerItem>
             )}
           </FourthLineContainer>
+          <ClaimRewardButton
+            Icon={Reward16Icon}
+            type="button"
+            disabled={!isPossibleClaimReward}
+            onClick={async () => {
+              if (rewardAminoTx && simulate.data?.gas_info?.gas_used && isPossibleClaimReward) {
+                await enQueue({
+                  messageId: '',
+                  origin: '',
+                  channel: 'inApp',
+                  message: {
+                    method: 'cos_signAmino',
+                    params: {
+                      chainName: chain.chainName,
+                      doc: {
+                        ...rewardAminoTx,
+                        fee: { amount: [{ amount: '0', denom: chain.baseDenom }], gas: times(simulate.data.gas_info?.gas_used, COSMOS_DEFAULT_ESTIMATE_AV, 0) },
+                      },
+                      isEditFee: true,
+                      isEditMemo: true,
+                    },
+                  },
+                });
+
+                if (currentAccount.type === 'LEDGER') {
+                  await openWindow();
+                  window.close();
+                }
+              }
+            }}
+          >
+            {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
+          </ClaimRewardButton>
         </StyledAccordionDetails>
       </StyledAccordion>
 
@@ -384,6 +480,9 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
               </FourthLineContainerItem>
             )}
           </FourthLineContainer>
+          <ClaimRewardButton Icon={Reward16Icon} type="button" disabled>
+            {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
+          </ClaimRewardButton>
         </StyledAccordionDetails>
       </StyledAccordion>
 
