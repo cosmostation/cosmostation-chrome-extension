@@ -11,3 +11,44 @@ content-type: application/json
     "params": [],
     "id": 0
 }
+
+### sui_getObjectsOwnedByAddress
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getObjectsOwnedByAddress",
+    "params": ["0x7ee621c2d49ca2d108de7a5e82eb36d67a455e6f"],
+    "id": 0
+}
+
+### sui_getObject
+POST {{rpcURL}}
+content-type: application/json
+
+[{
+    "jsonrpc": "2.0",
+    "method": "sui_getObject",
+    "params": ["0x249b721185aaea25a2b8900e3e3a35bd5273fb4c"],
+    "id": 1
+},
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getObject",
+    "params": ["0x4d3be548a9840e3c00fc3d4c42fdc39cedbdce3d"],
+    "id": 1
+},
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getObject",
+    "params": ["0x6e84058a9f049f9508310697269f60d7969d2861"],
+    "id": 1
+},
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getObject",
+    "params": ["0x6e84058a9f049f9508310697269f60d7969d2860"],
+    "id": 1
+}]
+
