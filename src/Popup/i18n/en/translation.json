@@ -540,8 +540,6 @@
         "Use": {
           "entry": {
             "removeAllowedChainError": "Please select more than 1 chain",
-            "removeShownAptosNetworkError": "Please select more than 1 network",
-            "removeShownEthereumNetworkError": "Please select more than 1 network",
             "searchPlaceholder": "Search chain"
           },
           "layout": {

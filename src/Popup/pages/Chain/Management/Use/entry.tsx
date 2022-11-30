@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_CHAINS, APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -55,15 +55,15 @@ export default function Entry() {
     : APTOS_NETWORKS;
 
   const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
-  // const filteredEthereumChains =
-  //   filteredEthereumNetworks.length === 0 && search
-  //     ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
-  //     : ETHEREUM_CHAINS;
+  const filteredEthereumChains =
+    filteredEthereumNetworks.length === 0 && search
+      ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+      : ETHEREUM_CHAINS;
 
-  // const filteredAptosChains =
-  //   filteredAptosNetworks.length === 0 && search
-  //     ? APTOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
-  //     : APTOS_CHAINS;
+  const filteredAptosChains =
+    filteredAptosNetworks.length === 0 && search
+      ? APTOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+      : APTOS_CHAINS;
 
   const handleOnChangeChain = async (checked: boolean, chain: Chain) => {
     if (checked) {
@@ -78,23 +78,46 @@ export default function Entry() {
   const handleOnChangeEthereumNetwork = async (checked: boolean, network: EthereumNetwork) => {
     if (checked) {
       await addShownEthereumNetwork(network);
+      if (shownEthereumNetworkIds.length < 2) {
+        filteredEthereumChains.map(async (item) => {
+          await addAllowedChainId(item);
+        });
+      }
     } else if (shownEthereumNetworkIds.length < 2) {
-      enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeShownEthereumNetworkError'), { variant: 'error' });
+      if (allowedChainIds.length < 2) {
+        enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
+      } else {
+        filteredEthereumChains.map(async (item) => {
+          await removeAllowedChainId(item);
+        });
+        await removeShownEthereumNetwork(network);
+      }
     } else {
       await removeShownEthereumNetwork(network);
     }
   };
-
   const handleOnChangeAptosNetwork = async (checked: boolean, network: AptosNetwork) => {
     if (checked) {
       await addShownAptosNetwork(network);
+      if (shownAptosNetworkIds.length < 2) {
+        filteredAptosChains.map(async (item) => {
+          await addAllowedChainId(item);
+        });
+      }
+      // TODO 번역어 삭제하기
     } else if (shownAptosNetworkIds.length < 2) {
-      enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeShownAptosNetworkError'), { variant: 'error' });
+      if (allowedChainIds.length < 2) {
+        enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
+      } else {
+        filteredAptosChains.map(async (item) => {
+          await removeAllowedChainId(item);
+        });
+        await removeShownAptosNetwork(network);
+      }
     } else {
       await removeShownAptosNetwork(network);
     }
   };
-
   return (
     <Container>
       <StyledInput
@@ -107,96 +130,6 @@ export default function Entry() {
         value={search}
         onChange={(event) => setSearch(event.currentTarget.value)}
       />
-      {/* <ListContainer>
-        {filteredEthereumChains.map((chain) => (
-          <Item
-            key={chain.id}
-            imageProps={{ alt: chain.chainName, src: chain.imageURL }}
-            switchProps={{
-              checked: allowedChainIds.includes(chain.id),
-              onChange: (_, checked) => {
-                void handleOnChangeChain(checked, chain);
-              },
-            }}
-          >
-            {chain.chainName}
-          </Item>
-        ))}
-        hi 11
-        {filteredEthereumNetworks.map((network) => (
-          <SubItem
-            key={network.id}
-            imageProps={{ alt: network.networkName, src: network.imageURL }}
-            switchProps={{
-              checked: shownEthereumNetworkIds.includes(network.id),
-              onChange: (_, checked) => {
-                void handleOnChangeEthereumNetwork(checked, network);
-              },
-              disabled: !allowedChainIds.includes(ETHEREUM.id),
-            }}
-          >
-            {network.networkName}
-          </SubItem>
-        ))}
-        <>
-          {filteredEthereumChains.length > 0 && (
-            <DividerContainer>
-              <Divider />
-            </DividerContainer>
-          )}
-          hi22
-          {filteredCosmosChains.map((chain) => (
-            <Item
-              key={chain.id}
-              imageProps={{ alt: chain.chainName, src: chain.imageURL }}
-              switchProps={{
-                checked: allowedChainIds.includes(chain.id),
-                onChange: (_, checked) => {
-                  void handleOnChangeChain(checked, chain);
-                },
-              }}
-            >
-              {chain.chainName}
-            </Item>
-          ))}
-        </>
-        <>
-          {[...filteredEthereumChains, ...filteredCosmosChains].length > 0 && (
-            <DividerContainer>
-              <Divider />
-            </DividerContainer>
-          )}
-          {filteredAptosChains.map((chain) => (
-            <Item
-              key={chain.id}
-              imageProps={{ alt: chain.chainName, src: chain.imageURL }}
-              switchProps={{
-                checked: allowedChainIds.includes(chain.id),
-                onChange: (_, checked) => {
-                  void handleOnChangeChain(checked, chain);
-                },
-              }}
-            >
-              {chain.chainName}
-            </Item>
-          ))}
-          {filteredAptosNetworks.map((network) => (
-            <SubItem
-              key={network.id}
-              imageProps={{ alt: network.networkName, src: network.imageURL }}
-              switchProps={{
-                checked: shownAptosNetworkIds.includes(network.id),
-                onChange: (_, checked) => {
-                  void handleOnChangeAptosNetwork(checked, network);
-                },
-                disabled: !allowedChainIds.includes(APTOS.id),
-              }}
-            >
-              {network.networkName}
-            </SubItem>
-          ))}
-        </>
-      </ListContainer> */}
       <ChainAccordionContainer>
         <StyledChainAccordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
           <StyledChainAccordionSummary aria-controls="panel1d-content" id="panel1d-header">
@@ -219,7 +152,6 @@ export default function Entry() {
                   onChange: (_, checked) => {
                     void handleOnChangeEthereumNetwork(checked, network);
                   },
-                  disabled: !allowedChainIds.includes(ETHEREUM.id),
                 }}
               >
                 {network.networkName}
@@ -276,7 +208,6 @@ export default function Entry() {
                   onChange: (_, checked) => {
                     void handleOnChangeAptosNetwork(checked, network);
                   },
-                  disabled: !allowedChainIds.includes(APTOS.id),
                 }}
               >
                 {network.networkName}

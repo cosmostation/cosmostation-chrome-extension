@@ -2,7 +2,7 @@ import { styled } from '@mui/material/styles';
 
 export const ItemContainer = styled('div')({
   width: '100%',
-  height: '4rem',
+  height: '3.6rem',
 
   padding: '0 0.4rem 0 3.6rem',
 
@@ -35,6 +35,7 @@ export const ItemLeftTextContainer = styled('div')(({ theme }) => ({
 }));
 
 export const ItemRightContainer = styled('div')({
+  padding: '0.6rem 0',
   display: 'flex',
   justifyContent: 'flex-end',
   alignItems: 'center',

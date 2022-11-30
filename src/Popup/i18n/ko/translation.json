@@ -540,8 +540,6 @@
         "Use": {
           "entry": {
             "removeAllowedChainError": "1개 이상 선택하셔야 됩니다.",
-            "removeShownAptosNetworkError": "1개 이상 선택하셔야 됩니다.",
-            "removeShownEthereumNetworkError": "1개 이상 선택하셔야 됩니다.",
             "searchPlaceholder": "체인 검색"
           },
           "layout": {

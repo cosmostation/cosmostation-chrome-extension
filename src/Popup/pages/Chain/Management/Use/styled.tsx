@@ -21,19 +21,9 @@ export const StyledInput = styled(Input)({
   height: '4rem',
 });
 
-export const ListContainer = styled('div')({
-  padding: '1.2rem 0',
-
-  height: 'calc(100% - 4rem)',
-});
-
 export const StyledSearch20Icon = styled(Search20Icon)(({ theme }) => ({
   fill: theme.colors.base05,
 }));
-
-export const DividerContainer = styled('div')({
-  margin: '1.2rem 0',
-});
 
 export const ItemLeftContainer = styled('div')({
   display: 'flex',
@@ -78,7 +68,8 @@ export const StyledChainAccordion = styled((props: AccordionProps) => <Accordion
 export const StyledChainAccordionSummary = styled((props: AccordionSummaryProps) => <AccordionSummary expandIcon={<BottomArrow24Icon />} {...props} />)(
   ({ theme }) => ({
     // backgroundColor: theme.colors.base02,
-    height: '4.8rem',
+    // height: '4.8rem',
+    padding: '1.2rem 0.4rem',
     // flexDirection: 'row-reverse',
     '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
       transform: 'rotate(180deg)',
@@ -87,7 +78,6 @@ export const StyledChainAccordionSummary = styled((props: AccordionSummaryProps)
       marginLeft: '0.4rem',
     },
     '& .MuiAccordionSummary-expandIconWrapper': {
-      marginRight: '0.4rem',
       '& > svg': {
         '& > path': {
           stroke: theme.colors.base05,
@@ -98,5 +88,5 @@ export const StyledChainAccordionSummary = styled((props: AccordionSummaryProps)
 );
 
 export const StyledChainAccordionDetails = styled(AccordionDetails)({
-  paddingBottom: '1.1rem',
+  paddingBottom: '1.2rem',
 });
