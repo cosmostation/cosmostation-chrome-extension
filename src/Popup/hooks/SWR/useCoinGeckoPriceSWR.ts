@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios';
 import useSWR from 'swr';
 
-import { NETWORKS } from '~/constants/chain';
+import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import { CURRENCY_TYPE } from '~/constants/chromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { get } from '~/Popup/utils/axios';
@@ -21,7 +21,7 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const { chromeStorage } = useChromeStorage();
 
   const { additionalEthereumNetworks, ethereumTokens, cosmosTokens } = chromeStorage;
-  const networkCoinGeckoIds = [...NETWORKS, ...additionalEthereumNetworks].filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId);
+  const networkCoinGeckoIds = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks].filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId);
   const ethereumTokenCoinGeckoIds = ethereumTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!);
   const cosmosTokenCoinGeckoIds = cosmosTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!);
   const cosmosAssetsCoinGeckoIds = cosmosAssets.data.map((item) => item.coinGeckoId);

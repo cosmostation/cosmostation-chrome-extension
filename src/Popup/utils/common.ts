@@ -2,7 +2,7 @@ import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { getAddress as getAptosAddress } from '~/Popup/utils/aptos';
 import { getAddress as getBech32Address, getAddressForEthermint } from '~/Popup/utils/cosmos';
-import { aesDecrypt, mnemonicToAptosPair, mnemonicToPair, privateKeyToAptosPair, privateKeyToPair } from '~/Popup/utils/crypto';
+import { aesDecrypt, mnemonicToAptosPair, mnemonicToPair, mnemonicToSuiPair, privateKeyToAptosPair, privateKeyToPair } from '~/Popup/utils/crypto';
 import { getAddress as getEthereumAddress } from '~/Popup/utils/ethereum';
 import type { Chain } from '~/types/chain';
 import type { Account } from '~/types/chromeStorage';
@@ -38,6 +38,11 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
     if (chain.line === 'APTOS') {
       const path = `m/${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${account.bip44.addressIndex}'`;
       return mnemonicToAptosPair(mnemonic, path);
+    }
+
+    if (chain.line === 'SUI') {
+      const path = `m/${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${account.bip44.addressIndex}'`;
+      return mnemonicToSuiPair(mnemonic, path);
     }
 
     const path = `m/${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${account.bip44.addressIndex}`;

@@ -1089,6 +1089,14 @@
               "addCoinButton": "Add coin",
               "coin": "Coin"
             }
+          },
+          "NativeChainCard": {
+            "index": {
+              "copied": "Copied",
+              "depositButton": "Deposit",
+              "networkError": "Network error",
+              "sendButton": "Send"
+            }
           }
         },
         "cosmos": {
@@ -1141,6 +1149,16 @@
             "index": {
               "importTokenButton": "Import token",
               "token": "Token"
+            }
+          }
+        },
+        "sui": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "Copied",
+              "depositButton": "Deposit",
+              "networkError": "Network error",
+              "sendButton": "Send"
             }
           }
         }

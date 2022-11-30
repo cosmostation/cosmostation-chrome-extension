@@ -1089,6 +1089,14 @@
               "addCoinButton": "코인 추가하기",
               "coin": "코인"
             }
+          },
+          "NativeChainCard": {
+            "index": {
+              "copied": "복사 되었습니다.",
+              "depositButton": "입금",
+              "networkError": "네트워크 오류",
+              "sendButton": "보내기"
+            }
           }
         },
         "cosmos": {
@@ -1141,6 +1149,16 @@
             "index": {
               "importTokenButton": "토큰 가져오기",
               "token": "토큰"
+            }
+          }
+        },
+        "sui": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "복사 되었습니다.",
+              "depositButton": "입금",
+              "networkError": "네트워크 오류",
+              "sendButton": "보내기"
             }
           }
         }

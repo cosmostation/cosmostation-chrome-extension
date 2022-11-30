@@ -1,0 +1,13 @@
+@rpcURL=https://fullnode.devnet.sui.io
+# @rpcURL=https://fullnode.testnet.sui.io
+
+### 
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "rpc.discover",
+    "params": [],
+    "id": 0
+}

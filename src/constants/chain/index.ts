@@ -1,4 +1,14 @@
-import type { AptosChain, AptosNetwork, CosmosChain, CosmosFeeBaseDenom, CosmosGasRate, EthereumChain, EthereumNetwork } from '~/types/chain';
+import type {
+  AptosChain,
+  AptosNetwork,
+  CosmosChain,
+  CosmosFeeBaseDenom,
+  CosmosGasRate,
+  EthereumChain,
+  EthereumNetwork,
+  SuiChain,
+  SuiNetwork,
+} from '~/types/chain';
 
 import { APTOS } from './aptos/aptos';
 import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
@@ -68,11 +78,15 @@ import { KAVA as ETHEREUM_NETWORK__KAVA } from './ethereum/network/kava';
 import { OKC as ETHEREUM_NETWORK__OKC } from './ethereum/network/okc';
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
+import { DEVNET as SUI_NETWORK__DEVNET } from './sui/network/devnet';
+import { TESTNET as SUI_NETWORK__TESTNET } from './sui/network/testnet';
+import { SUI } from './sui/sui';
 
 export const LINE_TYPE = {
   COSMOS: 'COSMOS',
   ETHEREUM: 'ETHEREUM',
   APTOS: 'APTOS',
+  SUI: 'SUI',
   COMMON: 'COMMON',
 } as const;
 
@@ -163,8 +177,10 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
 
 export const APTOS_CHAINS: AptosChain[] = [APTOS];
 
-export const APTOS_NETWORKS: AptosNetwork[] = [APTOS_NETWORK__MAINNET, APTOS_NETWORK__DEVNET, APTOS_NETWORK__TESTNET];
+export const APTOS_NETWORKS: AptosNetwork[] = [APTOS_NETWORK__MAINNET, APTOS_NETWORK__TESTNET, APTOS_NETWORK__DEVNET];
 
-export const NETWORKS = [...ETHEREUM_NETWORKS];
+export const SUI_CHAINS: SuiChain[] = [SUI];
 
-export const CHAINS = [...ETHEREUM_CHAINS, ...COSMOS_CHAINS, ...APTOS_CHAINS];
+export const SUI_NETWORKS: SuiNetwork[] = [SUI_NETWORK__TESTNET, SUI_NETWORK__DEVNET];
+
+export const CHAINS = [...ETHEREUM_CHAINS, ...COSMOS_CHAINS, ...APTOS_CHAINS, ...SUI_CHAINS];

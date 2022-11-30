@@ -68,7 +68,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const assets = useAssetsSWR();
 
-  const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
+  const asset = useMemo(() => assets.data.find((item) => item.coinType === APTOS_COIN), [assets.data]);
 
   const { t } = useTranslation();
 
@@ -96,7 +96,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
-      enqueueSnackbar(t('pages.Wallet.components.aptos.NativeChainCard.index.copied'));
+      enqueueSnackbar(t('pages.Wallet.components.sui.NativeChainCard.index.copied'));
     }
   };
 
@@ -140,11 +140,11 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
       </ThirdLineContainer>
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
-          {t('pages.Wallet.components.aptos.NativeChainCard.index.depositButton')}
+          {t('pages.Wallet.components.sui.NativeChainCard.index.depositButton')}
         </Button>
         <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" onClick={() => navigate('/wallet/send')}>
-          {t('pages.Wallet.components.aptos.NativeChainCard.index.sendButton')}
+          {t('pages.Wallet.components.sui.NativeChainCard.index.sendButton')}
         </Button>
       </FourthLineContainer>
     </Container>
@@ -216,11 +216,11 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       </ThirdLineContainer>
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.aptos.NativeChainCard.index.depositButton')}
+          {t('pages.Wallet.components.sui.NativeChainCard.index.depositButton')}
         </Button>
         <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.aptos.NativeChainCard.index.sendButton')}
+          {t('pages.Wallet.components.sui.NativeChainCard.index.sendButton')}
         </Button>
       </FourthLineContainer>
     </Container>
@@ -304,16 +304,16 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
       </SecondLineContainer>
       <ThirdLineContainer>
         <ErrorDescriptionContainer>
-          <Typography variant="h6">{t('pages.Wallet.components.aptos.NativeChainCard.index.networkError')}</Typography>
+          <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.networkError')}</Typography>
         </ErrorDescriptionContainer>
       </ThirdLineContainer>
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.aptos.NativeChainCard.index.depositButton')}
+          {t('pages.Wallet.components.sui.NativeChainCard.index.depositButton')}
         </Button>
         <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.aptos.NativeChainCard.index.sendButton')}
+          {t('pages.Wallet.components.sui.NativeChainCard.index.sendButton')}
         </Button>
       </FourthLineContainer>
       {isLoading && <StyledAbsoluteLoading size="2.5rem" />}
