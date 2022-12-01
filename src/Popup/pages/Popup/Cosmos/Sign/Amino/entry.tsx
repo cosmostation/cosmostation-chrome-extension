@@ -66,7 +66,7 @@ export default function Entry({ queue, chain }: EntryProps) {
       ...assets.data.map((asset) => ({
         originBaseDenom: asset.origin_denom,
         baseDenom: asset.denom,
-        decimals: asset.decimal,
+        decimals: asset.decimals,
         displayDenom: asset.symbol,
         coinGeckoId: asset.coinGeckoId,
       })),

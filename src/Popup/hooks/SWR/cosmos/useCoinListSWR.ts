@@ -44,7 +44,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
           originBaseDenom: item.origin_denom || '',
           baseDenom: item.denom,
           displayDenom: item.symbol,
-          decimals: item.decimal,
+          decimals: item.decimals,
           imageURL: item.image,
           coinGeckoId: item.coinGeckoId,
         })) || [],
@@ -115,7 +115,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
 
         return {
           coinType: coinInfo.type,
-          decimals: coinInfo?.decimal,
+          decimals: coinInfo?.decimals,
           originBaseDenom: coinInfo?.origin_denom,
           baseDenom: coin.denom,
           displayDenom: coinInfo?.symbol,
