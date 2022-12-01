@@ -49,8 +49,6 @@ export default function Entry({ chain }: EntryProps) {
   const [selectedTokens, setSelectedTokens] = useState<CosmosTokenParams[]>([]);
   const { currentChain } = useCurrentChain();
 
-  // const [debouncedValue, setDebouncedValue] = useState(search);
-
   const { addCosmosTokens, currentCosmosTokens } = useCurrentCosmosTokens();
 
   const { t } = useTranslation();
@@ -67,7 +65,7 @@ export default function Entry({ chain }: EntryProps) {
     () =>
       debounce((value: string) => {
         setSearch(value);
-      }, 200),
+      }, 100),
     [],
   );
 
