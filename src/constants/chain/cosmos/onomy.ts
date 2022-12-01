@@ -1,15 +1,15 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import onomyProtocolImg from '~/images/symbols/onomyProtocol.png';
+import onomyImg from '~/images/symbols/onomy.png';
 import type { CosmosChain } from '~/types/chain';
 
-export const ONOMY_PROTOCOL: CosmosChain = {
+export const ONOMY: CosmosChain = {
   id: '784e1edd-37bd-4e93-bc2e-4a2b03f7cbbe',
   line: 'COSMOS',
   type: '',
   chainId: '',
-  chainName: 'Onomy protocol',
+  chainName: 'Onomy',
   restURL: 'https://lcd-onomy-protocol.cosmostation.io',
-  imageURL: onomyProtocolImg,
+  imageURL: onomyImg,
   baseDenom: 'anom',
   displayDenom: 'NOM',
   decimals: 18,
@@ -19,7 +19,7 @@ export const ONOMY_PROTOCOL: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  bech32Prefix: { address: 'nom' },
+  bech32Prefix: { address: 'onomy' },
   explorerURL: `${MINTSCAN_URL}/onomy-protocol`,
   gasRate: {
     tiny: '0',
