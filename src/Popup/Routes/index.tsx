@@ -118,8 +118,8 @@ export default function Routes() {
           <Route path={PATH.CHAIN__MANAGEMENT__USE} element={<ChainManagementUse />} />
 
           <Route path={PATH.CHAIN__COSMOS__CHAIN__ADD} element={<ChainCosmosChainAdd />} />
-          <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__ERC20} element={<ChainCosmosTokenAddCW20 />} />
-          <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__ERC20__SEARCH} element={<ChainCosmosTokenAddCW20SEARCH />} />
+          <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__CW20} element={<ChainCosmosTokenAddCW20 />} />
+          <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__CW20__SEARCH} element={<ChainCosmosTokenAddCW20SEARCH />} />
 
           <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__ERC20__SEARCH} element={<ChainEthereumTokenAddERC20Search />} />
           <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__ERC20} element={<ChainEthereumTokenAddERC20 />} />

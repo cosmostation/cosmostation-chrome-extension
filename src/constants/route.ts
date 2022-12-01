@@ -21,8 +21,8 @@ export const PATH = {
   CHAIN__MANAGEMENT__USE: '/chain/management/use',
 
   CHAIN__COSMOS__CHAIN__ADD: '/chain/cosmos/chain/add',
-  CHAIN__COSMOS__TOKEN__ADD__ERC20: '/chain/cosmos/token/add/cw20',
-  CHAIN__COSMOS__TOKEN__ADD__ERC20__SEARCH: '/chain/cosmos/token/add/cw20/search',
+  CHAIN__COSMOS__TOKEN__ADD__CW20: '/chain/cosmos/token/add/cw20',
+  CHAIN__COSMOS__TOKEN__ADD__CW20__SEARCH: '/chain/cosmos/token/add/cw20/search',
 
   CHAIN__ETHEREUM__TOKEN__ADD__ERC20: '/chain/ethereum/token/add/erc20',
   CHAIN__ETHEREUM__TOKEN__ADD__ERC20__SEARCH: '/chain/ethereum/token/add/erc20/search',
