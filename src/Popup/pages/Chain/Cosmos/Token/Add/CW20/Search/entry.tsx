@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { debounce } from 'lodash';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
@@ -48,6 +49,8 @@ export default function Entry({ chain }: EntryProps) {
   const [selectedTokens, setSelectedTokens] = useState<CosmosTokenParams[]>([]);
   const { currentChain } = useCurrentChain();
 
+  // const [debouncedValue, setDebouncedValue] = useState(search);
+
   const { addCosmosTokens, currentCosmosTokens } = useCurrentCosmosTokens();
 
   const { t } = useTranslation();
@@ -59,6 +62,19 @@ export default function Entry({ chain }: EntryProps) {
     () => tokens.data.filter((original) => !currentTokenAddresses.includes(original.contract_address)),
     [currentTokenAddresses, tokens.data],
   );
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        setSearch(value);
+      }, 200),
+    [],
+  );
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    debouncedSearch(e.target.value);
+  };
+
   const filteredTokens = search ? validTokens.filter((item) => item.denom.toLowerCase().indexOf(search.toLowerCase()) > -1) : validTokens;
 
   const handleOnSubmit = async () => {
@@ -96,9 +112,7 @@ export default function Entry({ chain }: EntryProps) {
           }
           placeholder={t('pages.Chain.Cosmos.Token.Add.CW20.Search.entry.searchPlaceholder')}
           value={search}
-          onChange={(event) => {
-            setSearch(event.currentTarget.value);
-          }}
+          onChange={onChange}
         />
       </Div>
 
