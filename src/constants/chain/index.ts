@@ -82,7 +82,7 @@ export const COSMOS_DEFAULT_IBC_TRANSFER_GAS = '250000';
 export const COSMOS_DEFAULT_REWARD_GAS = '300000';
 
 export const COSMOS_DEFAULT_ESTIMATE_AV = '1.4';
-export const COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV = '1.4';
+export const COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV = '2';
 
 export const COSMOS_CHAINS: CosmosChain[] = [
   COSMOS,

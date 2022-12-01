@@ -5,7 +5,7 @@ import Number from '~/Popup/components/common/Number';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { divide, equal, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { ceil, divide, equal, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { FeeCoin, GasRate, GasRateKey } from '~/types/chain';
 
 import GasSettingDialog from './components/GasSettingDialog';
@@ -52,7 +52,7 @@ export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee
 
   const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
 
-  const displayFee = toDisplayDenomAmount(baseFee, decimals);
+  const displayFee = toDisplayDenomAmount(ceil(baseFee), decimals);
   const value = times(displayFee, chainPrice);
 
   const currentGasRate = divide(baseFee, gas);

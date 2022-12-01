@@ -315,7 +315,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                       chainName: chain.chainName,
                       doc: {
                         ...rewardAminoTx,
-                        fee: { amount: [{ amount: '0', denom: chain.baseDenom }], gas: times(simulate.data.gas_info?.gas_used, getDefaultAV(chain), 0) },
+                        fee: { amount: [{ amount: '0', denom: chain.baseDenom }], gas: times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) },
                       },
                       isEditFee: true,
                       isEditMemo: true,
