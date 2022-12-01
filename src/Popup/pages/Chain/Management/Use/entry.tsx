@@ -88,18 +88,10 @@ export default function Entry() {
   const handleOnChangeEthereumNetwork = async (checked: boolean, network: EthereumNetwork) => {
     if (checked) {
       await addShownEthereumNetwork(network);
-      if (shownEthereumNetworkIds.length < 2) {
-        filteredEthereumChains.map(async (item) => {
-          await addAllowedChainId(item);
-        });
-      }
+      filteredEthereumChains.map((item) => handleOnChangeChain(checked, item));
     } else if (shownEthereumNetworkIds.length < 2) {
-      if (allowedChainIds.length < 2) {
-        enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
-      } else {
-        filteredEthereumChains.map(async (item) => {
-          await removeAllowedChainId(item);
-        });
+      filteredEthereumChains.map((item) => handleOnChangeChain(checked, item));
+      if (allowedChainIds.length > 1) {
         await removeShownEthereumNetwork(network);
       }
     } else {
