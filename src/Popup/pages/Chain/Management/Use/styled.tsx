@@ -55,28 +55,17 @@ export const ChainAccordionContainer = styled('div')({
 export const StyledChainAccordion = styled((props: AccordionProps) => <Accordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
   border: '0',
   borderTop: `0.1rem solid ${theme.colors.base04}`,
-  '&:not(:last-child)': {
-    borderBottom: 0,
-  },
-  borderBottom: `0.1rem solid ${theme.colors.base04}`,
-  '&:before': {
-    display: 'none',
-  },
   borderRadius: '0',
 }));
 
 export const StyledChainAccordionSummary = styled((props: AccordionSummaryProps) => <AccordionSummary expandIcon={<BottomArrow24Icon />} {...props} />)(
   ({ theme }) => ({
-    // backgroundColor: theme.colors.base02,
-    // height: '4.8rem',
     padding: '1.2rem 0.4rem',
-    // flexDirection: 'row-reverse',
+
     '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
       transform: 'rotate(180deg)',
     },
-    '& .MuiAccordionSummary-content': {
-      marginLeft: '0.4rem',
-    },
+
     '& .MuiAccordionSummary-expandIconWrapper': {
       '& > svg': {
         '& > path': {
