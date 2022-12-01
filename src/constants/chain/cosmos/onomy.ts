@@ -6,7 +6,7 @@ export const ONOMY: CosmosChain = {
   id: '784e1edd-37bd-4e93-bc2e-4a2b03f7cbbe',
   line: 'COSMOS',
   type: '',
-  chainId: '',
+  chainId: 'onomy-mainnet-1',
   chainName: 'Onomy',
   restURL: 'https://lcd-onomy-protocol.cosmostation.io',
   imageURL: onomyImg,
