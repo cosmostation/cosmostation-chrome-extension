@@ -32,6 +32,30 @@ export type AssetV2 = {
   path?: string;
 };
 
+export type AssetV3 = {
+  chain: string;
+  denom: string;
+  origin_type: string;
+  origin_chain: string;
+  origin_denom: string;
+  symbol: string;
+  description: string;
+  channel?: string;
+  image?: string;
+  contract?: string;
+  website?: string;
+  type: string;
+  decimal: number;
+  coinGeckoId?: string;
+  counter_party?: CounterParty;
+  port?: string;
+  path?: string;
+};
+
+export type AssetV3Response = {
+  assets: AssetV3[];
+};
+
 export type AssetV2Payload = {
   assets: AssetV2[];
 };
@@ -43,17 +67,17 @@ export type CounterParty = {
 };
 
 export type CW20Asset = {
-  id: number;
-  chain: string;
-  contract_address: string;
-  denom: string;
+  chainId?: string | number;
+  chainName: string;
+  address: string;
+  symbol: string;
+  description?: string;
   decimal: number;
-  display: number;
-  logo?: string;
-  total_supply: number;
-  coingecko_id?: string;
+  image?: string;
+  default?: boolean;
+  coinGeckoId?: string;
 };
 
-export type CW20AssetPayload = {
+export type CW20AssetResponse = {
   assets: CW20Asset[];
 };

@@ -11,7 +11,7 @@ import { useCurrentAptosNetwork } from '../../useCurrent/useCurrentAptosNetwork'
 export function useAssetsSWR(config?: SWRConfiguration) {
   const { currentAptosNetwork } = useCurrentAptosNetwork();
 
-  const requestURL = 'https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/aptos/assets.json';
+  const requestURL = 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/aptos/contract.json';
 
   const fetcher = async (fetchUrl: string) => {
     try {
@@ -32,7 +32,7 @@ export function useAssetsSWR(config?: SWRConfiguration) {
     () =>
       (data?.filter((item) => item.chainId === currentAptosNetwork.chainId) || []).map((item) => ({
         ...item,
-        image: item.image ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.image}` : undefined,
+        image: item.image ? `https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${item.image}` : undefined,
       })),
     [currentAptosNetwork.chainId, data],
   );

@@ -20,7 +20,7 @@ export function useTokensSWR(config?: SWRConfiguration) {
 
   const mappingName = nameMap[currentEthereumNetwork.id] || currentEthereumNetwork.networkName.toLowerCase();
 
-  const requestURL = `https://api.mintscan.io/v2/assets/erc20/${mappingName}`;
+  const requestURL = `https://api.mintscan.io/v3/assets/${mappingName}/erc20`;
 
   const fetcher = async (fetchUrl: string) => {
     try {
@@ -42,13 +42,9 @@ export function useTokensSWR(config?: SWRConfiguration) {
       chainId: toHex(item.chainId, { addPrefix: true }),
       address: item.address,
       decimals: item.decimals,
-      name: item.name,
+      name: item.description,
       displayDenom: item.symbol,
-      imageURL: item.logoURI
-        ? item.logoURI.startsWith('http://') || item.logoURI.startsWith('https://')
-          ? item.logoURI
-          : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.logoURI}`
-        : undefined,
+      imageURL: item.image ? `https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${item.image}` : undefined,
       coinGeckoId: item.coinGeckoId,
     })) || [];
 

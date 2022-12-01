@@ -41,11 +41,11 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
         ?.filter((item) => item.type === 'native' || item.type === 'bridge')
         ?.map((item) => ({
           type: item.type,
-          originBaseDenom: item.base_denom || '',
+          originBaseDenom: item.origin_denom || '',
           baseDenom: item.denom,
-          displayDenom: item.dp_denom,
+          displayDenom: item.symbol,
           decimals: item.decimal,
-          imageURL: item.image ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.image}` : undefined,
+          imageURL: item.image,
           coinGeckoId: item.coinGeckoId,
         })) || [],
     [assets.data],
@@ -116,12 +116,10 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
         return {
           coinType: coinInfo.type,
           decimals: coinInfo?.decimal,
-          originBaseDenom: coinInfo?.base_denom,
+          originBaseDenom: coinInfo?.origin_denom,
           baseDenom: coin.denom,
-          displayDenom: coinInfo?.dp_denom,
-          imageURL: coinInfo?.image
-            ? `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${coinInfo.image}`
-            : undefined,
+          displayDenom: coinInfo?.symbol,
+          imageURL: coinInfo?.image,
           coinGeckoId: coinInfo.coinGeckoId,
           channelId: coinInfo?.channel,
           availableAmount: coin.amount,

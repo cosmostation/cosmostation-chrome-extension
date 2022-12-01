@@ -39,7 +39,7 @@ export default function AptosChainItem({ chain, network }: AptosChainItemProps) 
 
   const assets = useAssetsSWR();
 
-  const asset = useMemo(() => assets.data.find((item) => item.coinType === APTOS_COIN), [assets.data]);
+  const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
 
   const totalAmount = BigInt(aptosCoin?.data.coin.value || '0').toString();
 
@@ -110,7 +110,7 @@ export function AptosChainItemSkeleton({ chain, network }: AptosChainItemProps) 
 
   const assets = useAssetsSWR();
 
-  const asset = useMemo(() => assets.data.find((item) => item.coinType === APTOS_COIN), [assets.data]);
+  const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
 
   const imageURL = useMemo(() => network.imageURL || asset?.image, [asset?.image, network.imageURL]);
 
@@ -142,7 +142,7 @@ export function AptosChainItemLedgerCheck({ network, children }: Pick<AptosChain
 
   const assets = useAssetsSWR();
 
-  const asset = useMemo(() => assets.data.find((item) => item.coinType === APTOS_COIN), [assets.data]);
+  const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
 
   const imageURL = useMemo(() => network.imageURL || asset?.image, [asset?.image, network.imageURL]);
 

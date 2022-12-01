@@ -78,7 +78,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const { data: coinInfo } = useAccountResourceSWR({ resourceType: '0x1::coin::CoinInfo', address: '0x1', resourceTarget: APTOS_COIN });
 
-  const asset = useMemo(() => assets.data.find((item) => item.coinType === APTOS_COIN), [assets.data]);
+  const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
 
   const price = (asset?.coinGeckoId && coinGeckoPrice.data?.[asset.coinGeckoId]?.[currency]) || 0;
 

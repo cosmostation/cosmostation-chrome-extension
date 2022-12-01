@@ -16,6 +16,7 @@ export type BIP44 = {
 
 export type CommonChain = {
   id: string;
+  chainName: string;
   bip44: Omit<BIP44, 'addressIndex'>;
   imageURL?: string;
 };
@@ -37,7 +38,6 @@ export type CosmosChain = {
   line: typeof LINE_TYPE.COSMOS;
   type: CosmosType;
   chainId: string;
-  chainName: string;
   baseDenom: string;
   displayDenom: string;
   restURL: string;
@@ -102,7 +102,6 @@ export type FeeCoin = {
 
 export type EthereumChain = {
   line: typeof LINE_TYPE.ETHEREUM;
-  chainName: string;
 } & CommonChain;
 
 export type EthereumNetwork = {
@@ -119,7 +118,6 @@ export type EthereumNetwork = {
 
 export type AptosChain = {
   line: typeof LINE_TYPE.APTOS;
-  chainName: string;
 } & CommonChain;
 
 export type AptosNetwork = {

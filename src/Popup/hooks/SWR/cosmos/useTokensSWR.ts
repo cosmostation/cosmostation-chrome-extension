@@ -5,22 +5,22 @@ import useSWR from 'swr';
 import { get } from '~/Popup/utils/axios';
 import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
-import type { CW20AssetPayload } from '~/types/cosmos/asset';
+import type { CW20AssetResponse } from '~/types/cosmos/asset';
 
 export function useTokensSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const mappingName = convertCosmosToAssetName(chain);
 
-  const requestURL = `https://api.mintscan.io/v2/assets/${mappingName}/cw20`;
+  const requestURL = `https://api.mintscan.io/v3/assets/${mappingName}/cw20`;
 
   const fetcher = async (fetchUrl: string) => {
     try {
-      return await get<CW20AssetPayload>(fetchUrl);
+      return await get<CW20AssetResponse>(fetchUrl);
     } catch (e: unknown) {
       return null;
     }
   };
 
-  const { data, error, mutate } = useSWR<CW20AssetPayload | null, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<CW20AssetResponse | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
@@ -28,15 +28,11 @@ export function useTokensSWR(chain: CosmosChain, config?: SWRConfiguration) {
     ...config,
   });
 
-  const returnData: CW20AssetPayload['assets'] = data?.assets
+  const returnData: CW20AssetResponse['assets'] = data?.assets
     ? [
         ...data.assets.map((item) => ({
           ...item,
-          logo: item.logo
-            ? item.logo.startsWith('http://') || item.logo.startsWith('https://')
-              ? item.logo
-              : `https://raw.githubusercontent.com/cosmostation/cosmostation_token_resource/master/assets/images/${item.logo}`
-            : undefined,
+          image: item.image ? `https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${item.image}` : undefined,
         })),
       ]
     : [];
