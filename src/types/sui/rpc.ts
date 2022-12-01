@@ -1,11 +1,17 @@
+export type Owner = {
+  AddressOwner: string;
+};
+
+export type Details = {
+  data: Data;
+};
+
 export type GetObjectsOwnedByAddress = {
   objectId: string;
   version: number;
   digest: string;
   type: string;
-  owner: {
-    AddressOwner: string;
-  };
+  owner: Owner;
   previousTransaction: string;
 };
 
@@ -19,13 +25,10 @@ export type Data = {
     balance: number;
     id: { id: string };
   };
-};
-
-export type GetObjectDetails = {
-  data: Data;
+  owner: Owner;
 };
 
 export type GetObjectExists = {
   status: 'Exists';
-  details: GetObjectDetails;
+  details: Details;
 };
