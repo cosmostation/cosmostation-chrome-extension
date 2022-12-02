@@ -52,7 +52,7 @@ export const ChainAccordionContainer = styled('div')({
   marginTop: '1.6rem',
 });
 
-export const StyledChainAccordion = styled((props: AccordionProps) => <Accordion disableGutters elevation={0} square {...props} />)(({ theme }) => ({
+export const StyledChainAccordion = styled((props: AccordionProps) => <Accordion disableGutters {...props} />)(({ theme }) => ({
   border: '0',
   borderTop: `0.1rem solid ${theme.colors.base04}`,
   borderRadius: '0',

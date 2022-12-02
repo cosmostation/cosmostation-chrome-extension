@@ -36,13 +36,13 @@ export default function Entry() {
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
   const { addShownEthereumNetwork, removeShownEthereumNetwork } = useCurrentShownEthereumNetworks();
   const { addShownAptosNetwork, removeShownAptosNetwork } = useCurrentShownAptosNetworks();
-  const [expandedFirst, setExpanded] = useState<string | false>();
+  const [expandedFirst, setExpandedFirst] = useState<string | false>();
   const [expandedSecond, setExpandedSecond] = useState<string | false>();
   const [expandedThird, setExpandedThird] = useState<string | false>();
 
   const handleChange = (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
     if (panel === 'panel1') {
-      setExpanded(newExpanded ? panel : false);
+      setExpandedFirst(newExpanded ? panel : false);
     } else if (panel === 'panel2') {
       setExpandedSecond(newExpanded ? panel : false);
     } else {
@@ -98,21 +98,14 @@ export default function Entry() {
       await removeShownEthereumNetwork(network);
     }
   };
+
   const handleOnChangeAptosNetwork = async (checked: boolean, network: AptosNetwork) => {
     if (checked) {
       await addShownAptosNetwork(network);
-      if (shownAptosNetworkIds.length < 2) {
-        filteredAptosChains.map(async (item) => {
-          await addAllowedChainId(item);
-        });
-      }
+      filteredAptosChains.map((item) => handleOnChangeChain(checked, item));
     } else if (shownAptosNetworkIds.length < 2) {
-      if (allowedChainIds.length < 2) {
-        enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
-      } else {
-        filteredAptosChains.map(async (item) => {
-          await removeAllowedChainId(item);
-        });
+      filteredAptosChains.map((item) => handleOnChangeChain(checked, item));
+      if (allowedChainIds.length > 1) {
         await removeShownAptosNetwork(network);
       }
     } else {
