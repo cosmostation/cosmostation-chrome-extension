@@ -112,6 +112,7 @@ export default function Entry() {
       await removeShownAptosNetwork(network);
     }
   };
+
   return (
     <Container>
       <StyledInput

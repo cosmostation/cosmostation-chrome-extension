@@ -34,9 +34,4 @@ export const ItemLeftTextContainer = styled('div')(({ theme }) => ({
   marginLeft: '0.8rem',
 }));
 
-export const ItemRightContainer = styled('div')({
-  padding: '0.6rem 0',
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
-});
+export const ItemRightContainer = styled('div')({});
