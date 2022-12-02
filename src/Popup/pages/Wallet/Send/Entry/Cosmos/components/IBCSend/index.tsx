@@ -334,7 +334,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
             amount: [
               {
                 denom: currentFeeCoin.baseDenom,
-                amount: chain.type === 'ETHERMINT' ? times(currentFeeGasRate[currentGasRateKey], COSMOS_DEFAULT_IBC_SEND_GAS, 0) : '0',
+                amount: chain.type === 'ETHERMINT' ? times(currentFeeGasRate[currentGasRateKey], COSMOS_DEFAULT_IBC_SEND_GAS, 0) : '1',
               },
             ],
             gas: COSMOS_DEFAULT_IBC_SEND_GAS,
