@@ -68,13 +68,11 @@ export default function Entry({ chain }: EntryProps) {
     () =>
       debounce((a: string) => {
         setValues(a);
-        console.log('debounce');
-      }, 1000),
+      }, 3000),
     [],
   );
   const onChange = useCallback(() => {
     debouncedSearch(search);
-    console.log('onchange');
   }, [debouncedSearch, search]);
 
   const handleOnSubmit = async () => {
