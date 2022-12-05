@@ -46,6 +46,7 @@ export default function Entry({ chain }: EntryProps) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
+  const [values, setValues] = useState('');
   const [selectedTokens, setSelectedTokens] = useState<CosmosTokenParams[]>([]);
   const { currentChain } = useCurrentChain();
 
@@ -61,21 +62,20 @@ export default function Entry({ chain }: EntryProps) {
     [currentTokenAddresses, tokens.data],
   );
 
-  const filteredTokens = search ? validTokens.filter((item) => item.denom.toLowerCase().indexOf(search.toLowerCase()) > -1) : validTokens;
+  const filteredTokens = values ? validTokens.filter((item) => item.denom.toLowerCase().indexOf(search.toLowerCase()) > -1) : validTokens;
 
   const debouncedSearch = useMemo(
     () =>
-      debounce((value: string) => {
-        setSearch(value);
-      }, 200),
-    [setSearch],
+      debounce((a: string) => {
+        setValues(a);
+        console.log('debounce');
+      }, 1000),
+    [],
   );
-  const onChange = useCallback(
-    (e: { target: { value: string } }) => {
-      debouncedSearch(e.target.value);
-    },
-    [debouncedSearch],
-  );
+  const onChange = useCallback(() => {
+    debouncedSearch(search);
+    console.log('onchange');
+  }, [debouncedSearch, search]);
 
   const handleOnSubmit = async () => {
     await addCosmosTokens(selectedTokens);
@@ -111,13 +111,17 @@ export default function Entry({ chain }: EntryProps) {
         }
         placeholder={t('pages.Chain.Cosmos.Token.Add.CW20.Search.entry.searchPlaceholder')}
         value={search}
-        onChange={onChange}
+        onChange={(event) => {
+          setSearch(event.currentTarget.value);
+          onChange();
+        }}
       />
       <ContentsContainer>
         {filteredTokens.length > 0 ? (
           <TokenList>
             {filteredTokens.map((token) => {
               const isActive = selectedTokens.find((check) => check.address === token.contract_address);
+
               return (
                 <TokenItem
                   key={token.contract_address}
