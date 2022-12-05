@@ -11,6 +11,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
 
+import TokenItem from './components/TokenItem/index';
 import {
   ButtonContainer,
   Container,
@@ -29,7 +30,6 @@ import {
   WarningIconContainer,
   WarningTextContainer,
 } from './styled';
-import TokenItem from './TokenItem/index';
 
 import Info16Icon from '~/images/icons/Info16.svg';
 import Plus16Icon from '~/images/icons/Plus16.svg';
@@ -65,7 +65,7 @@ export default function Entry({ chain }: EntryProps) {
     () =>
       debounce((value: string) => {
         setSearch(value);
-      }, 100),
+      }, 200),
     [],
   );
 
@@ -91,7 +91,7 @@ export default function Entry({ chain }: EntryProps) {
           <Typography variant="h6">{t('pages.Chain.Cosmos.Token.Add.CW20.Search.entry.warning')}</Typography>
         </WarningTextContainer>
       </WarningContainer>
-      <Div sx={{ marginBottom: '1.2rem' }}>
+      <Div>
         <ImportCustomTokenButton onClick={() => navigate('/chain/cosmos/token/add/cw20')}>
           <ImportCustomTokenImage>
             <Plus16Icon />
@@ -101,19 +101,16 @@ export default function Entry({ chain }: EntryProps) {
           </ImportCustomTokenText>
         </ImportCustomTokenButton>
       </Div>
-      <Div>
-        <StyledInput
-          startAdornment={
-            <InputAdornment position="start">
-              <StyledSearch20Icon />
-            </InputAdornment>
-          }
-          placeholder={t('pages.Chain.Cosmos.Token.Add.CW20.Search.entry.searchPlaceholder')}
-          value={search}
-          onChange={onChange}
-        />
-      </Div>
-
+      <StyledInput
+        startAdornment={
+          <InputAdornment position="start">
+            <StyledSearch20Icon />
+          </InputAdornment>
+        }
+        placeholder={t('pages.Chain.Cosmos.Token.Add.CW20.Search.entry.searchPlaceholder')}
+        value={search}
+        onChange={onChange}
+      />
       <ContentsContainer>
         {filteredTokens.length > 0 ? (
           <TokenList>

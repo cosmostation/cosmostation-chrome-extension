@@ -1,27 +1,18 @@
 import { styled } from '@mui/material/styles';
 
 export const StyledButton = styled('button')(({ theme }) => ({
-  position: 'relative',
-
   backgroundColor: theme.colors.base01,
   border: 0,
-
   padding: '1.2rem',
-
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-
   height: '5.8rem',
-
   borderRadius: '0.8rem',
-
   cursor: 'pointer',
-
   '&:disabled': {
     cursor: 'default',
   },
-
   '&:hover': {
     backgroundColor: theme.colors.base02,
   },
@@ -49,14 +40,11 @@ export const LeftImageContainer = styled('div')({
   },
 });
 
-export const LeftTextContainer = styled('div')({
+export const LeftTextContainer = styled('div')(({ theme }) => ({
   paddingLeft: '0.8rem',
   display: 'grid',
   gridTemplateColumns: '1fr',
   rowGap: '0.3rem',
-});
-
-export const LeftTextChainContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 

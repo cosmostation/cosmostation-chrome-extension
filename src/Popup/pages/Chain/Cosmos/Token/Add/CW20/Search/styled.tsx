@@ -10,7 +10,6 @@ export const Container = styled('div')({
   height: '100%',
   padding: '0.9rem 1.6rem 0',
   position: 'relative',
-  overflow: 'hidden',
 });
 
 export const Div = styled('div')({});
@@ -80,7 +79,6 @@ export const ContentsContainer = styled('div')({
   height: '21.5rem',
   display: 'flex',
   justifyContent: 'center',
-  overflow: 'auto',
 });
 
 export const TokenIconBox = styled('div')({

@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 
-import { LeftContainer, LeftImageContainer, LeftTextChainContainer, LeftTextContainer, RightContainer, StyledButton } from './styled';
+import { LeftContainer, LeftImageContainer, LeftTextContainer, RightContainer, StyledButton } from './styled';
 
 import Check24Icon from '~/images/icons/Check24.svg';
 
@@ -21,9 +21,7 @@ export default function TokenItem({ onClick, isActive, symbol, logo }: TokenItem
           <Image src={logo} />
         </LeftImageContainer>
         <LeftTextContainer>
-          <LeftTextChainContainer>
-            <Typography variant="h5">{symbol}</Typography>
-          </LeftTextChainContainer>
+          <Typography variant="h5">{symbol}</Typography>
         </LeftTextContainer>
       </LeftContainer>
       <RightContainer>{isActive && <Check24Icon />}</RightContainer>
