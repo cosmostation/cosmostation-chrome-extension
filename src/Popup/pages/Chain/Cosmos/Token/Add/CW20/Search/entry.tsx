@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { debounce } from 'lodash';
+import React, { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
+import { useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
@@ -64,16 +64,9 @@ export default function Entry({ chain }: EntryProps) {
 
   const filteredTokens = values ? validTokens.filter((item) => item.denom.toLowerCase().indexOf(search.toLowerCase()) > -1) : validTokens;
 
-  const debouncedSearch = useMemo(
-    () =>
-      debounce((a: string) => {
-        setValues(a);
-      }, 3000),
-    [],
-  );
-  const onChange = useCallback(() => {
-    debouncedSearch(search);
-  }, [debouncedSearch, search]);
+  const debouncedSearch = useDebouncedCallback(() => {
+    setValues(search);
+  }, 1000);
 
   const handleOnSubmit = async () => {
     await addCosmosTokens(selectedTokens);
@@ -111,7 +104,7 @@ export default function Entry({ chain }: EntryProps) {
         value={search}
         onChange={(event) => {
           setSearch(event.currentTarget.value);
-          onChange();
+          debouncedSearch();
         }}
       />
       <ContentsContainer>
