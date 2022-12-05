@@ -36,17 +36,17 @@ export default function Entry() {
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
   const { addShownEthereumNetwork, removeShownEthereumNetwork } = useCurrentShownEthereumNetworks();
   const { addShownAptosNetwork, removeShownAptosNetwork } = useCurrentShownAptosNetworks();
-  const [expandedFirst, setExpandedFirst] = useState<string | false>();
-  const [expandedSecond, setExpandedSecond] = useState<string | false>();
-  const [expandedThird, setExpandedThird] = useState<string | false>();
+  const [expandedFirst, setExpandedFirst] = useState<boolean>();
+  const [expandedSecond, setExpandedSecond] = useState<boolean>();
+  const [expandedThird, setExpandedThird] = useState<boolean>();
 
-  const handleChange = (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+  const handleChange = (panel: 'panel1' | 'panel2' | 'panel3') => (_: React.SyntheticEvent, newExpanded: boolean) => {
     if (panel === 'panel1') {
-      setExpandedFirst(newExpanded ? panel : false);
+      setExpandedFirst(newExpanded);
     } else if (panel === 'panel2') {
-      setExpandedSecond(newExpanded ? panel : false);
+      setExpandedSecond(newExpanded);
     } else {
-      setExpandedThird(newExpanded ? panel : false);
+      setExpandedThird(newExpanded);
     }
   };
 
@@ -87,29 +87,33 @@ export default function Entry() {
 
   const handleOnChangeEthereumNetwork = async (checked: boolean, network: EthereumNetwork) => {
     if (checked) {
+      if (shownEthereumNetworkIds.length === 0) {
+        void handleOnChangeChain(checked, filteredEthereumChains[0]);
+      }
       await addShownEthereumNetwork(network);
-      filteredEthereumChains.map((item) => handleOnChangeChain(checked, item));
-    } else if (shownEthereumNetworkIds.length < 2) {
-      filteredEthereumChains.map((item) => handleOnChangeChain(checked, item));
+    } else {
+      if (shownEthereumNetworkIds.length === 1) {
+        void handleOnChangeChain(checked, filteredEthereumChains[0]);
+      }
       if (allowedChainIds.length > 1) {
         await removeShownEthereumNetwork(network);
       }
-    } else {
-      await removeShownEthereumNetwork(network);
     }
   };
 
   const handleOnChangeAptosNetwork = async (checked: boolean, network: AptosNetwork) => {
     if (checked) {
+      if (shownAptosNetworkIds.length === 0) {
+        void handleOnChangeChain(checked, filteredAptosChains[0]);
+      }
       await addShownAptosNetwork(network);
-      filteredAptosChains.map((item) => handleOnChangeChain(checked, item));
-    } else if (shownAptosNetworkIds.length < 2) {
-      filteredAptosChains.map((item) => handleOnChangeChain(checked, item));
+    } else {
+      if (shownAptosNetworkIds.length === 1) {
+        void handleOnChangeChain(checked, filteredAptosChains[0]);
+      }
       if (allowedChainIds.length > 1) {
         await removeShownAptosNetwork(network);
       }
-    } else {
-      await removeShownAptosNetwork(network);
     }
   };
 
@@ -127,7 +131,7 @@ export default function Entry() {
       />
       <ChainAccordionContainer>
         {!!filteredEthereumNetworks.length && (
-          <StyledChainAccordion expanded={!!search || expandedFirst === 'panel1'} onChange={handleChange('panel1')}>
+          <StyledChainAccordion expanded={!!search || expandedFirst} onChange={handleChange('panel1')}>
             <StyledChainAccordionSummary aria-controls="panel1d-content" id="panel1d-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
@@ -157,7 +161,7 @@ export default function Entry() {
           </StyledChainAccordion>
         )}
         {!!filteredCosmosChains.length && (
-          <StyledChainAccordion expanded={!!search || expandedSecond === 'panel2'} onChange={handleChange('panel2')}>
+          <StyledChainAccordion expanded={!!search || expandedSecond} onChange={handleChange('panel2')}>
             <StyledChainAccordionSummary aria-controls="panel2d-content" id="panel2d-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
@@ -187,7 +191,7 @@ export default function Entry() {
           </StyledChainAccordion>
         )}
         {!!filteredAptosNetworks.length && (
-          <StyledChainAccordion expanded={!!search || expandedThird === 'panel3'} onChange={handleChange('panel3')}>
+          <StyledChainAccordion expanded={!!search || expandedThird} onChange={handleChange('panel3')}>
             <StyledChainAccordionSummary aria-controls="panel3d-content" id="panel3d-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
