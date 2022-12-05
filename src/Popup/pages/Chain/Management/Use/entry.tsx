@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { APTOS_CHAINS, APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -36,17 +36,17 @@ export default function Entry() {
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
   const { addShownEthereumNetwork, removeShownEthereumNetwork } = useCurrentShownEthereumNetworks();
   const { addShownAptosNetwork, removeShownAptosNetwork } = useCurrentShownAptosNetworks();
-  const [expandedFirst, setExpandedFirst] = useState<boolean>();
-  const [expandedSecond, setExpandedSecond] = useState<boolean>();
-  const [expandedThird, setExpandedThird] = useState<boolean>();
+  const [isExpandedEthereum, setIsExpandedEthereum] = useState<boolean>();
+  const [isExpandedCosmos, setIsExpandedCosmos] = useState<boolean>();
+  const [isExpandedAptos, setIsExpandedAptos] = useState<boolean>();
 
-  const handleChange = (panel: 'panel1' | 'panel2' | 'panel3') => (_: React.SyntheticEvent, newExpanded: boolean) => {
-    if (panel === 'panel1') {
-      setExpandedFirst(newExpanded);
-    } else if (panel === 'panel2') {
-      setExpandedSecond(newExpanded);
+  const handleChange = (panel: 'ethereum' | 'cosmos' | 'aptos') => (_: React.SyntheticEvent, newExpanded: boolean) => {
+    if (panel === 'ethereum') {
+      setIsExpandedEthereum(newExpanded);
+    } else if (panel === 'cosmos') {
+      setIsExpandedCosmos(newExpanded);
     } else {
-      setExpandedThird(newExpanded);
+      setIsExpandedAptos(newExpanded);
     }
   };
 
@@ -65,15 +65,6 @@ export default function Entry() {
     : APTOS_NETWORKS;
 
   const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
-  const filteredEthereumChains =
-    filteredEthereumNetworks.length === 0 && search
-      ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
-      : ETHEREUM_CHAINS;
-
-  const filteredAptosChains =
-    filteredAptosNetworks.length === 0 && search
-      ? APTOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1)
-      : APTOS_CHAINS;
 
   const handleOnChangeChain = async (checked: boolean, chain: Chain) => {
     if (checked) {
@@ -88,12 +79,12 @@ export default function Entry() {
   const handleOnChangeEthereumNetwork = async (checked: boolean, network: EthereumNetwork) => {
     if (checked) {
       if (shownEthereumNetworkIds.length === 0) {
-        void handleOnChangeChain(checked, filteredEthereumChains[0]);
+        await addAllowedChainId(ETHEREUM);
       }
       await addShownEthereumNetwork(network);
     } else {
       if (shownEthereumNetworkIds.length === 1) {
-        void handleOnChangeChain(checked, filteredEthereumChains[0]);
+        await removeAllowedChainId(ETHEREUM);
       }
       if (allowedChainIds.length > 1) {
         await removeShownEthereumNetwork(network);
@@ -104,12 +95,12 @@ export default function Entry() {
   const handleOnChangeAptosNetwork = async (checked: boolean, network: AptosNetwork) => {
     if (checked) {
       if (shownAptosNetworkIds.length === 0) {
-        void handleOnChangeChain(checked, filteredAptosChains[0]);
+        await addAllowedChainId(APTOS);
       }
       await addShownAptosNetwork(network);
     } else {
       if (shownAptosNetworkIds.length === 1) {
-        void handleOnChangeChain(checked, filteredAptosChains[0]);
+        await removeAllowedChainId(APTOS);
       }
       if (allowedChainIds.length > 1) {
         await removeShownAptosNetwork(network);
@@ -131,8 +122,8 @@ export default function Entry() {
       />
       <ChainAccordionContainer>
         {!!filteredEthereumNetworks.length && (
-          <StyledChainAccordion expanded={!!search || expandedFirst} onChange={handleChange('panel1')}>
-            <StyledChainAccordionSummary aria-controls="panel1d-content" id="panel1d-header">
+          <StyledChainAccordion expanded={!!search || isExpandedEthereum} onChange={handleChange('ethereum')}>
+            <StyledChainAccordionSummary aria-controls="ethereum-content" id="ethereum-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
                   <Image src={ETHEREUM.imageURL} />
@@ -161,8 +152,8 @@ export default function Entry() {
           </StyledChainAccordion>
         )}
         {!!filteredCosmosChains.length && (
-          <StyledChainAccordion expanded={!!search || expandedSecond} onChange={handleChange('panel2')}>
-            <StyledChainAccordionSummary aria-controls="panel2d-content" id="panel2d-header">
+          <StyledChainAccordion expanded={!!search || isExpandedCosmos} onChange={handleChange('cosmos')}>
+            <StyledChainAccordionSummary aria-controls="cosmos-content" id="cosmos-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
                   <Image src={COSMOS.imageURL} />
@@ -191,8 +182,8 @@ export default function Entry() {
           </StyledChainAccordion>
         )}
         {!!filteredAptosNetworks.length && (
-          <StyledChainAccordion expanded={!!search || expandedThird} onChange={handleChange('panel3')}>
-            <StyledChainAccordionSummary aria-controls="panel3d-content" id="panel3d-header">
+          <StyledChainAccordion expanded={!!search || isExpandedAptos} onChange={handleChange('aptos')}>
+            <StyledChainAccordionSummary aria-controls="aptos-content" id="aptos-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
                   <Image src={APTOS.imageURL} />
