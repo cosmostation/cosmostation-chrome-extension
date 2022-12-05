@@ -12,6 +12,7 @@ export const chromeStorageDefault: ChromeStorage = {
   additionalChains: [],
   additionalEthereumNetworks: [],
   additionalAptosNetworks: [],
+  additionalSuiNetworks: [],
 
   encryptedPassword: null,
   windowId: null,
@@ -33,6 +34,9 @@ export const chromeStorageDefault: ChromeStorage = {
   selectedChainId: '',
   selectedEthereumNetworkId: '',
   selectedAptosNetworkId: '',
+  selectedSuiNetworkId: '',
+
+  suiPermissions: [],
 
   ethereumTokens: [],
   cosmosTokens: [],

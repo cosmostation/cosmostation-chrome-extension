@@ -19,13 +19,13 @@ import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
-import type { AptosChain } from '~/types/chain';
+import type { SuiChain } from '~/types/chain';
 
 import {
   Container,
@@ -53,14 +53,14 @@ import RetryIcon from '~/images/icons/Retry.svg';
 import SendIcon from '~/images/icons/Send.svg';
 
 type NativeChainCardProps = {
-  chain: AptosChain;
+  chain: SuiChain;
   isCustom?: boolean;
 };
 
 export default function NativeChainCard({ chain, isCustom }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
-  const { currentAptosNetwork } = useCurrentAptosNetwork();
+  const { currentSuiNetwork } = useCurrentSuiNetwork();
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
   const { data: aptosCoin } = useAccountResourceSWR({ resourceType: '0x1::coin::CoinStore', resourceTarget: APTOS_COIN }, { suspense: true });
@@ -74,11 +74,11 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const { navigate } = useNavigate();
 
-  const { explorerURL } = currentAptosNetwork;
+  const { explorerURL } = currentSuiNetwork;
 
   const decimals = useMemo(() => aptosInfo?.data.decimals || 0, [aptosInfo?.data.decimals]);
 
-  const imageURL = useMemo(() => currentAptosNetwork.imageURL || asset?.image, [asset?.image, currentAptosNetwork.imageURL]);
+  const imageURL = useMemo(() => currentSuiNetwork.imageURL || asset?.image, [asset?.image, currentSuiNetwork.imageURL]);
 
   const { data } = useCoinGeckoPriceSWR();
 
@@ -152,7 +152,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 }
 
 export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProps) {
-  const { currentAptosNetwork } = useCurrentAptosNetwork();
+  const { currentSuiNetwork } = useCurrentSuiNetwork();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
@@ -160,7 +160,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 
   const { t } = useTranslation();
 
-  const { explorerURL, imageURL } = currentAptosNetwork;
+  const { explorerURL, imageURL } = currentSuiNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -232,7 +232,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const [isLoading, setIsloading] = useState(false);
 
-  const { currentAptosNetwork } = useCurrentAptosNetwork();
+  const { currentSuiNetwork } = useCurrentSuiNetwork();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
@@ -240,7 +240,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const { t } = useTranslation();
 
-  const { explorerURL, imageURL } = currentAptosNetwork;
+  const { explorerURL, imageURL } = currentSuiNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;

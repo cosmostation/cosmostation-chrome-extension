@@ -1,5 +1,5 @@
 import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
-import type { AptosNetwork, BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken } from '~/types/chain';
+import type { AptosNetwork, BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken, SuiNetwork } from '~/types/chain';
 import type { TransportType } from '~/types/ledger';
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
@@ -77,6 +77,12 @@ export type Providers = {
   aptos: boolean;
 };
 
+export type SuiPermission = {
+  id: string;
+  accountId: Account['id'];
+  permission: string;
+};
+
 export type ChromeStorage = {
   encryptedPassword: string | null;
   accounts: Account[];
@@ -107,8 +113,13 @@ export type ChromeStorage = {
   additionalAptosNetworks: AptosNetwork[];
   selectedAptosNetworkId: AptosNetwork['id'];
 
+  additionalSuiNetworks: SuiNetwork[];
+  selectedSuiNetworkId: SuiNetwork['id'];
+
   cosmosTokens: CosmosToken[];
   ethereumTokens: EthereumToken[];
+
+  suiPermissions: SuiPermission[];
 
   autoSigns: AutoSign[];
 

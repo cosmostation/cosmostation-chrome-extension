@@ -19,7 +19,7 @@ content-type: application/json
 {
     "jsonrpc": "2.0",
     "method": "sui_getObjectsOwnedByAddress",
-    "params": ["0x7ee621c2d49ca2d108de7a5e82eb36d67a455e6f"],
+    "params": ["0xb1ff4847c94edd8aca85c4ce16f88388f3aab3da"],
     "id": 0
 }
 

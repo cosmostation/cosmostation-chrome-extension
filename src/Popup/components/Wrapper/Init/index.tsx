@@ -7,6 +7,7 @@ import { APTOS } from '~/constants/chain/aptos/aptos';
 import { MAINNET as APTOS_NETWORK_MAINNET } from '~/constants/chain/aptos/network/mainnet';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { DEVNET as SUI_NETWORK_DEVNET } from '~/constants/chain/sui/network/devnet';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeSessionStorageDefault, chromeSessionStorageState } from '~/Popup/recoils/chromeSessionStorage';
@@ -145,6 +146,10 @@ export default function Init({ children }: InitType) {
 
       if (!originChromeStorage.selectedAptosNetworkId) {
         await setStorage('selectedAptosNetworkId', APTOS_NETWORK_MAINNET.id);
+      }
+
+      if (!originChromeStorage.selectedSuiNetworkId) {
+        await setStorage('selectedSuiNetworkId', SUI_NETWORK_DEVNET.id);
       }
 
       const currentTime = new Date().getTime();
