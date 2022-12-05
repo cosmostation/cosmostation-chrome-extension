@@ -111,8 +111,7 @@ export default function Entry({ chain }: EntryProps) {
         {filteredTokens.length > 0 ? (
           <TokenList>
             {filteredTokens.map((token) => {
-              const isActive = selectedTokens.find((check) => check.address === token.contract_address);
-
+              const isActive = !!selectedTokens.find((check) => check.address === token.contract_address);
               return (
                 <TokenItem
                   key={token.contract_address}
@@ -135,7 +134,7 @@ export default function Entry({ chain }: EntryProps) {
                       ]);
                     }
                   }}
-                  isActive={!!isActive}
+                  isActive={isActive}
                 />
               );
             })}
