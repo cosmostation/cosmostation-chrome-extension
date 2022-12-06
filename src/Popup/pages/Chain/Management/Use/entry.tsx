@@ -84,7 +84,12 @@ export default function Entry() {
       await addShownEthereumNetwork(network);
     } else {
       if (shownEthereumNetworkIds.length === 1) {
-        await removeAllowedChainId(ETHEREUM);
+        if (allowedChainIds.length < 2) {
+          enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
+        } else {
+          await removeShownEthereumNetwork(network);
+          await removeAllowedChainId(ETHEREUM);
+        }
       }
       if (allowedChainIds.length > 1) {
         await removeShownEthereumNetwork(network);
@@ -100,7 +105,12 @@ export default function Entry() {
       await addShownAptosNetwork(network);
     } else {
       if (shownAptosNetworkIds.length === 1) {
-        await removeAllowedChainId(APTOS);
+        if (allowedChainIds.length < 2) {
+          enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
+        } else {
+          await removeAllowedChainId(APTOS);
+          await removeShownAptosNetwork(network);
+        }
       }
       if (allowedChainIds.length > 1) {
         await removeShownAptosNetwork(network);
@@ -122,7 +132,7 @@ export default function Entry() {
       />
       <ChainAccordionContainer>
         {!!filteredEthereumNetworks.length && (
-          <StyledChainAccordion expanded={!!search || isExpandedEthereum} onChange={handleChange('ethereum')}>
+          <StyledChainAccordion expanded={(!!search || isExpandedEthereum) ?? false} onChange={handleChange('ethereum')}>
             <StyledChainAccordionSummary aria-controls="ethereum-content" id="ethereum-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
@@ -152,7 +162,7 @@ export default function Entry() {
           </StyledChainAccordion>
         )}
         {!!filteredCosmosChains.length && (
-          <StyledChainAccordion expanded={!!search || isExpandedCosmos} onChange={handleChange('cosmos')}>
+          <StyledChainAccordion expanded={(!!search || isExpandedCosmos) ?? false} onChange={handleChange('cosmos')}>
             <StyledChainAccordionSummary aria-controls="cosmos-content" id="cosmos-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
@@ -182,7 +192,7 @@ export default function Entry() {
           </StyledChainAccordion>
         )}
         {!!filteredAptosNetworks.length && (
-          <StyledChainAccordion expanded={!!search || isExpandedAptos} onChange={handleChange('aptos')}>
+          <StyledChainAccordion expanded={(!!search || isExpandedAptos) ?? false} onChange={handleChange('aptos')}>
             <StyledChainAccordionSummary aria-controls="aptos-content" id="aptos-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
