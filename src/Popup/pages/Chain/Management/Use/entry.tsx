@@ -82,18 +82,15 @@ export default function Entry() {
         await addAllowedChainId(ETHEREUM);
       }
       await addShownEthereumNetwork(network);
-    } else {
-      if (shownEthereumNetworkIds.length === 1) {
-        if (allowedChainIds.length < 2) {
-          enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
-        } else {
-          await removeShownEthereumNetwork(network);
-          await removeAllowedChainId(ETHEREUM);
-        }
-      }
-      if (allowedChainIds.length > 1) {
+    } else if (shownEthereumNetworkIds.length === 1) {
+      if (allowedChainIds.length < 2) {
+        enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
+      } else {
         await removeShownEthereumNetwork(network);
+        await removeAllowedChainId(ETHEREUM);
       }
+    } else {
+      await removeShownEthereumNetwork(network);
     }
   };
 
@@ -103,18 +100,15 @@ export default function Entry() {
         await addAllowedChainId(APTOS);
       }
       await addShownAptosNetwork(network);
-    } else {
-      if (shownAptosNetworkIds.length === 1) {
-        if (allowedChainIds.length < 2) {
-          enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
-        } else {
-          await removeAllowedChainId(APTOS);
-          await removeShownAptosNetwork(network);
-        }
-      }
-      if (allowedChainIds.length > 1) {
+    } else if (shownAptosNetworkIds.length === 1) {
+      if (allowedChainIds.length < 2) {
+        enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
+      } else {
         await removeShownAptosNetwork(network);
+        await removeAllowedChainId(APTOS);
       }
+    } else {
+      await removeShownAptosNetwork(network);
     }
   };
 
