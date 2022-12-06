@@ -8,6 +8,7 @@ import { MAINNET as APTOS_NETWORK_MAINNET } from '~/constants/chain/aptos/networ
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
+import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeSessionStorageDefault, chromeSessionStorageState } from '~/Popup/recoils/chromeSessionStorage';
 import { chromeStorageDefault, chromeStorageState } from '~/Popup/recoils/chromeStorage';
@@ -33,6 +34,9 @@ export default function Init({ children }: InitType) {
 
   const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
   const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
+
+  const { addAllowedChainId } = useCurrentAllowedChains();
+  const { allowedChainIds, shownEthereumNetworkIds, shownAptosNetworkIds } = chromeStorage;
 
   const handleOnStorageChange = (_: unknown, areaName: 'sync' | 'local' | 'managed' | 'session') => {
     if (areaName === 'local') {
@@ -140,6 +144,12 @@ export default function Init({ children }: InitType) {
         };
 
         await setStorage('providers', newProviders);
+      }
+      if (!allowedChainIds.includes(ETHEREUM.id) && shownEthereumNetworkIds.length > 0) {
+        await addAllowedChainId(ETHEREUM);
+      }
+      if (!allowedChainIds.includes(APTOS.id) && shownAptosNetworkIds.length > 0) {
+        await addAllowedChainId(APTOS);
       }
 
       setIsLoading(false);
