@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
-import { useDebouncedCallback } from 'use-debounce';
+import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
@@ -46,7 +46,6 @@ export default function Entry({ chain }: EntryProps) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
-  const [values, setValues] = useState('');
   const [selectedTokens, setSelectedTokens] = useState<CosmosTokenParams[]>([]);
   const { currentChain } = useCurrentChain();
 
@@ -62,11 +61,9 @@ export default function Entry({ chain }: EntryProps) {
     [currentTokenAddresses, tokens.data],
   );
 
-  const filteredTokens = values ? validTokens.filter((item) => item.denom.toLowerCase().indexOf(search.toLowerCase()) > -1) : validTokens;
+  const [debouncedSearch] = useDebounce(search, 500);
 
-  const debouncedSearch = useDebouncedCallback(() => {
-    setValues(search);
-  }, 1000);
+  const filteredTokens = debouncedSearch ? validTokens.filter((item) => item.denom.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) : validTokens;
 
   const handleOnSubmit = async () => {
     await addCosmosTokens(selectedTokens);
@@ -104,7 +101,6 @@ export default function Entry({ chain }: EntryProps) {
         value={search}
         onChange={(event) => {
           setSearch(event.currentTarget.value);
-          debouncedSearch();
         }}
       />
       <ContentsContainer>
