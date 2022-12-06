@@ -66,6 +66,15 @@ export default function Entry() {
 
   const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
 
+  void (async () => {
+    if (!allowedChainIds.includes(ETHEREUM.id) && shownEthereumNetworkIds.length > 0) {
+      await addAllowedChainId(ETHEREUM);
+    }
+    if (!allowedChainIds.includes(APTOS.id) && shownAptosNetworkIds.length > 0) {
+      await addAllowedChainId(APTOS);
+    }
+  })();
+
   const handleOnChangeChain = async (checked: boolean, chain: Chain) => {
     if (checked) {
       await addAllowedChainId(chain);
