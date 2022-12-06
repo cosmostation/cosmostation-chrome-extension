@@ -26,6 +26,8 @@ export type GasRate = {
   average: string;
 };
 
+export type GasRateKey = keyof GasRate;
+
 export type Gas = {
   send?: string;
   ibcSend?: string;

@@ -17,7 +17,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { fix, lt, times } from '~/Popup/utils/big';
+import { ceil, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
@@ -117,9 +117,9 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const signingMemo = isEditMemo ? memo : doc.memo;
 
-  const fixedBaseFee = useMemo(() => fix(baseFee, 0, 0), [baseFee]);
+  const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 
-  const signingFee = isEditFee ? { amount: [{ denom: selectedFeeCoin.baseDenom, amount: fixedBaseFee }], gas } : doc.fee;
+  const signingFee = isEditFee ? { amount: [{ denom: selectedFeeCoin.baseDenom, amount: ceilBaseFee }], gas } : doc.fee;
 
   const tx = { ...doc, memo: signingMemo, fee: signingFee };
 
