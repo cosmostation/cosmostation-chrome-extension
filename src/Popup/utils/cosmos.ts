@@ -145,11 +145,11 @@ export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {
 
 export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
   const nameMap = {
-    [CRYPTO_ORG.id]: 'cryptoorg',
+    [CRYPTO_ORG.id]: 'crypto-org',
     [ASSET_MANTLE.id]: 'asset-mantle',
     [GRAVITY_BRIDGE.id]: 'gravity-bridge',
     [SIF.id]: 'sifchain',
-    [KI.id]: 'kichain',
+    [KI.id]: 'ki-chain',
     [STAFIHUB.id]: 'stafi',
     [FETCH_AI.id]: 'fetchai',
   };
@@ -158,11 +158,11 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
 
 export function convertAssetNameToCosmos(assetName: string) {
   const nameMap = {
-    cryptoorg: CRYPTO_ORG,
+    'crypto-org': CRYPTO_ORG,
     'asset-mantle': ASSET_MANTLE,
     'gravity-bridge': GRAVITY_BRIDGE,
     sifchain: SIF,
-    kichain: KI,
+    'ki-chain': KI,
     stafi: STAFIHUB,
     fetchai: FETCH_AI,
   } as Record<string, CosmosChain | undefined>;

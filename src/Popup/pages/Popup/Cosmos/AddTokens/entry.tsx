@@ -59,13 +59,13 @@ export default function Entry({ queue, chain }: EntryProps) {
   const tokens: CosmosToken[] = useMemo(
     () =>
       params.tokens.map((param) => {
-        const token = officialTokens.data?.find((item) => item.contract_address.toLowerCase() === param.address.toLowerCase());
+        const token = officialTokens.data?.find((item) => item.address.toLowerCase() === param.address.toLowerCase());
 
         if (token) {
           return {
             ...param,
-            coinGeckoId: token?.coingecko_id,
-            imageURL: token?.logo,
+            coinGeckoId: token?.coinGeckoId,
+            imageURL: token?.image,
           };
         }
 

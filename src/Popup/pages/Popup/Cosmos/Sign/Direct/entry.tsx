@@ -58,10 +58,10 @@ export default function Entry({ queue, chain }: EntryProps) {
         coinGeckoId: chain.coinGeckoId,
       },
       ...assets.data.map((asset) => ({
-        originBaseDenom: asset.base_denom,
+        originBaseDenom: asset.origin_denom,
         baseDenom: asset.denom,
-        decimals: asset.decimal,
-        displayDenom: asset.dp_denom,
+        decimals: asset.decimals,
+        displayDenom: asset.symbol,
         coinGeckoId: asset.coinGeckoId,
       })),
     ],

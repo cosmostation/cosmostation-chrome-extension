@@ -1,11 +1,11 @@
 export type Asset = {
   chainId: number;
-  coinType: string;
-  officialName: string;
-  officialSymbol: string;
-  name: string;
+  chainName: string;
+  address: string;
   symbol: string;
+  description?: string;
   decimals: number;
-  coinGeckoId?: string;
   image?: string;
+  default?: boolean;
+  coinGeckoId?: string;
 };
