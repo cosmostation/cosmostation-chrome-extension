@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSnackbar } from 'notistack';
+import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
@@ -31,6 +32,7 @@ import {
 
 export default function Entry() {
   const [search, setSearch] = useState('');
+  const [debouncedSearch] = useDebounce(search, 500);
 
   const { chromeStorage } = useChromeStorage();
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
@@ -56,15 +58,17 @@ export default function Entry() {
 
   const { allowedChainIds, shownEthereumNetworkIds, shownAptosNetworkIds } = chromeStorage;
 
-  const filteredEthereumNetworks = search
-    ? ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+  const filteredEthereumNetworks = debouncedSearch
+    ? ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1)
     : ETHEREUM_NETWORKS;
 
-  const filteredAptosNetworks = search
-    ? APTOS_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1)
+  const filteredAptosNetworks = debouncedSearch
+    ? APTOS_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1)
     : APTOS_NETWORKS;
 
-  const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
+  const filteredCosmosChains = debouncedSearch
+    ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1)
+    : COSMOS_CHAINS;
 
   const handleOnChangeChain = async (checked: boolean, chain: Chain) => {
     if (checked) {
@@ -126,7 +130,7 @@ export default function Entry() {
       />
       <ChainAccordionContainer>
         {!!filteredEthereumNetworks.length && (
-          <StyledChainAccordion expanded={(!!search || isExpandedEthereum) ?? false} onChange={handleChange('ethereum')}>
+          <StyledChainAccordion expanded={(!!debouncedSearch || isExpandedEthereum) ?? false} onChange={handleChange('ethereum')}>
             <StyledChainAccordionSummary aria-controls="ethereum-content" id="ethereum-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
@@ -156,7 +160,7 @@ export default function Entry() {
           </StyledChainAccordion>
         )}
         {!!filteredCosmosChains.length && (
-          <StyledChainAccordion expanded={(!!search || isExpandedCosmos) ?? false} onChange={handleChange('cosmos')}>
+          <StyledChainAccordion expanded={(!!debouncedSearch || isExpandedCosmos) ?? false} onChange={handleChange('cosmos')}>
             <StyledChainAccordionSummary aria-controls="cosmos-content" id="cosmos-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
@@ -186,7 +190,7 @@ export default function Entry() {
           </StyledChainAccordion>
         )}
         {!!filteredAptosNetworks.length && (
-          <StyledChainAccordion expanded={(!!search || isExpandedAptos) ?? false} onChange={handleChange('aptos')}>
+          <StyledChainAccordion expanded={(!!debouncedSearch || isExpandedAptos) ?? false} onChange={handleChange('aptos')}>
             <StyledChainAccordionSummary aria-controls="aptos-content" id="aptos-header">
               <ItemLeftContainer>
                 <ItemLeftImageContainer>
