@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
-import { CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { MAINNET as APTOS_NETWORK_MAINNET } from '~/constants/chain/aptos/network/mainnet';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
@@ -27,16 +27,18 @@ export default function Init({ children }: InitType) {
   const [chromeStorage, setChromeStorage] = useRecoilState(chromeStorageState);
   const setChromeSessionStorage = useSetRecoilState(chromeSessionStorageState);
 
+  const { addAllowedChainId } = useCurrentAllowedChains();
+
   const { changeLanguage, language } = useTranslation();
+
+  const officialEthereumNetworkIds = ETHEREUM_NETWORKS.map((item) => item.id);
+  const officialAptosNetworkIds = APTOS_NETWORKS.map((item) => item.id);
 
   const officialChainLowercaseNames = CHAINS.map((item) => item.chainName.toLowerCase());
   const officialChainIds = CHAINS.map((item) => item.id);
 
   const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
   const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
-
-  const { addAllowedChainId } = useCurrentAllowedChains();
-  const { allowedChainIds, shownEthereumNetworkIds, shownAptosNetworkIds } = chromeStorage;
 
   const handleOnStorageChange = (_: unknown, areaName: 'sync' | 'local' | 'managed' | 'session') => {
     if (areaName === 'local') {
@@ -121,6 +123,31 @@ export default function Init({ children }: InitType) {
         await setStorage('selectedChainId', COSMOS.id);
       }
 
+      if (
+        !originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).includes(APTOS.id) &&
+        originChromeStorage.shownAptosNetworkIds.filter((item) => officialAptosNetworkIds.includes(item)).length > 0
+      ) {
+        // await setStorage('allowedChainIds', [APTOS.id]);
+        await addAllowedChainId(APTOS);
+      }
+
+      if (
+        !originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).includes(ETHEREUM.id) &&
+        originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length > 0
+      ) {
+        //  await setStorage('allowedChainIds', [ETHEREUM.id]);
+        await addAllowedChainId(ETHEREUM);
+      }
+
+      // if (
+      //   !originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).includes(ETHEREUM.id) &&
+      //   originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length > 0 &&
+      //   !originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).includes(ETHEREUM.id) &&
+      //   originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length > 0
+      // ) {
+      //   await setStorage('allowedChainIds', [ETHEREUM.id, APTOS.id]);
+      // }
+
       if (!originChromeStorage.selectedAptosNetworkId) {
         await setStorage('selectedAptosNetworkId', APTOS_NETWORK_MAINNET.id);
       }
@@ -144,12 +171,6 @@ export default function Init({ children }: InitType) {
         };
 
         await setStorage('providers', newProviders);
-      }
-      if (!allowedChainIds.includes(ETHEREUM.id) && shownEthereumNetworkIds.length > 0) {
-        await addAllowedChainId(ETHEREUM);
-      }
-      if (!allowedChainIds.includes(APTOS.id) && shownAptosNetworkIds.length > 0) {
-        await addAllowedChainId(APTOS);
       }
 
       setIsLoading(false);
