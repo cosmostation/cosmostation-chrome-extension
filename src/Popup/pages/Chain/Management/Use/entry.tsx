@@ -77,9 +77,6 @@ export default function Entry() {
   };
 
   const handleOnChangeEthereumNetwork = async (checked: boolean, network: EthereumNetwork) => {
-    if (!allowedChainIds.includes(ETHEREUM.id) && shownEthereumNetworkIds.length > 0) {
-      await addAllowedChainId(ETHEREUM);
-    }
     if (checked) {
       if (shownEthereumNetworkIds.length === 0) {
         await addAllowedChainId(ETHEREUM);
@@ -98,9 +95,6 @@ export default function Entry() {
   };
 
   const handleOnChangeAptosNetwork = async (checked: boolean, network: AptosNetwork) => {
-    if (!allowedChainIds.includes(APTOS.id) && shownAptosNetworkIds.length > 0) {
-      await addAllowedChainId(APTOS);
-    }
     if (checked) {
       if (shownAptosNetworkIds.length === 0) {
         await addAllowedChainId(APTOS);
