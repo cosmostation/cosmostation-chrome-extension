@@ -28,14 +28,14 @@ export default function Init({ children }: InitType) {
 
   const { changeLanguage, language } = useTranslation();
 
-  const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
-  const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
+  const officialChainLowercaseNames = CHAINS.map((item) => item.chainName.toLowerCase());
+  const officialChainIds = CHAINS.map((item) => item.id);
 
   const officialEthereumNetworkIds = ETHEREUM_NETWORKS.map((item) => item.id);
   const officialAptosNetworkIds = APTOS_NETWORKS.map((item) => item.id);
 
-  const officialChainLowercaseNames = CHAINS.map((item) => item.chainName.toLowerCase());
-  const officialChainIds = CHAINS.map((item) => item.id);
+  const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
+  const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
 
   const handleOnStorageChange = (_: unknown, areaName: 'sync' | 'local' | 'managed' | 'session') => {
     if (areaName === 'local') {
