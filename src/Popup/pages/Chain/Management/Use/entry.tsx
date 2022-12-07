@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
@@ -32,7 +32,8 @@ import {
 
 export default function Entry() {
   const [search, setSearch] = useState('');
-  const [debouncedSearch] = useDebounce(search, 500);
+  const [debouncedOpenSearch] = useDebounce(search, 300);
+  const [debouncedCloseSearch] = useDebounce(debouncedOpenSearch, 800);
 
   const { chromeStorage } = useChromeStorage();
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
@@ -58,17 +59,35 @@ export default function Entry() {
 
   const { allowedChainIds, shownEthereumNetworkIds, shownAptosNetworkIds } = chromeStorage;
 
-  const filteredEthereumNetworks = debouncedSearch
-    ? ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1)
-    : ETHEREUM_NETWORKS;
+  const filteredEthereumNetworks = useMemo(() => {
+    if (debouncedOpenSearch) {
+      return ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1);
+    }
 
-  const filteredAptosNetworks = debouncedSearch
-    ? APTOS_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1)
-    : APTOS_NETWORKS;
+    return debouncedCloseSearch
+      ? ETHEREUM_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1)
+      : ETHEREUM_NETWORKS;
+  }, [debouncedCloseSearch, debouncedOpenSearch]);
 
-  const filteredCosmosChains = debouncedSearch
-    ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1)
-    : COSMOS_CHAINS;
+  const filteredAptosNetworks = useMemo(() => {
+    if (debouncedOpenSearch) {
+      return APTOS_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1);
+    }
+
+    return debouncedCloseSearch
+      ? APTOS_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1)
+      : APTOS_NETWORKS;
+  }, [debouncedOpenSearch, debouncedCloseSearch]);
+
+  const filteredCosmosChains = useMemo(() => {
+    if (debouncedOpenSearch) {
+      return COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1);
+    }
+
+    return debouncedCloseSearch
+      ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1)
+      : COSMOS_CHAINS;
+  }, [debouncedCloseSearch, debouncedOpenSearch]);
 
   const handleOnChangeChain = async (checked: boolean, chain: Chain) => {
     if (checked) {
@@ -129,96 +148,92 @@ export default function Entry() {
         onChange={(event) => setSearch(event.currentTarget.value)}
       />
       <ChainAccordionContainer>
-        {!!filteredEthereumNetworks.length && (
-          <StyledChainAccordion expanded={(!!debouncedSearch || isExpandedEthereum) ?? false} onChange={handleChange('ethereum')}>
-            <StyledChainAccordionSummary aria-controls="ethereum-content" id="ethereum-header">
-              <ItemLeftContainer>
-                <ItemLeftImageContainer>
-                  <Image src={ETHEREUM.imageURL} />
-                </ItemLeftImageContainer>
-                <ItemLeftTextContainer>
-                  <Typography variant="h5">EVM Networks</Typography>
-                </ItemLeftTextContainer>
-              </ItemLeftContainer>
-            </StyledChainAccordionSummary>
-            <StyledChainAccordionDetails>
-              {filteredEthereumNetworks.map((network) => (
-                <SubItem
-                  key={network.id}
-                  imageProps={{ alt: network.networkName, src: network.imageURL }}
-                  switchProps={{
-                    checked: shownEthereumNetworkIds.includes(network.id),
-                    onChange: (_, checked) => {
-                      void handleOnChangeEthereumNetwork(checked, network);
-                    },
-                  }}
-                >
-                  {network.networkName}
-                </SubItem>
-              ))}
-            </StyledChainAccordionDetails>
-          </StyledChainAccordion>
-        )}
-        {!!filteredCosmosChains.length && (
-          <StyledChainAccordion expanded={(!!debouncedSearch || isExpandedCosmos) ?? false} onChange={handleChange('cosmos')}>
-            <StyledChainAccordionSummary aria-controls="cosmos-content" id="cosmos-header">
-              <ItemLeftContainer>
-                <ItemLeftImageContainer>
-                  <Image src={COSMOS.imageURL} />
-                </ItemLeftImageContainer>
-                <ItemLeftTextContainer>
-                  <Typography variant="h5">Cosmos Chains</Typography>
-                </ItemLeftTextContainer>
-              </ItemLeftContainer>
-            </StyledChainAccordionSummary>
-            <StyledChainAccordionDetails>
-              {filteredCosmosChains.map((chain) => (
-                <SubItem
-                  key={chain.id}
-                  imageProps={{ alt: chain.chainName, src: chain.imageURL }}
-                  switchProps={{
-                    checked: allowedChainIds.includes(chain.id),
-                    onChange: (_, checked) => {
-                      void handleOnChangeChain(checked, chain);
-                    },
-                  }}
-                >
-                  {chain.chainName}
-                </SubItem>
-              ))}
-            </StyledChainAccordionDetails>
-          </StyledChainAccordion>
-        )}
-        {!!filteredAptosNetworks.length && (
-          <StyledChainAccordion expanded={(!!debouncedSearch || isExpandedAptos) ?? false} onChange={handleChange('aptos')}>
-            <StyledChainAccordionSummary aria-controls="aptos-content" id="aptos-header">
-              <ItemLeftContainer>
-                <ItemLeftImageContainer>
-                  <Image src={APTOS.imageURL} />
-                </ItemLeftImageContainer>
-                <ItemLeftTextContainer>
-                  <Typography variant="h5">Aptos Networks</Typography>
-                </ItemLeftTextContainer>
-              </ItemLeftContainer>
-            </StyledChainAccordionSummary>
-            <StyledChainAccordionDetails>
-              {filteredAptosNetworks.map((network) => (
-                <SubItem
-                  key={network.id}
-                  imageProps={{ alt: network.networkName, src: network.imageURL }}
-                  switchProps={{
-                    checked: shownAptosNetworkIds.includes(network.id),
-                    onChange: (_, checked) => {
-                      void handleOnChangeAptosNetwork(checked, network);
-                    },
-                  }}
-                >
-                  {network.networkName}
-                </SubItem>
-              ))}
-            </StyledChainAccordionDetails>
-          </StyledChainAccordion>
-        )}
+        <StyledChainAccordion expanded={(!!debouncedOpenSearch || isExpandedEthereum) ?? false} onChange={handleChange('ethereum')}>
+          <StyledChainAccordionSummary aria-controls="ethereum-content" id="ethereum-header">
+            <ItemLeftContainer>
+              <ItemLeftImageContainer>
+                <Image src={ETHEREUM.imageURL} />
+              </ItemLeftImageContainer>
+              <ItemLeftTextContainer>
+                <Typography variant="h5">EVM Networks</Typography>
+              </ItemLeftTextContainer>
+            </ItemLeftContainer>
+          </StyledChainAccordionSummary>
+          <StyledChainAccordionDetails>
+            {filteredEthereumNetworks.map((network) => (
+              <SubItem
+                key={network.id}
+                imageProps={{ alt: network.networkName, src: network.imageURL }}
+                switchProps={{
+                  checked: shownEthereumNetworkIds.includes(network.id),
+                  onChange: (_, checked) => {
+                    void handleOnChangeEthereumNetwork(checked, network);
+                  },
+                }}
+              >
+                {network.networkName}
+              </SubItem>
+            ))}
+          </StyledChainAccordionDetails>
+        </StyledChainAccordion>
+
+        <StyledChainAccordion expanded={(!!debouncedOpenSearch || isExpandedCosmos) ?? false} onChange={handleChange('cosmos')}>
+          <StyledChainAccordionSummary aria-controls="cosmos-content" id="cosmos-header">
+            <ItemLeftContainer>
+              <ItemLeftImageContainer>
+                <Image src={COSMOS.imageURL} />
+              </ItemLeftImageContainer>
+              <ItemLeftTextContainer>
+                <Typography variant="h5">Cosmos Chains</Typography>
+              </ItemLeftTextContainer>
+            </ItemLeftContainer>
+          </StyledChainAccordionSummary>
+          <StyledChainAccordionDetails>
+            {filteredCosmosChains.map((chain) => (
+              <SubItem
+                key={chain.id}
+                imageProps={{ alt: chain.chainName, src: chain.imageURL }}
+                switchProps={{
+                  checked: allowedChainIds.includes(chain.id),
+                  onChange: (_, checked) => {
+                    void handleOnChangeChain(checked, chain);
+                  },
+                }}
+              >
+                {chain.chainName}
+              </SubItem>
+            ))}
+          </StyledChainAccordionDetails>
+        </StyledChainAccordion>
+
+        <StyledChainAccordion expanded={(!!debouncedOpenSearch || isExpandedAptos) ?? false} onChange={handleChange('aptos')}>
+          <StyledChainAccordionSummary aria-controls="aptos-content" id="aptos-header">
+            <ItemLeftContainer>
+              <ItemLeftImageContainer>
+                <Image src={APTOS.imageURL} />
+              </ItemLeftImageContainer>
+              <ItemLeftTextContainer>
+                <Typography variant="h5">Aptos Networks</Typography>
+              </ItemLeftTextContainer>
+            </ItemLeftContainer>
+          </StyledChainAccordionSummary>
+          <StyledChainAccordionDetails>
+            {filteredAptosNetworks.map((network) => (
+              <SubItem
+                key={network.id}
+                imageProps={{ alt: network.networkName, src: network.imageURL }}
+                switchProps={{
+                  checked: shownAptosNetworkIds.includes(network.id),
+                  onChange: (_, checked) => {
+                    void handleOnChangeAptosNetwork(checked, network);
+                  },
+                }}
+              >
+                {network.networkName}
+              </SubItem>
+            ))}
+          </StyledChainAccordionDetails>
+        </StyledChainAccordion>
         <Divider />
       </ChainAccordionContainer>
     </Container>
