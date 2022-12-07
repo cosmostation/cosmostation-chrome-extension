@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { APTOS_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
+import { SUI_NETWORKS } from '~/constants/chain';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { emitToWeb } from '~/Popup/utils/message';
 // import { emitToWeb } from '~/Popup/utils/message';
@@ -11,7 +11,7 @@ export function useCurrentSuiNetwork() {
 
   const { selectedSuiNetworkId, additionalSuiNetworks, allowedOrigins } = chromeStorage;
 
-  const allNetworks = [...APTOS_NETWORKS, ...additionalSuiNetworks];
+  const allNetworks = [...SUI_NETWORKS, ...additionalSuiNetworks];
 
   const currentAccountSelectedSuiNetworkId = allNetworks.find((network) => network.id === selectedSuiNetworkId)?.id ?? allNetworks[0].id;
 

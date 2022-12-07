@@ -2,21 +2,6 @@ export type Owner = {
   AddressOwner: string;
 };
 
-export type Details = {
-  data: Data;
-};
-
-export type GetObjectsOwnedByAddress = {
-  objectId: string;
-  version: number;
-  digest: string;
-  type: string;
-  owner: Owner;
-  previousTransaction: string;
-};
-
-export type GetObjectsOwnedByAddressResponse = GetObjectsOwnedByAddress[];
-
 export type Data = {
   dataType: string;
   type: string;
@@ -28,7 +13,44 @@ export type Data = {
   owner: Owner;
 };
 
+export type ErrorResponse = {
+  code: number;
+  message: string;
+};
+
+export type Result<T> = {
+  jsonrpc: string;
+  id: string | number;
+  result?: T;
+  error?: ErrorResponse;
+};
+
+export type Reference = {
+  objectId: string;
+  version: number;
+  digest: string;
+};
+
+export type ExistsDetails = {
+  data: Data;
+  owner: Owner;
+  previousTransaction: string;
+  storageRebase: number;
+  reference: Reference;
+};
+
+export type GetObjectsOwnedByAddress = {
+  objectId: string;
+  version: number;
+  digest: string;
+  type: string;
+  owner: Owner;
+  previousTransaction: string;
+};
+
+export type GetObjectsOwnedByAddressResponse = Result<GetObjectsOwnedByAddress[]>;
+
 export type GetObjectExists = {
   status: 'Exists';
-  details: Details;
+  details: ExistsDetails;
 };

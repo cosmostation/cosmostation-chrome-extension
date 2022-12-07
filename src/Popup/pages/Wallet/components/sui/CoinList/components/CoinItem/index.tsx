@@ -46,7 +46,7 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
 
   const { data: assets } = useAssetsSWR();
 
-  const asset = assets.find((item) => item.coinType === coinAddress);
+  const asset = assets.find((item) => item.address === coinAddress);
 
   const displayAmount = useMemo(
     () => toDisplayDenomAmount(coin.data.coin.value, coinInfo?.data.decimals || 0),
@@ -54,7 +54,7 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
   );
   const displayDenom = asset?.symbol || coinInfo?.data.symbol || '';
 
-  const displayName = asset?.name || coinInfo?.data.name || '';
+  const displayName = asset?.description || coinInfo?.data.name || '';
 
   const price = useMemo(
     () => (asset?.coinGeckoId && coinGeckoPrice.data?.[asset.coinGeckoId]?.[currency]) || 0,

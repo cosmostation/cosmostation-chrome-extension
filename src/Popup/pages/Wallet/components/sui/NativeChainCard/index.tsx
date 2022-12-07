@@ -68,7 +68,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const assets = useAssetsSWR();
 
-  const asset = useMemo(() => assets.data.find((item) => item.coinType === APTOS_COIN), [assets.data]);
+  const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
 
   const { t } = useTranslation();
 
