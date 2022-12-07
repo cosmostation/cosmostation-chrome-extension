@@ -121,26 +121,26 @@ export default function Init({ children }: InitType) {
       }
 
       if (
-        !originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).includes(ETHEREUM.id) &&
-        originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length > 0
+        (!originChromeStorage.allowedChainIds?.includes(ETHEREUM.id) &&
+          originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length > 0) ||
+        (!originChromeStorage.allowedChainIds?.includes(APTOS.id) &&
+          originChromeStorage.shownAptosNetworkIds.filter((item) => officialAptosNetworkIds.includes(item)).length > 0)
       ) {
-        await setStorage('allowedChainIds', [...originChromeStorage.allowedChainIds.filter((item) => officialChainIds.includes(item)), ETHEREUM.id]);
-      }
-
-      if (
-        !originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).includes(APTOS.id) &&
-        originChromeStorage.shownAptosNetworkIds.filter((item) => officialAptosNetworkIds.includes(item)).length > 0
-      ) {
-        await setStorage('allowedChainIds', [...originChromeStorage.allowedChainIds.filter((item) => officialChainIds.includes(item)), APTOS.id]);
-      }
-
-      if (
-        !originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).includes(ETHEREUM.id) &&
-        originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length > 0 &&
-        !originChromeStorage.allowedChainIds?.filter((item) => officialChainIds.includes(item)).includes(APTOS.id) &&
-        originChromeStorage.shownAptosNetworkIds?.filter((item) => officialAptosNetworkIds.includes(item)).length > 0
-      ) {
-        await setStorage('allowedChainIds', [...originChromeStorage.allowedChainIds.filter((item) => officialChainIds.includes(item)), ETHEREUM.id, APTOS.id]);
+        const allowedChainList: string[] = [];
+        if (
+          !originChromeStorage.allowedChainIds?.includes(ETHEREUM.id) &&
+          originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length > 0
+        ) {
+          allowedChainList.push(ETHEREUM.id);
+        }
+        if (
+          !originChromeStorage.allowedChainIds?.includes(APTOS.id) &&
+          originChromeStorage.shownAptosNetworkIds.filter((item) => officialAptosNetworkIds.includes(item)).length > 0
+        ) {
+          allowedChainList.push(APTOS.id);
+        }
+        allowedChainList.push(...originChromeStorage.allowedChainIds);
+        await setStorage('allowedChainIds', allowedChainList);
       }
 
       if (!originChromeStorage.selectedAptosNetworkId) {
