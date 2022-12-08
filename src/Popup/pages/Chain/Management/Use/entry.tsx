@@ -28,10 +28,9 @@ import {
   StyledChainAccordionDetails,
   StyledChainAccordionSummary,
   StyledInput,
+  StyledNoResults16Icon,
   StyledSearch20Icon,
 } from './styled';
-
-import NoResults16Icon from '~/images/icons/NoResults16.svg';
 
 export default function Entry() {
   const [search, setSearch] = useState('');
@@ -185,7 +184,7 @@ export default function Entry() {
               ))
             ) : (
               <NoResultsContainer>
-                <NoResults16Icon />
+                <StyledNoResults16Icon />
                 <Typography variant="h6">No Results</Typography>
               </NoResultsContainer>
             )}
@@ -226,7 +225,7 @@ export default function Entry() {
               ))
             ) : (
               <NoResultsContainer>
-                <NoResults16Icon />
+                <StyledNoResults16Icon />
                 <Typography variant="h6">No Results</Typography>
               </NoResultsContainer>
             )}
@@ -266,7 +265,7 @@ export default function Entry() {
               ))
             ) : (
               <NoResultsContainer>
-                <NoResults16Icon />
+                <StyledNoResults16Icon />
                 <Typography variant="h6">No Results</Typography>
               </NoResultsContainer>
             )}

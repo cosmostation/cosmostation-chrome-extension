@@ -5,6 +5,7 @@ import Accordion, { AccordionDetails, AccordionSummary } from '~/Popup/component
 import Input from '~/Popup/components/common/Input';
 
 import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
+import NoResults16Icon from '~/images/icons/NoResults16.svg';
 import Search20Icon from '~/images/icons/Search20.svg';
 
 export const Container = styled('div')({
@@ -96,4 +97,8 @@ export const NoResultsContainer = styled('div')(({ theme }) => ({
   columnGap: '0.4rem',
 
   color: theme.colors.text02,
+}));
+
+export const StyledNoResults16Icon = styled(NoResults16Icon)(({ theme }) => ({
+  fill: theme.colors.base05,
 }));
