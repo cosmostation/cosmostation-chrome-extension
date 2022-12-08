@@ -56,14 +56,11 @@ export default function Entry({ chain }: EntryProps) {
 
   const currentTokenAddresses = currentCosmosTokens.map((current) => current.address);
 
-  const validTokens = useMemo(
-    () => tokens.data.filter((original) => !currentTokenAddresses.includes(original.contract_address)),
-    [currentTokenAddresses, tokens.data],
-  );
+  const validTokens = useMemo(() => tokens.data.filter((original) => !currentTokenAddresses.includes(original.address)), [currentTokenAddresses, tokens.data]);
 
   const [debouncedSearch] = useDebounce(search, 500);
 
-  const filteredTokens = debouncedSearch ? validTokens.filter((item) => item.denom.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) : validTokens;
+  const filteredTokens = debouncedSearch ? validTokens.filter((item) => item.symbol.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) : validTokens;
 
   const handleOnSubmit = async () => {
     await addCosmosTokens(selectedTokens);
@@ -107,25 +104,25 @@ export default function Entry({ chain }: EntryProps) {
         {filteredTokens.length > 0 ? (
           <TokenList>
             {filteredTokens.map((token) => {
-              const isActive = !!selectedTokens.find((check) => check.address === token.contract_address);
+              const isActive = !!selectedTokens.find((check) => check.address === token.address);
               return (
                 <TokenItem
-                  key={token.contract_address}
-                  symbol={token.denom}
-                  logo={token.logo}
+                  key={token.address}
+                  symbol={token.symbol}
+                  logo={token.image}
                   onClick={() => {
                     if (isActive) {
-                      setSelectedTokens(selectedTokens.filter((selectedToken) => selectedToken.address !== token.contract_address));
+                      setSelectedTokens(selectedTokens.filter((selectedToken) => selectedToken.address !== token.address));
                     } else {
                       setSelectedTokens([
                         ...selectedTokens,
                         {
-                          address: token.contract_address,
+                          address: token.address,
                           chainId: currentChain.id,
                           tokenType: 'CW20',
-                          displayDenom: token.denom,
-                          decimals: token.decimal,
-                          imageURL: token.logo,
+                          displayDenom: token.symbol,
+                          decimals: token.decimals,
+                          imageURL: token.image,
                         },
                       ]);
                     }
