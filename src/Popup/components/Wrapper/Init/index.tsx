@@ -126,7 +126,7 @@ export default function Init({ children }: InitType) {
         (!originChromeStorage.allowedChainIds?.includes(APTOS.id) &&
           originChromeStorage.shownAptosNetworkIds.filter((item) => officialAptosNetworkIds.includes(item)).length > 0)
       ) {
-        const allowedChainList: string[] = [];
+        const allowedChainList: Chain['id'][] = [];
         if (
           !originChromeStorage.allowedChainIds?.includes(ETHEREUM.id) &&
           originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length > 0
@@ -139,8 +139,8 @@ export default function Init({ children }: InitType) {
         ) {
           allowedChainList.push(APTOS.id);
         }
-        allowedChainList.push(...originChromeStorage.allowedChainIds);
-        await setStorage('allowedChainIds', allowedChainList);
+
+        await setStorage('allowedChainIds', [...originChromeStorage.allowedChainIds, ...allowedChainList]);
       }
 
       if (!originChromeStorage.selectedAptosNetworkId) {

@@ -28,9 +28,10 @@ import {
   StyledChainAccordionDetails,
   StyledChainAccordionSummary,
   StyledInput,
-  StyledNoResults16Icon,
   StyledSearch20Icon,
 } from './styled';
+
+import NoResults16Icon from '~/images/icons/NoResults16.svg';
 
 export default function Entry() {
   const [search, setSearch] = useState('');
@@ -150,10 +151,10 @@ export default function Entry() {
         onChange={(event) => setSearch(event.currentTarget.value)}
       />
       <ChainAccordionContainer>
-        <StyledChainAccordion expanded={(!!debouncedOpenSearch || isExpandedEthereum) ?? false} onChange={handleChange('ethereum')}>
+        <StyledChainAccordion expanded={!!debouncedOpenSearch || isExpandedEthereum} onChange={handleChange('ethereum')}>
           <StyledChainAccordionSummary
             data-is-expanded={!!debouncedOpenSearch || isExpandedEthereum}
-            data-is-length={!!filteredEthereumNetworks.length}
+            data-is-exists={!!filteredEthereumNetworks.length}
             aria-controls="ethereum-content"
             id="ethereum-header"
           >
@@ -166,7 +167,7 @@ export default function Entry() {
               </ItemLeftTextContainer>
             </ItemLeftContainer>
           </StyledChainAccordionSummary>
-          <StyledChainAccordionDetails data-is-length={!!filteredEthereumNetworks.length}>
+          <StyledChainAccordionDetails data-is-exists={!!filteredEthereumNetworks.length}>
             {filteredEthereumNetworks.length ? (
               filteredEthereumNetworks.map((network) => (
                 <SubItem
@@ -184,17 +185,17 @@ export default function Entry() {
               ))
             ) : (
               <NoResultsContainer>
-                <StyledNoResults16Icon />
+                <NoResults16Icon />
                 <Typography variant="h6">No Results</Typography>
               </NoResultsContainer>
             )}
           </StyledChainAccordionDetails>
         </StyledChainAccordion>
 
-        <StyledChainAccordion expanded={(!!debouncedOpenSearch || isExpandedCosmos) ?? false} onChange={handleChange('cosmos')}>
+        <StyledChainAccordion expanded={!!debouncedOpenSearch || isExpandedCosmos} onChange={handleChange('cosmos')}>
           <StyledChainAccordionSummary
             data-is-expanded={!!debouncedOpenSearch || isExpandedCosmos}
-            data-is-length={!!filteredCosmosChains.length}
+            data-is-exists={!!filteredCosmosChains.length}
             aria-controls="cosmos-content"
             id="cosmos-header"
           >
@@ -207,7 +208,7 @@ export default function Entry() {
               </ItemLeftTextContainer>
             </ItemLeftContainer>
           </StyledChainAccordionSummary>
-          <StyledChainAccordionDetails data-is-length={!!filteredCosmosChains.length}>
+          <StyledChainAccordionDetails data-is-exists={!!filteredCosmosChains.length}>
             {filteredCosmosChains.length ? (
               filteredCosmosChains.map((chain) => (
                 <SubItem
@@ -225,16 +226,16 @@ export default function Entry() {
               ))
             ) : (
               <NoResultsContainer>
-                <StyledNoResults16Icon />
+                <NoResults16Icon />
                 <Typography variant="h6">No Results</Typography>
               </NoResultsContainer>
             )}
           </StyledChainAccordionDetails>
         </StyledChainAccordion>
-        <StyledChainAccordion expanded={(!!debouncedOpenSearch || isExpandedAptos) ?? false} onChange={handleChange('aptos')}>
+        <StyledChainAccordion expanded={!!debouncedOpenSearch || isExpandedAptos} onChange={handleChange('aptos')}>
           <StyledChainAccordionSummary
             data-is-expanded={!!debouncedOpenSearch || isExpandedAptos}
-            data-is-length={!!filteredAptosNetworks.length}
+            data-is-exists={!!filteredAptosNetworks.length}
             aria-controls="aptos-content"
             id="aptos-header"
           >
@@ -247,7 +248,7 @@ export default function Entry() {
               </ItemLeftTextContainer>
             </ItemLeftContainer>
           </StyledChainAccordionSummary>
-          <StyledChainAccordionDetails data-is-length={!!filteredAptosNetworks.length}>
+          <StyledChainAccordionDetails data-is-exists={!!filteredAptosNetworks.length}>
             {filteredAptosNetworks.length ? (
               filteredAptosNetworks.map((network) => (
                 <SubItem
@@ -265,7 +266,7 @@ export default function Entry() {
               ))
             ) : (
               <NoResultsContainer>
-                <StyledNoResults16Icon />
+                <NoResults16Icon />
                 <Typography variant="h6">No Results</Typography>
               </NoResultsContainer>
             )}
