@@ -23,12 +23,15 @@ import {
   ItemLeftContainer,
   ItemLeftImageContainer,
   ItemLeftTextContainer,
+  NoResultsContainer,
   StyledChainAccordion,
   StyledChainAccordionDetails,
   StyledChainAccordionSummary,
   StyledInput,
   StyledSearch20Icon,
 } from './styled';
+
+import NoResults16Icon from '~/images/icons/NoResults16.svg';
 
 export default function Entry() {
   const [search, setSearch] = useState('');
@@ -39,9 +42,9 @@ export default function Entry() {
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
   const { addShownEthereumNetwork, removeShownEthereumNetwork } = useCurrentShownEthereumNetworks();
   const { addShownAptosNetwork, removeShownAptosNetwork } = useCurrentShownAptosNetworks();
-  const [isExpandedEthereum, setIsExpandedEthereum] = useState<boolean>();
-  const [isExpandedCosmos, setIsExpandedCosmos] = useState<boolean>();
-  const [isExpandedAptos, setIsExpandedAptos] = useState<boolean>();
+  const [isExpandedEthereum, setIsExpandedEthereum] = useState<boolean>(false);
+  const [isExpandedCosmos, setIsExpandedCosmos] = useState<boolean>(false);
+  const [isExpandedAptos, setIsExpandedAptos] = useState<boolean>(false);
 
   const handleChange = (panel: 'ethereum' | 'cosmos' | 'aptos') => (_: React.SyntheticEvent, newExpanded: boolean) => {
     if (panel === 'ethereum') {
@@ -149,7 +152,12 @@ export default function Entry() {
       />
       <ChainAccordionContainer>
         <StyledChainAccordion expanded={(!!debouncedOpenSearch || isExpandedEthereum) ?? false} onChange={handleChange('ethereum')}>
-          <StyledChainAccordionSummary aria-controls="ethereum-content" id="ethereum-header">
+          <StyledChainAccordionSummary
+            data-is-expanded={!!debouncedOpenSearch || isExpandedEthereum}
+            data-is-length={!!filteredEthereumNetworks.length}
+            aria-controls="ethereum-content"
+            id="ethereum-header"
+          >
             <ItemLeftContainer>
               <ItemLeftImageContainer>
                 <Image src={ETHEREUM.imageURL} />
@@ -159,26 +167,38 @@ export default function Entry() {
               </ItemLeftTextContainer>
             </ItemLeftContainer>
           </StyledChainAccordionSummary>
-          <StyledChainAccordionDetails>
-            {filteredEthereumNetworks.map((network) => (
-              <SubItem
-                key={network.id}
-                imageProps={{ alt: network.networkName, src: network.imageURL }}
-                switchProps={{
-                  checked: shownEthereumNetworkIds.includes(network.id),
-                  onChange: (_, checked) => {
-                    void handleOnChangeEthereumNetwork(checked, network);
-                  },
-                }}
-              >
-                {network.networkName}
-              </SubItem>
-            ))}
+          <StyledChainAccordionDetails data-is-length={!!filteredEthereumNetworks.length}>
+            {filteredEthereumNetworks.length ? (
+              filteredEthereumNetworks.map((network) => (
+                <SubItem
+                  key={network.id}
+                  imageProps={{ alt: network.networkName, src: network.imageURL }}
+                  switchProps={{
+                    checked: shownEthereumNetworkIds.includes(network.id),
+                    onChange: (_, checked) => {
+                      void handleOnChangeEthereumNetwork(checked, network);
+                    },
+                  }}
+                >
+                  {network.networkName}
+                </SubItem>
+              ))
+            ) : (
+              <NoResultsContainer>
+                <NoResults16Icon />
+                <Typography variant="h6">No Results</Typography>
+              </NoResultsContainer>
+            )}
           </StyledChainAccordionDetails>
         </StyledChainAccordion>
 
         <StyledChainAccordion expanded={(!!debouncedOpenSearch || isExpandedCosmos) ?? false} onChange={handleChange('cosmos')}>
-          <StyledChainAccordionSummary aria-controls="cosmos-content" id="cosmos-header">
+          <StyledChainAccordionSummary
+            data-is-expanded={!!debouncedOpenSearch || isExpandedCosmos}
+            data-is-length={!!filteredCosmosChains.length}
+            aria-controls="cosmos-content"
+            id="cosmos-header"
+          >
             <ItemLeftContainer>
               <ItemLeftImageContainer>
                 <Image src={COSMOS.imageURL} />
@@ -188,26 +208,37 @@ export default function Entry() {
               </ItemLeftTextContainer>
             </ItemLeftContainer>
           </StyledChainAccordionSummary>
-          <StyledChainAccordionDetails>
-            {filteredCosmosChains.map((chain) => (
-              <SubItem
-                key={chain.id}
-                imageProps={{ alt: chain.chainName, src: chain.imageURL }}
-                switchProps={{
-                  checked: allowedChainIds.includes(chain.id),
-                  onChange: (_, checked) => {
-                    void handleOnChangeChain(checked, chain);
-                  },
-                }}
-              >
-                {chain.chainName}
-              </SubItem>
-            ))}
+          <StyledChainAccordionDetails data-is-length={!!filteredCosmosChains.length}>
+            {filteredCosmosChains.length ? (
+              filteredCosmosChains.map((chain) => (
+                <SubItem
+                  key={chain.id}
+                  imageProps={{ alt: chain.chainName, src: chain.imageURL }}
+                  switchProps={{
+                    checked: allowedChainIds.includes(chain.id),
+                    onChange: (_, checked) => {
+                      void handleOnChangeChain(checked, chain);
+                    },
+                  }}
+                >
+                  {chain.chainName}
+                </SubItem>
+              ))
+            ) : (
+              <NoResultsContainer>
+                <NoResults16Icon />
+                <Typography variant="h6">No Results</Typography>
+              </NoResultsContainer>
+            )}
           </StyledChainAccordionDetails>
         </StyledChainAccordion>
-
         <StyledChainAccordion expanded={(!!debouncedOpenSearch || isExpandedAptos) ?? false} onChange={handleChange('aptos')}>
-          <StyledChainAccordionSummary aria-controls="aptos-content" id="aptos-header">
+          <StyledChainAccordionSummary
+            data-is-expanded={!!debouncedOpenSearch || isExpandedAptos}
+            data-is-length={!!filteredAptosNetworks.length}
+            aria-controls="aptos-content"
+            id="aptos-header"
+          >
             <ItemLeftContainer>
               <ItemLeftImageContainer>
                 <Image src={APTOS.imageURL} />
@@ -217,21 +248,28 @@ export default function Entry() {
               </ItemLeftTextContainer>
             </ItemLeftContainer>
           </StyledChainAccordionSummary>
-          <StyledChainAccordionDetails>
-            {filteredAptosNetworks.map((network) => (
-              <SubItem
-                key={network.id}
-                imageProps={{ alt: network.networkName, src: network.imageURL }}
-                switchProps={{
-                  checked: shownAptosNetworkIds.includes(network.id),
-                  onChange: (_, checked) => {
-                    void handleOnChangeAptosNetwork(checked, network);
-                  },
-                }}
-              >
-                {network.networkName}
-              </SubItem>
-            ))}
+          <StyledChainAccordionDetails data-is-length={!!filteredAptosNetworks.length}>
+            {filteredAptosNetworks.length ? (
+              filteredAptosNetworks.map((network) => (
+                <SubItem
+                  key={network.id}
+                  imageProps={{ alt: network.networkName, src: network.imageURL }}
+                  switchProps={{
+                    checked: shownAptosNetworkIds.includes(network.id),
+                    onChange: (_, checked) => {
+                      void handleOnChangeAptosNetwork(checked, network);
+                    },
+                  }}
+                >
+                  {network.networkName}
+                </SubItem>
+              ))
+            ) : (
+              <NoResultsContainer>
+                <NoResults16Icon />
+                <Typography variant="h6">No Results</Typography>
+              </NoResultsContainer>
+            )}
           </StyledChainAccordionDetails>
         </StyledChainAccordion>
         <Divider />

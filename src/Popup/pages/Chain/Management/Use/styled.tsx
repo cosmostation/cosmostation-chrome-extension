@@ -1,4 +1,3 @@
-import type { AccordionProps } from '@mui/material/Accordion';
 import type { AccordionSummaryProps } from '@mui/material/AccordionSummary';
 import { styled } from '@mui/material/styles';
 
@@ -52,30 +51,49 @@ export const ChainAccordionContainer = styled('div')({
   marginTop: '1.6rem',
 });
 
-export const StyledChainAccordion = styled((props: AccordionProps) => <Accordion disableGutters {...props} />)(({ theme }) => ({
+export const StyledChainAccordion = styled(Accordion)(({ theme }) => ({
   border: '0',
   borderTop: `0.1rem solid ${theme.colors.base04}`,
   borderRadius: '0',
 }));
 
-export const StyledChainAccordionSummary = styled((props: AccordionSummaryProps) => <AccordionSummary expandIcon={<BottomArrow24Icon />} {...props} />)(
-  ({ theme }) => ({
-    padding: '1.2rem 0.4rem',
+type StyledAccordionSummaryProps = {
+  'data-is-expanded': boolean;
+  'data-is-length': boolean;
+};
 
-    '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
-      transform: 'rotate(180deg)',
+export const StyledChainAccordionSummary = styled((props: AccordionSummaryProps) => (
+  <AccordionSummary expandIcon={<BottomArrow24Icon />} {...props} />
+))<StyledAccordionSummaryProps>(({ theme, ...props }) => ({
+  padding: props['data-is-expanded'] ? (props['data-is-length'] ? '1.2rem 0.4rem 0.8rem' : '1.2rem 0.4rem 0.45rem') : '1.2rem 0.4rem',
+
+  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
+    transform: 'rotate(180deg)',
+  },
+
+  '& .MuiAccordionSummary-expandIconWrapper': {
+    '& > svg > path': {
+      stroke: theme.colors.base05,
     },
+  },
+}));
 
-    '& .MuiAccordionSummary-expandIconWrapper': {
-      '& > svg': {
-        '& > path': {
-          stroke: theme.colors.base05,
-        },
-      },
-    },
-  }),
-);
+type StyledAccordionDetailsProps = {
+  'data-is-length': boolean;
+};
 
-export const StyledChainAccordionDetails = styled(AccordionDetails)({
-  paddingBottom: '1.2rem',
-});
+export const StyledChainAccordionDetails = styled(AccordionDetails)<StyledAccordionDetailsProps>((props) => ({
+  paddingBottom: props['data-is-length'] ? '1.2rem' : '1.4rem',
+}));
+
+export const NoResultsContainer = styled('div')(({ theme }) => ({
+  paddingLeft: '3.6rem',
+
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+
+  columnGap: '0.4rem',
+
+  color: theme.colors.text02,
+}));
