@@ -14,7 +14,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { fix, lt, times } from '~/Popup/utils/big';
+import { ceil, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
@@ -58,10 +58,10 @@ export default function Entry({ queue, chain }: EntryProps) {
         coinGeckoId: chain.coinGeckoId,
       },
       ...assets.data.map((asset) => ({
-        originBaseDenom: asset.base_denom,
+        originBaseDenom: asset.origin_denom,
         baseDenom: asset.denom,
-        decimals: asset.decimal,
-        displayDenom: asset.dp_denom,
+        decimals: asset.decimals,
+        displayDenom: asset.symbol,
         coinGeckoId: asset.coinGeckoId,
       })),
     ],
@@ -124,12 +124,12 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
 
-  const fixedBaseFee = useMemo(() => fix(baseFee, 0, 0), [baseFee]);
+  const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 
   const encodedBodyBytes = cosmos.tx.v1beta1.TxBody.encode({ ...decodedBodyBytes, memo }).finish();
   const encodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode({
     ...decodedAuthInfoBytes,
-    fee: { amount: [{ denom: selectedFeeCoin.baseDenom, amount: fixedBaseFee }], gas_limit: Number(gas) },
+    fee: { amount: [{ denom: selectedFeeCoin.baseDenom, amount: ceilBaseFee }], gas_limit: Number(gas) },
   }).finish();
 
   const bodyBytes = isEditMemo ? encodedBodyBytes : doc.body_bytes;

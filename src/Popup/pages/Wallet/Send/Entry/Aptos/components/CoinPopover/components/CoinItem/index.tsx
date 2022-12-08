@@ -42,7 +42,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin,
 
   const assets = useAssetsSWR();
 
-  const asset = assets.data.find((item) => item.coinType === coinAddress);
+  const asset = assets.data.find((item) => item.address === coinAddress);
 
   const { data: coinInfo } = useAccountResourceSWR({
     resourceType: '0x1::coin::CoinInfo',

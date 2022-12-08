@@ -53,15 +53,15 @@ export default function Entry({ chain }: EntryProps) {
 
   const submit = async (data: ImportTokenForm) => {
     if (tokenInfo.data) {
-      const savedTokenInfo = tokens.data.find((item) => item.contract_address === data.address);
+      const savedTokenInfo = tokens.data.find((item) => item.address === data.address);
       await addCosmosToken({
         address: data.address,
         decimals: tokenInfo.data.decimals,
         displayDenom: tokenInfo.data.symbol,
         tokenType: 'CW20',
         chainId: currentChain.id,
-        imageURL: savedTokenInfo?.logo ?? data.imageURL,
-        coinGeckoId: savedTokenInfo?.coingecko_id,
+        imageURL: savedTokenInfo?.image ?? data.imageURL,
+        coinGeckoId: savedTokenInfo?.coinGeckoId,
       });
 
       enqueueSnackbar(t('pages.Chain.Cosmos.Token.Add.CW20.entry.addTokenSnackbar'));

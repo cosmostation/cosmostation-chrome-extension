@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
@@ -17,16 +18,19 @@ import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
+import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { fix, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { protoTx } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
-import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain';
+import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKey } from '~/types/chain';
 
 import { BottomContainer, Container, MarginTop8Div, MarginTop12Div, MarginTop16Div, MaxButton, StyledInput, StyledTextarea } from './styled';
 import CoinOrTokenPopover from '../CoinOrTokenPopover';
@@ -127,10 +131,13 @@ export default function Send({ chain }: CosmosProps) {
 
   const [customGas, setCustomGas] = useState<string | undefined>();
 
-  const currentGas = useMemo(() => customGas || sendGas, [customGas, sendGas]);
-  const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate.low));
+  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
 
-  const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
+  const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate[currentGasRateKey]));
+
+  const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
+
+  const currentDisplayFeeAmount = toDisplayDenomAmount(currentCeilFeeAmount, decimals);
 
   const tokenBalance = useTokenBalanceSWR(chain, currentCoinOrTokenId, address);
 
@@ -228,12 +235,114 @@ export default function Send({ chain }: CosmosProps) {
     t,
   ]);
 
-  useEffect(() => {
-    if (!customGas) {
-      setCurrentFeeAmount(times(currentGas, gasRate.low));
+  const memoizedSendAminoTx = useMemo(() => {
+    if (account.data?.value.account_number && addressRegex.test(currentAddress) && currentDisplayAmount) {
+      const sequence = String(account.data?.value.sequence || '0');
+
+      if (currentCoinOrToken.type === 'coin') {
+        return {
+          account_number: String(account.data.value.account_number),
+          sequence,
+          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+          fee: {
+            amount: [
+              {
+                denom: currentFeeCoin.baseDenom,
+                amount: chain.type === 'ETHERMINT' ? times(currentFeeGasRate[currentGasRateKey], COSMOS_DEFAULT_SEND_GAS, 0) : '1',
+              },
+            ],
+            gas: COSMOS_DEFAULT_SEND_GAS,
+          },
+          memo: currentMemo,
+          msgs: [
+            {
+              type: chain.chainName === SHENTU.chainName ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
+              value: {
+                from_address: address,
+                to_address: currentAddress,
+                amount: [{ amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0), denom: currentCoinOrToken.baseDenom }],
+              },
+            },
+          ],
+        };
+      }
+
+      if (currentCoinOrToken.type === 'token') {
+        return {
+          account_number: String(account.data.value.account_number),
+          sequence,
+          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+          fee: {
+            amount: [
+              {
+                denom: currentFeeCoin.baseDenom,
+                amount: times(currentFeeGasRate[currentGasRateKey], COSMOS_DEFAULT_TRANSFER_GAS, 0),
+              },
+            ],
+            gas: COSMOS_DEFAULT_TRANSFER_GAS,
+          },
+          memo: currentMemo,
+          msgs: [
+            {
+              type: 'wasm/MsgExecuteContract',
+              value: {
+                sender: address,
+                contract: currentCoinOrToken.address,
+                msg: {
+                  transfer: {
+                    recipient: currentAddress,
+                    amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
+                  },
+                },
+                funds: [],
+              },
+            },
+          ],
+        };
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentCoinOrTokenId]);
+
+    return undefined;
+  }, [
+    account.data?.value.account_number,
+    account.data?.value.sequence,
+    address,
+    addressRegex,
+    chain.chainId,
+    chain.chainName,
+    chain.type,
+    currentAddress,
+    currentCoinOrToken,
+    currentDisplayAmount,
+    currentFeeCoin.baseDenom,
+    currentFeeGasRate,
+    currentGasRateKey,
+    currentMemo,
+    nodeInfo.data?.node_info?.network,
+  ]);
+
+  const [sendAminoTx] = useDebounce(memoizedSendAminoTx, 1000);
+
+  const sendProtoTx = useMemo(() => {
+    if (sendAminoTx) {
+      return protoTx(sendAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
+    }
+    return null;
+  }, [chain, sendAminoTx]);
+
+  const simulate = useSimulateSWR({ chain, txBytes: sendProtoTx?.tx_bytes });
+
+  const simulatedGas = useMemo(
+    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
+    [chain, simulate.data?.gas_info?.gas_used],
+  );
+
+  const currentGas = useMemo(() => customGas || simulatedGas || sendGas, [customGas, sendGas, simulatedGas]);
+
+  useEffect(() => {
+    setCurrentFeeAmount(times(currentGas, currentFeeGasRate[currentGasRateKey]));
+  }, [currentGas, currentGasRateKey, currentFeeGasRate]);
+
   return (
     <Container>
       <div>
@@ -307,8 +416,8 @@ export default function Send({ chain }: CosmosProps) {
           gasRate={currentFeeGasRate}
           baseFee={currentFeeAmount}
           gas={currentGas}
-          onChangeGas={(g) => setCustomGas(g)}
-          onChangeFee={(f) => setCurrentFeeAmount(f)}
+          onChangeGas={setCustomGas}
+          onChangeGasRateKey={setCurrentGasRateKey}
           isEdit
         />
       </MarginTop12Div>
@@ -317,9 +426,9 @@ export default function Send({ chain }: CosmosProps) {
           <div>
             <Button
               type="button"
-              disabled={!!errorMessage}
+              disabled={!!errorMessage || !sendAminoTx}
               onClick={async () => {
-                if (currentCoinOrToken.type === 'coin') {
+                if (sendAminoTx) {
                   await enQueue({
                     messageId: '',
                     origin: '',
@@ -328,62 +437,7 @@ export default function Send({ chain }: CosmosProps) {
                       method: 'cos_signAmino',
                       params: {
                         chainName: chain.chainName,
-                        doc: {
-                          account_number: String(account.data?.value.account_number ?? ''),
-                          sequence: String(account.data?.value.sequence ?? '0'),
-                          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
-                          fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: fix(currentFeeAmount, 0) }], gas: currentGas },
-                          memo: currentMemo,
-                          msgs: [
-                            {
-                              type: chain.chainName === SHENTU.chainName ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
-                              value: {
-                                from_address: address,
-                                to_address: currentAddress,
-                                amount: [
-                                  { amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0), denom: currentCoinOrToken.baseDenom },
-                                ],
-                              },
-                            },
-                          ],
-                        },
-                      },
-                    },
-                  });
-                }
-
-                if (currentCoinOrToken.type === 'token') {
-                  await enQueue({
-                    messageId: '',
-                    origin: '',
-                    channel: 'inApp',
-                    message: {
-                      method: 'cos_signAmino',
-                      params: {
-                        chainName: chain.chainName,
-                        doc: {
-                          account_number: String(account.data?.value.account_number ?? ''),
-                          sequence: String(account.data?.value.sequence ?? '0'),
-                          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
-                          fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: fix(currentFeeAmount, 0) }], gas: currentGas },
-                          memo: currentMemo,
-                          msgs: [
-                            {
-                              type: 'wasm/MsgExecuteContract',
-                              value: {
-                                sender: address,
-                                contract: currentCoinOrToken.address,
-                                msg: {
-                                  transfer: {
-                                    recipient: currentAddress,
-                                    amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
-                                  },
-                                },
-                                funds: [],
-                              },
-                            },
-                          ],
-                        },
+                        doc: { ...sendAminoTx, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }], gas: currentGas } },
                       },
                     },
                   });

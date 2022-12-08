@@ -5,8 +5,8 @@ import Number from '~/Popup/components/common/Number';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { divide, equal, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import type { FeeCoin, GasRate } from '~/types/chain';
+import { ceil, divide, equal, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import type { FeeCoin, GasRate, GasRateKey } from '~/types/chain';
 
 import GasSettingDialog from './components/GasSettingDialog';
 import {
@@ -31,11 +31,12 @@ type FeeProps = {
   baseFee: string;
   gas: string;
   gasRate: GasRate;
+  onChangeGasRateKey?: (key: GasRateKey) => void;
   onChangeFee?: (fee: string) => void;
   onChangeGas?: (gas: string) => void;
 };
 
-export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee, onChangeGas, feeCoin }: FeeProps) {
+export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee, onChangeGasRateKey, onChangeGas, feeCoin }: FeeProps) {
   const { chromeStorage } = useChromeStorage();
   const { decimals, displayDenom, coinGeckoId } = feeCoin;
 
@@ -51,7 +52,7 @@ export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee
 
   const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
 
-  const displayFee = toDisplayDenomAmount(baseFee, decimals);
+  const displayFee = toDisplayDenomAmount(ceil(baseFee), decimals);
   const value = times(displayFee, chainPrice);
 
   const currentGasRate = divide(baseFee, gas);
@@ -89,13 +90,34 @@ export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee
             </EditLeftContainer>
             <EditRightContainer>
               <FeeButtonContainer>
-                <FeeButton type="button" onClick={() => onChangeFee?.(times(tiny, gas))} data-is-active={equal(currentGasRate, tiny) ? 1 : 0}>
+                <FeeButton
+                  type="button"
+                  onClick={() => {
+                    onChangeFee?.(times(tiny, gas));
+                    onChangeGasRateKey?.('tiny');
+                  }}
+                  data-is-active={equal(currentGasRate, tiny) ? 1 : 0}
+                >
                   {t('components.Fee.index.tiny')}
                 </FeeButton>
-                <FeeButton type="button" onClick={() => onChangeFee?.(times(low, gas))} data-is-active={equal(currentGasRate, low) ? 1 : 0}>
+                <FeeButton
+                  type="button"
+                  onClick={() => {
+                    onChangeFee?.(times(low, gas));
+                    onChangeGasRateKey?.('low');
+                  }}
+                  data-is-active={equal(currentGasRate, low) ? 1 : 0}
+                >
                   {t('components.Fee.index.low')}
                 </FeeButton>
-                <FeeButton type="button" onClick={() => onChangeFee?.(times(average, gas))} data-is-active={equal(currentGasRate, average) ? 1 : 0}>
+                <FeeButton
+                  type="button"
+                  onClick={() => {
+                    onChangeFee?.(times(average, gas));
+                    onChangeGasRateKey?.('average');
+                  }}
+                  data-is-active={equal(currentGasRate, average) ? 1 : 0}
+                >
                   {t('components.Fee.index.average')}
                 </FeeButton>
               </FeeButtonContainer>

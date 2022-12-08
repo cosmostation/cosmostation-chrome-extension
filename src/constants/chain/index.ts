@@ -35,6 +35,7 @@ import { LUM } from './cosmos/lum';
 import { MEDIBLOC } from './cosmos/medibloc';
 import { NYX, NYX_FEE_BASE_DENOMS, NYX_GAS_RATES } from './cosmos/nyx';
 import { OMNIFLIX } from './cosmos/omniflix';
+import { ONOMY } from './cosmos/onomy';
 import { OSMOSIS } from './cosmos/osmosis';
 import { PASSAGE } from './cosmos/passage';
 import { PERSISTENCE } from './cosmos/persistence';
@@ -81,7 +82,8 @@ export const COSMOS_DEFAULT_TRANSFER_GAS = '200000';
 export const COSMOS_DEFAULT_IBC_TRANSFER_GAS = '250000';
 export const COSMOS_DEFAULT_REWARD_GAS = '300000';
 
-export const COSMOS_DEFAULT_ESTIMATE_AV = '1.35';
+export const COSMOS_DEFAULT_ESTIMATE_AV = '1.2';
+export const COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV = '1.4';
 
 export const COSMOS_CHAINS: CosmosChain[] = [
   COSMOS,
@@ -115,6 +117,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   MEDIBLOC,
   NYX,
   OMNIFLIX,
+  ONOMY,
   OSMOSIS,
   PASSAGE,
   PERSISTENCE,
