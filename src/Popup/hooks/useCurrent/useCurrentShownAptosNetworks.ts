@@ -17,6 +17,14 @@ export function useCurrentShownAptosNetworks() {
     await setChromeStorage('shownAptosNetworkIds', [...shownAptosNetworkIds, network.id]);
   };
 
+  const addShownAptosNetworks = async (networks: AptosNetwork[]) => {
+    const networkIds = networks.map((network) => network.id);
+
+    const newShownAptosNetworkIds = Array.from(new Set([...shownAptosNetworkIds, ...networkIds]));
+
+    await setChromeStorage('shownAptosNetworkIds', newShownAptosNetworkIds);
+  };
+
   const removeShownAptosNetwork = async (network: AptosNetwork) => {
     if (!shownAptosNetworkIds.find((shownAptosNetworkId) => shownAptosNetworkId === network.id)) {
       return;
@@ -27,9 +35,19 @@ export function useCurrentShownAptosNetworks() {
     await setChromeStorage('shownAptosNetworkIds', newShownAptosNetworkIds);
   };
 
+  const removeShownAptosNetworks = async (networks: AptosNetwork[]) => {
+    const networkIds = networks.map((network) => network.id);
+
+    const newShownAptosNetworkIds = shownAptosNetworkIds.filter((shownAptosNetworkId) => !networkIds.includes(shownAptosNetworkId));
+
+    await setChromeStorage('shownAptosNetworkIds', newShownAptosNetworkIds);
+  };
+
   return {
     currentShownAptosNetwork,
     addShownAptosNetwork,
+    addShownAptosNetworks,
     removeShownAptosNetwork,
+    removeShownAptosNetworks,
   };
 }
