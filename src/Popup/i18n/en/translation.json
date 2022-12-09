@@ -31,6 +31,11 @@
     },
     "Fee": {
       "components": {
+        "FeeSettingDialog": {
+          "index": {
+            "feeSettings": "Choose Tx fee"
+          }
+        },
         "GasSettingDialog": {
           "index": {
             "gasSettings": "Gas settings",

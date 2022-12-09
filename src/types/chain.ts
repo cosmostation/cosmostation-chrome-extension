@@ -100,6 +100,8 @@ export type FeeCoin = {
   displayDenom: string;
   decimals: number;
   coinGeckoId?: string;
+  imageURL?: string | undefined;
+  availableAmount?: string;
 };
 
 export type EthereumChain = {

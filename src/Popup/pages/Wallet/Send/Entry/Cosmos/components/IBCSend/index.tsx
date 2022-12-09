@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
+import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS } from '~/constants/chain';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
@@ -19,6 +19,7 @@ import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useClientStateSWR } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
+import { useGasRateSWR } from '~/Popup/hooks/SWR/cosmos/useGasRateSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
@@ -84,7 +85,11 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const nodeInfo = useNodeInfoSWR(chain);
   const { enQueue } = useCurrentQueue();
   const params = useParams();
+  const assetGasRate = useGasRateSWR(chain);
 
+  // TODO
+  // 1. swr훅을 통해 가져온 데이터들 중 baseDenom만 쏙 뽑아온다
+  // 2. baseDenom을 익스텐션 저장값과 비교한 후 익스텐션 안에 있는 놈들만 가져온다
   const { t } = useTranslation();
   const { currentCosmosTokens } = useCurrentCosmosTokens();
 
@@ -135,6 +140,18 @@ export default function IBCSend({ chain }: IBCSendProps) {
     ],
     [coinAll, currentCosmosTokens],
   );
+
+  // NOTE Legacy
+  // const availableFeeCoin = useMemo(() => {
+  //   const assetGasFeeRateDenomList = [...Object.keys(assetGasRate.data)];
+
+  //   // NOTE 익스텐션이 지원하는 체인의 토큰인지 확인
+  //   const aa = COSMOS_CHAINS.filter((item) => assetGasFeeRateDenomList.includes(item.baseDenom)).map((item) => item.baseDenom);
+  //   // NOTE availableCoinOrTokenList에서 assetGasFeeRateDenomList안에 denom이 포함되는 놈만 필터림
+  //   const bb = availableCoinOrTokenList.filter((item) => (item.type === 'coin' ? aa.includes(item.baseDenom) : false));
+  //   // NOTE 현재 chain에서 해당 토큰의 available > 0인지
+  //   return bb;
+  // }, [assetGasRate.data, availableCoinOrTokenList]);
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
@@ -242,18 +259,18 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const feeCoins = useMemo(() => {
     if (currentCoinOrToken.type === 'coin') {
-      const feeBaseDenoms = COSMOS_FEE_BASE_DENOMS.find((item) => item.chainId === chain.id && item.baseDenom === currentCoinOrToken.baseDenom)?.feeBaseDenoms;
+      const assetGasFeeRateDenomList = [...Object.keys(assetGasRate.data)];
 
-      const filteredFeeCoins = coinAll.filter((item) => feeBaseDenoms?.includes(item.baseDenom));
+      const filteredFeeCoins = coinAll.filter((item) => assetGasFeeRateDenomList?.includes(item.baseDenom));
 
       return filteredFeeCoins.length > 0 ? filteredFeeCoins : [coinAll[0]];
     }
 
     return [coinAll[0]];
-  }, [chain.id, coinAll, currentCoinOrToken]);
+  }, [assetGasRate.data, coinAll, currentCoinOrToken.type]);
 
   // 복수 개가 될 때 필요
-  const [currentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
+  const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
 
   const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom)!, [currentFeeBaseDenom, feeCoins]);
 
@@ -262,10 +279,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [currentFeeCoin.availableAmount, currentFeeCoin.decimals],
   );
 
-  const currentFeeGasRate = useMemo(
-    () => COSMOS_GAS_RATES.find((item) => item.chainId === chain.id && item.baseDenom === currentFeeCoin.baseDenom)?.gasRate ?? chain.gasRate,
-    [chain.gasRate, chain.id, currentFeeCoin.baseDenom],
-  );
+  const currentFeeGasRate = useMemo(() => assetGasRate.data[chain.baseDenom] ?? chain.gasRate, [assetGasRate.data, chain.baseDenom, chain.gasRate]);
 
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
@@ -555,10 +569,14 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
         <MarginTop8Div>
           <Fee
-            feeCoin={{ ...currentFeeCoin, originBaseDenom: currentFeeCoin.originBaseDenom }}
+            feeCoin={{ ...currentFeeCoin }}
+            feeCoinList={feeCoins}
             gasRate={currentFeeGasRate}
             baseFee={currentFeeAmount}
             gas={currentGas}
+            onChangeFeeCoin={(feeCoinBaseDenom) => {
+              setCurrentFeeBaseDenom(feeCoinBaseDenom);
+            }}
             onChangeGas={setCustomGas}
             onChangeGasRateKey={setCurrentGasRateKey}
             isEdit
