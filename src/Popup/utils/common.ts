@@ -4,6 +4,7 @@ import { getAddress as getAptosAddress } from '~/Popup/utils/aptos';
 import { getAddress as getBech32Address, getAddressForEthermint } from '~/Popup/utils/cosmos';
 import { aesDecrypt, mnemonicToAptosPair, mnemonicToPair, mnemonicToSuiPair, privateKeyToAptosPair, privateKeyToPair } from '~/Popup/utils/crypto';
 import { getAddress as getEthereumAddress } from '~/Popup/utils/ethereum';
+import { getAddress as getSuiAddress } from '~/Popup/utils/sui';
 import type { Chain } from '~/types/chain';
 import type { Account } from '~/types/chromeStorage';
 
@@ -24,6 +25,10 @@ export function getAddress(chain: Chain, publicKey?: Buffer) {
 
   if (chain.line === 'APTOS') {
     return getAptosAddress(publicKey);
+  }
+
+  if (chain.line === 'SUI') {
+    return getSuiAddress(publicKey);
   }
 
   return '';

@@ -104,6 +104,7 @@ export type ChromeStorage = {
 
   shownEthereumNetworkIds: EthereumNetwork['id'][];
   shownAptosNetworkIds: AptosNetwork['id'][];
+  shownSuiNetworkIds: SuiNetwork['id'][];
 
   selectedChainId: Chain['id'];
 

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
-import { APTOS_CHAINS, COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
+import { APTOS_CHAINS, COSMOS_CHAINS, ETHEREUM_CHAINS, SUI_CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -11,6 +11,8 @@ import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
+import { useCurrentShownSuiNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownSuiNetworks';
+import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Chain } from '~/types/chain';
@@ -46,13 +48,17 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
   const { currentAptosNetwork, setCurrentAptosNetwork, removeAptosNetwork } = useCurrentAptosNetwork();
   const { currentShownAptosNetwork } = useCurrentShownAptosNetworks();
 
+  const { currentSuiNetwork, setCurrentSuiNetwork, removeSuiNetwork } = useCurrentSuiNetwork();
+  const { currentShownSuiNetwork } = useCurrentShownSuiNetworks();
+
   const { t } = useTranslation();
 
-  const { allowedChainIds, additionalChains, additionalEthereumNetworks, additionalAptosNetworks } = chromeStorage;
+  const { allowedChainIds, additionalChains, additionalEthereumNetworks, additionalAptosNetworks, additionalSuiNetworks } = chromeStorage;
 
   const allowedCosmosChain = useMemo(() => COSMOS_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
   const allowedEthereumChain = useMemo(() => ETHEREUM_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
   const allowedAptosChain = useMemo(() => APTOS_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
+  const allowedSuiChain = useMemo(() => SUI_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
 
   return (
     <Popover {...remainder} onClose={onClose}>
@@ -230,6 +236,70 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
                         }}
                         onClickDelete={async () => {
                           await removeAptosNetwork(network);
+                        }}
+                        isCustom
+                      >
+                        {network.networkName}
+                      </ChainItemButton>
+                    )),
+                  ];
+                })}
+              </ChainListContainer>
+            </>
+          )}
+
+          {allowedSuiChain.length > 0 && (
+            <>
+              {[...allowedEthereumChain, ...allowedCosmosChain, ...allowedAptosChain].length > 0 && <StyledDivider />}
+              <ChainTitleContainer>
+                <Typography variant="h6">SUI networks</Typography>
+              </ChainTitleContainer>
+              <ChainListContainer>
+                {allowedSuiChain.map((chain) => {
+                  if (isOnlyChain) {
+                    return (
+                      <ChainItemButton
+                        key={chain.id}
+                        isActive={currentChain.id === chain.id}
+                        imgSrc={chain.imageURL}
+                        onClick={() => {
+                          onClickChain?.(chain);
+                          onClose?.({}, 'backdropClick');
+                        }}
+                      >
+                        {chain.chainName}
+                      </ChainItemButton>
+                    );
+                  }
+                  return [
+                    ...currentShownSuiNetwork.map((network) => (
+                      <ChainItemButton
+                        key={`${chain.id}-${network.id}`}
+                        isActive={currentChain.id === chain.id && currentSuiNetwork.id === network.id}
+                        isBackgroundActive={currentSuiNetwork.id === network.id}
+                        imgSrc={network.imageURL}
+                        onClick={async () => {
+                          await setCurrentSuiNetwork(network);
+                          onClickChain?.(chain);
+                          onClose?.({}, 'backdropClick');
+                        }}
+                      >
+                        {network.networkName}
+                      </ChainItemButton>
+                    )),
+                    ...additionalSuiNetworks.map((network) => (
+                      <ChainItemButton
+                        key={`${chain.id}-${network.id}`}
+                        isActive={currentChain.id === chain.id && currentSuiNetwork.id === network.id}
+                        isBackgroundActive={currentSuiNetwork.id === network.id}
+                        imgSrc={network.imageURL}
+                        onClick={async () => {
+                          await setCurrentSuiNetwork(network);
+                          onClickChain?.(chain, true);
+                          onClose?.({}, 'backdropClick');
+                        }}
+                        onClickDelete={async () => {
+                          await removeSuiNetwork(network);
                         }}
                         isCustom
                       >

@@ -19,7 +19,7 @@ content-type: application/json
 {
     "jsonrpc": "2.0",
     "method": "sui_getObjectsOwnedByAddress",
-    "params": ["0xb1ff4847c94edd8aca85c4ce16f88388f3aab3da"],
+    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe"],
     "id": 0
 }
 
@@ -52,3 +52,24 @@ content-type: application/json
     "id": 1
 }]
 
+### sui_getCoinMetadata
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getCoinMetadata",
+    "params": ["0x2::sui::SUI"],
+    "id": 1
+}
+
+### sui_getBalance
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getBalance",
+    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe", "0x2::sui::SUI"],
+    "id": 1
+}

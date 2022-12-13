@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
-import { APTOS_NETWORKS, CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { MAINNET as APTOS_NETWORK_MAINNET } from '~/constants/chain/aptos/network/mainnet';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { DEVNET as SUI_NETWORK_DEVNET } from '~/constants/chain/sui/network/devnet';
+import { TESTNET as SUI_NETWORK_MAINNET } from '~/constants/chain/sui/network/testnet';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeSessionStorageDefault, chromeSessionStorageState } from '~/Popup/recoils/chromeSessionStorage';
@@ -34,6 +35,7 @@ export default function Init({ children }: InitType) {
 
   const officialEthereumNetworkIds = ETHEREUM_NETWORKS.map((item) => item.id);
   const officialAptosNetworkIds = APTOS_NETWORKS.map((item) => item.id);
+  const officialSuiNetworkIds = SUI_NETWORKS.map((item) => item.id);
 
   const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
   const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
@@ -142,6 +144,10 @@ export default function Init({ children }: InitType) {
         }
 
         await setStorage('allowedChainIds', [...originChromeStorage.allowedChainIds, ...allowedChainList]);
+      }
+
+      if (!originChromeStorage.shownSuiNetworkIds?.filter((item) => officialSuiNetworkIds.includes(item)).length) {
+        await setStorage('shownSuiNetworkIds', [SUI_NETWORK_MAINNET.id]);
       }
 
       if (!originChromeStorage.selectedAptosNetworkId) {

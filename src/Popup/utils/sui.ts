@@ -1,12 +1,7 @@
-import { sha3_256 as sha3 } from '@noble/hashes/sha3';
-import { bytesToHex } from '@noble/hashes/utils';
+import { Ed25519PublicKey } from '@mysten/sui.js';
 
 export function getAddress(publicKey: Buffer) {
-  const hash = sha3.create();
-  hash.update(publicKey);
-  hash.update('\x00');
+  const key = new Ed25519PublicKey(publicKey);
 
-  const address = `0x${bytesToHex(hash.digest())}`;
-
-  return address;
+  return `0x${key.toSuiAddress()}`;
 }

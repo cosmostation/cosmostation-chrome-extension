@@ -141,6 +141,7 @@ export type SuiNetwork = {
   id: string;
   networkName: string;
   rpcURL: string;
+  displayDenom: string;
   imageURL?: string;
   explorerURL?: string;
   coinGeckoId?: string;

@@ -7,4 +7,5 @@ export const TESTNET: SuiNetwork = {
   rpcURL: 'https://fullnode.testnet.sui.io',
   imageURL: suiImg,
   explorerURL: 'https://explorer.sui.io',
+  displayDenom: 'SUI',
 };

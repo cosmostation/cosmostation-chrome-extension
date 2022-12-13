@@ -31,14 +31,6 @@ export type Reference = {
   digest: string;
 };
 
-export type ExistsDetails = {
-  data: Data;
-  owner: Owner;
-  previousTransaction: string;
-  storageRebase: number;
-  reference: Reference;
-};
-
 export type GetObjectsOwnedByAddress = {
   objectId: string;
   version: number;
@@ -50,7 +42,46 @@ export type GetObjectsOwnedByAddress = {
 
 export type GetObjectsOwnedByAddressResponse = Result<GetObjectsOwnedByAddress[]>;
 
+export type ExistsDetails = {
+  data: Data;
+  owner: Owner;
+  previousTransaction: string;
+  storageRebase: number;
+  reference: Reference;
+};
+
+export type DeletedDetails = {
+  objectId: string;
+  version: number;
+  digest: string;
+};
+
+export type NotExistsDetails = string;
+
 export type GetObjectExists = {
   status: 'Exists';
   details: ExistsDetails;
 };
+
+export type GetObjectDeleted = {
+  status: 'Deleted';
+  details: DeletedDetails;
+};
+
+export type GetObjectNotExists = {
+  status: 'NotExists';
+  details: NotExistsDetails;
+};
+
+export type GetObjectResponse = Result<GetObjectNotExists | GetObjectDeleted | GetObjectExists>;
+
+export type GetCoinMetadata = {
+  decimals: number;
+  description: string;
+  iconUrl: string | null;
+  id: string | null;
+  name: string;
+  symbol: string;
+};
+
+export type GetCoinMetadataResponse = Result<GetCoinMetadata>;

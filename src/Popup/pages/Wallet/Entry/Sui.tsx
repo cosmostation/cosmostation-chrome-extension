@@ -7,9 +7,8 @@ import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetw
 import type { SuiChain } from '~/types/chain';
 
 import LedgerCheck from '../components/LedgerCheck';
-import CoinList from '../components/sui/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/sui/NativeChainCard';
-import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
+import { Container, HeaderContainer, NativeChainCardContainer } from '../styled';
 
 type SuiProps = {
   chain: SuiChain;
@@ -27,21 +26,16 @@ export default function Sui({ chain }: SuiProps) {
         <Header />
       </HeaderContainer>
       <LedgerCheck>
-        <>
-          <NativeChainCardContainer>
-            <ErrorBoundary
-              // eslint-disable-next-line react/no-unstable-nested-components
-              FallbackComponent={(props) => <NativeChainCardError chain={chain} isCustom={isCustom} {...props} />}
-            >
-              <Suspense fallback={<NativeChainCardSkeleton chain={chain} isCustom={isCustom} />}>
-                <NativeChainCard chain={chain} isCustom={isCustom} />
-              </Suspense>
-            </ErrorBoundary>
-          </NativeChainCardContainer>
-          <BottomContainer>
-            <CoinList />
-          </BottomContainer>
-        </>
+        <NativeChainCardContainer>
+          <ErrorBoundary
+            // eslint-disable-next-line react/no-unstable-nested-components
+            FallbackComponent={(props) => <NativeChainCardError chain={chain} isCustom={isCustom} {...props} />}
+          >
+            <Suspense fallback={<NativeChainCardSkeleton chain={chain} isCustom={isCustom} />}>
+              <NativeChainCard chain={chain} isCustom={isCustom} />
+            </Suspense>
+          </ErrorBoundary>
+        </NativeChainCardContainer>
       </LedgerCheck>
     </Container>
   );
