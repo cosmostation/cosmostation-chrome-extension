@@ -7,7 +7,7 @@ import encUtf8 from 'crypto-js/enc-utf8';
 import baseSha512 from 'crypto-js/sha512';
 import { ECPairFactory } from 'ecpair';
 import * as TinySecp256k1 from 'tiny-secp256k1';
-import {} from '@mysten/sui.js';
+import { Ed25519Keypair } from '@mysten/sui.js';
 
 const bip32 = BIP32Factory(TinySecp256k1);
 const ECPair = ECPairFactory(TinySecp256k1);
@@ -90,4 +90,10 @@ export function privateKeyToAptosPair(privateKey: Buffer) {
   const publicKey = Buffer.from(account.pubKey().toUint8Array());
 
   return { privateKey, publicKey };
+}
+
+export function privateKeyToSuiPair(privateKey: Buffer) {
+  const keypair = Ed25519Keypair.fromSecretKey(privateKey);
+
+  return { privateKey, publicKey: Buffer.from(keypair.getPublicKey().toBytes()) };
 }
