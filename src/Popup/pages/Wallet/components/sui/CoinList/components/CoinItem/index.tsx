@@ -6,12 +6,10 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
-import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
-import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
+import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { getCoinAddress } from '~/Popup/utils/aptos';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import type { X1CoinCoinstore } from '~/types/aptos/accounts';
 
 import {
   LeftContainer,
@@ -27,7 +25,7 @@ import {
 } from './styled';
 
 type CoinItemProps = {
-  coin: X1CoinCoinstore;
+  coin: { type: string; amount: string };
   onClick?: () => void;
   disabled?: boolean;
 };
@@ -35,37 +33,24 @@ type CoinItemProps = {
 export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
   const { chromeStorage } = useChromeStorage();
 
-  const coinAddress = getCoinAddress(coin.type);
-  const accountAddress = coinAddress.split('::')[0];
+  const coinType = getCoinAddress(coin.type);
+
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType }, { suspense: true });
 
   const { currency } = chromeStorage;
 
-  const coinGeckoPrice = useCoinGeckoPriceSWR();
+  const displayAmount = useMemo(() => toDisplayDenomAmount(coin.amount, coinMetadata?.result?.decimals || 0), [coin.amount, coinMetadata?.result?.decimals]);
+  const displayDenom = coinMetadata?.result?.symbol || '';
 
-  const { data: coinInfo } = useAccountResourceSWR({ resourceType: '0x1::coin::CoinInfo', resourceTarget: coinAddress, address: accountAddress });
+  const displayName = coinMetadata?.result?.name || '';
 
-  const { data: assets } = useAssetsSWR();
-
-  const asset = assets.find((item) => item.address === coinAddress);
-
-  const displayAmount = useMemo(
-    () => toDisplayDenomAmount(coin.data.coin.value, coinInfo?.data.decimals || 0),
-    [coin.data.coin.value, coinInfo?.data.decimals],
-  );
-  const displayDenom = asset?.symbol || coinInfo?.data.symbol || '';
-
-  const displayName = asset?.description || coinInfo?.data.name || '';
-
-  const price = useMemo(
-    () => (asset?.coinGeckoId && coinGeckoPrice.data?.[asset.coinGeckoId]?.[currency]) || 0,
-    [asset?.coinGeckoId, coinGeckoPrice.data, currency],
-  );
+  const price = 0;
 
   const displayValue = useMemo(() => times(displayAmount, price), [displayAmount, price]);
 
-  const imageURL = asset?.image;
+  const imageURL = coinMetadata?.result?.iconUrl || undefined;
 
-  if (!coinInfo) {
+  if (!coinMetadata) {
     return null;
   }
 
@@ -80,7 +65,7 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
             <Typography variant="h5">{displayDenom}</Typography>
           </LeftTextChainContainer>
 
-          <Tooltip title={coinAddress}>
+          <Tooltip title={coinType}>
             <LeftTextChainNameContainer>
               <Typography variant="h5">{displayName}</Typography>
             </LeftTextChainNameContainer>

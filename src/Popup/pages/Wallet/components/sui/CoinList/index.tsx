@@ -2,11 +2,15 @@ import { Suspense, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
+import { SUI_COIN } from '~/constants/sui';
 import AddButton from '~/Popup/components/AddButton';
 import Empty from '~/Popup/components/common/Empty';
-import { useCurrentAptosCoins } from '~/Popup/hooks/useCurrent/useCurrentAptosCoins';
+import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
+import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { plus } from '~/Popup/utils/big';
+import { getCoinAddress, isExists } from '~/Popup/utils/sui';
 import type { Path } from '~/types/route';
 
 import CoinItem, { CoinItemSkeleton } from './components/CoinItem';
@@ -28,11 +32,33 @@ export default function CoinList() {
   const { navigate } = useNavigate();
   const { t } = useTranslation();
 
-  const { currentAptosCoins } = useCurrentAptosCoins();
+  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({}, { suspense: true });
+  const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) });
 
-  const filteredCurrentAptosCoins = useMemo(() => currentAptosCoins.filter((item) => !item.type.includes('0x1::aptos_coin::AptosCoin')), [currentAptosCoins]);
+  const filteredObjects = useMemo(
+    () => objects?.filter(isExists).filter((object) => getCoinAddress(object.result?.details.data.type || '') !== SUI_COIN) || [],
+    [objects],
+  );
 
-  const isExistToken = !!filteredCurrentAptosCoins.length;
+  const filteredCoins = useMemo(() => {
+    const reducedCoins = filteredObjects.reduce<Record<string, string>>((prev, cur) => {
+      if (cur.result) {
+        if (prev[cur.result.details.data.type]) {
+          return { ...prev, [cur.result.details.data.type]: plus(prev[cur.result.details.data.type], cur.result.details.data.fields.balance) };
+        }
+
+        return { ...prev, [cur.result.details.data.type]: String(cur.result.details.data.fields.balance) };
+      }
+
+      return prev;
+    }, {});
+
+    const reducedCoinsKeys = Object.keys(reducedCoins);
+
+    return reducedCoinsKeys.map((key) => ({ type: key, amount: reducedCoins[key] }));
+  }, [filteredObjects]);
+
+  const isExistToken = !!filteredCoins.length;
 
   return (
     <Container>
@@ -42,7 +68,7 @@ export default function CoinList() {
             <Typography variant="h6">{t('pages.Wallet.components.aptos.CoinList.index.coin')}</Typography>
           </ListTitleLeftTextContainer>
           <ListTitleLeftCountContainer>
-            <Typography variant="h6">{isExistToken ? `${filteredCurrentAptosCoins.length}` : ''}</Typography>
+            <Typography variant="h6">{isExistToken ? `${filteredCoins.length}` : ''}</Typography>
           </ListTitleLeftCountContainer>
         </ListTitleLeftContainer>
         <ListTitleRightContainer>
@@ -55,7 +81,7 @@ export default function CoinList() {
       </ListTitleContainer>
       <ListContainer>
         {isExistToken ? (
-          filteredCurrentAptosCoins.map((coin) => (
+          filteredCoins.map((coin) => (
             <ErrorBoundary key={coin.type} FallbackComponent={Empty}>
               <Suspense fallback={<CoinItemSkeleton coin={coin} />}>
                 <CoinItem coin={coin} onClick={() => navigate(`/wallet/send/${coin.type}` as unknown as Path)} />
