@@ -3,6 +3,7 @@ import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import Aptos from './Aptos';
 import Cosmos from './Cosmos';
 import Ethereum from './Ethereum';
+import Sui from './Sui';
 
 export default function Entry() {
   const { currentChain } = useCurrentChain();
@@ -18,5 +19,10 @@ export default function Entry() {
   if (currentChain.line === 'APTOS') {
     return <Aptos chain={currentChain} />;
   }
+
+  if (currentChain.line === 'SUI') {
+    return <Sui chain={currentChain} />;
+  }
+
   return null;
 }

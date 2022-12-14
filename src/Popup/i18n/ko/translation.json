@@ -940,6 +940,11 @@
             "address": "주소",
             "copied": "복사 되었습니다.",
             "scanQrCode": "QR코드 스캔"
+          },
+          "Sui": {
+            "address": "주소",
+            "copied": "복사 되었습니다.",
+            "scanQrCode": "QR코드 스캔"
           }
         },
         "layout": {

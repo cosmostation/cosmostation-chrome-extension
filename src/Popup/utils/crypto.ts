@@ -93,7 +93,7 @@ export function privateKeyToAptosPair(privateKey: Buffer) {
 }
 
 export function privateKeyToSuiPair(privateKey: Buffer) {
-  const keypair = Ed25519Keypair.fromSecretKey(privateKey);
+  const keypair = Ed25519Keypair.fromSeed(privateKey);
 
   return { privateKey, publicKey: Buffer.from(keypair.getPublicKey().toBytes()) };
 }

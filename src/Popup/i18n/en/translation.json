@@ -940,6 +940,11 @@
             "address": "Address",
             "copied": "Copied",
             "scanQrCode": "Scan QR code"
+          },
+          "Sui": {
+            "address": "Address",
+            "copied": "Copied",
+            "scanQrCode": "Scan QR code"
           }
         },
         "layout": {

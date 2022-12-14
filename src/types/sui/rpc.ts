@@ -73,7 +73,9 @@ export type GetObjectNotExists = {
   details: NotExistsDetails;
 };
 
-export type GetObjectResponse = Result<GetObjectNotExists | GetObjectDeleted | GetObjectExists>;
+export type GetObject = GetObjectNotExists | GetObjectDeleted | GetObjectExists;
+
+export type GetObjectResponse = Result<GetObject>;
 
 export type GetCoinMetadata = {
   decimals: number;

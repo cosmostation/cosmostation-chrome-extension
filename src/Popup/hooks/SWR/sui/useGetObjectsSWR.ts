@@ -4,33 +4,35 @@ import useSWR from 'swr';
 
 import { isAxiosError, post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
-import type { GetCoinMetadataResponse } from '~/types/sui/rpc';
+import type { GetObjectResponse } from '~/types/sui/rpc';
 
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
 
 type FetchParams = {
   url: string;
-  coinType: string;
+  payload: string;
 };
 
-type UseGetCoinMetadataSWRProps = {
-  coinType?: string;
+type UseGetObjectsOwnedByAddressSWRProps = {
+  objectIds?: string[];
   network?: SuiNetwork;
 };
 
-export function useGetCoinMetadataSWR({ network, coinType }: UseGetCoinMetadataSWRProps, config?: SWRConfiguration) {
+export function useGetObjectsSWR({ network, objectIds }: UseGetObjectsOwnedByAddressSWRProps, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
 
+  const payload = objectIds?.map((objectId) => ({
+    jsonrpc: '2.0',
+    method: 'sui_getObject',
+    params: [objectId],
+    id: objectId,
+  }));
+
   const fetcher = async (params: FetchParams) => {
     try {
-      return await post<GetCoinMetadataResponse>(params.url, {
-        jsonrpc: '2.0',
-        method: 'sui_getCoinMetadata',
-        params: [params.coinType],
-        id: params.coinType,
-      });
+      return await post<GetObjectResponse[]>(params.url, payload);
     } catch (e) {
       if (isAxiosError(e)) {
         if (e.response?.status === 404) {
@@ -41,12 +43,12 @@ export function useGetCoinMetadataSWR({ network, coinType }: UseGetCoinMetadataS
     }
   };
 
-  const { data, error, mutate } = useSWR<GetCoinMetadataResponse | null, AxiosError>({ url: rpcURL, coinType }, fetcher, {
+  const { data, error, mutate } = useSWR<GetObjectResponse[] | null, AxiosError>({ url: rpcURL, payload }, fetcher, {
     revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
+    dedupingInterval: 10000,
+    refreshInterval: 11000,
     errorRetryCount: 0,
-    isPaused: () => !coinType,
+    isPaused: () => !objectIds?.length,
     ...config,
   });
 

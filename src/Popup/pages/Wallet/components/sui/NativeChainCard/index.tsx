@@ -4,7 +4,7 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
-import { APTOS_COIN } from '~/constants/aptos';
+import { SUI_COIN } from '~/constants/sui';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
@@ -12,19 +12,20 @@ import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
-import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
-import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
+import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
+import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
+import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
+import { getCoinAddress, isExists } from '~/Popup/utils/sui';
 import type { SuiChain } from '~/types/chain';
 
 import {
@@ -63,12 +64,24 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
   const { currentSuiNetwork } = useCurrentSuiNetwork();
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
-  const { data: aptosCoin } = useAccountResourceSWR({ resourceType: '0x1::coin::CoinStore', resourceTarget: APTOS_COIN }, { suspense: true });
-  const { data: aptosInfo } = useAccountResourceSWR({ resourceType: '0x1::coin::CoinInfo', resourceTarget: APTOS_COIN, address: '0x1' }, { suspense: true });
 
-  const assets = useAssetsSWR();
+  const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
 
-  const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
+  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: currentAddress }, { suspense: true });
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN }, { suspense: true });
+
+  const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) });
+
+  const suiCoinObjects = useMemo(
+    () => objects?.filter(isExists).filter((object) => getCoinAddress(object.result?.details.data.type || '') === SUI_COIN) || [],
+    [objects],
+  );
+
+  const amount = useMemo(() => suiCoinObjects.reduce((ac, cu) => plus(ac, cu.result?.details.data.fields.balance || '0'), '0'), [suiCoinObjects]);
+
+  const decimals = useMemo(() => coinMetadata?.result?.decimals || 0, [coinMetadata?.result?.decimals]);
+
+  const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);
 
   const { t } = useTranslation();
 
@@ -76,23 +89,16 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const { explorerURL } = currentSuiNetwork;
 
-  const decimals = useMemo(() => aptosInfo?.data.decimals || 0, [aptosInfo?.data.decimals]);
+  const imageURL = useMemo(
+    () => currentSuiNetwork.imageURL || coinMetadata?.result?.iconUrl || undefined,
+    [coinMetadata?.result?.iconUrl, currentSuiNetwork.imageURL],
+  );
 
-  const imageURL = useMemo(() => currentSuiNetwork.imageURL || asset?.image, [asset?.image, currentSuiNetwork.imageURL]);
-
-  const { data } = useCoinGeckoPriceSWR();
-
-  const amount = aptosCoin?.data.coin.value || '0';
-
-  const price = (asset?.coinGeckoId && data?.[asset.coinGeckoId]?.[chromeStorage.currency]) || 0;
-
-  const displayAmount = toDisplayDenomAmount(amount, decimals);
+  const price = 0;
 
   const value = times(price, displayAmount);
 
-  const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
-
-  const displayDenom = useMemo(() => asset?.symbol || aptosInfo?.data.symbol || '', [aptosInfo?.data.symbol, asset?.symbol]);
+  const displayDenom = useMemo(() => coinMetadata?.result?.symbol || 'SUI', [coinMetadata?.result?.symbol]);
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
@@ -110,7 +116,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {explorerURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/address/${currentAddress}`);
+                window.open(`${explorerURL}/address/${currentAddress}?network=${currentSuiNetwork.networkName === 'Testnet' ? 'testnet' : 'devnet'}`);
               }}
             >
               <ExplorerIcon />
