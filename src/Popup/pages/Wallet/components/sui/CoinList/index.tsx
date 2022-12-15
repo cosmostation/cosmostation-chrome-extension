@@ -3,7 +3,6 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
 import { SUI_COIN } from '~/constants/sui';
-import AddButton from '~/Popup/components/AddButton';
 import Empty from '~/Popup/components/common/Empty';
 import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
 import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
@@ -15,8 +14,6 @@ import type { Path } from '~/types/route';
 
 import CoinItem, { CoinItemSkeleton } from './components/CoinItem';
 import {
-  AddTokenButton,
-  AddTokenTextContainer,
   Container,
   ListContainer,
   ListTitleContainer,
@@ -25,8 +22,6 @@ import {
   ListTitleLeftTextContainer,
   ListTitleRightContainer,
 } from './styled';
-
-import Plus16Icon from '~/images/icons/Plus16.svg';
 
 export default function CoinList() {
   const { navigate } = useNavigate();
@@ -60,6 +55,10 @@ export default function CoinList() {
 
   const isExistToken = !!filteredCoins.length;
 
+  if (!isExistToken) {
+    return null;
+  }
+
   return (
     <Container>
       <ListTitleContainer>
@@ -71,31 +70,16 @@ export default function CoinList() {
             <Typography variant="h6">{isExistToken ? `${filteredCoins.length}` : ''}</Typography>
           </ListTitleLeftCountContainer>
         </ListTitleLeftContainer>
-        <ListTitleRightContainer>
-          {isExistToken && (
-            <AddButton type="button" onClick={() => navigate('/chain/aptos/coin/add')}>
-              {t('pages.Wallet.components.aptos.CoinList.index.addCoinButton')}
-            </AddButton>
-          )}
-        </ListTitleRightContainer>
+        <ListTitleRightContainer />
       </ListTitleContainer>
       <ListContainer>
-        {isExistToken ? (
-          filteredCoins.map((coin) => (
-            <ErrorBoundary key={coin.type} FallbackComponent={Empty}>
-              <Suspense fallback={<CoinItemSkeleton coin={coin} />}>
-                <CoinItem coin={coin} onClick={() => navigate(`/wallet/send/${coin.type}` as unknown as Path)} />
-              </Suspense>
-            </ErrorBoundary>
-          ))
-        ) : (
-          <AddTokenButton type="button" onClick={() => navigate('/chain/aptos/coin/add')}>
-            <Plus16Icon />
-            <AddTokenTextContainer>
-              <Typography variant="h6">{t('pages.Wallet.components.aptos.CoinList.index.addCoinButton')}</Typography>
-            </AddTokenTextContainer>
-          </AddTokenButton>
-        )}
+        {filteredCoins.map((coin) => (
+          <ErrorBoundary key={coin.type} FallbackComponent={Empty}>
+            <Suspense fallback={<CoinItemSkeleton coin={coin} />}>
+              <CoinItem coin={coin} onClick={() => navigate(`/wallet/send/${coin.type}` as unknown as Path)} />
+            </Suspense>
+          </ErrorBoundary>
+        ))}
       </ListContainer>
     </Container>
   );
