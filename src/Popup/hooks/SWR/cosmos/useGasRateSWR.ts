@@ -3,6 +3,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { NYX } from '~/constants/chain/cosmos/nyx';
 import { get } from '~/Popup/utils/axios';
 import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain, GasRate } from '~/types/chain';
@@ -31,7 +32,7 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const gasRate = useMemo(() => (data ? data.find((item) => item.chain === mappedName)?.rate ?? [] : []), [data, mappedName]);
 
   const returnData: Record<string, GasRate> = useMemo(() => {
-    const result: Record<string, GasRate> = { [chain.baseDenom]: chain.gasRate };
+    const result: Record<string, GasRate> = chain.baseDenom === NYX.baseDenom ? {} : { [chain.baseDenom]: chain.gasRate };
 
     gasRate.forEach((gr, idx) => {
       const splitedItems = gr.split(',');

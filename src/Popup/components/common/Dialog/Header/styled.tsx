@@ -15,6 +15,7 @@ export const LeftContainter = styled('div')(({ theme }) => ({
 }));
 
 export const StyledButton = styled('button')(({ theme }) => ({
+  height: '2.4rem',
   backgroundColor: 'transparent',
   padding: 0,
   margin: 0,

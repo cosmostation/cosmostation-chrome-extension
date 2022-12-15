@@ -101,7 +101,7 @@ export type FeeCoin = {
   decimals: number;
   coinGeckoId?: string;
   imageURL?: string | undefined;
-  availableAmount?: string;
+  availableAmount: string;
 };
 
 export type EthereumChain = {

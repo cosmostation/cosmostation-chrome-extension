@@ -9,8 +9,9 @@ import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
 import Fee from '~/Popup/components/Fee';
 import PopupHeader from '~/Popup/components/PopupHeader';
-import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
+import { useGasRateSWR } from '~/Popup/hooks/SWR/cosmos/useGasRateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentFeeCoinList } from '~/Popup/hooks/useCurrent/useCurrentFeeCoinList';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -20,7 +21,7 @@ import { signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { decodeProtobufMessage } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
-import type { CosmosChain, FeeCoin } from '~/types/chain';
+import type { CosmosChain } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type { CosSignDirect, CosSignDirectResponse } from '~/types/message/cosmos';
@@ -42,31 +43,12 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { deQueue } = useCurrentQueue();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
-  const assets = useAssetsSWR(chain, { suspense: true });
-
   const { enqueueSnackbar } = useSnackbar();
+  const assetGasRate = useGasRateSWR(chain);
 
   const { t } = useTranslation();
 
-  const feeCoins: FeeCoin[] = useMemo(
-    () => [
-      {
-        originBaseDenom: chain.baseDenom,
-        baseDenom: chain.baseDenom,
-        displayDenom: chain.displayDenom,
-        decimals: chain.decimals,
-        coinGeckoId: chain.coinGeckoId,
-      },
-      ...assets.data.map((asset) => ({
-        originBaseDenom: asset.origin_denom,
-        baseDenom: asset.denom,
-        decimals: asset.decimals,
-        displayDenom: asset.symbol,
-        coinGeckoId: asset.coinGeckoId,
-      })),
-    ],
-    [assets.data, chain.baseDenom, chain.coinGeckoId, chain.decimals, chain.displayDenom],
-  );
+  const { feeCoins } = useCurrentFeeCoinList(chain);
 
   const { message, messageId, origin } = queue;
 
@@ -103,18 +85,18 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputFeeAmount = inputFee.amount || '0';
 
-  const selectedFeeCoin = feeCoins.find((feeCoin) => feeCoin.baseDenom === inputFee.denom) || {
-    decimals: 0,
-    originBaseDenom: inputFee.denom!,
-    baseDenom: inputFee.denom!,
-    displayDenom: 'UNKNOWN',
-  };
+  const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
 
-  const baseGasRate = gasRate || chain.gasRate;
+  const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom)!, [currentFeeBaseDenom, feeCoins]);
 
-  const tinyFee = times(inputGas, baseGasRate.tiny);
-  const lowFee = times(inputGas, baseGasRate.low);
-  const averageFee = times(inputGas, baseGasRate.average);
+  const currentFeeGasRate = useMemo(
+    () => assetGasRate.data[currentFeeBaseDenom] || gasRate || chain.gasRate,
+    [assetGasRate.data, chain.gasRate, currentFeeBaseDenom, gasRate],
+  );
+
+  const tinyFee = times(inputGas, currentFeeGasRate.tiny);
+  const lowFee = times(inputGas, currentFeeGasRate.low);
+  const averageFee = times(inputGas, currentFeeGasRate.average);
 
   const isExistZeroFee = tinyFee === '0' || lowFee === '0' || averageFee === '0';
 
@@ -129,7 +111,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const encodedBodyBytes = cosmos.tx.v1beta1.TxBody.encode({ ...decodedBodyBytes, memo }).finish();
   const encodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode({
     ...decodedAuthInfoBytes,
-    fee: { amount: [{ denom: selectedFeeCoin.baseDenom, amount: ceilBaseFee }], gas_limit: Number(gas) },
+    fee: { amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas_limit: Number(gas) },
   }).finish();
 
   const bodyBytes = isEditMemo ? encodedBodyBytes : doc.body_bytes;
@@ -175,10 +157,14 @@ export default function Entry({ queue, chain }: EntryProps) {
           {fee && (
             <FeeContainer>
               <Fee
-                feeCoin={selectedFeeCoin}
-                gasRate={gasRate || chain.gasRate}
+                feeCoin={currentFeeCoin}
+                feeCoinList={feeCoins}
+                gasRate={currentFeeGasRate}
                 baseFee={baseFee}
                 gas={gas}
+                onChangeFeeCoin={(feeCoinBaseDenom) => {
+                  setCurrentFeeBaseDenom(feeCoinBaseDenom);
+                }}
                 onChangeFee={(f) => setBaseFee(f)}
                 onChangeGas={(g) => setGas(g)}
                 isEdit={isEditFee}

@@ -1,18 +1,28 @@
 import { styled } from '@mui/material/styles';
 
 export const Container = styled('div')({
-  padding: '2.1rem 1.6rem 1.6rem 1.6rem',
+  padding: '1.7rem 1.6rem 1.6rem',
 });
 
-export const FeeCoinListContainer = styled('div')({});
+export const FeeCoinListContainer = styled('div')({
+  maxHeight: '14.4rem',
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  rowGap: '0.4rem',
+  overflow: 'auto',
+});
 
-export const FeeCoinContainerButton = styled('button')(({ theme }) => ({
-  backgroundColor: theme.colors.base02,
-  border: `0.1rem solid ${theme.colors.base03}`,
+type FeeCoinButtonProps = {
+  'data-is-active'?: boolean;
+};
+
+export const FeeCoinButton = styled('button')<FeeCoinButtonProps>(({ theme, ...props }) => ({
+  backgroundColor: props['data-is-active'] ? theme.colors.base02 : 'transparent',
+  border: 0,
 
   borderRadius: '0.8rem',
 
-  padding: '0.8rem 1.2rem 0.6rem 1.2rem',
+  padding: '0.7rem 1.2rem',
 
   height: '4.8rem',
   width: '100%',
@@ -22,6 +32,10 @@ export const FeeCoinContainerButton = styled('button')(({ theme }) => ({
   alignItems: 'center',
 
   cursor: 'pointer',
+
+  '&:hover': {
+    backgroundColor: theme.colors.base03,
+  },
 }));
 
 export const FeeCoinLeftContainer = styled('div')({
@@ -51,4 +65,14 @@ export const FeeCoinTitleContainer = styled('div')(({ theme }) => ({
 
 export const FeeCoinLeftHeaderTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
+}));
+
+export const FeeCoinRightContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+
+  '& > svg > path': {
+    fill: theme.colors.base06,
+  },
 }));

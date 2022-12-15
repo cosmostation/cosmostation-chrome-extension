@@ -79,10 +79,7 @@ export const CoinRightContainer = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
   alignItems: 'center',
 
-  '& > svg': {
-    '& > path': {
-      stroke: theme.colors.base06,
-      fill: theme.colors.base06,
-    },
+  '& > svg > path': {
+    fill: theme.colors.base06,
   },
 }));

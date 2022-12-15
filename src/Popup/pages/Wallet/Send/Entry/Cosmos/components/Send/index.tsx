@@ -23,6 +23,7 @@ import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
+import { useCurrentFeeCoinList } from '~/Popup/hooks/useCurrent/useCurrentFeeCoinList';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -110,18 +111,6 @@ export default function Send({ chain }: CosmosProps) {
     [coinAll, currentCosmosTokens],
   );
 
-  // NOTE LEGACY
-  // const availableFeeCoin = useMemo(() => {
-  //   const assetGasFeeRateDenomList = [...Object.keys(assetGasRate.data)];
-
-  //   // NOTE 익스텐션이 지원하는 체인의 토큰인지 확인
-  //   const aa = COSMOS_CHAINS.filter((item) => assetGasFeeRateDenomList.includes(item.baseDenom)).map((item) => item.baseDenom);
-  //   // NOTE availableCoinOrTokenList에서 assetGasFeeRateDenomList안에 denom이 포함되는 놈만 필터림
-  //   const bb = availableCoinOrTokenList.filter((item) => (item.type === 'coin' ? aa.includes(item.baseDenom) : false));
-  //   // NOTE 현재 chain에서 해당 토큰의 available > 0인지
-  //   return bb;
-  // }, [assetGasRate.data, availableCoinOrTokenList]);
-
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
   const [currentAddress, setCurrentAddress] = useState('');
@@ -168,20 +157,9 @@ export default function Send({ chain }: CosmosProps) {
     [currentCoinOrToken.decimals, currentCoinOrTokenAvailableAmount],
   );
 
-  const feeCoins = useMemo(() => {
-    if (currentCoinOrToken.type === 'coin') {
-      const assetGasFeeRateDenomList = [...Object.keys(assetGasRate.data)];
+  const { feeCoins } = useCurrentFeeCoinList(chain);
 
-      const filteredFeeCoins = coinAll.filter((item) => assetGasFeeRateDenomList?.includes(item.baseDenom));
-
-      return filteredFeeCoins.length > 0 ? filteredFeeCoins : [coinAll[0]];
-    }
-
-    return [coinAll[0]];
-  }, [assetGasRate.data, coinAll, currentCoinOrToken.type]);
-
-  // 복수 개가 될 때 필요
-  const [currentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
+  const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
 
   const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom)!, [currentFeeBaseDenom, feeCoins]);
 
@@ -190,7 +168,7 @@ export default function Send({ chain }: CosmosProps) {
     [currentFeeCoin.availableAmount, currentFeeCoin.decimals],
   );
 
-  const currentFeeGasRate = useMemo(() => assetGasRate.data[chain.baseDenom] ?? chain.gasRate, [assetGasRate.data, chain.baseDenom, chain.gasRate]);
+  const currentFeeGasRate = useMemo(() => assetGasRate.data[currentFeeBaseDenom] ?? chain.gasRate, [assetGasRate.data, chain.gasRate, currentFeeBaseDenom]);
 
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
@@ -423,13 +401,16 @@ export default function Send({ chain }: CosmosProps) {
 
       <MarginTop12Div>
         <Fee
-          feeCoin={{ ...currentFeeCoin, originBaseDenom: currentFeeCoin.originBaseDenom }}
+          feeCoin={currentFeeCoin}
           feeCoinList={feeCoins}
           gasRate={currentFeeGasRate}
           baseFee={currentFeeAmount}
           gas={currentGas}
-          onChangeGas={setCustomGas}
-          onChangeGasRateKey={setCurrentGasRateKey}
+          onChangeFeeCoin={(feeCoinBaseDenom) => {
+            setCurrentFeeBaseDenom(feeCoinBaseDenom);
+          }}
+          onChangeGas={(g) => setCustomGas(g)}
+          onChangeGasRateKey={(gasRateKey) => setCurrentGasRateKey(gasRateKey)}
           isEdit
         />
       </MarginTop12Div>

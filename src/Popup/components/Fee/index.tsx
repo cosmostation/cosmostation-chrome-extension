@@ -39,7 +39,7 @@ type FeeProps = {
   onChangeGasRateKey?: (key: GasRateKey) => void;
   onChangeFee?: (fee: string) => void;
   onChangeGas?: (gas: string) => void;
-  onChangeFeeCoin?: (feeCoin: string) => void;
+  onChangeFeeCoin?: (feeCoinBaseDenom: string) => void;
 };
 
 export default function Fee({
@@ -47,12 +47,12 @@ export default function Fee({
   gasRate,
   baseFee,
   gas,
+  feeCoin,
+  feeCoinList,
   onChangeFee,
   onChangeGasRateKey,
   onChangeGas,
   onChangeFeeCoin,
-  feeCoin,
-  feeCoinList,
 }: FeeProps) {
   const { chromeStorage } = useChromeStorage();
   const { decimals, displayDenom, coinGeckoId } = feeCoin;
@@ -157,7 +157,7 @@ export default function Fee({
         <FeeSettingDialog
           open={isOpenFeeDialog}
           onClose={() => setIsOpenFeeDialog(false)}
-          feeCoin={feeCoin}
+          currentFeeCoin={feeCoin}
           feeCoinList={feeCoinList}
           onChangeFeeCoin={(feeCoinbaseDenom) => {
             onChangeFeeCoin?.(feeCoinbaseDenom);
