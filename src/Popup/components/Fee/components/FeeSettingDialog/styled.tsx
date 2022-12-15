@@ -5,7 +5,7 @@ export const Container = styled('div')({
 });
 
 export const FeeCoinListContainer = styled('div')({
-  maxHeight: '14.4rem',
+  maxHeight: '15.2rem',
   display: 'grid',
   gridTemplateColumns: '1fr',
   rowGap: '0.4rem',
