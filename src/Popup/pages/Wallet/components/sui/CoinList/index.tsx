@@ -32,7 +32,7 @@ export default function CoinList() {
   const { navigate } = useNavigate();
   const { t } = useTranslation();
 
-  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({}, { suspense: true });
+  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({});
   const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) });
 
   const filteredObjects = useMemo(

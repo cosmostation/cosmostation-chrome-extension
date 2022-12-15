@@ -2,7 +2,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { isAxiosError, post } from '~/Popup/utils/axios';
+import { post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
 import type { GetCoinMetadataResponse } from '~/types/sui/rpc';
 
@@ -32,12 +32,7 @@ export function useGetCoinMetadataSWR({ network, coinType }: UseGetCoinMetadataS
         id: params.coinType,
       });
     } catch (e) {
-      if (isAxiosError(e)) {
-        if (e.response?.status === 404) {
-          return null;
-        }
-      }
-      throw e;
+      return null;
     }
   };
 

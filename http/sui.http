@@ -59,7 +59,7 @@ content-type: application/json
 {
     "jsonrpc": "2.0",
     "method": "sui_getCoinMetadata",
-    "params": ["0x2::sui::SUI"],
+    "params": ["0x46c5f442cadb487ad798445b24883a1134d77c13::pool::TestBNB"],
     "id": 1
 }
 

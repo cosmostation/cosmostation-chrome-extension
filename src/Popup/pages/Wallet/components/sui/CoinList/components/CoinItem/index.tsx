@@ -5,7 +5,6 @@ import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { getCoinAddress } from '~/Popup/utils/aptos';
@@ -35,14 +34,16 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
 
   const coinType = getCoinAddress(coin.type);
 
+  const splitedCoinType = coinType.split('::');
+
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType }, { suspense: true });
 
   const { currency } = chromeStorage;
 
   const displayAmount = useMemo(() => toDisplayDenomAmount(coin.amount, coinMetadata?.result?.decimals || 0), [coin.amount, coinMetadata?.result?.decimals]);
-  const displayDenom = coinMetadata?.result?.symbol || '';
+  const displayDenom = coinMetadata?.result?.symbol || splitedCoinType[2] || '';
 
-  const displayName = coinMetadata?.result?.name || '';
+  const displayName = coinMetadata?.result?.name || splitedCoinType[2] || '';
 
   const price = 0;
 
@@ -93,14 +94,12 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
 type CoinItemSkeletonProps = Pick<CoinItemProps, 'coin'>;
 
 export function CoinItemSkeleton({ coin }: CoinItemSkeletonProps) {
-  const coinAddress = getCoinAddress(coin.type);
-  const accountAddress = coinAddress.split('::')[0];
+  const coinType = getCoinAddress(coin.type);
 
-  const { data: coinInfo } = useAccountResourceSWR({ resourceType: '0x1::coin::CoinInfo', resourceTarget: coinAddress, address: accountAddress });
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType });
+  const splitedCoinType = coinType.split('::');
 
-  if (!coinInfo) {
-    return null;
-  }
+  const displayDenom = coinMetadata?.result?.symbol || splitedCoinType[2] || '';
 
   return (
     <StyledButton disabled>
@@ -110,7 +109,7 @@ export function CoinItemSkeleton({ coin }: CoinItemSkeletonProps) {
         </LeftImageContainer>
         <LeftTextContainer>
           <LeftTextChainContainer>
-            <Typography variant="h5">{coinInfo.data.symbol}</Typography>
+            <Typography variant="h5">{displayDenom}</Typography>
           </LeftTextChainContainer>
         </LeftTextContainer>
       </LeftContainer>
