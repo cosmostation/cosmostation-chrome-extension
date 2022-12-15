@@ -19,13 +19,12 @@ import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useClientStateSWR } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
-import { useGasRateSWR } from '~/Popup/hooks/SWR/cosmos/useGasRateSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
-import { useCurrentFeeCoinList } from '~/Popup/hooks/useCurrent/useCurrentFeeCoinList';
+import { useCurrentFees } from '~/Popup/hooks/useCurrent/useCurrentFees';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -86,7 +85,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const nodeInfo = useNodeInfoSWR(chain);
   const { enQueue } = useCurrentQueue();
   const params = useParams();
-  const assetGasRate = useGasRateSWR(chain);
 
   const { t } = useTranslation();
   const { currentCosmosTokens } = useCurrentCosmosTokens();
@@ -243,7 +241,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const revisionHeight = latestHeight?.revision_height ? String(1000 + parseInt(latestHeight?.revision_height, 10)) : undefined;
   const revisionNumber = latestHeight?.revision_number;
 
-  const { feeCoins } = useCurrentFeeCoinList(chain);
+  const { feeCoins, assetGasRate } = useCurrentFees(chain);
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
 

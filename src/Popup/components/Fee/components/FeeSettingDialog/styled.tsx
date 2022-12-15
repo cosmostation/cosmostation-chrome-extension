@@ -24,7 +24,6 @@ export const FeeCoinButton = styled('button')<FeeCoinButtonProps>(({ theme, ...p
 
   padding: '0.7rem 1.2rem',
 
-  height: '4.8rem',
   width: '100%',
 
   display: 'flex',

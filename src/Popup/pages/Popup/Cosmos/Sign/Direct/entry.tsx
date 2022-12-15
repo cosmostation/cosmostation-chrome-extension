@@ -9,9 +9,8 @@ import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
 import Fee from '~/Popup/components/Fee';
 import PopupHeader from '~/Popup/components/PopupHeader';
-import { useGasRateSWR } from '~/Popup/hooks/SWR/cosmos/useGasRateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentFeeCoinList } from '~/Popup/hooks/useCurrent/useCurrentFeeCoinList';
+import { useCurrentFees } from '~/Popup/hooks/useCurrent/useCurrentFees';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -44,11 +43,10 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
   const { enqueueSnackbar } = useSnackbar();
-  const assetGasRate = useGasRateSWR(chain);
 
   const { t } = useTranslation();
 
-  const { feeCoins } = useCurrentFeeCoinList(chain);
+  const { feeCoins, assetGasRate } = useCurrentFees(chain);
 
   const { message, messageId, origin } = queue;
 
