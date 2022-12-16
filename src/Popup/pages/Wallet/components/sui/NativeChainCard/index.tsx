@@ -13,7 +13,6 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
 import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
@@ -234,8 +233,6 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 }
 
 export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: NativeChainCardProps & FallbackProps) {
-  useBalanceSWR();
-
   const [isLoading, setIsloading] = useState(false);
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();

@@ -85,7 +85,7 @@ import type {
   WalletSwitchEthereumChainResponse,
   WalletWatchAsset,
 } from '~/types/message/ethereum';
-import type { SuiConnect, SuiConnectResponse, SuiGetAccountResponse } from '~/types/message/sui';
+import type { SuiConnect, SuiConnectResponse, SuiExecuteMoveCall, SuiGetAccountResponse } from '~/types/message/sui';
 
 import {
   aptosSignMessageSchema,
@@ -110,6 +110,7 @@ import {
   ethSignTypedDataParamsSchema,
   personalSignParamsSchema,
   suiConnectSchema,
+  suiExecuteMoveCallSchema,
   walletAddEthereumChainParamsSchema,
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,
@@ -1887,7 +1888,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               throw e;
             }
 
-            throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`);
+            throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
           }
         }
 
@@ -1917,14 +1918,40 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
                 void setQueues();
               }
             } else {
-              throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED]);
+              throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
             }
           } catch (e) {
             if (e instanceof SuiRPCError) {
               throw e;
             }
 
-            throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`);
+            throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
+          }
+        }
+
+        if (method === 'sui_executeMoveCall') {
+          const { params } = message;
+
+          try {
+            const schema = suiExecuteMoveCallSchema();
+
+            const validatedParams = (await schema.validateAsync(params)) as SuiExecuteMoveCall['params'];
+
+            if (currentAccountAllowedOrigins.includes(origin) && currentAccountSuiPermissions.includes('suggestTransactions')) {
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method, params: validatedParams },
+              });
+              void setQueues();
+            } else {
+              throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+            }
+          } catch (e) {
+            if (e instanceof SuiRPCError) {
+              throw e;
+            }
+
+            throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
           }
         }
       } else if (suiNoPopupMethods.includes(method)) {

@@ -51,7 +51,7 @@ import type {
   WalletSwitchEthereumChain,
   WalletWatchAsset,
 } from './ethereum';
-import type { SuiConnect, SuiGetAccount, SuiHasPermissions } from './sui';
+import type { SuiConnect, SuiExecuteMoveCall, SuiGetAccount, SuiHasPermissions } from './sui';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type CosmosListenerType = ValueOf<typeof COSMOS_LISTENER_TYPE>;
@@ -114,7 +114,7 @@ export type AptosRequestMessage =
   | AptosSignAndSubmitTransaction
   | AptosSignMessage;
 
-export type SuiRequestMessage = SuiHasPermissions | SuiConnect | SuiGetAccount;
+export type SuiRequestMessage = SuiHasPermissions | SuiConnect | SuiGetAccount | SuiExecuteMoveCall;
 
 export type CommonRequestMessage = ComProviders;
 

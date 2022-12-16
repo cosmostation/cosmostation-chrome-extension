@@ -30,6 +30,7 @@ import type {
   WalletSwitchEthereumChain,
   WalletWatchAsset,
 } from '~/types/message/ethereum';
+import type { SuiExecuteMoveCall } from '~/types/message/sui';
 
 import { getChainIdRegex } from '../utils/common';
 
@@ -461,4 +462,22 @@ export const suiConnectSchema = () =>
       Joi.string()
         .valid(...suiPermissionType)
         .required(),
+    );
+
+export const suiExecuteMoveCallSchema = () =>
+  Joi.array()
+    .label('params')
+    .min(1)
+    .max(1)
+    .required()
+    .items(
+      Joi.object<SuiExecuteMoveCall['params'][0]>({
+        packageObjectId: Joi.string().required(),
+        module: Joi.string().required(),
+        function: Joi.string().required(),
+        gasPayment: Joi.string().optional(),
+        gasBudget: Joi.number().required(),
+        typeArguments: Joi.array().required(),
+        arguments: Joi.array().required(),
+      }),
     );

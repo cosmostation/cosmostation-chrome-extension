@@ -2,7 +2,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { isAxiosError, post } from '~/Popup/utils/axios';
+import { post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
 import type { GetObjectResponse } from '~/types/sui/rpc';
 
@@ -30,17 +30,12 @@ export function useGetObjectsSWR({ network, objectIds }: UseGetObjectsOwnedByAdd
     id: objectId,
   }));
 
-  const fetcher = async (params: FetchParams) => {
-    try {
-      return await post<GetObjectResponse[]>(params.url, payload);
-    } catch (e) {
-      if (isAxiosError(e)) {
-        if (e.response?.status === 404) {
-          return null;
-        }
-      }
-      throw e;
+  const fetcher = (params: FetchParams) => {
+    if (!params.payload.length) {
+      return null;
     }
+
+    return post<GetObjectResponse[]>(params.url, payload);
   };
 
   const { data, error, mutate } = useSWR<GetObjectResponse[] | null, AxiosError>({ url: rpcURL, payload }, fetcher, {
@@ -48,9 +43,10 @@ export function useGetObjectsSWR({ network, objectIds }: UseGetObjectsOwnedByAdd
     dedupingInterval: 10000,
     refreshInterval: 11000,
     errorRetryCount: 0,
-    isPaused: () => !objectIds?.length,
     ...config,
   });
 
-  return { data, error, mutate };
+  const returnData = Array.isArray(data) ? data : null;
+
+  return { data: returnData, error, mutate };
 }

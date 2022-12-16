@@ -1,3 +1,5 @@
+import type { MoveCallTransaction, SuiTransactionResponse } from '@mysten/sui.js';
+
 import type { SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 
 import type { SuiPermissionType } from '../chromeStorage';
@@ -18,6 +20,16 @@ export type SuiGetAccount = {
   params: unknown;
   id?: number | string;
 };
+
+export type SuiExecuteMoveCallParam = MoveCallTransaction;
+
+export type SuiExecuteMoveCall = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__EXECUTE_MOVE_CALL;
+  params: [SuiExecuteMoveCallParam];
+  id?: number | string;
+};
+
+export type SuiExecuteMoveCallResponse = SuiTransactionResponse;
 
 export type SuiGetAccountResponse = {
   address: string;

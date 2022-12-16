@@ -65,7 +65,7 @@ export const APTOS_RPC_ERROR_MESSAGE = {
 } as const;
 
 export const SUI_RPC_ERROR_MESSAGE = {
-  [RPC_ERROR.UNAUTHORIZED]: "The account needs 'viewAccount' permission",
+  [RPC_ERROR.UNAUTHORIZED]: "The account needs 'viewAccount' or 'suggestTransaction' permission",
   [RPC_ERROR.UNSUPPORTED_METHOD]: 'The requested method is not supported',
   [RPC_ERROR.DISCONNECTED]: 'The provider is disconnected from all chains.',
   [RPC_ERROR.CHAIN_DISCONNECTED]: 'The provider is disconnected from the specified chain.',

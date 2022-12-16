@@ -15,7 +15,6 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -228,8 +227,6 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 }
 
 export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: NativeChainCardProps & FallbackProps) {
-  useBalanceSWR();
-
   const [isLoading, setIsloading] = useState(false);
 
   const { currentAptosNetwork } = useCurrentAptosNetwork();
