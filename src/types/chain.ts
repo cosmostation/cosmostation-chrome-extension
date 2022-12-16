@@ -102,6 +102,7 @@ export type FeeCoin = {
   coinGeckoId?: string;
   imageURL?: string | undefined;
   availableAmount: string;
+  gasRate?: GasRate;
 };
 
 export type EthereumChain = {

@@ -32,6 +32,14 @@ export const FeeCoinButton = styled('button')<FeeCoinButtonProps>(({ theme, ...p
 
   cursor: 'pointer',
 
+  '&:disabled': {
+    cursor: 'default',
+
+    '&:hover': {
+      backgroundColor: theme.colors.base02,
+    },
+  },
+
   '&:hover': {
     backgroundColor: theme.colors.base03,
   },

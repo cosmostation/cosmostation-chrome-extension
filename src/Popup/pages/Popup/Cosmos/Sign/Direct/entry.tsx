@@ -7,6 +7,7 @@ import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -14,7 +15,7 @@ import { useCurrentFees } from '~/Popup/hooks/useCurrent/useCurrentFees';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, lt, times } from '~/Popup/utils/big';
+import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
@@ -46,7 +47,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { t } = useTranslation();
 
-  const { feeCoins, assetGasRate } = useCurrentFees(chain);
+  const { feeCoins } = useCurrentFees(chain);
 
   const { message, messageId, origin } = queue;
 
@@ -83,14 +84,11 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputFeeAmount = inputFee.amount || '0';
 
-  const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
+  const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(inputFee.denom ?? feeCoins[0].baseDenom);
 
   const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom)!, [currentFeeBaseDenom, feeCoins]);
 
-  const currentFeeGasRate = useMemo(
-    () => assetGasRate.data[currentFeeBaseDenom] || gasRate || chain.gasRate,
-    [assetGasRate.data, chain.gasRate, currentFeeBaseDenom, gasRate],
-  );
+  const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
 
   const tinyFee = times(inputGas, currentFeeGasRate.tiny);
   const lowFee = times(inputGas, currentFeeGasRate.low);
@@ -131,6 +129,16 @@ export default function Entry({ queue, chain }: EntryProps) {
     setValue(newValue);
   };
 
+  // TODO fee코인 부족시 버튼 disable
+  // 번역어 위치도 변경할 것
+  const errorMessage = useMemo(() => {
+    if (!gte(currentFeeCoin.availableAmount, baseFee)) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientFeeAmount');
+    }
+
+    return '';
+  }, [baseFee, currentFeeCoin.availableAmount, t]);
+
   return (
     <Container>
       <PopupHeader account={{ ...currentAccount, address }} chain={{ name: chain.chainName, imageURL: chain.imageURL }} origin={origin} />
@@ -162,6 +170,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                 gas={gas}
                 onChangeFeeCoin={(feeCoinBaseDenom) => {
                   setCurrentFeeBaseDenom(feeCoinBaseDenom);
+                  setBaseFee(times(gas, feeCoins.find((item) => item.baseDenom === feeCoinBaseDenom)!.gasRate!.low));
                 }}
                 onChangeFee={(f) => setBaseFee(f)}
                 onChangeGas={(g) => setGas(g)}
@@ -195,52 +204,55 @@ export default function Entry({ queue, chain }: EntryProps) {
           >
             {t('pages.Popup.Cosmos.Sign.Direct.entry.cancelButton')}
           </OutlineButton>
-          <Button
-            onClick={async () => {
-              try {
-                if (!keyPair?.privateKey) {
-                  throw new Error('Unknown Error');
+          <Tooltip varient="error" title={errorMessage} placement="top" arrow>
+            <Button
+              disabled={!!errorMessage}
+              onClick={async () => {
+                try {
+                  if (!keyPair?.privateKey) {
+                    throw new Error('Unknown Error');
+                  }
+                  const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
+
+                  const signature = signDirect(signedDoc, keyPair.privateKey, chain);
+
+                  const base64Signature = Buffer.from(signature).toString('base64');
+
+                  const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+
+                  const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
+
+                  const signedDocHex = {
+                    ...doc,
+                    body_bytes: Buffer.from(bodyBytes).toString('hex'),
+                    auth_info_bytes: Buffer.from(authInfoBytes).toString('hex'),
+                  };
+                  const pubKey = { type: publicKeyType, value: base64PublicKey };
+
+                  const result: CosSignDirectResponse = {
+                    signature: base64Signature,
+                    pub_key: pubKey,
+                    signed_doc: signedDocHex as unknown as SignDirectDoc,
+                  };
+
+                  responseToWeb({
+                    response: {
+                      result,
+                    },
+                    message,
+                    messageId,
+                    origin,
+                  });
+
+                  await deQueue();
+                } catch (e) {
+                  enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                 }
-                const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
-
-                const signature = signDirect(signedDoc, keyPair.privateKey, chain);
-
-                const base64Signature = Buffer.from(signature).toString('base64');
-
-                const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
-
-                const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
-
-                const signedDocHex = {
-                  ...doc,
-                  body_bytes: Buffer.from(bodyBytes).toString('hex'),
-                  auth_info_bytes: Buffer.from(authInfoBytes).toString('hex'),
-                };
-                const pubKey = { type: publicKeyType, value: base64PublicKey };
-
-                const result: CosSignDirectResponse = {
-                  signature: base64Signature,
-                  pub_key: pubKey,
-                  signed_doc: signedDocHex as unknown as SignDirectDoc,
-                };
-
-                responseToWeb({
-                  response: {
-                    result,
-                  },
-                  message,
-                  messageId,
-                  origin,
-                });
-
-                await deQueue();
-              } catch (e) {
-                enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
-              }
-            }}
-          >
-            {t('pages.Popup.Cosmos.Sign.Direct.entry.confirmButton')}
-          </Button>
+              }}
+            >
+              {t('pages.Popup.Cosmos.Sign.Direct.entry.confirmButton')}
+            </Button>
+          </Tooltip>
         </BottomButtonContainer>
       </BottomContainer>
     </Container>

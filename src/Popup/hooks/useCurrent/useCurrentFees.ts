@@ -13,52 +13,53 @@ export function useCurrentFees(chain: CosmosChain) {
 
   const assetGasRate = useGasRateSWR(chain);
 
-  const { vestingRelatedAvailable, totalAmount } = useAmountSWR(chain, true);
+  const { vestingRelatedAvailable } = useAmountSWR(chain, true);
   const coinList = useCoinListSWR(chain, true);
   const coinAll = useMemo(
     () => [
       {
         availableAmount: vestingRelatedAvailable,
-        totalAmount,
-        coinType: 'staking',
         decimals: chain.decimals,
         imageURL: chain.imageURL,
         displayDenom: chain.displayDenom,
         baseDenom: chain.baseDenom,
         coinGeckoId: chain.coinGeckoId,
+        gasRate: assetGasRate.data[chain.baseDenom] ?? chain.gasRate,
       },
-      ...coinList.coins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
-      ...coinList.ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
+      ...coinList.coins.map((item) => ({ ...item, gasRate: assetGasRate.data[item.baseDenom] })),
+      ...coinList.ibcCoins.map((item) => ({ ...item, gasRate: assetGasRate.data[item.baseDenom] })),
     ],
     [
+      assetGasRate.data,
       chain.baseDenom,
       chain.coinGeckoId,
       chain.decimals,
       chain.displayDenom,
+      chain.gasRate,
       chain.imageURL,
       coinList.coins,
       coinList.ibcCoins,
-      totalAmount,
       vestingRelatedAvailable,
     ],
   );
 
   const feeCoins: FeeCoin[] = useMemo(() => {
-    const nyxFeeBaseDenoms = COSMOS_FEE_BASE_DENOMS.find((item) => item.chainId === chain.id)?.feeBaseDenoms;
+    const feeBaseDenoms = COSMOS_FEE_BASE_DENOMS.find((item) => item.chainId === chain.id)?.feeBaseDenoms;
 
     const filteredFeeCoins = currentChainAssets.data
-      .filter((item) => [...Object.keys(assetGasRate.data)].includes(item.denom) || nyxFeeBaseDenoms?.includes(item.denom))
+      .filter((item) => [...Object.keys(assetGasRate.data)].includes(item.denom) || feeBaseDenoms?.includes(item.denom))
       .map((item) => ({
-        decimals: item.decimals,
-        baseDenom: item.denom,
+        ...item,
         originBaseDenom: item.origin_denom,
+        baseDenom: item.denom,
         displayDenom: item.symbol,
         imageURL: item.image,
         availableAmount: coinAll.find((coin) => coin.baseDenom === item.denom)?.availableAmount ?? '0',
+        gasRate: assetGasRate.data[item.denom],
       }));
 
     return filteredFeeCoins.length > 0 ? filteredFeeCoins : [coinAll[0]];
   }, [assetGasRate.data, chain.id, coinAll, currentChainAssets.data]);
 
-  return { feeCoins, assetGasRate };
+  return { feeCoins };
 }

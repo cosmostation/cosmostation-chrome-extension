@@ -241,7 +241,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const revisionHeight = latestHeight?.revision_height ? String(1000 + parseInt(latestHeight?.revision_height, 10)) : undefined;
   const revisionNumber = latestHeight?.revision_number;
 
-  const { feeCoins, assetGasRate } = useCurrentFees(chain);
+  const { feeCoins } = useCurrentFees(chain);
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
 
@@ -252,7 +252,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [currentFeeCoin.availableAmount, currentFeeCoin.decimals],
   );
 
-  const currentFeeGasRate = useMemo(() => assetGasRate.data[currentFeeBaseDenom] ?? chain.gasRate, [assetGasRate.data, chain.gasRate, currentFeeBaseDenom]);
+  const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate ?? chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate]);
 
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
