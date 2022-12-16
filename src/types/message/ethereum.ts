@@ -5,8 +5,8 @@ import type { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPU
 
 import type { EthereumNetwork, EthereumToken } from '../chain';
 
-export type EthereumNoPopupMethodType = ValueOf<typeof ETHEREUM_NO_POPUP_METHOD_TYPE>;
 export type EthereumPopupMethodType = ValueOf<typeof ETHEREUM_POPUP_METHOD_TYPE>;
+export type EthereumNoPopupMethodType = ValueOf<typeof ETHEREUM_NO_POPUP_METHOD_TYPE>;
 
 export type CustomChain = CustomChainParams;
 export type EthereumTxCommon = Common;

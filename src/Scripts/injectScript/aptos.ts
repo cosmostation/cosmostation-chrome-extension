@@ -2,14 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { LINE_TYPE } from '~/constants/chain';
 import { MESSAGE_TYPE } from '~/constants/message';
-import type {
-  AptosListenerType,
-  AptosRequestMessage,
-  ContentScriptToWebEventMessage,
-  CosmosRequestMessage,
-  ListenerMessage,
-  ResponseMessage,
-} from '~/types/message';
+import type { AptosListenerType, AptosRequestMessage, ContentScriptToWebEventMessage, ListenerMessage, ResponseMessage } from '~/types/message';
 import type {
   AptosAccountResponse,
   AptosConnectResponse,
@@ -27,7 +20,7 @@ const request = (message: AptosRequestMessage) =>
   new Promise((res, rej) => {
     const messageId = uuidv4();
 
-    const handler = (event: MessageEvent<ContentScriptToWebEventMessage<ResponseMessage, CosmosRequestMessage>>) => {
+    const handler = (event: MessageEvent<ContentScriptToWebEventMessage<ResponseMessage, AptosRequestMessage>>) => {
       if (event.data?.isCosmostation && event.data?.type === MESSAGE_TYPE.RESPONSE__WEB_TO_CONTENT_SCRIPT && event.data?.messageId === messageId) {
         window.removeEventListener('message', handler);
 

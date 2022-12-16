@@ -1,4 +1,5 @@
 import cloneDeep from 'lodash/cloneDeep';
+import { v4 as uuidv4 } from 'uuid';
 
 import { CHAINS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
@@ -7,7 +8,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { emitToWeb } from '~/Popup/utils/message';
-import type { Account, AccountWithName } from '~/types/chromeStorage';
+import type { Account, AccountWithName, SuiPermissionType } from '~/types/chromeStorage';
 
 import { useCurrentPassword } from './useCurrentPassword';
 
@@ -15,13 +16,15 @@ export function useCurrentAccount() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { currentPassword } = useCurrentPassword();
 
-  const { selectedAccountId, accounts, accountName, allowedOrigins, additionalChains, autoSigns } = chromeStorage;
+  const { selectedAccountId, accounts, accountName, allowedOrigins, additionalChains, autoSigns, suiPermissions } = chromeStorage;
 
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
 
   const currentAccount = selectedAccount || accounts[0];
 
   const currentAccountName = accountName[currentAccount.id] ?? '';
+
+  const currentAccountSuiPermissions = suiPermissions.filter((permission) => permission.accountId === currentAccount.id);
 
   const currentAccountAllowedOrigins = allowedOrigins
     .filter((allowedOrigin) => allowedOrigin.accountId === selectedAccountId)
@@ -106,13 +109,32 @@ export function useCurrentAccount() {
     }
   };
 
+  const addSuiPermissions = async (permissions: SuiPermissionType[], origin: string) => {
+    const newSuiPermissions = [
+      ...suiPermissions.filter((permission) => permission.accountId !== currentAccount.id),
+      ...permissions.map((permission) => ({ id: uuidv4(), accountId: currentAccount.id, permission, origin })),
+    ];
+
+    await setChromeStorage('suiPermissions', newSuiPermissions);
+  };
+
+  const removeSuiPermissions = async (permissions: SuiPermissionType[], origin: string) => {
+    const newSuiPermissions = suiPermissions.filter(
+      (permission) =>
+        !(permission.accountId === currentAccount.id && permission.origin === origin && permissions.some((item) => item === permission.permission)),
+    );
+    await setChromeStorage('suiPermissions', newSuiPermissions);
+  };
   return {
     currentAccount: { ...currentAccount, name: currentAccountName },
     currentAccountAllowedOrigins,
+    currentAccountSuiPermissions,
     setCurrentAccount,
     addAllowedOrigin,
     removeAllowedOrigin,
     addAccount,
     removeAccount,
+    addSuiPermissions,
+    removeSuiPermissions,
   };
 }

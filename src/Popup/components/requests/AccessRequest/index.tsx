@@ -36,13 +36,23 @@ type AccessRequestProps = {
 
 export default function AccessRequest({ children }: AccessRequestProps) {
   const { currentQueue, deQueue } = useCurrentQueue();
-  const { currentAccount, addAllowedOrigin, currentAccountAllowedOrigins } = useCurrentAccount();
+  const { currentAccount, addAllowedOrigin, currentAccountAllowedOrigins, currentAccountSuiPermissions, addSuiPermissions } = useCurrentAccount();
 
   const { name } = currentAccount;
 
   const { t, language } = useTranslation();
 
-  if (!currentQueue?.channel && currentQueue?.origin && !currentAccountAllowedOrigins.includes(currentQueue?.origin)) {
+  const currentAccountSuiPermissionTypes = currentAccountSuiPermissions
+    .filter((permission) => permission.origin === currentQueue?.origin)
+    .map((permission) => permission.permission);
+
+  if (
+    (!currentQueue?.channel && currentQueue?.origin && !currentAccountAllowedOrigins.includes(currentQueue.origin)) ||
+    (!currentQueue?.channel &&
+      currentQueue &&
+      currentQueue.message.method === 'sui_connect' &&
+      !currentQueue.message.params.every((permission) => currentAccountSuiPermissionTypes.includes(permission)))
+  ) {
     return (
       <BaseLayout>
         <Container>
@@ -78,30 +88,57 @@ export default function AccessRequest({ children }: AccessRequestProps) {
               <Typography variant="h5">{t('components.requests.AccessRequest.index.downDescription')}</Typography>
             </Description2Container>
             <CheckListContainer>
-              <CheckItemContainer>
-                <CheckContainer>
-                  <Check24Icon />
-                </CheckContainer>
-                <TextContainer>
-                  <Typography variant="h5">{t('components.requests.AccessRequest.index.downItem1')}</Typography>
-                </TextContainer>
-              </CheckItemContainer>
-              <CheckItemContainer>
-                <CheckContainer>
-                  <Check24Icon />
-                </CheckContainer>
-                <TextContainer>
-                  <Typography variant="h5">{t('components.requests.AccessRequest.index.downItem2')}</Typography>
-                </TextContainer>
-              </CheckItemContainer>
-              <CheckItemContainer>
-                <CheckContainer>
-                  <Check24Icon />
-                </CheckContainer>
-                <TextContainer>
-                  <Typography variant="h5">{t('components.requests.AccessRequest.index.downItem3')}</Typography>
-                </TextContainer>
-              </CheckItemContainer>
+              {currentQueue.message.method === 'sui_connect' ? (
+                <>
+                  {currentQueue.message.params.includes('viewAccount') && (
+                    <CheckItemContainer>
+                      <CheckContainer>
+                        <Check24Icon />
+                      </CheckContainer>
+                      <TextContainer>
+                        <Typography variant="h5">{t('components.requests.AccessRequest.index.downItem1')}</Typography>
+                      </TextContainer>
+                    </CheckItemContainer>
+                  )}
+                  {currentQueue.message.params.includes('suggestTransactions') && (
+                    <CheckItemContainer>
+                      <CheckContainer>
+                        <Check24Icon />
+                      </CheckContainer>
+                      <TextContainer>
+                        <Typography variant="h5">{t('components.requests.AccessRequest.index.downItem2')}</Typography>
+                      </TextContainer>
+                    </CheckItemContainer>
+                  )}
+                </>
+              ) : (
+                <>
+                  <CheckItemContainer>
+                    <CheckContainer>
+                      <Check24Icon />
+                    </CheckContainer>
+                    <TextContainer>
+                      <Typography variant="h5">{t('components.requests.AccessRequest.index.downItem1')}</Typography>
+                    </TextContainer>
+                  </CheckItemContainer>
+                  <CheckItemContainer>
+                    <CheckContainer>
+                      <Check24Icon />
+                    </CheckContainer>
+                    <TextContainer>
+                      <Typography variant="h5">{t('components.requests.AccessRequest.index.downItem2')}</Typography>
+                    </TextContainer>
+                  </CheckItemContainer>
+                  <CheckItemContainer>
+                    <CheckContainer>
+                      <Check24Icon />
+                    </CheckContainer>
+                    <TextContainer>
+                      <Typography variant="h5">{t('components.requests.AccessRequest.index.downItem3')}</Typography>
+                    </TextContainer>
+                  </CheckItemContainer>
+                </>
+              )}
             </CheckListContainer>
           </ContentsContainer>
           <BottomContainer>
@@ -127,6 +164,10 @@ export default function AccessRequest({ children }: AccessRequestProps) {
             <Button
               onClick={async () => {
                 await addAllowedOrigin(currentQueue.origin);
+
+                if (currentQueue.message.method === 'sui_connect') {
+                  await addSuiPermissions(currentQueue.message.params, currentQueue.origin);
+                }
               }}
             >
               Confirm

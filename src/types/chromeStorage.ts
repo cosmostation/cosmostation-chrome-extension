@@ -1,4 +1,5 @@
 import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
+import type { PERMISSION } from '~/constants/sui';
 import type { AptosNetwork, BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken, SuiNetwork } from '~/types/chain';
 import type { TransportType } from '~/types/ledger';
 import type { Path } from '~/types/route';
@@ -9,6 +10,7 @@ import type { RequestMessage } from './message';
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
 export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 export type CurrencyType = ValueOf<typeof CURRENCY_TYPE>;
+export type SuiPermissionType = ValueOf<typeof PERMISSION>;
 
 export type AccountCommon = {
   id: string;
@@ -79,8 +81,9 @@ export type Providers = {
 
 export type SuiPermission = {
   id: string;
+  origin: AllowedOrigin['origin'];
   accountId: Account['id'];
-  permission: string;
+  permission: SuiPermissionType;
 };
 
 export type ChromeStorage = {

@@ -67,10 +67,10 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
 
-  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: currentAddress });
-  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
+  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: currentAddress }, { suspense: true });
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN }, { suspense: true });
 
-  const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) });
+  const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
 
   const suiCoinObjects = useMemo(
     () => objects?.filter(isExists).filter((object) => getCoinAddress(object.result?.details.data.type || '') === SUI_COIN) || [],

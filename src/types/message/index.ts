@@ -51,6 +51,7 @@ import type {
   WalletSwitchEthereumChain,
   WalletWatchAsset,
 } from './ethereum';
+import type { SuiConnect, SuiGetAccount, SuiHasPermissions } from './sui';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type CosmosListenerType = ValueOf<typeof COSMOS_LISTENER_TYPE>;
@@ -113,9 +114,11 @@ export type AptosRequestMessage =
   | AptosSignAndSubmitTransaction
   | AptosSignMessage;
 
+export type SuiRequestMessage = SuiHasPermissions | SuiConnect | SuiGetAccount;
+
 export type CommonRequestMessage = ComProviders;
 
-export type RequestMessage = CommonRequestMessage | EthereumRequestMessage | CosmosRequestMessage | AptosRequestMessage;
+export type RequestMessage = CommonRequestMessage | EthereumRequestMessage | CosmosRequestMessage | AptosRequestMessage | SuiRequestMessage;
 
 // window.postMessage 통신
 // isCosmostation: extension 확인 플래그

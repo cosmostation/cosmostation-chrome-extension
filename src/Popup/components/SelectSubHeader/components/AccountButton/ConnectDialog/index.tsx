@@ -16,7 +16,7 @@ export default function ConnectDialog({ onClose, ...remainder }: ConnectDialogPr
   const { data } = useCurrentTab(true);
   const { t } = useTranslation();
 
-  const { addAllowedOrigin, removeAllowedOrigin, currentAccountAllowedOrigins } = useCurrentAccount();
+  const { addAllowedOrigin, removeAllowedOrigin, currentAccountAllowedOrigins, removeSuiPermissions, addSuiPermissions } = useCurrentAccount();
 
   const origin = data?.origin || '';
 
@@ -33,8 +33,12 @@ export default function ConnectDialog({ onClose, ...remainder }: ConnectDialogPr
   const handleOnClick = async () => {
     if (isConnected) {
       await removeAllowedOrigin(origin);
+
+      await removeSuiPermissions(['viewAccount', 'suggestTransactions'], origin);
     } else {
       await addAllowedOrigin(origin);
+
+      await addSuiPermissions(['viewAccount', 'suggestTransactions'], origin);
     }
 
     onClose?.({}, 'backdropClick');

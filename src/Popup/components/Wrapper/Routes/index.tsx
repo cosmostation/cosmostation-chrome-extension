@@ -33,7 +33,9 @@ export default function Routes({ children }: RoutesType) {
         chromeStorage.queues[0].message.method === 'wallet_requestPermissions' ||
         chromeStorage.queues[0].message.method === 'ten_requestAccount' ||
         chromeStorage.queues[0].message.method === 'aptos_account' ||
-        chromeStorage.queues[0].message.method === 'aptos_connect'
+        chromeStorage.queues[0].message.method === 'aptos_connect' ||
+        chromeStorage.queues[0].message.method === 'sui_connect' ||
+        chromeStorage.queues[0].message.method === 'sui_getAccount'
       ) {
         navigate('/popup/request-account');
       }

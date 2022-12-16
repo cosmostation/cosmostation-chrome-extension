@@ -1,3 +1,12 @@
+export type Body = {
+  method: string;
+  params: unknown;
+  jsonrpc: string;
+  id?: string | number;
+};
+
+export type Payload = Body[];
+
 export type Owner = {
   AddressOwner: string;
 };

@@ -56,8 +56,6 @@ export class CosmosRPCError extends Error {
 export class AptosRPCError extends Error {
   public code: number;
 
-  public id?: string | number;
-
   public rpcMessage: unknown;
 
   constructor(code: number, message: string) {
@@ -75,6 +73,32 @@ export class AptosRPCError extends Error {
     this.rpcMessage = errorMessage;
 
     Object.setPrototypeOf(this, AptosRPCError.prototype);
+  }
+}
+
+export class SuiRPCError extends Error {
+  public code: number;
+
+  public id?: string | number;
+
+  public rpcMessage: unknown;
+
+  constructor(code: number, message: string, id?: string | number) {
+    super(message);
+    this.name = 'SuiRPCError';
+    this.code = code;
+    this.id = id;
+
+    const errorMessage = {
+      error: {
+        code,
+        message,
+      },
+    };
+
+    this.rpcMessage = errorMessage;
+
+    Object.setPrototypeOf(this, SuiRPCError.prototype);
   }
 }
 
