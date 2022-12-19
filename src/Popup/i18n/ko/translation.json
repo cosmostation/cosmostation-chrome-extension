@@ -472,6 +472,20 @@
         "Token": {
           "Add": {
             "CW20": {
+              "Search": {
+                "entry": {
+                  "addTokenSnackbar": "토큰이 추가 되었습니다.",
+                  "importCustomTokenButton": "커스텀 토큰 추가",
+                  "searchPlaceholder": "토큰 검색",
+                  "submitButton": "토큰 가져오기",
+                  "tokenIconText1": "Cosmostation 지갑에서 관리할",
+                  "tokenIconText2": "사용자 커스텀 토큰을 추가하세요.",
+                  "warning": "추가할 토큰이 Cosmostation에서 제공하는 토큰 검색 리스트 중에 없다면, \"커스텀 토큰 추가\"를 통해 사용자 토큰을 추가할 수 있습니다."
+                },
+                "layout": {
+                  "title": "토큰 가져오기"
+                }
+              },
               "entry": {
                 "addTokenErrorSnackbar": "토큰 추가를 실패했습니다.",
                 "addTokenSnackbar": "토큰이 추가 되었습니다.",
