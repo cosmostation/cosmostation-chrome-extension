@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
@@ -85,8 +85,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const inputFeeAmount = inputFee.amount || '0';
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(inputFee.denom ?? feeCoins[0].baseDenom);
-
-  const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom)!, [currentFeeBaseDenom, feeCoins]);
+  // NOTE apply null safety
+  const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) ?? feeCoins[0], [currentFeeBaseDenom, feeCoins]);
 
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
 
@@ -101,6 +101,10 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [gas, setGas] = useState(inputGas);
   const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
+
+  useEffect(() => {
+    if (baseFee === inputFeeAmount) setCurrentFeeBaseDenom(feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom);
+  }, [baseFee, feeCoins, inputFee.denom, inputFeeAmount]);
 
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 

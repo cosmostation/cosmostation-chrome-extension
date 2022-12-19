@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import secp256k1 from 'secp256k1';
 import sortKeys from 'sort-keys';
@@ -25,7 +25,7 @@ import CosmosApp from '~/Popup/utils/ledger/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, protoTx } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import type { CosmosChain } from '~/types/chain';
+import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { CosSignAmino, CosSignAminoResponse } from '~/types/message/cosmos';
 
@@ -76,7 +76,9 @@ export default function Entry({ queue, chain }: EntryProps) {
     };
   const inputFeeAmount = inputFee.amount;
 
-  const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(inputFee.denom ?? feeCoins[0].baseDenom);
+  const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
+    feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
+  );
 
   const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom)!, [currentFeeBaseDenom, feeCoins]);
 
@@ -91,9 +93,18 @@ export default function Entry({ queue, chain }: EntryProps) {
   const initBaseFee = isEditFee && !isExistZeroFee && lt(inputFeeAmount, '1') ? lowFee : inputFeeAmount;
 
   const [gas, setGas] = useState(inputGas);
+  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
+
   const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(doc.memo);
 
+  useEffect(() => {
+    if (baseFee === inputFeeAmount) setCurrentFeeBaseDenom(feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom);
+  }, [baseFee, feeCoins, inputFee.denom, inputFeeAmount]);
+  // NOTE 가스레이트 선택
+  // useEffect(() => {
+  //   if (baseFee !== inputFeeAmount) setBaseFee(times(gas, currentFeeGasRate[currentGasRateKey]));
+  // }, [currentGasRateKey, currentFeeGasRate, gas, baseFee, inputFeeAmount]);
   const signingMemo = isEditMemo ? memo : doc.memo;
 
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
@@ -143,10 +154,14 @@ export default function Entry({ queue, chain }: EntryProps) {
               gas={gas}
               onChangeFeeCoin={(feeCoinBaseDenom) => {
                 setCurrentFeeBaseDenom(feeCoinBaseDenom);
-                setBaseFee(times(gas, feeCoins.find((item) => item.baseDenom === feeCoinBaseDenom)!.gasRate!.low));
+                setBaseFee(times(gas, feeCoins.find((item) => item.baseDenom === feeCoinBaseDenom)!.gasRate![currentGasRateKey]));
               }}
-              onChangeFee={(f) => setBaseFee(f)}
               onChangeGas={(g) => setGas(g)}
+              // NOTE edit fee모드 일때 fee selecting시 선택한 가스 레이트를 기억하기 위해
+              onChangeGasRateKey={(gasRateKey) => {
+                setCurrentGasRateKey(gasRateKey);
+                setBaseFee(times(gas, currentFeeGasRate[gasRateKey]));
+              }}
               isEdit={isEditFee}
             />
           </FeeContainer>
