@@ -42,6 +42,8 @@ export default function Entry() {
     void setChromeStorage('selectedAccountId', '');
 
     void setChromeStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id]);
+    void setChromeStorage('shownEthereumNetworkIds', [...ETHEREUM_NETWORKS.map((network) => network.id)]);
+    void setChromeStorage('shownAptosNetworkIds', [...APTOS_NETWORKS.map((network) => network.id)]);
     void setChromeStorage('allowedOrigins', []);
     void setChromeStorage('selectedChainId', '');
     void setChromeStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
