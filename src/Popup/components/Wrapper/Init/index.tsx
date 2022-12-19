@@ -7,7 +7,6 @@ import { APTOS } from '~/constants/chain/aptos/aptos';
 import { MAINNET as APTOS_NETWORK_MAINNET } from '~/constants/chain/aptos/network/mainnet';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { ETHEREUM as ETHEREUM_NETWORK_ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeSessionStorageDefault, chromeSessionStorageState } from '~/Popup/recoils/chromeSessionStorage';
@@ -121,12 +120,27 @@ export default function Init({ children }: InitType) {
         await setStorage('selectedChainId', COSMOS.id);
       }
 
-      if (!originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length) {
-        await setStorage('shownEthereumNetworkIds', [ETHEREUM_NETWORK_ETHEREUM.id]);
-      }
+      if (
+        (!originChromeStorage.allowedChainIds?.includes(ETHEREUM.id) &&
+          originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length > 0) ||
+        (!originChromeStorage.allowedChainIds?.includes(APTOS.id) &&
+          originChromeStorage.shownAptosNetworkIds.filter((item) => officialAptosNetworkIds.includes(item)).length > 0)
+      ) {
+        const allowedChainList: Chain['id'][] = [];
+        if (
+          !originChromeStorage.allowedChainIds?.includes(ETHEREUM.id) &&
+          originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length > 0
+        ) {
+          allowedChainList.push(ETHEREUM.id);
+        }
+        if (
+          !originChromeStorage.allowedChainIds?.includes(APTOS.id) &&
+          originChromeStorage.shownAptosNetworkIds.filter((item) => officialAptosNetworkIds.includes(item)).length > 0
+        ) {
+          allowedChainList.push(APTOS.id);
+        }
 
-      if (!originChromeStorage.shownAptosNetworkIds?.filter((item) => officialAptosNetworkIds.includes(item)).length) {
-        await setStorage('shownAptosNetworkIds', [APTOS_NETWORK_MAINNET.id]);
+        await setStorage('allowedChainIds', [...originChromeStorage.allowedChainIds, ...allowedChainList]);
       }
 
       if (!originChromeStorage.selectedAptosNetworkId) {

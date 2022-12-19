@@ -477,6 +477,20 @@
         "Token": {
           "Add": {
             "CW20": {
+              "Search": {
+                "entry": {
+                  "addTokenSnackbar": "Token added",
+                  "importCustomTokenButton": "Import a custom token",
+                  "searchPlaceholder": "Search tokens",
+                  "submitButton": "Import token",
+                  "tokenIconText1": "Add custom tokens to manage on",
+                  "tokenIconText2": "Cosmostation Extension.",
+                  "warning": "Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click \"Import a custom token\"."
+                },
+                "layout": {
+                  "title": "Import tokens"
+                }
+              },
               "entry": {
                 "addTokenErrorSnackbar": "Failed to add",
                 "addTokenSnackbar": "Token added",
@@ -545,8 +559,6 @@
         "Use": {
           "entry": {
             "removeAllowedChainError": "Please select more than 1 chain",
-            "removeShownAptosNetworkError": "Please select more than 1 network",
-            "removeShownEthereumNetworkError": "Please select more than 1 network",
             "searchPlaceholder": "Search chain"
           },
           "layout": {

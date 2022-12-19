@@ -1,8 +1,10 @@
 import { styled } from '@mui/material/styles';
 
+import Switch from '~/Popup/components/common/Switch';
+
 export const ItemContainer = styled('div')({
   width: '100%',
-  height: '4rem',
+  height: '3.6rem',
 
   padding: '0 0.4rem 0 3.6rem',
 
@@ -34,8 +36,29 @@ export const ItemLeftTextContainer = styled('div')(({ theme }) => ({
   marginLeft: '0.8rem',
 }));
 
-export const ItemRightContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
+export const ItemRightContainer = styled('div')({});
+
+export const StyledSwitch = styled(Switch)({
+  width: '4.2rem',
+  height: '2.4rem',
+
+  '&:active': {
+    '& .MuiSwitch-thumb': {
+      width: '1.8rem',
+    },
+    '& .MuiSwitch-switchBase.Mui-checked': {
+      transform: 'translateX(1.7rem)',
+    },
+  },
+  '& .MuiSwitch-switchBase': {
+    padding: '0.4rem',
+
+    '&.Mui-checked': {
+      transform: 'translateX(1.8rem)',
+    },
+  },
+  '& .MuiSwitch-thumb': {
+    width: '1.6rem',
+    height: '1.6rem',
+  },
 });

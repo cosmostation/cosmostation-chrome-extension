@@ -17,6 +17,14 @@ export function useCurrentShownEthereumNetworks() {
     await setChromeStorage('shownEthereumNetworkIds', [...shownEthereumNetworkIds, network.id]);
   };
 
+  const addShownEthereumNetworks = async (networks: EthereumNetwork[]) => {
+    const networkIds = networks.map((network) => network.id);
+
+    const newShownEthereumNetworkIds = Array.from(new Set([...shownEthereumNetworkIds, ...networkIds]));
+
+    await setChromeStorage('shownEthereumNetworkIds', newShownEthereumNetworkIds);
+  };
+
   const removeShownEthereumNetwork = async (network: EthereumNetwork) => {
     if (!shownEthereumNetworkIds.find((shownEthereumNetworkId) => shownEthereumNetworkId === network.id)) {
       return;
@@ -27,9 +35,19 @@ export function useCurrentShownEthereumNetworks() {
     await setChromeStorage('shownEthereumNetworkIds', newShownEthereumNetworkIds);
   };
 
+  const removeShownEthereumNetworks = async (networks: EthereumNetwork[]) => {
+    const networkIds = networks.map((network) => network.id);
+
+    const newShownEthereumNetworkIds = shownEthereumNetworkIds.filter((shownEthereumNetworkId) => !networkIds.includes(shownEthereumNetworkId));
+
+    await setChromeStorage('shownEthereumNetworkIds', newShownEthereumNetworkIds);
+  };
+
   return {
     currentShownEthereumNetwork,
     addShownEthereumNetwork,
+    addShownEthereumNetworks,
     removeShownEthereumNetwork,
+    removeShownEthereumNetworks,
   };
 }

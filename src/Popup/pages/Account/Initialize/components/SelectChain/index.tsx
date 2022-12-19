@@ -2,12 +2,16 @@ import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { APTOS_CHAINS, COSMOS_CHAINS, ETHEREUM_CHAINS } from '~/constants/chain';
+import { APTOS_CHAINS, APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS } from '~/constants/chain/aptos/aptos';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import Divider from '~/Popup/components/common/Divider';
 import Image from '~/Popup/components/common/Image';
 import Switch from '~/Popup/components/common/Switch';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
+import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
+import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Chain } from '~/types/chain';
 
@@ -32,6 +36,8 @@ export default function SelectChain() {
   const { t } = useTranslation();
 
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
+  const { addShownEthereumNetworks, removeShownEthereumNetworks } = useCurrentShownEthereumNetworks();
+  const { addShownAptosNetworks, removeShownAptosNetworks } = useCurrentShownAptosNetworks();
 
   const { chromeStorage } = useChromeStorage();
 
@@ -44,10 +50,26 @@ export default function SelectChain() {
   const handleOnChange = async (checked: boolean, chain: Chain) => {
     if (checked) {
       await addAllowedChainId(chain);
+
+      if (chain.id === ETHEREUM.id) {
+        await addShownEthereumNetworks(ETHEREUM_NETWORKS);
+      }
+
+      if (chain.id === APTOS.id) {
+        await addShownAptosNetworks(APTOS_NETWORKS);
+      }
     } else if (allowedChainIds.length < 2) {
       enqueueSnackbar(t('pages.Account.Initialize.components.SelectChain.index.removeAllowedChainError'), { variant: 'error' });
     } else {
       await removeAllowedChainId(chain);
+
+      if (chain.id === ETHEREUM.id) {
+        await removeShownEthereumNetworks(ETHEREUM_NETWORKS);
+      }
+
+      if (chain.id === APTOS.id) {
+        await removeShownAptosNetworks(APTOS_NETWORKS);
+      }
     }
   };
 

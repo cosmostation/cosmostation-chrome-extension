@@ -34,7 +34,7 @@ export type CW20Asset = {
   address: string;
   symbol: string;
   description?: string;
-  decimal: number;
+  decimals: number;
   image?: string;
   default?: boolean;
   coinGeckoId?: string;
