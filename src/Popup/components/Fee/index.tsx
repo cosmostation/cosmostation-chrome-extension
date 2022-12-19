@@ -31,7 +31,7 @@ import ChangeIcon from '~/images/icons/Change.svg';
 
 type FeeProps = {
   feeCoin: FeeCoin;
-  feeCoinList?: FeeCoin[];
+  feeCoinList: FeeCoin[];
   isEdit?: boolean;
   baseFee: string;
   gas: string;

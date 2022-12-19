@@ -652,6 +652,7 @@
               "dataTab": "Data",
               "detailTab": "Details",
               "failedTransfer": "Failed to transfer",
+              "insufficientFeeAmount": "Insufficient fee",
               "signButton": "Sign"
             }
           },
@@ -673,7 +674,8 @@
               "cancelButton": "Cancel",
               "confirmButton": "Confirm",
               "dataTab": "Data",
-              "detailTab": "Details"
+              "detailTab": "Details",
+              "insufficientFeeAmount": "Insufficient fee"
             }
           },
           "Message": {

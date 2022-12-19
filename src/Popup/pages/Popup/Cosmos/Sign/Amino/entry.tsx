@@ -106,11 +106,9 @@ export default function Entry({ queue, chain }: EntryProps) {
     setValue(newValue);
   };
 
-  // TODO fee코인 부족시 버튼 disable
-  // 번역어 위치도 변경할 것
   const errorMessage = useMemo(() => {
     if (!gte(currentFeeCoin.availableAmount, baseFee)) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientFeeAmount');
+      return t('pages.Popup.Cosmos.Sign.Amino.entry.insufficientFeeAmount');
     }
 
     return '';
@@ -179,118 +177,120 @@ export default function Entry({ queue, chain }: EntryProps) {
             {t('pages.Popup.Cosmos.Sign.Amino.entry.cancelButton')}
           </OutlineButton>
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
-            <Button
-              disabled={!!errorMessage}
-              onClick={async () => {
-                try {
-                  if (!keyPair) {
-                    throw new Error('key pair does not exist');
-                  }
-
-                  const signature = await (async () => {
-                    if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
-                      if (!keyPair.privateKey) {
-                        throw new Error('key does not exist');
-                      }
-
-                      return signAmino(tx, keyPair.privateKey, chain);
+            <div>
+              <Button
+                disabled={!!errorMessage}
+                onClick={async () => {
+                  try {
+                    if (!keyPair) {
+                      throw new Error('key pair does not exist');
                     }
 
-                    if (currentAccount.type === 'LEDGER') {
-                      setLoadingLedgerSigning(true);
-                      const transport = await createTransport();
+                    const signature = await (async () => {
+                      if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
+                        if (!keyPair.privateKey) {
+                          throw new Error('key does not exist');
+                        }
 
-                      const cosmosApp = new CosmosApp(transport);
-
-                      await cosmosApp.init();
-
-                      const path = new Uint8Array([44, 118, 0, 0, Number(currentAccount.bip44.addressIndex)]);
-
-                      const { compressed_pk } = await cosmosApp.getPublicKey(path);
-
-                      const ledgerAddress = getAddress(chain, compressed_pk);
-
-                      if (!isEqualsIgnoringCase(address, ledgerAddress)) {
-                        throw new Error('Account address and Ledger address are not the same.');
+                        return signAmino(tx, keyPair.privateKey, chain);
                       }
 
-                      const result = await cosmosApp.sign(path, Buffer.from(JSON.stringify(sortKeys(tx, { deep: true }))));
+                      if (currentAccount.type === 'LEDGER') {
+                        setLoadingLedgerSigning(true);
+                        const transport = await createTransport();
 
-                      if (!result.signature) {
-                        throw new Error(result.error_message);
+                        const cosmosApp = new CosmosApp(transport);
+
+                        await cosmosApp.init();
+
+                        const path = new Uint8Array([44, 118, 0, 0, Number(currentAccount.bip44.addressIndex)]);
+
+                        const { compressed_pk } = await cosmosApp.getPublicKey(path);
+
+                        const ledgerAddress = getAddress(chain, compressed_pk);
+
+                        if (!isEqualsIgnoringCase(address, ledgerAddress)) {
+                          throw new Error('Account address and Ledger address are not the same.');
+                        }
+
+                        const result = await cosmosApp.sign(path, Buffer.from(JSON.stringify(sortKeys(tx, { deep: true }))));
+
+                        if (!result.signature) {
+                          throw new Error(result.error_message);
+                        }
+
+                        return secp256k1.signatureImport(result.signature);
                       }
 
-                      return secp256k1.signatureImport(result.signature);
-                    }
+                      throw new Error('Unknown type account');
+                    })();
+                    const base64Signature = Buffer.from(signature).toString('base64');
 
-                    throw new Error('Unknown type account');
-                  })();
-                  const base64Signature = Buffer.from(signature).toString('base64');
+                    const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
 
-                  const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+                    const publicKeyType = getPublicKeyType(chain);
 
-                  const publicKeyType = getPublicKeyType(chain);
+                    const pubKey = { type: publicKeyType, value: base64PublicKey };
 
-                  const pubKey = { type: publicKeyType, value: base64PublicKey };
+                    if (channel) {
+                      try {
+                        const url = cosmosURL(chain).postBroadcast();
+                        const pTx = protoTx(tx, base64Signature, pubKey);
 
-                  if (channel) {
-                    try {
-                      const url = cosmosURL(chain).postBroadcast();
-                      const pTx = protoTx(tx, base64Signature, pubKey);
+                        const response = await broadcast(url, pTx);
 
-                      const response = await broadcast(url, pTx);
+                        const { code } = response.tx_response;
 
-                      const { code } = response.tx_response;
-
-                      if (code === 0) {
-                        enqueueSnackbar('success');
-                      } else {
-                        throw new Error(response.tx_response.raw_log as string);
+                        if (code === 0) {
+                          enqueueSnackbar('success');
+                        } else {
+                          throw new Error(response.tx_response.raw_log as string);
+                        }
+                      } catch (e) {
+                        enqueueSnackbar(
+                          (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
+                          {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                          },
+                        );
+                      } finally {
+                        setTimeout(
+                          () => {
+                            void deQueue();
+                          },
+                          currentAccount.type === 'LEDGER' && channel ? 1000 : 0,
+                        );
                       }
-                    } catch (e) {
-                      enqueueSnackbar(
-                        (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
-                        {
-                          variant: 'error',
-                          autoHideDuration: 3000,
+                    } else {
+                      const result: CosSignAminoResponse = {
+                        signature: base64Signature,
+                        pub_key: pubKey,
+                        signed_doc: tx,
+                      };
+
+                      responseToWeb({
+                        response: {
+                          result,
                         },
-                      );
-                    } finally {
-                      setTimeout(
-                        () => {
-                          void deQueue();
-                        },
-                        currentAccount.type === 'LEDGER' && channel ? 1000 : 0,
-                      );
+                        message,
+                        messageId,
+                        origin,
+                      });
+
+                      await deQueue();
                     }
-                  } else {
-                    const result: CosSignAminoResponse = {
-                      signature: base64Signature,
-                      pub_key: pubKey,
-                      signed_doc: tx,
-                    };
-
-                    responseToWeb({
-                      response: {
-                        result,
-                      },
-                      message,
-                      messageId,
-                      origin,
-                    });
-
-                    await deQueue();
+                  } catch (e) {
+                    enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+                    setLoadingLedgerSigning(false);
+                  } finally {
+                    await closeTransport();
                   }
-                } catch (e) {
-                  enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
-                  setLoadingLedgerSigning(false);
-                } finally {
-                  await closeTransport();
-                }
-              }}
-            >
-              {t('pages.Popup.Cosmos.Sign.Amino.entry.signButton')}
-            </Button>
+                }}
+              >
+                {t('pages.Popup.Cosmos.Sign.Amino.entry.signButton')}
+              </Button>
+            </div>
           </Tooltip>
         </BottomButtonContainer>
       </BottomContainer>

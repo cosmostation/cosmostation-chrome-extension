@@ -129,11 +129,9 @@ export default function Entry({ queue, chain }: EntryProps) {
     setValue(newValue);
   };
 
-  // TODO fee코인 부족시 버튼 disable
-  // 번역어 위치도 변경할 것
   const errorMessage = useMemo(() => {
     if (!gte(currentFeeCoin.availableAmount, baseFee)) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientFeeAmount');
+      return t('pages.Popup.Cosmos.Sign.Direct.entry.insufficientFeeAmount');
     }
 
     return '';
@@ -205,53 +203,55 @@ export default function Entry({ queue, chain }: EntryProps) {
             {t('pages.Popup.Cosmos.Sign.Direct.entry.cancelButton')}
           </OutlineButton>
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
-            <Button
-              disabled={!!errorMessage}
-              onClick={async () => {
-                try {
-                  if (!keyPair?.privateKey) {
-                    throw new Error('Unknown Error');
+            <div>
+              <Button
+                disabled={!!errorMessage}
+                onClick={async () => {
+                  try {
+                    if (!keyPair?.privateKey) {
+                      throw new Error('Unknown Error');
+                    }
+                    const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
+
+                    const signature = signDirect(signedDoc, keyPair.privateKey, chain);
+
+                    const base64Signature = Buffer.from(signature).toString('base64');
+
+                    const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+
+                    const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
+
+                    const signedDocHex = {
+                      ...doc,
+                      body_bytes: Buffer.from(bodyBytes).toString('hex'),
+                      auth_info_bytes: Buffer.from(authInfoBytes).toString('hex'),
+                    };
+                    const pubKey = { type: publicKeyType, value: base64PublicKey };
+
+                    const result: CosSignDirectResponse = {
+                      signature: base64Signature,
+                      pub_key: pubKey,
+                      signed_doc: signedDocHex as unknown as SignDirectDoc,
+                    };
+
+                    responseToWeb({
+                      response: {
+                        result,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
+
+                    await deQueue();
+                  } catch (e) {
+                    enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                   }
-                  const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
-
-                  const signature = signDirect(signedDoc, keyPair.privateKey, chain);
-
-                  const base64Signature = Buffer.from(signature).toString('base64');
-
-                  const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
-
-                  const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
-
-                  const signedDocHex = {
-                    ...doc,
-                    body_bytes: Buffer.from(bodyBytes).toString('hex'),
-                    auth_info_bytes: Buffer.from(authInfoBytes).toString('hex'),
-                  };
-                  const pubKey = { type: publicKeyType, value: base64PublicKey };
-
-                  const result: CosSignDirectResponse = {
-                    signature: base64Signature,
-                    pub_key: pubKey,
-                    signed_doc: signedDocHex as unknown as SignDirectDoc,
-                  };
-
-                  responseToWeb({
-                    response: {
-                      result,
-                    },
-                    message,
-                    messageId,
-                    origin,
-                  });
-
-                  await deQueue();
-                } catch (e) {
-                  enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
-                }
-              }}
-            >
-              {t('pages.Popup.Cosmos.Sign.Direct.entry.confirmButton')}
-            </Button>
+                }}
+              >
+                {t('pages.Popup.Cosmos.Sign.Direct.entry.confirmButton')}
+              </Button>
+            </div>
           </Tooltip>
         </BottomButtonContainer>
       </BottomContainer>
