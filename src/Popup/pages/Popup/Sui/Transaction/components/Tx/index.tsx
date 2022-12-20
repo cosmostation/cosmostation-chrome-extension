@@ -1,17 +1,16 @@
 import { Typography } from '@mui/material';
-
-import type { AptosSignPayload } from '~/types/message/aptos';
+import type { SignableTransaction } from '@mysten/sui.js';
 
 import { Container } from './styled';
 
-type ContainerProps = {
-  payload: AptosSignPayload;
+type TxProps = {
+  transaction: SignableTransaction;
 };
 
-export default function Tx({ payload }: ContainerProps) {
+export default function Tx({ transaction }: TxProps) {
   return (
     <Container>
-      <Typography variant="h6">{JSON.stringify(payload, null, 4)}</Typography>
+      <Typography variant="h6">{JSON.stringify(transaction, null, 4)}</Typography>
     </Container>
   );
 }

@@ -593,9 +593,11 @@
         "Transaction": {
           "entry": {
             "average": "평균",
+            "cancelButton": "취소",
             "high": "높음",
             "low": "낮음",
-            "maxFee": "최대 수수료"
+            "maxFee": "최대 수수료",
+            "signButton": "서명"
           }
         }
       },
@@ -842,6 +844,15 @@
                 }
               }
             }
+          }
+        }
+      },
+      "Sui": {
+        "Transaction": {
+          "entry": {
+            "cancelButton": "취소",
+            "expectedFee": "예상 수수료",
+            "signButton": "서명"
           }
         }
       }

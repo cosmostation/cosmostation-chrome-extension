@@ -1937,7 +1937,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             const validatedParams = (await schema.validateAsync(params)) as SuiExecuteMoveCall['params'];
 
-            if (currentAccountAllowedOrigins.includes(origin) && currentAccountSuiPermissions.includes('suggestTransactions')) {
+            if (
+              currentAccountAllowedOrigins.includes(origin) &&
+              currentAccountSuiPermissions.includes('viewAccount') &&
+              currentAccountSuiPermissions.includes('suggestTransactions')
+            ) {
               localQueues.push({
                 ...request,
                 message: { ...request.message, method, params: validatedParams },
@@ -1954,6 +1958,19 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
           }
         }
+      }
+
+      if (method === 'sui_signAndExecuteTransaction') {
+        if (
+          currentAccountAllowedOrigins.includes(origin) &&
+          currentAccountSuiPermissions.includes('viewAccount') &&
+          currentAccountSuiPermissions.includes('suggestTransactions')
+        ) {
+          localQueues.push(request);
+          void setQueues();
+        } else {
+          throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+        }
       } else if (suiNoPopupMethods.includes(method)) {
         if (method === 'sui_requestPermissions') {
           responseToWeb({
@@ -1965,7 +1982,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             origin,
           });
         } else {
-          const params = method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
+          const { params } = message;
 
           const response = await suiRequestRPC(method, params, id);
           responseToWeb({ response, message, messageId, origin });

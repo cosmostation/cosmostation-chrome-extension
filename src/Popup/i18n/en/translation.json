@@ -593,9 +593,11 @@
         "Transaction": {
           "entry": {
             "average": "Average",
+            "cancelButton": "Cancel",
             "high": "High",
             "low": "Low",
-            "maxFee": "Max fee"
+            "maxFee": "Max fee",
+            "signButton": "Sign"
           }
         }
       },
@@ -842,6 +844,15 @@
                 }
               }
             }
+          }
+        }
+      },
+      "Sui": {
+        "Transaction": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "expectedFee": "Expected fee",
+            "signButton": "Sign"
           }
         }
       }

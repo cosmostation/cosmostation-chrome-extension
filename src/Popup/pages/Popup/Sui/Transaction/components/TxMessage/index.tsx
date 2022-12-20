@@ -1,11 +1,11 @@
-import type { AptosSignPayload } from '~/types/message/aptos';
+import type { SignableTransaction } from '@mysten/sui.js';
 
 import Transaction from './messages/Transaction';
 
 type TxMessageProps = {
-  payload: AptosSignPayload;
+  transaction: SignableTransaction;
 };
 
-export default function TxMessage({ payload }: TxMessageProps) {
-  return <Transaction payload={payload} />;
+export default function TxMessage({ transaction }: TxMessageProps) {
+  return <Transaction transaction={transaction} />;
 }

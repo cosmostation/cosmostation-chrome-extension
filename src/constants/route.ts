@@ -84,4 +84,7 @@ export const PATH = {
   // popup aptos
   POPUP__APTOS__TRANSACTION: '/popup/aptos/transaction',
   POPUP__APTOS__SIGN_MESSAGE: '/popup/aptos/sign-message',
+
+  // popup sui
+  POPUP__SUI__TRANSACTION: '/popup/sui/transaction',
 } as const;

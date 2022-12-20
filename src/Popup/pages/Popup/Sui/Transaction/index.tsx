@@ -3,7 +3,7 @@ import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/chromeStorage';
-import type { AptosSignAndSubmitTransaction, AptosSignTransaction } from '~/types/message/aptos';
+import type { SuiSignAndExecuteTransaction } from '~/types/message/sui';
 
 import Entry from './entry';
 import Layout from './layout';
@@ -11,7 +11,7 @@ import Layout from './layout';
 export default function Transaction() {
   const { currentQueue } = useCurrentQueue();
 
-  if (currentQueue && isAptosTransaction(currentQueue)) {
+  if (currentQueue && isSuiTransaction(currentQueue)) {
     return (
       <Lock>
         <LedgerPublicKeyRequest>
@@ -28,6 +28,6 @@ export default function Transaction() {
   return null;
 }
 
-function isAptosTransaction(queue: Queue): queue is Queue<AptosSignTransaction | AptosSignAndSubmitTransaction> {
-  return queue?.message?.method === 'aptos_signTransaction' || queue?.message?.method === 'aptos_signAndSubmitTransaction';
+function isSuiTransaction(queue: Queue): queue is Queue<SuiSignAndExecuteTransaction> {
+  return queue?.message?.method === 'sui_signAndExecuteTransaction';
 }

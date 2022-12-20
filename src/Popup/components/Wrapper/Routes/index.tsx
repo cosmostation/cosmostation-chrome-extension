@@ -115,6 +115,10 @@ export default function Routes({ children }: RoutesType) {
       if (chromeStorage.queues[0].message.method === 'aptos_signMessage') {
         navigate('/popup/aptos/sign-message');
       }
+
+      if (chromeStorage.queues[0].message.method === 'sui_signAndExecuteTransaction') {
+        navigate('/popup/sui/transaction');
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
