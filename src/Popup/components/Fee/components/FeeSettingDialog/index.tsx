@@ -52,15 +52,13 @@ export default function FeeSettingDialog({ currentFeeCoin, feeCoinList, onClose,
     }
   }, [remainder.open]);
 
-  const sortedFeeCoinList = [...feeCoinList.filter((item) => gt(item.availableAmount, '0')), ...feeCoinList.filter((item) => !gt(item.availableAmount, '0'))];
-
   return (
     <Dialog {...remainder} onClose={handleOnClose}>
       <DialogHeader onClose={handleOnClose}>{t('components.Fee.components.FeeSettingDialog.index.feeSettings')}</DialogHeader>
       <Container>
         <FeeCoinListContainer>
-          {sortedFeeCoinList &&
-            sortedFeeCoinList.map((item) => {
+          {feeCoinList &&
+            feeCoinList.map((item) => {
               const isActive = currentFeeCoin.baseDenom === item.baseDenom;
               const displayFee = toDisplayDenomAmount(item.availableAmount, item.decimals);
               const isAvailable = gt(item.availableAmount, '0');

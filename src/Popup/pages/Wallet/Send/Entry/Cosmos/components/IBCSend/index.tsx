@@ -245,7 +245,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
 
-  const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom)!, [currentFeeBaseDenom, feeCoins]);
+  const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) ?? feeCoins[0], [currentFeeBaseDenom, feeCoins]);
 
   const currentFeeCoinDisplayAvailableAmount = useMemo(
     () => toDisplayDenomAmount(currentFeeCoin.availableAmount, currentFeeCoin.decimals),

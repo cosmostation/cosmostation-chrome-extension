@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { COSMOS_FEE_BASE_DENOMS } from '~/constants/chain';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
+import { gt } from '~/Popup/utils/big';
 import type { CosmosChain, FeeCoin } from '~/types/chain';
 
 import { useAmountSWR } from '../SWR/cosmos/useAmountSWR';
@@ -58,8 +59,14 @@ export function useCurrentFees(chain: CosmosChain) {
         gasRate: assetGasRate.data[item.denom],
       }));
 
-    return filteredFeeCoins.length > 0 ? filteredFeeCoins : [coinAll[0]];
-  }, [assetGasRate.data, chain.id, coinAll, currentChainAssets.data]);
+    const sortedFeeCoinList = [
+      ...filteredFeeCoins.filter((item) => item.baseDenom === chain.baseDenom),
+      ...filteredFeeCoins.filter((item) => item.baseDenom !== chain.baseDenom && gt(item.availableAmount, '0')),
+      ...filteredFeeCoins.filter((item) => item.baseDenom !== chain.baseDenom && !gt(item.availableAmount, '0')),
+    ];
+
+    return sortedFeeCoinList.length > 0 ? sortedFeeCoinList : [coinAll[0]];
+  }, [assetGasRate.data, chain.baseDenom, chain.id, coinAll, currentChainAssets.data]);
 
   return { feeCoins };
 }

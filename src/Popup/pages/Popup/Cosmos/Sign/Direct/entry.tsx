@@ -21,7 +21,7 @@ import { signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { decodeProtobufMessage } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
-import type { CosmosChain } from '~/types/chain';
+import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type { CosSignDirect, CosSignDirectResponse } from '~/types/message/cosmos';
@@ -84,8 +84,10 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputFeeAmount = inputFee.amount || '0';
 
-  const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(inputFee.denom ?? feeCoins[0].baseDenom);
-  // NOTE apply null safety
+  const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
+    feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
+  );
+
   const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) ?? feeCoins[0], [currentFeeBaseDenom, feeCoins]);
 
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
@@ -99,6 +101,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const initBaseFee = isEditFee && !isExistZeroFee && lt(inputFeeAmount, '1') ? lowFee : inputFeeAmount;
 
   const [gas, setGas] = useState(inputGas);
+  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
   const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
 
@@ -172,10 +175,14 @@ export default function Entry({ queue, chain }: EntryProps) {
                 gas={gas}
                 onChangeFeeCoin={(feeCoinBaseDenom) => {
                   setCurrentFeeBaseDenom(feeCoinBaseDenom);
-                  setBaseFee(times(gas, feeCoins.find((item) => item.baseDenom === feeCoinBaseDenom)!.gasRate!.low));
+                  setBaseFee(times(gas, feeCoins.find((item) => item.baseDenom === feeCoinBaseDenom)!.gasRate![currentGasRateKey]));
                 }}
                 onChangeFee={(f) => setBaseFee(f)}
                 onChangeGas={(g) => setGas(g)}
+                onChangeGasRateKey={(gasRateKey) => {
+                  setCurrentGasRateKey(gasRateKey);
+                  setBaseFee(times(gas, currentFeeGasRate[gasRateKey]));
+                }}
                 isEdit={isEditFee}
               />
             </FeeContainer>

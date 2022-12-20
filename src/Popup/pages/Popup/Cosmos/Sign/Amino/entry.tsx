@@ -80,7 +80,7 @@ export default function Entry({ queue, chain }: EntryProps) {
     feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
   );
 
-  const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom)!, [currentFeeBaseDenom, feeCoins]);
+  const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) ?? feeCoins[0], [currentFeeBaseDenom, feeCoins]);
 
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
 
@@ -94,17 +94,13 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const [gas, setGas] = useState(inputGas);
   const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
-
   const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(doc.memo);
 
   useEffect(() => {
     if (baseFee === inputFeeAmount) setCurrentFeeBaseDenom(feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom);
   }, [baseFee, feeCoins, inputFee.denom, inputFeeAmount]);
-  // NOTE 가스레이트 선택
-  // useEffect(() => {
-  //   if (baseFee !== inputFeeAmount) setBaseFee(times(gas, currentFeeGasRate[currentGasRateKey]));
-  // }, [currentGasRateKey, currentFeeGasRate, gas, baseFee, inputFeeAmount]);
+
   const signingMemo = isEditMemo ? memo : doc.memo;
 
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
@@ -156,8 +152,8 @@ export default function Entry({ queue, chain }: EntryProps) {
                 setCurrentFeeBaseDenom(feeCoinBaseDenom);
                 setBaseFee(times(gas, feeCoins.find((item) => item.baseDenom === feeCoinBaseDenom)!.gasRate![currentGasRateKey]));
               }}
+              onChangeFee={(f) => setBaseFee(f)}
               onChangeGas={(g) => setGas(g)}
-              // NOTE edit fee모드 일때 fee selecting시 선택한 가스 레이트를 기억하기 위해
               onChangeGasRateKey={(gasRateKey) => {
                 setCurrentGasRateKey(gasRateKey);
                 setBaseFee(times(gas, currentFeeGasRate[gasRateKey]));
