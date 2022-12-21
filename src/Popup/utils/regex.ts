@@ -6,3 +6,4 @@ export const getCosmosAddressRegex = (prefix: string, lengths: number[]) =>
   new RegExp(`^${prefix}(${lengths.map((item) => `(.{${item},${item}})`).join('|')})$`);
 
 export const hexRegex = /^0[x][0-9a-f]+$/;
+export const hexOrDecRegex = /0[x][0-9a-f]+|[0-9]+$/;

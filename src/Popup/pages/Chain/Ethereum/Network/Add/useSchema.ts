@@ -1,6 +1,6 @@
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Joi from '~/Popup/utils/joi';
-import { hexRegex } from '~/Popup/utils/regex';
+import { hexOrDecRegex } from '~/Popup/utils/regex';
 import type { EthereumNetwork } from '~/types/chain';
 
 export type AddNetworkForm = Pick<EthereumNetwork, 'chainId' | 'networkName' | 'rpcURL' | 'displayDenom' | 'explorerURL' | 'imageURL' | 'coinGeckoId'>;
@@ -11,7 +11,7 @@ export function useSchema() {
   const addNetworkForm = Joi.object<AddNetworkForm>({
     chainId: Joi.string()
       .required()
-      .pattern(hexRegex)
+      .pattern(hexOrDecRegex)
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),

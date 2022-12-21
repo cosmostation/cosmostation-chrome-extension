@@ -503,7 +503,7 @@
           "Add": {
             "entry": {
               "addNetworkSnackbar": "네트워크가 추가 되었습니다.",
-              "chainIdPlaceholder": "체인 ID (예: 0x1)",
+              "chainIdPlaceholder": "체인 ID (예: 0x1 혹은 1)",
               "coinGeckoIdPlaceholder": "Coingecko API id (선택)",
               "displayDenomPlaceholder": "통화 기호 (선택)",
               "explorerURLPlaceholder": "블록 탐색기 URL (선택)",
@@ -1179,7 +1179,7 @@
       "address": {
         "string": {
           "pattern": {
-            "base": "16진수로 입력하셔야 합니다. (예: 0x1)"
+            "base": "16진수 또는 10진수로 입력하셔야 합니다. (예: 0x1 혹은 1)"
           }
         }
       }
