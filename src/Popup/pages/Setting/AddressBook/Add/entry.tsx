@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 
+import { CHAINS } from '~/constants/chain';
 import Button from '~/Popup/components/common/Button';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
@@ -19,7 +21,9 @@ import { useSchema } from './useSchema';
 
 export default function Entry() {
   const { currentChain } = useCurrentChain();
-  const [chain, setChain] = useState(currentChain);
+  const params = useParams();
+
+  const [chain, setChain] = useState(CHAINS.find((item) => item.id === params.id) || currentChain);
 
   const { currentAdditionalChains } = useCurrentAdditionalChains();
   const [isCustom, setIsCustom] = useState(!!currentAdditionalChains.find((item) => item.id === currentChain.id));

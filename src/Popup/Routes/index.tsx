@@ -99,7 +99,9 @@ export default function Routes() {
           <Route path={PATH.SETTING__CHANGE_LANGUAGE} element={<SettingChangeLanguage />} />
           <Route path={PATH.SETTING__CHANGE_CURRENCY} element={<SettingChangeCurrency />} />
           <Route path={PATH.SETTING__ADDRESS_BOOK} element={<SettingAddressBook />} />
-          <Route path={PATH.SETTING__ADDRESS_BOOK__ADD} element={<SettingAddressBookAdd />} />
+          <Route path={PATH.SETTING__ADDRESS_BOOK__ADD} element={<SettingAddressBookAdd />}>
+            <Route path=":id" element={<SettingAddressBookAdd />} />
+          </Route>
           <Route path={PATH.SETTING__CONNECTED_SITES} element={<SettingConnectedSites />} />
           <Route path={PATH.SETTING__AUTO_SIGN} element={<SettingAutoSign />} />
           <Route path={PATH.SETTING__LEDGER} element={<SettingLedger />} />
