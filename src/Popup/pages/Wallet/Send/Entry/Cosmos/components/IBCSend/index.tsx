@@ -547,8 +547,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
             gasRate={currentFeeGasRate}
             baseFee={currentFeeAmount}
             gas={currentGas}
-            onChangeFeeCoin={(feeCoinBaseDenom) => {
-              setCurrentFeeBaseDenom(feeCoinBaseDenom);
+            onChangeFeeCoin={(selectedFeeCoin) => {
+              setCurrentFeeBaseDenom(selectedFeeCoin.baseDenom);
             }}
             onChangeGas={(g) => setCustomGas(g)}
             onChangeGasRateKey={(gasRateKey) => setCurrentGasRateKey(gasRateKey)}

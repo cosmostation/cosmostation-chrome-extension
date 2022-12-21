@@ -39,7 +39,7 @@ type FeeProps = {
   onChangeGasRateKey?: (key: GasRateKey) => void;
   onChangeFee?: (fee: string) => void;
   onChangeGas?: (gas: string) => void;
-  onChangeFeeCoin?: (feeCoinBaseDenom: string) => void;
+  onChangeFeeCoin?: (selectedFeeCoin: FeeCoin) => void;
 };
 
 export default function Fee({
@@ -159,8 +159,8 @@ export default function Fee({
           onClose={() => setIsOpenFeeDialog(false)}
           currentFeeCoin={feeCoin}
           feeCoinList={feeCoinList}
-          onChangeFeeCoin={(feeCoinbaseDenom) => {
-            onChangeFeeCoin?.(feeCoinbaseDenom);
+          onChangeFeeCoin={(selectedFeeCoin) => {
+            onChangeFeeCoin?.(selectedFeeCoin);
           }}
         />
       </>

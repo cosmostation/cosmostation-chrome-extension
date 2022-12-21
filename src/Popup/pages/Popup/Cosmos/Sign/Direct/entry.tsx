@@ -173,9 +173,9 @@ export default function Entry({ queue, chain }: EntryProps) {
                 gasRate={currentFeeGasRate}
                 baseFee={baseFee}
                 gas={gas}
-                onChangeFeeCoin={(feeCoinBaseDenom) => {
-                  setCurrentFeeBaseDenom(feeCoinBaseDenom);
-                  setBaseFee(times(gas, feeCoins.find((item) => item.baseDenom === feeCoinBaseDenom)!.gasRate![currentGasRateKey]));
+                onChangeFeeCoin={(selectedFeeCoin) => {
+                  setCurrentFeeBaseDenom(selectedFeeCoin.baseDenom);
+                  setBaseFee(times(gas, feeCoins.find((item) => item.baseDenom === selectedFeeCoin.baseDenom)!.gasRate![currentGasRateKey]));
                 }}
                 onChangeFee={(f) => setBaseFee(f)}
                 onChangeGas={(g) => setGas(g)}

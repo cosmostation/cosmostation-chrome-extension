@@ -29,7 +29,7 @@ import Check16Icon from '~/images/icons/Check16.svg';
 type FeeSettingDialogProps = Omit<DialogProps, 'children'> & {
   currentFeeCoin: FeeCoin;
   feeCoinList: FeeCoin[];
-  onChangeFeeCoin?: (feeCoinbaseDenom: string) => void;
+  onChangeFeeCoin?: (selectedFeeCoin: FeeCoin) => void;
 };
 
 export default function FeeSettingDialog({ currentFeeCoin, feeCoinList, onClose, onChangeFeeCoin, ...remainder }: FeeSettingDialogProps) {
@@ -41,8 +41,8 @@ export default function FeeSettingDialog({ currentFeeCoin, feeCoinList, onClose,
     onClose?.({}, 'backdropClick');
   };
 
-  const onClickFeeCoin = (coin: FeeCoin) => {
-    onChangeFeeCoin?.(coin.baseDenom);
+  const onClickFeeCoin = (selectedFeeCoin: FeeCoin) => {
+    onChangeFeeCoin?.(selectedFeeCoin);
     handleOnClose();
   };
 
