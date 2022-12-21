@@ -103,6 +103,17 @@ type Aptos = {
 
 type Sui = {
   request: (message: import('~/types/message').SuiRequestMessage) => Promise<T>;
+  connect: (permissions: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
+  disconnect: () => Promise<import('~/types/message/sui').SuiDisconnectResponse>;
+  requestPermissions: (permissions?: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
+  hasPermissions: (permissions?: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
+  getAccounts: () => Promise<string[]>;
+  getPublicKey: () => Promise<string>;
+  executeMoveCall: (data: import('~/types/message/sui').SuiExecuteMoveCall['params'][0]) => Promise<import('~/types/message/sui').SuiExecuteMoveCallResponse>;
+  signAndExecuteTransaction: (
+    data: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][0],
+    type: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][1],
+  ) => Promise<import('~/types/message/sui').SuiSignAndExecuteTransactionResponse>;
 };
 
 type MetaMask = Ethereum;

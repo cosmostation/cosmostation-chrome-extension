@@ -31,7 +31,10 @@ export default function CoinList() {
   const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) });
 
   const filteredObjects = useMemo(
-    () => objects?.filter(isExists).filter((object) => getCoinAddress(object.result?.details.data.type || '') !== SUI_COIN) || [],
+    () =>
+      objects
+        ?.filter(isExists)
+        .filter((object) => getCoinAddress(object.result?.details.data.type || '') !== SUI_COIN && !!object.result?.details.data.fields.balance) || [],
     [objects],
   );
 

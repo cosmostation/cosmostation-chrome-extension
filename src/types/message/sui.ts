@@ -7,6 +7,8 @@ import type { SuiPermissionType } from '../chromeStorage';
 export type SuiPopupMethodType = ValueOf<typeof SUI_POPUP_METHOD_TYPE>;
 export type SuiNoPopupMethodType = ValueOf<typeof SUI_NO_POPUP_METHOD_TYPE>;
 
+// Popup
+
 export type SuiConnect = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__CONNECT;
   params: SuiPermissionType[];
@@ -44,14 +46,26 @@ export type SuiGetAccountResponse = {
   publicKey: string;
 };
 
-export type SuiHasPermissions = {
-  method: typeof SUI_NO_POPUP_METHOD_TYPE.SUI__HAS_PERMISSIONS;
+// No Popup
+
+export type SuiGetPermissions = {
+  method: typeof SUI_NO_POPUP_METHOD_TYPE.SUI__GET_PERMISSIONS;
   params: unknown;
   id?: number | string;
 };
 
+export type SuiGetPermissionsResponse = SuiPermissionType[];
+
+export type SuiDisconnect = {
+  method: typeof SUI_NO_POPUP_METHOD_TYPE.SUI__DISCONNECT;
+  params: unknown;
+  id?: number | string;
+};
+
+export type SuiDisconnectResponse = null;
+
 export type SuiRPCRequest = {
-  method: Exclude<SuiNoPopupMethodType, typeof SUI_NO_POPUP_METHOD_TYPE.SUI__HAS_PERMISSIONS>;
+  method: Exclude<SuiNoPopupMethodType, typeof SUI_NO_POPUP_METHOD_TYPE.SUI__GET_PERMISSIONS | typeof SUI_NO_POPUP_METHOD_TYPE.SUI__DISCONNECT>;
   params: unknown;
   id?: number | string;
 };

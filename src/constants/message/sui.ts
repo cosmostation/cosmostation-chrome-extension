@@ -1,6 +1,5 @@
 export const SUI_POPUP_METHOD_TYPE = {
   SUI__CONNECT: 'sui_connect',
-  SUI__DISCONNECT: 'sui_disconnect',
   SUI__EXECUTE_MOVE_CALL: 'sui_executeMoveCall',
   SUI__EXECUTE_SERIALIZED_MOVE_CALL: 'sui_executeSerializedMoveCall',
   SUI__SIGN_AND_EXECUTE_TRANSACTION: 'sui_signAndExecuteTransaction',
@@ -48,7 +47,8 @@ export const SUI_NO_POPUP_METHOD_TYPE = {
   SUI__TRY_GET_PAST_OBJECT: 'sui_tryGetPastObject',
 
   // custom
-  SUI__HAS_PERMISSIONS: 'sui_requestPermissions',
+  SUI__GET_PERMISSIONS: 'sui_getPermissions',
+  SUI__DISCONNECT: 'sui_disconnect',
 } as const;
 
 export const SUI_METHOD_TYPE = {

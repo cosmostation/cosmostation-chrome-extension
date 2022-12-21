@@ -1834,7 +1834,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const suiPopupMethods = Object.values(SUI_POPUP_METHOD_TYPE) as string[];
     const suiNoPopupMethods = Object.values(SUI_NO_POPUP_METHOD_TYPE) as string[];
 
-    const { currentAccountAllowedOrigins, currentAccount, suiPermissions } = await chromeStorage();
+    const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins } = await chromeStorage();
 
     const { currentPassword } = await chromeSessionStorage();
 
@@ -1944,7 +1944,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             ) {
               localQueues.push({
                 ...request,
-                message: { ...request.message, method, params: validatedParams },
+                message: { ...request.message, method: 'sui_signAndExecuteTransaction', params: [{ kind: 'moveCall', data: validatedParams[0] }] },
               });
               void setQueues();
             } else {
@@ -1958,24 +1958,41 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
           }
         }
-      }
 
-      if (method === 'sui_signAndExecuteTransaction') {
-        if (
-          currentAccountAllowedOrigins.includes(origin) &&
-          currentAccountSuiPermissions.includes('viewAccount') &&
-          currentAccountSuiPermissions.includes('suggestTransactions')
-        ) {
-          localQueues.push(request);
-          void setQueues();
-        } else {
-          throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+        if (method === 'sui_signAndExecuteTransaction') {
+          if (
+            currentAccountAllowedOrigins.includes(origin) &&
+            currentAccountSuiPermissions.includes('viewAccount') &&
+            currentAccountSuiPermissions.includes('suggestTransactions')
+          ) {
+            localQueues.push(request);
+            void setQueues();
+          } else {
+            throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+          }
         }
       } else if (suiNoPopupMethods.includes(method)) {
-        if (method === 'sui_requestPermissions') {
+        if (method === 'sui_getPermissions') {
           responseToWeb({
             response: {
               result: currentAccountSuiPermissions,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        } else if (method === 'sui_disconnect') {
+          const newAllowedOrigins = allowedOrigins.filter((item) => !(item.accountId === currentAccount.id && item.origin === origin));
+          await setStorage('allowedOrigins', newAllowedOrigins);
+
+          const newSuiPermissions = suiPermissions.filter((permission) => !(permission.accountId === currentAccount.id && permission.origin === origin));
+          await setStorage('suiPermissions', newSuiPermissions);
+
+          const result = null;
+
+          responseToWeb({
+            response: {
+              result,
             },
             message,
             messageId,

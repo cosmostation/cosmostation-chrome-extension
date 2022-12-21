@@ -23,7 +23,7 @@ import { toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
-import type { SuiSignAndExecuteTransaction } from '~/types/message/sui';
+import type { SuiSignAndExecuteTransaction, SuiSignAndExecuteTransactionResponse } from '~/types/message/sui';
 
 import Tx from './components/Tx';
 import TxMessage from './components/TxMessage';
@@ -197,7 +197,25 @@ export default function Entry({ queue }: EntryProps) {
           </OutlineButton>
           {/* <Tooltip title={errorMessage} varient="error" placement="top"> */}
           <div>
-            <Button disabled={isDiabled} onClick={() => null}>
+            <Button
+              disabled={isDiabled}
+              onClick={async () => {
+                const response = await rawSigner.signAndExecuteTransaction(params[0]);
+
+                const result: SuiSignAndExecuteTransactionResponse = response;
+
+                responseToWeb({
+                  response: {
+                    result,
+                  },
+                  message,
+                  messageId,
+                  origin,
+                });
+
+                await deQueue();
+              }}
+            >
               {t('pages.Popup.Sui.Transaction.entry.signButton')}
             </Button>
           </div>
