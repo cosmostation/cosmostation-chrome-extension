@@ -97,3 +97,31 @@ export const ExchangeWarningIconContainer = styled('div')(({ theme }) => ({
     },
   },
 }));
+
+export const AddressContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+
+  padding: '0.6rem 1.2rem',
+
+  backgroundColor: 'rgba(39, 189, 105, 0.15)',
+
+  borderRadius: '0.6rem',
+
+  columnGap: '0.4rem',
+});
+
+export const CheckAddressIconContainer = styled('div')({
+  flexShrink: 0,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  width: '1.6rem',
+  height: '1.6rem',
+});
+
+export const Address = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+  wordBreak: 'break-all',
+}));

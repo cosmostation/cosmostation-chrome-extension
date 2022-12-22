@@ -20,6 +20,7 @@ import { useClientStateSWR } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
+import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
@@ -37,7 +38,10 @@ import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKey } from '~/
 
 import ReceiverIBCPopover from './components/ReceiverIBCPopover';
 import {
+  Address,
+  AddressContainer,
   BottomContainer,
+  CheckAddressIconContainer,
   Container,
   ContentContainer,
   ExchangeWarningContainer,
@@ -55,6 +59,7 @@ import CoinOrTokenPopover from '../CoinOrTokenPopover';
 
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
+import CheckAddress16Icon from '~/images/icons/CheckAddress16.svg';
 import IBCWarningIcon from '~/images/icons/IBCWarning.svg';
 import Info16Icon from '~/images/icons/Info16.svg';
 
@@ -141,12 +146,14 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
-  const [receiverAddress, setReceiverAddress] = useState('');
+  const [currentAddress, setCurrentAddress] = useState('');
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
   const [currentMemo, setCurrentMemo] = useState('');
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
+
+  const [debouncedCurrentAddress] = useDebounce(currentAddress, 500);
 
   const currentCoinOrToken = useMemo(
     () =>
@@ -239,6 +246,16 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [selectedReceiverIBC?.chain?.bech32Prefix.address],
   );
 
+  const { data: ICNS } = useICNSSWR({
+    name: addressRegex.test(debouncedCurrentAddress) ? '' : debouncedCurrentAddress,
+    cosmosChain: selectedReceiverIBC?.chain,
+  });
+
+  const currentDepositAddress = useMemo(
+    () => (ICNS?.data.bech32_address ? ICNS.data.bech32_address : currentAddress),
+    [ICNS?.data.bech32_address, currentAddress],
+  );
+
   const clientState = useClientStateSWR({ chain, channelId: selectedReceiverIBC?.channel ?? '', port: selectedReceiverIBC?.port });
 
   const latestHeight = clientState.data?.identified_client_state?.client_state?.latest_height;
@@ -278,7 +295,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     if (!latestHeight) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.timeoutHeightError');
     }
-    if (!addressRegex.test(receiverAddress)) {
+    if (!addressRegex.test(currentDepositAddress)) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAddress');
     }
 
@@ -305,7 +322,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     return '';
   }, [
     addressRegex,
-    receiverAddress,
+    currentDepositAddress,
     currentCoinOrToken,
     currentCoinOrTokenDisplayAvailableAmount,
     currentDisplayAmount,
@@ -339,7 +356,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
             {
               type: chain.chainName === SHENTU.chainName ? 'bank/MsgTransfer' : 'cosmos-sdk/MsgTransfer',
               value: {
-                receiver: receiverAddress,
+                receiver: currentDepositAddress,
                 sender: senderAddress,
                 source_channel: selectedReceiverIBC.channel,
                 source_port: selectedReceiverIBC.port || 'transfer',
@@ -382,9 +399,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
                   send: {
                     amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
                     contract: selectedReceiverIBC.port.split('.')?.[1],
-                    msg: Buffer.from(JSON.stringify({ channel: selectedReceiverIBC.channel, remote_address: receiverAddress, timeout: 900 }), 'utf8').toString(
-                      'base64',
-                    ),
+                    msg: Buffer.from(
+                      JSON.stringify({ channel: selectedReceiverIBC.channel, remote_address: currentDepositAddress, timeout: 900 }),
+                      'utf8',
+                    ).toString('base64'),
                   },
                 },
                 funds: [],
@@ -409,7 +427,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     currentGasRateKey,
     currentMemo,
     nodeInfo.data?.node_info?.network,
-    receiverAddress,
+    currentDepositAddress,
     revisionHeight,
     revisionNumber,
     selectedReceiverIBC,
@@ -508,10 +526,22 @@ export default function IBCSend({ chain }: IBCSendProps) {
               </InputAdornment>
             }
             placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.recipientAddressPlaceholder')}
-            onChange={(e) => setReceiverAddress(e.currentTarget.value)}
-            value={receiverAddress}
+            onChange={(e) => setCurrentAddress(e.currentTarget.value)}
+            value={currentAddress}
           />
         </MarginTop8Div>
+        {ICNS?.data.bech32_address && (
+          <MarginTop8Div>
+            <AddressContainer>
+              <CheckAddressIconContainer>
+                <CheckAddress16Icon />
+              </CheckAddressIconContainer>
+              <Address>
+                <Typography variant="h7">{ICNS.data.bech32_address}</Typography>
+              </Address>
+            </AddressContainer>
+          </MarginTop8Div>
+        )}
         <MarginTop8Div>
           <DropdownButton
             imgSrc={currentCoinOrToken.imageURL}
@@ -618,9 +648,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
         open={isOpenedAddressBook}
         chain={selectedReceiverIBC?.chain}
         onClose={() => setIsOpenedAddressBook(false)}
-        onClickAddress={(a) => {
-          setReceiverAddress(a.address);
-          setCurrentMemo(a.memo || '');
+        onClickAddress={(addressInfo) => {
+          setCurrentAddress(addressInfo.address);
+          setCurrentMemo(addressInfo.memo || '');
         }}
       />
 
@@ -629,7 +659,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         chain={selectedReceiverIBC?.chain}
         onClose={() => setIsOpenedMyAddressBook(false)}
         onClickAddress={(a) => {
-          setReceiverAddress(a);
+          setCurrentAddress(a);
         }}
       />
 
@@ -642,7 +672,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         onClickCoinOrToken={(clickedCoinOrToken) => {
           setCurrentCoinOrTokenId(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.baseDenom : clickedCoinOrToken.address);
           setCurrentDisplayAmount('');
-          setReceiverAddress('');
+          setCurrentAddress('');
           setCurrentMemo('');
         }}
         open={isOpenPopover}
@@ -665,7 +695,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         onClickChain={(clickedChain) => {
           setReceiverIBC(clickedChain);
           setCurrentDisplayAmount('');
-          setReceiverAddress('');
+          setCurrentAddress('');
           setCurrentMemo('');
         }}
         open={isRecipientOpenPopover}
