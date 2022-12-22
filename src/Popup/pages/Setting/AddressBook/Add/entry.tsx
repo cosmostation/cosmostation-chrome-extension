@@ -23,10 +23,11 @@ export default function Entry() {
   const { currentChain } = useCurrentChain();
   const params = useParams();
 
-  const [chain, setChain] = useState(CHAINS.find((item) => item.id === params.id) || currentChain);
-
   const { currentAdditionalChains } = useCurrentAdditionalChains();
-  const [isCustom, setIsCustom] = useState(!!currentAdditionalChains.find((item) => item.id === currentChain.id));
+
+  const [chain, setChain] = useState([...CHAINS, ...currentAdditionalChains].find((item) => item.id === params.id) || currentChain);
+
+  const [isCustom, setIsCustom] = useState(!!currentAdditionalChains.find((item) => item.id === chain.id));
 
   const { chromeStorage, setChromeStorage } = useChromeStorage();
   const { enqueueSnackbar } = useSnackbar();
