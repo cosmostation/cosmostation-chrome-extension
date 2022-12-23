@@ -9,7 +9,7 @@ import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { plus } from '~/Popup/utils/big';
-import { getCoinAddress, isExists } from '~/Popup/utils/sui';
+import { getCoinType, isExists } from '~/Popup/utils/sui';
 import type { Path } from '~/types/route';
 
 import CoinItem, { CoinItemSkeleton } from './components/CoinItem';
@@ -34,7 +34,7 @@ export default function CoinList() {
     () =>
       objects
         ?.filter(isExists)
-        .filter((object) => getCoinAddress(object.result?.details.data.type || '') !== SUI_COIN && !!object.result?.details.data.fields.balance) || [],
+        .filter((object) => getCoinType(object.result?.details.data.type || '') !== SUI_COIN && !!object.result?.details.data.fields.balance) || [],
     [objects],
   );
 

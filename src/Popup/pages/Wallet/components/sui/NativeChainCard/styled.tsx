@@ -106,7 +106,7 @@ export const FourthLineContainer = styled('div')({
   justifyContent: 'space-between',
   alignItems: 'center',
 
-  marginTop: '1.6rem',
+  marginTop: '0.8rem',
 });
 
 export const FourthLineCenterContainer = styled('div')({
@@ -124,6 +124,10 @@ export const StyledRetryIconButton = styled(IconButton)(({ theme }) => ({
     },
   },
 }));
+
+export const FaucetButtonContainer = styled('div')({
+  marginTop: '1.6rem',
+});
 
 export const ErrorDescriptionContainer = styled('div')(({ theme }) => ({
   color: theme.accentColors.red,

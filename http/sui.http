@@ -73,3 +73,25 @@ content-type: application/json
     "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe", "0x2::sui::SUI"],
     "id": 1
 }
+
+### sui_getBalance
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getBalance",
+    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe", "0x2::sui::SUI"],
+    "id": 1
+}
+
+### sui_getAllCoins
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getAllCoins",
+    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe"],
+    "id": 1
+}

@@ -94,7 +94,8 @@ export default function Entry({ queue }: EntryProps) {
 
   const expectedBaseFee = useMemo(() => {
     if (dryRunTransaction?.gasUsed) {
-      return String(dryRunTransaction.gasUsed.computationCost + dryRunTransaction.gasUsed.storageCost - dryRunTransaction.gasUsed.storageRebate);
+      const cost = dryRunTransaction.gasUsed.computationCost + dryRunTransaction.gasUsed.storageCost - dryRunTransaction.gasUsed.storageRebate;
+      return String(cost > 0 ? cost : 0);
     }
 
     return '0';
@@ -238,6 +239,10 @@ export default function Entry({ queue }: EntryProps) {
                     messageId,
                     origin,
                   });
+
+                  if (queue.channel === 'inApp') {
+                    enqueueSnackbar('success');
+                  }
 
                   await deQueue();
                 } catch (e) {

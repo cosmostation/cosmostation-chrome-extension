@@ -4,6 +4,8 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import { DEVNET } from '~/constants/chain/sui/network/devnet';
+import { TESTNET } from '~/constants/chain/sui/network/testnet';
 import { SUI_COIN } from '~/constants/sui';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
@@ -22,14 +24,17 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { post } from '~/Popup/utils/axios';
 import { plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
-import { getCoinAddress, isExists } from '~/Popup/utils/sui';
+import { getCoinType, isExists } from '~/Popup/utils/sui';
 import type { SuiChain } from '~/types/chain';
 
+import FaucetButton from './components/FaucetButton';
 import {
   Container,
   ErrorDescriptionContainer,
+  FaucetButtonContainer,
   FirstLineContainer,
   FirstLineLeftContainer,
   FirstLineRightContainer,
@@ -50,6 +55,7 @@ import {
 import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
+import Reward16Icon from '~/images/icons/Reward16.svg';
 import SendIcon from '~/images/icons/Send.svg';
 
 type NativeChainCardProps = {
@@ -64,15 +70,17 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
 
+  const [isDiabledFaucet, setIsDiabledFaucet] = useState(false);
+
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
 
-  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: currentAddress }, { suspense: true });
+  const { data: objectsOwnedByAddress, mutate: mutateObjectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: currentAddress }, { suspense: true });
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN }, { suspense: true });
 
   const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
 
   const suiCoinObjects = useMemo(
-    () => objects?.filter(isExists).filter((object) => getCoinAddress(object.result?.details.data.type || '') === SUI_COIN) || [],
+    () => objects?.filter(isExists).filter((object) => getCoinType(object.result?.details.data.type || '') === SUI_COIN) || [],
     [objects],
   );
 
@@ -102,6 +110,26 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
       enqueueSnackbar(t('pages.Wallet.components.sui.NativeChainCard.index.copied'));
+    }
+  };
+
+  const handleOnFaucet = async () => {
+    const faucetURL = DEVNET.id === currentSuiNetwork.id ? 'https://faucet.devnet.sui.io/gas' : 'https://faucet.testnet.sui.io/gas';
+
+    try {
+      setIsDiabledFaucet(true);
+      const response = await post<{ error: null | unknown }>(faucetURL, { FixedAmountRequest: { recipient: currentAddress } });
+
+      if (!response.error) {
+        setTimeout(() => {
+          enqueueSnackbar('success faucet');
+          void mutateObjectsOwnedByAddress();
+          setIsDiabledFaucet(false);
+        }, 5000);
+      }
+    } catch (e) {
+      setIsDiabledFaucet(false);
+      enqueueSnackbar('Failed faucet', { variant: 'error' });
     }
   };
 
@@ -143,6 +171,13 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {value}
         </Number>
       </ThirdLineContainer>
+      {[TESTNET.id, DEVNET.id].includes(currentSuiNetwork.id) && (
+        <FaucetButtonContainer>
+          <FaucetButton Icon={Reward16Icon} onClick={handleOnFaucet} disabled={isDiabledFaucet}>
+            Faucet
+          </FaucetButton>
+        </FaucetButtonContainer>
+      )}
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
           {t('pages.Wallet.components.sui.NativeChainCard.index.depositButton')}
@@ -219,6 +254,13 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       <ThirdLineContainer>
         <Skeleton width="8rem" height="1.9rem" />
       </ThirdLineContainer>
+      {[TESTNET.id, DEVNET.id].includes(currentSuiNetwork.id) && (
+        <FaucetButtonContainer>
+          <FaucetButton Icon={Reward16Icon} disabled>
+            Faucet
+          </FaucetButton>
+        </FaucetButtonContainer>
+      )}
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.sui.NativeChainCard.index.depositButton')}
@@ -310,6 +352,13 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.networkError')}</Typography>
         </ErrorDescriptionContainer>
       </ThirdLineContainer>
+      {[TESTNET.id, DEVNET.id].includes(currentSuiNetwork.id) && (
+        <FaucetButtonContainer>
+          <FaucetButton Icon={Reward16Icon} disabled>
+            Faucet
+          </FaucetButton>
+        </FaucetButtonContainer>
+      )}
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.sui.NativeChainCard.index.depositButton')}
