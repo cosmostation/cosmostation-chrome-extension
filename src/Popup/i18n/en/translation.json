@@ -852,6 +852,7 @@
           "entry": {
             "cancelButton": "Cancel",
             "expectedFee": "Expected fee",
+            "maxFee": "Max fee",
             "signButton": "Sign"
           }
         }

@@ -1,4 +1,4 @@
-import type { ExecuteTransactionRequestType, MoveCallTransaction, SignableTransaction, SuiExecuteTransactionResponse } from '@mysten/sui.js';
+import type { ExecuteTransactionRequestType, MoveCallTransaction, SuiExecuteTransactionResponse, UnserializedSignableTransaction } from '@mysten/sui.js';
 
 import type { SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 
@@ -35,7 +35,7 @@ export type SuiExecuteMoveCallResponse = SuiExecuteTransactionResponse;
 
 export type SuiSignAndExecuteTransaction = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION;
-  params: [SignableTransaction] | [SignableTransaction, ExecuteTransactionRequestType];
+  params: [UnserializedSignableTransaction] | [UnserializedSignableTransaction, ExecuteTransactionRequestType];
   id?: number | string;
 };
 

@@ -1,15 +1,15 @@
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
-import type { RawSigner, SignableTransaction, TransactionEffects } from '@mysten/sui.js';
+import type { RawSigner, TransactionEffects, UnserializedSignableTransaction } from '@mysten/sui.js';
 
 type FetchParams = {
-  transaction?: SignableTransaction;
+  transaction?: UnserializedSignableTransaction;
 };
 
 type UseDryRunTransactionSWRProps = {
   rawSigner?: RawSigner;
-  transaction?: SignableTransaction;
+  transaction?: UnserializedSignableTransaction;
 };
 
 export function useDryRunTransactionSWR({ transaction, rawSigner }: UseDryRunTransactionSWRProps, config?: SWRConfiguration) {

@@ -1,9 +1,9 @@
-import type { SignableTransaction } from '@mysten/sui.js';
+import type { UnserializedSignableTransaction } from '@mysten/sui.js';
 
 import Transaction from './messages/Transaction';
 
 type TxMessageProps = {
-  transaction: SignableTransaction;
+  transaction: UnserializedSignableTransaction;
 };
 
 export default function TxMessage({ transaction }: TxMessageProps) {

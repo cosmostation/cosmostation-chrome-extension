@@ -103,6 +103,18 @@ export const FeeButton = styled('button')<FeeButtonProps>(({ theme, ...props }) 
   cursor: 'pointer',
 }));
 
+export const FeeEditButton = styled(FeeButton)({
+  minWidth: '2rem',
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  borderRadius: '10rem',
+
+  padding: '0 0.4rem',
+});
+
 export const BottomContainer = styled('div')({
   position: 'absolute',
 
@@ -127,6 +139,8 @@ export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
 
 export const WarningContainer = styled('div')({
   padding: '1.2rem 2.2rem 1.2rem 1.6rem',
+
+  wordBreak: 'break-all',
 
   borderRadius: '0.8rem',
 

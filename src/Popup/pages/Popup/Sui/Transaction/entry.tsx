@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 import { Ed25519Keypair, JsonRpcProvider, RawSigner } from '@mysten/sui.js';
 
@@ -58,6 +59,7 @@ export default function Entry({ queue }: EntryProps) {
   const { params } = message;
 
   const { chromeStorage } = useChromeStorage();
+  const { enqueueSnackbar } = useSnackbar();
 
   const { currency } = chromeStorage;
 
@@ -103,6 +105,8 @@ export default function Entry({ queue }: EntryProps) {
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
   };
+
+  const displayBudgetFee = useMemo(() => toDisplayDenomAmount(params[0].data.gasBudget, decimals), [decimals, params]);
 
   const isDiabled = useMemo(() => !(dryRunTransaction?.status.status === 'success'), [dryRunTransaction?.status.status]);
 
@@ -158,6 +162,27 @@ export default function Entry({ queue }: EntryProps) {
                 </FeeRightColumnContainer>
               </FeeRightContainer>
             </FeeInfoContainer>
+            <FeeInfoContainer>
+              <FeeLeftContainer>
+                <Typography variant="h5">{t('pages.Popup.Sui.Transaction.entry.maxFee')}</Typography>
+              </FeeLeftContainer>
+              <FeeRightContainer>
+                <FeeRightColumnContainer>
+                  <FeeRightAmountContainer>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                      {displayBudgetFee}
+                    </Number>
+                    &nbsp;
+                    <Typography variant="h5n">{symbol}</Typography>
+                  </FeeRightAmountContainer>
+                  <FeeRightValueContainer>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                      0
+                    </Number>
+                  </FeeRightValueContainer>
+                </FeeRightColumnContainer>
+              </FeeRightContainer>
+            </FeeInfoContainer>
           </FeeContainer>
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
@@ -200,20 +225,24 @@ export default function Entry({ queue }: EntryProps) {
             <Button
               disabled={isDiabled}
               onClick={async () => {
-                const response = await rawSigner.signAndExecuteTransaction(params[0]);
+                try {
+                  const response = await rawSigner.signAndExecuteTransaction(params[0]);
 
-                const result: SuiSignAndExecuteTransactionResponse = response;
+                  const result: SuiSignAndExecuteTransactionResponse = response;
 
-                responseToWeb({
-                  response: {
-                    result,
-                  },
-                  message,
-                  messageId,
-                  origin,
-                });
+                  responseToWeb({
+                    response: {
+                      result,
+                    },
+                    message,
+                    messageId,
+                    origin,
+                  });
 
-                await deQueue();
+                  await deQueue();
+                } catch (e) {
+                  enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+                }
               }}
             >
               {t('pages.Popup.Sui.Transaction.entry.signButton')}
