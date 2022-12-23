@@ -94,8 +94,11 @@ export default function Entry({ queue }: EntryProps) {
 
   const expectedBaseFee = useMemo(() => {
     if (dryRunTransaction?.gasUsed) {
-      const cost = dryRunTransaction.gasUsed.computationCost + dryRunTransaction.gasUsed.storageCost - dryRunTransaction.gasUsed.storageRebate;
-      return String(cost > 0 ? cost : 0);
+      const storageCost = dryRunTransaction.gasUsed.storageCost - dryRunTransaction.gasUsed.storageRebate;
+
+      const cost = dryRunTransaction.gasUsed.computationCost - (storageCost > 0 ? storageCost : 0);
+
+      return String(cost);
     }
 
     return '0';

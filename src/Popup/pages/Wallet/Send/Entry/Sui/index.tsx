@@ -171,9 +171,11 @@ export default function Sui({ chain }: SuiProps) {
 
   useEffect(() => {
     if (dryRunTransaction?.gasUsed) {
-      const cost = dryRunTransaction.gasUsed.computationCost + dryRunTransaction.gasUsed.storageCost - dryRunTransaction.gasUsed.storageRebate;
+      const storageCost = dryRunTransaction.gasUsed.storageCost - dryRunTransaction.gasUsed.storageRebate;
 
-      const baseBudget = Number(times(cost > 10 ? cost : 10, 2));
+      const cost = dryRunTransaction.gasUsed.computationCost - (storageCost > 0 ? storageCost : 0);
+
+      const baseBudget = Number(times(cost, 2));
 
       if (baseBudget !== currentBaseBudget) {
         setCurrentBaseBudget(baseBudget);
