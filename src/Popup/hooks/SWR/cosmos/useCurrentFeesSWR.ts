@@ -6,11 +6,11 @@ import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { gt } from '~/Popup/utils/big';
 import type { CosmosChain, FeeCoin } from '~/types/chain';
 
-import { useAmountSWR } from '../SWR/cosmos/useAmountSWR';
-import { useAssetsSWR } from '../SWR/cosmos/useAssetsSWR';
-import { useGasRateSWR } from '../SWR/cosmos/useGasRateSWR';
+import { useAmountSWR } from './useAmountSWR';
+import { useAssetsSWR } from './useAssetsSWR';
+import { useGasRateSWR } from './useGasRateSWR';
 
-export function useCurrentFees(chain: CosmosChain, config?: SWRConfiguration) {
+export function useCurrentFeesSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const currentChainAssets = useAssetsSWR(chain);
 
   const assetGasRate = useGasRateSWR(chain, config);
