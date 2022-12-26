@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import type { SWRConfiguration } from 'swr';
 
 import { COSMOS_FEE_BASE_DENOMS } from '~/constants/chain';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
@@ -9,10 +10,10 @@ import { useAmountSWR } from '../SWR/cosmos/useAmountSWR';
 import { useAssetsSWR } from '../SWR/cosmos/useAssetsSWR';
 import { useGasRateSWR } from '../SWR/cosmos/useGasRateSWR';
 
-export function useCurrentFees(chain: CosmosChain) {
+export function useCurrentFees(chain: CosmosChain, config?: SWRConfiguration) {
   const currentChainAssets = useAssetsSWR(chain);
 
-  const assetGasRate = useGasRateSWR(chain);
+  const assetGasRate = useGasRateSWR(chain, config);
 
   const { vestingRelatedAvailable } = useAmountSWR(chain, true);
   const coinList = useCoinListSWR(chain, true);

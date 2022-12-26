@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
@@ -47,7 +47,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { t } = useTranslation();
 
-  const { feeCoins } = useCurrentFees(chain);
+  const { feeCoins } = useCurrentFees(chain, { suspense: true });
 
   const { message, messageId, origin } = queue;
 
@@ -104,10 +104,6 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
   const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
-
-  useEffect(() => {
-    if (baseFee === inputFeeAmount) setCurrentFeeBaseDenom(feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom);
-  }, [baseFee, feeCoins, inputFee.denom, inputFeeAmount]);
 
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import secp256k1 from 'secp256k1';
 import sortKeys from 'sort-keys';
@@ -54,7 +54,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { t } = useTranslation();
 
-  const { feeCoins } = useCurrentFees(chain);
+  const { feeCoins } = useCurrentFees(chain, { suspense: true });
 
   const { message, messageId, origin, channel } = queue;
 
@@ -96,10 +96,6 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
   const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(doc.memo);
-
-  useEffect(() => {
-    if (baseFee === inputFeeAmount) setCurrentFeeBaseDenom(feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom);
-  }, [baseFee, feeCoins, inputFee.denom, inputFeeAmount]);
 
   const signingMemo = isEditMemo ? memo : doc.memo;
 
