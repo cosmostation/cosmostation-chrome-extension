@@ -1074,6 +1074,14 @@
           "title": "보내기"
         }
       },
+      "Swap": {
+        "Entry": {
+          "swapButton": "교환"
+        },
+        "layout": {
+          "title": "교환"
+        }
+      },
       "components": {
         "Header": {
           "AccountButton": {

@@ -1074,6 +1074,14 @@
           "title": "Send"
         }
       },
+      "Swap": {
+        "Entry": {
+          "swapButton": "Swap"
+        },
+        "layout": {
+          "title": "Swap"
+        }
+      },
       "components": {
         "Header": {
           "AccountButton": {

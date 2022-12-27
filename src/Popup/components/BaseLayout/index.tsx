@@ -8,6 +8,7 @@ type BaseLayoutProps = {
   useSubHeader?: {
     title: string;
     onClick?: () => void;
+    onSubClick?: () => void;
   };
   children: JSX.Element;
 };

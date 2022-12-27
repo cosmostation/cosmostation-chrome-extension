@@ -6,6 +6,7 @@ import { Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
 import { KAVA } from '~/constants/chain/cosmos/kava';
+import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
@@ -47,6 +48,7 @@ import {
   FourthLineContainerItem,
   FourthLineContainerItemLeft,
   FourthLineContainerItemRight,
+  IconButtonContainer,
   SecondLineContainer,
   SecondLineLeftAbsoluteImageContainer,
   SecondLineLeftContainer,
@@ -60,14 +62,17 @@ import {
   StyledIconButton,
   StyledRetryIconButton,
   ThirdLineContainer,
+  UnitIconButton,
 } from './styled';
 
 import BottomArrow20Icon from '~/images/icons/BottomArrow20.svg';
+import BuyIcon from '~/images/icons/Buy.svg';
 import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
 import Reward16Icon from '~/images/icons/Reward16.svg';
 import SendIcon from '~/images/icons/Send.svg';
+import SwapIcon from '~/images/icons/Swap.svg';
 
 type NativeChainCardProps = {
   chain: CosmosChain;
@@ -343,6 +348,17 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         <Button Icon={SendIcon} typoVarient="h5" disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
+        <ButtonCenterContainer />
+        {chain.id === OSMOSIS.id && (
+          <IconButtonContainer>
+            <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/swap')}>
+              <SwapIcon />
+            </UnitIconButton>
+            <UnitIconButton onClick={() => navigate('/wallet/send')}>
+              <BuyIcon />
+            </UnitIconButton>
+          </IconButtonContainer>
+        )}
       </ButtonContainer>
 
       <ExpandedButton

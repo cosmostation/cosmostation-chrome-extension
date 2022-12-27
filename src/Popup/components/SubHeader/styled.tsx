@@ -1,5 +1,7 @@
 import { styled } from '@mui/material/styles';
 
+import IconButton from '../common/IconButton';
+
 export const Container = styled('div')({
   display: 'flex',
   alignItems: 'center',
@@ -47,3 +49,10 @@ export const BackButton = styled('button')(({ theme }) => ({
     fill: theme.colors.base06,
   },
 }));
+
+export const SideButton = styled(IconButton)({
+  right: 0,
+  position: 'absolute',
+
+  padding: '0',
+});

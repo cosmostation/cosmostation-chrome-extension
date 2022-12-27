@@ -222,3 +222,22 @@ export const ErrorDescriptionContainer = styled('div')(({ theme }) => ({
 export const StyledAbsoluteLoading = styled(AbsoluteLoading)({
   borderRadius: '0.8rem',
 });
+
+export const UnitIconButton = styled(IconButton)(({ theme }) => ({
+  width: '3.2rem',
+  height: '3.2rem',
+
+  padding: '0',
+  borderRadius: '0.8rem',
+
+  backgroundColor: theme.accentColors.purple01,
+
+  '&:hover': {
+    backgroundColor: theme.accentColors.purple02,
+  },
+}));
+
+export const IconButtonContainer = styled('div')({
+  display: 'flex',
+  columnGap: '0.8rem',
+});
