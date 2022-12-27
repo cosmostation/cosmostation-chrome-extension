@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useResetRecoilState } from 'recoil';
 
-import { APTOS_NETWORKS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -44,10 +44,12 @@ export default function Entry() {
     void setChromeStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id]);
     void setChromeStorage('shownEthereumNetworkIds', [...ETHEREUM_NETWORKS.map((network) => network.id)]);
     void setChromeStorage('shownAptosNetworkIds', [...APTOS_NETWORKS.map((network) => network.id)]);
+    void setChromeStorage('shownSuiNetworkIds', [...SUI_NETWORKS.map((network) => network.id)]);
     void setChromeStorage('allowedOrigins', []);
     void setChromeStorage('selectedChainId', '');
     void setChromeStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
     void setChromeStorage('selectedAptosNetworkId', APTOS_NETWORKS[0].id);
+    void setChromeStorage('selectedSuiNetworkId', SUI_NETWORKS[0].id);
     void setChromeStorage('encryptedPassword', null);
 
     void setCurrentPassword(null);

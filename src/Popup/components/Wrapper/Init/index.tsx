@@ -8,7 +8,7 @@ import { MAINNET as APTOS_NETWORK_MAINNET } from '~/constants/chain/aptos/networ
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { DEVNET as SUI_NETWORK_DEVNET } from '~/constants/chain/sui/network/devnet';
-import { TESTNET as SUI_NETWORK_TESTNET } from '~/constants/chain/sui/network/testnet';
+import { SUI } from '~/constants/chain/sui/sui';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeSessionStorageDefault, chromeSessionStorageState } from '~/Popup/recoils/chromeSessionStorage';
@@ -127,7 +127,9 @@ export default function Init({ children }: InitType) {
         (!originChromeStorage.allowedChainIds?.includes(ETHEREUM.id) &&
           originChromeStorage.shownEthereumNetworkIds?.filter((item) => officialEthereumNetworkIds.includes(item)).length > 0) ||
         (!originChromeStorage.allowedChainIds?.includes(APTOS.id) &&
-          originChromeStorage.shownAptosNetworkIds.filter((item) => officialAptosNetworkIds.includes(item)).length > 0)
+          originChromeStorage.shownAptosNetworkIds?.filter((item) => officialAptosNetworkIds.includes(item)).length > 0) ||
+        (!originChromeStorage.allowedChainIds?.includes(SUI.id) &&
+          originChromeStorage.shownSuiNetworkIds?.filter((item) => officialSuiNetworkIds.includes(item)).length > 0)
       ) {
         const allowedChainList: Chain['id'][] = [];
         if (
@@ -136,18 +138,22 @@ export default function Init({ children }: InitType) {
         ) {
           allowedChainList.push(ETHEREUM.id);
         }
+
         if (
           !originChromeStorage.allowedChainIds?.includes(APTOS.id) &&
-          originChromeStorage.shownAptosNetworkIds.filter((item) => officialAptosNetworkIds.includes(item)).length > 0
+          originChromeStorage.shownAptosNetworkIds?.filter((item) => officialAptosNetworkIds.includes(item)).length > 0
         ) {
           allowedChainList.push(APTOS.id);
         }
 
-        await setStorage('allowedChainIds', [...originChromeStorage.allowedChainIds, ...allowedChainList]);
-      }
+        if (
+          !originChromeStorage.allowedChainIds?.includes(SUI.id) &&
+          originChromeStorage.shownSuiNetworkIds?.filter((item) => officialSuiNetworkIds.includes(item)).length > 0
+        ) {
+          allowedChainList.push(SUI.id);
+        }
 
-      if (!originChromeStorage.shownSuiNetworkIds?.filter((item) => officialSuiNetworkIds.includes(item)).length) {
-        await setStorage('shownSuiNetworkIds', [SUI_NETWORK_TESTNET.id]);
+        await setStorage('allowedChainIds', [...originChromeStorage.allowedChainIds, ...allowedChainList]);
       }
 
       if (!originChromeStorage.selectedAptosNetworkId) {

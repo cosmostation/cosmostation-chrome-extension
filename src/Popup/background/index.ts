@@ -1,7 +1,8 @@
-import { APTOS_NETWORKS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
@@ -110,11 +111,12 @@ function background() {
         await setStorage('language', '' as LanguageType);
         await setStorage('currency', '' as CurrencyType);
 
-        await setStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id]);
+        await setStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id, SUI.id]);
         await setStorage('allowedOrigins', []);
         await setStorage('selectedChainId', '');
         await setStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
         await setStorage('selectedAptosNetworkId', APTOS_NETWORKS[0].id);
+        await setStorage('selectedSuiNetworkId', SUI_NETWORKS[0].id);
 
         await setStorage('autoSigns', []);
 

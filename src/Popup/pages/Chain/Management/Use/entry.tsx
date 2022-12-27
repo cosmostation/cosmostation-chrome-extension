@@ -3,18 +3,20 @@ import { useSnackbar } from 'notistack';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { SUI } from '~/constants/chain/sui/sui';
 import Divider from '~/Popup/components/common/Divider';
 import Image from '~/Popup/components/common/Image';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
+import { useCurrentShownSuiNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownSuiNetworks';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { AptosNetwork, Chain, EthereumNetwork } from '~/types/chain';
+import type { AptosNetwork, Chain, EthereumNetwork, SuiNetwork } from '~/types/chain';
 
 import SubItem from './components/SubItem';
 import {
@@ -42,17 +44,21 @@ export default function Entry() {
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
   const { addShownEthereumNetwork, removeShownEthereumNetwork } = useCurrentShownEthereumNetworks();
   const { addShownAptosNetwork, removeShownAptosNetwork } = useCurrentShownAptosNetworks();
+  const { addShownSuiNetwork, removeShownSuiNetwork } = useCurrentShownSuiNetworks();
   const [isExpandedEthereum, setIsExpandedEthereum] = useState<boolean>(false);
   const [isExpandedCosmos, setIsExpandedCosmos] = useState<boolean>(false);
   const [isExpandedAptos, setIsExpandedAptos] = useState<boolean>(false);
+  const [isExpandedSui, setIsExpandedSui] = useState<boolean>(false);
 
-  const handleChange = (panel: 'ethereum' | 'cosmos' | 'aptos') => (_: React.SyntheticEvent, newExpanded: boolean) => {
+  const handleChange = (panel: 'ethereum' | 'cosmos' | 'aptos' | 'sui') => (_: React.SyntheticEvent, newExpanded: boolean) => {
     if (panel === 'ethereum') {
       setIsExpandedEthereum(newExpanded);
     } else if (panel === 'cosmos') {
       setIsExpandedCosmos(newExpanded);
-    } else {
+    } else if (panel === 'aptos') {
       setIsExpandedAptos(newExpanded);
+    } else if (panel === 'sui') {
+      setIsExpandedSui(newExpanded);
     }
   };
 
@@ -60,7 +66,7 @@ export default function Entry() {
 
   const { t } = useTranslation();
 
-  const { allowedChainIds, shownEthereumNetworkIds, shownAptosNetworkIds } = chromeStorage;
+  const { allowedChainIds, shownEthereumNetworkIds, shownAptosNetworkIds, shownSuiNetworkIds } = chromeStorage;
 
   const filteredEthereumNetworks = useMemo(() => {
     if (debouncedOpenSearch) {
@@ -80,6 +86,16 @@ export default function Entry() {
     return debouncedCloseSearch
       ? APTOS_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1)
       : APTOS_NETWORKS;
+  }, [debouncedOpenSearch, debouncedCloseSearch]);
+
+  const filteredSuiNetworks = useMemo(() => {
+    if (debouncedOpenSearch) {
+      return SUI_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1);
+    }
+
+    return debouncedCloseSearch
+      ? SUI_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1)
+      : SUI_NETWORKS;
   }, [debouncedOpenSearch, debouncedCloseSearch]);
 
   const filteredCosmosChains = useMemo(() => {
@@ -135,6 +151,24 @@ export default function Entry() {
       }
     } else {
       await removeShownAptosNetwork(network);
+    }
+  };
+
+  const handleOnChangeSuiNetwork = async (checked: boolean, network: SuiNetwork) => {
+    if (checked) {
+      if (shownSuiNetworkIds.length === 0) {
+        await addAllowedChainId(SUI);
+      }
+      await addShownSuiNetwork(network);
+    } else if (shownSuiNetworkIds.length === 1) {
+      if (allowedChainIds.length < 2) {
+        enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
+      } else {
+        await removeShownSuiNetwork(network);
+        await removeAllowedChainId(SUI);
+      }
+    } else {
+      await removeShownSuiNetwork(network);
     }
   };
 
@@ -258,6 +292,46 @@ export default function Entry() {
                     checked: shownAptosNetworkIds.includes(network.id),
                     onChange: (_, checked) => {
                       void handleOnChangeAptosNetwork(checked, network);
+                    },
+                  }}
+                >
+                  {network.networkName}
+                </SubItem>
+              ))
+            ) : (
+              <NoResultsContainer>
+                <NoResults16Icon />
+                <Typography variant="h6">No Results</Typography>
+              </NoResultsContainer>
+            )}
+          </StyledChainAccordionDetails>
+        </StyledChainAccordion>
+        <StyledChainAccordion expanded={!!debouncedOpenSearch || isExpandedSui} onChange={handleChange('sui')}>
+          <StyledChainAccordionSummary
+            data-is-expanded={!!debouncedOpenSearch || isExpandedSui}
+            data-is-exists={!!filteredSuiNetworks.length}
+            aria-controls="aptos-content"
+            id="aptos-header"
+          >
+            <ItemLeftContainer>
+              <ItemLeftImageContainer>
+                <Image src={SUI.imageURL} />
+              </ItemLeftImageContainer>
+              <ItemLeftTextContainer>
+                <Typography variant="h5">Sui Networks</Typography>
+              </ItemLeftTextContainer>
+            </ItemLeftContainer>
+          </StyledChainAccordionSummary>
+          <StyledChainAccordionDetails data-is-exists={!!filteredSuiNetworks.length}>
+            {filteredSuiNetworks.length ? (
+              filteredSuiNetworks.map((network) => (
+                <SubItem
+                  key={network.id}
+                  imageProps={{ alt: network.networkName, src: network.imageURL }}
+                  switchProps={{
+                    checked: shownSuiNetworkIds.includes(network.id),
+                    onChange: (_, checked) => {
+                      void handleOnChangeSuiNetwork(checked, network);
                     },
                   }}
                 >
