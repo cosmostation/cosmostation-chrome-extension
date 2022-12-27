@@ -1,19 +1,25 @@
 import { Typography } from '@mui/material';
 
-import { ContentContainer, StyledButton } from './styled';
+import { ContentContainer, StyledButton, StyledCircularProgress } from './styled';
 
 type ButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
   typoVarient?: 'h4' | 'h5';
   Icon?: SvgElement;
+  isProgress?: boolean;
 };
 
-export default function Button({ children, Icon, typoVarient = 'h4', type, ...remainder }: ButtonProps) {
+export default function Button({ children, Icon, isProgress = false, typoVarient = 'h4', type, ...remainder }: ButtonProps) {
+  const disabled = isProgress ? true : remainder.disabled;
   return (
-    <StyledButton {...remainder} data-typo-varient={typoVarient} type={type ?? 'button'}>
-      <ContentContainer data-is-icon={Icon ? 1 : 0}>
-        {Icon && <Icon />}
-        <Typography variant={typoVarient}>{children}</Typography>
-      </ContentContainer>
+    <StyledButton {...remainder} data-typo-varient={typoVarient} type={type ?? 'button'} disabled={disabled}>
+      {isProgress ? (
+        <StyledCircularProgress size={14} />
+      ) : (
+        <ContentContainer data-is-icon={Icon ? 1 : 0}>
+          {Icon && <Icon />}
+          <Typography variant={typoVarient}>{children}</Typography>
+        </ContentContainer>
+      )}
     </StyledButton>
   );
 }

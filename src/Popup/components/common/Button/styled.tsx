@@ -1,3 +1,4 @@
+import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 type StyledButtonProps = {
@@ -50,5 +51,11 @@ export const ContentContainer = styled('div')<ContentContainerProps>((props) => 
 
   '& :first-of-type': {
     marginRight: props['data-is-icon'] ? '0.4rem' : '0',
+  },
+}));
+
+export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
+  '&.MuiCircularProgress-root': {
+    color: theme.accentColors.purple01,
   },
 }));

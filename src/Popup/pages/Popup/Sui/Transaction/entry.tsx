@@ -71,6 +71,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
+  const [isProgress, setIsProgress] = useState(false);
 
   const { t } = useTranslation();
 
@@ -228,8 +229,10 @@ export default function Entry({ queue }: EntryProps) {
           <div>
             <Button
               disabled={isDiabled}
+              isProgress={isProgress}
               onClick={async () => {
                 try {
+                  setIsProgress(true);
                   const response = await rawSigner.signAndExecuteTransaction(params[0]);
 
                   const result: SuiSignAndExecuteTransactionResponse = response;
@@ -250,6 +253,8 @@ export default function Entry({ queue }: EntryProps) {
                   await deQueue();
                 } catch (e) {
                   enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+                } finally {
+                  setIsProgress(false);
                 }
               }}
             >
