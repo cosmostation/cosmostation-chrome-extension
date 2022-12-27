@@ -23,14 +23,16 @@ import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
 
 type CoinButtonProps = ComponentProps<typeof Button> & {
   isActive?: boolean;
-  currentCoinType: string;
+  coinType: string;
   chain: SuiChain;
 };
 
-export default function CoinButton({ currentCoinType, chain, isActive, ...remainder }: CoinButtonProps) {
+export default function CoinButton({ coinType, chain, isActive, ...remainder }: CoinButtonProps) {
   const { t } = useTranslation();
 
   const { currentAccount } = useCurrentAccount();
+
+  const splitedCoinType = coinType.split('::');
 
   const accounts = useAccounts(true);
 
@@ -40,28 +42,25 @@ export default function CoinButton({ currentCoinType, chain, isActive, ...remain
 
   const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
 
-  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: currentCoinType }, { suspense: true });
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType }, { suspense: true });
 
   const decimals = useMemo(() => coinMetadata?.result?.decimals || 0, [coinMetadata?.result?.decimals]);
 
   const suiCoinObjects = useMemo(
-    () => objects?.filter(isExists).filter((object) => getCoinType(object.result?.details.data.type || '') === currentCoinType) || [],
-    [currentCoinType, objects],
+    () => objects?.filter(isExists).filter((object) => getCoinType(object.result?.details.data.type || '') === coinType) || [],
+    [coinType, objects],
   );
 
-  const coinObjects = useMemo(
-    () => suiCoinObjects.filter((object) => getCoinType(object.result?.details.data.type) === currentCoinType),
-    [currentCoinType, suiCoinObjects],
-  );
+  const coinObjects = useMemo(() => suiCoinObjects.filter((object) => getCoinType(object.result?.details.data.type) === coinType), [coinType, suiCoinObjects]);
 
   const baseAmount = useMemo(() => coinObjects.reduce((ac, cu) => plus(ac, cu.result?.details.data.fields.balance || '0'), '0'), [coinObjects]);
 
   const imageURL = useMemo(
-    () => (coinMetadata?.result?.iconUrl || currentCoinType === SUI_COIN ? chain.imageURL : undefined),
-    [chain.imageURL, coinMetadata?.result?.iconUrl, currentCoinType],
+    () => (coinMetadata?.result?.iconUrl || coinType === SUI_COIN ? chain.imageURL : undefined),
+    [chain.imageURL, coinMetadata?.result?.iconUrl, coinType],
   );
 
-  const displayDenom = useMemo(() => coinMetadata?.result?.symbol || '', [coinMetadata?.result?.symbol]);
+  const displayDenom = useMemo(() => coinMetadata?.result?.symbol || splitedCoinType[2] || '', [coinMetadata?.result?.symbol, splitedCoinType]);
   const displayAmount = toDisplayDenomAmount(baseAmount, decimals);
 
   return (

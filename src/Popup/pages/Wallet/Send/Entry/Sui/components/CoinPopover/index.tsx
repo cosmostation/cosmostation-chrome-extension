@@ -25,10 +25,7 @@ export default function CoinPopover({ currentCoinType, onClickCoin, onClose, cha
 
   const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
 
-  const suiCoinObjects = useMemo(
-    () => objects?.filter(isExists).filter((object) => getCoinType(object.result?.details.data.type || '') === currentCoinType) || [],
-    [currentCoinType, objects],
-  );
+  const suiCoinObjects = useMemo(() => objects?.filter(isExists).filter((object) => !!object.result?.details.data.fields.balance) || [], [objects]);
 
   const suiCoinNames = useMemo(
     () => Array.from(new Set(suiCoinObjects.map((object) => getCoinType(object.result?.details.data.type)))).filter((name) => !!name),

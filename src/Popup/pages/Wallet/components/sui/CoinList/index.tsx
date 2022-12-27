@@ -79,7 +79,7 @@ export default function CoinList() {
         {filteredCoins.map((coin) => (
           <ErrorBoundary key={coin.type} FallbackComponent={Empty}>
             <Suspense fallback={<CoinItemSkeleton coin={coin} />}>
-              <CoinItem coin={coin} onClick={() => navigate(`/wallet/send/${coin.type}` as unknown as Path)} />
+              <CoinItem coin={coin} onClick={() => navigate(`/wallet/send/${getCoinType(coin.type)}` as unknown as Path)} />
             </Suspense>
           </ErrorBoundary>
         ))}

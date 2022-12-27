@@ -96,7 +96,7 @@ export default function Entry({ queue }: EntryProps) {
     if (dryRunTransaction?.gasUsed) {
       const storageCost = dryRunTransaction.gasUsed.storageCost - dryRunTransaction.gasUsed.storageRebate;
 
-      const cost = dryRunTransaction.gasUsed.computationCost - (storageCost > 0 ? storageCost : 0);
+      const cost = dryRunTransaction.gasUsed.computationCost + (storageCost > 0 ? storageCost : 0);
 
       return String(cost);
     }

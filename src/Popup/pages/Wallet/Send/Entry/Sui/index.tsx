@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 import type { UnserializedSignableTransaction } from '@mysten/sui.js';
 import { Ed25519Keypair, JsonRpcProvider, RawSigner } from '@mysten/sui.js';
@@ -35,6 +36,8 @@ type SuiProps = {
   chain: SuiChain;
 };
 
+const DEFAULT_GAS_BUDGET = 20000;
+
 export default function Sui({ chain }: SuiProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -45,8 +48,6 @@ export default function Sui({ chain }: SuiProps) {
 
   const { t } = useTranslation();
   const { enQueue } = useCurrentQueue();
-
-  const [currentBaseBudget, setCurrentBaseBudget] = useState(20000);
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
@@ -64,10 +65,7 @@ export default function Sui({ chain }: SuiProps) {
 
   const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
 
-  const suiCoinObjects = useMemo(
-    () => objects?.filter(isExists).filter((object) => getCoinType(object.result?.details.data.type || '') === SUI_COIN) || [],
-    [objects],
-  );
+  const suiCoinObjects = useMemo(() => objects?.filter(isExists).filter((object) => !!object.result?.details.data.fields.balance) || [], [objects]);
 
   const suiCoinNames = useMemo(
     () => Array.from(new Set(suiCoinObjects.map((object) => getCoinType(object.result?.details.data.type)))).filter((name) => !!name),
@@ -76,6 +74,8 @@ export default function Sui({ chain }: SuiProps) {
 
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
   const [currentCoinType, setCurrentCoinType] = useState<string | undefined>(suiCoinNames.includes(params.id || '') ? params.id : suiCoinNames[0]);
+
+  const [debouncedCurrentDisplayAmount] = useDebounce(currentDisplayAmount, 700);
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: currentCoinType }, { suspense: true });
 
@@ -100,31 +100,53 @@ export default function Sui({ chain }: SuiProps) {
 
   const currentCoinDisplayAmount = useMemo(() => toDisplayDenomAmount(currentCoinBaseAmount, decimals), [currentCoinBaseAmount, decimals]);
 
-  const tx: UnserializedSignableTransaction | undefined = useMemo(() => {
+  const dryRunTx = useMemo<UnserializedSignableTransaction | undefined>(() => {
     if (
       !suiAddressRegex.test(currentAddress) ||
       address.toLowerCase() === currentAddress.toLowerCase() ||
       currentCoinBaseAmount === '0' ||
-      lte(currentDisplayAmount || '0', '0') ||
-      gt(currentDisplayAmount || '0', currentCoinDisplayAmount)
+      lte(debouncedCurrentDisplayAmount || '0', '0') ||
+      gt(debouncedCurrentDisplayAmount || '0', currentCoinDisplayAmount)
     ) {
       return undefined;
     }
 
-    const baseAmount = toBaseDenomAmount(currentDisplayAmount, decimals);
+    const baseAmount = toBaseDenomAmount(debouncedCurrentDisplayAmount, decimals);
 
     return {
-      kind: 'paySui',
+      kind: currentCoinType === SUI_COIN ? 'paySui' : 'pay',
       data: {
         amounts: [Number(baseAmount)],
-        gasBudget: currentBaseBudget,
+        gasBudget: DEFAULT_GAS_BUDGET,
         recipients: [currentAddress],
         inputCoins: currentCoinObjects.map((object) => object.result!.details.data.fields.id.id),
       },
     };
-  }, [address, currentAddress, currentBaseBudget, currentCoinBaseAmount, currentCoinDisplayAmount, currentCoinObjects, currentDisplayAmount, decimals]);
+  }, [address, currentAddress, currentCoinBaseAmount, currentCoinDisplayAmount, currentCoinObjects, currentCoinType, debouncedCurrentDisplayAmount, decimals]);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionSWR({ rawSigner, transaction: tx });
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionSWR({ rawSigner, transaction: dryRunTx });
+
+  const currentGasBudget = useMemo(() => {
+    if (dryRunTx && dryRunTransaction?.status.status === 'success') {
+      const storageCost = dryRunTransaction.gasUsed.storageCost - dryRunTransaction.gasUsed.storageRebate;
+
+      const cost = dryRunTransaction.gasUsed.computationCost + (storageCost > 0 ? storageCost : 0);
+
+      const baseBudget = Number(times(cost, 2));
+
+      return baseBudget;
+    }
+
+    return DEFAULT_GAS_BUDGET;
+  }, [dryRunTransaction, dryRunTx]);
+
+  const tx = useMemo<UnserializedSignableTransaction | undefined>(() => {
+    if (dryRunTx && dryRunTransaction?.status.status === 'success') {
+      return { kind: dryRunTx.kind, data: { ...dryRunTx.data, gasBudget: currentGasBudget } } as UnserializedSignableTransaction;
+    }
+
+    return undefined;
+  }, [currentGasBudget, dryRunTransaction?.status.status, dryRunTx]);
 
   const errorMessage = useMemo(() => {
     if (!suiAddressRegex.test(currentAddress)) {
@@ -139,11 +161,11 @@ export default function Sui({ chain }: SuiProps) {
       return t('pages.Wallet.Send.Entry.Sui.index.invalidAmount');
     }
 
-    if (lte(currentDisplayAmount || '0', '0')) {
+    if (lte(debouncedCurrentDisplayAmount || '0', '0')) {
       return t('pages.Wallet.Send.Entry.Sui.index.invalidAmount');
     }
 
-    if (gt(currentDisplayAmount || '0', currentCoinDisplayAmount)) {
+    if (gt(debouncedCurrentDisplayAmount || '0', currentCoinDisplayAmount)) {
       return t('pages.Wallet.Send.Entry.Sui.index.insufficientAmount');
     }
 
@@ -163,29 +185,15 @@ export default function Sui({ chain }: SuiProps) {
     currentAddress,
     currentCoinBaseAmount,
     currentCoinDisplayAmount,
-    currentDisplayAmount,
+    debouncedCurrentDisplayAmount,
     dryRunTransaction?.status.status,
     dryRunTransactionError?.message,
     t,
   ]);
 
-  useEffect(() => {
-    if (dryRunTransaction?.gasUsed) {
-      const storageCost = dryRunTransaction.gasUsed.storageCost - dryRunTransaction.gasUsed.storageRebate;
-
-      const cost = dryRunTransaction.gasUsed.computationCost - (storageCost > 0 ? storageCost : 0);
-
-      const baseBudget = Number(times(cost, 2));
-
-      if (baseBudget !== currentBaseBudget) {
-        setCurrentBaseBudget(baseBudget);
-      }
-    }
-  }, [currentBaseBudget, dryRunTransaction?.gasUsed]);
-
   const handleOnClickMax = () => {
     if (currentCoinType === SUI_COIN) {
-      const currentDisplayBudget = toDisplayDenomAmount(currentBaseBudget, decimals);
+      const currentDisplayBudget = toDisplayDenomAmount(currentGasBudget, decimals);
 
       const displayAmount = minus(currentCoinDisplayAmount, currentDisplayBudget);
       setCurrentDisplayAmount(gt(displayAmount, '0') ? displayAmount : '0');
@@ -214,7 +222,7 @@ export default function Sui({ chain }: SuiProps) {
         <Div sx={{ marginTop: '0.8rem' }}>
           {currentCoinType && (
             <CoinButton
-              currentCoinType={currentCoinType}
+              coinType={currentCoinType}
               isActive={isOpenPopover}
               chain={chain}
               onClick={(event) => {

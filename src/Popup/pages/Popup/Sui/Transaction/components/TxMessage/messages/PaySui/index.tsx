@@ -1,8 +1,12 @@
+import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 import type { PaySuiTransaction } from '@mysten/sui.js';
 
+import { SUI_COIN } from '~/constants/sui';
 import Number from '~/Popup/components/common/Number';
+import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { toDisplayDenomAmount } from '~/Popup/utils/big';
 
 import {
   AddressContainer,
@@ -23,6 +27,11 @@ type TransactionProps = {
 
 export default function Transaction({ transaction }: TransactionProps) {
   const { t } = useTranslation();
+
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
+
+  const decimals = useMemo(() => coinMetadata?.result?.decimals || 0, [coinMetadata?.result?.decimals]);
+
   return (
     <Container title="Transaction">
       <ContentContainer>
@@ -46,7 +55,7 @@ export default function Transaction({ transaction }: TransactionProps) {
               <RightColumnContainer>
                 <RightAmountContainer>
                   <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                    {String(amount)}
+                    {toDisplayDenomAmount(amount, decimals)}
                   </Number>
                 </RightAmountContainer>
               </RightColumnContainer>

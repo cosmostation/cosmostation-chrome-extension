@@ -42,6 +42,8 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coinT
 
   const accounts = useAccounts(true);
 
+  const splitedCoinType = coinType.split('::');
+
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
   const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address }, { suspense: true });
@@ -66,7 +68,8 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coinT
     [chain.imageURL, coinMetadata?.result?.iconUrl, coinType],
   );
 
-  const displayDenom = useMemo(() => coinMetadata?.result?.symbol || '', [coinMetadata?.result?.symbol]);
+  const displayDenom = useMemo(() => coinMetadata?.result?.symbol || splitedCoinType[2] || '', [coinMetadata?.result?.symbol, splitedCoinType]);
+
   const displayAmount = toDisplayDenomAmount(baseAmount, decimals);
 
   return (
