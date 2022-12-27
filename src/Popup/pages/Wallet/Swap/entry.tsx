@@ -1,6 +1,7 @@
 import { Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
+import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
@@ -21,7 +22,7 @@ import SwapIcon from '~/images/icons/Swap.svg';
 
 export default function Entry() {
   const { t } = useTranslation();
-  const sampleAmount = '4000';
+  const sampleAmount = '4000.000';
   return (
     <Container>
       <SwapContainer>
@@ -31,7 +32,10 @@ export default function Entry() {
               <Typography variant="h6">Input Coin</Typography>
             </SwapCoinLeftHeaderContainer>
             <SwapCoinRightHeaderContainer>
-              <Typography variant="h6">Available: {sampleAmount}</Typography>
+              <Typography variant="h6">Available: </Typography>
+              <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                {sampleAmount}
+              </Number>
               <MaxButton>
                 <Typography variant="h5">MAX</Typography>
               </MaxButton>
@@ -44,7 +48,7 @@ export default function Entry() {
               <Typography variant="h6">Output Coin</Typography>
             </SwapCoinLeftHeaderContainer>
             <SwapCoinRightHeaderContainer>
-              <Typography variant="h6">Available: {sampleAmount}</Typography>
+              <Typography variant="h4">Available: {sampleAmount}</Typography>
               <MaxButton>
                 <Typography variant="h5">MAX</Typography>
               </MaxButton>
