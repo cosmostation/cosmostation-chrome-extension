@@ -15,7 +15,7 @@ export function useCurrentFeesSWR(chain: CosmosChain, config?: SWRConfiguration)
 
   const assetGasRate = useGasRateSWR(chain, config);
 
-  const { vestingRelatedAvailable } = useAmountSWR(chain, true);
+  const { vestingRelatedAvailable } = useAmountSWR(chain);
   const coinList = useCoinListSWR(chain, true);
   const coinAll = useMemo(
     () => [

@@ -28,12 +28,12 @@ export type CoinInfo = {
 };
 
 export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
-  const account = useAccountSWR(chain, suspense);
-  const delegation = useDelegationSWR(chain, suspense);
-  const reward = useRewardSWR(chain, suspense);
-  const balance = useBalanceSWR(chain, suspense);
-  const incentive = useIncentiveSWR(chain, suspense);
   const assets = useAssetsSWR(chain, { suspense });
+  const account = useAccountSWR(chain);
+  const delegation = useDelegationSWR(chain);
+  const reward = useRewardSWR(chain);
+  const balance = useBalanceSWR(chain);
+  const incentive = useIncentiveSWR(chain);
 
   const nativeAssets: Coin[] = useMemo(
     () =>
