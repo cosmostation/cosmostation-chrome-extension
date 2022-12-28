@@ -88,6 +88,81 @@ export const MaxButton = styled('button')(({ theme }) => ({
   },
 }));
 
+export const SwapContainerButton = styled('button')({
+  backgroundColor: 'transparent',
+  border: `none`,
+
+  padding: '0',
+  paddingTop: '1.3rem',
+
+  width: '100%',
+
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+
+  cursor: 'pointer',
+});
+
+export const SwapLeftContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+});
+
+export const SwapLeftImageContainer = styled('div')({
+  '& > img': {
+    width: '3.2rem',
+    height: '3.2rem',
+  },
+});
+
+export const SwapLeftInfoContainer = styled('div')({
+  marginLeft: '0.8rem',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+});
+
+export const SwapTitleContainer = styled('div')(({ theme }) => ({
+  textAlign: 'left',
+  color: theme.colors.text01,
+}));
+
+export const SwapLeftHeaderTitleContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text02,
+}));
+
+type SwapLeftIconButtonProps = {
+  'data-is-active'?: number;
+};
+export const SwapLeftIconButton = styled('div')<SwapLeftIconButtonProps>(({ theme, ...props }) => ({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+
+  '& > svg': {
+    transform: props['data-is-active'] ? 'rotate(180deg)' : 'none',
+    '& > path': {
+      stroke: theme.colors.base05,
+    },
+  },
+}));
+
+export const SwapRightInfoContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-end',
+});
+
+export const SwapAmountInfoContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+}));
+
+export const SwapCurrencyInfoContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text02,
+}));
+
 export const SwapInfoContainer = styled('div')(({ theme }) => ({
   width: '100%',
   height: '10rem',
@@ -97,6 +172,11 @@ export const SwapInfoContainer = styled('div')(({ theme }) => ({
 
   border: `0.1rem solid ${theme.colors.base03}`,
   borderRadius: '0.8rem',
+}));
+
+export const SwapInfoHeaderContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  color: theme.colors.text01,
 }));
 
 export const BottomContainer = styled('div')({
