@@ -223,12 +223,19 @@ export const StyledAbsoluteLoading = styled(AbsoluteLoading)({
   borderRadius: '0.8rem',
 });
 
-export const UnitIconButton = styled(IconButton)(({ theme }) => ({
+export const UnitIconButton = styled('button')(({ theme }) => ({
   width: '3.2rem',
   height: '3.2rem',
 
+  border: 'none',
+
   padding: '0',
   borderRadius: '0.8rem',
+
+  display: 'flex',
+
+  justifyContent: 'center',
+  alignItems: 'center',
 
   backgroundColor: theme.accentColors.purple01,
 

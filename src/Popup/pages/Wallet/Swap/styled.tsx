@@ -15,6 +15,7 @@ export const Container = styled('div')({
 export const ContentContainer = styled('div')({});
 
 export const SwapContainer = styled('div')({
+  marginTop: '1.4rem',
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
@@ -60,28 +61,25 @@ export const SwapCoinLeftHeaderContainer = styled('div')(({ theme }) => ({
 
 export const SwapCoinRightHeaderContainer = styled('div')(({ theme }) => ({
   display: 'flex',
-
+  alignItems: 'center',
   color: theme.colors.text02,
 }));
 
 export const MaxButton = styled('button')(({ theme }) => ({
+  width: '2.8rem',
+  display: 'flex',
+  alignItems: 'center',
+  textAlign: 'right',
   padding: '0',
   border: 0,
-  borderRadius: '5rem',
 
   marginLeft: '0.4rem',
 
-  //   height: 'max-content',
-
-  //   display: 'flex',
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   backgroundColor: theme.colors.base03,
   backgroundColor: 'transparent',
-
   color: theme.accentColors.purple01,
 
   cursor: 'pointer',
+
   textDecorationLine: 'underline',
   '&:hover': {
     backgroundColor: theme.accentColors.purple02,
@@ -141,6 +139,8 @@ export const SwapCoinLeftIconButton = styled('div')<SwapCoinLeftIconButtonProps>
   justifyContent: 'flex-end',
   alignItems: 'center',
 
+  marginLeft: '0.5rem',
+
   '& > svg': {
     transform: props['data-is-active'] ? 'rotate(180deg)' : 'none',
     '& > path': {
@@ -164,7 +164,7 @@ export const SwapCoinRightSubTitleContainer = styled('div')(({ theme }) => ({
 }));
 
 export const SwapInfoContainer = styled('div')(({ theme }) => ({
-  padding: '1.6rem',
+  padding: '1.6rem 1.6rem 1.9rem',
 
   marginTop: '0.8rem',
 
@@ -174,7 +174,7 @@ export const SwapInfoContainer = styled('div')(({ theme }) => ({
 
 export const SwapInfoHeaderContainer = styled('div')(({ theme }) => ({
   display: 'flex',
-  alignItems: 'center',
+  // alignItems: 'center',
   color: theme.colors.text01,
 }));
 
@@ -201,4 +201,57 @@ export const BottomContainer = styled('div')({
   width: 'calc(100% - 3.2rem)',
 
   bottom: '1.6rem',
+});
+
+export const TopContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  position: 'relative',
+
+  backgroundColor: 'transparent',
+});
+
+export const TextContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  height: '2.8rem',
+
+  color: theme.colors.text01,
+}));
+
+export const BackButton = styled('button')(({ theme }) => ({
+  left: 0,
+
+  width: '2.8rem',
+  height: '2.8rem',
+
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  position: 'absolute',
+
+  backgroundColor: theme.colors.base03,
+
+  borderRadius: '50%',
+
+  border: 0,
+  margin: 0,
+
+  cursor: 'pointer',
+
+  '& svg': {
+    fill: theme.colors.base06,
+  },
+}));
+
+export const SideButton = styled(IconButton)({
+  right: 0,
+  position: 'absolute',
+
+  padding: '0',
 });

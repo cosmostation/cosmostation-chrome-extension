@@ -1078,7 +1078,13 @@
         "Entry": {
           "swapButton": "교환"
         },
-        "layout": {
+        "components": {
+          "SlippageSettingDialog": {
+            "confirm": "확인",
+            "title": "설정"
+          }
+        },
+        "entry": {
           "title": "교환"
         }
       },

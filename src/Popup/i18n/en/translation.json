@@ -1078,7 +1078,13 @@
         "Entry": {
           "swapButton": "Swap"
         },
-        "layout": {
+        "components": {
+          "SlippageSettingDialog": {
+            "confirm": "Confirm",
+            "title": "Setting"
+          }
+        },
+        "entry": {
           "title": "Swap"
         }
       },
