@@ -88,7 +88,7 @@ export const MaxButton = styled('button')(({ theme }) => ({
   },
 }));
 
-export const SwapContainerButton = styled('button')({
+export const SwapCoinContainerButton = styled('button')({
   backgroundColor: 'transparent',
   border: `none`,
 
@@ -104,39 +104,39 @@ export const SwapContainerButton = styled('button')({
   cursor: 'pointer',
 });
 
-export const SwapLeftContainer = styled('div')({
+export const SwapCoinLeftContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
 });
 
-export const SwapLeftImageContainer = styled('div')({
+export const SwapCoinLeftImageContainer = styled('div')({
   '& > img': {
     width: '3.2rem',
     height: '3.2rem',
   },
 });
 
-export const SwapLeftInfoContainer = styled('div')({
+export const SwapCoinLeftInfoContainer = styled('div')({
   marginLeft: '0.8rem',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
 });
 
-export const SwapTitleContainer = styled('div')(({ theme }) => ({
+export const SwapCoinLeftTitleContainer = styled('div')(({ theme }) => ({
   textAlign: 'left',
   color: theme.colors.text01,
 }));
 
-export const SwapLeftHeaderTitleContainer = styled('div')(({ theme }) => ({
+export const SwapCoinLeftSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-type SwapLeftIconButtonProps = {
+type SwapCoinLeftIconButtonProps = {
   'data-is-active'?: number;
 };
-export const SwapLeftIconButton = styled('div')<SwapLeftIconButtonProps>(({ theme, ...props }) => ({
+export const SwapCoinLeftIconButton = styled('div')<SwapCoinLeftIconButtonProps>(({ theme, ...props }) => ({
   display: 'flex',
   justifyContent: 'flex-end',
   alignItems: 'center',
@@ -149,23 +149,21 @@ export const SwapLeftIconButton = styled('div')<SwapLeftIconButtonProps>(({ them
   },
 }));
 
-export const SwapRightInfoContainer = styled('div')({
+export const SwapCoinRightContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-end',
 });
 
-export const SwapAmountInfoContainer = styled('div')(({ theme }) => ({
+export const SwapCoinRightTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const SwapCurrencyInfoContainer = styled('div')(({ theme }) => ({
+export const SwapCoinRightSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
 export const SwapInfoContainer = styled('div')(({ theme }) => ({
-  width: '100%',
-  height: '10rem',
   padding: '1.6rem',
 
   marginTop: '0.8rem',
@@ -176,6 +174,24 @@ export const SwapInfoContainer = styled('div')(({ theme }) => ({
 
 export const SwapInfoHeaderContainer = styled('div')(({ theme }) => ({
   display: 'flex',
+  alignItems: 'center',
+  color: theme.colors.text01,
+}));
+
+export const SwapInfoSubContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  rowGap: '0.6rem',
+  marginTop: '1.1rem',
+});
+
+export const SwapInfoSubTextContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  color: theme.colors.text02,
+}));
+
+export const SwapInfoSubRightTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 

@@ -11,24 +11,27 @@ import {
   BottomContainer,
   Container,
   MaxButton,
-  SwapAmountInfoContainer,
   SwapCoinContainer,
+  SwapCoinContainerButton,
   SwapCoinHeaderContainer,
+  SwapCoinLeftContainer,
   SwapCoinLeftHeaderContainer,
+  SwapCoinLeftIconButton,
+  SwapCoinLeftImageContainer,
+  SwapCoinLeftInfoContainer,
+  SwapCoinLeftSubTitleContainer,
+  SwapCoinLeftTitleContainer,
+  SwapCoinRightContainer,
   SwapCoinRightHeaderContainer,
+  SwapCoinRightSubTitleContainer,
+  SwapCoinRightTitleContainer,
   SwapContainer,
-  SwapContainerButton,
-  SwapCurrencyInfoContainer,
   SwapIconButton,
   SwapInfoContainer,
   SwapInfoHeaderContainer,
-  SwapLeftContainer,
-  SwapLeftHeaderTitleContainer,
-  SwapLeftIconButton,
-  SwapLeftImageContainer,
-  SwapLeftInfoContainer,
-  SwapRightInfoContainer,
-  SwapTitleContainer,
+  SwapInfoSubContainer,
+  SwapInfoSubRightTextContainer,
+  SwapInfoSubTextContainer,
 } from './styled';
 
 import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
@@ -62,28 +65,28 @@ export default function Entry() {
               </MaxButton>
             </SwapCoinRightHeaderContainer>
           </SwapCoinHeaderContainer>
-          <SwapContainerButton>
-            <SwapLeftContainer>
-              <SwapLeftImageContainer>
+          <SwapCoinContainerButton>
+            <SwapCoinLeftContainer>
+              <SwapCoinLeftImageContainer>
                 <Image src={OSMOSIS.imageURL} />
-              </SwapLeftImageContainer>
-              <SwapLeftInfoContainer>
-                <SwapTitleContainer>
+              </SwapCoinLeftImageContainer>
+              <SwapCoinLeftInfoContainer>
+                <SwapCoinLeftTitleContainer>
                   <Typography variant="h5">{OSMOSIS.displayDenom}</Typography>
-                </SwapTitleContainer>
-                <SwapLeftHeaderTitleContainer>
+                </SwapCoinLeftTitleContainer>
+                <SwapCoinLeftSubTitleContainer>
                   <Typography variant="h6n">{OSMOSIS.chainName}</Typography>
-                </SwapLeftHeaderTitleContainer>
-              </SwapLeftInfoContainer>
-              <SwapLeftIconButton data-is-active={samplePopover ? 1 : 0}>
+                </SwapCoinLeftSubTitleContainer>
+              </SwapCoinLeftInfoContainer>
+              <SwapCoinLeftIconButton data-is-active={samplePopover ? 1 : 0}>
                 <BottomArrow24Icon />
-              </SwapLeftIconButton>
-            </SwapLeftContainer>
-            <SwapRightInfoContainer>
-              <SwapAmountInfoContainer>
+              </SwapCoinLeftIconButton>
+            </SwapCoinLeftContainer>
+            <SwapCoinRightContainer>
+              <SwapCoinRightTitleContainer>
                 <Typography variant="h4">{sampleAmount2}</Typography>
-              </SwapAmountInfoContainer>
-              <SwapCurrencyInfoContainer>
+              </SwapCoinRightTitleContainer>
+              <SwapCoinRightSubTitleContainer>
                 <Typography variant="h6n"> $ </Typography>{' '}
                 <Tooltip title={sampleAmount3} arrow placement="top">
                   <span>
@@ -92,9 +95,9 @@ export default function Entry() {
                     </Number>
                   </span>
                 </Tooltip>
-              </SwapCurrencyInfoContainer>
-            </SwapRightInfoContainer>
-          </SwapContainerButton>
+              </SwapCoinRightSubTitleContainer>
+            </SwapCoinRightContainer>
+          </SwapCoinContainerButton>
         </SwapCoinContainer>
         {/* NOTE OutPut */}
         <SwapCoinContainer>
@@ -103,28 +106,28 @@ export default function Entry() {
               <Typography variant="h6">Output Coin</Typography>
             </SwapCoinLeftHeaderContainer>
           </SwapCoinHeaderContainer>
-          <SwapContainerButton>
-            <SwapLeftContainer>
-              <SwapLeftImageContainer>
+          <SwapCoinContainerButton>
+            <SwapCoinLeftContainer>
+              <SwapCoinLeftImageContainer>
                 <Image src={OSMOSIS.imageURL} />
-              </SwapLeftImageContainer>
-              <SwapLeftInfoContainer>
-                <SwapTitleContainer>
+              </SwapCoinLeftImageContainer>
+              <SwapCoinLeftInfoContainer>
+                <SwapCoinLeftTitleContainer>
                   <Typography variant="h5">{OSMOSIS.displayDenom}</Typography>
-                </SwapTitleContainer>
-                <SwapLeftHeaderTitleContainer>
+                </SwapCoinLeftTitleContainer>
+                <SwapCoinLeftSubTitleContainer>
                   <Typography variant="h6n">{OSMOSIS.chainName}</Typography>
-                </SwapLeftHeaderTitleContainer>
-              </SwapLeftInfoContainer>
-              <SwapLeftIconButton data-is-active={samplePopover ? 1 : 0}>
+                </SwapCoinLeftSubTitleContainer>
+              </SwapCoinLeftInfoContainer>
+              <SwapCoinLeftIconButton data-is-active={samplePopover ? 1 : 0}>
                 <BottomArrow24Icon />
-              </SwapLeftIconButton>
-            </SwapLeftContainer>
-            <SwapRightInfoContainer>
-              <SwapAmountInfoContainer>
+              </SwapCoinLeftIconButton>
+            </SwapCoinLeftContainer>
+            <SwapCoinRightContainer>
+              <SwapCoinRightTitleContainer>
                 <Typography variant="h4">{sampleAmount2}</Typography>
-              </SwapAmountInfoContainer>
-              <SwapCurrencyInfoContainer>
+              </SwapCoinRightTitleContainer>
+              <SwapCoinRightSubTitleContainer>
                 <Typography variant="h6n"> $ </Typography>{' '}
                 <Tooltip title={sampleAmount3} arrow placement="top">
                   <span>
@@ -133,9 +136,9 @@ export default function Entry() {
                     </Number>
                   </span>
                 </Tooltip>
-              </SwapCurrencyInfoContainer>
-            </SwapRightInfoContainer>
-          </SwapContainerButton>
+              </SwapCoinRightSubTitleContainer>
+            </SwapCoinRightContainer>
+          </SwapCoinContainerButton>
         </SwapCoinContainer>
         <SwapIconButton>
           <SwapIcon />
@@ -155,6 +158,32 @@ export default function Entry() {
           &nbsp;
           <Typography variant="h6">{OSMOSIS.displayDenom}</Typography>
         </SwapInfoHeaderContainer>
+        <SwapInfoSubContainer>
+          <SwapInfoSubTextContainer>
+            <Typography variant="h6">Price Impact</Typography>
+            <SwapInfoSubRightTextContainer>
+              <Typography variant="h6">-</Typography>
+            </SwapInfoSubRightTextContainer>
+          </SwapInfoSubTextContainer>
+          <SwapInfoSubTextContainer>
+            <Typography variant="h6">Swap Fee (0.2%)</Typography>
+            <SwapInfoSubRightTextContainer>
+              <Typography variant="h6">-</Typography>
+            </SwapInfoSubRightTextContainer>
+          </SwapInfoSubTextContainer>
+          <SwapInfoSubTextContainer>
+            <Typography variant="h6">Expected Output</Typography>
+            <SwapInfoSubRightTextContainer>
+              <Typography variant="h6">-</Typography>
+            </SwapInfoSubRightTextContainer>
+          </SwapInfoSubTextContainer>
+          <SwapInfoSubTextContainer>
+            <Typography variant="h6">Minimum after slippage (1%)</Typography>
+            <SwapInfoSubRightTextContainer>
+              <Typography variant="h6">-</Typography>
+            </SwapInfoSubRightTextContainer>
+          </SwapInfoSubTextContainer>
+        </SwapInfoSubContainer>
       </SwapInfoContainer>
       <BottomContainer>
         <Tooltip varient="error" title="errorMessage" placement="top" arrow>
