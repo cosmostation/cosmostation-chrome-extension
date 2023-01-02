@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 import IconButton from '~/Popup/components/common/IconButton';
+import Input from '~/Popup/components/common/Input';
 
 export const Container = styled('div')({
   height: '100%',
@@ -63,6 +64,41 @@ export const SwapCoinRightHeaderContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   color: theme.colors.text02,
+}));
+
+export const StyledInput = styled(Input)(({ theme }) => ({
+  '&.MuiOutlinedInput-root': {
+    '.MuiOutlinedInput-input': {
+      textAlign: 'right',
+      fontFamily: theme.typography.h4n.fontFamily,
+      fontStyle: theme.typography.h4n.fontStyle,
+      fontSize: theme.typography.h4n.fontSize,
+      lineHeight: theme.typography.h4n.lineHeight,
+      letterSpacing: theme.typography.h4n.letterSpacing,
+
+      '&::placeholder': {
+        fontFamily: theme.typography.h4n.fontFamily,
+        fontStyle: theme.typography.h4n.fontStyle,
+        fontSize: theme.typography.h4n.fontSize,
+        lineHeight: theme.typography.h4n.lineHeight,
+        letterSpacing: theme.typography.h4n.letterSpacing,
+
+        color: theme.colors.text02,
+        opacity: 0.8,
+      },
+    },
+    '.MuiOutlinedInput-notchedOutline': {
+      border: `none`,
+    },
+    '& .MuiOutlinedInput-input': {
+      padding: '0',
+    },
+    '&.Mui-focused': {
+      '.MuiOutlinedInput-notchedOutline': {
+        border: 'none',
+      },
+    },
+  },
 }));
 
 export const MaxButton = styled('button')(({ theme }) => ({
@@ -155,8 +191,11 @@ export const SwapCoinRightContainer = styled('div')({
   alignItems: 'flex-end',
 });
 
-export const SwapCoinRightTitleContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text01,
+type SwapCoinRightTitleContainerProps = {
+  'data-is-active'?: boolean;
+};
+export const SwapCoinRightTitleContainer = styled('div')<SwapCoinRightTitleContainerProps>(({ theme, ...props }) => ({
+  color: props['data-is-active'] ? theme.colors.text01 : theme.colors.text02,
 }));
 
 export const SwapCoinRightSubTitleContainer = styled('div')(({ theme }) => ({

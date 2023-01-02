@@ -1081,7 +1081,8 @@
         "components": {
           "SlippageSettingDialog": {
             "confirm": "확인",
-            "title": "설정"
+            "title": "설정",
+            "toleranceInfo": "가격이 이 비율 이상으로 불리하게 변하면 거래가 취소됩니다."
           }
         },
         "entry": {

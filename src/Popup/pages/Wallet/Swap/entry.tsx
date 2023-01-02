@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Typography } from '@mui/material';
 
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
@@ -7,9 +7,11 @@ import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
+import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { isDecimal, times } from '~/Popup/utils/big';
 
 import SlippageSettingDialog from './components/SlippageSettingDialog';
 import {
@@ -18,6 +20,7 @@ import {
   Container,
   MaxButton,
   SideButton,
+  StyledInput,
   SwapCoinContainer,
   SwapCoinContainerButton,
   SwapCoinHeaderContainer,
@@ -56,16 +59,48 @@ export default function Entry() {
   const [inputCoin, setInputCoin] = useState(OSMOSIS);
   const [outputCoin, setOutputCoin] = useState(COSMOS);
 
+  const [currentSlippage, setCurrentSlippage] = useState('1');
+
+  // NOTE 바꿀 코인의 amount
+  const [inputAmount, setInputAmout] = useState<string>('');
+  const [outputAmount, setOutputAmout] = useState<string>('0');
+
+  // FIXME 현재 인풋 어마운트를 다 지운 상태에서도 1.24값이 남아있음
+  useEffect(() => {
+    if (inputAmount) {
+      // NOTE 변환비율 변경
+      setOutputAmout(times(inputAmount, 1.24));
+    }
+  }, [inputAmount]);
+
   const [isOpenSlippageDialog, setisOpenSlippageDialog] = useState(false);
 
   const { currency } = chromeStorage;
+
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
+
+  const inputChainPrice = (inputCoin.coinGeckoId && coinGeckoPrice.data?.[inputCoin.coinGeckoId]?.[chromeStorage.currency]) || 0;
+  const outputChainPrice = (outputCoin.coinGeckoId && coinGeckoPrice.data?.[outputCoin.coinGeckoId]?.[chromeStorage.currency]) || 0;
+
+  // NOTE calculate coin amount
+  const inputChainAmoutPrice = useMemo(() => (inputAmount ? times(inputAmount, inputChainPrice) : '0'), [inputAmount, inputChainPrice]);
+
+  const outputChainAmoutPrice = useMemo(() => (inputAmount ? times(outputAmount, outputChainPrice) : '0'), [inputAmount, outputAmount, outputChainPrice]);
+
   const sampleAmount = '4000.000';
-  const sampleAmount2 = '12.00';
-  const outCoinAmount = '0.987423';
-  // TODO currency 적용
-  const sampleAmount3 = '9.04';
 
   const samplePopover = false;
+
+  const errorMessage = useMemo(
+    () => {
+      if (!inputAmount) {
+        return t('pages.Wallet.Swap.entry.title');
+      }
+      return '';
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [inputAmount],
+  );
   return (
     <>
       <Container>
@@ -117,17 +152,28 @@ export default function Entry() {
               </SwapCoinLeftContainer>
               <SwapCoinRightContainer>
                 <SwapCoinRightTitleContainer>
-                  <Number typoOfIntegers="h4n">{sampleAmount2}</Number>
+                  <StyledInput
+                    placeholder={`${inputAmount || '0'}`}
+                    value={inputAmount}
+                    onChange={(e) => {
+                      if (!isDecimal(e.currentTarget.value, 0) && e.currentTarget.value) {
+                        return;
+                      }
+                      setInputAmout(e.currentTarget.value);
+                    }}
+                  />
                 </SwapCoinRightTitleContainer>
-                <SwapCoinRightSubTitleContainer>
-                  <Tooltip title={sampleAmount3} arrow placement="top">
-                    <span>
-                      <Number typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={2} currency={currency}>
-                        {sampleAmount3}
-                      </Number>
-                    </span>
-                  </Tooltip>
-                </SwapCoinRightSubTitleContainer>
+                {inputAmount && (
+                  <SwapCoinRightSubTitleContainer>
+                    <Tooltip title={inputChainAmoutPrice} arrow placement="top">
+                      <span>
+                        <Number typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={2} currency={currency}>
+                          {inputChainAmoutPrice}
+                        </Number>
+                      </span>
+                    </Tooltip>
+                  </SwapCoinRightSubTitleContainer>
+                )}
               </SwapCoinRightContainer>
             </SwapCoinContainerButton>
           </SwapCoinContainer>
@@ -156,17 +202,19 @@ export default function Entry() {
                 </SwapCoinLeftIconButton>
               </SwapCoinLeftContainer>
               <SwapCoinRightContainer>
-                <SwapCoinRightTitleContainer>
-                  <Typography variant="h4n">{outCoinAmount}</Typography>
+                <SwapCoinRightTitleContainer data-is-active={outputAmount !== '0'}>
+                  <Typography variant="h4n">{outputAmount}</Typography>
                 </SwapCoinRightTitleContainer>
                 <SwapCoinRightSubTitleContainer>
-                  <Tooltip title={sampleAmount3} arrow placement="top">
-                    <span>
-                      <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={outputCoin.decimals} currency={currency}>
-                        {sampleAmount3}
-                      </Number>
-                    </span>
-                  </Tooltip>
+                  {inputAmount && (
+                    <Tooltip title={outputChainAmoutPrice} arrow placement="top">
+                      <span>
+                        <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={outputCoin.decimals} currency={currency}>
+                          {outputChainAmoutPrice}
+                        </Number>
+                      </span>
+                    </Tooltip>
+                  )}
                 </SwapCoinRightSubTitleContainer>
               </SwapCoinRightContainer>
             </SwapCoinContainerButton>
@@ -217,7 +265,7 @@ export default function Entry() {
               </SwapInfoSubRightTextContainer>
             </SwapInfoSubTextContainer>
             <SwapInfoSubTextContainer>
-              <Typography variant="h6">Minimum after slippage (1%)</Typography>
+              <Typography variant="h6">Minimum after slippage ({currentSlippage}%)</Typography>
               <SwapInfoSubRightTextContainer>
                 <Typography variant="h6">-</Typography>
               </SwapInfoSubRightTextContainer>
@@ -229,7 +277,7 @@ export default function Entry() {
             <div>
               <Button
                 type="button"
-                // disabled={!!errorMessage || !ibcSendAminoTx}
+                disabled={!!errorMessage}
                 // onClick={ }
               >
                 {t('pages.Wallet.Swap.Entry.swapButton')}
@@ -238,7 +286,14 @@ export default function Entry() {
           </Tooltip>
         </BottomContainer>
       </Container>
-      <SlippageSettingDialog open={isOpenSlippageDialog} onClose={() => setisOpenSlippageDialog(false)} />
+      <SlippageSettingDialog
+        selectedSlippage={currentSlippage}
+        open={isOpenSlippageDialog}
+        onClose={() => setisOpenSlippageDialog(false)}
+        onSubmitSlippage={(a) => {
+          setCurrentSlippage(a);
+        }}
+      />
       );
     </>
   );
