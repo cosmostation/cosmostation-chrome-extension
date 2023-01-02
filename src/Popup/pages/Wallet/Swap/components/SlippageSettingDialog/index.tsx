@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { DialogProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
@@ -29,17 +29,18 @@ type SlippageSettingDialogProps = Omit<DialogProps, 'children'> & {
 export default function SlippageSettingDialog({ selectedSlippage, onClose, onSubmitSlippage, ...remainder }: SlippageSettingDialogProps) {
   const { t } = useTranslation();
 
-  const [currentSlippage, setCurrentSlippage] = useState(selectedSlippage);
+  const [slippage, setCurrentSlippage] = useState(selectedSlippage);
   const [customSlippage, setCustomSlippage] = useState('');
+
+  const currentSlippage = useMemo(() => customSlippage || slippage, [customSlippage, slippage]);
 
   const handleOnClose = () => {
     onClose?.({}, 'backdropClick');
   };
-  const submit = (slippage: string) => {
-    onSubmitSlippage?.(slippage);
+  const submit = () => {
+    onSubmitSlippage?.(currentSlippage);
     handleOnClose();
   };
-
   return (
     <Dialog {...remainder} onClose={handleOnClose}>
       <DialogHeader onClose={handleOnClose}>{t('pages.Wallet.Swap.components.SlippageSettingDialog.title')}</DialogHeader>
@@ -102,9 +103,7 @@ export default function SlippageSettingDialog({ selectedSlippage, onClose, onSub
             data-is-active={!!customSlippage}
           />
         </SlippageButtonContainer>
-        <StyledButton onClick={() => submit(customSlippage !== '' ? customSlippage : currentSlippage)}>
-          {t('pages.Wallet.Swap.components.SlippageSettingDialog.confirm')}
-        </StyledButton>
+        <StyledButton onClick={submit}>{t('pages.Wallet.Swap.components.SlippageSettingDialog.confirm')}</StyledButton>
       </Container>
     </Dialog>
   );
