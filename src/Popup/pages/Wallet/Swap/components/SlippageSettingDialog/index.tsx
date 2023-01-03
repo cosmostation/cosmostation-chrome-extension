@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react';
 import type { DialogProps } from '@mui/material';
-import { Typography } from '@mui/material';
+import { InputAdornment, Typography } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { equal, isDecimal } from '~/Popup/utils/big';
+import type { CosmosChain } from '~/types/chain';
 
 import {
   Container,
@@ -15,6 +16,7 @@ import {
   SlippageButtonContainer,
   SlippageButtonTextContainer,
   SlippageCustomInput,
+  SlippageCustomInputText,
   StyledButton,
   StyledTooltip,
 } from './styled';
@@ -22,11 +24,12 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 
 type SlippageSettingDialogProps = Omit<DialogProps, 'children'> & {
+  currentInputChain: CosmosChain;
   selectedSlippage: string;
   onSubmitSlippage?: (slippage: string) => void;
 };
 
-export default function SlippageSettingDialog({ selectedSlippage, onClose, onSubmitSlippage, ...remainder }: SlippageSettingDialogProps) {
+export default function SlippageSettingDialog({ currentInputChain, selectedSlippage, onClose, onSubmitSlippage, ...remainder }: SlippageSettingDialogProps) {
   const { t } = useTranslation();
 
   const [slippage, setCurrentSlippage] = useState(selectedSlippage);
@@ -65,7 +68,7 @@ export default function SlippageSettingDialog({ selectedSlippage, onClose, onSub
             data-is-active={equal(currentSlippage, '1') && !customSlippage}
           >
             <SlippageButtonTextContainer>
-              <Typography variant="h5">1%</Typography>
+              <Typography variant="h5n">1%</Typography>
             </SlippageButtonTextContainer>
           </SlippageButton>
           <SlippageButton
@@ -76,7 +79,7 @@ export default function SlippageSettingDialog({ selectedSlippage, onClose, onSub
             data-is-active={equal(currentSlippage, '3') && !customSlippage}
           >
             <SlippageButtonTextContainer>
-              <Typography variant="h5">3%</Typography>
+              <Typography variant="h5n">3%</Typography>
             </SlippageButtonTextContainer>
           </SlippageButton>
           <SlippageButton
@@ -87,13 +90,22 @@ export default function SlippageSettingDialog({ selectedSlippage, onClose, onSub
             data-is-active={equal(currentSlippage, '5') && !customSlippage}
           >
             <SlippageButtonTextContainer>
-              <Typography variant="h5">5%</Typography>
+              <Typography variant="h5n">5%</Typography>
             </SlippageButtonTextContainer>
           </SlippageButton>
-          {/* TODO 커스텀 버튼 쪽 value prefix추가 및 중앙정렬 */}
           <SlippageCustomInput
+            endAdornment={
+              customSlippage && (
+                <InputAdornment position="end">
+                  {/* NOTE 중앙정렬 필요함 */}
+                  <SlippageCustomInputText>
+                    <Typography variant="h5n">%</Typography>
+                  </SlippageCustomInputText>
+                </InputAdornment>
+              )
+            }
             onChange={(e) => {
-              if (!isDecimal(e.currentTarget.value, 0) && e.currentTarget.value) {
+              if (!isDecimal(e.currentTarget.value, currentInputChain.decimals) && e.currentTarget.value) {
                 return;
               }
               setCustomSlippage(e.currentTarget.value);

@@ -4,6 +4,10 @@ import { tooltipClasses } from '@mui/material/Tooltip';
 import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
 import Tooltip from '~/Popup/components/common/Tooltip';
+// FIXME % 중앙정렬을 위해 값을 주었지만 수정이 필요함
+export const SlippageCustomInputText = styled('div')({
+  height: '2.4rem',
+});
 
 export const Container = styled('div')({
   padding: '1.3rem 1.6rem 1.6rem',
@@ -82,14 +86,31 @@ export const SlippageCustomInput = styled(Input)<SlippageCustomInputProps>(({ th
     width: '6.6rem',
 
     border: 'none',
-    borderRadius: '0.8rem',
 
     backgroundColor: props['data-is-active'] ? theme.accentColors.purple01 : theme.colors.base03,
     color: props['data-is-active'] ? theme.colors.text01 : theme.colors.text02,
 
-    '& .MuiOutlinedInput-input': {
-      padding: '0.8rem 0.85rem',
+    '& .MuiInputAdornment-root': {
+      marginLeft: '0',
+      marginRight: '0.8rem',
+      color: theme.colors.text01,
     },
+
+    '& .MuiOutlinedInput-input': {
+      textAlign: props['data-is-active'] ? 'end' : 'center',
+
+      padding: '0.8rem 0',
+
+      fontFamily: theme.typography.h5n.fontFamily,
+      fontStyle: theme.typography.h5n.fontStyle,
+      fontSize: theme.typography.h5n.fontSize,
+      lineHeight: theme.typography.h5n.lineHeight,
+      letterSpacing: theme.typography.h5n.letterSpacing,
+      '&::placeholder': {
+        textAlign: 'center',
+      },
+    },
+
     '&.Mui-focused': {
       '.MuiOutlinedInput-notchedOutline': {
         border: 'none',

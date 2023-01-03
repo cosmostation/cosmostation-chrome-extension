@@ -84,7 +84,7 @@ export const StyledInput = styled(Input)(({ theme }) => ({
         letterSpacing: theme.typography.h4n.letterSpacing,
 
         color: theme.colors.text02,
-        opacity: 0.8,
+        opacity: 1,
       },
     },
     '.MuiOutlinedInput-notchedOutline': {
@@ -199,6 +199,8 @@ export const SwapCoinRightTitleContainer = styled('div')<SwapCoinRightTitleConta
 }));
 
 export const SwapCoinRightSubTitleContainer = styled('div')(({ theme }) => ({
+  height: '1.9rem',
+
   color: theme.colors.text02,
 }));
 
@@ -213,7 +215,6 @@ export const SwapInfoContainer = styled('div')(({ theme }) => ({
 
 export const SwapInfoHeaderContainer = styled('div')(({ theme }) => ({
   display: 'flex',
-  // alignItems: 'center',
   color: theme.colors.text01,
 }));
 
@@ -224,15 +225,24 @@ export const SwapInfoSubContainer = styled('div')({
   marginTop: '1.1rem',
 });
 
-export const SwapInfoSubTextContainer = styled('div')(({ theme }) => ({
+export const SwapInfoSubLeftContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   color: theme.colors.text02,
 }));
 
-export const SwapInfoSubRightTextContainer = styled('div')(({ theme }) => ({
+export const SwapInfoSubRightContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+  position: 'relative',
 }));
+
+export const SwapInfoSubRightTextContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+
+  position: 'absolute',
+  right: '0',
+});
 
 export const BottomContainer = styled('div')({
   position: 'absolute',

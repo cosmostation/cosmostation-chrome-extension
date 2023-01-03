@@ -1086,6 +1086,7 @@
           }
         },
         "entry": {
+          "invalidAmount": "수량을 입력하세요.",
           "title": "교환"
         }
       },

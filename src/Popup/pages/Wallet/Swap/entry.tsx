@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
+import { CURRENCY_SYMBOL } from '~/constants/currency';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
@@ -11,7 +12,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { isDecimal, times } from '~/Popup/utils/big';
+import { divide, isDecimal, minus, times } from '~/Popup/utils/big';
 
 import SlippageSettingDialog from './components/SlippageSettingDialog';
 import {
@@ -40,8 +41,9 @@ import {
   SwapInfoContainer,
   SwapInfoHeaderContainer,
   SwapInfoSubContainer,
+  SwapInfoSubLeftContainer,
+  SwapInfoSubRightContainer,
   SwapInfoSubRightTextContainer,
-  SwapInfoSubTextContainer,
   TextContainer,
   TopContainer,
 } from './styled';
@@ -63,15 +65,22 @@ export default function Entry() {
 
   // NOTE 바꿀 코인의 amount
   const [inputAmount, setInputAmout] = useState<string>('');
+
   const [outputAmount, setOutputAmout] = useState<string>('0');
 
-  // FIXME 현재 인풋 어마운트를 다 지운 상태에서도 1.24값이 남아있음
   useEffect(() => {
     if (inputAmount) {
       // NOTE 변환비율 변경
       setOutputAmout(times(inputAmount, 1.24));
+    } else {
+      setOutputAmout('0');
     }
   }, [inputAmount]);
+
+  const tokenMinOutAmount = useMemo(
+    () => (currentSlippage && outputAmount ? minus(outputAmount, times(outputAmount, divide(currentSlippage, 100))) : '0'),
+    [currentSlippage, outputAmount],
+  );
 
   const [isOpenSlippageDialog, setisOpenSlippageDialog] = useState(false);
 
@@ -87,6 +96,9 @@ export default function Entry() {
 
   const outputChainAmoutPrice = useMemo(() => (inputAmount ? times(outputAmount, outputChainPrice) : '0'), [inputAmount, outputAmount, outputChainPrice]);
 
+  // NOTE 오스모시스 디앱에서 스왑 fee를 0.2%로 사용하여 그 값을 사용함
+  const swapFeePrice = useMemo(() => (inputAmount ? times(inputChainAmoutPrice, 0.0002) : '0'), [inputAmount, inputChainAmoutPrice]);
+
   const sampleAmount = '4000.000';
 
   const samplePopover = false;
@@ -94,7 +106,7 @@ export default function Entry() {
   const errorMessage = useMemo(
     () => {
       if (!inputAmount) {
-        return t('pages.Wallet.Swap.entry.title');
+        return t('pages.Wallet.Swap.entry.invalidAmount');
       }
       return '';
     },
@@ -156,15 +168,15 @@ export default function Entry() {
                     placeholder={`${inputAmount || '0'}`}
                     value={inputAmount}
                     onChange={(e) => {
-                      if (!isDecimal(e.currentTarget.value, 0) && e.currentTarget.value) {
+                      if (!isDecimal(e.currentTarget.value, inputCoin.decimals) && e.currentTarget.value) {
                         return;
                       }
                       setInputAmout(e.currentTarget.value);
                     }}
                   />
                 </SwapCoinRightTitleContainer>
-                {inputAmount && (
-                  <SwapCoinRightSubTitleContainer>
+                <SwapCoinRightSubTitleContainer>
+                  {inputAmount && (
                     <Tooltip title={inputChainAmoutPrice} arrow placement="top">
                       <span>
                         <Number typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={2} currency={currency}>
@@ -172,8 +184,8 @@ export default function Entry() {
                         </Number>
                       </span>
                     </Tooltip>
-                  </SwapCoinRightSubTitleContainer>
-                )}
+                  )}
+                </SwapCoinRightSubTitleContainer>
               </SwapCoinRightContainer>
             </SwapCoinContainerButton>
           </SwapCoinContainer>
@@ -203,13 +215,13 @@ export default function Entry() {
               </SwapCoinLeftContainer>
               <SwapCoinRightContainer>
                 <SwapCoinRightTitleContainer data-is-active={outputAmount !== '0'}>
-                  <Typography variant="h4n">{outputAmount}</Typography>
+                  <Number typoOfIntegers="h4n">{outputAmount}</Number>
                 </SwapCoinRightTitleContainer>
                 <SwapCoinRightSubTitleContainer>
                   {inputAmount && (
                     <Tooltip title={outputChainAmoutPrice} arrow placement="top">
                       <span>
-                        <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={outputCoin.decimals} currency={currency}>
+                        <Number typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={outputCoin.decimals} currency={currency}>
                           {outputChainAmoutPrice}
                         </Number>
                       </span>
@@ -234,46 +246,93 @@ export default function Entry() {
         <SwapInfoContainer>
           <SwapInfoHeaderContainer>
             <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-              {sampleAmount}
+              {inputAmount || '0'}
             </Number>
             &nbsp;
-            <Typography variant="h5n">{OSMOSIS.displayDenom} ≈</Typography>
+            <Typography variant="h5n">{inputCoin.displayDenom} ≈</Typography>
             &nbsp;
             <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-              {sampleAmount}
+              {outputAmount}
             </Number>
             &nbsp;
-            <Typography variant="h5n">{OSMOSIS.displayDenom}</Typography>
+            <Typography variant="h5n">{outputCoin.displayDenom}</Typography>
           </SwapInfoHeaderContainer>
           <SwapInfoSubContainer>
-            <SwapInfoSubTextContainer>
+            <SwapInfoSubLeftContainer>
               <Typography variant="h6">Price Impact</Typography>
-              <SwapInfoSubRightTextContainer>
-                <Typography variant="h6">-</Typography>
-              </SwapInfoSubRightTextContainer>
-            </SwapInfoSubTextContainer>
-            <SwapInfoSubTextContainer>
+              <SwapInfoSubRightContainer>
+                {inputAmount ? (
+                  <SwapInfoSubRightTextContainer>
+                    <Typography variant="h6n">-</Typography>
+                    &nbsp;
+                    <Typography variant="h6n">{'<'}</Typography>
+                    &nbsp;
+                    <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
+                      {swapFeePrice}
+                    </Number>
+                    <Typography variant="h6n">%</Typography>
+                  </SwapInfoSubRightTextContainer>
+                ) : (
+                  <Typography variant="h6">-</Typography>
+                )}
+              </SwapInfoSubRightContainer>
+            </SwapInfoSubLeftContainer>
+            <SwapInfoSubLeftContainer>
               <Typography variant="h6">Swap Fee (0.2%)</Typography>
-              <SwapInfoSubRightTextContainer>
-                <Typography variant="h6">-</Typography>
-              </SwapInfoSubRightTextContainer>
-            </SwapInfoSubTextContainer>
-            <SwapInfoSubTextContainer>
+              <SwapInfoSubRightContainer>
+                {inputAmount ? (
+                  <SwapInfoSubRightTextContainer>
+                    <Typography variant="h6">≈</Typography>
+                    &nbsp;
+                    <Typography variant="h6n">{'<'}</Typography>
+                    &nbsp;
+                    <Typography variant="h5n">{currency && `${CURRENCY_SYMBOL[currency]} `}</Typography>
+                    &nbsp;
+                    <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
+                      {swapFeePrice}
+                    </Number>
+                  </SwapInfoSubRightTextContainer>
+                ) : (
+                  <Typography variant="h6">-</Typography>
+                )}
+              </SwapInfoSubRightContainer>
+            </SwapInfoSubLeftContainer>
+            <SwapInfoSubLeftContainer>
               <Typography variant="h6">Expected Output</Typography>
-              <SwapInfoSubRightTextContainer>
-                <Typography variant="h6">-</Typography>
-              </SwapInfoSubRightTextContainer>
-            </SwapInfoSubTextContainer>
-            <SwapInfoSubTextContainer>
+              <SwapInfoSubRightContainer>
+                {inputAmount ? (
+                  <SwapInfoSubRightTextContainer>
+                    <Number typoOfIntegers="h6n" typoOfDecimals="h7n">
+                      {outputAmount}
+                    </Number>
+                    &nbsp;
+                    <Typography variant="h6n">{outputCoin.displayDenom}</Typography>
+                  </SwapInfoSubRightTextContainer>
+                ) : (
+                  <Typography variant="h6">-</Typography>
+                )}
+              </SwapInfoSubRightContainer>
+            </SwapInfoSubLeftContainer>
+            <SwapInfoSubLeftContainer>
               <Typography variant="h6">Minimum after slippage ({currentSlippage}%)</Typography>
-              <SwapInfoSubRightTextContainer>
-                <Typography variant="h6">-</Typography>
-              </SwapInfoSubRightTextContainer>
-            </SwapInfoSubTextContainer>
+              <SwapInfoSubRightContainer>
+                {inputAmount ? (
+                  <SwapInfoSubRightTextContainer>
+                    <Number typoOfIntegers="h6n" typoOfDecimals="h7n">
+                      {tokenMinOutAmount}
+                    </Number>
+                    &nbsp;
+                    <Typography variant="h6n">{outputCoin.displayDenom}</Typography>
+                  </SwapInfoSubRightTextContainer>
+                ) : (
+                  <Typography variant="h6">-</Typography>
+                )}
+              </SwapInfoSubRightContainer>
+            </SwapInfoSubLeftContainer>
           </SwapInfoSubContainer>
         </SwapInfoContainer>
         <BottomContainer>
-          <Tooltip varient="error" title="errorMessage" placement="top" arrow>
+          <Tooltip varient="error" title={errorMessage} placement="top" arrow>
             <div>
               <Button
                 type="button"
@@ -287,6 +346,7 @@ export default function Entry() {
         </BottomContainer>
       </Container>
       <SlippageSettingDialog
+        currentInputChain={inputCoin}
         selectedSlippage={currentSlippage}
         open={isOpenSlippageDialog}
         onClose={() => setisOpenSlippageDialog(false)}
