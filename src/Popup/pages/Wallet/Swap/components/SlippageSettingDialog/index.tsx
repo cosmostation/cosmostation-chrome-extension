@@ -4,9 +4,9 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
+import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { equal, isDecimal } from '~/Popup/utils/big';
-import type { CosmosChain } from '~/types/chain';
 
 import {
   Container,
@@ -24,7 +24,7 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 
 type SlippageSettingDialogProps = Omit<DialogProps, 'children'> & {
-  currentInputChain: CosmosChain;
+  currentInputChain: BaseCoinInfo;
   selectedSlippage: string;
   onSubmitSlippage?: (slippage: string) => void;
 };

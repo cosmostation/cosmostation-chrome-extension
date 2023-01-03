@@ -168,7 +168,7 @@ export const SwapCoinLeftSubTitleContainer = styled('div')(({ theme }) => ({
 }));
 
 type SwapCoinLeftIconButtonProps = {
-  'data-is-active'?: number;
+  'data-is-active'?: boolean;
 };
 export const SwapCoinLeftIconButton = styled('div')<SwapCoinLeftIconButtonProps>(({ theme, ...props }) => ({
   display: 'flex',

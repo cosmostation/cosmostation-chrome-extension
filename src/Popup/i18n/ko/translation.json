@@ -1079,6 +1079,11 @@
           "swapButton": "교환"
         },
         "components": {
+          "CoinListBottomSheet": {
+            "index": {
+              "title": "코인을 선택하세요"
+            }
+          },
           "SlippageSettingDialog": {
             "confirm": "확인",
             "title": "설정",

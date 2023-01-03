@@ -1079,6 +1079,11 @@
           "swapButton": "Swap"
         },
         "components": {
+          "CoinListBottomSheet": {
+            "index": {
+              "title": "Select a coin"
+            }
+          },
           "SlippageSettingDialog": {
             "confirm": "Confirm",
             "title": "Setting",
