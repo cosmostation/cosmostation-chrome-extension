@@ -113,6 +113,7 @@ export default function SlippageSettingDialog({ currentInputChain, selectedSlipp
             value={customSlippage}
             placeholder="Custom"
             data-is-active={!!customSlippage}
+            data-is-length={currentSlippage.length > 2}
           />
         </SlippageButtonContainer>
         <StyledButton onClick={submit}>{t('pages.Wallet.Swap.components.SlippageSettingDialog.confirm')}</StyledButton>

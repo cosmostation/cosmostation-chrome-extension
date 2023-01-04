@@ -1081,6 +1081,7 @@
         "components": {
           "CoinListBottomSheet": {
             "index": {
+              "searchPlaceholder": "토큰 검색",
               "title": "코인을 선택하세요"
             }
           },

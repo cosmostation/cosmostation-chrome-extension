@@ -78,8 +78,8 @@ export const SlippageButtonTextContainer = styled('div')({});
 
 type SlippageCustomInputProps = {
   'data-is-active'?: boolean;
+  'data-is-length'?: boolean;
 };
-
 export const SlippageCustomInput = styled(Input)<SlippageCustomInputProps>(({ theme, ...props }) => ({
   '&.MuiOutlinedInput-root': {
     height: '3.2rem',
@@ -92,7 +92,7 @@ export const SlippageCustomInput = styled(Input)<SlippageCustomInputProps>(({ th
 
     '& .MuiInputAdornment-root': {
       marginLeft: '0',
-      marginRight: '0.8rem',
+      marginRight: props['data-is-length'] ? '0.4rem' : '0.8rem',
       color: theme.colors.text01,
     },
 

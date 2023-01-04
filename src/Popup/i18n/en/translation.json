@@ -1081,6 +1081,7 @@
         "components": {
           "CoinListBottomSheet": {
             "index": {
+              "searchPlaceholder": "Search tokens",
               "title": "Select a coin"
             }
           },

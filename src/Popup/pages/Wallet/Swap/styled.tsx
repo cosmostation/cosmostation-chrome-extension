@@ -301,6 +301,5 @@ export const BackButton = styled('button')(({ theme }) => ({
 export const SideButton = styled(IconButton)({
   right: 0,
   position: 'absolute',
-
   padding: '0',
 });

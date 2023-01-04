@@ -1,41 +1,51 @@
-import { useRef } from 'react';
+import { forwardRef } from 'react';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
-import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
+import Number from '~/Popup/components/common/Number';
+import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 
 import {
   ChainButton,
-  ChainLeftChainNameContainer,
-  ChainLeftChannelIdContainer,
   ChainLeftContainer,
   ChainLeftImageContainer,
   ChainLeftInfoContainer,
+  ChainLeftSubTitleContainer,
+  ChainLeftTitleContainer,
   ChainRightContainer,
+  ChainRightIconContainer,
+  ChainRightInfoContainer,
+  ChainRightSubTitleContainer,
+  ChainRightTitleContainer,
 } from './styled';
+import type { CoinInfo } from '../../../entry';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 
 type CoinItemProps = {
-  coinInfo: BaseCoinInfo;
-  onClickCoin?: (clickedCoin: BaseCoinInfo) => void;
+  coinInfo: CoinInfo;
+  onClickCoin?: (clickedCoin: CoinInfo) => void;
   isActive: boolean;
 };
 
-export default function CoinItem({ coinInfo, onClickCoin, isActive }: CoinItemProps) {
-  const ref = useRef<HTMLButtonElement>(null);
+const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onClickCoin, isActive }, ref) => {
+  const { chromeStorage } = useChromeStorage();
+  const { currency } = chromeStorage;
 
-  //   useEffect(() => {
-  //     if (remainder.open) {
-  //       setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0);
-  //     }
-  //   }, [remainder.open]);
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
+
+  const inputChainPrice = (coinInfo.coinGeckoId && coinGeckoPrice.data?.[coinInfo.coinGeckoId]?.[chromeStorage.currency]) || 0;
+
+  const coinDisplayDenomAmount = toDisplayDenomAmount(coinInfo.availableAmount, coinInfo.decimals);
+  const inputCoinAmountPrice = times(coinDisplayDenomAmount, inputChainPrice);
 
   return (
     <ChainButton
       type="button"
       key={coinInfo.baseDenom}
-      data-is-active={isActive ? 1 : 0}
+      data-is-active={isActive}
       ref={isActive ? ref : undefined}
       onClick={() => {
         onClickCoin?.(coinInfo);
@@ -46,15 +56,30 @@ export default function CoinItem({ coinInfo, onClickCoin, isActive }: CoinItemPr
           <Image src={coinInfo.imageURL} />
         </ChainLeftImageContainer>
         <ChainLeftInfoContainer>
-          <ChainLeftChainNameContainer>
+          <ChainLeftTitleContainer>
             <Typography variant="h5">{coinInfo.displayDenom}</Typography>
-          </ChainLeftChainNameContainer>
-          <ChainLeftChannelIdContainer>
-            <Typography variant="h6n">{coinInfo.availableAmount}</Typography>
-          </ChainLeftChannelIdContainer>
+          </ChainLeftTitleContainer>
+          <ChainLeftSubTitleContainer>
+            <Typography variant="h6">{coinInfo.chain.chainName}</Typography>
+          </ChainLeftSubTitleContainer>
         </ChainLeftInfoContainer>
       </ChainLeftContainer>
-      <ChainRightContainer>{isActive && <Check16Icon />}</ChainRightContainer>
+      <ChainRightContainer>
+        <ChainRightInfoContainer>
+          <ChainRightTitleContainer>
+            <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={coinInfo.decimals}>
+              {coinDisplayDenomAmount}
+            </Number>
+          </ChainRightTitleContainer>
+          <ChainRightSubTitleContainer>
+            <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
+              {inputCoinAmountPrice}
+            </Number>
+          </ChainRightSubTitleContainer>
+        </ChainRightInfoContainer>
+        <ChainRightIconContainer>{isActive && <Check16Icon />}</ChainRightIconContainer>
+      </ChainRightContainer>
     </ChainButton>
   );
-}
+});
+export default CoinItem;

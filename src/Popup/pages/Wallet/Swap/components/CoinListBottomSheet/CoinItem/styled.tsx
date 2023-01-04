@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 type ChainButtonProps = {
-  'data-is-active'?: number;
+  'data-is-active'?: boolean;
 };
 
 export const ChainButton = styled('button')<ChainButtonProps>(({ theme, ...props }) => ({
@@ -28,7 +28,6 @@ export const ChainButton = styled('button')<ChainButtonProps>(({ theme, ...props
 
 export const ChainLeftContainer = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-start',
   alignItems: 'center',
 });
 
@@ -46,24 +45,39 @@ export const ChainLeftInfoContainer = styled('div')({
   alignItems: 'flex-start',
 });
 
-export const ChainLeftChainNameContainer = styled('div')(({ theme }) => ({
-  textAlign: 'left',
+export const ChainLeftTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const ChainLeftChannelIdContainer = styled('div')(({ theme }) => ({
+export const ChainLeftSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-export const ChainRightContainer = styled('div')(({ theme }) => ({
+export const ChainRightInfoContainer = styled('div')({
+  marginRight: '0.8rem',
   display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
+  flexDirection: 'column',
+  alignItems: 'flex-end',
+});
 
+export const ChainRightTitleContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+}));
+
+export const ChainRightSubTitleContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text02,
+}));
+
+export const ChainRightIconContainer = styled('div')(({ theme }) => ({
+  width: '1.6rem',
   '& > svg': {
     '& > path': {
-      stroke: theme.colors.base06,
       fill: theme.colors.base06,
     },
   },
 }));
+
+export const ChainRightContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+});
