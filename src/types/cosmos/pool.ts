@@ -1,6 +1,6 @@
 export type Pool = {
   id: string;
-  pool_paramas: {
+  pool_params: {
     swap_fee: string;
     exit_fee: string;
   };

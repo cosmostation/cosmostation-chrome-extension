@@ -1092,6 +1092,8 @@
           }
         },
         "entry": {
+          "insufficientAmount": "Insufficient amount",
+          "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",
           "title": "Swap"
         }

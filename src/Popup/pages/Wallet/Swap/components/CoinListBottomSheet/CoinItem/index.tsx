@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -43,7 +44,6 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
 
   return (
     <ChainButton
-      type="button"
       key={coinInfo.baseDenom}
       data-is-active={isActive}
       ref={isActive ? ref : undefined}
@@ -72,9 +72,13 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
             </Number>
           </ChainRightTitleContainer>
           <ChainRightSubTitleContainer>
-            <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
-              {inputCoinAmountPrice}
-            </Number>
+            <Tooltip title={inputCoinAmountPrice} placement="top" arrow>
+              <div>
+                <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
+                  {inputCoinAmountPrice}
+                </Number>
+              </div>
+            </Tooltip>
           </ChainRightSubTitleContainer>
         </ChainRightInfoContainer>
         <ChainRightIconContainer>{isActive && <Check16Icon />}</ChainRightIconContainer>

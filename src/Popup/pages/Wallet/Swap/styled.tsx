@@ -13,8 +13,6 @@ export const Container = styled('div')({
   position: 'relative',
 });
 
-export const ContentContainer = styled('div')({});
-
 export const SwapContainer = styled('div')({
   marginTop: '1.4rem',
   display: 'flex',
@@ -25,14 +23,12 @@ export const SwapContainer = styled('div')({
 });
 
 export const SwapIconButton = styled(IconButton)(({ theme }) => ({
-  width: '3.2rem',
-  height: '3.2rem',
+  padding: '0.6rem',
 
   position: 'absolute',
   top: '50%',
   left: '50%',
   transform: `translate(-50%, -50%)`,
-  padding: '0',
   borderRadius: '5rem',
 
   backgroundColor: theme.colors.base04,
@@ -102,10 +98,6 @@ export const StyledInput = styled(Input)(({ theme }) => ({
 }));
 
 export const MaxButton = styled('button')(({ theme }) => ({
-  width: '2.8rem',
-  display: 'flex',
-  alignItems: 'center',
-  textAlign: 'right',
   padding: '0',
   border: 0,
 
@@ -118,7 +110,7 @@ export const MaxButton = styled('button')(({ theme }) => ({
 
   textDecorationLine: 'underline',
   '&:hover': {
-    backgroundColor: theme.accentColors.purple02,
+    color: theme.accentColors.purple02,
   },
 }));
 
@@ -159,12 +151,12 @@ export const SwapCoinLeftInfoContainer = styled('div')({
 });
 
 export const SwapCoinLeftTitleContainer = styled('div')(({ theme }) => ({
-  textAlign: 'left',
   color: theme.colors.text01,
 }));
 
 export const SwapCoinLeftSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
+  textAlign: 'left',
 }));
 
 type SwapCoinLeftIconButtonProps = {

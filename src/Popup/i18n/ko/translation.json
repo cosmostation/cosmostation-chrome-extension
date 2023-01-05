@@ -1092,6 +1092,8 @@
           }
         },
         "entry": {
+          "insufficientAmount": "수량이 부족합니다.",
+          "insufficientFeeAmount": "수수료가 부족합니다.",
           "invalidAmount": "수량을 입력하세요.",
           "title": "교환"
         }
