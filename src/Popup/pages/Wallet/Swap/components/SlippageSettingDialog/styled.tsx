@@ -92,7 +92,7 @@ export const SlippageCustomInput = styled(Input)<SlippageCustomInputProps>(({ th
 
     '& .MuiInputAdornment-root': {
       marginLeft: '0',
-      marginRight: props['data-is-length'] ? '0.4rem' : '0.8rem',
+      marginRight: props['data-is-length'] ? '0.3rem' : '0.8rem',
       color: theme.colors.text01,
     },
 

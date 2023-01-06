@@ -4,9 +4,8 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
-import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { equal, isDecimal } from '~/Popup/utils/big';
+import { equal, gt, isDecimal } from '~/Popup/utils/big';
 
 import {
   Container,
@@ -24,12 +23,11 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 
 type SlippageSettingDialogProps = Omit<DialogProps, 'children'> & {
-  currentInputChain: BaseCoinInfo;
   selectedSlippage: string;
   onSubmitSlippage?: (slippage: string) => void;
 };
 
-export default function SlippageSettingDialog({ currentInputChain, selectedSlippage, onClose, onSubmitSlippage, ...remainder }: SlippageSettingDialogProps) {
+export default function SlippageSettingDialog({ selectedSlippage, onClose, onSubmitSlippage, ...remainder }: SlippageSettingDialogProps) {
   const { t } = useTranslation();
 
   const [slippage, setCurrentSlippage] = useState(selectedSlippage);
@@ -50,7 +48,6 @@ export default function SlippageSettingDialog({ currentInputChain, selectedSlipp
       <Container>
         <HeaderInfoContainer>
           <Typography variant="h5">Slippage tolerance</Typography>
-          {/* NOTE  ToolTip Variation */}
           <StyledTooltip title={t('pages.Wallet.Swap.components.SlippageSettingDialog.toleranceInfo')} placement="bottom" arrow>
             <span>
               <HeaderInfoIconContainer>
@@ -97,7 +94,7 @@ export default function SlippageSettingDialog({ currentInputChain, selectedSlipp
             endAdornment={
               customSlippage && (
                 <InputAdornment position="end">
-                  {/* NOTE 중앙정렬 필요함 */}
+                  {/* TODO 중앙정렬 필요함 */}
                   <SlippageCustomInputText>
                     <Typography variant="h5n">%</Typography>
                   </SlippageCustomInputText>
@@ -105,7 +102,7 @@ export default function SlippageSettingDialog({ currentInputChain, selectedSlipp
               )
             }
             onChange={(e) => {
-              if (!isDecimal(e.currentTarget.value, currentInputChain.decimals) && e.currentTarget.value) {
+              if (!isDecimal(e.currentTarget.value, 3) && e.currentTarget.value) {
                 return;
               }
               setCustomSlippage(e.currentTarget.value);
@@ -113,7 +110,8 @@ export default function SlippageSettingDialog({ currentInputChain, selectedSlipp
             value={customSlippage}
             placeholder="Custom"
             data-is-active={!!customSlippage}
-            data-is-length={currentSlippage.length > 2}
+            // TODO 5이상으로 큰 숫자 받을떄도 중앙정렬 되도록 단순 불리언이 아니라 숫자를 넘겨줘야할듯
+            data-is-length={gt(currentSlippage.length, 2)}
           />
         </SlippageButtonContainer>
         <StyledButton onClick={submit}>{t('pages.Wallet.Swap.components.SlippageSettingDialog.confirm')}</StyledButton>

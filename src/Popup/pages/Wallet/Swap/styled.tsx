@@ -156,6 +156,7 @@ export const SwapCoinLeftTitleContainer = styled('div')(({ theme }) => ({
 
 export const SwapCoinLeftSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
+  // FIXME 줄넘김이 발생할 경우 폭이 크게 잡혀서 우측 버튼이 너무 동떨어져있게됨
   textAlign: 'left',
 }));
 
@@ -228,12 +229,23 @@ export const SwapInfoSubRightContainer = styled('div')(({ theme }) => ({
   position: 'relative',
 }));
 
+// TODO 사이즈 조절 오버플로우
+// type SwapInfoRightTextContainer = {
+//   'data-is-active'?: boolean;
+// };
+// export const SwapInfoRightTextContainer = styled('div')({
+
+// });
+
 export const SwapInfoSubRightTextContainer = styled('div')({
+  // TODO amount가 지나치게 클 경우 왼쪽 영역을 덮음
   display: 'flex',
   alignItems: 'center',
 
   position: 'absolute',
   right: '0',
+
+  overflowWrap: 'normal',
 });
 
 export const BottomContainer = styled('div')({

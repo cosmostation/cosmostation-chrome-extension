@@ -6,14 +6,14 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import CoinItem from './CoinItem';
 import { CoinList, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
-import type { CoinInfo } from '../../entry';
+import type { ChainAssetInfo } from '../../entry';
 
 import Close24Icon from '~/images/icons/Close24.svg';
 
 type CoinListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  currentSelectedCoin: CoinInfo;
-  availableCoinList: CoinInfo[];
-  onClickCoin?: (clickedCoin: CoinInfo) => void;
+  currentSelectedCoin?: ChainAssetInfo;
+  availableCoinList: ChainAssetInfo[];
+  onClickCoin?: (clickedCoin: ChainAssetInfo) => void;
 };
 
 export default function CoinListBottomSheet({ currentSelectedCoin, availableCoinList, onClickCoin, onClose, ...remainder }: CoinListBottomSheetProps) {
@@ -34,8 +34,7 @@ export default function CoinListBottomSheet({ currentSelectedCoin, availableCoin
   const filteredCoins = debouncedSearch
     ? availableCoinList.filter(
         (item) =>
-          item.chain.chainName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1 ||
-          item.displayDenom.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1,
+          item.chainName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1 || item.symbol.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1,
       )
     : availableCoinList;
 
@@ -75,11 +74,11 @@ export default function CoinListBottomSheet({ currentSelectedCoin, availableCoin
         />
         <CoinList>
           {filteredCoins.map((item) => {
-            const isActive = item.displayDenom === currentSelectedCoin.displayDenom;
+            const isActive = item.symbol === currentSelectedCoin?.symbol;
             return (
               <CoinItem
                 isActive={isActive}
-                key={item.baseDenom}
+                key={item.denom}
                 ref={isActive ? ref : undefined}
                 coinInfo={item}
                 onClickCoin={(clickedCoin) => {

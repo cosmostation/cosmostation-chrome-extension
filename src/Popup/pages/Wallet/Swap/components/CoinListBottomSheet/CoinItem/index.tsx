@@ -21,13 +21,13 @@ import {
   ChainRightSubTitleContainer,
   ChainRightTitleContainer,
 } from './styled';
-import type { CoinInfo } from '../../../entry';
+import type { ChainAssetInfo } from '../../../entry';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 
 type CoinItemProps = {
-  coinInfo: CoinInfo;
-  onClickCoin?: (clickedCoin: CoinInfo) => void;
+  coinInfo: ChainAssetInfo;
+  onClickCoin?: (clickedCoin: ChainAssetInfo) => void;
   isActive: boolean;
 };
 
@@ -39,12 +39,12 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
 
   const inputChainPrice = (coinInfo.coinGeckoId && coinGeckoPrice.data?.[coinInfo.coinGeckoId]?.[chromeStorage.currency]) || 0;
 
-  const coinDisplayDenomAmount = toDisplayDenomAmount(coinInfo.availableAmount, coinInfo.decimals);
+  const coinDisplayDenomAmount = toDisplayDenomAmount(coinInfo?.availableAmount || '0', coinInfo.decimals);
   const inputCoinAmountPrice = times(coinDisplayDenomAmount, inputChainPrice);
 
   return (
     <ChainButton
-      key={coinInfo.baseDenom}
+      key={coinInfo.denom}
       data-is-active={isActive}
       ref={isActive ? ref : undefined}
       onClick={() => {
@@ -53,32 +53,32 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
     >
       <ChainLeftContainer>
         <ChainLeftImageContainer>
-          <Image src={coinInfo.imageURL} />
+          <Image src={coinInfo.image} />
         </ChainLeftImageContainer>
         <ChainLeftInfoContainer>
           <ChainLeftTitleContainer>
-            <Typography variant="h5">{coinInfo.displayDenom}</Typography>
+            <Typography variant="h5">{coinInfo.symbol}</Typography>
           </ChainLeftTitleContainer>
           <ChainLeftSubTitleContainer>
-            <Typography variant="h6">{coinInfo.chain.chainName}</Typography>
+            <Typography variant="h6">{coinInfo.chainName}</Typography>
           </ChainLeftSubTitleContainer>
         </ChainLeftInfoContainer>
       </ChainLeftContainer>
       <ChainRightContainer>
         <ChainRightInfoContainer>
           <ChainRightTitleContainer>
-            <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={coinInfo.decimals}>
-              {coinDisplayDenomAmount}
-            </Number>
-          </ChainRightTitleContainer>
-          <ChainRightSubTitleContainer>
-            <Tooltip title={inputCoinAmountPrice} placement="top" arrow>
+            <Tooltip title={coinDisplayDenomAmount} placement="top" arrow>
               <div>
-                <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
-                  {inputCoinAmountPrice}
+                <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={coinInfo.decimals}>
+                  {coinDisplayDenomAmount}
                 </Number>
               </div>
             </Tooltip>
+          </ChainRightTitleContainer>
+          <ChainRightSubTitleContainer>
+            <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
+              {inputCoinAmountPrice}
+            </Number>
           </ChainRightSubTitleContainer>
         </ChainRightInfoContainer>
         <ChainRightIconContainer>{isActive && <Check16Icon />}</ChainRightIconContainer>
