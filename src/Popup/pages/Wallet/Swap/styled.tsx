@@ -40,7 +40,6 @@ export const SwapIconButton = styled(IconButton)(({ theme }) => ({
 
 export const SwapCoinContainer = styled('div')(({ theme }) => ({
   width: '100%',
-  height: '10rem',
   padding: '1.3rem 1.6rem',
 
   background: theme.colors.base02,
@@ -64,6 +63,7 @@ export const SwapCoinRightHeaderContainer = styled('div')(({ theme }) => ({
 
 export const StyledInput = styled(Input)(({ theme }) => ({
   '&.MuiOutlinedInput-root': {
+    width: '13rem',
     '.MuiOutlinedInput-input': {
       textAlign: 'right',
       fontFamily: theme.typography.h4n.fontFamily,
@@ -114,11 +114,7 @@ export const MaxButton = styled('button')(({ theme }) => ({
   },
 }));
 
-export const SwapCoinContainerButton = styled('button')({
-  backgroundColor: 'transparent',
-  border: `none`,
-
-  padding: '0',
+export const SwapCoinBodyContainer = styled('div')({
   paddingTop: '1.3rem',
 
   width: '100%',
@@ -130,10 +126,17 @@ export const SwapCoinContainerButton = styled('button')({
   cursor: 'pointer',
 });
 
-export const SwapCoinLeftContainer = styled('div')({
+export const SwapCoinLeftButton = styled('button')({
+  backgroundColor: 'transparent',
+  border: `none`,
+
+  padding: '0',
+
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
+
+  cursor: 'pointer',
 });
 
 export const SwapCoinLeftImageContainer = styled('div')({
@@ -156,18 +159,13 @@ export const SwapCoinLeftTitleContainer = styled('div')(({ theme }) => ({
 
 export const SwapCoinLeftSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
-  // FIXME 줄넘김이 발생할 경우 폭이 크게 잡혀서 우측 버튼이 너무 동떨어져있게됨
   textAlign: 'left',
 }));
 
 type SwapCoinLeftIconButtonProps = {
   'data-is-active'?: boolean;
 };
-export const SwapCoinLeftIconButton = styled('div')<SwapCoinLeftIconButtonProps>(({ theme, ...props }) => ({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
-
+export const SwapCoinLeftIcon = styled('div')<SwapCoinLeftIconButtonProps>(({ theme, ...props }) => ({
   marginLeft: '0.5rem',
 
   '& > svg': {
@@ -198,7 +196,7 @@ export const SwapCoinRightSubTitleContainer = styled('div')(({ theme }) => ({
 }));
 
 export const SwapInfoContainer = styled('div')(({ theme }) => ({
-  padding: '1.6rem 1.6rem 1.9rem',
+  padding: '1.6rem',
 
   marginTop: '0.8rem',
 
@@ -214,38 +212,27 @@ export const SwapInfoHeaderContainer = styled('div')(({ theme }) => ({
 export const SwapInfoSubContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
-  rowGap: '0.6rem',
-  marginTop: '1.1rem',
+  marginTop: '0.9rem',
+});
+
+export const SwapInfoSubTextContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  height: '2.1rem',
 });
 
 export const SwapInfoSubLeftContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'space-between',
   color: theme.colors.text02,
 }));
 
 export const SwapInfoSubRightContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
-  position: 'relative',
 }));
 
-// TODO 사이즈 조절 오버플로우
-// type SwapInfoRightTextContainer = {
-//   'data-is-active'?: boolean;
-// };
-// export const SwapInfoRightTextContainer = styled('div')({
-
-// });
-
 export const SwapInfoSubRightTextContainer = styled('div')({
-  // TODO amount가 지나치게 클 경우 왼쪽 영역을 덮음
   display: 'flex',
   alignItems: 'center',
-
-  position: 'absolute',
-  right: '0',
-
-  overflowWrap: 'normal',
 });
 
 export const BottomContainer = styled('div')({
