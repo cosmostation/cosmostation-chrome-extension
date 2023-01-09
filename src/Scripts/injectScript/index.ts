@@ -8,6 +8,7 @@ import { ethereum } from './ethereum';
 
 void (() => {
   window.cosmostation = {
+    version: String(process.env.VERSION),
     providers: { metamask: ethereum, keplr },
     handlerInfos: [],
     common,

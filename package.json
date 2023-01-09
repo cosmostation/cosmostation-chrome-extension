@@ -20,7 +20,7 @@
     "update:manifest": "sed -i \"\" -e \"/\\\"version\\\":/s/:.*/: $(cat package.json | jq '.version'),/\" public/manifest.json",
     "update:env": "sed -i \"\" -e \"/^VERSION=/s/=.*/=$(cat package.json | jq '.version' | sed 's/\"//g')/\" .env",
     "update:env:dev": "sed -i \"\" -e \"/^VERSION=/s/=.*/=$(cat package.json | jq '.version' | sed 's/\"//g')/\" .env.development",
-    "update:version": "yarn run update:manifest && yarn run update:env"
+    "update:version": "yarn run update:manifest && yarn run update:env && yarn run update:env:dev"
   },
   "author": "",
   "license": "MIT",

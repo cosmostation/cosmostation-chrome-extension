@@ -14,6 +14,7 @@ type Keplr = Omit<
 
 interface Window {
   cosmostation: {
+    version: string;
     common: Common;
     ethereum: Ethereum;
     cosmos: Cosmos;
