@@ -58,5 +58,9 @@ void (() => {
     if (providers.aptos) {
       window.aptos = aptos;
     }
+
+    if (!window.suiWallet) {
+      window.suiWallet = sui;
+    }
   })();
 })();

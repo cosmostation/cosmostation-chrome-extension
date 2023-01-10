@@ -281,6 +281,14 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
+  const accounts = useAccounts(true);
+
+  const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
+
+  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: currentAddress });
+  useGetCoinMetadataSWR({ coinType: SUI_COIN });
+  useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) });
+
   const { enqueueSnackbar } = useSnackbar();
 
   const { t } = useTranslation();

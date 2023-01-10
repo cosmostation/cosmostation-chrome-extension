@@ -479,5 +479,5 @@ export const suiExecuteMoveCallSchema = () =>
         gasBudget: Joi.number().required(),
         typeArguments: Joi.array().required(),
         arguments: Joi.array().required(),
-      }),
+      }).unknown(),
     );
