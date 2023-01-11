@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useDebounce } from 'use-debounce';
+import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
@@ -85,6 +85,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const { enQueue } = useCurrentQueue();
   const params = useParams();
 
+  const [isDisabled, setIsDisabled] = useState(false);
+
   const { t } = useTranslation();
   const { currentCosmosTokens } = useCurrentCosmosTokens();
 
@@ -153,7 +155,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [availableCoinOrTokenList, currentCoinOrTokenId],
   );
 
-  const sendGas = currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS : gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS;
+  const sendGas = useMemo(
+    () => (currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS : gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS),
+    [currentCoinOrToken.type, gas.ibcSend, gas.ibcTransfer],
+  );
 
   const [customGas, setCustomGas] = useState<string | undefined>();
 
@@ -237,7 +242,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const latestHeight = clientState.data?.identified_client_state?.client_state?.latest_height;
 
-  const revisionHeight = latestHeight?.revision_height ? String(1000 + parseInt(latestHeight?.revision_height, 10)) : undefined;
+  const revisionHeight = useMemo(
+    () => (latestHeight?.revision_height ? String(1000 + parseInt(latestHeight?.revision_height, 10)) : undefined),
+    [latestHeight?.revision_height],
+  );
   const revisionNumber = latestHeight?.revision_number;
 
   const feeCoins = useMemo(() => {
@@ -276,9 +284,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
     return currentCoinOrTokenDisplayAvailableAmount;
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
-  const currentCoinOrTokenDecimals = currentCoinOrToken.decimals || 0;
+  const currentCoinOrTokenDecimals = useMemo(() => currentCoinOrToken.decimals || 0, [currentCoinOrToken.decimals]);
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
-  const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentCoinOrTokenDecimals);
+  const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
   const errorMessage = useMemo(() => {
     if (!latestHeight) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.timeoutHeightError');
@@ -421,7 +429,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     senderAddress,
   ]);
 
-  const [ibcSendAminoTx] = useDebounce(memoizedIBCSendAminoTx, 1000);
+  const [ibcSendAminoTx] = useDebounce(memoizedIBCSendAminoTx, 700);
 
   const ibcSendProtoTx = useMemo(() => {
     if (ibcSendAminoTx) {
@@ -448,6 +456,18 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentCoinOrTokenId]);
+
+  const debouncedEnabled = useDebouncedCallback(() => {
+    setTimeout(() => {
+      setIsDisabled(false);
+    }, 700);
+  }, 700);
+
+  useEffect(() => {
+    setIsDisabled(true);
+
+    debouncedEnabled();
+  }, [debouncedEnabled, memoizedIBCSendAminoTx]);
 
   useEffect(() => {
     setCurrentFeeAmount(times(currentGas, currentFeeGasRate[currentGasRateKey]));
@@ -571,7 +591,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           <div>
             <Button
               type="button"
-              disabled={!!errorMessage || !ibcSendAminoTx}
+              disabled={!!errorMessage || !ibcSendAminoTx || isDisabled}
               onClick={async () => {
                 if (ibcSendAminoTx) {
                   await enQueue({
