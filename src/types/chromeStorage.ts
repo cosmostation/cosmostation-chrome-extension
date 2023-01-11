@@ -77,6 +77,7 @@ export type Providers = {
   keplr: boolean;
   metamask: boolean;
   aptos: boolean;
+  suiWallet: boolean;
 };
 
 export type SuiPermission = {

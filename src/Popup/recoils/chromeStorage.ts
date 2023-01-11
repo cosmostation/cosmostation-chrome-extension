@@ -46,7 +46,7 @@ export const chromeStorageDefault: ChromeStorage = {
 
   ledgerTransportType: 'USB',
 
-  providers: { keplr: true, metamask: true, aptos: true },
+  providers: { keplr: true, metamask: true, aptos: true, suiWallet: true },
 };
 
 export const chromeStorageState = atom<ChromeStorage>({

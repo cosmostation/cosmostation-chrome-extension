@@ -59,7 +59,7 @@ void (() => {
       window.aptos = aptos;
     }
 
-    if (!window.suiWallet) {
+    if (providers.suiWallet && !window.suiWallet) {
       window.suiWallet = sui;
     }
   })();
