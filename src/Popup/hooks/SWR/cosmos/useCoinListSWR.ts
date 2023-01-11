@@ -107,25 +107,28 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
     );
   }, [account?.data, balance.data?.balance, chain, delegation?.data, incentive?.data, nativeAssets, reward?.data?.total]);
 
-  const ibcCoins: CoinInfo[] =
-    balance.data?.balance
-      ?.filter((coin) => ibcAssets.map((item) => item.denom).includes(coin.denom))
-      .map((coin) => {
-        const coinInfo = ibcAssets.find((item) => item.denom === coin.denom)!;
+  const ibcCoins: CoinInfo[] = useMemo(
+    () =>
+      balance.data?.balance
+        ?.filter((coin) => ibcAssets.map((item) => item.denom).includes(coin.denom))
+        .map((coin) => {
+          const coinInfo = ibcAssets.find((item) => item.denom === coin.denom)!;
 
-        return {
-          coinType: coinInfo.type,
-          decimals: coinInfo?.decimals,
-          originBaseDenom: coinInfo?.origin_denom,
-          baseDenom: coin.denom,
-          displayDenom: coinInfo?.symbol,
-          imageURL: coinInfo?.image,
-          coinGeckoId: coinInfo.coinGeckoId,
-          channelId: coinInfo?.channel,
-          availableAmount: coin.amount,
-          totalAmount: coin.amount,
-        };
-      }) || [];
+          return {
+            coinType: coinInfo.type,
+            decimals: coinInfo?.decimals,
+            originBaseDenom: coinInfo?.origin_denom,
+            baseDenom: coin.denom,
+            displayDenom: coinInfo?.symbol,
+            imageURL: coinInfo?.image,
+            coinGeckoId: coinInfo.coinGeckoId,
+            channelId: coinInfo?.channel,
+            availableAmount: coin.amount,
+            totalAmount: coin.amount,
+          };
+        }) || [],
+    [balance.data?.balance, ibcAssets],
+  );
 
   return { coins, ibcCoins };
 }

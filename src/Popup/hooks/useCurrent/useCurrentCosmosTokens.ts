@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -14,7 +15,7 @@ export function useCurrentCosmosTokens() {
 
   const { cosmosTokens } = chromeStorage;
 
-  const currentCosmosTokens = cosmosTokens.filter((item) => item.chainId === currentChain.id);
+  const currentCosmosTokens = useMemo(() => cosmosTokens.filter((item) => item.chainId === currentChain.id), [cosmosTokens, currentChain.id]);
 
   const addCosmosToken = async (token: AddCosmosTokenParams) => {
     const newCosmosTokens = [

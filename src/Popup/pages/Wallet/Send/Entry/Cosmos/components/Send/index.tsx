@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useDebounce } from 'use-debounce';
+import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS, COSMOS_FEE_BASE_DENOMS, COSMOS_GAS_RATES } from '~/constants/chain';
@@ -62,6 +62,8 @@ export default function Send({ chain }: CosmosProps) {
   const { enQueue } = useCurrentQueue();
   const params = useParams();
 
+  const [isDisabled, setIsDisabled] = useState(false);
+
   const { t } = useTranslation();
 
   const { currentCosmosTokens } = useCurrentCosmosTokens();
@@ -69,7 +71,10 @@ export default function Send({ chain }: CosmosProps) {
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
 
-  const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
+  const address = useMemo(
+    () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '',
+    [accounts.data, chain.id, currentAccount.id],
+  );
 
   const { decimals, gas, gasRate } = chain;
 
@@ -127,7 +132,10 @@ export default function Send({ chain }: CosmosProps) {
     [availableCoinOrTokenList, currentCoinOrTokenId],
   );
 
-  const sendGas = currentCoinOrToken.type === 'coin' ? gas.send || COSMOS_DEFAULT_SEND_GAS : gas.transfer || COSMOS_DEFAULT_TRANSFER_GAS;
+  const sendGas = useMemo(
+    () => (currentCoinOrToken.type === 'coin' ? gas.send || COSMOS_DEFAULT_SEND_GAS : gas.transfer || COSMOS_DEFAULT_TRANSFER_GAS),
+    [currentCoinOrToken.type, gas.send, gas.transfer],
+  );
 
   const [customGas, setCustomGas] = useState<string | undefined>();
 
@@ -190,11 +198,11 @@ export default function Send({ chain }: CosmosProps) {
     return currentCoinOrTokenDisplayAvailableAmount;
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
-  const currentCoinOrTokenDecimals = currentCoinOrToken.decimals || 0;
+  const currentCoinOrTokenDecimals = useMemo(() => currentCoinOrToken.decimals || 0, [currentCoinOrToken.decimals]);
 
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
 
-  const currentDisplayMaxDecimals = getDisplayMaxDecimals(currentCoinOrTokenDecimals);
+  const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
 
   const errorMessage = useMemo(() => {
     if (!addressRegex.test(currentAddress) || address === currentAddress) {
@@ -321,7 +329,7 @@ export default function Send({ chain }: CosmosProps) {
     nodeInfo.data?.node_info?.network,
   ]);
 
-  const [sendAminoTx] = useDebounce(memoizedSendAminoTx, 1000);
+  const [sendAminoTx] = useDebounce(memoizedSendAminoTx, 700);
 
   const sendProtoTx = useMemo(() => {
     if (sendAminoTx) {
@@ -338,6 +346,18 @@ export default function Send({ chain }: CosmosProps) {
   );
 
   const currentGas = useMemo(() => customGas || simulatedGas || sendGas, [customGas, sendGas, simulatedGas]);
+
+  const debouncedEnabled = useDebouncedCallback(() => {
+    setTimeout(() => {
+      setIsDisabled(false);
+    }, 700);
+  }, 700);
+
+  useEffect(() => {
+    setIsDisabled(true);
+
+    debouncedEnabled();
+  }, [debouncedEnabled, memoizedSendAminoTx]);
 
   useEffect(() => {
     setCurrentFeeAmount(times(currentGas, currentFeeGasRate[currentGasRateKey]));
@@ -426,7 +446,7 @@ export default function Send({ chain }: CosmosProps) {
           <div>
             <Button
               type="button"
-              disabled={!!errorMessage || !sendAminoTx}
+              disabled={!!errorMessage || !sendAminoTx || isDisabled}
               onClick={async () => {
                 if (sendAminoTx) {
                   await enQueue({
