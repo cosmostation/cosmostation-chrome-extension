@@ -26,7 +26,17 @@ import { TERITORI } from '~/constants/chain/cosmos/teritori';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
-import type { Msg, MsgCustom, MsgExecuteContract, MsgReward, MsgSend, MsgSignData, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
+import type {
+  Msg,
+  MsgCustom,
+  MsgExecuteContract,
+  MsgReward,
+  MsgSend,
+  MsgSignData,
+  MsgSwapExactAmountIn,
+  MsgTransfer,
+  SignAminoDoc,
+} from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 import { toHex } from './string';
@@ -129,6 +139,10 @@ export function isAminoIBCSend(msg: Msg): msg is Msg<MsgTransfer> {
 
 export function isAminoReward(msg: Msg): msg is Msg<MsgReward> {
   return msg.type === 'cosmos-sdk/MsgWithdrawDelegationReward';
+}
+
+export function isAminoSwapExactAmountIn(msg: Msg): msg is Msg<MsgSwapExactAmountIn> {
+  return msg.type === 'osmosis/gamm/swap-exact-amount-in';
 }
 
 export function isAminoExecuteContract(msg: Msg): msg is Msg<MsgExecuteContract> {

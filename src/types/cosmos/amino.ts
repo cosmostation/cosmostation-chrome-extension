@@ -1,4 +1,5 @@
 import type { Amount, Height } from './common';
+import type { SwapAmountInRoute, SwapCoin } from './swap';
 
 export type Fee = { amount: Amount[]; gas: string };
 
@@ -28,6 +29,13 @@ export type MsgTransfer = {
   timeout_height: Height;
   timeout_timestamp: number;
   token: Amount;
+};
+
+export type MsgSwapExactAmountIn = {
+  sender: string;
+  routes: SwapAmountInRoute[];
+  token_in: SwapCoin;
+  token_out_min_amount: string;
 };
 
 export type MsgSignData = {

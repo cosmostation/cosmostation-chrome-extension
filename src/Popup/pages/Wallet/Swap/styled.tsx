@@ -40,13 +40,14 @@ export const SwapIconButton = styled(IconButton)(({ theme }) => ({
 
 export const SwapCoinContainer = styled('div')(({ theme }) => ({
   width: '100%',
-  padding: '1.3rem 1.6rem',
+  padding: '1.3rem 1.6rem 2.5rem',
 
   background: theme.colors.base02,
   borderRadius: '0.8rem',
 }));
 
 export const SwapCoinHeaderContainer = styled('div')({
+  height: '1.8rem',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
@@ -65,6 +66,7 @@ export const StyledInput = styled(Input)(({ theme }) => ({
   '&.MuiOutlinedInput-root': {
     width: '13rem',
     '.MuiOutlinedInput-input': {
+      height: '1.8rem',
       textAlign: 'right',
       fontFamily: theme.typography.h4n.fontFamily,
       fontStyle: theme.typography.h4n.fontStyle,
@@ -115,15 +117,11 @@ export const MaxButton = styled('button')(({ theme }) => ({
 }));
 
 export const SwapCoinBodyContainer = styled('div')({
-  paddingTop: '1.3rem',
-
-  width: '100%',
+  paddingTop: '0.9rem',
 
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-
-  cursor: 'pointer',
 });
 
 export const SwapCoinLeftButton = styled('button')({
@@ -140,6 +138,8 @@ export const SwapCoinLeftButton = styled('button')({
 });
 
 export const SwapCoinLeftImageContainer = styled('div')({
+  width: '3.2rem',
+  height: '3.2rem',
   '& > img': {
     width: '3.2rem',
     height: '3.2rem',
@@ -151,6 +151,8 @@ export const SwapCoinLeftInfoContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
+
+  rowGap: '0.2rem',
 });
 
 export const SwapCoinLeftTitleContainer = styled('div')(({ theme }) => ({
@@ -166,8 +168,10 @@ type SwapCoinLeftIconButtonProps = {
   'data-is-active'?: boolean;
 };
 export const SwapCoinLeftIcon = styled('div')<SwapCoinLeftIconButtonProps>(({ theme, ...props }) => ({
-  marginLeft: '0.5rem',
+  marginLeft: '0.3rem',
 
+  width: '2.4rem',
+  height: '2.4rem',
   '& > svg': {
     transform: props['data-is-active'] ? 'rotate(180deg)' : 'none',
     '& > path': {
@@ -186,11 +190,16 @@ type SwapCoinRightTitleContainerProps = {
   'data-is-active'?: boolean;
 };
 export const SwapCoinRightTitleContainer = styled('div')<SwapCoinRightTitleContainerProps>(({ theme, ...props }) => ({
+  height: '1.8rem',
+  width: '13rem',
   color: props['data-is-active'] ? theme.colors.text01 : theme.colors.text02,
+
+  textAlign: 'right',
+  overflow: 'hidden',
 }));
 
 export const SwapCoinRightSubTitleContainer = styled('div')(({ theme }) => ({
-  height: '1.9rem',
+  height: '1.7rem',
 
   color: theme.colors.text02,
 }));

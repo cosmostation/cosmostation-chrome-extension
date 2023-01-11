@@ -1095,6 +1095,7 @@
           "insufficientAmount": "Insufficient amount",
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",
+          "invalidPriceImpact": "Too high Price Impact",
           "title": "Swap"
         }
       },

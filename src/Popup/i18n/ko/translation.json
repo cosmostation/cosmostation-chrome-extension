@@ -1095,6 +1095,7 @@
           "insufficientAmount": "수량이 부족합니다.",
           "insufficientFeeAmount": "수수료가 부족합니다.",
           "invalidAmount": "수량을 입력하세요.",
+          "invalidPriceImpact": "Price Impact가 지나치게 높습니다.",
           "title": "교환"
         }
       },
