@@ -98,7 +98,7 @@ export function convertAminoSwapExactAmmountInMessageToProto(msg: Msg<MsgSwapExa
   });
 
   return new google.protobuf.Any({
-    type_url: '/osmosis.gamm.v1beta1..MsgSwapExactAmountIn',
+    type_url: '/osmosis.gamm.v1beta1.MsgSwapExactAmountIn',
     value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode(message).finish(),
   });
 }

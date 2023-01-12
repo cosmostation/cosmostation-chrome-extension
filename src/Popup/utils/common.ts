@@ -117,6 +117,10 @@ export function getDisplayMaxDecimals(decimals?: number) {
   return decimals < maxDisplayDecimals ? decimals : maxDisplayDecimals;
 }
 
+export function getCapitalize(string: string) {
+  return string.charAt(0).toUpperCase().concat(string.slice(1));
+}
+
 export function getSiteIconURL(domain: string) {
   return `https://icon.horse/icon/${domain}?size=small`;
 }

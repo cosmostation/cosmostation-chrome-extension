@@ -67,7 +67,7 @@ export function ceil(num: string | number) {
   return new Big(num).toFixed(0, 0);
 }
 
-export function fix(number: string, decimal: number, optional: RoundingMode = 0) {
+export function fix(number: string, decimal?: number, optional: RoundingMode = 0) {
   return Big(number).toFixed(decimal, optional);
 }
 
