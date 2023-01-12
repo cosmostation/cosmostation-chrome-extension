@@ -235,16 +235,30 @@ export default function Entry({ queue }: EntryProps) {
                   setIsProgress(true);
                   const response = await rawSigner.signAndExecuteTransaction(params[0]);
 
-                  const result: SuiSignAndExecuteTransactionResponse = response;
+                  if ('EffectsCert' in response) {
+                    const result: SuiSignAndExecuteTransactionResponse = {
+                      certificate: response.EffectsCert.certificate,
+                      effects: response.EffectsCert.effects,
+                    };
 
-                  responseToWeb({
-                    response: {
-                      result,
-                    },
-                    message,
-                    messageId,
-                    origin,
-                  });
+                    responseToWeb({
+                      response: {
+                        result,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
+                  } else {
+                    responseToWeb({
+                      response: {
+                        result: response,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
+                  }
 
                   if (queue.channel === 'inApp') {
                     enqueueSnackbar('success');
