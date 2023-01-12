@@ -238,7 +238,7 @@ export default function Entry({ queue }: EntryProps) {
                   if ('EffectsCert' in response) {
                     const result: SuiSignAndExecuteTransactionResponse = {
                       certificate: response.EffectsCert.certificate,
-                      effects: response.EffectsCert.effects,
+                      effects: response.EffectsCert.effects.effects,
                     };
 
                     responseToWeb({

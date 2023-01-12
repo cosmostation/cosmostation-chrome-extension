@@ -45,7 +45,7 @@ export type SuiSignAndExecuteTransaction = {
   id?: number | string;
 };
 
-export type SuiSignAndExecuteTransactionResponse = { certificate: CertifiedTransaction; effects: SuiCertifiedTransactionEffects };
+export type SuiSignAndExecuteTransactionResponse = { certificate: CertifiedTransaction; effects: SuiCertifiedTransactionEffects['effects'] };
 
 export type SuiGetAccountResponse = {
   address: string;
