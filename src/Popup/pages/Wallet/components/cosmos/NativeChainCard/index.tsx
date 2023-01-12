@@ -344,11 +344,9 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.depositButton')}
         </Button>
-        <ButtonCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
-        <ButtonCenterContainer />
         {chain.id === OSMOSIS.id && (
           <IconButtonContainer>
             <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/swap')}>

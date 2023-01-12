@@ -141,6 +141,8 @@ export const ButtonContainer = styled('div')({
   alignItems: 'center',
 
   padding: '1rem 0',
+
+  columnGap: '0.8rem',
 });
 
 export const ButtonCenterContainer = styled('div')({
