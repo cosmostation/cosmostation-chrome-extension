@@ -657,6 +657,14 @@
                       "fromAddress": "보내는 주소",
                       "toAddress": "받는 주소"
                     }
+                  },
+                  "Swap": {
+                    "index": {
+                      "poolId": "풀 Id",
+                      "routes": "경로",
+                      "tokenIn": "보낼 코인",
+                      "tokenOut": "받을 코인"
+                    }
                   }
                 }
               }
@@ -1092,10 +1100,14 @@
           }
         },
         "entry": {
+          "expectedOutput": "예상 교환치",
           "insufficientAmount": "수량이 부족합니다.",
           "insufficientFeeAmount": "수수료가 부족합니다.",
           "invalidAmount": "수량을 입력하세요.",
-          "invalidPriceImpact": "Price Impact가 지나치게 높습니다.",
+          "invalidPriceImpact": "가격 변동치가 지나치게 높습니다.",
+          "minimumReceived": "슬리피지 이후 받을 최소수량",
+          "priceImpact": "가격 변동치",
+          "swapFee": "교환 수수료",
           "title": "교환"
         }
       },

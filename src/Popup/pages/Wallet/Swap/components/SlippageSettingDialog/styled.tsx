@@ -4,10 +4,6 @@ import { tooltipClasses } from '@mui/material/Tooltip';
 import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
 import Tooltip from '~/Popup/components/common/Tooltip';
-// FIXME % 중앙정렬을 위해 값을 주었지만 수정이 필요함
-export const SlippageCustomInputText = styled('div')({
-  height: '2.4rem',
-});
 
 export const Container = styled('div')({
   padding: '1.3rem 1.6rem 1.6rem',
@@ -76,45 +72,60 @@ export const SlippageButton = styled(Button)<SlippageButtonProps>(({ theme, ...p
 
 export const SlippageButtonTextContainer = styled('div')({});
 
+type SlippageCustomInputContainerProps = {
+  'data-is-active'?: boolean;
+};
+
+export const SlippageCustomInputConatiner = styled('div')<SlippageCustomInputContainerProps>(({ theme, ...props }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  height: '3.2rem',
+  width: '6.6rem',
+
+  border: 'none',
+  borderRadius: '0.8rem',
+
+  color: props['data-is-active'] ? theme.colors.text01 : theme.colors.text02,
+  backgroundColor: props['data-is-active'] ? theme.accentColors.purple01 : theme.colors.base03,
+
+  '&:hover': {
+    border: '0.1rem solid #9C6CFF',
+  },
+}));
+
 type SlippageCustomInputProps = {
   'data-is-active'?: boolean;
-  'data-is-length'?: boolean;
+  'data-width': number;
 };
+
 export const SlippageCustomInput = styled(Input)<SlippageCustomInputProps>(({ theme, ...props }) => ({
   '&.MuiOutlinedInput-root': {
-    height: '3.2rem',
-    width: '6.6rem',
-
-    border: 'none',
-
-    backgroundColor: props['data-is-active'] ? theme.accentColors.purple01 : theme.colors.base03,
-    color: props['data-is-active'] ? theme.colors.text01 : theme.colors.text02,
-
-    '& .MuiInputAdornment-root': {
-      marginLeft: '0',
-      marginRight: props['data-is-length'] ? '0.3rem' : '0.8rem',
-      color: theme.colors.text01,
-    },
+    backgroundColor: 'transparent',
+    width: props['data-width'] > 0 ? `${props['data-width']}rem` : '100%',
 
     '& .MuiOutlinedInput-input': {
-      textAlign: props['data-is-active'] ? 'end' : 'center',
+      padding: '0',
 
-      padding: '0.8rem 0',
-
+      height: '1.92rem',
+      textAlign: 'center',
       fontFamily: theme.typography.h5n.fontFamily,
       fontStyle: theme.typography.h5n.fontStyle,
       fontSize: theme.typography.h5n.fontSize,
       lineHeight: theme.typography.h5n.lineHeight,
       letterSpacing: theme.typography.h5n.letterSpacing,
       '&::placeholder': {
-        textAlign: 'center',
+        opacity: 1,
       },
     },
 
-    '&.Mui-focused': {
-      '.MuiOutlinedInput-notchedOutline': {
-        border: 'none',
-      },
+    '.MuiOutlinedInput-notchedOutline': {
+      border: 'none',
     },
   },
 }));
+
+export const SlippageCustomInputAdornment = styled('div')({
+  height: '1.8rem',
+});

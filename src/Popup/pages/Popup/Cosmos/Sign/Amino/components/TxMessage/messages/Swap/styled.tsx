@@ -7,7 +7,31 @@ export const ContentContainer = styled('div')(({ theme }) => ({
   wordBreak: 'break-all',
 }));
 
-export const AddressContainer = styled('div')({});
+export const InputCoinContainer = styled('div')({});
+
+export const InputCoinImageContainer = styled('div')({
+  width: '3.2rem',
+  height: '3.2rem',
+  '& > img': {
+    width: '3.2rem',
+    height: '3.2rem',
+  },
+});
+
+export const OutputCoinImageContainer = styled('div')({
+  width: '3.2rem',
+  height: '3.2rem',
+  '& > img': {
+    width: '3.2rem',
+    height: '3.2rem',
+  },
+});
+
+export const OutputCoinContainer = styled('div')({});
+
+export const RoutesContainer = styled('div')({});
+
+export const PoolContainer = styled('div')({});
 
 export const LabelContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,

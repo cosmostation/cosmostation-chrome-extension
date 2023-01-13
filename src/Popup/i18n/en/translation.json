@@ -657,6 +657,14 @@
                       "fromAddress": "From address",
                       "toAddress": "To address"
                     }
+                  },
+                  "Swap": {
+                    "index": {
+                      "poolId": "Pool Id",
+                      "routes": "Route",
+                      "tokenIn": "From",
+                      "tokenOut": "To"
+                    }
                   }
                 }
               }
@@ -1092,10 +1100,14 @@
           }
         },
         "entry": {
+          "expectedOutput": "Expected Output",
           "insufficientAmount": "Insufficient amount",
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",
           "invalidPriceImpact": "Too high Price Impact",
+          "minimumReceived": "Minimum received after slippage",
+          "priceImpact": "Price Impact",
+          "swapFee": "Swap Fee",
           "title": "Swap"
         }
       },

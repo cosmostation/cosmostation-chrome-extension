@@ -215,8 +215,7 @@ export default function Entry({ chain }: EntryProps) {
     const beforeSpotPriceInOverOut = times(divide(inputWeightCalculated, outputWeightCalculated), scale);
 
     const effective = divide(inputDisplayAmount || 1, outputDisplayAmount !== '0' ? outputDisplayAmount : 1);
-
-    return minus(divide(effective || 1, beforeSpotPriceInOverOut || 1), 1);
+    return minus(fix(times(divide(effective || 1, beforeSpotPriceInOverOut || 1), 100000000), 7), 100000000);
   }, [poolAsssets, swapFeeRate, inputDisplayAmount, outputDisplayAmount, inputCoinBaseDenom, outputCoinBaseDenom]);
 
   const currentInputCoinAvailableAmount = useMemo(() => inputCoin?.availableAmount || '0', [inputCoin]);
@@ -294,12 +293,11 @@ export default function Entry({ chain }: EntryProps) {
     if (!gte(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
       return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
     }
-    // TODO swap 불가 threshold 파악하기
-    // if (!gt(priceImpact, 0.1)) {
-    //   return t('pages.Wallet.Swap.entry.invalidPriceImpact');
-    // }
+    if (gt(priceImpact, 10)) {
+      return t('pages.Wallet.Swap.entry.invalidPriceImpact');
+    }
     return '';
-  }, [currentDisplayFeeAmount, currentInputCoinDisplayAvailableAmount, inputDisplayAmount, t]);
+  }, [currentDisplayFeeAmount, currentInputCoinDisplayAvailableAmount, inputDisplayAmount, priceImpact, t]);
   return (
     <>
       <Container>
@@ -443,11 +441,11 @@ export default function Entry({ chain }: EntryProps) {
           <SwapInfoSubContainer>
             <SwapInfoSubTextContainer>
               <SwapInfoSubLeftContainer>
-                <Typography variant="h6">Price Impact</Typography>
+                <Typography variant="h6">{t('pages.Wallet.Swap.entry.priceImpact')}</Typography>
               </SwapInfoSubLeftContainer>
               <SwapInfoSubRightContainer>
                 {inputDisplayAmount && priceImpact ? (
-                  <SwapInfoSubRightTextContainer>
+                  <SwapInfoSubRightTextContainer data-is-invalid={gt(priceImpact, 10)}>
                     <Typography variant="h6n">-</Typography>
                     &nbsp;
                     <Typography variant="h6n">{'<'}</Typography>
@@ -464,7 +462,9 @@ export default function Entry({ chain }: EntryProps) {
             </SwapInfoSubTextContainer>
             <SwapInfoSubTextContainer>
               <SwapInfoSubLeftContainer>
-                <Typography variant="h6">Swap Fee ({times(swapFeeRate, 100)}%)</Typography>
+                <Typography variant="h6">
+                  {t('pages.Wallet.Swap.entry.swapFee')} ({times(swapFeeRate, 100)}%)
+                </Typography>
               </SwapInfoSubLeftContainer>
               <SwapInfoSubRightContainer>
                 {inputDisplayAmount && swapFeePrice ? (
@@ -486,7 +486,7 @@ export default function Entry({ chain }: EntryProps) {
             </SwapInfoSubTextContainer>
             <SwapInfoSubTextContainer>
               <SwapInfoSubLeftContainer>
-                <Typography variant="h6">Expected Output</Typography>
+                <Typography variant="h6">{t('pages.Wallet.Swap.entry.expectedOutput')}</Typography>
               </SwapInfoSubLeftContainer>
 
               <SwapInfoSubRightContainer>
@@ -505,8 +505,9 @@ export default function Entry({ chain }: EntryProps) {
             </SwapInfoSubTextContainer>
             <SwapInfoSubTextContainer>
               <SwapInfoSubLeftContainer>
-                {/* TODO 이거 Minimim received 아닌지 여쭤보기 */}
-                <Typography variant="h6">Minimum after slippage ({currentSlippage}%)</Typography>
+                <Typography variant="h6">
+                  {t('pages.Wallet.Swap.entry.minimumReceived')} ({currentSlippage}%)
+                </Typography>
               </SwapInfoSubLeftContainer>
 
               <SwapInfoSubRightContainer>
@@ -563,7 +564,7 @@ export default function Entry({ chain }: EntryProps) {
                                     amount: currentTokenInAmount,
                                     denom: inputCoinBaseDenom,
                                   },
-                                  token_out_min_amount: tokenOutMinAmount,
+                                  token_out_min_amount: fix(tokenOutMinAmount, 0),
                                 },
                               },
                             ],

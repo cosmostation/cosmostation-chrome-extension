@@ -239,10 +239,15 @@ export const SwapInfoSubRightContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const SwapInfoSubRightTextContainer = styled('div')({
+type SwapInfoSubRightTextContainerProps = {
+  'data-is-invalid'?: boolean;
+};
+export const SwapInfoSubRightTextContainer = styled('div')<SwapInfoSubRightTextContainerProps>(({ theme, ...props }) => ({
   display: 'flex',
   alignItems: 'center',
-});
+
+  color: props['data-is-invalid'] ? theme.accentColors.red : theme.colors.text01,
+}));
 
 export const BottomContainer = styled('div')({
   position: 'absolute',

@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
 import type { DialogProps } from '@mui/material';
-import { InputAdornment, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { equal, gt, isDecimal } from '~/Popup/utils/big';
+import { equal, fix, isDecimal, times } from '~/Popup/utils/big';
 
 import {
   Container,
@@ -15,7 +15,8 @@ import {
   SlippageButtonContainer,
   SlippageButtonTextContainer,
   SlippageCustomInput,
-  SlippageCustomInputText,
+  SlippageCustomInputAdornment,
+  SlippageCustomInputConatiner,
   StyledButton,
   StyledTooltip,
 } from './styled';
@@ -90,29 +91,25 @@ export default function SlippageSettingDialog({ selectedSlippage, onClose, onSub
               <Typography variant="h5n">5%</Typography>
             </SlippageButtonTextContainer>
           </SlippageButton>
-          <SlippageCustomInput
-            endAdornment={
-              customSlippage && (
-                <InputAdornment position="end">
-                  {/* TODO 중앙정렬 필요함 */}
-                  <SlippageCustomInputText>
-                    <Typography variant="h5n">%</Typography>
-                  </SlippageCustomInputText>
-                </InputAdornment>
-              )
-            }
-            onChange={(e) => {
-              if (!isDecimal(e.currentTarget.value, 3) && e.currentTarget.value) {
-                return;
-              }
-              setCustomSlippage(e.currentTarget.value);
-            }}
-            value={customSlippage}
-            placeholder="Custom"
-            data-is-active={!!customSlippage}
-            // TODO 5이상으로 큰 숫자 받을떄도 중앙정렬 되도록 단순 불리언이 아니라 숫자를 넘겨줘야할듯
-            data-is-length={gt(currentSlippage.length, 2)}
-          />
+          <SlippageCustomInputConatiner data-is-active={!!customSlippage}>
+            <SlippageCustomInput
+              placeholder="Custom"
+              data-is-active={!!customSlippage}
+              data-width={Number(times(customSlippage.length, 0.7))}
+              onChange={(e) => {
+                if ((!isDecimal(e.currentTarget.value, 2) && e.currentTarget.value) || fix(e.currentTarget.value || '1', 0).length > 2) {
+                  return;
+                }
+                setCustomSlippage(e.currentTarget.value);
+              }}
+              value={customSlippage}
+            />
+            {customSlippage && (
+              <SlippageCustomInputAdornment>
+                <Typography variant="h5n">%</Typography>
+              </SlippageCustomInputAdornment>
+            )}
+          </SlippageCustomInputConatiner>
         </SlippageButtonContainer>
         <StyledButton onClick={submit}>{t('pages.Wallet.Swap.components.SlippageSettingDialog.confirm')}</StyledButton>
       </Container>
