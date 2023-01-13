@@ -504,10 +504,19 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.depositButton')}
         </Button>
-        <ButtonCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
+        {chain.id === OSMOSIS.id && (
+          <IconButtonContainer>
+            <UnitIconButton disabled>
+              <SwapIcon />
+            </UnitIconButton>
+            <UnitIconButton disabled>
+              <BuyIcon />
+            </UnitIconButton>
+          </IconButtonContainer>
+        )}
       </ButtonContainer>
 
       <ExpandedButton

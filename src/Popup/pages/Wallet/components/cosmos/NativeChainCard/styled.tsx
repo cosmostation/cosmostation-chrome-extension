@@ -244,6 +244,21 @@ export const UnitIconButton = styled('button')(({ theme }) => ({
   '&:hover': {
     backgroundColor: theme.accentColors.purple02,
   },
+
+  '&:disabled': {
+    backgroundColor: theme.colors.base04,
+    color: theme.colors.text02,
+
+    cursor: 'default',
+
+    '& svg': {
+      fill: theme.colors.text02,
+
+      '& > path': {
+        fill: theme.colors.text02,
+      },
+    },
+  },
 }));
 
 export const IconButtonContainer = styled('div')({
