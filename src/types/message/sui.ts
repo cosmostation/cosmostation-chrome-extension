@@ -37,7 +37,7 @@ export type SuiExecuteMoveCall = {
   id?: number | string;
 };
 
-export type SuiExecuteMoveCallResponse = { certificate: CertifiedTransaction; effects: SuiCertifiedTransactionEffects };
+export type SuiExecuteMoveCallResponse = { certificate: CertifiedTransaction; effects: SuiCertifiedTransactionEffects['effects'] };
 
 export type SuiSignAndExecuteTransaction = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION;
