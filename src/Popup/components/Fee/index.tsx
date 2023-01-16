@@ -8,6 +8,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, equal, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { FeeCoin, GasRate, GasRateKey } from '~/types/chain';
 
+import FeeSettingDialog from './components/FeeSettingDialog';
 import GasSettingDialog from './components/GasSettingDialog';
 import {
   Container,
@@ -17,6 +18,7 @@ import {
   FeeButton,
   FeeButtonContainer,
   FeeInfoContainer,
+  FeeSettingButton,
   GasButton,
   LeftContainer,
   RightAmountContainer,
@@ -25,8 +27,11 @@ import {
   RightValueContainer,
 } from './styled';
 
+import ChangeIcon from '~/images/icons/Change.svg';
+
 type FeeProps = {
   feeCoin: FeeCoin;
+  feeCoinList: FeeCoin[];
   isEdit?: boolean;
   baseFee: string;
   gas: string;
@@ -34,9 +39,21 @@ type FeeProps = {
   onChangeGasRateKey?: (key: GasRateKey) => void;
   onChangeFee?: (fee: string) => void;
   onChangeGas?: (gas: string) => void;
+  onChangeFeeCoin?: (selectedFeeCoin: FeeCoin) => void;
 };
 
-export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee, onChangeGasRateKey, onChangeGas, feeCoin }: FeeProps) {
+export default function Fee({
+  isEdit = false,
+  gasRate,
+  baseFee,
+  gas,
+  feeCoin,
+  feeCoinList,
+  onChangeFee,
+  onChangeGasRateKey,
+  onChangeGas,
+  onChangeFeeCoin,
+}: FeeProps) {
   const { chromeStorage } = useChromeStorage();
   const { decimals, displayDenom, coinGeckoId } = feeCoin;
 
@@ -45,6 +62,7 @@ export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee
   const { t } = useTranslation();
 
   const [isOpenGasDialog, setIsOpenGasDialog] = useState(false);
+  const [isOpenFeeDialog, setIsOpenFeeDialog] = useState(false);
 
   const { currency } = chromeStorage;
 
@@ -63,7 +81,10 @@ export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee
         <Container>
           <FeeInfoContainer>
             <LeftContainer>
-              <Typography variant="h5">{t('components.Fee.index.fee')}</Typography>
+              <FeeSettingButton type="button" onClick={() => setIsOpenFeeDialog(true)}>
+                <Typography variant="h5">{t('components.Fee.index.fee')}</Typography>
+                <ChangeIcon />
+              </FeeSettingButton>
             </LeftContainer>
             <RightContainer>
               <RightColumnContainer>
@@ -130,8 +151,16 @@ export default function Fee({ isEdit = false, gasRate, baseFee, gas, onChangeFee
           onClose={() => setIsOpenGasDialog(false)}
           onSubmitGas={(gasData) => {
             onChangeFee?.(times(currentGasRate, gasData.gas));
-
             onChangeGas?.(String(gasData.gas));
+          }}
+        />
+        <FeeSettingDialog
+          open={isOpenFeeDialog}
+          onClose={() => setIsOpenFeeDialog(false)}
+          currentFeeCoin={feeCoin}
+          feeCoinList={feeCoinList}
+          onChangeFeeCoin={(selectedFeeCoin) => {
+            onChangeFeeCoin?.(selectedFeeCoin);
           }}
         />
       </>

@@ -7,20 +7,21 @@ import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import PopupHeader from '~/Popup/components/PopupHeader';
-import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
+import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, lt, times } from '~/Popup/utils/big';
+import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { decodeProtobufMessage } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
-import type { CosmosChain, FeeCoin } from '~/types/chain';
+import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type { CosSignDirect, CosSignDirectResponse } from '~/types/message/cosmos';
@@ -42,31 +43,11 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { deQueue } = useCurrentQueue();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
-  const assets = useAssetsSWR(chain, { suspense: true });
-
   const { enqueueSnackbar } = useSnackbar();
 
   const { t } = useTranslation();
 
-  const feeCoins: FeeCoin[] = useMemo(
-    () => [
-      {
-        originBaseDenom: chain.baseDenom,
-        baseDenom: chain.baseDenom,
-        displayDenom: chain.displayDenom,
-        decimals: chain.decimals,
-        coinGeckoId: chain.coinGeckoId,
-      },
-      ...assets.data.map((asset) => ({
-        originBaseDenom: asset.origin_denom,
-        baseDenom: asset.denom,
-        decimals: asset.decimals,
-        displayDenom: asset.symbol,
-        coinGeckoId: asset.coinGeckoId,
-      })),
-    ],
-    [assets.data, chain.baseDenom, chain.coinGeckoId, chain.decimals, chain.displayDenom],
-  );
+  const { feeCoins } = useCurrentFeesSWR(chain, { suspense: true });
 
   const { message, messageId, origin } = queue;
 
@@ -103,24 +84,24 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputFeeAmount = inputFee.amount || '0';
 
-  const selectedFeeCoin = feeCoins.find((feeCoin) => feeCoin.baseDenom === inputFee.denom) || {
-    decimals: 0,
-    originBaseDenom: inputFee.denom!,
-    baseDenom: inputFee.denom!,
-    displayDenom: 'UNKNOWN',
-  };
+  const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
+    feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
+  );
 
-  const baseGasRate = gasRate || chain.gasRate;
+  const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) ?? feeCoins[0], [currentFeeBaseDenom, feeCoins]);
 
-  const tinyFee = times(inputGas, baseGasRate.tiny);
-  const lowFee = times(inputGas, baseGasRate.low);
-  const averageFee = times(inputGas, baseGasRate.average);
+  const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
+
+  const tinyFee = times(inputGas, currentFeeGasRate.tiny);
+  const lowFee = times(inputGas, currentFeeGasRate.low);
+  const averageFee = times(inputGas, currentFeeGasRate.average);
 
   const isExistZeroFee = tinyFee === '0' || lowFee === '0' || averageFee === '0';
 
   const initBaseFee = isEditFee && !isExistZeroFee && lt(inputFeeAmount, '1') ? lowFee : inputFeeAmount;
 
   const [gas, setGas] = useState(inputGas);
+  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
   const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
 
@@ -129,7 +110,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const encodedBodyBytes = cosmos.tx.v1beta1.TxBody.encode({ ...decodedBodyBytes, memo }).finish();
   const encodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode({
     ...decodedAuthInfoBytes,
-    fee: { amount: [{ denom: selectedFeeCoin.baseDenom, amount: ceilBaseFee }], gas_limit: Number(gas) },
+    fee: { amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas_limit: Number(gas) },
   }).finish();
 
   const bodyBytes = isEditMemo ? encodedBodyBytes : doc.body_bytes;
@@ -150,6 +131,14 @@ export default function Entry({ queue, chain }: EntryProps) {
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const errorMessage = useMemo(() => {
+    if (!gte(currentFeeCoin.availableAmount, baseFee)) {
+      return t('pages.Popup.Cosmos.Sign.Direct.entry.insufficientFeeAmount');
+    }
+
+    return '';
+  }, [baseFee, currentFeeCoin.availableAmount, t]);
 
   return (
     <Container>
@@ -175,12 +164,21 @@ export default function Entry({ queue, chain }: EntryProps) {
           {fee && (
             <FeeContainer>
               <Fee
-                feeCoin={selectedFeeCoin}
-                gasRate={gasRate || chain.gasRate}
+                feeCoin={currentFeeCoin}
+                feeCoinList={feeCoins}
+                gasRate={currentFeeGasRate}
                 baseFee={baseFee}
                 gas={gas}
+                onChangeFeeCoin={(selectedFeeCoin) => {
+                  setCurrentFeeBaseDenom(selectedFeeCoin.baseDenom);
+                  setBaseFee(times(gas, feeCoins.find((item) => item.baseDenom === selectedFeeCoin.baseDenom)!.gasRate![currentGasRateKey]));
+                }}
                 onChangeFee={(f) => setBaseFee(f)}
                 onChangeGas={(g) => setGas(g)}
+                onChangeGasRateKey={(gasRateKey) => {
+                  setCurrentGasRateKey(gasRateKey);
+                  setBaseFee(times(gas, currentFeeGasRate[gasRateKey]));
+                }}
                 isEdit={isEditFee}
               />
             </FeeContainer>
@@ -211,52 +209,57 @@ export default function Entry({ queue, chain }: EntryProps) {
           >
             {t('pages.Popup.Cosmos.Sign.Direct.entry.cancelButton')}
           </OutlineButton>
-          <Button
-            onClick={async () => {
-              try {
-                if (!keyPair?.privateKey) {
-                  throw new Error('Unknown Error');
-                }
-                const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
+          <Tooltip varient="error" title={errorMessage} placement="top" arrow>
+            <div>
+              <Button
+                disabled={!!errorMessage}
+                onClick={async () => {
+                  try {
+                    if (!keyPair?.privateKey) {
+                      throw new Error('Unknown Error');
+                    }
+                    const signedDoc = { ...doc, body_bytes: bodyBytes, auth_info_bytes: authInfoBytes };
 
-                const signature = signDirect(signedDoc, keyPair.privateKey, chain);
+                    const signature = signDirect(signedDoc, keyPair.privateKey, chain);
 
-                const base64Signature = Buffer.from(signature).toString('base64');
+                    const base64Signature = Buffer.from(signature).toString('base64');
 
-                const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+                    const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
 
-                const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
+                    const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
 
-                const signedDocHex = {
-                  ...doc,
-                  body_bytes: Buffer.from(bodyBytes).toString('hex'),
-                  auth_info_bytes: Buffer.from(authInfoBytes).toString('hex'),
-                };
-                const pubKey = { type: publicKeyType, value: base64PublicKey };
+                    const signedDocHex = {
+                      ...doc,
+                      body_bytes: Buffer.from(bodyBytes).toString('hex'),
+                      auth_info_bytes: Buffer.from(authInfoBytes).toString('hex'),
+                    };
+                    const pubKey = { type: publicKeyType, value: base64PublicKey };
 
-                const result: CosSignDirectResponse = {
-                  signature: base64Signature,
-                  pub_key: pubKey,
-                  signed_doc: signedDocHex as unknown as SignDirectDoc,
-                };
+                    const result: CosSignDirectResponse = {
+                      signature: base64Signature,
+                      pub_key: pubKey,
+                      signed_doc: signedDocHex as unknown as SignDirectDoc,
+                    };
 
-                responseToWeb({
-                  response: {
-                    result,
-                  },
-                  message,
-                  messageId,
-                  origin,
-                });
+                    responseToWeb({
+                      response: {
+                        result,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
 
-                await deQueue();
-              } catch (e) {
-                enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
-              }
-            }}
-          >
-            {t('pages.Popup.Cosmos.Sign.Direct.entry.confirmButton')}
-          </Button>
+                    await deQueue();
+                  } catch (e) {
+                    enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+                  }
+                }}
+              >
+                {t('pages.Popup.Cosmos.Sign.Direct.entry.confirmButton')}
+              </Button>
+            </div>
+          </Tooltip>
         </BottomButtonContainer>
       </BottomContainer>
     </Container>

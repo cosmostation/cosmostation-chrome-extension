@@ -31,6 +31,11 @@
     },
     "Fee": {
       "components": {
+        "FeeSettingDialog": {
+          "index": {
+            "feeSettings": "수수료 선택"
+          }
+        },
         "GasSettingDialog": {
           "index": {
             "gasSettings": "가스량 설정",
@@ -659,6 +664,7 @@
               "dataTab": "데이터",
               "detailTab": "상세 내역",
               "failedTransfer": "보내기를 실패했습니다.",
+              "insufficientFeeAmount": "수수료가 부족합니다.",
               "signButton": "서명"
             }
           },
@@ -680,7 +686,8 @@
               "cancelButton": "취소",
               "confirmButton": "승인",
               "dataTab": "데이터",
-              "detailTab": "상세 내역"
+              "detailTab": "상세 내역",
+              "insufficientFeeAmount": "수수료가 부족합니다."
             }
           },
           "Message": {

@@ -60,6 +60,21 @@ export const GasButton = styled('button')(({ theme }) => ({
 
   cursor: 'pointer',
 }));
+export const FeeSettingButton = styled('button')(({ theme }) => ({
+  border: 0,
+  padding: 0,
+  backgroundColor: 'transparent',
+  color: theme.colors.text01,
+
+  cursor: 'pointer',
+
+  display: 'flex',
+  columnGap: '0.2rem',
+
+  '& > svg': {
+    fill: theme.colors.base06,
+  },
+}));
 
 export const FeeButtonContainer = styled('div')({
   display: 'grid',

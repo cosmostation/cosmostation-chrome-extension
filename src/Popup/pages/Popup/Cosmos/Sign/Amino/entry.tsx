@@ -7,24 +7,25 @@ import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
 import PopupHeader from '~/Popup/components/PopupHeader';
-import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
+import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, lt, times } from '~/Popup/utils/big';
+import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, protoTx } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import type { CosmosChain, FeeCoin } from '~/types/chain';
+import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { CosSignAmino, CosSignAminoResponse } from '~/types/message/cosmos';
 
@@ -46,7 +47,6 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
   const { enqueueSnackbar } = useSnackbar();
-  const assets = useAssetsSWR(chain, { suspense: true });
 
   const { closeTransport, createTransport } = useLedgerTransport();
 
@@ -54,25 +54,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { t } = useTranslation();
 
-  const feeCoins: FeeCoin[] = useMemo(
-    () => [
-      {
-        originBaseDenom: chain.baseDenom,
-        baseDenom: chain.baseDenom,
-        displayDenom: chain.displayDenom,
-        decimals: chain.decimals,
-        coinGeckoId: chain.coinGeckoId,
-      },
-      ...assets.data.map((asset) => ({
-        originBaseDenom: asset.origin_denom,
-        baseDenom: asset.denom,
-        decimals: asset.decimals,
-        displayDenom: asset.symbol,
-        coinGeckoId: asset.coinGeckoId,
-      })),
-    ],
-    [assets.data, chain.baseDenom, chain.coinGeckoId, chain.decimals, chain.displayDenom],
-  );
+  const { feeCoins } = useCurrentFeesSWR(chain, { suspense: true });
 
   const { message, messageId, origin, channel } = queue;
 
@@ -94,24 +76,24 @@ export default function Entry({ queue, chain }: EntryProps) {
     };
   const inputFeeAmount = inputFee.amount;
 
-  const selectedFeeCoin: FeeCoin = feeCoins.find((feeCoin) => feeCoin.baseDenom === inputFee.denom) || {
-    decimals: 0,
-    baseDenom: inputFee.denom,
-    originBaseDenom: inputFee.denom,
-    displayDenom: 'UNKNOWN',
-  };
+  const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
+    feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
+  );
 
-  const baseGasRate = gasRate || chain.gasRate;
+  const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) ?? feeCoins[0], [currentFeeBaseDenom, feeCoins]);
 
-  const tinyFee = times(inputGas, baseGasRate.tiny);
-  const lowFee = times(inputGas, baseGasRate.low);
-  const averageFee = times(inputGas, baseGasRate.average);
+  const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
+
+  const tinyFee = times(inputGas, currentFeeGasRate.tiny);
+  const lowFee = times(inputGas, currentFeeGasRate.low);
+  const averageFee = times(inputGas, currentFeeGasRate.average);
 
   const isExistZeroFee = tinyFee === '0' || lowFee === '0' || averageFee === '0';
 
   const initBaseFee = isEditFee && !isExistZeroFee && lt(inputFeeAmount, '1') ? lowFee : inputFeeAmount;
 
   const [gas, setGas] = useState(inputGas);
+  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
   const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(doc.memo);
 
@@ -119,13 +101,21 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 
-  const signingFee = isEditFee ? { amount: [{ denom: selectedFeeCoin.baseDenom, amount: ceilBaseFee }], gas } : doc.fee;
+  const signingFee = isEditFee ? { amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas } : doc.fee;
 
   const tx = { ...doc, memo: signingMemo, fee: signingFee };
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  const errorMessage = useMemo(() => {
+    if (!gte(currentFeeCoin.availableAmount, baseFee)) {
+      return t('pages.Popup.Cosmos.Sign.Amino.entry.insufficientFeeAmount');
+    }
+
+    return '';
+  }, [baseFee, currentFeeCoin.availableAmount, t]);
 
   return (
     <Container>
@@ -149,12 +139,21 @@ export default function Entry({ queue, chain }: EntryProps) {
           </MemoContainer>
           <FeeContainer>
             <Fee
-              feeCoin={selectedFeeCoin}
-              gasRate={gasRate || chain.gasRate}
+              feeCoin={currentFeeCoin}
+              feeCoinList={feeCoins}
+              gasRate={currentFeeGasRate}
               baseFee={baseFee}
               gas={gas}
+              onChangeFeeCoin={(selectedFeeCoin) => {
+                setCurrentFeeBaseDenom(selectedFeeCoin.baseDenom);
+                setBaseFee(times(gas, feeCoins.find((item) => item.baseDenom === selectedFeeCoin.baseDenom)!.gasRate![currentGasRateKey]));
+              }}
               onChangeFee={(f) => setBaseFee(f)}
               onChangeGas={(g) => setGas(g)}
+              onChangeGasRateKey={(gasRateKey) => {
+                setCurrentGasRateKey(gasRateKey);
+                setBaseFee(times(gas, currentFeeGasRate[gasRateKey]));
+              }}
               isEdit={isEditFee}
             />
           </FeeContainer>
@@ -184,117 +183,122 @@ export default function Entry({ queue, chain }: EntryProps) {
           >
             {t('pages.Popup.Cosmos.Sign.Amino.entry.cancelButton')}
           </OutlineButton>
-          <Button
-            onClick={async () => {
-              try {
-                if (!keyPair) {
-                  throw new Error('key pair does not exist');
-                }
-
-                const signature = await (async () => {
-                  if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
-                    if (!keyPair.privateKey) {
-                      throw new Error('key does not exist');
-                    }
-
-                    return signAmino(tx, keyPair.privateKey, chain);
-                  }
-
-                  if (currentAccount.type === 'LEDGER') {
-                    setLoadingLedgerSigning(true);
-                    const transport = await createTransport();
-
-                    const cosmosApp = new CosmosApp(transport);
-
-                    await cosmosApp.init();
-
-                    const path = new Uint8Array([44, 118, 0, 0, Number(currentAccount.bip44.addressIndex)]);
-
-                    const { compressed_pk } = await cosmosApp.getPublicKey(path);
-
-                    const ledgerAddress = getAddress(chain, compressed_pk);
-
-                    if (!isEqualsIgnoringCase(address, ledgerAddress)) {
-                      throw new Error('Account address and Ledger address are not the same.');
-                    }
-
-                    const result = await cosmosApp.sign(path, Buffer.from(JSON.stringify(sortKeys(tx, { deep: true }))));
-
-                    if (!result.signature) {
-                      throw new Error(result.error_message);
-                    }
-
-                    return secp256k1.signatureImport(result.signature);
-                  }
-
-                  throw new Error('Unknown type account');
-                })();
-                const base64Signature = Buffer.from(signature).toString('base64');
-
-                const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
-
-                const publicKeyType = getPublicKeyType(chain);
-
-                const pubKey = { type: publicKeyType, value: base64PublicKey };
-
-                if (channel) {
+          <Tooltip varient="error" title={errorMessage} placement="top" arrow>
+            <div>
+              <Button
+                disabled={!!errorMessage}
+                onClick={async () => {
                   try {
-                    const url = cosmosURL(chain).postBroadcast();
-                    const pTx = protoTx(tx, base64Signature, pubKey);
+                    if (!keyPair) {
+                      throw new Error('key pair does not exist');
+                    }
 
-                    const response = await broadcast(url, pTx);
+                    const signature = await (async () => {
+                      if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
+                        if (!keyPair.privateKey) {
+                          throw new Error('key does not exist');
+                        }
 
-                    const { code } = response.tx_response;
+                        return signAmino(tx, keyPair.privateKey, chain);
+                      }
 
-                    if (code === 0) {
-                      enqueueSnackbar('success');
+                      if (currentAccount.type === 'LEDGER') {
+                        setLoadingLedgerSigning(true);
+                        const transport = await createTransport();
+
+                        const cosmosApp = new CosmosApp(transport);
+
+                        await cosmosApp.init();
+
+                        const path = new Uint8Array([44, 118, 0, 0, Number(currentAccount.bip44.addressIndex)]);
+
+                        const { compressed_pk } = await cosmosApp.getPublicKey(path);
+
+                        const ledgerAddress = getAddress(chain, compressed_pk);
+
+                        if (!isEqualsIgnoringCase(address, ledgerAddress)) {
+                          throw new Error('Account address and Ledger address are not the same.');
+                        }
+
+                        const result = await cosmosApp.sign(path, Buffer.from(JSON.stringify(sortKeys(tx, { deep: true }))));
+
+                        if (!result.signature) {
+                          throw new Error(result.error_message);
+                        }
+
+                        return secp256k1.signatureImport(result.signature);
+                      }
+
+                      throw new Error('Unknown type account');
+                    })();
+                    const base64Signature = Buffer.from(signature).toString('base64');
+
+                    const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+
+                    const publicKeyType = getPublicKeyType(chain);
+
+                    const pubKey = { type: publicKeyType, value: base64PublicKey };
+
+                    if (channel) {
+                      try {
+                        const url = cosmosURL(chain).postBroadcast();
+                        const pTx = protoTx(tx, base64Signature, pubKey);
+
+                        const response = await broadcast(url, pTx);
+
+                        const { code } = response.tx_response;
+
+                        if (code === 0) {
+                          enqueueSnackbar('success');
+                        } else {
+                          throw new Error(response.tx_response.raw_log as string);
+                        }
+                      } catch (e) {
+                        enqueueSnackbar(
+                          (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
+                          {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                          },
+                        );
+                      } finally {
+                        setTimeout(
+                          () => {
+                            void deQueue();
+                          },
+                          currentAccount.type === 'LEDGER' && channel ? 1000 : 0,
+                        );
+                      }
                     } else {
-                      throw new Error(response.tx_response.raw_log as string);
+                      const result: CosSignAminoResponse = {
+                        signature: base64Signature,
+                        pub_key: pubKey,
+                        signed_doc: tx,
+                      };
+
+                      responseToWeb({
+                        response: {
+                          result,
+                        },
+                        message,
+                        messageId,
+                        origin,
+                      });
+
+                      await deQueue();
                     }
                   } catch (e) {
-                    enqueueSnackbar(
-                      (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
-                      {
-                        variant: 'error',
-                        autoHideDuration: 3000,
-                      },
-                    );
+                    enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+                    setLoadingLedgerSigning(false);
                   } finally {
-                    setTimeout(
-                      () => {
-                        void deQueue();
-                      },
-                      currentAccount.type === 'LEDGER' && channel ? 1000 : 0,
-                    );
+                    await closeTransport();
                   }
-                } else {
-                  const result: CosSignAminoResponse = {
-                    signature: base64Signature,
-                    pub_key: pubKey,
-                    signed_doc: tx,
-                  };
-
-                  responseToWeb({
-                    response: {
-                      result,
-                    },
-                    message,
-                    messageId,
-                    origin,
-                  });
-
-                  await deQueue();
-                }
-              } catch (e) {
-                enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
-                setLoadingLedgerSigning(false);
-              } finally {
-                await closeTransport();
-              }
-            }}
-          >
-            {t('pages.Popup.Cosmos.Sign.Amino.entry.signButton')}
-          </Button>
+                }}
+              >
+                {t('pages.Popup.Cosmos.Sign.Amino.entry.signButton')}
+              </Button>
+            </div>
+          </Tooltip>
         </BottomButtonContainer>
       </BottomContainer>
       <LedgerToPopup />

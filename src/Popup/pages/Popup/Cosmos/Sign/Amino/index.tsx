@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import { COSMOS_CHAINS } from '~/constants/chain';
+import Empty from '~/Popup/components/common/Empty';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
@@ -25,9 +27,11 @@ export default function Amino() {
           <LedgerPublicKeyRequest>
             <AccessRequest>
               <Layout>
-                <Suspense fallback={null}>
-                  <Entry queue={currentQueue} chain={selectedChain} />
-                </Suspense>
+                <ErrorBoundary fallback={<Empty />}>
+                  <Suspense fallback={null}>
+                    <Entry queue={currentQueue} chain={selectedChain} />
+                  </Suspense>
+                </ErrorBoundary>
               </Layout>
             </AccessRequest>
           </LedgerPublicKeyRequest>

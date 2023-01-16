@@ -1,40 +1,29 @@
 import { styled } from '@mui/material/styles';
 
-import Popover from '~/Popup/components/common/Popover';
-
-export const StyledPopover = styled(Popover)({
-  '& .MuiPaper-root': {
-    marginTop: '0.8rem',
-
-    '& > div': {
-      width: '32.6rem',
-      maxHeight: '25rem',
-    },
-  },
+export const Container = styled('div')({
+  padding: '1.7rem 1.6rem 1.6rem',
 });
 
-export const Container = styled('div')({
-  padding: '1.6rem 1.2rem',
-
+export const FeeCoinListContainer = styled('div')({
+  maxHeight: '15.2rem',
   display: 'grid',
   gridTemplateColumns: '1fr',
-  rowGap: '0.8rem',
+  rowGap: '0.4rem',
   overflow: 'auto',
 });
 
-type ChainButtonProps = {
-  'data-is-active'?: number;
+type FeeCoinButtonProps = {
+  'data-is-active'?: boolean;
 };
 
-export const ChainButton = styled('button')<ChainButtonProps>(({ theme, ...props }) => ({
+export const FeeCoinButton = styled('button')<FeeCoinButtonProps>(({ theme, ...props }) => ({
   backgroundColor: props['data-is-active'] ? theme.colors.base02 : 'transparent',
   border: 0,
 
   borderRadius: '0.8rem',
 
-  padding: '0.8rem 1.2rem 0.6rem 1.2rem',
+  padding: '0.7rem 1.2rem',
 
-  height: '4.8rem',
   width: '100%',
 
   display: 'flex',
@@ -43,41 +32,49 @@ export const ChainButton = styled('button')<ChainButtonProps>(({ theme, ...props
 
   cursor: 'pointer',
 
+  '&:disabled': {
+    cursor: 'default',
+
+    '&:hover': {
+      backgroundColor: theme.colors.base02,
+    },
+  },
+
   '&:hover': {
     backgroundColor: theme.colors.base03,
   },
 }));
 
-export const ChainLeftContainer = styled('div')({
+export const FeeCoinLeftContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
 });
 
-export const ChainLeftImageContainer = styled('div')({
+export const FeeCoinLeftImageContainer = styled('div')({
   '& > img': {
     width: '2.4rem',
     height: '2.4rem',
   },
 });
 
-export const ChainLeftInfoContainer = styled('div')({
+export const FeeCoinLeftInfoContainer = styled('div')({
   marginLeft: '0.8rem',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
 });
 
-export const ChainLeftChainNameContainer = styled('div')(({ theme }) => ({
+export const FeeCoinTitleContainer = styled('div')(({ theme }) => ({
   textAlign: 'left',
   color: theme.colors.text01,
 }));
 
-export const ChainLeftChannelIdContainer = styled('div')(({ theme }) => ({
+export const FeeCoinLeftHeaderTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-export const ChainRightContainer = styled('div')(({ theme }) => ({
+export const FeeCoinRightContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-end',
   alignItems: 'center',
