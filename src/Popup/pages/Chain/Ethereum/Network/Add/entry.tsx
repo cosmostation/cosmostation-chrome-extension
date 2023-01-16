@@ -9,6 +9,7 @@ import Input from '~/Popup/components/common/Input';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { requestRPC } from '~/Popup/utils/ethereum';
+import { toHex } from '~/Popup/utils/string';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 
 import { ButtonContainer, Container, ContentsContainer, Div, InputContainer, WarningContainer, WarningIconContainer, WarningTextContainer } from './styled';
@@ -39,15 +40,17 @@ export default function Entry() {
     try {
       const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], '1', data.rpcURL);
 
-      if (response.result !== data.chainId) {
-        throw Error(`Chain ID returned by RPC URL ${data.rpcURL} does not match ${data.chainId} (result: ${response.result || ''})`);
+      const convertChainId = toHex(data.chainId, { addPrefix: true, isStringNumber: true });
+
+      if (response.result !== convertChainId) {
+        throw Error(`Chain ID returned by RPC URL ${data.rpcURL} does not match ${data.chainId} (${convertChainId}) (result: ${response.result || ''})`);
       }
 
-      if (ETHEREUM_NETWORKS.map((item) => item.chainId).includes(data.chainId)) {
+      if (ETHEREUM_NETWORKS.map((item) => item.chainId).includes(convertChainId)) {
         throw Error(`Can't add ${data.chainId}`);
       }
 
-      await addEthereumNetwork({ ...data, decimals: 18 });
+      await addEthereumNetwork({ ...data, chainId: convertChainId, decimals: 18 });
 
       enqueueSnackbar(t('pages.Chain.Ethereum.Network.Add.entry.addNetworkSnackbar'));
       reset();

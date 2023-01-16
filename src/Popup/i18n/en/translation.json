@@ -503,7 +503,7 @@
           "Add": {
             "entry": {
               "addNetworkSnackbar": "Network added",
-              "chainIdPlaceholder": "Chain id (eg. 0x1)",
+              "chainIdPlaceholder": "Chain id (eg. 0x1 or 1)",
               "coinGeckoIdPlaceholder": "Coingecko API id (option)",
               "displayDenomPlaceholder": "Currency symbol (option)",
               "explorerURLPlaceholder": "Explorer URL (option)",
@@ -1179,7 +1179,7 @@
       "address": {
         "string": {
           "pattern": {
-            "base": "Must be entered in hexadecimal (eg. 0x1)"
+            "base": "Must be entered in hexadecimal or decimal (eg. 0x1 or 1)"
           }
         }
       }
