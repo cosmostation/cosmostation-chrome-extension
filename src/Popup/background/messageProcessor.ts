@@ -1632,6 +1632,15 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             messageId,
             origin,
           });
+        } else if (method === 'eth_chainId') {
+          responseToWeb({
+            response: {
+              result: currentEthereumNetwork.chainId,
+            },
+            message,
+            messageId,
+            origin,
+          });
         } else {
           const params = method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
 
