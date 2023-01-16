@@ -8,6 +8,7 @@ import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentA
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import type { Path } from '~/types/route';
 
 import {
   AddAddressBookButton,
@@ -56,12 +57,14 @@ export default function Entry() {
           {chain.chainName}
         </StyledChainButton>
         {filteredAddressBook.length > 0 && (
-          <AddButton onClick={() => navigate('/setting/address-book/add')}>{t('pages.Setting.AddressBook.entry.addAddressButton')}</AddButton>
+          <AddButton onClick={() => navigate(`/setting/address-book/add/${chain.id}` as unknown as Path)}>
+            {t('pages.Setting.AddressBook.entry.addAddressButton')}
+          </AddButton>
         )}
       </Header>
       <AddressBookList>
         {filteredAddressBook.length === 0 && (
-          <AddAddressBookButton onClick={() => navigate('/setting/address-book/add')} type="button">
+          <AddAddressBookButton onClick={() => navigate(`/setting/address-book/add/${chain.id}` as unknown as Path)} type="button">
             <AddAddressBookImage>
               <Plus16Icon />
             </AddAddressBookImage>
