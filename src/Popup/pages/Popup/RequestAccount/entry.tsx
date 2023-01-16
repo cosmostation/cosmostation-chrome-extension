@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { CHAINS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { SUI } from '~/constants/chain/sui/sui';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -13,6 +14,7 @@ import type { CosmosChain } from '~/types/chain';
 import type { AptosAccountResponse } from '~/types/message/aptos';
 import type { CosRequestAccountResponse } from '~/types/message/cosmos';
 import type { EthRequestAccountsResponse } from '~/types/message/ethereum';
+import type { SuiConnectResponse, SuiGetAccountResponse } from '~/types/message/sui';
 
 export default function Entry() {
   const { currentQueue, deQueue } = useCurrentQueue();
@@ -86,6 +88,50 @@ export default function Entry() {
       const address = getAddress(chain, keyPair?.publicKey);
 
       const result: AptosAccountResponse = { address, publicKey: `0x${keyPair!.publicKey.toString('hex')}` };
+
+      responseToWeb({
+        response: {
+          result,
+        },
+        message,
+        messageId,
+        origin,
+      });
+
+      void deQueue();
+    }
+
+    if (currentQueue?.message.method === 'sui_connect') {
+      const { message, messageId, origin } = currentQueue;
+
+      const result: SuiConnectResponse = null;
+
+      responseToWeb({
+        response: {
+          result,
+        },
+        message,
+        messageId,
+        origin,
+      });
+
+      void deQueue();
+    }
+
+    if (currentQueue?.message.method === 'sui_getAccount' && currentPassword) {
+      const chain = SUI;
+
+      const { message, messageId, origin } = currentQueue;
+
+      const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+      const address = getAddress(chain, keyPair?.publicKey);
+
+      const publicKey = `0x${keyPair!.publicKey.toString('hex')}`;
+
+      const result: SuiGetAccountResponse = {
+        address,
+        publicKey,
+      };
 
       responseToWeb({
         response: {

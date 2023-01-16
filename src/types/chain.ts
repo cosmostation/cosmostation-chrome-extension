@@ -125,11 +125,26 @@ export type AptosChain = {
   line: typeof LINE_TYPE.APTOS;
 } & CommonChain;
 
+export type SuiChain = {
+  line: typeof LINE_TYPE.SUI;
+  chainName: string;
+} & CommonChain;
+
 export type AptosNetwork = {
   id: string;
   chainId: number;
   networkName: string;
   restURL: string;
+  imageURL?: string;
+  explorerURL?: string;
+  coinGeckoId?: string;
+};
+
+export type SuiNetwork = {
+  id: string;
+  networkName: string;
+  rpcURL: string;
+  displayDenom: string;
   imageURL?: string;
   explorerURL?: string;
   coinGeckoId?: string;
@@ -147,6 +162,6 @@ export type EthereumERC20Token = {
   coinGeckoId?: string;
 };
 
-export type Chain = CosmosChain | EthereumChain | AptosChain;
+export type Chain = CosmosChain | EthereumChain | AptosChain | SuiChain;
 
 export type EthereumToken = EthereumERC20Token;

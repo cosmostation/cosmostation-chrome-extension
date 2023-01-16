@@ -598,9 +598,11 @@
         "Transaction": {
           "entry": {
             "average": "평균",
+            "cancelButton": "취소",
             "high": "높음",
             "low": "낮음",
-            "maxFee": "최대 수수료"
+            "maxFee": "최대 수수료",
+            "signButton": "서명"
           }
         }
       },
@@ -851,6 +853,16 @@
             }
           }
         }
+      },
+      "Sui": {
+        "Transaction": {
+          "entry": {
+            "cancelButton": "취소",
+            "expectedFee": "예상 수수료",
+            "maxFee": "최대 수수료",
+            "signButton": "서명"
+          }
+        }
       }
     },
     "Restore": {
@@ -944,6 +956,11 @@
             "scanQrCode": "QR코드 스캔"
           },
           "Ethereum": {
+            "address": "주소",
+            "copied": "복사 되었습니다.",
+            "scanQrCode": "QR코드 스캔"
+          },
+          "Sui": {
             "address": "주소",
             "copied": "복사 되었습니다.",
             "scanQrCode": "QR코드 스캔"
@@ -1041,6 +1058,16 @@
               "recipientAddressPlaceholder": "입금 주소",
               "sendButton": "보내기"
             }
+          },
+          "Sui": {
+            "index": {
+              "amountPlaceholder": "수량",
+              "insufficientAmount": "수량이 부족합니다.",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "invalidAmount": "수량을 입력하세요.",
+              "recipientAddressPlaceholder": "입금 주소",
+              "sendButton": "보내기"
+            }
           }
         },
         "layout": {
@@ -1096,6 +1123,14 @@
               "addCoinButton": "코인 추가하기",
               "coin": "코인"
             }
+          },
+          "NativeChainCard": {
+            "index": {
+              "copied": "복사 되었습니다.",
+              "depositButton": "입금",
+              "networkError": "네트워크 오류",
+              "sendButton": "보내기"
+            }
           }
         },
         "cosmos": {
@@ -1148,6 +1183,16 @@
             "index": {
               "importTokenButton": "토큰 가져오기",
               "token": "토큰"
+            }
+          }
+        },
+        "sui": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "복사 되었습니다.",
+              "depositButton": "입금",
+              "networkError": "네트워크 오류",
+              "sendButton": "보내기"
             }
           }
         }

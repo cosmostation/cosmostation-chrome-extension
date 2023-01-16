@@ -1,4 +1,4 @@
-import { APTOS_NETWORKS, CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { chromeStorageDefault } from '~/Popup/recoils/chromeStorage';
 import type { ChromeStorage, ChromeStorageKeys } from '~/types/chromeStorage';
 
@@ -49,27 +49,36 @@ export async function chromeStorage() {
     allowedOrigins,
     allowedChainIds,
     additionalAptosNetworks,
+    additionalSuiNetworks,
     selectedAptosNetworkId,
   } = storageWithDefault;
 
   const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
   const currentAccountName = accountName[selectedAccountId];
 
-  const currentEthereumNetwork = () => {
+  const currentEthereumNetwork = (() => {
     const ethereumNetworks = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks];
 
     const networkId = selectedEthereumNetworkId ?? ETHEREUM_NETWORKS[1].id;
 
     return ethereumNetworks.find((network) => network.id === networkId) ?? ethereumNetworks[0];
-  };
+  })();
 
-  const currentAptosNetwork = () => {
+  const currentAptosNetwork = (() => {
     const aptosNetworks = [...APTOS_NETWORKS, ...additionalAptosNetworks];
 
     const networkId = selectedAptosNetworkId ?? APTOS_NETWORKS[1].id;
 
     return aptosNetworks.find((network) => network.id === networkId) ?? aptosNetworks[0];
-  };
+  })();
+
+  const currentSuiNetwork = (() => {
+    const suiNetworks = [...SUI_NETWORKS, ...additionalSuiNetworks];
+
+    const networkId = selectedAptosNetworkId ?? APTOS_NETWORKS[1].id;
+
+    return suiNetworks.find((network) => network.id === networkId) ?? suiNetworks[0];
+  })();
 
   const currentAllowedChains = CHAINS.filter((chain) => allowedChainIds.includes(chain.id));
 
@@ -83,6 +92,7 @@ export async function chromeStorage() {
     currentAccountName,
     currentEthereumNetwork,
     currentAptosNetwork,
+    currentSuiNetwork,
     currentAllowedChains,
     currentAccountAllowedOrigins,
   };

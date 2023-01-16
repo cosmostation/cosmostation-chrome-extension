@@ -598,9 +598,11 @@
         "Transaction": {
           "entry": {
             "average": "Average",
+            "cancelButton": "Cancel",
             "high": "High",
             "low": "Low",
-            "maxFee": "Max fee"
+            "maxFee": "Max fee",
+            "signButton": "Sign"
           }
         }
       },
@@ -851,6 +853,16 @@
             }
           }
         }
+      },
+      "Sui": {
+        "Transaction": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "expectedFee": "Expected fee",
+            "maxFee": "Max fee",
+            "signButton": "Sign"
+          }
+        }
       }
     },
     "Restore": {
@@ -944,6 +956,11 @@
             "scanQrCode": "Scan QR code"
           },
           "Ethereum": {
+            "address": "Address",
+            "copied": "Copied",
+            "scanQrCode": "Scan QR code"
+          },
+          "Sui": {
             "address": "Address",
             "copied": "Copied",
             "scanQrCode": "Scan QR code"
@@ -1041,6 +1058,16 @@
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"
             }
+          },
+          "Sui": {
+            "index": {
+              "amountPlaceholder": "Amount",
+              "insufficientAmount": "Insufficient amount",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
           }
         },
         "layout": {
@@ -1096,6 +1123,14 @@
               "addCoinButton": "Add coin",
               "coin": "Coin"
             }
+          },
+          "NativeChainCard": {
+            "index": {
+              "copied": "Copied",
+              "depositButton": "Deposit",
+              "networkError": "Network error",
+              "sendButton": "Send"
+            }
           }
         },
         "cosmos": {
@@ -1148,6 +1183,16 @@
             "index": {
               "importTokenButton": "Import token",
               "token": "Token"
+            }
+          }
+        },
+        "sui": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "Copied",
+              "depositButton": "Deposit",
+              "networkError": "Network error",
+              "sendButton": "Send"
             }
           }
         }

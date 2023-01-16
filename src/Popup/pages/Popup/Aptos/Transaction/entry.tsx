@@ -310,7 +310,7 @@ export default function Entry({ queue }: EntryProps) {
               await deQueue();
             }}
           >
-            {t('pages.Popup.Ethereum.SignTransaction.entry.cancelButton')}
+            {t('pages.Popup.Aptos.Transaction.entry.cancelButton')}
           </OutlineButton>
           {/* <Tooltip title={errorMessage} varient="error" placement="top"> */}
           <div>
@@ -360,7 +360,7 @@ export default function Entry({ queue }: EntryProps) {
                 }
               }}
             >
-              {t('pages.Popup.Ethereum.SignTransaction.entry.signButton')}
+              {t('pages.Popup.Aptos.Transaction.entry.signButton')}
             </Button>
           </div>
           {/* </Tooltip> */}

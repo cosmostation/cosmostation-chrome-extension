@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 import aptosImg from '~/images/etc/aptos.png';
 import keplrImg from '~/images/etc/keplr.png';
 import metamaskImg from '~/images/etc/metamask.png';
+import suiWalletImg from '~/images/etc/suiWallet.png';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
@@ -54,6 +55,18 @@ export default function Entry() {
           }}
         >
           Aptos
+        </Item>
+
+        <Item
+          imageProps={{ alt: 'Sui Wallet', src: suiWalletImg }}
+          switchProps={{
+            checked: providers.suiWallet,
+            onChange: (_, checked) => {
+              void setChromeStorage('providers', { ...providers, suiWallet: checked });
+            },
+          }}
+        >
+          Sui Wallet
         </Item>
       </ListContainer>
       <BottomDescriptionContainer>

@@ -5,6 +5,7 @@ import { aptos } from './aptos';
 import { common } from './common';
 import { cosmos, keplr, tendermint } from './cosmos';
 import { ethereum } from './ethereum';
+import { sui } from './sui';
 
 void (() => {
   window.cosmostation = {
@@ -16,6 +17,7 @@ void (() => {
     cosmos,
     aptos,
     tendermint,
+    sui,
   };
 
   void (async () => {
@@ -55,6 +57,10 @@ void (() => {
 
     if (providers.aptos) {
       window.aptos = aptos;
+    }
+
+    if (providers.suiWallet && !window.suiWallet) {
+      window.suiWallet = sui;
     }
   })();
 })();

@@ -1,0 +1,97 @@
+@rpcURL=https://fullnode.devnet.sui.io
+# @rpcURL=https://fullnode.testnet.sui.io
+
+### 
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "rpc.discover",
+    "params": [],
+    "id": 0
+}
+
+### sui_getObjectsOwnedByAddress
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getObjectsOwnedByAddress",
+    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe"],
+    "id": 0
+}
+
+### sui_getObject
+POST {{rpcURL}}
+content-type: application/json
+
+[{
+    "jsonrpc": "2.0",
+    "method": "sui_getObject",
+    "params": ["0x249b721185aaea25a2b8900e3e3a35bd5273fb4c"],
+    "id": 1
+},
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getObject",
+    "params": ["0x4d3be548a9840e3c00fc3d4c42fdc39cedbdce3d"],
+    "id": 1
+},
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getObject",
+    "params": ["0x6e84058a9f049f9508310697269f60d7969d2861"],
+    "id": 1
+},
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getObject",
+    "params": ["0x6e84058a9f049f9508310697269f60d7969d2860"],
+    "id": 1
+}]
+
+### sui_getCoinMetadata
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getCoinMetadata",
+    "params": ["0x46c5f442cadb487ad798445b24883a1134d77c13::pool::TestBNB"],
+    "id": 1
+}
+
+### sui_getBalance
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getBalance",
+    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe", "0x2::sui::SUI"],
+    "id": 1
+}
+
+### sui_getBalance
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getBalance",
+    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe", "0x2::sui::SUI"],
+    "id": 1
+}
+
+### sui_getAllCoins
+POST {{rpcURL}}
+content-type: application/json
+
+{
+    "jsonrpc": "2.0",
+    "method": "sui_getAllCoins",
+    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe"],
+    "id": 1
+}

@@ -19,6 +19,7 @@ interface Window {
     ethereum: Ethereum;
     cosmos: Cosmos;
     aptos: Aptos;
+    sui: Sui;
     tendermint: {
       request: (message: import('~/types/message').CosmosRequestMessage) => Promise<T>;
       on: (eventName: import('~/types/message').CosmosListenerType, eventHandler: (event?: unknown) => void) => void;
@@ -41,8 +42,8 @@ interface Window {
   getOfflineSignerAuto?: unknown;
 
   ethereum?: MetaMask;
-  petra?: Aptos;
   aptos?: Aptos;
+  suiWallet?: Sui;
 }
 
 type JsonRPCRequest = { id?: string; jsonrpc: '2.0'; method: string; params?: unknown };
@@ -98,6 +99,21 @@ type Aptos = {
   offNetworkChange: (eventHandler: (data?: unknown) => void) => void;
   onAccountChange: (eventHandler: (data?: unknown) => void) => void;
   offAccountChange: (eventHandler: (data?: unknown) => void) => void;
+};
+
+type Sui = {
+  request: (message: import('~/types/message').SuiRequestMessage) => Promise<T>;
+  connect: (permissions: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
+  disconnect: () => Promise<import('~/types/message/sui').SuiDisconnectResponse>;
+  requestPermissions: (permissions?: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
+  hasPermissions: (permissions?: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
+  getAccounts: () => Promise<string[]>;
+  getPublicKey: () => Promise<string>;
+  executeMoveCall: (data: import('~/types/message/sui').SuiExecuteMoveCall['params'][0]) => Promise<import('~/types/message/sui').SuiExecuteMoveCallResponse>;
+  signAndExecuteTransaction: (
+    data: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][0],
+    type: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][1],
+  ) => Promise<import('~/types/message/sui').SuiSignAndExecuteTransactionResponse>;
 };
 
 type MetaMask = Ethereum;

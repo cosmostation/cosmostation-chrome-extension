@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { APTOS_CHAINS, APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { APTOS_CHAINS, APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_CHAINS, ETHEREUM_NETWORKS, SUI_CHAINS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { SUI } from '~/constants/chain/sui/sui';
 import Divider from '~/Popup/components/common/Divider';
 import Image from '~/Popup/components/common/Image';
 import Switch from '~/Popup/components/common/Switch';
@@ -12,6 +13,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
+import { useCurrentShownSuiNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownSuiNetworks';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Chain } from '~/types/chain';
 
@@ -38,6 +40,7 @@ export default function SelectChain() {
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
   const { addShownEthereumNetworks, removeShownEthereumNetworks } = useCurrentShownEthereumNetworks();
   const { addShownAptosNetworks, removeShownAptosNetworks } = useCurrentShownAptosNetworks();
+  const { addShownSuiNetworks, removeShownSuiNetworks } = useCurrentShownSuiNetworks();
 
   const { chromeStorage } = useChromeStorage();
 
@@ -46,6 +49,7 @@ export default function SelectChain() {
   const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
   const filteredEthereumChains = search ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : ETHEREUM_CHAINS;
   const filteredAptosChains = search ? APTOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : APTOS_CHAINS;
+  const filteredSuiChains = search ? SUI_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : SUI_CHAINS;
 
   const handleOnChange = async (checked: boolean, chain: Chain) => {
     if (checked) {
@@ -58,6 +62,10 @@ export default function SelectChain() {
       if (chain.id === APTOS.id) {
         await addShownAptosNetworks(APTOS_NETWORKS);
       }
+
+      if (chain.id === SUI.id) {
+        await addShownSuiNetworks(SUI_NETWORKS);
+      }
     } else if (allowedChainIds.length < 2) {
       enqueueSnackbar(t('pages.Account.Initialize.components.SelectChain.index.removeAllowedChainError'), { variant: 'error' });
     } else {
@@ -69,6 +77,10 @@ export default function SelectChain() {
 
       if (chain.id === APTOS.id) {
         await removeShownAptosNetworks(APTOS_NETWORKS);
+      }
+
+      if (chain.id === SUI.id) {
+        await removeShownSuiNetworks(SUI_NETWORKS);
       }
     }
   };
@@ -103,6 +115,21 @@ export default function SelectChain() {
           ))}
 
           {filteredAptosChains.map((chain) => (
+            <Item
+              key={chain.id}
+              imageProps={{ alt: chain.chainName, src: chain.imageURL }}
+              switchProps={{
+                checked: allowedChainIds.includes(chain.id),
+                onChange: (_, checked) => {
+                  void handleOnChange(checked, chain);
+                },
+              }}
+            >
+              {chain.chainName}
+            </Item>
+          ))}
+
+          {filteredSuiChains.map((chain) => (
             <Item
               key={chain.id}
               imageProps={{ alt: chain.chainName, src: chain.imageURL }}

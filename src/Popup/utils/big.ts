@@ -71,7 +71,7 @@ export function fix(number: string, decimal: number, optional: RoundingMode = 0)
   return Big(number).toFixed(decimal, optional);
 }
 
-export function toDisplayDenomAmount(number: string, decimal: number) {
+export function toDisplayDenomAmount(number: string | number, decimal: number) {
   return times(number, pow(10, -decimal), decimal);
 }
 

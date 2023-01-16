@@ -12,6 +12,7 @@ export const chromeStorageDefault: ChromeStorage = {
   additionalChains: [],
   additionalEthereumNetworks: [],
   additionalAptosNetworks: [],
+  additionalSuiNetworks: [],
 
   encryptedPassword: null,
   windowId: null,
@@ -29,10 +30,14 @@ export const chromeStorageDefault: ChromeStorage = {
 
   shownEthereumNetworkIds: [],
   shownAptosNetworkIds: [],
+  shownSuiNetworkIds: [],
 
   selectedChainId: '',
   selectedEthereumNetworkId: '',
   selectedAptosNetworkId: '',
+  selectedSuiNetworkId: '',
+
+  suiPermissions: [],
 
   ethereumTokens: [],
   cosmosTokens: [],
@@ -41,7 +46,7 @@ export const chromeStorageDefault: ChromeStorage = {
 
   ledgerTransportType: 'USB',
 
-  providers: { keplr: true, metamask: true, aptos: true },
+  providers: { keplr: true, metamask: true, aptos: true, suiWallet: true },
 };
 
 export const chromeStorageState = atom<ChromeStorage>({

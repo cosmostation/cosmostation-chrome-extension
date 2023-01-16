@@ -57,7 +57,7 @@ export function rpcResponse(result: unknown, id?: number | string) {
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
   const { currentEthereumNetwork } = await chromeStorage();
 
-  const rpcURL = url ?? currentEthereumNetwork().rpcURL;
+  const rpcURL = url ?? currentEthereumNetwork.rpcURL;
 
   const rpcId = id ?? new Date().getTime();
 

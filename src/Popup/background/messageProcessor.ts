@@ -11,22 +11,32 @@ import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 import { COSMOS_CHAINS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { SUI } from '~/constants/chain/sui/sui';
 import { PRIVATE_KEY_FOR_TEST } from '~/constants/common';
-import { COSMOS_RPC_ERROR_MESSAGE, ETHEREUM_RPC_ERROR_MESSAGE, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import {
+  APTOS_RPC_ERROR_MESSAGE,
+  COSMOS_RPC_ERROR_MESSAGE,
+  ETHEREUM_RPC_ERROR_MESSAGE,
+  RPC_ERROR,
+  RPC_ERROR_MESSAGE,
+  SUI_RPC_ERROR_MESSAGE,
+} from '~/constants/error';
 import type { TOKEN_TYPE } from '~/constants/ethereum';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import { APTOS_METHOD_TYPE, APTOS_NO_POPUP_METHOD_TYPE, APTOS_POPUP_METHOD_TYPE } from '~/constants/message/aptos';
 import { COMMON_METHOD_TYPE, COMMON_NO_POPUP_METHOD_TYPE } from '~/constants/message/common';
 import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/message/cosmos';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
+import { SUI_METHOD_TYPE, SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 import { chromeSessionStorage } from '~/Popup/utils/chromeSessionStorage';
 import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { AptosRPCError, CommonRPCError, CosmosRPCError, EthereumRPCError } from '~/Popup/utils/error';
-import { requestRPC, signTypedData } from '~/Popup/utils/ethereum';
+import { AptosRPCError, CommonRPCError, CosmosRPCError, EthereumRPCError, SuiRPCError } from '~/Popup/utils/error';
+import { requestRPC as ethereumRequestRPC, signTypedData } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { toHex } from '~/Popup/utils/string';
+import { requestRPC as suiRequestRPC } from '~/Popup/utils/sui';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
@@ -75,6 +85,7 @@ import type {
   WalletSwitchEthereumChainResponse,
   WalletWatchAsset,
 } from '~/types/message/ethereum';
+import type { SuiConnect, SuiConnectResponse, SuiExecuteMoveCall, SuiGetAccountResponse } from '~/types/message/sui';
 
 import {
   aptosSignMessageSchema,
@@ -98,6 +109,8 @@ import {
   ethSignTransactionParamsSchema,
   ethSignTypedDataParamsSchema,
   personalSignParamsSchema,
+  suiConnectSchema,
+  suiExecuteMoveCallSchema,
   walletAddEthereumChainParamsSchema,
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,
@@ -1166,7 +1179,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             try {
               const param2 = JSON.parse(validatedParams[1]) as CustomTypedMessage<MessageTypes>;
 
-              const currentNetwork = currentEthereumNetwork();
+              const currentNetwork = currentEthereumNetwork;
 
               const chainId = param2?.domain?.chainId;
 
@@ -1259,7 +1272,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             let gas: string | number = 0;
 
             try {
-              const provider = new Web3.providers.HttpProvider(currentEthereumNetwork().rpcURL, {
+              const provider = new Web3.providers.HttpProvider(currentEthereumNetwork.rpcURL, {
                 headers: [
                   {
                     name: 'Cosmostation',
@@ -1321,7 +1334,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as EthcAddNetwork['params'];
 
-            const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], message.id, validatedParams[0].rpcURL);
+            const response = await ethereumRequestRPC<ResponseRPC<string>>('eth_chainId', [], message.id, validatedParams[0].rpcURL);
 
             if (validatedParams[0].chainId !== response.result) {
               throw new EthereumRPCError(
@@ -1360,7 +1373,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as EthcSwitchNetwork['params'];
 
-            if (params[0] === currentEthereumNetwork().chainId) {
+            if (params[0] === currentEthereumNetwork.chainId) {
               const result: EthcSwitchNetworkResponse = null;
 
               responseToWeb({
@@ -1462,7 +1475,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as WalletAddEthereumChain['params'];
 
-            const response = await requestRPC<ResponseRPC<string>>('eth_chainId', [], message.id, validatedParams[0].rpcUrls[0]);
+            const response = await ethereumRequestRPC<ResponseRPC<string>>('eth_chainId', [], message.id, validatedParams[0].rpcUrls[0]);
 
             if (validatedParams[0].chainId !== response.result) {
               throw new EthereumRPCError(
@@ -1517,7 +1530,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync(params)) as WalletSwitchEthereumChain['params'];
 
-            if (validatedParams[0].chainId === currentEthereumNetwork().chainId) {
+            if (validatedParams[0].chainId === currentEthereumNetwork.chainId) {
               const result: WalletSwitchEthereumChainResponse = null;
 
               responseToWeb({
@@ -1622,7 +1635,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         } else {
           const params = method === ETHEREUM_METHOD_TYPE.ETH__GET_BALANCE && message.params.length === 1 ? [...message.params, 'latest'] : message.params;
 
-          const response = await requestRPC(method, params, id);
+          const response = await ethereumRequestRPC(method, params, id);
           responseToWeb({ response, message, messageId, origin });
         }
       } else {
@@ -1668,12 +1681,12 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const { message, messageId, origin } = request;
 
     if (currentAccount.type === 'LEDGER') {
-      throw new AptosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
+      throw new AptosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, APTOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
     }
 
     try {
       if (!message?.method || !aptosMethods.includes(message.method)) {
-        throw new AptosRPCError(RPC_ERROR.UNSUPPORTED_METHOD, ETHEREUM_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD]);
+        throw new AptosRPCError(RPC_ERROR.UNSUPPORTED_METHOD, APTOS_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD]);
       }
 
       const { method } = message;
@@ -1775,7 +1788,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         }
 
         if (method === 'aptos_network') {
-          const result: AptosNetworkResponse = currentAptosNetwork().networkName;
+          const result: AptosNetworkResponse = currentAptosNetwork.networkName;
 
           responseToWeb({
             response: {
@@ -1806,6 +1819,212 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             code: RPC_ERROR.INTERNAL,
             message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
           },
+        },
+        message,
+        messageId,
+        origin,
+      });
+    }
+  }
+
+  if (request.line === 'SUI') {
+    const chain = SUI;
+
+    const suiMethods = Object.values(SUI_METHOD_TYPE) as string[];
+    const suiPopupMethods = Object.values(SUI_POPUP_METHOD_TYPE) as string[];
+    const suiNoPopupMethods = Object.values(SUI_NO_POPUP_METHOD_TYPE) as string[];
+
+    const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins } = await chromeStorage();
+
+    const { currentPassword } = await chromeSessionStorage();
+
+    const { message, messageId, origin } = request;
+
+    const currentAccountSuiPermissions =
+      suiPermissions
+        ?.filter((permission) => permission.accountId === currentAccount.id && permission.origin === origin)
+        .map((permission) => permission.permission) || [];
+
+    if (currentAccount.type === 'LEDGER') {
+      throw new SuiRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
+    }
+
+    try {
+      if (!message?.method || !suiMethods.includes(message.method)) {
+        throw new SuiRPCError(RPC_ERROR.UNSUPPORTED_METHOD, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD], message?.id);
+      }
+
+      const { method, id } = message;
+
+      if (suiPopupMethods.includes(method)) {
+        if (method === 'sui_connect') {
+          const { params } = message;
+
+          try {
+            const schema = suiConnectSchema();
+
+            const validatedParams = (await schema.validateAsync(params)) as SuiConnect['params'];
+
+            if (currentAccountAllowedOrigins.includes(origin) && validatedParams.every((item) => currentAccountSuiPermissions.includes(item))) {
+              const result: SuiConnectResponse = null;
+
+              responseToWeb({
+                response: {
+                  result,
+                },
+                message,
+                messageId,
+                origin,
+              });
+            } else {
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method, params: Array.from(new Set([...validatedParams])) },
+              });
+              void setQueues();
+            }
+          } catch (e) {
+            if (e instanceof SuiRPCError) {
+              throw e;
+            }
+
+            throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
+          }
+        }
+
+        if (method === 'sui_getAccount') {
+          try {
+            if (currentAccountAllowedOrigins.includes(origin) && currentAccountSuiPermissions.includes('viewAccount')) {
+              if (currentPassword) {
+                const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+                const address = getAddress(chain, keyPair?.publicKey);
+
+                const publicKey = `0x${keyPair!.publicKey.toString('hex')}`;
+                const result: SuiGetAccountResponse = {
+                  address,
+                  publicKey,
+                };
+
+                responseToWeb({
+                  response: {
+                    result,
+                  },
+                  message,
+                  messageId,
+                  origin,
+                });
+              } else {
+                localQueues.push(request);
+                void setQueues();
+              }
+            } else {
+              throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+            }
+          } catch (e) {
+            if (e instanceof SuiRPCError) {
+              throw e;
+            }
+
+            throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
+          }
+        }
+
+        if (method === 'sui_executeMoveCall') {
+          const { params } = message;
+
+          try {
+            const schema = suiExecuteMoveCallSchema();
+
+            const validatedParams = (await schema.validateAsync(params)) as SuiExecuteMoveCall['params'];
+
+            if (
+              currentAccountAllowedOrigins.includes(origin) &&
+              currentAccountSuiPermissions.includes('viewAccount') &&
+              currentAccountSuiPermissions.includes('suggestTransactions')
+            ) {
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method: 'sui_signAndExecuteTransaction', params: [{ kind: 'moveCall', data: validatedParams[0] }] },
+              });
+              void setQueues();
+            } else {
+              throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+            }
+          } catch (e) {
+            if (e instanceof SuiRPCError) {
+              throw e;
+            }
+
+            throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
+          }
+        }
+
+        if (method === 'sui_signAndExecuteTransaction') {
+          if (
+            currentAccountAllowedOrigins.includes(origin) &&
+            currentAccountSuiPermissions.includes('viewAccount') &&
+            currentAccountSuiPermissions.includes('suggestTransactions')
+          ) {
+            localQueues.push(request);
+            void setQueues();
+          } else {
+            throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+          }
+        }
+      } else if (suiNoPopupMethods.includes(method)) {
+        if (method === 'sui_getPermissions') {
+          responseToWeb({
+            response: {
+              result: currentAccountSuiPermissions,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        } else if (method === 'sui_disconnect') {
+          const newAllowedOrigins = allowedOrigins.filter((item) => !(item.accountId === currentAccount.id && item.origin === origin));
+          await setStorage('allowedOrigins', newAllowedOrigins);
+
+          const newSuiPermissions = suiPermissions.filter((permission) => !(permission.accountId === currentAccount.id && permission.origin === origin));
+          await setStorage('suiPermissions', newSuiPermissions);
+
+          const result = null;
+
+          responseToWeb({
+            response: {
+              result,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        } else {
+          const { params } = message;
+
+          const response = await suiRequestRPC(method, params, id);
+          responseToWeb({ response, message, messageId, origin });
+        }
+      } else {
+        throw new SuiRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST], message.id);
+      }
+    } catch (e) {
+      if (e instanceof SuiRPCError) {
+        responseToWeb({
+          response: e.rpcMessage,
+          message,
+          messageId,
+          origin,
+        });
+        return;
+      }
+
+      responseToWeb({
+        response: {
+          error: {
+            code: RPC_ERROR.INTERNAL,
+            message: `${RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL]}`,
+          },
+          jsonrpc: '2.0',
         },
         message,
         messageId,
