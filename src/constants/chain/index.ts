@@ -79,7 +79,7 @@ import { OKC as ETHEREUM_NETWORK__OKC } from './ethereum/network/okc';
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
 import { DEVNET as SUI_NETWORK__DEVNET } from './sui/network/devnet';
-import { TESTNET as SUI_NETWORK__TESTNET } from './sui/network/testnet';
+// import { TESTNET as SUI_NETWORK__TESTNET } from './sui/network/testnet';
 import { SUI } from './sui/sui';
 
 export const LINE_TYPE = {
@@ -181,6 +181,6 @@ export const APTOS_NETWORKS: AptosNetwork[] = [APTOS_NETWORK__MAINNET, APTOS_NET
 
 export const SUI_CHAINS: SuiChain[] = [SUI];
 
-export const SUI_NETWORKS: SuiNetwork[] = [SUI_NETWORK__TESTNET, SUI_NETWORK__DEVNET];
+export const SUI_NETWORKS: SuiNetwork[] = [SUI_NETWORK__DEVNET];
 
 export const CHAINS = [...ETHEREUM_CHAINS, ...COSMOS_CHAINS, ...APTOS_CHAINS, ...SUI_CHAINS];
