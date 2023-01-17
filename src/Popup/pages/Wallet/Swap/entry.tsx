@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_SWAP_GAS } from '~/constants/chain';
@@ -14,6 +15,7 @@ import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { usePoolsAssetSWR } from '~/Popup/hooks/SWR/cosmos/usePoolsAssetSWR';
 import { usePoolSWR } from '~/Popup/hooks/SWR/cosmos/usePoolsSWR';
+import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -22,8 +24,9 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { convertAssetNameToCosmos } from '~/Popup/utils/cosmos';
+import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { calcSpotPrice } from '~/Popup/utils/osmosis';
+import { protoTx } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { AssetV3 } from '~/types/cosmos/asset';
 
@@ -227,23 +230,6 @@ export default function Entry({ chain }: EntryProps) {
 
   const currentFeeCoin = chain;
 
-  const currentFeeAmount = useMemo(() => times(COSMOS_DEFAULT_SWAP_GAS, chain.gasRate.average), [chain.gasRate.average]);
-
-  const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
-
-  const currentDisplayFeeAmount = toDisplayDenomAmount(currentCeilFeeAmount, chain.decimals);
-
-  const currentDisplaySwapFeeAmount = useMemo(() => (inputDisplayAmount ? times(inputDisplayAmount, swapFeeRate) : '0'), [inputDisplayAmount, swapFeeRate]);
-
-  const maxDisplayAmount = useMemo(() => {
-    const maxAmount = minus(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount);
-    if (inputCoin?.denom === currentFeeCoin.baseDenom) {
-      return gt(maxAmount, '0') ? maxAmount : '0';
-    }
-
-    return currentInputCoinDisplayAvailableAmount;
-  }, [currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount, inputCoin?.denom, currentFeeCoin.baseDenom]);
-
   const swapCoin = useCallback(() => {
     const temptInputCoinBaseDenom = inputCoinBaseDenom;
     setInputCoinBaseDenom(outputCoinBaseDenom);
@@ -278,6 +264,89 @@ export default function Entry({ chain }: EntryProps) {
 
   const outputCoinAmountPrice = useMemo(() => times(currentOutputDisplayAmount || '0', outputCoinPrice), [currentOutputDisplayAmount, outputCoinPrice]);
 
+  const memoizedSwapAminoTx = useMemo(() => {
+    if (inputDisplayAmount && account.data?.value.account_number) {
+      const sequence = String(account.data?.value.sequence || '0');
+
+      return {
+        account_number: String(account.data.value.account_number),
+        sequence,
+        chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+        fee: { amount: [{ amount: '1', denom: currentFeeCoin.baseDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
+        memo: '',
+        msgs: [
+          {
+            type: 'osmosis/gamm/swap-exact-amount-in',
+            value: {
+              routes: [
+                {
+                  pool_id: currentPoolId,
+                  token_out_denom: outputCoinBaseDenom,
+                },
+              ],
+              sender: address,
+              token_in: {
+                amount: currentInputBaseAmount,
+                denom: inputCoinBaseDenom,
+              },
+              token_out_min_amount: fix(tokenOutMinAmount, 0),
+            },
+          },
+        ],
+      };
+    }
+
+    return undefined;
+  }, [
+    account.data?.value.account_number,
+    account.data?.value.sequence,
+    address,
+    chain.chainId,
+    currentFeeCoin.baseDenom,
+    currentInputBaseAmount,
+    currentPoolId,
+    inputCoinBaseDenom,
+    inputDisplayAmount,
+    nodeInfo.data?.node_info?.network,
+    outputCoinBaseDenom,
+    tokenOutMinAmount,
+  ]);
+
+  const [swapAminoTx] = useDebounce(memoizedSwapAminoTx, 700);
+
+  const swapProtoTx = useMemo(() => {
+    if (swapAminoTx) {
+      return protoTx(swapAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
+    }
+    return null;
+  }, [chain, swapAminoTx]);
+
+  const simulate = useSimulateSWR({ chain, txBytes: swapProtoTx?.tx_bytes });
+
+  const simulatedGas = useMemo(
+    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
+    [chain, simulate.data?.gas_info?.gas_used],
+  );
+
+  const currentGas = useMemo(() => simulatedGas || COSMOS_DEFAULT_SWAP_GAS, [simulatedGas]);
+
+  const currentFeeAmount = useMemo(() => times(currentGas, chain.gasRate.low), [chain.gasRate.low, currentGas]);
+
+  const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
+
+  const currentDisplayFeeAmount = toDisplayDenomAmount(currentCeilFeeAmount, chain.decimals);
+
+  const currentDisplaySwapFeeAmount = useMemo(() => (inputDisplayAmount ? times(inputDisplayAmount, swapFeeRate) : '0'), [inputDisplayAmount, swapFeeRate]);
+
+  const maxDisplayAmount = useMemo(() => {
+    const maxAmount = minus(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount);
+    if (inputCoin?.denom === currentFeeCoin.baseDenom) {
+      return gt(maxAmount, '0') ? maxAmount : '0';
+    }
+
+    return currentInputCoinDisplayAvailableAmount;
+  }, [currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount, inputCoin?.denom, currentFeeCoin.baseDenom]);
+
   const swapFeePrice = useMemo(() => times(inputCoinPrice, currentDisplaySwapFeeAmount), [inputCoinPrice, currentDisplaySwapFeeAmount]);
 
   const errorMessage = useMemo(() => {
@@ -298,6 +367,21 @@ export default function Entry({ chain }: EntryProps) {
     }
     return '';
   }, [currentDisplayFeeAmount, currentInputCoinDisplayAvailableAmount, inputDisplayAmount, priceImpactPercent, t]);
+
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const debouncedEnabled = useDebouncedCallback(() => {
+    setTimeout(() => {
+      setIsDisabled(false);
+    }, 700);
+  }, 700);
+
+  useEffect(() => {
+    setIsDisabled(true);
+
+    debouncedEnabled();
+  }, [debouncedEnabled, memoizedSwapAminoTx]);
+
   return (
     <>
       <Container>
@@ -359,7 +443,12 @@ export default function Entry({ chain }: EntryProps) {
                       if (!isDecimal(e.currentTarget.value, inputCoin?.decimals || 0) && e.currentTarget.value) {
                         return;
                       }
-                      setInputDisplayAmount(e.currentTarget.value);
+
+                      if (gt(e.currentTarget.value || '0', maxDisplayAmount)) {
+                        setInputDisplayAmount(maxDisplayAmount);
+                      } else {
+                        setInputDisplayAmount(e.currentTarget.value);
+                      }
                     }}
                   />
                 </SwapCoinRightTitleContainer>
@@ -531,10 +620,9 @@ export default function Entry({ chain }: EntryProps) {
             <div>
               <Button
                 type="button"
-                disabled={!!errorMessage}
+                disabled={!!errorMessage || !swapAminoTx || isDisabled}
                 onClick={async () => {
-                  const sequence = String(account.data?.value.sequence || '0');
-                  if (inputDisplayAmount && account.data?.value.account_number) {
+                  if (swapAminoTx) {
                     await enQueue({
                       messageId: '',
                       origin: '',
@@ -543,33 +631,7 @@ export default function Entry({ chain }: EntryProps) {
                         method: 'cos_signAmino',
                         params: {
                           chainName: chain.chainName,
-                          doc: {
-                            account_number: String(account.data.value.account_number),
-                            sequence,
-                            chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
-                            fee: { amount: [{ amount: currentCeilFeeAmount, denom: currentFeeCoin.baseDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
-                            memo: '',
-                            msgs: [
-                              {
-                                type: 'osmosis/gamm/swap-exact-amount-in',
-                                value: {
-                                  routes: [
-                                    {
-                                      pool_id: currentPoolId,
-                                      token_out_denom: outputCoinBaseDenom,
-                                    },
-                                  ],
-                                  sender: address,
-                                  token_in: {
-                                    amount: currentInputBaseAmount,
-                                    denom: inputCoinBaseDenom,
-                                  },
-                                  token_out_min_amount: fix(tokenOutMinAmount, 0),
-                                },
-                              },
-                            ],
-                          },
-                          isEditFee: true,
+                          doc: { ...swapAminoTx, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }], gas: currentGas } },
                         },
                       },
                     });
