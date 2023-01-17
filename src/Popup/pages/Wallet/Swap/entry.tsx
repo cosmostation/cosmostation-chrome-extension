@@ -161,22 +161,6 @@ export default function Entry({ chain }: EntryProps) {
 
   const swapFeeRate = useMemo(() => poolsData.data?.pool.pool_params.swap_fee || '0', [poolsData.data?.pool.pool_params.swap_fee]);
 
-  const currentSwapRate = useMemo(() => {
-    try {
-      const tokenList = poolAsssets?.map((item) => item.token);
-
-      const inputTokenPoolDisplayAmount =
-        toDisplayDenomAmount(tokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount || '0', inputCoin?.decimals || 0) || 1;
-
-      const outputTokenPoolDisplayAmount =
-        toDisplayDenomAmount(tokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount || '0', outputCoin?.decimals || 0) || 1;
-
-      return divide(outputTokenPoolDisplayAmount, inputTokenPoolDisplayAmount);
-    } catch {
-      return '0';
-    }
-  }, [inputCoin?.decimals, inputCoinBaseDenom, outputCoin?.decimals, outputCoinBaseDenom, poolAsssets]);
-
   const tokenList = useMemo(() => poolAsssets?.map((item) => item.token), [poolAsssets]);
 
   const tokenAmountIn = useMemo(() => tokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount || '0', [inputCoinBaseDenom, tokenList]);
@@ -201,6 +185,20 @@ export default function Entry({ chain }: EntryProps) {
       return '0';
     }
   }, [currentInputBaseAmount, swapFeeRate, tokenAmountIn, tokenAmountOut, tokenWeightIn, tokenWeightOut]);
+
+  const outputAmountOf1Coin = useMemo(() => {
+    try {
+      const weightRatio = divide(tokenWeightIn, tokenWeightOut);
+      const adjustIn = 1;
+      const y = divide(tokenAmountIn, plus(tokenAmountIn, adjustIn));
+
+      const foo = Number(y) ** Number(weightRatio);
+      const bar = minus(1, foo);
+      return times(tokenAmountOut, bar);
+    } catch {
+      return '0';
+    }
+  }, [tokenAmountIn, tokenAmountOut, tokenWeightIn, tokenWeightOut]);
 
   const currentOutputDisplayAmount = useMemo(
     () => toDisplayDenomAmount(currentOutputBaseAmount, outputCoin?.decimals || 0),
@@ -262,7 +260,7 @@ export default function Entry({ chain }: EntryProps) {
 
   const tokenOutMinDisplayAmount = useMemo(() => toDisplayDenomAmount(tokenOutMinAmount, outputCoin?.decimals || 0), [outputCoin?.decimals, tokenOutMinAmount]);
 
-  const [isOpenSlippageDialog, setisOpenSlippageDialog] = useState(false);
+  const [isOpenSlippageDialog, setIsOpenSlippageDialog] = useState(false);
 
   const [isOpenedInputCoinList, setIsOpenedInputCoinList] = useState(false);
   const [isOpenedOutputCoinList, setIsOpenedOutputCoinList] = useState(false);
@@ -310,7 +308,7 @@ export default function Entry({ chain }: EntryProps) {
           <TextContainer>
             <Typography variant="h3">{t('pages.Wallet.Swap.entry.title')}</Typography>
           </TextContainer>
-          <SideButton onClick={() => setisOpenSlippageDialog(true)}>
+          <SideButton onClick={() => setIsOpenSlippageDialog(true)}>
             <Management24Icon />
           </SideButton>
         </TopContainer>
@@ -435,7 +433,7 @@ export default function Entry({ chain }: EntryProps) {
             <Typography variant="h6n">{inputCoin?.symbol} ≈</Typography>
             &nbsp;
             <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={outputCoin?.decimals}>
-              {currentSwapRate}
+              {outputAmountOf1Coin}
             </NumberText>
             &nbsp;
             <Typography variant="h6n">{outputCoin?.symbol}</Typography>
@@ -571,6 +569,7 @@ export default function Entry({ chain }: EntryProps) {
                               },
                             ],
                           },
+                          isEditFee: true,
                         },
                       },
                     });
@@ -586,7 +585,7 @@ export default function Entry({ chain }: EntryProps) {
       <SlippageSettingDialog
         selectedSlippage={currentSlippage}
         open={isOpenSlippageDialog}
-        onClose={() => setisOpenSlippageDialog(false)}
+        onClose={() => setIsOpenSlippageDialog(false)}
         onSubmitSlippage={(customSlippage) => {
           setCurrentSlippage(customSlippage);
         }}
