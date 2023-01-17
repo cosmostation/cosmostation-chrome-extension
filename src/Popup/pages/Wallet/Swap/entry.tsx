@@ -20,9 +20,10 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, divide, fix, gt, gte, isDecimal, minus, plus, pow, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { ceil, divide, fix, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos } from '~/Popup/utils/cosmos';
+import { calcSpotPrice } from '~/Popup/utils/osmosis';
 import type { CosmosChain } from '~/types/chain';
 import type { AssetV3 } from '~/types/cosmos/asset';
 
@@ -126,7 +127,7 @@ export default function Entry({ chain }: EntryProps) {
     return sortedAvailableSwapCoinList;
   }, [balance, currentChainAssets.data, uniquePoolDenomList]);
 
-  const [inputDisplayAmount, setInputAmount] = useState<string>('');
+  const [inputDisplayAmount, setInputDisplayAmount] = useState<string>('');
 
   const availableSwapOutputCoinList = useMemo(
     () =>
@@ -144,7 +145,7 @@ export default function Entry({ chain }: EntryProps) {
     [availableSwapOutputCoinList, outputCoinBaseDenom],
   );
 
-  const currentTokenInAmount = useMemo(() => toBaseDenomAmount(inputDisplayAmount || 0, inputCoin?.decimals || 0), [inputCoin?.decimals, inputDisplayAmount]);
+  const currentInputBaseAmount = useMemo(() => toBaseDenomAmount(inputDisplayAmount || 0, inputCoin?.decimals || 0), [inputCoin?.decimals, inputDisplayAmount]);
 
   useEffect(() => {
     if (!outputCoin) {
@@ -152,71 +153,72 @@ export default function Entry({ chain }: EntryProps) {
     }
   }, [availableSwapOutputCoinList, outputCoin, outputCoinBaseDenom]);
 
-  const currentPoolId = useMemo(() => currentPool?.id || '1', [currentPool?.id]);
+  const currentPoolId = useMemo(() => currentPool?.id, [currentPool?.id]);
 
   const poolsData = usePoolSWR(currentPoolId);
 
   const poolAsssets = useMemo(() => poolsData.data?.pool.pool_assets, [poolsData.data?.pool.pool_assets]);
 
-  const swapFeeRate = useMemo(() => fix(poolsData.data?.pool.pool_params.swap_fee ?? '0'), [poolsData.data?.pool.pool_params.swap_fee]);
+  const swapFeeRate = useMemo(() => poolsData.data?.pool.pool_params.swap_fee || '0', [poolsData.data?.pool.pool_params.swap_fee]);
 
   const currentSwapRate = useMemo(() => {
-    const tokenList = poolAsssets?.map((item) => item.token);
-
-    const inputTokenPoolDisplayAmount =
-      toDisplayDenomAmount(tokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount || '1', inputCoin?.decimals || 0) || 1;
-
-    const outputTokenPoolDisplayAmount =
-      toDisplayDenomAmount(tokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount || '1', outputCoin?.decimals || 0) || 1;
-
-    return divide(outputTokenPoolDisplayAmount, inputTokenPoolDisplayAmount);
-  }, [inputCoin?.decimals, inputCoinBaseDenom, outputCoin?.decimals, outputCoinBaseDenom, poolAsssets]);
-
-  const outputDisplayAmount = useMemo(() => {
-    if (inputDisplayAmount) {
+    try {
       const tokenList = poolAsssets?.map((item) => item.token);
 
-      const tokenAmountIn = tokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount || '1';
-      const tokenWeightIn = poolAsssets?.find((item) => item.token.denom === inputCoinBaseDenom)?.weight || '1';
+      const inputTokenPoolDisplayAmount =
+        toDisplayDenomAmount(tokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount || '0', inputCoin?.decimals || 0) || 1;
 
-      const tokenAmountOut = tokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount || '1';
-      const tokenWeightOut = poolAsssets?.find((item) => item.token.denom === outputCoinBaseDenom)?.weight || '1';
+      const outputTokenPoolDisplayAmount =
+        toDisplayDenomAmount(tokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount || '0', outputCoin?.decimals || 0) || 1;
 
-      const weightRatio = divide(tokenWeightIn || 1, tokenWeightOut || 1);
-      const adjustIn = times(inputDisplayAmount || 1, minus(1, swapFeeRate));
+      return divide(outputTokenPoolDisplayAmount, inputTokenPoolDisplayAmount);
+    } catch {
+      return '0';
+    }
+  }, [inputCoin?.decimals, inputCoinBaseDenom, outputCoin?.decimals, outputCoinBaseDenom, poolAsssets]);
+
+  const tokenList = useMemo(() => poolAsssets?.map((item) => item.token), [poolAsssets]);
+
+  const tokenAmountIn = useMemo(() => tokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount || '0', [inputCoinBaseDenom, tokenList]);
+  const tokenWeightIn = useMemo(() => poolAsssets?.find((item) => item.token.denom === inputCoinBaseDenom)?.weight || '0', [inputCoinBaseDenom, poolAsssets]);
+
+  const tokenAmountOut = useMemo(() => tokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount || '0', [outputCoinBaseDenom, tokenList]);
+  const tokenWeightOut = useMemo(
+    () => poolAsssets?.find((item) => item.token.denom === outputCoinBaseDenom)?.weight || '0',
+    [outputCoinBaseDenom, poolAsssets],
+  );
+
+  const currentOutputBaseAmount = useMemo(() => {
+    try {
+      const weightRatio = divide(tokenWeightIn, tokenWeightOut);
+      const adjustIn = times(currentInputBaseAmount, minus(1, swapFeeRate));
       const y = divide(tokenAmountIn, plus(tokenAmountIn, adjustIn));
-      // TODO 소수 계산 가능한 제곱함수 구현할것
-      // osmo-ion은 weightRation가 소수라 pow안에 아규먼트로 넘어갈 시 오류 발생
-      // 임시로 weightRatio를 1로 대체함
-      // const foo = pow(y, 1);
-      const foo = pow(y, Number(weightRatio));
+
+      const foo = Number(y) ** Number(weightRatio);
       const bar = minus(1, foo);
       return times(tokenAmountOut, bar);
+    } catch {
+      return '0';
     }
-    return '0';
-  }, [inputCoinBaseDenom, inputDisplayAmount, outputCoinBaseDenom, poolAsssets, swapFeeRate]);
+  }, [currentInputBaseAmount, swapFeeRate, tokenAmountIn, tokenAmountOut, tokenWeightIn, tokenWeightOut]);
 
-  const currentTokenOutAmount = useMemo(() => toBaseDenomAmount(outputDisplayAmount, outputCoin?.decimals || 0), [outputCoin?.decimals, outputDisplayAmount]);
+  const currentOutputDisplayAmount = useMemo(
+    () => toDisplayDenomAmount(currentOutputBaseAmount, outputCoin?.decimals || 0),
+    [currentOutputBaseAmount, outputCoin?.decimals],
+  );
 
   const priceImpact = useMemo(() => {
-    const tokenList = poolAsssets?.map((item) => item.token);
+    try {
+      const beforeSpotPriceInOverOut = calcSpotPrice(tokenAmountIn, tokenWeightIn, tokenAmountOut, tokenWeightOut, swapFeeRate);
 
-    const tokenBalanceIn = tokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount || '1';
-    const tokenWeightIn = poolAsssets?.find((item) => item.token.denom === inputCoinBaseDenom)?.weight || '1';
+      const effective = divide(currentInputBaseAmount, currentOutputBaseAmount);
+      return minus(divide(effective, beforeSpotPriceInOverOut), '1');
+    } catch {
+      return '0';
+    }
+  }, [tokenAmountIn, tokenWeightIn, tokenAmountOut, tokenWeightOut, swapFeeRate, currentInputBaseAmount, currentOutputBaseAmount]);
 
-    const tokenBalanceOut = tokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount || '1';
-    const tokenWeightOut = poolAsssets?.find((item) => item.token.denom === outputCoinBaseDenom)?.weight || '1';
-
-    const inputWeightCalculated = divide(tokenBalanceIn, tokenWeightIn);
-    const outputWeightCalculated = divide(tokenBalanceOut, tokenWeightOut);
-
-    const scale = divide('1', minus('1', swapFeeRate));
-
-    const beforeSpotPriceInOverOut = times(divide(inputWeightCalculated, outputWeightCalculated), scale);
-
-    const effective = divide(inputDisplayAmount || 1, outputDisplayAmount !== '0' ? outputDisplayAmount : 1);
-    return minus(fix(times(divide(effective || 1, beforeSpotPriceInOverOut || 1), 100000000), 7), 100000000);
-  }, [poolAsssets, swapFeeRate, inputDisplayAmount, outputDisplayAmount, inputCoinBaseDenom, outputCoinBaseDenom]);
+  const priceImpactPercent = useMemo(() => times(priceImpact, '100'), [priceImpact]);
 
   const currentInputCoinAvailableAmount = useMemo(() => inputCoin?.availableAmount || '0', [inputCoin]);
 
@@ -249,13 +251,13 @@ export default function Entry({ chain }: EntryProps) {
     setInputCoinBaseDenom(outputCoinBaseDenom);
     setOutputCoinBaseDenom(temptInputCoinBaseDenom);
     if (inputDisplayAmount) {
-      setInputAmount(outputDisplayAmount);
+      setInputDisplayAmount(currentOutputDisplayAmount);
     }
-  }, [inputCoinBaseDenom, inputDisplayAmount, outputCoinBaseDenom, outputDisplayAmount]);
+  }, [inputCoinBaseDenom, inputDisplayAmount, outputCoinBaseDenom, currentOutputDisplayAmount]);
 
   const tokenOutMinAmount = useMemo(
-    () => (currentSlippage && currentTokenOutAmount ? minus(currentTokenOutAmount, times(currentTokenOutAmount, divide(currentSlippage, 100))) : '0'),
-    [currentSlippage, currentTokenOutAmount],
+    () => (currentSlippage && currentOutputBaseAmount ? minus(currentOutputBaseAmount, times(currentOutputBaseAmount, divide(currentSlippage, 100))) : '0'),
+    [currentSlippage, currentOutputBaseAmount],
   );
 
   const tokenOutMinDisplayAmount = useMemo(() => toDisplayDenomAmount(tokenOutMinAmount, outputCoin?.decimals || 0), [outputCoin?.decimals, tokenOutMinAmount]);
@@ -276,7 +278,7 @@ export default function Entry({ chain }: EntryProps) {
 
   const inputCoinAmountPrice = useMemo(() => times(inputDisplayAmount || '0', inputCoinPrice), [inputDisplayAmount, inputCoinPrice]);
 
-  const outputCoinAmountPrice = useMemo(() => times(outputDisplayAmount || '0', outputCoinPrice), [outputDisplayAmount, outputCoinPrice]);
+  const outputCoinAmountPrice = useMemo(() => times(currentOutputDisplayAmount || '0', outputCoinPrice), [currentOutputDisplayAmount, outputCoinPrice]);
 
   const swapFeePrice = useMemo(() => times(inputCoinPrice, currentDisplaySwapFeeAmount), [inputCoinPrice, currentDisplaySwapFeeAmount]);
 
@@ -293,11 +295,11 @@ export default function Entry({ chain }: EntryProps) {
     if (!gte(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
       return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
     }
-    if (gt(priceImpact, 10)) {
+    if (gt(priceImpactPercent, 10)) {
       return t('pages.Wallet.Swap.entry.invalidPriceImpact');
     }
     return '';
-  }, [currentDisplayFeeAmount, currentInputCoinDisplayAvailableAmount, inputDisplayAmount, priceImpact, t]);
+  }, [currentDisplayFeeAmount, currentInputCoinDisplayAvailableAmount, inputDisplayAmount, priceImpactPercent, t]);
   return (
     <>
       <Container>
@@ -326,7 +328,7 @@ export default function Entry({ chain }: EntryProps) {
                 </NumberText>
                 <MaxButton
                   onClick={() => {
-                    setInputAmount(maxDisplayAmount);
+                    setInputDisplayAmount(maxDisplayAmount);
                   }}
                 >
                   <Typography variant="h6n">MAX</Typography>
@@ -359,7 +361,7 @@ export default function Entry({ chain }: EntryProps) {
                       if (!isDecimal(e.currentTarget.value, inputCoin?.decimals || 0) && e.currentTarget.value) {
                         return;
                       }
-                      setInputAmount(e.currentTarget.value);
+                      setInputDisplayAmount(e.currentTarget.value);
                     }}
                   />
                 </SwapCoinRightTitleContainer>
@@ -401,9 +403,9 @@ export default function Entry({ chain }: EntryProps) {
                 </SwapCoinLeftIcon>
               </SwapCoinLeftButton>
               <SwapCoinRightContainer>
-                <SwapCoinRightTitleContainer data-is-active={outputDisplayAmount !== '0'}>
-                  <NumberText typoOfIntegers="h4n" fixed={outputDisplayAmount !== '0' ? getDisplayMaxDecimals(outputCoin?.decimals) : 0}>
-                    {outputDisplayAmount}
+                <SwapCoinRightTitleContainer data-is-active={currentOutputDisplayAmount !== '0'}>
+                  <NumberText typoOfIntegers="h4n" fixed={currentOutputDisplayAmount !== '0' ? getDisplayMaxDecimals(outputCoin?.decimals) : 0}>
+                    {currentOutputDisplayAmount}
                   </NumberText>
                 </SwapCoinRightTitleContainer>
                 <SwapCoinRightSubTitleContainer>
@@ -444,14 +446,14 @@ export default function Entry({ chain }: EntryProps) {
                 <Typography variant="h6">{t('pages.Wallet.Swap.entry.priceImpact')}</Typography>
               </SwapInfoSubLeftContainer>
               <SwapInfoSubRightContainer>
-                {inputDisplayAmount && priceImpact ? (
-                  <SwapInfoSubRightTextContainer data-is-invalid={gt(priceImpact, 10)}>
+                {inputDisplayAmount && priceImpactPercent ? (
+                  <SwapInfoSubRightTextContainer data-is-invalid={gt(priceImpactPercent, 10)}>
                     <Typography variant="h6n">-</Typography>
                     &nbsp;
                     <Typography variant="h6n">{'<'}</Typography>
                     &nbsp;
                     <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
-                      {priceImpact}
+                      {priceImpactPercent}
                     </NumberText>
                     <Typography variant="h6n">%</Typography>
                   </SwapInfoSubRightTextContainer>
@@ -490,10 +492,10 @@ export default function Entry({ chain }: EntryProps) {
               </SwapInfoSubLeftContainer>
 
               <SwapInfoSubRightContainer>
-                {inputDisplayAmount && outputDisplayAmount ? (
+                {inputDisplayAmount && currentOutputDisplayAmount ? (
                   <SwapInfoSubRightTextContainer>
                     <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
-                      {outputDisplayAmount}
+                      {currentOutputDisplayAmount}
                     </NumberText>
                     &nbsp;
                     <Typography variant="h6n">{outputCoin?.symbol}</Typography>
@@ -561,7 +563,7 @@ export default function Entry({ chain }: EntryProps) {
                                   ],
                                   sender: address,
                                   token_in: {
-                                    amount: currentTokenInAmount,
+                                    amount: currentInputBaseAmount,
                                     denom: inputCoinBaseDenom,
                                   },
                                   token_out_min_amount: fix(tokenOutMinAmount, 0),

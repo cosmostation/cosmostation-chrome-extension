@@ -5,8 +5,8 @@ import useSWR from 'swr';
 import { get } from '~/Popup/utils/axios';
 import type { PoolResponse } from '~/types/cosmos/pool';
 
-export function usePoolSWR(poolId: string, config?: SWRConfiguration) {
-  const requestURL = `https://lcd-osmosis-app.cosmostation.io/osmosis/gamm/v1beta1/pools/${poolId}`;
+export function usePoolSWR(poolId?: string, config?: SWRConfiguration) {
+  const requestURL = `https://lcd-osmosis-app.cosmostation.io/osmosis/gamm/v1beta1/pools/${poolId || ''}`;
 
   const fetcher = async (fetchUrl: string) => {
     try {
