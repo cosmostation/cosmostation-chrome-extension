@@ -231,13 +231,11 @@ export default function Entry({ chain }: EntryProps) {
   const currentFeeCoin = chain;
 
   const swapCoin = useCallback(() => {
-    const temptInputCoinBaseDenom = inputCoinBaseDenom;
+    const tmpInputCoinBaseDenom = inputCoinBaseDenom;
     setInputCoinBaseDenom(outputCoinBaseDenom);
-    setOutputCoinBaseDenom(temptInputCoinBaseDenom);
-    if (inputDisplayAmount) {
-      setInputDisplayAmount(currentOutputDisplayAmount);
-    }
-  }, [inputCoinBaseDenom, inputDisplayAmount, outputCoinBaseDenom, currentOutputDisplayAmount]);
+    setOutputCoinBaseDenom(tmpInputCoinBaseDenom);
+    setInputDisplayAmount('');
+  }, [inputCoinBaseDenom, outputCoinBaseDenom]);
 
   const tokenOutMinAmount = useMemo(
     () => (currentSlippage && currentOutputBaseAmount ? minus(currentOutputBaseAmount, times(currentOutputBaseAmount, divide(currentSlippage, 100))) : '0'),
