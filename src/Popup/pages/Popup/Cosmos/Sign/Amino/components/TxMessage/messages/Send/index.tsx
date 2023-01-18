@@ -28,9 +28,10 @@ import Container from '../../components/Container';
 type SendProps = {
   msg: Msg<MsgSend>;
   chain: CosmosChain;
+  msgLength: number;
 };
 
-export default function Send({ msg, chain }: SendProps) {
+export default function Send({ msg, chain, msgLength }: SendProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { coins, ibcCoins } = useCoinListSWR(chain);
@@ -44,7 +45,7 @@ export default function Send({ msg, chain }: SendProps) {
   const { amount, from_address, to_address } = value;
 
   return (
-    <Container title="Send">
+    <Container title="Send" msgLength={msgLength}>
       <ContentContainer>
         <AddressContainer>
           <LabelContainer>

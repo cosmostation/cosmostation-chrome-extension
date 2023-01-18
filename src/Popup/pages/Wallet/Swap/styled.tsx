@@ -124,7 +124,10 @@ export const SwapCoinBodyContainer = styled('div')({
   alignItems: 'center',
 });
 
-export const SwapCoinLeftButton = styled('button')({
+type SwapCoinLeftButtonProps = {
+  'data-is-active'?: boolean;
+};
+export const SwapCoinLeftButton = styled('button')<SwapCoinLeftButtonProps>(({ theme, ...props }) => ({
   backgroundColor: 'transparent',
   border: `none`,
 
@@ -135,7 +138,21 @@ export const SwapCoinLeftButton = styled('button')({
   alignItems: 'center',
 
   cursor: 'pointer',
-});
+
+  '& > svg': {
+    transform: props['data-is-active'] ? 'rotate(180deg)' : 'none',
+    '& > path': {
+      stroke: theme.colors.base05,
+    },
+  },
+  '&:hover': {
+    '& > svg': {
+      '& > path': {
+        stroke: theme.colors.base06,
+      },
+    },
+  },
+}));
 
 export const SwapCoinLeftImageContainer = styled('div')({
   width: '3.2rem',
@@ -153,6 +170,8 @@ export const SwapCoinLeftInfoContainer = styled('div')({
   alignItems: 'flex-start',
 
   rowGap: '0.2rem',
+
+  marginRight: '0.3rem',
 });
 
 export const SwapCoinLeftTitleContainer = styled('div')(({ theme }) => ({
@@ -162,22 +181,6 @@ export const SwapCoinLeftTitleContainer = styled('div')(({ theme }) => ({
 export const SwapCoinLeftSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
   textAlign: 'left',
-}));
-
-type SwapCoinLeftIconButtonProps = {
-  'data-is-active'?: boolean;
-};
-export const SwapCoinLeftIcon = styled('div')<SwapCoinLeftIconButtonProps>(({ theme, ...props }) => ({
-  marginLeft: '0.3rem',
-
-  width: '2.4rem',
-  height: '2.4rem',
-  '& > svg': {
-    transform: props['data-is-active'] ? 'rotate(180deg)' : 'none',
-    '& > path': {
-      stroke: theme.colors.base05,
-    },
-  },
 }));
 
 export const SwapCoinRightContainer = styled('div')({

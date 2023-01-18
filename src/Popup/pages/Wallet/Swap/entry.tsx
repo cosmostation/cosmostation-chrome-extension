@@ -22,10 +22,10 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, divide, fix, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
-import { calcSpotPrice } from '~/Popup/utils/osmosis';
+import { calcOutGivenIn, calcSpotPrice } from '~/Popup/utils/osmosis';
 import { protoTx } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { AssetV3 } from '~/types/cosmos/asset';
@@ -44,7 +44,6 @@ import {
   SwapCoinHeaderContainer,
   SwapCoinLeftButton,
   SwapCoinLeftHeaderContainer,
-  SwapCoinLeftIcon,
   SwapCoinLeftImageContainer,
   SwapCoinLeftInfoContainer,
   SwapCoinLeftSubTitleContainer,
@@ -166,10 +165,10 @@ export default function Entry({ chain }: EntryProps) {
 
   const tokenList = useMemo(() => poolAsssets?.map((item) => item.token), [poolAsssets]);
 
-  const tokenAmountIn = useMemo(() => tokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount || '0', [inputCoinBaseDenom, tokenList]);
+  const tokenBalanceIn = useMemo(() => tokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount || '0', [inputCoinBaseDenom, tokenList]);
   const tokenWeightIn = useMemo(() => poolAsssets?.find((item) => item.token.denom === inputCoinBaseDenom)?.weight || '0', [inputCoinBaseDenom, poolAsssets]);
 
-  const tokenAmountOut = useMemo(() => tokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount || '0', [outputCoinBaseDenom, tokenList]);
+  const tokenBalanceOut = useMemo(() => tokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount || '0', [outputCoinBaseDenom, tokenList]);
   const tokenWeightOut = useMemo(
     () => poolAsssets?.find((item) => item.token.denom === outputCoinBaseDenom)?.weight || '0',
     [outputCoinBaseDenom, poolAsssets],
@@ -177,47 +176,46 @@ export default function Entry({ chain }: EntryProps) {
 
   const currentOutputBaseAmount = useMemo(() => {
     try {
-      const weightRatio = divide(tokenWeightIn, tokenWeightOut);
-      const adjustIn = times(currentInputBaseAmount, minus(1, swapFeeRate));
-      const y = divide(tokenAmountIn, plus(tokenAmountIn, adjustIn));
-
-      const foo = Number(y) ** Number(weightRatio);
-      const bar = minus(1, foo);
-      return times(tokenAmountOut, bar);
+      return calcOutGivenIn(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, currentInputBaseAmount, swapFeeRate);
     } catch {
       return '0';
     }
-  }, [currentInputBaseAmount, swapFeeRate, tokenAmountIn, tokenAmountOut, tokenWeightIn, tokenWeightOut]);
+  }, [currentInputBaseAmount, swapFeeRate, tokenBalanceIn, tokenBalanceOut, tokenWeightIn, tokenWeightOut]);
+
+  const currentOutputDisplayAmount = useMemo(
+    () => toDisplayDenomAmount(currentOutputBaseAmount, inputDisplayAmount ? outputCoin?.decimals || 0 : 0),
+    [currentOutputBaseAmount, inputDisplayAmount, outputCoin?.decimals],
+  );
+
+  const beforeSpotPriceInOverOut = useMemo(() => {
+    try {
+      return calcSpotPrice(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, swapFeeRate);
+    } catch (error) {
+      return '0';
+    }
+  }, [swapFeeRate, tokenBalanceIn, tokenBalanceOut, tokenWeightIn, tokenWeightOut]);
 
   const outputAmountOf1Coin = useMemo(() => {
     try {
-      const weightRatio = divide(tokenWeightIn, tokenWeightOut);
-      const adjustIn = 1;
-      const y = divide(tokenAmountIn, plus(tokenAmountIn, adjustIn));
+      const beforeSpotPriceWithoutSwapFeeInOverOutDec = times(beforeSpotPriceInOverOut, minus(1, swapFeeRate));
+      const multiplicationInOverOut = minus(outputCoin?.decimals || 0, inputCoin?.decimals || 0);
 
-      const foo = Number(y) ** Number(weightRatio);
-      const bar = minus(1, foo);
-      return times(tokenAmountOut, bar);
+      return outputCoin?.decimals === inputCoin?.decimals
+        ? divide(1, beforeSpotPriceWithoutSwapFeeInOverOutDec)
+        : toDisplayDenomAmount(divide(1, beforeSpotPriceWithoutSwapFeeInOverOutDec), Number(multiplicationInOverOut));
     } catch {
       return '0';
     }
-  }, [tokenAmountIn, tokenAmountOut, tokenWeightIn, tokenWeightOut]);
-
-  const currentOutputDisplayAmount = useMemo(
-    () => toDisplayDenomAmount(currentOutputBaseAmount, outputCoin?.decimals || 0),
-    [currentOutputBaseAmount, outputCoin?.decimals],
-  );
+  }, [beforeSpotPriceInOverOut, inputCoin?.decimals, outputCoin?.decimals, swapFeeRate]);
 
   const priceImpact = useMemo(() => {
     try {
-      const beforeSpotPriceInOverOut = calcSpotPrice(tokenAmountIn, tokenWeightIn, tokenAmountOut, tokenWeightOut, swapFeeRate);
-
       const effective = divide(currentInputBaseAmount, currentOutputBaseAmount);
       return minus(divide(effective, beforeSpotPriceInOverOut), '1');
     } catch {
       return '0';
     }
-  }, [tokenAmountIn, tokenWeightIn, tokenAmountOut, tokenWeightOut, swapFeeRate, currentInputBaseAmount, currentOutputBaseAmount]);
+  }, [currentInputBaseAmount, currentOutputBaseAmount, beforeSpotPriceInOverOut]);
 
   const priceImpactPercent = useMemo(() => times(priceImpact, '100'), [priceImpact]);
 
@@ -348,6 +346,12 @@ export default function Entry({ chain }: EntryProps) {
   const swapFeePrice = useMemo(() => times(inputCoinPrice, currentDisplaySwapFeeAmount), [inputCoinPrice, currentDisplaySwapFeeAmount]);
 
   const errorMessage = useMemo(() => {
+    if (!poolsData.data || !poolsAssetData.data) {
+      return t('pages.Wallet.Swap.entry.networkError');
+    }
+    if (gt(currentInputBaseAmount, tokenBalanceIn)) {
+      return t('pages.Wallet.Swap.entry.excessiveSwap');
+    }
     if (!inputDisplayAmount || !gt(inputDisplayAmount, '0')) {
       return t('pages.Wallet.Swap.entry.invalidAmount');
     }
@@ -364,7 +368,17 @@ export default function Entry({ chain }: EntryProps) {
       return t('pages.Wallet.Swap.entry.invalidPriceImpact');
     }
     return '';
-  }, [currentDisplayFeeAmount, currentInputCoinDisplayAvailableAmount, inputDisplayAmount, priceImpactPercent, t]);
+  }, [
+    currentDisplayFeeAmount,
+    currentInputBaseAmount,
+    currentInputCoinDisplayAvailableAmount,
+    inputDisplayAmount,
+    poolsAssetData.data,
+    poolsData.data,
+    priceImpactPercent,
+    t,
+    tokenBalanceIn,
+  ]);
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -416,7 +430,7 @@ export default function Entry({ chain }: EntryProps) {
               </SwapCoinRightHeaderContainer>
             </SwapCoinHeaderContainer>
             <SwapCoinBodyContainer>
-              <SwapCoinLeftButton onClick={() => setIsOpenedInputCoinList(true)}>
+              <SwapCoinLeftButton onClick={() => setIsOpenedInputCoinList(true)} data-is-active={isOpenedInputCoinList}>
                 <SwapCoinLeftImageContainer>
                   <Image src={inputCoin?.image || chain.imageURL} />
                 </SwapCoinLeftImageContainer>
@@ -428,9 +442,7 @@ export default function Entry({ chain }: EntryProps) {
                     <Typography variant="h6">{inputCoin?.chainName || chain.chainName}</Typography>
                   </SwapCoinLeftSubTitleContainer>
                 </SwapCoinLeftInfoContainer>
-                <SwapCoinLeftIcon data-is-active={isOpenedInputCoinList}>
-                  <BottomArrow24Icon />
-                </SwapCoinLeftIcon>
+                <BottomArrow24Icon />
               </SwapCoinLeftButton>
               <SwapCoinRightContainer>
                 <SwapCoinRightTitleContainer>
@@ -471,7 +483,7 @@ export default function Entry({ chain }: EntryProps) {
               </SwapCoinLeftHeaderContainer>
             </SwapCoinHeaderContainer>
             <SwapCoinBodyContainer>
-              <SwapCoinLeftButton onClick={() => setIsOpenedOutputCoinList(true)}>
+              <SwapCoinLeftButton onClick={() => setIsOpenedOutputCoinList(true)} data-is-active={isOpenedOutputCoinList}>
                 <SwapCoinLeftImageContainer>
                   <Image src={outputCoin?.image} />
                 </SwapCoinLeftImageContainer>
@@ -483,9 +495,7 @@ export default function Entry({ chain }: EntryProps) {
                     <Typography variant="h6">{outputCoin?.chainName}</Typography>
                   </SwapCoinLeftSubTitleContainer>
                 </SwapCoinLeftInfoContainer>
-                <SwapCoinLeftIcon data-is-active={isOpenedOutputCoinList}>
-                  <BottomArrow24Icon />
-                </SwapCoinLeftIcon>
+                <BottomArrow24Icon />
               </SwapCoinLeftButton>
               <SwapCoinRightContainer>
                 <SwapCoinRightTitleContainer data-is-active={currentOutputDisplayAmount !== '0'}>
@@ -533,9 +543,7 @@ export default function Entry({ chain }: EntryProps) {
               <SwapInfoSubRightContainer>
                 {inputDisplayAmount && priceImpactPercent ? (
                   <SwapInfoSubRightTextContainer data-is-invalid={gt(priceImpactPercent, 10)}>
-                    <Typography variant="h6n">-</Typography>
-                    &nbsp;
-                    <Typography variant="h6n">{'<'}</Typography>
+                    <Typography variant="h6n">{` - ${lt(priceImpactPercent, 0.01) ? `<` : ``}`}</Typography>
                     &nbsp;
                     <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
                       {priceImpactPercent}
@@ -556,11 +564,7 @@ export default function Entry({ chain }: EntryProps) {
               <SwapInfoSubRightContainer>
                 {inputDisplayAmount && swapFeePrice ? (
                   <SwapInfoSubRightTextContainer>
-                    <Typography variant="h6">≈</Typography>
-                    &nbsp;
-                    <Typography variant="h6n">{'<'}</Typography>
-                    &nbsp;
-                    <Typography variant="h5n">{currency && `${CURRENCY_SYMBOL[currency]} `}</Typography>
+                    <Typography variant="h6n">{` ≈ ${lt(swapFeePrice, 0.01) ? `<` : ``} ${currency ? CURRENCY_SYMBOL[currency] : ``}`}</Typography>
                     &nbsp;
                     <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
                       {swapFeePrice}

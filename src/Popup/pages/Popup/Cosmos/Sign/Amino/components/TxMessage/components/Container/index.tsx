@@ -5,11 +5,12 @@ import { StyledContainer, StyledDivider, TitleContainer } from './styled';
 type ContainerProps = {
   title: string;
   children?: JSX.Element;
+  msgLength?: number;
 };
 
-export default function Container({ title, children }: ContainerProps) {
+export default function Container({ title, children, msgLength }: ContainerProps) {
   return (
-    <StyledContainer>
+    <StyledContainer data-is-length={msgLength ? msgLength > 1 : false}>
       <TitleContainer>
         <Typography variant="h4">{title}</Typography>
       </TitleContainer>

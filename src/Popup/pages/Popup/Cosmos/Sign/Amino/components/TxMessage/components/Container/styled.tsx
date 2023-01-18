@@ -2,13 +2,16 @@ import { styled } from '@mui/material/styles';
 
 import Divider from '~/Popup/components/common/Divider';
 
-export const StyledContainer = styled('div')(({ theme }) => ({
+type StyledContainerProps = {
+  'data-is-length': boolean;
+};
+export const StyledContainer = styled('div')<StyledContainerProps>(({ theme, ...props }) => ({
   padding: '1.6rem',
 
   backgroundColor: theme.colors.base02,
   borderRadius: '0.8rem',
 
-  height: '15.7rem',
+  height: props['data-is-length'] ? '15.7rem' : '18.7rem',
   overflow: 'auto',
 }));
 

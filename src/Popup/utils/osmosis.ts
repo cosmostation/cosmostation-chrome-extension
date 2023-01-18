@@ -17,7 +17,7 @@ export function calcOutGivenIn(
   tokenAmountIn: string,
   swapFee: string,
 ) {
-  const weightRatio = times(tokenAmountIn, divide(tokenWeightIn, tokenWeightOut));
+  const weightRatio = divide(tokenWeightIn, tokenWeightOut);
 
   const adjustedIn = times(tokenAmountIn, minus(1, swapFee));
 

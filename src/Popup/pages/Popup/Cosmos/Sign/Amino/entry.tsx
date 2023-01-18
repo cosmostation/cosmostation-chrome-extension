@@ -128,7 +128,7 @@ export default function Entry({ queue, chain }: EntryProps) {
           </Tabs>
         </TabContainer>
         <TabPanel value={value} index={0}>
-          <TxMessage msg={msgs[txMsgPage - 1]} chain={chain} />
+          <TxMessage msg={msgs[txMsgPage - 1]} chain={chain} msgLength={msgs.length} />
           {msgs.length > 1 && (
             <PaginationContainer>
               <Pagination currentPage={txMsgPage} totalPage={msgs.length} onChange={(page) => setTxMsgPage(page)} />

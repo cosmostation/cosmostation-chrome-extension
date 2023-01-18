@@ -145,11 +145,6 @@ export const ButtonContainer = styled('div')({
   columnGap: '0.8rem',
 });
 
-export const ButtonCenterContainer = styled('div')({
-  width: '0.8rem',
-  flexShrink: 0,
-});
-
 export const StyledAccordion = styled((props: AccordionProps) => <Accordion disableGutters elevation={0} square {...props} />)({
   border: 0,
 

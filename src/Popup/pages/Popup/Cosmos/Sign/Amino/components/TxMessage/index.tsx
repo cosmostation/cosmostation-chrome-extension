@@ -8,11 +8,11 @@ import Reward from './messages/Reward';
 import Send from './messages/Send';
 import Swap from './messages/Swap';
 
-type TxMessageProps = { chain: CosmosChain; msg: Msg };
+type TxMessageProps = { chain: CosmosChain; msg: Msg; msgLength: number };
 
-export default function TxMessage({ chain, msg }: TxMessageProps) {
+export default function TxMessage({ chain, msg, msgLength }: TxMessageProps) {
   if (isAminoSend(msg)) {
-    return <Send msg={msg} chain={chain} />;
+    return <Send msg={msg} chain={chain} msgLength={msgLength} />;
   }
 
   if (isAminoIBCSend(msg)) {

@@ -1100,12 +1100,14 @@
           }
         },
         "entry": {
+          "excessiveSwap": "유동성 풀에 예치된 토큰의 수량보다 더 교환할 수 없습니다.",
           "expectedOutput": "예상 교환치",
           "insufficientAmount": "수량이 부족합니다.",
           "insufficientFeeAmount": "수수료가 부족합니다.",
           "invalidAmount": "수량을 입력하세요.",
           "invalidPriceImpact": "가격 변동치가 지나치게 높습니다.",
           "minimumReceived": "슬리피지 이후 받을 최소수량",
+          "networkError": "네트워크 오류",
           "priceImpact": "가격 변동치",
           "swapFee": "교환 수수료",
           "title": "교환"

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { Typography } from '@mui/material';
 
 import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
@@ -12,7 +12,9 @@ import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { Msg, MsgSwapExactAmountIn } from '~/types/cosmos/amino';
 
 import {
+  Container,
   ContentContainer,
+  HeaderContainer,
   InputCoinContainer,
   InputCoinImageContainer,
   LabelContainer,
@@ -20,9 +22,14 @@ import {
   OutputCoinImageContainer,
   PoolContainer,
   RoutesContainer,
+  StyledDivider,
+  SwapCoinContainer,
+  SwapCoinImageContainer,
+  SwapCoinInfoContainer,
+  SwapCoinSubTitleContainer,
+  SwapCoinTitleContainer,
   ValueContainer,
 } from './styled';
-import Container from '../../components/Container';
 
 type SwapProps = {
   msg: Msg<MsgSwapExactAmountIn>;
@@ -34,11 +41,17 @@ export default function Swap({ msg }: SwapProps) {
   const { chromeStorage } = useChromeStorage();
   const { currency } = chromeStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
+
+  const containerAreaRef = useRef<HTMLDivElement>(null);
+  const contentsContainerHeight = `${containerAreaRef.current?.clientHeight ? containerAreaRef.current.clientHeight * 0.1 - 6 : 15.7}rem`;
+
   const { value } = msg;
 
   const { token_in, token_out_min_amount, routes } = value;
+
   const inputCoin = useMemo(() => currentChainAssets.data.find((item) => item.denom === token_in.denom), [currentChainAssets.data, token_in.denom]);
   const outputCoin = useMemo(() => currentChainAssets.data.find((item) => item.denom === routes[0].token_out_denom), [currentChainAssets.data, routes]);
+
   const inputDisplayAmount = useMemo(() => toDisplayDenomAmount(token_in.amount, inputCoin?.decimals || 0), [inputCoin?.decimals, token_in.amount]);
   const outputDisplayAmount = useMemo(
     () => toDisplayDenomAmount(token_out_min_amount, outputCoin?.decimals || 0),
@@ -59,8 +72,42 @@ export default function Swap({ msg }: SwapProps) {
   const outputCoinAmountPrice = useMemo(() => times(outputDisplayAmount || '0', outputCoinPrice), [outputDisplayAmount, outputCoinPrice]);
 
   return (
-    <Container title="Osmosis Swap">
-      <ContentContainer>
+    <Container ref={containerAreaRef}>
+      <HeaderContainer>
+        <SwapCoinContainer>
+          <SwapCoinImageContainer>
+            <Image src={inputCoin?.image} />
+          </SwapCoinImageContainer>
+          <SwapCoinInfoContainer>
+            <SwapCoinTitleContainer>
+              <Typography variant="h4">{inputCoin?.symbol}</Typography>
+            </SwapCoinTitleContainer>
+            <SwapCoinSubTitleContainer>
+              <Number typoOfIntegers="h6n" typoOfDecimals="h7n">
+                {inputDisplayAmount}
+              </Number>
+            </SwapCoinSubTitleContainer>
+          </SwapCoinInfoContainer>
+        </SwapCoinContainer>
+        <SwapCoinContainer>
+          <Typography variant="h4">→</Typography>
+          <SwapCoinImageContainer>
+            <Image src={outputCoin?.image} />
+          </SwapCoinImageContainer>
+          <SwapCoinInfoContainer>
+            <SwapCoinTitleContainer>
+              <Typography variant="h4">{outputCoin?.symbol}</Typography>
+            </SwapCoinTitleContainer>
+            <SwapCoinSubTitleContainer>
+              <Number typoOfIntegers="h6n" typoOfDecimals="h7n">
+                {`≈ ${outputDisplayAmount}`}
+              </Number>
+            </SwapCoinSubTitleContainer>
+          </SwapCoinInfoContainer>
+        </SwapCoinContainer>
+      </HeaderContainer>
+      <StyledDivider />
+      <ContentContainer data-height={contentsContainerHeight}>
         <InputCoinContainer>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.tokenIn')}</Typography>

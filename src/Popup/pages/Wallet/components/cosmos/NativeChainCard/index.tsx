@@ -36,7 +36,6 @@ import type { MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
 
 import ClaimRewardButton from './components/ClaimRewardButton';
 import {
-  ButtonCenterContainer,
   ButtonContainer,
   Container,
   ErrorDescriptionContainer,
@@ -352,7 +351,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
             <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/swap')}>
               <SwapIcon />
             </UnitIconButton>
-            <UnitIconButton onClick={() => navigate('/wallet/send')}>
+            <UnitIconButton disabled>
               <BuyIcon />
             </UnitIconButton>
           </IconButtonContainer>
@@ -616,10 +615,19 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.depositButton')}
         </Button>
-        <ButtonCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
+        {chain.id === OSMOSIS.id && (
+          <IconButtonContainer>
+            <UnitIconButton disabled>
+              <SwapIcon />
+            </UnitIconButton>
+            <UnitIconButton disabled>
+              <BuyIcon />
+            </UnitIconButton>
+          </IconButtonContainer>
+        )}
       </ButtonContainer>
       {isLoading && <StyledAbsoluteLoading size="2.5rem" />}
     </Container>

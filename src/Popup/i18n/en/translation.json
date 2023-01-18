@@ -1100,12 +1100,14 @@
           }
         },
         "entry": {
+          "excessiveSwap": "Can't swap Token more than Token amounts in the pool",
           "expectedOutput": "Expected Output",
           "insufficientAmount": "Insufficient amount",
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",
           "invalidPriceImpact": "Too high Price Impact",
           "minimumReceived": "Minimum received after slippage",
+          "networkError": "Network Error",
           "priceImpact": "Price Impact",
           "swapFee": "Swap Fee",
           "title": "Swap"
