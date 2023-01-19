@@ -2,13 +2,16 @@ import { styled } from '@mui/material/styles';
 
 import Divider from '~/Popup/components/common/Divider';
 
-export const StyledContainer = styled('div')(({ theme }) => ({
+type StyledContainerProps = {
+  'data-is-multiple'?: boolean;
+};
+export const StyledContainer = styled('div')<StyledContainerProps>(({ theme, ...props }) => ({
   padding: '1.6rem',
 
   backgroundColor: theme.colors.base02,
   borderRadius: '0.8rem',
 
-  height: '15.7rem',
+  height: props['data-is-multiple'] ? '15.7rem' : '18.7rem',
   overflow: 'auto',
 }));
 
@@ -18,5 +21,4 @@ export const TitleContainer = styled('div')(({ theme }) => ({
 
 export const StyledDivider = styled(Divider)({
   marginTop: '1.6rem',
-  marginBottom: '1.2rem',
 });

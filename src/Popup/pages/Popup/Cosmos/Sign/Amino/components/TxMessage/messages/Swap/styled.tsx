@@ -2,18 +2,23 @@ import { styled } from '@mui/material/styles';
 
 import Divider from '~/Popup/components/common/Divider';
 
-export const Container = styled('div')(({ theme }) => ({
+type ContainerProps = {
+  'data-is-multiple': boolean;
+};
+export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => ({
   padding: '1.3rem 1.6rem',
 
   backgroundColor: theme.colors.base02,
   borderRadius: '0.8rem',
 
-  height: '15.7rem',
+  height: props['data-is-multiple'] ? '15.7rem' : '18.7rem',
 }));
 
 export const HeaderContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
+
+  position: 'relative',
 });
 
 export const SwapCoinContainer = styled('div')({
@@ -21,6 +26,26 @@ export const SwapCoinContainer = styled('div')({
   justifyContent: 'flex-start',
   alignItems: 'center',
 });
+
+export const AfterSwapCoinContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+
+  position: 'absolute',
+  top: '50%',
+  left: '75%',
+  transform: `translate(-50%, -50%)`,
+});
+
+export const SwapDirectionArrowContainer = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: `translate(-50%, -50%)`,
+
+  color: theme.colors.base05,
+}));
 
 export const SwapCoinImageContainer = styled('div')({
   width: '3.2rem',
@@ -49,43 +74,35 @@ export const SwapCoinSubTitleContainer = styled('div')(({ theme }) => ({
   textAlign: 'left',
 }));
 
+export const SwapCoinAmountContainer = styled('div')({
+  maxWidth: '8rem',
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
 export const StyledDivider = styled(Divider)({
   marginTop: '1.6rem',
-  marginBottom: '1.2rem',
 });
+
 type ContentContainerProps = {
-  'data-height': string;
+  'data-is-multiple': boolean;
 };
 export const ContentContainer = styled('div')<ContentContainerProps>(({ theme, ...props }) => ({
   color: theme.colors.text01,
 
-  height: props['data-height'],
+  height: `${(props['data-is-multiple'] ? 15.7 : 18.7) - 8.08}rem`,
 
   whiteSpace: 'pre-wrap',
   wordBreak: 'break-all',
+
+  paddingTop: '1.2rem',
 
   overflow: 'auto',
 }));
 
 export const InputCoinContainer = styled('div')({});
-
-export const InputCoinImageContainer = styled('div')({
-  width: '3.2rem',
-  height: '3.2rem',
-  '& > img': {
-    width: '3.2rem',
-    height: '3.2rem',
-  },
-});
-
-export const OutputCoinImageContainer = styled('div')({
-  width: '3.2rem',
-  height: '3.2rem',
-  '& > img': {
-    width: '3.2rem',
-    height: '3.2rem',
-  },
-});
 
 export const OutputCoinContainer = styled('div')({});
 
@@ -95,41 +112,25 @@ export const PoolContainer = styled('div')({});
 
 export const LabelContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
+  display: 'flex',
+  justifyContent: 'space-between',
 }));
 
 export const ValueContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
   marginTop: '0.4rem',
-}));
 
-export const AmountInfoContainer = styled('div')({
-  paddingTop: '0.4rem',
-  paddingBottom: '0.4rem',
   display: 'flex',
   justifyContent: 'space-between',
-});
-
-export const LeftContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text02,
 }));
-
-export const RightContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-end',
-});
 
 export const RightColumnContainer = styled('div')({});
 
 export const RightAmountContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'flex-end',
-
   color: theme.colors.text01,
 }));
 
 export const RightValueContainer = styled('div')(({ theme }) => ({
-  marginTop: '0.2rem',
-
   display: 'flex',
   justifyContent: 'flex-end',
 

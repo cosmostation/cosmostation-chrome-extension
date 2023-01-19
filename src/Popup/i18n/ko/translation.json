@@ -660,6 +660,8 @@
                   },
                   "Swap": {
                     "index": {
+                      "amount": "교환 수량",
+                      "expectedOutput": "예상 교환치",
                       "poolId": "풀 Id",
                       "routes": "경로",
                       "tokenIn": "보낼 코인",

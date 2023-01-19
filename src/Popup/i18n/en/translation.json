@@ -660,6 +660,8 @@
                   },
                   "Swap": {
                     "index": {
+                      "amount": "Amount",
+                      "expectedOutput": "Expected Output",
                       "poolId": "Pool Id",
                       "routes": "Route",
                       "tokenIn": "From",
