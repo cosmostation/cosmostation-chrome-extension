@@ -145,13 +145,13 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                     const cosmosApp = new CosmosApp(transport);
 
-                    await cosmosApp.init();
+                    const coinType = chain.bip44.coinType.replaceAll("'", '');
 
-                    const path = new Uint8Array([44, 118, 0, 0, Number(currentAccount.bip44.addressIndex)]);
+                    const path = [44, Number(coinType), 0, 0, Number(currentAccount.bip44.addressIndex)];
 
                     const { compressed_pk } = await cosmosApp.getPublicKey(path);
 
-                    const ledgerAddress = getAddress(chain, compressed_pk);
+                    const ledgerAddress = getAddress(chain, Buffer.from(compressed_pk));
 
                     if (!isEqualsIgnoringCase(address, ledgerAddress)) {
                       throw new Error('Account address and Ledger address are not the same.');

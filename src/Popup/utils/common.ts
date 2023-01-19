@@ -1,4 +1,6 @@
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
+import { MEDIBLOC } from '~/constants/chain/cosmos/medibloc';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { getAddress as getAptosAddress } from '~/Popup/utils/aptos';
 import { getAddress as getBech32Address, getAddressForEthermint } from '~/Popup/utils/cosmos';
@@ -79,6 +81,14 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
   if (account.type === 'LEDGER') {
     if (chain.bip44.coinType === COSMOS.bip44.coinType && account.cosmosPublicKey) {
       return { privateKey: null, publicKey: Buffer.from(account.cosmosPublicKey, 'hex') };
+    }
+
+    if (chain.bip44.coinType === MEDIBLOC.bip44.coinType && account.mediblocPublicKey) {
+      return { privateKey: null, publicKey: Buffer.from(account.mediblocPublicKey, 'hex') };
+    }
+
+    if (chain.bip44.coinType === CRYPTO_ORG.bip44.coinType && account.cryptoOrgPublicKey) {
+      return { privateKey: null, publicKey: Buffer.from(account.cryptoOrgPublicKey, 'hex') };
     }
 
     if (chain.bip44.coinType === ETHEREUM.bip44.coinType && account.ethereumPublicKey) {

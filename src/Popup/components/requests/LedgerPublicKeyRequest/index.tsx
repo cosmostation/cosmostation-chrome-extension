@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useSnackbar } from 'notistack';
 import EthereumApp from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
@@ -42,7 +43,9 @@ import {
 
 import Step1Icon from './assets/Step1.svg';
 import Step2CosmosIcon from './assets/Step2Cosmos.svg';
+import Step2CryptoOrg from './assets/Step2CryptoOrg.svg';
 import Step2EthereumIcon from './assets/Step2Ethereum.svg';
+import Step2Medibloc from './assets/Step2Medibloc.svg';
 import BottomArrow28Icon from '~/images/icons/BottomArrow28.svg';
 
 type AccessRequestProps = {
@@ -66,7 +69,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
   const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
 
-  const chain = (() => {
+  const chain = useMemo(() => {
     if (isCosmos(currentQueue) && !!currentQueue?.message?.params?.chainName) {
       return [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
     }
@@ -76,28 +79,38 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
     }
 
     return undefined;
-  })();
+  }, [currentCosmosAdditionalChains, currentQueue, ethereumPopupMethods]);
 
   if (currentAccount.type === 'LEDGER' && chain && currentQueue) {
-    if (chain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS && chain.line === 'COSMOS') {
+    if (
+      ![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG].includes(chain.bip44.coinType) &&
+      chain.line === 'COSMOS'
+    ) {
       return null;
     }
 
     if (
       (!currentAccount.cosmosPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS && chain.line === 'COSMOS') ||
+      (!currentAccount.mediblocPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC && chain.line === 'COSMOS') ||
+      (!currentAccount.cryptoOrgPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG && chain.line === 'COSMOS') ||
       (!currentAccount.ethereumPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM && chain.line === 'ETHEREUM')
     ) {
       const Step2 = (() => {
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) return Step2CosmosIcon;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) return Step2EthereumIcon;
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) return Step2Medibloc;
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG) return Step2CryptoOrg;
         return null;
       })();
 
       const appName = (() => {
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) return 'Cosmos';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) return 'Ethereum';
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) return 'Medibloc';
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG) return 'Crypto.org Chain';
         return null;
       })();
+
       return (
         <BaseLayout>
           <Container>
@@ -171,14 +184,40 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                     if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
                       const cosmosApp = new CosmosApp(transport);
 
-                      await cosmosApp.init();
-
-                      const result = await cosmosApp.getPublicKey(new Uint8Array([44, 118, 0, 0, Number(currentAccount.bip44.addressIndex)]));
+                      const result = await cosmosApp.getPublicKey([44, 118, 0, 0, Number(currentAccount.bip44.addressIndex)]);
 
                       const publicKey = Buffer.from(result.compressed_pk).toString('hex');
 
                       if (accountIndex > -1) {
                         newAccounts.splice(accountIndex, 1, { ...currentAccount, cosmosPublicKey: publicKey });
+
+                        await setChromeStorage('accounts', newAccounts);
+                      }
+                    }
+
+                    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) {
+                      const cosmosApp = new CosmosApp(transport);
+
+                      const result = await cosmosApp.getPublicKey([44, 371, 0, 0, Number(currentAccount.bip44.addressIndex)]);
+
+                      const publicKey = Buffer.from(result.compressed_pk).toString('hex');
+
+                      if (accountIndex > -1) {
+                        newAccounts.splice(accountIndex, 1, { ...currentAccount, mediblocPublicKey: publicKey });
+
+                        await setChromeStorage('accounts', newAccounts);
+                      }
+                    }
+
+                    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG) {
+                      const cosmosApp = new CosmosApp(transport);
+
+                      const result = await cosmosApp.getPublicKey([44, 394, 0, 0, Number(currentAccount.bip44.addressIndex)]);
+
+                      const publicKey = Buffer.from(result.compressed_pk).toString('hex');
+
+                      if (accountIndex > -1) {
+                        newAccounts.splice(accountIndex, 1, { ...currentAccount, cryptoOrgPublicKey: publicKey });
 
                         await setChromeStorage('accounts', newAccounts);
                       }

@@ -55,7 +55,8 @@ export default function LedgerCheck({ children }: LedgerCheckProps) {
 
   if (currentAccount.type === 'LEDGER') {
     if (
-      (currentChain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS && currentChain.line === 'COSMOS') ||
+      (![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG].includes(currentChain.bip44.coinType) &&
+        currentChain.line === 'COSMOS') ||
       currentChain.line === 'APTOS' ||
       currentChain.line === 'SUI'
     ) {
@@ -74,6 +75,8 @@ export default function LedgerCheck({ children }: LedgerCheckProps) {
 
     if (
       (!currentAccount.cosmosPublicKey && currentChain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS && currentChain.line === 'COSMOS') ||
+      (!currentAccount.mediblocPublicKey && currentChain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC && currentChain.line === 'COSMOS') ||
+      (!currentAccount.cryptoOrgPublicKey && currentChain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG && currentChain.line === 'COSMOS') ||
       (!currentAccount.ethereumPublicKey && currentChain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM && currentChain.line === 'ETHEREUM')
     ) {
       return (
