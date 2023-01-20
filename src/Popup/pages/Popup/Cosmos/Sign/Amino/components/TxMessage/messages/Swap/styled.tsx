@@ -35,7 +35,7 @@ export const AfterSwapCoinContainer = styled('div')({
   position: 'absolute',
   top: '50%',
   left: '75%',
-  transform: `translate(-50%, -50%)`,
+  transform: `translate(-40%, -50%)`,
 });
 
 export const SwapDirectionArrowContainer = styled('div')(({ theme }) => ({
@@ -72,15 +72,17 @@ export const SwapCoinTitleContainer = styled('div')(({ theme }) => ({
 export const SwapCoinSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
   textAlign: 'left',
-}));
 
-export const SwapCoinAmountContainer = styled('div')({
+  display: 'flex',
+
+  whiteSpace: 'nowrap',
+
   maxWidth: '8rem',
   '& > *': {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
-});
+}));
 
 export const StyledDivider = styled(Divider)({
   marginTop: '1.6rem',

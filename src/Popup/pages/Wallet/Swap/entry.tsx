@@ -358,11 +358,13 @@ export default function Entry({ chain }: EntryProps) {
     if (!gte(currentInputCoinDisplayAvailableAmount, inputDisplayAmount)) {
       return t('pages.Wallet.Swap.entry.insufficientAmount');
     }
-    if (!gte(currentInputCoinDisplayAvailableAmount, plus(inputDisplayAmount, currentDisplayFeeAmount))) {
-      return t('pages.Wallet.Swap.entry.insufficientAmount');
-    }
-    if (!gte(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
-      return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
+    if (inputCoin?.denom === currentFeeCoin.baseDenom) {
+      if (!gte(currentInputCoinDisplayAvailableAmount, plus(inputDisplayAmount, currentDisplayFeeAmount))) {
+        return t('pages.Wallet.Swap.entry.insufficientAmount');
+      }
+      if (!gte(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
+        return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
+      }
     }
     if (gt(priceImpactPercent, 10)) {
       return t('pages.Wallet.Swap.entry.invalidPriceImpact');
@@ -370,8 +372,10 @@ export default function Entry({ chain }: EntryProps) {
     return '';
   }, [
     currentDisplayFeeAmount,
+    currentFeeCoin.baseDenom,
     currentInputBaseAmount,
     currentInputCoinDisplayAvailableAmount,
+    inputCoin?.denom,
     inputDisplayAmount,
     poolsAssetData.data,
     poolsData.data,

@@ -25,7 +25,6 @@ import {
   RightValueContainer,
   RoutesContainer,
   StyledDivider,
-  SwapCoinAmountContainer,
   SwapCoinContainer,
   SwapCoinImageContainer,
   SwapCoinInfoContainer,
@@ -102,11 +101,9 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
               <Typography variant="h4">{outputCoin?.symbol}</Typography>
             </SwapCoinTitleContainer>
             <SwapCoinSubTitleContainer>
-              <SwapCoinAmountContainer>
-                <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                  {`≈ ${outputDisplayAmount}`}
-                </Number>
-              </SwapCoinAmountContainer>
+              <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                {`≈ ${outputDisplayAmount}`}
+              </Number>
             </SwapCoinSubTitleContainer>
           </SwapCoinInfoContainer>
         </AfterSwapCoinContainer>
@@ -116,7 +113,7 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
         <InputCoinContainer>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.tokenIn')}</Typography>
-            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.amount')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.swapAmount')}</Typography>
           </LabelContainer>
           <ValueContainer>
             <Typography variant="h5">{inputCoin?.symbol}</Typography>

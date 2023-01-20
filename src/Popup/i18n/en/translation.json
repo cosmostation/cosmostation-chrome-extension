@@ -660,7 +660,7 @@
                   },
                   "Swap": {
                     "index": {
-                      "amount": "Amount",
+                      "swapAmount": "Swap Amount",
                       "expectedOutput": "Expected Output",
                       "poolId": "Pool Id",
                       "routes": "Route",

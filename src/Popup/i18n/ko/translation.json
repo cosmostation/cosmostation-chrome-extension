@@ -660,7 +660,7 @@
                   },
                   "Swap": {
                     "index": {
-                      "amount": "교환 수량",
+                      "swapAmount": "교환 수량",
                       "expectedOutput": "예상 교환치",
                       "poolId": "풀 Id",
                       "routes": "경로",
