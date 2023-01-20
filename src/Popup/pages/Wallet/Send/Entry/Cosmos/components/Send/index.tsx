@@ -18,6 +18,7 @@ import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
+import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
@@ -33,11 +34,24 @@ import { protoTx } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKey } from '~/types/chain';
 
-import { BottomContainer, Container, MarginTop8Div, MarginTop12Div, MarginTop16Div, MaxButton, StyledInput, StyledTextarea } from './styled';
+import {
+  Address,
+  AddressContainer,
+  BottomContainer,
+  CheckAddressIconContainer,
+  Container,
+  MarginTop8Div,
+  MarginTop12Div,
+  MarginTop16Div,
+  MaxButton,
+  StyledInput,
+  StyledTextarea,
+} from './styled';
 import CoinOrTokenPopover from '../CoinOrTokenPopover';
 
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
+import CheckAddress16Icon from '~/images/icons/CheckAddress16.svg';
 
 export const TYPE = {
   COIN: 'coin',
@@ -117,6 +131,9 @@ export default function Send({ chain }: CosmosProps) {
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
   const [currentAddress, setCurrentAddress] = useState('');
+
+  const [debouncedCurrentAddress] = useDebounce(currentAddress, 500);
+
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
   const [currentMemo, setCurrentMemo] = useState('');
 
@@ -124,6 +141,13 @@ export default function Send({ chain }: CosmosProps) {
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
 
   const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
+
+  const { data: ICNS } = useICNSSWR({ name: addressRegex.test(debouncedCurrentAddress) ? '' : debouncedCurrentAddress });
+
+  const currentDepositAddress = useMemo(
+    () => (ICNS?.data.bech32_address ? ICNS.data.bech32_address : currentAddress),
+    [ICNS?.data.bech32_address, currentAddress],
+  );
 
   const currentCoinOrToken = useMemo(
     () =>
@@ -192,7 +216,7 @@ export default function Send({ chain }: CosmosProps) {
   const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
 
   const errorMessage = useMemo(() => {
-    if (!addressRegex.test(currentAddress) || address === currentAddress) {
+    if (!addressRegex.test(currentDepositAddress) || address === currentDepositAddress) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.invalidAddress');
     }
 
@@ -220,7 +244,7 @@ export default function Send({ chain }: CosmosProps) {
   }, [
     address,
     addressRegex,
-    currentAddress,
+    currentDepositAddress,
     currentCoinOrToken,
     currentCoinOrTokenDisplayAvailableAmount,
     currentDisplayAmount,
@@ -231,7 +255,7 @@ export default function Send({ chain }: CosmosProps) {
   ]);
 
   const memoizedSendAminoTx = useMemo(() => {
-    if (account.data?.value.account_number && addressRegex.test(currentAddress) && currentDisplayAmount) {
+    if (account.data?.value.account_number && addressRegex.test(currentDepositAddress) && currentDisplayAmount) {
       const sequence = String(account.data?.value.sequence || '0');
 
       if (currentCoinOrToken.type === 'coin') {
@@ -254,7 +278,7 @@ export default function Send({ chain }: CosmosProps) {
               type: chain.chainName === SHENTU.chainName ? 'bank/MsgSend' : 'cosmos-sdk/MsgSend',
               value: {
                 from_address: address,
-                to_address: currentAddress,
+                to_address: currentDepositAddress,
                 amount: [{ amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0), denom: currentCoinOrToken.baseDenom }],
               },
             },
@@ -285,7 +309,7 @@ export default function Send({ chain }: CosmosProps) {
                 contract: currentCoinOrToken.address,
                 msg: {
                   transfer: {
-                    recipient: currentAddress,
+                    recipient: currentDepositAddress,
                     amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
                   },
                 },
@@ -306,7 +330,7 @@ export default function Send({ chain }: CosmosProps) {
     chain.chainId,
     chain.chainName,
     chain.type,
-    currentAddress,
+    currentDepositAddress,
     currentCoinOrToken,
     currentDisplayAmount,
     currentFeeCoin.baseDenom,
@@ -369,6 +393,16 @@ export default function Send({ chain }: CosmosProps) {
           value={currentAddress}
         />
       </div>
+      {ICNS?.data.bech32_address && (
+        <AddressContainer>
+          <CheckAddressIconContainer>
+            <CheckAddress16Icon />
+          </CheckAddressIconContainer>
+          <Address>
+            <Typography variant="h7">{ICNS.data.bech32_address}</Typography>
+          </Address>
+        </AddressContainer>
+      )}
       <MarginTop8Div>
         <DropdownButton
           imgSrc={currentCoinOrToken.imageURL}

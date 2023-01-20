@@ -1,0 +1,5 @@
+@restURL=https://lcd-osmosis.cosmostation.io
+
+### 
+GET {{restURL}}/cosmwasm/wasm/v1/contract/osmo1xk0s8xgktn9x5vwcgtjdxqzadg88fgn33p8u9cnpdxwemvxscvast52cdd/smart/eyJhZGRyZXNzX2J5X2ljbnMiOiB7ImljbnMiOiAiZG9nZW1vcy5vc21vIn19
+
