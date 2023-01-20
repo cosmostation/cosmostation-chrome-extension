@@ -41,6 +41,8 @@ export type LedgerAccount = {
 
   cosmosPublicKey?: string;
   ethereumPublicKey?: string;
+  mediblocPublicKey?: string;
+  cryptoOrgPublicKey?: string;
 };
 
 export type Account = AccountCommon & (MnemonicAccount | PrivateKeyAccount | LedgerAccount);
