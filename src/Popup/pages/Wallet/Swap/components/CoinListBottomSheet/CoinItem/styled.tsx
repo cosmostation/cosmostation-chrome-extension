@@ -1,10 +1,10 @@
 import { styled } from '@mui/material/styles';
 
-type ChainButtonProps = {
+type CoinButtonProps = {
   'data-is-active'?: boolean;
 };
 
-export const ChainButton = styled('button')<ChainButtonProps>(({ theme, ...props }) => ({
+export const CoinButton = styled('button')<CoinButtonProps>(({ theme, ...props }) => ({
   backgroundColor: props['data-is-active'] ? theme.colors.base02 : 'transparent',
   border: 0,
 
@@ -26,49 +26,51 @@ export const ChainButton = styled('button')<ChainButtonProps>(({ theme, ...props
   },
 }));
 
-export const ChainLeftContainer = styled('div')({
+export const CoinLeftContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
 });
 
-export const ChainLeftImageContainer = styled('div')({
+export const CoinLeftImageContainer = styled('div')({
   '& > img': {
     width: '2.4rem',
     height: '2.4rem',
   },
 });
 
-export const ChainLeftInfoContainer = styled('div')({
+export const CoinLeftInfoContainer = styled('div')({
   marginLeft: '0.8rem',
+
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
 });
 
-export const ChainLeftTitleContainer = styled('div')(({ theme }) => ({
+export const CoinLeftTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const ChainLeftSubTitleContainer = styled('div')(({ theme }) => ({
+export const CoinLeftSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-export const ChainRightInfoContainer = styled('div')({
+export const CoinRightInfoContainer = styled('div')({
   marginRight: '0.8rem',
+
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-end',
 });
 
-export const ChainRightTitleContainer = styled('div')(({ theme }) => ({
+export const CoinRightTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const ChainRightSubTitleContainer = styled('div')(({ theme }) => ({
+export const CoinRightSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-export const ChainRightIconContainer = styled('div')(({ theme }) => ({
+export const CoinRightIconContainer = styled('div')(({ theme }) => ({
   width: '1.6rem',
   '& > svg': {
     '& > path': {
@@ -77,7 +79,7 @@ export const ChainRightIconContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-export const ChainRightContainer = styled('div')({
+export const CoinRightContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
 });

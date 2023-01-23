@@ -660,10 +660,10 @@
                   },
                   "Swap": {
                     "index": {
-                      "swapAmount": "교환 수량",
                       "expectedOutput": "예상 교환치",
                       "poolId": "풀 Id",
                       "routes": "경로",
+                      "swapAmount": "교환 수량",
                       "tokenIn": "보낼 코인",
                       "tokenOut": "받을 코인"
                     }
@@ -1097,11 +1097,13 @@
           },
           "SlippageSettingDialog": {
             "confirm": "확인",
+            "slippageTolerance": "슬리피지 허용치",
             "title": "설정",
             "toleranceInfo": "가격이 이 비율 이상으로 불리하게 변하면 거래가 취소됩니다."
           }
         },
         "entry": {
+          "availableAmount": "사용 가능 수량",
           "excessiveSwap": "유동성 풀에 예치된 토큰의 수량보다 더 교환할 수 없습니다.",
           "expectedOutput": "예상 교환치",
           "insufficientAmount": "수량이 부족합니다.",

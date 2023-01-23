@@ -25,14 +25,16 @@ import {
   RightValueContainer,
   RoutesContainer,
   StyledDivider,
+  SwapArrowIconContainer,
   SwapCoinContainer,
   SwapCoinImageContainer,
   SwapCoinInfoContainer,
   SwapCoinSubTitleContainer,
   SwapCoinTitleContainer,
-  SwapDirectionArrowContainer,
   ValueContainer,
 } from './styled';
+
+import SwapArrowIcon from '~/images/icons/SwapArrow.svg';
 
 type SwapProps = {
   msg: Msg<MsgSwapExactAmountIn>;
@@ -74,9 +76,6 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
   return (
     <Container data-is-multiple={isMultipleMsgs}>
       <HeaderContainer>
-        <SwapDirectionArrowContainer>
-          <Typography variant="h2">→</Typography>
-        </SwapDirectionArrowContainer>
         <SwapCoinContainer>
           <SwapCoinImageContainer>
             <Image src={inputCoin?.image} />
@@ -93,6 +92,9 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
           </SwapCoinInfoContainer>
         </SwapCoinContainer>
         <AfterSwapCoinContainer>
+          <SwapArrowIconContainer>
+            <SwapArrowIcon />
+          </SwapArrowIconContainer>
           <SwapCoinImageContainer>
             <Image src={outputCoin?.image} />
           </SwapCoinImageContainer>

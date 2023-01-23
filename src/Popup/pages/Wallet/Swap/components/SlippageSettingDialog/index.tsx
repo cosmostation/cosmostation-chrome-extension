@@ -24,23 +24,23 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 
 type SlippageSettingDialogProps = Omit<DialogProps, 'children'> & {
-  selectedSlippage: string;
+  currentSlippage: string;
   onSubmitSlippage?: (slippage: string) => void;
 };
 
-export default function SlippageSettingDialog({ selectedSlippage, onClose, onSubmitSlippage, ...remainder }: SlippageSettingDialogProps) {
+export default function SlippageSettingDialog({ currentSlippage, onClose, onSubmitSlippage, ...remainder }: SlippageSettingDialogProps) {
   const { t } = useTranslation();
 
-  const [slippage, setCurrentSlippage] = useState(selectedSlippage);
+  const [slippage, setCurrentSlippage] = useState(currentSlippage);
   const [customSlippage, setCustomSlippage] = useState('');
 
-  const currentSlippage = useMemo(() => customSlippage || slippage, [customSlippage, slippage]);
+  const selectedSlippage = useMemo(() => customSlippage || slippage, [customSlippage, slippage]);
 
   const handleOnClose = () => {
     onClose?.({}, 'backdropClick');
   };
   const submit = () => {
-    onSubmitSlippage?.(currentSlippage);
+    onSubmitSlippage?.(selectedSlippage);
     handleOnClose();
   };
   return (
@@ -48,7 +48,7 @@ export default function SlippageSettingDialog({ selectedSlippage, onClose, onSub
       <DialogHeader onClose={handleOnClose}>{t('pages.Wallet.Swap.components.SlippageSettingDialog.title')}</DialogHeader>
       <Container>
         <HeaderInfoContainer>
-          <Typography variant="h5">Slippage tolerance</Typography>
+          <Typography variant="h5">{t('pages.Wallet.Swap.components.SlippageSettingDialog.slippageTolerance')}</Typography>
           <StyledTooltip title={t('pages.Wallet.Swap.components.SlippageSettingDialog.toleranceInfo')} placement="bottom" arrow>
             <span>
               <HeaderInfoIconContainer>
@@ -63,7 +63,7 @@ export default function SlippageSettingDialog({ selectedSlippage, onClose, onSub
               setCustomSlippage('');
               setCurrentSlippage('1');
             }}
-            data-is-active={equal(currentSlippage, '1') && !customSlippage}
+            data-is-active={equal(selectedSlippage, '1') && !customSlippage}
           >
             <SlippageButtonTextContainer>
               <Typography variant="h5n">1%</Typography>
@@ -74,7 +74,7 @@ export default function SlippageSettingDialog({ selectedSlippage, onClose, onSub
               setCustomSlippage('');
               setCurrentSlippage('3');
             }}
-            data-is-active={equal(currentSlippage, '3') && !customSlippage}
+            data-is-active={equal(selectedSlippage, '3') && !customSlippage}
           >
             <SlippageButtonTextContainer>
               <Typography variant="h5n">3%</Typography>
@@ -85,7 +85,7 @@ export default function SlippageSettingDialog({ selectedSlippage, onClose, onSub
               setCustomSlippage('');
               setCurrentSlippage('5');
             }}
-            data-is-active={equal(currentSlippage, '5') && !customSlippage}
+            data-is-active={equal(selectedSlippage, '5') && !customSlippage}
           >
             <SlippageButtonTextContainer>
               <Typography variant="h5n">5%</Typography>
@@ -94,7 +94,6 @@ export default function SlippageSettingDialog({ selectedSlippage, onClose, onSub
           <SlippageCustomInputConatiner data-is-active={!!customSlippage}>
             <SlippageCustomInput
               placeholder="Custom"
-              data-is-active={!!customSlippage}
               data-width={Number(times(customSlippage.length, 0.7))}
               onChange={(e) => {
                 if ((!isDecimal(e.currentTarget.value, 2) && e.currentTarget.value) || fix(e.currentTarget.value || '1', 0).length > 2) {

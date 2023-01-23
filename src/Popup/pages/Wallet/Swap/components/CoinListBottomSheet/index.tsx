@@ -31,7 +31,7 @@ export default function CoinListBottomSheet({ currentSelectedCoin, availableCoin
 
   const [debouncedSearch] = useDebounce(search, 500);
 
-  const filteredCoins = debouncedSearch
+  const filteredCoinList = debouncedSearch
     ? availableCoinList.filter(
         (item) =>
           item.chainName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1 || item.symbol.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1,
@@ -73,7 +73,7 @@ export default function CoinListBottomSheet({ currentSelectedCoin, availableCoin
           }}
         />
         <CoinList>
-          {filteredCoins.map((item) => {
+          {filteredCoinList.map((item) => {
             const isActive = item.symbol === currentSelectedCoin?.symbol;
             return (
               <CoinItem

@@ -34,18 +34,13 @@ export const AfterSwapCoinContainer = styled('div')({
 
   position: 'absolute',
   top: '50%',
-  left: '75%',
-  transform: `translate(-40%, -50%)`,
+  left: '50%',
+  transform: `translate(-1.2rem, -50%)`,
 });
 
-export const SwapDirectionArrowContainer = styled('div')(({ theme }) => ({
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: `translate(-50%, -50%)`,
-
-  color: theme.colors.base05,
-}));
+export const SwapArrowIconContainer = styled('div')({
+  marginRight: '1.2rem',
+});
 
 export const SwapCoinImageContainer = styled('div')({
   width: '3.2rem',
@@ -77,7 +72,7 @@ export const SwapCoinSubTitleContainer = styled('div')(({ theme }) => ({
 
   whiteSpace: 'nowrap',
 
-  maxWidth: '8rem',
+  maxWidth: '7.5rem',
   '& > *': {
     overflow: 'hidden',
     textOverflow: 'ellipsis',

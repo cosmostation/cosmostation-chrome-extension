@@ -17,8 +17,10 @@ export const StyledButton = styled(Button)({
 export const HeaderInfoContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
+
   columnGap: '0.533rem',
 });
+
 export const HeaderInfoIconContainer = styled('div')(({ theme }) => ({
   height: '1.6rem',
   '& > svg': {
@@ -96,7 +98,6 @@ export const SlippageCustomInputConatiner = styled('div')<SlippageCustomInputCon
 }));
 
 type SlippageCustomInputProps = {
-  'data-is-active'?: boolean;
   'data-width': number;
 };
 

@@ -9,17 +9,17 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 
 import {
-  ChainButton,
-  ChainLeftContainer,
-  ChainLeftImageContainer,
-  ChainLeftInfoContainer,
-  ChainLeftSubTitleContainer,
-  ChainLeftTitleContainer,
-  ChainRightContainer,
-  ChainRightIconContainer,
-  ChainRightInfoContainer,
-  ChainRightSubTitleContainer,
-  ChainRightTitleContainer,
+  CoinButton,
+  CoinLeftContainer,
+  CoinLeftImageContainer,
+  CoinLeftInfoContainer,
+  CoinLeftSubTitleContainer,
+  CoinLeftTitleContainer,
+  CoinRightContainer,
+  CoinRightIconContainer,
+  CoinRightInfoContainer,
+  CoinRightSubTitleContainer,
+  CoinRightTitleContainer,
 } from './styled';
 import type { ChainAssetInfo } from '../../../entry';
 
@@ -37,13 +37,13 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const inputChainPrice = (coinInfo.coinGeckoId && coinGeckoPrice.data?.[coinInfo.coinGeckoId]?.[chromeStorage.currency]) || 0;
+  const coinPrice = (coinInfo.coinGeckoId && coinGeckoPrice.data?.[coinInfo.coinGeckoId]?.[chromeStorage.currency]) || 0;
 
   const coinDisplayDenomAmount = toDisplayDenomAmount(coinInfo?.availableAmount || '0', coinInfo.decimals);
-  const inputCoinAmountPrice = times(coinDisplayDenomAmount, inputChainPrice);
+  const coinAmountPrice = times(coinDisplayDenomAmount, coinPrice);
 
   return (
-    <ChainButton
+    <CoinButton
       key={coinInfo.denom}
       data-is-active={isActive}
       ref={isActive ? ref : undefined}
@@ -51,39 +51,41 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
         onClickCoin?.(coinInfo);
       }}
     >
-      <ChainLeftContainer>
-        <ChainLeftImageContainer>
+      <CoinLeftContainer>
+        <CoinLeftImageContainer>
           <Image src={coinInfo.image} />
-        </ChainLeftImageContainer>
-        <ChainLeftInfoContainer>
-          <ChainLeftTitleContainer>
+        </CoinLeftImageContainer>
+        <CoinLeftInfoContainer>
+          <CoinLeftTitleContainer>
             <Typography variant="h5">{coinInfo.symbol}</Typography>
-          </ChainLeftTitleContainer>
-          <ChainLeftSubTitleContainer>
+          </CoinLeftTitleContainer>
+          <CoinLeftSubTitleContainer>
             <Typography variant="h6">{coinInfo.chainName}</Typography>
-          </ChainLeftSubTitleContainer>
-        </ChainLeftInfoContainer>
-      </ChainLeftContainer>
-      <ChainRightContainer>
-        <ChainRightInfoContainer>
-          <ChainRightTitleContainer>
-            <Tooltip title={coinDisplayDenomAmount} placement="top" arrow>
-              <div>
-                <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={coinInfo.decimals}>
-                  {coinDisplayDenomAmount}
-                </Number>
-              </div>
-            </Tooltip>
-          </ChainRightTitleContainer>
-          <ChainRightSubTitleContainer>
-            <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
-              {inputCoinAmountPrice}
-            </Number>
-          </ChainRightSubTitleContainer>
-        </ChainRightInfoContainer>
-        <ChainRightIconContainer>{isActive && <Check16Icon />}</ChainRightIconContainer>
-      </ChainRightContainer>
-    </ChainButton>
+          </CoinLeftSubTitleContainer>
+        </CoinLeftInfoContainer>
+      </CoinLeftContainer>
+      {coinInfo.availableAmount && (
+        <CoinRightContainer>
+          <CoinRightInfoContainer>
+            <CoinRightTitleContainer>
+              <Tooltip title={coinDisplayDenomAmount} placement="top" arrow>
+                <div>
+                  <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={coinInfo.decimals}>
+                    {coinDisplayDenomAmount}
+                  </Number>
+                </div>
+              </Tooltip>
+            </CoinRightTitleContainer>
+            <CoinRightSubTitleContainer>
+              <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
+                {coinAmountPrice}
+              </Number>
+            </CoinRightSubTitleContainer>
+          </CoinRightInfoContainer>
+          <CoinRightIconContainer>{isActive && <Check16Icon />}</CoinRightIconContainer>
+        </CoinRightContainer>
+      )}
+    </CoinButton>
   );
 });
 export default CoinItem;
