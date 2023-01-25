@@ -72,7 +72,7 @@ export function fix(number: string, decimal?: number, optional: RoundingMode = 0
 }
 
 export function toDisplayDenomAmount(number: string | number, decimal: number) {
-  return times(number, pow(10, decimal * -1), decimal > 0 ? decimal : undefined);
+  return times(number, pow(10, -decimal), decimal);
 }
 
 export function toBaseDenomAmount(number: string | number, decimal: number) {

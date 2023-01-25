@@ -25,7 +25,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
-import { calcOutGivenIn, calcSpotPrice } from '~/Popup/utils/osmosis';
+import { calcOutGivenIn, calcSpotPrice, decimalScaling } from '~/Popup/utils/osmosis';
 import { protoTx } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { AssetV3 } from '~/types/cosmos/asset';
@@ -206,9 +206,9 @@ export default function Entry({ chain }: EntryProps) {
       const beforeSpotPriceWithoutSwapFeeInOverOutDec = times(beforeSpotPriceInOverOut, minus(1, swapFeeRate));
       const multiplicationInOverOut = minus(outputCoin?.decimals || 0, inputCoin?.decimals || 0);
 
-      return outputCoin?.decimals === inputCoin?.decimals
+      return multiplicationInOverOut === '0'
         ? divide(1, beforeSpotPriceWithoutSwapFeeInOverOutDec)
-        : toDisplayDenomAmount(divide(1, beforeSpotPriceWithoutSwapFeeInOverOutDec, 18), Number(multiplicationInOverOut));
+        : decimalScaling(divide(1, beforeSpotPriceWithoutSwapFeeInOverOutDec, 18), Number(multiplicationInOverOut), outputCoin?.decimals);
     } catch {
       return '0';
     }

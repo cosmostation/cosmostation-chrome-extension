@@ -1,4 +1,4 @@
-import { divide, minus, plus, times } from './big';
+import { divide, minus, plus, pow, times } from './big';
 
 export function calcSpotPrice(tokenBalanceIn: string, tokenWeightIn: string, tokenBalaceOut: string, tokenWeightOut: string, swapFee: string) {
   const calcIn = divide(tokenBalanceIn, tokenWeightIn);
@@ -27,4 +27,8 @@ export function calcOutGivenIn(
   const bar = minus(1, foo);
 
   return times(tokenBalaceOut, bar);
+}
+
+export function decimalScaling(number: string | number, decimalDiff: number, outputCoinDecimal?: number) {
+  return times(number, pow(10, decimalDiff * -1), outputCoinDecimal);
 }
