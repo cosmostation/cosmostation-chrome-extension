@@ -165,7 +165,9 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.routes')}</Typography>
           </LabelContainer>
           <ValueContainer>
-            <Typography variant="h5">{`${inputCoin?.symbol || 'undefined'} / ${outputCoin?.symbol || 'undefined'}`}</Typography>
+            <Typography variant="h5">
+              {inputCoin?.symbol} / {outputCoin?.symbol}
+            </Typography>
           </ValueContainer>
         </RoutesContainer>
 

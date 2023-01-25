@@ -208,7 +208,7 @@ export default function Entry({ chain }: EntryProps) {
 
       return outputCoin?.decimals === inputCoin?.decimals
         ? divide(1, beforeSpotPriceWithoutSwapFeeInOverOutDec)
-        : toDisplayDenomAmount(divide(1, beforeSpotPriceWithoutSwapFeeInOverOutDec), Number(multiplicationInOverOut));
+        : toDisplayDenomAmount(divide(1, beforeSpotPriceWithoutSwapFeeInOverOutDec, 18), Number(multiplicationInOverOut));
     } catch {
       return '0';
     }
@@ -435,7 +435,7 @@ export default function Entry({ chain }: EntryProps) {
                     setInputDisplayAmount(maxDisplayAmount);
                   }}
                 >
-                  <Typography variant="h6n">MAX</Typography>
+                  <Typography variant="h6">MAX</Typography>
                 </MaxButton>
               </SwapCoinBodyRightHeaderContainer>
             </SwapCoinHeaderContainer>
@@ -457,7 +457,7 @@ export default function Entry({ chain }: EntryProps) {
               <SwapCoinBodyRightContainer>
                 <SwapCoinBodyRightTitleContainer>
                   <StyledInput
-                    placeholder={`${inputDisplayAmount || '0'}`}
+                    placeholder="0"
                     value={inputDisplayAmount}
                     onChange={(e) => {
                       if (!isDecimal(e.currentTarget.value, inputCoin?.decimals || 0) && e.currentTarget.value) {
@@ -533,13 +533,13 @@ export default function Entry({ chain }: EntryProps) {
         </SwapContainer>
         <SwapInfoContainer>
           <SwapInfoHeaderContainer>
-            <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={inputCoin?.decimals}>
+            <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(inputCoin?.decimals)}>
               1
             </NumberText>
             &nbsp;
             <Typography variant="h6n">{inputCoin?.symbol} ≈</Typography>
             &nbsp;
-            <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={outputCoin?.decimals}>
+            <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
               {outputAmountOf1Coin}
             </NumberText>
             &nbsp;
