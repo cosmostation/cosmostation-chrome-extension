@@ -2,9 +2,7 @@ import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
-import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
-import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -12,6 +10,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { Msg, MsgSwapExactAmountIn } from '~/types/cosmos/amino';
 
+import CoinAmountInfoContainer from './components/CoinAmountInfoContainer';
 import {
   Container,
   ContentContainer,
@@ -25,11 +24,6 @@ import {
   RightValueContainer,
   RoutesContainer,
   StyledDivider,
-  SwapCoinContainer,
-  SwapCoinImageContainer,
-  SwapCoinInfoContainer,
-  SwapCoinSubTitleContainer,
-  SwapCoinTitleContainer,
   ValueContainer,
 } from './styled';
 
@@ -75,45 +69,9 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
   return (
     <Container data-is-multiple={isMultipleMsgs}>
       <HeaderContainer>
-        <SwapCoinContainer>
-          <SwapCoinImageContainer>
-            <Image src={inputCoin?.image} />
-          </SwapCoinImageContainer>
-          <SwapCoinInfoContainer>
-            <SwapCoinTitleContainer>
-              <Typography variant="h4">{inputCoin?.symbol}</Typography>
-            </SwapCoinTitleContainer>
-            <SwapCoinSubTitleContainer>
-              <Tooltip title={inputDisplayAmount} arrow placement="top">
-                <span>
-                  <Number typoOfIntegers="h6n" typoOfDecimals="h7n">
-                    {inputDisplayAmount}
-                  </Number>
-                </span>
-              </Tooltip>
-            </SwapCoinSubTitleContainer>
-          </SwapCoinInfoContainer>
-        </SwapCoinContainer>
+        <CoinAmountInfoContainer coinImg={inputCoin?.image} displayDenom={inputCoin?.symbol} displayAmount={inputDisplayAmount} />
         <SwapArrowIcon />
-        <SwapCoinContainer>
-          <SwapCoinImageContainer>
-            <Image src={outputCoin?.image} />
-          </SwapCoinImageContainer>
-          <SwapCoinInfoContainer>
-            <SwapCoinTitleContainer>
-              <Typography variant="h4">{outputCoin?.symbol}</Typography>
-            </SwapCoinTitleContainer>
-            <SwapCoinSubTitleContainer>
-              <Tooltip title={outputDisplayAmount} arrow placement="top">
-                <span>
-                  <Number typoOfIntegers="h6n" typoOfDecimals="h7n">
-                    {`≈ ${outputDisplayAmount}`}
-                  </Number>
-                </span>
-              </Tooltip>
-            </SwapCoinSubTitleContainer>
-          </SwapCoinInfoContainer>
-        </SwapCoinContainer>
+        <CoinAmountInfoContainer coinImg={outputCoin?.image} displayDenom={outputCoin?.symbol} displayAmount={outputDisplayAmount} isTilde />
       </HeaderContainer>
       <StyledDivider />
       <ContentContainer>

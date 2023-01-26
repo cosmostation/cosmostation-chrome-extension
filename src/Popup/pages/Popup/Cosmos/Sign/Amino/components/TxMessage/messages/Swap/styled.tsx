@@ -23,53 +23,6 @@ export const HeaderContainer = styled('div')({
   alignItems: 'center',
 });
 
-export const SwapCoinContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-
-  width: '10rem',
-});
-
-export const SwapCoinImageContainer = styled('div')({
-  width: '3.2rem',
-  height: '3.2rem',
-  '& > img': {
-    width: '3.2rem',
-    height: '3.2rem',
-  },
-});
-
-export const SwapCoinInfoContainer = styled('div')({
-  marginLeft: '0.8rem',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-
-  rowGap: '0.1rem',
-});
-
-export const SwapCoinTitleContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text01,
-}));
-
-export const SwapCoinSubTitleContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text01,
-  textAlign: 'left',
-
-  display: 'flex',
-
-  whiteSpace: 'nowrap',
-  wordBreak: 'keep-all',
-
-  maxWidth: '0.6rem',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-}));
-
 export const StyledDivider = styled(Divider)({
   marginTop: '1.6rem',
 });
