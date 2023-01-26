@@ -427,9 +427,13 @@ export default function Entry({ chain }: EntryProps) {
               <SwapCoinBodyRightHeaderContainer>
                 <Typography variant="h6"> {t('pages.Wallet.Swap.entry.availableAmount')} :</Typography>
                 &nbsp;
-                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={inputCoin?.decimals}>
-                  {currentInputCoinDisplayAvailableAmount}
-                </NumberText>
+                <Tooltip title={currentInputCoinDisplayAvailableAmount} arrow placement="top">
+                  <span>
+                    <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(inputCoin?.decimals)}>
+                      {currentInputCoinDisplayAvailableAmount}
+                    </NumberText>
+                  </span>
+                </Tooltip>
                 <MaxButton
                   onClick={() => {
                     setInputDisplayAmount(maxDisplayAmount);
@@ -474,13 +478,9 @@ export default function Entry({ chain }: EntryProps) {
                 </SwapCoinBodyRightTitleContainer>
                 <SwapCoinBodyRightSubTitleContainer>
                   {inputCoinAmountPrice && inputDisplayAmount && (
-                    <Tooltip title={inputCoinAmountPrice} arrow placement="top">
-                      <span>
-                        <NumberText typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={2} currency={currency}>
-                          {inputCoinAmountPrice}
-                        </NumberText>
-                      </span>
-                    </Tooltip>
+                    <NumberText typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={2} currency={currency}>
+                      {inputCoinAmountPrice}
+                    </NumberText>
                   )}
                 </SwapCoinBodyRightSubTitleContainer>
               </SwapCoinBodyRightContainer>
@@ -509,19 +509,19 @@ export default function Entry({ chain }: EntryProps) {
               </SwapCoinBodyLeftButton>
               <SwapCoinBodyRightContainer>
                 <SwapCoinBodyRightTitleContainer data-is-active={currentOutputDisplayAmount !== '0'}>
-                  <NumberText typoOfIntegers="h4n" fixed={currentOutputDisplayAmount !== '0' ? getDisplayMaxDecimals(outputCoin?.decimals) : 0}>
-                    {currentOutputDisplayAmount}
-                  </NumberText>
+                  <Tooltip title={currentOutputDisplayAmount} arrow placement="top">
+                    <span>
+                      <NumberText typoOfIntegers="h4n" fixed={currentOutputDisplayAmount !== '0' ? getDisplayMaxDecimals(outputCoin?.decimals) : 0}>
+                        {currentOutputDisplayAmount}
+                      </NumberText>
+                    </span>
+                  </Tooltip>
                 </SwapCoinBodyRightTitleContainer>
                 <SwapCoinBodyRightSubTitleContainer>
                   {outputCoinAmountPrice && inputDisplayAmount && (
-                    <Tooltip title={outputCoinAmountPrice} arrow placement="top">
-                      <span>
-                        <NumberText typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={2} currency={currency}>
-                          {outputCoinAmountPrice}
-                        </NumberText>
-                      </span>
-                    </Tooltip>
+                    <NumberText typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={2} currency={currency}>
+                      {outputCoinAmountPrice}
+                    </NumberText>
                   )}
                 </SwapCoinBodyRightSubTitleContainer>
               </SwapCoinBodyRightContainer>
@@ -539,9 +539,13 @@ export default function Entry({ chain }: EntryProps) {
             &nbsp;
             <Typography variant="h6n">{inputCoin?.symbol} ≈</Typography>
             &nbsp;
-            <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
-              {outputAmountOf1Coin}
-            </NumberText>
+            <Tooltip title={outputAmountOf1Coin} arrow placement="top">
+              <span>
+                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
+                  {outputAmountOf1Coin}
+                </NumberText>
+              </span>
+            </Tooltip>
             &nbsp;
             <Typography variant="h6n">{outputCoin?.symbol}</Typography>
           </SwapInfoHeaderContainer>
@@ -594,9 +598,13 @@ export default function Entry({ chain }: EntryProps) {
               <SwapInfoBodyRightContainer>
                 {inputDisplayAmount && currentOutputDisplayAmount ? (
                   <SwapInfoBodyRightTextContainer>
-                    <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
-                      {currentOutputDisplayAmount}
-                    </NumberText>
+                    <Tooltip title={currentOutputDisplayAmount} arrow placement="top">
+                      <span>
+                        <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
+                          {currentOutputDisplayAmount}
+                        </NumberText>
+                      </span>
+                    </Tooltip>
                     &nbsp;
                     <Typography variant="h6n">{outputCoin?.symbol}</Typography>
                   </SwapInfoBodyRightTextContainer>
@@ -616,9 +624,13 @@ export default function Entry({ chain }: EntryProps) {
               <SwapInfoBodyRightContainer>
                 {inputDisplayAmount && tokenOutMinDisplayAmount ? (
                   <SwapInfoBodyRightTextContainer>
-                    <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
-                      {tokenOutMinDisplayAmount}
-                    </NumberText>
+                    <Tooltip title={tokenOutMinDisplayAmount} arrow placement="top">
+                      <span>
+                        <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
+                          {tokenOutMinDisplayAmount}
+                        </NumberText>
+                      </span>
+                    </Tooltip>
                     &nbsp;
                     <Typography variant="h6n">{outputCoin?.symbol}</Typography>
                   </SwapInfoBodyRightTextContainer>

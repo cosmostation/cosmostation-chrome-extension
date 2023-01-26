@@ -101,7 +101,7 @@ export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
 
   return (
     <Container title="IBC Send" isMultipleMsgs={isMultipleMsgs}>
-      <ContentContainer data-is-multiple={isMultipleMsgs}>
+      <ContentContainer>
         <AddressContainer>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.IBCSend.index.sender')}</Typography>

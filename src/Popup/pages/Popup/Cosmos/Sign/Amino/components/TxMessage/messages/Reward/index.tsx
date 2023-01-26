@@ -14,7 +14,7 @@ export default function IBCSend({ msg, isMultipleMsgs }: IBCSendProps) {
 
   return (
     <Container title={t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Reward.index.title')} isMultipleMsgs={isMultipleMsgs}>
-      <ContentContainer data-is-multiple={isMultipleMsgs}>
+      <ContentContainer>
         <AddressContainer>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Reward.index.delegatorAddress')}</Typography>

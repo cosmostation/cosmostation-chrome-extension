@@ -7,6 +7,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 
 import {
   CoinButton,
@@ -70,7 +71,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
             <CoinRightTitleContainer>
               <Tooltip title={coinDisplayDenomAmount} placement="top" arrow>
                 <div>
-                  <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={coinInfo.decimals}>
+                  <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(coinInfo.decimals)}>
                     {coinDisplayDenomAmount}
                   </Number>
                 </div>

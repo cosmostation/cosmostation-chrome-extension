@@ -12,7 +12,9 @@ export const StyledContainer = styled('div')<StyledContainerProps>(({ theme, ...
   borderRadius: '0.8rem',
 
   height: props['data-is-multiple'] ? '15.7rem' : '18.7rem',
-  overflow: 'auto',
+
+  display: 'flex',
+  flexDirection: 'column',
 }));
 
 export const TitleContainer = styled('div')(({ theme }) => ({

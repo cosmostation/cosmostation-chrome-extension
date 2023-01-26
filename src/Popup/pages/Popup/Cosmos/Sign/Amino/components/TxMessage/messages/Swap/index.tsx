@@ -4,6 +4,7 @@ import { Typography } from '@mui/material';
 import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -85,9 +86,13 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
               <Typography variant="h4">{inputCoin?.symbol}</Typography>
             </SwapCoinTitleContainer>
             <SwapCoinSubTitleContainer>
-              <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                {inputDisplayAmount}
-              </Number>
+              <Tooltip title={inputDisplayAmount} arrow placement="top">
+                <span>
+                  <Number typoOfIntegers="h6n" typoOfDecimals="h7n">
+                    {inputDisplayAmount}
+                  </Number>
+                </span>
+              </Tooltip>
             </SwapCoinSubTitleContainer>
           </SwapCoinInfoContainer>
         </SwapCoinContainer>
@@ -103,15 +108,19 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
               <Typography variant="h4">{outputCoin?.symbol}</Typography>
             </SwapCoinTitleContainer>
             <SwapCoinSubTitleContainer>
-              <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                {`≈ ${outputDisplayAmount}`}
-              </Number>
+              <Tooltip title={outputDisplayAmount} arrow placement="top">
+                <span>
+                  <Number typoOfIntegers="h6n" typoOfDecimals="h7n">
+                    {`≈ ${outputDisplayAmount}`}
+                  </Number>
+                </span>
+              </Tooltip>
             </SwapCoinSubTitleContainer>
           </SwapCoinInfoContainer>
         </AfterSwapCoinContainer>
       </HeaderContainer>
       <StyledDivider />
-      <ContentContainer data-is-multiple={isMultipleMsgs}>
+      <ContentContainer>
         <InputCoinContainer>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.tokenIn')}</Typography>
@@ -136,7 +145,7 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
           </ValueContainer>
         </InputCoinContainer>
 
-        <OutputCoinContainer sx={{ marginTop: '0.6rem', paddingBottom: '1.2rem' }}>
+        <OutputCoinContainer>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.tokenOut')}</Typography>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.expectedOutput')}</Typography>
@@ -160,7 +169,7 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
           </ValueContainer>
         </OutputCoinContainer>
 
-        <RoutesContainer sx={{ marginTop: '0.4rem' }}>
+        <RoutesContainer>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.routes')}</Typography>
           </LabelContainer>
@@ -171,7 +180,7 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
           </ValueContainer>
         </RoutesContainer>
 
-        <PoolContainer sx={{ marginTop: '0.4rem' }}>
+        <PoolContainer>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.poolId')}</Typography>
           </LabelContainer>

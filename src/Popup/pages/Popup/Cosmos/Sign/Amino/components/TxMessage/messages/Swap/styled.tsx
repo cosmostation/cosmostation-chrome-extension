@@ -12,6 +12,9 @@ export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => 
   borderRadius: '0.8rem',
 
   height: props['data-is-multiple'] ? '15.7rem' : '18.7rem',
+
+  display: 'flex',
+  flexDirection: 'column',
 }));
 
 export const HeaderContainer = styled('div')({
@@ -83,13 +86,8 @@ export const StyledDivider = styled(Divider)({
   marginTop: '1.6rem',
 });
 
-type ContentContainerProps = {
-  'data-is-multiple': boolean;
-};
-export const ContentContainer = styled('div')<ContentContainerProps>(({ theme, ...props }) => ({
+export const ContentContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
-
-  height: `${(props['data-is-multiple'] ? 15.7 : 18.7) - 8.08}rem`,
 
   whiteSpace: 'pre-wrap',
   wordBreak: 'break-all',
@@ -101,11 +99,17 @@ export const ContentContainer = styled('div')<ContentContainerProps>(({ theme, .
 
 export const InputCoinContainer = styled('div')({});
 
-export const OutputCoinContainer = styled('div')({});
+export const OutputCoinContainer = styled('div')({
+  marginTop: '0.4rem',
+});
 
-export const RoutesContainer = styled('div')({});
+export const RoutesContainer = styled('div')({
+  marginTop: '0.4rem',
+});
 
-export const PoolContainer = styled('div')({});
+export const PoolContainer = styled('div')({
+  marginTop: '0.4rem',
+});
 
 export const LabelContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,

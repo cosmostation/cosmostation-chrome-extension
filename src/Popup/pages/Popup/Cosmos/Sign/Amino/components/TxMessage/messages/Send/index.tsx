@@ -46,7 +46,7 @@ export default function Send({ msg, chain, isMultipleMsgs }: SendProps) {
 
   return (
     <Container title="Send" isMultipleMsgs={isMultipleMsgs}>
-      <ContentContainer data-is-multiple={isMultipleMsgs}>
+      <ContentContainer>
         <AddressContainer>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Send.index.fromAddress')}</Typography>

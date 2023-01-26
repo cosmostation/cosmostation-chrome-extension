@@ -13,7 +13,7 @@ export default function Custom({ msg, isMultipleMsgs }: CustomProps) {
 
   return (
     <Container title="Custom" isMultipleMsgs={isMultipleMsgs}>
-      <ContentContainer data-is-multiple={isMultipleMsgs}>
+      <ContentContainer>
         <Typography variant="h6">{doc}</Typography>
       </ContentContainer>
     </Container>
