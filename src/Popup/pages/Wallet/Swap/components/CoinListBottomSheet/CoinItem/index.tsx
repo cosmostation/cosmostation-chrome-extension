@@ -65,27 +65,25 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
           </CoinLeftSubTitleContainer>
         </CoinLeftInfoContainer>
       </CoinLeftContainer>
-      {coinInfo.availableAmount && (
-        <CoinRightContainer>
-          <CoinRightInfoContainer>
-            <CoinRightTitleContainer>
-              <Tooltip title={coinDisplayDenomAmount} placement="top" arrow>
-                <div>
-                  <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(coinInfo.decimals)}>
-                    {coinDisplayDenomAmount}
-                  </Number>
-                </div>
-              </Tooltip>
-            </CoinRightTitleContainer>
-            <CoinRightSubTitleContainer>
-              <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
-                {coinAmountPrice}
-              </Number>
-            </CoinRightSubTitleContainer>
-          </CoinRightInfoContainer>
-          <CoinRightIconContainer>{isActive && <Check16Icon />}</CoinRightIconContainer>
-        </CoinRightContainer>
-      )}
+      <CoinRightContainer>
+        <CoinRightInfoContainer>
+          <CoinRightTitleContainer>
+            <Tooltip title={coinDisplayDenomAmount} placement="top" arrow>
+              <div>
+                <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(coinInfo.decimals)}>
+                  {coinDisplayDenomAmount}
+                </Number>
+              </div>
+            </Tooltip>
+          </CoinRightTitleContainer>
+          <CoinRightSubTitleContainer>
+            <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
+              {coinAmountPrice}
+            </Number>
+          </CoinRightSubTitleContainer>
+        </CoinRightInfoContainer>
+        <CoinRightIconContainer>{isActive && <Check16Icon />}</CoinRightIconContainer>
+      </CoinRightContainer>
     </CoinButton>
   );
 });
