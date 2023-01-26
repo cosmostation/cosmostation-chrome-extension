@@ -1,4 +1,5 @@
 export type Pool = {
+  '@type': string;
   id: string;
   pool_params: {
     swap_fee: string;
@@ -18,7 +19,8 @@ export type PoolResponse = {
   pool: Pool;
 };
 
-export type STKAtomPool = {
+export type StablePool = {
+  '@type': string;
   id: string;
   pool_params: {
     swap_fee: string;
@@ -31,8 +33,8 @@ export type STKAtomPool = {
   scaling_factors: string[];
 };
 
-export type STKAtomPoolResponse = {
-  pool: STKAtomPool;
+export type StablePoolResponse = {
+  pool: StablePool;
 };
 
 export type PoolsAsset = {
