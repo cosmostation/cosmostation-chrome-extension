@@ -13,7 +13,6 @@ import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { Msg, MsgSwapExactAmountIn } from '~/types/cosmos/amino';
 
 import {
-  AfterSwapCoinContainer,
   Container,
   ContentContainer,
   HeaderContainer,
@@ -26,7 +25,6 @@ import {
   RightValueContainer,
   RoutesContainer,
   StyledDivider,
-  SwapArrowIconContainer,
   SwapCoinContainer,
   SwapCoinImageContainer,
   SwapCoinInfoContainer,
@@ -96,10 +94,8 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
             </SwapCoinSubTitleContainer>
           </SwapCoinInfoContainer>
         </SwapCoinContainer>
-        <AfterSwapCoinContainer>
-          <SwapArrowIconContainer>
-            <SwapArrowIcon />
-          </SwapArrowIconContainer>
+        <SwapArrowIcon />
+        <SwapCoinContainer>
           <SwapCoinImageContainer>
             <Image src={outputCoin?.image} />
           </SwapCoinImageContainer>
@@ -117,7 +113,7 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
               </Tooltip>
             </SwapCoinSubTitleContainer>
           </SwapCoinInfoContainer>
-        </AfterSwapCoinContainer>
+        </SwapCoinContainer>
       </HeaderContainer>
       <StyledDivider />
       <ContentContainer>

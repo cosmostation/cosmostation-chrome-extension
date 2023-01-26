@@ -351,7 +351,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
             <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/swap')}>
               <SwapIcon />
             </UnitIconButton>
-            <UnitIconButton disabled>
+            <UnitIconButton disabled sx={{ display: 'none' }}>
               <BuyIcon />
             </UnitIconButton>
           </IconButtonContainer>
@@ -511,7 +511,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
             <UnitIconButton disabled>
               <SwapIcon />
             </UnitIconButton>
-            <UnitIconButton disabled>
+            <UnitIconButton disabled sx={{ display: 'none' }}>
               <BuyIcon />
             </UnitIconButton>
           </IconButtonContainer>
@@ -623,7 +623,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
             <UnitIconButton disabled>
               <SwapIcon />
             </UnitIconButton>
-            <UnitIconButton disabled>
+            <UnitIconButton disabled sx={{ display: 'none' }}>
               <BuyIcon />
             </UnitIconButton>
           </IconButtonContainer>

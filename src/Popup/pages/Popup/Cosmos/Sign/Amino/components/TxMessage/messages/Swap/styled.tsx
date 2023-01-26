@@ -20,29 +20,15 @@ export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => 
 export const HeaderContainer = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
-
-  position: 'relative',
+  alignItems: 'center',
 });
 
 export const SwapCoinContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
-});
 
-export const AfterSwapCoinContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: `translate(-1.2rem, -50%)`,
-});
-
-export const SwapArrowIconContainer = styled('div')({
-  marginRight: '1.2rem',
+  width: '10rem',
 });
 
 export const SwapCoinImageContainer = styled('div')({
@@ -74,8 +60,10 @@ export const SwapCoinSubTitleContainer = styled('div')(({ theme }) => ({
   display: 'flex',
 
   whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
 
-  maxWidth: '7.5rem',
+  maxWidth: '0.6rem',
+
   '& > *': {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
