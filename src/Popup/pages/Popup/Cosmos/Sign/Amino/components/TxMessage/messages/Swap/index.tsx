@@ -19,10 +19,12 @@ import {
   LabelContainer,
   OutputCoinContainer,
   PoolContainer,
+  PoolValueContainer,
   RightAmountContainer,
   RightColumnContainer,
   RightValueContainer,
   RoutesContainer,
+  RoutesValueContainer,
   StyledDivider,
   ValueContainer,
 } from './styled';
@@ -45,9 +47,20 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
   const { token_in, token_out_min_amount, routes } = value;
 
   const inputCoin = useMemo(() => currentChainAssets.data.find((item) => item.denom === token_in.denom), [currentChainAssets.data, token_in.denom]);
-  const outputCoin = useMemo(() => currentChainAssets.data.find((item) => item.denom === routes[0].token_out_denom), [currentChainAssets.data, routes]);
+  const outputCoin = useMemo(
+    () => currentChainAssets.data.find((item) => item.denom === routes[routes.length - 1].token_out_denom),
+    [currentChainAssets.data, routes],
+  );
+
+  const routesTokenOutDenomList = useMemo(() => routes.map(({ token_out_denom }) => token_out_denom), [routes]);
+
+  const routesTokenOutDisplayDenomList = useMemo(
+    () => currentChainAssets.data.filter((item) => routesTokenOutDenomList.includes(item.denom)).map((item) => item.symbol),
+    [currentChainAssets.data, routesTokenOutDenomList],
+  );
 
   const inputDisplayAmount = useMemo(() => toDisplayDenomAmount(token_in.amount, inputCoin?.decimals || 0), [inputCoin?.decimals, token_in.amount]);
+
   const outputDisplayAmount = useMemo(
     () => toDisplayDenomAmount(token_out_min_amount, outputCoin?.decimals || 0),
     [outputCoin?.decimals, token_out_min_amount],
@@ -127,20 +140,27 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.routes')}</Typography>
           </LabelContainer>
-          <ValueContainer>
-            <Typography variant="h5">
-              {inputCoin?.symbol} / {outputCoin?.symbol}
-            </Typography>
-          </ValueContainer>
+          <RoutesValueContainer>
+            <Typography variant="h5">{inputCoin?.symbol} </Typography>
+            {routesTokenOutDisplayDenomList.map((item) => (
+              <Typography key={item} variant="h5">
+                / {item}{' '}
+              </Typography>
+            ))}
+          </RoutesValueContainer>
         </RoutesContainer>
 
         <PoolContainer>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.poolId')}</Typography>
           </LabelContainer>
-          <ValueContainer>
-            <Typography variant="h5">{String(routes[0].pool_id)}</Typography>
-          </ValueContainer>
+          <PoolValueContainer>
+            {routes.map((item, index) => (
+              <Typography key={String(item.pool_id)} variant="h5">
+                {`${index > 0 ? ` / ` : ``}${String(item.pool_id)}`}
+              </Typography>
+            ))}
+          </PoolValueContainer>
         </PoolContainer>
       </ContentContainer>
     </Container>

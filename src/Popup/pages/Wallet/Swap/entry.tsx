@@ -76,6 +76,9 @@ type EntryProps = {
   chain: CosmosChain;
 };
 
+const STABLE_POOL_TYPE = '/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool';
+const WEIGHTED_POOL_TYPE = '/osmosis.gamm.v1beta1.Pool';
+
 export default function Entry({ chain }: EntryProps) {
   const { t } = useTranslation();
   const { navigateBack } = useNavigate();
@@ -159,34 +162,58 @@ export default function Entry({ chain }: EntryProps) {
 
   const poolData = usePoolSWR(currentPoolId);
 
-  const poolAsssets = useMemo(() => poolData.data?.pool.pool_assets, [poolData.data?.pool.pool_assets]);
-
   const swapFeeRate = useMemo(() => poolData.data?.pool.pool_params.swap_fee || '0', [poolData.data?.pool.pool_params.swap_fee]);
 
-  const poolAssetsTokenList = useMemo(() => poolAsssets?.map((item) => item.token), [poolAsssets]);
+  const poolAssetsTokenList = useMemo(() => {
+    if (poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE) {
+      const poolAssets = poolData.data.pool.pool_assets;
+      return poolAssets?.map((item) => item.token);
+    }
+    if (poolData.data && poolData.data.pool['@type'] === STABLE_POOL_TYPE) {
+      return poolData.data.pool.pool_liquidity;
+    }
+    return [];
+  }, [poolData.data]);
 
   const tokenBalanceIn = useMemo(
     () => poolAssetsTokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount || '0',
     [inputCoinBaseDenom, poolAssetsTokenList],
   );
-  const tokenWeightIn = useMemo(() => poolAsssets?.find((item) => item.token.denom === inputCoinBaseDenom)?.weight || '0', [inputCoinBaseDenom, poolAsssets]);
+
+  const tokenWeightIn = useMemo(
+    () =>
+      poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE
+        ? poolData.data.pool.pool_assets.find((item) => item.token.denom === inputCoinBaseDenom)?.weight || '0'
+        : '0',
+    [inputCoinBaseDenom, poolData.data],
+  );
 
   const tokenBalanceOut = useMemo(
     () => poolAssetsTokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount || '0',
     [outputCoinBaseDenom, poolAssetsTokenList],
   );
+
   const tokenWeightOut = useMemo(
-    () => poolAsssets?.find((item) => item.token.denom === outputCoinBaseDenom)?.weight || '0',
-    [outputCoinBaseDenom, poolAsssets],
+    () =>
+      poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE
+        ? poolData.data.pool.pool_assets.find((item) => item.token.denom === outputCoinBaseDenom)?.weight || '0'
+        : '0',
+    [outputCoinBaseDenom, poolData.data],
   );
 
   const currentOutputBaseAmount = useMemo(() => {
-    try {
-      return calcOutGivenIn(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, currentInputBaseAmount, swapFeeRate);
-    } catch {
-      return '0';
+    if (poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE) {
+      try {
+        return calcOutGivenIn(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, currentInputBaseAmount, swapFeeRate);
+      } catch {
+        return '0';
+      }
     }
-  }, [currentInputBaseAmount, swapFeeRate, tokenBalanceIn, tokenBalanceOut, tokenWeightIn, tokenWeightOut]);
+    if (poolData.data && poolData.data.pool['@type'] === STABLE_POOL_TYPE) {
+      return '1';
+    }
+    return '0';
+  }, [currentInputBaseAmount, poolData.data, swapFeeRate, tokenBalanceIn, tokenBalanceOut, tokenWeightIn, tokenWeightOut]);
 
   const currentOutputDisplayAmount = useMemo(
     () => toDisplayDenomAmount(currentOutputBaseAmount, inputDisplayAmount ? outputCoin?.decimals || 0 : 0),
@@ -194,12 +221,18 @@ export default function Entry({ chain }: EntryProps) {
   );
 
   const beforeSpotPriceInOverOut = useMemo(() => {
-    try {
-      return calcSpotPrice(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, swapFeeRate);
-    } catch {
-      return '0';
+    if (poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE) {
+      try {
+        return calcSpotPrice(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, swapFeeRate);
+      } catch {
+        return '0';
+      }
     }
-  }, [swapFeeRate, tokenBalanceIn, tokenBalanceOut, tokenWeightIn, tokenWeightOut]);
+    if (poolData.data && poolData.data.pool['@type'] === STABLE_POOL_TYPE) {
+      return '1';
+    }
+    return '';
+  }, [poolData.data, swapFeeRate, tokenBalanceIn, tokenBalanceOut, tokenWeightIn, tokenWeightOut]);
 
   const outputAmountOf1Coin = useMemo(() => {
     try {

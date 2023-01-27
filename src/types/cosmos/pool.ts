@@ -1,5 +1,5 @@
-export type Pool = {
-  '@type': string;
+export type WeightedPool = {
+  '@type': '/osmosis.gamm.v1beta1.Pool';
   id: string;
   pool_params: {
     swap_fee: string;
@@ -15,12 +15,12 @@ export type Pool = {
   total_weight: string;
 };
 
-export type PoolResponse = {
-  pool: Pool;
+export type WeightedPoolResponse = {
+  pool: WeightedPool;
 };
 
 export type StablePool = {
-  '@type': string;
+  '@type': '/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool';
   id: string;
   pool_params: {
     swap_fee: string;

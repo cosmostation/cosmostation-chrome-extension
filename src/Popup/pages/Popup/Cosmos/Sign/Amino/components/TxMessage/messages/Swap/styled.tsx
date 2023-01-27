@@ -48,8 +48,16 @@ export const RoutesContainer = styled('div')({
   marginTop: '0.4rem',
 });
 
+export const RoutesValueContainer = styled('div')({
+  display: 'flex',
+});
+
 export const PoolContainer = styled('div')({
   marginTop: '0.4rem',
+});
+
+export const PoolValueContainer = styled('div')({
+  display: 'flex',
 });
 
 export const LabelContainer = styled('div')(({ theme }) => ({
