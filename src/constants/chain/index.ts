@@ -69,6 +69,7 @@ import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
+import { CANTO as ETHEREUM_NETWORK__CANTO } from './ethereum/network/canto';
 import { CRONOS as ETHEREUM_NETWORK__CRONOS } from './ethereum/network/cronos';
 import { ETHEREUM as ETHEREUM_NETWORK__ETHEREUM } from './ethereum/network/ethereum';
 import { EVMOS as ETHEREUM_NETWORK__EVMOS } from './ethereum/network/evmos';
@@ -76,6 +77,7 @@ import { FANTOM as ETHEREUM_NETWORK__FANTOM } from './ethereum/network/fantom';
 import { HARMONY as ETHEREUM_NETWORK__HARMONY } from './ethereum/network/harmony';
 import { KAVA as ETHEREUM_NETWORK__KAVA } from './ethereum/network/kava';
 import { OKC as ETHEREUM_NETWORK__OKC } from './ethereum/network/okc';
+import { OPTIMISM as ETHEREUM_NETWORK__OPTIMISM } from './ethereum/network/optimism';
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
 import { DEVNET as SUI_NETWORK__DEVNET } from './sui/network/devnet';
@@ -165,12 +167,14 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__ETHEREUM,
   ETHEREUM_NETWORK__ARBITRUM,
   ETHEREUM_NETWORK__AVALANCHE,
+  ETHEREUM_NETWORK__CANTO,
   ETHEREUM_NETWORK__CRONOS,
   ETHEREUM_NETWORK__EVMOS,
   ETHEREUM_NETWORK__FANTOM,
   ETHEREUM_NETWORK__HARMONY,
   ETHEREUM_NETWORK__KAVA,
   ETHEREUM_NETWORK__OKC,
+  ETHEREUM_NETWORK__OPTIMISM,
   ETHEREUM_NETWORK__POLYGON,
   ETHEREUM_NETWORK__SMART_CHAIN,
 ];

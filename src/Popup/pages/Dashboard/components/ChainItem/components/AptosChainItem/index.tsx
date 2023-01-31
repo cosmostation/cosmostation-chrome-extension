@@ -37,7 +37,7 @@ export default function AptosChainItem({ chain, network }: AptosChainItemProps) 
     { suspense: true },
   );
 
-  const assets = useAssetsSWR();
+  const assets = useAssetsSWR(network);
 
   const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
 
