@@ -176,44 +176,65 @@ export default function Entry({ chain }: EntryProps) {
   }, [poolData.data]);
 
   const tokenBalanceIn = useMemo(
-    () => poolAssetsTokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount || '0',
+    () => poolAssetsTokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount,
     [inputCoinBaseDenom, poolAssetsTokenList],
   );
 
   const tokenWeightIn = useMemo(
     () =>
       poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE
-        ? poolData.data.pool.pool_assets.find((item) => item.token.denom === inputCoinBaseDenom)?.weight || '0'
-        : '0',
+        ? poolData.data.pool.pool_assets.find((item) => item.token.denom === inputCoinBaseDenom)?.weight
+        : undefined,
     [inputCoinBaseDenom, poolData.data],
   );
 
   const tokenBalanceOut = useMemo(
-    () => poolAssetsTokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount || '0',
+    () => poolAssetsTokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount,
     [outputCoinBaseDenom, poolAssetsTokenList],
   );
 
   const tokenWeightOut = useMemo(
     () =>
       poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE
-        ? poolData.data.pool.pool_assets.find((item) => item.token.denom === outputCoinBaseDenom)?.weight || '0'
-        : '0',
+        ? poolData.data.pool.pool_assets.find((item) => item.token.denom === outputCoinBaseDenom)?.weight
+        : undefined,
     [outputCoinBaseDenom, poolData.data],
   );
 
+  const scalingFactors = useMemo(
+    () => (poolData.data && poolData.data.pool['@type'] === STABLE_POOL_TYPE ? poolData.data.pool.scaling_factors : undefined),
+    [poolData.data],
+  );
+
   const currentOutputBaseAmount = useMemo(() => {
-    if (poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE) {
-      try {
-        return calcOutGivenIn(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, currentInputBaseAmount, swapFeeRate);
-      } catch {
-        return '0';
-      }
+    try {
+      return calcOutGivenIn(
+        currentInputBaseAmount,
+        swapFeeRate,
+        poolAssetsTokenList,
+        tokenBalanceIn,
+        tokenWeightIn,
+        tokenBalanceOut,
+        tokenWeightOut,
+        inputCoin?.denom,
+        outputCoin?.denom,
+        scalingFactors,
+      );
+    } catch {
+      return '0';
     }
-    if (poolData.data && poolData.data.pool['@type'] === STABLE_POOL_TYPE) {
-      return '1';
-    }
-    return '0';
-  }, [currentInputBaseAmount, poolData.data, swapFeeRate, tokenBalanceIn, tokenBalanceOut, tokenWeightIn, tokenWeightOut]);
+  }, [
+    currentInputBaseAmount,
+    inputCoin?.denom,
+    outputCoin?.denom,
+    poolAssetsTokenList,
+    scalingFactors,
+    swapFeeRate,
+    tokenBalanceIn,
+    tokenBalanceOut,
+    tokenWeightIn,
+    tokenWeightOut,
+  ]);
 
   const currentOutputDisplayAmount = useMemo(
     () => toDisplayDenomAmount(currentOutputBaseAmount, inputDisplayAmount ? outputCoin?.decimals || 0 : 0),
@@ -221,18 +242,22 @@ export default function Entry({ chain }: EntryProps) {
   );
 
   const beforeSpotPriceInOverOut = useMemo(() => {
-    if (poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE) {
-      try {
-        return calcSpotPrice(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, swapFeeRate);
-      } catch {
-        return '0';
-      }
+    try {
+      return calcSpotPrice(
+        swapFeeRate,
+        poolAssetsTokenList,
+        tokenBalanceIn,
+        tokenWeightIn,
+        tokenBalanceOut,
+        tokenWeightOut,
+        inputCoin?.denom,
+        outputCoin?.denom,
+        scalingFactors,
+      );
+    } catch {
+      return '0';
     }
-    if (poolData.data && poolData.data.pool['@type'] === STABLE_POOL_TYPE) {
-      return '1';
-    }
-    return '';
-  }, [poolData.data, swapFeeRate, tokenBalanceIn, tokenBalanceOut, tokenWeightIn, tokenWeightOut]);
+  }, [inputCoin?.denom, outputCoin?.denom, poolAssetsTokenList, scalingFactors, swapFeeRate, tokenBalanceIn, tokenBalanceOut, tokenWeightIn, tokenWeightOut]);
 
   const outputAmountOf1Coin = useMemo(() => {
     try {
@@ -388,7 +413,7 @@ export default function Entry({ chain }: EntryProps) {
     if (!poolData.data || !poolsAssetData.data) {
       return t('pages.Wallet.Swap.entry.networkError');
     }
-    if (gt(currentInputBaseAmount, tokenBalanceIn)) {
+    if (gt(currentInputBaseAmount, tokenBalanceIn || '0')) {
       return t('pages.Wallet.Swap.entry.excessiveSwap');
     }
     if (!inputDisplayAmount || !gt(inputDisplayAmount, '0')) {

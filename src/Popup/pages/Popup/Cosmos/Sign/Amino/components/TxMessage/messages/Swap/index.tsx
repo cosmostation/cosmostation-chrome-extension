@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 
 import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import Number from '~/Popup/components/common/Number';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -17,6 +18,7 @@ import {
   HeaderContainer,
   InputCoinContainer,
   LabelContainer,
+  LeftDenomContainer,
   OutputCoinContainer,
   PoolContainer,
   PoolValueContainer,
@@ -55,7 +57,7 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
   const routesTokenOutDenomList = useMemo(() => routes.map(({ token_out_denom }) => token_out_denom), [routes]);
 
   const routesTokenOutDisplayDenomList = useMemo(
-    () => currentChainAssets.data.filter((item) => routesTokenOutDenomList.includes(item.denom)).map((item) => item.symbol),
+    () => routesTokenOutDenomList.map((item) => currentChainAssets.data.find((chainAsset) => chainAsset.denom === item)?.symbol || 'Unknown'),
     [currentChainAssets.data, routesTokenOutDenomList],
   );
 
@@ -94,19 +96,27 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.swapAmount')}</Typography>
           </LabelContainer>
           <ValueContainer>
-            <Typography variant="h5">{inputCoin?.symbol}</Typography>
+            <LeftDenomContainer>
+              <Tooltip title={token_in.denom} arrow placement="top">
+                <Typography variant="h5">{token_in.denom}</Typography>
+              </Tooltip>
+            </LeftDenomContainer>
             <RightColumnContainer>
               <RightAmountContainer>
                 <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
                   {inputDisplayAmount}
                 </Number>
                 &nbsp;
-                <Typography variant="h5n">{inputCoin?.symbol}</Typography>
+                <Typography variant="h5n">{inputCoin?.symbol || 'Unknown'}</Typography>
               </RightAmountContainer>
               <RightValueContainer>
-                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                  {inputCoinAmountPrice}
-                </Number>
+                {inputCoinAmountPrice === '0' ? (
+                  <Typography variant="h6">Unknown</Typography>
+                ) : (
+                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                    {inputCoinAmountPrice}
+                  </Number>
+                )}
               </RightValueContainer>
             </RightColumnContainer>
           </ValueContainer>
@@ -118,19 +128,27 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.expectedOutput')}</Typography>
           </LabelContainer>
           <ValueContainer>
-            <Typography variant="h5">{outputCoin?.symbol}</Typography>
+            <LeftDenomContainer>
+              <Tooltip title={routes[routes.length - 1].token_out_denom} arrow placement="top">
+                <Typography variant="h5">{routes[routes.length - 1].token_out_denom}</Typography>
+              </Tooltip>
+            </LeftDenomContainer>
             <RightColumnContainer>
               <RightAmountContainer>
                 <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
                   {outputDisplayAmount}
                 </Number>
                 &nbsp;
-                <Typography variant="h5n">{outputCoin?.symbol}</Typography>
+                <Typography variant="h5n">{outputCoin?.symbol || 'Unknown'}</Typography>
               </RightAmountContainer>
               <RightValueContainer>
-                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                  {outputCoinAmountPrice}
-                </Number>
+                {outputCoinAmountPrice === '0' ? (
+                  <Typography variant="h6">Unknown</Typography>
+                ) : (
+                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                    {outputCoinAmountPrice}
+                  </Number>
+                )}
               </RightValueContainer>
             </RightColumnContainer>
           </ValueContainer>
@@ -141,7 +159,7 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.routes')}</Typography>
           </LabelContainer>
           <RoutesValueContainer>
-            <Typography variant="h5">{inputCoin?.symbol} </Typography>
+            <Typography variant="h5">{inputCoin?.symbol || 'Unknown'} </Typography>
             {routesTokenOutDisplayDenomList.map((item) => (
               <Typography key={item} variant="h5">
                 / {item}{' '}

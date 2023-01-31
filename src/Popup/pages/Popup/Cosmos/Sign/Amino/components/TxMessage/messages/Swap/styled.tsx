@@ -74,6 +74,18 @@ export const ValueContainer = styled('div')(({ theme }) => ({
   justifyContent: 'space-between',
 }));
 
+export const LeftDenomContainer = styled('div')({
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '7rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
 export const RightColumnContainer = styled('div')({});
 
 export const RightAmountContainer = styled('div')(({ theme }) => ({

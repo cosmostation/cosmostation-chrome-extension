@@ -7,9 +7,9 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { CoinContainer, CoinImageContainer, CoinInfoContainer, CoinSubTitleContainer, CoinTitleContainer } from './styled';
 
 type CoinAmountInfoContainerProps = {
+  displayAmount: string;
   coinImg?: string;
   displayDenom?: string;
-  displayAmount: string;
   isTilde?: boolean;
 };
 
@@ -21,7 +21,9 @@ export default function CoinAmountInfoContainer({ coinImg, displayDenom, display
       </CoinImageContainer>
       <CoinInfoContainer>
         <CoinTitleContainer>
-          <Typography variant="h4">{displayDenom}</Typography>
+          <Tooltip title={displayDenom || 'Unknown'} arrow placement="top">
+            <Typography variant="h4">{displayDenom || 'Unknown'}</Typography>
+          </Tooltip>
         </CoinTitleContainer>
         <CoinSubTitleContainer>
           <Tooltip title={displayAmount} arrow placement="top">

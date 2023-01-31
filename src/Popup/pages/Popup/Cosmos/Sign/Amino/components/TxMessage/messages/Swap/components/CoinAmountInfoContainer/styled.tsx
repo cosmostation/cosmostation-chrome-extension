@@ -29,6 +29,16 @@ export const CoinInfoContainer = styled('div')({
 
 export const CoinTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '6rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const CoinSubTitleContainer = styled('div')(({ theme }) => ({
