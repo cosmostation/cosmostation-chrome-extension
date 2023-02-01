@@ -36,6 +36,7 @@
     "@ethersproject/abi": "^5.6.1",
     "@ethersproject/keccak256": "^5.6.0",
     "@hookform/resolvers": "^2.8.8",
+    "@keplr-wallet/unit": "^0.10.24",
     "@ledgerhq/hw-app-eth": "^6.29.3",
     "@ledgerhq/hw-transport": "^6.27.2",
     "@ledgerhq/hw-transport-web-ble": "^6.27.2",
