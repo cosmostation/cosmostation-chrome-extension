@@ -660,12 +660,12 @@
                   },
                   "Swap": {
                     "index": {
-                      "expectedOutput": "예상 교환치",
-                      "poolId": "풀 Id",
+                      "expectedOutput": "최소 교환 수량",
+                      "poolId": "Poll Id",
                       "routes": "경로",
-                      "swapAmount": "교환 수량",
-                      "tokenIn": "보낼 코인",
-                      "tokenOut": "받을 코인"
+                      "swapAmount": "수량",
+                      "tokenIn": "From",
+                      "tokenOut": "To"
                     }
                   }
                 }
@@ -1091,15 +1091,15 @@
         "components": {
           "CoinListBottomSheet": {
             "index": {
-              "searchPlaceholder": "토큰 검색",
-              "title": "코인을 선택하세요"
+              "searchPlaceholder": "검색",
+              "title": "토큰 선택하세요"
             }
           },
           "SlippageSettingDialog": {
             "confirm": "확인",
             "slippageTolerance": "슬리피지 허용치",
             "title": "설정",
-            "toleranceInfo": "가격이 이 비율 이상으로 불리하게 변하면 거래가 취소됩니다."
+            "toleranceInfo": "교환 비율이 해당 값 이상일 경우 거래가 취소됩니다."
           }
         },
         "entry": {
@@ -1110,7 +1110,7 @@
           "insufficientFeeAmount": "수수료가 부족합니다.",
           "invalidAmount": "수량을 입력하세요.",
           "invalidPriceImpact": "가격 변동치가 지나치게 높습니다.",
-          "minimumReceived": "슬리피지 이후 받을 최소수량",
+          "minimumReceived": "슬리피지 이후 받을 최소 수량",
           "networkError": "네트워크 오류",
           "priceImpact": "가격 변동치",
           "swapFee": "교환 수수료",
