@@ -6,10 +6,11 @@ import type { AbiItem } from 'web3-utils';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { ERC20_ABI } from '~/constants/abi';
+import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
-import IconButton from '~/Popup/components/common/IconButton';
 import Tooltip from '~/Popup/components/common/Tooltip';
+import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
@@ -32,6 +33,7 @@ import CoinButton from './components/CoinButton';
 import CoinPopover from './components/CoinPopover';
 import { BottomContainer, Container, Div, MaxButton, StyledInput } from './styled';
 
+import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
 
 type EthereumProps = {
@@ -62,6 +64,7 @@ export default function Ethereum({ chain }: EthereumProps) {
   const [currentAddress, setCurrentAddress] = useState('');
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
+  const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
@@ -180,11 +183,18 @@ export default function Ethereum({ chain }: EthereumProps) {
         <Div>
           <StyledInput
             endAdornment={
-              <InputAdornment position="end">
-                <IconButton edge="end" onClick={() => setIsOpenedAddressBook(true)}>
-                  <AddressBook24Icon />
-                </IconButton>
-              </InputAdornment>
+              <>
+                <InputAdornment position="end">
+                  <InputAdornmentIconButton onClick={() => setIsOpenedMyAddressBook(true)}>
+                    <AccountAddressIcon />
+                  </InputAdornmentIconButton>
+                </InputAdornment>
+                <InputAdornment position="start">
+                  <InputAdornmentIconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
+                    <AddressBook24Icon />
+                  </InputAdornmentIconButton>
+                </InputAdornment>
+              </>
             }
             placeholder={t('pages.Wallet.Send.Entry.Ethereum.index.recipientAddressPlaceholder')}
             onChange={(e) => setCurrentAddress(e.currentTarget.value)}
@@ -264,6 +274,17 @@ export default function Ethereum({ chain }: EthereumProps) {
           onClose={() => setIsOpenedAddressBook(false)}
           onClickAddress={(a) => {
             setCurrentAddress(a.address);
+          }}
+        />
+
+        <AccountAddressBookBottomSheet
+          open={isOpenedMyAddressBook}
+          hasCurrentAccount={false}
+          chain={chain}
+          token={currentEthereumNetwork}
+          onClose={() => setIsOpenedMyAddressBook(false)}
+          onClickAddress={(a) => {
+            setCurrentAddress(a);
           }}
         />
       </Container>

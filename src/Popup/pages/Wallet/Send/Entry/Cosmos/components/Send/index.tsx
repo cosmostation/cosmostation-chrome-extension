@@ -9,9 +9,9 @@ import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBook
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
 import DropdownButton from '~/Popup/components/common/DropdownButton';
-import IconButton from '~/Popup/components/common/IconButton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
+import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
@@ -379,14 +379,18 @@ export default function Send({ chain }: CosmosProps) {
       <div>
         <StyledInput
           endAdornment={
-            <InputAdornment position="end">
-              <IconButton onClick={() => setIsOpenedMyAddressBook(true)} edge="end">
-                <AccountAddressIcon />
-              </IconButton>
-              <IconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
-                <AddressBook24Icon />
-              </IconButton>
-            </InputAdornment>
+            <>
+              <InputAdornment position="end">
+                <InputAdornmentIconButton onClick={() => setIsOpenedMyAddressBook(true)}>
+                  <AccountAddressIcon />
+                </InputAdornmentIconButton>
+              </InputAdornment>
+              <InputAdornment position="start">
+                <InputAdornmentIconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
+                  <AddressBook24Icon />
+                </InputAdornmentIconButton>
+              </InputAdornment>
+            </>
           }
           placeholder={t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.recipientAddressPlaceholder')}
           onChange={(e) => setCurrentAddress(e.currentTarget.value)}
