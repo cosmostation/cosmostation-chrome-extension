@@ -1,6 +1,6 @@
 import type { RoundingMode } from 'big.js';
 import Big from 'big.js';
-import { Dec, Int } from '@osmosis-labs/math/node_modules/@keplr-wallet/unit';
+import { Dec, Int } from '@keplr-wallet/unit';
 
 export function pow(base: number | string, exponent: number) {
   return new Big(base).pow(exponent).toString();
