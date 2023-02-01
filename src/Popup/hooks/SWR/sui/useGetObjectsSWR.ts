@@ -31,7 +31,7 @@ export function useGetObjectsSWR({ network, objectIds }: UseGetObjectsOwnedByAdd
   }));
 
   const fetcher = (params: FetchParams) => {
-    if (!params.payload.length) {
+    if (params.payload && !params.payload.length) {
       return null;
     }
 
