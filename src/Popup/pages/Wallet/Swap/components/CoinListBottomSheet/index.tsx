@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { useDebounce } from 'use-debounce';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -29,14 +28,15 @@ export default function CoinListBottomSheet({ currentSelectedCoin, availableCoin
 
   const [search, setSearch] = useState('');
 
-  const [debouncedSearch] = useDebounce(search, 500);
-
-  const filteredCoinList = debouncedSearch
-    ? availableCoinList.filter(
-        (item) =>
-          item.chainName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1 || item.symbol.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1,
-      )
-    : availableCoinList;
+  const filteredCoinList = useMemo(
+    () =>
+      search
+        ? availableCoinList.filter(
+            (item) => item.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1 || item.symbol.toLowerCase().indexOf(search.toLowerCase()) > -1,
+          )
+        : availableCoinList,
+    [availableCoinList, search],
+  );
 
   return (
     <StyledBottomSheet

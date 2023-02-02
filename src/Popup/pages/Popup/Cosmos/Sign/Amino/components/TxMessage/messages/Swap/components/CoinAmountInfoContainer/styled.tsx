@@ -2,7 +2,6 @@ import { styled } from '@mui/material/styles';
 
 export const CoinContainer = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-start',
   alignItems: 'center',
 
   width: '10rem',

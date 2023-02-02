@@ -14,6 +14,8 @@ type CoinAmountInfoContainerProps = {
 };
 
 export default function CoinAmountInfoContainer({ coinImg, displayDenom, displayAmount, isTilde }: CoinAmountInfoContainerProps) {
+  const coinDisplayDenom = displayDenom || 'Unknown';
+
   return (
     <CoinContainer>
       <CoinImageContainer>
@@ -21,8 +23,8 @@ export default function CoinAmountInfoContainer({ coinImg, displayDenom, display
       </CoinImageContainer>
       <CoinInfoContainer>
         <CoinTitleContainer>
-          <Tooltip title={displayDenom || 'Unknown'} arrow placement="top">
-            <Typography variant="h4">{displayDenom || 'Unknown'}</Typography>
+          <Tooltip title={coinDisplayDenom} arrow placement="top">
+            <Typography variant="h4">{coinDisplayDenom}</Typography>
           </Tooltip>
         </CoinTitleContainer>
         <CoinSubTitleContainer>

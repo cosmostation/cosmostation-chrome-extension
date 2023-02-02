@@ -24,7 +24,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { calcOutGivenIn, calcSpotPrice, decimalScaling } from '~/Popup/utils/osmosis';
 import { protoTx } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
@@ -95,10 +95,16 @@ export default function Entry({ chain }: EntryProps) {
   const balance = useBalanceSWR(chain);
   const [currentSlippage, setCurrentSlippage] = useState('1');
 
-  const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
+  const address = useMemo(
+    () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '',
+    [accounts.data, chain.id, currentAccount.id],
+  );
 
   const poolsAssetData = usePoolsAssetSWR(chain.chainName.toLowerCase());
-  const poolDenomList = poolsAssetData.data ? [...poolsAssetData.data.map((item) => item.adenom), ...poolsAssetData.data.map((item) => item.bdenom)] : [];
+  const poolDenomList = useMemo(
+    () => (poolsAssetData.data ? [...poolsAssetData.data.map((item) => item.adenom), ...poolsAssetData.data.map((item) => item.bdenom)] : []),
+    [poolsAssetData.data],
+  );
   const uniquePoolDenomList = poolDenomList.filter((denom, idx, arr) => arr.findIndex((item) => item === denom) === idx);
 
   const [inputCoinBaseDenom, setInputCoinBaseDenom] = useState<string>(chain.baseDenom);
@@ -120,7 +126,7 @@ export default function Entry({ chain }: EntryProps) {
         .filter((item) => uniquePoolDenomList.includes(item.denom))
         .map((item) => ({
           ...item,
-          chainName: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || item.origin_chain),
+          chainName: getCapitalize(item.prevChain || item.origin_chain),
           availableAmount: balance.data?.balance ? balance.data?.balance.find((coin) => coin.denom === item.denom)?.amount : '0',
         })) || [];
 
@@ -151,12 +157,6 @@ export default function Entry({ chain }: EntryProps) {
   );
 
   const currentInputBaseAmount = useMemo(() => toBaseDenomAmount(inputDisplayAmount || 0, inputCoin?.decimals || 0), [inputCoin?.decimals, inputDisplayAmount]);
-
-  useEffect(() => {
-    if (!outputCoin) {
-      setOutputCoinBaseDenom(availableSwapOutputCoinList[0]?.denom);
-    }
-  }, [availableSwapOutputCoinList, outputCoin, outputCoinBaseDenom]);
 
   const currentPoolId = useMemo(() => currentPool?.id, [currentPool?.id]);
 
@@ -433,19 +433,23 @@ export default function Entry({ chain }: EntryProps) {
     if (gt(priceImpactPercent, 10)) {
       return t('pages.Wallet.Swap.entry.invalidPriceImpact');
     }
+    if (!gt(currentOutputDisplayAmount, 0)) {
+      return t('pages.Wallet.Swap.entry.invalidOutputAmount');
+    }
     return '';
   }, [
-    currentDisplayFeeAmount,
-    currentFeeCoin.baseDenom,
+    poolData.data,
+    poolsAssetData.data,
+    currentOutputDisplayAmount,
     currentInputBaseAmount,
+    tokenBalanceIn,
+    inputDisplayAmount,
     currentInputCoinDisplayAvailableAmount,
     inputCoin?.denom,
-    inputDisplayAmount,
-    poolsAssetData.data,
-    poolData.data,
+    currentFeeCoin.baseDenom,
     priceImpactPercent,
     t,
-    tokenBalanceIn,
+    currentDisplayFeeAmount,
   ]);
 
   const [isDisabled, setIsDisabled] = useState(false);
@@ -455,6 +459,12 @@ export default function Entry({ chain }: EntryProps) {
       setIsDisabled(false);
     }, 700);
   }, 700);
+
+  useEffect(() => {
+    if (!outputCoin) {
+      setOutputCoinBaseDenom(availableSwapOutputCoinList[0]?.denom);
+    }
+  }, [availableSwapOutputCoinList, outputCoin, outputCoinBaseDenom]);
 
   useEffect(() => {
     setIsDisabled(true);

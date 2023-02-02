@@ -15,8 +15,8 @@ export type WeightedPool = {
   total_weight: string;
 };
 
-export type WeightedPoolResponse = {
-  pool: WeightedPool;
+export type PoolResponse = {
+  pool: WeightedPool | StablePool;
 };
 
 export type StablePool = {
@@ -31,10 +31,6 @@ export type StablePool = {
     amount: string;
   }[];
   scaling_factors: string[];
-};
-
-export type StablePoolResponse = {
-  pool: StablePool;
 };
 
 export type PoolsAsset = {

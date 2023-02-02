@@ -3,9 +3,7 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { get } from '~/Popup/utils/axios';
-import type { StablePoolResponse, WeightedPoolResponse } from '~/types/cosmos/pool';
-
-export type PoolResponse = WeightedPoolResponse | StablePoolResponse;
+import type { PoolResponse } from '~/types/cosmos/pool';
 
 export function usePoolSWR(poolId?: string, config?: SWRConfiguration) {
   const requestURL = `https://lcd-osmosis-app.cosmostation.io/osmosis/gamm/v1beta1/pools/${poolId || ''}`;

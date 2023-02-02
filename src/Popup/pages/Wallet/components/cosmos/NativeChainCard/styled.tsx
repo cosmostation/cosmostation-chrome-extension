@@ -238,6 +238,7 @@ export const UnitIconButton = styled('button')(({ theme }) => ({
 
   '&:hover': {
     backgroundColor: theme.accentColors.purple02,
+    cursor: 'pointer',
   },
 
   '&:disabled': {

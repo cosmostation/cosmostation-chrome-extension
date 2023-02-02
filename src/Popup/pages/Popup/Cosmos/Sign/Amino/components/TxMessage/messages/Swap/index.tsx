@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
@@ -9,6 +8,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import type { CosmosChain } from '~/types/chain';
 import type { Msg, MsgSwapExactAmountIn } from '~/types/cosmos/amino';
 
 import CoinAmountInfoContainer from './components/CoinAmountInfoContainer';
@@ -35,12 +35,13 @@ import SwapArrowIcon from '~/images/icons/SwapArrow.svg';
 
 type SwapProps = {
   msg: Msg<MsgSwapExactAmountIn>;
+  chain: CosmosChain;
   isMultipleMsgs: boolean;
 };
 
-export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
+export default function Swap({ msg, chain, isMultipleMsgs }: SwapProps) {
   const { t } = useTranslation();
-  const currentChainAssets = useAssetsSWR(OSMOSIS);
+  const currentChainAssets = useAssetsSWR(chain);
   const { chromeStorage } = useChromeStorage();
   const { currency } = chromeStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
@@ -54,12 +55,18 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
     [currentChainAssets.data, routes],
   );
 
-  const routesTokenOutDenomList = useMemo(() => routes.map(({ token_out_denom }) => token_out_denom), [routes]);
-
-  const routesTokenOutDisplayDenomList = useMemo(
-    () => routesTokenOutDenomList.map((item) => currentChainAssets.data.find((chainAsset) => chainAsset.denom === item)?.symbol || 'Unknown'),
-    [currentChainAssets.data, routesTokenOutDenomList],
+  const routesDisplayDenomList = useMemo(
+    () =>
+      [
+        inputCoin?.symbol || 'Unknown',
+        ...routes
+          .map(({ token_out_denom }) => token_out_denom)
+          .map((item) => currentChainAssets.data.find((chainAsset) => chainAsset.denom === item)?.symbol || 'Unknown'),
+      ].join(' / '),
+    [currentChainAssets.data, inputCoin?.symbol, routes],
   );
+
+  const routesPoolIdList = useMemo(() => routes.map(({ pool_id }) => pool_id).join(' / '), [routes]);
 
   const inputDisplayAmount = useMemo(() => toDisplayDenomAmount(token_in.amount, inputCoin?.decimals || 0), [inputCoin?.decimals, token_in.amount]);
 
@@ -110,13 +117,9 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
                 <Typography variant="h5n">{inputCoin?.symbol || 'Unknown'}</Typography>
               </RightAmountContainer>
               <RightValueContainer>
-                {inputCoinAmountPrice === '0' ? (
-                  <Typography variant="h6">Unknown</Typography>
-                ) : (
-                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                    {inputCoinAmountPrice}
-                  </Number>
-                )}
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                  {inputCoinAmountPrice}
+                </Number>
               </RightValueContainer>
             </RightColumnContainer>
           </ValueContainer>
@@ -142,13 +145,9 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
                 <Typography variant="h5n">{outputCoin?.symbol || 'Unknown'}</Typography>
               </RightAmountContainer>
               <RightValueContainer>
-                {outputCoinAmountPrice === '0' ? (
-                  <Typography variant="h6">Unknown</Typography>
-                ) : (
-                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                    {outputCoinAmountPrice}
-                  </Number>
-                )}
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                  {outputCoinAmountPrice}
+                </Number>
               </RightValueContainer>
             </RightColumnContainer>
           </ValueContainer>
@@ -159,12 +158,7 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.routes')}</Typography>
           </LabelContainer>
           <RoutesValueContainer>
-            <Typography variant="h5">{inputCoin?.symbol || 'Unknown'} </Typography>
-            {routesTokenOutDisplayDenomList.map((item) => (
-              <Typography key={item} variant="h5">
-                / {item}{' '}
-              </Typography>
-            ))}
+            <Typography variant="h5">{routesDisplayDenomList}</Typography>
           </RoutesValueContainer>
         </RoutesContainer>
 
@@ -173,11 +167,7 @@ export default function Swap({ msg, isMultipleMsgs }: SwapProps) {
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Swap.index.poolId')}</Typography>
           </LabelContainer>
           <PoolValueContainer>
-            {routes.map((item, index) => (
-              <Typography key={String(item.pool_id)} variant="h5">
-                {`${index > 0 ? ` / ` : ``}${String(item.pool_id)}`}
-              </Typography>
-            ))}
+            <Typography variant="h5">{routesPoolIdList}</Typography>
           </PoolValueContainer>
         </PoolContainer>
       </ContentContainer>

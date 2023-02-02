@@ -1109,6 +1109,7 @@
           "insufficientAmount": "Insufficient amount",
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",
+          "invalidOutputAmount": "Invalid output amount",
           "invalidPriceImpact": "Too high Price Impact",
           "minimumReceived": "Minimum received after slippage",
           "networkError": "Network Error",

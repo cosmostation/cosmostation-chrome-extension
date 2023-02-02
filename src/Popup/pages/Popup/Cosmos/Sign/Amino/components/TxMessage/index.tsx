@@ -24,7 +24,7 @@ export default function TxMessage({ chain, msg, isMultipleMsgs }: TxMessageProps
   }
 
   if (isAminoSwapExactAmountIn(msg)) {
-    return <Swap msg={msg} isMultipleMsgs={isMultipleMsgs} />;
+    return <Swap msg={msg} chain={chain} isMultipleMsgs={isMultipleMsgs} />;
   }
 
   if (isAminoCustom(msg)) {
