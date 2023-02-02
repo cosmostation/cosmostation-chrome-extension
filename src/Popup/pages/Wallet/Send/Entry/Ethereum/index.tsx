@@ -281,7 +281,6 @@ export default function Ethereum({ chain }: EthereumProps) {
           open={isOpenedMyAddressBook}
           hasCurrentAccount={false}
           chain={chain}
-          token={currentEthereumNetwork}
           onClose={() => setIsOpenedMyAddressBook(false)}
           onClickAddress={(a) => {
             setCurrentAddress(a);

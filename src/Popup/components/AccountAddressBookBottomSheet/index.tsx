@@ -5,7 +5,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { CommonChain, EthereumNetwork } from '~/types/chain';
+import type { CommonChain } from '~/types/chain';
 
 import { AddressList, Container, Header, HeaderTitle, StyledBottomSheet } from './styled';
 import AccountAddressBookItem from '../AccountAddressBookItem';
@@ -13,14 +13,12 @@ import AccountAddressBookItem from '../AccountAddressBookItem';
 type AccountAddressBookBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   onClickAddress?: (address: string) => void;
   chain?: CommonChain;
-  token?: EthereumNetwork;
   hasCurrentAccount?: boolean;
 };
 
 export default function AccountAddressBookBottomSheet({
   hasCurrentAccount = true,
   chain,
-  token,
   onClickAddress,
   onClose,
   ...remainder
@@ -55,7 +53,6 @@ export default function AccountAddressBookBottomSheet({
               accountName={accountName[item.id]}
               address={chain ? item.address[chain.id] : ''}
               chain={chain}
-              token={token}
               onClick={(address) => {
                 onClickAddress?.(address);
                 onClose?.({}, 'backdropClick');

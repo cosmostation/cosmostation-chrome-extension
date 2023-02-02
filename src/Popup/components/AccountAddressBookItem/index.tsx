@@ -2,24 +2,23 @@ import { Typography } from '@mui/material';
 
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { shorterAddress } from '~/Popup/utils/string';
-import type { CommonChain, EthereumNetwork } from '~/types/chain';
+import type { CommonChain } from '~/types/chain';
 
 import { AddressContainer, Container, LabelContainer, LabelLeftContainer, StyledImage } from './styled';
 
 type AccountAddressBookItemProps = {
   accountName: string;
   chain?: CommonChain;
-  token?: EthereumNetwork;
   address: string;
   onClick?: (address: string) => void;
 };
 
-export default function AccountAddressBookItem({ onClick, address, chain, token, accountName }: AccountAddressBookItemProps) {
+export default function AccountAddressBookItem({ onClick, address, chain, accountName }: AccountAddressBookItemProps) {
   return (
     <Container onClick={() => onClick?.(address)} data-is-onclick={onClick ? 1 : 0}>
       <LabelContainer>
         <LabelLeftContainer>
-          <StyledImage src={token?.imageURL ?? chain?.imageURL} />
+          <StyledImage src={chain?.imageURL} />
           <Typography variant="h6">{accountName}</Typography>
         </LabelLeftContainer>
       </LabelContainer>
