@@ -27,16 +27,15 @@ export const StyledDivider = styled(Divider)({
   marginTop: '1.6rem',
 });
 
-export const ContentContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text01,
+export const ContentContainer = styled('div')({
+  margin: '0 -1.6rem',
+  padding: '1.2rem 1.6rem 0',
 
   whiteSpace: 'pre-wrap',
   wordBreak: 'break-all',
 
-  paddingTop: '1.2rem',
-
   overflow: 'auto',
-}));
+});
 
 export const InputCoinContainer = styled('div')({});
 
@@ -48,17 +47,21 @@ export const RoutesContainer = styled('div')({
   marginTop: '0.4rem',
 });
 
-export const RoutesValueContainer = styled('div')({
+export const RoutesValueContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+
   display: 'flex',
-});
+}));
 
 export const PoolContainer = styled('div')({
   marginTop: '0.4rem',
 });
 
-export const PoolValueContainer = styled('div')({
+export const PoolValueContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+
   display: 'flex',
-});
+}));
 
 export const LabelContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
