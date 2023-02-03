@@ -52,7 +52,7 @@ export default function AccountAddressBookBottomSheet({
               key={item.id}
               accountName={accountName[item.id]}
               address={chain ? item.address[chain.id] : ''}
-              chain={chain}
+              accountId={item.id}
               onClick={(address) => {
                 onClickAddress?.(address);
                 onClose?.({}, 'backdropClick');
