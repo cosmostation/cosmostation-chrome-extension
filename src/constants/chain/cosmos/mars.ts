@@ -1,0 +1,31 @@
+// import { MINTSCAN_URL } from '~/constants/common';
+import marsImg from '~/images/symbols/mars.png';
+import type { CosmosChain } from '~/types/chain';
+
+export const MARS: CosmosChain = {
+  id: 'acc298c0-ee4f-48e6-bcd5-3b974a553cf7',
+  line: 'COSMOS',
+  type: '',
+  chainId: 'mars-1',
+  chainName: 'Mars',
+  restURL: 'https://lcd-mars-protocol.cosmostation.io',
+  imageURL: marsImg,
+  baseDenom: 'umars',
+  displayDenom: 'MARS',
+  decimals: 6,
+  bip44: {
+    purpose: "44'",
+    coinType: "118'",
+    account: "0'",
+    change: '0',
+  },
+  bech32Prefix: { address: 'mars' },
+  // coinGeckoId: 'mars',
+  // explorerURL: `${MINTSCAN_URL}/mars-protocol`,
+  gasRate: {
+    tiny: '0',
+    low: '0',
+    average: '0',
+  },
+  gas: {},
+};

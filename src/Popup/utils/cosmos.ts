@@ -37,7 +37,7 @@ export function cosmosURL(chain: CosmosChain) {
   const isV1BetaClientState = [IXO.id, STARNAME.id, EMONEY.id].includes(chain.id);
   // reward 중첩 typing!
   return {
-    getNodeInfo: () => `${restURL}/node_info`,
+    getNodeInfo: () => `${restURL}/cosmos/base/tendermint/v1beta1/node_info`,
     getBalance: (address: string) => `${restURL}/cosmos/bank/v1beta1/balances/${address}?pagination.limit=10000`,
     getDelegations: (address: string) => `${restURL}/cosmos/staking/v1beta1/delegations/${address}`,
     getRewards: (address: string) => `${restURL}/cosmos/distribution/v1beta1/delegators/${address}/rewards`,
