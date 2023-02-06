@@ -5,14 +5,14 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { CosmosChain } from '~/types/chain';
+import type { CommonChain } from '~/types/chain';
 
 import { AddressList, Container, Header, HeaderTitle, StyledBottomSheet } from './styled';
 import AccountAddressBookItem from '../AccountAddressBookItem';
 
 type AccountAddressBookBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   onClickAddress?: (address: string) => void;
-  chain?: CosmosChain;
+  chain?: CommonChain;
   hasCurrentAccount?: boolean;
 };
 
@@ -52,7 +52,7 @@ export default function AccountAddressBookBottomSheet({
               key={item.id}
               accountName={accountName[item.id]}
               address={chain ? item.address[chain.id] : ''}
-              chain={chain}
+              accountId={item.id}
               onClick={(address) => {
                 onClickAddress?.(address);
                 onClose?.({}, 'backdropClick');

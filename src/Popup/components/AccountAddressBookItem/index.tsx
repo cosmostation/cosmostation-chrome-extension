@@ -1,24 +1,30 @@
+import stc from 'string-to-color';
 import { Typography } from '@mui/material';
 
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { shorterAddress } from '~/Popup/utils/string';
-import type { Chain } from '~/types/chain';
 
-import { AddressContainer, Container, LabelContainer, LabelLeftContainer, StyledImage } from './styled';
+import { AccountIconContainer, AddressContainer, Container, LabelContainer, LabelLeftContainer } from './styled';
+
+import Account10Icon from '~/images/icons/Account10.svg';
 
 type AccountAddressBookItemProps = {
   accountName: string;
-  chain?: Chain;
   address: string;
+  accountId: string;
   onClick?: (address: string) => void;
 };
 
-export default function AccountAddressBookItem({ onClick, address, chain, accountName }: AccountAddressBookItemProps) {
+export default function AccountAddressBookItem({ onClick, address, accountName, accountId }: AccountAddressBookItemProps) {
+  const accountColor = stc(accountId);
+
   return (
     <Container onClick={() => onClick?.(address)} data-is-onclick={onClick ? 1 : 0}>
       <LabelContainer>
         <LabelLeftContainer>
-          <StyledImage src={chain?.imageURL} />
+          <AccountIconContainer data-account-color={accountColor}>
+            <Account10Icon />
+          </AccountIconContainer>
           <Typography variant="h6">{accountName}</Typography>
         </LabelLeftContainer>
       </LabelContainer>

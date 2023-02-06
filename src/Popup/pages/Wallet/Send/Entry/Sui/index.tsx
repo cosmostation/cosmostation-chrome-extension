@@ -6,10 +6,11 @@ import type { UnserializedSignableTransaction } from '@mysten/sui.js';
 import { Ed25519Keypair, JsonRpcProvider, RawSigner } from '@mysten/sui.js';
 
 import { SUI_COIN } from '~/constants/sui';
+import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
-import IconButton from '~/Popup/components/common/IconButton';
 import Tooltip from '~/Popup/components/common/Tooltip';
+import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useDryRunTransactionSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
@@ -30,6 +31,7 @@ import CoinButton from './components/CoinButton';
 import CoinPopover from './components/CoinPopover';
 import { BottomContainer, Container, Div, MaxButton, StyledInput } from './styled';
 
+import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
 
 type SuiProps = {
@@ -84,6 +86,7 @@ export default function Sui({ chain }: SuiProps) {
   const [currentAddress, setCurrentAddress] = useState('');
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
+  const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
@@ -208,11 +211,18 @@ export default function Sui({ chain }: SuiProps) {
         <Div>
           <StyledInput
             endAdornment={
-              <InputAdornment position="end">
-                <IconButton edge="end" onClick={() => setIsOpenedAddressBook(true)}>
-                  <AddressBook24Icon />
-                </IconButton>
-              </InputAdornment>
+              <>
+                <InputAdornment position="end">
+                  <InputAdornmentIconButton onClick={() => setIsOpenedMyAddressBook(true)}>
+                    <AccountAddressIcon />
+                  </InputAdornmentIconButton>
+                </InputAdornment>
+                <InputAdornment position="start">
+                  <InputAdornmentIconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
+                    <AddressBook24Icon />
+                  </InputAdornmentIconButton>
+                </InputAdornment>
+              </>
             }
             placeholder={t('pages.Wallet.Send.Entry.Sui.index.recipientAddressPlaceholder')}
             onChange={(e) => setCurrentAddress(e.currentTarget.value)}
@@ -287,6 +297,16 @@ export default function Sui({ chain }: SuiProps) {
           onClose={() => setIsOpenedAddressBook(false)}
           onClickAddress={(a) => {
             setCurrentAddress(a.address);
+          }}
+        />
+
+        <AccountAddressBookBottomSheet
+          open={isOpenedMyAddressBook}
+          hasCurrentAccount={false}
+          chain={chain}
+          onClose={() => setIsOpenedMyAddressBook(false)}
+          onClickAddress={(a) => {
+            setCurrentAddress(a);
           }}
         />
       </Container>
