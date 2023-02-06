@@ -20,7 +20,7 @@ export const MARS: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'mars' },
-  // coinGeckoId: 'mars',
+  coinGeckoId: 'mars-protocol-a7fcbcfb-fd61-4017-92f0-7ee9f9cc6da3',
   explorerURL: `${MINTSCAN_URL}/mars-protocol`,
   gasRate: {
     tiny: '0',

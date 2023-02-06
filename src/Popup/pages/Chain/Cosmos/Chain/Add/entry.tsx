@@ -52,7 +52,7 @@ export default function Entry() {
 
   const submit = async (data: AddChainForm) => {
     try {
-      const nodeInfo = await get<NodeInfoPayload>(`${data.restURL}/node_info`);
+      const nodeInfo = await get<NodeInfoPayload>(`${data.restURL}/cosmos/base/tendermint/v1beta1/node_info`);
 
       if (!nodeInfo?.node_info?.network) {
         throw new Error(t('pages.Chain.Cosmos.Chain.Add.entry.restURLError'));
