@@ -10,7 +10,7 @@ export function useSchema() {
   const gasForm = Joi.object<GasForm>({
     gas: Joi.number()
       .required()
-      .min(0)
+      .min(1)
       .messages({
         'any.required': t('schema.common.any.required'),
         'number.base': t('schema.common.number.base'),
