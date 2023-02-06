@@ -42,6 +42,7 @@ import { KONSTELLATION } from './cosmos/konstellation';
 import { KUJIRA } from './cosmos/kujira';
 import { LIKE_COIN } from './cosmos/likeCoin';
 import { LUM } from './cosmos/lum';
+import { MARS } from './cosmos/mars';
 import { MEDIBLOC } from './cosmos/medibloc';
 import { NYX, NYX_FEE_BASE_DENOMS, NYX_GAS_RATES } from './cosmos/nyx';
 import { OMNIFLIX } from './cosmos/omniflix';
@@ -131,6 +132,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   KUJIRA,
   LIKE_COIN,
   LUM,
+  MARS,
   MEDIBLOC,
   NYX,
   OMNIFLIX,
