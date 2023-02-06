@@ -1,4 +1,4 @@
-// import { MINTSCAN_URL } from '~/constants/common';
+import { MINTSCAN_URL } from '~/constants/common';
 import marsImg from '~/images/symbols/mars.png';
 import type { CosmosChain } from '~/types/chain';
 
@@ -21,7 +21,7 @@ export const MARS: CosmosChain = {
   },
   bech32Prefix: { address: 'mars' },
   // coinGeckoId: 'mars',
-  // explorerURL: `${MINTSCAN_URL}/mars-protocol`,
+  explorerURL: `${MINTSCAN_URL}/mars-protocol`,
   gasRate: {
     tiny: '0',
     low: '0',
