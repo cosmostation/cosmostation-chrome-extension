@@ -60,12 +60,8 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
       return toDisplayDenomAmount(itemBaseAmount, ibcCoinInfo.decimals);
     }
 
-    if (chain.baseDenom === baseDenom) {
-      return toDisplayDenomAmount(itemBaseAmount, chain.decimals);
-    }
-
     return itemBaseAmount || '0';
-  }, [assetCoinInfo?.decimals, baseDenom, chain.baseDenom, chain.decimals, decimals, ibcCoinInfo?.decimals, itemBaseAmount, itemBaseDenom]);
+  }, [assetCoinInfo?.decimals, baseDenom, decimals, ibcCoinInfo?.decimals, itemBaseAmount, itemBaseDenom]);
 
   const itemDisplayDenom = useMemo(() => {
     if (itemBaseDenom === baseDenom) {
@@ -80,12 +76,8 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
       return ibcCoinInfo.displayDenom;
     }
 
-    if (chain.baseDenom === baseDenom) {
-      return chain.displayDenom;
-    }
-
     return itemBaseDenom.length > 5 ? `${itemBaseDenom.substring(0, 5)}...` : itemBaseDenom;
-  }, [assetCoinInfo?.displayDenom, baseDenom, chain.baseDenom, chain.displayDenom, displayDenom, ibcCoinInfo?.displayDenom, itemBaseDenom]);
+  }, [assetCoinInfo?.displayDenom, baseDenom, displayDenom, ibcCoinInfo?.displayDenom, itemBaseDenom]);
 
   const itemDisplayValue = useMemo(() => {
     if (itemBaseDenom === baseDenom) {
