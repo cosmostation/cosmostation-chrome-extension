@@ -78,15 +78,21 @@ export default function Entry() {
       : ETHEREUM_NETWORKS;
   }, [debouncedCloseSearch, debouncedOpenSearch]);
 
-  const filteredAptosNetworks = useMemo(
-    () => (APTOS.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1 ? APTOS_NETWORKS : []),
-    [debouncedOpenSearch],
-  );
+  const filteredAptosNetworks = useMemo(() => {
+    if (debouncedOpenSearch) {
+      return APTOS.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1 ? APTOS_NETWORKS : [];
+    }
 
-  const filteredSuiNetworks = useMemo(
-    () => (SUI.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1 ? SUI_NETWORKS : []),
-    [debouncedOpenSearch],
-  );
+    return debouncedCloseSearch ? (APTOS.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1 ? APTOS_NETWORKS : []) : [];
+  }, [debouncedCloseSearch, debouncedOpenSearch]);
+
+  const filteredSuiNetworks = useMemo(() => {
+    if (debouncedOpenSearch) {
+      return SUI.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1 ? SUI_NETWORKS : [];
+    }
+
+    return debouncedCloseSearch ? (SUI.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1 ? SUI_NETWORKS : []) : [];
+  }, [debouncedCloseSearch, debouncedOpenSearch]);
 
   const filteredCosmosChains = useMemo(() => {
     if (debouncedOpenSearch) {
