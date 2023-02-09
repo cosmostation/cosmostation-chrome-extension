@@ -78,25 +78,15 @@ export default function Entry() {
       : ETHEREUM_NETWORKS;
   }, [debouncedCloseSearch, debouncedOpenSearch]);
 
-  const filteredAptosNetworks = useMemo(() => {
-    if (debouncedOpenSearch) {
-      return APTOS_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1);
-    }
+  const filteredAptosNetworks = useMemo(
+    () => (APTOS.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1 ? APTOS_NETWORKS : []),
+    [debouncedOpenSearch],
+  );
 
-    return debouncedCloseSearch
-      ? APTOS_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1)
-      : APTOS_NETWORKS;
-  }, [debouncedOpenSearch, debouncedCloseSearch]);
-
-  const filteredSuiNetworks = useMemo(() => {
-    if (debouncedOpenSearch) {
-      return SUI_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1);
-    }
-
-    return debouncedCloseSearch
-      ? SUI_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1)
-      : SUI_NETWORKS;
-  }, [debouncedOpenSearch, debouncedCloseSearch]);
+  const filteredSuiNetworks = useMemo(
+    () => (SUI.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1 ? SUI_NETWORKS : []),
+    [debouncedOpenSearch],
+  );
 
   const filteredCosmosChains = useMemo(() => {
     if (debouncedOpenSearch) {
