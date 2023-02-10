@@ -102,8 +102,6 @@ type Aptos = {
 };
 
 type Sui = {
-  values: import('~/Scripts/injectScript/sui').Values;
-  setValue: <T extends keyof import('~/Scripts/injectScript/sui').Values>(key: T, value: import('~/Scripts/injectScript/sui').Values[T]) => void;
   request: (message: import('~/types/message').SuiRequestMessage) => Promise<T>;
   connect: (permissions: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
   disconnect: () => Promise<import('~/types/message/sui').SuiDisconnectResponse>;
