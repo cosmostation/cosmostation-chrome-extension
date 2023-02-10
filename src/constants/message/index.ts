@@ -20,3 +20,8 @@ export const APTOS_LISTENER_TYPE = {
   ACCOUNT_CHANGED: 'accountChange',
   CHAIN_CHANGED: 'networkChange',
 } as const;
+
+export const SUI_LISTENER_TYPE = {
+  ACCOUNT_CHANGED: 'accountChange',
+  CHAIN_CHANGED: 'networkChange',
+} as const;

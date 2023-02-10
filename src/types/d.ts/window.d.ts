@@ -102,6 +102,8 @@ type Aptos = {
 };
 
 type Sui = {
+  values: import('~/Scripts/injectScript/sui').Values;
+  setValue: <T extends keyof import('~/Scripts/injectScript/sui').Values>(key: T, value: import('~/Scripts/injectScript/sui').Values[T]) => void;
   request: (message: import('~/types/message').SuiRequestMessage) => Promise<T>;
   connect: (permissions: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
   disconnect: () => Promise<import('~/types/message/sui').SuiDisconnectResponse>;
@@ -114,6 +116,8 @@ type Sui = {
     data: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][0],
     type: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][1],
   ) => Promise<import('~/types/message/sui').SuiSignAndExecuteTransactionResponse>;
+  on: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
+  off: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
 };
 
 type MetaMask = Ethereum;

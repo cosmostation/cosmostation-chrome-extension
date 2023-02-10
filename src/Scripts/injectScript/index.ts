@@ -30,6 +30,16 @@ void (() => {
       window.cosmostation.ethereum.networkVersion = `${parseInt(chainId as string, 16)}`;
     });
 
+    sui.on('accountChange', (account) => {
+      sui.setValue('accounts', (account ? [account] : []) as string[]);
+    });
+
+    void sui
+      .getAccounts()
+      .then((accounts) => sui.setValue('accounts', accounts))
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      .catch(() => {});
+
     const providers = (await window.cosmostation.common.request({ method: 'com_providers' })) as ComProvidersResponse;
 
     if (providers.keplr && !window.keplr) {

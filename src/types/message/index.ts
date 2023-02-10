@@ -57,6 +57,7 @@ export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type CosmosListenerType = ValueOf<typeof COSMOS_LISTENER_TYPE>;
 export type EthereumListenerType = ValueOf<typeof ETHEREUM_LISTENER_TYPE>;
 export type AptosListenerType = ValueOf<typeof APTOS_LISTENER_TYPE>;
+export type SuiListenerType = ValueOf<typeof APTOS_LISTENER_TYPE>;
 export type ListenerType = CosmosListenerType | EthereumListenerType | AptosListenerType;
 
 /** Web Page <-> Content Script 통신 타입 정의 */
