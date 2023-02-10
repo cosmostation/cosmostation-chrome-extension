@@ -80,23 +80,19 @@ export default function Entry() {
 
   const filteredAptosNetworks = useMemo(() => {
     if (debouncedOpenSearch) {
-      return APTOS_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1);
+      return APTOS.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1 ? APTOS_NETWORKS : [];
     }
 
-    return debouncedCloseSearch
-      ? APTOS_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1)
-      : APTOS_NETWORKS;
-  }, [debouncedOpenSearch, debouncedCloseSearch]);
+    return debouncedCloseSearch ? (APTOS.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1 ? APTOS_NETWORKS : []) : [];
+  }, [debouncedCloseSearch, debouncedOpenSearch]);
 
   const filteredSuiNetworks = useMemo(() => {
     if (debouncedOpenSearch) {
-      return SUI_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1);
+      return SUI.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1 ? SUI_NETWORKS : [];
     }
 
-    return debouncedCloseSearch
-      ? SUI_NETWORKS.filter((network) => network.networkName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1)
-      : SUI_NETWORKS;
-  }, [debouncedOpenSearch, debouncedCloseSearch]);
+    return debouncedCloseSearch ? (SUI.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1 ? SUI_NETWORKS : []) : [];
+  }, [debouncedCloseSearch, debouncedOpenSearch]);
 
   const filteredCosmosChains = useMemo(() => {
     if (debouncedOpenSearch) {
