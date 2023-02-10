@@ -20,6 +20,7 @@ import { AXELAR } from './cosmos/axelar';
 import { BAND } from './cosmos/band';
 import { BITCANNA } from './cosmos/bitcanna';
 import { BITSONG } from './cosmos/bitsong';
+import { CANTO } from './cosmos/canto';
 import { CERBERUS } from './cosmos/cerberus';
 import { CHIHUAHUA } from './cosmos/chihuahua';
 import { COMDEX } from './cosmos/comdex';
@@ -111,6 +112,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   BAND,
   BITCANNA,
   BITSONG,
+  CANTO,
   CERBERUS,
   CHIHUAHUA,
   COMDEX,
