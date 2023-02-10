@@ -109,6 +109,7 @@ type Sui = {
   hasPermissions: (permissions?: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
   getAccounts: () => Promise<string[]>;
   getPublicKey: () => Promise<string>;
+  getChain: () => Promise<string>;
   executeMoveCall: (data: import('~/types/message/sui').SuiExecuteMoveCall['params'][0]) => Promise<import('~/types/message/sui').SuiExecuteMoveCallResponse>;
   signAndExecuteTransaction: (
     data: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][0],

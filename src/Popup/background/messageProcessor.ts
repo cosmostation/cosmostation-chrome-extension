@@ -85,7 +85,7 @@ import type {
   WalletSwitchEthereumChainResponse,
   WalletWatchAsset,
 } from '~/types/message/ethereum';
-import type { SuiConnect, SuiConnectResponse, SuiExecuteMoveCall, SuiGetAccountResponse } from '~/types/message/sui';
+import type { SuiConnect, SuiConnectResponse, SuiExecuteMoveCall, SuiGetAccountResponse, SuiGetChainResponse } from '~/types/message/sui';
 
 import {
   aptosSignMessageSchema,
@@ -1843,7 +1843,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const suiPopupMethods = Object.values(SUI_POPUP_METHOD_TYPE) as string[];
     const suiNoPopupMethods = Object.values(SUI_NO_POPUP_METHOD_TYPE) as string[];
 
-    const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins } = await chromeStorage();
+    const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins, currentSuiNetwork } = await chromeStorage();
 
     const { currentPassword } = await chromeSessionStorage();
 
@@ -1998,6 +1998,17 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           await setStorage('suiPermissions', newSuiPermissions);
 
           const result = null;
+
+          responseToWeb({
+            response: {
+              result,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        } else if (method === 'sui_getChain') {
+          const result: SuiGetChainResponse = currentSuiNetwork.networkName.toLowerCase();
 
           responseToWeb({
             response: {

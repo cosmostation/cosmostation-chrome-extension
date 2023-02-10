@@ -70,6 +70,14 @@ export type SuiDisconnect = {
 
 export type SuiDisconnectResponse = null;
 
+export type SuiGetChain = {
+  method: typeof SUI_NO_POPUP_METHOD_TYPE.SUI__GET_CHAIN;
+  params: unknown;
+  id?: number | string;
+};
+
+export type SuiGetChainResponse = string;
+
 export type SuiRPCRequest = {
   method: Exclude<SuiNoPopupMethodType, typeof SUI_NO_POPUP_METHOD_TYPE.SUI__GET_PERMISSIONS | typeof SUI_NO_POPUP_METHOD_TYPE.SUI__DISCONNECT>;
   params: unknown;
