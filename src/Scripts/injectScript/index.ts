@@ -22,6 +22,8 @@ void (() => {
     sui,
   };
 
+  window['cosmostation Wallet'] = sui;
+
   registerWallet(new SuiStandard());
 
   void (async () => {

@@ -51,7 +51,16 @@ import type {
   WalletSwitchEthereumChain,
   WalletWatchAsset,
 } from './ethereum';
-import type { SuiConnect, SuiDisconnect, SuiExecuteMoveCall, SuiGetAccount, SuiGetChain, SuiGetPermissions, SuiSignAndExecuteTransaction } from './sui';
+import type {
+  SuiConnect,
+  SuiDisconnect,
+  SuiExecuteMoveCall,
+  SuiExecuteSerializedMoveCall,
+  SuiGetAccount,
+  SuiGetChain,
+  SuiGetPermissions,
+  SuiSignAndExecuteTransaction,
+} from './sui';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type CosmosListenerType = ValueOf<typeof COSMOS_LISTENER_TYPE>;
@@ -120,6 +129,7 @@ export type SuiRequestMessage =
   | SuiConnect
   | SuiGetAccount
   | SuiExecuteMoveCall
+  | SuiExecuteSerializedMoveCall
   | SuiSignAndExecuteTransaction
   | SuiDisconnect
   | SuiGetChain;

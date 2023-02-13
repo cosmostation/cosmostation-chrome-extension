@@ -36,6 +36,7 @@ interface Window {
       metamask: MetaMask;
     };
   };
+  'cosmostation Wallet'?: Sui;
   keplr?: Keplr;
   getOfflineSigner?: unknown;
   getOfflineSignerOnlyAmino?: unknown;
@@ -111,6 +112,9 @@ type Sui = {
   getPublicKey: () => Promise<string>;
   getChain: () => Promise<string>;
   executeMoveCall: (data: import('~/types/message/sui').SuiExecuteMoveCall['params'][0]) => Promise<import('~/types/message/sui').SuiExecuteMoveCallResponse>;
+  executeSerializedMoveCall: (
+    data: import('~/types/message/sui').SuiExecuteSerializedMoveCall['params'][0],
+  ) => Promise<import('~/types/message/sui').SuiExecuteSerializedMoveCallResponse>;
   signAndExecuteTransaction: (
     data: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][0],
     type: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][1],

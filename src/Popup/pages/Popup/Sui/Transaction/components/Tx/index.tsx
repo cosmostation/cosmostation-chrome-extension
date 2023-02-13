@@ -4,7 +4,7 @@ import type { UnserializedSignableTransaction } from '@mysten/sui.js';
 import { Container } from './styled';
 
 type TxProps = {
-  transaction: UnserializedSignableTransaction;
+  transaction: UnserializedSignableTransaction | string;
 };
 
 export default function Tx({ transaction }: TxProps) {

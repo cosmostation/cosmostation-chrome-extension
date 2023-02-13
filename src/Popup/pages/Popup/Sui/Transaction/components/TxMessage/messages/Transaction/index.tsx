@@ -6,7 +6,7 @@ import { ContentContainer } from './styled';
 import Container from '../../components/Container';
 
 type TransactionProps = {
-  transaction: UnserializedSignableTransaction;
+  transaction: UnserializedSignableTransaction | string;
 };
 
 export default function Transaction({ transaction }: TransactionProps) {

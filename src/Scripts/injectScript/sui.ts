@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+
 import { v4 as uuidv4 } from 'uuid';
 import type { IdentifierArray, Wallet, WalletAccount } from '@mysten/wallet-standard';
 
@@ -9,6 +11,7 @@ import type {
   SuiDisconnectResponse,
   SuiExecuteMoveCall,
   SuiExecuteMoveCallResponse,
+  SuiExecuteSerializedMoveCall,
   SuiGetAccountResponse,
   SuiGetChainResponse,
   SuiGetPermissionsResponse,
@@ -86,8 +89,15 @@ const hasPermissions = async (permissions: SuiPermissionType[] = ['suggestTransa
 const executeMoveCall = (data: SuiExecuteMoveCall['params'][0]) =>
   request({ method: 'sui_executeMoveCall', params: [data] }) as Promise<SuiExecuteMoveCallResponse>;
 
+const executeSerializedMoveCall = (data: SuiExecuteSerializedMoveCall['params'][0]) =>
+  request({ method: 'sui_executeSerializedMoveCall', params: [data] }) as Promise<SuiExecuteMoveCallResponse>;
+
 const signAndExecuteTransaction = (data: SuiSignAndExecuteTransaction['params'][0], type?: SuiSignAndExecuteTransaction['params'][1]) =>
-  request({ method: 'sui_signAndExecuteTransaction', params: type ? [data, type] : [data] }) as Promise<SuiSignAndExecuteTransactionResponse>;
+  request({
+    method: 'sui_signAndExecuteTransaction',
+    // @ts-ignore:next-line
+    params: type ? [data, type] : [data?.transaction ? { ...data.transaction } : data],
+  }) as Promise<SuiSignAndExecuteTransactionResponse>;
 
 const off = (eventName: SuiListenerType, eventHandler?: (data: unknown) => void) => {
   const handlerInfos = window.cosmostation.handlerInfos.filter(
@@ -126,7 +136,7 @@ const on = (eventName: SuiListenerType, eventHandler: (data: any) => void) => {
 class SuiStandard implements Wallet {
   version: '1.0.0';
 
-  readonly name: string = 'Cosmostation';
+  readonly name: string = 'Cosmostation Wallet';
 
   icon: `data:image/svg+xml;base64,${string}` | `data:image/webp;base64,${string}` | `data:image/png;base64,${string}` | `data:image/gif;base64,${string}`;
 
@@ -135,6 +145,8 @@ class SuiStandard implements Wallet {
   features: Readonly<Record<`${string}:${string}`, unknown>> = {};
 
   accounts: readonly WalletAccount[] = [];
+
+  hasPermissions = hasPermissions;
 
   constructor() {
     this.version = '1.0.0';
@@ -201,6 +213,7 @@ export const sui: Sui = {
   connect,
   disconnect,
   executeMoveCall,
+  executeSerializedMoveCall,
   getAccounts,
   getPublicKey,
   getChain,

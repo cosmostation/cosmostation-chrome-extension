@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
-import { Ed25519Keypair, JsonRpcProvider, RawSigner } from '@mysten/sui.js';
+import { Base64DataBuffer, Ed25519Keypair, JsonRpcProvider, RawSigner } from '@mysten/sui.js';
 
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -85,7 +85,15 @@ export default function Entry({ queue }: EntryProps) {
 
   const rawSigner = useMemo(() => new RawSigner(keypair, provider), [keypair, provider]);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionSWR({ rawSigner, transaction: params[0] });
+  const transaction = useMemo(() => {
+    if (typeof params[0] === 'string') {
+      return new Base64DataBuffer(params[0]);
+    }
+
+    return params[0];
+  }, [params]);
+
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionSWR({ rawSigner, transaction });
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
@@ -111,7 +119,15 @@ export default function Entry({ queue }: EntryProps) {
     setTabValue(newTabValue);
   };
 
-  const displayBudgetFee = useMemo(() => toDisplayDenomAmount(params[0].data.gasBudget, decimals), [decimals, params]);
+  const baseBudgetFee = useMemo(() => {
+    if (typeof params[0] === 'string') {
+      return 0;
+    }
+
+    return params[0].data.gasBudget || 0;
+  }, [params]);
+
+  const displayBudgetFee = useMemo(() => toDisplayDenomAmount(baseBudgetFee, decimals), [baseBudgetFee, decimals]);
 
   const isDiabled = useMemo(() => !(dryRunTransaction?.status.status === 'success'), [dryRunTransaction?.status.status]);
 
@@ -167,27 +183,29 @@ export default function Entry({ queue }: EntryProps) {
                 </FeeRightColumnContainer>
               </FeeRightContainer>
             </FeeInfoContainer>
-            <FeeInfoContainer>
-              <FeeLeftContainer>
-                <Typography variant="h5">{t('pages.Popup.Sui.Transaction.entry.maxFee')}</Typography>
-              </FeeLeftContainer>
-              <FeeRightContainer>
-                <FeeRightColumnContainer>
-                  <FeeRightAmountContainer>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                      {displayBudgetFee}
-                    </Number>
-                    &nbsp;
-                    <Typography variant="h5n">{symbol}</Typography>
-                  </FeeRightAmountContainer>
-                  <FeeRightValueContainer>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                      0
-                    </Number>
-                  </FeeRightValueContainer>
-                </FeeRightColumnContainer>
-              </FeeRightContainer>
-            </FeeInfoContainer>
+            {!(transaction instanceof Base64DataBuffer) && (
+              <FeeInfoContainer>
+                <FeeLeftContainer>
+                  <Typography variant="h5">{t('pages.Popup.Sui.Transaction.entry.maxFee')}</Typography>
+                </FeeLeftContainer>
+                <FeeRightContainer>
+                  <FeeRightColumnContainer>
+                    <FeeRightAmountContainer>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                        {displayBudgetFee}
+                      </Number>
+                      &nbsp;
+                      <Typography variant="h5n">{symbol}</Typography>
+                    </FeeRightAmountContainer>
+                    <FeeRightValueContainer>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                        0
+                      </Number>
+                    </FeeRightValueContainer>
+                  </FeeRightColumnContainer>
+                </FeeRightContainer>
+              </FeeInfoContainer>
+            )}
           </FeeContainer>
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
@@ -233,12 +251,26 @@ export default function Entry({ queue }: EntryProps) {
               onClick={async () => {
                 try {
                   setIsProgress(true);
-                  const response = await rawSigner.signAndExecuteTransaction(params[0]);
+                  const response = await rawSigner.signAndExecuteTransaction(transaction);
 
                   if ('EffectsCert' in response) {
                     const result: SuiSignAndExecuteTransactionResponse = {
                       certificate: response.EffectsCert.certificate,
-                      effects: response.EffectsCert.effects.effects,
+                      effects: response.EffectsCert.effects.effects as unknown as SuiSignAndExecuteTransactionResponse['effects'],
+                    };
+
+                    responseToWeb({
+                      response: {
+                        result,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
+                  } else if ('certificate' in response && 'effects' in response) {
+                    const result: SuiSignAndExecuteTransactionResponse = {
+                      certificate: response.certificate as unknown as SuiSignAndExecuteTransactionResponse['certificate'],
+                      effects: response.effects.effects as unknown as SuiSignAndExecuteTransactionResponse['effects'],
                     };
 
                     responseToWeb({

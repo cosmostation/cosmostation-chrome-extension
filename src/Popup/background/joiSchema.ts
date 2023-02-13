@@ -481,3 +481,5 @@ export const suiExecuteMoveCallSchema = () =>
         arguments: Joi.array().required(),
       }).unknown(),
     );
+
+export const suiExecuteSerializedMoveCallSchema = () => Joi.array().label('params').min(1).max(1).required().items(Joi.string().base64());
