@@ -22,7 +22,7 @@ void (() => {
     sui,
   };
 
-  window['cosmostation Wallet'] = sui;
+  window.cosmostationWallet = sui;
 
   registerWallet(new SuiStandard());
 

@@ -36,7 +36,7 @@ interface Window {
       metamask: MetaMask;
     };
   };
-  'cosmostation Wallet'?: Sui;
+  cosmostationWallet?: Sui;
   keplr?: Keplr;
   getOfflineSigner?: unknown;
   getOfflineSignerOnlyAmino?: unknown;
