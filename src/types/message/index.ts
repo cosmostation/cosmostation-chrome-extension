@@ -51,12 +51,22 @@ import type {
   WalletSwitchEthereumChain,
   WalletWatchAsset,
 } from './ethereum';
-import type { SuiConnect, SuiDisconnect, SuiExecuteMoveCall, SuiGetAccount, SuiGetPermissions, SuiSignAndExecuteTransaction } from './sui';
+import type {
+  SuiConnect,
+  SuiDisconnect,
+  SuiExecuteMoveCall,
+  SuiExecuteSerializedMoveCall,
+  SuiGetAccount,
+  SuiGetChain,
+  SuiGetPermissions,
+  SuiSignAndExecuteTransaction,
+} from './sui';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
 export type CosmosListenerType = ValueOf<typeof COSMOS_LISTENER_TYPE>;
 export type EthereumListenerType = ValueOf<typeof ETHEREUM_LISTENER_TYPE>;
 export type AptosListenerType = ValueOf<typeof APTOS_LISTENER_TYPE>;
+export type SuiListenerType = ValueOf<typeof APTOS_LISTENER_TYPE>;
 export type ListenerType = CosmosListenerType | EthereumListenerType | AptosListenerType;
 
 /** Web Page <-> Content Script 통신 타입 정의 */
@@ -114,7 +124,15 @@ export type AptosRequestMessage =
   | AptosSignAndSubmitTransaction
   | AptosSignMessage;
 
-export type SuiRequestMessage = SuiGetPermissions | SuiConnect | SuiGetAccount | SuiExecuteMoveCall | SuiSignAndExecuteTransaction | SuiDisconnect;
+export type SuiRequestMessage =
+  | SuiGetPermissions
+  | SuiConnect
+  | SuiGetAccount
+  | SuiExecuteMoveCall
+  | SuiExecuteSerializedMoveCall
+  | SuiSignAndExecuteTransaction
+  | SuiDisconnect
+  | SuiGetChain;
 
 export type CommonRequestMessage = ComProviders;
 

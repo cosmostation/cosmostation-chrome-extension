@@ -51,6 +51,7 @@ export async function chromeStorage() {
     additionalAptosNetworks,
     additionalSuiNetworks,
     selectedAptosNetworkId,
+    selectedSuiNetworkId,
   } = storageWithDefault;
 
   const currentAccount = (() => accounts.find((account) => account.id === selectedAccountId)!)();
@@ -75,7 +76,7 @@ export async function chromeStorage() {
   const currentSuiNetwork = (() => {
     const suiNetworks = [...SUI_NETWORKS, ...additionalSuiNetworks];
 
-    const networkId = selectedAptosNetworkId ?? APTOS_NETWORKS[1].id;
+    const networkId = selectedSuiNetworkId ?? SUI_NETWORKS[0].id;
 
     return suiNetworks.find((network) => network.id === networkId) ?? suiNetworks[0];
   })();

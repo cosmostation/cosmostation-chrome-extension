@@ -24,7 +24,7 @@ export function useCurrentSuiNetwork() {
 
     const origins = Array.from(new Set(allowedOrigins.map((item) => item.origin)));
 
-    emitToWeb({ line: 'SUI', type: 'networkChange', message: { result: network.networkName } }, origins);
+    emitToWeb({ line: 'SUI', type: 'networkChange', message: { result: network.networkName.toLowerCase() } }, origins);
   };
 
   const removeSuiNetwork = async (network: SuiNetwork) => {

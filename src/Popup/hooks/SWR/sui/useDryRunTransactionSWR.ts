@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
-import type { RawSigner, TransactionEffects, UnserializedSignableTransaction } from '@mysten/sui.js';
+import type { Base64DataBuffer, RawSigner, TransactionEffects, UnserializedSignableTransaction } from '@mysten/sui.js';
 
 type FetchParams = {
   transaction?: UnserializedSignableTransaction;
@@ -9,7 +9,7 @@ type FetchParams = {
 
 type UseDryRunTransactionSWRProps = {
   rawSigner?: RawSigner;
-  transaction?: UnserializedSignableTransaction;
+  transaction?: UnserializedSignableTransaction | Base64DataBuffer;
 };
 
 export function useDryRunTransactionSWR({ transaction, rawSigner }: UseDryRunTransactionSWRProps, config?: SWRConfiguration) {

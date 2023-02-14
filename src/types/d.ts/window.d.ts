@@ -36,6 +36,7 @@ interface Window {
       metamask: MetaMask;
     };
   };
+  cosmostationWallet?: Sui;
   keplr?: Keplr;
   getOfflineSigner?: unknown;
   getOfflineSignerOnlyAmino?: unknown;
@@ -109,11 +110,17 @@ type Sui = {
   hasPermissions: (permissions?: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
   getAccounts: () => Promise<string[]>;
   getPublicKey: () => Promise<string>;
+  getChain: () => Promise<string>;
   executeMoveCall: (data: import('~/types/message/sui').SuiExecuteMoveCall['params'][0]) => Promise<import('~/types/message/sui').SuiExecuteMoveCallResponse>;
+  executeSerializedMoveCall: (
+    data: import('~/types/message/sui').SuiExecuteSerializedMoveCall['params'][0],
+  ) => Promise<import('~/types/message/sui').SuiExecuteSerializedMoveCallResponse>;
   signAndExecuteTransaction: (
     data: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][0],
     type: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][1],
   ) => Promise<import('~/types/message/sui').SuiSignAndExecuteTransactionResponse>;
+  on: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
+  off: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
 };
 
 type MetaMask = Ethereum;

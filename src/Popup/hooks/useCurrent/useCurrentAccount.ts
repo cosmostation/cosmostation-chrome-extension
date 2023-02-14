@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CHAINS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { SUI } from '~/constants/chain/sui/sui';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { openTab } from '~/Popup/utils/chromeTabs';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
@@ -72,6 +73,15 @@ export function useCurrentAccount() {
     emitToWeb({ line: 'APTOS', type: 'accountChange', message: { result: aptosAddress } }, currentAccountOrigins);
     emitToWeb(
       { line: 'APTOS', type: 'accountChange', message: { result: '' } },
+      currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
+    );
+
+    const suiKeyPair = getKeyPair(accounts.find((item) => item.id === newAccountId)!, SUI, currentPassword);
+    const suiAddress = getAddress(SUI, suiKeyPair?.publicKey);
+
+    emitToWeb({ line: 'SUI', type: 'accountChange', message: { result: suiAddress } }, currentAccountOrigins);
+    emitToWeb(
+      { line: 'SUI', type: 'accountChange', message: { result: '' } },
       currentAccountNotOrigins.filter((item) => !currentAccountOrigins.includes(item)),
     );
   };

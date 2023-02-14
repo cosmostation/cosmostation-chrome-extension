@@ -85,7 +85,14 @@ import type {
   WalletSwitchEthereumChainResponse,
   WalletWatchAsset,
 } from '~/types/message/ethereum';
-import type { SuiConnect, SuiConnectResponse, SuiExecuteMoveCall, SuiGetAccountResponse } from '~/types/message/sui';
+import type {
+  SuiConnect,
+  SuiConnectResponse,
+  SuiExecuteMoveCall,
+  SuiExecuteSerializedMoveCall,
+  SuiGetAccountResponse,
+  SuiGetChainResponse,
+} from '~/types/message/sui';
 
 import {
   aptosSignMessageSchema,
@@ -111,6 +118,7 @@ import {
   personalSignParamsSchema,
   suiConnectSchema,
   suiExecuteMoveCallSchema,
+  suiExecuteSerializedMoveCallSchema,
   walletAddEthereumChainParamsSchema,
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,
@@ -1843,7 +1851,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const suiPopupMethods = Object.values(SUI_POPUP_METHOD_TYPE) as string[];
     const suiNoPopupMethods = Object.values(SUI_NO_POPUP_METHOD_TYPE) as string[];
 
-    const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins } = await chromeStorage();
+    const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins, currentSuiNetwork } = await chromeStorage();
 
     const { currentPassword } = await chromeSessionStorage();
 
@@ -1968,6 +1976,36 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         }
 
+        if (method === 'sui_executeSerializedMoveCall') {
+          const { params } = message;
+
+          try {
+            const schema = suiExecuteSerializedMoveCallSchema();
+
+            const validatedParams = (await schema.validateAsync(params)) as SuiExecuteSerializedMoveCall['params'];
+
+            if (
+              currentAccountAllowedOrigins.includes(origin) &&
+              currentAccountSuiPermissions.includes('viewAccount') &&
+              currentAccountSuiPermissions.includes('suggestTransactions')
+            ) {
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method: 'sui_signAndExecuteTransaction', params: [validatedParams[0]] },
+              });
+              void setQueues();
+            } else {
+              throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+            }
+          } catch (e) {
+            if (e instanceof SuiRPCError) {
+              throw e;
+            }
+
+            throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
+          }
+        }
+
         if (method === 'sui_signAndExecuteTransaction') {
           if (
             currentAccountAllowedOrigins.includes(origin) &&
@@ -1998,6 +2036,17 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           await setStorage('suiPermissions', newSuiPermissions);
 
           const result = null;
+
+          responseToWeb({
+            response: {
+              result,
+            },
+            message,
+            messageId,
+            origin,
+          });
+        } else if (method === 'sui_getChain') {
+          const result: SuiGetChainResponse = currentSuiNetwork.networkName.toLowerCase();
 
           responseToWeb({
             response: {

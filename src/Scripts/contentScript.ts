@@ -1,4 +1,4 @@
-import { APTOS_LISTENER_TYPE, COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE } from '~/constants/message';
+import { APTOS_LISTENER_TYPE, COSMOS_LISTENER_TYPE, ETHEREUM_LISTENER_TYPE, MESSAGE_TYPE, SUI_LISTENER_TYPE } from '~/constants/message';
 import type {
   BackgroundToContentScriptEventMessage,
   ContentScriptToBackgroundEventMessage,
@@ -53,6 +53,7 @@ chrome.runtime.onMessage.addListener((request: ListenerMessage<ResponseMessage>,
     if (request.line === 'COSMOS') return Object.values(COSMOS_LISTENER_TYPE);
     if (request.line === 'ETHEREUM') return Object.values(ETHEREUM_LISTENER_TYPE);
     if (request.line === 'APTOS') return Object.values(APTOS_LISTENER_TYPE);
+    if (request.line === 'SUI') return Object.values(SUI_LISTENER_TYPE);
 
     return [];
   })() as ListenerType[];

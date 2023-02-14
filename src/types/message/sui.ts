@@ -2,7 +2,7 @@ import type {
   CertifiedTransaction,
   ExecuteTransactionRequestType,
   MoveCallTransaction,
-  SuiCertifiedTransactionEffects,
+  SuiFinalizedEffects,
   UnserializedSignableTransaction,
 } from '@mysten/sui.js';
 
@@ -14,7 +14,6 @@ export type SuiPopupMethodType = ValueOf<typeof SUI_POPUP_METHOD_TYPE>;
 export type SuiNoPopupMethodType = ValueOf<typeof SUI_NO_POPUP_METHOD_TYPE>;
 
 // Popup
-
 export type SuiConnect = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__CONNECT;
   params: SuiPermissionType[];
@@ -37,15 +36,23 @@ export type SuiExecuteMoveCall = {
   id?: number | string;
 };
 
-export type SuiExecuteMoveCallResponse = { certificate: CertifiedTransaction; effects: SuiCertifiedTransactionEffects['effects'] };
+export type SuiExecuteMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
 
-export type SuiSignAndExecuteTransaction = {
-  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION;
-  params: [UnserializedSignableTransaction] | [UnserializedSignableTransaction, ExecuteTransactionRequestType];
+export type SuiExecuteSerializedMoveCall = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__EXECUTE_SERIALIZED_MOVE_CALL;
+  params: [string];
   id?: number | string;
 };
 
-export type SuiSignAndExecuteTransactionResponse = { certificate: CertifiedTransaction; effects: SuiCertifiedTransactionEffects['effects'] };
+export type SuiExecuteSerializedMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
+
+export type SuiSignAndExecuteTransaction = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION;
+  params: [UnserializedSignableTransaction | string] | [UnserializedSignableTransaction | string, ExecuteTransactionRequestType];
+  id?: number | string;
+};
+
+export type SuiSignAndExecuteTransactionResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
 
 export type SuiGetAccountResponse = {
   address: string;
@@ -69,6 +76,14 @@ export type SuiDisconnect = {
 };
 
 export type SuiDisconnectResponse = null;
+
+export type SuiGetChain = {
+  method: typeof SUI_NO_POPUP_METHOD_TYPE.SUI__GET_CHAIN;
+  params: unknown;
+  id?: number | string;
+};
+
+export type SuiGetChainResponse = string;
 
 export type SuiRPCRequest = {
   method: Exclude<SuiNoPopupMethodType, typeof SUI_NO_POPUP_METHOD_TYPE.SUI__GET_PERMISSIONS | typeof SUI_NO_POPUP_METHOD_TYPE.SUI__DISCONNECT>;

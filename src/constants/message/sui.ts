@@ -49,6 +49,7 @@ export const SUI_NO_POPUP_METHOD_TYPE = {
   // custom
   SUI__GET_PERMISSIONS: 'sui_getPermissions',
   SUI__DISCONNECT: 'sui_disconnect',
+  SUI__GET_CHAIN: 'sui_getChain',
 } as const;
 
 export const SUI_METHOD_TYPE = {

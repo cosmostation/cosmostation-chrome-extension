@@ -1,3 +1,5 @@
+import { registerWallet } from '@wallet-standard/core';
+
 import type { ListenerMessage } from '~/types/message';
 import type { ComProvidersResponse } from '~/types/message/common';
 
@@ -5,7 +7,7 @@ import { aptos } from './aptos';
 import { common } from './common';
 import { cosmos, keplr, tendermint } from './cosmos';
 import { ethereum } from './ethereum';
-import { sui } from './sui';
+import { sui, SuiStandard } from './sui';
 
 void (() => {
   window.cosmostation = {
@@ -19,6 +21,10 @@ void (() => {
     tendermint,
     sui,
   };
+
+  window.cosmostationWallet = sui;
+
+  registerWallet(new SuiStandard());
 
   void (async () => {
     const currentChainId = (await window.cosmostation.ethereum.request({ method: 'eth_chainId', params: [] })) as string;
