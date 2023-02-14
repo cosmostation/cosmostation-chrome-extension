@@ -1,6 +1,9 @@
 import { styled } from '@mui/material/styles';
 
-export const Container = styled('div')(({ theme }) => ({
+type ContainerProps = {
+  'data-is-dragging': boolean;
+};
+export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => ({
   backgroundColor: theme.colors.base02,
 
   padding: '0 0.8rem 0 1.6rem',
@@ -15,6 +18,10 @@ export const Container = styled('div')(({ theme }) => ({
   borderRadius: '0.8rem',
 
   border: 0,
+
+  opacity: props['data-is-dragging'] ? 0 : 1,
+
+  cursor: 'move',
 }));
 
 export const LeftContainer = styled('div')({
@@ -55,6 +62,8 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
   border: 0,
   padding: 0,
+
+  height: '2.4rem',
 
   cursor: 'pointer',
 

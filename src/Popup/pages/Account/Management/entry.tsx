@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import update from 'immutability-helper';
 
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -6,8 +9,11 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Account } from '~/types/chromeStorage';
 
 import AccountItem from './components/AccountItem';
+import AccountList from './components/AccountList';
 import ManagePopover from './components/ManagePopover';
-import { ButtonContainer, Container, ListContainer, StyledButton } from './styled';
+import { ButtonContainer, Container, StyledButton } from './styled';
+
+export type IndexedAccount = Account & { index: number };
 
 export default function Entry() {
   const { chromeStorage } = useChromeStorage();
@@ -21,25 +27,67 @@ export default function Entry() {
 
   const { accounts, accountName } = chromeStorage;
 
+  const [indexedAccounts, setIndexedAccounts] = useState<IndexedAccount[]>(
+    accounts.map((item, idx) => ({
+      index: idx,
+      ...item,
+    })),
+  );
   const { t } = useTranslation();
+
+  const findCardItem = useCallback(
+    (id: number) => {
+      const cardItem = indexedAccounts.filter((c) => c.index === id)[0];
+
+      return {
+        cardItem,
+        index: indexedAccounts.indexOf(cardItem),
+      };
+    },
+    [indexedAccounts],
+  );
+  // TODO index필드 삭제 후 set하기
+  // await setChromeStorage('accounts', {...);
+  const moveItem = useCallback(
+    (id: number, atIndex: number) => {
+      const { cardItem, index } = findCardItem(id);
+      setIndexedAccounts(
+        update(indexedAccounts, {
+          $splice: [
+            [index, 1],
+            [atIndex, 0, cardItem],
+          ],
+        }),
+      );
+    },
+    [indexedAccounts, findCardItem],
+  );
 
   return (
     <Container>
-      <ListContainer>
-        {accounts.map((account) => (
-          <AccountItem
-            accountType={account.type}
-            isActive={selectedAccount?.id === account.id && isOpenPopover}
-            key={account.id}
-            onClick={(event) => {
-              setSelectedAccount(account);
-              setPopoverAnchorEl(event.currentTarget);
-            }}
-          >
-            {accountName[account.id]}
-          </AccountItem>
-        ))}
-      </ListContainer>
+      <DndProvider backend={HTML5Backend}>
+        <AccountList>
+          <>
+            {indexedAccounts.map((account) => (
+              <AccountItem
+                draggableItem={account}
+                moveItem={moveItem}
+                findCardItem={findCardItem}
+                accountType={account.type}
+                isActive={selectedAccount?.id === account.id && isOpenPopover}
+                key={account.id}
+                itemIndex={account.index}
+                onClick={(event) => {
+                  setSelectedAccount(account);
+                  setPopoverAnchorEl(event.currentTarget);
+                }}
+              >
+                {accountName[account.id]}
+              </AccountItem>
+            ))}
+          </>
+        </AccountList>
+      </DndProvider>
       <ButtonContainer>
         <StyledButton onClick={() => navigate('/account/create')}>{t('pages.Account.Management.entry.addAccount')}</StyledButton>
       </ButtonContainer>

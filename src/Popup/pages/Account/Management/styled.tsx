@@ -11,17 +11,6 @@ export const Container = styled('div')({
   position: 'relative',
 });
 
-export const ListContainer = styled('div')({
-  display: 'grid',
-  gridTemplateColumns: '1fr',
-  rowGap: '0.8rem',
-
-  width: '100%',
-  maxHeight: 'calc(100% - 8rem)',
-
-  overflow: 'auto',
-});
-
 export const ButtonContainer = styled('div')({
   position: 'absolute',
   width: 'calc(100% - 3.2rem)',
