@@ -83,7 +83,7 @@ export default function Entry() {
       return APTOS.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1 ? APTOS_NETWORKS : [];
     }
 
-    return debouncedCloseSearch ? (APTOS.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1 ? APTOS_NETWORKS : []) : [];
+    return debouncedCloseSearch ? (APTOS.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1 ? APTOS_NETWORKS : []) : APTOS_NETWORKS;
   }, [debouncedCloseSearch, debouncedOpenSearch]);
 
   const filteredSuiNetworks = useMemo(() => {
@@ -91,7 +91,7 @@ export default function Entry() {
       return SUI.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1 ? SUI_NETWORKS : [];
     }
 
-    return debouncedCloseSearch ? (SUI.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1 ? SUI_NETWORKS : []) : [];
+    return debouncedCloseSearch ? (SUI.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1 ? SUI_NETWORKS : []) : SUI_NETWORKS;
   }, [debouncedCloseSearch, debouncedOpenSearch]);
 
   const filteredCosmosChains = useMemo(() => {
