@@ -35,7 +35,7 @@ export default function Entry() {
   );
   const { t } = useTranslation();
 
-  const findCardItem = useCallback(
+  const findAccountItem = useCallback(
     (id: number) => {
       const cardItem = indexedAccounts.filter((c) => c.index === id)[0];
 
@@ -48,9 +48,14 @@ export default function Entry() {
   );
   // TODO index필드 삭제 후 set하기
   // await setChromeStorage('accounts', {...);
-  const moveItem = useCallback(
+
+  // const rebasedAccount = indexedAccounts.map(({ index, ...rest }) => ({
+  //   ...rest,
+  // }));
+
+  const moveAccountItem = useCallback(
     (id: number, atIndex: number) => {
-      const { cardItem, index } = findCardItem(id);
+      const { cardItem, index } = findAccountItem(id);
       setIndexedAccounts(
         update(indexedAccounts, {
           $splice: [
@@ -60,7 +65,7 @@ export default function Entry() {
         }),
       );
     },
-    [indexedAccounts, findCardItem],
+    [indexedAccounts, findAccountItem],
   );
 
   return (
@@ -71,8 +76,8 @@ export default function Entry() {
             {indexedAccounts.map((account) => (
               <AccountItem
                 draggableItem={account}
-                moveItem={moveItem}
-                findCardItem={findCardItem}
+                moveAccountItem={moveAccountItem}
+                findAccountItem={findAccountItem}
                 accountType={account.type}
                 isActive={selectedAccount?.id === account.id && isOpenPopover}
                 key={account.id}

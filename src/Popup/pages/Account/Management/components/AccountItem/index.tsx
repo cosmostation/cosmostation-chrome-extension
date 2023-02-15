@@ -12,8 +12,8 @@ import Ledger14Icon from '~/images/icons/Ledger14.svg';
 type AccountItemProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
   itemIndex: number;
   draggableItem: IndexedAccount;
-  moveItem: (id: number, atIndex: number) => void;
-  findCardItem: (id: number) => { index: number };
+  moveAccountItem: (id: number, atIndex: number) => void;
+  findAccountItem: (id: number) => { index: number };
   children?: string;
   isActive?: boolean;
   accountType?: AccountType;
@@ -23,7 +23,16 @@ export const ItemTypes = {
   CARD: 'card',
 };
 
-export default function AccountItem({ children, isActive, accountType, draggableItem, itemIndex, moveItem, findCardItem, ...remainder }: AccountItemProps) {
+export default function AccountItem({
+  children,
+  isActive,
+  accountType,
+  draggableItem,
+  itemIndex,
+  moveAccountItem,
+  findAccountItem,
+  ...remainder
+}: AccountItemProps) {
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: ItemTypes.CARD,
@@ -33,11 +42,11 @@ export default function AccountItem({ children, isActive, accountType, draggable
       }),
       end: (item, monitor) => {
         if (!monitor.didDrop()) {
-          moveItem(itemIndex, item.index);
+          moveAccountItem(itemIndex, item.index);
         }
       },
     }),
-    [itemIndex, moveItem],
+    [itemIndex, moveAccountItem],
   );
 
   const [, drop] = useDrop(
@@ -45,12 +54,12 @@ export default function AccountItem({ children, isActive, accountType, draggable
       accept: ItemTypes.CARD,
       hover: ({ index: draggedId }: IndexedAccount) => {
         if (draggedId !== itemIndex) {
-          const { index: overIndex } = findCardItem(itemIndex);
-          moveItem(draggedId, overIndex);
+          const { index: overIndex } = findAccountItem(itemIndex);
+          moveAccountItem(draggedId, overIndex);
         }
       },
     }),
-    [findCardItem, moveItem],
+    [findAccountItem, moveAccountItem],
   );
 
   return (
