@@ -344,6 +344,13 @@
       },
       "Management": {
         "components": {
+          "DraggableAccountList": {
+            "index": {
+              "cancel": "Cancel",
+              "confirm": "Confirm",
+              "successSnackbar": "Accounts have been reordered successfully"
+            }
+          },
           "ManagePopover": {
             "ChangeNameDialog": {
               "index": {

@@ -1,9 +1,6 @@
 import { styled } from '@mui/material/styles';
 
-type ContainerProps = {
-  'data-is-dragging': boolean;
-};
-export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => ({
+export const Container = styled('div')(({ theme }) => ({
   backgroundColor: theme.colors.base02,
 
   padding: '0 0.8rem 0 1.6rem',
@@ -18,10 +15,6 @@ export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => 
   borderRadius: '0.8rem',
 
   border: 0,
-
-  opacity: props['data-is-dragging'] ? 0 : 1,
-
-  cursor: 'move',
 }));
 
 export const LeftContainer = styled('div')({
