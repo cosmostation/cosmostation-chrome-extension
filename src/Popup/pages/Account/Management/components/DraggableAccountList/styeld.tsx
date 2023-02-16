@@ -1,12 +1,5 @@
 import { styled } from '@mui/material/styles';
 
-export const Container = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-
-  height: '100%',
-});
-
 export const ListContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: '1fr',
@@ -15,6 +8,8 @@ export const ListContainer = styled('div')({
   width: '100%',
 
   overflow: 'auto',
+
+  maxHeight: 'calc(100% - 6rem)',
 });
 
 export const SideButtonContainer = styled('div')({

@@ -7,7 +7,7 @@ export const Container = styled('div')({
   width: '100%',
   height: '100%',
 
-  padding: '0.8rem 1.6rem 1.6rem',
+  padding: '0.8rem 1.6rem 0',
 
   position: 'relative',
 });
@@ -18,7 +18,7 @@ export const ListContainer = styled('div')({
   rowGap: '0.8rem',
 
   width: '100%',
-  maxHeight: 'calc(100% - 10.8rem)',
+  maxHeight: 'calc(100% - 12.4rem)',
 
   overflow: 'auto',
 });
@@ -28,7 +28,7 @@ export const ButtonContainer = styled('div')({
   width: 'calc(100% - 3.2rem)',
   height: '8rem',
 
-  bottom: 'auto',
+  bottom: '0',
 
   display: 'flex',
   justifyContent: 'center',
@@ -47,7 +47,3 @@ export const SideButton = styled(IconButton)(({ theme }) => ({
     },
   },
 }));
-
-export const ContentContainer = styled('div')({
-  height: '100%',
-});

@@ -7,7 +7,7 @@ export const Container = styled('div')({
 
   position: 'relative',
 
-  margin: '0.8rem 1.6rem',
+  margin: '0 0 1.6rem',
 
   backgroundColor: 'transparent',
 });

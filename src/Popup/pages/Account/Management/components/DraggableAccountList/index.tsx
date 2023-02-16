@@ -10,20 +10,20 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Account, AccountName } from '~/types/chromeStorage';
 
-import { Container, ListContainer, SideButtonContainer } from './styeld';
+import { ListContainer, SideButtonContainer } from './styeld';
 import type { IndexedAccount } from '../../entry';
 import DraggableAccountItem, { ItemTypes } from '../DraggableAccountItem';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 import Close16Icon from '~/images/icons/Close16.svg';
 
-type AccountListProps = {
+type DraggableAccountListProps = {
   accounts: Account[];
   accountName: AccountName;
   onClose: () => void;
 };
 
-export default function AccountList({ accounts, accountName, onClose }: AccountListProps) {
+export default function DraggableAccountList({ accounts, accountName, onClose }: DraggableAccountListProps) {
   const { t } = useTranslation();
   const { navigateBack } = useNavigate();
 
@@ -101,21 +101,19 @@ export default function AccountList({ accounts, accountName, onClose }: AccountL
           </IconTextButton>
         </SideButtonContainer>
       </SubSideHeader>
-      <Container>
-        <ListContainer ref={drop}>
-          {indexedAccounts.map((account) => (
-            <DraggableAccountItem
-              draggableItem={account}
-              moveAccountItem={moveAccountItem}
-              findAccountItem={findAccountItem}
-              key={account.id}
-              itemIndex={account.index}
-            >
-              {accountName[account.id]}
-            </DraggableAccountItem>
-          ))}
-        </ListContainer>
-      </Container>
+      <ListContainer ref={drop}>
+        {indexedAccounts.map((account) => (
+          <DraggableAccountItem
+            draggableItem={account}
+            moveAccountItem={moveAccountItem}
+            findAccountItem={findAccountItem}
+            key={account.id}
+            itemIndex={account.index}
+          >
+            {accountName[account.id]}
+          </DraggableAccountItem>
+        ))}
+      </ListContainer>
     </>
   );
 }

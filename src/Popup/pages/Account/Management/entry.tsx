@@ -11,7 +11,7 @@ import type { Account } from '~/types/chromeStorage';
 import AccountItem from './components/AccountItem';
 import DraggableAccountList from './components/DraggableAccountList';
 import ManagePopover from './components/ManagePopover';
-import { ButtonContainer, Container, ContentContainer, ListContainer, SideButton, StyledButton } from './styled';
+import { ButtonContainer, Container, ListContainer, SideButton, StyledButton } from './styled';
 
 import ListEdit24Icon from '~/images/icons/ListEdit24.svg';
 
@@ -32,67 +32,63 @@ export default function Entry() {
 
   const { t } = useTranslation();
 
-  return (
-    <ContentContainer>
-      {!isEditMode && (
-        <SubSideHeader title={t('pages.Account.Management.layout.title')} onClick={() => navigateBack()}>
-          <SideButton onClick={() => setIsEditMode(true)}>
-            <ListEdit24Icon />
-          </SideButton>
-        </SubSideHeader>
-      )}
+  if (isEditMode) {
+    return (
       <Container>
-        {isEditMode ? (
-          <DndProvider backend={HTML5Backend}>
-            <DraggableAccountList
-              accounts={accounts}
-              accountName={accountName}
-              onClose={() => {
-                setIsEditMode(false);
-              }}
-            />
-          </DndProvider>
-        ) : (
-          <ContentContainer>
-            <ListContainer>
-              {accounts.map((account) => (
-                <AccountItem
-                  accountType={account.type}
-                  isActive={selectedAccount?.id === account.id && isOpenPopover}
-                  key={account.id}
-                  onClick={(event) => {
-                    setSelectedAccount(account);
-                    setPopoverAnchorEl(event.currentTarget);
-                  }}
-                >
-                  {accountName[account.id]}
-                </AccountItem>
-              ))}
-            </ListContainer>
-
-            <ButtonContainer>
-              <StyledButton onClick={() => navigate('/account/create')}>{t('pages.Account.Management.entry.addAccount')}</StyledButton>
-            </ButtonContainer>
-            <ManagePopover
-              account={selectedAccount}
-              marginThreshold={0}
-              open={isOpenPopover}
-              onClose={() => {
-                setPopoverAnchorEl(null);
-              }}
-              anchorEl={popoverAnchorEl}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-            />
-          </ContentContainer>
-        )}
+        <DndProvider backend={HTML5Backend}>
+          <DraggableAccountList
+            accounts={accounts}
+            accountName={accountName}
+            onClose={() => {
+              setIsEditMode(false);
+            }}
+          />
+        </DndProvider>
       </Container>
-    </ContentContainer>
+    );
+  }
+  return (
+    <Container>
+      <SubSideHeader title={t('pages.Account.Management.layout.title')} onClick={() => navigateBack()}>
+        <SideButton onClick={() => setIsEditMode(true)}>
+          <ListEdit24Icon />
+        </SideButton>
+      </SubSideHeader>
+      <ListContainer>
+        {accounts.map((account) => (
+          <AccountItem
+            accountType={account.type}
+            isActive={selectedAccount?.id === account.id && isOpenPopover}
+            key={account.id}
+            onClick={(event) => {
+              setSelectedAccount(account);
+              setPopoverAnchorEl(event.currentTarget);
+            }}
+          >
+            {accountName[account.id]}
+          </AccountItem>
+        ))}
+      </ListContainer>
+      <ButtonContainer>
+        <StyledButton onClick={() => navigate('/account/create')}>{t('pages.Account.Management.entry.addAccount')}</StyledButton>
+      </ButtonContainer>
+      <ManagePopover
+        account={selectedAccount}
+        marginThreshold={0}
+        open={isOpenPopover}
+        onClose={() => {
+          setPopoverAnchorEl(null);
+        }}
+        anchorEl={popoverAnchorEl}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      />
+    </Container>
   );
 }
