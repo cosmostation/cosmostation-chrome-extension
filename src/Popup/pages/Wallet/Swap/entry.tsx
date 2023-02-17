@@ -27,6 +27,7 @@ import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { calcOutGivenIn, calcSpotPrice, decimalScaling } from '~/Popup/utils/osmosis';
 import { protoTx } from '~/Popup/utils/proto';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { AssetV3 } from '~/types/cosmos/asset';
 
@@ -114,8 +115,8 @@ export default function Entry({ chain }: EntryProps) {
     () =>
       poolsAssetData.data?.find(
         (item) =>
-          (item.adenom === outputCoinBaseDenom && item.bdenom === inputCoinBaseDenom) ||
-          (item.adenom === inputCoinBaseDenom && item.bdenom === outputCoinBaseDenom),
+          (isEqualsIgnoringCase(item.adenom, outputCoinBaseDenom) && isEqualsIgnoringCase(item.bdenom, inputCoinBaseDenom)) ||
+          (isEqualsIgnoringCase(item.adenom, inputCoinBaseDenom) && isEqualsIgnoringCase(item.bdenom, outputCoinBaseDenom)),
       ),
     [inputCoinBaseDenom, outputCoinBaseDenom, poolsAssetData.data],
   );
@@ -127,11 +128,11 @@ export default function Entry({ chain }: EntryProps) {
         .map((item) => ({
           ...item,
           chainName: getCapitalize(item.prevChain || item.origin_chain),
-          availableAmount: balance.data?.balance ? balance.data?.balance.find((coin) => coin.denom === item.denom)?.amount : '0',
+          availableAmount: balance.data?.balance ? balance.data?.balance.find((coin) => isEqualsIgnoringCase(coin.denom, item.denom))?.amount : '0',
         })) || [];
 
     const sortedAvailableSwapCoinList = [
-      ...swapCoinList.filter((item) => gt(item?.availableAmount || 0, 0) && (item.type === 'staking' || item.type === 'native')),
+      ...swapCoinList.filter((item) => gt(item?.availableAmount || 0, 0) && (item.type === 'staking' || item.type === 'native' || item.type === 'bridge')),
       ...swapCoinList.filter((item) => gt(item?.availableAmount || 0, 0) && item.type === 'ibc').sort((a, b) => a.symbol.localeCompare(b.symbol)),
       ...swapCoinList.filter((item) => !gt(item?.availableAmount || 0, 0)).sort((a, b) => a.symbol.localeCompare(b.symbol)),
     ];
@@ -144,15 +145,20 @@ export default function Entry({ chain }: EntryProps) {
     () =>
       availableSwapCoinList.filter((coin) =>
         poolsAssetData.data?.find(
-          (item) => (item.adenom === coin.denom && item.bdenom === inputCoinBaseDenom) || (item.adenom === inputCoinBaseDenom && item.bdenom === coin.denom),
+          (item) =>
+            (isEqualsIgnoringCase(item.adenom, coin.denom) && isEqualsIgnoringCase(item.bdenom, inputCoinBaseDenom)) ||
+            (isEqualsIgnoringCase(item.adenom, inputCoinBaseDenom) && isEqualsIgnoringCase(item.bdenom, coin.denom)),
         ),
       ),
     [availableSwapCoinList, inputCoinBaseDenom, poolsAssetData.data],
   );
 
-  const inputCoin = useMemo(() => availableSwapCoinList.find((item) => item.denom === inputCoinBaseDenom), [availableSwapCoinList, inputCoinBaseDenom]);
+  const inputCoin = useMemo(
+    () => availableSwapCoinList.find((item) => isEqualsIgnoringCase(item.denom, inputCoinBaseDenom)),
+    [availableSwapCoinList, inputCoinBaseDenom],
+  );
   const outputCoin = useMemo(
-    () => availableSwapOutputCoinList.find((item) => item.denom === outputCoinBaseDenom),
+    () => availableSwapOutputCoinList.find((item) => isEqualsIgnoringCase(item.denom, outputCoinBaseDenom)),
     [availableSwapOutputCoinList, outputCoinBaseDenom],
   );
 
@@ -176,27 +182,27 @@ export default function Entry({ chain }: EntryProps) {
   }, [poolData.data]);
 
   const tokenBalanceIn = useMemo(
-    () => poolAssetsTokenList?.find((item) => item.denom === inputCoinBaseDenom)?.amount,
+    () => poolAssetsTokenList?.find((item) => isEqualsIgnoringCase(item.denom, inputCoinBaseDenom))?.amount,
     [inputCoinBaseDenom, poolAssetsTokenList],
   );
 
   const tokenWeightIn = useMemo(
     () =>
       poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE
-        ? poolData.data.pool.pool_assets.find((item) => item.token.denom === inputCoinBaseDenom)?.weight
+        ? poolData.data.pool.pool_assets.find((item) => isEqualsIgnoringCase(item.token.denom, inputCoinBaseDenom))?.weight
         : undefined,
     [inputCoinBaseDenom, poolData.data],
   );
 
   const tokenBalanceOut = useMemo(
-    () => poolAssetsTokenList?.find((item) => item.denom === outputCoinBaseDenom)?.amount,
+    () => poolAssetsTokenList?.find((item) => isEqualsIgnoringCase(item.denom, outputCoinBaseDenom))?.amount,
     [outputCoinBaseDenom, poolAssetsTokenList],
   );
 
   const tokenWeightOut = useMemo(
     () =>
       poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE
-        ? poolData.data.pool.pool_assets.find((item) => item.token.denom === outputCoinBaseDenom)?.weight
+        ? poolData.data.pool.pool_assets.find((item) => isEqualsIgnoringCase(item.token.denom, outputCoinBaseDenom))?.weight
         : undefined,
     [outputCoinBaseDenom, poolData.data],
   );
@@ -400,7 +406,7 @@ export default function Entry({ chain }: EntryProps) {
 
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount);
-    if (inputCoin?.denom === currentFeeCoin.baseDenom) {
+    if (isEqualsIgnoringCase(inputCoin?.denom, currentFeeCoin.baseDenom)) {
       return gt(maxAmount, '0') ? maxAmount : '0';
     }
 
