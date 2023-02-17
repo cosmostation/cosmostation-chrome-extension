@@ -88,7 +88,7 @@ export default function CoinList({ chain }: CoinListProps) {
 
   const { navigate } = useNavigate();
 
-  if (nativeCoinCnt + ibcCointCnt < 1 && !chain.cosmWasm) {
+  if (nativeCoinCnt + bridgedCoinCnt + ibcCointCnt + tokenCnt < 1 && !chain.cosmWasm) {
     return null;
   }
 
