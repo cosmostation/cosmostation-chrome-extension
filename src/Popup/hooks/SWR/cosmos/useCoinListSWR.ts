@@ -59,7 +59,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
     const coinArray = chainCoins.map((item) => item.baseDenom);
     return (
       balance.data?.balance
-        ?.filter((coin) => coinArray.includes(coin.denom.toLowerCase()))
+        ?.filter((coin) => coinArray.includes(coin.denom))
         .map((coin) => {
           const coinInfo = chainCoins.find((item) => isEqualsIgnoringCase(item.baseDenom, coin.denom))!;
 
