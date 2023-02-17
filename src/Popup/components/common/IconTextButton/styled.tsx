@@ -24,7 +24,7 @@ export const SideTextButton = styled('button')<SideTextButtonProps>(({ theme, ..
   },
 
   '&:hover': {
-    opacity: props['data-is-active'] ? 0.7 : 1,
+    opacity: 0.7,
   },
 }));
 

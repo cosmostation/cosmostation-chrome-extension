@@ -20,15 +20,12 @@ export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => 
 
   border: 0,
 
-  opacity: props['data-is-dragging'] ? 0 : 1,
+  opacity: props['data-is-dragging'] ? 0 : 0.999,
 
   cursor: 'move',
 }));
 
-export const LeftContainer = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-});
+export const LeftContainer = styled('div')({});
 
 export const LeftTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,

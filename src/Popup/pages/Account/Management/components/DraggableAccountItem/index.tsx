@@ -1,6 +1,8 @@
 import { useDrag, useDrop } from 'react-dnd';
 import { Typography } from '@mui/material';
 
+import { DND_ITEM_TYPE } from '~/constants/dnd';
+
 import { Container, LeftContainer, LeftTextContainer, RightContainer } from './styled';
 import type { IndexedAccount } from '../../entry';
 
@@ -14,14 +16,10 @@ type DraggableAccountItemProps = {
   children?: string;
 };
 
-export const ItemTypes = {
-  CARD: 'card',
-};
-
 export default function DraggableAccountItem({ children, draggableItem, itemIndex, moveAccountItem, findAccountItem }: DraggableAccountItemProps) {
   const [{ isDragging }, drag] = useDrag(
     () => ({
-      type: ItemTypes.CARD,
+      type: DND_ITEM_TYPE.CARD,
       item: draggableItem,
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
@@ -37,7 +35,7 @@ export default function DraggableAccountItem({ children, draggableItem, itemInde
 
   const [, drop] = useDrop(
     () => ({
-      accept: ItemTypes.CARD,
+      accept: DND_ITEM_TYPE.CARD,
       hover: ({ index: draggedId }: IndexedAccount) => {
         if (draggedId !== itemIndex) {
           const { index: overIndex } = findAccountItem(itemIndex);

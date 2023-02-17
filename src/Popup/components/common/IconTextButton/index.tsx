@@ -3,8 +3,8 @@ import { Typography } from '@mui/material';
 import { ButtonTextContainer, SideTextButton } from './styled';
 
 type IconTextButtonProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
-  children: string;
   Icon: SvgElement;
+  children?: string;
   isActive?: boolean;
 };
 

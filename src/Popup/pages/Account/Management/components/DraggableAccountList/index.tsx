@@ -3,6 +3,7 @@ import { useDrop } from 'react-dnd';
 import update from 'immutability-helper';
 import { useSnackbar } from 'notistack';
 
+import { DND_ITEM_TYPE } from '~/constants/dnd';
 import IconTextButton from '~/Popup/components/common/IconTextButton';
 import SubSideHeader from '~/Popup/components/SubSideHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -12,7 +13,7 @@ import type { Account, AccountName } from '~/types/chromeStorage';
 
 import { ListContainer, SideButtonContainer } from './styeld';
 import type { IndexedAccount } from '../../entry';
-import DraggableAccountItem, { ItemTypes } from '../DraggableAccountItem';
+import DraggableAccountItem from '../DraggableAccountItem';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 import Close16Icon from '~/images/icons/Close16.svg';
@@ -64,7 +65,7 @@ export default function DraggableAccountList({ accounts, accountName, onClose }:
     [findAccountItem, indexedAccounts],
   );
 
-  const [, drop] = useDrop(() => ({ accept: ItemTypes.CARD }));
+  const [, drop] = useDrop(() => ({ accept: DND_ITEM_TYPE.CARD }));
 
   const isChanged = useMemo(() => Object.keys(accounts).toString() !== indexedAccounts.map(({ index }) => index).toString(), [accounts, indexedAccounts]);
 
@@ -83,13 +84,18 @@ export default function DraggableAccountList({ accounts, accountName, onClose }:
           </IconTextButton>
           <IconTextButton
             onClick={async () => {
-              if (!isChanged) {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const revertedAccount: Account[] = indexedAccounts.map(({ index, ...rest }) => ({
+                ...rest,
+              }));
+
+              if (
+                !isChanged ||
+                JSON.stringify([...accounts].sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0))) !==
+                  JSON.stringify([...revertedAccount].sort((a, b) => (a.id > b.id ? 1 : a.id < b.id ? -1 : 0)))
+              ) {
                 onClose();
               } else {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const revertedAccount: Account[] = indexedAccounts.map(({ index, ...rest }) => ({
-                  ...rest,
-                }));
                 await setChromeStorage('accounts', revertedAccount);
                 onClose();
                 enqueueSnackbar(t('pages.Account.Management.components.DraggableAccountList.index.successSnackbar'));
