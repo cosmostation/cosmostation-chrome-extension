@@ -174,14 +174,12 @@ export default function Init({ children }: InitType) {
       if (
         originChromeStorage.providers?.aptos === undefined ||
         originChromeStorage.providers?.metamask === undefined ||
-        originChromeStorage.providers?.keplr === undefined ||
-        originChromeStorage.providers?.suiWallet === undefined
+        originChromeStorage.providers?.keplr === undefined
       ) {
         const newProviders: Providers = {
-          aptos: originChromeStorage.providers?.aptos === undefined ? true : originChromeStorage.providers?.aptos,
-          keplr: originChromeStorage.providers?.keplr === undefined ? true : originChromeStorage.providers?.keplr,
-          metamask: originChromeStorage.providers?.metamask === undefined ? true : originChromeStorage.providers?.metamask,
-          suiWallet: originChromeStorage.providers?.suiWallet === undefined ? true : originChromeStorage.providers?.suiWallet,
+          aptos: originChromeStorage.providers?.aptos === undefined ? false : originChromeStorage.providers?.aptos,
+          keplr: originChromeStorage.providers?.keplr === undefined ? false : originChromeStorage.providers?.keplr,
+          metamask: originChromeStorage.providers?.metamask === undefined ? false : originChromeStorage.providers?.metamask,
         };
 
         await setStorage('providers', newProviders);
