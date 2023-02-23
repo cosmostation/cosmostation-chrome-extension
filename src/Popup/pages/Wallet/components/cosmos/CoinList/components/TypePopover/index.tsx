@@ -7,7 +7,7 @@ import { Container, StyledPopover, TypeButton, TypeLeftContainer, TypeLeftNumber
 import Check16Icon from '~/images/icons/Check16.svg';
 
 export type TypeInfo = {
-  type: 'all' | 'native' | 'ibc' | 'cw20';
+  type: 'all' | 'native' | 'bridge' | 'ibc' | 'cw20';
   name: string;
   count: string | number;
 };

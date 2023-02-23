@@ -26,9 +26,9 @@ import {
 } from './styled';
 import Container from '../../components/Container';
 
-type IBCSendProps = { msg: Msg<MsgTransfer>; chain: CosmosChain };
+type IBCSendProps = { msg: Msg<MsgTransfer>; chain: CosmosChain; isMultipleMsgs: boolean };
 
-export default function IBCSend({ msg, chain }: IBCSendProps) {
+export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { coins, ibcCoins } = useCoinListSWR(chain);
@@ -100,7 +100,7 @@ export default function IBCSend({ msg, chain }: IBCSendProps) {
   }, [assetCoinInfo?.coinGeckoId, baseDenom, coinGeckoId, coinGeckoPrice.data, currency, ibcCoinInfo?.coinGeckoId, itemBaseDenom, itemDisplayAmount]);
 
   return (
-    <Container title="IBC Send">
+    <Container title="IBC Send" isMultipleMsgs={isMultipleMsgs}>
       <ContentContainer>
         <AddressContainer>
           <LabelContainer>

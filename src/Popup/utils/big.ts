@@ -1,5 +1,6 @@
 import type { RoundingMode } from 'big.js';
 import Big from 'big.js';
+import { Dec, Int } from '@keplr-wallet/unit';
 
 export function pow(base: number | string, exponent: number) {
   return new Big(base).pow(exponent).toString();
@@ -67,7 +68,7 @@ export function ceil(num: string | number) {
   return new Big(num).toFixed(0, 0);
 }
 
-export function fix(number: string, decimal: number, optional: RoundingMode = 0) {
+export function fix(number: string, decimal?: number, optional: RoundingMode = 0) {
   return Big(number).toFixed(decimal, optional);
 }
 
@@ -100,4 +101,12 @@ export function isDecimal(number: string, decimal: number) {
   }
 
   return true;
+}
+
+export function toDec(number: string) {
+  return new Dec(number);
+}
+
+export function toInt(number: string) {
+  return new Int(number);
 }

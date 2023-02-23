@@ -41,11 +41,19 @@ export default function CoinList({ chain }: CoinListProps) {
 
   const { currentCosmosTokens, removeCosmosToken } = useCurrentCosmosTokens();
 
-  const coinCnt = coins.length;
+  const nativeCoinCnt = useMemo(() => coins.filter((coin) => coin.coinType === 'native').length, [coins]);
+  const bridgedCoinCnt = useMemo(() => coins.filter((coin) => coin.coinType === 'bridge').length, [coins]);
   const ibcCointCnt = ibcCoins.length;
   const tokenCnt = currentCosmosTokens.length;
 
-  const sortedCoins = useMemo(() => coins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)), [coins]);
+  const sortedNativeCoins = useMemo(
+    () => coins.filter((coin) => coin.coinType === 'native').sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
+    [coins],
+  );
+  const sortedBridgedCoins = useMemo(
+    () => coins.filter((coin) => coin.coinType === 'bridge').sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
+    [coins],
+  );
   const sortedIbcCoins = useMemo(() => ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)), [ibcCoins]);
 
   const sortedTokens = useMemo(() => currentCosmosTokens.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)), [currentCosmosTokens]);
@@ -53,10 +61,14 @@ export default function CoinList({ chain }: CoinListProps) {
   const typeInfos = useMemo(() => {
     const infos: TypeInfo[] = [];
 
-    infos.push({ type: 'all', name: 'All Assets', count: coinCnt + ibcCointCnt + tokenCnt });
+    infos.push({ type: 'all', name: 'All Assets', count: nativeCoinCnt + bridgedCoinCnt + ibcCointCnt + tokenCnt });
 
-    if (coinCnt) {
-      infos.push({ type: 'native', name: 'Native Coins', count: coinCnt });
+    if (nativeCoinCnt) {
+      infos.push({ type: 'native', name: 'Native Coins', count: nativeCoinCnt });
+    }
+
+    if (bridgedCoinCnt) {
+      infos.push({ type: 'bridge', name: 'Bridged Coins', count: bridgedCoinCnt });
     }
 
     if (ibcCointCnt) {
@@ -68,7 +80,7 @@ export default function CoinList({ chain }: CoinListProps) {
     }
 
     return infos;
-  }, [chain.cosmWasm, coinCnt, ibcCointCnt, tokenCnt]);
+  }, [nativeCoinCnt, ibcCointCnt, tokenCnt, bridgedCoinCnt, chain.cosmWasm]);
 
   const [currentType, setCurrentType] = useState(typeInfos[0].type);
 
@@ -76,11 +88,11 @@ export default function CoinList({ chain }: CoinListProps) {
 
   const { navigate } = useNavigate();
 
-  if (coinCnt + ibcCointCnt < 1 && !chain.cosmWasm) {
+  if (nativeCoinCnt + bridgedCoinCnt + ibcCointCnt + tokenCnt < 1 && !chain.cosmWasm) {
     return null;
   }
 
-  const isExistCoinOrToken = coinCnt + ibcCointCnt + tokenCnt > 0;
+  const isExistCoinOrToken = nativeCoinCnt + ibcCointCnt + tokenCnt > 0;
 
   return (
     <Container>
@@ -103,7 +115,22 @@ export default function CoinList({ chain }: CoinListProps) {
       </ListTitleContainer>
       <ListContainer>
         {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'native') &&
-          sortedCoins.map((item) => (
+          sortedNativeCoins.map((item) => (
+            <CoinItem
+              disabled={!gt(item.availableAmount, '0')}
+              key={item.baseDenom}
+              onClick={() => navigate(`/wallet/send/${item.baseDenom ? `${encodeURIComponent(item.baseDenom)}` : ''}` as unknown as Path)}
+              amount={item.totalAmount}
+              channel={item.channelId}
+              decimals={item.decimals}
+              displayDenom={item.displayDenom}
+              imageURL={item.imageURL}
+              coinGeckoId={item.coinGeckoId}
+            />
+          ))}
+
+        {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'bridge') &&
+          sortedBridgedCoins.map((item) => (
             <CoinItem
               disabled={!gt(item.availableAmount, '0')}
               key={item.baseDenom}

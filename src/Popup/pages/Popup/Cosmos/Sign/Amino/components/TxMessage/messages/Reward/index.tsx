@@ -7,13 +7,13 @@ import type { Msg, MsgReward } from '~/types/cosmos/amino';
 import { AddressContainer, ContentContainer, LabelContainer, ValueContainer } from './styled';
 import Container from '../../components/Container';
 
-type IBCSendProps = { msg: Msg<MsgReward> };
+type IBCSendProps = { msg: Msg<MsgReward>; isMultipleMsgs: boolean };
 
-export default function IBCSend({ msg }: IBCSendProps) {
+export default function IBCSend({ msg, isMultipleMsgs }: IBCSendProps) {
   const { t } = useTranslation();
 
   return (
-    <Container title={t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Reward.index.title')}>
+    <Container title={t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Reward.index.title')} isMultipleMsgs={isMultipleMsgs}>
       <ContentContainer>
         <AddressContainer>
           <LabelContainer>

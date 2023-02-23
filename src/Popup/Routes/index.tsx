@@ -65,6 +65,7 @@ import SettingProvider from '~/Popup/pages/Setting/Provider';
 import Wallet from '~/Popup/pages/Wallet';
 import WalletReceive from '~/Popup/pages/Wallet/Receive';
 import WalletSend from '~/Popup/pages/Wallet/Send';
+import WalletSwap from '~/Popup/pages/Wallet/Swap';
 
 export default function Routes() {
   const { chromeStorage } = useChromeStorage();
@@ -94,6 +95,7 @@ export default function Routes() {
           <Route path={PATH.WALLET__SEND} element={<WalletSend />}>
             <Route path=":id" element={<WalletSend />} />
           </Route>
+          <Route path={PATH.WALLET__SWAP} element={<WalletSwap />} />
           <Route path={PATH.WALLET__RECEIVE} element={<WalletReceive />} />
 
           <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />

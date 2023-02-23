@@ -5,11 +5,12 @@ import { StyledContainer, StyledDivider, TitleContainer } from './styled';
 type ContainerProps = {
   title: string;
   children?: JSX.Element;
+  isMultipleMsgs: boolean;
 };
 
-export default function Container({ title, children }: ContainerProps) {
+export default function Container({ title, children, isMultipleMsgs }: ContainerProps) {
   return (
-    <StyledContainer>
+    <StyledContainer data-is-multiple={isMultipleMsgs}>
       <TitleContainer>
         <Typography variant="h4">{title}</Typography>
       </TitleContainer>

@@ -8,6 +8,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 
 import TokenButton from './components/TokenButton';
@@ -68,7 +69,7 @@ export default function CoinOrTokenPopover({
 
           const displayAmount = toDisplayDenomAmount(item.availableAmount, decimals);
 
-          const isActive = currentCoinOrTokenInfo.type === 'coin' && currentCoinOrTokenInfo.baseDenom === item.baseDenom;
+          const isActive = currentCoinOrTokenInfo.type === 'coin' && isEqualsIgnoringCase(currentCoinOrTokenInfo.baseDenom, item.baseDenom);
           return (
             <CoinButton
               type="button"
@@ -105,7 +106,7 @@ export default function CoinOrTokenPopover({
           );
         })}
         {tokenInfos.map((item) => {
-          const isActive = currentCoinOrTokenInfo.type === 'token' && currentCoinOrTokenInfo.address === item.address;
+          const isActive = currentCoinOrTokenInfo.type === 'token' && isEqualsIgnoringCase(currentCoinOrTokenInfo.address, item.address);
 
           return (
             <TokenButton

@@ -1,9 +1,10 @@
 import { post } from '~/Popup/utils/axios';
-import { isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend } from '~/Popup/utils/cosmos';
+import { isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
 import { cosmwasm } from '~/proto/cosmwasm-v0.28.0.js';
 import { ibc } from '~/proto/ibc-v5.0.1.js';
-import type { Msg, MsgExecuteContract, MsgReward, MsgSend, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
+import { osmosis } from '~/proto/osmosis-v13.1.2.js';
+import type { Msg, MsgExecuteContract, MsgReward, MsgSend, MsgSwapExactAmountIn, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend, PubKey } from '~/types/cosmos/proto';
 
@@ -22,6 +23,10 @@ export function convertAminoMessageToProto(msg: Msg) {
 
   if (isAminoReward(msg)) {
     return convertAminoRewardMessageToProto(msg);
+  }
+
+  if (isAminoSwapExactAmountIn(msg)) {
+    return convertAminoSwapExactAmmountInMessageToProto(msg);
   }
 
   return null;
@@ -82,6 +87,19 @@ export function convertAminoRewardMessageToProto(msg: Msg<MsgReward>) {
   return new google.protobuf.Any({
     type_url: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
     value: cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode(message).finish(),
+  });
+}
+export function convertAminoSwapExactAmmountInMessageToProto(msg: Msg<MsgSwapExactAmountIn>) {
+  const message = new osmosis.gamm.v1beta1.MsgSwapExactAmountIn({
+    sender: msg.value.sender,
+    routes: msg.value.routes,
+    token_in: msg.value.token_in,
+    token_out_min_amount: msg.value.token_out_min_amount,
+  });
+
+  return new google.protobuf.Any({
+    type_url: '/osmosis.gamm.v1beta1.MsgSwapExactAmountIn',
+    value: osmosis.gamm.v1beta1.MsgSwapExactAmountIn.encode(message).finish(),
   });
 }
 

@@ -657,6 +657,16 @@
                       "fromAddress": "보내는 주소",
                       "toAddress": "받는 주소"
                     }
+                  },
+                  "Swap": {
+                    "index": {
+                      "expectedOutput": "최소 교환 수량",
+                      "poolId": "Pool Id",
+                      "routes": "경로",
+                      "swapAmount": "수량",
+                      "tokenIn": "From",
+                      "tokenOut": "To"
+                    }
                   }
                 }
               }
@@ -1072,6 +1082,40 @@
         },
         "layout": {
           "title": "보내기"
+        }
+      },
+      "Swap": {
+        "Entry": {
+          "swapButton": "교환"
+        },
+        "components": {
+          "CoinListBottomSheet": {
+            "index": {
+              "searchPlaceholder": "검색",
+              "title": "토큰 선택하세요"
+            }
+          },
+          "SlippageSettingDialog": {
+            "confirm": "확인",
+            "slippageTolerance": "슬리피지 허용치",
+            "title": "설정",
+            "toleranceInfo": "교환 비율이 해당 값 이상일 경우 거래가 취소됩니다."
+          }
+        },
+        "entry": {
+          "availableAmount": "사용 가능 수량",
+          "excessiveSwap": "유동성 풀에 예치된 토큰의 수량보다 더 교환할 수 없습니다.",
+          "expectedOutput": "예상 교환치",
+          "insufficientAmount": "수량이 부족합니다.",
+          "insufficientFeeAmount": "수수료가 부족합니다.",
+          "invalidAmount": "수량을 입력하세요.",
+          "invalidOutputAmount": "예상 교환치가 없습니다.",
+          "invalidPriceImpact": "가격 변동치가 지나치게 높습니다.",
+          "minimumReceived": "슬리피지 이후 받을 최소 수량",
+          "networkError": "네트워크 오류",
+          "priceImpact": "가격 변동치",
+          "swapFee": "교환 수수료",
+          "title": "교환"
         }
       },
       "components": {

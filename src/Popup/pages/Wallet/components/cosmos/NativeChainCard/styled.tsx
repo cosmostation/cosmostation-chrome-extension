@@ -141,11 +141,8 @@ export const ButtonContainer = styled('div')({
   alignItems: 'center',
 
   padding: '1rem 0',
-});
 
-export const ButtonCenterContainer = styled('div')({
-  width: '0.8rem',
-  flexShrink: 0,
+  columnGap: '0.8rem',
 });
 
 export const StyledAccordion = styled((props: AccordionProps) => <Accordion disableGutters elevation={0} square {...props} />)({
@@ -221,4 +218,46 @@ export const ErrorDescriptionContainer = styled('div')(({ theme }) => ({
 
 export const StyledAbsoluteLoading = styled(AbsoluteLoading)({
   borderRadius: '0.8rem',
+});
+
+export const UnitIconButton = styled('button')(({ theme }) => ({
+  width: '3.2rem',
+  height: '3.2rem',
+
+  border: 'none',
+
+  padding: '0',
+  borderRadius: '0.8rem',
+
+  display: 'flex',
+
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  backgroundColor: theme.accentColors.purple01,
+
+  '&:hover': {
+    backgroundColor: theme.accentColors.purple02,
+    cursor: 'pointer',
+  },
+
+  '&:disabled': {
+    backgroundColor: theme.colors.base04,
+    color: theme.colors.text02,
+
+    cursor: 'default',
+
+    '& svg': {
+      fill: theme.colors.text02,
+
+      '& > path': {
+        fill: theme.colors.text02,
+      },
+    },
+  },
+}));
+
+export const IconButtonContainer = styled('div')({
+  display: 'flex',
+  columnGap: '0.8rem',
 });

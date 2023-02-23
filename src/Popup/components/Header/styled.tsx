@@ -8,7 +8,7 @@ export const Container = styled('div')({
   alignItems: 'center',
   justifyContent: 'space-between',
 
-  padding: '0 0.4rem 0 1.2rem',
+  padding: '0 0.8rem 0 1.2rem',
 
   backgroundColor: 'transparent',
 });

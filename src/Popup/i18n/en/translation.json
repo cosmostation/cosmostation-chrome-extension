@@ -657,6 +657,16 @@
                       "fromAddress": "From address",
                       "toAddress": "To address"
                     }
+                  },
+                  "Swap": {
+                    "index": {
+                      "expectedOutput": "Expected Output",
+                      "poolId": "Pool Id",
+                      "routes": "Route",
+                      "swapAmount": "Swap Amount",
+                      "tokenIn": "From",
+                      "tokenOut": "To"
+                    }
                   }
                 }
               }
@@ -1072,6 +1082,40 @@
         },
         "layout": {
           "title": "Send"
+        }
+      },
+      "Swap": {
+        "Entry": {
+          "swapButton": "Swap"
+        },
+        "components": {
+          "CoinListBottomSheet": {
+            "index": {
+              "searchPlaceholder": "Search",
+              "title": "Select a coin"
+            }
+          },
+          "SlippageSettingDialog": {
+            "confirm": "Confirm",
+            "slippageTolerance": "Slippage tolerance",
+            "title": "Setting",
+            "toleranceInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage."
+          }
+        },
+        "entry": {
+          "availableAmount": "Available",
+          "excessiveSwap": "Can't swap Token more than Token amounts in the pool",
+          "expectedOutput": "Expected Output",
+          "insufficientAmount": "Insufficient amount",
+          "insufficientFeeAmount": "Insufficient fee",
+          "invalidAmount": "Invalid amount",
+          "invalidOutputAmount": "Invalid output amount",
+          "invalidPriceImpact": "Too high Price Impact",
+          "minimumReceived": "Minimum received after slippage",
+          "networkError": "Network Error",
+          "priceImpact": "Price Impact",
+          "swapFee": "Swap Fee",
+          "title": "Swap"
         }
       },
       "components": {
