@@ -56,6 +56,8 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
   border: 0,
   padding: 0,
 
+  height: '2.4rem',
+
   cursor: 'pointer',
 
   '& > svg': {

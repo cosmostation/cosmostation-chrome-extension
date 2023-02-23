@@ -1,20 +1,29 @@
 import { useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
+import SubSideHeader from '~/Popup/components/SubSideHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Account } from '~/types/chromeStorage';
 
 import AccountItem from './components/AccountItem';
+import DraggableAccountList from './components/DraggableAccountList';
 import ManagePopover from './components/ManagePopover';
-import { ButtonContainer, Container, ListContainer, StyledButton } from './styled';
+import { ButtonContainer, Container, ListContainer, SideButton, StyledButton } from './styled';
+
+import ListEdit24Icon from '~/images/icons/ListEdit24.svg';
+
+export type IndexedAccount = Account & { index: number };
 
 export default function Entry() {
   const { chromeStorage } = useChromeStorage();
 
-  const { navigate } = useNavigate();
+  const { navigate, navigateBack } = useNavigate();
 
   const [selectedAccount, setSelectedAccount] = useState<Account>();
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
@@ -23,8 +32,28 @@ export default function Entry() {
 
   const { t } = useTranslation();
 
+  if (isEditMode) {
+    return (
+      <Container>
+        <DndProvider backend={HTML5Backend}>
+          <DraggableAccountList
+            accounts={accounts}
+            accountName={accountName}
+            onClose={() => {
+              setIsEditMode(false);
+            }}
+          />
+        </DndProvider>
+      </Container>
+    );
+  }
   return (
     <Container>
+      <SubSideHeader title={t('pages.Account.Management.layout.title')} onClick={() => navigateBack()}>
+        <SideButton onClick={() => setIsEditMode(true)}>
+          <ListEdit24Icon />
+        </SideButton>
+      </SubSideHeader>
       <ListContainer>
         {accounts.map((account) => (
           <AccountItem
