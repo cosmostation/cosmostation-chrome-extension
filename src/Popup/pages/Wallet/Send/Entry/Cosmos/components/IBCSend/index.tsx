@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
@@ -24,6 +25,7 @@ import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
+import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/squid/useSquidAssetsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -110,6 +112,14 @@ export default function IBCSend({ chain }: IBCSendProps) {
     () => currentChainAssets.data.filter((item) => convertAssetNameToCosmos(item.prevChain || '')),
     [currentChainAssets.data],
   );
+
+  // NOTE Squid SDK Test codes
+  const { squidChainList, filteredSquidTokenList } = useSquidAssetsSWR();
+
+  const filteredSquidTokenLists = useMemo(() => filteredSquidTokenList('1'), [filteredSquidTokenList]);
+
+  const filteredSquidTokenList2 = useMemo(() => filteredSquidTokenList('cosmoshub-4'), [filteredSquidTokenList]);
+
   const coinAll = useMemo(
     () => [
       {
