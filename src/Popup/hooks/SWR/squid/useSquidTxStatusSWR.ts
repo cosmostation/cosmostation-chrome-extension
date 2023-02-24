@@ -1,13 +1,18 @@
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 import type { GetStatus, StatusResponse } from '@0xsquid/sdk';
-
-import { useSquidSDkSWR } from './useSquidSDKSWR';
+import { Squid } from '@0xsquid/sdk';
 
 export function useSquidTxStatusSWR(tx: GetStatus, config?: SWRConfiguration) {
-  const squidSDK = useSquidSDkSWR();
+  const squid = new Squid({
+    baseUrl: 'https://api.0xsquid.com',
+  });
 
-  const fetcher = async (txhash: GetStatus) => squidSDK.data?.getStatus(txhash);
+  const fetcher = async (txhash: GetStatus) => {
+    await squid.init();
+    const status = await squid.getStatus(txhash);
+    return status;
+  };
 
   const { data, isValidating, error, mutate } = useSWR<StatusResponse | undefined, unknown>(tx, fetcher, {
     revalidateOnFocus: false,

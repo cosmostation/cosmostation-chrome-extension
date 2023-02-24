@@ -2,7 +2,7 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 import { Squid } from '@0xsquid/sdk';
 
-export function useSquidSDkSWR(config?: SWRConfiguration) {
+export function useSquidSDKSWR(config?: SWRConfiguration) {
   const squid = new Squid({
     baseUrl: 'https://api.0xsquid.com',
   });
