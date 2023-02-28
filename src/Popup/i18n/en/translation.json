@@ -1122,7 +1122,8 @@
           "networkError": "Network Error",
           "priceImpact": "Price Impact",
           "swapFee": "Swap Fee",
-          "title": "Swap"
+          "title": "Swap",
+          "processingTime": "Estimated processing time"
         }
       },
       "components": {

@@ -20,7 +20,7 @@ export type IndexedAccount = Account & { index: number };
 export default function Entry() {
   const { chromeStorage } = useChromeStorage();
 
-  const { navigate, navigateBack } = useNavigate();
+  const { navigate } = useNavigate();
 
   const [selectedAccount, setSelectedAccount] = useState<Account>();
   const [isEditMode, setIsEditMode] = useState(false);
@@ -49,7 +49,7 @@ export default function Entry() {
   }
   return (
     <Container>
-      <SubSideHeader title={t('pages.Account.Management.layout.title')} onClick={() => navigateBack()}>
+      <SubSideHeader title={t('pages.Account.Management.layout.title')}>
         <SideButton onClick={() => setIsEditMode(true)}>
           <ListEdit24Icon />
         </SideButton>

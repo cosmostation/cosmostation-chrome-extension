@@ -1,17 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
-import type { ChainData, TokenData } from '@0xsquid/sdk';
-import { InputAdornment, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_SWAP_GAS } from '~/constants/chain';
 import { CURRENCY_SYMBOL } from '~/constants/currency';
-import AmountInput from '~/Popup/components/common/AmountInput';
 import Button from '~/Popup/components/common/Button';
+import Image from '~/Popup/components/common/Image';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import WarningContainer from '~/Popup/components/common/WarningContainer';
-import SubSideHeader from '~/Popup/components/SubSideHeader';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
@@ -20,7 +16,6 @@ import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { usePoolsAssetSWR } from '~/Popup/hooks/SWR/cosmos/usePoolsAssetSWR';
 import { usePoolSWR } from '~/Popup/hooks/SWR/cosmos/usePoolsSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
-import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/squid/useSquidAssetsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -36,16 +31,28 @@ import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { AssetV3 } from '~/types/cosmos/asset';
 
+import CoinListBottomSheet from './components/CoinListBottomSheet';
 import SlippageSettingDialog from './components/SlippageSettingDialog';
-import SwapCoinContainer from './components/SwapCoinContainer';
 import {
-  BodyContainer,
+  BackButton,
   BottomContainer,
   Container,
   MaxButton,
   SideButton,
-  SwapCoinInputAmountContainer,
-  SwapCoinOutputAmountContainer,
+  StyledInput,
+  SwapCoinBodyContainer,
+  SwapCoinBodyLeftButton,
+  SwapCoinBodyLeftHeaderContainer,
+  SwapCoinBodyLeftImageContainer,
+  SwapCoinBodyLeftInfoContainer,
+  SwapCoinBodyLeftSubTitleContainer,
+  SwapCoinBodyLeftTitleContainer,
+  SwapCoinBodyRightContainer,
+  SwapCoinBodyRightHeaderContainer,
+  SwapCoinBodyRightSubTitleContainer,
+  SwapCoinBodyRightTitleContainer,
+  SwapCoinContainer,
+  SwapCoinHeaderContainer,
   SwapContainer,
   SwapIconButton,
   SwapInfoBodyContainer,
@@ -55,9 +62,12 @@ import {
   SwapInfoBodyTextContainer,
   SwapInfoContainer,
   SwapInfoHeaderContainer,
-  SwapInfoHeaderRightContainer,
+  TextContainer,
+  TopContainer,
 } from './styled';
 
+import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
+import LeftArrow16Icon from '~/images/icons/LeftArrow16.svg';
 import Management24Icon from '~/images/icons/Mangement24.svg';
 import SwapIcon from '~/images/icons/Swap.svg';
 
@@ -304,6 +314,9 @@ export default function Entry({ chain }: EntryProps) {
 
   const [isOpenSlippageDialog, setIsOpenSlippageDialog] = useState(false);
 
+  const [isOpenedInputCoinList, setIsOpenedInputCoinList] = useState(false);
+  const [isOpenedOutputCoinList, setIsOpenedOutputCoinList] = useState(false);
+
   const inputCoinPrice = useMemo(
     () => (inputCoin?.coinGeckoId && coinGeckoPrice.data?.[inputCoin?.coinGeckoId]?.[chromeStorage.currency]) || 0,
     [chromeStorage.currency, coinGeckoPrice.data, inputCoin?.coinGeckoId],
@@ -402,36 +415,6 @@ export default function Entry({ chain }: EntryProps) {
 
   const swapFeePrice = useMemo(() => times(inputCoinPrice, currentDisplaySwapFeeAmount), [inputCoinPrice, currentDisplaySwapFeeAmount]);
 
-  // NOTE Squid SDK Test codes
-  const { squidChainList, filteredSquidTokenList } = useSquidAssetsSWR();
-
-  const [currentSwapApi, setCurrentSwapApi] = useState('squid');
-
-  const [currentFromChain, setCurrentFromChain] = useState<ChainData>();
-  const [currentToChain, setCurrentToChain] = useState<ChainData>();
-
-  const [currentFromCoin, setCurrentFromCoin] = useState<TokenData>();
-  const [currentToCoin, setCurrentToCoin] = useState<TokenData>();
-
-  const filteredSquidFromTokenList = useMemo(() => filteredSquidTokenList(currentFromChain?.chainId), [currentFromChain?.chainId, filteredSquidTokenList]);
-  const filteredSquidToTokenList = useMemo(() => filteredSquidTokenList(currentToChain?.chainId), [currentToChain?.chainId, filteredSquidTokenList]);
-
-  // const sampleparams = {
-  //   fromChain: 1, // Goerli testnet
-  //   fromToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // WETH on Goerli
-  //   fromAmount: '50000000000000000', // 0.05 WETH
-  //   toChain: 43114, // Avalanche Fuji Testnet
-  //   toToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // aUSDC on Avalanche Fuji Testnet
-  //   toAddress: '0xA9b4823ec2718Fb09BD5FC21323B2BE5DD0aDDf6', // the recipient of the trade
-  //   slippage: 1.0, // 1.00 = 1% max slippage across the entire route
-  //   enableForecall: true, // instant execution service, defaults to true
-  //   quoteOnly: false, // optional, defaults to false
-  // };
-
-  // const testSquidRoute = useSquidRouteSWR(sampleparams);
-
-  // const testTxStatus = useSquidTxStatusSWR({ transactionId: '0x26b279240c73f5841eb9e0ce11b13ad280f4cf612c653b43bd9083672da63ec0' });
-
   const errorMessage = useMemo(() => {
     if (!poolData.data || !poolsAssetData.data) {
       return t('pages.Wallet.Swap.entry.networkError');
@@ -495,213 +478,243 @@ export default function Entry({ chain }: EntryProps) {
     debouncedEnabled();
   }, [debouncedEnabled, memoizedSwapAminoTx]);
 
-  // NOTE need currentSwapApi with useEffect
   return (
     <>
       <Container>
-        <SubSideHeader title={t('pages.Wallet.Swap.entry.title')}>
+        <TopContainer>
+          <BackButton onClick={() => navigateBack()}>
+            <LeftArrow16Icon />
+          </BackButton>
+          <TextContainer>
+            <Typography variant="h3">{t('pages.Wallet.Swap.entry.title')}</Typography>
+          </TextContainer>
           <SideButton onClick={() => setIsOpenSlippageDialog(true)}>
             <Management24Icon />
           </SideButton>
-        </SubSideHeader>
-        <BodyContainer>
-          <SwapContainer>
-            <SwapCoinContainer
-              headerLeftText="Input coin"
-              currentSelectedChain={currentFromChain}
-              currentSelectedCoin={currentFromCoin}
-              onClickChain={(clickedChain) => setCurrentFromChain(clickedChain)}
-              onClickCoin={(clickedCoin) => setCurrentFromCoin(clickedCoin)}
-              availableChainList={squidChainList}
-              availableCoinList={filteredSquidFromTokenList}
-              address="osmo1aygdt8742gamxv8ca99wzh56ry4xw5s3dtgtpf"
-              isChainSelected={!!currentFromChain && !!currentToChain}
-            >
-              <SwapCoinInputAmountContainer data-is-error>
-                <AmountInput
-                  error
-                  helperText="Insufficient balance"
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <MaxButton
-                        type="button"
-                        onClick={() => {
-                          setInputDisplayAmount(maxDisplayAmount);
-                        }}
-                      >
-                        <Typography variant="h7">MAX</Typography>
-                      </MaxButton>
-                    </InputAdornment>
-                  }
-                  onChange={(e) => {
-                    if (!isDecimal(e.currentTarget.value, 6 || 0) && e.currentTarget.value) {
-                      return;
-                    }
-
-                    setInputDisplayAmount(e.currentTarget.value);
-                  }}
-                  value={inputDisplayAmount}
-                  placeholder="0"
-                />
-              </SwapCoinInputAmountContainer>
-            </SwapCoinContainer>
-            <SwapCoinContainer
-              headerLeftText="Output coin"
-              currentSelectedChain={currentToChain}
-              currentSelectedCoin={currentToCoin}
-              onClickChain={(clickedChain) => setCurrentToChain(clickedChain)}
-              onClickCoin={(clickedCoin) => setCurrentToCoin(clickedCoin)}
-              availableChainList={squidChainList}
-              availableCoinList={filteredSquidToTokenList}
-              address="osmo1aygdt8742gamxv8ca99wzh56ry4xw5s3dtgtpf"
-              isChainSelected={!!currentFromChain && !!currentToChain}
-            >
-              <SwapCoinOutputAmountContainer data-is-active={currentOutputDisplayAmount !== '0'}>
-                <Tooltip title={currentOutputDisplayAmount} arrow placement="top">
-                  <span>
-                    <NumberText typoOfIntegers="h3n" fixed={currentOutputDisplayAmount !== '0' ? getDisplayMaxDecimals(outputCoin?.decimals) : 0}>
-                      {currentOutputDisplayAmount}
-                    </NumberText>
-                  </span>
-                </Tooltip>
-              </SwapCoinOutputAmountContainer>
-            </SwapCoinContainer>
-            <SwapIconButton disabled onClick={swapCoin}>
-              <SwapIcon />
-            </SwapIconButton>
-          </SwapContainer>
-          <WarningContainer
-            message="Transaction size is currently limited to $10,000. Please decrease the size of your transaction
-and try again."
-          />
-          <SwapInfoContainer>
-            <SwapInfoHeaderContainer>
-              <Typography variant="h6n">Minimum to receive</Typography>
-              <SwapInfoHeaderRightContainer>
-                <Tooltip title={outputAmountOf1Coin} arrow placement="top">
-                  <span>
-                    <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
-                      {outputAmountOf1Coin}
-                    </NumberText>
-                  </span>
-                </Tooltip>
+        </TopContainer>
+        <SwapContainer>
+          <SwapCoinContainer>
+            <SwapCoinHeaderContainer>
+              <SwapCoinBodyLeftHeaderContainer>
+                <Typography variant="h6">Input Coin</Typography>
+              </SwapCoinBodyLeftHeaderContainer>
+              <SwapCoinBodyRightHeaderContainer>
+                <Typography variant="h6"> {t('pages.Wallet.Swap.entry.availableAmount')} :</Typography>
                 &nbsp;
-                <Typography variant="h6n">{inputCoin?.symbol}</Typography>
-              </SwapInfoHeaderRightContainer>
-            </SwapInfoHeaderContainer>
-            <SwapInfoBodyContainer>
-              <SwapInfoBodyTextContainer>
-                <SwapInfoBodyLeftContainer>
-                  <Typography variant="h6">{t('pages.Wallet.Swap.entry.priceImpact')}</Typography>
-                </SwapInfoBodyLeftContainer>
-                <SwapInfoBodyRightContainer>
-                  {inputDisplayAmount && priceImpactPercent ? (
-                    <SwapInfoBodyRightTextContainer data-is-invalid={gt(priceImpactPercent, 10)}>
-                      <Typography variant="h6n">{` - ${lt(priceImpactPercent, 0.01) ? `<` : ``}`}</Typography>
-                      &nbsp;
-                      <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
-                        {priceImpactPercent}
+                <Tooltip title={currentInputCoinDisplayAvailableAmount} arrow placement="top">
+                  <span>
+                    <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(inputCoin?.decimals)}>
+                      {currentInputCoinDisplayAvailableAmount}
+                    </NumberText>
+                  </span>
+                </Tooltip>
+                <MaxButton
+                  onClick={() => {
+                    setInputDisplayAmount(maxDisplayAmount);
+                  }}
+                >
+                  <Typography variant="h6">MAX</Typography>
+                </MaxButton>
+              </SwapCoinBodyRightHeaderContainer>
+            </SwapCoinHeaderContainer>
+            <SwapCoinBodyContainer>
+              <SwapCoinBodyLeftButton onClick={() => setIsOpenedInputCoinList(true)} data-is-active={isOpenedInputCoinList}>
+                <SwapCoinBodyLeftImageContainer>
+                  <Image src={inputCoin?.image || chain.imageURL} />
+                </SwapCoinBodyLeftImageContainer>
+                <SwapCoinBodyLeftInfoContainer>
+                  <SwapCoinBodyLeftTitleContainer>
+                    <Typography variant="h4">{inputCoin?.symbol || chain.displayDenom}</Typography>
+                  </SwapCoinBodyLeftTitleContainer>
+                  <SwapCoinBodyLeftSubTitleContainer>
+                    <Typography variant="h6">{inputCoin?.chainName || chain.chainName}</Typography>
+                  </SwapCoinBodyLeftSubTitleContainer>
+                </SwapCoinBodyLeftInfoContainer>
+                <BottomArrow24Icon />
+              </SwapCoinBodyLeftButton>
+              <SwapCoinBodyRightContainer>
+                <SwapCoinBodyRightTitleContainer>
+                  <StyledInput
+                    placeholder="0"
+                    value={inputDisplayAmount}
+                    onChange={(e) => {
+                      if (!isDecimal(e.currentTarget.value, inputCoin?.decimals || 0) && e.currentTarget.value) {
+                        return;
+                      }
+
+                      if (gt(e.currentTarget.value || '0', maxDisplayAmount)) {
+                        setInputDisplayAmount(maxDisplayAmount);
+                      } else {
+                        setInputDisplayAmount(e.currentTarget.value);
+                      }
+                    }}
+                  />
+                </SwapCoinBodyRightTitleContainer>
+                <SwapCoinBodyRightSubTitleContainer>
+                  {inputCoinAmountPrice && inputDisplayAmount && (
+                    <NumberText typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={2} currency={currency}>
+                      {inputCoinAmountPrice}
+                    </NumberText>
+                  )}
+                </SwapCoinBodyRightSubTitleContainer>
+              </SwapCoinBodyRightContainer>
+            </SwapCoinBodyContainer>
+          </SwapCoinContainer>
+          <SwapCoinContainer>
+            <SwapCoinHeaderContainer>
+              <SwapCoinBodyLeftHeaderContainer>
+                <Typography variant="h6">Output Coin</Typography>
+              </SwapCoinBodyLeftHeaderContainer>
+            </SwapCoinHeaderContainer>
+            <SwapCoinBodyContainer>
+              <SwapCoinBodyLeftButton onClick={() => setIsOpenedOutputCoinList(true)} data-is-active={isOpenedOutputCoinList}>
+                <SwapCoinBodyLeftImageContainer>
+                  <Image src={outputCoin?.image} />
+                </SwapCoinBodyLeftImageContainer>
+                <SwapCoinBodyLeftInfoContainer>
+                  <SwapCoinBodyLeftTitleContainer>
+                    <Typography variant="h4">{outputCoin?.symbol}</Typography>
+                  </SwapCoinBodyLeftTitleContainer>
+                  <SwapCoinBodyLeftSubTitleContainer>
+                    <Typography variant="h6">{outputCoin?.chainName}</Typography>
+                  </SwapCoinBodyLeftSubTitleContainer>
+                </SwapCoinBodyLeftInfoContainer>
+                <BottomArrow24Icon />
+              </SwapCoinBodyLeftButton>
+              <SwapCoinBodyRightContainer>
+                <SwapCoinBodyRightTitleContainer data-is-active={currentOutputDisplayAmount !== '0'}>
+                  <Tooltip title={currentOutputDisplayAmount} arrow placement="top">
+                    <span>
+                      <NumberText typoOfIntegers="h4n" fixed={currentOutputDisplayAmount !== '0' ? getDisplayMaxDecimals(outputCoin?.decimals) : 0}>
+                        {currentOutputDisplayAmount}
                       </NumberText>
-                      <Typography variant="h6n">%</Typography>
-                    </SwapInfoBodyRightTextContainer>
-                  ) : (
-                    <Typography variant="h6">-</Typography>
+                    </span>
+                  </Tooltip>
+                </SwapCoinBodyRightTitleContainer>
+                <SwapCoinBodyRightSubTitleContainer>
+                  {outputCoinAmountPrice && inputDisplayAmount && (
+                    <NumberText typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={2} currency={currency}>
+                      {outputCoinAmountPrice}
+                    </NumberText>
                   )}
-                </SwapInfoBodyRightContainer>
-              </SwapInfoBodyTextContainer>
+                </SwapCoinBodyRightSubTitleContainer>
+              </SwapCoinBodyRightContainer>
+            </SwapCoinBodyContainer>
+          </SwapCoinContainer>
+          <SwapIconButton onClick={swapCoin}>
+            <SwapIcon />
+          </SwapIconButton>
+        </SwapContainer>
+        <SwapInfoContainer>
+          <SwapInfoHeaderContainer>
+            <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(inputCoin?.decimals)}>
+              1
+            </NumberText>
+            &nbsp;
+            <Typography variant="h6n">{inputCoin?.symbol} ≈</Typography>
+            &nbsp;
+            <Tooltip title={outputAmountOf1Coin} arrow placement="top">
+              <span>
+                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
+                  {outputAmountOf1Coin}
+                </NumberText>
+              </span>
+            </Tooltip>
+            &nbsp;
+            <Typography variant="h6n">{outputCoin?.symbol}</Typography>
+          </SwapInfoHeaderContainer>
+          <SwapInfoBodyContainer>
+            <SwapInfoBodyTextContainer>
+              <SwapInfoBodyLeftContainer>
+                <Typography variant="h6">{t('pages.Wallet.Swap.entry.priceImpact')}</Typography>
+              </SwapInfoBodyLeftContainer>
+              <SwapInfoBodyRightContainer>
+                {inputDisplayAmount && priceImpactPercent ? (
+                  <SwapInfoBodyRightTextContainer data-is-invalid={gt(priceImpactPercent, 10)}>
+                    <Typography variant="h6n">{` - ${lt(priceImpactPercent, 0.01) ? `<` : ``}`}</Typography>
+                    &nbsp;
+                    <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
+                      {priceImpactPercent}
+                    </NumberText>
+                    <Typography variant="h6n">%</Typography>
+                  </SwapInfoBodyRightTextContainer>
+                ) : (
+                  <Typography variant="h6">-</Typography>
+                )}
+              </SwapInfoBodyRightContainer>
+            </SwapInfoBodyTextContainer>
 
-              <SwapInfoBodyTextContainer>
-                <SwapInfoBodyLeftContainer>
-                  <Typography variant="h6">
-                    {t('pages.Wallet.Swap.entry.swapFee')} ({times(swapFeeRate, 100)}%)
-                  </Typography>
-                </SwapInfoBodyLeftContainer>
-                <SwapInfoBodyRightContainer>
-                  {inputDisplayAmount && swapFeePrice ? (
-                    <SwapInfoBodyRightTextContainer>
-                      <Typography variant="h6n">{` ≈ ${lt(swapFeePrice, 0.01) ? `<` : ``} ${currency ? CURRENCY_SYMBOL[currency] : ``}`}</Typography>
-                      &nbsp;
-                      <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
-                        {swapFeePrice}
-                      </NumberText>
-                    </SwapInfoBodyRightTextContainer>
-                  ) : (
-                    <Typography variant="h6">-</Typography>
-                  )}
-                </SwapInfoBodyRightContainer>
-              </SwapInfoBodyTextContainer>
+            <SwapInfoBodyTextContainer>
+              <SwapInfoBodyLeftContainer>
+                <Typography variant="h6">
+                  {t('pages.Wallet.Swap.entry.swapFee')} ({times(swapFeeRate, 100)}%)
+                </Typography>
+              </SwapInfoBodyLeftContainer>
+              <SwapInfoBodyRightContainer>
+                {inputDisplayAmount && swapFeePrice ? (
+                  <SwapInfoBodyRightTextContainer>
+                    <Typography variant="h6n">{` ≈ ${lt(swapFeePrice, 0.01) ? `<` : ``} ${currency ? CURRENCY_SYMBOL[currency] : ``}`}</Typography>
+                    &nbsp;
+                    <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
+                      {swapFeePrice}
+                    </NumberText>
+                  </SwapInfoBodyRightTextContainer>
+                ) : (
+                  <Typography variant="h6">-</Typography>
+                )}
+              </SwapInfoBodyRightContainer>
+            </SwapInfoBodyTextContainer>
 
-              <SwapInfoBodyTextContainer>
-                <SwapInfoBodyLeftContainer>
-                  <Typography variant="h6">{t('pages.Wallet.Swap.entry.expectedOutput')}</Typography>
-                </SwapInfoBodyLeftContainer>
-                <SwapInfoBodyRightContainer>
-                  {inputDisplayAmount && currentOutputDisplayAmount ? (
-                    <SwapInfoBodyRightTextContainer>
-                      <Tooltip title={currentOutputDisplayAmount} arrow placement="top">
-                        <span>
-                          <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
-                            {currentOutputDisplayAmount}
-                          </NumberText>
-                        </span>
-                      </Tooltip>
-                      &nbsp;
-                      <Typography variant="h6n">{outputCoin?.symbol}</Typography>
-                    </SwapInfoBodyRightTextContainer>
-                  ) : (
-                    <Typography variant="h6">-</Typography>
-                  )}
-                </SwapInfoBodyRightContainer>
-              </SwapInfoBodyTextContainer>
+            <SwapInfoBodyTextContainer>
+              <SwapInfoBodyLeftContainer>
+                <Typography variant="h6">{t('pages.Wallet.Swap.entry.expectedOutput')}</Typography>
+              </SwapInfoBodyLeftContainer>
+              <SwapInfoBodyRightContainer>
+                {inputDisplayAmount && currentOutputDisplayAmount ? (
+                  <SwapInfoBodyRightTextContainer>
+                    <Tooltip title={currentOutputDisplayAmount} arrow placement="top">
+                      <span>
+                        <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
+                          {currentOutputDisplayAmount}
+                        </NumberText>
+                      </span>
+                    </Tooltip>
+                    &nbsp;
+                    <Typography variant="h6n">{outputCoin?.symbol}</Typography>
+                  </SwapInfoBodyRightTextContainer>
+                ) : (
+                  <Typography variant="h6">-</Typography>
+                )}
+              </SwapInfoBodyRightContainer>
+            </SwapInfoBodyTextContainer>
 
-              <SwapInfoBodyTextContainer>
-                <SwapInfoBodyLeftContainer>
-                  <Typography variant="h6">
-                    {t('pages.Wallet.Swap.entry.minimumReceived')} ({currentSlippage}%)
-                  </Typography>
-                </SwapInfoBodyLeftContainer>
+            <SwapInfoBodyTextContainer>
+              <SwapInfoBodyLeftContainer>
+                <Typography variant="h6">
+                  {t('pages.Wallet.Swap.entry.minimumReceived')} ({currentSlippage}%)
+                </Typography>
+              </SwapInfoBodyLeftContainer>
 
-                <SwapInfoBodyRightContainer>
-                  {inputDisplayAmount && tokenOutMinDisplayAmount ? (
-                    <SwapInfoBodyRightTextContainer>
-                      <Tooltip title={tokenOutMinDisplayAmount} arrow placement="top">
-                        <span>
-                          <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
-                            {tokenOutMinDisplayAmount}
-                          </NumberText>
-                        </span>
-                      </Tooltip>
-                      &nbsp;
-                      <Typography variant="h6n">{outputCoin?.symbol}</Typography>
-                    </SwapInfoBodyRightTextContainer>
-                  ) : (
-                    <Typography variant="h6">-</Typography>
-                  )}
-                </SwapInfoBodyRightContainer>
-              </SwapInfoBodyTextContainer>
-
-              {currentSwapApi === 'squid' && (
-                <SwapInfoBodyTextContainer>
-                  <SwapInfoBodyLeftContainer>
-                    <Typography variant="h6">{t('pages.Wallet.Swap.entry.processingTime')}</Typography>
-                  </SwapInfoBodyLeftContainer>
-
-                  <SwapInfoBodyRightContainer>
-                    {inputDisplayAmount && tokenOutMinDisplayAmount ? (
-                      <SwapInfoBodyRightTextContainer>
-                        <NumberText typoOfIntegers="h6n">~ 16</NumberText>
-                        &nbsp;
-                        <Typography variant="h6n">minutes</Typography>
-                      </SwapInfoBodyRightTextContainer>
-                    ) : (
-                      <Typography variant="h6">-</Typography>
-                    )}
-                  </SwapInfoBodyRightContainer>
-                </SwapInfoBodyTextContainer>
-              )}
-            </SwapInfoBodyContainer>
-          </SwapInfoContainer>
-        </BodyContainer>
+              <SwapInfoBodyRightContainer>
+                {inputDisplayAmount && tokenOutMinDisplayAmount ? (
+                  <SwapInfoBodyRightTextContainer>
+                    <Tooltip title={tokenOutMinDisplayAmount} arrow placement="top">
+                      <span>
+                        <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
+                          {tokenOutMinDisplayAmount}
+                        </NumberText>
+                      </span>
+                    </Tooltip>
+                    &nbsp;
+                    <Typography variant="h6n">{outputCoin?.symbol}</Typography>
+                  </SwapInfoBodyRightTextContainer>
+                ) : (
+                  <Typography variant="h6">-</Typography>
+                )}
+              </SwapInfoBodyRightContainer>
+            </SwapInfoBodyTextContainer>
+          </SwapInfoBodyContainer>
+        </SwapInfoContainer>
         <BottomContainer>
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
             <div>
@@ -738,6 +751,23 @@ and try again."
         onSubmitSlippage={(customSlippage) => {
           setCurrentSlippage(customSlippage);
         }}
+      />
+      <CoinListBottomSheet
+        currentSelectedCoin={inputCoin}
+        availableCoinList={availableSwapCoinList}
+        open={isOpenedInputCoinList}
+        onClose={() => setIsOpenedInputCoinList(false)}
+        onClickCoin={(clickedCoin) => {
+          setInputDisplayAmount('');
+          setInputCoinBaseDenom(clickedCoin.denom);
+        }}
+      />
+      <CoinListBottomSheet
+        currentSelectedCoin={outputCoin}
+        availableCoinList={availableSwapOutputCoinList}
+        open={isOpenedOutputCoinList}
+        onClose={() => setIsOpenedOutputCoinList(false)}
+        onClickCoin={(clickedCoin) => setOutputCoinBaseDenom(clickedCoin.denom)}
       />
       );
     </>

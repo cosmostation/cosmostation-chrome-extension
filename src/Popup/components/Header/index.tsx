@@ -13,14 +13,16 @@ import Cosmostation14Icon from '~/images/icons/Cosmostation14.svg';
 import Dashboard24Icon from '~/images/icons/Dashboard24.svg';
 import Logo28Icon from '~/images/icons/Logo28.svg';
 import MenuIcon from '~/images/icons/Menu.svg';
+import Swap24Icon from '~/images/icons/Swap24.svg';
 import Wallet24Icon from '~/images/icons/Wallet24.svg';
 
 type HeaderProps = {
   isShowPageButton?: boolean;
   isShowMenuButton?: boolean;
+  isShowSwapButton?: boolean;
 };
 
-export default function Header({ isShowMenuButton = true, isShowPageButton = true }: HeaderProps) {
+export default function Header({ isShowMenuButton = true, isShowPageButton = true, isShowSwapButton = true }: HeaderProps) {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const { chromeStorage } = useChromeStorage();
   const { pathname } = useLocation();
@@ -41,6 +43,15 @@ export default function Header({ isShowMenuButton = true, isShowPageButton = tru
         </LeftContentTextContainer>
       </LeftContentContainer>
       <RightContentContainer>
+        {isShowSwapButton && (
+          <IconButton
+            onClick={() => {
+              navigate('/wallet/swap');
+            }}
+          >
+            <Swap24Icon />
+          </IconButton>
+        )}
         {isShowPageButton && (
           <IconButton
             onClick={() => {
