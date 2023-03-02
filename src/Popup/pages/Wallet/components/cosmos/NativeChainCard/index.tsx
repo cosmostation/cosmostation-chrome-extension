@@ -35,6 +35,7 @@ import { protoTx } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgCommission, MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
 
+import ClaimCommissionButton from './components/ClaimCommissionButton';
 import ClaimRewardButton from './components/ClaimRewardButton';
 import {
   ButtonContainer,
@@ -394,7 +395,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
             >
               {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
             </ClaimRewardButton>
-            <ClaimRewardButton
+            <ClaimCommissionButton
+              isAvailable={!!isPossibleClaimCommission}
               Icon={Reward16Icon}
               type="button"
               disabled={!isPossibleClaimCommission}
@@ -429,7 +431,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
               }}
             >
               {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
-            </ClaimRewardButton>
+            </ClaimCommissionButton>
           </ClaimButtonContainer>
         </StyledAccordionDetails>
       </StyledAccordion>
@@ -588,14 +590,9 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
               </FourthLineContainerItem>
             )}
           </FourthLineContainer>
-          <ClaimButtonContainer>
-            <ClaimRewardButton Icon={Reward16Icon} type="button" disabled>
-              {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
-            </ClaimRewardButton>
-            <ClaimRewardButton Icon={Reward16Icon} type="button" disabled>
-              {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
-            </ClaimRewardButton>
-          </ClaimButtonContainer>
+          <ClaimRewardButton Icon={Reward16Icon} type="button" disabled>
+            {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
+          </ClaimRewardButton>
         </StyledAccordionDetails>
       </StyledAccordion>
 
