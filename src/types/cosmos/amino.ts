@@ -21,6 +21,10 @@ export type MsgReward = {
   validator_address: string;
 };
 
+export type MsgCommission = {
+  validator_address: string;
+};
+
 export type MsgTransfer = {
   receiver: string;
   sender: string;
