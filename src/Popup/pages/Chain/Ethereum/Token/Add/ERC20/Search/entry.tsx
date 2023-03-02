@@ -51,7 +51,7 @@ export default function Entry() {
   const validTokens = useMemo(() => tokens.data.filter((original) => !currentTokenAddresses.includes(original.address)), [currentTokenAddresses, tokens.data]);
   const filteredTokens = search
     ? validTokens.filter(
-        (item) => (item.name.toLowerCase().indexOf(search.toLowerCase()) || item.displayDenom.toLowerCase().indexOf(search.toLowerCase())) > -1,
+        (item) => item.name.toLowerCase().indexOf(search.toLowerCase()) > -1 || item.displayDenom.toLowerCase().indexOf(search.toLowerCase()) > -1,
       )
     : validTokens;
 
