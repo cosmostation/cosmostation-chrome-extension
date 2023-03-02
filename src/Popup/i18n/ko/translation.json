@@ -1121,9 +1121,9 @@
           "minimumReceived": "슬리피지 이후 받을 최소 수량",
           "networkError": "네트워크 오류",
           "priceImpact": "가격 변동치",
+          "processingTime": "예상 소요 시간",
           "swapFee": "교환 수수료",
-          "title": "교환",
-          "processingTime": "예상 소요 시간"
+          "title": "교환"
         }
       },
       "components": {

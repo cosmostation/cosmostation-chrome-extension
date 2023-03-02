@@ -1121,9 +1121,9 @@
           "minimumReceived": "Minimum received after slippage",
           "networkError": "Network Error",
           "priceImpact": "Price Impact",
+          "processingTime": "Estimated processing time",
           "swapFee": "Swap Fee",
-          "title": "Swap",
-          "processingTime": "Estimated processing time"
+          "title": "Swap"
         }
       },
       "components": {
