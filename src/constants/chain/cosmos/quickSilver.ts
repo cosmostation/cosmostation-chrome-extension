@@ -6,7 +6,7 @@ export const QUICK_SILVER: CosmosChain = {
   id: '69209a86-82d8-45d5-847a-472ff9b99a13',
   line: 'COSMOS',
   type: '',
-  chainId: 'quicksilver-1',
+  chainId: 'quicksilver-2',
   chainName: 'QuickSilver',
   restURL: 'https://lcd-quicksilver.cosmostation.io',
   imageURL: quickSilverImg,
