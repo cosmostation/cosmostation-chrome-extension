@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { ChainData, TokenData } from '@0xsquid/sdk/dist/types';
+import type { TokenData } from '@0xsquid/sdk/dist/types';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
 
 import ChainItem from './components/ChainItem';
 import CoinItem from './components/CoinItem';
@@ -13,11 +14,11 @@ import Close24Icon from '~/images/icons/Close24.svg';
 type AssetListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   type: 'chain' | 'coin';
   currentSelectedCoin?: TokenData;
-  currentSelectedChain?: ChainData;
+  currentSelectedChain?: IntegratedSwapChain;
   availableCoinList?: TokenData[];
-  availableChainList?: ChainData[];
+  availableChainList?: IntegratedSwapChain[];
   onClickCoin?: (clickedCoin: TokenData) => void;
-  onClickChain?: (clickedChain: ChainData) => void;
+  onClickChain?: (clickedChain: IntegratedSwapChain) => void;
 };
 
 export default function AssetListBottomSheet({
@@ -49,9 +50,23 @@ export default function AssetListBottomSheet({
   );
 
   const filteredChainList = useMemo(
-    () => (search ? availableChainList?.filter((item) => item.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : availableChainList),
+    () => (search ? availableChainList?.filter((item) => item.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1) : availableChainList),
     [availableChainList, search],
   );
+
+  const bottomListTitle = useMemo(() => {
+    if (type === 'chain') {
+      return t('pages.Wallet.Swap.components.SwapCoinContainer.components.AssetListBottomSheet.index.chainBottomListTitle');
+    }
+    return t('pages.Wallet.Swap.components.SwapCoinContainer.components.AssetListBottomSheet.index.coinBottomListTitle');
+  }, [t, type]);
+
+  const searchPlaceholder = useMemo(() => {
+    if (type === 'chain') {
+      return t('pages.Wallet.Swap.components.SwapCoinContainer.components.AssetListBottomSheet.index.searchChainPlaceholder');
+    }
+    return t('pages.Wallet.Swap.components.SwapCoinContainer.components.AssetListBottomSheet.index.searchCoinPlaceholder');
+  }, [t, type]);
 
   return (
     <StyledBottomSheet
@@ -64,7 +79,7 @@ export default function AssetListBottomSheet({
       <Container>
         <Header>
           <HeaderTitle>
-            <Typography variant="h4">{t('pages.Wallet.Swap.components.CoinListBottomSheet.index.title')}</Typography>
+            <Typography variant="h4">{bottomListTitle}</Typography>
           </HeaderTitle>
           <StyledButton
             onClick={() => {
@@ -81,7 +96,7 @@ export default function AssetListBottomSheet({
               <StyledSearch20Icon />
             </InputAdornment>
           }
-          placeholder={t('pages.Wallet.Swap.components.CoinListBottomSheet.index.searchPlaceholder')}
+          placeholder={searchPlaceholder}
           value={search}
           onChange={(event) => {
             setSearch(event.currentTarget.value);

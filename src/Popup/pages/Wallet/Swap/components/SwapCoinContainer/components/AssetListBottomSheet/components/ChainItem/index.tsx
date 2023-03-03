@@ -1,17 +1,17 @@
 import { forwardRef } from 'react';
-import type { ChainData } from '@0xsquid/sdk/dist/types';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
+import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
 
 import { ChainButton, ChainLeftContainer, ChainLeftImageContainer, ChainLeftTitleContainer, ChainRightContainer, ChainRightIconContainer } from './styled';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 
 type ChainItemProps = {
-  chainInfo: ChainData;
+  chainInfo: IntegratedSwapChain;
   isActive: boolean;
-  onClickChain: (clickedChain: ChainData) => void;
+  onClickChain: (clickedChain: IntegratedSwapChain) => void;
 };
 
 const ChainItem = forwardRef<HTMLButtonElement, ChainItemProps>(({ chainInfo, onClickChain, isActive }, ref) => (
@@ -25,10 +25,10 @@ const ChainItem = forwardRef<HTMLButtonElement, ChainItemProps>(({ chainInfo, on
   >
     <ChainLeftContainer>
       <ChainLeftImageContainer>
-        <Image src={chainInfo.chainIconURI} />
+        <Image src={chainInfo.imageURL} />
       </ChainLeftImageContainer>
       <ChainLeftTitleContainer>
-        <Typography variant="h5">{chainInfo.chainName}</Typography>
+        <Typography variant="h5">{chainInfo.networkName}</Typography>
       </ChainLeftTitleContainer>
     </ChainLeftContainer>
     <ChainRightContainer>

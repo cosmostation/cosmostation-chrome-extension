@@ -1107,6 +1107,23 @@
             "slippageTolerance": "Slippage tolerance",
             "title": "Setting",
             "toleranceInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage."
+          },
+          "SwapCoinContainer": {
+            "components": {
+              "AssetListBottomSheet": {
+                "index": {
+                  "chainBottomListTitle": "Select a chain",
+                  "coinBottomListTitle": "Select a coin",
+                  "searchChainPlaceholder": "Search chains",
+                  "searchCoinPlaceholder": "Search tokens"
+                }
+              }
+            },
+            "index": {
+              "availableAmount": "Available",
+              "selectChain": "Select chain",
+              "selectCoin": "Select token"
+            }
           }
         },
         "entry": {
@@ -1119,11 +1136,13 @@
           "invalidOutputAmount": "Invalid output amount",
           "invalidPriceImpact": "Too high Price Impact",
           "minimumReceived": "Minimum received after slippage",
+          "minimumToReceive": "Minimum to receive",
           "networkError": "Network Error",
           "priceImpact": "Price Impact",
           "processingTime": "Estimated processing time",
           "swapFee": "Swap Fee",
-          "title": "Swap"
+          "title": "Swap",
+          "txSizeWarning": "Transaction size is currently limited to $10,000. Please decrease the size of your transaction and try again."
         }
       },
       "components": {
