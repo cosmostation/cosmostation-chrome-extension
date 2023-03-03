@@ -18,10 +18,9 @@ export function useOneInchSwapTxSWR(
   { fromTokenAddress, toTokenAddress, fromAddress, slippage, amount, chainId }: UseOneInchSwapSWRProps,
   config?: SWRConfiguration,
 ) {
-  // NOTE Need to type Cosmostaion address!
   const referrerAddress = '0xa76C7F20740300505FF26280E4b10873556CF4d0';
-  // NOTE Set fee ration 1~3
   const feeRatio = '2';
+
   const requestURL = `https://api.1inch.io/v5.0/${chainId}/swap?fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&amount=${amount}&fromAddress=${fromAddress}&slippage=${slippage}&referrerAddress=${referrerAddress}&fee=${feeRatio}
   `;
 

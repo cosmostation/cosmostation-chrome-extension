@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import type { TokenData } from '@0xsquid/sdk/dist/types';
 import { Typography } from '@mui/material';
 
 import NumberText from '~/Popup/components/common/Number';
@@ -9,6 +8,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
+import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
 
 import AssetListBottomSheet from './components/AssetListBottomSheet';
 import SwapAssetButton from './components/SwapAssetButton';
@@ -26,14 +26,15 @@ import {
 
 type SwapCoinContainerProps = {
   address: string;
+  coinAmountPrice: string;
   headerLeftText: string;
   availableChainList?: IntegratedSwapChain[];
-  availableCoinList?: TokenData[];
+  availableCoinList?: IntegratedSwapToken[];
   currentSelectedChain?: IntegratedSwapChain;
-  currentSelectedCoin?: TokenData;
+  currentSelectedCoin?: IntegratedSwapToken;
   isChainSelected?: boolean;
   children?: JSX.Element;
-  onClickCoin?: (clickedCoin: TokenData) => void;
+  onClickCoin?: (clickedCoin: IntegratedSwapToken) => void;
   onClickChain?: (clickedChain: IntegratedSwapChain) => void;
 };
 
@@ -87,7 +88,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
         <FooterContainer>
           <FooterLeftContainer>
             <NumberText typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={2} currency={currency}>
-              43.423
+              {remainder.coinAmountPrice}
             </NumberText>
           </FooterLeftContainer>
           <FooterRightContainer>

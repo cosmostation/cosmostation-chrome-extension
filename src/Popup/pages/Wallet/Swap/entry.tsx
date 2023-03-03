@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
-import type { TokenData } from '@0xsquid/sdk';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { ONEINCH_SUPPORTED_CHAINS } from '~/constants/1inch';
@@ -18,6 +16,7 @@ import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import WarningContainer from '~/Popup/components/common/WarningContainer';
 import SubSideHeader from '~/Popup/components/SubSideHeader';
+import { useTokenAssetsSWR } from '~/Popup/hooks/SWR/1inch/useTokenAssetsSWR';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
@@ -41,6 +40,7 @@ import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { AssetV3 } from '~/types/cosmos/asset';
 import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
+import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
 
 import SlippageSettingDialog from './components/SlippageSettingDialog';
 import SwapCoinContainer from './components/SwapCoinContainer';
@@ -410,7 +410,7 @@ export default function Entry({ chain }: EntryProps) {
   // NOTE Squid SDK Test codes
   const { squidChainList, filteredSquidTokenList } = useSquidAssetsSWR();
 
-  const [currentSwapApi, setCurrentSwapApi] = useState('squid');
+  const [currentSwapApi, setCurrentSwapApi] = useState('');
 
   const [currentFromChain, setCurrentFromChain] = useState<IntegratedSwapChain>();
   const [currentToChain, setCurrentToChain] = useState<IntegratedSwapChain>();
@@ -426,9 +426,14 @@ export default function Entry({ chain }: EntryProps) {
 
   const [isFromSelected, setIsFromSelected] = useState<boolean>();
 
-  const [currentFromCoin, setCurrentFromCoin] = useState<TokenData>();
-  const [currentToCoin, setCurrentToCoin] = useState<TokenData>();
+  const [currentFromCoin, setCurrentFromCoin] = useState<IntegratedSwapToken>();
+  const [currentToCoin, setCurrentToCoin] = useState<IntegratedSwapToken>();
 
+  // FIXME 체인 리스팅 로직 최적화, 똑같은 리스트를 조건이 다르다고 새로 만들고 있는 느낌
+  // FIXME unsupported chains filtering logc refactor
+
+  // TODO 스왑 후에는 스왑해서 나온 토큰을 자동으로 추가하기
+  // TODO 토큰 amount 가져오기
   const availableFromChainList: IntegratedSwapChain[] = useMemo(() => {
     const unsupportedChainIdList = ['42220', '1284', '42161'];
     if (isFromSelected && squidChainList) {
@@ -518,7 +523,7 @@ export default function Entry({ chain }: EntryProps) {
 
   const availableToChainList: IntegratedSwapChain[] = useMemo(() => {
     const unsupportedEVMChainIdList = ['42220', '1284', '42161'];
-    const unsupportedCosmosChainIdList = [COSMOS.chainId, AXELAR.chainId, FETCH_AI.chainId, INJECTIVE.chainId, KI.chainId, 'phoenix-1'];
+    const unsupportedCosmosChainIdList = [COSMOS.chainId, AXELAR.chainId, FETCH_AI.chainId, INJECTIVE.chainId, KI.chainId, 'phoenix-1', 'agoric-3'];
 
     if (!isFromSelected && squidChainList) {
       return [
@@ -566,8 +571,37 @@ export default function Entry({ chain }: EntryProps) {
     return [];
   }, [currentFromChain, isFromSelected, squidChainList]);
 
-  const filteredSquidFromTokenList = useMemo(() => filteredSquidTokenList(currentFromChain?.chainId), [currentFromChain?.chainId, filteredSquidTokenList]);
-  const filteredSquidToTokenList = useMemo(() => filteredSquidTokenList(currentToChain?.chainId), [currentToChain?.chainId, filteredSquidTokenList]);
+  const oneinchFromTokenList = useTokenAssetsSWR(currentFromChain?.chainId || '');
+  const oneinchToTokenList = useTokenAssetsSWR(currentToChain?.chainId || '');
+
+  const filteredSquidFromTokenList: IntegratedSwapToken[] = useMemo(() => {
+    if (currentSwapApi === 'squid') {
+      return filteredSquidTokenList(currentFromChain?.chainId);
+    }
+    if (currentSwapApi === '1inch' && oneinchFromTokenList.data) {
+      return currentToCoin
+        ? Object.values(oneinchFromTokenList.data.tokens)
+            .filter((item) => item.address !== currentToCoin.address)
+            .map((item) => ({
+              ...item,
+              availableAmount: '123',
+            }))
+        : Object.values(oneinchFromTokenList.data.tokens);
+    }
+    return [];
+  }, [currentFromChain?.chainId, currentSwapApi, currentToCoin, filteredSquidTokenList, oneinchFromTokenList.data]);
+
+  const filteredSquidToTokenList: IntegratedSwapToken[] = useMemo(() => {
+    if (currentSwapApi === 'squid') {
+      return filteredSquidTokenList(currentToChain?.chainId);
+    }
+    if (currentSwapApi === '1inch' && oneinchToTokenList.data) {
+      return currentFromCoin
+        ? Object.values(oneinchToTokenList.data.tokens).filter((item) => item.address !== currentFromCoin.address)
+        : Object.values(oneinchToTokenList.data.tokens);
+    }
+    return [];
+  }, [currentSwapApi, oneinchToTokenList.data, filteredSquidTokenList, currentToChain?.chainId, currentFromCoin]);
 
   // const sampleparams = {
   //   fromChain: 1, // Goerli testnet
@@ -655,7 +689,31 @@ export default function Entry({ chain }: EntryProps) {
     debouncedEnabled();
   }, [debouncedEnabled, memoizedSwapAminoTx]);
 
-  // NOTE need currentSwapApi with useEffect
+  useEffect(() => {
+    if (!currentFromChain || !currentToChain) {
+      setCurrentSwapApi('');
+    }
+    if (currentFromChain?.supportedApi === 'squid' && currentToChain?.supportedApi === 'squid' && currentFromChain.chainId !== currentToChain.chainId) {
+      setCurrentSwapApi('squid');
+    }
+    if (
+      (currentFromChain?.supportedApi === '1inch' && currentToChain?.supportedApi === '1inch') ||
+      (currentFromChain?.chainId === currentToChain?.chainId && currentFromChain?.chainType === 'evm')
+    ) {
+      setCurrentSwapApi('1inch');
+    }
+    if (currentFromChain?.chainId === 'osmosis-1' && currentToChain?.chainId === 'osmosis-1') {
+      setCurrentSwapApi('osmo');
+    }
+  }, [
+    currentFromChain,
+    currentFromChain?.chainId,
+    currentFromChain?.chainType,
+    currentFromChain?.supportedApi,
+    currentToChain,
+    currentToChain?.chainId,
+    currentToChain?.supportedApi,
+  ]);
   return (
     <>
       <Container>
@@ -668,6 +726,7 @@ export default function Entry({ chain }: EntryProps) {
           <SwapContainer>
             <SwapCoinContainer
               headerLeftText="Input coin"
+              coinAmountPrice={inputCoinAmountPrice}
               currentSelectedChain={currentFromChain}
               currentSelectedCoin={currentFromCoin}
               onClickChain={(clickedChain) => {
@@ -678,6 +737,8 @@ export default function Entry({ chain }: EntryProps) {
                 if (isFromSelected === undefined) {
                   setIsFromSelected(true);
                 }
+                setCurrentFromCoin(undefined);
+                setCurrentToCoin(undefined);
               }}
               onClickCoin={(clickedCoin) => setCurrentFromCoin(clickedCoin)}
               availableChainList={availableFromChainList}
@@ -715,6 +776,7 @@ export default function Entry({ chain }: EntryProps) {
             </SwapCoinContainer>
             <SwapCoinContainer
               headerLeftText="Output coin"
+              coinAmountPrice={outputCoinAmountPrice}
               currentSelectedChain={currentToChain}
               currentSelectedCoin={currentToCoin}
               onClickChain={(clickedChain) => {
@@ -725,6 +787,8 @@ export default function Entry({ chain }: EntryProps) {
                 if (isFromSelected === undefined) {
                   setIsFromSelected(false);
                 }
+                setCurrentFromCoin(undefined);
+                setCurrentToCoin(undefined);
               }}
               onClickCoin={(clickedCoin) => setCurrentToCoin(clickedCoin)}
               availableChainList={availableToChainList}

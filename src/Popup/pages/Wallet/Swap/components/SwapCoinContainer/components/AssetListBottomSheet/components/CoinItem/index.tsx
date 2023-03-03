@@ -1,5 +1,4 @@
 import { forwardRef } from 'react';
-import type { TokenData } from '@0xsquid/sdk';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
@@ -9,6 +8,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { times } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
+import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
 
 import {
   CoinButton,
@@ -27,9 +27,9 @@ import {
 import Check16Icon from '~/images/icons/Check16.svg';
 
 type CoinItemProps = {
-  coinInfo: TokenData;
+  coinInfo: IntegratedSwapToken;
   isActive: boolean;
-  onClickCoin: (clickedCoin: TokenData) => void;
+  onClickCoin: (clickedCoin: IntegratedSwapToken) => void;
 };
 
 const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onClickCoin, isActive }, ref) => {
@@ -39,12 +39,10 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const coinPrice = (coinInfo.coingeckoId && coinGeckoPrice.data?.[coinInfo.coingeckoId]?.[chromeStorage.currency]) || 0;
-
   // const coinDisplayDenomAmount = toDisplayDenomAmount(coinInfo?.availableAmount || '0', coinInfo.decimals);
   const coinDisplayDenomAmount = '13.31213';
 
   const coinAmountPrice = times(coinDisplayDenomAmount, coinPrice);
-  // FIXME 선택한 토큰 chain Id값 가지고 체인이름 가져오기
   return (
     <CoinButton
       key={coinInfo.address}

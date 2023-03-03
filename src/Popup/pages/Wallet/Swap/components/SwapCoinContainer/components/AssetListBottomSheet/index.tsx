@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { TokenData } from '@0xsquid/sdk/dist/types';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
+import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
 
 import ChainItem from './components/ChainItem';
 import CoinItem from './components/CoinItem';
@@ -13,11 +13,11 @@ import Close24Icon from '~/images/icons/Close24.svg';
 
 type AssetListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   type: 'chain' | 'coin';
-  currentSelectedCoin?: TokenData;
+  currentSelectedCoin?: IntegratedSwapToken;
   currentSelectedChain?: IntegratedSwapChain;
-  availableCoinList?: TokenData[];
+  availableCoinList?: IntegratedSwapToken[];
   availableChainList?: IntegratedSwapChain[];
-  onClickCoin?: (clickedCoin: TokenData) => void;
+  onClickCoin?: (clickedCoin: IntegratedSwapToken) => void;
   onClickChain?: (clickedChain: IntegratedSwapChain) => void;
 };
 
