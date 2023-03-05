@@ -35,8 +35,7 @@ import { protoTx } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgCommission, MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
 
-import ClaimCommissionButton from './components/ClaimCommissionButton';
-import ClaimRewardButton from './components/ClaimRewardButton';
+import ClaimButton from './components/ClaimButton';
 import {
   ButtonContainer,
   ClaimButtonContainer,
@@ -87,7 +86,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
   const reward = useRewardSWR(chain);
-  const validatorAddresses = useValidatorsSWR();
+  const validators = useValidatorsSWR();
+
   const account = useAccountSWR(chain);
   const accounts = useAccounts(true);
   const { enQueue } = useCurrentQueue();
@@ -109,13 +109,18 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const { decimals, coinGeckoId, explorerURL } = chain;
 
-  const price = (coinGeckoId && data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
+  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[chromeStorage.currency]) || 0, [chromeStorage.currency, coinGeckoId, data]);
 
-  const displayAmount = toDisplayDenomAmount(totalAmount, decimals);
+  const displayAmount = useMemo(() => toDisplayDenomAmount(totalAmount, decimals), [decimals, totalAmount]);
 
-  const value = times(displayAmount, price);
+  const value = useMemo(() => times(displayAmount, price), [displayAmount, price]);
 
-  const currentAddress = accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[chain.id] || '';
+  const currentAddress = useMemo(
+    () => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[chain.id] || '',
+    [accounts?.data, chain.id, currentAccount.id],
+  );
+
+  const operatorAddress = useMemo(() => validators.data?.find((item) => item.address === currentAddress)?.operatorAddress, [currentAddress, validators.data]);
 
   const rewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
     if (reward.data?.rewards?.length && account.data?.value.account_number && account.data.value.sequence) {
@@ -157,8 +162,6 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const rewardSimulate = useSimulateSWR({ chain, txBytes: rewardProtoTx?.tx_bytes });
 
   const commissionAminoTx = useMemo<SignAminoDoc<MsgCommission> | undefined>(() => {
-    const operatorAddress = validatorAddresses.data?.find((item) => item.address === currentAddress)?.operatorAddress;
-
     if (operatorAddress && account.data?.value.account_number && account.data.value.sequence) {
       return {
         account_number: account.data.value.account_number,
@@ -178,16 +181,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
       };
     }
     return undefined;
-  }, [
-    account.data?.value.account_number,
-    account.data?.value.sequence,
-    chain.baseDenom,
-    chain.chainId,
-    chain.gasRate.low,
-    chain.type,
-    currentAddress,
-    validatorAddresses.data,
-  ]);
+  }, [account.data?.value.account_number, account.data?.value.sequence, chain.baseDenom, chain.chainId, chain.gasRate.low, chain.type, operatorAddress]);
 
   const commissionProtoTx = useMemo(() => {
     if (commissionAminoTx) {
@@ -362,7 +356,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
             )}
           </FourthLineContainer>
           <ClaimButtonContainer>
-            <ClaimRewardButton
+            <ClaimButton
               Icon={Reward16Icon}
               type="button"
               disabled={!isPossibleClaimReward}
@@ -394,44 +388,45 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
               }}
             >
               {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
-            </ClaimRewardButton>
-            <ClaimCommissionButton
-              isAvailable={!!isPossibleClaimCommission}
-              Icon={Reward16Icon}
-              type="button"
-              disabled={!isPossibleClaimCommission}
-              onClick={async () => {
-                if (commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
-                  await enQueue({
-                    messageId: '',
-                    origin: '',
-                    channel: 'inApp',
-                    message: {
-                      method: 'cos_signAmino',
-                      params: {
-                        chainName: chain.chainName,
-                        doc: {
-                          ...commissionAminoTx,
-                          fee: {
-                            amount: [{ amount: '0', denom: chain.baseDenom }],
-                            gas: times(commissionSimulate.data.gas_info.gas_used, getDefaultAV(chain), 0),
+            </ClaimButton>
+            {operatorAddress && (
+              <ClaimButton
+                Icon={Reward16Icon}
+                type="button"
+                disabled={!isPossibleClaimCommission}
+                onClick={async () => {
+                  if (commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
+                    await enQueue({
+                      messageId: '',
+                      origin: '',
+                      channel: 'inApp',
+                      message: {
+                        method: 'cos_signAmino',
+                        params: {
+                          chainName: chain.chainName,
+                          doc: {
+                            ...commissionAminoTx,
+                            fee: {
+                              amount: [{ amount: '0', denom: chain.baseDenom }],
+                              gas: times(commissionSimulate.data.gas_info.gas_used, getDefaultAV(chain), 0),
+                            },
                           },
+                          isEditFee: true,
+                          isEditMemo: true,
                         },
-                        isEditFee: true,
-                        isEditMemo: true,
                       },
-                    },
-                  });
+                    });
 
-                  if (currentAccount.type === 'LEDGER') {
-                    await openWindow();
-                    window.close();
+                    if (currentAccount.type === 'LEDGER') {
+                      await openWindow();
+                      window.close();
+                    }
                   }
-                }
-              }}
-            >
-              {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
-            </ClaimCommissionButton>
+                }}
+              >
+                {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
+              </ClaimButton>
+            )}
           </ClaimButtonContainer>
         </StyledAccordionDetails>
       </StyledAccordion>
@@ -476,6 +471,8 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 
   const { currentAccount } = useCurrentAccount();
 
+  const validators = useValidatorsSWR();
+
   const { currentPassword } = useCurrentPassword();
 
   const { explorerURL } = chain;
@@ -497,6 +494,8 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 
     return getAddress(chain, keyPair?.publicKey);
   }, [chain, currentAccount, currentPassword]);
+
+  const operatorAddress = useMemo(() => validators.data?.find((item) => item.address === address)?.operatorAddress, [address, validators.data]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -590,9 +589,16 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
               </FourthLineContainerItem>
             )}
           </FourthLineContainer>
-          <ClaimRewardButton Icon={Reward16Icon} type="button" disabled>
-            {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
-          </ClaimRewardButton>
+          <ClaimButtonContainer>
+            <ClaimButton Icon={Reward16Icon} type="button" disabled>
+              {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
+            </ClaimButton>
+            {operatorAddress && (
+              <ClaimButton Icon={Reward16Icon} type="button" disabled>
+                {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
+              </ClaimButton>
+            )}
+          </ClaimButtonContainer>
         </StyledAccordionDetails>
       </StyledAccordion>
 
