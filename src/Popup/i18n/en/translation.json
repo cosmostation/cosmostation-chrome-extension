@@ -645,7 +645,7 @@
                 "messages": {
                   "Commission": {
                     "index": {
-                      "title": "Commission reward",
+                      "title": "Claim Commission",
                       "validatorAddress": "Validator address"
                     }
                   },
