@@ -643,6 +643,12 @@
             "components": {
               "TxMessage": {
                 "messages": {
+                  "Commission": {
+                    "index": {
+                      "title": "Claim Commission",
+                      "validatorAddress": "Validator address"
+                    }
+                  },
                   "IBCSend": {
                     "index": {
                       "amount": "Amount",
@@ -1220,6 +1226,7 @@
           "NativeChainCard": {
             "index": {
               "available": "Available",
+              "claimCommissionButton": "Claim Comm'n",
               "claimRewardButton": "Claim Reward",
               "copied": "Copied",
               "delegated": "Delegated",

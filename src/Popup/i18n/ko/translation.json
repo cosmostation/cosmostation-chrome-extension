@@ -643,6 +643,12 @@
             "components": {
               "TxMessage": {
                 "messages": {
+                  "Commission": {
+                    "index": {
+                      "title": "커미션 받기",
+                      "validatorAddress": "검증자 주소"
+                    }
+                  },
                   "IBCSend": {
                     "index": {
                       "amount": "수량",
@@ -1220,6 +1226,7 @@
           "NativeChainCard": {
             "index": {
               "available": "전송 가능 수량",
+              "claimCommissionButton": "커미션 받기",
               "claimRewardButton": "이자 받기",
               "copied": "복사 되었습니다.",
               "delegated": "위임 수량",
