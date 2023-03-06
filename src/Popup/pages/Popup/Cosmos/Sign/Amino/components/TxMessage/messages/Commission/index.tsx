@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { Msg, MsgCommission } from '~/types/cosmos/amino';
@@ -20,7 +21,9 @@ export default function Commission({ msg, isMultipleMsgs }: CommissionProps) {
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Commission.index.validatorAddress')}</Typography>
           </LabelContainer>
           <ValueContainer>
-            <Typography variant="h5">{shorterAddress(msg.value.validator_address, 32)}</Typography>
+            <Tooltip title={msg.value.validator_address} arrow placement="top">
+              <Typography variant="h5">{shorterAddress(msg.value.validator_address, 32)}</Typography>
+            </Tooltip>
           </ValueContainer>
         </AddressContainer>
       </ContentContainer>
