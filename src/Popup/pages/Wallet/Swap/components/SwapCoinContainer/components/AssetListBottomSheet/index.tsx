@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
 
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
 import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
@@ -33,7 +34,14 @@ export default function AssetListBottomSheet({
   ...remainder
 }: AssetListBottomSheetProps) {
   const { t } = useTranslation();
+  const { chromeStorage } = useChromeStorage();
 
+  const { ethereumTokens } = chromeStorage;
+  // 해당 네트워크 아이디가 따로 있어야할듯
+
+  const currentEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentSelectedChain?.id);
+  // NOTE 리스트가 너무 많아서 미리 amount 정보를 넘겨주는 방식이 옳아보임
+  // const tokenBalance = useTokenBalanceSWR(token, { suspense: true });
   const ref = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
@@ -112,6 +120,7 @@ export default function AssetListBottomSheet({
                   key={item.address}
                   ref={isActive ? ref : undefined}
                   coinInfo={item}
+                  gecko={currentEthereumTokens.find((token) => token.address === item.address)?.coinGeckoId}
                   onClickCoin={(clickedCoin) => {
                     onClickCoin?.(clickedCoin);
                     setSearch('');
@@ -126,7 +135,7 @@ export default function AssetListBottomSheet({
               return (
                 <ChainItem
                   isActive={isActive}
-                  key={item.chainId}
+                  key={item.id}
                   ref={isActive ? ref : undefined}
                   chainInfo={item}
                   onClickChain={(clickedChain) => {

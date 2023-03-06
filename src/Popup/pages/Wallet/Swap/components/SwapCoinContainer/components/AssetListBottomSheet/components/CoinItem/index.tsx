@@ -30,17 +30,20 @@ type CoinItemProps = {
   coinInfo: IntegratedSwapToken;
   isActive: boolean;
   onClickCoin: (clickedCoin: IntegratedSwapToken) => void;
+  gecko?: string;
 };
 
-const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onClickCoin, isActive }, ref) => {
+const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onClickCoin, isActive, gecko }, ref) => {
   const { chromeStorage } = useChromeStorage();
   const { currency } = chromeStorage;
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const coinPrice = (coinInfo.coingeckoId && coinGeckoPrice.data?.[coinInfo.coingeckoId]?.[chromeStorage.currency]) || 0;
+  // const coinPrice = (coinInfo.coingeckoId && coinGeckoPrice.data?.[coinInfo.coingeckoId]?.[chromeStorage.currency]) || 0;
+  const coinPrice = (gecko && coinGeckoPrice.data?.[gecko]?.[chromeStorage.currency]) || 0;
+
   // const coinDisplayDenomAmount = toDisplayDenomAmount(coinInfo?.availableAmount || '0', coinInfo.decimals);
-  const coinDisplayDenomAmount = '13.31213';
+  const coinDisplayDenomAmount = '1';
 
   const coinAmountPrice = times(coinDisplayDenomAmount, coinPrice);
   return (

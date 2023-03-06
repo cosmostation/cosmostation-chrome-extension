@@ -3,12 +3,14 @@ import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { ONEINCH_SUPPORTED_CHAINS } from '~/constants/1inch';
-import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS } from '~/constants/chain';
+import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { AXELAR } from '~/constants/chain/cosmos/axelar';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { KI } from '~/constants/chain/cosmos/ki';
+import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { CURRENCY_SYMBOL } from '~/constants/currency';
 import AmountInput from '~/Popup/components/common/AmountInput';
 import Button from '~/Popup/components/common/Button';
@@ -37,7 +39,6 @@ import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { calcOutGivenIn, calcSpotPrice, decimalScaling } from '~/Popup/utils/osmosis';
 import { protoTx } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import type { CosmosChain } from '~/types/chain';
 import type { AssetV3 } from '~/types/cosmos/asset';
 import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
 import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
@@ -69,14 +70,11 @@ import SwapIcon from '~/images/icons/Swap.svg';
 
 export type ChainAssetInfo = AssetV3 & { chainName: string; availableAmount?: string };
 
-type EntryProps = {
-  chain: CosmosChain;
-};
-
 const STABLE_POOL_TYPE = '/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool';
 const WEIGHTED_POOL_TYPE = '/osmosis.gamm.v1beta1.Pool';
 
-export default function Entry({ chain }: EntryProps) {
+export default function Entry() {
+  const chain = OSMOSIS;
   const { t } = useTranslation();
   const { currentAccount } = useCurrentAccount();
   const account = useAccountSWR(chain, true);
@@ -416,11 +414,11 @@ export default function Entry({ chain }: EntryProps) {
   const [currentToChain, setCurrentToChain] = useState<IntegratedSwapChain>();
 
   const currentFromAddress = useMemo(
-    () => (currentFromChain ? accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentFromChain.id] || '' : ''),
+    () => (currentFromChain ? accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentFromChain.addressId] || '' : ''),
     [accounts?.data, currentAccount.id, currentFromChain],
   );
   const currentToAddress = useMemo(
-    () => (currentToChain ? accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentToChain.id] || '' : ''),
+    () => (currentToChain ? accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentToChain.addressId] || '' : ''),
     [accounts?.data, currentAccount.id, currentToChain],
   );
 
@@ -434,139 +432,111 @@ export default function Entry({ chain }: EntryProps) {
 
   // TODO 스왑 후에는 스왑해서 나온 토큰을 자동으로 추가하기
   // TODO 토큰 amount 가져오기
+
   const availableFromChainList: IntegratedSwapChain[] = useMemo(() => {
-    const unsupportedChainIdList = ['42220', '1284', '42161'];
+    const unsupportedEVMChainIdList = ['42220', '1284'];
+    const supportedCosmosChainIdList = [OSMOSIS.chainId];
+
+    const squidEVMChainIDList = squidChainList
+      ?.filter((item) => item.chainType === 'evm' && !unsupportedEVMChainIdList.includes(String(item.chainId)))
+      .map((item) => String(item.chainId));
+
+    const squidCosmosChainIDList = squidChainList
+      ?.filter((item) => supportedCosmosChainIdList.includes(String(item.chainId)))
+      .map((item) => String(item.chainId));
+
+    const squidEVMList = ETHEREUM_NETWORKS.filter((item) => squidEVMChainIDList?.includes(String(parseInt(item.chainId, 16)))).map((item) => ({
+      ...item,
+      chainId: String(parseInt(item.chainId, 16)),
+      supportedApi: 'squid',
+      line: ETHEREUM.line,
+      addressId: ETHEREUM.id,
+    }));
+
+    const squidCosmosList = COSMOS_CHAINS.filter((item) => squidCosmosChainIDList?.includes(item.chainId)).map((item) => ({
+      ...item,
+      supportedApi: 'squid',
+      addressId: item.id,
+      networkName: item.chainName,
+    }));
+
+    const integratedEVMList = [
+      ...squidEVMList,
+      ...ONEINCH_SUPPORTED_CHAINS.map((item) => ({
+        ...item,
+        chainId: String(parseInt(item.chainId, 16)),
+        supportedApi: '1inch',
+        line: ETHEREUM.line,
+        addressId: ETHEREUM.id,
+      })),
+    ].filter((chainItem, idx, arr) => arr.findIndex((item) => item.chainId === chainItem.chainId) === idx);
+
+    // FIXME if 조건문 수정하거나 날려버리기
     if (isFromSelected && squidChainList) {
-      return [
-        ...squidChainList
-          .filter((item) => (item.chainType === 'evm' && !unsupportedChainIdList.includes(String(item.chainId))) || item.chainId === 'osmosis-1')
-          .map((item) => ({
-            ...item,
-            chainId: String(item.chainId),
-            imageURL: item.chainIconURI,
-            supportedApi: 'squid',
-            id: item.chainType === 'evm' ? '33c328b1-2d5f-43f1-ac88-25be1a5abf6c' : COSMOS_CHAINS.find((c) => c.chainId === item.chainId)?.id || '',
-          })),
-        ...ONEINCH_SUPPORTED_CHAINS.map((item) => ({
-          ...item,
-          chainId: String(parseInt(item.chainId, 16)),
-          supportedApi: '1inch',
-          chainType: 'evm',
-          id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
-        })),
-      ].filter((chainItem, idx, arr) => arr.findIndex((item) => item.chainId === chainItem.chainId) === idx);
+      return [...integratedEVMList, ...squidCosmosList];
     }
     if (currentToChain?.supportedApi === '1inch') {
       return [currentToChain];
     }
     if (squidChainList) {
       if (currentToChain?.chainId === 'osmosis-1') {
-        return [
-          ...squidChainList
-            .filter((item) => (item.chainType === 'evm' && !unsupportedChainIdList.includes(String(item.chainId))) || item.chainId === 'osmosis-1')
-            .map((item) => ({
-              ...item,
-              chainId: String(item.chainId),
-              imageURL: item.chainIconURI,
-              supportedApi: 'squid',
-              id: item.chainType === 'evm' ? '33c328b1-2d5f-43f1-ac88-25be1a5abf6c' : COSMOS_CHAINS.find((c) => c.chainId === item.chainId)?.id || '',
-            })),
-        ];
+        return [...squidEVMList, ...squidCosmosList];
       }
-      if (currentToChain?.chainType === 'cosmos') {
-        return [
-          ...squidChainList
-            .filter((item) => item.chainType === 'evm' && !unsupportedChainIdList.includes(String(item.chainId)))
-            .map((item) => ({
-              ...item,
-              chainId: String(item.chainId),
-              imageURL: item.chainIconURI,
-              supportedApi: 'squid',
-              id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
-            })),
-        ];
+      if (currentToChain?.line === 'COSMOS') {
+        return [...squidEVMList];
       }
-      if (currentToChain?.chainType === 'evm') {
-        return [
-          ...squidChainList
-            .filter((item) => item.chainType === 'evm' && !unsupportedChainIdList.includes(String(item.chainId)))
-            .map((item) => ({
-              ...item,
-              chainId: String(item.chainId),
-              imageURL: item.chainIconURI,
-              supportedApi: 'squid',
-              id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
-            })),
-        ];
+      if (currentToChain?.line === 'ETHEREUM') {
+        return [...squidEVMList];
       }
-      return [
-        ...squidChainList
-          .filter((item) => (item.chainType === 'evm' && !unsupportedChainIdList.includes(String(item.chainId))) || item.chainId === 'osmosis-1')
-          .map((item) => ({
-            ...item,
-            chainId: String(item.chainId),
-            imageURL: item.chainIconURI,
-            supportedApi: 'squid',
-            id: item.chainType === 'evm' ? '33c328b1-2d5f-43f1-ac88-25be1a5abf6c' : COSMOS_CHAINS.find((c) => c.chainId === item.chainId)?.id || '',
-          })),
-        ...ONEINCH_SUPPORTED_CHAINS.map((item) => ({
-          ...item,
-          chainId: String(parseInt(item.chainId, 16)),
-          supportedApi: '1inch',
-          chainType: 'evm',
-          id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
-        })),
-      ].filter((chainItem, idx, arr) => arr.findIndex((item) => item.chainId === chainItem.chainId) === idx);
+      return [...integratedEVMList, ...squidCosmosList];
     }
     return [];
   }, [currentToChain, isFromSelected, squidChainList]);
 
   const availableToChainList: IntegratedSwapChain[] = useMemo(() => {
-    const unsupportedEVMChainIdList = ['42220', '1284', '42161'];
+    const unsupportedEVMChainIdList = ['42220', '1284'];
     const unsupportedCosmosChainIdList = [COSMOS.chainId, AXELAR.chainId, FETCH_AI.chainId, INJECTIVE.chainId, KI.chainId, 'phoenix-1', 'agoric-3'];
 
+    const squidEVMChainIDList = squidChainList?.filter((item) => !unsupportedEVMChainIdList.includes(String(item.chainId))).map((item) => String(item.chainId));
+
+    const squidCosmosChainIDList = squidChainList
+      ?.filter((item) => !unsupportedCosmosChainIdList.includes(String(item.chainId)))
+      .map((item) => String(item.chainId));
+
+    const squidEVMList = ETHEREUM_NETWORKS.filter((item) => squidEVMChainIDList?.includes(String(parseInt(item.chainId, 16)))).map((item) => ({
+      ...item,
+      chainId: String(parseInt(item.chainId, 16)),
+      supportedApi: 'squid',
+      line: ETHEREUM.line,
+      addressId: ETHEREUM.id,
+    }));
+
+    const squidCosmosList = COSMOS_CHAINS.filter((item) => squidCosmosChainIDList?.includes(String(item.chainId))).map((item) => ({
+      ...item,
+      supportedApi: 'squid',
+      addressId: item.id,
+      networkName: item.chainName,
+    }));
+
+    const integratedEVMList = [
+      ...squidEVMList,
+      ...ONEINCH_SUPPORTED_CHAINS.map((item) => ({
+        ...item,
+        chainId: String(parseInt(item.chainId, 16)),
+        supportedApi: '1inch',
+        line: ETHEREUM.line,
+        addressId: ETHEREUM.id,
+      })),
+    ].filter((chainItem, idx, arr) => arr.findIndex((item) => item.chainId === chainItem.chainId) === idx);
+
     if (!isFromSelected && squidChainList) {
-      return [
-        ...squidChainList
-          .filter((item) => !unsupportedCosmosChainIdList.includes(String(item.chainId)) && !unsupportedEVMChainIdList.includes(String(item.chainId)))
-          .map((item) => ({
-            ...item,
-            chainId: String(item.chainId),
-            imageURL: item.chainIconURI,
-            supportedApi: 'squid',
-            id: item.chainType === 'evm' ? '33c328b1-2d5f-43f1-ac88-25be1a5abf6c' : COSMOS_CHAINS.find((c) => c.chainId === item.chainId)?.id || '',
-          })),
-        ...ONEINCH_SUPPORTED_CHAINS.map((item) => ({
-          ...item,
-          chainId: String(parseInt(item.chainId, 16)),
-          supportedApi: '1inch',
-          chainType: 'evm',
-          id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
-        })),
-      ].filter((chainItem, idx, arr) => arr.findIndex((item) => item.chainId === chainItem.chainId) === idx);
+      return [...integratedEVMList, ...squidCosmosList];
     }
     if (currentFromChain?.supportedApi === '1inch' || currentFromChain?.chainId === 'osmosis-1') {
       return [currentFromChain];
     }
-    if (squidChainList) {
-      return [
-        ...squidChainList
-          .filter((item) => !unsupportedCosmosChainIdList.includes(String(item.chainId)) && !unsupportedEVMChainIdList.includes(String(item.chainId)))
-          .map((item) => ({
-            ...item,
-            chainId: String(item.chainId),
-            imageURL: item.chainIconURI,
-            supportedApi: 'squid',
-            id: item.chainType === 'evm' ? '33c328b1-2d5f-43f1-ac88-25be1a5abf6c' : COSMOS_CHAINS.find((c) => c.chainId === item.chainId)?.id || '',
-          })),
-        ...ONEINCH_SUPPORTED_CHAINS.map((item) => ({
-          ...item,
-          chainId: String(parseInt(item.chainId, 16)),
-          supportedApi: '1inch',
-          chainType: 'evm',
-          id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
-        })),
-      ].filter((chainItem, idx, arr) => arr.findIndex((item) => item.chainId === chainItem.chainId) === idx);
+    if (currentFromChain?.supportedApi === 'squid' && squidChainList) {
+      return [...squidEVMList, ...squidCosmosList];
     }
     return [];
   }, [currentFromChain, isFromSelected, squidChainList]);
@@ -698,22 +668,15 @@ export default function Entry({ chain }: EntryProps) {
     }
     if (
       (currentFromChain?.supportedApi === '1inch' && currentToChain?.supportedApi === '1inch') ||
-      (currentFromChain?.chainId === currentToChain?.chainId && currentFromChain?.chainType === 'evm')
+      (currentFromChain?.chainId === currentToChain?.chainId && currentFromChain?.line === ETHEREUM.line)
     ) {
       setCurrentSwapApi('1inch');
     }
     if (currentFromChain?.chainId === 'osmosis-1' && currentToChain?.chainId === 'osmosis-1') {
       setCurrentSwapApi('osmo');
     }
-  }, [
-    currentFromChain,
-    currentFromChain?.chainId,
-    currentFromChain?.chainType,
-    currentFromChain?.supportedApi,
-    currentToChain,
-    currentToChain?.chainId,
-    currentToChain?.supportedApi,
-  ]);
+  }, [currentFromChain, currentFromChain?.chainId, currentFromChain?.supportedApi, currentToChain, currentToChain?.chainId, currentToChain?.supportedApi]);
+
   return (
     <>
       <Container>

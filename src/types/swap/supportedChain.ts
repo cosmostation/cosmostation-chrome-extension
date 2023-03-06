@@ -1,7 +1,5 @@
-import type { ChainData } from '@0xsquid/sdk/dist/types';
+import type { CosmosChain, EthereumNetwork } from '../chain';
 
-import type { EthereumNetwork } from '../chain';
-
-export type IntegratedSwapChain = ((EthereumNetwork & { chainType: string }) | (ChainData & { imageURL: string; id: string; chainId: string })) & {
-  supportedApi?: string;
-};
+export type IntegratedSwapChain =
+  | (EthereumNetwork & { line: string; supportedApi: string; addressId: string })
+  | (CosmosChain & { supportedApi: string; addressId: string; networkName: string });
