@@ -14,6 +14,10 @@ export type MsgSend = {
   amount: Amount[];
 };
 
+export type MsgCommission = {
+  validator_address: string;
+};
+
 export type SignDirectDoc = {
   chain_id: string;
   body_bytes: Uint8Array;

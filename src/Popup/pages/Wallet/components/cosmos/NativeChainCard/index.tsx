@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
+import { EVMOS } from '~/constants/chain/cosmos/evmos';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import customBeltImg from '~/images/etc/customBelt.png';
@@ -31,7 +32,8 @@ import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
-import { protoTx } from '~/Popup/utils/proto';
+import { getAuthInfoBytes, getTxBodyBytes, protoTx } from '~/Popup/utils/proto';
+import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgCommission, MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
 
@@ -193,6 +195,70 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const commissionSimulate = useSimulateSWR({ chain, txBytes: commissionProtoTx?.tx_bytes });
 
+  const commissionSimulatedAminoTx = useMemo<SignAminoDoc<MsgCommission> | undefined>(() => {
+    if (
+      operatorAddress &&
+      chain.id === EVMOS.id &&
+      account.data?.value.account_number &&
+      account.data.value.sequence &&
+      commissionSimulate.data?.gas_info?.gas_used
+    ) {
+      return {
+        account_number: account.data.value.account_number,
+        sequence: account.data.value.sequence,
+        chain_id: chain.chainId,
+        fee: {
+          amount: [{ amount: '0', denom: chain.baseDenom }],
+          gas: times(commissionSimulate.data.gas_info.gas_used, getDefaultAV(chain), 0),
+        },
+        msgs: [
+          {
+            type: 'cosmos-sdk/MsgWithdrawValidatorCommission',
+            value: { validator_address: operatorAddress },
+          },
+        ],
+        memo: '',
+      };
+    }
+    return undefined;
+  }, [account.data?.value.account_number, account.data?.value.sequence, chain, commissionSimulate?.data?.gas_info?.gas_used, operatorAddress]);
+
+  const commissionTxBodyBytes = useMemo(() => (commissionSimulatedAminoTx ? getTxBodyBytes(commissionSimulatedAminoTx) : null), [commissionSimulatedAminoTx]);
+  const commissionAuthInfoBytes = useMemo(
+    () =>
+      commissionSimulatedAminoTx
+        ? getAuthInfoBytes(commissionSimulatedAminoTx, { type: getPublicKeyType(chain), value: '' }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT)
+        : null,
+    [chain, commissionSimulatedAminoTx],
+  );
+
+  const commissionDirectTx = useMemo(() => {
+    if (
+      operatorAddress &&
+      chain.id === EVMOS.id &&
+      account.data?.value.account_number &&
+      account.data.value.sequence &&
+      commissionAuthInfoBytes &&
+      commissionTxBodyBytes
+    ) {
+      return {
+        chain_id: chain.chainId,
+        account_number: account.data.value.account_number,
+        auth_info_bytes: Buffer.from(commissionAuthInfoBytes).toString('hex') as unknown as Uint8Array,
+        body_bytes: Buffer.from(commissionTxBodyBytes).toString('hex') as unknown as Uint8Array,
+      };
+    }
+    return undefined;
+  }, [
+    account.data?.value.account_number,
+    account.data?.value.sequence,
+    chain.chainId,
+    chain.id,
+    operatorAddress,
+    commissionAuthInfoBytes,
+    commissionTxBodyBytes,
+  ]);
+
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
       enqueueSnackbar(t('pages.Wallet.components.cosmos.NativeChainCard.index.copied'));
@@ -225,8 +291,11 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   );
 
   const isPossibleClaimCommission = useMemo(
-    () => !!commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount),
-    [commissionAminoTx, commissionSimulate.data?.gas_info?.gas_used, displayAvailableAmount, estimatedCommissionDisplayFeeAmount],
+    () =>
+      commissionDirectTx
+        ? !!commissionDirectTx && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount)
+        : !!commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount),
+    [commissionAminoTx, commissionDirectTx, commissionSimulate.data?.gas_info?.gas_used, displayAvailableAmount, estimatedCommissionDisplayFeeAmount],
   );
 
   return (
@@ -395,7 +464,31 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                 type="button"
                 disabled={!isPossibleClaimCommission}
                 onClick={async () => {
-                  if (commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
+                  if (chain.id === EVMOS.id && commissionDirectTx && isPossibleClaimCommission) {
+                    await enQueue({
+                      messageId: '',
+                      origin: '',
+                      channel: 'inApp',
+                      message: {
+                        method: 'cos_signDirect',
+                        params: {
+                          chainName: chain.chainName,
+                          doc: {
+                            ...commissionDirectTx,
+                          },
+                          isEditFee: true,
+                          isEditMemo: true,
+                        },
+                      },
+                    });
+
+                    if (currentAccount.type === 'LEDGER') {
+                      await openWindow();
+                      window.close();
+                    }
+                  }
+
+                  if (chain.id !== EVMOS.id && commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
                     await enQueue({
                       messageId: '',
                       origin: '',
