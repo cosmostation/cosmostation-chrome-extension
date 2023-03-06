@@ -28,6 +28,7 @@ import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
 import type {
   Msg,
+  MsgCommission,
   MsgCustom,
   MsgExecuteContract,
   MsgReward,
@@ -139,6 +140,10 @@ export function isAminoIBCSend(msg: Msg): msg is Msg<MsgTransfer> {
 
 export function isAminoReward(msg: Msg): msg is Msg<MsgReward> {
   return msg.type === 'cosmos-sdk/MsgWithdrawDelegationReward';
+}
+
+export function isAminoCommission(msg: Msg): msg is Msg<MsgCommission> {
+  return msg.type === 'cosmos-sdk/MsgWithdrawValidatorCommission';
 }
 
 export function isAminoSwapExactAmountIn(msg: Msg): msg is Msg<MsgSwapExactAmountIn> {
