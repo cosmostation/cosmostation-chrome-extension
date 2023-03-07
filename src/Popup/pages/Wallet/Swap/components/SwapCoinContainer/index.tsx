@@ -116,6 +116,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
       />
       <AssetListBottomSheet
         type="coin"
+        currentSelectedChain={remainder.currentSelectedChain}
         currentSelectedCoin={remainder.currentSelectedCoin}
         availableCoinList={remainder.availableCoinList}
         open={isOpenedCoinList}

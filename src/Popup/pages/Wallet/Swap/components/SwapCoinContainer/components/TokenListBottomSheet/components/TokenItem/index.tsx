@@ -28,52 +28,52 @@ import {
 
 import Check16Icon from '~/images/icons/Check16.svg';
 
-type CoinItemProps = {
-  coinInfo: IntegratedSwapToken;
+type TokenItemProps = {
+  tokenInfo: IntegratedSwapToken;
   isActive: boolean;
-  onClickCoin: (clickedCoin: IntegratedSwapToken) => void;
+  onClickToken: (clickedCoin: IntegratedSwapToken) => void;
   currentNetwork?: IntegratedSwapChain;
 };
 
-const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onClickCoin, isActive, currentNetwork }, ref) => {
+const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, onClickToken, isActive, currentNetwork }, ref) => {
   const { chromeStorage } = useChromeStorage();
   const { currency } = chromeStorage;
 
   // const currentEthereumToken = useMemo(() => ethereumTokens.find((item) => item.ethereumNetworkId === currentNetworkId), [currentNetworkId, ethereumTokens]);
-  // const aaaa = coinInfo.address === currentEthereumToken?.address
+  // const aaaa = tokenInfo.address === currentEthereumToken?.address
 
   // FIXME line기준으로 분기처리 해버리기
-  const tokenBalance = useTokenBalanceSWR(currentNetwork ? (currentNetwork.line === 'ETHEREUM' ? currentNetwork : undefined) : undefined, coinInfo);
+  const tokenBalance = useTokenBalanceSWR(currentNetwork ? (currentNetwork.line === 'ETHEREUM' ? currentNetwork : undefined) : undefined, tokenInfo);
   const amount = tokenBalance.data || '0';
-  const coinDisplayDenomAmount = toDisplayDenomAmount(amount, coinInfo.decimals);
+  const coinDisplayDenomAmount = toDisplayDenomAmount(amount, tokenInfo.decimals);
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const coinPrice = (coinInfo.coingeckoId && coinGeckoPrice.data?.[coinInfo.coingeckoId]?.[chromeStorage.currency]) || 0;
+  const coinPrice = (tokenInfo.coingeckoId && coinGeckoPrice.data?.[tokenInfo.coingeckoId]?.[chromeStorage.currency]) || 0;
   // const coinPrice = (gecko && coinGeckoPrice.data?.[gecko]?.[chromeStorage.currency]) || 0;
 
-  // const coinDisplayDenomAmount = toDisplayDenomAmount(coinInfo?.availableAmount || '0', coinInfo.decimals);
+  // const coinDisplayDenomAmount = toDisplayDenomAmount(tokenInfo?.availableAmount || '0', tokenInfo.decimals);
   const coinAmountPrice = times(coinDisplayDenomAmount, coinPrice);
 
   return (
     <CoinButton
-      key={coinInfo.address}
+      key={tokenInfo.address}
       data-is-active={isActive}
       ref={isActive ? ref : undefined}
       onClick={() => {
-        onClickCoin?.(coinInfo);
+        onClickToken?.(tokenInfo);
       }}
     >
       <CoinLeftContainer>
         <CoinLeftImageContainer>
-          <Image src={coinInfo.logoURI} />
+          <Image src={tokenInfo.logoURI} />
         </CoinLeftImageContainer>
         <CoinLeftInfoContainer>
           <CoinLeftTitleContainer>
-            <Typography variant="h5">{coinInfo.symbol}</Typography>
+            <Typography variant="h5">{tokenInfo.symbol}</Typography>
           </CoinLeftTitleContainer>
           <CoinLeftSubTitleContainer>
-            <Typography variant="h6">{coinInfo.name}</Typography>
+            <Typography variant="h6">{tokenInfo.name}</Typography>
           </CoinLeftSubTitleContainer>
         </CoinLeftInfoContainer>
       </CoinLeftContainer>
@@ -82,7 +82,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
           <CoinRightTitleContainer>
             <Tooltip title={coinDisplayDenomAmount} placement="top" arrow>
               <div>
-                <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(coinInfo.decimals)}>
+                <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(tokenInfo.decimals)}>
                   {coinDisplayDenomAmount}
                 </Number>
               </div>
@@ -99,4 +99,4 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
     </CoinButton>
   );
 });
-export default CoinItem;
+export default TokenItem;

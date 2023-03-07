@@ -22,6 +22,7 @@ type AssetListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSh
   onClickChain?: (clickedChain: IntegratedSwapChain) => void;
 };
 
+// NOTE coin 컴포넌트로직이 복잡해짐에 따라 체인, 코인 바텀시트로 컴포넌트 분리할 것
 export default function AssetListBottomSheet({
   type,
   currentSelectedCoin,
@@ -37,13 +38,13 @@ export default function AssetListBottomSheet({
   const { chromeStorage } = useChromeStorage();
 
   const { ethereumTokens } = chromeStorage;
-  // 해당 네트워크 아이디가 따로 있어야할듯
 
   const currentEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentSelectedChain?.id);
-  // NOTE 리스트가 너무 많아서 미리 amount 정보를 넘겨주는 방식이 옳아보임
-  // const tokenBalance = useTokenBalanceSWR(token, { suspense: true });
-  const ref = useRef<HTMLButtonElement>(null);
 
+  const currentEthereumTokenAddresses = currentEthereumTokens.map((item) => item.address);
+
+  const ref = useRef<HTMLButtonElement>(null);
+  // 토큰 처음에는 30개만 노출하고 검색 2자 이상일 때부터 필터링
   useEffect(() => {
     if (remainder.open) {
       setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0);
@@ -52,9 +53,26 @@ export default function AssetListBottomSheet({
 
   const [search, setSearch] = useState('');
 
+  const sortedCoinList = useMemo(
+    () =>
+      availableCoinList
+        ? [
+            ...availableCoinList
+              // NOTE 추후에 지원할 토큰리스트를 chainList에 업로드 할 것
+              .filter((item) => currentEthereumTokenAddresses.includes(item.address))
+              .map((item) => ({
+                ...item,
+                coingeckoId: currentEthereumTokens.find((token) => token.address === item.address)?.coinGeckoId || '',
+              })),
+            ...availableCoinList.filter((item) => !currentEthereumTokenAddresses.includes(item.address)),
+          ]
+        : [],
+    [currentEthereumTokenAddresses, currentEthereumTokens, availableCoinList],
+  );
+
   const filteredCoinList = useMemo(
-    () => (search ? availableCoinList?.filter((item) => item.symbol.toLowerCase().indexOf(search.toLowerCase()) > -1) : availableCoinList),
-    [availableCoinList, search],
+    () => (search ? sortedCoinList?.filter((item) => item.symbol.toLowerCase().indexOf(search.toLowerCase()) > -1) : sortedCoinList),
+    [sortedCoinList, search],
   );
 
   const filteredChainList = useMemo(
@@ -114,13 +132,14 @@ export default function AssetListBottomSheet({
           {type === 'coin' &&
             filteredCoinList?.map((item) => {
               const isActive = item.symbol === currentSelectedCoin?.symbol;
+              const isAdded = currentEthereumTokenAddresses.includes(item.address);
               return (
                 <CoinItem
                   isActive={isActive}
                   key={item.address}
                   ref={isActive ? ref : undefined}
+                  currentNetwork={isAdded ? currentSelectedChain : undefined}
                   coinInfo={item}
-                  gecko={currentEthereumTokens.find((token) => token.address === item.address)?.coinGeckoId}
                   onClickCoin={(clickedCoin) => {
                     onClickCoin?.(clickedCoin);
                     setSearch('');

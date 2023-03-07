@@ -434,11 +434,11 @@ export default function Entry() {
   // TODO 토큰 amount 가져오기
 
   const availableFromChainList: IntegratedSwapChain[] = useMemo(() => {
-    const unsupportedEVMChainIdList = ['42220', '1284'];
+    const exceptedEVMChainIds = ['42220', '1284'];
     const supportedCosmosChainIdList = [OSMOSIS.chainId];
 
     const squidEVMChainIDList = squidChainList
-      ?.filter((item) => item.chainType === 'evm' && !unsupportedEVMChainIdList.includes(String(item.chainId)))
+      ?.filter((item) => item.chainType === 'evm' && !exceptedEVMChainIds.includes(String(item.chainId)))
       .map((item) => String(item.chainId));
 
     const squidCosmosChainIDList = squidChainList
@@ -494,14 +494,12 @@ export default function Entry() {
   }, [currentToChain, isFromSelected, squidChainList]);
 
   const availableToChainList: IntegratedSwapChain[] = useMemo(() => {
-    const unsupportedEVMChainIdList = ['42220', '1284'];
-    const unsupportedCosmosChainIdList = [COSMOS.chainId, AXELAR.chainId, FETCH_AI.chainId, INJECTIVE.chainId, KI.chainId, 'phoenix-1', 'agoric-3'];
+    const exceptedEVMChainIds = ['42220', '1284'];
+    const exceptedCosmosChainIds = [COSMOS.chainId, AXELAR.chainId, FETCH_AI.chainId, INJECTIVE.chainId, KI.chainId, 'phoenix-1', 'agoric-3'];
 
-    const squidEVMChainIDList = squidChainList?.filter((item) => !unsupportedEVMChainIdList.includes(String(item.chainId))).map((item) => String(item.chainId));
+    const squidEVMChainIDList = squidChainList?.filter((item) => !exceptedEVMChainIds.includes(String(item.chainId))).map((item) => String(item.chainId));
 
-    const squidCosmosChainIDList = squidChainList
-      ?.filter((item) => !unsupportedCosmosChainIdList.includes(String(item.chainId)))
-      .map((item) => String(item.chainId));
+    const squidCosmosChainIDList = squidChainList?.filter((item) => !exceptedCosmosChainIds.includes(String(item.chainId))).map((item) => String(item.chainId));
 
     const squidEVMList = ETHEREUM_NETWORKS.filter((item) => squidEVMChainIDList?.includes(String(parseInt(item.chainId, 16)))).map((item) => ({
       ...item,
@@ -688,7 +686,7 @@ export default function Entry() {
         <BodyContainer>
           <SwapContainer>
             <SwapCoinContainer
-              headerLeftText="Input coin"
+              headerLeftText="From"
               coinAmountPrice={inputCoinAmountPrice}
               currentSelectedChain={currentFromChain}
               currentSelectedCoin={currentFromCoin}
@@ -738,7 +736,7 @@ export default function Entry() {
               </SwapCoinInputAmountContainer>
             </SwapCoinContainer>
             <SwapCoinContainer
-              headerLeftText="Output coin"
+              headerLeftText="To"
               coinAmountPrice={outputCoinAmountPrice}
               currentSelectedChain={currentToChain}
               currentSelectedCoin={currentToCoin}
