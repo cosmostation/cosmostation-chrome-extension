@@ -224,16 +224,10 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                     const base64Signature = Buffer.from(signature).toString('base64');
 
-                    const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
-
-                    const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
-
-                    const pubKey = { type: publicKeyType, value: base64PublicKey };
-
                     if (channel) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
-                        const pTx = protoDirectTx(doc, base64Signature);
+                        const pTx = protoDirectTx(signedDoc, base64Signature);
 
                         const response = await broadcast(url, pTx);
 
@@ -256,6 +250,12 @@ export default function Entry({ queue, chain }: EntryProps) {
                         await deQueue();
                       }
                     } else {
+                      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+
+                      const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
+
+                      const pubKey = { type: publicKeyType, value: base64PublicKey };
+
                       const signedDocHex = {
                         ...doc,
                         body_bytes: Buffer.from(bodyBytes).toString('hex'),
