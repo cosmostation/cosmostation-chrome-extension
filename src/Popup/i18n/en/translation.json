@@ -1116,12 +1116,16 @@
           },
           "SwapCoinContainer": {
             "components": {
-              "AssetListBottomSheet": {
+              "ChainListBottomSheet": {
                 "index": {
                   "chainBottomListTitle": "Select a chain",
-                  "coinBottomListTitle": "Select a coin",
-                  "searchChainPlaceholder": "Search chains",
-                  "searchCoinPlaceholder": "Search tokens"
+                  "searchChainPlaceholder": "Search chains"
+                }
+              },
+              "TokenListBottomSheet": {
+                "index": {
+                  "searchTokenPlaceholder": "Select a coin",
+                  "tokenBottomListTitle": "Search tokens"
                 }
               }
             },

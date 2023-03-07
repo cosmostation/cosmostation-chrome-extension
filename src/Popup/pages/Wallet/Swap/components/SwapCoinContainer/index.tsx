@@ -10,8 +10,9 @@ import { shorterAddress } from '~/Popup/utils/string';
 import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
 import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
 
-import AssetListBottomSheet from './components/AssetListBottomSheet';
+import ChainListBottomSheet from './components/ChainListBottomSheet';
 import SwapAssetButton from './components/SwapAssetButton';
+import TokenListBottomSheet from './components/TokenListBottomSheet';
 import {
   BodyContainer,
   Container,
@@ -104,8 +105,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
           </FooterRightContainer>
         </FooterContainer>
       </Container>
-      <AssetListBottomSheet
-        type="chain"
+      <ChainListBottomSheet
         currentSelectedChain={remainder.currentSelectedChain}
         availableChainList={remainder.availableChainList}
         open={isOpenedChainList}
@@ -114,14 +114,13 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
           remainder.onClickChain?.(clickedChain);
         }}
       />
-      <AssetListBottomSheet
-        type="coin"
+      <TokenListBottomSheet
         currentSelectedChain={remainder.currentSelectedChain}
-        currentSelectedCoin={remainder.currentSelectedCoin}
-        availableCoinList={remainder.availableCoinList}
+        currentSelectedToken={remainder.currentSelectedCoin}
+        availableTokenList={remainder.availableCoinList}
         open={isOpenedCoinList}
         onClose={() => setisOpenedCoinList(false)}
-        onClickCoin={(clickedCoin) => {
+        onClickToken={(clickedCoin) => {
           remainder.onClickCoin?.(clickedCoin);
         }}
       />

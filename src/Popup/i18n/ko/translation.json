@@ -1116,12 +1116,16 @@
           },
           "SwapCoinContainer": {
             "components": {
-              "AssetListBottomSheet": {
+              "ChainListBottomSheet": {
                 "index": {
                   "chainBottomListTitle": "체인을 선택하세요",
-                  "coinBottomListTitle": "토큰을 선택하세요",
-                  "searchChainPlaceholder": "체인 검색",
-                  "searchCoinPlaceholder": "토큰 검색"
+                  "searchChainPlaceholder": "체인 검색"
+                }
+              },
+              "TokenListBottomSheet": {
+                "index": {
+                  "searchTokenPlaceholder": "토큰을 선택하세요",
+                  "tokenBottomListTitle": "토큰 검색"
                 }
               }
             },

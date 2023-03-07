@@ -44,13 +44,12 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
 
   // FIXME line기준으로 분기처리 해버리기
   const tokenBalance = useTokenBalanceSWR(currentNetwork ? (currentNetwork.line === 'ETHEREUM' ? currentNetwork : undefined) : undefined, tokenInfo);
-  const amount = tokenBalance.data || '0';
+  const amount = tokenBalance.data || '1000000';
   const coinDisplayDenomAmount = toDisplayDenomAmount(amount, tokenInfo.decimals);
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-
+  // FIXME 여차하면 그냥 가격값은 날려버리자
   const coinPrice = (tokenInfo.coingeckoId && coinGeckoPrice.data?.[tokenInfo.coingeckoId]?.[chromeStorage.currency]) || 0;
-  // const coinPrice = (gecko && coinGeckoPrice.data?.[gecko]?.[chromeStorage.currency]) || 0;
 
   // const coinDisplayDenomAmount = toDisplayDenomAmount(tokenInfo?.availableAmount || '0', tokenInfo.decimals);
   const coinAmountPrice = times(coinDisplayDenomAmount, coinPrice);

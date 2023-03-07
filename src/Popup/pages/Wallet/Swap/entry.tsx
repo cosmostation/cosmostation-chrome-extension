@@ -542,34 +542,58 @@ export default function Entry() {
   const oneinchFromTokenList = useTokenAssetsSWR(currentFromChain?.chainId || '');
   const oneinchToTokenList = useTokenAssetsSWR(currentToChain?.chainId || '');
 
+  const { ethereumTokens } = chromeStorage;
+
+  const currentFromEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentFromChain?.id);
+  const currentToEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentToChain?.id);
+
+  const currentFromEthereumTokenAddresses = currentFromEthereumTokens.map((item) => item.address);
+  const currentToEthereumTokenAddresses = currentToEthereumTokens.map((item) => item.address);
+
   const filteredSquidFromTokenList: IntegratedSwapToken[] = useMemo(() => {
     if (currentSwapApi === 'squid') {
       return filteredSquidTokenList(currentFromChain?.chainId);
     }
     if (currentSwapApi === '1inch' && oneinchFromTokenList.data) {
       return currentToCoin
-        ? Object.values(oneinchFromTokenList.data.tokens)
-            .filter((item) => item.address !== currentToCoin.address)
-            .map((item) => ({
-              ...item,
-              availableAmount: '123',
-            }))
-        : Object.values(oneinchFromTokenList.data.tokens);
+        ? [
+            ...Object.values(oneinchFromTokenList.data.tokens).filter(
+              (item) => item.address !== currentToCoin.address && currentFromEthereumTokenAddresses.includes(item.address),
+            ),
+            ...Object.values(oneinchFromTokenList.data.tokens).filter(
+              (item) => item.address !== currentToCoin.address && !currentFromEthereumTokenAddresses.includes(item.address),
+            ),
+          ]
+        : [
+            ...Object.values(oneinchFromTokenList.data.tokens).filter((item) => currentFromEthereumTokenAddresses.includes(item.address)),
+            ...Object.values(oneinchFromTokenList.data.tokens).filter((item) => !currentFromEthereumTokenAddresses.includes(item.address)),
+          ];
     }
     return [];
-  }, [currentFromChain?.chainId, currentSwapApi, currentToCoin, filteredSquidTokenList, oneinchFromTokenList.data]);
+  }, [currentFromChain?.chainId, currentFromEthereumTokenAddresses, currentSwapApi, currentToCoin, filteredSquidTokenList, oneinchFromTokenList.data]);
 
+  // FIXME 토큰 선,후 선택에 따라 토큰 리스팅에 영향을 줘서 이거 손 봐야할 듯
   const filteredSquidToTokenList: IntegratedSwapToken[] = useMemo(() => {
     if (currentSwapApi === 'squid') {
       return filteredSquidTokenList(currentToChain?.chainId);
     }
     if (currentSwapApi === '1inch' && oneinchToTokenList.data) {
       return currentFromCoin
-        ? Object.values(oneinchToTokenList.data.tokens).filter((item) => item.address !== currentFromCoin.address)
-        : Object.values(oneinchToTokenList.data.tokens);
+        ? [
+            ...Object.values(oneinchToTokenList.data.tokens).filter(
+              (item) => item.address !== currentFromCoin.address && currentToEthereumTokenAddresses.includes(item.address),
+            ),
+            ...Object.values(oneinchToTokenList.data.tokens).filter(
+              (item) => item.address !== currentFromCoin.address && !currentToEthereumTokenAddresses.includes(item.address),
+            ),
+          ]
+        : [
+            ...Object.values(oneinchToTokenList.data.tokens).filter((item) => currentToEthereumTokenAddresses.includes(item.address)),
+            ...Object.values(oneinchToTokenList.data.tokens).filter((item) => !currentToEthereumTokenAddresses.includes(item.address)),
+          ];
     }
     return [];
-  }, [currentSwapApi, oneinchToTokenList.data, filteredSquidTokenList, currentToChain?.chainId, currentFromCoin]);
+  }, [currentSwapApi, oneinchToTokenList.data, filteredSquidTokenList, currentToChain?.chainId, currentFromCoin, currentToEthereumTokenAddresses]);
 
   // const sampleparams = {
   //   fromChain: 1, // Goerli testnet
