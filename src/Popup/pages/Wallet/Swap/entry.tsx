@@ -664,7 +664,6 @@ export default function Entry() {
     }
     return [];
   }, [currentSwapApi, oneinchToTokenList.data, filteredSquidTokenList, currentToChain?.chainId, currentFromCoin, currentToEthereumTokens]);
-  console.log(filteredSquidToTokenList);
   // const sampleparams = {
   //   fromChain: 1, // Goerli testnet
   //   fromToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // WETH on Goerli
@@ -769,7 +768,6 @@ export default function Entry() {
     }
   }, [currentFromChain, currentFromChain?.chainId, currentFromChain?.supportedApi, currentToChain, currentToChain?.chainId, currentToChain?.supportedApi]);
 
-  console.log(currentSwapApi);
   return (
     <>
       <Container>
