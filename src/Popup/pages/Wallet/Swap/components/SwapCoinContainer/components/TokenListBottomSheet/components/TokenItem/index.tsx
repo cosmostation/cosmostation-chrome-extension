@@ -5,25 +5,27 @@ import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/1inch/useTokenBalanceSWR';
+import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
-import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
+import type { IntegratedSwapEVMChain } from '~/types/swap/supportedChain';
 import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
 
 import {
-  CoinButton,
-  CoinLeftContainer,
-  CoinLeftImageContainer,
-  CoinLeftInfoContainer,
-  CoinLeftSubTitleContainer,
-  CoinLeftTitleContainer,
-  CoinRightContainer,
-  CoinRightIconContainer,
-  CoinRightInfoContainer,
-  CoinRightSubTitleContainer,
-  CoinRightTitleContainer,
+  TokenButton,
+  TokenLeftContainer,
+  TokenLeftImageContainer,
+  TokenLeftInfoContainer,
+  TokenLeftSubTitleContainer,
+  TokenLeftTitleContainer,
+  TokenRightContainer,
+  TokenRightIconContainer,
+  TokenRightInfoContainer,
+  TokenRightSubTitleContainer,
+  TokenRightTitleContainer,
 } from './styled';
 
 import Check16Icon from '~/images/icons/Check16.svg';
@@ -31,31 +33,30 @@ import Check16Icon from '~/images/icons/Check16.svg';
 type TokenItemProps = {
   tokenInfo: IntegratedSwapToken;
   isActive: boolean;
-  onClickToken: (clickedCoin: IntegratedSwapToken) => void;
-  currentNetwork?: IntegratedSwapChain;
+  onClickToken: (clickedToken: IntegratedSwapToken) => void;
+  currentNetwork?: IntegratedSwapEVMChain;
 };
 
 const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, onClickToken, isActive, currentNetwork }, ref) => {
   const { chromeStorage } = useChromeStorage();
   const { currency } = chromeStorage;
 
-  // const currentEthereumToken = useMemo(() => ethereumTokens.find((item) => item.ethereumNetworkId === currentNetworkId), [currentNetworkId, ethereumTokens]);
-  // const aaaa = tokenInfo.address === currentEthereumToken?.address
+  const balance = useBalanceSWR(currentNetwork);
+  const tokenBalance = useTokenBalanceSWR(currentNetwork, tokenInfo);
+  const amount = isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', tokenInfo.address)
+    ? BigInt(balance?.data?.result || '0').toString(10)
+    : BigInt(tokenBalance.data || '0').toString(10) || '0';
 
-  // FIXME line기준으로 분기처리 해버리기
-  const tokenBalance = useTokenBalanceSWR(currentNetwork ? (currentNetwork.line === 'ETHEREUM' ? currentNetwork : undefined) : undefined, tokenInfo);
-  const amount = tokenBalance.data || '1000000';
-  const coinDisplayDenomAmount = toDisplayDenomAmount(amount, tokenInfo.decimals);
+  const coinDisplayDenomAmount = toDisplayDenomAmount(amount, gt(amount, 0) ? tokenInfo.decimals : 0);
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  // FIXME 여차하면 그냥 가격값은 날려버리자
+
   const coinPrice = (tokenInfo.coingeckoId && coinGeckoPrice.data?.[tokenInfo.coingeckoId]?.[chromeStorage.currency]) || 0;
 
-  // const coinDisplayDenomAmount = toDisplayDenomAmount(tokenInfo?.availableAmount || '0', tokenInfo.decimals);
   const coinAmountPrice = times(coinDisplayDenomAmount, coinPrice);
 
   return (
-    <CoinButton
+    <TokenButton
       key={tokenInfo.address}
       data-is-active={isActive}
       ref={isActive ? ref : undefined}
@@ -63,39 +64,41 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
         onClickToken?.(tokenInfo);
       }}
     >
-      <CoinLeftContainer>
-        <CoinLeftImageContainer>
+      <TokenLeftContainer>
+        <TokenLeftImageContainer>
           <Image src={tokenInfo.logoURI} />
-        </CoinLeftImageContainer>
-        <CoinLeftInfoContainer>
-          <CoinLeftTitleContainer>
+        </TokenLeftImageContainer>
+        <TokenLeftInfoContainer>
+          <TokenLeftTitleContainer>
             <Typography variant="h5">{tokenInfo.symbol}</Typography>
-          </CoinLeftTitleContainer>
-          <CoinLeftSubTitleContainer>
+          </TokenLeftTitleContainer>
+          <TokenLeftSubTitleContainer>
             <Typography variant="h6">{tokenInfo.name}</Typography>
-          </CoinLeftSubTitleContainer>
-        </CoinLeftInfoContainer>
-      </CoinLeftContainer>
-      <CoinRightContainer>
-        <CoinRightInfoContainer>
-          <CoinRightTitleContainer>
+          </TokenLeftSubTitleContainer>
+        </TokenLeftInfoContainer>
+      </TokenLeftContainer>
+      <TokenRightContainer>
+        <TokenRightInfoContainer>
+          <TokenRightTitleContainer>
             <Tooltip title={coinDisplayDenomAmount} placement="top" arrow>
               <div>
-                <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(tokenInfo.decimals)}>
+                <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={coinDisplayDenomAmount === '0' ? 0 : getDisplayMaxDecimals(tokenInfo.decimals)}>
                   {coinDisplayDenomAmount}
                 </Number>
               </div>
             </Tooltip>
-          </CoinRightTitleContainer>
-          <CoinRightSubTitleContainer>
-            <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
-              {coinAmountPrice}
-            </Number>
-          </CoinRightSubTitleContainer>
-        </CoinRightInfoContainer>
-        <CoinRightIconContainer>{isActive && <Check16Icon />}</CoinRightIconContainer>
-      </CoinRightContainer>
-    </CoinButton>
+          </TokenRightTitleContainer>
+          {tokenInfo.coingeckoId && (
+            <TokenRightSubTitleContainer>
+              <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
+                {coinAmountPrice}
+              </Number>
+            </TokenRightSubTitleContainer>
+          )}
+        </TokenRightInfoContainer>
+        <TokenRightIconContainer>{isActive && <Check16Icon />}</TokenRightIconContainer>
+      </TokenRightContainer>
+    </TokenButton>
   );
 });
 export default TokenItem;

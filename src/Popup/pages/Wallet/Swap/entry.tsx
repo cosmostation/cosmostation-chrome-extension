@@ -19,6 +19,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import WarningContainer from '~/Popup/components/common/WarningContainer';
 import SubSideHeader from '~/Popup/components/SubSideHeader';
 import { useTokenAssetsSWR } from '~/Popup/hooks/SWR/1inch/useTokenAssetsSWR';
+import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/1inch/useTokenBalanceSWR';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
@@ -27,6 +28,7 @@ import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { usePoolsAssetSWR } from '~/Popup/hooks/SWR/cosmos/usePoolsAssetSWR';
 import { usePoolSWR } from '~/Popup/hooks/SWR/cosmos/usePoolsSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
+import { useBalanceSWR as useETHBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/squid/useSquidAssetsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -427,7 +429,6 @@ export default function Entry() {
   const [currentFromCoin, setCurrentFromCoin] = useState<IntegratedSwapToken>();
   const [currentToCoin, setCurrentToCoin] = useState<IntegratedSwapToken>();
 
-  // FIXME 체인 리스팅 로직 최적화, 똑같은 리스트를 조건이 다르다고 새로 만들고 있는 느낌
   // FIXME unsupported chains filtering logc refactor
 
   // TODO 스왑 후에는 스왑해서 나온 토큰을 자동으로 추가하기
@@ -547,54 +548,123 @@ export default function Entry() {
   const currentFromEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentFromChain?.id);
   const currentToEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentToChain?.id);
 
-  const currentFromEthereumTokenAddresses = currentFromEthereumTokens.map((item) => item.address);
-  const currentToEthereumTokenAddresses = currentToEthereumTokens.map((item) => item.address);
+  // FIXME 기존에 커런트 체인으로 값 가져오게 되어있어서 그냥 새로 만들어야할듯
+  const currentFromETHNativeBalance = useETHBalanceSWR(currentFromChain?.line === 'ETHEREUM' ? currentFromChain : undefined);
+  const currentFromETHTokenBalance = useTokenBalanceSWR(currentFromChain?.line === 'ETHEREUM' ? currentFromChain : undefined, currentFromCoin);
+
+  const currentFromETHAmount = useMemo(
+    () =>
+      // NOTE 이거를 native기준으로 삼아도 되나?
+      isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', currentFromCoin?.address)
+        ? BigInt(currentFromETHNativeBalance?.data?.result || '0').toString(10)
+        : BigInt(currentFromETHTokenBalance.data || '0').toString(10),
+    [currentFromCoin?.address, currentFromETHNativeBalance?.data?.result, currentFromETHTokenBalance.data],
+  );
+  const currentFromETHDisplayAmount = useMemo(
+    () => toDisplayDenomAmount(currentFromETHAmount, currentFromCoin?.decimals || 0),
+    [currentFromCoin?.decimals, currentFromETHAmount],
+  );
+
+  const currentToETHNativeBalance = useETHBalanceSWR(currentToChain?.line === 'ETHEREUM' ? currentToChain : undefined);
+  const currentToETHTokenBalance = useTokenBalanceSWR(currentToChain?.line === 'ETHEREUM' ? currentToChain : undefined, currentToCoin);
+
+  const currentToETHAmount = useMemo(
+    () =>
+      // NOTE 이거를 native기준으로 삼아도 되나?
+      isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', currentToCoin?.address)
+        ? BigInt(currentToETHNativeBalance?.data?.result || '0').toString(10)
+        : BigInt(currentToETHTokenBalance.data || '0').toString(10),
+    [currentToCoin?.address, currentToETHNativeBalance?.data?.result, currentToETHTokenBalance.data],
+  );
+  const currentToETHDisplayAmount = useMemo(
+    () => toDisplayDenomAmount(currentToETHAmount, currentToCoin?.decimals || 0),
+    [currentToCoin?.decimals, currentToETHAmount],
+  );
 
   const filteredSquidFromTokenList: IntegratedSwapToken[] = useMemo(() => {
     if (currentSwapApi === 'squid') {
-      return filteredSquidTokenList(currentFromChain?.chainId);
+      return [
+        ...filteredSquidTokenList(currentFromChain?.chainId).filter((item) => isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', item.address)),
+        ...filteredSquidTokenList(currentFromChain?.chainId).filter((item) =>
+          currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)),
+        ),
+        ...filteredSquidTokenList(currentFromChain?.chainId).filter(
+          (item) =>
+            !currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)) &&
+            !isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', item.address),
+        ),
+      ];
     }
     if (currentSwapApi === '1inch' && oneinchFromTokenList.data) {
+      // NOTE 네이티브를 최상단으로 올리기?
       return currentToCoin
         ? [
+            ...Object.values(oneinchFromTokenList.data.tokens).filter((item) => item.address !== currentToCoin.address && item.tags.includes('native')),
             ...Object.values(oneinchFromTokenList.data.tokens).filter(
-              (item) => item.address !== currentToCoin.address && currentFromEthereumTokenAddresses.includes(item.address),
+              (item) => item.address !== currentToCoin.address && currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)),
             ),
             ...Object.values(oneinchFromTokenList.data.tokens).filter(
-              (item) => item.address !== currentToCoin.address && !currentFromEthereumTokenAddresses.includes(item.address),
+              (item) =>
+                item.address !== currentToCoin.address &&
+                !currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)) &&
+                !item.tags.includes('native'),
             ),
           ]
         : [
-            ...Object.values(oneinchFromTokenList.data.tokens).filter((item) => currentFromEthereumTokenAddresses.includes(item.address)),
-            ...Object.values(oneinchFromTokenList.data.tokens).filter((item) => !currentFromEthereumTokenAddresses.includes(item.address)),
+            ...Object.values(oneinchFromTokenList.data.tokens).filter((item) => item.tags.includes('native')),
+            ...Object.values(oneinchFromTokenList.data.tokens).filter((item) =>
+              currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)),
+            ),
+            ...Object.values(oneinchFromTokenList.data.tokens).filter(
+              (item) => !currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)) && !item.tags.includes('native'),
+            ),
           ];
     }
     return [];
-  }, [currentFromChain?.chainId, currentFromEthereumTokenAddresses, currentSwapApi, currentToCoin, filteredSquidTokenList, oneinchFromTokenList.data]);
+  }, [currentFromChain?.chainId, currentFromEthereumTokens, currentSwapApi, currentToCoin, filteredSquidTokenList, oneinchFromTokenList.data]);
 
   // FIXME 토큰 선,후 선택에 따라 토큰 리스팅에 영향을 줘서 이거 손 봐야할 듯
   const filteredSquidToTokenList: IntegratedSwapToken[] = useMemo(() => {
     if (currentSwapApi === 'squid') {
-      return filteredSquidTokenList(currentToChain?.chainId);
+      return [
+        ...filteredSquidTokenList(currentToChain?.chainId).filter((item) => isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', item.address)),
+        ...filteredSquidTokenList(currentToChain?.chainId).filter((item) =>
+          currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)),
+        ),
+        ...filteredSquidTokenList(currentToChain?.chainId).filter(
+          (item) =>
+            !currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)) &&
+            !isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', item.address),
+        ),
+      ];
     }
     if (currentSwapApi === '1inch' && oneinchToTokenList.data) {
       return currentFromCoin
         ? [
+            ...Object.values(oneinchToTokenList.data.tokens).filter((item) => item.address !== currentFromCoin.address && item.tags.includes('native')),
             ...Object.values(oneinchToTokenList.data.tokens).filter(
-              (item) => item.address !== currentFromCoin.address && currentToEthereumTokenAddresses.includes(item.address),
+              (item) => item.address !== currentFromCoin.address && currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)),
             ),
             ...Object.values(oneinchToTokenList.data.tokens).filter(
-              (item) => item.address !== currentFromCoin.address && !currentToEthereumTokenAddresses.includes(item.address),
+              (item) =>
+                item.address !== currentFromCoin.address &&
+                !currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)) &&
+                !item.tags.includes('native'),
             ),
           ]
         : [
-            ...Object.values(oneinchToTokenList.data.tokens).filter((item) => currentToEthereumTokenAddresses.includes(item.address)),
-            ...Object.values(oneinchToTokenList.data.tokens).filter((item) => !currentToEthereumTokenAddresses.includes(item.address)),
+            ...Object.values(oneinchToTokenList.data.tokens).filter((item) => item.tags.includes('native')),
+            ...Object.values(oneinchToTokenList.data.tokens).filter((item) =>
+              currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)),
+            ),
+            ...Object.values(oneinchToTokenList.data.tokens).filter(
+              (item) => !currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)) && !item.tags.includes('native'),
+            ),
           ];
     }
     return [];
-  }, [currentSwapApi, oneinchToTokenList.data, filteredSquidTokenList, currentToChain?.chainId, currentFromCoin, currentToEthereumTokenAddresses]);
-
+  }, [currentSwapApi, oneinchToTokenList.data, filteredSquidTokenList, currentToChain?.chainId, currentFromCoin, currentToEthereumTokens]);
+  console.log(filteredSquidToTokenList);
   // const sampleparams = {
   //   fromChain: 1, // Goerli testnet
   //   fromToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // WETH on Goerli
@@ -699,6 +769,7 @@ export default function Entry() {
     }
   }, [currentFromChain, currentFromChain?.chainId, currentFromChain?.supportedApi, currentToChain, currentToChain?.chainId, currentToChain?.supportedApi]);
 
+  console.log(currentSwapApi);
   return (
     <>
       <Container>
@@ -711,6 +782,7 @@ export default function Entry() {
           <SwapContainer>
             <SwapCoinContainer
               headerLeftText="From"
+              availableAmount={currentFromETHDisplayAmount}
               coinAmountPrice={inputCoinAmountPrice}
               currentSelectedChain={currentFromChain}
               currentSelectedCoin={currentFromCoin}
@@ -761,6 +833,7 @@ export default function Entry() {
             </SwapCoinContainer>
             <SwapCoinContainer
               headerLeftText="To"
+              availableAmount={currentToETHDisplayAmount}
               coinAmountPrice={outputCoinAmountPrice}
               currentSelectedChain={currentToChain}
               currentSelectedCoin={currentToCoin}

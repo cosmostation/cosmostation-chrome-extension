@@ -1,10 +1,10 @@
 import { styled } from '@mui/material/styles';
 
-type TokenButtonProps = {
+type CoinButtonProps = {
   'data-is-active'?: boolean;
 };
 
-export const TokenButton = styled('button')<TokenButtonProps>(({ theme, ...props }) => ({
+export const CoinButton = styled('button')<CoinButtonProps>(({ theme, ...props }) => ({
   backgroundColor: props['data-is-active'] ? theme.colors.base02 : 'transparent',
   border: 0,
 
@@ -26,19 +26,19 @@ export const TokenButton = styled('button')<TokenButtonProps>(({ theme, ...props
   },
 }));
 
-export const TokenLeftContainer = styled('div')({
+export const CoinLeftContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
 });
 
-export const TokenLeftImageContainer = styled('div')({
+export const CoinLeftImageContainer = styled('div')({
   '& > img': {
     width: '2.4rem',
     height: '2.4rem',
   },
 });
 
-export const TokenLeftInfoContainer = styled('div')({
+export const CoinLeftInfoContainer = styled('div')({
   marginLeft: '0.8rem',
 
   display: 'flex',
@@ -46,15 +46,15 @@ export const TokenLeftInfoContainer = styled('div')({
   alignItems: 'flex-start',
 });
 
-export const TokenLeftTitleContainer = styled('div')(({ theme }) => ({
+export const CoinLeftTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const TokenLeftSubTitleContainer = styled('div')(({ theme }) => ({
+export const CoinLeftSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-export const TokenRightInfoContainer = styled('div')({
+export const CoinRightInfoContainer = styled('div')({
   marginRight: '0.8rem',
 
   display: 'flex',
@@ -62,15 +62,15 @@ export const TokenRightInfoContainer = styled('div')({
   alignItems: 'flex-end',
 });
 
-export const TokenRightTitleContainer = styled('div')(({ theme }) => ({
+export const CoinRightTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const TokenRightSubTitleContainer = styled('div')(({ theme }) => ({
+export const CoinRightSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
-export const TokenRightIconContainer = styled('div')(({ theme }) => ({
+export const CoinRightIconContainer = styled('div')(({ theme }) => ({
   width: '1.6rem',
   '& > svg': {
     '& > path': {
@@ -79,7 +79,7 @@ export const TokenRightIconContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-export const TokenRightContainer = styled('div')({
+export const CoinRightContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
 });

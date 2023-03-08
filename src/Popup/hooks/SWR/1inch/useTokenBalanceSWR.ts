@@ -5,8 +5,8 @@ import Web3 from 'web3';
 import type { AbiItem } from 'web3-utils';
 
 import { ERC20_ABI } from '~/constants/abi';
-import type { EthereumNetwork } from '~/types/chain';
 import type { ERC20ContractBalanceOfPayload, ERC20ContractMethods } from '~/types/ethereum/contract';
+import type { IntegratedSwapEVMChain } from '~/types/swap/supportedChain';
 import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
 
 import { useCurrentAccount } from '../../useCurrent/useCurrentAccount';
@@ -18,11 +18,11 @@ type FetcherParams = {
   address: string;
 };
 
-export function useTokenBalanceSWR(currentEthereumNetwork?: EthereumNetwork, token?: IntegratedSwapToken, config?: SWRConfiguration) {
+export function useTokenBalanceSWR(currentEthereumNetwork?: IntegratedSwapEVMChain, token?: IntegratedSwapToken, config?: SWRConfiguration) {
   const accounts = useAccounts(config?.suspense);
   const { currentAccount } = useCurrentAccount();
 
-  const address = accounts.data?.find((account) => account.id === currentAccount.id)?.address[currentEthereumNetwork?.id || ''] || '';
+  const address = accounts.data?.find((account) => account.id === currentAccount.id)?.address[currentEthereumNetwork?.addressId || ''] || '';
 
   const fetcher = (params: FetcherParams) => {
     const provider = new Web3.providers.HttpProvider(params.rpcURL, {
@@ -41,7 +41,7 @@ export function useTokenBalanceSWR(currentEthereumNetwork?: EthereumNetwork, tok
   };
 
   const { data, error, mutate } = useSWR<ERC20ContractBalanceOfPayload, AxiosError>(
-    { rpcURL: currentEthereumNetwork?.rpcURL, tokenAddress: token?.address, address },
+    { rpcURL: currentEthereumNetwork ? currentEthereumNetwork.rpcURL : '', tokenAddress: token?.address, address },
     fetcher,
     {
       revalidateOnFocus: false,

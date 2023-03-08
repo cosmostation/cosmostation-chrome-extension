@@ -29,6 +29,7 @@ type SwapCoinContainerProps = {
   address: string;
   coinAmountPrice: string;
   headerLeftText: string;
+  availableAmount?: string;
   availableChainList?: IntegratedSwapChain[];
   availableCoinList?: IntegratedSwapToken[];
   currentSelectedChain?: IntegratedSwapChain;
@@ -48,7 +49,6 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
   const [isOpenedCoinList, setisOpenedCoinList] = useState(false);
 
   const shortAddress = useMemo(() => shorterAddress(remainder.address, 17), [remainder.address]);
-  const availableCoinAmount = '404.502';
   return (
     <>
       <Container>
@@ -95,10 +95,10 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
           <FooterRightContainer>
             <Typography variant="h6"> {t('pages.Wallet.Swap.components.SwapCoinContainer.index.availableAmount')} :</Typography>
             &nbsp;
-            <Tooltip title={availableCoinAmount} arrow placement="top">
+            <Tooltip title={remainder.availableAmount || ''} arrow placement="top">
               <span>
                 <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(6)}>
-                  {availableCoinAmount}
+                  {remainder.availableAmount}
                 </NumberText>
               </span>
             </Tooltip>
