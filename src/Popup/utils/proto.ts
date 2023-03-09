@@ -182,7 +182,7 @@ export function getPubKey(pubKey: PubKey) {
   return publicKey;
 }
 
-export function protoTx(signed: SignAminoDoc, pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
+export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
   const txBodyBytes = getTxBodyBytes(signed);
 
   if (txBodyBytes === null) {
@@ -191,7 +191,7 @@ export function protoTx(signed: SignAminoDoc, pubKey: PubKey, mode = cosmos.tx.s
 
   const authInfoBytes = getAuthInfoBytes(signed, pubKey, mode);
 
-  return { txBodyBytes, authInfoBytes };
+  return { signature, txBodyBytes, authInfoBytes };
 }
 
 export function protoTxBytes({ signature, txBodyBytes, authInfoBytes }: ProtoTxBytesProps) {

@@ -446,9 +446,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const ibcSendProtoTx = useMemo(() => {
     if (ibcSendAminoTx) {
-      const pTx = protoTx(ibcSendAminoTx, { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(ibcSendAminoTx, '', { type: getPublicKeyType(chain), value: '' });
 
-      return pTx ? protoTxBytes({ signature: '', txBodyBytes: pTx.txBodyBytes, authInfoBytes: pTx.authInfoBytes }) : null;
+      return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
   }, [chain, ibcSendAminoTx]);

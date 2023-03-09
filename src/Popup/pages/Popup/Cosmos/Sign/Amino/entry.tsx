@@ -242,10 +242,8 @@ export default function Entry({ queue, chain }: EntryProps) {
                     if (channel) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
-                        const pTx = protoTx(tx, pubKey);
-                        const pTxBytes = pTx
-                          ? protoTxBytes({ signature: base64Signature, txBodyBytes: pTx.txBodyBytes, authInfoBytes: pTx.authInfoBytes })
-                          : undefined;
+                        const pTx = protoTx(tx, base64Signature, pubKey);
+                        const pTxBytes = pTx ? protoTxBytes({ ...pTx }) : undefined;
 
                         const response = await broadcast(url, pTxBytes);
 
