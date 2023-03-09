@@ -24,3 +24,9 @@ export type SignDirectDoc = {
   auth_info_bytes: Uint8Array;
   account_number: string;
 };
+
+export type ProtoTxBytesProps = {
+  signature: string;
+  txBodyBytes: Uint8Array;
+  authInfoBytes: Uint8Array;
+};

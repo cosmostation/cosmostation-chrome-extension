@@ -30,7 +30,7 @@ import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisp
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
-import { protoTx } from '~/Popup/utils/proto';
+import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKey } from '~/types/chain';
 
@@ -344,7 +344,11 @@ export default function Send({ chain }: CosmosProps) {
 
   const sendProtoTx = useMemo(() => {
     if (sendAminoTx) {
-      return protoTx(sendAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(sendAminoTx, { type: getPublicKeyType(chain), value: '' });
+
+      return pTx
+        ? protoTxBytes({ signature: Buffer.from(new Uint8Array(64)).toString('base64'), txBodyBytes: pTx.txBodyBytes, authInfoBytes: pTx.authInfoBytes })
+        : null;
     }
     return null;
   }, [chain, sendAminoTx]);

@@ -19,7 +19,7 @@ import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
-import { broadcast, decodeProtobufMessage, protoDirectTx } from '~/Popup/utils/proto';
+import { broadcast, decodeProtobufMessage, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
@@ -227,9 +227,13 @@ export default function Entry({ queue, chain }: EntryProps) {
                     if (channel) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
-                        const pTx = protoDirectTx(signedDoc, base64Signature);
+                        const pTxBytes = protoTxBytes({
+                          signature: base64Signature,
+                          txBodyBytes: signedDoc.body_bytes,
+                          authInfoBytes: signedDoc.auth_info_bytes,
+                        });
 
-                        const response = await broadcast(url, pTx);
+                        const response = await broadcast(url, pTxBytes);
 
                         const { code } = response.tx_response;
 

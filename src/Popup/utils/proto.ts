@@ -6,7 +6,7 @@ import { ibc } from '~/proto/ibc-v5.0.1.js';
 import { osmosis } from '~/proto/osmosis-v13.1.2.js';
 import type { Msg, MsgCommission, MsgExecuteContract, MsgReward, MsgSend, MsgSwapExactAmountIn, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
-import type { Msg as ProtoMsg, MsgCommission as ProtoMsgCommission, MsgSend as ProtoMsgSend, PubKey, SignDirectDoc } from '~/types/cosmos/proto';
+import type { Msg as ProtoMsg, MsgCommission as ProtoMsgCommission, MsgSend as ProtoMsgSend, ProtoTxBytesProps, PubKey } from '~/types/cosmos/proto';
 
 export function convertAminoMessageToProto(msg: Msg) {
   if (isAminoSend(msg)) {
@@ -182,33 +182,22 @@ export function getPubKey(pubKey: PubKey) {
   return publicKey;
 }
 
-export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey) {
+export function protoTx(signed: SignAminoDoc, pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
   const txBodyBytes = getTxBodyBytes(signed);
 
   if (txBodyBytes === null) {
     return null;
   }
 
-  const authInfoBytes = getAuthInfoBytes(signed, pubKey);
+  const authInfoBytes = getAuthInfoBytes(signed, pubKey, mode);
+
+  return { txBodyBytes, authInfoBytes };
+}
+
+export function protoTxBytes({ signature, txBodyBytes, authInfoBytes }: ProtoTxBytesProps) {
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
     body_bytes: txBodyBytes,
     auth_info_bytes: authInfoBytes,
-    signatures: [Buffer.from(signature, 'base64')],
-  });
-  const txRawBytes = cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
-
-  const tx = {
-    tx_bytes: Buffer.from(txRawBytes).toString('base64'),
-    mode: cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
-  };
-
-  return tx;
-}
-
-export function protoDirectTx(signed: SignDirectDoc, signature: string) {
-  const txRaw = new cosmos.tx.v1beta1.TxRaw({
-    body_bytes: signed.body_bytes,
-    auth_info_bytes: signed.auth_info_bytes,
     signatures: [Buffer.from(signature, 'base64')],
   });
   const txRawBytes = cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();

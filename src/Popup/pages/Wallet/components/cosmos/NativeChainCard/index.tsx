@@ -8,7 +8,6 @@ import { COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
 import { EVMOS } from '~/constants/chain/cosmos/evmos';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
-import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
@@ -33,7 +32,7 @@ import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
-import { getAuthInfoBytes, getTxBodyBytes, protoTx } from '~/Popup/utils/proto';
+import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgCommission, MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
@@ -157,7 +156,9 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const rewardProtoTx = useMemo(() => {
     if (rewardAminoTx) {
-      return protoTx(rewardAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(rewardAminoTx, { type: getPublicKeyType(chain), value: '' });
+
+      return pTx ? protoTxBytes({ signature: '', txBodyBytes: pTx.txBodyBytes, authInfoBytes: pTx.authInfoBytes }) : undefined;
     }
 
     return undefined;
@@ -189,7 +190,9 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const commissionProtoTx = useMemo(() => {
     if (commissionAminoTx) {
-      return protoTx(commissionAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(commissionAminoTx, { type: getPublicKeyType(chain), value: '' });
+
+      return pTx ? protoTxBytes({ signature: '', txBodyBytes: pTx.txBodyBytes, authInfoBytes: pTx.authInfoBytes }) : undefined;
     }
 
     return undefined;
@@ -197,7 +200,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const commissionSimulate = useSimulateSWR({ chain, txBytes: commissionProtoTx?.tx_bytes });
 
-  const commissionSimulatedAminoTx = useMemo<SignAminoDoc<MsgCommission> | undefined>(() => {
+  const commissionDirectTx = useMemo(() => {
     if (
       operatorAddress &&
       chain.id === EVMOS.id &&
@@ -205,7 +208,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
       account.data.value.sequence &&
       !!commissionSimulate.data?.gas_info?.gas_used
     ) {
-      return {
+      const commissionSimulatedAminoTx = {
         account_number: account.data.value.account_number,
         sequence: account.data.value.sequence,
         chain_id: chain.chainId,
@@ -221,50 +224,33 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         ],
         memo: '',
       };
-    }
-    return undefined;
-  }, [account.data?.value.account_number, account.data?.value.sequence, chain, commissionSimulate?.data?.gas_info?.gas_used, operatorAddress]);
 
-  const commissionTxBodyBytes = useMemo(() => (commissionSimulatedAminoTx ? getTxBodyBytes(commissionSimulatedAminoTx) : null), [commissionSimulatedAminoTx]);
-  const commissionAuthInfoBytes = useMemo(() => {
-    const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+      const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-    const base64PublicKey = keyPair ? Buffer.from(keyPair.publicKey).toString('base64') : '';
+      const base64PublicKey = keyPair ? Buffer.from(keyPair.publicKey).toString('base64') : '';
 
-    return commissionSimulatedAminoTx
-      ? getAuthInfoBytes(
-          commissionSimulatedAminoTx,
-          { type: PUBLIC_KEY_TYPE.SECP256K1, value: base64PublicKey },
-          cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
-        )
-      : null;
-  }, [chain, commissionSimulatedAminoTx, currentAccount, currentPassword]);
+      const publicKeyType = getPublicKeyType(chain);
 
-  const commissionDirectTx = useMemo(() => {
-    if (
-      operatorAddress &&
-      chain.id === EVMOS.id &&
-      account.data?.value.account_number &&
-      account.data.value.sequence &&
-      commissionAuthInfoBytes &&
-      commissionTxBodyBytes
-    ) {
-      return {
-        chain_id: chain.chainId,
-        account_number: account.data.value.account_number,
-        auth_info_bytes: Buffer.from(commissionAuthInfoBytes).toString('hex') as unknown as Uint8Array,
-        body_bytes: Buffer.from(commissionTxBodyBytes).toString('hex') as unknown as Uint8Array,
-      };
+      const pTx = protoTx(commissionSimulatedAminoTx, { type: publicKeyType, value: base64PublicKey }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
+
+      return pTx
+        ? {
+            chain_id: chain.chainId,
+            account_number: account.data.value.account_number,
+            auth_info_bytes: Buffer.from(pTx.authInfoBytes).toString('hex') as unknown as Uint8Array,
+            body_bytes: Buffer.from(pTx.txBodyBytes).toString('hex') as unknown as Uint8Array,
+          }
+        : undefined;
     }
     return undefined;
   }, [
+    operatorAddress,
+    chain,
     account.data?.value.account_number,
     account.data?.value.sequence,
-    chain.chainId,
-    chain.id,
-    operatorAddress,
-    commissionAuthInfoBytes,
-    commissionTxBodyBytes,
+    commissionSimulate.data?.gas_info?.gas_used,
+    currentAccount,
+    currentPassword,
   ]);
 
   const handleOnClickCopy = () => {
