@@ -2,8 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
-import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
+import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 
 import TokenItem from './components/TokenItem';
 import { AssetList, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
@@ -39,7 +38,11 @@ export default function TokenListBottomSheet({
 
   const filteredTokenList = useMemo(
     () =>
-      search.length > 1 ? availableTokenList?.filter((item) => item.symbol.toLowerCase().indexOf(search.toLowerCase()) > -1) : availableTokenList?.slice(0, 30),
+      search.length > 1
+        ? availableTokenList?.filter(
+            (item) => item.symbol.toLowerCase().indexOf(search.toLowerCase()) > -1 || item.name.toLowerCase().indexOf(search.toLowerCase()) > -1,
+          )
+        : availableTokenList?.slice(0, 30),
     [availableTokenList, search],
   );
 
@@ -80,25 +83,23 @@ export default function TokenListBottomSheet({
           }}
         />
         <AssetList>
-          {currentSelectedChain?.line === 'ETHEREUM' &&
-            filteredTokenList?.map((item) => {
-              const isActive = item.symbol === currentSelectedToken?.symbol;
-              return (
-                <TokenItem
-                  isActive={isActive}
-                  key={item.address}
-                  ref={isActive ? ref : undefined}
-                  currentNetwork={currentSelectedChain}
-                  tokenInfo={item}
-                  onClickToken={(clickedToken) => {
-                    onClickToken?.(clickedToken);
-                    setSearch('');
-                    onClose?.({}, 'escapeKeyDown');
-                  }}
-                />
-              );
-            })}
-          {/* NOTE 오스모시스 스왑 {currentSelectedChain?.line ==='COSMOS'&& } */}
+          {filteredTokenList?.map((item) => {
+            const isActive = item.symbol === currentSelectedToken?.symbol;
+            return (
+              <TokenItem
+                isActive={isActive}
+                key={item.address || item.denom}
+                ref={isActive ? ref : undefined}
+                currentNetwork={currentSelectedChain?.line === 'ETHEREUM' ? currentSelectedChain : undefined}
+                tokenInfo={item}
+                onClickToken={(clickedToken) => {
+                  onClickToken?.(clickedToken);
+                  setSearch('');
+                  onClose?.({}, 'escapeKeyDown');
+                }}
+              />
+            );
+          })}
         </AssetList>
       </Container>
     </StyledBottomSheet>

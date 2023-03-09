@@ -42,8 +42,8 @@ import { calcOutGivenIn, calcSpotPrice, decimalScaling } from '~/Popup/utils/osm
 import { protoTx } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { AssetV3 } from '~/types/cosmos/asset';
-import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
-import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
+import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
+import type { IntegratedSwapAPI } from '~/types/swap/integratedSwap';
 
 import SlippageSettingDialog from './components/SlippageSettingDialog';
 import SwapCoinContainer from './components/SwapCoinContainer';
@@ -410,7 +410,7 @@ export default function Entry() {
   // NOTE Squid SDK Test codes
   const { squidChainList, filteredSquidTokenList } = useSquidAssetsSWR();
 
-  const [currentSwapApi, setCurrentSwapApi] = useState('');
+  const [currentSwapApi, setCurrentSwapApi] = useState<IntegratedSwapAPI>();
 
   const [currentFromChain, setCurrentFromChain] = useState<IntegratedSwapChain>();
   const [currentToChain, setCurrentToChain] = useState<IntegratedSwapChain>();
@@ -552,34 +552,40 @@ export default function Entry() {
   const currentFromETHNativeBalance = useETHBalanceSWR(currentFromChain?.line === 'ETHEREUM' ? currentFromChain : undefined);
   const currentFromETHTokenBalance = useTokenBalanceSWR(currentFromChain?.line === 'ETHEREUM' ? currentFromChain : undefined, currentFromCoin);
 
-  const currentFromETHAmount = useMemo(
+  const currentFromAmount = useMemo(
     () =>
-      // NOTE 이거를 native기준으로 삼아도 되나?
-      isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', currentFromCoin?.address)
+      currentFromCoin?.denom
+        ? currentFromCoin?.availableAmount || '0'
+        : isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', currentFromCoin?.address)
         ? BigInt(currentFromETHNativeBalance?.data?.result || '0').toString(10)
         : BigInt(currentFromETHTokenBalance.data || '0').toString(10),
-    [currentFromCoin?.address, currentFromETHNativeBalance?.data?.result, currentFromETHTokenBalance.data],
+    [
+      currentFromCoin?.address,
+      currentFromCoin?.availableAmount,
+      currentFromCoin?.denom,
+      currentFromETHNativeBalance?.data?.result,
+      currentFromETHTokenBalance.data,
+    ],
   );
-  const currentFromETHDisplayAmount = useMemo(
-    () => toDisplayDenomAmount(currentFromETHAmount, currentFromCoin?.decimals || 0),
-    [currentFromCoin?.decimals, currentFromETHAmount],
+  const currentFromDisplayAmount = useMemo(
+    () => toDisplayDenomAmount(currentFromAmount, currentFromCoin?.decimals || 0),
+    [currentFromCoin?.decimals, currentFromAmount],
   );
 
   const currentToETHNativeBalance = useETHBalanceSWR(currentToChain?.line === 'ETHEREUM' ? currentToChain : undefined);
   const currentToETHTokenBalance = useTokenBalanceSWR(currentToChain?.line === 'ETHEREUM' ? currentToChain : undefined, currentToCoin);
 
-  const currentToETHAmount = useMemo(
+  const currentToAmount = useMemo(
     () =>
-      // NOTE 이거를 native기준으로 삼아도 되나?
-      isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', currentToCoin?.address)
+      currentToCoin?.denom
+        ? currentToCoin?.availableAmount || '0'
+        : isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', currentToCoin?.address)
         ? BigInt(currentToETHNativeBalance?.data?.result || '0').toString(10)
         : BigInt(currentToETHTokenBalance.data || '0').toString(10),
-    [currentToCoin?.address, currentToETHNativeBalance?.data?.result, currentToETHTokenBalance.data],
+    [currentToCoin?.address, currentToCoin?.availableAmount, currentToCoin?.denom, currentToETHNativeBalance?.data?.result, currentToETHTokenBalance.data],
   );
-  const currentToETHDisplayAmount = useMemo(
-    () => toDisplayDenomAmount(currentToETHAmount, currentToCoin?.decimals || 0),
-    [currentToCoin?.decimals, currentToETHAmount],
-  );
+
+  const currentToDisplayAmount = useMemo(() => toDisplayDenomAmount(currentToAmount, currentToCoin?.decimals || 0), [currentToCoin?.decimals, currentToAmount]);
 
   const filteredSquidFromTokenList: IntegratedSwapToken[] = useMemo(() => {
     if (currentSwapApi === 'squid') {
@@ -596,7 +602,6 @@ export default function Entry() {
       ];
     }
     if (currentSwapApi === '1inch' && oneinchFromTokenList.data) {
-      // NOTE 네이티브를 최상단으로 올리기?
       return currentToCoin
         ? [
             ...Object.values(oneinchFromTokenList.data.tokens).filter((item) => item.address !== currentToCoin.address && item.tags.includes('native')),
@@ -620,8 +625,24 @@ export default function Entry() {
             ),
           ];
     }
+    if (currentSwapApi === 'osmo') {
+      return availableSwapCoinList.map((item) => ({
+        ...item,
+        name: item.chainName,
+        coingeckoId: item.coinGeckoId,
+        logoURI: item.image,
+      }));
+    }
     return [];
-  }, [currentFromChain?.chainId, currentFromEthereumTokens, currentSwapApi, currentToCoin, filteredSquidTokenList, oneinchFromTokenList.data]);
+  }, [
+    availableSwapCoinList,
+    currentFromChain?.chainId,
+    currentFromEthereumTokens,
+    currentSwapApi,
+    currentToCoin,
+    filteredSquidTokenList,
+    oneinchFromTokenList.data,
+  ]);
 
   // FIXME 토큰 선,후 선택에 따라 토큰 리스팅에 영향을 줘서 이거 손 봐야할 듯
   const filteredSquidToTokenList: IntegratedSwapToken[] = useMemo(() => {
@@ -662,8 +683,24 @@ export default function Entry() {
             ),
           ];
     }
+    if (currentSwapApi === 'osmo') {
+      return availableSwapOutputCoinList.map((item) => ({
+        ...item,
+        name: item.chainName,
+        coingeckoId: item.coinGeckoId,
+        logoURI: item.image,
+      }));
+    }
     return [];
-  }, [currentSwapApi, oneinchToTokenList.data, filteredSquidTokenList, currentToChain?.chainId, currentFromCoin, currentToEthereumTokens]);
+  }, [
+    currentSwapApi,
+    oneinchToTokenList.data,
+    currentToChain?.chainId,
+    filteredSquidTokenList,
+    currentToEthereumTokens,
+    currentFromCoin,
+    availableSwapOutputCoinList,
+  ]);
   // const sampleparams = {
   //   fromChain: 1, // Goerli testnet
   //   fromToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // WETH on Goerli
@@ -752,7 +789,7 @@ export default function Entry() {
 
   useEffect(() => {
     if (!currentFromChain || !currentToChain) {
-      setCurrentSwapApi('');
+      setCurrentSwapApi(undefined);
     }
     if (currentFromChain?.supportedApi === 'squid' && currentToChain?.supportedApi === 'squid' && currentFromChain.chainId !== currentToChain.chainId) {
       setCurrentSwapApi('squid');
@@ -780,7 +817,7 @@ export default function Entry() {
           <SwapContainer>
             <SwapCoinContainer
               headerLeftText="From"
-              availableAmount={currentFromETHDisplayAmount}
+              availableAmount={currentFromDisplayAmount}
               coinAmountPrice={inputCoinAmountPrice}
               currentSelectedChain={currentFromChain}
               currentSelectedCoin={currentFromCoin}
@@ -831,7 +868,7 @@ export default function Entry() {
             </SwapCoinContainer>
             <SwapCoinContainer
               headerLeftText="To"
-              availableAmount={currentToETHDisplayAmount}
+              availableAmount={currentToDisplayAmount}
               coinAmountPrice={outputCoinAmountPrice}
               currentSelectedChain={currentToChain}
               currentSelectedCoin={currentToCoin}

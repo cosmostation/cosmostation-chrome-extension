@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
-import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
+import type { IntegratedSwapChain } from '~/types/swap/asset';
 
 import { ChainButton, ChainLeftContainer, ChainLeftImageContainer, ChainLeftTitleContainer, ChainRightContainer, ChainRightIconContainer } from './styled';
 

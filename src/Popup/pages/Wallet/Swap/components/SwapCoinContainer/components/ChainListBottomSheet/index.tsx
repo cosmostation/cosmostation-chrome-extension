@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
+import type { IntegratedSwapChain } from '~/types/swap/asset';
 
 import ChainItem from './components/ChainItem';
 import { AssetList, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';

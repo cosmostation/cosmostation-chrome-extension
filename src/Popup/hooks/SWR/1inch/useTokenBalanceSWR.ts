@@ -6,8 +6,7 @@ import type { AbiItem } from 'web3-utils';
 
 import { ERC20_ABI } from '~/constants/abi';
 import type { ERC20ContractBalanceOfPayload, ERC20ContractMethods } from '~/types/ethereum/contract';
-import type { IntegratedSwapEVMChain } from '~/types/swap/supportedChain';
-import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
+import type { IntegratedSwapEVMChain, IntegratedSwapToken } from '~/types/swap/asset';
 
 import { useCurrentAccount } from '../../useCurrent/useCurrentAccount';
 import { useAccounts } from '../cache/useAccounts';

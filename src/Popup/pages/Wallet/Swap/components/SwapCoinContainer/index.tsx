@@ -7,8 +7,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { shorterAddress } from '~/Popup/utils/string';
-import type { IntegratedSwapChain } from '~/types/swap/supportedChain';
-import type { IntegratedSwapToken } from '~/types/swap/supportedToken';
+import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 
 import ChainListBottomSheet from './components/ChainListBottomSheet';
 import SwapAssetButton from './components/SwapAssetButton';
