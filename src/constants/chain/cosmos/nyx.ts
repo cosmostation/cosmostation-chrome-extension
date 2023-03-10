@@ -4,6 +4,7 @@ import type { CosmosChain, CosmosFeeBaseDenom, CosmosGasRate } from '~/types/cha
 
 export const NYX: CosmosChain = {
   id: 'f7d12742-2a2f-49d0-a1cd-3c38092f670b',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'nyx',

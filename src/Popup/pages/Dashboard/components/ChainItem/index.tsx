@@ -129,9 +129,9 @@ export function ChainItemSkeleton({ chainName, imageURL, onClick }: ChainItemSke
   );
 }
 
-type ChainItemErrorProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'> & { onClickRetry?: () => void };
+type ChainItemErrorProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'> & { onClickRetry?: () => void; isActive?: boolean };
 
-export function ChainItemError({ chainName, imageURL, onClick, onClickRetry }: ChainItemErrorProps) {
+export function ChainItemError({ chainName, imageURL, isActive = true, onClick, onClickRetry }: ChainItemErrorProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { t } = useTranslation();
@@ -147,25 +147,31 @@ export function ChainItemError({ chainName, imageURL, onClick, onClickRetry }: C
               <Typography variant="h5">{chainName}</Typography>
             </LeftTextChainContainer>
             <LeftTextErrorContainer>
-              <Typography variant="h6">{t('pages.Dashboard.components.ChainItem.index.networkError')}</Typography>
+              {isActive ? (
+                <Typography variant="h6">{t('pages.Dashboard.components.ChainItem.index.networkError')}</Typography>
+              ) : (
+                <Typography variant="h6">{t('pages.Dashboard.components.ChainItem.index.inactiveNetwork')}</Typography>
+              )}
             </LeftTextErrorContainer>
           </LeftTextContainer>
         </LeftContainer>
         <RightContainer />
       </StyledButton>
       <RightButtonContainer>
-        <StyledIconButton
-          onClick={() => {
-            setIsLoading(true);
+        {isActive && (
+          <StyledIconButton
+            onClick={() => {
+              setIsLoading(true);
 
-            setTimeout(() => {
-              onClickRetry?.();
-              setIsLoading(false);
-            }, 500);
-          }}
-        >
-          <RetryIcon />
-        </StyledIconButton>
+              setTimeout(() => {
+                onClickRetry?.();
+                setIsLoading(false);
+              }, 500);
+            }}
+          >
+            <RetryIcon />
+          </StyledIconButton>
+        )}
       </RightButtonContainer>
       {isLoading && <StyledAbsoluteLoading size="2rem" />}
     </ButtonContainer>

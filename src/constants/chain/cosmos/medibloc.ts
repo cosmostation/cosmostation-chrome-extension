@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const MEDIBLOC: CosmosChain = {
   id: '1272070c-b1f0-455e-9bb7-ff434b5011e9',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'panacea-3',

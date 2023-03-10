@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const EVMOS: CosmosChain = {
   id: '086983eb-26dd-4792-a4bb-c8b280b854e3',
+  isActive: true,
   line: 'COSMOS',
   type: 'ETHERMINT',
   chainId: 'evmos_9001-2',

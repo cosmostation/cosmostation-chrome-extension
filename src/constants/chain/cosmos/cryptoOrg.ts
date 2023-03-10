@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const CRYPTO_ORG: CosmosChain = {
   id: 'b006dccc-ff1e-4c5a-95ad-94f313029d93',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'crypto-org-chain-mainnet-1',

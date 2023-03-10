@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const REGEN: CosmosChain = {
   id: '4df87360-9802-4418-a23b-22ef8a4d8cd4',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'regen-1',

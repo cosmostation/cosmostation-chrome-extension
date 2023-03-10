@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const DESMOS: CosmosChain = {
   id: 'd858b1e3-a202-4915-8699-214bb789077b',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'desmos-mainnet',

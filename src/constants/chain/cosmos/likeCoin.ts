@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const LIKE_COIN: CosmosChain = {
   id: '024316b6-fd43-4023-9dcc-9f1eafba6730',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'likecoin-mainnet-2',

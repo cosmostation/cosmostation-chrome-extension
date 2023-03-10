@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const STARNAME: CosmosChain = {
   id: '320cfa03-401d-44b5-a40a-0de7c0d705eb',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'iov-mainnet-ibc',

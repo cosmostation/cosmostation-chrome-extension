@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const OSMOSIS: CosmosChain = {
   id: 'd17852e4-351a-4b91-af44-358e5ed1dbf0',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'osmosis-1',

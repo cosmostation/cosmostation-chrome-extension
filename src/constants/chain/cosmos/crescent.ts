@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const CRESCENT: CosmosChain = {
   id: 'c4c9e553-24a2-487d-a3a9-106b0f70b4ce',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'crescent-1',

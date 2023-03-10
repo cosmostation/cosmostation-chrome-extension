@@ -97,7 +97,9 @@ export function CosmosChainItemError({ chain, resetErrorBoundary }: CosmosChainI
 
   const { chainName, imageURL } = chain;
 
-  return <ChainItemError onClick={handleOnClick} chainName={chainName} imageURL={imageURL} onClickRetry={() => resetErrorBoundary()} />;
+  return (
+    <ChainItemError onClick={handleOnClick} chainName={chainName} imageURL={imageURL} isActive={chain.isActive} onClickRetry={() => resetErrorBoundary()} />
+  );
 }
 
 export function CosmosChainLedgerCheck({ chain, children }: CosmosChainItemProps & { children: JSX.Element }) {

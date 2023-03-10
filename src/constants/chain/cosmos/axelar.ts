@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const AXELAR: CosmosChain = {
   id: 'ed524a0d-ba39-475b-9d0c-a9057deaf605',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'axelar-dojo-1',

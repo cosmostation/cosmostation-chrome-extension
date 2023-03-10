@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const LUM: CosmosChain = {
   id: '888c0bfe-3f2f-4387-ba94-14102522040f',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'lum-network-1',

@@ -587,6 +587,7 @@
       "components": {
         "ChainItem": {
           "index": {
+            "inactiveNetwork": "Inactive Network!",
             "networkError": "Network Error"
           }
         }
@@ -1211,6 +1212,9 @@
               "copied": "Copied",
               "delegated": "Delegated",
               "depositButton": "Deposit",
+              "inactiveNetwork": "Inactive Network!",
+              "inactiveNetworkDescription": "This network is no longer operational",
+              "inactiveNetworkSubDescription": "Note that Cosmostation Wallet is showing archived data only.",
               "incentive": "Incentive",
               "networkError": "Network Error",
               "reward": "Reward",

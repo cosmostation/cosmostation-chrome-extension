@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const ONOMY: CosmosChain = {
   id: '784e1edd-37bd-4e93-bc2e-4a2b03f7cbbe',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'onomy-mainnet-1',

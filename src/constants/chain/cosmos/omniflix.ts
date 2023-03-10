@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const OMNIFLIX: CosmosChain = {
   id: '21806ff6-d8ef-47d9-beaf-9077723e83f5',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'omniflixhub-1',

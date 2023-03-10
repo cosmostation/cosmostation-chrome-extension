@@ -50,6 +50,7 @@ import {
   FourthLineContainerItemLeft,
   FourthLineContainerItemRight,
   IconButtonContainer,
+  InActiveDescriptionContainer,
   SecondLineContainer,
   SecondLineLeftAbsoluteImageContainer,
   SecondLineLeftContainer,
@@ -694,24 +695,35 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <StyledRetryIconButton
-            onClick={() => {
-              setIsloading(true);
+          {chain.isActive ? (
+            <StyledRetryIconButton
+              onClick={() => {
+                setIsloading(true);
 
-              setTimeout(() => {
-                resetErrorBoundary();
-                setIsloading(false);
-              }, 500);
-            }}
-          >
-            <RetryIcon />
-          </StyledRetryIconButton>
+                setTimeout(() => {
+                  resetErrorBoundary();
+                  setIsloading(false);
+                }, 500);
+              }}
+            >
+              <RetryIcon />
+            </StyledRetryIconButton>
+          ) : (
+            <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.inactiveNetwork')}</Typography>
+          )}
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>
-        <ErrorDescriptionContainer>
-          <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.networkError')}</Typography>
-        </ErrorDescriptionContainer>
+        {chain.isActive ? (
+          <ErrorDescriptionContainer>
+            <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.networkError')}</Typography>
+          </ErrorDescriptionContainer>
+        ) : (
+          <InActiveDescriptionContainer>
+            <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.inactiveNetworkDescription')}</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.inactiveNetworkSubDescription')}</Typography>
+          </InActiveDescriptionContainer>
+        )}
       </ThirdLineContainer>
 
       <ButtonContainer sx={{ paddingBottom: '1.6rem' }}>

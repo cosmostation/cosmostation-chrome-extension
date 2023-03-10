@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const CERBERUS: CosmosChain = {
   id: 'a87b6f94-2968-4393-a2b0-21ecae5dfe09',
+  isActive: false,
   line: 'COSMOS',
   type: '',
   chainId: 'cerberus-chain-1',

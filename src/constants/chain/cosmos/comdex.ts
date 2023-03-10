@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const COMDEX: CosmosChain = {
   id: 'a688af06-d166-4835-8155-011ba6a76659',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'comdex-1',

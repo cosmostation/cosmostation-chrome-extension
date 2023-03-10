@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const BAND: CosmosChain = {
   id: 'c3e5474b-8cf7-467e-b6a8-706d2b694e5a',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'laozi-mainnet',

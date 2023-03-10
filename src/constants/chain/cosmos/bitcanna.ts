@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const BITCANNA: CosmosChain = {
   id: 'c5abe1b8-7b89-4e8b-bdc3-733a410a4486',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'bitcanna-1',

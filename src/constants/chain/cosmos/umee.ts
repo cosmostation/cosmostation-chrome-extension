@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const UMEE: CosmosChain = {
   id: '760481cc-5a53-42dd-a805-c7f38c363114',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'umee-1',

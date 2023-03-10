@@ -62,6 +62,7 @@ export default function Entry() {
       }
       const newChain: CosmosChain = {
         id: uuidv4(),
+        isActive: true,
         line: 'COSMOS',
         type: data.type ?? '',
         chainId: nodeInfo.node_info.network,

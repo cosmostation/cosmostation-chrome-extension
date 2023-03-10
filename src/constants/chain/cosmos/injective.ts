@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const INJECTIVE: CosmosChain = {
   id: 'a26df150-42e4-4712-86da-fa7239ff0c41',
+  isActive: true,
   line: 'COSMOS',
   type: 'ETHERMINT',
   chainId: 'injective-1',

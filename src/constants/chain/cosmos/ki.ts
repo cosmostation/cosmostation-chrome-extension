@@ -4,6 +4,7 @@ import type { CosmosChain } from '~/types/chain';
 
 export const KI: CosmosChain = {
   id: 'f850280f-316c-44ab-9624-c8d760dbca8c',
+  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'kichain-2',
