@@ -32,8 +32,8 @@ export default function Cosmos({ chain }: CosmosProps) {
         <Header />
       </HeaderContainer>
       <LedgerCheck>
-        <>
-          {chain.isActive ? (
+        {chain.isActive ? (
+          <>
             <NativeChainCardContainer>
               <ErrorBoundary
                 // eslint-disable-next-line react/no-unstable-nested-components
@@ -44,18 +44,18 @@ export default function Cosmos({ chain }: CosmosProps) {
                 </Suspense>
               </ErrorBoundary>
             </NativeChainCardContainer>
-          ) : (
-            <InActiveNativeChainCard chain={chain} isCustom={isCustom} />
-          )}
 
-          <BottomContainer>
-            <ErrorBoundary fallback={<Empty />}>
-              <Suspense fallback={null}>
-                <CoinList chain={chain} />
-              </Suspense>
-            </ErrorBoundary>
-          </BottomContainer>
-        </>
+            <BottomContainer>
+              <ErrorBoundary fallback={<Empty />}>
+                <Suspense fallback={null}>
+                  <CoinList chain={chain} />
+                </Suspense>
+              </ErrorBoundary>
+            </BottomContainer>
+          </>
+        ) : (
+          <InActiveNativeChainCard chain={chain} isCustom={isCustom} />
+        )}
       </LedgerCheck>
     </Container>
   );
