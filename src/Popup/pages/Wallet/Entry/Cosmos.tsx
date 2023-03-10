@@ -9,6 +9,7 @@ import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentA
 import type { CosmosChain } from '~/types/chain';
 
 import CoinList from '../components/cosmos/CoinList';
+import InActiveNativeChainCard from '../components/cosmos/InActiveNativeChainCard';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/cosmos/NativeChainCard';
 import LedgerCheck from '../components/LedgerCheck';
 import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
@@ -32,16 +33,21 @@ export default function Cosmos({ chain }: CosmosProps) {
       </HeaderContainer>
       <LedgerCheck>
         <>
-          <NativeChainCardContainer>
-            <ErrorBoundary
-              // eslint-disable-next-line react/no-unstable-nested-components
-              FallbackComponent={(props) => <NativeChainCardError chain={chain} isCustom={isCustom} {...props} />}
-            >
-              <Suspense fallback={<NativeChainCardSkeleton chain={chain} isCustom={isCustom} />}>
-                <NativeChainCard chain={chain} isCustom={isCustom} />
-              </Suspense>
-            </ErrorBoundary>
-          </NativeChainCardContainer>
+          {chain.isActive ? (
+            <NativeChainCardContainer>
+              <ErrorBoundary
+                // eslint-disable-next-line react/no-unstable-nested-components
+                FallbackComponent={(props) => <NativeChainCardError chain={chain} isCustom={isCustom} {...props} />}
+              >
+                <Suspense fallback={<NativeChainCardSkeleton chain={chain} isCustom={isCustom} />}>
+                  <NativeChainCard chain={chain} isCustom={isCustom} />
+                </Suspense>
+              </ErrorBoundary>
+            </NativeChainCardContainer>
+          ) : (
+            <InActiveNativeChainCard chain={chain} isCustom={isCustom} />
+          )}
+
           <BottomContainer>
             <ErrorBoundary fallback={<Empty />}>
               <Suspense fallback={null}>

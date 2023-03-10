@@ -19,6 +19,7 @@ import AptosChainItem, {
 } from '~/Popup/pages/Dashboard/components/ChainItem/components/AptosChainItem';
 import CosmosChainItem, {
   CosmosChainItemError,
+  CosmosChainItemInActive,
   CosmosChainItemSkeleton,
   CosmosChainLedgerCheck,
 } from '~/Popup/pages/Dashboard/components/ChainItem/components/CosmosChainItem';
@@ -123,20 +124,24 @@ export default function Entry() {
             )),
           )}
 
-          {cosmosChainList.map((item) => (
-            <CosmosChainLedgerCheck key={`${currentAccount.id}${item.chain.id}`} chain={item.chain}>
-              <ErrorBoundary
-                FallbackComponent={
-                  // eslint-disable-next-line react/no-unstable-nested-components
-                  (props) => <CosmosChainItemError {...props} chain={item.chain} />
-                }
-              >
-                <Suspense fallback={<CosmosChainItemSkeleton chain={item.chain} />}>
-                  <CosmosChainItem chain={item.chain} />
-                </Suspense>
-              </ErrorBoundary>
-            </CosmosChainLedgerCheck>
-          ))}
+          {cosmosChainList.map((item) =>
+            item.chain.isActive ? (
+              <CosmosChainLedgerCheck key={`${currentAccount.id}${item.chain.id}`} chain={item.chain}>
+                <ErrorBoundary
+                  FallbackComponent={
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    (props) => <CosmosChainItemError {...props} chain={item.chain} />
+                  }
+                >
+                  <Suspense fallback={<CosmosChainItemSkeleton chain={item.chain} />}>
+                    <CosmosChainItem chain={item.chain} />
+                  </Suspense>
+                </ErrorBoundary>
+              </CosmosChainLedgerCheck>
+            ) : (
+              <CosmosChainItemInActive chain={item.chain} />
+            ),
+          )}
 
           {aptosChainList.map((item) =>
             aptosNetworkList.map((network) => (

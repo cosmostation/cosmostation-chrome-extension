@@ -10,7 +10,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
+import ChainItem, { ChainItemError, ChainItemInActive, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
@@ -97,9 +97,21 @@ export function CosmosChainItemError({ chain, resetErrorBoundary }: CosmosChainI
 
   const { chainName, imageURL } = chain;
 
-  return (
-    <ChainItemError onClick={handleOnClick} chainName={chainName} imageURL={imageURL} isActive={chain.isActive} onClickRetry={() => resetErrorBoundary()} />
-  );
+  return <ChainItemError onClick={handleOnClick} chainName={chainName} imageURL={imageURL} onClickRetry={() => resetErrorBoundary()} />;
+}
+
+export function CosmosChainItemInActive({ chain }: CosmosChainItemProps) {
+  const { setCurrentChain } = useCurrentChain();
+  const { navigate } = useNavigate();
+
+  const handleOnClick = () => {
+    void setCurrentChain(chain);
+    navigate('/wallet');
+  };
+
+  const { chainName, imageURL } = chain;
+
+  return <ChainItemInActive onClick={handleOnClick} chainName={chainName} imageURL={imageURL} />;
 }
 
 export function CosmosChainLedgerCheck({ chain, children }: CosmosChainItemProps & { children: JSX.Element }) {

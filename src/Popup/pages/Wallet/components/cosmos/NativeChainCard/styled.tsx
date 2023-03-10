@@ -224,21 +224,6 @@ export const ErrorDescriptionContainer = styled('div')(({ theme }) => ({
   color: theme.accentColors.red,
 }));
 
-export const InActiveDescriptionContainer = styled('div')(({ theme }) => ({
-  color: theme.accentColors.red,
-
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-
-  textAlign: 'center',
-
-  rowGap: '0.3rem',
-
-  marginTop: '1.6rem',
-}));
-
 export const StyledAbsoluteLoading = styled(AbsoluteLoading)({
   borderRadius: '0.8rem',
 });

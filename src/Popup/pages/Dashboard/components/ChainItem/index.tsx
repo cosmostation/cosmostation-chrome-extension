@@ -129,9 +129,9 @@ export function ChainItemSkeleton({ chainName, imageURL, onClick }: ChainItemSke
   );
 }
 
-type ChainItemErrorProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'> & { onClickRetry?: () => void; isActive?: boolean };
+type ChainItemErrorProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'> & { onClickRetry?: () => void };
 
-export function ChainItemError({ chainName, imageURL, isActive = true, onClick, onClickRetry }: ChainItemErrorProps) {
+export function ChainItemError({ chainName, imageURL, onClick, onClickRetry }: ChainItemErrorProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { t } = useTranslation();
@@ -147,33 +147,53 @@ export function ChainItemError({ chainName, imageURL, isActive = true, onClick, 
               <Typography variant="h5">{chainName}</Typography>
             </LeftTextChainContainer>
             <LeftTextErrorContainer>
-              {isActive ? (
-                <Typography variant="h6">{t('pages.Dashboard.components.ChainItem.index.networkError')}</Typography>
-              ) : (
-                <Typography variant="h6">{t('pages.Dashboard.components.ChainItem.index.inactiveNetwork')}</Typography>
-              )}
+              <Typography variant="h6">{t('pages.Dashboard.components.ChainItem.index.networkError')}</Typography>
             </LeftTextErrorContainer>
           </LeftTextContainer>
         </LeftContainer>
         <RightContainer />
       </StyledButton>
       <RightButtonContainer>
-        {isActive && (
-          <StyledIconButton
-            onClick={() => {
-              setIsLoading(true);
+        <StyledIconButton
+          onClick={() => {
+            setIsLoading(true);
 
-              setTimeout(() => {
-                onClickRetry?.();
-                setIsLoading(false);
-              }, 500);
-            }}
-          >
-            <RetryIcon />
-          </StyledIconButton>
-        )}
+            setTimeout(() => {
+              onClickRetry?.();
+              setIsLoading(false);
+            }, 500);
+          }}
+        >
+          <RetryIcon />
+        </StyledIconButton>
       </RightButtonContainer>
       {isLoading && <StyledAbsoluteLoading size="2rem" />}
+    </ButtonContainer>
+  );
+}
+
+type ChainItemInActiveProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'>;
+
+export function ChainItemInActive({ chainName, imageURL, onClick }: ChainItemInActiveProps) {
+  const { t } = useTranslation();
+  return (
+    <ButtonContainer>
+      <StyledButton onClick={onClick}>
+        <LeftContainer>
+          <LeftImageContainer>
+            <Image src={imageURL} />
+          </LeftImageContainer>
+          <LeftTextContainer>
+            <LeftTextChainContainer>
+              <Typography variant="h5">{chainName}</Typography>
+            </LeftTextChainContainer>
+            <LeftTextErrorContainer>
+              <Typography variant="h6">{t('pages.Dashboard.components.ChainItem.index.inactiveNetwork')}</Typography>
+            </LeftTextErrorContainer>
+          </LeftTextContainer>
+        </LeftContainer>
+        <RightContainer />
+      </StyledButton>
     </ButtonContainer>
   );
 }
