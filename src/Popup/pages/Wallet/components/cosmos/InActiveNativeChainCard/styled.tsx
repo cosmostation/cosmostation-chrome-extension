@@ -87,20 +87,10 @@ export const SecondLineLeftTextContainer = styled('div')(({ theme }) => ({
 }));
 
 export const SecondLineRightContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
-
   color: theme.colors.text01,
 }));
 
-export const ThirdLineContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
-
-  color: theme.colors.text02,
-}));
+export const ThirdLineContainer = styled('div')({});
 
 export const ButtonContainer = styled('div')({
   display: 'flex',
