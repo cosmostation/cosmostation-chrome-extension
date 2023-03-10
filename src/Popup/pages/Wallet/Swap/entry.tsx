@@ -587,7 +587,7 @@ export default function Entry() {
 
   const currentToDisplayAmount = useMemo(() => toDisplayDenomAmount(currentToAmount, currentToCoin?.decimals || 0), [currentToCoin?.decimals, currentToAmount]);
 
-  const filteredSquidFromTokenList: IntegratedSwapToken[] = useMemo(() => {
+  const filteredFromTokenList: IntegratedSwapToken[] = useMemo(() => {
     if (currentSwapApi === 'squid') {
       return [
         ...filteredSquidTokenList(currentFromChain?.chainId).filter((item) => isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', item.address)),
@@ -645,7 +645,7 @@ export default function Entry() {
   ]);
 
   // FIXME 토큰 선,후 선택에 따라 토큰 리스팅에 영향을 줘서 이거 손 봐야할 듯
-  const filteredSquidToTokenList: IntegratedSwapToken[] = useMemo(() => {
+  const filteredToTokenList: IntegratedSwapToken[] = useMemo(() => {
     if (currentSwapApi === 'squid') {
       return [
         ...filteredSquidTokenList(currentToChain?.chainId).filter((item) => isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', item.address)),
@@ -718,37 +718,39 @@ export default function Entry() {
   // const testTxStatus = useSquidTxStatusSWR({ transactionId: '0x26b279240c73f5841eb9e0ce11b13ad280f4cf612c653b43bd9083672da63ec0' });
 
   const errorMessage = useMemo(() => {
-    if (!poolData.data || !poolsAssetData.data) {
-      return t('pages.Wallet.Swap.entry.networkError');
-    }
-    if (gt(currentInputBaseAmount, tokenBalanceIn || '0')) {
-      return t('pages.Wallet.Swap.entry.excessiveSwap');
-    }
-    if (!inputDisplayAmount || !gt(inputDisplayAmount, '0')) {
-      return t('pages.Wallet.Swap.entry.invalidAmount');
-    }
-    if (!gte(currentInputCoinDisplayAvailableAmount, inputDisplayAmount)) {
-      return t('pages.Wallet.Swap.entry.insufficientAmount');
-    }
-    if (inputCoin?.denom === currentFeeCoin.baseDenom) {
-      if (!gte(currentInputCoinDisplayAvailableAmount, plus(inputDisplayAmount, currentDisplayFeeAmount))) {
+    if (currentSwapApi === 'osmo') {
+      if (!poolData.data || !poolsAssetData.data) {
+        return t('pages.Wallet.Swap.entry.networkError');
+      }
+      if (gt(currentInputBaseAmount, tokenBalanceIn || '0')) {
+        return t('pages.Wallet.Swap.entry.excessiveSwap');
+      }
+      if (!inputDisplayAmount || !gt(inputDisplayAmount, '0')) {
+        return t('pages.Wallet.Swap.entry.invalidAmount');
+      }
+      if (!gte(currentInputCoinDisplayAvailableAmount, inputDisplayAmount)) {
         return t('pages.Wallet.Swap.entry.insufficientAmount');
       }
-      if (!gte(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
-        return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
+      if (inputCoin?.denom === currentFeeCoin.baseDenom) {
+        if (!gte(currentInputCoinDisplayAvailableAmount, plus(inputDisplayAmount, currentDisplayFeeAmount))) {
+          return t('pages.Wallet.Swap.entry.insufficientAmount');
+        }
+        if (!gte(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
+          return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
+        }
       }
-    }
-    if (gt(priceImpactPercent, 10)) {
-      return t('pages.Wallet.Swap.entry.invalidPriceImpact');
-    }
-    if (!gt(currentOutputDisplayAmount, 0)) {
-      return t('pages.Wallet.Swap.entry.invalidOutputAmount');
+      if (gt(priceImpactPercent, 10)) {
+        return t('pages.Wallet.Swap.entry.invalidPriceImpact');
+      }
+      if (!gt(currentOutputDisplayAmount, 0)) {
+        return t('pages.Wallet.Swap.entry.invalidOutputAmount');
+      }
     }
     return '';
   }, [
+    currentSwapApi,
     poolData.data,
     poolsAssetData.data,
-    currentOutputDisplayAmount,
     currentInputBaseAmount,
     tokenBalanceIn,
     inputDisplayAmount,
@@ -756,16 +758,17 @@ export default function Entry() {
     inputCoin?.denom,
     currentFeeCoin.baseDenom,
     priceImpactPercent,
+    currentOutputDisplayAmount,
     t,
     currentDisplayFeeAmount,
   ]);
 
   const warningMessage = useMemo(() => {
-    if (filteredSquidFromTokenList) {
+    if (filteredFromTokenList) {
       return t('pages.Wallet.Swap.entry.txSizeWarning');
     }
     return '';
-  }, [filteredSquidFromTokenList, t]);
+  }, [filteredFromTokenList, t]);
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -834,14 +837,14 @@ export default function Entry() {
               }}
               onClickCoin={(clickedCoin) => setCurrentFromCoin(clickedCoin)}
               availableChainList={availableFromChainList}
-              availableCoinList={filteredSquidFromTokenList}
+              availableCoinList={filteredFromTokenList}
               address={currentFromAddress}
               isChainSelected={!!currentFromChain && !!currentToChain}
             >
               <SwapCoinInputAmountContainer data-is-error>
                 <AmountInput
                   error
-                  helperText="Insufficient balance"
+                  helperText={gte(inputDisplayAmount, currentFromDisplayAmount) ? 'Insufficient balance' : ''}
                   endAdornment={
                     <InputAdornment position="end">
                       <MaxButton
@@ -885,7 +888,7 @@ export default function Entry() {
               }}
               onClickCoin={(clickedCoin) => setCurrentToCoin(clickedCoin)}
               availableChainList={availableToChainList}
-              availableCoinList={filteredSquidToTokenList}
+              availableCoinList={filteredToTokenList}
               address={currentToAddress}
               isChainSelected={!!currentFromChain && !!currentToChain}
             >
