@@ -102,7 +102,7 @@ export const ButtonContainer = styled('div')({
   columnGap: '0.8rem',
 });
 
-export const InActiveDescriptionContainer = styled('div')(({ theme }) => ({
+export const TerminatedDescriptionContainer = styled('div')(({ theme }) => ({
   color: theme.accentColors.red,
 
   display: 'flex',

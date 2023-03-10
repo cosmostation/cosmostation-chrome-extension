@@ -19,8 +19,8 @@ import AptosChainItem, {
 } from '~/Popup/pages/Dashboard/components/ChainItem/components/AptosChainItem';
 import CosmosChainItem, {
   CosmosChainItemError,
-  CosmosChainItemInActive,
   CosmosChainItemSkeleton,
+  CosmosChainItemTerminated,
   CosmosChainLedgerCheck,
 } from '~/Popup/pages/Dashboard/components/ChainItem/components/CosmosChainItem';
 import EthereumChainItem, {
@@ -126,7 +126,7 @@ export default function Entry() {
 
           {cosmosChainList.map((item) =>
             item.chain.isTerminated ? (
-              <CosmosChainItemInActive chain={item.chain} />
+              <CosmosChainItemTerminated chain={item.chain} />
             ) : (
               <CosmosChainLedgerCheck key={`${currentAccount.id}${item.chain.id}`} chain={item.chain}>
                 <ErrorBoundary

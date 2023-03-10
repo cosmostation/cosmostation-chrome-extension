@@ -18,7 +18,6 @@ import {
   FirstLineContainer,
   FirstLineLeftContainer,
   FirstLineRightContainer,
-  InActiveDescriptionContainer,
   SecondLineContainer,
   SecondLineLeftAbsoluteImageContainer,
   SecondLineLeftContainer,
@@ -26,6 +25,7 @@ import {
   SecondLineLeftTextContainer,
   SecondLineRightContainer,
   StyledIconButton,
+  TerminatedDescriptionContainer,
   ThirdLineContainer,
 } from './styled';
 
@@ -33,12 +33,12 @@ import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import SendIcon from '~/images/icons/Send.svg';
 
-type InActiveNativeChainCardProps = {
+type TerminatedNativeChainCardProps = {
   chain: CosmosChain;
   isCustom?: boolean;
 };
 
-export default function InActiveNativeChainCard({ chain, isCustom = false }: InActiveNativeChainCardProps) {
+export default function TerminatedNativeChainCard({ chain, isCustom = false }: TerminatedNativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
 
   const accounts = useAccounts(true);
@@ -56,7 +56,7 @@ export default function InActiveNativeChainCard({ chain, isCustom = false }: InA
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
-      enqueueSnackbar(t('pages.Wallet.components.cosmos.InActiveNativeChainCard.index.copied'));
+      enqueueSnackbar(t('pages.Wallet.components.cosmos.TerminatedNativeChainCard.index.copied'));
     }
   };
 
@@ -82,22 +82,22 @@ export default function InActiveNativeChainCard({ chain, isCustom = false }: InA
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <Typography variant="h6">{t('pages.Wallet.components.cosmos.InActiveNativeChainCard.index.inactiveNetwork')}</Typography>
+          <Typography variant="h6">{t('pages.Wallet.components.cosmos.TerminatedNativeChainCard.index.inactiveNetwork')}</Typography>
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>
-        <InActiveDescriptionContainer>
-          <Typography variant="h6">{t('pages.Wallet.components.cosmos.InActiveNativeChainCard.index.inactiveNetworkDescription')}</Typography>
-          <Typography variant="h6">{t('pages.Wallet.components.cosmos.InActiveNativeChainCard.index.inactiveNetworkSubDescription')}</Typography>
-        </InActiveDescriptionContainer>
+        <TerminatedDescriptionContainer>
+          <Typography variant="h6">{t('pages.Wallet.components.cosmos.TerminatedNativeChainCard.index.inactiveNetworkDescription')}</Typography>
+          <Typography variant="h6">{t('pages.Wallet.components.cosmos.TerminatedNativeChainCard.index.inactiveNetworkSubDescription')}</Typography>
+        </TerminatedDescriptionContainer>
       </ThirdLineContainer>
 
       <ButtonContainer sx={{ paddingBottom: '1.6rem' }}>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.cosmos.InActiveNativeChainCard.index.depositButton')}
+          {t('pages.Wallet.components.cosmos.TerminatedNativeChainCard.index.depositButton')}
         </Button>
         <Button Icon={SendIcon} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.cosmos.InActiveNativeChainCard.index.sendButton')}
+          {t('pages.Wallet.components.cosmos.TerminatedNativeChainCard.index.sendButton')}
         </Button>
       </ButtonContainer>
     </Container>

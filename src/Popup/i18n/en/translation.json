@@ -1204,16 +1204,6 @@
               "importTokenButton": "Import token"
             }
           },
-          "InActiveNativeChainCard": {
-            "index": {
-              "copied": "Copied",
-              "depositButton": "Deposit",
-              "inactiveNetwork": "Inactive Network!",
-              "inactiveNetworkDescription": "This network is no longer operational",
-              "inactiveNetworkSubDescription": "Note that Cosmostation Wallet is showing archived data only.",
-              "sendButton": "Send"
-            }
-          },
           "NativeChainCard": {
             "index": {
               "available": "Available",
@@ -1228,6 +1218,16 @@
               "sendButton": "Send",
               "unbonding": "Unbonding",
               "vesting": "Vesting"
+            }
+          },
+          "TerminatedNativeChainCard": {
+            "index": {
+              "copied": "Copied",
+              "depositButton": "Deposit",
+              "inactiveNetwork": "Inactive Network!",
+              "inactiveNetworkDescription": "This network is no longer operational",
+              "inactiveNetworkSubDescription": "Note that Cosmostation Wallet is showing archived data only.",
+              "sendButton": "Send"
             }
           }
         },

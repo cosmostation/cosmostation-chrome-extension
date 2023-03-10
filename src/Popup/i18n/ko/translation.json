@@ -1204,16 +1204,6 @@
               "importTokenButton": "토큰 가져오기"
             }
           },
-          "InActiveNativeChainCard": {
-            "index": {
-              "copied": "복사 되었습니다.",
-              "depositButton": "입금",
-              "inactiveNetwork": "비활성화된 네트워크!",
-              "inactiveNetworkDescription": "이 네트워크는 더 이상 작동하지 않습니다",
-              "inactiveNetworkSubDescription": "코스모스테이션 월렛은 보관된 데이터만 보여드리고 있으니 참고하세요.",
-              "sendButton": "보내기"
-            }
-          },
           "NativeChainCard": {
             "index": {
               "available": "전송 가능 수량",
@@ -1228,6 +1218,16 @@
               "sendButton": "보내기",
               "unbonding": "위임 해제 수량",
               "vesting": "위임 가능 수량"
+            }
+          },
+          "TerminatedNativeChainCard": {
+            "index": {
+              "copied": "복사 되었습니다.",
+              "depositButton": "입금",
+              "inactiveNetwork": "비활성화된 네트워크!",
+              "inactiveNetworkDescription": "이 네트워크는 더 이상 작동하지 않습니다",
+              "inactiveNetworkSubDescription": "코스모스테이션 월렛은 보관된 데이터만 보여드리고 있으니 참고하세요.",
+              "sendButton": "보내기"
             }
           }
         },

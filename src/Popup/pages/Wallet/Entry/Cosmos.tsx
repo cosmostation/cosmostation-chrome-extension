@@ -9,8 +9,8 @@ import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentA
 import type { CosmosChain } from '~/types/chain';
 
 import CoinList from '../components/cosmos/CoinList';
-import InActiveNativeChainCard from '../components/cosmos/InActiveNativeChainCard';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/cosmos/NativeChainCard';
+import TerminatedNativeChainCard from '../components/cosmos/TerminatedNativeChainCard';
 import LedgerCheck from '../components/LedgerCheck';
 import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
 
@@ -33,7 +33,7 @@ export default function Cosmos({ chain }: CosmosProps) {
       </HeaderContainer>
       <LedgerCheck>
         {chain.isTerminated ? (
-          <InActiveNativeChainCard chain={chain} isCustom={isCustom} />
+          <TerminatedNativeChainCard chain={chain} isCustom={isCustom} />
         ) : (
           <>
             <NativeChainCardContainer>

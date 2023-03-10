@@ -172,9 +172,9 @@ export function ChainItemError({ chainName, imageURL, onClick, onClickRetry }: C
   );
 }
 
-type ChainItemInActiveProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'>;
+type ChainItemTerminatedProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'>;
 
-export function ChainItemInActive({ chainName, imageURL, onClick }: ChainItemInActiveProps) {
+export function ChainItemTerminated({ chainName, imageURL, onClick }: ChainItemTerminatedProps) {
   const { t } = useTranslation();
   return (
     <ButtonContainer>
