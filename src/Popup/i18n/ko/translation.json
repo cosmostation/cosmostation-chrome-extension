@@ -1131,6 +1131,7 @@
             },
             "index": {
               "availableAmount": "사용 가능 수량",
+              "balance": "보유 수량",
               "selectChain": "체인 선택하기",
               "selectCoin": "토큰 선택하기"
             }

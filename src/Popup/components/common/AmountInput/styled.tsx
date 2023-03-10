@@ -87,6 +87,8 @@ export const HelperContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
   alignItems: 'center',
+
+  height: '1.5rem',
 });
 
 export const HelperTextContainer = styled('div')(({ theme }) => ({

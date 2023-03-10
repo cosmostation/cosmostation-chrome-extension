@@ -92,7 +92,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
             </NumberText>
           </FooterLeftContainer>
           <FooterRightContainer>
-            <Typography variant="h6"> {t('pages.Wallet.Swap.components.SwapCoinContainer.index.availableAmount')} :</Typography>
+            <Typography variant="h6"> {t('pages.Wallet.Swap.components.SwapCoinContainer.index.balance')} :</Typography>
             &nbsp;
             <Tooltip title={remainder.availableAmount || ''} arrow placement="top">
               <span>

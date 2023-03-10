@@ -10,13 +10,13 @@ export default function AmountInput({ helperText, ...remainder }: AmountInputPro
   return (
     <>
       <StyledTextField {...remainder} />
-      {helperText && (
-        <HelperContainer>
+      <HelperContainer>
+        {helperText && (
           <HelperTextContainer>
             <Typography variant="h6">{helperText}</Typography>
           </HelperTextContainer>
-        </HelperContainer>
-      )}
+        )}
+      </HelperContainer>
     </>
   );
 }

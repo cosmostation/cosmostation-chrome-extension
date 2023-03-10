@@ -1,3 +1,4 @@
+import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import IconButton from '~/Popup/components/common/IconButton';
@@ -169,3 +170,9 @@ export const BottomContainer = styled('div')({
 export const SideButton = styled(IconButton)({
   padding: '0',
 });
+
+export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
+  '&.MuiCircularProgress-root': {
+    color: theme.accentColors.purple01,
+  },
+}));

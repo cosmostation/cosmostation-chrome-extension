@@ -1131,6 +1131,7 @@
             },
             "index": {
               "availableAmount": "Available",
+              "balance": "Balance",
               "selectChain": "Select chain",
               "selectCoin": "Select token"
             }

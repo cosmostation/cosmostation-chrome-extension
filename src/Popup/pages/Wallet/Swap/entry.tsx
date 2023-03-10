@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
+import type { GetRoute } from '@0xsquid/sdk';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { ONEINCH_SUPPORTED_CHAINS } from '~/constants/1inch';
@@ -30,6 +31,7 @@ import { usePoolSWR } from '~/Popup/hooks/SWR/cosmos/usePoolsSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useBalanceSWR as useETHBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/squid/useSquidAssetsSWR';
+import { useSquidRouteSWR } from '~/Popup/hooks/SWR/squid/useSquidRouteSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -38,7 +40,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
-import { calcOutGivenIn, calcSpotPrice, decimalScaling } from '~/Popup/utils/osmosis';
+import { calcOutGivenIn, calcSpotPrice } from '~/Popup/utils/osmosis';
 import { protoTx } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { AssetV3 } from '~/types/cosmos/asset';
@@ -53,6 +55,7 @@ import {
   Container,
   MaxButton,
   SideButton,
+  StyledCircularProgress,
   SwapCoinInputAmountContainer,
   SwapCoinOutputAmountContainer,
   SwapContainer,
@@ -103,17 +106,24 @@ export default function Entry() {
   );
   const uniquePoolDenomList = poolDenomList.filter((denom, idx, arr) => arr.findIndex((item) => item === denom) === idx);
 
-  const [inputCoinBaseDenom, setInputCoinBaseDenom] = useState<string>(chain.baseDenom);
-  const [outputCoinBaseDenom, setOutputCoinBaseDenom] = useState<string>('');
+  const [currentSwapApi, setCurrentSwapApi] = useState<IntegratedSwapAPI>();
+
+  const [currentFromChain, setCurrentFromChain] = useState<IntegratedSwapChain>();
+  const [currentToChain, setCurrentToChain] = useState<IntegratedSwapChain>();
+
+  const [isFromSelected, setIsFromSelected] = useState<boolean>();
+
+  const [currentFromCoin, setCurrentFromCoin] = useState<IntegratedSwapToken>();
+  const [currentToCoin, setCurrentToCoin] = useState<IntegratedSwapToken>();
 
   const currentPool = useMemo(
     () =>
       poolsAssetData.data?.find(
         (item) =>
-          (isEqualsIgnoringCase(item.adenom, outputCoinBaseDenom) && isEqualsIgnoringCase(item.bdenom, inputCoinBaseDenom)) ||
-          (isEqualsIgnoringCase(item.adenom, inputCoinBaseDenom) && isEqualsIgnoringCase(item.bdenom, outputCoinBaseDenom)),
+          (isEqualsIgnoringCase(item.adenom, currentToCoin?.denom) && isEqualsIgnoringCase(item.bdenom, currentFromCoin?.denom)) ||
+          (isEqualsIgnoringCase(item.adenom, currentFromCoin?.denom) && isEqualsIgnoringCase(item.bdenom, currentToCoin?.denom)),
       ),
-    [inputCoinBaseDenom, outputCoinBaseDenom, poolsAssetData.data],
+    [currentFromCoin?.denom, currentToCoin?.denom, poolsAssetData.data],
   );
 
   const availableSwapCoinList: ChainAssetInfo[] = useMemo(() => {
@@ -135,29 +145,20 @@ export default function Entry() {
   }, [balance, currentChainAssets.data, uniquePoolDenomList]);
 
   const [inputDisplayAmount, setInputDisplayAmount] = useState<string>('');
+  // NOTE 디바운싱 후 쿼리가 날라가서 디바운싱 타임 동안 프로그레스가 안보이는 문제발생
+  const [debouncedInputDisplayAmount] = useDebounce(inputDisplayAmount, 400);
 
   const availableSwapOutputCoinList = useMemo(
     () =>
       availableSwapCoinList.filter((coin) =>
         poolsAssetData.data?.find(
           (item) =>
-            (isEqualsIgnoringCase(item.adenom, coin.denom) && isEqualsIgnoringCase(item.bdenom, inputCoinBaseDenom)) ||
-            (isEqualsIgnoringCase(item.adenom, inputCoinBaseDenom) && isEqualsIgnoringCase(item.bdenom, coin.denom)),
+            (isEqualsIgnoringCase(item.adenom, coin.denom) && isEqualsIgnoringCase(item.bdenom, currentFromCoin?.denom)) ||
+            (isEqualsIgnoringCase(item.adenom, currentFromCoin?.denom) && isEqualsIgnoringCase(item.bdenom, coin.denom)),
         ),
       ),
-    [availableSwapCoinList, inputCoinBaseDenom, poolsAssetData.data],
+    [availableSwapCoinList, currentFromCoin?.denom, poolsAssetData.data],
   );
-
-  const inputCoin = useMemo(
-    () => availableSwapCoinList.find((item) => isEqualsIgnoringCase(item.denom, inputCoinBaseDenom)),
-    [availableSwapCoinList, inputCoinBaseDenom],
-  );
-  const outputCoin = useMemo(
-    () => availableSwapOutputCoinList.find((item) => isEqualsIgnoringCase(item.denom, outputCoinBaseDenom)),
-    [availableSwapOutputCoinList, outputCoinBaseDenom],
-  );
-
-  const currentInputBaseAmount = useMemo(() => toBaseDenomAmount(inputDisplayAmount || 0, inputCoin?.decimals || 0), [inputCoin?.decimals, inputDisplayAmount]);
 
   const currentPoolId = useMemo(() => currentPool?.id, [currentPool?.id]);
 
@@ -177,69 +178,34 @@ export default function Entry() {
   }, [poolData.data]);
 
   const tokenBalanceIn = useMemo(
-    () => poolAssetsTokenList?.find((item) => isEqualsIgnoringCase(item.denom, inputCoinBaseDenom))?.amount,
-    [inputCoinBaseDenom, poolAssetsTokenList],
+    () => poolAssetsTokenList?.find((item) => isEqualsIgnoringCase(item.denom, currentFromCoin?.denom))?.amount,
+    [currentFromCoin?.denom, poolAssetsTokenList],
   );
 
   const tokenWeightIn = useMemo(
     () =>
       poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE
-        ? poolData.data.pool.pool_assets.find((item) => isEqualsIgnoringCase(item.token.denom, inputCoinBaseDenom))?.weight
+        ? poolData.data.pool.pool_assets.find((item) => isEqualsIgnoringCase(item.token.denom, currentFromCoin?.denom))?.weight
         : undefined,
-    [inputCoinBaseDenom, poolData.data],
+    [currentFromCoin?.denom, poolData.data],
   );
 
   const tokenBalanceOut = useMemo(
-    () => poolAssetsTokenList?.find((item) => isEqualsIgnoringCase(item.denom, outputCoinBaseDenom))?.amount,
-    [outputCoinBaseDenom, poolAssetsTokenList],
+    () => poolAssetsTokenList?.find((item) => isEqualsIgnoringCase(item.denom, currentToCoin?.denom))?.amount,
+    [currentToCoin?.denom, poolAssetsTokenList],
   );
 
   const tokenWeightOut = useMemo(
     () =>
       poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE
-        ? poolData.data.pool.pool_assets.find((item) => isEqualsIgnoringCase(item.token.denom, outputCoinBaseDenom))?.weight
+        ? poolData.data.pool.pool_assets.find((item) => isEqualsIgnoringCase(item.token.denom, currentToCoin?.denom))?.weight
         : undefined,
-    [outputCoinBaseDenom, poolData.data],
+    [currentToCoin?.denom, poolData.data],
   );
 
   const scalingFactors = useMemo(
     () => (poolData.data && poolData.data.pool['@type'] === STABLE_POOL_TYPE ? poolData.data.pool.scaling_factors : undefined),
     [poolData.data],
-  );
-
-  const currentOutputBaseAmount = useMemo(() => {
-    try {
-      return calcOutGivenIn(
-        currentInputBaseAmount,
-        swapFeeRate,
-        poolAssetsTokenList,
-        tokenBalanceIn,
-        tokenWeightIn,
-        tokenBalanceOut,
-        tokenWeightOut,
-        inputCoin?.denom,
-        outputCoin?.denom,
-        scalingFactors,
-      );
-    } catch {
-      return '0';
-    }
-  }, [
-    currentInputBaseAmount,
-    inputCoin?.denom,
-    outputCoin?.denom,
-    poolAssetsTokenList,
-    scalingFactors,
-    swapFeeRate,
-    tokenBalanceIn,
-    tokenBalanceOut,
-    tokenWeightIn,
-    tokenWeightOut,
-  ]);
-
-  const currentOutputDisplayAmount = useMemo(
-    () => toDisplayDenomAmount(currentOutputBaseAmount, inputDisplayAmount ? outputCoin?.decimals || 0 : 0),
-    [currentOutputBaseAmount, inputDisplayAmount, outputCoin?.decimals],
   );
 
   const beforeSpotPriceInOverOut = useMemo(() => {
@@ -251,169 +217,46 @@ export default function Entry() {
         tokenWeightIn,
         tokenBalanceOut,
         tokenWeightOut,
-        inputCoin?.denom,
-        outputCoin?.denom,
+        currentToCoin?.denom,
+        currentFromCoin?.denom,
         scalingFactors,
       );
     } catch {
       return '0';
     }
-  }, [inputCoin?.denom, outputCoin?.denom, poolAssetsTokenList, scalingFactors, swapFeeRate, tokenBalanceIn, tokenBalanceOut, tokenWeightIn, tokenWeightOut]);
+  }, [
+    currentToCoin?.denom,
+    currentFromCoin?.denom,
+    poolAssetsTokenList,
+    scalingFactors,
+    swapFeeRate,
+    tokenBalanceIn,
+    tokenBalanceOut,
+    tokenWeightIn,
+    tokenWeightOut,
+  ]);
 
-  const outputAmountOf1Coin = useMemo(() => {
-    try {
-      const beforeSpotPriceWithoutSwapFeeInOverOutDec = times(beforeSpotPriceInOverOut, minus(1, swapFeeRate));
-      const multiplicationInOverOut = minus(outputCoin?.decimals || 0, inputCoin?.decimals || 0);
-
-      return multiplicationInOverOut === '0'
-        ? divide(1, beforeSpotPriceWithoutSwapFeeInOverOutDec)
-        : decimalScaling(divide(1, beforeSpotPriceWithoutSwapFeeInOverOutDec, 18), Number(multiplicationInOverOut), outputCoin?.decimals);
-    } catch {
-      return '0';
-    }
-  }, [beforeSpotPriceInOverOut, inputCoin?.decimals, outputCoin?.decimals, swapFeeRate]);
-
-  const priceImpact = useMemo(() => {
-    try {
-      const effective = divide(currentInputBaseAmount, currentOutputBaseAmount);
-      return minus(divide(effective, beforeSpotPriceInOverOut), '1');
-    } catch {
-      return '0';
-    }
-  }, [currentInputBaseAmount, currentOutputBaseAmount, beforeSpotPriceInOverOut]);
-
-  const priceImpactPercent = useMemo(() => times(priceImpact, '100'), [priceImpact]);
-
-  const currentInputCoinAvailableAmount = useMemo(() => inputCoin?.availableAmount || '0', [inputCoin]);
+  const currentInputCoinAvailableAmount = useMemo(() => currentFromCoin?.availableAmount || '0', [currentFromCoin]);
 
   const currentInputCoinDisplayAvailableAmount = useMemo(
-    () => toDisplayDenomAmount(currentInputCoinAvailableAmount, inputCoin?.decimals || 0),
-    [currentInputCoinAvailableAmount, inputCoin],
+    () => toDisplayDenomAmount(currentInputCoinAvailableAmount, currentFromCoin?.decimals || 0),
+    [currentInputCoinAvailableAmount, currentFromCoin],
   );
 
   const currentFeeCoin = chain;
 
   const swapCoin = useCallback(() => {
-    const tmpInputCoinBaseDenom = inputCoinBaseDenom;
-    setInputCoinBaseDenom(outputCoinBaseDenom);
-    setOutputCoinBaseDenom(tmpInputCoinBaseDenom);
+    // NOTE 추후 구현
+    // const tmpInputCoinBaseDenom = currentFromCoin?.denom;
+    // setInputCoinBaseDenom(currentToCoin?.denom || '');
+    // setOutputCoinBaseDenom(tmpInputCoinBaseDenom);
     setInputDisplayAmount('');
-  }, [inputCoinBaseDenom, outputCoinBaseDenom]);
-
-  const tokenOutMinAmount = useMemo(
-    () => (currentSlippage && currentOutputBaseAmount ? minus(currentOutputBaseAmount, times(currentOutputBaseAmount, divide(currentSlippage, 100))) : '0'),
-    [currentSlippage, currentOutputBaseAmount],
-  );
-
-  const tokenOutMinDisplayAmount = useMemo(() => toDisplayDenomAmount(tokenOutMinAmount, outputCoin?.decimals || 0), [outputCoin?.decimals, tokenOutMinAmount]);
+  }, []);
 
   const [isOpenSlippageDialog, setIsOpenSlippageDialog] = useState(false);
 
-  const inputCoinPrice = useMemo(
-    () => (inputCoin?.coinGeckoId && coinGeckoPrice.data?.[inputCoin?.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoPrice.data, inputCoin?.coinGeckoId],
-  );
-  const outputCoinPrice = useMemo(
-    () => (outputCoin?.coinGeckoId && coinGeckoPrice.data?.[outputCoin?.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoPrice.data, outputCoin?.coinGeckoId],
-  );
-
-  const inputCoinAmountPrice = useMemo(() => times(inputDisplayAmount || '0', inputCoinPrice), [inputDisplayAmount, inputCoinPrice]);
-
-  const outputCoinAmountPrice = useMemo(() => times(currentOutputDisplayAmount || '0', outputCoinPrice), [currentOutputDisplayAmount, outputCoinPrice]);
-
-  const memoizedSwapAminoTx = useMemo(() => {
-    if (inputDisplayAmount && account.data?.value.account_number) {
-      const sequence = String(account.data?.value.sequence || '0');
-
-      return {
-        account_number: String(account.data.value.account_number),
-        sequence,
-        chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
-        fee: { amount: [{ amount: '1', denom: currentFeeCoin.baseDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
-        memo: '',
-        msgs: [
-          {
-            type: 'osmosis/gamm/swap-exact-amount-in',
-            value: {
-              routes: [
-                {
-                  pool_id: currentPoolId,
-                  token_out_denom: outputCoinBaseDenom,
-                },
-              ],
-              sender: address,
-              token_in: {
-                amount: currentInputBaseAmount,
-                denom: inputCoinBaseDenom,
-              },
-              token_out_min_amount: fix(tokenOutMinAmount, 0),
-            },
-          },
-        ],
-      };
-    }
-
-    return undefined;
-  }, [
-    account.data?.value.account_number,
-    account.data?.value.sequence,
-    address,
-    chain.chainId,
-    currentFeeCoin.baseDenom,
-    currentInputBaseAmount,
-    currentPoolId,
-    inputCoinBaseDenom,
-    inputDisplayAmount,
-    nodeInfo.data?.node_info?.network,
-    outputCoinBaseDenom,
-    tokenOutMinAmount,
-  ]);
-
-  const [swapAminoTx] = useDebounce(memoizedSwapAminoTx, 700);
-
-  const swapProtoTx = useMemo(() => {
-    if (swapAminoTx) {
-      return protoTx(swapAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
-    }
-    return null;
-  }, [chain, swapAminoTx]);
-
-  const simulate = useSimulateSWR({ chain, txBytes: swapProtoTx?.tx_bytes });
-
-  const simulatedGas = useMemo(
-    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
-    [chain, simulate.data?.gas_info?.gas_used],
-  );
-
-  const currentGas = useMemo(() => simulatedGas || COSMOS_DEFAULT_SWAP_GAS, [simulatedGas]);
-
-  const currentFeeAmount = useMemo(() => times(currentGas, chain.gasRate.low), [chain.gasRate.low, currentGas]);
-
-  const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
-
-  const currentDisplayFeeAmount = toDisplayDenomAmount(currentCeilFeeAmount, chain.decimals);
-
-  const currentDisplaySwapFeeAmount = useMemo(() => (inputDisplayAmount ? times(inputDisplayAmount, swapFeeRate) : '0'), [inputDisplayAmount, swapFeeRate]);
-
-  const maxDisplayAmount = useMemo(() => {
-    const maxAmount = minus(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount);
-    if (isEqualsIgnoringCase(inputCoin?.denom, currentFeeCoin.baseDenom)) {
-      return gt(maxAmount, '0') ? maxAmount : '0';
-    }
-
-    return currentInputCoinDisplayAvailableAmount;
-  }, [currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount, inputCoin?.denom, currentFeeCoin.baseDenom]);
-
-  const swapFeePrice = useMemo(() => times(inputCoinPrice, currentDisplaySwapFeeAmount), [inputCoinPrice, currentDisplaySwapFeeAmount]);
-
   // NOTE Squid SDK Test codes
   const { squidChainList, filteredSquidTokenList } = useSquidAssetsSWR();
-
-  const [currentSwapApi, setCurrentSwapApi] = useState<IntegratedSwapAPI>();
-
-  const [currentFromChain, setCurrentFromChain] = useState<IntegratedSwapChain>();
-  const [currentToChain, setCurrentToChain] = useState<IntegratedSwapChain>();
 
   const currentFromAddress = useMemo(
     () => (currentFromChain ? accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentFromChain.addressId] || '' : ''),
@@ -424,15 +267,9 @@ export default function Entry() {
     [accounts?.data, currentAccount.id, currentToChain],
   );
 
-  const [isFromSelected, setIsFromSelected] = useState<boolean>();
-
-  const [currentFromCoin, setCurrentFromCoin] = useState<IntegratedSwapToken>();
-  const [currentToCoin, setCurrentToCoin] = useState<IntegratedSwapToken>();
-
   // FIXME unsupported chains filtering logc refactor
 
   // TODO 스왑 후에는 스왑해서 나온 토큰을 자동으로 추가하기
-  // TODO 토큰 amount 가져오기
 
   const availableFromChainList: IntegratedSwapChain[] = useMemo(() => {
     const exceptedEVMChainIds = ['42220', '1284'];
@@ -552,7 +389,7 @@ export default function Entry() {
   const currentFromETHNativeBalance = useETHBalanceSWR(currentFromChain?.line === 'ETHEREUM' ? currentFromChain : undefined);
   const currentFromETHTokenBalance = useTokenBalanceSWR(currentFromChain?.line === 'ETHEREUM' ? currentFromChain : undefined, currentFromCoin);
 
-  const currentFromAmount = useMemo(
+  const currentFromBalance = useMemo(
     () =>
       currentFromCoin?.denom
         ? currentFromCoin?.availableAmount || '0'
@@ -567,15 +404,15 @@ export default function Entry() {
       currentFromETHTokenBalance.data,
     ],
   );
-  const currentFromDisplayAmount = useMemo(
-    () => toDisplayDenomAmount(currentFromAmount, currentFromCoin?.decimals || 0),
-    [currentFromCoin?.decimals, currentFromAmount],
+  const currentFromDisplayBalance = useMemo(
+    () => toDisplayDenomAmount(currentFromBalance, currentFromCoin?.decimals || 0),
+    [currentFromCoin?.decimals, currentFromBalance],
   );
 
   const currentToETHNativeBalance = useETHBalanceSWR(currentToChain?.line === 'ETHEREUM' ? currentToChain : undefined);
   const currentToETHTokenBalance = useTokenBalanceSWR(currentToChain?.line === 'ETHEREUM' ? currentToChain : undefined, currentToCoin);
 
-  const currentToAmount = useMemo(
+  const currentToBalance = useMemo(
     () =>
       currentToCoin?.denom
         ? currentToCoin?.availableAmount || '0'
@@ -585,7 +422,10 @@ export default function Entry() {
     [currentToCoin?.address, currentToCoin?.availableAmount, currentToCoin?.denom, currentToETHNativeBalance?.data?.result, currentToETHTokenBalance.data],
   );
 
-  const currentToDisplayAmount = useMemo(() => toDisplayDenomAmount(currentToAmount, currentToCoin?.decimals || 0), [currentToCoin?.decimals, currentToAmount]);
+  const currentToDisplayBalance = useMemo(
+    () => toDisplayDenomAmount(currentToBalance, currentToCoin?.decimals || 0),
+    [currentToCoin?.decimals, currentToBalance],
+  );
 
   const filteredFromTokenList: IntegratedSwapToken[] = useMemo(() => {
     if (currentSwapApi === 'squid') {
@@ -701,19 +541,224 @@ export default function Entry() {
     currentFromCoin,
     availableSwapOutputCoinList,
   ]);
-  // const sampleparams = {
-  //   fromChain: 1, // Goerli testnet
-  //   fromToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // WETH on Goerli
-  //   fromAmount: '50000000000000000', // 0.05 WETH
-  //   toChain: 43114, // Avalanche Fuji Testnet
-  //   toToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // aUSDC on Avalanche Fuji Testnet
-  //   toAddress: '0xA9b4823ec2718Fb09BD5FC21323B2BE5DD0aDDf6', // the recipient of the trade
-  //   slippage: 1.0, // 1.00 = 1% max slippage across the entire route
-  //   enableForecall: true, // instant execution service, defaults to true
-  //   quoteOnly: false, // optional, defaults to false
-  // };
 
-  // const testSquidRoute = useSquidRouteSWR(sampleparams);
+  const fromTokenPrice = useMemo(
+    () => (currentFromCoin?.coingeckoId && coinGeckoPrice.data?.[currentFromCoin?.coingeckoId]?.[chromeStorage.currency]) || 0,
+    [chromeStorage.currency, coinGeckoPrice.data, currentFromCoin?.coingeckoId],
+  );
+  const toTokenPrice = useMemo(
+    () => (currentToCoin?.coingeckoId && coinGeckoPrice.data?.[currentToCoin.coingeckoId]?.[chromeStorage.currency]) || 0,
+    [chromeStorage.currency, coinGeckoPrice.data, currentToCoin?.coingeckoId],
+  );
+
+  const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', fromTokenPrice), [inputDisplayAmount, fromTokenPrice]);
+
+  const currentInputBaseAmount = useMemo(
+    () => toBaseDenomAmount(debouncedInputDisplayAmount || 0, currentFromCoin?.decimals || 0),
+    [currentFromCoin?.decimals, debouncedInputDisplayAmount],
+  );
+
+  const squidRouteParam = useMemo<GetRoute | undefined>(() => {
+    if (
+      currentSwapApi === 'squid' &&
+      currentFromChain &&
+      currentFromCoin &&
+      currentToChain &&
+      currentToCoin &&
+      currentFromCoin?.address &&
+      currentToCoin?.address &&
+      currentToAddress &&
+      currentInputBaseAmount
+    ) {
+      return {
+        fromChain: currentFromChain.chainId,
+        fromToken: currentFromCoin.address,
+        fromAmount: currentInputBaseAmount,
+        toChain: currentToChain.chainId,
+        toToken: currentToCoin.address,
+        toAddress: currentToAddress,
+        slippage: Number(currentSlippage),
+      };
+    }
+    return undefined;
+  }, [currentFromChain, currentFromCoin, currentInputBaseAmount, currentSlippage, currentSwapApi, currentToAddress, currentToChain, currentToCoin]);
+
+  const squidRoute = useSquidRouteSWR(squidRouteParam);
+
+  // NOTE 현재는 외부에 선언되어있지만  estimatedToTokenDisplayAmount안으로 다 집어넣을 것
+  const currentOutputBaseAmount = useMemo(() => {
+    if (currentFromCoin?.denom && currentToCoin?.denom)
+      try {
+        return calcOutGivenIn(
+          currentInputBaseAmount,
+          swapFeeRate,
+          poolAssetsTokenList,
+          tokenBalanceIn,
+          tokenWeightIn,
+          tokenBalanceOut,
+          tokenWeightOut,
+          currentFromCoin?.denom,
+          currentToCoin?.denom,
+          scalingFactors,
+        );
+      } catch {
+        return '0';
+      }
+    return '0';
+  }, [
+    currentFromCoin?.denom,
+    currentInputBaseAmount,
+    currentToCoin?.denom,
+    poolAssetsTokenList,
+    scalingFactors,
+    swapFeeRate,
+    tokenBalanceIn,
+    tokenBalanceOut,
+    tokenWeightIn,
+    tokenWeightOut,
+  ]);
+
+  const tokenOutMinAmount = useMemo(
+    () => (currentSlippage && currentOutputBaseAmount ? minus(currentOutputBaseAmount, times(currentOutputBaseAmount, divide(currentSlippage, 100))) : '0'),
+    [currentSlippage, currentOutputBaseAmount],
+  );
+
+  const estimatedToTokenDisplayAmount = useMemo(() => {
+    if (inputDisplayAmount === '') {
+      return '0';
+    }
+    if (currentSwapApi === 'osmo') {
+      // NOTE const a = try구문 어떻게 쓰는 건지 문법 확인
+      // NOTE 오스모스왑쪽 아웃풋 어마운트 오류있음
+      return toDisplayDenomAmount(currentOutputBaseAmount, currentToCoin?.decimals || 0);
+    }
+    return squidRoute.data && !squidRoute.isValidating
+      ? toDisplayDenomAmount(squidRoute.data.route.estimate.toAmount || '0', currentToCoin?.decimals || 0)
+      : '0';
+  }, [inputDisplayAmount, currentSwapApi, squidRoute.data, squidRoute.isValidating, currentToCoin?.decimals, currentOutputBaseAmount]);
+
+  const estimatedToTokenDisplayMinAmount = useMemo(() => {
+    if (currentSwapApi === 'osmo') {
+      return toDisplayDenomAmount(tokenOutMinAmount, currentToCoin?.decimals || 0);
+    }
+    return squidRoute.data && !squidRoute.isValidating
+      ? toDisplayDenomAmount(squidRoute.data.route.estimate.toAmountMin || '0', currentToCoin?.decimals || 0)
+      : '0';
+  }, [currentSwapApi, squidRoute.data, squidRoute.isValidating, currentToCoin?.decimals, tokenOutMinAmount]);
+
+  // NOTE 현재 squid 쪽만 고려중
+  const estimatedToTokenDisplayAmountPrice = useMemo(
+    () => (estimatedToTokenDisplayAmount ? times(estimatedToTokenDisplayAmount, toTokenPrice) : '0'),
+    [estimatedToTokenDisplayAmount, toTokenPrice],
+  );
+
+  // NOTE OSMO SWAP ZONE
+
+  const currentOutputDisplayAmount = useMemo(
+    () => toDisplayDenomAmount(currentOutputBaseAmount, inputDisplayAmount ? currentToCoin?.decimals || 0 : 0),
+    [currentOutputBaseAmount, inputDisplayAmount, currentToCoin?.decimals],
+  );
+
+  const tokenOutMinDisplayAmount = useMemo(
+    () => toDisplayDenomAmount(tokenOutMinAmount, currentToCoin?.decimals || 0),
+    [currentToCoin?.decimals, tokenOutMinAmount],
+  );
+
+  const priceImpact = useMemo(() => {
+    try {
+      const effective = divide(currentInputBaseAmount, currentOutputBaseAmount);
+      return minus(divide(effective, beforeSpotPriceInOverOut), '1');
+    } catch {
+      return '0';
+    }
+  }, [currentInputBaseAmount, currentOutputBaseAmount, beforeSpotPriceInOverOut]);
+
+  const priceImpactPercent = useMemo(() => times(priceImpact, '100'), [priceImpact]);
+
+  const memoizedSwapAminoTx = useMemo(() => {
+    if (inputDisplayAmount && account.data?.value.account_number) {
+      const sequence = String(account.data?.value.sequence || '0');
+
+      return {
+        account_number: String(account.data.value.account_number),
+        sequence,
+        chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+        fee: { amount: [{ amount: '1', denom: currentFeeCoin.baseDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
+        memo: '',
+        msgs: [
+          {
+            type: 'osmosis/gamm/swap-exact-amount-in',
+            value: {
+              routes: [
+                {
+                  pool_id: currentPoolId,
+                  token_out_denom: currentToCoin?.denom,
+                },
+              ],
+              sender: address,
+              token_in: {
+                amount: currentInputBaseAmount,
+                denom: currentFromCoin?.denom,
+              },
+              token_out_min_amount: fix(tokenOutMinAmount, 0),
+            },
+          },
+        ],
+      };
+    }
+
+    return undefined;
+  }, [
+    account.data?.value.account_number,
+    account.data?.value.sequence,
+    address,
+    chain.chainId,
+    currentFeeCoin.baseDenom,
+    currentInputBaseAmount,
+    currentPoolId,
+    currentFromCoin?.denom,
+    inputDisplayAmount,
+    nodeInfo.data?.node_info?.network,
+    currentToCoin?.denom,
+    tokenOutMinAmount,
+  ]);
+
+  const [swapAminoTx] = useDebounce(memoizedSwapAminoTx, 700);
+
+  const swapProtoTx = useMemo(() => {
+    if (swapAminoTx) {
+      return protoTx(swapAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
+    }
+    return null;
+  }, [chain, swapAminoTx]);
+
+  const simulate = useSimulateSWR({ chain, txBytes: swapProtoTx?.tx_bytes });
+
+  const simulatedGas = useMemo(
+    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
+    [chain, simulate.data?.gas_info?.gas_used],
+  );
+
+  const currentGas = useMemo(() => simulatedGas || COSMOS_DEFAULT_SWAP_GAS, [simulatedGas]);
+
+  const currentFeeAmount = useMemo(() => times(currentGas, chain.gasRate.low), [chain.gasRate.low, currentGas]);
+
+  const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
+
+  const currentDisplayFeeAmount = toDisplayDenomAmount(currentCeilFeeAmount, chain.decimals);
+
+  const currentDisplaySwapFeeAmount = useMemo(() => (inputDisplayAmount ? times(inputDisplayAmount, swapFeeRate) : '0'), [inputDisplayAmount, swapFeeRate]);
+
+  const swapFeePrice = useMemo(() => times(fromTokenPrice, currentDisplaySwapFeeAmount), [fromTokenPrice, currentDisplaySwapFeeAmount]);
+
+  const maxDisplayAmount = useMemo(() => {
+    const maxAmount = minus(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount);
+    if (isEqualsIgnoringCase(currentFromCoin?.denom, currentFeeCoin.baseDenom)) {
+      return gt(maxAmount, '0') ? maxAmount : '0';
+    }
+
+    return currentInputCoinDisplayAvailableAmount;
+  }, [currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount, currentFromCoin?.denom, currentFeeCoin.baseDenom]);
 
   // const testTxStatus = useSquidTxStatusSWR({ transactionId: '0x26b279240c73f5841eb9e0ce11b13ad280f4cf612c653b43bd9083672da63ec0' });
 
@@ -731,7 +776,7 @@ export default function Entry() {
       if (!gte(currentInputCoinDisplayAvailableAmount, inputDisplayAmount)) {
         return t('pages.Wallet.Swap.entry.insufficientAmount');
       }
-      if (inputCoin?.denom === currentFeeCoin.baseDenom) {
+      if (currentFromCoin?.denom === currentFeeCoin.baseDenom) {
         if (!gte(currentInputCoinDisplayAvailableAmount, plus(inputDisplayAmount, currentDisplayFeeAmount))) {
           return t('pages.Wallet.Swap.entry.insufficientAmount');
         }
@@ -755,7 +800,7 @@ export default function Entry() {
     tokenBalanceIn,
     inputDisplayAmount,
     currentInputCoinDisplayAvailableAmount,
-    inputCoin?.denom,
+    currentFromCoin?.denom,
     currentFeeCoin.baseDenom,
     priceImpactPercent,
     currentOutputDisplayAmount,
@@ -770,6 +815,15 @@ export default function Entry() {
     return '';
   }, [filteredFromTokenList, t]);
 
+  const inputHelperMessage = useMemo(() => {
+    if (inputDisplayAmount) {
+      if (gte(inputDisplayAmount, currentFromDisplayBalance)) {
+        return t('pages.Wallet.Swap.entry.insufficientAmount');
+      }
+    }
+    return '';
+  }, [currentFromDisplayBalance, inputDisplayAmount, t]);
+
   const [isDisabled, setIsDisabled] = useState(false);
 
   const debouncedEnabled = useDebouncedCallback(() => {
@@ -778,11 +832,12 @@ export default function Entry() {
     }, 700);
   }, 700);
 
-  useEffect(() => {
-    if (!outputCoin) {
-      setOutputCoinBaseDenom(availableSwapOutputCoinList[0]?.denom);
-    }
-  }, [availableSwapOutputCoinList, outputCoin, outputCoinBaseDenom]);
+  // NOTE Handling exception
+  // useEffect(() => {
+  //   if (!currentToCoin) {
+  //     setOutputCoinBaseDenom(availableSwapOutputCoinList[0]?.denom);
+  //   }
+  // }, [availableSwapOutputCoinList, currentToCoin, currentToCoin?.denom]);
 
   useEffect(() => {
     setIsDisabled(true);
@@ -820,8 +875,8 @@ export default function Entry() {
           <SwapContainer>
             <SwapCoinContainer
               headerLeftText="From"
-              availableAmount={currentFromDisplayAmount}
-              coinAmountPrice={inputCoinAmountPrice}
+              availableAmount={currentFromDisplayBalance}
+              coinAmountPrice={inputTokenAmountPrice}
               currentSelectedChain={currentFromChain}
               currentSelectedCoin={currentFromCoin}
               onClickChain={(clickedChain) => {
@@ -844,7 +899,7 @@ export default function Entry() {
               <SwapCoinInputAmountContainer data-is-error>
                 <AmountInput
                   error
-                  helperText={gte(inputDisplayAmount, currentFromDisplayAmount) ? 'Insufficient balance' : ''}
+                  helperText={inputHelperMessage}
                   endAdornment={
                     <InputAdornment position="end">
                       <MaxButton
@@ -871,8 +926,8 @@ export default function Entry() {
             </SwapCoinContainer>
             <SwapCoinContainer
               headerLeftText="To"
-              availableAmount={currentToDisplayAmount}
-              coinAmountPrice={outputCoinAmountPrice}
+              availableAmount={currentToDisplayBalance}
+              coinAmountPrice={estimatedToTokenDisplayAmountPrice}
               currentSelectedChain={currentToChain}
               currentSelectedCoin={currentToCoin}
               onClickChain={(clickedChain) => {
@@ -892,15 +947,19 @@ export default function Entry() {
               address={currentToAddress}
               isChainSelected={!!currentFromChain && !!currentToChain}
             >
-              <SwapCoinOutputAmountContainer data-is-active={currentOutputDisplayAmount !== '0'}>
-                <Tooltip title={currentOutputDisplayAmount} arrow placement="top">
-                  <span>
-                    <NumberText typoOfIntegers="h3n" fixed={currentOutputDisplayAmount !== '0' ? getDisplayMaxDecimals(outputCoin?.decimals) : 0}>
-                      {currentOutputDisplayAmount}
-                    </NumberText>
-                  </span>
-                </Tooltip>
-              </SwapCoinOutputAmountContainer>
+              {squidRoute.isValidating ? (
+                <StyledCircularProgress size={25} />
+              ) : (
+                <SwapCoinOutputAmountContainer data-is-active={estimatedToTokenDisplayAmount !== '0'}>
+                  <Tooltip title={estimatedToTokenDisplayAmount} arrow placement="top">
+                    <span>
+                      <NumberText typoOfIntegers="h3n" fixed={estimatedToTokenDisplayAmount !== '0' ? getDisplayMaxDecimals(currentToCoin?.decimals) : 0}>
+                        {estimatedToTokenDisplayAmount}
+                      </NumberText>
+                    </span>
+                  </Tooltip>
+                </SwapCoinOutputAmountContainer>
+              )}
             </SwapCoinContainer>
             <SwapIconButton disabled onClick={swapCoin}>
               <SwapIcon />
@@ -913,15 +972,21 @@ export default function Entry() {
             <SwapInfoHeaderContainer>
               <Typography variant="h6n">{t('pages.Wallet.Swap.entry.minimumToReceive')}</Typography>
               <SwapInfoHeaderRightContainer>
-                <Tooltip title={outputAmountOf1Coin} arrow placement="top">
-                  <span>
-                    <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
-                      {outputAmountOf1Coin}
-                    </NumberText>
-                  </span>
-                </Tooltip>
-                &nbsp;
-                <Typography variant="h6n">{inputCoin?.symbol}</Typography>
+                {squidRoute.isValidating ? (
+                  <StyledCircularProgress size={50} />
+                ) : (
+                  <>
+                    <Tooltip title={estimatedToTokenDisplayMinAmount} arrow placement="top">
+                      <span>
+                        <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(currentToCoin?.decimals || 0)}>
+                          {estimatedToTokenDisplayMinAmount}
+                        </NumberText>
+                      </span>
+                    </Tooltip>
+                    &nbsp;
+                    <Typography variant="h6n">{currentToCoin?.symbol}</Typography>
+                  </>
+                )}
               </SwapInfoHeaderRightContainer>
             </SwapInfoHeaderContainer>
             <SwapInfoBodyContainer>
@@ -975,13 +1040,13 @@ export default function Entry() {
                     <SwapInfoBodyRightTextContainer>
                       <Tooltip title={currentOutputDisplayAmount} arrow placement="top">
                         <span>
-                          <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
+                          <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(currentToCoin?.decimals)}>
                             {currentOutputDisplayAmount}
                           </NumberText>
                         </span>
                       </Tooltip>
                       &nbsp;
-                      <Typography variant="h6n">{outputCoin?.symbol}</Typography>
+                      <Typography variant="h6n">{currentToCoin?.symbol}</Typography>
                     </SwapInfoBodyRightTextContainer>
                   ) : (
                     <Typography variant="h6">-</Typography>
@@ -1001,13 +1066,13 @@ export default function Entry() {
                     <SwapInfoBodyRightTextContainer>
                       <Tooltip title={tokenOutMinDisplayAmount} arrow placement="top">
                         <span>
-                          <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(outputCoin?.decimals)}>
+                          <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(currentToCoin?.decimals)}>
                             {tokenOutMinDisplayAmount}
                           </NumberText>
                         </span>
                       </Tooltip>
                       &nbsp;
-                      <Typography variant="h6n">{outputCoin?.symbol}</Typography>
+                      <Typography variant="h6n">{currentToCoin?.symbol}</Typography>
                     </SwapInfoBodyRightTextContainer>
                   ) : (
                     <Typography variant="h6">-</Typography>
