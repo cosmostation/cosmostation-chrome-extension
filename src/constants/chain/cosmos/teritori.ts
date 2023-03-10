@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const TERITORI: CosmosChain = {
   id: '61672fc9-c139-460a-9b2b-97ef3a9e98ee',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'teritori-1',

@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const KAVA: CosmosChain = {
   id: '634e5e88-0a26-4ef5-92b5-dbf4cf040a8a',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'kava_2222-10',

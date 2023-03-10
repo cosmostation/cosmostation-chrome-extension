@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const RIZON: CosmosChain = {
   id: '2be3f1c4-8c2e-4fc9-80c8-5877b0bb77c8',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'titan-1',

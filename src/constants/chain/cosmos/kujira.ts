@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const KUJIRA: CosmosChain = {
   id: 'fa7a1907-662f-497c-95fb-2383e88341fd',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'kaiyo-1',

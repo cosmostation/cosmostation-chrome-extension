@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const CANTO: CosmosChain = {
   id: 'a27cc3f4-12b7-4986-aa71-e9d40549ebf2',
-  isActive: true,
   line: 'COSMOS',
   type: 'ETHERMINT',
   chainId: 'canto_7700-1',

@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const KONSTELLATION: CosmosChain = {
   id: 'bf8c1e6b-7e9c-43cf-8a30-7b17eda15ffb',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'darchub',

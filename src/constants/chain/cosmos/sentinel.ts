@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const SENTINEL: CosmosChain = {
   id: '8c72318f-8279-4d37-a457-1cd4c0b1f160',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'sentinelhub-2',

@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const QUICK_SILVER: CosmosChain = {
   id: '69209a86-82d8-45d5-847a-472ff9b99a13',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'quicksilver-2',

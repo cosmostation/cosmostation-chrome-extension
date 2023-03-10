@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const STAFIHUB: CosmosChain = {
   id: '44430154-6f96-4f07-adec-2f9d38fd17b8',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'stafihub-1',

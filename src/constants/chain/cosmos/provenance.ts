@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const PROVENANCE: CosmosChain = {
   id: 'b2326658-5a8b-4bfd-a852-b7ff3859f08c',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'pio-mainnet-1',

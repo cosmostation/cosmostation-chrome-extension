@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const AKASH: CosmosChain = {
   id: 'b869bcf8-f489-443a-9be4-56cac21f6f53',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'akashnet-2',

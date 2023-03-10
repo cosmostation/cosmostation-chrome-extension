@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const PERSISTENCE: CosmosChain = {
   id: '58c55107-2df3-4851-a68e-fee203308be2',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'core-1',

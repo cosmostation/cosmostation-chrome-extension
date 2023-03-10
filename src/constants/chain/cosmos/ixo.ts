@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const IXO: CosmosChain = {
   id: '9ae49caf-35b3-44d4-9fc4-4b29ff1c59d0',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'impacthub-3',

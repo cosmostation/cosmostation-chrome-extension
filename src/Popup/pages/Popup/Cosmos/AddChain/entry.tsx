@@ -134,7 +134,6 @@ export default function Entry({ queue }: EntryProps) {
 
               const newChain: CosmosChain = {
                 id: uuidv4(),
-                isActive: true,
                 line: 'COSMOS',
                 type: type || '',
                 chainId,

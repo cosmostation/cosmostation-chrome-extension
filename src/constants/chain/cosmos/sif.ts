@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const SIF: CosmosChain = {
   id: 'ba43a35a-0861-486a-9ce9-c23fb1ba610c',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'sifchain-1',

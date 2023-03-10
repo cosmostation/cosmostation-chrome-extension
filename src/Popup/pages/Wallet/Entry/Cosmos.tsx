@@ -32,7 +32,9 @@ export default function Cosmos({ chain }: CosmosProps) {
         <Header />
       </HeaderContainer>
       <LedgerCheck>
-        {chain.isActive ? (
+        {chain.isTerminated ? (
+          <InActiveNativeChainCard chain={chain} isCustom={isCustom} />
+        ) : (
           <>
             <NativeChainCardContainer>
               <ErrorBoundary
@@ -53,8 +55,6 @@ export default function Cosmos({ chain }: CosmosProps) {
               </ErrorBoundary>
             </BottomContainer>
           </>
-        ) : (
-          <InActiveNativeChainCard chain={chain} isCustom={isCustom} />
         )}
       </LedgerCheck>
     </Container>

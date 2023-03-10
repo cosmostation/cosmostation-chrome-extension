@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const TGRADE: CosmosChain = {
   id: '8a4cc90b-fc6b-4fcb-b297-e4eddcbe8723',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'tgrade-mainnet-1',

@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const GRAVITY_BRIDGE: CosmosChain = {
   id: 'f21c887b-08ec-42dc-b907-aeaf5113d9f4',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'gravity-bridge-3',

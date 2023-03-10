@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const STARGAZE: CosmosChain = {
   id: 'df309f02-4dd7-4a44-9050-6dd2b5e348bc',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'stargaze-1',

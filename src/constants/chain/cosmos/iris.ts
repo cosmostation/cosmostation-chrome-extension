@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const IRIS: CosmosChain = {
   id: 'd86e2b4e-e422-4b58-b687-f1de03cde152',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'irishub-1',

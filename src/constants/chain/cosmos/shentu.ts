@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const SHENTU: CosmosChain = {
   id: '29d61a8d-6bbe-4524-afa5-6f70931bcdee',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'shentu-2.2',

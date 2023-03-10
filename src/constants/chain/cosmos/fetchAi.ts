@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const FETCH_AI: CosmosChain = {
   id: '3b8e015e-ab6c-4095-9dd8-57e62f437f4f',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'fetchhub-4',

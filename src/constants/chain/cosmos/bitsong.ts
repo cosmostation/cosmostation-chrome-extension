@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const BITSONG: CosmosChain = {
   id: 'b00c564c-d7cd-4918-9a24-b0e46628456f',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'bitsong-2b',

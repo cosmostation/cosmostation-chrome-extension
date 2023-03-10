@@ -125,7 +125,9 @@ export default function Entry() {
           )}
 
           {cosmosChainList.map((item) =>
-            item.chain.isActive ? (
+            item.chain.isTerminated ? (
+              <CosmosChainItemInActive chain={item.chain} />
+            ) : (
               <CosmosChainLedgerCheck key={`${currentAccount.id}${item.chain.id}`} chain={item.chain}>
                 <ErrorBoundary
                   FallbackComponent={
@@ -138,8 +140,6 @@ export default function Entry() {
                   </Suspense>
                 </ErrorBoundary>
               </CosmosChainLedgerCheck>
-            ) : (
-              <CosmosChainItemInActive chain={item.chain} />
             ),
           )}
 

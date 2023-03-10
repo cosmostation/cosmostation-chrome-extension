@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const ASSET_MANTLE: CosmosChain = {
   id: 'e45dbc17-1233-40e9-92c0-59152b79750d',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'mantle-1',

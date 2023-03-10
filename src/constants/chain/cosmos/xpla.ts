@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const XPLA: CosmosChain = {
   id: '4d3ffa1b-be1b-4877-92db-efeefaeb7593',
-  isActive: true,
   line: 'COSMOS',
   type: 'ETHERMINT',
   chainId: 'dimension_37-1',

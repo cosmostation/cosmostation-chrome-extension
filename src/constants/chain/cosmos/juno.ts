@@ -4,7 +4,6 @@ import type { CosmosChain } from '~/types/chain';
 
 export const JUNO: CosmosChain = {
   id: '23076a4e-8bba-4e36-8563-2c30948f290c',
-  isActive: true,
   line: 'COSMOS',
   type: '',
   chainId: 'juno-1',
