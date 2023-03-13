@@ -100,6 +100,10 @@ export const SwapCoinOutputAmountContainer = styled('div')<SwapCoinOutputAmountC
   marginBottom: '1.6rem',
 }));
 
+export const OutputAmountCircularProgressContainer = styled('div')({
+  height: '4.2rem',
+});
+
 export const BodyContainer = styled('div')({
   height: 'calc(100% - 11rem)',
   overflow: 'auto',

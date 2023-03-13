@@ -1099,6 +1099,7 @@
       },
       "Swap": {
         "Entry": {
+          "permissionButton": "토큰의 permission이 필요합니다",
           "swapButton": "교환"
         },
         "components": {
@@ -1148,6 +1149,7 @@
           "invalidPriceImpact": "가격 변동치가 지나치게 높습니다.",
           "minimumReceived": "슬리피지 이후 받을 최소 수량",
           "minimumToReceive": "수령 가능한 최소 수량",
+          "minutes": "분",
           "networkError": "네트워크 오류",
           "priceImpact": "가격 변동치",
           "processingTime": "예상 소요 시간",

@@ -19,6 +19,10 @@ import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import WarningContainer from '~/Popup/components/common/WarningContainer';
 import SubSideHeader from '~/Popup/components/SubSideHeader';
+import { useAllowanceSWR } from '~/Popup/hooks/SWR/1inch/useAllowanceSWR';
+import { useAllowanceTxSWR } from '~/Popup/hooks/SWR/1inch/useAllowanceTxSWR';
+import type { UseOneInchSwapSWRProps } from '~/Popup/hooks/SWR/1inch/useOneInchSwapTxSWR';
+import { useOneInchSwapTxSWR } from '~/Popup/hooks/SWR/1inch/useOneInchSwapTxSWR';
 import { useTokenAssetsSWR } from '~/Popup/hooks/SWR/1inch/useTokenAssetsSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/1inch/useTokenBalanceSWR';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
@@ -54,6 +58,7 @@ import {
   BottomContainer,
   Container,
   MaxButton,
+  OutputAmountCircularProgressContainer,
   SideButton,
   StyledCircularProgress,
   SwapCoinInputAmountContainer,
@@ -71,6 +76,7 @@ import {
 } from './styled';
 
 import Management24Icon from '~/images/icons/Mangement24.svg';
+import Permission16Icon from '~/images/icons/Permission16.svg';
 import SwapIcon from '~/images/icons/Swap.svg';
 
 export type ChainAssetInfo = AssetV3 & { chainName: string; availableAmount?: string };
@@ -585,6 +591,46 @@ export default function Entry() {
 
   const squidRoute = useSquidRouteSWR(squidRouteParam);
 
+  const allowance = useAllowanceSWR({
+    tokenAddress: currentFromCoin?.address || '',
+    walletAddress: currentFromAddress,
+    chainId: currentFromChain?.chainId || '',
+  });
+
+  const allowanceTx = useAllowanceTxSWR(
+    allowance.data && !gt(allowance.data?.allowance, '0')
+      ? {
+          tokenAddress: currentFromCoin?.address || '',
+          chainId: currentFromChain?.chainId || '',
+        }
+      : {
+          tokenAddress: '',
+          chainId: '',
+        },
+  );
+
+  // NOTE NULL safety가 ''로 이상함 useOneInchSwapTxSWR안에도 수정할 필요가 있어보임
+  const oneInchRouteParam = useMemo<UseOneInchSwapSWRProps | undefined>(() => {
+    if (currentSwapApi === '1inch' && currentFromCoin && currentToCoin && currentFromChain) {
+      return {
+        fromTokenAddress: currentFromCoin.address || '',
+        toTokenAddress: currentToCoin.address || '',
+        fromAddress: currentFromAddress,
+        slippage: currentSlippage,
+        amount: currentInputBaseAmount,
+        chainId: currentFromChain.chainId || '',
+      };
+    }
+    return undefined;
+  }, [currentFromAddress, currentFromChain, currentFromCoin, currentInputBaseAmount, currentSlippage, currentSwapApi, currentToCoin]);
+
+  const oneInchRoute = useOneInchSwapTxSWR(oneInchRouteParam);
+
+  const squidProcessingTime = useMemo(
+    () => (squidRoute.data ? divide(squidRoute.data?.route.estimate.estimatedRouteDuration || 0, 60) : '0'),
+    [squidRoute.data],
+  );
+
   // NOTE 현재는 외부에 선언되어있지만  estimatedToTokenDisplayAmount안으로 다 집어넣을 것
   const currentOutputBaseAmount = useMemo(() => {
     if (currentFromCoin?.denom && currentToCoin?.denom)
@@ -628,20 +674,21 @@ export default function Entry() {
       return '0';
     }
     if (currentSwapApi === 'osmo') {
-      // NOTE const a = try구문 어떻게 쓰는 건지 문법 확인
-      // NOTE 오스모스왑쪽 아웃풋 어마운트 오류있음
       return toDisplayDenomAmount(currentOutputBaseAmount, currentToCoin?.decimals || 0);
     }
-    return squidRoute.data && !squidRoute.isValidating
+    if(currentSwapApi ==='1inch' && oneInchRoute.data){
+      return toDisplayDenomAmount(oneInchRoute.data.toTokenAmount, currentToCoin?.decimals || 0);
+    }
+    return squidRoute.data && !squidRoute.isValidating && currentSwapApi === 'squid'
       ? toDisplayDenomAmount(squidRoute.data.route.estimate.toAmount || '0', currentToCoin?.decimals || 0)
       : '0';
-  }, [inputDisplayAmount, currentSwapApi, squidRoute.data, squidRoute.isValidating, currentToCoin?.decimals, currentOutputBaseAmount]);
+  }, [inputDisplayAmount, currentSwapApi, oneInchRoute.data, squidRoute.data, squidRoute.isValidating, currentToCoin?.decimals, currentOutputBaseAmount]);
 
   const estimatedToTokenDisplayMinAmount = useMemo(() => {
     if (currentSwapApi === 'osmo') {
       return toDisplayDenomAmount(tokenOutMinAmount, currentToCoin?.decimals || 0);
     }
-    return squidRoute.data && !squidRoute.isValidating
+    return squidRoute.data && !squidRoute.isValidating && currentSwapApi === 'squid'
       ? toDisplayDenomAmount(squidRoute.data.route.estimate.toAmountMin || '0', currentToCoin?.decimals || 0)
       : '0';
   }, [currentSwapApi, squidRoute.data, squidRoute.isValidating, currentToCoin?.decimals, tokenOutMinAmount]);
@@ -791,6 +838,12 @@ export default function Entry() {
         return t('pages.Wallet.Swap.entry.invalidOutputAmount');
       }
     }
+    if (currentSwapApi === '1inch') {
+      if (!allowanceTx) {
+        // return t('pages.Wallet.Swap.entry.tokenPermission');
+        return '';
+      }
+    }
     return '';
   }, [
     currentSwapApi,
@@ -806,6 +859,7 @@ export default function Entry() {
     currentOutputDisplayAmount,
     t,
     currentDisplayFeeAmount,
+    allowanceTx,
   ]);
 
   const warningMessage = useMemo(() => {
@@ -889,6 +943,7 @@ export default function Entry() {
                 }
                 setCurrentFromCoin(undefined);
                 setCurrentToCoin(undefined);
+                setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => setCurrentFromCoin(clickedCoin)}
               availableChainList={availableFromChainList}
@@ -940,6 +995,7 @@ export default function Entry() {
                 }
                 setCurrentFromCoin(undefined);
                 setCurrentToCoin(undefined);
+                setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => setCurrentToCoin(clickedCoin)}
               availableChainList={availableToChainList}
@@ -948,7 +1004,9 @@ export default function Entry() {
               isChainSelected={!!currentFromChain && !!currentToChain}
             >
               {squidRoute.isValidating ? (
-                <StyledCircularProgress size={25} />
+                <OutputAmountCircularProgressContainer>
+                  <StyledCircularProgress size={20} />
+                </OutputAmountCircularProgressContainer>
               ) : (
                 <SwapCoinOutputAmountContainer data-is-active={estimatedToTokenDisplayAmount !== '0'}>
                   <Tooltip title={estimatedToTokenDisplayAmount} arrow placement="top">
@@ -973,7 +1031,7 @@ export default function Entry() {
               <Typography variant="h6n">{t('pages.Wallet.Swap.entry.minimumToReceive')}</Typography>
               <SwapInfoHeaderRightContainer>
                 {squidRoute.isValidating ? (
-                  <StyledCircularProgress size={50} />
+                  <StyledCircularProgress size={15} />
                 ) : (
                   <>
                     <Tooltip title={estimatedToTokenDisplayMinAmount} arrow placement="top">
@@ -1087,12 +1145,16 @@ export default function Entry() {
                   </SwapInfoBodyLeftContainer>
 
                   <SwapInfoBodyRightContainer>
-                    {inputDisplayAmount && tokenOutMinDisplayAmount ? (
-                      <SwapInfoBodyRightTextContainer>
-                        <NumberText typoOfIntegers="h6n">~ 16</NumberText>
-                        &nbsp;
-                        <Typography variant="h6n">minutes</Typography>
-                      </SwapInfoBodyRightTextContainer>
+                    {inputDisplayAmount ? (
+                      squidRoute.isValidating ? (
+                        <StyledCircularProgress size={15} />
+                      ) : (
+                        <SwapInfoBodyRightTextContainer>
+                          <NumberText typoOfIntegers="h6n">{`~ ${squidProcessingTime}`}</NumberText>
+                          &nbsp;
+                          <Typography variant="h6n">{t('pages.Wallet.Swap.entry.minutes')}</Typography>
+                        </SwapInfoBodyRightTextContainer>
+                      )
                     ) : (
                       <Typography variant="h6">-</Typography>
                     )}
@@ -1105,7 +1167,9 @@ export default function Entry() {
         <BottomContainer>
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
             <div>
+              {/* {currentSwapApi === '1inch' &&  allowance.data?.allowance &&!gt(allowance.data.allowance,0)} */}
               <Button
+                Icon={currentSwapApi === '1inch' && allowance.data?.allowance && !gt(allowance.data.allowance, 0) && Permission16Icon}
                 type="button"
                 disabled={!!errorMessage || !swapAminoTx || isDisabled}
                 onClick={async () => {
@@ -1125,7 +1189,9 @@ export default function Entry() {
                   }
                 }}
               >
-                {t('pages.Wallet.Swap.Entry.swapButton')}
+                {currentSwapApi === '1inch' && allowance.data?.allowance && !gt(allowance.data.allowance, 0)
+                  ? t('pages.Wallet.Swap.Entry.permissionButton')
+                  : t('pages.Wallet.Swap.Entry.swapButton')}
               </Button>
             </div>
           </Tooltip>

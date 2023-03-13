@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import { get } from '~/Popup/utils/axios';
 import type { OneInchSwapPayload } from '~/types/1inch/swap';
 
-type UseOneInchSwapSWRProps = {
+export type UseOneInchSwapSWRProps = {
   fromTokenAddress: string;
   toTokenAddress: string;
   fromAddress: string;
@@ -14,15 +14,15 @@ type UseOneInchSwapSWRProps = {
   chainId: string;
 };
 
-export function useOneInchSwapTxSWR(
-  { fromTokenAddress, toTokenAddress, fromAddress, slippage, amount, chainId }: UseOneInchSwapSWRProps,
-  config?: SWRConfiguration,
-) {
+export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?: SWRConfiguration) {
+  // NOTE Need change to COSMOSTATION Addresss
   const referrerAddress = '0xa76C7F20740300505FF26280E4b10873556CF4d0';
   const feeRatio = '2';
 
-  const requestURL = `https://api.1inch.io/v5.0/${chainId}/swap?fromTokenAddress=${fromTokenAddress}&toTokenAddress=${toTokenAddress}&amount=${amount}&fromAddress=${fromAddress}&slippage=${slippage}&referrerAddress=${referrerAddress}&fee=${feeRatio}
-  `;
+  const requestURL = swapParam
+    ? `https://api.1inch.io/v5.0/${swapParam.chainId}/swap?fromTokenAddress=${swapParam.fromTokenAddress}&toTokenAddress=${swapParam.toTokenAddress}&amount=${swapParam.amount}&fromAddress=${swapParam.fromAddress}&slippage=${swapParam.slippage}&referrerAddress=${referrerAddress}&fee=${feeRatio}
+  `
+    : '';
 
   const fetcher = (fetchUrl: string) => get<OneInchSwapPayload>(fetchUrl);
 
@@ -30,7 +30,7 @@ export function useOneInchSwapTxSWR(
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    isPaused: () => !fromTokenAddress || !toTokenAddress || !fromAddress || !slippage || !amount || !chainId,
+    isPaused: () => !swapParam,
     ...config,
   });
 
