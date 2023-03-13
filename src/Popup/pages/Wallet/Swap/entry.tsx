@@ -34,19 +34,22 @@ import { usePoolsAssetSWR } from '~/Popup/hooks/SWR/cosmos/usePoolsAssetSWR';
 import { usePoolSWR } from '~/Popup/hooks/SWR/cosmos/usePoolsSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useBalanceSWR as useETHBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
+import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
 import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/squid/useSquidAssetsSWR';
 import { useSquidRouteSWR } from '~/Popup/hooks/SWR/squid/useSquidRouteSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { calcOutGivenIn, calcSpotPrice } from '~/Popup/utils/osmosis';
 import { protoTx } from '~/Popup/utils/proto';
-import { isEqualsIgnoringCase } from '~/Popup/utils/string';
+import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { AssetV3 } from '~/types/cosmos/asset';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 import type { IntegratedSwapAPI } from '~/types/swap/integratedSwap';
@@ -99,6 +102,10 @@ export default function Entry() {
   const currentChainAssets = useAssetsSWR(chain);
   const balance = useBalanceSWR(chain);
   const [currentSlippage, setCurrentSlippage] = useState('1');
+  // NOTE Tx컴포넌트 쪽이 전부 currentEthereumNetwork로 되어있어
+  // 기존안대로 currentEthereumNetwork를 건드리지 않고 구현하는 방향을 고수하기에는
+  // 어렵다고 판단, 기존 새로 만든 훅을 모두 삭제하고 현재 이더리움 네트워크를 변경하는 방안으로 진행
+  const { setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const address = useMemo(
     () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '',
@@ -596,8 +603,7 @@ export default function Entry() {
     walletAddress: currentFromAddress,
     chainId: currentFromChain?.chainId || '',
   });
-
-  const allowanceTx = useAllowanceTxSWR(
+  const allowanceTxData = useAllowanceTxSWR(
     allowance.data && !gt(allowance.data?.allowance, '0')
       ? {
           tokenAddress: currentFromCoin?.address || '',
@@ -608,6 +614,27 @@ export default function Entry() {
           chainId: '',
         },
   );
+
+  const allowanceTx = useMemo(() => {
+    if (allowanceTxData.data) {
+      return {
+        from: currentFromAddress,
+        to: allowanceTxData.data.to,
+        data: allowanceTxData.data.data,
+        value: toHex(allowanceTxData.data.value, { addPrefix: true, isStringNumber: true }),
+      };
+    }
+    return {
+      from: '',
+      to: '',
+      data: '',
+      value: '',
+    };
+  }, [allowanceTxData, currentFromAddress]);
+
+  const allowanceEstimateGas = useEstimateGasSWR([allowanceTx]);
+
+  const allowanceBaseEstimateGas = useMemo(() => BigInt(allowanceEstimateGas.data?.result || '21000').toString(10), [allowanceEstimateGas.data?.result]);
 
   // NOTE NULL safety가 ''로 이상함 useOneInchSwapTxSWR안에도 수정할 필요가 있어보임
   const oneInchRouteParam = useMemo<UseOneInchSwapSWRProps | undefined>(() => {
@@ -626,10 +653,34 @@ export default function Entry() {
 
   const oneInchRoute = useOneInchSwapTxSWR(oneInchRouteParam);
 
+  const oneInchSwapTx = useMemo(() => {
+    if (allowance.data && gt(allowance?.data?.allowance, '0') && oneInchRoute.data) {
+      return {
+        from: oneInchRoute.data.tx.from,
+        to: oneInchRoute.data.tx.to,
+        data: oneInchRoute.data.tx.data,
+        value: toHex(oneInchRoute.data.tx.value, { addPrefix: true, isStringNumber: true }),
+        gas: toHex(oneInchRoute.data.tx.gas, { addPrefix: true, isStringNumber: true }),
+      };
+    }
+    return undefined;
+  }, [allowance.data, oneInchRoute.data]);
+
   const squidProcessingTime = useMemo(
     () => (squidRoute.data ? divide(squidRoute.data?.route.estimate.estimatedRouteDuration || 0, 60) : '0'),
     [squidRoute.data],
   );
+
+  // FIXME 각각 다른 isValidaiting변수 이걸로 교체
+  const isLoadingSwapData = useMemo(() => {
+    if (currentSwapApi === '1inch') {
+      return oneInchRoute.isValidating;
+    }
+    if (currentSwapApi === 'squid') {
+      return squidRoute.isValidating;
+    }
+    return false;
+  }, [currentSwapApi, oneInchRoute.isValidating, squidRoute.isValidating]);
 
   // NOTE 현재는 외부에 선언되어있지만  estimatedToTokenDisplayAmount안으로 다 집어넣을 것
   const currentOutputBaseAmount = useMemo(() => {
@@ -676,22 +727,27 @@ export default function Entry() {
     if (currentSwapApi === 'osmo') {
       return toDisplayDenomAmount(currentOutputBaseAmount, currentToCoin?.decimals || 0);
     }
-    if(currentSwapApi ==='1inch' && oneInchRoute.data){
+    if (currentSwapApi === '1inch' && oneInchRoute.data) {
       return toDisplayDenomAmount(oneInchRoute.data.toTokenAmount, currentToCoin?.decimals || 0);
     }
-    return squidRoute.data && !squidRoute.isValidating && currentSwapApi === 'squid'
-      ? toDisplayDenomAmount(squidRoute.data.route.estimate.toAmount || '0', currentToCoin?.decimals || 0)
-      : '0';
-  }, [inputDisplayAmount, currentSwapApi, oneInchRoute.data, squidRoute.data, squidRoute.isValidating, currentToCoin?.decimals, currentOutputBaseAmount]);
+    if (currentSwapApi === 'squid' && squidRoute.data) {
+      return toDisplayDenomAmount(squidRoute.data.route.estimate.toAmount || '0', currentToCoin?.decimals || 0);
+    }
+    return '0';
+  }, [inputDisplayAmount, currentSwapApi, oneInchRoute.data, squidRoute.data, currentToCoin?.decimals, currentOutputBaseAmount]);
 
   const estimatedToTokenDisplayMinAmount = useMemo(() => {
     if (currentSwapApi === 'osmo') {
       return toDisplayDenomAmount(tokenOutMinAmount, currentToCoin?.decimals || 0);
     }
-    return squidRoute.data && !squidRoute.isValidating && currentSwapApi === 'squid'
-      ? toDisplayDenomAmount(squidRoute.data.route.estimate.toAmountMin || '0', currentToCoin?.decimals || 0)
-      : '0';
-  }, [currentSwapApi, squidRoute.data, squidRoute.isValidating, currentToCoin?.decimals, tokenOutMinAmount]);
+    if (currentSwapApi === '1inch' && oneInchRoute.data && currentSlippage) {
+      return minus(oneInchRoute.data.toTokenAmount, times(oneInchRoute.data.toTokenAmount, divide(currentSlippage, 100)));
+    }
+    if (currentSwapApi === 'squid' && squidRoute.data) {
+      return toDisplayDenomAmount(squidRoute.data.route.estimate.toAmountMin || '0', currentToCoin?.decimals || 0);
+    }
+    return '0';
+  }, [currentSwapApi, oneInchRoute.data, currentSlippage, squidRoute.data, currentToCoin?.decimals, tokenOutMinAmount]);
 
   // NOTE 현재 squid 쪽만 고려중
   const estimatedToTokenDisplayAmountPrice = useMemo(
@@ -810,6 +866,13 @@ export default function Entry() {
   // const testTxStatus = useSquidTxStatusSWR({ transactionId: '0x26b279240c73f5841eb9e0ce11b13ad280f4cf612c653b43bd9083672da63ec0' });
 
   const errorMessage = useMemo(() => {
+    if (!inputDisplayAmount || !gt(inputDisplayAmount, '0')) {
+      return t('pages.Wallet.Swap.entry.invalidAmount');
+    }
+    if (!gte(currentFromDisplayBalance, inputDisplayAmount)) {
+      return t('pages.Wallet.Swap.entry.insufficientAmount');
+    }
+
     if (currentSwapApi === 'osmo') {
       if (!poolData.data || !poolsAssetData.data) {
         return t('pages.Wallet.Swap.entry.networkError');
@@ -817,49 +880,44 @@ export default function Entry() {
       if (gt(currentInputBaseAmount, tokenBalanceIn || '0')) {
         return t('pages.Wallet.Swap.entry.excessiveSwap');
       }
-      if (!inputDisplayAmount || !gt(inputDisplayAmount, '0')) {
-        return t('pages.Wallet.Swap.entry.invalidAmount');
-      }
-      if (!gte(currentInputCoinDisplayAvailableAmount, inputDisplayAmount)) {
-        return t('pages.Wallet.Swap.entry.insufficientAmount');
+      if (!gt(estimatedToTokenDisplayAmount, 0)) {
+        return t('pages.Wallet.Swap.entry.invalidOutputAmount');
       }
       if (currentFromCoin?.denom === currentFeeCoin.baseDenom) {
-        if (!gte(currentInputCoinDisplayAvailableAmount, plus(inputDisplayAmount, currentDisplayFeeAmount))) {
+        if (!gte(currentFromDisplayBalance, plus(inputDisplayAmount, currentDisplayFeeAmount))) {
           return t('pages.Wallet.Swap.entry.insufficientAmount');
         }
-        if (!gte(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
+        if (!gte(currentFromDisplayBalance, currentDisplayFeeAmount)) {
           return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
         }
       }
       if (gt(priceImpactPercent, 10)) {
         return t('pages.Wallet.Swap.entry.invalidPriceImpact');
       }
-      if (!gt(currentOutputDisplayAmount, 0)) {
-        return t('pages.Wallet.Swap.entry.invalidOutputAmount');
-      }
     }
     if (currentSwapApi === '1inch') {
-      if (!allowanceTx) {
-        // return t('pages.Wallet.Swap.entry.tokenPermission');
-        return '';
+      // NOTE 아웃풋 검증과정에서 어차피 걸러질거같은데 흠 이 조건문 필요없을지도
+      if (oneInchRoute && !oneInchRoute?.data && allowance.data && gt(allowance.data?.allowance, '0')) {
+        return t('pages.Wallet.Swap.entry.getOneInchSwapError');
       }
     }
     return '';
   }, [
+    inputDisplayAmount,
+    currentFromDisplayBalance,
+    estimatedToTokenDisplayAmount,
     currentSwapApi,
+    t,
     poolData.data,
     poolsAssetData.data,
     currentInputBaseAmount,
     tokenBalanceIn,
-    inputDisplayAmount,
-    currentInputCoinDisplayAvailableAmount,
     currentFromCoin?.denom,
     currentFeeCoin.baseDenom,
     priceImpactPercent,
-    currentOutputDisplayAmount,
-    t,
     currentDisplayFeeAmount,
-    allowanceTx,
+    oneInchRoute,
+    allowance.data,
   ]);
 
   const warningMessage = useMemo(() => {
@@ -933,7 +991,7 @@ export default function Entry() {
               coinAmountPrice={inputTokenAmountPrice}
               currentSelectedChain={currentFromChain}
               currentSelectedCoin={currentFromCoin}
-              onClickChain={(clickedChain) => {
+              onClickChain={async (clickedChain) => {
                 setCurrentFromChain(clickedChain);
                 if (isFromSelected) {
                   setCurrentToChain(undefined);
@@ -944,6 +1002,9 @@ export default function Entry() {
                 setCurrentFromCoin(undefined);
                 setCurrentToCoin(undefined);
                 setInputDisplayAmount('');
+                if (clickedChain.line === 'ETHEREUM') {
+                  await setCurrentEthereumNetwork(clickedChain);
+                }
               }}
               onClickCoin={(clickedCoin) => setCurrentFromCoin(clickedCoin)}
               availableChainList={availableFromChainList}
@@ -1003,7 +1064,7 @@ export default function Entry() {
               address={currentToAddress}
               isChainSelected={!!currentFromChain && !!currentToChain}
             >
-              {squidRoute.isValidating ? (
+              {isLoadingSwapData ? (
                 <OutputAmountCircularProgressContainer>
                   <StyledCircularProgress size={20} />
                 </OutputAmountCircularProgressContainer>
@@ -1030,7 +1091,7 @@ export default function Entry() {
             <SwapInfoHeaderContainer>
               <Typography variant="h6n">{t('pages.Wallet.Swap.entry.minimumToReceive')}</Typography>
               <SwapInfoHeaderRightContainer>
-                {squidRoute.isValidating ? (
+                {isLoadingSwapData ? (
                   <StyledCircularProgress size={15} />
                 ) : (
                   <>
@@ -1048,6 +1109,7 @@ export default function Entry() {
               </SwapInfoHeaderRightContainer>
             </SwapInfoHeaderContainer>
             <SwapInfoBodyContainer>
+              {/* NOTE 스왑비율 컴포넌트 추가 */}
               <SwapInfoBodyTextContainer>
                 <SwapInfoBodyLeftContainer>
                   <Typography variant="h6">{t('pages.Wallet.Swap.entry.priceImpact')}</Typography>
@@ -1146,7 +1208,7 @@ export default function Entry() {
 
                   <SwapInfoBodyRightContainer>
                     {inputDisplayAmount ? (
-                      squidRoute.isValidating ? (
+                      isLoadingSwapData ? (
                         <StyledCircularProgress size={15} />
                       ) : (
                         <SwapInfoBodyRightTextContainer>
@@ -1167,32 +1229,83 @@ export default function Entry() {
         <BottomContainer>
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
             <div>
-              {/* {currentSwapApi === '1inch' &&  allowance.data?.allowance &&!gt(allowance.data.allowance,0)} */}
-              <Button
-                Icon={currentSwapApi === '1inch' && allowance.data?.allowance && !gt(allowance.data.allowance, 0) && Permission16Icon}
-                type="button"
-                disabled={!!errorMessage || !swapAminoTx || isDisabled}
-                onClick={async () => {
-                  if (swapAminoTx) {
-                    await enQueue({
-                      messageId: '',
-                      origin: '',
-                      channel: 'inApp',
-                      message: {
-                        method: 'cos_signAmino',
-                        params: {
-                          chainName: chain.chainName,
-                          doc: { ...swapAminoTx, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }], gas: currentGas } },
+              {inputDisplayAmount && allowance.data && !gt(allowance.data?.allowance, '0') && allowanceTx ? (
+                <Button
+                  Icon={Permission16Icon}
+                  isProgress={currentSwapApi === '1inch' && oneInchRoute.isValidating}
+                  type="button"
+                  disabled={!allowanceTx}
+                  onClick={async () => {
+                    if (currentSwapApi === '1inch' && allowanceTx) {
+                      await enQueue({
+                        messageId: '',
+                        origin: '',
+                        channel: 'inApp',
+                        message: {
+                          method: 'eth_sendTransaction',
+                          params: [
+                            {
+                              ...allowanceTx,
+                              gas: toHex(allowanceBaseEstimateGas, { addPrefix: true, isStringNumber: true }),
+                            },
+                          ],
                         },
-                      },
-                    });
-                  }
-                }}
-              >
-                {currentSwapApi === '1inch' && allowance.data?.allowance && !gt(allowance.data.allowance, 0)
-                  ? t('pages.Wallet.Swap.Entry.permissionButton')
-                  : t('pages.Wallet.Swap.Entry.swapButton')}
-              </Button>
+                      });
+
+                      if (currentAccount.type === 'LEDGER') {
+                        await openWindow();
+                        window.close();
+                      }
+                    }
+                  }}
+                >
+                  {t('pages.Wallet.Swap.Entry.permissionButton')}
+                </Button>
+              ) : (
+                <Button
+                  isProgress={isLoadingSwapData}
+                  type="button"
+                  disabled={!!errorMessage || !swapAminoTx || isDisabled}
+                  onClick={async () => {
+                    if (currentSwapApi === '1inch' && oneInchSwapTx) {
+                      await enQueue({
+                        messageId: '',
+                        origin: '',
+                        channel: 'inApp',
+                        message: {
+                          method: 'eth_sendTransaction',
+                          params: [
+                            {
+                              ...oneInchSwapTx,
+                            },
+                          ],
+                        },
+                      });
+
+                      if (currentAccount.type === 'LEDGER') {
+                        await openWindow();
+                        window.close();
+                      }
+                    }
+                    if (currentSwapApi === 'osmo' && swapAminoTx) {
+                      await enQueue({
+                        messageId: '',
+                        origin: '',
+                        channel: 'inApp',
+                        message: {
+                          method: 'cos_signAmino',
+                          params: {
+                            chainName: chain.chainName,
+                            doc: { ...swapAminoTx, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }], gas: currentGas } },
+                          },
+                        },
+                      });
+                    }
+                  }}
+                >
+                  {t('pages.Wallet.Swap.Entry.swapButton')}
+                </Button>
+              )}
             </div>
           </Tooltip>
         </BottomContainer>

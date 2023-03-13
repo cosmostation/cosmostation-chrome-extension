@@ -26,13 +26,14 @@ export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?:
 
   const fetcher = (fetchUrl: string) => get<OneInchSwapPayload>(fetchUrl);
 
-  const { data, error, mutate } = useSWR<OneInchSwapPayload, AxiosError>(requestURL, fetcher, {
+  const { data, isValidating, error, mutate } = useSWR<OneInchSwapPayload, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
+    dedupingInterval: 14000,
+    refreshInterval: 15000,
+    errorRetryCount: 0,
     isPaused: () => !swapParam,
     ...config,
   });
 
-  return { data, error, mutate };
+  return { data, isValidating, error, mutate };
 }

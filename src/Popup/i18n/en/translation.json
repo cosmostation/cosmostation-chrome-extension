@@ -1142,6 +1142,7 @@
           "availableAmount": "Available",
           "excessiveSwap": "Can't swap Token more than Token amounts in the pool",
           "expectedOutput": "Expected Output",
+          "getOneInchSwapError": "Failed to Get Swap Route",
           "insufficientAmount": "Insufficient amount",
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",

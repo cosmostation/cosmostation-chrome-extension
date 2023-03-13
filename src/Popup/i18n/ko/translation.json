@@ -1142,6 +1142,7 @@
           "availableAmount": "사용 가능 수량",
           "excessiveSwap": "유동성 풀에 예치된 토큰의 수량보다 더 교환할 수 없습니다.",
           "expectedOutput": "예상 교환치",
+          "getOneInchSwapError": "스왑 경로를 가져오는데 실패했습니다",
           "insufficientAmount": "수량이 부족합니다.",
           "insufficientFeeAmount": "수수료가 부족합니다.",
           "invalidAmount": "수량을 입력하세요.",
