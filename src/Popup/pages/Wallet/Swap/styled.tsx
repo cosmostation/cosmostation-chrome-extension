@@ -1,7 +1,9 @@
 import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { tooltipClasses } from '@mui/material/Tooltip';
 
 import IconButton from '~/Popup/components/common/IconButton';
+import Tooltip from '~/Popup/components/common/Tooltip';
 
 export const Container = styled('div')({
   height: '100%',
@@ -120,16 +122,63 @@ export const SwapInfoContainer = styled('div')(({ theme }) => ({
 
 export const SwapInfoHeaderContainer = styled('div')(({ theme }) => ({
   display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
+  flexDirection: 'column',
+
+  justifyContent: 'flex-start',
+  alignItems: 'flex-start',
 
   color: theme.colors.text01,
 }));
 
-export const SwapInfoHeaderRightContainer = styled('div')({
+export const SwapInfoSubHeaderContainer = styled('div')({
   display: 'flex',
+});
+
+export const StyledTooltipTitleContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+}));
+
+export const StyledTooltipBodyContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+
+  marginTop: '0.8rem',
+
+  columnGap: '0.3rem',
+});
+
+export const StyledTooltipBodyTextContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
   alignItems: 'center',
 });
+
+export const StyledTooltipBodyLeftTextContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text02,
+}));
+
+export const StyledTooltipBodyRightTextContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+});
+
+export const StyledTooltip = styled(Tooltip)(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.colors.base02,
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    marginTop: '0.7rem !important',
+
+    backgroundColor: theme.colors.base02,
+
+    padding: '0.8rem',
+    textAlign: 'start',
+
+    maxWidth: '27rem',
+    maxHeight: '7.8rem',
+  },
+}));
 
 export const SwapInfoBodyContainer = styled('div')({
   display: 'flex',
@@ -145,7 +194,22 @@ export const SwapInfoBodyTextContainer = styled('div')({
 });
 
 export const SwapInfoBodyLeftContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+
+  columnGap: '0.2rem',
+
   color: theme.colors.text02,
+}));
+
+export const SwapInfoBodyLeftIconContainer = styled('div')(({ theme }) => ({
+  height: '1.6rem',
+  '& > svg': {
+    fill: theme.colors.base05,
+    '&:hover': {
+      fill: theme.colors.base06,
+    },
+  },
 }));
 
 export const SwapInfoBodyRightContainer = styled('div')(({ theme }) => ({
