@@ -50,3 +50,5 @@ export type OneInchQuotePayload = {
   protocols: Array<Array<Protocol[]>>;
   estimatedGas: number;
 };
+
+export type AllowedTokensSWRPayload = Record<string, Record<string, Token>>;

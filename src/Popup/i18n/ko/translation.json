@@ -1139,6 +1139,7 @@
           }
         },
         "entry": {
+          "allowanceWarning": "스왑 라우터는 서명된 허가 승인을 사용합니다. 이를 통해 선택한 토큰에 대한 1인치 스마트 계약 액세스를 승인하고 단일 트랜잭션으로 스왑할 수 있습니다.",
           "amountLowThanFee": "스왑을 위해 필요한 수수료보다 사용 가능 수량이 적습니다.",
           "availableAmount": "사용 가능 수량",
           "dueToSlippage": "설정한 슬리피지",
@@ -1155,6 +1156,8 @@
           "invalidOsmoSwapTx": "tx 데이터가 생성되지 않았습니다.",
           "invalidOutputAmount": "예상 교환치가 없습니다.",
           "invalidPriceImpact": "가격 변동치가 지나치게 높습니다.",
+          "invalidTxSize": "거래 규모가 지나치게 큽니다.",
+          "liquidityWarning": "이 거래의 규모는 사용 가능한 유동성에 비해 큽니다. 더 나은 가격으로 스왑을 원하신다면 스왑 금액을 줄이십시오.",
           "minimumReceived": "슬리피지 이후 받을 최소 수량",
           "minutes": "분",
           "networkError": "네트워크 오류",
@@ -1166,6 +1169,7 @@
           "swapFee": "교환 수수료",
           "title": "교환",
           "tryAgain": "이상의 수량을 보유해야 합니다.",
+          "txCost": "Tx 가격",
           "txSizeWarning": "거래 규모는 현재 $10,000로 제한되어 있습니다."
         }
       },

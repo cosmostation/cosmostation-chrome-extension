@@ -35,10 +35,10 @@ export const SwapIconButton = styled(IconButton)(({ theme }) => ({
     transform: `translate(-50%, -50%)`,
     borderRadius: '5rem',
 
-    backgroundColor: theme.colors.base02,
+    backgroundColor: theme.colors.base04,
 
     '&:hover': {
-      backgroundColor: theme.colors.base01,
+      backgroundColor: theme.colors.base05,
     },
     '&:disabled': {
       backgroundColor: theme.colors.base01,
@@ -131,6 +131,8 @@ export const SwapInfoHeaderContainer = styled('div')(({ theme }) => ({
 }));
 
 export const SwapInfoSubHeaderContainer = styled('div')({
+  height: '2.2rem',
+
   display: 'flex',
 });
 
@@ -175,8 +177,8 @@ export const StyledTooltip = styled(Tooltip)(({ theme }) => ({
     padding: '0.8rem',
     textAlign: 'start',
 
-    maxWidth: '27rem',
-    maxHeight: '7.8rem',
+    maxWidth: '23rem',
+    maxHeight: 'fit-content',
   },
 }));
 

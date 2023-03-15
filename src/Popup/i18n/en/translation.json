@@ -1139,6 +1139,7 @@
           }
         },
         "entry": {
+          "allowanceWarning": "Swap Router uses signed permit approvals. This allows you to approve 1inch smart contract access to your selected tokens and swap in one single transaction.",
           "amountLowThanFee": "You do not have enough balance to cover the estimated gas costs for this transaction. Make sure you have more than",
           "availableAmount": "Available",
           "dueToSlippage": "Due to slippage",
@@ -1152,9 +1153,11 @@
           "insufficientAmount": "Insufficient amount",
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",
-          "invalidOsmoSwapTx": "Invalid Tx Data",
+          "invalidOsmoSwapTx": "Invalid tx data",
           "invalidOutputAmount": "Invalid output amount",
           "invalidPriceImpact": "Too high Price Impact",
+          "invalidTxSize": "Invalid tx size",
+          "liquidityWarning": "The size of this trade is large compared to the available liquidity. Reduce the swap amount to get a better price.",
           "minimumReceived": "Minimum received after slippage",
           "minutes": "minutes",
           "networkError": "Network Error",
@@ -1166,6 +1169,7 @@
           "swapFee": "Swap Fee",
           "title": "Swap",
           "tryAgain": "before trying again.",
+          "txCost": "Tx cost",
           "txSizeWarning": "Transaction size is currently limited to $10,000. Please decrease the size of your transaction and try again."
         }
       },
