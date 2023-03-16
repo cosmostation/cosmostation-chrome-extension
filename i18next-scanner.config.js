@@ -1,5 +1,4 @@
 const fs = require('fs');
-const chalk = require('chalk');
 
 module.exports = {
   input: [
@@ -60,7 +59,7 @@ module.exports = {
     });
 
     if (count > 0) {
-      console.log(`i18next-scanner: count=${chalk.cyan(count)}, file=${chalk.yellow(JSON.stringify(file.relative))}`);
+      console.log(`i18next-scanner: count=${count}, file=${JSON.stringify(file.relative)}`);
     }
 
     done();
