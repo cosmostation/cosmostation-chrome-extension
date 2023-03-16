@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
+import { EVMOS } from '~/constants/chain/cosmos/evmos';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import customBeltImg from '~/images/etc/customBelt.png';
@@ -31,7 +32,8 @@ import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
-import { protoTx } from '~/Popup/utils/proto';
+import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
+import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgCommission, MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
 
@@ -84,6 +86,7 @@ const EXPANDED_KEY = 'wallet-cosmos-expanded';
 
 export default function NativeChainCard({ chain, isCustom = false }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
+  const { currentPassword } = useCurrentPassword();
   const { chromeStorage } = useChromeStorage();
   const reward = useRewardSWR(chain);
   const validators = useValidatorsSWR();
@@ -153,7 +156,9 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const rewardProtoTx = useMemo(() => {
     if (rewardAminoTx) {
-      return protoTx(rewardAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(rewardAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+
+      return pTx ? protoTxBytes({ ...pTx }) : undefined;
     }
 
     return undefined;
@@ -185,13 +190,68 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const commissionProtoTx = useMemo(() => {
     if (commissionAminoTx) {
-      return protoTx(commissionAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(commissionAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+
+      return pTx ? protoTxBytes({ ...pTx }) : undefined;
     }
 
     return undefined;
   }, [chain, commissionAminoTx]);
 
   const commissionSimulate = useSimulateSWR({ chain, txBytes: commissionProtoTx?.tx_bytes });
+
+  const commissionDirectTx = useMemo(() => {
+    if (
+      operatorAddress &&
+      chain.id === EVMOS.id &&
+      account.data?.value.account_number &&
+      account.data.value.sequence &&
+      !!commissionSimulate.data?.gas_info?.gas_used
+    ) {
+      const commissionSimulatedAminoTx = {
+        account_number: account.data.value.account_number,
+        sequence: account.data.value.sequence,
+        chain_id: chain.chainId,
+        fee: {
+          amount: [{ amount: '0', denom: chain.baseDenom }],
+          gas: times(commissionSimulate.data.gas_info.gas_used, getDefaultAV(chain), 0),
+        },
+        msgs: [
+          {
+            type: 'cosmos-sdk/MsgWithdrawValidatorCommission',
+            value: { validator_address: operatorAddress },
+          },
+        ],
+        memo: '',
+      };
+
+      const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+
+      const base64PublicKey = keyPair ? Buffer.from(keyPair.publicKey).toString('base64') : '';
+
+      const publicKeyType = getPublicKeyType(chain);
+
+      const pTx = protoTx(commissionSimulatedAminoTx, '', { type: publicKeyType, value: base64PublicKey }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
+
+      return pTx
+        ? {
+            chain_id: chain.chainId,
+            account_number: account.data.value.account_number,
+            auth_info_bytes: Buffer.from(pTx.authInfoBytes).toString('hex') as unknown as Uint8Array,
+            body_bytes: Buffer.from(pTx.txBodyBytes).toString('hex') as unknown as Uint8Array,
+          }
+        : undefined;
+    }
+    return undefined;
+  }, [
+    operatorAddress,
+    chain,
+    account.data?.value.account_number,
+    account.data?.value.sequence,
+    commissionSimulate.data?.gas_info?.gas_used,
+    currentAccount,
+    currentPassword,
+  ]);
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
@@ -225,8 +285,11 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   );
 
   const isPossibleClaimCommission = useMemo(
-    () => !!commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount),
-    [commissionAminoTx, commissionSimulate.data?.gas_info?.gas_used, displayAvailableAmount, estimatedCommissionDisplayFeeAmount],
+    () =>
+      chain.id === EVMOS.id
+        ? !!commissionDirectTx && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount)
+        : !!commissionAminoTx && !!commissionSimulate.data?.gas_info?.gas_used && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount),
+    [chain.id, commissionAminoTx, commissionDirectTx, commissionSimulate.data?.gas_info?.gas_used, displayAvailableAmount, estimatedCommissionDisplayFeeAmount],
   );
 
   return (
@@ -395,7 +458,26 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                 type="button"
                 disabled={!isPossibleClaimCommission}
                 onClick={async () => {
-                  if (commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
+                  if (chain.id === EVMOS.id && commissionDirectTx && isPossibleClaimCommission) {
+                    await enQueue({
+                      messageId: '',
+                      origin: '',
+                      channel: 'inApp',
+                      message: {
+                        method: 'cos_signDirect',
+                        params: {
+                          chainName: chain.chainName,
+                          doc: {
+                            ...commissionDirectTx,
+                          },
+                          isEditFee: true,
+                          isEditMemo: true,
+                        },
+                      },
+                    });
+                  }
+
+                  if (chain.id !== EVMOS.id && commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
                     await enQueue({
                       messageId: '',
                       origin: '',

@@ -698,6 +698,12 @@
             "components": {
               "TxMessage": {
                 "messages": {
+                  "Commission": {
+                    "index": {
+                      "title": "Claim Commission",
+                      "validatorAddress": "Validator address"
+                    }
+                  },
                   "Send": {
                     "index": {
                       "amount": "Amount",
@@ -713,6 +719,7 @@
               "confirmButton": "Confirm",
               "dataTab": "Data",
               "detailTab": "Details",
+              "failedTransfer": "Failed to transfer",
               "insufficientFeeAmount": "Insufficient fee"
             }
           },

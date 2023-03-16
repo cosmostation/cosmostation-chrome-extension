@@ -26,7 +26,7 @@ import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDe
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { calcOutGivenIn, calcSpotPrice, decimalScaling } from '~/Popup/utils/osmosis';
-import { protoTx } from '~/Popup/utils/proto';
+import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { AssetV3 } from '~/types/cosmos/asset';
@@ -382,7 +382,9 @@ export default function Entry({ chain }: EntryProps) {
 
   const swapProtoTx = useMemo(() => {
     if (swapAminoTx) {
-      return protoTx(swapAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(swapAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
+
+      return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
   }, [chain, swapAminoTx]);

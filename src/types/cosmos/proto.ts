@@ -14,9 +14,19 @@ export type MsgSend = {
   amount: Amount[];
 };
 
+export type MsgCommission = {
+  validator_address: string;
+};
+
 export type SignDirectDoc = {
   chain_id: string;
   body_bytes: Uint8Array;
   auth_info_bytes: Uint8Array;
   account_number: string;
+};
+
+export type ProtoTxBytesProps = {
+  signature: string;
+  txBodyBytes: Uint8Array;
+  authInfoBytes: Uint8Array;
 };

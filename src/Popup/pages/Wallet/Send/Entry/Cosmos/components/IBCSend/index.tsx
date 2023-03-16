@@ -32,7 +32,7 @@ import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisp
 import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, convertCosmosToAssetName, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
-import { protoTx } from '~/Popup/utils/proto';
+import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKey } from '~/types/chain';
@@ -446,7 +446,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const ibcSendProtoTx = useMemo(() => {
     if (ibcSendAminoTx) {
-      return protoTx(ibcSendAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(ibcSendAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+
+      return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
   }, [chain, ibcSendAminoTx]);
