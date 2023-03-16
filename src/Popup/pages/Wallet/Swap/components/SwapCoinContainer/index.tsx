@@ -5,6 +5,7 @@ import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { gt } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
@@ -96,7 +97,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
             &nbsp;
             <Tooltip title={remainder.availableAmount || ''} arrow placement="top">
               <span>
-                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(6)}>
+                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={gt(remainder.availableAmount || '0', '0') ? getDisplayMaxDecimals(6) : 0}>
                   {remainder.availableAmount}
                 </NumberText>
               </span>

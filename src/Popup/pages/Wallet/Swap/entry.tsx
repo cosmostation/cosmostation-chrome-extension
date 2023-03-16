@@ -314,7 +314,7 @@ export default function Entry() {
       return [currentToChain];
     }
     if (squidChainList) {
-      if (currentToChain?.chainId === 'osmosis-1') {
+      if (currentToChain?.chainId === OSMOSIS.chainId) {
         return [...squidEVMList, ...squidCosmosList];
       }
       if (currentToChain?.line === 'COSMOS') {
@@ -365,7 +365,7 @@ export default function Entry() {
     if (!isFromSelected && squidChainList) {
       return [...integratedEVMList, ...squidCosmosList];
     }
-    if (currentFromChain?.supportedApi === '1inch' || currentFromChain?.chainId === 'osmosis-1') {
+    if (currentFromChain?.supportedApi === '1inch' || currentFromChain?.chainId === OSMOSIS.chainId) {
       return [currentFromChain];
     }
     if (currentFromChain?.supportedApi === 'squid' && squidChainList) {
@@ -927,7 +927,9 @@ export default function Entry() {
 
   // FIXME squid fee 고려한 값으로 수정하기
   const maxDisplayAmount = useMemo(() => {
-    const maxAmount = minus(currentFromDisplayBalance, estimatedDisplayFeeAmount);
+    const estimatedDisplayFeeAmount15 = times(estimatedDisplayFeeAmount, 1.2);
+
+    const maxAmount = minus(currentFromDisplayBalance, estimatedDisplayFeeAmount15);
     if (isEqualsIgnoringCase(currentFromCoin?.denom, currentFeeCoin.baseDenom)) {
       return gt(maxAmount, '0') ? maxAmount : '0';
     }
