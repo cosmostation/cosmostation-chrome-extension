@@ -16,6 +16,7 @@ export type UseOneInchSwapSWRProps = {
 
 export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?: SWRConfiguration) {
   // NOTE Need change to COSMOSTATION Addresss
+  // NOTE 설정 fee 비율에 따라 유저는 스왑시 더 적은 수의 토큰을 받게됨
   const referrerAddress = '0xa76C7F20740300505FF26280E4b10873556CF4d0';
   const feeRatio = '2';
 

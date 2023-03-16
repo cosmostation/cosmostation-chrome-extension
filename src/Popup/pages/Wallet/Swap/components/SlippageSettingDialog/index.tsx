@@ -5,7 +5,7 @@ import { Typography } from '@mui/material';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { equal, fix, isDecimal, times } from '~/Popup/utils/big';
+import { equal, fix, gte, isDecimal, times } from '~/Popup/utils/big';
 
 import {
   Container,
@@ -96,7 +96,11 @@ export default function SlippageSettingDialog({ currentSlippage, onClose, onSubm
               placeholder="Custom"
               data-width={Number(times(customSlippage.length, 0.7))}
               onChange={(e) => {
-                if ((!isDecimal(e.currentTarget.value, 2) && e.currentTarget.value) || fix(e.currentTarget.value || '1', 0).length > 2) {
+                if (
+                  (!isDecimal(e.currentTarget.value, 2) && e.currentTarget.value) ||
+                  fix(e.currentTarget.value || '1', 0).length > 2 ||
+                  gte(e.currentTarget.value || '1', 50)
+                ) {
                   return;
                 }
                 setCustomSlippage(e.currentTarget.value);

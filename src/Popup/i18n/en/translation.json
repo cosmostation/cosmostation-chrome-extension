@@ -1154,7 +1154,7 @@
           "excessiveSwap": "Can't swap Token more than Token amounts in the pool",
           "exchangeRate": "Exchange Rate",
           "expectedOutput": "Expected Output",
-          "finalReceiveInfo": "the final amount you receive and the estimated amount may differ. You will receive at least",
+          "finalReceiveInfo": ", the final amount you receive and the estimated amount may differ. You will receive at least",
           "gasFees": "Gas fees before refund",
           "gasFeesInfo": "We overstimate gas by 50% to guarantee your trade. Any gas we don’t use will be refunded by Axelar.",
           "getOneInchSwapError": "Failed to Get Swap Route",
