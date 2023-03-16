@@ -286,10 +286,10 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const isPossibleClaimCommission = useMemo(
     () =>
-      commissionDirectTx
+      chain.id === EVMOS.id
         ? !!commissionDirectTx && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount)
         : !!commissionAminoTx && !!commissionSimulate.data?.gas_info?.gas_used && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount),
-    [commissionAminoTx, commissionDirectTx, commissionSimulate.data?.gas_info?.gas_used, displayAvailableAmount, estimatedCommissionDisplayFeeAmount],
+    [chain.id, commissionAminoTx, commissionDirectTx, commissionSimulate.data?.gas_info?.gas_used, displayAvailableAmount, estimatedCommissionDisplayFeeAmount],
   );
 
   return (

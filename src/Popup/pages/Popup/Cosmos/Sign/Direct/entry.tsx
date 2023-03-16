@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
-import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -17,7 +16,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { cosmosURL, signDirect } from '~/Popup/utils/cosmos';
+import { cosmosURL, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, decodeProtobufMessage, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
@@ -256,7 +255,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     } else {
                       const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
 
-                      const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
+                      const publicKeyType = getPublicKeyType(chain);
 
                       const pubKey = { type: publicKeyType, value: base64PublicKey };
 
