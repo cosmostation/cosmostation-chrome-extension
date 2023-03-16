@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
-import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -17,9 +16,9 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { signDirect } from '~/Popup/utils/cosmos';
+import { cosmosURL, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
-import { decodeProtobufMessage } from '~/Popup/utils/proto';
+import { broadcast, decodeProtobufMessage, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/chromeStorage';
@@ -49,7 +48,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { feeCoins } = useCurrentFeesSWR(chain, { suspense: true });
 
-  const { message, messageId, origin } = queue;
+  const { message, messageId, origin, channel } = queue;
 
   const {
     params: { doc, isEditFee, isEditMemo, gasRate },
@@ -224,33 +223,64 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                     const base64Signature = Buffer.from(signature).toString('base64');
 
-                    const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+                    if (channel) {
+                      try {
+                        const url = cosmosURL(chain).postBroadcast();
+                        const pTxBytes = protoTxBytes({
+                          signature: base64Signature,
+                          txBodyBytes: signedDoc.body_bytes,
+                          authInfoBytes: signedDoc.auth_info_bytes,
+                        });
 
-                    const publicKeyType = PUBLIC_KEY_TYPE.SECP256K1;
+                        const response = await broadcast(url, pTxBytes);
 
-                    const signedDocHex = {
-                      ...doc,
-                      body_bytes: Buffer.from(bodyBytes).toString('hex'),
-                      auth_info_bytes: Buffer.from(authInfoBytes).toString('hex'),
-                    };
-                    const pubKey = { type: publicKeyType, value: base64PublicKey };
+                        const { code } = response.tx_response;
 
-                    const result: CosSignDirectResponse = {
-                      signature: base64Signature,
-                      pub_key: pubKey,
-                      signed_doc: signedDocHex as unknown as SignDirectDoc,
-                    };
+                        if (code === 0) {
+                          enqueueSnackbar('success');
+                        } else {
+                          throw new Error(response.tx_response.raw_log as string);
+                        }
+                      } catch (e) {
+                        enqueueSnackbar(
+                          (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Direct.entry.failedTransfer'),
+                          {
+                            variant: 'error',
+                            autoHideDuration: 3000,
+                          },
+                        );
+                      } finally {
+                        await deQueue();
+                      }
+                    } else {
+                      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
 
-                    responseToWeb({
-                      response: {
-                        result,
-                      },
-                      message,
-                      messageId,
-                      origin,
-                    });
+                      const publicKeyType = getPublicKeyType(chain);
 
-                    await deQueue();
+                      const pubKey = { type: publicKeyType, value: base64PublicKey };
+
+                      const signedDocHex = {
+                        ...doc,
+                        body_bytes: Buffer.from(bodyBytes).toString('hex'),
+                        auth_info_bytes: Buffer.from(authInfoBytes).toString('hex'),
+                      };
+
+                      const result: CosSignDirectResponse = {
+                        signature: base64Signature,
+                        pub_key: pubKey,
+                        signed_doc: signedDocHex as unknown as SignDirectDoc,
+                      };
+
+                      responseToWeb({
+                        response: {
+                          result,
+                        },
+                        message,
+                        messageId,
+                        origin,
+                      });
+                      await deQueue();
+                    }
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                   }

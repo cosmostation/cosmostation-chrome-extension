@@ -172,6 +172,32 @@ export function ChainItemError({ chainName, imageURL, onClick, onClickRetry }: C
   );
 }
 
+type ChainItemTerminatedProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'>;
+
+export function ChainItemTerminated({ chainName, imageURL, onClick }: ChainItemTerminatedProps) {
+  const { t } = useTranslation();
+  return (
+    <ButtonContainer>
+      <StyledButton onClick={onClick}>
+        <LeftContainer>
+          <LeftImageContainer>
+            <Image src={imageURL} />
+          </LeftImageContainer>
+          <LeftTextContainer>
+            <LeftTextChainContainer>
+              <Typography variant="h5">{chainName}</Typography>
+            </LeftTextChainContainer>
+            <LeftTextErrorContainer>
+              <Typography variant="h6">{t('pages.Dashboard.components.ChainItem.index.inactiveNetwork')}</Typography>
+            </LeftTextErrorContainer>
+          </LeftTextContainer>
+        </LeftContainer>
+        <RightContainer />
+      </StyledButton>
+    </ButtonContainer>
+  );
+}
+
 type ChainItemLedgerCheckProps = Pick<ChainItemProps, 'chainName' | 'imageURL' | 'onClick'> & { isSupported?: boolean };
 
 export function ChainItemLedgerCheck({ chainName, imageURL, isSupported, onClick }: ChainItemLedgerCheckProps) {

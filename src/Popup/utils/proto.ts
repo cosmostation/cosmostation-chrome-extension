@@ -6,7 +6,7 @@ import { ibc } from '~/proto/ibc-v5.0.1.js';
 import { osmosis } from '~/proto/osmosis-v13.1.2.js';
 import type { Msg, MsgCommission, MsgExecuteContract, MsgReward, MsgSend, MsgSwapExactAmountIn, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
-import type { Msg as ProtoMsg, MsgSend as ProtoMsgSend, PubKey } from '~/types/cosmos/proto';
+import type { Msg as ProtoMsg, MsgCommission as ProtoMsgCommission, MsgSend as ProtoMsgSend, ProtoTxBytesProps, PubKey } from '~/types/cosmos/proto';
 
 export function convertAminoMessageToProto(msg: Msg) {
   if (isAminoSend(msg)) {
@@ -134,8 +134,8 @@ export function getTxBodyBytes(signed: SignAminoDoc) {
   return cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
 }
 
-export function getAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey) {
-  const signerInfo = getSignerInfo(signed, pubKey);
+export function getAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
+  const signerInfo = getSignerInfo(signed, pubKey, mode);
 
   const fee = new cosmos.tx.v1beta1.Fee({
     amount: signed.fee.amount,
@@ -147,7 +147,7 @@ export function getAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey) {
   return cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
 }
 
-export function getSignerInfo(signed: SignAminoDoc, pubKey: PubKey) {
+export function getSignerInfo(signed: SignAminoDoc, pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
   const publicKey = getPubKey(pubKey);
 
   const typeURL = (() => {
@@ -169,7 +169,7 @@ export function getSignerInfo(signed: SignAminoDoc, pubKey: PubKey) {
     }),
     mode_info: {
       single: {
-        mode: cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
+        mode,
       },
     },
     sequence: Number(signed.sequence),
@@ -182,14 +182,19 @@ export function getPubKey(pubKey: PubKey) {
   return publicKey;
 }
 
-export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey) {
+export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
   const txBodyBytes = getTxBodyBytes(signed);
 
   if (txBodyBytes === null) {
     return null;
   }
 
-  const authInfoBytes = getAuthInfoBytes(signed, pubKey);
+  const authInfoBytes = getAuthInfoBytes(signed, pubKey, mode);
+
+  return { signature, txBodyBytes, authInfoBytes };
+}
+
+export function protoTxBytes({ signature, txBodyBytes, authInfoBytes }: ProtoTxBytesProps) {
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
     body_bytes: txBodyBytes,
     auth_info_bytes: authInfoBytes,
@@ -214,11 +219,19 @@ export function decodeProtobufMessage(msg: google.protobuf.IAny) {
     return { type_url: msg.type_url, value: cosmos.bank.v1beta1.MsgSend.decode(msg.value!) } as ProtoMsg<ProtoMsgSend>;
   }
 
+  if (msg.type_url === '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission') {
+    return { type_url: msg.type_url, value: cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission.decode(msg.value!) } as ProtoMsg<ProtoMsgCommission>;
+  }
+
   return { ...msg, value: msg.value ? Buffer.from(msg.value).toString('hex') : '' } as ProtoMsg<string>;
 }
 
 export function isDirectSend(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgSend> {
   return msg.type_url === '/cosmos.bank.v1beta1.MsgSend';
+}
+
+export function isDirectCommission(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgCommission> {
+  return msg.type_url === '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission';
 }
 
 export function isDirectCustom(msg: ProtoMsg): msg is ProtoMsg {

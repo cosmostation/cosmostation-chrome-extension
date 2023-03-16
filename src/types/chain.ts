@@ -38,6 +38,7 @@ export type Gas = {
 
 export type CosmosChain = {
   line: typeof LINE_TYPE.COSMOS;
+  isTerminated?: boolean;
   type: CosmosType;
   chainId: string;
   baseDenom: string;

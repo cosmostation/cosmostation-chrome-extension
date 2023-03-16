@@ -587,6 +587,7 @@
       "components": {
         "ChainItem": {
           "index": {
+            "inactiveNetwork": "비활성화된 네트워크!",
             "networkError": "네트워크 오류"
           }
         }
@@ -697,6 +698,12 @@
             "components": {
               "TxMessage": {
                 "messages": {
+                  "Commission": {
+                    "index": {
+                      "title": "커미션 받기",
+                      "validatorAddress": "검증자 주소"
+                    }
+                  },
                   "Send": {
                     "index": {
                       "amount": "수량",
@@ -712,6 +719,7 @@
               "confirmButton": "승인",
               "dataTab": "데이터",
               "detailTab": "상세 내역",
+              "failedTransfer": "보내기를 실패했습니다.",
               "insufficientFeeAmount": "수수료가 부족합니다."
             }
           },
@@ -1259,6 +1267,16 @@
               "sendButton": "보내기",
               "unbonding": "위임 해제 수량",
               "vesting": "위임 가능 수량"
+            }
+          },
+          "TerminatedNativeChainCard": {
+            "index": {
+              "copied": "복사 되었습니다.",
+              "depositButton": "입금",
+              "inactiveNetwork": "비활성화된 네트워크!",
+              "inactiveNetworkDescription": "이 네트워크는 더 이상 작동하지 않습니다",
+              "inactiveNetworkSubDescription": "코스모스테이션 월렛은 보관된 데이터만 보여드리고 있으니 참고하세요.",
+              "sendButton": "보내기"
             }
           }
         },

@@ -49,7 +49,7 @@ import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { calcOutGivenIn, calcSpotPrice, decimalScaling } from '~/Popup/utils/osmosis';
-import { protoTx } from '~/Popup/utils/proto';
+import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { AssetV3 } from '~/types/cosmos/asset';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
@@ -871,7 +871,9 @@ export default function Entry() {
 
   const swapProtoTx = useMemo(() => {
     if (swapAminoTx) {
-      return protoTx(swapAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(swapAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
+
+      return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
   }, [chain, swapAminoTx]);
