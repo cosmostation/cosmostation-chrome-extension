@@ -2,11 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import type BigNumber from 'bignumber.js';
 import { rlp } from 'ethereumjs-util';
 import { useSnackbar } from 'notistack';
+import Web3 from 'web3';
+import type { AbiItem } from 'web3-utils';
 import Common, { Hardfork } from '@ethereumjs/common';
 import { TransactionFactory } from '@ethereumjs/tx';
 import EthereumApp, { ledgerService } from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
 
+import { ONE_INCH_ABI, SQUID_ROUTER_ABI } from '~/constants/abi';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
@@ -17,6 +20,7 @@ import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import GasSettingDialog from '~/Popup/components/GasSettingDialog';
 import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
+import { useTokenAssetsSWR } from '~/Popup/hooks/SWR/1inch/useTokenAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useDetermineTxTypeSWR } from '~/Popup/hooks/SWR/ethereum/useDetermineTxTypeSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
@@ -40,6 +44,7 @@ import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
+import type { OneInchSwapTxData } from '~/types/1inch/contract';
 import type { Queue } from '~/types/chromeStorage';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { EthSendTransaction, EthSendTransactionResponse, EthSignTransaction, EthSignTransactionResponse } from '~/types/message/ethereum';
@@ -93,7 +98,7 @@ export default function Entry({ queue }: EntryProps) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const tokens = useTokensSWR();
-  const { currentEthereumTokens } = useCurrentEthereumTokens();
+  const { currentEthereumTokens, addEthereumToken } = useCurrentEthereumTokens();
 
   const allTokens = useMemo(
     () => [
@@ -156,6 +161,7 @@ export default function Entry({ queue }: EntryProps) {
   const [maxPriorityFeePerGas, setMaxPriorityFeePerGas] = useState(
     BigInt(toHex(originEthereumTx.maxPriorityFeePerGas || '0', { addPrefix: true, isStringNumber: true })).toString(10),
   );
+  const oneinchTokenList = useTokenAssetsSWR(String(parseInt(currentEthereumNetwork.chainId, 16)));
 
   const ethereumTx = useMemo(() => {
     const nonce =
@@ -229,6 +235,55 @@ export default function Entry({ queue }: EntryProps) {
     transactionCount.data?.result,
     currentEthereumNetwork.chainId,
   ]);
+
+  const provider = new Web3.providers.HttpProvider(currentEthereumNetwork.rpcURL, {
+    headers: [
+      {
+        name: 'Cosmostation',
+        value: `extension/${String(process.env.VERSION)}`,
+      },
+    ],
+  });
+  const web3 = new Web3(provider);
+
+  const txData = useMemo(() => originEthereumTx.data, [originEthereumTx.data]);
+
+  const encodedFunctionSignature = useMemo(() => txData?.substring(0, 10), [txData]);
+
+  const inputData = useMemo(() => txData?.slice(10), [txData]);
+
+  const functionABI = useMemo(() => {
+    // FIXME 현재 스퀴드 스왑 시 수신 체인의 정보를 해당 페이지에서 가져올 수 있는 방법이 없어
+    // FIXME 수신 체인에 자동으로 토큰 추가는 어려운 상황
+    if (isEqualsIgnoringCase(originEthereumTx.to, '0xce16F69375520ab01377ce7B88f5BA8C48F8D666')) {
+      return SQUID_ROUTER_ABI.filter(
+        (item) => item.type === 'function' && isEqualsIgnoringCase(web3.eth.abi.encodeFunctionSignature(item as AbiItem), encodedFunctionSignature),
+      )[0];
+    }
+    if (isEqualsIgnoringCase(originEthereumTx.to, '0x1111111254eeb25477b68fb85ed929f73a960582')) {
+      return ONE_INCH_ABI.filter(
+        (item) => item.type === 'function' && isEqualsIgnoringCase(web3.eth.abi.encodeFunctionSignature(item as AbiItem), encodedFunctionSignature),
+      )[0];
+    }
+    return undefined;
+  }, [encodedFunctionSignature, originEthereumTx.to, web3.eth.abi]);
+
+  const decodedInputs = useMemo(() => {
+    // if (functionABI && isEqualsIgnoringCase(originEthereumTx.to, '0xce16F69375520ab01377ce7B88f5BA8C48F8D666')) {
+    //   return web3.eth.abi.decodeParameters(functionABI.inputs || [], inputData || '');
+    // }
+    if (functionABI && isEqualsIgnoringCase(originEthereumTx.to, '0x1111111254eeb25477b68fb85ed929f73a960582')) {
+      return web3.eth.abi.decodeParameters(functionABI.inputs || [], inputData || '') as OneInchSwapTxData;
+    }
+    return undefined;
+  }, [functionABI, inputData, originEthereumTx.to, web3.eth.abi]);
+
+  const foundToken = useMemo(() => {
+    if (decodedInputs && oneinchTokenList.data && isEqualsIgnoringCase(originEthereumTx.to, '0x1111111254eeb25477b68fb85ed929f73a960582')) {
+      return Object.values(oneinchTokenList.data.tokens).find((item) => isEqualsIgnoringCase(item.address, decodedInputs?.desc.dstToken));
+    }
+    return undefined;
+  }, [decodedInputs, oneinchTokenList.data, originEthereumTx.to]);
 
   const baseFee = useMemo(() => {
     if (ethereumTx.maxFeePerGas) {
@@ -595,6 +650,15 @@ export default function Entry({ queue }: EntryProps) {
                         }
 
                         await deQueue();
+                      }
+                      if (foundToken) {
+                        const newToken = {
+                          address: foundToken.address,
+                          displayDenom: foundToken.symbol,
+                          decimals: foundToken.decimals,
+                          imageURL: foundToken.logoURI,
+                        };
+                        await addEthereumToken({ ...newToken, tokenType: 'ERC20' });
                       }
                     } catch (e) {
                       enqueueSnackbar((e as { message: string }).message, { variant: 'error' });

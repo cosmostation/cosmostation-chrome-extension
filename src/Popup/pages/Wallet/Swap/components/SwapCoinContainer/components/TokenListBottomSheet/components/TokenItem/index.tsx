@@ -45,12 +45,12 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
 
   const amount = useMemo(
     () =>
-      tokenInfo.denom
+      gt(tokenInfo.availableAmount || '0', '0')
         ? tokenInfo.availableAmount || '0'
         : isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', tokenInfo.address)
         ? BigInt(balance?.data?.result || '0').toString(10)
         : BigInt(tokenBalance.data || '0').toString(10) || '0',
-    [balance?.data?.result, tokenBalance.data, tokenInfo.address, tokenInfo.availableAmount, tokenInfo.denom],
+    [balance?.data?.result, tokenBalance.data, tokenInfo.address, tokenInfo.availableAmount],
   );
 
   const coinDisplayDenomAmount = toDisplayDenomAmount(amount, gt(amount, 0) ? tokenInfo.decimals : 0);

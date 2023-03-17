@@ -91,6 +91,8 @@ import Management24Icon from '~/images/icons/Mangement24.svg';
 import Permission16Icon from '~/images/icons/Permission16.svg';
 import SwapIcon from '~/images/icons/Swap.svg';
 
+import evm_assets from './evm_assets.json';
+
 export type ChainAssetInfo = AssetV3 & { chainName: string; availableAmount?: string };
 
 const STABLE_POOL_TYPE = '/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool';
@@ -115,6 +117,7 @@ export default function Entry() {
   // NOTE Tx컴포넌트 쪽이 전부 currentEthereumNetwork로 되어있어
   // 기존안대로 currentEthereumNetwork를 건드리지 않고 구현하는 방향을 고수하기에는
   // 어렵다고 판단, 기존 새로 만든 훅을 모두 삭제하고 현재 이더리움 네트워크를 변경하는 방안으로 진행
+  // NOTE 쿼리파람으로 넘기는 방향도 괜찮을 듯 함
   const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
   // NOTE 임시로 이전 네트워크를 저장해놓고 뒤로 가거나...
   const [isOpenSlippageDialog, setIsOpenSlippageDialog] = useState(false);
@@ -144,6 +147,11 @@ export default function Entry() {
 
   const [inputDisplayAmount, setInputDisplayAmount] = useState<string>('');
   const [debouncedInputDisplayAmount] = useDebounce(inputDisplayAmount, 400);
+
+  const currentInputBaseAmount = useMemo(
+    () => toBaseDenomAmount(debouncedInputDisplayAmount || 0, currentFromCoin?.decimals || 0),
+    [currentFromCoin?.decimals, debouncedInputDisplayAmount],
+  );
 
   const allowedOneInchTokens = useAllowedTokensSWR();
 
@@ -392,18 +400,12 @@ export default function Entry() {
 
   const currentFromBalance = useMemo(
     () =>
-      currentFromCoin?.denom
+      gt(currentFromCoin?.availableAmount || '0', '0')
         ? currentFromCoin?.availableAmount || '0'
         : isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', currentFromCoin?.address)
         ? BigInt(currentFromETHNativeBalance?.data?.result || '0').toString(10)
         : BigInt(currentFromETHTokenBalance.data || '0').toString(10),
-    [
-      currentFromCoin?.address,
-      currentFromCoin?.availableAmount,
-      currentFromCoin?.denom,
-      currentFromETHNativeBalance?.data?.result,
-      currentFromETHTokenBalance.data,
-    ],
+    [currentFromCoin?.address, currentFromCoin?.availableAmount, currentFromETHNativeBalance?.data?.result, currentFromETHTokenBalance.data],
   );
   const currentFromDisplayBalance = useMemo(
     () => toDisplayDenomAmount(currentFromBalance, currentFromCoin?.decimals || 0),
@@ -415,12 +417,12 @@ export default function Entry() {
 
   const currentToBalance = useMemo(
     () =>
-      currentToCoin?.denom
+      gt(currentToCoin?.availableAmount || '0', '0')
         ? currentToCoin?.availableAmount || '0'
         : isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', currentToCoin?.address)
         ? BigInt(currentToETHNativeBalance?.data?.result || '0').toString(10)
         : BigInt(currentToETHTokenBalance.data || '0').toString(10),
-    [currentToCoin?.address, currentToCoin?.availableAmount, currentToCoin?.denom, currentToETHNativeBalance?.data?.result, currentToETHTokenBalance.data],
+    [currentToCoin?.address, currentToCoin?.availableAmount, currentToETHNativeBalance?.data?.result, currentToETHTokenBalance.data],
   );
 
   const currentToDisplayBalance = useMemo(
@@ -498,7 +500,7 @@ export default function Entry() {
   ]);
 
   const filteredToTokenList: IntegratedSwapToken[] = useMemo(() => {
-    if (currentSwapApi === 'squid') {
+    if (currentSwapApi === 'squid' && currentToChain?.line === 'ETHEREUM') {
       return [
         ...filteredSquidTokenList(currentToChain?.chainId).filter((item) => isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', item.address)),
         ...filteredSquidTokenList(currentToChain?.chainId).filter((item) =>
@@ -509,7 +511,38 @@ export default function Entry() {
             !currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)) &&
             !isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', item.address),
         ),
-      ];
+      ].map((item) => ({
+        ...item,
+        coingeckoId: currentChainAssets.data.find((asset) => asset.counter_party?.denom === item.address)?.coinGeckoId || item.coingeckoId,
+        availableAmount: balance.data?.balance
+          ? balance.data?.balance.find((coin) =>
+              isEqualsIgnoringCase(coin.denom, currentChainAssets.data.find((asset) => asset.counter_party?.denom === item.address)?.denom),
+            )?.amount
+          : '0',
+      }));
+    }
+    // FIXME 코인과 wrapped coin을 matching할 정보가 없음
+    // NOTE 코인 -> wrapped token으로 원래는 변경이 가능하지만 코인, wrapped토큰을 matching할 수 있는 정보가 따로 없음
+    if (currentSwapApi === 'squid' && currentToChain?.line === 'COSMOS') {
+      return [
+        ...filteredSquidTokenList(currentToChain.chainId).filter((item) => item.address === 'uusdc'),
+        ...filteredSquidTokenList(currentToChain.chainId).filter(
+          (item) =>
+            item.address !== 'uusdc' &&
+            isEqualsIgnoringCase(
+              item.address,
+              evm_assets.mainnet.find((asset) => asset.contracts.find((contract) => isEqualsIgnoringCase(contract.address, currentFromCoin?.address)))?.id,
+            ),
+        ),
+      ].map((item) => ({
+        ...item,
+        coingeckoId: currentChainAssets.data.find((asset) => asset.counter_party?.denom === item.address)?.coinGeckoId || item.coingeckoId,
+        availableAmount: balance.data?.balance
+          ? balance.data?.balance.find((coin) =>
+              isEqualsIgnoringCase(coin.denom, currentChainAssets.data.find((asset) => asset.counter_party?.denom === item.address)?.denom),
+            )?.amount
+          : '0',
+      }));
     }
     if (currentSwapApi === '1inch' && oneinchToTokenList.data) {
       return [
@@ -543,14 +576,18 @@ export default function Entry() {
     return [];
   }, [
     currentSwapApi,
+    currentToChain?.line,
+    currentToChain?.chainId,
     oneinchToTokenList.data,
     filteredSquidTokenList,
-    currentToChain?.chainId,
     currentToEthereumTokens,
+    currentChainAssets.data,
+    balance.data?.balance,
+    currentFromCoin?.address,
+    currentFromCoin?.denom,
     filteredAllowedOneInchTokens,
     filteredFromTokenList,
     poolsAssetData.data,
-    currentFromCoin?.denom,
   ]);
 
   const fromTokenPrice = useMemo(
@@ -573,11 +610,6 @@ export default function Entry() {
   }, [chromeStorage.currency, coinGeckoPrice.data, currentEthereumNetwork.coinGeckoId, currentFeeCoin.coinGeckoId, currentSwapApi]);
 
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', fromTokenPrice), [inputDisplayAmount, fromTokenPrice]);
-
-  const currentInputBaseAmount = useMemo(
-    () => toBaseDenomAmount(debouncedInputDisplayAmount || 0, currentFromCoin?.decimals || 0),
-    [currentFromCoin?.decimals, debouncedInputDisplayAmount],
-  );
 
   const squidRouteParam = useMemo<GetRoute | undefined>(() => {
     if (
@@ -828,12 +860,11 @@ export default function Entry() {
     inputDisplayAmount,
   ]);
 
-  // FIXME 일부 오스모 스왑의 케이스에서 잘못된 값 리턴
   const priceImpactPercent = useMemo(() => {
     if (currentSwapApi === 'osmo') {
       try {
         const effective = divide(currentInputBaseAmount, estimatedToTokenBaseAmount);
-        return times(minus(divide(effective, beforeSpotPriceInOverOut), '1'), '100');
+        return times(minus(divide(effective, beforeSpotPriceInOverOut), '1'), '100', 18);
       } catch {
         return '0';
       }
@@ -1436,14 +1467,14 @@ export default function Entry() {
                             <StyledTooltipBodyContainer>
                               <StyledTooltipBodyTextContainer>
                                 <StyledTooltipBodyLeftTextContainer>
-                                  <Typography variant="h7">Source Chain gas</Typography>
+                                  <Typography variant="h7n">Source Chain gas</Typography>
                                 </StyledTooltipBodyLeftTextContainer>
                                 <StyledTooltipBodyRightTextContainer>
-                                  <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={5}>
+                                  <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={gt(squidSourceChainGasDisplayAmount, '0') ? 5 : 0}>
                                     {squidSourceChainGasDisplayAmount}
                                   </NumberText>
                                   &nbsp;
-                                  <Typography variant="h7">{currentEthereumNetwork.displayDenom}</Typography> (
+                                  <Typography variant="h7n">{currentEthereumNetwork.displayDenom}</Typography> (
                                   <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={2} currency={currency}>
                                     {squidSourceChainGasPrice}
                                   </NumberText>
@@ -1452,14 +1483,14 @@ export default function Entry() {
                               </StyledTooltipBodyTextContainer>
                               <StyledTooltipBodyTextContainer>
                                 <StyledTooltipBodyLeftTextContainer>
-                                  <Typography variant="h7">Cross-Chain gas</Typography>
+                                  <Typography variant="h7n">Cross-Chain gas</Typography>
                                 </StyledTooltipBodyLeftTextContainer>
                                 <StyledTooltipBodyRightTextContainer>
-                                  <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={5}>
+                                  <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={gt(squidCrossChainGasDisplayAmount, '0') ? 5 : 0}>
                                     {squidCrossChainGasDisplayAmount}
                                   </NumberText>
                                   &nbsp;
-                                  <Typography variant="h7">{currentEthereumNetwork.displayDenom}</Typography>(
+                                  <Typography variant="h7n">{currentEthereumNetwork.displayDenom}</Typography>(
                                   <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={2} currency={currency}>
                                     {squidCrossChainGasPrice}
                                   </NumberText>
