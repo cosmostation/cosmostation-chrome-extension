@@ -117,7 +117,6 @@ export default function Entry() {
   // NOTE Tx컴포넌트 쪽이 전부 currentEthereumNetwork로 되어있어
   // 기존안대로 currentEthereumNetwork를 건드리지 않고 구현하는 방향을 고수하기에는
   // 어렵다고 판단, 기존 새로 만든 훅을 모두 삭제하고 현재 이더리움 네트워크를 변경하는 방안으로 진행
-  // NOTE 쿼리파람으로 넘기는 방향도 괜찮을 듯 함
   const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
   // NOTE 임시로 이전 네트워크를 저장해놓고 뒤로 가거나...
   const [isOpenSlippageDialog, setIsOpenSlippageDialog] = useState(false);
