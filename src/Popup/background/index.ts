@@ -91,6 +91,14 @@ function background() {
 
   chrome.runtime.onInstalled.addListener((details) => {
     void (async () => {
+      if (details.reason === 'update') {
+        const extensionManifest = chrome.runtime.getManifest();
+        if (extensionManifest.version === '0.4.11') {
+          void (async () => {
+            await setStorage('providers', { keplr: false, metamask: false, aptos: false });
+          })();
+        }
+      }
       if (details.reason === 'install') {
         await setStorage('queues', []);
         await setStorage('windowId', null);
