@@ -93,7 +93,7 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.4.11') {
+        if (extensionManifest.version === '0.4.13') {
           void (async () => {
             await setStorage('providers', { keplr: false, metamask: false, aptos: false });
           })();
