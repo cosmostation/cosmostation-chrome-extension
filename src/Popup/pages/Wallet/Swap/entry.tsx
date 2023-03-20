@@ -657,6 +657,7 @@ export default function Entry() {
   const squidCrossChainFeePrice = useMemo(() => times(squidCrossChainFeeDisplayAmount, feeTokenPrice), [feeTokenPrice, squidCrossChainFeeDisplayAmount]);
 
   // NOTE 1inch ZONE
+  // NOTE 1inch일때만 fetching하도록
   const allowance = useAllowanceSWR({
     tokenAddress: currentFromToken?.address || '',
     walletAddress: currentFromAddress,
