@@ -720,7 +720,8 @@
               "dataTab": "Data",
               "detailTab": "Details",
               "failedTransfer": "Failed to transfer",
-              "insufficientFeeAmount": "Insufficient fee"
+              "insufficientFeeAmount": "Insufficient fee",
+              "invalidAccountType": "Invalid account type (Ledger)"
             }
           },
           "Message": {

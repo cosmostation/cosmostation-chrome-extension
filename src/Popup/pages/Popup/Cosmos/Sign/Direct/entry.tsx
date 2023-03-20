@@ -135,9 +135,12 @@ export default function Entry({ queue, chain }: EntryProps) {
     if (!gte(currentFeeCoin.availableAmount, baseFee)) {
       return t('pages.Popup.Cosmos.Sign.Direct.entry.insufficientFeeAmount');
     }
+    if (currentAccount.type === 'LEDGER') {
+      return t('pages.Popup.Cosmos.Sign.Direct.entry.invalidAccountType');
+    }
 
     return '';
-  }, [baseFee, currentFeeCoin.availableAmount, t]);
+  }, [baseFee, currentAccount.type, currentFeeCoin.availableAmount, t]);
 
   return (
     <Container>
