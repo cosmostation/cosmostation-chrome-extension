@@ -126,7 +126,7 @@ export default function Entry() {
 
           {cosmosChainList.map((item) =>
             item.chain.isTerminated ? (
-              <CosmosChainItemTerminated chain={item.chain} />
+              <CosmosChainItemTerminated chain={item.chain} key={`${currentAccount.id}${item.chain.id}`} />
             ) : (
               <CosmosChainLedgerCheck key={`${currentAccount.id}${item.chain.id}`} chain={item.chain}>
                 <ErrorBoundary
