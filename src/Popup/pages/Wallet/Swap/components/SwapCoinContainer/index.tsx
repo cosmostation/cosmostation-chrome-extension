@@ -27,14 +27,14 @@ import {
 
 type SwapCoinContainerProps = {
   address: string;
-  coinAmountPrice: string;
+  tokenAmountPrice: string;
   headerLeftText: string;
-  availableAmount?: string;
+  availableAmount: string;
   availableChainList?: IntegratedSwapChain[];
   availableCoinList?: IntegratedSwapToken[];
   currentSelectedChain?: IntegratedSwapChain;
   currentSelectedCoin?: IntegratedSwapToken;
-  isChainSelected?: boolean;
+  isChainSelected: boolean;
   children?: JSX.Element;
   onClickCoin?: (clickedCoin: IntegratedSwapToken) => void;
   onClickChain?: (clickedChain: IntegratedSwapChain) => void;
@@ -57,7 +57,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
             <Typography variant="h6">{remainder.headerLeftText}</Typography>
           </HeaderLeftContainer>
           <HeaderRightContainer>
-            <Tooltip title={remainder.address || ''} arrow placement="top">
+            <Tooltip title={remainder.address} arrow placement="top">
               <Typography variant="h6">{shortAddress}</Typography>
             </Tooltip>
           </HeaderRightContainer>
@@ -88,16 +88,16 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
         </BodyContainer>
         <FooterContainer>
           <FooterLeftContainer>
-            <NumberText typoOfDecimals="h7n" typoOfIntegers="h5n" fixed={2} currency={currency}>
-              {remainder.coinAmountPrice}
+            <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2} currency={currency}>
+              {remainder.tokenAmountPrice}
             </NumberText>
           </FooterLeftContainer>
           <FooterRightContainer>
             <Typography variant="h6n"> {t('pages.Wallet.Swap.components.SwapCoinContainer.index.balance')} :</Typography>
             &nbsp;
-            <Tooltip title={remainder.availableAmount || ''} arrow placement="top">
+            <Tooltip title={remainder.availableAmount} arrow placement="top">
               <span>
-                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={gt(remainder.availableAmount || '0', '0') ? getDisplayMaxDecimals(6) : 0}>
+                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={gt(remainder.availableAmount, '0') ? getDisplayMaxDecimals(6) : 0}>
                   {remainder.availableAmount}
                 </NumberText>
               </span>

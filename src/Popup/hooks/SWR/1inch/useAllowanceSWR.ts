@@ -11,8 +11,10 @@ type UseAllowanceSWRProps = {
   chainId: string;
 };
 
-export function useAllowanceSWR({ tokenAddress, walletAddress, chainId }: UseAllowanceSWRProps, config?: SWRConfiguration) {
-  const requestURL = `https://api.1inch.io/v5.0/${chainId}/approve/allowance?tokenAddress=${tokenAddress}&walletAddress=${walletAddress}`;
+export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: SWRConfiguration) {
+  const requestURL =
+    allowanceParam &&
+    `https://api.1inch.io/v5.0/${allowanceParam.chainId}/approve/allowance?tokenAddress=${allowanceParam.tokenAddress}&walletAddress=${allowanceParam.walletAddress}`;
 
   const fetcher = (fetchUrl: string) => get<AllowancePayload>(fetchUrl);
 
@@ -20,7 +22,7 @@ export function useAllowanceSWR({ tokenAddress, walletAddress, chainId }: UseAll
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    isPaused: () => !tokenAddress || !walletAddress || !chainId,
+    isPaused: () => !allowanceParam,
     ...config,
   });
 

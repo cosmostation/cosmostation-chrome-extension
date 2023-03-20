@@ -10,8 +10,9 @@ type UseAllowanceTxSWRProps = {
   chainId: string;
 };
 
-export function useAllowanceTxSWR({ tokenAddress, chainId }: UseAllowanceTxSWRProps, config?: SWRConfiguration) {
-  const requestURL = `https://api.1inch.io/v5.0/${chainId}/approve/transaction?tokenAddress=${tokenAddress}`;
+export function useAllowanceTxSWR(allowanceTxParam?: UseAllowanceTxSWRProps, config?: SWRConfiguration) {
+  const requestURL =
+    allowanceTxParam && `https://api.1inch.io/v5.0/${allowanceTxParam.chainId}/approve/transaction?tokenAddress=${allowanceTxParam.tokenAddress}`;
 
   const fetcher = (fetchUrl: string) => get<AllowanceTxPayload>(fetchUrl);
 
@@ -19,7 +20,7 @@ export function useAllowanceTxSWR({ tokenAddress, chainId }: UseAllowanceTxSWRPr
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    isPaused: () => !tokenAddress || !chainId,
+    isPaused: () => !allowanceTxParam,
     ...config,
   });
 

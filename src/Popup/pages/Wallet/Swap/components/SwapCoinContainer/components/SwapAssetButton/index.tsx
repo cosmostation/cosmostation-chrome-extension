@@ -20,11 +20,11 @@ type SwapAssetButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttribu
   placeholder: string;
   imgUrl?: string;
   title?: string;
-  isActive?: boolean;
+  isActive: boolean;
   isAvailable?: boolean;
 };
 
-export default function SwapAssetButton({ imgUrl, title, isAvailable = true, isActive = false, placeholder, ...remainder }: SwapAssetButtonProps) {
+export default function SwapAssetButton({ imgUrl, title, isAvailable = true, isActive, placeholder, ...remainder }: SwapAssetButtonProps) {
   return (
     <StyledButton {...remainder} disabled={!isAvailable} type="button">
       <ContentContainer>
