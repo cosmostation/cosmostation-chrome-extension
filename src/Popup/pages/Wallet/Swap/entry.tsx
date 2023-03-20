@@ -722,28 +722,6 @@ export default function Entry() {
 
   const oneInchRoute = useOneInchSwapTxSWR(oneInchRouteParam);
 
-  const integratedSwapTx = useMemo(() => {
-    if (allowance.data && gt(allowance?.data?.allowance, '0') && oneInchRoute.data) {
-      return {
-        from: oneInchRoute.data.tx.from,
-        to: oneInchRoute.data.tx.to,
-        data: oneInchRoute.data.tx.data,
-        value: toHex(oneInchRoute.data.tx.value, { addPrefix: true, isStringNumber: true }),
-        gas: toHex(times(oneInchRoute.data.tx.gas, 1.2, 0), { addPrefix: true, isStringNumber: true }),
-      };
-    }
-    if (currentSwapApi === 'squid' && squidRoute.data) {
-      return {
-        from: currentFromAddress,
-        to: squidRoute.data.route.transactionRequest.targetAddress,
-        data: squidRoute.data.route.transactionRequest.data,
-        value: toHex(squidRoute.data.route.transactionRequest.value, { addPrefix: true, isStringNumber: true }),
-        gas: toHex(times(squidRoute.data.route.transactionRequest.gasLimit, 1.2, 0), { addPrefix: true, isStringNumber: true }),
-      };
-    }
-    return undefined;
-  }, [allowance.data, currentFromAddress, currentSwapApi, oneInchRoute.data, squidRoute.data]);
-
   const isLoadingSwapData = useMemo(() => {
     if (currentSwapApi === '1inch') {
       return oneInchRoute.isValidating;
@@ -834,8 +812,8 @@ export default function Entry() {
     if (currentSwapApi === 'squid' && squidRoute.data && squidRoute.data.route.estimate.exchangeRate) {
       return squidRoute.data.route.estimate.exchangeRate;
     }
-    if (currentSwapApi === '1inch' && oneInchRoute.data) {
-      return divide(estimatedToTokenDisplayAmount, gt(inputDisplayAmount, 0) ? inputDisplayAmount : '1');
+    if (currentSwapApi === '1inch' && oneInchRoute.data && gt(inputDisplayAmount, 0)) {
+      return divide(estimatedToTokenDisplayAmount, inputDisplayAmount);
     }
     return '0';
   }, [
@@ -864,6 +842,28 @@ export default function Entry() {
     }
     return '0';
   }, [beforeSpotPriceInOverOut, currentInputBaseAmount, currentSwapApi, estimatedToTokenBaseAmount, squidRoute.data]);
+
+  const integratedSwapTx = useMemo(() => {
+    if (allowance.data && gt(allowance?.data?.allowance, '0') && oneInchRoute.data) {
+      return {
+        from: oneInchRoute.data.tx.from,
+        to: oneInchRoute.data.tx.to,
+        data: oneInchRoute.data.tx.data,
+        value: toHex(oneInchRoute.data.tx.value, { addPrefix: true, isStringNumber: true }),
+        gas: toHex(times(oneInchRoute.data.tx.gas, 1.2, 0), { addPrefix: true }),
+      };
+    }
+    if (currentSwapApi === 'squid' && squidRoute.data) {
+      return {
+        from: currentFromAddress,
+        to: squidRoute.data.route.transactionRequest.targetAddress,
+        data: squidRoute.data.route.transactionRequest.data,
+        value: toHex(squidRoute.data.route.transactionRequest.value, { addPrefix: true }),
+        gas: toHex(times(squidRoute.data.route.transactionRequest.gasLimit, 1.2, 0), { addPrefix: true, isStringNumber: true }),
+      };
+    }
+    return undefined;
+  }, [allowance.data, currentFromAddress, currentSwapApi, oneInchRoute.data, squidRoute.data]);
 
   const memoizedSwapAminoTx = useMemo(() => {
     if (currentSwapApi === 'osmo' && inputDisplayAmount && account.data?.value.account_number) {
