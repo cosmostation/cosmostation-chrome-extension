@@ -4,9 +4,9 @@ import type { Token } from '../1inch/swap';
 import type { CosmosChain, EthereumNetwork } from '../chain';
 import type { AssetV3 } from '../cosmos/asset';
 
-export type IntegratedSwapEVMChain = EthereumNetwork & { line: 'ETHEREUM'; supportedApi: string; addressId: string };
+export type IntegratedSwapEVMChain = EthereumNetwork & { line: 'ETHEREUM'; addressId: string; baseDenom?: string };
 
-export type IntegratedSwapCosmosChain = CosmosChain & { supportedApi: string; addressId: string; networkName: string };
+export type IntegratedSwapCosmosChain = CosmosChain & { addressId: string; networkName: string };
 
 export type IntegratedSwapChain = IntegratedSwapEVMChain | IntegratedSwapCosmosChain;
 

@@ -1134,8 +1134,8 @@
               },
               "TokenListBottomSheet": {
                 "index": {
-                  "searchTokenPlaceholder": "Select a coin",
-                  "tokenBottomListTitle": "Search tokens"
+                  "searchTokenPlaceholder": "Search tokens",
+                  "tokenBottomListTitle": "Select a token"
                 }
               }
             },

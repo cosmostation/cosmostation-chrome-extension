@@ -95,7 +95,9 @@ export default function Routes() {
           <Route path={PATH.WALLET__SEND} element={<WalletSend />}>
             <Route path=":id" element={<WalletSend />} />
           </Route>
-          <Route path={PATH.WALLET__SWAP} element={<WalletSwap />} />
+          <Route path={PATH.WALLET__SWAP} element={<WalletSwap />}>
+            <Route path=":id" element={<WalletSwap />} />
+          </Route>
           <Route path={PATH.WALLET__RECEIVE} element={<WalletReceive />} />
 
           <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />

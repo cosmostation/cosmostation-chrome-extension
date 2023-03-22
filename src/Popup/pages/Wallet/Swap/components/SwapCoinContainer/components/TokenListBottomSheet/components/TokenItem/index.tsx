@@ -1,6 +1,7 @@
 import { forwardRef, useMemo } from 'react';
 import { Typography } from '@mui/material';
 
+import { EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
@@ -47,7 +48,7 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
     () =>
       gt(tokenInfo.availableAmount || '0', '0')
         ? tokenInfo.availableAmount || '0'
-        : isEqualsIgnoringCase('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', tokenInfo.address)
+        : isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, tokenInfo.address)
         ? BigInt(balance?.data?.result || '0').toString(10)
         : BigInt(tokenBalance.data || '0').toString(10) || '0',
     [balance?.data?.result, tokenBalance.data, tokenInfo.address, tokenInfo.availableAmount],

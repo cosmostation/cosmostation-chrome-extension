@@ -1134,8 +1134,8 @@
               },
               "TokenListBottomSheet": {
                 "index": {
-                  "searchTokenPlaceholder": "토큰을 선택하세요",
-                  "tokenBottomListTitle": "토큰 검색"
+                  "searchTokenPlaceholder": "토큰 검색",
+                  "tokenBottomListTitle": "토큰을 선택하세요"
                 }
               }
             },

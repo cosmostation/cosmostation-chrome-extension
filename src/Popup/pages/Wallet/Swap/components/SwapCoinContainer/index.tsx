@@ -88,9 +88,11 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
         </BodyContainer>
         <FooterContainer>
           <FooterLeftContainer>
-            <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2} currency={currency}>
-              {remainder.tokenAmountPrice}
-            </NumberText>
+            {gt(remainder.tokenAmountPrice, '0') && (
+              <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2} currency={currency}>
+                {remainder.tokenAmountPrice}
+              </NumberText>
+            )}
           </FooterLeftContainer>
           <FooterRightContainer>
             <Typography variant="h6n"> {t('pages.Wallet.Swap.components.SwapCoinContainer.index.balance')} :</Typography>

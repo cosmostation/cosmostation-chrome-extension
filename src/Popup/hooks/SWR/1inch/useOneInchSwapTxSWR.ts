@@ -20,10 +20,10 @@ export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?:
   const referrerAddress = '0xa76C7F20740300505FF26280E4b10873556CF4d0';
   const feeRatio = '2';
 
-  const requestURL = swapParam
-    ? `https://api.1inch.io/v5.0/${swapParam.chainId}/swap?fromTokenAddress=${swapParam.fromTokenAddress}&toTokenAddress=${swapParam.toTokenAddress}&amount=${swapParam.amount}&fromAddress=${swapParam.fromAddress}&slippage=${swapParam.slippage}&referrerAddress=${referrerAddress}&fee=${feeRatio}
-  `
-    : '';
+  const requestURL =
+    swapParam &&
+    `https://api.1inch.io/v5.0/${swapParam.chainId}/swap?fromTokenAddress=${swapParam.fromTokenAddress}&toTokenAddress=${swapParam.toTokenAddress}&amount=${swapParam.amount}&fromAddress=${swapParam.fromAddress}&slippage=${swapParam.slippage}&referrerAddress=${referrerAddress}&fee=${feeRatio}
+  `;
 
   const fetcher = (fetchUrl: string) => get<OneInchSwapPayload>(fetchUrl);
 

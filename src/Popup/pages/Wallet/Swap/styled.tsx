@@ -40,12 +40,6 @@ export const SwapIconButton = styled(IconButton)(({ theme }) => ({
     '&:hover': {
       backgroundColor: theme.colors.base05,
     },
-    '&:disabled': {
-      backgroundColor: theme.colors.base01,
-      '&:hover': {
-        backgroundColor: theme.colors.base01,
-      },
-    },
   },
 }));
 
@@ -104,6 +98,10 @@ export const SwapCoinOutputAmountContainer = styled('div')<SwapCoinOutputAmountC
 
 export const OutputAmountCircularProgressContainer = styled('div')({
   height: '4.2rem',
+});
+
+export const MinimumReceivedCircularProgressContainer = styled('div')({
+  height: '2.2rem',
 });
 
 export const BodyContainer = styled('div')({
