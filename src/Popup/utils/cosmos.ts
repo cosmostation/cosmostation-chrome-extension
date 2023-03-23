@@ -214,6 +214,10 @@ export function getMsgSignData(signer: string, message: string) {
 export function getDefaultAV(chain?: CosmosChain) {
   const exceptedChainIds = [PROVENANCE.id, TERITORI.id, CHIHUAHUA.id];
 
+  if (chain?.id === IXO.id) {
+    return '3.0';
+  }
+
   if (exceptedChainIds.includes(chain?.id || '')) {
     return COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV;
   }
