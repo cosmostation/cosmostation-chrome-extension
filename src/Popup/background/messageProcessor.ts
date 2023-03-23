@@ -5,6 +5,7 @@ import sortKeys from 'sort-keys';
 import TinySecp256k1 from 'tiny-secp256k1';
 import { v4 as uuidv4 } from 'uuid';
 import Web3 from 'web3';
+import { keccak256 } from '@ethersproject/keccak256';
 import type { MessageTypes } from '@metamask/eth-sig-util';
 import { SignTypedDataVersion } from '@metamask/eth-sig-util';
 
@@ -1037,7 +1038,12 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           try {
             const validatedParams = (await schema.validateAsync({ ...params, chainName })) as CosVerifyMessage['params'];
 
-            const tx = sha256(JSON.stringify(sortKeys(getMsgSignData(validatedParams.signer, validatedParams.message), { deep: true }))).toString(encHex);
+            const signDoc = JSON.stringify(sortKeys(getMsgSignData(validatedParams.signer, validatedParams.message)));
+
+            const tx =
+              chain?.type === 'ETHERMINT'
+                ? keccak256(Buffer.from(signDoc)).substring(2)
+                : sha256(JSON.stringify(sortKeys(getMsgSignData(validatedParams.signer, validatedParams.message), { deep: true }))).toString(encHex);
 
             const result: CosVerifyMessageResponse = TinySecp256k1.verify(
               Buffer.from(tx, 'hex'),
