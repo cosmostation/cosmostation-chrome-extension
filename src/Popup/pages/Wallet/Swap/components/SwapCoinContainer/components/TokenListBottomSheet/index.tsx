@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
 
+import { useIntersectionObserver } from '~/Popup/hooks/useIntersectionObserver';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 
@@ -25,32 +26,16 @@ export default function TokenListBottomSheet({
   ...remainder
 }: TokenListBottomSheetProps) {
   const { t } = useTranslation();
-
-  const [chainMax, setchainMax] = useState(30);
   const ref = useRef<HTMLButtonElement>(null);
-  const scrollObserver = useRef<HTMLDivElement>(null);
+  const [visibleChainVal, setVisibleChainVal] = useState(30);
 
-  const onIntersect = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
-    const target = entries[0];
-    if (target.isIntersecting) {
-      observer.unobserve(target.target);
-      setchainMax((chainMaxVal) => chainMaxVal + 30);
-      observer.observe(target.target);
+  const onIntersect: IntersectionObserverCallback = ([{ isIntersecting }]) => {
+    if (isIntersecting) {
+      setVisibleChainVal((visibleChainValVal) => visibleChainValVal + 30);
     }
   };
 
-  useEffect(() => {
-    if (!scrollObserver?.current) return;
-
-    const io = new IntersectionObserver(onIntersect, { threshold: 0.1 });
-    io.observe(scrollObserver?.current);
-
-    // eslint-disable-next-line consistent-return
-    return () => {
-      io.disconnect();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scrollObserver]);
+  const { setIntersectionObserver } = useIntersectionObserver(onIntersect, 0.3);
 
   useEffect(() => {
     if (remainder.open) {
@@ -66,8 +51,8 @@ export default function TokenListBottomSheet({
         ? availableTokenList?.filter(
             (item) => item.symbol.toLowerCase().indexOf(search.toLowerCase()) > -1 || item.name.toLowerCase().indexOf(search.toLowerCase()) > -1,
           )
-        : availableTokenList?.slice(0, chainMax),
-    [availableTokenList, chainMax, search],
+        : availableTokenList?.slice(0, visibleChainVal),
+    [availableTokenList, visibleChainVal, search],
   );
 
   return (
@@ -75,6 +60,8 @@ export default function TokenListBottomSheet({
       {...remainder}
       onClose={() => {
         setSearch('');
+        setVisibleChainVal(30);
+
         onClose?.({}, 'backdropClick');
       }}
     >
@@ -88,6 +75,8 @@ export default function TokenListBottomSheet({
           <StyledButton
             onClick={() => {
               setSearch('');
+              setVisibleChainVal(30);
+
               onClose?.({}, 'escapeKeyDown');
             }}
           >
@@ -119,12 +108,14 @@ export default function TokenListBottomSheet({
                 onClickToken={(clickedToken) => {
                   onClickToken?.(clickedToken);
                   setSearch('');
+                  setVisibleChainVal(30);
+
                   onClose?.({}, 'escapeKeyDown');
                 }}
               />
             );
           })}
-          <Div ref={scrollObserver} />
+          <Div ref={setIntersectionObserver} />
         </AssetList>
       </Container>
     </StyledBottomSheet>
