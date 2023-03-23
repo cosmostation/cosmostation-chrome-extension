@@ -5,7 +5,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 
 import TokenItem from './components/TokenItem';
-import { AssetList, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
+import { AssetList, Container, Div, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
 
 import Close24Icon from '~/images/icons/Close24.svg';
 
@@ -26,7 +26,31 @@ export default function TokenListBottomSheet({
 }: TokenListBottomSheetProps) {
   const { t } = useTranslation();
 
+  const [chainMax, setchainMax] = useState(30);
   const ref = useRef<HTMLButtonElement>(null);
+  const scrollObserver = useRef<HTMLDivElement>(null);
+
+  const onIntersect = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+    const target = entries[0];
+    if (target.isIntersecting) {
+      observer.unobserve(target.target);
+      setchainMax((chainMaxVal) => chainMaxVal + 30);
+      observer.observe(target.target);
+    }
+  };
+
+  useEffect(() => {
+    if (!scrollObserver?.current) return;
+
+    const io = new IntersectionObserver(onIntersect, { threshold: 0.1 });
+    io.observe(scrollObserver?.current);
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      io.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrollObserver]);
 
   useEffect(() => {
     if (remainder.open) {
@@ -42,8 +66,8 @@ export default function TokenListBottomSheet({
         ? availableTokenList?.filter(
             (item) => item.symbol.toLowerCase().indexOf(search.toLowerCase()) > -1 || item.name.toLowerCase().indexOf(search.toLowerCase()) > -1,
           )
-        : availableTokenList?.slice(0, 30),
-    [availableTokenList, search],
+        : availableTokenList?.slice(0, chainMax),
+    [availableTokenList, chainMax, search],
   );
 
   return (
@@ -100,6 +124,7 @@ export default function TokenListBottomSheet({
               />
             );
           })}
+          <Div ref={scrollObserver} />
         </AssetList>
       </Container>
     </StyledBottomSheet>

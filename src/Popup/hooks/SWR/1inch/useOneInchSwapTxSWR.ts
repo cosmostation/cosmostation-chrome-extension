@@ -1,9 +1,22 @@
-import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { FEE_RATIO, REFERRER_ADDRESS } from '~/constants/1inch';
 import { get } from '~/Popup/utils/axios';
 import type { OneInchSwapPayload } from '~/types/1inch/swap';
+
+type OneInchSwapError = {
+  statusCode: number;
+  error: string;
+  description: string;
+  requestId: string;
+  meta: [
+    {
+      type: string;
+      value: string;
+    },
+  ];
+};
 
 export type UseOneInchSwapSWRProps = {
   fromTokenAddress: string;
@@ -15,19 +28,16 @@ export type UseOneInchSwapSWRProps = {
 };
 
 export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?: SWRConfiguration) {
-  // NOTE Need change to COSMOSTATION Addresss
-  // NOTE 설정 fee 비율에 따라 유저는 스왑시 더 적은 수의 토큰을 받게됨
-  const referrerAddress = '0xa76C7F20740300505FF26280E4b10873556CF4d0';
-  const feeRatio = '2';
-
   const requestURL =
     swapParam &&
-    `https://api.1inch.io/v5.0/${swapParam.chainId}/swap?fromTokenAddress=${swapParam.fromTokenAddress}&toTokenAddress=${swapParam.toTokenAddress}&amount=${swapParam.amount}&fromAddress=${swapParam.fromAddress}&slippage=${swapParam.slippage}&referrerAddress=${referrerAddress}&fee=${feeRatio}
+    `https://api.1inch.io/v5.0/${swapParam.chainId}/swap?fromTokenAddress=${swapParam.fromTokenAddress}&toTokenAddress=${swapParam.toTokenAddress}&amount=${
+      swapParam.amount
+    }&fromAddress=${swapParam.fromAddress}&slippage=${swapParam.slippage}&referrerAddress=${REFERRER_ADDRESS || ''}&fee=${FEE_RATIO || ''}
   `;
 
   const fetcher = (fetchUrl: string) => get<OneInchSwapPayload>(fetchUrl);
 
-  const { data, isValidating, error, mutate } = useSWR<OneInchSwapPayload, AxiosError>(requestURL, fetcher, {
+  const { data, isValidating, error, mutate } = useSWR<OneInchSwapPayload, OneInchSwapError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,

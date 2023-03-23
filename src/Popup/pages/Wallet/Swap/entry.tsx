@@ -6,14 +6,10 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { ONEINCH_SUPPORTED_CHAINS } from '~/constants/1inch';
 import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS, ETHEREUM_NETWORKS } from '~/constants/chain';
-import { AXELAR } from '~/constants/chain/cosmos/axelar';
-import { COSMOS } from '~/constants/chain/cosmos/cosmos';
-import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
-import { INJECTIVE } from '~/constants/chain/cosmos/injective';
-import { KI } from '~/constants/chain/cosmos/ki';
 import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import { ETHEREUM, EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
 import { CURRENCY_SYMBOL } from '~/constants/currency';
+import { SQUID_SUPPORTED_COSMOS_CHAINS } from '~/constants/squid';
 import AmountInput from '~/Popup/components/common/AmountInput';
 import Button from '~/Popup/components/common/Button';
 import NumberText from '~/Popup/components/common/Number';
@@ -87,6 +83,7 @@ import {
   SwapInfoBodyTextContainer,
   SwapInfoContainer,
   SwapInfoHeaderContainer,
+  SwapInfoHeaderTextContainer,
   SwapInfoSubHeaderContainer,
 } from './styled';
 
@@ -172,7 +169,7 @@ export default function Entry() {
         line: ETHEREUM.line,
         addressId: ETHEREUM.id,
       })),
-    ].filter((chainItem, idx, arr) => arr.findIndex((item) => item.chainId === chainItem.chainId) === idx);
+    ].filter((chainItem, idx, arr) => arr.findIndex((item) => isEqualsIgnoringCase(item.chainId, chainItem.chainId)) === idx);
 
     if (isFromSelected) {
       return [...integratedEVMList, ...squidCosmosList];
@@ -196,11 +193,7 @@ export default function Entry() {
   const [currentFromChain, setCurrentFromChain] = useState<IntegratedSwapChain | undefined>(availableFromChainList.find((item) => item.id === params.id));
 
   const availableToChainList: IntegratedSwapChain[] = useMemo(() => {
-    // NOTE 제외보다는 지원하는(깃헙에 지원하는 체인을 등록) 방향으로 +evm,cosmos둘다
-    // NOTE 데이터 스키마 생각해서 말씀 드리기
-    const exceptedCosmosChainIds = [COSMOS.chainId, AXELAR.chainId, FETCH_AI.chainId, INJECTIVE.chainId, KI.chainId, 'phoenix-1', 'agoric-3'];
-
-    const squidCosmosChainIDList = squidChainList?.filter((item) => !exceptedCosmosChainIds.includes(String(item.chainId))).map((item) => String(item.chainId));
+    const squidSupportedCosmosChainIds = SQUID_SUPPORTED_COSMOS_CHAINS.map(({ chainId }) => chainId);
 
     const squidEVMList = ETHEREUM_NETWORKS.filter((item) =>
       squidChainList?.find(
@@ -213,7 +206,12 @@ export default function Entry() {
       line: ETHEREUM.line,
     }));
 
-    const squidCosmosList = COSMOS_CHAINS.filter((item) => squidCosmosChainIDList?.includes(String(item.chainId))).map((item) => ({
+    const squidCosmosList = COSMOS_CHAINS.filter(
+      (item) =>
+        // NOTE Deleted till next squid upgrade
+        squidSupportedCosmosChainIds.includes(item.chainId) &&
+        squidChainList?.find((squidChain) => squidChain.chainType === 'cosmos' && isEqualsIgnoringCase(item.chainId, String(squidChain.chainId))),
+    ).map((item) => ({
       ...item,
       addressId: item.id,
       networkName: item.chainName,
@@ -227,7 +225,7 @@ export default function Entry() {
         chainId: String(parseInt(item.chainId, 16)),
         line: ETHEREUM.line,
       })),
-    ].filter((chainItem, idx, arr) => arr.findIndex((item) => item.chainId === chainItem.chainId) === idx);
+    ].filter((chainItem, idx, arr) => arr.findIndex((item) => isEqualsIgnoringCase(item.chainId, chainItem.chainId)) === idx);
 
     if (!isFromSelected) {
       return [...integratedEVMList, ...squidCosmosList];
@@ -971,24 +969,27 @@ export default function Entry() {
     return currentFromDisplayBalance;
   }, [currentFromDisplayBalance, estimatedDisplayFeeAmount, currentSwapApi, currentFromToken?.denom, currentFromToken?.address, currentFeeToken?.baseDenom]);
 
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const debouncedEnabled = useDebouncedCallback(() => {
+    setTimeout(() => {
+      setIsDisabled(false);
+    }, 700);
+  }, 700);
+
   const errorMessage = useMemo(() => {
+    if (
+      availableFromChainList.length < 1 ||
+      availableToChainList.length < 1 ||
+      (currentSwapApi && (filteredFromTokenList.length < 1 || filteredToTokenList.length < 1))
+    ) {
+      return t('pages.Wallet.Swap.entry.networkError');
+    }
     if (!inputDisplayAmount || !gt(inputDisplayAmount, '0')) {
       return t('pages.Wallet.Swap.entry.invalidAmount');
     }
     if (!gte(currentFromDisplayBalance, inputDisplayAmount)) {
       return t('pages.Wallet.Swap.entry.insufficientAmount');
-    }
-    if (!gt(estimatedToTokenDisplayAmount, 0)) {
-      return t('pages.Wallet.Swap.entry.invalidOutputAmount');
-    }
-
-    if (isEqualsIgnoringCase(currentFromToken?.address, EVM_NATIVE_TOKEN_ADDRESS)) {
-      if (!gte(currentFromDisplayBalance, plus(inputDisplayAmount, estimatedDisplayFeeAmount))) {
-        return t('pages.Wallet.Swap.entry.insufficientAmount');
-      }
-      if (!gte(currentFromDisplayBalance, estimatedDisplayFeeAmount)) {
-        return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
-      }
     }
 
     if (currentSwapApi === 'osmo') {
@@ -1014,6 +1015,15 @@ export default function Entry() {
         return t('pages.Wallet.Swap.entry.invalidSwapTx');
       }
     }
+
+    if (isEqualsIgnoringCase(currentFromToken?.address, EVM_NATIVE_TOKEN_ADDRESS)) {
+      if (!gte(currentFromDisplayBalance, plus(inputDisplayAmount, estimatedDisplayFeeAmount))) {
+        return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
+      }
+      if (!gte(currentFromDisplayBalance, estimatedDisplayFeeAmount)) {
+        return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
+      }
+    }
     if (currentSwapApi === '1inch') {
       if (!oneInchRoute?.data || !allowance.data) {
         return t('pages.Wallet.Swap.entry.networkError');
@@ -1023,6 +1033,9 @@ export default function Entry() {
       }
     }
     if (currentSwapApi === 'squid') {
+      if (!squidRoute.data) {
+        return t('pages.Wallet.Swap.entry.networkError');
+      }
       if (gt(estimatedToTokenDisplayAmountPrice, 100000)) {
         return t('pages.Wallet.Swap.entry.invalidTxSize');
       }
@@ -1033,14 +1046,21 @@ export default function Entry() {
         return t('pages.Wallet.Swap.entry.invalidSwapTx');
       }
     }
+    if (!gt(estimatedToTokenDisplayAmount, '0')) {
+      return t('pages.Wallet.Swap.entry.invalidOutputAmount');
+    }
     return '';
   }, [
+    availableFromChainList,
+    availableToChainList,
+    currentSwapApi,
+    filteredFromTokenList,
+    filteredToTokenList,
     inputDisplayAmount,
     currentFromDisplayBalance,
     estimatedToTokenDisplayAmount,
     currentFromToken?.address,
     currentFromToken?.denom,
-    currentSwapApi,
     t,
     estimatedDisplayFeeAmount,
     poolData.data,
@@ -1053,23 +1073,51 @@ export default function Entry() {
     oneInchRoute?.data,
     allowance.data,
     integratedSwapTx,
+    squidRoute.data,
     estimatedToTokenDisplayAmountPrice,
+  ]);
+
+  const swapInfoMessage = useMemo(() => {
+    if (currentSwapApi === 'squid' && currentInputBaseAmount && currentToToken) {
+      return `${t('pages.Wallet.Swap.entry.swapInfoDescription1')} (${currentSlippage}%)${t('pages.Wallet.Swap.entry.swapInfoDescription2')} ${fix(
+        estimatedToTokenDisplayMinAmount,
+        gt(estimatedToTokenDisplayMinAmount, '0') ? getDisplayMaxDecimals(currentToToken.decimals) : 0,
+      )} ${currentToToken.symbol} ${
+        gt(estimatedToTokenDisplayAmountPrice, '0') ? `(${CURRENCY_SYMBOL[currency]}${fix(estimatedToTokenDisplayAmountPrice, 3)})` : ''
+      } ${chromeStorage.language === 'ko' ? t('pages.Wallet.Swap.entry.swapInfoDescription3') : ''}`;
+    }
+
+    return '';
+  }, [
+    chromeStorage.language,
+    currency,
+    currentInputBaseAmount,
+    currentSlippage,
+    currentSwapApi,
+    currentToToken,
+    estimatedToTokenDisplayAmountPrice,
+    estimatedToTokenDisplayMinAmount,
+    t,
   ]);
 
   const warningMessage = useMemo(() => {
     if (currentSwapApi === '1inch') {
+      if (oneInchRoute.error) {
+        return oneInchRoute.error.description;
+      }
       if (allowance.data && !gt(allowance.data.allowance, '0')) {
         return t('pages.Wallet.Swap.entry.allowanceWarning');
       }
     }
     if (currentSwapApi === 'squid') {
       if (squidRoute.error) {
-        return squidRoute.error.errors[0].message;
+        return squidRoute.error.errors.map(({ message }) => message).join('\n');
       }
       if (gt(estimatedFeeBaseAmount, currentFeeTokenBalance)) {
-        return `${t('pages.Wallet.Swap.entry.amountLowThanFee')} ${fix(estimatedDisplayFeeAmount, getDisplayMaxDecimals(currentEthereumNetwork.decimals))} ${
-          currentEthereumNetwork.displayDenom
-        } ${t('pages.Wallet.Swap.entry.tryAgain')}`;
+        return `${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription1')} ${fix(
+          estimatedDisplayFeeAmount,
+          getDisplayMaxDecimals(currentEthereumNetwork.decimals),
+        )} ${currentEthereumNetwork.displayDenom} ${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription2')}`;
       }
       if (gt(estimatedToTokenDisplayAmountPrice, '100000')) {
         return t('pages.Wallet.Swap.entry.txSizeWarning');
@@ -1078,25 +1126,24 @@ export default function Entry() {
         return t('pages.Wallet.Swap.entry.liquidityWarning');
       }
       if (currentFeeToken && isEqualsIgnoringCase(currentFromToken?.address, EVM_NATIVE_TOKEN_ADDRESS)) {
-        // FIXME 번역 요청드리고 어쩔 수 없다면 선택된 언어에 따라 분기처리 - 번역에 맞춰서 구성할 것
         if (gt(currentInputBaseAmount, minus(currentFeeTokenBalance, estimatedFeeBaseAmount))) {
-          return `${t('pages.Wallet.Swap.entry.notEnoughBalance')} ${currentFeeToken.displayDenom}${t('pages.Wallet.Swap.entry.notEnoughCoverAmount')} ${fix(
+          return `${t('pages.Wallet.Swap.entry.balanceWarningDescription1')} ${currentFeeToken.displayDenom}${t(
+            'pages.Wallet.Swap.entry.balanceWarningDescription2',
+          )} ${fix(
             toDisplayDenomAmount(minus(currentFeeTokenBalance, estimatedFeeBaseAmount), currentFeeToken.decimals),
             getDisplayMaxDecimals(currentFeeToken.decimals),
-          )} ${currentFeeToken.displayDenom} ${t('pages.Wallet.Swap.entry.setAmountBelowGas')}`;
+          )} ${currentFeeToken.displayDenom} ${t('pages.Wallet.Swap.entry.balanceWarningDescription3')}`;
         }
       }
-      if (currentInputBaseAmount && currentToToken) {
-        return `${t('pages.Wallet.Swap.entry.dueToSlippage')} (${currentSlippage}%)${t('pages.Wallet.Swap.entry.finalReceiveInfo')} ${fix(
-          estimatedToTokenDisplayMinAmount,
-          gt(estimatedToTokenDisplayMinAmount, '0') ? getDisplayMaxDecimals(currentToToken.decimals) : 0,
-        )} ${currentToToken.symbol} (${CURRENCY_SYMBOL[currency]}${fix(estimatedToTokenDisplayAmountPrice, 3)})`;
+      if (!errorMessage && !isDisabled) {
+        return t('pages.Wallet.Swap.entry.receiveWarningMessage');
       }
     }
 
     return '';
   }, [
     currentSwapApi,
+    oneInchRoute.error,
     allowance.data,
     t,
     squidRoute.error,
@@ -1106,14 +1153,12 @@ export default function Entry() {
     priceImpactPercent,
     currentFeeToken,
     currentFromToken?.address,
-    currentInputBaseAmount,
-    currentToToken,
+    errorMessage,
+    isDisabled,
     estimatedDisplayFeeAmount,
     currentEthereumNetwork.decimals,
     currentEthereumNetwork.displayDenom,
-    currentSlippage,
-    estimatedToTokenDisplayMinAmount,
-    currency,
+    currentInputBaseAmount,
   ]);
 
   const inputHelperMessage = useMemo(() => {
@@ -1133,14 +1178,6 @@ export default function Entry() {
     }
     return '';
   }, [allowance.data, allowanceTxBaseFee, currentFeeTokenBalance, t]);
-
-  const [isDisabled, setIsDisabled] = useState(false);
-
-  const debouncedEnabled = useDebouncedCallback(() => {
-    setTimeout(() => {
-      setIsDisabled(false);
-    }, 700);
-  }, 700);
 
   useEffect(() => {
     setIsDisabled(true);
@@ -1335,9 +1372,20 @@ export default function Entry() {
 
           <SwapInfoContainer>
             <SwapInfoHeaderContainer>
-              <Typography variant="h6n">
-                {t('pages.Wallet.Swap.entry.minimumReceived')} ({currentSlippage}%)
-              </Typography>
+              <SwapInfoHeaderTextContainer>
+                <Typography variant="h6n">
+                  {t('pages.Wallet.Swap.entry.minimumReceived')} ({currentSlippage}%)
+                </Typography>
+                {swapInfoMessage && (
+                  <StyledTooltip title={swapInfoMessage} placement="bottom" arrow>
+                    <span>
+                      <SwapInfoBodyLeftIconContainer>
+                        <Info16Icon />
+                      </SwapInfoBodyLeftIconContainer>
+                    </span>
+                  </StyledTooltip>
+                )}
+              </SwapInfoHeaderTextContainer>
               <SwapInfoSubHeaderContainer>
                 {isLoadingSwapData ? (
                   <MinimumReceivedCircularProgressContainer>
@@ -1487,7 +1535,8 @@ export default function Entry() {
                                     {squidSourceChainFeeDisplayAmount}
                                   </NumberText>
                                   &nbsp;
-                                  <Typography variant="h7n">{currentFeeToken?.displayDenom}</Typography> (
+                                  <Typography variant="h7n">{currentFeeToken?.displayDenom}</Typography>
+                                  &nbsp; (
                                   <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={2} currency={currency}>
                                     {squidSourceChainFeePrice}
                                   </NumberText>

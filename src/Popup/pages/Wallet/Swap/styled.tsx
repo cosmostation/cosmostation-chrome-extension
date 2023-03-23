@@ -127,6 +127,12 @@ export const SwapInfoHeaderContainer = styled('div')(({ theme }) => ({
 
   color: theme.colors.text01,
 }));
+export const SwapInfoHeaderTextContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+
+  columnGap: '0.3rem',
+});
 
 export const SwapInfoSubHeaderContainer = styled('div')({
   height: '2.2rem',

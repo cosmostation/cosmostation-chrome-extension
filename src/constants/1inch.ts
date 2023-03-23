@@ -9,3 +9,7 @@ import { POLYGON } from './chain/ethereum/network/polygon';
 import { SMART_CHAIN } from './chain/ethereum/network/smartChain';
 
 export const ONEINCH_SUPPORTED_CHAINS: EthereumNetwork[] = [ETHEREUM, SMART_CHAIN, POLYGON, OPTIMISM, ARBITRUM, AVALANCHE, FANTOM];
+
+export const REFERRER_ADDRESS = undefined;
+
+export const FEE_RATIO = undefined;
