@@ -53,6 +53,7 @@ import { OSMOSIS } from './cosmos/osmosis';
 import { PASSAGE } from './cosmos/passage';
 import { PERSISTENCE } from './cosmos/persistence';
 import { PROVENANCE } from './cosmos/provenance';
+import { QUASAR } from './cosmos/quasar';
 import { QUICK_SILVER } from './cosmos/quickSilver';
 import { REGEN } from './cosmos/regen';
 import { RIZON } from './cosmos/rizon';
@@ -146,6 +147,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   PASSAGE,
   PERSISTENCE,
   PROVENANCE,
+  QUASAR,
   QUICK_SILVER,
   REGEN,
   RIZON,
