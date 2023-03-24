@@ -50,7 +50,6 @@ import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { calcOutGivenIn, calcSpotPrice, decimalScaling } from '~/Popup/utils/osmosis';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
-import type { AssetV3 } from '~/types/cosmos/asset';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 import type { IntegratedSwapAPI } from '~/types/swap/integratedSwap';
 
@@ -93,8 +92,6 @@ import Permission16Icon from '~/images/icons/Permission16.svg';
 import SwapIcon from '~/images/icons/Swap.svg';
 
 import evm_assets from './assets/evm_assets.json';
-
-export type ChainAssetInfo = AssetV3 & { chainName: string; availableAmount?: string };
 
 const STABLE_POOL_TYPE = '/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool';
 const WEIGHTED_POOL_TYPE = '/osmosis.gamm.v1beta1.Pool';
@@ -1013,7 +1010,7 @@ export default function Entry() {
 
     if (isEqualsIgnoringCase(currentFromToken?.address, EVM_NATIVE_TOKEN_ADDRESS)) {
       if (!gte(currentFromDisplayBalance, plus(inputDisplayAmount, estimatedDisplayFeeAmount))) {
-        return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
+        return t('pages.Wallet.Swap.entry.insufficientAmount');
       }
       if (!gte(currentFromDisplayBalance, estimatedDisplayFeeAmount)) {
         return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
@@ -1104,6 +1101,7 @@ export default function Entry() {
         return t('pages.Wallet.Swap.entry.allowanceWarning');
       }
     }
+
     if (currentSwapApi === 'squid') {
       if (squidRoute.error) {
         return squidRoute.error.errors.map(({ message }) => message).join('\n');
@@ -1111,8 +1109,8 @@ export default function Entry() {
       if (gt(estimatedFeeBaseAmount, currentFeeTokenBalance)) {
         return `${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription1')} ${fix(
           estimatedDisplayFeeAmount,
-          getDisplayMaxDecimals(currentEthereumNetwork.decimals),
-        )} ${currentEthereumNetwork.displayDenom} ${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription2')}`;
+          getDisplayMaxDecimals(currentFeeToken?.decimals),
+        )} ${currentFeeToken?.displayDenom || ''} ${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription2')}`;
       }
       if (gt(estimatedToTokenDisplayAmountPrice, '100000')) {
         return t('pages.Wallet.Swap.entry.txSizeWarning');
@@ -1121,7 +1119,7 @@ export default function Entry() {
         return t('pages.Wallet.Swap.entry.liquidityWarning');
       }
       if (currentFeeToken && isEqualsIgnoringCase(currentFromToken?.address, EVM_NATIVE_TOKEN_ADDRESS)) {
-        if (gt(currentInputBaseAmount, minus(currentFeeTokenBalance, estimatedFeeBaseAmount))) {
+        if (gt(plus(currentInputBaseAmount, estimatedFeeBaseAmount), currentFeeTokenBalance)) {
           return `${t('pages.Wallet.Swap.entry.balanceWarningDescription1')} ${currentFeeToken.displayDenom}${t(
             'pages.Wallet.Swap.entry.balanceWarningDescription2',
           )} ${fix(
@@ -1151,8 +1149,6 @@ export default function Entry() {
     errorMessage,
     isDisabled,
     estimatedDisplayFeeAmount,
-    currentEthereumNetwork.decimals,
-    currentEthereumNetwork.displayDenom,
     currentInputBaseAmount,
   ]);
 
@@ -1537,7 +1533,7 @@ export default function Entry() {
                                   <Typography variant="h7n">Source Chain gas</Typography>
                                 </StyledTooltipBodyLeftTextContainer>
                                 <StyledTooltipBodyRightTextContainer>
-                                  ~
+                                  <Typography variant="h7n">~</Typography>
                                   <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={gt(squidSourceChainFeeDisplayAmount, '0') ? 5 : 0}>
                                     {squidSourceChainFeeDisplayAmount}
                                   </NumberText>
