@@ -5,7 +5,7 @@ import type { Queue } from '~/types/chromeStorage';
 
 export function useCurrentQueue() {
   const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { navigate } = useNavigate();
+  const { navigate, navigateBack } = useNavigate();
 
   const { queues } = chromeStorage;
 
@@ -24,6 +24,19 @@ export function useCurrentQueue() {
     return queues.length > 0 ? queues[0] : null;
   };
 
+  const backDeQueue = async () => {
+    const newQueues = queues.slice(1);
+
+    await setChromeStorage('queues', newQueues);
+
+    if (newQueues.length === 0) {
+      await closeWindow(currentQueue?.windowId);
+      navigateBack();
+    }
+
+    return queues.length > 0 ? queues[0] : null;
+  };
+
   const enQueue = async (queue: Queue) => {
     await setChromeStorage('queues', [...queues, queue]);
   };
@@ -31,5 +44,6 @@ export function useCurrentQueue() {
     currentQueue,
     deQueue,
     enQueue,
+    backDeQueue,
   };
 }

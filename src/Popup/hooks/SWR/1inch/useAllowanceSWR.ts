@@ -16,7 +16,7 @@ export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: 
     allowanceParam &&
     `https://api.1inch.io/v5.0/${allowanceParam.chainId}/approve/allowance?tokenAddress=${allowanceParam.tokenAddress}&walletAddress=${allowanceParam.walletAddress}`;
 
-  const fetcher = (fetchUrl: string) => get<AllowancePayload>(fetchUrl);
+  const fetcher = (fetchUrl: string) => get<AllowancePayload>(fetchUrl, { headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache', Expires: '0' } });
 
   const { data, error, mutate } = useSWR<AllowancePayload, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,

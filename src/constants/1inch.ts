@@ -13,3 +13,5 @@ export const ONEINCH_SUPPORTED_CHAINS: EthereumNetwork[] = [ETHEREUM, SMART_CHAI
 export const REFERRER_ADDRESS = undefined;
 
 export const FEE_RATIO = undefined;
+
+export const ONEINCH_CONTRACT_ADDRESS = '0x1111111254eeb25477b68fb85ed929f73a960582';

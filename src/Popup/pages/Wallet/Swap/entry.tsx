@@ -92,7 +92,7 @@ import Management24Icon from '~/images/icons/Mangement24.svg';
 import Permission16Icon from '~/images/icons/Permission16.svg';
 import SwapIcon from '~/images/icons/Swap.svg';
 
-import evm_assets from './evm_assets.json';
+import evm_assets from './assets/evm_assets.json';
 
 export type ChainAssetInfo = AssetV3 & { chainName: string; availableAmount?: string };
 
@@ -122,8 +122,6 @@ export default function Entry() {
   const { squidChainList, filteredSquidTokenList } = useSquidAssetsSWR();
 
   const allowedOneInchTokens = useAllowedTokensSWR();
-
-  // FIXME 토큰 리스팅 자동으로 끝쪽 도달하면 늘어나도록
 
   const [isOpenSlippageDialog, setIsOpenSlippageDialog] = useState(false);
 
@@ -350,13 +348,11 @@ export default function Entry() {
     tokenWeightOut,
   ]);
 
-  const swapCoin = useCallback(async () => {
+  const swapCoin = useCallback(() => {
     const tmpFromToken = currentFromToken;
     const tmpFromChain = currentFromChain;
 
     if (currentSwapApi === 'squid' && currentToChain?.line === 'ETHEREUM') {
-      await setCurrentEthereumNetwork(currentToChain);
-
       setCurrentFromChain(currentToChain);
       setCurrentToChain(tmpFromChain);
     }
@@ -365,7 +361,7 @@ export default function Entry() {
     setCurrentToCoin(tmpFromToken);
 
     setInputDisplayAmount('');
-  }, [currentFromChain, currentFromToken, currentSwapApi, currentToChain, currentToToken, setCurrentEthereumNetwork]);
+  }, [currentFromChain, currentFromToken, currentSwapApi, currentToChain, currentToToken]);
 
   const currentFromAddress = useMemo(
     () => (currentFromChain && accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentFromChain.addressId]) || '',
@@ -376,7 +372,6 @@ export default function Entry() {
     [accounts?.data, currentAccount.id, currentToChain],
   );
 
-  // FIXME 기존에 커런트 체인으로 값 가져오게 되어있어서 그냥 새로 만들어야할듯
   const currentFromETHNativeBalance = useETHBalanceSWR(currentFromChain?.line === 'ETHEREUM' ? currentFromChain : undefined);
   const currentFromETHTokenBalance = useTokenBalanceSWR(currentFromChain?.line === 'ETHEREUM' ? currentFromChain : undefined, currentFromToken);
 
@@ -387,8 +382,7 @@ export default function Entry() {
     () =>
       gt(currentFromToken?.availableAmount || '0', '0')
         ? currentFromToken?.availableAmount || '0'
-        : // NOTE Need research is right
-        isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, currentFromToken?.address)
+        : isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, currentFromToken?.address)
         ? BigInt(currentFromETHNativeBalance?.data?.result || '0').toString(10)
         : BigInt(currentFromETHTokenBalance.data || '0').toString(10),
     [currentFromToken?.address, currentFromToken?.availableAmount, currentFromETHNativeBalance?.data?.result, currentFromETHTokenBalance.data],
@@ -495,6 +489,7 @@ export default function Entry() {
 
     if (currentSwapApi === 'squid' && currentToChain?.line === 'ETHEREUM') {
       const filteredTokenList = filteredSquidTokenList(currentToChain?.chainId);
+
       return [
         ...filteredTokenList.filter((item) => isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address)),
         ...filteredTokenList.filter((item) => currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))),
@@ -1234,6 +1229,12 @@ export default function Entry() {
   }, [chain.id, currentFromChain, currentFromChain?.id, currentToChain, currentToChain?.id]);
 
   useEffect(() => {
+    if (currentSwapApi === '1inch' && currentFromToken) void allowance.mutate();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSwapApi, currentFromToken]);
+
+  useEffect(() => {
     if (!currentFromToken && currentFromChain?.id === OSMOSIS.id && currentSwapApi === 'osmo') {
       setCurrentFromCoin(filteredFromTokenList[0]);
     }
@@ -1241,6 +1242,12 @@ export default function Entry() {
       setCurrentToCoin(filteredToTokenList[0]);
     }
   }, [currentFromChain?.id, currentFromToken, currentSwapApi, currentToChain?.id, currentToToken, filteredFromTokenList, filteredToTokenList]);
+
+  useEffect(() => {
+    if (currentFromChain?.line === 'ETHEREUM') {
+      void setCurrentEthereumNetwork(currentFromChain);
+    }
+  }, [currentFromChain, currentSwapApi, setCurrentEthereumNetwork]);
 
   return (
     <>
@@ -1258,7 +1265,7 @@ export default function Entry() {
               tokenAmountPrice={inputTokenAmountPrice}
               currentSelectedChain={currentFromChain}
               currentSelectedCoin={currentFromToken}
-              onClickChain={async (clickedChain) => {
+              onClickChain={(clickedChain) => {
                 setCurrentFromChain(clickedChain);
                 if (isFromSelected) {
                   setCurrentToChain(undefined);
@@ -1267,9 +1274,6 @@ export default function Entry() {
                 setCurrentFromCoin(undefined);
                 setCurrentToCoin(undefined);
                 setInputDisplayAmount('');
-                if (clickedChain.line === 'ETHEREUM') {
-                  await setCurrentEthereumNetwork(clickedChain);
-                }
               }}
               onClickCoin={(clickedCoin) => {
                 if (currentSwapApi === 'osmo' && currentToToken) {
@@ -1332,11 +1336,13 @@ export default function Entry() {
                 setCurrentToCoin(undefined);
                 setInputDisplayAmount('');
               }}
-              onClickCoin={(clickedCoin) =>
-                currentSwapApi === '1inch' && clickedCoin.address === currentFromToken?.address && clickedCoin.symbol === currentFromToken?.symbol
-                  ? swapCoin()
-                  : setCurrentToCoin(clickedCoin)
-              }
+              onClickCoin={(clickedCoin) => {
+                if (currentSwapApi === '1inch' && clickedCoin.address === currentFromToken?.address && clickedCoin.symbol === currentFromToken?.symbol) {
+                  void swapCoin();
+                } else {
+                  setCurrentToCoin(clickedCoin);
+                }
+              }}
               availableChainList={availableToChainList}
               availableCoinList={filteredToTokenList}
               address={currentToAddress}
@@ -1531,6 +1537,7 @@ export default function Entry() {
                                   <Typography variant="h7n">Source Chain gas</Typography>
                                 </StyledTooltipBodyLeftTextContainer>
                                 <StyledTooltipBodyRightTextContainer>
+                                  ~
                                   <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={gt(squidSourceChainFeeDisplayAmount, '0') ? 5 : 0}>
                                     {squidSourceChainFeeDisplayAmount}
                                   </NumberText>
@@ -1545,14 +1552,15 @@ export default function Entry() {
                               </StyledTooltipBodyTextContainer>
                               <StyledTooltipBodyTextContainer>
                                 <StyledTooltipBodyLeftTextContainer>
-                                  <Typography variant="h7n">Cross-Chain gas</Typography>
+                                  <Typography variant="h7n">Cross-Chain fees</Typography>
                                 </StyledTooltipBodyLeftTextContainer>
                                 <StyledTooltipBodyRightTextContainer>
                                   <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={gt(squidCrossChainFeeDisplayAmount, '0') ? 5 : 0}>
                                     {squidCrossChainFeeDisplayAmount}
                                   </NumberText>
                                   &nbsp;
-                                  <Typography variant="h7n">{currentFeeToken?.displayDenom}</Typography>(
+                                  <Typography variant="h7n">{currentFeeToken?.displayDenom}</Typography>
+                                  &nbsp; (
                                   <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={2} currency={currency}>
                                     {squidCrossChainFeePrice}
                                   </NumberText>

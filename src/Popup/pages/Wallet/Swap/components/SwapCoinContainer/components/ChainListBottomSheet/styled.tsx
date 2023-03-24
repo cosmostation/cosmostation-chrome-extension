@@ -31,11 +31,12 @@ export const StyledSearch20Icon = styled(Search20Icon)(({ theme }) => ({
 
 export const StyledInput = styled(Input)({
   height: '4rem',
-  marginTop: '1.6rem',
+  margin: '1.6rem 0',
 });
 
 export const AssetList = styled('div')({
-  marginTop: '1.6rem',
+  margin: '0 -1.6rem',
+  padding: '0 1.6rem',
 
   display: 'grid',
   gridTemplateColumns: '1fr',

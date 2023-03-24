@@ -105,6 +105,9 @@ export const MinimumReceivedCircularProgressContainer = styled('div')({
 });
 
 export const BodyContainer = styled('div')({
+  margin: '0 -1.6rem',
+  padding: '0 1.6rem',
+
   height: 'calc(100% - 11rem)',
   overflow: 'auto',
 });
@@ -181,7 +184,7 @@ export const StyledTooltip = styled(Tooltip)(({ theme }) => ({
     padding: '0.8rem',
     textAlign: 'start',
 
-    maxWidth: '23rem',
+    maxWidth: '23.5rem',
     maxHeight: 'fit-content',
   },
 }));

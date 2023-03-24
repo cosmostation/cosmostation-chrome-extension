@@ -9,10 +9,12 @@ import { TransactionFactory } from '@ethereumjs/tx';
 import EthereumApp, { ledgerService } from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
 
+import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
 import { ONE_INCH_ABI, SQUID_ROUTER_ABI } from '~/constants/abi';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
+import { SQUID_CONTRACT_ADDRESS } from '~/constants/squid';
 import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -121,7 +123,7 @@ export default function Entry({ queue }: EntryProps) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { currency } = chromeStorage;
-  const { deQueue } = useCurrentQueue();
+  const { deQueue, backDeQueue } = useCurrentQueue();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -253,14 +255,12 @@ export default function Entry({ queue }: EntryProps) {
   const inputData = useMemo(() => txData?.slice(10), [txData]);
 
   const functionABI = useMemo(() => {
-    // FIXME 현재 스퀴드 스왑 시 수신 체인의 정보를 해당 페이지에서 가져올 수 있는 방법이 없어
-    // FIXME 수신 체인에 자동으로 토큰 추가는 어려운 상황
-    if (isEqualsIgnoringCase(originEthereumTx.to, '0xce16F69375520ab01377ce7B88f5BA8C48F8D666')) {
+    if (isEqualsIgnoringCase(originEthereumTx.to, SQUID_CONTRACT_ADDRESS)) {
       return SQUID_ROUTER_ABI.filter(
         (item) => item.type === 'function' && isEqualsIgnoringCase(web3.eth.abi.encodeFunctionSignature(item as AbiItem), encodedFunctionSignature),
       )[0];
     }
-    if (isEqualsIgnoringCase(originEthereumTx.to, '0x1111111254eeb25477b68fb85ed929f73a960582')) {
+    if (isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
       return ONE_INCH_ABI.filter(
         (item) => item.type === 'function' && isEqualsIgnoringCase(web3.eth.abi.encodeFunctionSignature(item as AbiItem), encodedFunctionSignature),
       )[0];
@@ -269,18 +269,15 @@ export default function Entry({ queue }: EntryProps) {
   }, [encodedFunctionSignature, originEthereumTx.to, web3.eth.abi]);
 
   const decodedInputs = useMemo(() => {
-    // if (functionABI && isEqualsIgnoringCase(originEthereumTx.to, '0xce16F69375520ab01377ce7B88f5BA8C48F8D666')) {
-    //   return web3.eth.abi.decodeParameters(functionABI.inputs || [], inputData || '');
-    // }
-    if (functionABI && isEqualsIgnoringCase(originEthereumTx.to, '0x1111111254eeb25477b68fb85ed929f73a960582')) {
+    if (functionABI && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
       return web3.eth.abi.decodeParameters(functionABI.inputs || [], inputData || '') as OneInchSwapTxData;
     }
     return undefined;
   }, [functionABI, inputData, originEthereumTx.to, web3.eth.abi]);
 
   const foundToken = useMemo(() => {
-    if (decodedInputs && oneinchTokenList.data && isEqualsIgnoringCase(originEthereumTx.to, '0x1111111254eeb25477b68fb85ed929f73a960582')) {
-      return Object.values(oneinchTokenList.data.tokens).find((item) => isEqualsIgnoringCase(item.address, decodedInputs?.desc.dstToken));
+    if (decodedInputs && oneinchTokenList.data && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
+      return Object.values(oneinchTokenList.data.tokens).find((item) => isEqualsIgnoringCase(item.address, decodedInputs?.desc?.dstToken));
     }
     return undefined;
   }, [decodedInputs, oneinchTokenList.data, originEthereumTx.to]);
@@ -648,8 +645,11 @@ export default function Entry({ queue }: EntryProps) {
                         if (queue.channel === 'inApp') {
                           enqueueSnackbar('success');
                         }
-
-                        await deQueue();
+                        if (queue.channel === 'inApp' && txType.data?.type === 'approve') {
+                          await backDeQueue();
+                        } else {
+                          await deQueue();
+                        }
                       }
                       if (foundToken) {
                         const newToken = {
