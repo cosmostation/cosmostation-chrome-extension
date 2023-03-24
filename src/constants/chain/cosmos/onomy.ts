@@ -20,6 +20,7 @@ export const ONOMY: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'onomy' },
+  coinGeckoId: 'onomy-protocol',
   explorerURL: `${MINTSCAN_URL}/onomy-protocol`,
   gasRate: {
     tiny: '0',
