@@ -30,11 +30,12 @@ type SwapCoinContainerProps = {
   tokenAmountPrice: string;
   headerLeftText: string;
   availableAmount: string;
+  isChainSelected: boolean;
   availableChainList?: IntegratedSwapChain[];
-  availableCoinList?: IntegratedSwapToken[];
+  availableTokenList?: IntegratedSwapToken[];
   currentSelectedChain?: IntegratedSwapChain;
   currentSelectedCoin?: IntegratedSwapToken;
-  isChainSelected: boolean;
+  isError?: boolean;
   children?: JSX.Element;
   onClickCoin?: (clickedCoin: IntegratedSwapToken) => void;
   onClickChain?: (clickedChain: IntegratedSwapChain) => void;
@@ -69,6 +70,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
                 setisOpenedChainList(true);
               }}
               isActive={isOpenedChainList}
+              isAvailable={!remainder.isError}
               imgUrl={remainder.currentSelectedChain?.imageURL}
               title={remainder.currentSelectedChain?.networkName}
               placeholder={t('pages.Wallet.Swap.components.SwapCoinContainer.index.selectChain')}
@@ -119,7 +121,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
       <TokenListBottomSheet
         currentSelectedChain={remainder.currentSelectedChain}
         currentSelectedToken={remainder.currentSelectedCoin}
-        availableTokenList={remainder.availableCoinList}
+        availableTokenList={remainder.availableTokenList}
         open={isOpenedCoinList}
         onClose={() => setisOpenedCoinList(false)}
         onClickToken={(clickedCoin) => {

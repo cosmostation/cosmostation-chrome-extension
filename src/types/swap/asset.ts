@@ -14,11 +14,10 @@ export type IntegratedSwapCosmosToken = AssetV3 & {
   name: string;
   denom: string;
   availableAmount?: string;
-  coingeckoId?: string;
   logoURI?: string;
   address?: string;
 };
 
-export type IntegratedSwapEVMToken = (Token | TokenData) & { coingeckoId?: string; availableAmount?: string; denom?: string };
+export type IntegratedSwapEVMToken = (Token | TokenData) & { coinGeckoId?: string; availableAmount?: string; denom?: string };
 
 export type IntegratedSwapToken = IntegratedSwapEVMToken | IntegratedSwapCosmosToken;

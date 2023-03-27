@@ -40,6 +40,12 @@ export const SwapIconButton = styled(IconButton)(({ theme }) => ({
     '&:hover': {
       backgroundColor: theme.colors.base05,
     },
+    '&:disabled': {
+      backgroundColor: theme.colors.base01,
+      '&:hover': {
+        backgroundColor: theme.colors.base01,
+      },
+    },
   },
 }));
 
@@ -134,7 +140,7 @@ export const SwapInfoHeaderTextContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
 
-  columnGap: '0.3rem',
+  columnGap: '0.2rem',
 });
 
 export const SwapInfoSubHeaderContainer = styled('div')({

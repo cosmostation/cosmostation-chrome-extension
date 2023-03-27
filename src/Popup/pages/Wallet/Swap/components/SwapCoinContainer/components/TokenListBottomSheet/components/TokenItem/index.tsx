@@ -58,7 +58,7 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const coinPrice = (tokenInfo.coingeckoId && coinGeckoPrice.data?.[tokenInfo.coingeckoId]?.[chromeStorage.currency]) || 0;
+  const coinPrice = (tokenInfo.coinGeckoId && coinGeckoPrice.data?.[tokenInfo.coinGeckoId]?.[chromeStorage.currency]) || 0;
 
   const coinAmountPrice = times(coinDisplayDenomAmount, coinPrice);
 
@@ -95,7 +95,7 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
               </div>
             </Tooltip>
           </TokenRightTitleContainer>
-          {tokenInfo.coingeckoId && (
+          {tokenInfo.coinGeckoId && (
             <TokenRightSubTitleContainer>
               <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
                 {coinAmountPrice}

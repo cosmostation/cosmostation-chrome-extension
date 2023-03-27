@@ -10,11 +10,10 @@ import EthereumApp, { ledgerService } from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
 
 import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
-import { ONE_INCH_ABI, SQUID_ROUTER_ABI } from '~/constants/abi';
+import { ONE_INCH_ABI } from '~/constants/abi';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
-import { SQUID_CONTRACT_ADDRESS } from '~/constants/squid';
 import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -248,18 +247,11 @@ export default function Entry({ queue }: EntryProps) {
   });
   const web3 = new Web3(provider);
 
-  const txData = useMemo(() => originEthereumTx.data, [originEthereumTx.data]);
+  const encodedFunctionSignature = useMemo(() => originEthereumTx.data?.substring(0, 10), [originEthereumTx.data]);
 
-  const encodedFunctionSignature = useMemo(() => txData?.substring(0, 10), [txData]);
-
-  const inputData = useMemo(() => txData?.slice(10), [txData]);
+  const inputData = useMemo(() => originEthereumTx.data?.slice(10), [originEthereumTx.data]);
 
   const functionABI = useMemo(() => {
-    if (isEqualsIgnoringCase(originEthereumTx.to, SQUID_CONTRACT_ADDRESS)) {
-      return SQUID_ROUTER_ABI.filter(
-        (item) => item.type === 'function' && isEqualsIgnoringCase(web3.eth.abi.encodeFunctionSignature(item as AbiItem), encodedFunctionSignature),
-      )[0];
-    }
     if (isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
       return ONE_INCH_ABI.filter(
         (item) => item.type === 'function' && isEqualsIgnoringCase(web3.eth.abi.encodeFunctionSignature(item as AbiItem), encodedFunctionSignature),

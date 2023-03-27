@@ -17,10 +17,10 @@ import BottomArrow from '~/images/icons/BottomArrow.svg';
 import UpArrow from '~/images/icons/UpArrow.svg';
 
 type SwapAssetButtonProps = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
+  isActive: boolean;
   placeholder: string;
   imgUrl?: string;
   title?: string;
-  isActive: boolean;
   isAvailable?: boolean;
 };
 

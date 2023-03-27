@@ -97,7 +97,7 @@ export default function TokenListBottomSheet({
         />
         <AssetList>
           {filteredTokenList?.map((item) => {
-            const isActive = item.symbol === currentSelectedToken?.symbol;
+            const isActive = item.address ? item.address === currentSelectedToken?.address : item.denom === currentSelectedToken?.denom;
             return (
               <TokenItem
                 isActive={isActive}

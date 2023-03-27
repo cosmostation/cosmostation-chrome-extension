@@ -71,7 +71,7 @@ export default function ChainListBottomSheet({ currentSelectedChain, availableCh
         />
         <AssetList>
           {filteredChainList?.map((item) => {
-            const isActive = item.chainId === currentSelectedChain?.chainId;
+            const isActive = item.id === currentSelectedChain?.id;
             return (
               <ChainItem
                 isActive={isActive}
