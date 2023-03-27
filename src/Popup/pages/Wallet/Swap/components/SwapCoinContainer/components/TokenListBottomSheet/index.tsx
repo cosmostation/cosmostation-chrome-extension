@@ -3,6 +3,7 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { useIntersectionObserver } from '~/Popup/hooks/useIntersectionObserver';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 
 import TokenItem from './components/TokenItem';
@@ -97,11 +98,11 @@ export default function TokenListBottomSheet({
         />
         <AssetList>
           {filteredTokenList?.map((item) => {
-            const isActive = item.address ? item.address === currentSelectedToken?.address : item.denom === currentSelectedToken?.denom;
+            const isActive = isEqualsIgnoringCase(item.address, currentSelectedToken?.address);
             return (
               <TokenItem
                 isActive={isActive}
-                key={item.address || item.denom}
+                key={item.address}
                 ref={isActive ? ref : undefined}
                 currentNetwork={currentSelectedChain?.line === 'ETHEREUM' ? currentSelectedChain : undefined}
                 tokenInfo={item}

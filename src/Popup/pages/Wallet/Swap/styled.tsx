@@ -190,7 +190,7 @@ export const StyledTooltip = styled(Tooltip)(({ theme }) => ({
     padding: '0.8rem',
     textAlign: 'start',
 
-    maxWidth: '23.5rem',
+    maxWidth: '23rem',
     maxHeight: 'fit-content',
   },
 }));

@@ -263,10 +263,10 @@ export default function Entry() {
     () =>
       poolsAssetData.data?.find(
         (item) =>
-          (isEqualsIgnoringCase(item.adenom, currentToToken?.denom) && isEqualsIgnoringCase(item.bdenom, currentFromToken?.denom)) ||
-          (isEqualsIgnoringCase(item.adenom, currentFromToken?.denom) && isEqualsIgnoringCase(item.bdenom, currentToToken?.denom)),
+          (isEqualsIgnoringCase(item.adenom, currentToToken?.address) && isEqualsIgnoringCase(item.bdenom, currentFromToken?.address)) ||
+          (isEqualsIgnoringCase(item.adenom, currentFromToken?.address) && isEqualsIgnoringCase(item.bdenom, currentToToken?.address)),
       ),
-    [currentFromToken?.denom, currentToToken?.denom, poolsAssetData.data],
+    [currentFromToken?.address, currentToToken?.address, poolsAssetData.data],
   );
 
   const currentPoolId = useMemo(() => currentPool?.id, [currentPool?.id]);
@@ -287,29 +287,29 @@ export default function Entry() {
   }, [poolData.data]);
 
   const tokenBalanceIn = useMemo(
-    () => poolAssetsTokenList?.find((item) => isEqualsIgnoringCase(item.denom, currentFromToken?.denom))?.amount,
-    [currentFromToken?.denom, poolAssetsTokenList],
+    () => poolAssetsTokenList?.find((item) => isEqualsIgnoringCase(item.denom, currentFromToken?.address))?.amount,
+    [currentFromToken?.address, poolAssetsTokenList],
   );
 
   const tokenWeightIn = useMemo(
     () =>
       poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE
-        ? poolData.data.pool.pool_assets.find((item) => isEqualsIgnoringCase(item.token.denom, currentFromToken?.denom))?.weight
+        ? poolData.data.pool.pool_assets.find((item) => isEqualsIgnoringCase(item.token.denom, currentFromToken?.address))?.weight
         : undefined,
-    [currentFromToken?.denom, poolData.data],
+    [currentFromToken?.address, poolData.data],
   );
 
   const tokenBalanceOut = useMemo(
-    () => poolAssetsTokenList?.find((item) => isEqualsIgnoringCase(item.denom, currentToToken?.denom))?.amount,
-    [currentToToken?.denom, poolAssetsTokenList],
+    () => poolAssetsTokenList?.find((item) => isEqualsIgnoringCase(item.denom, currentToToken?.address))?.amount,
+    [currentToToken?.address, poolAssetsTokenList],
   );
 
   const tokenWeightOut = useMemo(
     () =>
       poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE
-        ? poolData.data.pool.pool_assets.find((item) => isEqualsIgnoringCase(item.token.denom, currentToToken?.denom))?.weight
+        ? poolData.data.pool.pool_assets.find((item) => isEqualsIgnoringCase(item.token.denom, currentToToken?.address))?.weight
         : undefined,
-    [currentToToken?.denom, poolData.data],
+    [currentToToken?.address, poolData.data],
   );
 
   const scalingFactors = useMemo(
@@ -326,16 +326,16 @@ export default function Entry() {
         tokenWeightIn,
         tokenBalanceOut,
         tokenWeightOut,
-        currentToToken?.denom,
-        currentFromToken?.denom,
+        currentToToken?.address,
+        currentFromToken?.address,
         scalingFactors,
       );
     } catch {
       return '0';
     }
   }, [
-    currentToToken?.denom,
-    currentFromToken?.denom,
+    currentToToken?.address,
+    currentFromToken?.address,
     poolAssetsTokenList,
     scalingFactors,
     osmoSwapFeeRate,
@@ -453,6 +453,7 @@ export default function Entry() {
           .filter((item) => uniquePoolDenomList.includes(item.denom))
           .map((item) => ({
             ...item,
+            address: item.denom,
             name: getCapitalize(item.prevChain || item.origin_chain),
             availableAmount: balance.data?.balance ? balance.data?.balance.find((coin) => isEqualsIgnoringCase(coin.denom, item.denom))?.amount : '0',
             logoURI: item.image,
@@ -547,8 +548,8 @@ export default function Entry() {
       return filteredFromTokenList.filter((coin) =>
         poolsAssetData.data?.find(
           (item) =>
-            (isEqualsIgnoringCase(item.adenom, coin.denom) && isEqualsIgnoringCase(item.bdenom, currentFromToken?.denom)) ||
-            (isEqualsIgnoringCase(item.adenom, currentFromToken?.denom) && isEqualsIgnoringCase(item.bdenom, coin.denom)),
+            (isEqualsIgnoringCase(item.adenom, coin.address) && isEqualsIgnoringCase(item.bdenom, currentFromToken?.address)) ||
+            (isEqualsIgnoringCase(item.adenom, currentFromToken?.address) && isEqualsIgnoringCase(item.bdenom, coin.address)),
         ),
       );
     }
@@ -561,7 +562,6 @@ export default function Entry() {
     filteredSquidTokenList,
     currentChainAssets.data,
     currentFromToken?.address,
-    currentFromToken?.denom,
     balance.data?.balance,
     filteredAllowedOneInchTokens,
     filteredFromTokenList,
@@ -735,8 +735,8 @@ export default function Entry() {
           tokenWeightIn,
           tokenBalanceOut,
           tokenWeightOut,
-          currentFromToken?.denom,
-          currentToToken?.denom,
+          currentFromToken?.address,
+          currentToToken?.address,
           scalingFactors,
         );
       } catch {
@@ -750,10 +750,10 @@ export default function Entry() {
     }
     return '0';
   }, [
-    currentFromToken?.denom,
+    currentFromToken?.address,
     currentInputBaseAmount,
     currentSwapApi,
-    currentToToken?.denom,
+    currentToToken?.address,
     oneInchRoute.data,
     poolAssetsTokenList,
     scalingFactors,
@@ -858,13 +858,13 @@ export default function Entry() {
               routes: [
                 {
                   pool_id: currentPoolId,
-                  token_out_denom: currentToToken?.denom,
+                  token_out_denom: currentToToken?.address,
                 },
               ],
               sender: address,
               token_in: {
                 amount: currentInputBaseAmount,
-                denom: currentFromToken?.denom,
+                denom: currentFromToken?.address,
               },
               token_out_min_amount: fix(estimatedToTokenBaseMinAmount, 0),
             },
@@ -883,10 +883,10 @@ export default function Entry() {
     nodeInfo.data?.node_info?.network,
     osmosisChain.chainId,
     currentPoolId,
-    currentToToken?.denom,
+    currentToToken?.address,
     address,
     currentInputBaseAmount,
-    currentFromToken?.denom,
+    currentFromToken?.address,
     estimatedToTokenBaseMinAmount,
   ]);
 
@@ -949,7 +949,7 @@ export default function Entry() {
     const maxAmount = minus(currentFromDisplayBalance, estimatedDisplayFeeAmount);
 
     if (currentSwapApi === 'osmo') {
-      if (isEqualsIgnoringCase(currentFromToken?.denom, currentFeeToken?.baseDenom)) {
+      if (isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken?.baseDenom)) {
         return gt(maxAmount, '0') ? maxAmount : '0';
       }
     }
@@ -959,7 +959,7 @@ export default function Entry() {
       }
     }
     return currentFromDisplayBalance;
-  }, [currentFromDisplayBalance, estimatedDisplayFeeAmount, currentSwapApi, currentFromToken?.denom, currentFromToken?.address, currentFeeToken?.baseDenom]);
+  }, [currentFromDisplayBalance, estimatedDisplayFeeAmount, currentSwapApi, currentFromToken?.address, currentFeeToken?.baseDenom]);
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -992,7 +992,7 @@ export default function Entry() {
         return t('pages.Wallet.Swap.entry.excessiveSwap');
       }
 
-      if (currentFromToken?.denom === currentFeeToken?.baseDenom) {
+      if (currentFromToken?.address === currentFeeToken?.baseDenom) {
         if (!gte(currentFromDisplayBalance, plus(inputDisplayAmount, estimatedDisplayFeeAmount))) {
           return t('pages.Wallet.Swap.entry.insufficientAmount');
         }
@@ -1052,7 +1052,6 @@ export default function Entry() {
     currentFromDisplayBalance,
     estimatedToTokenDisplayAmount,
     currentFromToken?.address,
-    currentFromToken?.denom,
     t,
     estimatedDisplayFeeAmount,
     poolData.data,

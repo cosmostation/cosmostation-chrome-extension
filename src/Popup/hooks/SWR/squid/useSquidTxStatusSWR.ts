@@ -3,12 +3,14 @@ import useSWR from 'swr';
 import type { GetStatus, StatusResponse } from '@0xsquid/sdk';
 import { Squid } from '@0xsquid/sdk';
 
-export function useSquidTxStatusSWR(tx: GetStatus, config?: SWRConfiguration) {
-  const squid = new Squid({
-    baseUrl: 'https://api.0xsquid.com',
-  });
+import { SQUID_BASE_URL } from '~/constants/squid';
 
+export function useSquidTxStatusSWR(tx: GetStatus, config?: SWRConfiguration) {
   const fetcher = async (txhash: GetStatus) => {
+    const squid = new Squid({
+      baseUrl: SQUID_BASE_URL,
+    });
+
     await squid.init();
     const status = await squid.getStatus(txhash);
     return status;

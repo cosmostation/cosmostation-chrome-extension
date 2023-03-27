@@ -2,12 +2,14 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 import { Squid } from '@0xsquid/sdk';
 
-export function useSquidSDKSWR(config?: SWRConfiguration) {
-  const squid = new Squid({
-    baseUrl: 'https://api.0xsquid.com',
-  });
+import { SQUID_BASE_URL } from '~/constants/squid';
 
-  const fetcher = async () => {
+export function useSquidSDKSWR(config?: SWRConfiguration) {
+  const fetcher = async (baseUrl: string) => {
+    const squid = new Squid({
+      baseUrl,
+    });
+
     try {
       await squid.init();
       return squid;
@@ -16,7 +18,7 @@ export function useSquidSDKSWR(config?: SWRConfiguration) {
     }
   };
 
-  const { data, error, mutate } = useSWR<Squid | null, unknown>('key', fetcher, {
+  const { data, error, mutate } = useSWR<Squid | null, unknown>(SQUID_BASE_URL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,

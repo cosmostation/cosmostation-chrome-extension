@@ -11,13 +11,12 @@ export type IntegratedSwapCosmosChain = CosmosChain & { addressId: string; netwo
 export type IntegratedSwapChain = IntegratedSwapEVMChain | IntegratedSwapCosmosChain;
 
 export type IntegratedSwapCosmosToken = AssetV3 & {
+  address: string;
   name: string;
-  denom: string;
   availableAmount?: string;
   logoURI?: string;
-  address?: string;
 };
 
-export type IntegratedSwapEVMToken = (Token | TokenData) & { coinGeckoId?: string; availableAmount?: string; denom?: string };
+export type IntegratedSwapEVMToken = (Token | TokenData) & { availableAmount?: string; coinGeckoId?: string };
 
 export type IntegratedSwapToken = IntegratedSwapEVMToken | IntegratedSwapCosmosToken;

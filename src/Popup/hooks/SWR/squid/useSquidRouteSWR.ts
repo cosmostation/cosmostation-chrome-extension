@@ -3,6 +3,8 @@ import useSWR from 'swr';
 import type { GetRoute, RouteResponse } from '@0xsquid/sdk';
 import { Squid } from '@0xsquid/sdk';
 
+import { SQUID_BASE_URL } from '~/constants/squid';
+
 type RouteError = {
   errors: {
     error: string;
@@ -12,11 +14,11 @@ type RouteError = {
 };
 
 export function useSquidRouteSWR(routeParam?: GetRoute, config?: SWRConfiguration) {
-  const squid = new Squid({
-    baseUrl: 'https://api.0xsquid.com',
-  });
-
   const fetcher = async (param: GetRoute) => {
+    const squid = new Squid({
+      baseUrl: SQUID_BASE_URL,
+    });
+
     await squid.init();
     return squid.getRoute(param);
   };
