@@ -3,7 +3,7 @@ import coreumImg from '~/images/symbols/coreum.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const COREUM: CosmosChain = {
-  id: '7df39cb6-ccd2-4316-956c-8be1f30f9f36',
+  id: 'ba442a81-f6cc-449c-9b53-657006634413',
   line: 'COSMOS',
   type: '',
   chainId: 'coreum-mainnet-1',
@@ -19,7 +19,7 @@ export const COREUM: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  bech32Prefix: { address: 'coreum' },
+  bech32Prefix: { address: 'core' },
   coinGeckoId: 'coreum',
   explorerURL: `${MINTSCAN_URL}/coreum`,
   gasRate: {
