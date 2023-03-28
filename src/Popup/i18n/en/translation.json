@@ -1159,6 +1159,7 @@
           "gasFees": "Gas fees before refund",
           "gasFeesInfo": "We overstimate gas by 50% to guarantee your trade. Any gas we don’t use will be refunded by Axelar.",
           "insufficientAmount": "Insufficient amount",
+          "insufficientBalance": "Insufficient balance",
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",
           "invalidOutputAmount": "Invalid output amount",

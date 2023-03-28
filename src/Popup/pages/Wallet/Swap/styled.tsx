@@ -162,22 +162,6 @@ export const StyledTooltipBodyContainer = styled('div')({
   columnGap: '0.3rem',
 });
 
-export const StyledTooltipBodyTextContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-});
-
-export const StyledTooltipBodyLeftTextContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text02,
-}));
-
-export const StyledTooltipBodyRightTextContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-});
-
 export const StyledTooltip = styled(Tooltip)(({ theme }) => ({
   [`& .${tooltipClasses.arrow}`]: {
     color: theme.colors.base02,

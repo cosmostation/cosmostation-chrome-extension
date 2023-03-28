@@ -1159,6 +1159,7 @@
           "gasFees": "가스비 (환불 전)",
           "gasFeesInfo": "스왑 tx 전송을 보장하기 위해 Axelar 에서는 가스비를 50% 높게 책정하고 있습니다. 미사용분은 사용자에게 환불됩니다.",
           "insufficientAmount": "수량이 부족합니다.",
+          "insufficientBalance": "잔액이 부족합니다.",
           "insufficientFeeAmount": "수수료가 부족합니다.",
           "invalidAmount": "수량을 입력하세요.",
           "invalidOutputAmount": "예상 교환치가 없습니다.",
