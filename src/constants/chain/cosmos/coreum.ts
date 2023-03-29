@@ -23,9 +23,9 @@ export const COREUM: CosmosChain = {
   coinGeckoId: 'coreum',
   explorerURL: `${MINTSCAN_URL}/coreum`,
   gasRate: {
-    tiny: '0.00000000000000001',
-    low: '0.0000000000000001',
-    average: '0.000000000000001',
+    tiny: '0.05',
+    low: '0.5',
+    average: '0.5',
   },
   gas: {},
 };
