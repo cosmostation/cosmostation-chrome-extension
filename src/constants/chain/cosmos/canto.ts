@@ -1,4 +1,4 @@
-import { MINTSCAN_URL } from '~/constants/common';
+// import { MINTSCAN_URL } from '~/constants/common';
 import cantoImg from '~/images/symbols/canto.png';
 import type { CosmosChain } from '~/types/chain';
 
@@ -21,7 +21,7 @@ export const CANTO: CosmosChain = {
   },
   bech32Prefix: { address: 'canto' },
   coinGeckoId: 'canto',
-  explorerURL: `${MINTSCAN_URL}/canto`,
+  // explorerURL: `${MINTSCAN_URL}/canto`,
   gasRate: {
     tiny: '1500000000000',
     low: '1500000000000',
