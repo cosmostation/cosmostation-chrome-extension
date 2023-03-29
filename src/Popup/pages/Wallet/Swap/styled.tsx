@@ -162,19 +162,40 @@ export const StyledTooltipBodyContainer = styled('div')({
   columnGap: '0.3rem',
 });
 
-export const StyledTooltip = styled(Tooltip)(({ theme }) => ({
+export const SwapInfoStyledTooltip = styled(Tooltip)(({ theme }) => ({
   [`& .${tooltipClasses.arrow}`]: {
     color: theme.colors.base02,
+    marginLeft: '1.75rem',
   },
   [`& .${tooltipClasses.tooltip}`]: {
     marginTop: '0.7rem !important',
+    marginRight: '3.5rem !important',
 
     backgroundColor: theme.colors.base02,
 
     padding: '0.8rem',
     textAlign: 'start',
 
-    maxWidth: '23rem',
+    maxWidth: '23.5rem',
+    maxHeight: 'fit-content',
+  },
+}));
+
+export const GasInfoStyledTooltip = styled(Tooltip)(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.colors.base02,
+    marginLeft: '-1.5rem',
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    marginBottom: '0.7rem !important',
+    marginLeft: '3rem',
+
+    backgroundColor: theme.colors.base02,
+
+    padding: '0.8rem',
+    textAlign: 'start',
+
+    maxWidth: '26.7rem',
     maxHeight: 'fit-content',
   },
 }));

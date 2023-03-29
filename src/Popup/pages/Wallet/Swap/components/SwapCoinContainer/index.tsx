@@ -27,10 +27,10 @@ import {
 
 type SwapCoinContainerProps = {
   address: string;
-  tokenAmountPrice: string;
+  balance: string;
   headerLeftText: string;
-  availableAmount: string;
   isChainSelected: boolean;
+  tokenAmountPrice: string;
   availableChainList?: IntegratedSwapChain[];
   availableTokenList?: IntegratedSwapToken[];
   currentSelectedChain?: IntegratedSwapChain;
@@ -99,10 +99,10 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
           <FooterRightContainer>
             <Typography variant="h6n"> {t('pages.Wallet.Swap.components.SwapCoinContainer.index.balance')} :</Typography>
             &nbsp;
-            <Tooltip title={remainder.availableAmount} arrow placement="top">
+            <Tooltip title={remainder.balance} arrow placement="top">
               <span>
-                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={gt(remainder.availableAmount, '0') ? getDisplayMaxDecimals(6) : 0}>
-                  {remainder.availableAmount}
+                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={gt(remainder.balance, '0') ? getDisplayMaxDecimals(6) : 0}>
+                  {remainder.balance}
                 </NumberText>
               </span>
             </Tooltip>

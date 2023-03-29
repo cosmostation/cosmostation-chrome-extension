@@ -1159,7 +1159,6 @@
           "gasFees": "가스비 (환불 전)",
           "gasFeesInfo": "스왑 tx 전송을 보장하기 위해 Axelar 에서는 가스비를 50% 높게 책정하고 있습니다. 미사용분은 사용자에게 환불됩니다.",
           "insufficientAmount": "수량이 부족합니다.",
-          "insufficientBalance": "잔액이 부족합니다.",
           "insufficientFeeAmount": "수수료가 부족합니다.",
           "invalidAmount": "수량을 입력하세요.",
           "invalidOutputAmount": "예상 교환치가 없습니다.",
@@ -1182,6 +1181,10 @@
           "title": "교환",
           "txCost": "Tx 가격",
           "txSizeWarning": "1회 스왑할 수 있는 최대 금액은 $10,000 입니다. 스왑 금액을 낮추고 다시 시도하세요."
+        },
+        "index": {
+          "fetchingData": "데이터를 가져오는 중입니다",
+          "networkError": "네트워크 오류"
         }
       },
       "components": {

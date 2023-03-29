@@ -1,4 +1,4 @@
-import type { CosmosChain } from '~/types/chain';
+import type { CosmosChain, EthereumNetwork } from '~/types/chain';
 
 import { ASSET_MANTLE } from './chain/cosmos/assetMantle';
 import { COMDEX } from './chain/cosmos/comdex';
@@ -11,6 +11,14 @@ import { REGEN } from './chain/cosmos/regen';
 import { SECRET } from './chain/cosmos/secret';
 import { STARGAZE } from './chain/cosmos/stargaze';
 import { UMEE } from './chain/cosmos/umee';
+import { ARBITRUM } from './chain/ethereum/network/arbitrum';
+import { AVALANCHE } from './chain/ethereum/network/avalanche';
+import { ETHEREUM } from './chain/ethereum/network/ethereum';
+import { FANTOM } from './chain/ethereum/network/fantom';
+import { POLYGON } from './chain/ethereum/network/polygon';
+import { SMART_CHAIN } from './chain/ethereum/network/smartChain';
+
+export const SQUID_SUPPORTED_EVM_CHAINS: EthereumNetwork[] = [ETHEREUM, ARBITRUM, AVALANCHE, POLYGON, SMART_CHAIN, FANTOM];
 
 export const SQUID_SUPPORTED_COSMOS_CHAINS: CosmosChain[] = [ASSET_MANTLE, COMDEX, CRESCENT, EVMOS, JUNO, KUJIRA, OSMOSIS, REGEN, SECRET, STARGAZE, UMEE];
 
