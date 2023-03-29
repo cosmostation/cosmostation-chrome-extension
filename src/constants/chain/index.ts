@@ -24,6 +24,7 @@ import { CANTO } from './cosmos/canto';
 import { CERBERUS } from './cosmos/cerberus';
 import { CHIHUAHUA } from './cosmos/chihuahua';
 import { COMDEX } from './cosmos/comdex';
+import { COREUM } from './cosmos/coreum';
 import { COSMOS } from './cosmos/cosmos';
 import { CRESCENT } from './cosmos/crescent';
 import { CRYPTO_ORG } from './cosmos/cryptoOrg';
@@ -118,6 +119,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   CERBERUS,
   CHIHUAHUA,
   COMDEX,
+  COREUM,
   CRESCENT,
   CRYPTO_ORG,
   CUDOS,
