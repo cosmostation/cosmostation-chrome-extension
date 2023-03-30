@@ -12,10 +12,10 @@ import { AssetList, Container, Div, Header, HeaderTitle, StyledBottomSheet, Styl
 import Close24Icon from '~/images/icons/Close24.svg';
 
 type TokenListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
+  availableTokenList?: IntegratedSwapToken[];
   currentSelectedChain?: IntegratedSwapChain;
   currentSelectedToken?: IntegratedSwapToken;
-  availableTokenList?: IntegratedSwapToken[];
-  onClickToken?: (clickedToken: IntegratedSwapToken) => void;
+  onClickToken: (clickedToken: IntegratedSwapToken) => void;
 };
 
 export default function TokenListBottomSheet({
@@ -28,11 +28,13 @@ export default function TokenListBottomSheet({
 }: TokenListBottomSheetProps) {
   const { t } = useTranslation();
   const ref = useRef<HTMLButtonElement>(null);
-  const [visibleChainVal, setVisibleChainVal] = useState(30);
+  const topRef = useRef<HTMLDivElement>(null);
+
+  const [viewLimit, setViewLimit] = useState(30);
 
   const onIntersect: IntersectionObserverCallback = ([{ isIntersecting }]) => {
     if (isIntersecting) {
-      setVisibleChainVal((visibleChainValVal) => visibleChainValVal + 30);
+      setViewLimit((limit) => limit + 30);
     }
   };
 
@@ -49,19 +51,27 @@ export default function TokenListBottomSheet({
   const filteredTokenList = useMemo(
     () =>
       search.length > 1
-        ? availableTokenList?.filter(
-            (item) => item.symbol.toLowerCase().indexOf(search.toLowerCase()) > -1 || item.name.toLowerCase().indexOf(search.toLowerCase()) > -1,
-          )
-        : availableTokenList?.slice(0, visibleChainVal),
-    [availableTokenList, visibleChainVal, search],
+        ? availableTokenList
+            ?.filter((item) => item.symbol.toLowerCase().indexOf(search.toLowerCase()) > -1 || item.name.toLowerCase().indexOf(search.toLowerCase()) > -1)
+            .slice(0, viewLimit) || []
+        : availableTokenList?.slice(0, viewLimit) || [],
+    [availableTokenList, viewLimit, search],
   );
+
+  useEffect(() => {
+    if (search.length > 1) {
+      setTimeout(() => topRef.current?.scrollIntoView(), 0);
+
+      setViewLimit(30);
+    }
+  }, [search.length]);
 
   return (
     <StyledBottomSheet
       {...remainder}
       onClose={() => {
         setSearch('');
-        setVisibleChainVal(30);
+        setViewLimit(30);
 
         onClose?.({}, 'backdropClick');
       }}
@@ -76,7 +86,7 @@ export default function TokenListBottomSheet({
           <StyledButton
             onClick={() => {
               setSearch('');
-              setVisibleChainVal(30);
+              setViewLimit(30);
 
               onClose?.({}, 'escapeKeyDown');
             }}
@@ -97,6 +107,7 @@ export default function TokenListBottomSheet({
           }}
         />
         <AssetList>
+          <Div ref={topRef} />
           {filteredTokenList?.map((item) => {
             const isActive = isEqualsIgnoringCase(item.address, currentSelectedToken?.address);
             return (
@@ -107,16 +118,15 @@ export default function TokenListBottomSheet({
                 currentNetwork={currentSelectedChain?.line === 'ETHEREUM' ? currentSelectedChain : undefined}
                 tokenInfo={item}
                 onClickToken={(clickedToken) => {
-                  onClickToken?.(clickedToken);
+                  onClickToken(clickedToken);
                   setSearch('');
-                  setVisibleChainVal(30);
 
                   onClose?.({}, 'escapeKeyDown');
                 }}
               />
             );
           })}
-          <Div ref={setIntersectionObserver} />
+          {filteredTokenList?.length > viewLimit - 1 && <Div ref={setIntersectionObserver} />}
         </AssetList>
       </Container>
     </StyledBottomSheet>

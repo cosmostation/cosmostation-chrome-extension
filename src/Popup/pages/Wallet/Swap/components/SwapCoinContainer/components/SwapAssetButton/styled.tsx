@@ -66,7 +66,7 @@ export const ContentLeftAbsoluteImageContainer = styled('div')({
 
 export const ContentCenterTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
-  maxWidth: '20rem',
+  maxWidth: '8rem',
 
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',
@@ -83,15 +83,6 @@ type ContentPlaceholderContainerProps = {
 
 export const ContentPlaceholderContainer = styled('div')<ContentPlaceholderContainerProps>(({ theme, ...props }) => ({
   color: props['data-is-disabled'] ? theme.colors.text02 : theme.colors.text01,
-  maxWidth: '20rem',
-
-  wordBreak: 'keep-all',
-  whiteSpace: 'nowrap',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
 }));
 
 export const ContentRightImageContainer = styled('div')(({ theme }) => ({

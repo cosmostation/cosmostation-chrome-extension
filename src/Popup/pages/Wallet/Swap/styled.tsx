@@ -49,13 +49,6 @@ export const SwapIconButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-export const SwapCoinContainer = styled('div')(({ theme }) => ({
-  padding: '1.3rem 1.6rem 2.5rem',
-
-  background: theme.colors.base02,
-  borderRadius: '0.8rem',
-}));
-
 export const MaxButton = styled('button')(({ theme }) => ({
   padding: '0.4rem 0.8rem',
   border: 0,
@@ -169,7 +162,7 @@ export const SwapInfoStyledTooltip = styled(Tooltip)(({ theme }) => ({
   },
   [`& .${tooltipClasses.tooltip}`]: {
     marginTop: '0.7rem !important',
-    marginRight: '3.5rem !important',
+    marginRight: '3.5rem',
 
     backgroundColor: theme.colors.base02,
 

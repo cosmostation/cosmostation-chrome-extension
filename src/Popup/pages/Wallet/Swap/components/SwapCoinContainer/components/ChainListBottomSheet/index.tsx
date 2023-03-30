@@ -10,9 +10,9 @@ import { AssetList, Container, Header, HeaderTitle, StyledBottomSheet, StyledBut
 import Close24Icon from '~/images/icons/Close24.svg';
 
 type ChainListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  currentSelectedChain?: IntegratedSwapChain;
   availableChainList?: IntegratedSwapChain[];
-  onClickChain?: (clickedChain: IntegratedSwapChain) => void;
+  currentSelectedChain?: IntegratedSwapChain;
+  onClickChain: (clickedChain: IntegratedSwapChain) => void;
 };
 
 export default function ChainListBottomSheet({ currentSelectedChain, availableChainList, onClickChain, onClose, ...remainder }: ChainListBottomSheetProps) {
@@ -79,8 +79,9 @@ export default function ChainListBottomSheet({ currentSelectedChain, availableCh
                 ref={isActive ? ref : undefined}
                 chainInfo={item}
                 onClickChain={(clickedChain) => {
-                  onClickChain?.(clickedChain);
+                  onClickChain(clickedChain);
                   setSearch('');
+
                   onClose?.({}, 'escapeKeyDown');
                 }}
               />

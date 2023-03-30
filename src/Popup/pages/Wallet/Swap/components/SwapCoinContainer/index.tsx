@@ -6,7 +6,6 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt } from '~/Popup/utils/big';
-import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 
@@ -28,6 +27,7 @@ import {
 type SwapCoinContainerProps = {
   address: string;
   balance: string;
+  children: JSX.Element;
   headerLeftText: string;
   isChainSelected: boolean;
   tokenAmountPrice: string;
@@ -36,9 +36,8 @@ type SwapCoinContainerProps = {
   currentSelectedChain?: IntegratedSwapChain;
   currentSelectedCoin?: IntegratedSwapToken;
   isError?: boolean;
-  children?: JSX.Element;
-  onClickCoin?: (clickedCoin: IntegratedSwapToken) => void;
   onClickChain?: (clickedChain: IntegratedSwapChain) => void;
+  onClickCoin?: (clickedCoin: IntegratedSwapToken) => void;
 };
 
 export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerProps) {
@@ -86,6 +85,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
               placeholder={t('pages.Wallet.Swap.components.SwapCoinContainer.index.selectCoin')}
             />
           </SwapAssetContainer>
+
           {remainder.children}
         </BodyContainer>
         <FooterContainer>
@@ -101,7 +101,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
             &nbsp;
             <Tooltip title={remainder.balance} arrow placement="top">
               <span>
-                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={gt(remainder.balance, '0') ? getDisplayMaxDecimals(6) : 0}>
+                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={gt(remainder.balance, '0') ? 6 : 0}>
                   {remainder.balance}
                 </NumberText>
               </span>

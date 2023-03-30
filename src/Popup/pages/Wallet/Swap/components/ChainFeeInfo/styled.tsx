@@ -1,11 +1,5 @@
 import { styled } from '@mui/material/styles';
 
-export const TextContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-});
-
 export const Container = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
@@ -24,4 +18,10 @@ export const RightTextContainer = styled('div')({
   alignItems: 'flex-end',
 
   rowGap: '0.2rem',
+});
+
+export const TextContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
 });

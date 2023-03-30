@@ -48,10 +48,30 @@ export const TokenLeftInfoContainer = styled('div')({
 
 export const TokenLeftTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '23rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const TokenLeftSubTitleContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
+
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '23rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const TokenRightInfoContainer = styled('div')({

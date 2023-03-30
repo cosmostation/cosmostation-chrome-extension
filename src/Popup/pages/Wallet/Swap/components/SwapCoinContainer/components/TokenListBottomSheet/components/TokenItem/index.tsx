@@ -38,10 +38,11 @@ type TokenItemProps = {
 };
 
 const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, onClickToken, isActive, currentNetwork }, ref) => {
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { chromeStorage } = useChromeStorage();
   const { currency } = chromeStorage;
 
-  const balance = useBalanceSWR(currentNetwork);
+  const nativeTokenBalance = useBalanceSWR(currentNetwork);
   const tokenBalance = useTokenBalanceSWR(currentNetwork, tokenInfo);
 
   const amount = useMemo(
@@ -49,14 +50,12 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
       gt(tokenInfo.availableAmount || '0', '0')
         ? tokenInfo.availableAmount || '0'
         : isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, tokenInfo.address)
-        ? BigInt(balance?.data?.result || '0').toString(10)
+        ? BigInt(nativeTokenBalance?.data?.result || '0').toString(10)
         : BigInt(tokenBalance.data || '0').toString(10) || '0',
-    [balance?.data?.result, tokenBalance.data, tokenInfo.address, tokenInfo.availableAmount],
+    [nativeTokenBalance?.data?.result, tokenBalance.data, tokenInfo.address, tokenInfo.availableAmount],
   );
 
-  const coinDisplayDenomAmount = toDisplayDenomAmount(amount, gt(amount, 0) ? tokenInfo.decimals : 0);
-
-  const coinGeckoPrice = useCoinGeckoPriceSWR();
+  const coinDisplayDenomAmount = toDisplayDenomAmount(amount, gt(amount, '0') ? tokenInfo.decimals : 0);
 
   const coinPrice = (tokenInfo.coinGeckoId && coinGeckoPrice.data?.[tokenInfo.coinGeckoId]?.[chromeStorage.currency]) || 0;
 
@@ -89,7 +88,7 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
           <TokenRightTitleContainer>
             <Tooltip title={coinDisplayDenomAmount} placement="top" arrow>
               <div>
-                <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={coinDisplayDenomAmount === '0' ? 0 : getDisplayMaxDecimals(tokenInfo.decimals)}>
+                <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={gt(coinDisplayDenomAmount, '0') ? getDisplayMaxDecimals(tokenInfo.decimals) : 0}>
                   {coinDisplayDenomAmount}
                 </Number>
               </div>

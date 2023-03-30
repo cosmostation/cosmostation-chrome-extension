@@ -26,25 +26,25 @@ export const ChainButton = styled('button')<ChainButtonProps>(({ theme, ...props
   },
 }));
 
-export const ChainLeftContainer = styled('div')({
+export const ChainButtonLeftContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
 });
 
-export const ChainLeftImageContainer = styled('div')({
+export const ChainButtonLeftImageContainer = styled('div')({
   '& > img': {
     width: '2.4rem',
     height: '2.4rem',
   },
 });
 
-export const ChainLeftTitleContainer = styled('div')(({ theme }) => ({
+export const ChainButtonLeftTitleContainer = styled('div')(({ theme }) => ({
   marginLeft: '0.8rem',
 
   color: theme.colors.text01,
 }));
 
-export const ChainRightIconContainer = styled('div')(({ theme }) => ({
+export const ChainButtonRightIconContainer = styled('div')(({ theme }) => ({
   width: '1.6rem',
   '& > svg': {
     '& > path': {
@@ -53,4 +53,4 @@ export const ChainRightIconContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-export const ChainRightContainer = styled('div')({});
+export const ChainButtonRightContainer = styled('div')({});

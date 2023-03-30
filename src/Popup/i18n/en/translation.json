@@ -1107,10 +1107,6 @@
         }
       },
       "Swap": {
-        "Entry": {
-          "permissionButton": "Give permission to use tokens",
-          "swapButton": "Swap"
-        },
         "components": {
           "CoinListBottomSheet": {
             "index": {
@@ -1171,9 +1167,11 @@
           "minimumReceived": "Minimum received after slippage",
           "minutes": "minutes",
           "networkError": "Network Error",
+          "permissionButton": "Give permission to use tokens",
           "priceImpact": "Price Impact",
           "processingTime": "Estimated processing time",
           "receiveWarningMessage": "Tx may revert and return axlUSDC on the destination chain if market volatility is high. You can swap axlUSDC to desired token when this happens.",
+          "swapButton": "Swap",
           "swapFee": "Swap Fee",
           "swapInfoDescription1": "Due to slippage",
           "swapInfoDescription2": ", the final amount you receive and the estimated amount may differ. You will receive at least",

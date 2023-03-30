@@ -920,7 +920,7 @@ export default function Entry() {
     if (osmoSwapAminoTx) {
       const pTx = protoTx(osmoSwapAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(osmosisChain), value: '' });
 
-      return pTx ? protoTxBytes({ ...pTx }) : null;
+      return pTx && protoTxBytes({ ...pTx });
     }
     return null;
   }, [osmosisChain, osmoSwapAminoTx]);
@@ -1012,7 +1012,9 @@ export default function Entry() {
                 osmosisAssets.data.find(
                   (asset) =>
                     asset.counter_party?.denom ===
-                    evm_assets.mainnet.find((evmAsset) => evmAsset.contracts.find((contract) => isEqualsIgnoringCase(contract.address, cu.token.address)))?.id,
+                    evm_assets.mainnet.find((evmAsset) =>
+                      evmAsset.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, cu.token.address)),
+                    )?.id,
                 )?.coinGeckoId || cu.token.coingeckoId
               ]?.[chromeStorage.currency] || 0,
             ),
@@ -1029,10 +1031,7 @@ export default function Entry() {
     return times(estimatedFeeDisplayAmount, currentFeeTokenPrice);
   }, [currentSwapAPI, estimatedFeeDisplayAmount, currentFeeTokenPrice, squidSourceChainTotalFeePrice, squidCrossChainTotalFeePrice]);
 
-  const currentOsmoSwapFeeDisplayAmount = useMemo(
-    () => (inputDisplayAmount ? times(inputDisplayAmount, osmoSwapFeeRate) : '0'),
-    [inputDisplayAmount, osmoSwapFeeRate],
-  );
+  const currentOsmoSwapFeeDisplayAmount = useMemo(() => times(inputDisplayAmount || '0', osmoSwapFeeRate), [inputDisplayAmount, osmoSwapFeeRate]);
 
   const osmoSwapFeePrice = useMemo(() => times(currentFeeTokenPrice, currentOsmoSwapFeeDisplayAmount), [currentFeeTokenPrice, currentOsmoSwapFeeDisplayAmount]);
 
@@ -1355,11 +1354,7 @@ export default function Entry() {
                   setCurrentToCoin(undefined);
                 }
 
-                if (
-                  currentSwapAPI === '1inch' &&
-                  isEqualsIgnoringCase(clickedCoin.address, currentToToken?.address) &&
-                  clickedCoin.symbol === currentToToken?.symbol
-                ) {
+                if (currentSwapAPI === '1inch' && isEqualsIgnoringCase(clickedCoin.address, currentToToken?.address)) {
                   void swapCoin();
                 } else {
                   setCurrentFromCoin(clickedCoin);
@@ -1375,7 +1370,7 @@ export default function Entry() {
                   error
                   helperText={inputHelperMessage}
                   endAdornment={
-                    gt(maxDisplayAmount, 0) && (
+                    gt(maxDisplayAmount, '0') && (
                       <InputAdornment position="end">
                         <MaxButton
                           type="button"
@@ -1417,7 +1412,7 @@ export default function Entry() {
                 setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => {
-                if (currentSwapAPI === '1inch' && clickedCoin.address === currentFromToken?.address && clickedCoin.symbol === currentFromToken?.symbol) {
+                if (currentSwapAPI === '1inch' && isEqualsIgnoringCase(clickedCoin.address, currentFromToken?.address)) {
                   void swapCoin();
                 } else {
                   setCurrentToCoin(clickedCoin);
@@ -1450,6 +1445,7 @@ export default function Entry() {
               </SwapIconButton>
             )}
           </SwapContainer>
+
           {warningMessage && (
             <WarningContainer>
               <Typography variant="h6">{warningMessage}</Typography>
@@ -1475,7 +1471,7 @@ export default function Entry() {
                   <MinimumReceivedCircularProgressContainer>
                     <StyledCircularProgress size={15} />
                   </MinimumReceivedCircularProgressContainer>
-                ) : debouncedInputDisplayAmount && gt(estimatedToTokenDisplayMinAmount, 0) ? (
+                ) : gt(estimatedToTokenDisplayMinAmount, '0') ? (
                   <>
                     <Tooltip title={estimatedToTokenDisplayMinAmount} arrow placement="top">
                       <span>
@@ -1502,18 +1498,16 @@ export default function Entry() {
                     <SwapInfoBodyRightContainer>
                       {isLoadingSwapData ? (
                         <StyledCircularProgress size={15} />
-                      ) : debouncedInputDisplayAmount && gt(outputAmountOf1Coin, 0) ? (
+                      ) : gt(outputAmountOf1Coin, '0') ? (
                         <SwapInfoBodyRightTextContainer>
-                          <NumberText typoOfIntegers="h6n">1</NumberText>
-                          &nbsp;
-                          <Typography variant="h6n">{currentFromToken?.symbol} ≈</Typography>
+                          <Typography variant="h6n">{`1 ${currentFromToken?.symbol || ''} ≈`} </Typography>
                           &nbsp;
                           <Tooltip title={outputAmountOf1Coin} arrow placement="top">
                             <span>
                               <NumberText
                                 typoOfIntegers="h6n"
                                 typoOfDecimals="h7n"
-                                fixed={gt(outputAmountOf1Coin, 0) ? getDisplayMaxDecimals(currentToToken?.decimals) : 0}
+                                fixed={gt(outputAmountOf1Coin, '0') ? getDisplayMaxDecimals(currentToToken?.decimals) : 0}
                               >
                                 {outputAmountOf1Coin}
                               </NumberText>
@@ -1535,9 +1529,9 @@ export default function Entry() {
                     <SwapInfoBodyRightContainer>
                       {isLoadingSwapData ? (
                         <StyledCircularProgress size={15} />
-                      ) : inputDisplayAmount && priceImpactPercent !== '0' ? (
-                        <SwapInfoBodyRightTextContainer data-is-invalid={gt(priceImpactPercent, currentSwapAPI === 'osmo' ? 10 : 5)}>
-                          <Typography variant="h6n">{` ${gt(priceImpactPercent, 0) ? `-` : ``} ${
+                      ) : priceImpactPercent !== '0' ? (
+                        <SwapInfoBodyRightTextContainer data-is-invalid={gt(priceImpactPercent, currentSwapAPI === 'osmo' ? '10' : '5')}>
+                          <Typography variant="h6n">{` ${gt(priceImpactPercent, '0') ? `-` : ``} ${
                             lt(priceImpactPercent.replace('-', ''), 0.01) ? `<` : ``
                           }`}</Typography>
                           &nbsp;
@@ -1558,13 +1552,13 @@ export default function Entry() {
                 <SwapInfoBodyTextContainer>
                   <SwapInfoBodyLeftContainer>
                     <Typography variant="h6">
-                      {t('pages.Wallet.Swap.entry.swapFee')} ({times(osmoSwapFeeRate, 100)}%)
+                      {t('pages.Wallet.Swap.entry.swapFee')} ({times(osmoSwapFeeRate, '100')}%)
                     </Typography>
                   </SwapInfoBodyLeftContainer>
                   <SwapInfoBodyRightContainer>
-                    {inputDisplayAmount && osmoSwapFeePrice ? (
+                    {gt(osmoSwapFeePrice, '0') ? (
                       <SwapInfoBodyRightTextContainer>
-                        <Typography variant="h6n">{` ≈ ${lt(osmoSwapFeePrice, 0.01) ? `<` : ``} ${currency ? CURRENCY_SYMBOL[currency] : ``}`}</Typography>
+                        <Typography variant="h6n">{` ≈ ${lt(osmoSwapFeePrice, '0.01') ? `<` : ``} ${CURRENCY_SYMBOL[currency]}`}</Typography>
                         &nbsp;
                         <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
                           {osmoSwapFeePrice}
@@ -1585,9 +1579,9 @@ export default function Entry() {
                   <SwapInfoBodyRightContainer>
                     {isLoadingSwapData ? (
                       <StyledCircularProgress size={15} />
-                    ) : inputDisplayAmount && estimatedFeePrice ? (
+                    ) : gt(estimatedFeePrice, '0') ? (
                       <SwapInfoBodyRightTextContainer>
-                        <Typography variant="h6n">{` ≈ ${lt(estimatedFeePrice, 0.01) ? `<` : ``} ${currency ? CURRENCY_SYMBOL[currency] : ``}`}</Typography>
+                        <Typography variant="h6n">{` ≈ ${lt(estimatedFeePrice, '0.01') ? `<` : ``} ${CURRENCY_SYMBOL[currency]}`}</Typography>
                         &nbsp;
                         <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
                           {estimatedFeePrice}
@@ -1610,7 +1604,7 @@ export default function Entry() {
                           <StyledTooltipTitleContainer>
                             <Typography variant="h7">{t('pages.Wallet.Swap.entry.gasFeesInfo')}</Typography>
                             <StyledTooltipBodyContainer>
-                              <ChainFeeInfo title="Source Chain Gas" feeInfo={squidRoute.data?.route.estimate.gasCosts} />
+                              <ChainFeeInfo title="Source Chain Gas" feeInfo={squidRoute.data?.route.estimate.gasCosts} isTilde />
                               <ChainFeeInfo
                                 title="Cross-Chain fees"
                                 feeInfo={squidRoute.data?.route.estimate.feeCosts.map((item) => ({
@@ -1622,7 +1616,7 @@ export default function Entry() {
                                         (asset) =>
                                           asset.counter_party?.denom ===
                                           evm_assets.mainnet.find((evmAsset) =>
-                                            evmAsset.contracts.find((contract) => isEqualsIgnoringCase(contract.address, item.token.address)),
+                                            evmAsset.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, item.token.address)),
                                           )?.id,
                                       )?.coinGeckoId || item.token.coingeckoId,
                                   },
@@ -1642,7 +1636,7 @@ export default function Entry() {
                     <SwapInfoBodyRightContainer>
                       {isLoadingSwapData ? (
                         <StyledCircularProgress size={15} />
-                      ) : estimatedFeePrice !== '0' ? (
+                      ) : gt(estimatedFeePrice, '0') ? (
                         <SwapInfoBodyRightTextContainer>
                           <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2} currency={currency}>
                             {estimatedFeePrice}
@@ -1662,9 +1656,9 @@ export default function Entry() {
                     <SwapInfoBodyRightContainer>
                       {isLoadingSwapData ? (
                         <StyledCircularProgress size={15} />
-                      ) : squidProcessingTime !== '0' ? (
+                      ) : gt(squidProcessingTime, '0') ? (
                         <SwapInfoBodyRightTextContainer>
-                          <NumberText typoOfIntegers="h6n" typoOfDecimals="h6n">{`~ ${squidProcessingTime}`}</NumberText>
+                          <Typography variant="h6n">{`~ ${squidProcessingTime}`}</Typography>
                           &nbsp;
                           <Typography variant="h6n">{t('pages.Wallet.Swap.entry.minutes')}</Typography>
                         </SwapInfoBodyRightTextContainer>
@@ -1710,7 +1704,7 @@ export default function Entry() {
                     }
                   }}
                 >
-                  {t('pages.Wallet.Swap.Entry.permissionButton')}
+                  {t('pages.Wallet.Swap.entry.permissionButton')}
                 </Button>
               </div>
             </Tooltip>
@@ -1720,9 +1714,9 @@ export default function Entry() {
                 <Button
                   isProgress={isLoadingSwapData}
                   type="button"
-                  disabled={!!errorMessage || isDisabled}
+                  disabled={!!errorMessage || isDisabled || (currentSwapAPI === 'osmo' ? !osmoSwapAminoTx : !integratedSwapTx)}
                   onClick={async () => {
-                    if (currentSwapAPI === '1inch' || (currentSwapAPI === 'squid' && integratedSwapTx)) {
+                    if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid') && integratedSwapTx) {
                       await enQueue({
                         messageId: '',
                         origin: '',
@@ -1732,7 +1726,6 @@ export default function Entry() {
                           params: [
                             {
                               ...integratedSwapTx,
-                              gas: toHex(estimatedGas, { addPrefix: true, isStringNumber: true }),
                             },
                           ],
                         },
@@ -1762,7 +1755,7 @@ export default function Entry() {
                     }
                   }}
                 >
-                  {t('pages.Wallet.Swap.Entry.swapButton')}
+                  {t('pages.Wallet.Swap.entry.swapButton')}
                 </Button>
               </div>
             </Tooltip>
@@ -1829,7 +1822,7 @@ export function EntryError({ errorMessage }: EntryErrorProps) {
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
             <div>
               <Button type="button" disabled>
-                {t('pages.Wallet.Swap.Entry.swapButton')}
+                {t('pages.Wallet.Swap.entry.swapButton')}
               </Button>
             </div>
           </Tooltip>

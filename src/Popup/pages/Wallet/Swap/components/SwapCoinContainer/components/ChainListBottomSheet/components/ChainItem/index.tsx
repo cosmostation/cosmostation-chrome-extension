@@ -4,7 +4,14 @@ import { Typography } from '@mui/material';
 import Image from '~/Popup/components/common/Image';
 import type { IntegratedSwapChain } from '~/types/swap/asset';
 
-import { ChainButton, ChainLeftContainer, ChainLeftImageContainer, ChainLeftTitleContainer, ChainRightContainer, ChainRightIconContainer } from './styled';
+import {
+  ChainButton,
+  ChainButtonLeftContainer,
+  ChainButtonLeftImageContainer,
+  ChainButtonLeftTitleContainer,
+  ChainButtonRightContainer,
+  ChainButtonRightIconContainer,
+} from './styled';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 
@@ -14,26 +21,26 @@ type ChainItemProps = {
   onClickChain: (clickedChain: IntegratedSwapChain) => void;
 };
 
-const ChainItem = forwardRef<HTMLButtonElement, ChainItemProps>(({ chainInfo, onClickChain, isActive }, ref) => (
+const ChainItem = forwardRef<HTMLButtonElement, ChainItemProps>(({ chainInfo, isActive, onClickChain }, ref) => (
   <ChainButton
-    key={chainInfo.chainId}
+    key={chainInfo.id}
     data-is-active={isActive}
     ref={isActive ? ref : undefined}
     onClick={() => {
       onClickChain?.(chainInfo);
     }}
   >
-    <ChainLeftContainer>
-      <ChainLeftImageContainer>
+    <ChainButtonLeftContainer>
+      <ChainButtonLeftImageContainer>
         <Image src={chainInfo.imageURL} />
-      </ChainLeftImageContainer>
-      <ChainLeftTitleContainer>
+      </ChainButtonLeftImageContainer>
+      <ChainButtonLeftTitleContainer>
         <Typography variant="h5">{chainInfo.networkName}</Typography>
-      </ChainLeftTitleContainer>
-    </ChainLeftContainer>
-    <ChainRightContainer>
-      <ChainRightIconContainer>{isActive && <Check16Icon />}</ChainRightIconContainer>
-    </ChainRightContainer>
+      </ChainButtonLeftTitleContainer>
+    </ChainButtonLeftContainer>
+    <ChainButtonRightContainer>
+      <ChainButtonRightIconContainer>{isActive && <Check16Icon />}</ChainButtonRightIconContainer>
+    </ChainButtonRightContainer>
   </ChainButton>
 ));
 export default ChainItem;
