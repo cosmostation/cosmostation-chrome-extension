@@ -257,3 +257,23 @@ export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
     color: theme.accentColors.purple01,
   },
 }));
+
+export const FeePriceButton = styled('button')({
+  border: 0,
+  padding: 0,
+
+  backgroundColor: 'transparent',
+
+  cursor: 'pointer',
+});
+
+export const FeePriceButtonTextContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+
+  color: theme.colors.text01,
+
+  '&:hover': {
+    color: theme.colors.text02,
+  },
+}));

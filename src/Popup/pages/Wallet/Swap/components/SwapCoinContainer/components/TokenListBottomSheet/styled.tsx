@@ -71,7 +71,3 @@ export const StyledButton = styled('button')(({ theme }) => ({
     fill: theme.colors.base05,
   },
 }));
-
-export const Div = styled('div')({
-  height: '0.1rem',
-});

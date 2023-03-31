@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { useIntersectionObserver } from '~/Popup/hooks/useIntersectionObserver';
+import IntersectionObserver from '~/Popup/components/IntersectionObserver';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 
 import TokenItem from './components/TokenItem';
-import { AssetList, Container, Div, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
+import { AssetList, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
 
 import Close24Icon from '~/images/icons/Close24.svg';
 
@@ -31,14 +31,6 @@ export default function TokenListBottomSheet({
   const topRef = useRef<HTMLDivElement>(null);
 
   const [viewLimit, setViewLimit] = useState(30);
-
-  const onIntersect: IntersectionObserverCallback = ([{ isIntersecting }]) => {
-    if (isIntersecting) {
-      setViewLimit((limit) => limit + 30);
-    }
-  };
-
-  const { setIntersectionObserver } = useIntersectionObserver(onIntersect, 0.3);
 
   useEffect(() => {
     if (remainder.open) {
@@ -107,7 +99,7 @@ export default function TokenListBottomSheet({
           }}
         />
         <AssetList>
-          <Div ref={topRef} />
+          <div ref={topRef} />
           {filteredTokenList?.map((item) => {
             const isActive = isEqualsIgnoringCase(item.address, currentSelectedToken?.address);
             return (
@@ -126,7 +118,13 @@ export default function TokenListBottomSheet({
               />
             );
           })}
-          {filteredTokenList?.length > viewLimit - 1 && <Div ref={setIntersectionObserver} />}
+          {filteredTokenList?.length > viewLimit - 1 && (
+            <IntersectionObserver
+              onIntersect={() => {
+                setViewLimit((limit) => limit + 30);
+              }}
+            />
+          )}
         </AssetList>
       </Container>
     </StyledBottomSheet>

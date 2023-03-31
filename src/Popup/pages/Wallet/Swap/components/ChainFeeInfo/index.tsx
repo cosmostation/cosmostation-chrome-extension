@@ -11,10 +11,10 @@ import { Container, LeftTextContainer, RightTextContainer, TextContainer } from 
 type ChainFeeInfoProps = {
   title: string;
   feeInfo: FeeCost[] | GasCost[] | undefined;
-  isTilde?: boolean;
+  isTildeAmount?: boolean;
 };
 
-export default function ChainFeeInfo({ title, feeInfo, isTilde = false }: ChainFeeInfoProps) {
+export default function ChainFeeInfo({ title, feeInfo, isTildeAmount = false }: ChainFeeInfoProps) {
   const { chromeStorage } = useChromeStorage();
   const { currency } = chromeStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
@@ -31,14 +31,19 @@ export default function ChainFeeInfo({ title, feeInfo, isTilde = false }: ChainF
           const feeTokenPrice = (item.token?.coingeckoId && coinGeckoPrice.data?.[item.token.coingeckoId]?.[chromeStorage.currency]) || 0;
           const feeAmountPrice = times(displayFeeAmount, feeTokenPrice);
 
-          const feeText = `${isTilde ? '~' : ''} ${displayFeeAmount} ${item.token?.symbol}`;
+          const feeText = `${isTildeAmount ? '~' : ''} ${displayFeeAmount} ${item.token?.symbol}`;
           return (
             <TextContainer key={item.token.address}>
               <Typography variant="h7n">{feeText}</Typography>
+              &nbsp;
               {gt(feeAmountPrice, '0') && (
-                <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={2} currency={currency}>
-                  {feeAmountPrice}
-                </NumberText>
+                <>
+                  <Typography variant="h7n">(</Typography>
+                  <NumberText typoOfIntegers="h7n" typoOfDecimals="h7n" fixed={2} currency={currency}>
+                    {feeAmountPrice}
+                  </NumberText>
+                  <Typography variant="h7n">)</Typography>
+                </>
               )}
             </TextContainer>
           );

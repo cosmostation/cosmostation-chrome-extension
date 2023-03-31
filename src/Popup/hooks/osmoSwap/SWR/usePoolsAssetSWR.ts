@@ -5,8 +5,8 @@ import useSWR from 'swr';
 import { get } from '~/Popup/utils/axios';
 import type { PoolsAssetResponse } from '~/types/cosmos/pool';
 
-export function usePoolsAssetSWR(chainName: string, config?: SWRConfiguration) {
-  const requestURL = `https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/${chainName}/pool.json`;
+export function usePoolsAssetSWR(chainName?: string, config?: SWRConfiguration) {
+  const requestURL = chainName && `https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/${chainName}/pool.json`;
 
   const fetcher = async (fetchUrl: string) => {
     try {
