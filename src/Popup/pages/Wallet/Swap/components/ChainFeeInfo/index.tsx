@@ -25,7 +25,7 @@ export default function ChainFeeInfo({ title, feeInfo, isTildeAmount = false }: 
         <Typography variant="h7n">{title}</Typography>
       </LeftTextContainer>
       <RightTextContainer>
-        {feeInfo?.map((item) => {
+        {feeInfo?.map((item, idx) => {
           const displayFeeAmount = String(parseFloat(fix(toDisplayDenomAmount(item.amount || '0', item.token?.decimals), 5)));
 
           const feeTokenPrice = (item.token?.coingeckoId && coinGeckoPrice.data?.[item.token.coingeckoId]?.[chromeStorage.currency]) || 0;
@@ -33,7 +33,7 @@ export default function ChainFeeInfo({ title, feeInfo, isTildeAmount = false }: 
 
           const feeText = `${isTildeAmount ? '~' : ''} ${displayFeeAmount} ${item.token?.symbol}`;
           return (
-            <TextContainer key={item.token.address}>
+            <TextContainer key={item.token.address.concat(String(idx))}>
               <Typography variant="h7n">{feeText}</Typography>
               &nbsp;
               {gt(feeAmountPrice, '0') && (

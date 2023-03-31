@@ -16,8 +16,6 @@ export const RightTextContainer = styled('div')({
 
   justifyContent: 'center',
   alignItems: 'flex-end',
-
-  rowGap: '0.2rem',
 });
 
 export const TextContainer = styled('div')({

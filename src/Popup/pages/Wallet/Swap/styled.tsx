@@ -1,4 +1,3 @@
-import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { tooltipClasses } from '@mui/material/Tooltip';
 
@@ -152,7 +151,7 @@ export const StyledTooltipBodyContainer = styled('div')({
 
   marginTop: '0.8rem',
 
-  columnGap: '0.3rem',
+  rowGap: '0.5rem',
 });
 
 export const SwapInfoStyledTooltip = styled(Tooltip)(({ theme }) => ({
@@ -251,12 +250,6 @@ export const BottomContainer = styled('div')({
 export const SideButton = styled(IconButton)({
   padding: '0',
 });
-
-export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
-  '&.MuiCircularProgress-root': {
-    color: theme.accentColors.purple01,
-  },
-}));
 
 export const FeePriceButton = styled('button')({
   border: 0,

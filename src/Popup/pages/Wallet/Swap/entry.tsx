@@ -13,6 +13,7 @@ import { SQUID_SUPPORTED_COSMOS_CHAINS, SQUID_SUPPORTED_EVM_CHAINS } from '~/con
 import AmountInput from '~/Popup/components/common/AmountInput';
 import Button from '~/Popup/components/common/Button';
 import NumberText from '~/Popup/components/common/Number';
+import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import WarningContainer from '~/Popup/components/common/WarningContainer';
 import SubSideHeader from '~/Popup/components/SubSideHeader';
@@ -66,7 +67,6 @@ import {
   MinimumReceivedCircularProgressContainer,
   OutputAmountCircularProgressContainer,
   SideButton,
-  StyledCircularProgress,
   StyledTooltipBodyContainer,
   StyledTooltipTitleContainer,
   SwapCoinInputAmountContainer,
@@ -138,7 +138,7 @@ export default function Entry() {
   const filteredFromChainList: IntegratedSwapChain[] = useMemo(() => {
     const squidEVMList = ETHEREUM_NETWORKS.filter(
       (item) =>
-        SQUID_SUPPORTED_EVM_CHAINS.find((squidChain) => squidChain.chainId === item.chainId) &&
+        SQUID_SUPPORTED_EVM_CHAINS.find((squidChain) => squidChain.id === item.id) &&
         squidChainList?.find((squidChain) => squidChain.chainType === 'evm' && String(parseInt(item.chainId, 16)) === String(squidChain.chainId)),
     ).map((item) => ({
       ...item,
@@ -147,10 +147,12 @@ export default function Entry() {
       line: ETHEREUM.line,
     }));
 
+    const squidOnlyEVMList = squidEVMList.filter((item) => !ONEINCH_SUPPORTED_CHAINS.find((oneInchChain) => oneInchChain.id === item.id));
+
     const squidCosmosList = COSMOS_CHAINS.filter(
       (item) =>
-        osmosisChain.chainId === item.chainId &&
-        SQUID_SUPPORTED_COSMOS_CHAINS.find((squidChain) => squidChain.chainId === item.chainId) &&
+        osmosisChain.id === item.id &&
+        SQUID_SUPPORTED_COSMOS_CHAINS.find((squidChain) => squidChain.id === item.id) &&
         squidChainList?.find((squidChain) => squidChain.chainType === 'cosmos' && item.chainId === String(squidChain.chainId)),
     ).map((item) => ({
       ...item,
@@ -166,29 +168,36 @@ export default function Entry() {
         line: ETHEREUM.line,
         addressId: ETHEREUM.id,
       })),
-    ].filter((chainItem, idx, arr) => arr.findIndex((item) => item.chainId === chainItem.chainId) === idx);
+    ].filter((chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx);
 
     if (isFromSelected) {
       return [...integratedEVMList, ...squidCosmosList];
     }
 
-    if (currentToChain?.chainId === osmosisChain.chainId) {
-      return [...squidEVMList, ...squidCosmosList];
+    if (currentToChain) {
+      if (currentToChain.id === osmosisChain.id) {
+        return [...squidEVMList, ...squidCosmosList];
+      }
+
+      if (ONEINCH_SUPPORTED_CHAINS.filter((item) => !squidEVMList.find((evmChain) => evmChain.id === item.id)).find((item) => item.id === currentToChain.id)) {
+        return [currentToChain];
+      }
+
+      if (squidOnlyEVMList.find((item) => item.id === currentToChain.id)) {
+        return [...squidEVMList.filter((item) => !squidOnlyEVMList.find((squidOnlyChainItem) => squidOnlyChainItem.id === item.id))];
+      }
+
+      if (squidChainList?.find((item) => String(item.chainId) === currentToChain.chainId)) {
+        return [...squidEVMList];
+      }
     }
 
-    if (
-      currentToChain &&
-      ONEINCH_SUPPORTED_CHAINS.filter((item) => !squidEVMList.find((evmChain) => evmChain.chainId === String(parseInt(item.chainId, 16)))).find(
-        (item) => String(parseInt(item.chainId, 16)) === currentToChain.chainId,
-      )
-    ) {
-      return [currentToChain];
-    }
     return [...integratedEVMList, ...squidCosmosList];
-  }, [currentToChain, isFromSelected, osmosisChain.chainId, squidChainList]);
+  }, [currentToChain, isFromSelected, osmosisChain.id, squidChainList]);
 
   const [currentFromChain, setCurrentFromChain] = useState<IntegratedSwapChain | undefined>(filteredFromChainList.find((item) => item.id === params.id));
 
+  // NOTE EDIT chain id to id
   const filteredToChainList: IntegratedSwapChain[] = useMemo(() => {
     const squidEVMList = ETHEREUM_NETWORKS.filter(
       (item) =>
@@ -200,6 +209,10 @@ export default function Entry() {
       chainId: String(parseInt(item.chainId, 16)),
       line: ETHEREUM.line,
     }));
+
+    const squidOnlyEVMList = squidEVMList.filter(
+      (item) => !ONEINCH_SUPPORTED_CHAINS.find((oneInchChain) => String(parseInt(oneInchChain.chainId, 16)) === item.chainId),
+    );
 
     const squidCosmosList = COSMOS_CHAINS.filter(
       (item) =>
@@ -225,14 +238,22 @@ export default function Entry() {
       return [...integratedEVMList, ...squidCosmosList];
     }
 
-    if (
-      (currentFromChain &&
+    if (currentFromChain) {
+      if (
         ONEINCH_SUPPORTED_CHAINS.filter((item) => !squidEVMList.find((evmChain) => evmChain.chainId === String(parseInt(item.chainId, 16)))).find(
           (item) => String(parseInt(item.chainId, 16)) === currentFromChain.chainId,
-        )) ||
-      currentFromChain?.chainId === osmosisChain.chainId
-    ) {
-      return [currentFromChain];
+        ) ||
+        currentFromChain?.chainId === osmosisChain.chainId
+      ) {
+        return [currentFromChain];
+      }
+
+      if (squidOnlyEVMList.find((item) => item.id === currentFromChain.id)) {
+        return [
+          ...squidEVMList.filter((item) => !squidOnlyEVMList.find((squidOnlyChainItem) => squidOnlyChainItem.chainId === item.chainId)),
+          ...squidCosmosList,
+        ];
+      }
     }
     return [...squidEVMList, ...squidCosmosList];
   }, [currentFromChain, isFromSelected, osmosisChain.chainId, squidChainList]);
@@ -1308,7 +1329,7 @@ export default function Entry() {
             >
               {isLoadingSwapData ? (
                 <OutputAmountCircularProgressContainer>
-                  <StyledCircularProgress size={20} />
+                  <Skeleton width="7.4rem" height="2.2rem" />
                 </OutputAmountCircularProgressContainer>
               ) : (
                 <SwapCoinOutputAmountContainer data-is-active={gt(estimatedToTokenDisplayAmount, '0')}>
@@ -1352,7 +1373,7 @@ export default function Entry() {
               <SwapInfoSubHeaderContainer>
                 {isLoadingSwapData ? (
                   <MinimumReceivedCircularProgressContainer>
-                    <StyledCircularProgress size={15} />
+                    <Skeleton width="10.3rem" height="1.5rem" />
                   </MinimumReceivedCircularProgressContainer>
                 ) : gt(estimatedToTokenDisplayMinAmount, '0') ? (
                   <>
@@ -1380,7 +1401,7 @@ export default function Entry() {
                     </SwapInfoBodyLeftContainer>
                     <SwapInfoBodyRightContainer>
                       {isLoadingSwapData ? (
-                        <StyledCircularProgress size={15} />
+                        <Skeleton width="10rem" height="1.5rem" />
                       ) : gt(outputAmountOf1Coin, '0') ? (
                         <SwapInfoBodyRightTextContainer>
                           <Typography variant="h6n">{`1 ${currentFromToken?.symbol || ''} ≈`} </Typography>
@@ -1411,7 +1432,7 @@ export default function Entry() {
                     </SwapInfoBodyLeftContainer>
                     <SwapInfoBodyRightContainer>
                       {isLoadingSwapData ? (
-                        <StyledCircularProgress size={15} />
+                        <Skeleton width="4rem" height="1.5rem" />
                       ) : priceImpactPercent !== '0' ? (
                         <SwapInfoBodyRightTextContainer data-is-invalid={gt(priceImpactPercent, currentSwapAPI === 'osmo' ? '10' : '5')}>
                           <Typography variant="h6n">{` ${gt(priceImpactPercent, '0') ? `-` : ``} ${
@@ -1461,7 +1482,7 @@ export default function Entry() {
                   </SwapInfoBodyLeftContainer>
                   <SwapInfoBodyRightContainer>
                     {isLoadingSwapData ? (
-                      <StyledCircularProgress size={15} />
+                      <Skeleton width="4rem" height="1.5rem" />
                     ) : gt(estimatedFeePrice, '0') && debouncedInputDisplayAmount ? (
                       <FeePriceButton type="button" onClick={() => setIsFeePriceCurrencyBase(!isFeePriceCurrencyBase)}>
                         <FeePriceButtonTextContainer>
@@ -1537,7 +1558,7 @@ export default function Entry() {
                     </SwapInfoBodyLeftContainer>
                     <SwapInfoBodyRightContainer>
                       {isLoadingSwapData ? (
-                        <StyledCircularProgress size={15} />
+                        <Skeleton width="4rem" height="1.5rem" />
                       ) : gt(estimatedFeePrice, '0') ? (
                         <SwapInfoBodyRightTextContainer>
                           <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2} currency={currency}>
@@ -1557,7 +1578,7 @@ export default function Entry() {
 
                     <SwapInfoBodyRightContainer>
                       {isLoadingSwapData ? (
-                        <StyledCircularProgress size={15} />
+                        <Skeleton width="4rem" height="1.5rem" />
                       ) : gt(squidProcessingTime, '0') ? (
                         <SwapInfoBodyRightTextContainer>
                           <Typography variant="h6n">{`~ ${squidProcessingTime}`}</Typography>
@@ -1614,7 +1635,6 @@ export default function Entry() {
             <Tooltip varient="error" title={errorMessage} placement="top" arrow>
               <div>
                 <Button
-                  isProgress={isLoadingSwapData}
                   type="button"
                   disabled={!!errorMessage || isDisabled || (currentSwapAPI === 'osmo' ? !osmoSwapAminoTx : !integratedSwapTx)}
                   onClick={async () => {
