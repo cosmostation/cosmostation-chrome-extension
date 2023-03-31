@@ -24,6 +24,7 @@ import { CANTO } from './cosmos/canto';
 import { CERBERUS } from './cosmos/cerberus';
 import { CHIHUAHUA } from './cosmos/chihuahua';
 import { COMDEX } from './cosmos/comdex';
+import { COREUM } from './cosmos/coreum';
 import { COSMOS } from './cosmos/cosmos';
 import { CRESCENT } from './cosmos/crescent';
 import { CRYPTO_ORG } from './cosmos/cryptoOrg';
@@ -53,6 +54,7 @@ import { OSMOSIS } from './cosmos/osmosis';
 import { PASSAGE } from './cosmos/passage';
 import { PERSISTENCE } from './cosmos/persistence';
 import { PROVENANCE } from './cosmos/provenance';
+import { QUASAR } from './cosmos/quasar';
 import { QUICK_SILVER } from './cosmos/quickSilver';
 import { REGEN } from './cosmos/regen';
 import { RIZON } from './cosmos/rizon';
@@ -118,6 +120,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   CERBERUS,
   CHIHUAHUA,
   COMDEX,
+  COREUM,
   CRESCENT,
   CRYPTO_ORG,
   CUDOS,
@@ -146,6 +149,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   PASSAGE,
   PERSISTENCE,
   PROVENANCE,
+  QUASAR,
   QUICK_SILVER,
   REGEN,
   RIZON,
