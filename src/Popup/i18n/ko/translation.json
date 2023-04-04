@@ -65,7 +65,7 @@
           "language": "언어",
           "ledger": "Ledger",
           "lock": "잠금",
-          "provider": "Provider"
+          "provider": "우선 설정"
         }
       }
     },
@@ -967,10 +967,10 @@
       },
       "Provider": {
         "entry": {
-          "description": "Provider 기능은 선택된 익스텐션 지갑이 chrome://extensions 에서 비활성화 되어있거나 설치되어 있지 않을 때 활성화됩니다."
+          "description": "우선 설정 기능은 선택된 익스텐션 지갑이 chrome://extensions 에서 비활성화 되어있거나 설치되어 있지 않을 때 활성화됩니다."
         },
         "layout": {
-          "title": "Provider"
+          "title": "우선 설정"
         }
       }
     },
