@@ -4,14 +4,19 @@ import type { Msg } from '~/types/cosmos/amino';
 
 import Commission from './messages/Commission';
 import Custom from './messages/Custom';
+import Empty from './messages/Empty';
 import IBCSend from './messages/IBCSend';
 import Reward from './messages/Reward';
 import Send from './messages/Send';
 import Swap from './messages/Swap';
 
-type TxMessageProps = { chain: CosmosChain; msg: Msg; isMultipleMsgs: boolean };
+type TxMessageProps = { chain: CosmosChain; msg?: Msg; isMultipleMsgs: boolean };
 
 export default function TxMessage({ chain, msg, isMultipleMsgs }: TxMessageProps) {
+  if (!msg) {
+    return <Empty />;
+  }
+
   if (isAminoSend(msg)) {
     return <Send msg={msg} chain={chain} isMultipleMsgs={isMultipleMsgs} />;
   }
