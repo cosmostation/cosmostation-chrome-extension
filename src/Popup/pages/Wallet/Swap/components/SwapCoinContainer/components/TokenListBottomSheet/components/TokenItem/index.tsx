@@ -47,12 +47,12 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
 
   const amount = useMemo(
     () =>
-      gt(tokenInfo.availableAmount || '0', '0')
-        ? tokenInfo.availableAmount || '0'
+      gt(tokenInfo.balance || '0', '0')
+        ? tokenInfo.balance || '0'
         : isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, tokenInfo.address)
         ? BigInt(nativeTokenBalance?.data?.result || '0').toString(10)
         : BigInt(tokenBalance.data || '0').toString(10) || '0',
-    [nativeTokenBalance?.data?.result, tokenBalance.data, tokenInfo.address, tokenInfo.availableAmount],
+    [nativeTokenBalance?.data?.result, tokenBalance.data, tokenInfo.address, tokenInfo.balance],
   );
 
   const coinDisplayDenomAmount = toDisplayDenomAmount(amount, gt(amount, '0') ? tokenInfo.decimals : 0);

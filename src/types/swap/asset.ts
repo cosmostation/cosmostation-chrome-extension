@@ -13,10 +13,29 @@ export type IntegratedSwapChain = IntegratedSwapEVMChain | IntegratedSwapCosmosC
 export type IntegratedSwapCosmosToken = AssetV3 & {
   address: string;
   name: string;
-  availableAmount?: string;
+  balance?: string;
   logoURI?: string;
 };
 
-export type IntegratedSwapEVMToken = (Token | TokenData) & { availableAmount?: string; coinGeckoId?: string };
+export type IntegratedSwapEVMToken = (Token | TokenData) & { balance?: string; coinGeckoId?: string };
 
 export type IntegratedSwapToken = IntegratedSwapEVMToken | IntegratedSwapCosmosToken;
+
+export type SupportSwapChainPayload = {
+  oneInch: SupportedChain;
+  squid: SupportedChain;
+};
+
+export type SupportedChain = {
+  evm: ChainData;
+  cosmos: ChainData;
+};
+
+export type ChainData = {
+  send: ChainIdData[];
+  receive: ChainIdData[];
+};
+
+export type ChainIdData = {
+  chainId: string;
+};

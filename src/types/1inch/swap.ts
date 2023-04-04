@@ -42,13 +42,4 @@ export type Tx = {
   gasPrice: string;
 };
 
-export type OneInchQuotePayload = {
-  fromToken: Token;
-  toToken: Token;
-  toTokenAmount: string;
-  fromTokenAmount: string;
-  protocols: Array<Array<Protocol[]>>;
-  estimatedGas: number;
-};
-
-export type AllowedTokensSWRPayload = Record<string, Record<string, Token>>;
+export type SupportTokensPayload = Record<string, Record<string, Token>>;

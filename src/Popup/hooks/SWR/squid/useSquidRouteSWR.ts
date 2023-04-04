@@ -6,7 +6,7 @@ import { Squid } from '@0xsquid/sdk';
 import { SQUID_BASE_URL } from '~/constants/squid';
 
 type RouteError = {
-  errors: {
+  errors?: {
     error: string;
     message: string;
     errorType: string;

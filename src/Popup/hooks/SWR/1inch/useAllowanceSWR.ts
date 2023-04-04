@@ -2,6 +2,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { ONEINCH_BASE_URL } from '~/constants/1inch';
 import { get } from '~/Popup/utils/axios';
 import type { AllowancePayload } from '~/types/1inch/allowance';
 
@@ -14,7 +15,7 @@ type UseAllowanceSWRProps = {
 export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: SWRConfiguration) {
   const requestURL =
     allowanceParam &&
-    `https://api.1inch.io/v5.0/${allowanceParam.chainId}/approve/allowance?tokenAddress=${allowanceParam.tokenAddress}&walletAddress=${allowanceParam.walletAddress}`;
+    `${ONEINCH_BASE_URL}${allowanceParam.chainId}/approve/allowance?tokenAddress=${allowanceParam.tokenAddress}&walletAddress=${allowanceParam.walletAddress}`;
 
   const fetcher = (fetchUrl: string) => get<AllowancePayload>(fetchUrl, { headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache', Expires: '0' } });
 

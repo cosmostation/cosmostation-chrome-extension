@@ -3,14 +3,14 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { get } from '~/Popup/utils/axios';
-import type { AllowedTokensSWRPayload } from '~/types/1inch/swap';
+import type { SupportTokensPayload } from '~/types/1inch/swap';
 
-export function useAllowedTokensSWR(config?: SWRConfiguration) {
+export function useSupportTokensSWR(config?: SWRConfiguration) {
   const requestURL = 'https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/1inch.json';
 
-  const fetcher = (fetchUrl: string) => get<AllowedTokensSWRPayload>(fetchUrl);
+  const fetcher = (fetchUrl: string) => get<SupportTokensPayload>(fetchUrl);
 
-  const { data, error, mutate } = useSWR<AllowedTokensSWRPayload, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<SupportTokensPayload, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,

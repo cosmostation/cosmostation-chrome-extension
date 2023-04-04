@@ -13,8 +13,8 @@ export default function Wallet() {
   return (
     <Lock>
       <Layout>
-        <ErrorBoundary fallback={<EntryError errorMessage={t('pages.Wallet.Swap.index.fetchingData')} />}>
-          <Suspense fallback={<EntryError errorMessage={t('pages.Wallet.Swap.index.networkError')} />}>
+        <ErrorBoundary fallback={<EntryError errorMessage={t('pages.Wallet.Swap.index.networkError')} />}>
+          <Suspense fallback={<EntryError errorMessage={t('pages.Wallet.Swap.index.fetchingData')} />}>
             <Entry />
           </Suspense>
         </ErrorBoundary>

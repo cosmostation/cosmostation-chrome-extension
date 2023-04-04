@@ -42,7 +42,7 @@ export function useOsmoSwapMath(osmoSwapMathProps?: useOsmoSwapMathProps) {
 
   const poolData = usePoolSWR(currentPoolId);
 
-  const swapFeeRate = useMemo(() => poolData.data?.pool.pool_params.swap_fee || '0', [poolData.data?.pool.pool_params.swap_fee]);
+  const swapServiceFeeRate = useMemo(() => poolData.data?.pool.pool_params.swap_fee || '0', [poolData.data?.pool.pool_params.swap_fee]);
 
   const poolAssetsTokenList = useMemo(() => {
     if (poolData.data && poolData.data.pool['@type'] === WEIGHTED_POOL_TYPE) {
@@ -89,7 +89,7 @@ export function useOsmoSwapMath(osmoSwapMathProps?: useOsmoSwapMathProps) {
   const beforeSpotPriceInOverOut = useMemo(() => {
     try {
       return calcSpotPrice(
-        swapFeeRate,
+        swapServiceFeeRate,
         poolAssetsTokenList,
         tokenBalanceIn,
         tokenWeightIn,
@@ -107,7 +107,7 @@ export function useOsmoSwapMath(osmoSwapMathProps?: useOsmoSwapMathProps) {
     osmoSwapMathProps?.inputCoin?.denom,
     poolAssetsTokenList,
     scalingFactors,
-    swapFeeRate,
+    swapServiceFeeRate,
     tokenBalanceIn,
     tokenBalanceOut,
     tokenWeightIn,
@@ -116,7 +116,7 @@ export function useOsmoSwapMath(osmoSwapMathProps?: useOsmoSwapMathProps) {
 
   const exchangeRate = useMemo(() => {
     try {
-      const beforeSpotPriceWithoutSwapFeeInOverOutDec = times(beforeSpotPriceInOverOut, minus(1, swapFeeRate));
+      const beforeSpotPriceWithoutSwapFeeInOverOutDec = times(beforeSpotPriceInOverOut, minus(1, swapServiceFeeRate));
       const multiplicationInOverOut = minus(osmoSwapMathProps?.outputCoin?.decimals || 0, osmoSwapMathProps?.inputCoin?.decimals || 0);
 
       return multiplicationInOverOut === '0'
@@ -125,13 +125,13 @@ export function useOsmoSwapMath(osmoSwapMathProps?: useOsmoSwapMathProps) {
     } catch {
       return '0';
     }
-  }, [beforeSpotPriceInOverOut, osmoSwapMathProps?.inputCoin?.decimals, swapFeeRate, osmoSwapMathProps?.outputCoin?.decimals]);
+  }, [beforeSpotPriceInOverOut, osmoSwapMathProps?.inputCoin?.decimals, swapServiceFeeRate, osmoSwapMathProps?.outputCoin?.decimals]);
 
   const estimatedOutputBaseAmount = useMemo(() => {
     try {
       return calcOutGivenIn(
         osmoSwapMathProps?.inputBaseAmount || '0',
-        swapFeeRate,
+        swapServiceFeeRate,
         poolAssetsTokenList,
         tokenBalanceIn,
         tokenWeightIn,
@@ -146,7 +146,7 @@ export function useOsmoSwapMath(osmoSwapMathProps?: useOsmoSwapMathProps) {
     }
   }, [
     osmoSwapMathProps?.inputBaseAmount,
-    swapFeeRate,
+    swapServiceFeeRate,
     poolAssetsTokenList,
     tokenBalanceIn,
     tokenWeightIn,
@@ -170,7 +170,7 @@ export function useOsmoSwapMath(osmoSwapMathProps?: useOsmoSwapMathProps) {
     priceImpact,
     exchangeRate,
     uniquePoolDenomList,
-    swapFeeRate,
+    swapServiceFeeRate,
     poolsAssetData,
     estimatedOutputBaseAmount,
     currentPoolId,

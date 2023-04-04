@@ -21,7 +21,7 @@ import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import GasSettingDialog from '~/Popup/components/GasSettingDialog';
 import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
-import { useTokenAssetsSWR } from '~/Popup/hooks/SWR/1inch/useTokenAssetsSWR';
+import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/1inch/useOneInchTokensSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useDetermineTxTypeSWR } from '~/Popup/hooks/SWR/ethereum/useDetermineTxTypeSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
@@ -162,7 +162,7 @@ export default function Entry({ queue }: EntryProps) {
   const [maxPriorityFeePerGas, setMaxPriorityFeePerGas] = useState(
     BigInt(toHex(originEthereumTx.maxPriorityFeePerGas || '0', { addPrefix: true, isStringNumber: true })).toString(10),
   );
-  const oneinchTokenList = useTokenAssetsSWR(String(parseInt(currentEthereumNetwork.chainId, 16)));
+  const oneInchTokens = useOneInchTokensSWR(String(parseInt(currentEthereumNetwork.chainId, 16)));
 
   const ethereumTx = useMemo(() => {
     const nonce =
@@ -268,11 +268,11 @@ export default function Entry({ queue }: EntryProps) {
   }, [functionABI, inputData, originEthereumTx.to, web3.eth.abi]);
 
   const foundToken = useMemo(() => {
-    if (decodedInputs && oneinchTokenList.data && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
-      return Object.values(oneinchTokenList.data.tokens).find((item) => isEqualsIgnoringCase(item.address, decodedInputs?.desc?.dstToken));
+    if (decodedInputs && oneInchTokens.data && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
+      return Object.values(oneInchTokens.data.tokens).find((item) => isEqualsIgnoringCase(item.address, decodedInputs?.desc?.dstToken));
     }
     return undefined;
-  }, [decodedInputs, oneinchTokenList.data, originEthereumTx.to]);
+  }, [decodedInputs, oneInchTokens.data, originEthereumTx.to]);
 
   const baseFee = useMemo(() => {
     if (ethereumTx.maxFeePerGas) {

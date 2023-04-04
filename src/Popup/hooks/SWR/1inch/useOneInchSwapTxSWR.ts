@@ -1,7 +1,7 @@
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { FEE_RATIO, REFERRER_ADDRESS } from '~/constants/1inch';
+import { FEE_RATIO, ONEINCH_BASE_URL, REFERRER_ADDRESS } from '~/constants/1inch';
 import { get } from '~/Popup/utils/axios';
 import type { OneInchSwapPayload } from '~/types/1inch/swap';
 
@@ -30,7 +30,7 @@ export type UseOneInchSwapSWRProps = {
 export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?: SWRConfiguration) {
   const requestURL =
     swapParam &&
-    `https://api.1inch.io/v5.0/${swapParam.chainId}/swap?fromTokenAddress=${swapParam.fromTokenAddress}&toTokenAddress=${swapParam.toTokenAddress}&amount=${
+    `${ONEINCH_BASE_URL}${swapParam.chainId}/swap?fromTokenAddress=${swapParam.fromTokenAddress}&toTokenAddress=${swapParam.toTokenAddress}&amount=${
       swapParam.amount
     }&fromAddress=${swapParam.fromAddress}&slippage=${swapParam.slippage}&referrerAddress=${REFERRER_ADDRESS || ''}&fee=${FEE_RATIO || ''}
   `;
