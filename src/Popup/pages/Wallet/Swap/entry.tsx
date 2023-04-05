@@ -107,7 +107,7 @@ export default function Entry() {
 
   const { enQueue } = useCurrentQueue();
   const nodeInfo = useNodeInfoSWR(osmosisChain);
-  const supportedCosmosChain = useSupportChainsSWR();
+  const supportedCosmosChain = useSupportChainsSWR({ suspense: true });
   const { chromeStorage } = useChromeStorage();
   const { ethereumTokens } = chromeStorage;
   const { currency } = chromeStorage;
