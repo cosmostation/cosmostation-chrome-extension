@@ -1148,7 +1148,7 @@ export default function Entry() {
         return t('pages.Wallet.Swap.entry.allowanceWarning');
       }
       if (oneInchRoute.error) {
-        return oneInchRoute.error.description;
+        return oneInchRoute.error.response?.data.description;
       }
     }
 

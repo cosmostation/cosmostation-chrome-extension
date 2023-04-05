@@ -1,3 +1,4 @@
+import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
@@ -6,16 +7,16 @@ import { get } from '~/Popup/utils/axios';
 import type { OneInchSwapPayload } from '~/types/1inch/swap';
 
 type OneInchSwapError = {
-  statusCode: number;
+  description?: string;
   error: string;
-  description: string;
-  requestId: string;
   meta: [
     {
       type: string;
       value: string;
     },
   ];
+  requestId: string;
+  statusCode: number;
 };
 
 export type UseOneInchSwapSWRProps = {
@@ -37,7 +38,7 @@ export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?:
 
   const fetcher = (fetchUrl: string) => get<OneInchSwapPayload>(fetchUrl);
 
-  const { data, isValidating, error, mutate } = useSWR<OneInchSwapPayload, OneInchSwapError>(requestURL, fetcher, {
+  const { data, isValidating, error, mutate } = useSWR<OneInchSwapPayload, AxiosError<OneInchSwapError>>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,
