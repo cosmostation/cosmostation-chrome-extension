@@ -48,6 +48,7 @@ import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
+import type { CosmosChain } from '~/types/chain';
 import type { AssetV3 as CosmosAssetV3 } from '~/types/cosmos/asset';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 import type { IntegratedSwapAPI } from '~/types/swap/integratedSwap';
@@ -88,10 +89,10 @@ import {
 
 import Info16Icon from '~/images/icons/Info16.svg';
 import Management24Icon from '~/images/icons/Mangement24.svg';
-import OneInchLogoIcon from '~/images/icons/oneInchLogo.svg';
-import OsmosisLogoIcon from '~/images/icons/osmosisLogo.svg';
+import OneInchLogoIcon from '~/images/icons/OneInchLogo.svg';
+import OsmosisLogoIcon from '~/images/icons/OsmosisLogo.svg';
 import Permission16Icon from '~/images/icons/Permission16.svg';
-import SquidLogoIcon from '~/images/icons/squidLogo.svg';
+import SquidLogoIcon from '~/images/icons/SquidLogo.svg';
 import SwapIcon from '~/images/icons/Swap.svg';
 
 import evm_assets from './assets/evm_assets.json';
@@ -113,7 +114,6 @@ export default function Entry() {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const osmosisAssets = useCosmosAssetsSWR(osmosisChain);
   const supportedSwapChains = useSupportSwapChainsSWR();
-  const osmosisBalance = useBalanceSWR(osmosisChain);
 
   const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
 
@@ -125,11 +125,6 @@ export default function Entry() {
 
   const [isFeePriceCurrencyBase, setIsFeePriceCurrencyBase] = useState(true);
   const [isOsmoSwapFeePriceCurrencyBase, setIsOsmoSwapFeePriceCurrencyBase] = useState(true);
-
-  const address = useMemo(
-    () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[osmosisChain.id] || '',
-    [accounts.data, osmosisChain.id, currentAccount.id],
-  );
 
   const [currentSlippage, setCurrentSlippage] = useState('1');
 
@@ -340,6 +335,9 @@ export default function Entry() {
     [accounts?.data, currentAccount.id, currentToChain],
   );
 
+  const cosmosFromChainBalance = useBalanceSWR(currentFromChain as CosmosChain);
+  const cosmosToChainBalance = useBalanceSWR(currentToChain as CosmosChain);
+
   const currentFromEVMNativeBalance = useNativeBalanceSWR(currentFromChain?.line === 'ETHEREUM' ? currentFromChain : undefined);
   const currentFromEVMTokenBalance = useTokenBalanceSWR(currentFromChain?.line === 'ETHEREUM' ? currentFromChain : undefined, currentFromToken);
 
@@ -393,7 +391,7 @@ export default function Entry() {
         .map((item) => ({
           ...item,
           address: item.denom,
-          balance: osmosisBalance.data?.balance ? osmosisBalance.data?.balance.find((coin) => coin.denom === item.denom)?.amount : '0',
+          balance: cosmosFromChainBalance.data?.balance ? cosmosFromChainBalance.data?.balance.find((coin) => coin.denom === item.denom)?.amount : '0',
           logoURI: item.image,
           name: getCapitalize(item.prevChain || item.origin_chain),
         }));
@@ -449,7 +447,7 @@ export default function Entry() {
     currentFromChain?.chainId,
     osmosisAssets.data,
     osmoSwapMath.uniquePoolDenomList,
-    osmosisBalance.data?.balance,
+    cosmosFromChainBalance.data?.balance,
     currentEthereumNetwork.coinGeckoId,
     supportedOneInchTokens,
     filterSquidTokens,
@@ -522,8 +520,8 @@ export default function Entry() {
       ].map((item) => ({
         ...item,
         coinGeckoId: osmosisAssets.data.find((asset) => asset.counter_party?.denom === item.address)?.coinGeckoId || item.coingeckoId,
-        balance: osmosisBalance.data?.balance
-          ? osmosisBalance.data?.balance.find((coin) =>
+        balance: cosmosToChainBalance.data?.balance
+          ? cosmosToChainBalance.data?.balance.find((coin) =>
               isEqualsIgnoringCase(coin.denom, osmosisAssets.data.find((asset) => asset.counter_party?.denom === item.address)?.denom),
             )?.amount
           : '0',
@@ -545,7 +543,7 @@ export default function Entry() {
     supportedOneInchTokens,
     filterSquidTokens,
     osmosisAssets.data,
-    osmosisBalance.data?.balance,
+    cosmosToChainBalance.data?.balance,
   ]);
 
   const currentFromTokenPrice = useMemo(
@@ -576,7 +574,7 @@ export default function Entry() {
 
   const currentFeeTokenBalance = useMemo(() => {
     if (currentSwapAPI === 'osmo') {
-      return osmosisBalance.data?.balance?.find((item) => isEqualsIgnoringCase(item.denom, osmosisChain.baseDenom))?.amount || '0';
+      return cosmosFromChainBalance.data?.balance?.find((item) => isEqualsIgnoringCase(item.denom, osmosisChain.baseDenom))?.amount || '0';
     }
 
     if (currentSwapAPI === '1inch' || currentSwapAPI === 'squid') {
@@ -584,7 +582,7 @@ export default function Entry() {
     }
 
     return '0';
-  }, [currentSwapAPI, osmosisBalance.data?.balance, osmosisChain.baseDenom, currentFromEVMNativeBalance?.data?.result]);
+  }, [currentSwapAPI, cosmosFromChainBalance.data?.balance, osmosisChain.baseDenom, currentFromEVMNativeBalance?.data?.result]);
 
   const currentFeeTokenPrice = useMemo(
     () => (currentFeeToken?.coinGeckoId && coinGeckoPrice.data?.[currentFeeToken.coinGeckoId]?.[chromeStorage.currency]) || 0,
@@ -850,7 +848,7 @@ export default function Entry() {
                   token_out_denom: currentToToken?.address,
                 },
               ],
-              sender: address,
+              sender: currentFromAddress,
               token_in: {
                 amount: currentInputBaseAmount,
                 denom: currentFromToken?.address,
@@ -873,7 +871,7 @@ export default function Entry() {
     osmosisChain.chainId,
     osmoSwapMath.currentPoolId,
     currentToToken?.address,
-    address,
+    currentFromAddress,
     currentInputBaseAmount,
     currentFromToken?.address,
     estimatedToTokenBaseMinAmount,
@@ -1361,7 +1359,7 @@ export default function Entry() {
               availableChainList={filteredFromChains}
               availableTokenList={filteredFromTokenList}
               address={currentFromAddress}
-              isChainSelected={!!currentFromChain && !!currentToChain}
+              isTokenAvailable={!!currentFromChain && !!currentToChain}
             >
               <SwapCoinInputAmountContainer data-is-error>
                 <AmountInput
@@ -1419,7 +1417,7 @@ export default function Entry() {
               availableChainList={filteredToChainList}
               availableTokenList={filteredToTokenList}
               address={currentToAddress}
-              isChainSelected={!!currentFromChain && !!currentToChain}
+              isTokenAvailable={!!currentFromChain && !!currentToChain}
             >
               {isLoadingSwapData ? (
                 <OutputAmountCircularProgressContainer>
@@ -1818,14 +1816,14 @@ export function EntryError({ errorMessage }: EntryErrorProps) {
         </SubSideHeader>
         <BodyContainer>
           <SwapContainer>
-            <SwapCoinContainer headerLeftText="From" balance="0" tokenAmountPrice="0" address="" isError isChainSelected={false}>
+            <SwapCoinContainer headerLeftText="From" balance="0" tokenAmountPrice="0" address="" isChainAvailable={false} isTokenAvailable={false}>
               <SwapCoinOutputAmountContainer data-is-active={false}>
                 <NumberText typoOfIntegers="h3n" fixed={0}>
                   0
                 </NumberText>
               </SwapCoinOutputAmountContainer>
             </SwapCoinContainer>
-            <SwapCoinContainer headerLeftText="To" balance="0" tokenAmountPrice="0" address="" isError isChainSelected={false}>
+            <SwapCoinContainer headerLeftText="To" balance="0" tokenAmountPrice="0" address="" isChainAvailable={false} isTokenAvailable={false}>
               <SwapCoinOutputAmountContainer data-is-active={false}>
                 <NumberText typoOfIntegers="h3n" fixed={0}>
                   0

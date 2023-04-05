@@ -8,14 +8,14 @@ import { cosmosURL } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { BalancePayload } from '~/types/cosmos/balance';
 
-export function useBalanceSWR(chain: CosmosChain, suspense?: boolean) {
+export function useBalanceSWR(chain?: CosmosChain, suspense?: boolean) {
   const accounts = useAccounts(suspense);
   const { chromeStorage } = useChromeStorage();
 
-  const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
-  const { getBalance } = cosmosURL(chain);
+  const address = (chain && accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain?.id]) || '';
+  const { getBalance } = (chain && cosmosURL(chain)) ?? {};
 
-  const requestURL = getBalance(address);
+  const requestURL = getBalance && getBalance(address);
 
   const fetcher = async (fetchUrl: string) => {
     try {

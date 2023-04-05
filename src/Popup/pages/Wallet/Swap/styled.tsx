@@ -279,9 +279,5 @@ export const ButtonTextIconContaier = styled('div')(({ theme }) => ({
 
   '& > svg': {
     fill: theme.colors.base06,
-
-    '& > path': {
-      fill: theme.colors.base06,
-    },
   },
 }));

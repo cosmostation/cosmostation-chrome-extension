@@ -29,18 +29,18 @@ type SwapCoinContainerProps = {
   balance: string;
   children: JSX.Element;
   headerLeftText: string;
-  isChainSelected: boolean;
+  isChainAvailable?: boolean;
+  isTokenAvailable: boolean;
   tokenAmountPrice: string;
   availableChainList?: IntegratedSwapChain[];
   availableTokenList?: IntegratedSwapToken[];
   currentSelectedChain?: IntegratedSwapChain;
   currentSelectedCoin?: IntegratedSwapToken;
-  isError?: boolean;
   onClickChain?: (clickedChain: IntegratedSwapChain) => void;
   onClickCoin?: (clickedCoin: IntegratedSwapToken) => void;
 };
 
-export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerProps) {
+export default function SwapCoinContainer({ isChainAvailable = true, ...remainder }: SwapCoinContainerProps) {
   const { chromeStorage } = useChromeStorage();
   const { currency } = chromeStorage;
   const { t } = useTranslation();
@@ -69,7 +69,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
                 setisOpenedChainList(true);
               }}
               isActive={isOpenedChainList}
-              isAvailable={!remainder.isError}
+              isAvailable={isChainAvailable}
               imgUrl={remainder.currentSelectedChain?.imageURL}
               title={remainder.currentSelectedChain?.networkName}
               placeholder={t('pages.Wallet.Swap.components.SwapCoinContainer.index.selectChain')}
@@ -79,7 +79,7 @@ export default function SwapCoinContainer({ ...remainder }: SwapCoinContainerPro
                 setisOpenedCoinList(true);
               }}
               isActive={isOpenedCoinList}
-              isAvailable={remainder.isChainSelected}
+              isAvailable={remainder.isTokenAvailable}
               imgUrl={remainder.currentSelectedCoin?.logoURI}
               title={remainder.currentSelectedCoin?.symbol}
               placeholder={t('pages.Wallet.Swap.components.SwapCoinContainer.index.selectCoin')}
