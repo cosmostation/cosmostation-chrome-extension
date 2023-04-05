@@ -58,6 +58,7 @@ import SwapCoinContainer from './components/SwapCoinContainer';
 import {
   BodyContainer,
   BottomContainer,
+  ButtonTextIconContaier,
   Container,
   FeePriceButton,
   FeePriceButtonTextContainer,
@@ -87,7 +88,10 @@ import {
 
 import Info16Icon from '~/images/icons/Info16.svg';
 import Management24Icon from '~/images/icons/Mangement24.svg';
+import OneInchLogoIcon from '~/images/icons/oneInchLogo.svg';
+import OsmosisLogoIcon from '~/images/icons/osmosisLogo.svg';
 import Permission16Icon from '~/images/icons/Permission16.svg';
+import SquidLogoIcon from '~/images/icons/squidLogo.svg';
 import SwapIcon from '~/images/icons/Swap.svg';
 
 import evm_assets from './assets/evm_assets.json';
@@ -1291,9 +1295,12 @@ export default function Entry() {
     supportedSwapChains.data?.squid.cosmos.receive,
     supportedSwapChains.data?.squid.cosmos.send,
   ]);
+
   useEffect(() => {
-    if (!currentSwapAPI) {
+    if (!currentSwapAPI || !filteredFromTokenList.find((token) => token.address === currentFromToken?.address)) {
       setCurrentFromToken(undefined);
+    }
+    if (!currentSwapAPI || !filteredToTokenList.find((token) => token.address === currentToToken?.address)) {
       setCurrentToToken(undefined);
     }
 
@@ -1345,10 +1352,6 @@ export default function Entry() {
                 setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => {
-                if (currentSwapAPI === 'osmo' && currentToToken) {
-                  setCurrentToToken(undefined);
-                }
-
                 if (currentSwapAPI === '1inch' && isEqualsIgnoringCase(clickedCoin.address, currentToToken?.address)) {
                   void swapAssetInfo();
                 } else {
@@ -1773,7 +1776,12 @@ export default function Entry() {
                     }
                   }}
                 >
-                  {t('pages.Wallet.Swap.entry.swapButton')}
+                  <ButtonTextIconContaier>
+                    {currentSwapAPI ? t('pages.Wallet.Swap.entry.swapButtonOn') : t('pages.Wallet.Swap.entry.swapButton')}
+                    {currentSwapAPI === 'osmo' && <OsmosisLogoIcon />}
+                    {currentSwapAPI === '1inch' && <OneInchLogoIcon />}
+                    {currentSwapAPI === 'squid' && <SquidLogoIcon />}
+                  </ButtonTextIconContaier>
                 </Button>
               </div>
             </Tooltip>

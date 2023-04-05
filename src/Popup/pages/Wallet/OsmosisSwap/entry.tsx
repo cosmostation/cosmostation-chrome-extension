@@ -740,7 +740,7 @@ export default function Entry({ chain }: EntryProps) {
                   }
                 }}
               >
-                {t('pages.Wallet.Swap.Entry.swapButton')}
+                {t('pages.Wallet.Swap.entry.swapButton')}
               </Button>
             </div>
           </Tooltip>

@@ -1172,6 +1172,7 @@
           "processingTime": "예상 소요 시간",
           "receiveWarningMessage": "시장 변동성이 높을 시, 설정한 output 토큰이 아닌 axlUSDC 토큰이 스왑되어 나올 수 있습니다. 이후 해당 axlUSDC를 원하는 토큰으로 스왑하세요.",
           "swapButton": "Swap",
+          "swapButtonOn": "Swap on",
           "swapFee": "교환 수수료",
           "swapInfoDescription1": "슬리피지",
           "swapInfoDescription2": "로 인해 최종 수령 금액과 예상 수령 금액이 다를 수 있습니다. 최소",

@@ -270,3 +270,18 @@ export const FeePriceButtonTextContainer = styled('div')(({ theme }) => ({
     color: theme.colors.text02,
   },
 }));
+
+export const ButtonTextIconContaier = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+
+  columnGap: '0.4rem',
+
+  '& > svg': {
+    fill: theme.colors.base06,
+
+    '& > path': {
+      fill: theme.colors.base06,
+    },
+  },
+}));

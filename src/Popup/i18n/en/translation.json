@@ -1172,6 +1172,7 @@
           "processingTime": "Estimated processing time",
           "receiveWarningMessage": "Tx may revert and return axlUSDC on the destination chain if market volatility is high. You can swap axlUSDC to desired token when this happens.",
           "swapButton": "Swap",
+          "swapButtonOn": "Swap on",
           "swapFee": "Swap Fee",
           "swapInfoDescription1": "Due to slippage",
           "swapInfoDescription2": ", the final amount you receive and the estimated amount may differ. You will receive at least",
