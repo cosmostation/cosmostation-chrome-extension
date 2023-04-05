@@ -113,7 +113,7 @@ export default function Entry() {
   const { currency } = chromeStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const osmosisAssets = useCosmosAssetsSWR(osmosisChain);
-  const supportedSwapChains = useSupportSwapChainsSWR();
+  const supportedSwapChains = useSupportSwapChainsSWR({ suspense: true });
 
   const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
 
@@ -1733,7 +1733,7 @@ export default function Entry() {
               <div>
                 <Button
                   type="button"
-                  disabled={!!errorMessage || isDisabled || (currentSwapAPI === 'osmo' ? !osmoSwapAminoTx : !integratedSwapTx)}
+                  disabled={!!errorMessage || isDisabled || isLoadingSwapData || (currentSwapAPI === 'osmo' ? !osmoSwapAminoTx : !integratedSwapTx)}
                   onClick={async () => {
                     if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid') && integratedSwapTx) {
                       await enQueue({

@@ -271,13 +271,9 @@ export const FeePriceButtonTextContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-export const ButtonTextIconContaier = styled('div')(({ theme }) => ({
+export const ButtonTextIconContaier = styled('div')({
   display: 'flex',
   alignItems: 'center',
 
   columnGap: '0.4rem',
-
-  '& > svg': {
-    fill: theme.colors.base06,
-  },
-}));
+});
