@@ -128,11 +128,15 @@ export default function Entry({ queue, chain }: EntryProps) {
           </Tabs>
         </TabContainer>
         <TabPanel value={value} index={0}>
-          <TxMessage msg={msgs[txMsgPage - 1]} chain={chain} isMultipleMsgs={msgs.length > 1} />
-          {msgs.length > 1 && (
-            <PaginationContainer>
-              <Pagination currentPage={txMsgPage} totalPage={msgs.length} onChange={(page) => setTxMsgPage(page)} />
-            </PaginationContainer>
+          {msgs?.length > 0 && (
+            <>
+              <TxMessage msg={msgs[txMsgPage - 1]} chain={chain} isMultipleMsgs={msgs.length > 1} />
+              {msgs.length > 1 && (
+                <PaginationContainer>
+                  <Pagination currentPage={txMsgPage} totalPage={msgs.length} onChange={(page) => setTxMsgPage(page)} />
+                </PaginationContainer>
+              )}
+            </>
           )}
           <MemoContainer>
             <Memo memo={memo} onChange={(m) => setMemo(m)} isEdit={isEditMemo} />
