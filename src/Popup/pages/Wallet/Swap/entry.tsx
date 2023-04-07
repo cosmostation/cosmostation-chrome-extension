@@ -99,7 +99,7 @@ import evm_assets from './assets/evm_assets.json';
 
 export default function Entry() {
   const osmosisChain = OSMOSIS;
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { currentAccount } = useCurrentAccount();
   const account = useAccountSWR(osmosisChain, true);
   const accounts = useAccounts(true);
@@ -1775,10 +1775,21 @@ export default function Entry() {
                   }}
                 >
                   <ButtonTextIconContaier>
-                    {currentSwapAPI ? t('pages.Wallet.Swap.entry.swapButtonOn') : t('pages.Wallet.Swap.entry.swapButton')}
-                    {currentSwapAPI === 'osmo' && <OsmosisLogoIcon />}
-                    {currentSwapAPI === '1inch' && <OneInchLogoIcon />}
-                    {currentSwapAPI === 'squid' && <SquidLogoIcon />}
+                    {language === 'ko' ? (
+                      <>
+                        {currentSwapAPI === 'osmo' && <OsmosisLogoIcon />}
+                        {currentSwapAPI === '1inch' && <OneInchLogoIcon />}
+                        {currentSwapAPI === 'squid' && <SquidLogoIcon />}
+                        {currentSwapAPI ? t('pages.Wallet.Swap.entry.swapButtonOn') : t('pages.Wallet.Swap.entry.swapButton')}
+                      </>
+                    ) : (
+                      <>
+                        {currentSwapAPI ? t('pages.Wallet.Swap.entry.swapButtonOn') : t('pages.Wallet.Swap.entry.swapButton')}
+                        {currentSwapAPI === 'osmo' && <OsmosisLogoIcon />}
+                        {currentSwapAPI === '1inch' && <OneInchLogoIcon />}
+                        {currentSwapAPI === 'squid' && <SquidLogoIcon />}
+                      </>
+                    )}
                   </ButtonTextIconContaier>
                 </Button>
               </div>
