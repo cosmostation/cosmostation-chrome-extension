@@ -27,4 +27,5 @@ export const NOBLE: CosmosChain = {
     average: '0.025',
   },
   gas: {},
+  custom: 'no-stake',
 };
