@@ -28,6 +28,6 @@ type ApplicationVersion = {
 };
 
 export type NodeInfoPayload = {
-  node_info: NodeInfo;
+  default_node_info: NodeInfo;
   application_version: ApplicationVersion;
 };

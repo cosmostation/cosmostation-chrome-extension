@@ -262,7 +262,7 @@ export default function Send({ chain }: CosmosProps) {
         return {
           account_number: String(account.data.value.account_number),
           sequence,
-          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+          chain_id: nodeInfo.data?.default_node_info?.network ?? chain.chainId,
           fee: {
             amount: [
               {
@@ -290,7 +290,7 @@ export default function Send({ chain }: CosmosProps) {
         return {
           account_number: String(account.data.value.account_number),
           sequence,
-          chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+          chain_id: nodeInfo.data?.default_node_info?.network ?? chain.chainId,
           fee: {
             amount: [
               {
@@ -337,7 +337,7 @@ export default function Send({ chain }: CosmosProps) {
     currentFeeGasRate,
     currentGasRateKey,
     currentMemo,
-    nodeInfo.data?.node_info?.network,
+    nodeInfo.data?.default_node_info?.network,
   ]);
 
   const [sendAminoTx] = useDebounce(memoizedSendAminoTx, 700);

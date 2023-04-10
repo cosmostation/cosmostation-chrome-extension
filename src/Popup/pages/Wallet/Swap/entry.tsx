@@ -337,7 +337,7 @@ export default function Entry({ chain }: EntryProps) {
       return {
         account_number: String(account.data.value.account_number),
         sequence,
-        chain_id: nodeInfo.data?.node_info?.network ?? chain.chainId,
+        chain_id: nodeInfo.data?.default_node_info?.network ?? chain.chainId,
         fee: { amount: [{ amount: '1', denom: currentFeeCoin.baseDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
         memo: '',
         msgs: [
@@ -373,7 +373,7 @@ export default function Entry({ chain }: EntryProps) {
     currentPoolId,
     inputCoinBaseDenom,
     inputDisplayAmount,
-    nodeInfo.data?.node_info?.network,
+    nodeInfo.data?.default_node_info?.network,
     outputCoinBaseDenom,
     tokenOutMinAmount,
   ]);
