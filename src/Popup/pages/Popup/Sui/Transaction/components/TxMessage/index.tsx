@@ -1,22 +1,20 @@
-import type { UnserializedSignableTransaction } from '@mysten/sui.js';
+import type { TransactionBlock } from '@mysten/sui.js';
 
-import { isPaySui } from '~/Popup/utils/sui';
-
-import PaySui from './messages/PaySui';
 import Transaction from './messages/Transaction';
 
 type TxMessageProps = {
-  transaction: UnserializedSignableTransaction | string;
+  transaction: TransactionBlock | string;
 };
 
 export default function TxMessage({ transaction }: TxMessageProps) {
-  if (typeof transaction === 'string') {
-    return <Transaction transaction={transaction} />;
-  }
+  // NOTE FIX ME
+  // if (typeof transaction === 'string') {
+  //   return <Transaction transaction={transaction} />;
+  // }
 
-  if (isPaySui(transaction)) {
-    return <PaySui transaction={transaction.data} />;
-  }
+  // if (isPaySui(transaction)) {
+  //   return <PaySui transaction={transaction.data} />;
+  // }
 
   return <Transaction transaction={transaction} />;
 }

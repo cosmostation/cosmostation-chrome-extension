@@ -4,7 +4,7 @@ import useSWR from 'swr';
 
 import { post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
-import type { GetCoinMetadataResponse } from '~/types/sui/rpc';
+import type { GetCoinBalanceResponse } from '~/types/sui/rpc';
 
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
 
@@ -17,28 +17,29 @@ type FetchParams = {
 type UseGetCoinMetadataSWRProps = {
   coinType?: string;
   network?: SuiNetwork;
+  address?: string;
 };
 
-// NOTE use for NFTs
-export function useGetCoinMetadataSWR({ network, coinType }: UseGetCoinMetadataSWRProps, config?: SWRConfiguration) {
+export function useGetCoinBalanceSWR({ address, network, coinType }: UseGetCoinMetadataSWRProps, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
 
   const fetcher = async (params: FetchParams) => {
     try {
-      return await post<GetCoinMetadataResponse>(params.url, {
+      return await post<GetCoinBalanceResponse>(params.url, {
         jsonrpc: '2.0',
         method: params.method,
-        params: [params.coinType],
-        id: params.coinType,
+        params: [address, params.coinType],
+        id: address,
       });
     } catch (e) {
       return null;
     }
   };
 
-  const { data, error, mutate } = useSWR<GetCoinMetadataResponse | null, AxiosError>({ url: rpcURL, coinType, method: 'suix_getCoinMetadata' }, fetcher, {
+  // FIXME 아이디 변경시에 값을 새로 안가져오고 이전 값을 가져오고 있음
+  const { data, error, mutate } = useSWR<GetCoinBalanceResponse | null, AxiosError>({ url: rpcURL, coinType, method: 'suix_getBalance' }, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,

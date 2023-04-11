@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
-import type { UnserializedSignableTransaction } from '@mysten/sui.js';
-import { Ed25519Keypair, JsonRpcProvider, RawSigner } from '@mysten/sui.js';
+import type { TransactionBlock as TransactionBlockType } from '@mysten/sui.js';
+import { Connection, Ed25519Keypair, JsonRpcProvider, RawSigner, TransactionBlock } from '@mysten/sui.js';
 
 import { SUI_COIN } from '~/constants/sui';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
@@ -13,9 +13,8 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useDryRunTransactionSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionSWR';
+import { useGetAllBalancesSWR } from '~/Popup/hooks/SWR/sui/useGetAllBalancesSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
-import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
-import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -24,7 +23,6 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, isDecimal, lte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getKeyPair } from '~/Popup/utils/common';
 import { suiAddressRegex } from '~/Popup/utils/regex';
-import { getCoinType, isExists } from '~/Popup/utils/sui';
 import type { SuiChain } from '~/types/chain';
 
 import CoinButton from './components/CoinButton';
@@ -53,9 +51,18 @@ export default function Sui({ chain }: SuiProps) {
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-  const provider = useMemo(() => new JsonRpcProvider(currentSuiNetwork.rpcURL), [currentSuiNetwork.rpcURL]);
+  const connection_testnet = useMemo(
+    () =>
+      new Connection({
+        fullnode: currentSuiNetwork.rpcURL,
+        faucet: 'https://fullnode.testnet.sui.io/gas',
+      }),
+    [currentSuiNetwork.rpcURL],
+  );
 
-  const keypair = useMemo(() => Ed25519Keypair.fromSeed(keyPair!.privateKey!), [keyPair]);
+  const provider = useMemo(() => new JsonRpcProvider(connection_testnet), [connection_testnet]);
+
+  const keypair = useMemo(() => Ed25519Keypair.fromSecretKey(keyPair!.privateKey!), [keyPair]);
 
   const rawSigner = useMemo(() => new RawSigner(keypair, provider), [keypair, provider]);
 
@@ -63,16 +70,11 @@ export default function Sui({ chain }: SuiProps) {
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address }, { suspense: true });
+  const { data: allBalances } = useGetAllBalancesSWR({ address }, { suspense: true });
 
-  const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
+  const suiCoinObjects = useMemo(() => allBalances?.result || [], [allBalances?.result]);
 
-  const suiCoinObjects = useMemo(() => objects?.filter(isExists).filter((object) => !!object.result?.details.data.fields.balance) || [], [objects]);
-
-  const suiCoinNames = useMemo(
-    () => Array.from(new Set(suiCoinObjects.map((object) => getCoinType(object.result?.details.data.type)))).filter((name) => !!name),
-    [suiCoinObjects],
-  );
+  const suiCoinNames = useMemo(() => suiCoinObjects.map((object) => object.coinType), [suiCoinObjects]);
 
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
   const [currentCoinType, setCurrentCoinType] = useState<string | undefined>(suiCoinNames.includes(params.id || '') ? params.id : suiCoinNames[0]);
@@ -91,49 +93,80 @@ export default function Sui({ chain }: SuiProps) {
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
 
-  const currentCoinObjects = useMemo(
-    () => suiCoinObjects.filter((object) => getCoinType(object.result?.details.data.type) === currentCoinType),
-    [currentCoinType, suiCoinObjects],
-  );
+  const currentCoinObjects = useMemo(() => suiCoinObjects.find((object) => object.coinType === currentCoinType), [currentCoinType, suiCoinObjects]);
 
-  const currentCoinBaseAmount = useMemo(
-    () => currentCoinObjects.reduce((ac, cu) => plus(ac, cu.result?.details.data.fields.balance || '0'), '0'),
-    [currentCoinObjects],
-  );
+  const currentCoinBaseAmount = useMemo(() => currentCoinObjects?.totalBalance || '0', [currentCoinObjects]);
 
   const currentCoinDisplayAmount = useMemo(() => toDisplayDenomAmount(currentCoinBaseAmount, decimals), [currentCoinBaseAmount, decimals]);
 
-  const dryRunTx = useMemo<UnserializedSignableTransaction | undefined>(() => {
-    if (
-      !suiAddressRegex.test(currentAddress) ||
-      address.toLowerCase() === currentAddress.toLowerCase() ||
-      currentCoinBaseAmount === '0' ||
-      lte(debouncedCurrentDisplayAmount || '0', '0') ||
-      gt(debouncedCurrentDisplayAmount || '0', currentCoinDisplayAmount)
-    ) {
+  // NOTE From Ethos
+  // const testTxBlock = useMemo(() => {
+  //   const transactionBlock = new TransactionBlock();
+
+  //   const baseAmount = toBaseDenomAmount(debouncedCurrentDisplayAmount || '0', decimals);
+
+  //   if (currentCoinType === SUI_COIN) {
+  //     const coin = transactionBlock.splitCoins(transactionBlock.gas, [transactionBlock.pure(baseAmount)]);
+  //     transactionBlock.transferObjects([coin], transactionBlock.pure(currentAddress));
+  //   } else {
+  //     const primaryCoinInput = transactionBlock.object(currentCoinType);
+  //     if (mergeCoins.length) {
+  //       transactionBlock.mergeCoins(
+  //         primaryCoinInput,
+  //         mergeCoins.map((coin) => transactionBlock.object(Coin.getID(coin))),
+  //       );
+  //     }
+  //     const coinToTransfer = transactionBlock.splitCoins(primaryCoinInput, [transactionBlock.pure(baseAmount)]);
+  //     transactionBlock.transferObjects([coinToTransfer], transactionBlock.pure(currentAddress));
+  //   }
+  //   return transactionBlock;
+  // }, [currentAddress, currentCoinType, debouncedCurrentDisplayAmount, decimals]);
+
+  const sendTx = useMemo<TransactionBlockType | undefined>(() => {
+    if (!debouncedCurrentDisplayAmount) {
       return undefined;
     }
+    const tx = new TransactionBlock();
 
-    const baseAmount = toBaseDenomAmount(debouncedCurrentDisplayAmount, decimals);
+    const baseAmount = toBaseDenomAmount(debouncedCurrentDisplayAmount || '0', decimals);
 
-    return {
-      kind: currentCoinType === SUI_COIN ? 'paySui' : 'pay',
-      data: {
-        amounts: [Number(baseAmount)],
-        gasBudget: DEFAULT_GAS_BUDGET,
-        recipients: [currentAddress],
-        inputCoins: currentCoinObjects.map((object) => object.result!.details.data.fields.id.id),
-      },
-    };
-  }, [address, currentAddress, currentCoinBaseAmount, currentCoinDisplayAmount, currentCoinObjects, currentCoinType, debouncedCurrentDisplayAmount, decimals]);
+    const txPure = tx.pure(baseAmount);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionSWR({ rawSigner, transaction: dryRunTx });
+    const [coin] = tx.splitCoins(tx.gas, [txPure]);
+
+    tx.transferObjects([coin], tx.pure(currentAddress));
+
+    return tx;
+  }, [currentAddress, debouncedCurrentDisplayAmount, decimals]);
+
+  // NOTE dry run에 쓰이는 transaction은 타입이 다른가?
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionSWR({ rawSigner, transaction: sendTx });
+
+  // const clonedTransaction = useMemo(() => {
+  //   if (!sendTx) return undefined;
+
+  //   const tx = new TransactionBlock(sendTx);
+  //   if (address) {
+  //     tx.setSenderIfNotSet(address);
+  //   }
+  //   return tx;
+  // }, [sendTx, address]);
+
+  // const txData = useCallback(async () => {
+  //   try {
+  //     await clonedTransaction?.build({ provider });
+  //     return clonedTransaction?.blockData;
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // }, [clonedTransaction, provider]);
+  // console.log('🚀 ~ file: index.tsx:138 ~ Sui ~ aaa:', aaa.data?.gasConfig.budget);
 
   const currentGasBudget = useMemo(() => {
-    if (dryRunTx && dryRunTransaction?.status.status === 'success') {
-      const storageCost = dryRunTransaction.gasUsed.storageCost - dryRunTransaction.gasUsed.storageRebate;
+    if (dryRunTransaction?.effects.status.status === 'success') {
+      const storageCost = minus(dryRunTransaction.effects.gasUsed.storageCost, dryRunTransaction.effects.gasUsed.storageRebate);
 
-      const cost = dryRunTransaction.gasUsed.computationCost + (storageCost > 0 ? storageCost : 0);
+      const cost = plus(dryRunTransaction.effects.gasUsed.computationCost, gt(storageCost, 0) ? storageCost : 0);
 
       const baseBudget = Number(times(cost, 2));
 
@@ -141,15 +174,7 @@ export default function Sui({ chain }: SuiProps) {
     }
 
     return DEFAULT_GAS_BUDGET;
-  }, [dryRunTransaction, dryRunTx]);
-
-  const tx = useMemo<UnserializedSignableTransaction | undefined>(() => {
-    if (dryRunTx && dryRunTransaction?.status.status === 'success') {
-      return { kind: dryRunTx.kind, data: { ...dryRunTx.data, gasBudget: currentGasBudget } } as UnserializedSignableTransaction;
-    }
-
-    return undefined;
-  }, [currentGasBudget, dryRunTransaction?.status.status, dryRunTx]);
+  }, [dryRunTransaction]);
 
   const errorMessage = useMemo(() => {
     if (!suiAddressRegex.test(currentAddress)) {
@@ -178,21 +203,13 @@ export default function Sui({ chain }: SuiProps) {
       return dryRunTransactionError.message.substring(idx === -1 ? 0 : idx + 1).trim();
     }
 
-    if (dryRunTransaction?.status.status !== 'success') {
-      return 'Unknown error';
-    }
+    // NOTE 수이 월렛에서는 해당 메서드가 전부 주석처리 되어있음
+    // if (dryRunTransaction?.effects.status.status !== 'success') {
+    //   return 'Unknown error';
+    // }
 
     return '';
-  }, [
-    address,
-    currentAddress,
-    currentCoinBaseAmount,
-    currentCoinDisplayAmount,
-    debouncedCurrentDisplayAmount,
-    dryRunTransaction?.status.status,
-    dryRunTransactionError?.message,
-    t,
-  ]);
+  }, [address, currentAddress, currentCoinBaseAmount, currentCoinDisplayAmount, debouncedCurrentDisplayAmount, dryRunTransactionError?.message, t]);
 
   const handleOnClickMax = () => {
     if (currentCoinType === SUI_COIN) {
@@ -273,14 +290,14 @@ export default function Sui({ chain }: SuiProps) {
                     return;
                   }
 
-                  if (tx) {
+                  if (sendTx) {
                     await enQueue({
                       messageId: '',
                       origin: '',
                       channel: 'inApp',
                       message: {
-                        method: 'sui_signAndExecuteTransaction',
-                        params: [tx],
+                        method: 'sui_signAndExecuteTransactionBlock',
+                        params: [sendTx.serialize()],
                       },
                     });
                   }

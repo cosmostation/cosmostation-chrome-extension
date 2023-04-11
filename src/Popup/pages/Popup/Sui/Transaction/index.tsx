@@ -29,5 +29,5 @@ export default function Transaction() {
 }
 
 function isSuiTransaction(queue: Queue): queue is Queue<SuiSignAndExecuteTransaction> {
-  return queue?.message?.method === 'sui_signAndExecuteTransaction';
+  return queue?.message?.method === 'sui_signAndExecuteTransactionBlock';
 }

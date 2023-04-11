@@ -96,3 +96,17 @@ export type GetCoinMetadata = {
 };
 
 export type GetCoinMetadataResponse = Result<GetCoinMetadata>;
+
+export type GetCoinBalance = {
+  // NOTE FIXME
+  // coinObjectCount : Uint
+  coinType: string;
+  // lockedBalance : <object>
+  totalBalance: string;
+};
+
+export type GetCoinBalanceResponse = Result<GetCoinBalance>;
+
+export type GetAllBalances = GetCoinBalance[];
+
+export type GetAllBalancesResponse = Result<GetAllBalances>;

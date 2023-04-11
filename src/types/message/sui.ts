@@ -1,10 +1,4 @@
-import type {
-  CertifiedTransaction,
-  ExecuteTransactionRequestType,
-  MoveCallTransaction,
-  SuiFinalizedEffects,
-  UnserializedSignableTransaction,
-} from '@mysten/sui.js';
+import type { ExecuteTransactionRequestType, MoveCallTransaction, TransactionBlock } from '@mysten/sui.js';
 
 import type { SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 
@@ -28,6 +22,14 @@ export type SuiGetAccount = {
   id?: number | string;
 };
 
+// NOTE 수이쪽에서 가져온 코드
+// export const MoveCallSuiTransaction = object({
+//   arguments: optional(array(SuiArgument)),
+//   type_arguments: optional(array(string())),
+//   package: ObjectId,
+//   module: string(),
+//   function: string(),
+// });
 export type SuiExecuteMoveCallParam = MoveCallTransaction;
 
 export type SuiExecuteMoveCall = {
@@ -36,7 +38,7 @@ export type SuiExecuteMoveCall = {
   id?: number | string;
 };
 
-export type SuiExecuteMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
+// export type SuiExecuteMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
 
 export type SuiExecuteSerializedMoveCall = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__EXECUTE_SERIALIZED_MOVE_CALL;
@@ -44,15 +46,16 @@ export type SuiExecuteSerializedMoveCall = {
   id?: number | string;
 };
 
-export type SuiExecuteSerializedMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
+// export type SuiExecuteSerializedMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
 
 export type SuiSignAndExecuteTransaction = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION;
-  params: [UnserializedSignableTransaction | string] | [UnserializedSignableTransaction | string, ExecuteTransactionRequestType];
+  params: [TransactionBlock | string] | [TransactionBlock | string, ExecuteTransactionRequestType];
+  // params: [TransactionBlock];
   id?: number | string;
 };
 
-export type SuiSignAndExecuteTransactionResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
+// export type SuiSignAndExecuteTransactionResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
 
 export type SuiGetAccountResponse = {
   address: string;

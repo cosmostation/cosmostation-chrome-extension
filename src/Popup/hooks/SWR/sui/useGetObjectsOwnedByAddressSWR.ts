@@ -1,6 +1,7 @@
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
+import type { SuiObjectResponseQuery } from '@mysten/sui.js/dist/types';
 
 import { SUI } from '~/constants/chain/sui/sui';
 import { isAxiosError, post } from '~/Popup/utils/axios';
@@ -14,14 +15,16 @@ import { useAccounts } from '../cache/useAccounts';
 type FetchParams = {
   url: string;
   address: string;
+  query?: SuiObjectResponseQuery;
 };
 
 type UseGetObjectsOwnedByAddressSWRProps = {
   address?: string;
   network?: SuiNetwork;
+  query?: SuiObjectResponseQuery;
 };
-
-export function useGetObjectsOwnedByAddressSWR({ network, address }: UseGetObjectsOwnedByAddressSWRProps, config?: SWRConfiguration) {
+// NOTE suix_getOwnedObjects
+export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseGetObjectsOwnedByAddressSWRProps, config?: SWRConfiguration) {
   const chain = SUI;
   const accounts = useAccounts(config?.suspense);
   const { chromeStorage } = useChromeStorage();
@@ -35,8 +38,21 @@ export function useGetObjectsOwnedByAddressSWR({ network, address }: UseGetObjec
     try {
       return await post<GetObjectsOwnedByAddressResponse>(params.url, {
         jsonrpc: '2.0',
-        method: 'sui_getObjectsOwnedByAddress',
-        params: [params.address],
+        // NOTE suix_getOwnedObjects
+        method: 'suix_getOwnedObjects',
+        params: [
+          params.address,
+          {
+            filter: {
+              ...query?.filter,
+            },
+            options: {
+              ...query?.options,
+            },
+          },
+          null,
+          null,
+        ],
         id: params.address,
       });
     } catch (e) {

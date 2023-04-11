@@ -1,10 +1,9 @@
 import { Typography } from '@mui/material';
-import type { UnserializedSignableTransaction } from '@mysten/sui.js';
 
 import { Container } from './styled';
 
 type TxProps = {
-  transaction: UnserializedSignableTransaction | string;
+  transaction: Record<string | number, unknown>;
 };
 
 export default function Tx({ transaction }: TxProps) {

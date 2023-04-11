@@ -111,14 +111,16 @@ type Sui = {
   getAccounts: () => Promise<string[]>;
   getPublicKey: () => Promise<string>;
   getChain: () => Promise<string>;
-  executeMoveCall: (data: import('~/types/message/sui').SuiExecuteMoveCall['params'][0]) => Promise<import('~/types/message/sui').SuiExecuteMoveCallResponse>;
-  executeSerializedMoveCall: (
-    data: import('~/types/message/sui').SuiExecuteSerializedMoveCall['params'][0],
-  ) => Promise<import('~/types/message/sui').SuiExecuteSerializedMoveCallResponse>;
-  signAndExecuteTransaction: (
+  // TODO MoveCall 이라는게 아예 사라진건지 파악해봐야함
+  // executeMoveCall: (data: import('~/types/message/sui').SuiExecuteMoveCall['params'][0]) => Promise<import('~/types/message/sui').SuiExecuteMoveCallResponse>;
+  // executeSerializedMoveCall: (
+  //   data: import('~/types/message/sui').SuiExecuteSerializedMoveCall['params'][0],
+  // ) => Promise<import('~/types/message/sui').SuiExecuteSerializedMoveCallResponse>;
+  signAndExecuteTransactionBlock: (
     data: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][0],
     type: import('~/types/message/sui').SuiSignAndExecuteTransaction['params'][1],
-  ) => Promise<import('~/types/message/sui').SuiSignAndExecuteTransactionResponse>;
+    // NOTE 여기도 리턴 타입 바뀌어야겠지?
+  ) => Promise<SuiSignTransactionBlockOutput>;
   on: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
   off: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
 };

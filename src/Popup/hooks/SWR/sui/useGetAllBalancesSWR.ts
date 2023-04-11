@@ -4,46 +4,44 @@ import useSWR from 'swr';
 
 import { post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
-import type { GetCoinMetadataResponse } from '~/types/sui/rpc';
+import type { GetAllBalancesResponse } from '~/types/sui/rpc';
 
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
 
 type FetchParams = {
   url: string;
-  coinType: string;
   method: string;
 };
 
-type UseGetCoinMetadataSWRProps = {
-  coinType?: string;
+type UseGetAllBalancesSWR = {
+  address: string;
   network?: SuiNetwork;
 };
 
-// NOTE use for NFTs
-export function useGetCoinMetadataSWR({ network, coinType }: UseGetCoinMetadataSWRProps, config?: SWRConfiguration) {
+export function useGetAllBalancesSWR({ address, network }: UseGetAllBalancesSWR, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
 
   const fetcher = async (params: FetchParams) => {
     try {
-      return await post<GetCoinMetadataResponse>(params.url, {
+      return await post<GetAllBalancesResponse>(params.url, {
         jsonrpc: '2.0',
         method: params.method,
-        params: [params.coinType],
-        id: params.coinType,
+        params: [address],
+        id: address,
       });
     } catch (e) {
       return null;
     }
   };
 
-  const { data, error, mutate } = useSWR<GetCoinMetadataResponse | null, AxiosError>({ url: rpcURL, coinType, method: 'suix_getCoinMetadata' }, fetcher, {
+  const { data, error, mutate } = useSWR<GetAllBalancesResponse | null, AxiosError>({ url: rpcURL, method: 'suix_getAllBalances' }, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
     errorRetryCount: 0,
-    isPaused: () => !coinType,
+    isPaused: () => !rpcURL,
     ...config,
   });
 

@@ -2,7 +2,7 @@ export const SUI_POPUP_METHOD_TYPE = {
   SUI__CONNECT: 'sui_connect',
   SUI__EXECUTE_MOVE_CALL: 'sui_executeMoveCall',
   SUI__EXECUTE_SERIALIZED_MOVE_CALL: 'sui_executeSerializedMoveCall',
-  SUI__SIGN_AND_EXECUTE_TRANSACTION: 'sui_signAndExecuteTransaction',
+  SUI__SIGN_AND_EXECUTE_TRANSACTION: 'sui_signAndExecuteTransactionBlock',
   SUI__SIGN_MESSAGE: 'sui_signMessage',
   SUI__GET_ACCOUNT: 'sui_getAccount',
 } as const;

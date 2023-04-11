@@ -1,4 +1,3 @@
-import type { PaySuiTransaction, UnserializedSignableTransaction } from '@mysten/sui.js';
 import { Ed25519PublicKey } from '@mysten/sui.js';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -10,18 +9,20 @@ import { SuiRPCError } from './error';
 export function getAddress(publicKey: Buffer) {
   const key = new Ed25519PublicKey(publicKey);
 
-  return `0x${key.toSuiAddress()}`;
+  return key.toSuiAddress();
 }
 
+// NOTE is needed?
 export function isExists(object: Result<GetObject>): object is Result<GetObjectExists> {
   return object.result?.status === 'Exists';
 }
 
+// NOTE is needed?
 export function getCoinType(type?: string) {
   if (!type) {
     return '';
   }
-
+  // NOTE 코인 타입 예시가 필요함
   const startIndex = type.indexOf('<');
   const endIndex = type.indexOf('>');
 
@@ -61,6 +62,7 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
   }
 }
 
-export function isPaySui(transaction: UnserializedSignableTransaction): transaction is { kind: 'paySui'; data: PaySuiTransaction } {
-  return transaction.kind === 'paySui';
-}
+// NOTE paySui가 지금은 뭐로 업그레이드 되었는지 모르겠음
+// export function isPaySui(transaction: TransactionBlock) {
+//   return transaction.blockData.transactions === 'paySui';
+// }

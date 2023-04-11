@@ -7,14 +7,12 @@ import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useGetAllBalancesSWR } from '~/Popup/hooks/SWR/sui/useGetAllBalancesSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
-import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
-import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { plus, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { getCoinType, isExists } from '~/Popup/utils/sui';
 import type { SuiChain } from '~/types/chain';
 
 import {
@@ -46,22 +44,20 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coinT
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address }, { suspense: true });
+  const { data: allBalances } = useGetAllBalancesSWR({ address }, { suspense: true });
+  // const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address }, { suspense: true });
 
-  const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
+  // const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType }, { suspense: true });
 
   const decimals = useMemo(() => coinMetadata?.result?.decimals || 0, [coinMetadata?.result?.decimals]);
 
-  const suiCoinObjects = useMemo(
-    () => objects?.filter(isExists).filter((object) => getCoinType(object.result?.details.data.type || '') === coinType) || [],
-    [coinType, objects],
-  );
+  const suiCoinObjects = useMemo(() => allBalances?.result || [], [allBalances?.result]);
 
-  const coinObjects = useMemo(() => suiCoinObjects.filter((object) => getCoinType(object.result?.details.data.type) === coinType), [coinType, suiCoinObjects]);
+  const coinObjects = useMemo(() => suiCoinObjects.find((object) => object.coinType === coinType), [coinType, suiCoinObjects]);
 
-  const baseAmount = useMemo(() => coinObjects.reduce((ac, cu) => plus(ac, cu.result?.details.data.fields.balance || '0'), '0'), [coinObjects]);
+  const baseAmount = useMemo(() => coinObjects?.totalBalance || '0', [coinObjects?.totalBalance]);
 
   const imageURL = useMemo(
     () => (coinMetadata?.result?.iconUrl || coinType === SUI_COIN ? chain.imageURL : undefined),
