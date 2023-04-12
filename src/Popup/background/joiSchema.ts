@@ -30,8 +30,8 @@ import type {
   WalletSwitchEthereumChain,
   WalletWatchAsset,
 } from '~/types/message/ethereum';
-import type { SuiExecuteMoveCall } from '~/types/message/sui';
 
+// import type { SuiExecuteMoveCall } from '~/types/message/sui';
 import { getChainIdRegex } from '../utils/common';
 
 const numberRegex = /^([0-9]+|[0-9]+(\.[0-9]+))$/;

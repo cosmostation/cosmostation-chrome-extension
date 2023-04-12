@@ -89,8 +89,8 @@ import type {
 import type {
   SuiConnect,
   SuiConnectResponse,
-  SuiExecuteMoveCall,
-  SuiExecuteSerializedMoveCall,
+  // SuiExecuteMoveCall,
+  // SuiExecuteSerializedMoveCall,
   SuiGetAccountResponse,
   SuiGetChainResponse,
 } from '~/types/message/sui';
@@ -119,7 +119,7 @@ import {
   personalSignParamsSchema,
   suiConnectSchema,
   // suiExecuteMoveCallSchema,
-  suiExecuteSerializedMoveCallSchema,
+  // suiExecuteSerializedMoveCallSchema,
   walletAddEthereumChainParamsSchema,
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,

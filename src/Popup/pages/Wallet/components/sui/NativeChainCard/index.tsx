@@ -3,6 +3,7 @@ import type { FallbackProps } from 'react-error-boundary';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
+import { Connection, JsonRpcProvider } from '@mysten/sui.js';
 
 import { DEVNET } from '~/constants/chain/sui/network/devnet';
 import { TESTNET } from '~/constants/chain/sui/network/testnet';
@@ -17,15 +18,12 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetCoinBalanceSWR } from '~/Popup/hooks/SWR/sui/useGetCoinBalanceSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
-import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
-import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { post } from '~/Popup/utils/axios';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import type { SuiChain } from '~/types/chain';
@@ -110,12 +108,27 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     }
   };
 
-  const handleOnFaucet = async () => {
-    const faucetURL = DEVNET.id === currentSuiNetwork.id ? 'https://faucet.devnet.sui.io/gas' : 'https://fullnode.testnet.sui.io/gas';
+  const faucetURL = DEVNET.id === currentSuiNetwork.id ? 'https://faucet.devnet.sui.io/gas' : 'https://faucet.testnet.sui.io/gas';
 
+  const connection_testnet = useMemo(
+    () =>
+      new Connection({
+        fullnode: currentSuiNetwork.rpcURL,
+        faucet: faucetURL,
+      }),
+    [currentSuiNetwork.rpcURL, faucetURL],
+  );
+
+  const provider = useMemo(() => new JsonRpcProvider(connection_testnet), [connection_testnet]);
+
+  const handleOnFaucet = async () => {
     try {
+      if (!currentAddress) {
+        throw new Error('Failed, wallet address not found.');
+      }
       setIsDiabledFaucet(true);
-      const response = await post<{ error: null | unknown }>(faucetURL, { FixedAmountRequest: { recipient: currentAddress } });
+
+      const response = await provider.requestSuiFromFaucet(currentAddress);
 
       if (!response.error) {
         setTimeout(() => {
@@ -282,10 +295,8 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
 
-  // FIXME
-  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: currentAddress });
+  useGetCoinBalanceSWR({ address: currentAddress, coinType: SUI_COIN });
   useGetCoinMetadataSWR({ coinType: SUI_COIN });
-  useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) });
 
   const { enqueueSnackbar } = useSnackbar();
 

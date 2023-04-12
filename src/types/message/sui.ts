@@ -1,4 +1,4 @@
-import type { ExecuteTransactionRequestType, MoveCallTransaction, TransactionBlock } from '@mysten/sui.js';
+import type { MoveCallTransaction, TransactionBlock } from '@mysten/sui.js';
 
 import type { SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 
@@ -22,14 +22,6 @@ export type SuiGetAccount = {
   id?: number | string;
 };
 
-// NOTE 수이쪽에서 가져온 코드
-// export const MoveCallSuiTransaction = object({
-//   arguments: optional(array(SuiArgument)),
-//   type_arguments: optional(array(string())),
-//   package: ObjectId,
-//   module: string(),
-//   function: string(),
-// });
 export type SuiExecuteMoveCallParam = MoveCallTransaction;
 
 export type SuiExecuteMoveCall = {
@@ -50,12 +42,9 @@ export type SuiExecuteSerializedMoveCall = {
 
 export type SuiSignAndExecuteTransaction = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION;
-  params: [TransactionBlock | string] | [TransactionBlock | string, ExecuteTransactionRequestType];
-  // params: [TransactionBlock];
+  params: [TransactionBlock | string];
   id?: number | string;
 };
-
-// export type SuiSignAndExecuteTransactionResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
 
 export type SuiGetAccountResponse = {
   address: string;

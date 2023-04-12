@@ -19,7 +19,6 @@ type UseGetCoinMetadataSWRProps = {
   network?: SuiNetwork;
 };
 
-// NOTE use for NFTs
 export function useGetCoinMetadataSWR({ network, coinType }: UseGetCoinMetadataSWRProps, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 

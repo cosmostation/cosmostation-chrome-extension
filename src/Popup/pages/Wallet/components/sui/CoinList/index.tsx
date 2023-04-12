@@ -4,12 +4,12 @@ import { Typography } from '@mui/material';
 
 import { SUI_COIN } from '~/constants/sui';
 import Empty from '~/Popup/components/common/Empty';
-import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
-import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useGetAllBalancesSWR } from '~/Popup/hooks/SWR/sui/useGetAllBalancesSWR';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { plus } from '~/Popup/utils/big';
-import { getCoinType, isExists } from '~/Popup/utils/sui';
+import type { SuiChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
 import CoinItem, { CoinItemSkeleton } from './components/CoinItem';
@@ -23,38 +23,26 @@ import {
   ListTitleRightContainer,
 } from './styled';
 
-export default function CoinList() {
+type CoinListProps = {
+  chain: SuiChain;
+};
+
+export default function CoinList({ chain }: CoinListProps) {
   const { navigate } = useNavigate();
   const { t } = useTranslation();
 
-  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({});
-  const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) });
+  const { currentAccount } = useCurrentAccount();
 
-  const filteredObjects = useMemo(
-    () =>
-      objects
-        ?.filter(isExists)
-        .filter((object) => getCoinType(object.result?.details.data.type || '') !== SUI_COIN && !!object.result?.details.data.fields.balance) || [],
-    [objects],
+  const accounts = useAccounts(true);
+
+  const currentAddress = useMemo(
+    () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '',
+    [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const filteredCoins = useMemo(() => {
-    const reducedCoins = filteredObjects.reduce<Record<string, string>>((prev, cur) => {
-      if (cur.result) {
-        if (prev[cur.result.details.data.type]) {
-          return { ...prev, [cur.result.details.data.type]: plus(prev[cur.result.details.data.type], cur.result.details.data.fields.balance) };
-        }
+  const { data: coins } = useGetAllBalancesSWR({ address: currentAddress });
 
-        return { ...prev, [cur.result.details.data.type]: String(cur.result.details.data.fields.balance) };
-      }
-
-      return prev;
-    }, {});
-
-    const reducedCoinsKeys = Object.keys(reducedCoins);
-
-    return reducedCoinsKeys.map((key) => ({ type: key, amount: reducedCoins[key] }));
-  }, [filteredObjects]);
+  const filteredCoins = useMemo(() => coins?.result?.filter((coin) => coin.coinType !== SUI_COIN && !!coin.totalBalance) || [], [coins?.result]);
 
   const isExistToken = !!filteredCoins.length;
 
@@ -77,9 +65,9 @@ export default function CoinList() {
       </ListTitleContainer>
       <ListContainer>
         {filteredCoins.map((coin) => (
-          <ErrorBoundary key={coin.type} FallbackComponent={Empty}>
+          <ErrorBoundary key={coin.coinType} FallbackComponent={Empty}>
             <Suspense fallback={<CoinItemSkeleton coin={coin} />}>
-              <CoinItem coin={coin} onClick={() => navigate(`/wallet/send/${getCoinType(coin.type)}` as unknown as Path)} />
+              <CoinItem coin={coin} onClick={() => navigate(`/wallet/send/${coin.coinType}` as unknown as Path)} />
             </Suspense>
           </ErrorBoundary>
         ))}

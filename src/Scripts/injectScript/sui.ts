@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import { v4 as uuidv4 } from 'uuid';
-import type { IdentifierArray, SuiSignTransactionBlockOutput, Wallet, WalletAccount } from '@mysten/wallet-standard';
+import { TransactionBlock } from '@mysten/sui.js';
+import type { IdentifierArray, SuiSignAndExecuteTransactionBlockInput, SuiSignTransactionBlockOutput, Wallet, WalletAccount } from '@mysten/wallet-standard';
 
 import { LINE_TYPE } from '~/constants/chain';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -15,7 +16,6 @@ import type {
   SuiGetAccountResponse,
   SuiGetChainResponse,
   SuiGetPermissionsResponse,
-  SuiSignAndExecuteTransaction,
 } from '~/types/message/sui';
 
 const request = (message: SuiRequestMessage) =>
@@ -85,21 +85,17 @@ const hasPermissions = async (permissions: SuiPermissionType[] = ['suggestTransa
   }
 };
 
-// NOTE SuiExecuteMoveCallResponse
-// const executeMoveCall = (data: SuiExecuteMoveCall['params'][0]) =>
-//   request({ method: 'sui_executeMoveCall', params: [data] }) as Promise<SuiExecuteMoveCallResponse>;
+const signAndExecuteTransactionBlock = (data: SuiSignAndExecuteTransactionBlockInput) => {
+  if (!TransactionBlock.is(data.transactionBlock)) {
+    throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
+  }
 
-// const executeSerializedMoveCall = (data: SuiExecuteSerializedMoveCall['params'][0]) =>
-//   request({ method: 'sui_executeSerializedMoveCall', params: [data] }) as Promise<SuiExecuteMoveCallResponse>;
-
-// NOTE suisignAndExecuteTransactionBlock
-// TODO SuiSignAndExecuteTransaction내의 param에 타입에 TrasactionBlock만 들어가는지 아니면 Uint8Array도 들어가는지 확인 필요
-const signAndExecuteTransactionBlock = (data: SuiSignAndExecuteTransaction['params'][0], type?: SuiSignAndExecuteTransaction['params'][1]) =>
-  request({
+  return request({
     method: 'sui_signAndExecuteTransactionBlock',
     // @ts-ignore:next-line
-    params: type ? [data, type] : [data?.transaction ? { ...data.transaction } : data],
+    params: [data.transactionBlock.serialize()],
   }) as Promise<SuiSignTransactionBlockOutput>;
+};
 
 const off = (eventName: SuiListenerType, eventHandler?: (data: unknown) => void) => {
   const handlerInfos = window.cosmostation.handlerInfos.filter(
@@ -179,20 +175,12 @@ class SuiStandard implements Wallet {
           }
         },
       },
-      // NOTE
-      // NOTE 사인 후 리턴값 타입은 수이 월랫에 맞춰서 제공할 것
 
-      // 먼저 사인해라
-      // 사인한 결과를 리턴해라
       'standard:events': {
         version: '1.0.0',
         on,
       },
-      // NOTE여기 부분을 수정해야함
 
-      // 메서드 관련된 부분 싹 다 갈아엎어야함
-      // NOTE sui_signAndExecuteTransaction 이거 말하는거임
-      // NOTE 아마 이 메서드로 바꿔주면 될 것 같음
       'sui:signAndExecuteTransactionBlock': {
         version: '1.0.0',
         signAndExecuteTransactionBlock,
@@ -224,8 +212,6 @@ class SuiStandard implements Wallet {
 export const sui: Sui = {
   connect,
   disconnect,
-  // executeMoveCall,
-  // executeSerializedMoveCall,
   getAccounts,
   getPublicKey,
   getChain,

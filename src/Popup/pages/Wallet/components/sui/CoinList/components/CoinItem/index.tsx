@@ -7,8 +7,8 @@ import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { getCoinAddress } from '~/Popup/utils/aptos';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import type { GetCoinBalance } from '~/types/sui/rpc';
 
 import {
   LeftContainer,
@@ -24,7 +24,7 @@ import {
 } from './styled';
 
 type CoinItemProps = {
-  coin: { type: string; amount: string };
+  coin: GetCoinBalance;
   onClick?: () => void;
   disabled?: boolean;
 };
@@ -32,15 +32,16 @@ type CoinItemProps = {
 export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
   const { chromeStorage } = useChromeStorage();
 
-  const coinType = getCoinAddress(coin.type);
+  const splitedCoinType = coin.coinType.split('::');
 
-  const splitedCoinType = coinType.split('::');
-
-  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType }, { suspense: true });
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: coin.coinType }, { suspense: true });
 
   const { currency } = chromeStorage;
 
-  const displayAmount = useMemo(() => toDisplayDenomAmount(coin.amount, coinMetadata?.result?.decimals || 0), [coin.amount, coinMetadata?.result?.decimals]);
+  const displayAmount = useMemo(
+    () => toDisplayDenomAmount(coin.totalBalance, coinMetadata?.result?.decimals || 0),
+    [coin.totalBalance, coinMetadata?.result?.decimals],
+  );
   const displayDenom = coinMetadata?.result?.symbol || splitedCoinType[2] || '';
 
   const displayName = coinMetadata?.result?.name || splitedCoinType[2] || '';
@@ -66,7 +67,7 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
             <Typography variant="h5">{displayDenom}</Typography>
           </LeftTextChainContainer>
 
-          <Tooltip title={coinType}>
+          <Tooltip title={coin.coinType}>
             <LeftTextChainNameContainer>
               <Typography variant="h5">{displayName}</Typography>
             </LeftTextChainNameContainer>
@@ -94,10 +95,8 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
 type CoinItemSkeletonProps = Pick<CoinItemProps, 'coin'>;
 
 export function CoinItemSkeleton({ coin }: CoinItemSkeletonProps) {
-  const coinType = getCoinAddress(coin.type);
-
-  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType });
-  const splitedCoinType = coinType.split('::');
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: coin.coinType });
+  const splitedCoinType = coin.coinType.split('::');
 
   const displayDenom = coinMetadata?.result?.symbol || splitedCoinType[2] || '';
 

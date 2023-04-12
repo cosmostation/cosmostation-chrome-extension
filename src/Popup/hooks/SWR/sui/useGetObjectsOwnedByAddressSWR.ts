@@ -23,7 +23,6 @@ type UseGetObjectsOwnedByAddressSWRProps = {
   network?: SuiNetwork;
   query?: SuiObjectResponseQuery;
 };
-// NOTE suix_getOwnedObjects
 export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseGetObjectsOwnedByAddressSWRProps, config?: SWRConfiguration) {
   const chain = SUI;
   const accounts = useAccounts(config?.suspense);
@@ -38,20 +37,12 @@ export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseG
     try {
       return await post<GetObjectsOwnedByAddressResponse>(params.url, {
         jsonrpc: '2.0',
-        // NOTE suix_getOwnedObjects
         method: 'suix_getOwnedObjects',
         params: [
           params.address,
           {
-            filter: {
-              ...query?.filter,
-            },
-            options: {
-              ...query?.options,
-            },
+            ...query,
           },
-          null,
-          null,
         ],
         id: params.address,
       });

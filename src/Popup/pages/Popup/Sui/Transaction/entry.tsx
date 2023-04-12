@@ -83,7 +83,6 @@ export default function Entry({ queue }: EntryProps) {
     () =>
       new Connection({
         fullnode: currentSuiNetwork.rpcURL,
-        faucet: 'https://fullnode.testnet.sui.io/gas',
       }),
     [currentSuiNetwork.rpcURL],
   );
@@ -210,7 +209,7 @@ export default function Entry({ queue }: EntryProps) {
           </FeeContainer>
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
-          <Tx transaction={transaction.blockData} />
+          <Tx transactionData={transaction.blockData} />
         </StyledTabPanel>
       </ContentContainer>
       <BottomContainer>
@@ -253,7 +252,6 @@ export default function Entry({ queue }: EntryProps) {
                 try {
                   setIsProgress(true);
                   const response = await rawSigner.signAndExecuteTransactionBlock({
-                    // NOTE Tx만드는건 수이의 createTokenTransferTransaction메서드를 참고
                     transactionBlock: transaction,
                     options: {
                       showInput: true,
@@ -262,39 +260,6 @@ export default function Entry({ queue }: EntryProps) {
                     },
                   });
 
-                  // NOTE Certificate가 사라졌나?
-                  // if ('EffectsCert' in response) {
-                  //   // NOTE SuiTransactionBlockResponse
-                  //   // NOTE 수이 사인 하는거 보고 어떤 리턴 타입 쓰는지 파악되면
-
-                  //   const result: SuiTransactionBlockResponse = {
-                  //     certificate: response.EffectsCert,
-                  //     effects: response.EffectsCert.effects.effects as unknown as SuiSignAndExecuteTransactionResponse['effects'],
-                  //   };
-
-                  //   responseToWeb({
-                  //     response: {
-                  //       result,
-                  //     },
-                  //     message,
-                  //     messageId,
-                  //     origin,
-                  //   });
-                  // } else if ('certificate' in response && 'effects' in response) {
-                  //   const result: SuiSignAndExecuteTransactionResponse = {
-                  //     certificate: response.certificate as unknown as SuiSignAndExecuteTransactionResponse['certificate'],
-                  //     effects: response.effects.effects as unknown as SuiSignAndExecuteTransactionResponse['effects'],
-                  //   };
-
-                  //   responseToWeb({
-                  //     response: {
-                  //       result,
-                  //     },
-                  //     message,
-                  //     messageId,
-                  //     origin,
-                  //   });
-                  // } else {
                   responseToWeb({
                     response: {
                       result: response,

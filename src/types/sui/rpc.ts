@@ -41,15 +41,19 @@ export type Reference = {
 };
 
 export type GetObjectsOwnedByAddress = {
-  objectId: string;
-  version: number;
-  digest: string;
-  type: string;
-  owner: Owner;
-  previousTransaction: string;
+  data: {
+    data: {
+      objectId: string;
+      version: number;
+      digest: string;
+      type: string;
+      // owner: Owner;
+      // previousTransaction: string;
+    };
+  }[];
 };
 
-export type GetObjectsOwnedByAddressResponse = Result<GetObjectsOwnedByAddress[]>;
+export type GetObjectsOwnedByAddressResponse = Result<GetObjectsOwnedByAddress>;
 
 export type ExistsDetails = {
   data: Data;
@@ -97,11 +101,15 @@ export type GetCoinMetadata = {
 
 export type GetCoinMetadataResponse = Result<GetCoinMetadata>;
 
+export type lockedBalance = {
+  epochId: number;
+  number: number;
+};
+
 export type GetCoinBalance = {
-  // NOTE FIXME
-  // coinObjectCount : Uint
+  coinObjectCount: number;
   coinType: string;
-  // lockedBalance : <object>
+  lockedBalance: lockedBalance;
   totalBalance: string;
 };
 

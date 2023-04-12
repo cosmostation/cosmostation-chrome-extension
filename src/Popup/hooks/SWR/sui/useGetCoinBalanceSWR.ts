@@ -9,12 +9,14 @@ import type { GetCoinBalanceResponse } from '~/types/sui/rpc';
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
 
 type FetchParams = {
+  address?: string;
   url: string;
   coinType: string;
   method: string;
 };
 
 type UseGetCoinMetadataSWRProps = {
+  // NOTE 수이 훅들 파라미터들 전반적으로 옵셔널 떼야함
   coinType?: string;
   network?: SuiNetwork;
   address?: string;
@@ -30,16 +32,15 @@ export function useGetCoinBalanceSWR({ address, network, coinType }: UseGetCoinM
       return await post<GetCoinBalanceResponse>(params.url, {
         jsonrpc: '2.0',
         method: params.method,
-        params: [address, params.coinType],
-        id: address,
+        params: [params.address, params.coinType],
+        id: params.address,
       });
     } catch (e) {
       return null;
     }
   };
 
-  // FIXME 아이디 변경시에 값을 새로 안가져오고 이전 값을 가져오고 있음
-  const { data, error, mutate } = useSWR<GetCoinBalanceResponse | null, AxiosError>({ url: rpcURL, coinType, method: 'suix_getBalance' }, fetcher, {
+  const { data, error, mutate } = useSWR<GetCoinBalanceResponse | null, AxiosError>({ address, url: rpcURL, coinType, method: 'suix_getBalance' }, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,

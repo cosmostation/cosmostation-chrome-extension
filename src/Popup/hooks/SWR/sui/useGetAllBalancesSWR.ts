@@ -9,6 +9,7 @@ import type { GetAllBalancesResponse } from '~/types/sui/rpc';
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
 
 type FetchParams = {
+  address: string;
   url: string;
   method: string;
 };
@@ -28,15 +29,15 @@ export function useGetAllBalancesSWR({ address, network }: UseGetAllBalancesSWR,
       return await post<GetAllBalancesResponse>(params.url, {
         jsonrpc: '2.0',
         method: params.method,
-        params: [address],
-        id: address,
+        params: [params.address],
+        id: params.address,
       });
     } catch (e) {
       return null;
     }
   };
 
-  const { data, error, mutate } = useSWR<GetAllBalancesResponse | null, AxiosError>({ url: rpcURL, method: 'suix_getAllBalances' }, fetcher, {
+  const { data, error, mutate } = useSWR<GetAllBalancesResponse | null, AxiosError>({ address, url: rpcURL, method: 'suix_getAllBalances' }, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,

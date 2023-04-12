@@ -40,7 +40,7 @@ export default function Sui({ chain }: SuiProps) {
           </NativeChainCardContainer>
         </LedgerCheck>
         <BottomContainer>
-          <CoinList />
+          <CoinList chain={chain} />
         </BottomContainer>
       </>
     </Container>
