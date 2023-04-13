@@ -94,7 +94,7 @@ export default function Entry({ queue }: EntryProps) {
   const rawSigner = useMemo(() => new RawSigner(keypair, provider), [keypair, provider]);
 
   const transaction = useMemo(() => {
-    if (typeof params[0] === 'string') {
+    if (typeof params[0] === 'string' || params[0] instanceof Uint8Array) {
       return TransactionBlock.from(params[0]);
     }
     return params[0];
@@ -104,7 +104,10 @@ export default function Entry({ queue }: EntryProps) {
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
-  const decimals = useMemo(() => coinMetadata?.result?.decimals || 0, [coinMetadata?.result?.decimals]);
+  const decimals = useMemo(
+    () => coinMetadata?.result?.decimals || currentSuiNetwork.decimals || 0,
+    [coinMetadata?.result?.decimals, currentSuiNetwork.decimals],
+  );
 
   const symbol = useMemo(() => coinMetadata?.result?.symbol || '', [coinMetadata?.result?.symbol]);
 
@@ -160,7 +163,7 @@ export default function Entry({ queue }: EntryProps) {
           <Tab label="Data" />
         </Tabs>
         <StyledTabPanel value={tabValue} index={0}>
-          <TxMessage transaction={params[0]} />
+          <TxMessage transaction={transaction} />
           <FeeContainer>
             <FeeInfoContainer>
               <FeeLeftContainer>

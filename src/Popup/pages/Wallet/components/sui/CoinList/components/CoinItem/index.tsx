@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
+import { SUI_TOKEN_TEMPORARY_DECIMALS } from '~/constants/sui';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
@@ -39,7 +40,7 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
   const { currency } = chromeStorage;
 
   const displayAmount = useMemo(
-    () => toDisplayDenomAmount(coin.totalBalance, coinMetadata?.result?.decimals || 0),
+    () => toDisplayDenomAmount(coin.totalBalance, coinMetadata?.result?.decimals || SUI_TOKEN_TEMPORARY_DECIMALS),
     [coin.totalBalance, coinMetadata?.result?.decimals],
   );
   const displayDenom = coinMetadata?.result?.symbol || splitedCoinType[2] || '';

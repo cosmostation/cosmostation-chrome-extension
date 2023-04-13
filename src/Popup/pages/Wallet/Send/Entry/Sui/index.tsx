@@ -5,7 +5,7 @@ import { InputAdornment, Typography } from '@mui/material';
 import type { TransactionBlock as TransactionBlockType } from '@mysten/sui.js';
 import { Connection, Ed25519Keypair, JsonRpcProvider, RawSigner, TransactionBlock } from '@mysten/sui.js';
 
-import { SUI_COIN } from '~/constants/sui';
+import { SUI_COIN, SUI_TOKEN_TEMPORARY_DECIMALS } from '~/constants/sui';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
@@ -15,7 +15,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useDryRunTransactionSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionSWR';
 import { useGetAllBalancesSWR } from '~/Popup/hooks/SWR/sui/useGetAllBalancesSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
-import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
+import { useGetCoinsSWR } from '~/Popup/hooks/SWR/sui/useGetCoinsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -71,28 +71,26 @@ export default function Sui({ chain }: SuiProps) {
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { data: allBalances } = useGetAllBalancesSWR({ address }, { suspense: true });
+  const { data: allCoinBalances } = useGetAllBalancesSWR({ address }, { suspense: true });
 
-  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({
-    address,
-    query: { options: { showType: true, showDisplay: true } },
-  });
+  const suiAvailableCoins = useMemo(() => allCoinBalances?.result || [], [allCoinBalances?.result]);
 
-  const suiCoinCoins = useMemo(() => allBalances?.result || [], [allBalances?.result]);
-
-  const suiCoinTypes = useMemo(() => suiCoinCoins.map((object) => object.coinType), [suiCoinCoins]);
+  const suiAvailableCoinTypes = useMemo(() => suiAvailableCoins.map((object) => object.coinType), [suiAvailableCoins]);
 
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
 
   const [currentCoinType, setCurrentCoinType] = useState<string | undefined>(
-    suiCoinTypes.includes(params.id || '') ? params.id : suiCoinTypes.find((coinType) => coinType === SUI_COIN) ? SUI_COIN : suiCoinTypes[0],
+    suiAvailableCoinTypes.includes(params.id || '') ? params.id : suiAvailableCoinTypes.includes(SUI_COIN) ? SUI_COIN : suiAvailableCoinTypes[0],
   );
 
   const [debouncedCurrentDisplayAmount] = useDebounce(currentDisplayAmount, 700);
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: currentCoinType }, { suspense: true });
 
-  const decimals = useMemo(() => coinMetadata?.result?.decimals || 0, [coinMetadata?.result?.decimals]);
+  const decimals = useMemo(
+    () => (coinMetadata?.result?.decimals || currentCoinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
+    [coinMetadata?.result?.decimals, currentCoinType, currentSuiNetwork.decimals],
+  );
 
   const [currentAddress, setCurrentAddress] = useState('');
 
@@ -102,7 +100,7 @@ export default function Sui({ chain }: SuiProps) {
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
 
-  const currentCoin = useMemo(() => suiCoinCoins.find((object) => object.coinType === currentCoinType), [currentCoinType, suiCoinCoins]);
+  const currentCoin = useMemo(() => suiAvailableCoins.find((object) => object.coinType === currentCoinType), [currentCoinType, suiAvailableCoins]);
 
   const currentCoinBaseAmount = useMemo(() => currentCoin?.totalBalance || '0', [currentCoin]);
 
@@ -112,38 +110,42 @@ export default function Sui({ chain }: SuiProps) {
 
   const isPayAllSui = useMemo(() => equal(baseAmount, currentCoinBaseAmount), [baseAmount, currentCoinBaseAmount]);
 
+  const { data: ownedEqualCoins } = useGetCoinsSWR({ address, coinType: currentCoinType, provider });
+
+  const filteredOwnedEqualCoins = useMemo(() => ownedEqualCoins?.data.filter((item) => !item.lockedUntilEpoch), [ownedEqualCoins?.data]);
+
   const sendTx = useMemo<TransactionBlockType | undefined>(() => {
     if (!debouncedCurrentDisplayAmount) {
       return undefined;
     }
     const tx = new TransactionBlock();
 
-    if (isPayAllSui && currentCoinType === SUI_COIN && objectsOwnedByAddress?.result) {
+    if (isPayAllSui && currentCoinType === SUI_COIN && filteredOwnedEqualCoins) {
       tx.transferObjects([tx.gas], tx.pure(currentAddress));
       tx.setGasPayment(
-        objectsOwnedByAddress.result.data
-          .filter((coin) => coin.data.type === currentCoinType)
+        filteredOwnedEqualCoins
+          .filter((coin) => coin.coinType === currentCoinType)
           .map((coin) => ({
-            objectId: coin.data.objectId,
-            digest: coin.data.digest,
-            version: coin.data.version,
+            objectId: coin.coinObjectId,
+            digest: coin.digest,
+            version: coin.version,
           })),
       );
       return tx;
     }
 
-    const [primaryCoin, ...mergeCoins] = objectsOwnedByAddress!.result!.data.filter((coin) => coin.data.type === currentCoinType);
+    const [primaryCoin, ...mergeCoins] = filteredOwnedEqualCoins?.filter((coin) => coin.coinType === currentCoinType) || [];
 
     if (currentCoinType === SUI_COIN) {
       const [coin] = tx.splitCoins(tx.gas, [tx.pure(baseAmount)]);
 
       tx.transferObjects([coin], tx.pure(currentAddress));
     } else {
-      const primaryCoinInput = tx.object(primaryCoin.data.objectId);
+      const primaryCoinInput = tx.object(primaryCoin.coinObjectId);
       if (mergeCoins.length) {
         tx.mergeCoins(
           primaryCoinInput,
-          mergeCoins.map((coin) => tx.object(coin.data.objectId)),
+          mergeCoins.map((coin) => tx.object(coin.coinObjectId)),
         );
       }
       const coin = tx.splitCoins(primaryCoinInput, [tx.pure(baseAmount)]);
@@ -151,7 +153,7 @@ export default function Sui({ chain }: SuiProps) {
     }
 
     return tx;
-  }, [baseAmount, currentAddress, currentCoinType, debouncedCurrentDisplayAmount, isPayAllSui, objectsOwnedByAddress]);
+  }, [baseAmount, currentAddress, currentCoinType, debouncedCurrentDisplayAmount, filteredOwnedEqualCoins, isPayAllSui]);
 
   const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionSWR({ rawSigner, transaction: sendTx });
 

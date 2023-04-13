@@ -47,13 +47,25 @@ export type GetObjectsOwnedByAddress = {
       version: number;
       digest: string;
       type: string;
-      // owner: Owner;
-      // previousTransaction: string;
     };
   }[];
 };
 
 export type GetObjectsOwnedByAddressResponse = Result<GetObjectsOwnedByAddress>;
+
+export type GetCoinsResponse = {
+  data: {
+    version: number;
+    digest: string;
+    coinType: string;
+    previousTransaction: string;
+    coinObjectId: string;
+    balance: number;
+    lockedUntilEpoch: number | null;
+  }[];
+  nextCursor: string | null;
+  hasNextPage: boolean;
+};
 
 export type ExistsDetails = {
   data: Data;

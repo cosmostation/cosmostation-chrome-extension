@@ -8,4 +8,5 @@ export const DEVNET: SuiNetwork = {
   imageURL: suiImg,
   explorerURL: 'https://explorer.sui.io',
   displayDenom: 'SUI',
+  decimals: 9,
 };

@@ -81,7 +81,10 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const amount = useMemo(() => BigInt(coinBalance?.result?.totalBalance || '0').toString(), [coinBalance?.result?.totalBalance]);
 
-  const decimals = useMemo(() => coinMetadata?.result?.decimals || 0, [coinMetadata?.result?.decimals]);
+  const decimals = useMemo(
+    () => coinMetadata?.result?.decimals || currentSuiNetwork.decimals || 0,
+    [coinMetadata?.result?.decimals, currentSuiNetwork.decimals],
+  );
 
   const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);
 
@@ -108,15 +111,13 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     }
   };
 
-  const faucetURL = DEVNET.id === currentSuiNetwork.id ? 'https://faucet.devnet.sui.io/gas' : 'https://faucet.testnet.sui.io/gas';
-
   const connection_testnet = useMemo(
     () =>
       new Connection({
         fullnode: currentSuiNetwork.rpcURL,
-        faucet: faucetURL,
+        faucet: DEVNET.id === currentSuiNetwork.id ? 'https://faucet.devnet.sui.io/gas' : 'https://faucet.testnet.sui.io/gas',
       }),
-    [currentSuiNetwork.rpcURL, faucetURL],
+    [currentSuiNetwork.id, currentSuiNetwork.rpcURL],
   );
 
   const provider = useMemo(() => new JsonRpcProvider(connection_testnet), [connection_testnet]);

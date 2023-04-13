@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import type { PopoverProps } from '@mui/material';
 
+import { SUI_COIN } from '~/constants/sui';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetAllBalancesSWR } from '~/Popup/hooks/SWR/sui/useGetAllBalancesSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -19,14 +20,15 @@ export default function CoinPopover({ currentCoinType, onClickCoin, onClose, cha
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  // const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address }, { suspense: true });
+  const { data: allCoinBalances } = useGetAllBalancesSWR({ address }, { suspense: true });
 
-  // const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
-  const { data: allBalances } = useGetAllBalancesSWR({ address }, { suspense: true });
-
-  const suiCoinObjects = useMemo(() => allBalances?.result || [], [allBalances?.result]);
-
-  const suiCoinNames = useMemo(() => suiCoinObjects.map((object) => object.coinType), [suiCoinObjects]);
+  const suiAvailableCoins = useMemo(
+    () =>
+      allCoinBalances?.result
+        ? [...allCoinBalances.result.filter((coin) => coin.coinType === SUI_COIN), ...allCoinBalances.result.filter((coin) => coin.coinType !== SUI_COIN)]
+        : [],
+    [allCoinBalances?.result],
+  );
 
   useEffect(() => {
     if (remainder.open) {
@@ -37,17 +39,17 @@ export default function CoinPopover({ currentCoinType, onClickCoin, onClose, cha
   return (
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
-        {suiCoinNames.map((coinType) => {
-          const isActive = currentCoinType === coinType;
+        {suiAvailableCoins.map((coin) => {
+          const isActive = currentCoinType === coin.coinType;
           return (
             <CoinItem
-              key={coinType || 'native'}
-              coinType={coinType}
+              key={coin.coinType || 'native'}
+              coin={coin}
               chain={chain}
               isActive={isActive}
               ref={isActive ? ref : undefined}
               onClick={() => {
-                onClickCoin?.(coinType);
+                onClickCoin?.(coin.coinType);
                 onClose?.({}, 'backdropClick');
               }}
             />

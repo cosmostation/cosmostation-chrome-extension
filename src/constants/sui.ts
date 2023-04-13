@@ -4,3 +4,5 @@ export const PERMISSION = {
 } as const;
 
 export const SUI_COIN = '0x2::sui::SUI';
+
+export const SUI_TOKEN_TEMPORARY_DECIMALS = 9;

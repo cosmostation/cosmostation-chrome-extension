@@ -40,9 +40,12 @@ export default function CoinList({ chain }: CoinListProps) {
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const { data: coins } = useGetAllBalancesSWR({ address: currentAddress });
+  const { data: allCoinBalances } = useGetAllBalancesSWR({ address: currentAddress });
 
-  const filteredCoins = useMemo(() => coins?.result?.filter((coin) => coin.coinType !== SUI_COIN && !!coin.totalBalance) || [], [coins?.result]);
+  const filteredCoins = useMemo(
+    () => allCoinBalances?.result?.filter((coin) => coin.coinType !== SUI_COIN && !!coin.totalBalance) || [],
+    [allCoinBalances?.result],
+  );
 
   const isExistToken = !!filteredCoins.length;
 

@@ -12,17 +12,15 @@ export function getAddress(publicKey: Buffer) {
   return key.toSuiAddress();
 }
 
-// NOTE is needed?
 export function isExists(object: Result<GetObject>): object is Result<GetObjectExists> {
   return object.result?.status === 'Exists';
 }
 
-// NOTE is needed?
 export function getCoinType(type?: string) {
   if (!type) {
     return '';
   }
-  // NOTE 코인 타입 예시가 필요함
+
   const startIndex = type.indexOf('<');
   const endIndex = type.indexOf('>');
 
