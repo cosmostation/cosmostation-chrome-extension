@@ -32,6 +32,7 @@ export function useGetCoinsSWR({ address, coinType, provider, cursor }: UseObjec
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
+    errorRetryCount: 0,
     isPaused: () => !address || !provider || !coinType,
     ...config,
   });

@@ -5,12 +5,12 @@ import type { DryRunTransactionBlockResponse, RawSigner } from '@mysten/sui.js';
 import { TransactionBlock } from '@mysten/sui.js';
 
 type FetchParams = {
-  transaction?: TransactionBlock;
+  transaction?: TransactionBlock | string | Uint8Array;
 };
 
 type UseDryRunTransactionSWRProps = {
   rawSigner?: RawSigner;
-  transaction?: TransactionBlock;
+  transaction?: TransactionBlock | string | Uint8Array;
 };
 
 export function useDryRunTransactionSWR({ transaction, rawSigner }: UseDryRunTransactionSWRProps, config?: SWRConfiguration) {
@@ -18,8 +18,10 @@ export function useDryRunTransactionSWR({ transaction, rawSigner }: UseDryRunTra
     if (!rawSigner || !params.transaction) {
       return null;
     }
+    const originTransaction =
+      typeof params.transaction === 'string' || params.transaction instanceof Uint8Array ? TransactionBlock.from(params.transaction) : params.transaction;
 
-    const clonedTransaction = new TransactionBlock(params.transaction);
+    const clonedTransaction = new TransactionBlock(originTransaction);
 
     clonedTransaction.setSenderIfNotSet(await rawSigner.getAddress());
 

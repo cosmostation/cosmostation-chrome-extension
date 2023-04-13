@@ -58,8 +58,8 @@ export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseG
 
   const { data, error, mutate } = useSWR<GetObjectsOwnedByAddressResponse | null, AxiosError>({ url: rpcURL, address: addr }, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 10000,
-    refreshInterval: 11000,
+    revalidateIfStale: false,
+    revalidateOnReconnect: false,
     errorRetryCount: 0,
     isPaused: () => !addr,
     ...config,

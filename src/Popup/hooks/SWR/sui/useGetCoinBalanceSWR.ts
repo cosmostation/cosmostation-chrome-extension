@@ -42,8 +42,8 @@ export function useGetCoinBalanceSWR({ address, network, coinType }: UseGetCoinM
 
   const { data, error, mutate } = useSWR<GetCoinBalanceResponse | null, AxiosError>({ address, url: rpcURL, coinType, method: 'suix_getBalance' }, fetcher, {
     revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
+    dedupingInterval: 14000,
+    refreshInterval: 15000,
     errorRetryCount: 0,
     isPaused: () => !coinType,
     ...config,

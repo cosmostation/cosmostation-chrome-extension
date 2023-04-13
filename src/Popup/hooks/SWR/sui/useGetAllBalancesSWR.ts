@@ -39,8 +39,8 @@ export function useGetAllBalancesSWR({ address, network }: UseGetAllBalancesSWR,
 
   const { data, error, mutate } = useSWR<GetAllBalancesResponse | null, AxiosError>({ address, url: rpcURL, method: 'suix_getAllBalances' }, fetcher, {
     revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
+    dedupingInterval: 14000,
+    refreshInterval: 15000,
     errorRetryCount: 0,
     isPaused: () => !rpcURL,
     ...config,
