@@ -15,7 +15,7 @@ import { useAccounts } from '../cache/useAccounts';
 type FetchParams = {
   url: string;
   address: string;
-  query?: SuiObjectResponseQuery;
+  query: SuiObjectResponseQuery;
 };
 
 type UseGetObjectsOwnedByAddressSWRProps = {

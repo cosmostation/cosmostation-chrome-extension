@@ -9,20 +9,19 @@ import type { GetCoinBalanceResponse } from '~/types/sui/rpc';
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
 
 type FetchParams = {
-  address?: string;
+  address: string;
   url: string;
   coinType: string;
   method: string;
 };
 
-type UseGetCoinMetadataSWRProps = {
-  // NOTE 수이 훅들 파라미터들 전반적으로 옵셔널 떼야함
+type UseGetCoinBalanceSWRProps = {
+  address: string;
   coinType?: string;
   network?: SuiNetwork;
-  address?: string;
 };
 
-export function useGetCoinBalanceSWR({ address, network, coinType }: UseGetCoinMetadataSWRProps, config?: SWRConfiguration) {
+export function useGetCoinBalanceSWR({ address, network, coinType }: UseGetCoinBalanceSWRProps, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
@@ -45,7 +44,7 @@ export function useGetCoinBalanceSWR({ address, network, coinType }: UseGetCoinM
     dedupingInterval: 14000,
     refreshInterval: 15000,
     errorRetryCount: 0,
-    isPaused: () => !coinType,
+    isPaused: () => !address,
     ...config,
   });
 

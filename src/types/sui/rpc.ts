@@ -1,3 +1,5 @@
+import type { DryRunTransactionBlockResponse, SuiObjectResponse } from '@mysten/sui.js';
+
 export type Body = {
   method: string;
   params: unknown;
@@ -53,7 +55,11 @@ export type GetObjectsOwnedByAddress = {
 
 export type GetObjectsOwnedByAddressResponse = Result<GetObjectsOwnedByAddress>;
 
-export type GetCoinsResponse = {
+export type GetObjectsResponse = Result<SuiObjectResponse>;
+
+export type DryRunTransactionBlockSWRResponse = Result<DryRunTransactionBlockResponse>;
+
+export type GetCoins = {
   data: {
     version: number;
     digest: string;
@@ -66,6 +72,8 @@ export type GetCoinsResponse = {
   nextCursor: string | null;
   hasNextPage: boolean;
 };
+
+export type GetCoinsResponse = Result<GetCoins>;
 
 export type ExistsDetails = {
   data: Data;

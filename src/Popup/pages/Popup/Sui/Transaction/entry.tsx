@@ -11,7 +11,7 @@ import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
-import { useDryRunTransactionSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionSWR';
+import { useDryRunTransactionBlockSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionBlockSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -100,7 +100,7 @@ export default function Entry({ queue }: EntryProps) {
     return params[0];
   }, [params]);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionSWR({ rawSigner, transaction });
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ rawSigner, transaction });
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
@@ -112,16 +112,16 @@ export default function Entry({ queue }: EntryProps) {
   const symbol = useMemo(() => coinMetadata?.result?.symbol || '', [coinMetadata?.result?.symbol]);
 
   const expectedBaseFee = useMemo(() => {
-    if (dryRunTransaction?.effects.gasUsed) {
-      const storageCost = minus(dryRunTransaction.effects.gasUsed.storageCost, dryRunTransaction.effects.gasUsed.storageRebate);
+    if (dryRunTransaction?.result?.effects.gasUsed) {
+      const storageCost = minus(dryRunTransaction.result.effects.gasUsed.storageCost, dryRunTransaction.result.effects.gasUsed.storageRebate);
 
-      const cost = plus(dryRunTransaction.effects.gasUsed.computationCost, gt(storageCost, 0) ? storageCost : 0);
+      const cost = plus(dryRunTransaction.result.effects.gasUsed.computationCost, gt(storageCost, 0) ? storageCost : 0);
 
       return String(cost);
     }
 
     return '0';
-  }, [dryRunTransaction?.effects.gasUsed]);
+  }, [dryRunTransaction?.result?.effects.gasUsed]);
 
   const expectedDisplayFee = useMemo(() => toDisplayDenomAmount(expectedBaseFee, decimals), [decimals, expectedBaseFee]);
 
@@ -133,7 +133,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const displayBudgetFee = useMemo(() => toDisplayDenomAmount(baseBudgetFee, decimals), [baseBudgetFee, decimals]);
 
-  const isDiabled = useMemo(() => !(dryRunTransaction?.effects.status.status === 'success'), [dryRunTransaction?.effects.status.status]);
+  const isDiabled = useMemo(() => !(dryRunTransaction?.result?.effects.status.status === 'success'), [dryRunTransaction?.result?.effects.status.status]);
 
   useEffect(() => {
     if (dryRunTransactionError?.message) {
@@ -141,15 +141,15 @@ export default function Entry({ queue }: EntryProps) {
       setErrorMessage(dryRunTransactionError.message.substring(idx === -1 ? 0 : idx + 1).trim());
     }
 
-    if (dryRunTransaction?.effects.status.error) {
-      setErrorMessage(dryRunTransaction?.effects.status.error);
+    if (dryRunTransaction?.result?.effects.status.error) {
+      setErrorMessage(dryRunTransaction?.result.effects.status.error);
     }
 
     if (dryRunTransaction === null) {
       setErrorMessage('Unknown Error');
     }
 
-    if (dryRunTransaction?.effects.status.status === 'success') {
+    if (dryRunTransaction?.result?.effects.status.status === 'success') {
       setErrorMessage('');
     }
   }, [dryRunTransaction, dryRunTransactionError?.message]);
