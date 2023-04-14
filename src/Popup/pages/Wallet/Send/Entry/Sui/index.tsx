@@ -56,7 +56,6 @@ export default function Sui({ chain }: SuiProps) {
     () =>
       new Connection({
         fullnode: currentSuiNetwork.rpcURL,
-        faucet: 'https://fullnode.testnet.sui.io/gas',
       }),
     [currentSuiNetwork.rpcURL],
   );
