@@ -146,6 +146,7 @@ export default function Entry({ queue }: EntryProps) {
   useEffect(() => {
     if (dryRunTransactionError?.message) {
       const idx = dryRunTransactionError.message.lastIndexOf(':');
+
       setErrorMessage(dryRunTransactionError.message.substring(idx === -1 ? 0 : idx + 1).trim());
     }
 
