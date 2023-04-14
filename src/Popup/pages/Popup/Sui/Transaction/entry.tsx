@@ -186,29 +186,27 @@ export default function Entry({ queue }: EntryProps) {
                 </FeeRightColumnContainer>
               </FeeRightContainer>
             </FeeInfoContainer>
-            {!(transaction instanceof Uint8Array) && (
-              <FeeInfoContainer>
-                <FeeLeftContainer>
-                  <Typography variant="h5">{t('pages.Popup.Sui.Transaction.entry.maxFee')}</Typography>
-                </FeeLeftContainer>
-                <FeeRightContainer>
-                  <FeeRightColumnContainer>
-                    <FeeRightAmountContainer>
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                        {displayBudgetFee}
-                      </Number>
-                      &nbsp;
-                      <Typography variant="h5n">{symbol}</Typography>
-                    </FeeRightAmountContainer>
-                    <FeeRightValueContainer>
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                        0
-                      </Number>
-                    </FeeRightValueContainer>
-                  </FeeRightColumnContainer>
-                </FeeRightContainer>
-              </FeeInfoContainer>
-            )}
+            <FeeInfoContainer>
+              <FeeLeftContainer>
+                <Typography variant="h5">{t('pages.Popup.Sui.Transaction.entry.maxFee')}</Typography>
+              </FeeLeftContainer>
+              <FeeRightContainer>
+                <FeeRightColumnContainer>
+                  <FeeRightAmountContainer>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                      {displayBudgetFee}
+                    </Number>
+                    &nbsp;
+                    <Typography variant="h5n">{symbol}</Typography>
+                  </FeeRightAmountContainer>
+                  <FeeRightValueContainer>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                      0
+                    </Number>
+                  </FeeRightValueContainer>
+                </FeeRightColumnContainer>
+              </FeeRightContainer>
+            </FeeInfoContainer>
           </FeeContainer>
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
