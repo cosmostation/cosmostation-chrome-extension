@@ -79,15 +79,15 @@ export default function Entry({ queue }: EntryProps) {
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-  const connection_testnet = useMemo(
+  const provider = useMemo(
     () =>
-      new Connection({
-        fullnode: currentSuiNetwork.rpcURL,
-      }),
+      new JsonRpcProvider(
+        new Connection({
+          fullnode: currentSuiNetwork.rpcURL,
+        }),
+      ),
     [currentSuiNetwork.rpcURL],
   );
-
-  const provider = useMemo(() => new JsonRpcProvider(connection_testnet), [connection_testnet]);
 
   const keypair = useMemo(() => Ed25519Keypair.fromSecretKey(keyPair!.privateKey!), [keyPair]);
 

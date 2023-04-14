@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
-import type { SuiObjectResponseQuery } from '@mysten/sui.js/dist/types';
+import type { SuiObjectResponseQuery } from '@mysten/sui.js';
 
 import { SUI } from '~/constants/chain/sui/sui';
 import { isAxiosError, post } from '~/Popup/utils/axios';

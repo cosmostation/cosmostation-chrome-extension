@@ -2,6 +2,7 @@ import { Suspense, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
+import { SUI } from '~/constants/chain/sui/sui';
 import { SUI_COIN } from '~/constants/sui';
 import Empty from '~/Popup/components/common/Empty';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
@@ -9,7 +10,6 @@ import { useGetAllBalancesSWR } from '~/Popup/hooks/SWR/sui/useGetAllBalancesSWR
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { SuiChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
 import CoinItem, { CoinItemSkeleton } from './components/CoinItem';
@@ -23,11 +23,9 @@ import {
   ListTitleRightContainer,
 } from './styled';
 
-type CoinListProps = {
-  chain: SuiChain;
-};
+export default function CoinList() {
+  const chain = SUI;
 
-export default function CoinList({ chain }: CoinListProps) {
   const { navigate } = useNavigate();
   const { t } = useTranslation();
 

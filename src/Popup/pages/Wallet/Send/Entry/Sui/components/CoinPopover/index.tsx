@@ -43,7 +43,7 @@ export default function CoinPopover({ currentCoinType, onClickCoin, onClose, cha
           const isActive = currentCoinType === coin.coinType;
           return (
             <CoinItem
-              key={coin.coinType || 'native'}
+              key={coin.coinType}
               coin={coin}
               chain={chain}
               isActive={isActive}

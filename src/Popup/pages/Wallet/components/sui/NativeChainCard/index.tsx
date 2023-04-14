@@ -111,16 +111,16 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     }
   };
 
-  const connection_testnet = useMemo(
+  const provider = useMemo(
     () =>
-      new Connection({
-        fullnode: currentSuiNetwork.rpcURL,
-        faucet: DEVNET.id === currentSuiNetwork.id ? 'https://faucet.devnet.sui.io/gas' : 'https://faucet.testnet.sui.io/gas',
-      }),
+      new JsonRpcProvider(
+        new Connection({
+          fullnode: currentSuiNetwork.rpcURL,
+          faucet: DEVNET.id === currentSuiNetwork.id ? 'https://faucet.devnet.sui.io/gas' : 'https://faucet.testnet.sui.io/gas',
+        }),
+      ),
     [currentSuiNetwork.id, currentSuiNetwork.rpcURL],
   );
-
-  const provider = useMemo(() => new JsonRpcProvider(connection_testnet), [connection_testnet]);
 
   const handleOnFaucet = async () => {
     try {
