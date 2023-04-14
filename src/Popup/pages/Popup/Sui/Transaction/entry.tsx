@@ -212,7 +212,7 @@ export default function Entry({ queue }: EntryProps) {
           </FeeContainer>
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
-          <Tx transactionData={transaction.blockData} />
+          <Tx transaction={transaction} />
         </StyledTabPanel>
       </ContentContainer>
       <BottomContainer>
