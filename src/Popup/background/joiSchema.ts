@@ -464,7 +464,6 @@ export const suiConnectSchema = () =>
         .required(),
     );
 
-// NOTE Cant't find suiExecuteMoveCallSchema in the codebase
 // export const suiExecuteMoveCallSchema = () =>
 //   Joi.array()
 //     .label('params')

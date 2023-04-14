@@ -1952,7 +1952,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         }
 
-        // NOTE Can't find executeMoveCall
         // if (method === 'sui_executeMoveCall') {
         //   const { params } = message;
 
@@ -1968,7 +1967,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         //     ) {
         //       localQueues.push({
         //         ...request,
-        //         // NOTE 여기를 수정봐라
         //         message: { ...request.message, method: 'sui_signAndExecuteTransactionBlock', params: [{ kind: 'moveCall', data: validatedParams[0] }] },
         //       });
         //       void setQueues();
@@ -1984,7 +1982,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         //   }
         // }
 
-        // NOTE Trasaction Type이 불분명해서 string을 지웠는데 그래서 오류가남
         // if (method === 'sui_executeSerializedMoveCall') {
         //   const { params } = message;
 

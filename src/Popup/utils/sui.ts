@@ -59,8 +59,3 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
     throw new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], rpcId);
   }
 }
-
-// NOTE paySui가 지금은 뭐로 업그레이드 되었는지 모르겠음
-// export function isPaySui(transaction: TransactionBlock) {
-//   return transaction.blockData.transactions === 'paySui';
-// }
