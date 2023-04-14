@@ -67,7 +67,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin,
             <Typography variant="h5">{displayDenom}</Typography>
           </CoinLeftDisplayDenomContainer>
           <CoinLeftAvailableContainer>
-            <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Ethereum.components.CoinPopover.components.CoinItem.index.available')} :</Typography>{' '}
+            <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Sui.components.CoinPopover.components.CoinItem.index.available')} :</Typography>{' '}
             <Tooltip title={displayAmount} arrow placement="top">
               <span>
                 <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={getDisplayMaxDecimals(decimals)}>

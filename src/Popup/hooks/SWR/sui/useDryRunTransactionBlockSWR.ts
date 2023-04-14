@@ -12,27 +12,29 @@ import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
 
 type FetchParams = {
   url: string;
-  transaction: TransactionBlock | string | Uint8Array;
+  transactionBlock: TransactionBlock | string | Uint8Array;
   method: string;
 };
 
 type UseDryRunTransactionBlockSWRProps = {
   network?: SuiNetwork;
   rawSigner?: RawSigner;
-  transaction?: TransactionBlock | string | Uint8Array;
+  transactionBlock?: TransactionBlock | string | Uint8Array;
 };
 
-export function useDryRunTransactionBlockSWR({ transaction, network, rawSigner }: UseDryRunTransactionBlockSWRProps, config?: SWRConfiguration) {
+export function useDryRunTransactionBlockSWR({ transactionBlock, network, rawSigner }: UseDryRunTransactionBlockSWRProps, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
 
   const fetcher = async (params: FetchParams) => {
-    if (!rawSigner || !params.transaction) {
+    if (!rawSigner || !params.transactionBlock) {
       return null;
     }
     const originTransaction =
-      typeof params.transaction === 'string' || params.transaction instanceof Uint8Array ? TransactionBlock.from(params.transaction) : params.transaction;
+      typeof params.transactionBlock === 'string' || params.transactionBlock instanceof Uint8Array
+        ? TransactionBlock.from(params.transactionBlock)
+        : params.transactionBlock;
 
     const clonedTransaction = new TransactionBlock(originTransaction);
 
@@ -60,14 +62,14 @@ export function useDryRunTransactionBlockSWR({ transaction, network, rawSigner }
   };
 
   const { data, error, mutate } = useSWR<DryRunTransactionBlockSWRResponse | null, AxiosError>(
-    { url: rpcURL, transaction, method: 'sui_dryRunTransactionBlock' },
+    { url: rpcURL, transactionBlock, method: 'sui_dryRunTransactionBlock' },
     fetcher,
     {
       revalidateOnFocus: false,
       revalidateIfStale: false,
       revalidateOnReconnect: false,
       errorRetryCount: 0,
-      isPaused: () => !transaction || !rawSigner,
+      isPaused: () => !transactionBlock || !rawSigner,
       ...config,
     },
   );

@@ -85,7 +85,7 @@ const hasPermissions = async (permissions: SuiPermissionType[] = ['suggestTransa
   }
 };
 
-const signAndExecuteTransactionBlock = (data: SuiSignAndExecuteTransactionBlockInput) => {
+const signAndExecuteTransactionBlock = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {
   if (!TransactionBlock.is(data.transactionBlock)) {
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
@@ -93,7 +93,7 @@ const signAndExecuteTransactionBlock = (data: SuiSignAndExecuteTransactionBlockI
   return request({
     method: 'sui_signAndExecuteTransactionBlock',
     // @ts-ignore:next-line
-    params: [data.transactionBlock.serialize()],
+    params: [{ ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined }],
   }) as Promise<SuiSignTransactionBlockOutput>;
 };
 
@@ -168,7 +168,7 @@ class SuiStandard implements Wallet {
                   address: address[0],
                   publicKey: new Uint8Array(Buffer.from(publicKey.substring(2), 'hex')),
                   chains: [`sui:${currentChain}`],
-                  features: ['sui:signAndExecuteTransaction'],
+                  features: ['sui:signAndExecuteTransactionBlock'],
                 },
               ];
             }
@@ -198,7 +198,7 @@ class SuiStandard implements Wallet {
               address: address[0],
               publicKey: new Uint8Array(Buffer.from(publicKey.substring(2), 'hex')),
               chains: [`sui:${currentChain}`],
-              features: ['sui:signAndExecuteTransaction'],
+              features: ['sui:signAndExecuteTransactionBlock'],
             },
           ];
         }

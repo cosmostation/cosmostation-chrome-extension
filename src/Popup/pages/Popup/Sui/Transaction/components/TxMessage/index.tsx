@@ -3,9 +3,9 @@ import type { TransactionBlock } from '@mysten/sui.js';
 import Transaction from './messages/Transaction';
 
 type TxMessageProps = {
-  transaction: TransactionBlock;
+  transactionBlock: TransactionBlock;
 };
 
-export default function TxMessage({ transaction }: TxMessageProps) {
-  return <Transaction transaction={transaction} />;
+export default function TxMessage({ transactionBlock }: TxMessageProps) {
+  return <Transaction transactionBlock={transactionBlock} />;
 }

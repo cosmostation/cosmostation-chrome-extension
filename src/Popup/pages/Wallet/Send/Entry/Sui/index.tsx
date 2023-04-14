@@ -111,7 +111,7 @@ export default function Sui({ chain }: SuiProps) {
 
   const filteredOwnedEqualCoins = useMemo(() => ownedEqualCoins?.result?.data.filter((item) => !item.lockedUntilEpoch), [ownedEqualCoins?.result?.data]);
 
-  const sendTx = useMemo<TransactionBlockType | undefined>(() => {
+  const sendTxBlock = useMemo<TransactionBlockType | undefined>(() => {
     if (!debouncedCurrentDisplayAmount) {
       return undefined;
     }
@@ -138,7 +138,7 @@ export default function Sui({ chain }: SuiProps) {
     return tx;
   }, [baseAmount, currentAddress, currentCoinType, debouncedCurrentDisplayAmount, filteredOwnedEqualCoins]);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ rawSigner, transaction: sendTx });
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ rawSigner, transactionBlock: sendTxBlock });
 
   const currentGasBudget = useMemo(() => {
     if (dryRunTransaction?.result?.effects.status.status === 'success') {
@@ -281,14 +281,14 @@ export default function Sui({ chain }: SuiProps) {
                     return;
                   }
 
-                  if (sendTx) {
+                  if (sendTxBlock) {
                     await enQueue({
                       messageId: '',
                       origin: '',
                       channel: 'inApp',
                       message: {
                         method: 'sui_signAndExecuteTransactionBlock',
-                        params: [sendTx.serialize()],
+                        params: [{ transactionBlockSerialized: sendTxBlock.serialize() }],
                       },
                     });
                   }

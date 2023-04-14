@@ -24,7 +24,7 @@ import { gt, minus, plus, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
-import type { SuiSignAndExecuteTransaction } from '~/types/message/sui';
+import type { SuiSignAndExecuteTransactionBlock } from '~/types/message/sui';
 
 import Tx from './components/Tx';
 import TxMessage from './components/TxMessage';
@@ -49,7 +49,7 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 
 type EntryProps = {
-  queue: Queue<SuiSignAndExecuteTransaction>;
+  queue: Queue<SuiSignAndExecuteTransactionBlock>;
 };
 
 export default function Entry({ queue }: EntryProps) {
@@ -93,14 +93,22 @@ export default function Entry({ queue }: EntryProps) {
 
   const rawSigner = useMemo(() => new RawSigner(keypair, provider), [keypair, provider]);
 
-  const transaction = useMemo(() => {
-    if (typeof params[0] === 'string' || params[0] instanceof Uint8Array) {
-      return TransactionBlock.from(params[0]);
-    }
-    return params[0];
-  }, [params]);
+  const transactionBlock = useMemo(() => TransactionBlock.from(params[0].transactionBlockSerialized), [params]);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ rawSigner, transaction });
+  const transactionBlockInput = useMemo(
+    () => ({
+      options: {
+        showInput: true,
+        showEffects: true,
+        showEvents: true,
+      },
+      ...params[0],
+      transactionBlockSerialized: undefined,
+      transactionBlock,
+    }),
+    [params, transactionBlock],
+  );
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ rawSigner, transactionBlock });
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
@@ -109,7 +117,7 @@ export default function Entry({ queue }: EntryProps) {
     [coinMetadata?.result?.decimals, currentSuiNetwork.decimals],
   );
 
-  const symbol = useMemo(() => coinMetadata?.result?.symbol || '', [coinMetadata?.result?.symbol]);
+  const symbol = useMemo(() => coinMetadata?.result?.symbol || 'SUI', [coinMetadata?.result?.symbol]);
 
   const expectedBaseFee = useMemo(() => {
     if (dryRunTransaction?.result?.effects.gasUsed) {
@@ -129,7 +137,7 @@ export default function Entry({ queue }: EntryProps) {
     setTabValue(newTabValue);
   };
 
-  const baseBudgetFee = useMemo(() => transaction.blockData?.gasConfig?.budget || 0, [transaction.blockData?.gasConfig?.budget]);
+  const baseBudgetFee = useMemo(() => transactionBlock.blockData?.gasConfig?.budget || 0, [transactionBlock.blockData?.gasConfig?.budget]);
 
   const displayBudgetFee = useMemo(() => toDisplayDenomAmount(baseBudgetFee, decimals), [baseBudgetFee, decimals]);
 
@@ -163,7 +171,7 @@ export default function Entry({ queue }: EntryProps) {
           <Tab label="Data" />
         </Tabs>
         <StyledTabPanel value={tabValue} index={0}>
-          <TxMessage transaction={transaction} />
+          <TxMessage transactionBlock={transactionBlock} />
           <FeeContainer>
             <FeeInfoContainer>
               <FeeLeftContainer>
@@ -210,7 +218,7 @@ export default function Entry({ queue }: EntryProps) {
           </FeeContainer>
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
-          <Tx transaction={transaction} />
+          <Tx transactionBlock={transactionBlock} />
         </StyledTabPanel>
       </ContentContainer>
       <BottomContainer>
@@ -252,14 +260,7 @@ export default function Entry({ queue }: EntryProps) {
               onClick={async () => {
                 try {
                   setIsProgress(true);
-                  const response = await rawSigner.signAndExecuteTransactionBlock({
-                    transactionBlock: transaction,
-                    options: {
-                      showInput: true,
-                      showEffects: true,
-                      showEvents: true,
-                    },
-                  });
+                  const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
 
                   responseToWeb({
                     response: {

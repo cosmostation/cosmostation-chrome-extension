@@ -72,7 +72,7 @@ export default function CoinButton({ coinType, chain, isActive, ...remainder }: 
             <Typography variant="h5">{displayDenom}</Typography>
           </LeftDisplayDenomContainer>
           <LeftAvailableContainer>
-            <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Ethereum.components.CoinButton.index.available')} :</Typography>{' '}
+            <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Sui.components.CoinButton.index.available')} :</Typography>{' '}
             <Tooltip title={displayAmount} placement="top" arrow>
               <span>
                 <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={getDisplayMaxDecimals(decimals)}>

@@ -6,11 +6,11 @@ import { ContentContainer } from './styled';
 import Container from '../../components/Container';
 
 type TransactionProps = {
-  transaction: TransactionBlock;
+  transactionBlock: TransactionBlock;
 };
 
-export default function Transaction({ transaction }: TransactionProps) {
-  const doc = YAML.dump(transaction.blockData, { indent: 4 });
+export default function Transaction({ transactionBlock }: TransactionProps) {
+  const doc = YAML.dump(transactionBlock.blockData, { indent: 4 });
 
   return (
     <Container title="Transaction">

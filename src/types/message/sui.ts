@@ -1,4 +1,5 @@
-import type { MoveCallTransaction, TransactionBlock } from '@mysten/sui.js';
+import type { MoveCallTransaction } from '@mysten/sui.js';
+import type { SuiSignAndExecuteTransactionBlockInput } from '@mysten/wallet-standard';
 
 import type { SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 
@@ -39,10 +40,13 @@ export type SuiExecuteSerializedMoveCall = {
 };
 
 // export type SuiExecuteSerializedMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
+type SuiSignAndExecuteTransactionBlockSerializedInput = Omit<SuiSignAndExecuteTransactionBlockInput, 'transactionBlock' | 'chain' | 'account'> & {
+  transactionBlockSerialized: string;
+};
 
-export type SuiSignAndExecuteTransaction = {
+export type SuiSignAndExecuteTransactionBlock = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION_BLOCK;
-  params: [TransactionBlock | string | Uint8Array];
+  params: [SuiSignAndExecuteTransactionBlockSerializedInput];
   id?: number | string;
 };
 
