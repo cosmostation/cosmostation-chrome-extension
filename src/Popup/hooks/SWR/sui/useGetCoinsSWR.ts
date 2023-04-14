@@ -2,11 +2,14 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { SUI } from '~/constants/chain/sui/sui';
 import { isAxiosError, post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
 import type { GetCoinsResponse } from '~/types/sui/rpc';
 
+import { useChromeStorage } from '../../useChromeStorage';
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
+import { useAccounts } from '../cache/useAccounts';
 
 type FetchParams = {
   url: string;
@@ -14,29 +17,34 @@ type FetchParams = {
   coinType: string;
   method: string;
   cursor: string;
+  limit: number;
 };
 
 type UseGetCoinsSWRProps = {
-  address: string;
+  address?: string;
   coinType?: string;
   network?: SuiNetwork;
   cursor?: string;
+  limit?: number;
 };
 const MAX_COINS_PER_REQUEST = 100;
 
-export function useGetCoinsSWR({ network, address, coinType, cursor }: UseGetCoinsSWRProps, config?: SWRConfiguration) {
+export function useGetCoinsSWR({ network, address, coinType, cursor, limit }: UseGetCoinsSWRProps, config?: SWRConfiguration) {
+  const chain = SUI;
+  const accounts = useAccounts(config?.suspense);
+  const { chromeStorage } = useChromeStorage();
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
 
-  // NOTE address 들어가는 모든 훅에 아래 처럼 구현해놓을 것
-  // const addr = address || accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
+  const addr = address || accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
+
   const fetcher = async (params: FetchParams) => {
     try {
       return await post<GetCoinsResponse>(params.url, {
         jsonrpc: '2.0',
         method: params.method,
-        params: [params.address, params.coinType, params.cursor, MAX_COINS_PER_REQUEST],
+        params: [params.address, params.coinType, params.cursor, params.limit],
         id: params.address,
       });
     } catch (e) {
@@ -49,14 +57,18 @@ export function useGetCoinsSWR({ network, address, coinType, cursor }: UseGetCoi
     }
   };
 
-  const { data, error, mutate } = useSWR<GetCoinsResponse | null, AxiosError>({ url: rpcURL, address, coinType, cursor, method: 'suix_getCoins' }, fetcher, {
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
-    errorRetryCount: 0,
-    isPaused: () => !address,
-    ...config,
-  });
+  const { data, error, mutate } = useSWR<GetCoinsResponse | null, AxiosError>(
+    { url: rpcURL, address: addr, coinType, cursor, limit: limit || MAX_COINS_PER_REQUEST, method: 'suix_getCoins' },
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+      errorRetryCount: 0,
+      isPaused: () => !addr || !coinType,
+      ...config,
+    },
+  );
 
   return { data, error, mutate };
 }

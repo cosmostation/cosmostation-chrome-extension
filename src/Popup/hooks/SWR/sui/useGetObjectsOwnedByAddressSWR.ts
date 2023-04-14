@@ -16,6 +16,7 @@ type FetchParams = {
   url: string;
   address: string;
   query: SuiObjectResponseQuery;
+  method: string;
 };
 
 type UseGetObjectsOwnedByAddressSWRProps = {
@@ -37,11 +38,11 @@ export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseG
     try {
       return await post<GetObjectsOwnedByAddressResponse>(params.url, {
         jsonrpc: '2.0',
-        method: 'suix_getOwnedObjects',
+        method: params.method,
         params: [
           params.address,
           {
-            ...query,
+            ...params.query,
           },
         ],
         id: params.address,
@@ -56,14 +57,18 @@ export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseG
     }
   };
 
-  const { data, error, mutate } = useSWR<GetObjectsOwnedByAddressResponse | null, AxiosError>({ url: rpcURL, address: addr }, fetcher, {
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
-    errorRetryCount: 0,
-    isPaused: () => !addr,
-    ...config,
-  });
+  const { data, error, mutate } = useSWR<GetObjectsOwnedByAddressResponse | null, AxiosError>(
+    { url: rpcURL, address: addr, query, method: 'suix_getOwnedObjects' },
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+      errorRetryCount: 0,
+      isPaused: () => !addr,
+      ...config,
+    },
+  );
 
   return { data, error, mutate };
 }

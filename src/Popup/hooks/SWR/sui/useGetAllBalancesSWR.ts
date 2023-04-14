@@ -2,11 +2,14 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { SUI } from '~/constants/chain/sui/sui';
 import { post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
 import type { GetAllBalancesResponse } from '~/types/sui/rpc';
 
+import { useChromeStorage } from '../../useChromeStorage';
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
+import { useAccounts } from '../cache/useAccounts';
 
 type FetchParams = {
   address: string;
@@ -15,14 +18,20 @@ type FetchParams = {
 };
 
 type UseGetAllBalancesSWR = {
-  address: string;
+  address?: string;
   network?: SuiNetwork;
 };
 
 export function useGetAllBalancesSWR({ address, network }: UseGetAllBalancesSWR, config?: SWRConfiguration) {
+  const chain = SUI;
+
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
+  const accounts = useAccounts(config?.suspense);
+  const { chromeStorage } = useChromeStorage();
   const { rpcURL } = network || currentSuiNetwork;
+
+  const addr = address || accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
 
   const fetcher = async (params: FetchParams) => {
     try {
@@ -37,12 +46,12 @@ export function useGetAllBalancesSWR({ address, network }: UseGetAllBalancesSWR,
     }
   };
 
-  const { data, error, mutate } = useSWR<GetAllBalancesResponse | null, AxiosError>({ address, url: rpcURL, method: 'suix_getAllBalances' }, fetcher, {
+  const { data, error, mutate } = useSWR<GetAllBalancesResponse | null, AxiosError>({ address: addr, url: rpcURL, method: 'suix_getAllBalances' }, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,
     errorRetryCount: 0,
-    isPaused: () => !rpcURL,
+    isPaused: () => !addr,
     ...config,
   });
 

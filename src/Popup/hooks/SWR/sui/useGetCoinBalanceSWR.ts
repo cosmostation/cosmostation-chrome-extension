@@ -2,11 +2,14 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { SUI } from '~/constants/chain/sui/sui';
 import { post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
 import type { GetCoinBalanceResponse } from '~/types/sui/rpc';
 
+import { useChromeStorage } from '../../useChromeStorage';
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
+import { useAccounts } from '../cache/useAccounts';
 
 type FetchParams = {
   address: string;
@@ -16,15 +19,22 @@ type FetchParams = {
 };
 
 type UseGetCoinBalanceSWRProps = {
-  address: string;
+  address?: string;
   coinType?: string;
   network?: SuiNetwork;
 };
 
 export function useGetCoinBalanceSWR({ address, network, coinType }: UseGetCoinBalanceSWRProps, config?: SWRConfiguration) {
+  const chain = SUI;
+
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
+  const accounts = useAccounts(config?.suspense);
+  const { chromeStorage } = useChromeStorage();
+
   const { rpcURL } = network || currentSuiNetwork;
+
+  const addr = address || accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
 
   const fetcher = async (params: FetchParams) => {
     try {
@@ -39,14 +49,18 @@ export function useGetCoinBalanceSWR({ address, network, coinType }: UseGetCoinB
     }
   };
 
-  const { data, error, mutate } = useSWR<GetCoinBalanceResponse | null, AxiosError>({ address, url: rpcURL, coinType, method: 'suix_getBalance' }, fetcher, {
-    revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
-    errorRetryCount: 0,
-    isPaused: () => !address,
-    ...config,
-  });
+  const { data, error, mutate } = useSWR<GetCoinBalanceResponse | null, AxiosError>(
+    { address: addr, url: rpcURL, coinType, method: 'suix_getBalance' },
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 14000,
+      refreshInterval: 15000,
+      errorRetryCount: 0,
+      isPaused: () => !addr || !coinType,
+      ...config,
+    },
+  );
 
   return { data, error, mutate };
 }

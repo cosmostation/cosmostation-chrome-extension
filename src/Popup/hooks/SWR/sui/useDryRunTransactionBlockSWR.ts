@@ -67,6 +67,7 @@ export function useDryRunTransactionBlockSWR({ transaction, network, rawSigner }
       revalidateIfStale: false,
       revalidateOnReconnect: false,
       errorRetryCount: 0,
+      isPaused: () => !transaction || !rawSigner,
       ...config,
     },
   );
