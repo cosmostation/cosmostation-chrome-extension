@@ -41,7 +41,7 @@ export type SuiExecuteSerializedMoveCall = {
 // export type SuiExecuteSerializedMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
 
 export type SuiSignAndExecuteTransaction = {
-  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION;
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION_BLOCK;
   params: [TransactionBlock | string | Uint8Array];
   id?: number | string;
 };

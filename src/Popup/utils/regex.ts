@@ -2,7 +2,7 @@ export const ethereumAddressRegex = /^0x[a-fA-F0-9]{40}$/;
 
 export const aptosAddressRegex = /^0x([a-fA-F0-9]{64}|[a-fA-F1-9]{1}[a-fA-F0-9]{62})$/;
 
-export const suiAddressRegex = /^0x([a-fA-F0-9]{64}|[a-fA-F1-9]{1}[a-fA-F0-9]{39})$/;
+export const suiAddressRegex = /^0x([a-fA-F0-9]{64}|[a-fA-F1-9]{1}[a-fA-F0-9]{62})$/;
 
 export const getCosmosAddressRegex = (prefix: string, lengths: number[]) =>
   new RegExp(`^${prefix}(${lengths.map((item) => `(.{${item},${item}})`).join('|')})$`);
