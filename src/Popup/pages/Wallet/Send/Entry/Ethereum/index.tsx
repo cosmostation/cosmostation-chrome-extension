@@ -59,7 +59,7 @@ export default function Ethereum({ chain }: EthereumProps) {
   const fee = useFeeSWR();
 
   const balance = useBalanceSWR();
-  const tokenBalance = useTokenBalanceSWR(currentToken);
+  const tokenBalance = useTokenBalanceSWR({ token: currentToken });
 
   const [currentAddress, setCurrentAddress] = useState('');
 

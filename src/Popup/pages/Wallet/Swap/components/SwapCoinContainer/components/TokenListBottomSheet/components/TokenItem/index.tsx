@@ -5,13 +5,14 @@ import { EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/1inch/useTokenBalanceSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
+import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
+import type { EthereumToken } from '~/types/chain';
 import type { IntegratedSwapEVMChain, IntegratedSwapToken } from '~/types/swap/asset';
 
 import {
@@ -43,7 +44,10 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
   const { currency } = chromeStorage;
 
   const nativeTokenBalance = useBalanceSWR(currentNetwork);
-  const tokenBalance = useTokenBalanceSWR(currentNetwork, tokenInfo);
+  const tokenBalance = useTokenBalanceSWR({
+    network: currentNetwork,
+    token: currentNetwork?.line === 'ETHEREUM' ? (tokenInfo as unknown as EthereumToken) : undefined,
+  });
 
   const amount = useMemo(
     () =>

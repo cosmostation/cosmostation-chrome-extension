@@ -12,7 +12,7 @@ type UseAllowanceTxSWRProps = {
 };
 
 export function useAllowanceTxSWR(allowanceTxParam?: UseAllowanceTxSWRProps, config?: SWRConfiguration) {
-  const requestURL = allowanceTxParam && `${ONEINCH_BASE_URL}${allowanceTxParam.chainId}/approve/transaction?tokenAddress=${allowanceTxParam.tokenAddress}`;
+  const requestURL = `${ONEINCH_BASE_URL}/${allowanceTxParam?.chainId || ''}/approve/transaction?tokenAddress=${allowanceTxParam?.tokenAddress || ''}`;
 
   const fetcher = (fetchUrl: string) => get<AllowanceTxPayload>(fetchUrl);
 

@@ -419,30 +419,31 @@ export default function Entry({ chain }: EntryProps) {
 
   const errorMessage = useMemo(() => {
     if (!poolData.data || !poolsAssetData.data) {
-      return t('pages.Wallet.Swap.entry.networkError');
+      // NOTE 이거 라우트정보 수정할 것
+      return t('pages.Wallet.OsmosisSwap.entry.networkError');
     }
     if (gt(currentInputBaseAmount, tokenBalanceIn || '0')) {
-      return t('pages.Wallet.Swap.entry.excessiveSwap');
+      return t('pages.Wallet.OsmosisSwap.entry.excessiveSwap');
     }
     if (!inputDisplayAmount || !gt(inputDisplayAmount, '0')) {
-      return t('pages.Wallet.Swap.entry.invalidAmount');
+      return t('pages.Wallet.OsmosisSwap.entry.invalidAmount');
     }
     if (!gte(currentInputCoinDisplayAvailableAmount, inputDisplayAmount)) {
-      return t('pages.Wallet.Swap.entry.insufficientAmount');
+      return t('pages.Wallet.OsmosisSwap.entry.insufficientAmount');
     }
     if (inputCoin?.denom === currentFeeCoin.baseDenom) {
       if (!gte(currentInputCoinDisplayAvailableAmount, plus(inputDisplayAmount, currentDisplayFeeAmount))) {
-        return t('pages.Wallet.Swap.entry.insufficientAmount');
+        return t('pages.Wallet.OsmosisSwap.entry.insufficientAmount');
       }
       if (!gte(currentInputCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
-        return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
+        return t('pages.Wallet.OsmosisSwap.entry.insufficientFeeAmount');
       }
     }
     if (gt(priceImpactPercent, 10)) {
-      return t('pages.Wallet.Swap.entry.invalidPriceImpact');
+      return t('pages.Wallet.OsmosisSwap.entry.invalidPriceImpact');
     }
     if (!gt(currentOutputDisplayAmount, 0)) {
-      return t('pages.Wallet.Swap.entry.invalidOutputAmount');
+      return t('pages.Wallet.OsmosisSwap.entry.invalidOutputAmount');
     }
     return '';
   }, [
@@ -488,7 +489,7 @@ export default function Entry({ chain }: EntryProps) {
             <LeftArrow16Icon />
           </BackButton>
           <TextContainer>
-            <Typography variant="h3">{t('pages.Wallet.Swap.entry.title')}</Typography>
+            <Typography variant="h3">{t('pages.Wallet.OsmosisSwap.entry.title')}</Typography>
           </TextContainer>
           <SideButton onClick={() => setIsOpenSlippageDialog(true)}>
             <Management24Icon />
@@ -501,7 +502,7 @@ export default function Entry({ chain }: EntryProps) {
                 <Typography variant="h6">Input Coin</Typography>
               </SwapCoinBodyLeftHeaderContainer>
               <SwapCoinBodyRightHeaderContainer>
-                <Typography variant="h6"> {t('pages.Wallet.Swap.entry.availableAmount')} :</Typography>
+                <Typography variant="h6"> {t('pages.Wallet.OsmosisSwap.entry.availableAmount')} :</Typography>
                 &nbsp;
                 <Tooltip title={currentInputCoinDisplayAvailableAmount} arrow placement="top">
                   <span>
@@ -628,7 +629,7 @@ export default function Entry({ chain }: EntryProps) {
           <SwapInfoBodyContainer>
             <SwapInfoBodyTextContainer>
               <SwapInfoBodyLeftContainer>
-                <Typography variant="h6">{t('pages.Wallet.Swap.entry.priceImpact')}</Typography>
+                <Typography variant="h6">{t('pages.Wallet.OsmosisSwap.entry.priceImpact')}</Typography>
               </SwapInfoBodyLeftContainer>
               <SwapInfoBodyRightContainer>
                 {inputDisplayAmount && priceImpactPercent ? (
@@ -649,7 +650,7 @@ export default function Entry({ chain }: EntryProps) {
             <SwapInfoBodyTextContainer>
               <SwapInfoBodyLeftContainer>
                 <Typography variant="h6">
-                  {t('pages.Wallet.Swap.entry.swapFee')} ({times(swapFeeRate, 100)}%)
+                  {t('pages.Wallet.OsmosisSwap.entry.swapFee')} ({times(swapFeeRate, 100)}%)
                 </Typography>
               </SwapInfoBodyLeftContainer>
               <SwapInfoBodyRightContainer>
@@ -669,7 +670,7 @@ export default function Entry({ chain }: EntryProps) {
 
             <SwapInfoBodyTextContainer>
               <SwapInfoBodyLeftContainer>
-                <Typography variant="h6">{t('pages.Wallet.Swap.entry.expectedOutput')}</Typography>
+                <Typography variant="h6">{t('pages.Wallet.OsmosisSwap.entry.expectedOutput')}</Typography>
               </SwapInfoBodyLeftContainer>
               <SwapInfoBodyRightContainer>
                 {inputDisplayAmount && currentOutputDisplayAmount ? (
@@ -693,7 +694,7 @@ export default function Entry({ chain }: EntryProps) {
             <SwapInfoBodyTextContainer>
               <SwapInfoBodyLeftContainer>
                 <Typography variant="h6">
-                  {t('pages.Wallet.Swap.entry.minimumReceived')} ({currentSlippage}%)
+                  {t('pages.Wallet.OsmosisSwap.entry.minimumReceived')} ({currentSlippage}%)
                 </Typography>
               </SwapInfoBodyLeftContainer>
 
@@ -740,7 +741,7 @@ export default function Entry({ chain }: EntryProps) {
                   }
                 }}
               >
-                {t('pages.Wallet.Swap.entry.swapButton')}
+                {t('pages.Wallet.OsmosisSwap.entry.swapButton')}
               </Button>
             </div>
           </Tooltip>

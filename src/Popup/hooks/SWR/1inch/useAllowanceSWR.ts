@@ -13,9 +13,9 @@ type UseAllowanceSWRProps = {
 };
 
 export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: SWRConfiguration) {
-  const requestURL =
-    allowanceParam &&
-    `${ONEINCH_BASE_URL}${allowanceParam.chainId}/approve/allowance?tokenAddress=${allowanceParam.tokenAddress}&walletAddress=${allowanceParam.walletAddress}`;
+  const requestURL = `${ONEINCH_BASE_URL}/${allowanceParam?.chainId || '0'}/approve/allowance?tokenAddress=${
+    allowanceParam?.tokenAddress || ''
+  }&walletAddress=${allowanceParam?.walletAddress || ''}`;
 
   const fetcher = (fetchUrl: string) => get<AllowancePayload>(fetchUrl, { headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache', Expires: '0' } });
 

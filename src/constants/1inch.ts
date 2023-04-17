@@ -1,4 +1,4 @@
-export const ONEINCH_BASE_URL = 'https://api.1inch.io/v5.0/';
+export const ONEINCH_BASE_URL = 'https://api.1inch.io/v5.0';
 
 export const REFERRER_ADDRESS = undefined;
 

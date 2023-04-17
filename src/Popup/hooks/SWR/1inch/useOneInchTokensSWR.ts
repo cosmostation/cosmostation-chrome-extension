@@ -7,7 +7,7 @@ import { get } from '~/Popup/utils/axios';
 import type { Assets } from '~/types/1inch/swap';
 
 export function useOneInchTokensSWR(chainId?: string, config?: SWRConfiguration) {
-  const requestURL = chainId && `${ONEINCH_BASE_URL}${chainId}/tokens`;
+  const requestURL = `${ONEINCH_BASE_URL}/${chainId || ''}/tokens`;
 
   const fetcher = (fetchUrl: string) => get<Assets>(fetchUrl);
 

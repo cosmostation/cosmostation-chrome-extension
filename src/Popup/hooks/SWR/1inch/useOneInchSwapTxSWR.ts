@@ -29,11 +29,11 @@ export type UseOneInchSwapSWRProps = {
 };
 
 export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?: SWRConfiguration) {
-  const requestURL =
-    swapParam &&
-    `${ONEINCH_BASE_URL}${swapParam.chainId}/swap?fromTokenAddress=${swapParam.fromTokenAddress}&toTokenAddress=${swapParam.toTokenAddress}&amount=${
-      swapParam.amount
-    }&fromAddress=${swapParam.fromAddress}&slippage=${swapParam.slippage}&referrerAddress=${REFERRER_ADDRESS || ''}&fee=${FEE_RATIO || ''}
+  const requestURL = `${ONEINCH_BASE_URL}/${swapParam?.chainId || ''}/swap?fromTokenAddress=${swapParam?.fromTokenAddress || ''}&toTokenAddress=${
+    swapParam?.toTokenAddress || ''
+  }&amount=${swapParam?.amount || ''}&fromAddress=${swapParam?.fromAddress || ''}&slippage=${swapParam?.slippage || ''}&referrerAddress=${
+    REFERRER_ADDRESS || ''
+  }&fee=${FEE_RATIO || ''}
   `;
 
   const fetcher = (fetchUrl: string) => get<OneInchSwapPayload>(fetchUrl);

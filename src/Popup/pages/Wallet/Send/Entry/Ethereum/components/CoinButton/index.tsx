@@ -26,7 +26,7 @@ export default function CoinButton({ currentToken, isActive, ...remainder }: Coi
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const balance = useBalanceSWR();
-  const tokenBalace = useTokenBalanceSWR(currentToken);
+  const tokenBalace = useTokenBalanceSWR({ token: currentToken });
 
   const isNative = currentToken === null;
 

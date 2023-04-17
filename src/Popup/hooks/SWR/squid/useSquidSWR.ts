@@ -4,7 +4,7 @@ import { Squid } from '@0xsquid/sdk';
 
 import { SQUID_BASE_URL } from '~/constants/squid';
 
-export function useSquidSDKSWR(config?: SWRConfiguration) {
+export function useSquidSWR(config?: SWRConfiguration) {
   const fetcher = async (baseUrl: string) => {
     const squid = new Squid({
       baseUrl,

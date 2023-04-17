@@ -150,6 +150,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const originEthereumTx = params[0];
 
+  // NOTE 여기 여기에 기존에 abi해체하던 코드
   const txType = useDetermineTxTypeSWR(originEthereumTx);
 
   const isCustomFee = !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas));
@@ -162,6 +163,8 @@ export default function Entry({ queue }: EntryProps) {
   const [maxPriorityFeePerGas, setMaxPriorityFeePerGas] = useState(
     BigInt(toHex(originEthereumTx.maxPriorityFeePerGas || '0', { addPrefix: true, isStringNumber: true })).toString(10),
   );
+
+  // NOTE 인앱일 경우에만
   const oneInchTokens = useOneInchTokensSWR(String(parseInt(currentEthereumNetwork.chainId, 16)));
 
   const ethereumTx = useMemo(() => {
@@ -302,6 +305,7 @@ export default function Entry({ queue }: EntryProps) {
     [allTokens, ethereumTx.to, txType.data?.type],
   );
 
+  // NOTE 1inch swap check in here
   const sendDisplayAmount = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
       try {

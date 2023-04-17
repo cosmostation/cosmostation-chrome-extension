@@ -45,11 +45,11 @@ export default function SlippageSettingDialog({ currentSlippage, onClose, onSubm
   };
   return (
     <Dialog {...remainder} onClose={handleOnClose}>
-      <DialogHeader onClose={handleOnClose}>{t('pages.Wallet.Swap.components.SlippageSettingDialog.title')}</DialogHeader>
+      <DialogHeader onClose={handleOnClose}>{t('pages.Wallet.OsmosisSwap.components.SlippageSettingDialog.title')}</DialogHeader>
       <Container>
         <HeaderInfoContainer>
-          <Typography variant="h5">{t('pages.Wallet.Swap.components.SlippageSettingDialog.slippageTolerance')}</Typography>
-          <StyledTooltip title={t('pages.Wallet.Swap.components.SlippageSettingDialog.toleranceInfo')} placement="bottom" arrow>
+          <Typography variant="h5">{t('pages.Wallet.OsmosisSwap.components.SlippageSettingDialog.slippageTolerance')}</Typography>
+          <StyledTooltip title={t('pages.Wallet.OsmosisSwap.components.SlippageSettingDialog.toleranceInfo')} placement="bottom" arrow>
             <span>
               <HeaderInfoIconContainer>
                 <Info16Icon />
@@ -110,7 +110,7 @@ export default function SlippageSettingDialog({ currentSlippage, onClose, onSubm
             )}
           </SlippageCustomInputConatiner>
         </SlippageButtonContainer>
-        <StyledButton onClick={submit}>{t('pages.Wallet.Swap.components.SlippageSettingDialog.confirm')}</StyledButton>
+        <StyledButton onClick={submit}>{t('pages.Wallet.OsmosisSwap.components.SlippageSettingDialog.confirm')}</StyledButton>
       </Container>
     </Dialog>
   );
