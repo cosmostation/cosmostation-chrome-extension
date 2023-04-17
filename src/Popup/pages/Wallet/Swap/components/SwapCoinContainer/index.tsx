@@ -80,8 +80,8 @@ export default function SwapCoinContainer({ isChainAvailable = true, ...remainde
               }}
               isActive={isOpenedCoinList}
               isAvailable={remainder.isTokenAvailable}
-              imgUrl={remainder.currentSelectedCoin?.logoURI}
-              title={remainder.currentSelectedCoin?.symbol}
+              imgUrl={remainder.currentSelectedCoin?.imageURL}
+              title={remainder.currentSelectedCoin?.displayDenom}
               placeholder={t('pages.Wallet.Swap.components.SwapCoinContainer.index.selectCoin')}
             />
           </SwapAssetContainer>

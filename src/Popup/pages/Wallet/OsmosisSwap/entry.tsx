@@ -419,7 +419,6 @@ export default function Entry({ chain }: EntryProps) {
 
   const errorMessage = useMemo(() => {
     if (!poolData.data || !poolsAssetData.data) {
-      // NOTE 이거 라우트정보 수정할 것
       return t('pages.Wallet.OsmosisSwap.entry.networkError');
     }
     if (gt(currentInputBaseAmount, tokenBalanceIn || '0')) {

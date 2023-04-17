@@ -46,7 +46,7 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
   const nativeTokenBalance = useBalanceSWR(currentNetwork);
   const tokenBalance = useTokenBalanceSWR({
     network: currentNetwork,
-    token: currentNetwork?.line === 'ETHEREUM' ? (tokenInfo as unknown as EthereumToken) : undefined,
+    token: currentNetwork?.line === 'ETHEREUM' ? (tokenInfo as EthereumToken) : undefined,
   });
 
   const amount = useMemo(
@@ -76,11 +76,11 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
     >
       <TokenLeftContainer>
         <TokenLeftImageContainer>
-          <Image src={tokenInfo.logoURI} />
+          <Image src={tokenInfo.imageURL} />
         </TokenLeftImageContainer>
         <TokenLeftInfoContainer>
           <TokenLeftTitleContainer>
-            <Typography variant="h5">{tokenInfo.symbol}</Typography>
+            <Typography variant="h5">{tokenInfo.displayDenom}</Typography>
           </TokenLeftTitleContainer>
           <TokenLeftSubTitleContainer>
             <Typography variant="h6">{tokenInfo.name}</Typography>

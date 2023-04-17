@@ -5,7 +5,7 @@ import { Interface } from '@ethersproject/abi';
 import type { MessageTypes, SignTypedDataVersion, TypedMessage } from '@metamask/eth-sig-util';
 import { signTypedData as baseSignTypedData } from '@metamask/eth-sig-util';
 
-import { ERC20_ABI, ONE_INCH_ABI } from '~/constants/abi';
+import { ERC20_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { chromeStorage } from '~/Popup/utils/chromeStorage';

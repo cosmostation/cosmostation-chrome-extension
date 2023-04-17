@@ -1,7 +1,4 @@
-import type { TokenData } from '@0xsquid/sdk/dist/types';
-
-import type { Token } from '../1inch/swap';
-import type { CosmosChain, EthereumNetwork } from '../chain';
+import type { CosmosChain, EthereumNetwork, EthereumToken } from '../chain';
 import type { AssetV3 } from '../cosmos/asset';
 
 export type IntegratedSwapEVMChain = EthereumNetwork & { line: 'ETHEREUM'; addressId: string };
@@ -12,12 +9,16 @@ export type IntegratedSwapChain = IntegratedSwapEVMChain | IntegratedSwapCosmosC
 
 export type IntegratedSwapCosmosToken = AssetV3 & {
   address: string;
-  name: string;
   balance?: string;
-  logoURI?: string;
+  displayDenom: string;
+  imageURL?: string;
+  name: string;
 };
 
-export type IntegratedSwapEVMToken = (Token | TokenData) & { balance?: string; coinGeckoId?: string };
+export type IntegratedSwapEVMToken = Omit<EthereumToken, 'id' | 'ethereumNetworkId' | 'tokenType' | 'name'> & {
+  balance?: string;
+  name: string;
+};
 
 export type IntegratedSwapToken = IntegratedSwapEVMToken | IntegratedSwapCosmosToken;
 

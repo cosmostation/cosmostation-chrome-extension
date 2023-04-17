@@ -1,4 +1,4 @@
-import type { FeeCost, GasCost } from '@0xsquid/sdk/dist/types';
+import type { FeeCost, GasCost } from '@0xsquid/sdk';
 import { Typography } from '@mui/material';
 
 import NumberText from '~/Popup/components/common/Number';

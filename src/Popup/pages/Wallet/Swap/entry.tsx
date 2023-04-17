@@ -49,7 +49,7 @@ import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
-import type { CosmosChain, EthereumNetwork, EthereumToken } from '~/types/chain';
+import type { CosmosChain, EthereumToken } from '~/types/chain';
 import type { AssetV3 as CosmosAssetV3 } from '~/types/cosmos/asset';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 import type { IntegratedSwapAPI } from '~/types/swap/integratedSwap';
@@ -348,11 +348,14 @@ export default function Entry() {
   const currentFromEVMNativeBalance = useNativeBalanceSWR(currentFromChain?.line === ethereumChain.line ? currentFromChain : undefined);
   const currentFromEVMTokenBalance = useTokenBalanceSWR({
     network: currentFromChain?.line === ethereumChain.line ? currentFromChain : undefined,
-    token: currentFromToken as unknown as EthereumToken,
+    token: currentFromChain?.line === ethereumChain.line ? (currentFromToken as EthereumToken) : undefined,
   });
 
   const currentToEVMNativeBalance = useNativeBalanceSWR(currentToChain?.line === ethereumChain.line ? currentToChain : undefined);
-  const currentToEVMTokenBalance = useTokenBalanceSWR({ network: currentToChain as EthereumNetwork, token: currentToToken as unknown as EthereumToken });
+  const currentToEVMTokenBalance = useTokenBalanceSWR({
+    network: currentToChain?.line === ethereumChain.line ? currentToChain : undefined,
+    token: currentToChain?.line === ethereumChain.line ? (currentToToken as EthereumToken) : undefined,
+  });
 
   const currentFromTokenBalance = useMemo(
     () =>
@@ -402,14 +405,16 @@ export default function Entry() {
           ...item,
           address: item.denom,
           balance: cosmosFromChainBalance.data?.balance ? cosmosFromChainBalance.data?.balance.find((coin) => coin.denom === item.denom)?.amount : '0',
-          logoURI: item.image,
+          imageURL: item.image,
           name: getCapitalize(item.prevChain || item.origin_chain),
+          displayDenom: item.symbol,
+          symbol: undefined,
         }));
 
       return [
         ...filteredTokens.filter((item) => gt(item?.balance || '0', '0') && (item.type === 'staking' || item.type === 'native' || item.type === 'bridge')),
-        ...filteredTokens.filter((item) => gt(item?.balance || '0', '0') && item.type === 'ibc').sort((a, b) => a.symbol.localeCompare(b.symbol)),
-        ...filteredTokens.filter((item) => !gt(item?.balance || '0', '0')).sort((a, b) => a.symbol.localeCompare(b.symbol)),
+        ...filteredTokens.filter((item) => gt(item?.balance || '0', '0') && item.type === 'ibc').sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
+        ...filteredTokens.filter((item) => !gt(item?.balance || '0', '0')).sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
       ];
     }
 
@@ -431,7 +436,11 @@ export default function Entry() {
             !currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)) &&
             !supportedOneInchTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)),
         ),
-      ];
+      ].map((item) => ({
+        ...item,
+        displayDenom: item.symbol,
+        imageURL: item.logoURI,
+      }));
     }
 
     if (currentSwapAPI === 'squid') {
@@ -445,7 +454,12 @@ export default function Entry() {
             !isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address) &&
             !currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)),
         ),
-      ].map((item) => ({ ...item, coinGeckoId: item.coingeckoId }));
+      ].map((item) => ({
+        ...item,
+        displayDenom: item.symbol,
+        imageURL: item.logoURI,
+        coinGeckoId: item.coingeckoId,
+      }));
     }
 
     return [];
@@ -494,7 +508,11 @@ export default function Entry() {
             !currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)) &&
             !supportedOneInchTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)),
         ),
-      ];
+      ].map((item) => ({
+        ...item,
+        displayDenom: item.symbol,
+        imageURL: item.logoURI,
+      }));
     }
 
     if (currentSwapAPI === 'squid' && currentToChain?.line === ethereumChain.line) {
@@ -510,6 +528,8 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        displayDenom: item.symbol,
+        imageURL: item.logoURI,
         coinGeckoId: item.coingeckoId,
       }));
     }
@@ -529,6 +549,8 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        displayDenom: item.symbol,
+        imageURL: item.logoURI,
         coinGeckoId: osmosisAssets.data.find((asset) => asset.counter_party?.denom === item.address)?.coinGeckoId || item.coingeckoId,
         balance: cosmosToChainBalance.data?.balance
           ? cosmosToChainBalance.data?.balance.find((coin) =>
@@ -1147,7 +1169,7 @@ export default function Entry() {
     if (currentToToken) {
       return `${t('pages.Wallet.Swap.entry.swapInfoDescription1')} (${currentSlippage}%)${t('pages.Wallet.Swap.entry.swapInfoDescription2')} ${String(
         parseFloat(fix(estimatedToTokenDisplayMinAmount, 5)),
-      )} ${currentToToken.symbol} ${
+      )} ${currentToToken.displayDenom} ${
         gt(estimatedToTokenDisplayAmountPrice, '0') ? `(${CURRENCY_SYMBOL[currency]}${fix(estimatedToTokenDisplayAmountPrice, 3)})` : ''
       } ${t('pages.Wallet.Swap.entry.swapInfoDescription3')}`;
     }
@@ -1185,15 +1207,15 @@ export default function Entry() {
       return `${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription1')} ${fix(
         estimatedFeeDisplayAmount,
         getDisplayMaxDecimals(currentFeeToken?.decimals),
-      )} ${currentFeeToken?.symbol || ''} ${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription2')}`;
+      )} ${currentFeeToken?.displayDenom || ''} ${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription2')}`;
     }
 
     if (currentFeeToken && isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken.address)) {
       if (gt(plus(currentInputBaseAmount, estimatedFeeBaseAmount), currentFromTokenBalance)) {
-        return `${t('pages.Wallet.Swap.entry.balanceWarningDescription1')} ${currentFeeToken.symbol}${t(
+        return `${t('pages.Wallet.Swap.entry.balanceWarningDescription1')} ${currentFeeToken?.displayDenom}${t(
           'pages.Wallet.Swap.entry.balanceWarningDescription2',
         )} ${fix(minus(currentFromTokenDisplayBalance, estimatedFeeDisplayAmount), getDisplayMaxDecimals(currentFeeToken.decimals))} ${
-          currentFeeToken.symbol
+          currentFeeToken?.displayDenom
         } ${t('pages.Wallet.Swap.entry.balanceWarningDescription3')}`;
       }
     }
@@ -1494,7 +1516,7 @@ export default function Entry() {
                       </span>
                     </Tooltip>
                     &nbsp;
-                    <Typography variant="h4n">{currentToToken?.symbol}</Typography>
+                    <Typography variant="h4n">{currentToToken?.displayDenom}</Typography>
                   </>
                 ) : (
                   <Typography variant="h4">-</Typography>
@@ -1513,7 +1535,7 @@ export default function Entry() {
                         <Skeleton width="10rem" height="1.5rem" />
                       ) : gt(outputAmountOf1Token, '0') ? (
                         <SwapInfoBodyRightTextContainer>
-                          <Typography variant="h6n">{`1 ${currentFromToken?.symbol || ''} ≈`} </Typography>
+                          <Typography variant="h6n">{`1 ${currentFromToken?.displayDenom || ''} ≈`} </Typography>
                           &nbsp;
                           <Tooltip title={outputAmountOf1Token} arrow placement="top">
                             <span>
@@ -1527,7 +1549,7 @@ export default function Entry() {
                             </span>
                           </Tooltip>
                           &nbsp;
-                          <Typography variant="h6n">{currentToToken?.symbol}</Typography>
+                          <Typography variant="h6n">{currentToToken?.displayDenom}</Typography>
                         </SwapInfoBodyRightTextContainer>
                       ) : (
                         <Typography variant="h6">-</Typography>
@@ -1592,7 +1614,7 @@ export default function Entry() {
                                 </span>
                               </Tooltip>
                               &nbsp;
-                              <Typography variant="h6n"> {currentFeeToken?.symbol}</Typography>
+                              <Typography variant="h6n"> {currentFeeToken?.displayDenom}</Typography>
                             </>
                           )}
                         </FeePriceButtonTextContainer>
@@ -1635,7 +1657,7 @@ export default function Entry() {
                                 </span>
                               </Tooltip>
                               &nbsp;
-                              <Typography variant="h6n">{currentFeeToken?.symbol}</Typography>
+                              <Typography variant="h6n">{currentFeeToken?.displayDenom}</Typography>
                             </>
                           )}
                         </FeePriceButtonTextContainer>
