@@ -150,6 +150,7 @@ export type SuiNetwork = {
   imageURL?: string;
   explorerURL?: string;
   coinGeckoId?: string;
+  decimals: number;
 };
 
 export type EthereumERC20Token = {

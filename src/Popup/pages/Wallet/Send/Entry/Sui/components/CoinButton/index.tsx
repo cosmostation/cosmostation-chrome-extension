@@ -2,19 +2,18 @@ import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import { SUI_COIN } from '~/constants/sui';
+import { SUI_COIN, SUI_TOKEN_TEMPORARY_DECIMALS } from '~/constants/sui';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useGetAllBalancesSWR } from '~/Popup/hooks/SWR/sui/useGetAllBalancesSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
-import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
-import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { plus, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { getCoinType, isExists } from '~/Popup/utils/sui';
 import type { SuiChain } from '~/types/chain';
 
 import { Button, LeftAvailableContainer, LeftContainer, LeftDisplayDenomContainer, LeftImageContainer, LeftInfoContainer, RightContainer } from './styled';
@@ -29,6 +28,7 @@ type CoinButtonProps = ComponentProps<typeof Button> & {
 
 export default function CoinButton({ coinType, chain, isActive, ...remainder }: CoinButtonProps) {
   const { t } = useTranslation();
+  const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { currentAccount } = useCurrentAccount();
 
@@ -38,22 +38,20 @@ export default function CoinButton({ coinType, chain, isActive, ...remainder }: 
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address }, { suspense: true });
-
-  const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
-
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType }, { suspense: true });
 
-  const decimals = useMemo(() => coinMetadata?.result?.decimals || 0, [coinMetadata?.result?.decimals]);
-
-  const suiCoinObjects = useMemo(
-    () => objects?.filter(isExists).filter((object) => getCoinType(object.result?.details.data.type || '') === coinType) || [],
-    [coinType, objects],
+  const decimals = useMemo(
+    () => (coinMetadata?.result?.decimals || coinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
+    [coinMetadata?.result?.decimals, coinType, currentSuiNetwork.decimals],
   );
 
-  const coinObjects = useMemo(() => suiCoinObjects.filter((object) => getCoinType(object.result?.details.data.type) === coinType), [coinType, suiCoinObjects]);
+  const { data: allCoinBalances } = useGetAllBalancesSWR({ address }, { suspense: true });
 
-  const baseAmount = useMemo(() => coinObjects.reduce((ac, cu) => plus(ac, cu.result?.details.data.fields.balance || '0'), '0'), [coinObjects]);
+  const suiAvailableCoins = useMemo(() => allCoinBalances?.result || [], [allCoinBalances?.result]);
+
+  const currentCoin = useMemo(() => suiAvailableCoins.find((object) => object.coinType === coinType), [suiAvailableCoins, coinType]);
+
+  const baseAmount = useMemo(() => currentCoin?.totalBalance || '0', [currentCoin?.totalBalance]);
 
   const imageURL = useMemo(
     () => (coinMetadata?.result?.iconUrl || coinType === SUI_COIN ? chain.imageURL : undefined),
@@ -74,7 +72,7 @@ export default function CoinButton({ coinType, chain, isActive, ...remainder }: 
             <Typography variant="h5">{displayDenom}</Typography>
           </LeftDisplayDenomContainer>
           <LeftAvailableContainer>
-            <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Ethereum.components.CoinButton.index.available')} :</Typography>{' '}
+            <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Sui.components.CoinButton.index.available')} :</Typography>{' '}
             <Tooltip title={displayAmount} placement="top" arrow>
               <span>
                 <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={getDisplayMaxDecimals(decimals)}>

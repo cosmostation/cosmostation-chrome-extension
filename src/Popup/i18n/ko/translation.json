@@ -1092,6 +1092,22 @@
             }
           },
           "Sui": {
+            "components": {
+              "CoinButton": {
+                "index": {
+                  "available": "사용 가능 수량"
+                }
+              },
+              "CoinPopover": {
+                "components": {
+                  "CoinItem": {
+                    "index": {
+                      "available": "사용 가능 수량"
+                    }
+                  }
+                }
+              }
+            },
             "index": {
               "amountPlaceholder": "수량",
               "insufficientAmount": "수량이 부족합니다.",

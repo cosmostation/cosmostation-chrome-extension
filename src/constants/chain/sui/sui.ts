@@ -2,7 +2,7 @@ import suiImg from '~/images/symbols/sui.png';
 import type { SuiChain } from '~/types/chain';
 
 export const SUI: SuiChain = {
-  id: '88ce1a83-0180-4601-a3d7-12089f586dd8',
+  id: 'b647feb9-f58d-4c0b-8d5a-383350b11d0f',
   line: 'SUI',
   chainName: 'Sui Networks',
   imageURL: suiImg,

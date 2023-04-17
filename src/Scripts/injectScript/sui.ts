@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import { v4 as uuidv4 } from 'uuid';
-import type { IdentifierArray, Wallet, WalletAccount } from '@mysten/wallet-standard';
+import { TransactionBlock } from '@mysten/sui.js';
+import type { IdentifierArray, SuiSignAndExecuteTransactionBlockInput, SuiSignTransactionBlockOutput, Wallet, WalletAccount } from '@mysten/wallet-standard';
 
 import { LINE_TYPE } from '~/constants/chain';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -9,14 +10,12 @@ import type { SuiPermissionType } from '~/types/chromeStorage';
 import type { ContentScriptToWebEventMessage, ListenerMessage, ResponseMessage, SuiListenerType, SuiRequestMessage } from '~/types/message';
 import type {
   SuiDisconnectResponse,
-  SuiExecuteMoveCall,
-  SuiExecuteMoveCallResponse,
-  SuiExecuteSerializedMoveCall,
+  // SuiExecuteMoveCall,
+  // SuiExecuteMoveCallResponse,
+  // SuiExecuteSerializedMoveCall,
   SuiGetAccountResponse,
   SuiGetChainResponse,
   SuiGetPermissionsResponse,
-  SuiSignAndExecuteTransaction,
-  SuiSignAndExecuteTransactionResponse,
 } from '~/types/message/sui';
 
 const request = (message: SuiRequestMessage) =>
@@ -86,18 +85,17 @@ const hasPermissions = async (permissions: SuiPermissionType[] = ['suggestTransa
   }
 };
 
-const executeMoveCall = (data: SuiExecuteMoveCall['params'][0]) =>
-  request({ method: 'sui_executeMoveCall', params: [data] }) as Promise<SuiExecuteMoveCallResponse>;
+const signAndExecuteTransactionBlock = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {
+  if (!TransactionBlock.is(data.transactionBlock)) {
+    throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
+  }
 
-const executeSerializedMoveCall = (data: SuiExecuteSerializedMoveCall['params'][0]) =>
-  request({ method: 'sui_executeSerializedMoveCall', params: [data] }) as Promise<SuiExecuteMoveCallResponse>;
-
-const signAndExecuteTransaction = (data: SuiSignAndExecuteTransaction['params'][0], type?: SuiSignAndExecuteTransaction['params'][1]) =>
-  request({
-    method: 'sui_signAndExecuteTransaction',
+  return request({
+    method: 'sui_signAndExecuteTransactionBlock',
     // @ts-ignore:next-line
-    params: type ? [data, type] : [data?.transaction ? { ...data.transaction } : data],
-  }) as Promise<SuiSignAndExecuteTransactionResponse>;
+    params: [{ ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined }],
+  }) as Promise<SuiSignTransactionBlockOutput>;
+};
 
 const off = (eventName: SuiListenerType, eventHandler?: (data: unknown) => void) => {
   const handlerInfos = window.cosmostation.handlerInfos.filter(
@@ -170,20 +168,22 @@ class SuiStandard implements Wallet {
                   address: address[0],
                   publicKey: new Uint8Array(Buffer.from(publicKey.substring(2), 'hex')),
                   chains: [`sui:${currentChain}`],
-                  features: ['sui:signAndExecuteTransaction'],
+                  features: ['sui:signAndExecuteTransactionBlock'],
                 },
               ];
             }
           }
         },
       },
+
       'standard:events': {
         version: '1.0.0',
         on,
       },
-      'sui:signAndExecuteTransaction': {
+
+      'sui:signAndExecuteTransactionBlock': {
         version: '1.0.0',
-        signAndExecuteTransaction,
+        signAndExecuteTransactionBlock,
       },
     };
     void (async () => {
@@ -198,7 +198,7 @@ class SuiStandard implements Wallet {
               address: address[0],
               publicKey: new Uint8Array(Buffer.from(publicKey.substring(2), 'hex')),
               chains: [`sui:${currentChain}`],
-              features: ['sui:signAndExecuteTransaction'],
+              features: ['sui:signAndExecuteTransactionBlock'],
             },
           ];
         }
@@ -212,8 +212,6 @@ class SuiStandard implements Wallet {
 export const sui: Sui = {
   connect,
   disconnect,
-  executeMoveCall,
-  executeSerializedMoveCall,
   getAccounts,
   getPublicKey,
   getChain,
@@ -222,7 +220,7 @@ export const sui: Sui = {
   on,
   request,
   requestPermissions,
-  signAndExecuteTransaction,
+  signAndExecuteTransactionBlock,
 };
 
 export { SuiStandard };

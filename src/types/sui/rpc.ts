@@ -1,3 +1,5 @@
+import type { DryRunTransactionBlockResponse, SuiObjectResponse } from '@mysten/sui.js';
+
 export type Body = {
   method: string;
   params: unknown;
@@ -41,15 +43,37 @@ export type Reference = {
 };
 
 export type GetObjectsOwnedByAddress = {
-  objectId: string;
-  version: number;
-  digest: string;
-  type: string;
-  owner: Owner;
-  previousTransaction: string;
+  data: {
+    data: {
+      objectId: string;
+      version: number;
+      digest: string;
+      type: string;
+    };
+  }[];
 };
 
-export type GetObjectsOwnedByAddressResponse = Result<GetObjectsOwnedByAddress[]>;
+export type GetObjectsOwnedByAddressResponse = Result<GetObjectsOwnedByAddress>;
+
+export type GetObjectsResponse = Result<SuiObjectResponse>;
+
+export type DryRunTransactionBlockSWRResponse = Result<DryRunTransactionBlockResponse>;
+
+export type GetCoins = {
+  data: {
+    version: number;
+    digest: string;
+    coinType: string;
+    previousTransaction: string;
+    coinObjectId: string;
+    balance: number;
+    lockedUntilEpoch: number | null;
+  }[];
+  nextCursor: string | null;
+  hasNextPage: boolean;
+};
+
+export type GetCoinsResponse = Result<GetCoins>;
 
 export type ExistsDetails = {
   data: Data;
@@ -96,3 +120,21 @@ export type GetCoinMetadata = {
 };
 
 export type GetCoinMetadataResponse = Result<GetCoinMetadata>;
+
+export type lockedBalance = {
+  epochId: number;
+  number: number;
+};
+
+export type GetCoinBalance = {
+  coinObjectCount: number;
+  coinType: string;
+  lockedBalance: lockedBalance;
+  totalBalance: string;
+};
+
+export type GetCoinBalanceResponse = Result<GetCoinBalance>;
+
+export type GetAllBalances = GetCoinBalance[];
+
+export type GetAllBalancesResponse = Result<GetAllBalances>;

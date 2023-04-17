@@ -1092,6 +1092,22 @@
             }
           },
           "Sui": {
+            "components": {
+              "CoinButton": {
+                "index": {
+                  "available": "Available"
+                }
+              },
+              "CoinPopover": {
+                "components": {
+                  "CoinItem": {
+                    "index": {
+                      "available": "Available"
+                    }
+                  }
+                }
+              }
+            },
             "index": {
               "amountPlaceholder": "Amount",
               "insufficientAmount": "Insufficient amount",

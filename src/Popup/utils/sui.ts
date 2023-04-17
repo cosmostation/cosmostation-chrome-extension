@@ -1,4 +1,3 @@
-import type { PaySuiTransaction, UnserializedSignableTransaction } from '@mysten/sui.js';
 import { Ed25519PublicKey } from '@mysten/sui.js';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -10,7 +9,7 @@ import { SuiRPCError } from './error';
 export function getAddress(publicKey: Buffer) {
   const key = new Ed25519PublicKey(publicKey);
 
-  return `0x${key.toSuiAddress()}`;
+  return key.toSuiAddress();
 }
 
 export function isExists(object: Result<GetObject>): object is Result<GetObjectExists> {
@@ -59,8 +58,4 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
   } catch {
     throw new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], rpcId);
   }
-}
-
-export function isPaySui(transaction: UnserializedSignableTransaction): transaction is { kind: 'paySui'; data: PaySuiTransaction } {
-  return transaction.kind === 'paySui';
 }
