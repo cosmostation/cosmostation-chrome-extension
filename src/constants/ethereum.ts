@@ -9,6 +9,7 @@ export const ETHEREUM_TX_TYPE = {
   CONTRACT_INTERACTION: 'contractInteraction',
   DEPLOY_CONTRACT: 'contractDeployment',
   SWAP: 'swap',
+  UNOSWAP: 'unoswap',
   SWAP_APPROVAL: 'swapApproval',
   SIGN: 'sign',
   SIGN_TYPED_DATA: 'signTypedData',

@@ -2,15 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import type BigNumber from 'bignumber.js';
 import { rlp } from 'ethereumjs-util';
 import { useSnackbar } from 'notistack';
-import Web3 from 'web3';
-import type { AbiItem } from 'web3-utils';
 import Common, { Hardfork } from '@ethereumjs/common';
 import { TransactionFactory } from '@ethereumjs/tx';
 import EthereumApp, { ledgerService } from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
 
 import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
-import { ONE_INCH_ABI } from '~/constants/abi';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
@@ -49,6 +46,7 @@ import type { OneInchSwapTxData } from '~/types/1inch/contract';
 import type { Queue } from '~/types/chromeStorage';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { EthSendTransaction, EthSendTransactionResponse, EthSignTransaction, EthSignTransactionResponse } from '~/types/message/ethereum';
+import type { Path } from '~/types/route';
 
 import FeeEIP1559Dialog from './components/FeeEIP1559Dialog';
 import GasPriceDialog from './components/GasPriceDialog';
@@ -122,7 +120,7 @@ export default function Entry({ queue }: EntryProps) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { currency } = chromeStorage;
-  const { deQueue, backDeQueue } = useCurrentQueue();
+  const { deQueue } = useCurrentQueue();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -150,7 +148,6 @@ export default function Entry({ queue }: EntryProps) {
 
   const originEthereumTx = params[0];
 
-  // NOTE 여기 여기에 기존에 abi해체하던 코드
   const txType = useDetermineTxTypeSWR(originEthereumTx);
 
   const isCustomFee = !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas));
@@ -163,9 +160,6 @@ export default function Entry({ queue }: EntryProps) {
   const [maxPriorityFeePerGas, setMaxPriorityFeePerGas] = useState(
     BigInt(toHex(originEthereumTx.maxPriorityFeePerGas || '0', { addPrefix: true, isStringNumber: true })).toString(10),
   );
-
-  // NOTE 인앱일 경우에만
-  const oneInchTokens = useOneInchTokensSWR(String(parseInt(currentEthereumNetwork.chainId, 16)));
 
   const ethereumTx = useMemo(() => {
     const nonce =
@@ -240,42 +234,15 @@ export default function Entry({ queue }: EntryProps) {
     currentEthereumNetwork.chainId,
   ]);
 
-  const provider = new Web3.providers.HttpProvider(currentEthereumNetwork.rpcURL, {
-    headers: [
-      {
-        name: 'Cosmostation',
-        value: `extension/${String(process.env.VERSION)}`,
-      },
-    ],
-  });
-  const web3 = new Web3(provider);
+  const oneInchTokens = useOneInchTokensSWR(queue.channel === 'inApp' ? String(parseInt(currentEthereumNetwork.chainId, 16)) : '');
 
-  const encodedFunctionSignature = useMemo(() => originEthereumTx.data?.substring(0, 10), [originEthereumTx.data]);
-
-  const inputData = useMemo(() => originEthereumTx.data?.slice(10), [originEthereumTx.data]);
-
-  const functionABI = useMemo(() => {
-    if (isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
-      return ONE_INCH_ABI.filter(
-        (item) => item.type === 'function' && isEqualsIgnoringCase(web3.eth.abi.encodeFunctionSignature(item as AbiItem), encodedFunctionSignature),
-      )[0];
+  const oneInchSwapDstToken = useMemo(() => {
+    if (txType.data?.type === 'swap' && oneInchTokens.data && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
+      const oneInchSwapTxData = txType.data.txDescription?.args as unknown as OneInchSwapTxData;
+      return Object.values(oneInchTokens.data.tokens).find((item) => isEqualsIgnoringCase(item.address, oneInchSwapTxData.desc.dstToken));
     }
     return undefined;
-  }, [encodedFunctionSignature, originEthereumTx.to, web3.eth.abi]);
-
-  const decodedInputs = useMemo(() => {
-    if (functionABI && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
-      return web3.eth.abi.decodeParameters(functionABI.inputs || [], inputData || '') as OneInchSwapTxData;
-    }
-    return undefined;
-  }, [functionABI, inputData, originEthereumTx.to, web3.eth.abi]);
-
-  const foundToken = useMemo(() => {
-    if (decodedInputs && oneInchTokens.data && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
-      return Object.values(oneInchTokens.data.tokens).find((item) => isEqualsIgnoringCase(item.address, decodedInputs?.desc?.dstToken));
-    }
-    return undefined;
-  }, [decodedInputs, oneInchTokens.data, originEthereumTx.to]);
+  }, [oneInchTokens.data, originEthereumTx.to, txType.data?.txDescription?.args, txType.data?.type]);
 
   const baseFee = useMemo(() => {
     if (ethereumTx.maxFeePerGas) {
@@ -305,7 +272,6 @@ export default function Entry({ queue }: EntryProps) {
     [allTokens, ethereumTx.to, txType.data?.type],
   );
 
-  // NOTE 1inch swap check in here
   const sendDisplayAmount = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
       try {
@@ -316,7 +282,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     if (txType.data?.type === 'transfer') {
-      const amount = (txType?.data?.erc20?.args?.[1] as BigNumber | undefined)?.toString(10) || '';
+      const amount = (txType?.data?.txDescription?.args?.[1] as BigNumber | undefined)?.toString(10) || '';
 
       try {
         return toDisplayDenomAmount(BigInt(amount).toString(10), token?.decimals || 0);
@@ -326,7 +292,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return '0';
-  }, [decimals, ethereumTx.value, token?.decimals, txType.data?.erc20?.args, txType.data?.type]);
+  }, [decimals, ethereumTx.value, token?.decimals, txType.data?.txDescription?.args, txType.data?.type]);
 
   const sendDisplayDenom = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
@@ -642,17 +608,17 @@ export default function Entry({ queue }: EntryProps) {
                           enqueueSnackbar('success');
                         }
                         if (queue.channel === 'inApp' && txType.data?.type === 'approve') {
-                          await backDeQueue();
+                          await deQueue(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path);
                         } else {
                           await deQueue();
                         }
                       }
-                      if (foundToken) {
+                      if (oneInchSwapDstToken) {
                         const newToken = {
-                          address: foundToken.address,
-                          displayDenom: foundToken.symbol,
-                          decimals: foundToken.decimals,
-                          imageURL: foundToken.logoURI,
+                          address: oneInchSwapDstToken.address,
+                          displayDenom: oneInchSwapDstToken.symbol,
+                          decimals: oneInchSwapDstToken.decimals,
+                          imageURL: oneInchSwapDstToken.logoURI,
                         };
                         await addEthereumToken({ ...newToken, tokenType: 'ERC20' });
                       }

@@ -5,7 +5,8 @@ import { Interface } from '@ethersproject/abi';
 import type { MessageTypes, SignTypedDataVersion, TypedMessage } from '@metamask/eth-sig-util';
 import { signTypedData as baseSignTypedData } from '@metamask/eth-sig-util';
 
-import { ERC20_ABI } from '~/constants/abi';
+import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
+import { ERC20_ABI, ONE_INCH_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { chromeStorage } from '~/Popup/utils/chromeStorage';
@@ -85,6 +86,8 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
 
 const erc20Interface = new Interface(ERC20_ABI);
 
+const oneInchInterface = new Interface(ONE_INCH_ABI);
+
 export function erc20Parse(tx: EthereumTx) {
   const { data } = tx;
 
@@ -98,21 +101,33 @@ export function erc20Parse(tx: EthereumTx) {
   }
 }
 
-// NOTE const oneInchInterface = new Interface(ONE_INCH_ABI);
+export function oneInchParse(tx: EthereumTx) {
+  const { data } = tx;
+
+  if (!data) {
+    return null;
+  }
+  try {
+    return oneInchInterface.parseTransaction({ data });
+  } catch {
+    return null;
+  }
+}
 
 export type DetermineTxType = {
   type: EthereumTxType;
-  erc20: TransactionDescription | null;
+  txDescription: TransactionDescription | null;
   getCodeResponse: string | null;
 };
 
 export async function determineTxType(txParams: EthereumTx): Promise<DetermineTxType> {
   const { data, to } = txParams;
-  // NOTE to 기준으로 분기처리
-  const erc20 = erc20Parse(txParams);
-  const name = erc20?.name;
 
-  // NOTE 메서드 이름은 이더스캔에 보면 Call bridge Call 이런게 메서드 네임
+  let txDescription;
+
+  txDescription = erc20Parse(txParams);
+  const name = txDescription?.name;
+
   const tokenMethodName = [ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM].find(
     (methodName) => isEqualsIgnoringCase(methodName, name),
   );
@@ -134,10 +149,19 @@ export async function determineTxType(txParams: EthereumTx): Promise<DetermineTx
 
     if (isContractAddress) {
       result = ETHEREUM_TX_TYPE.CONTRACT_INTERACTION;
+      if (to === ONEINCH_CONTRACT_ADDRESS) {
+        txDescription = oneInchParse(txParams);
+        if (txDescription?.name === ETHEREUM_TX_TYPE.SWAP) {
+          result = ETHEREUM_TX_TYPE.SWAP;
+        }
+        if (txDescription?.name === ETHEREUM_TX_TYPE.UNOSWAP) {
+          result = ETHEREUM_TX_TYPE.UNOSWAP;
+        }
+      }
     }
   }
 
-  return { type: result, getCodeResponse: contractCode, erc20 };
+  return { type: result, getCodeResponse: contractCode, txDescription };
 }
 
 export async function readAddressAsContract(address: string) {

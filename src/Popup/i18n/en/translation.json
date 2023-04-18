@@ -814,7 +814,13 @@
                 "Interact": {
                   "index": {
                     "contractAddress": "Contract address",
-                    "data": "Data"
+                    "contractMethod": "Contract Method",
+                    "data": "Data",
+                    "expectedOutput": "Expected Output",
+                    "fromToken": "From",
+                    "receiverAddress": "Receiver Address",
+                    "swapAmount": "Swap Amount",
+                    "toToken": "To"
                   }
                 },
                 "Send": {

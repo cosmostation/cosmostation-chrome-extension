@@ -7,6 +7,7 @@ import { DND_ITEM_TYPE } from '~/constants/dnd';
 import IconTextButton from '~/Popup/components/common/IconTextButton';
 import SubSideHeader from '~/Popup/components/SubSideHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Account, AccountName } from '~/types/chromeStorage';
 
@@ -25,6 +26,7 @@ type DraggableAccountListProps = {
 
 export default function DraggableAccountList({ accounts, accountName, onClose }: DraggableAccountListProps) {
   const { t } = useTranslation();
+  const { navigateBack } = useNavigate();
 
   const { setChromeStorage } = useChromeStorage();
   const { enqueueSnackbar } = useSnackbar();
@@ -69,7 +71,7 @@ export default function DraggableAccountList({ accounts, accountName, onClose }:
 
   return (
     <>
-      <SubSideHeader>
+      <SubSideHeader onClick={() => navigateBack()}>
         <SideButtonContainer>
           <IconTextButton
             onClick={() => {

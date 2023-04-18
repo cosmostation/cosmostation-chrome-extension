@@ -42,6 +42,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { openWindow } from '~/Popup/utils/chromeWindows';
@@ -102,6 +103,7 @@ export default function Entry() {
   const osmosisChain = OSMOSIS;
   const ethereumChain = ETHEREUM;
   const { t, language } = useTranslation();
+  const { navigateBack } = useNavigate();
   const { currentAccount } = useCurrentAccount();
   const account = useAccountSWR(osmosisChain, true);
   const accounts = useAccounts(true);
@@ -146,7 +148,7 @@ export default function Entry() {
         squidChains?.find((squidChain) => squidChain.chainType === 'evm' && String(parseInt(item.chainId, 16)) === squidChain.chainId),
     ).map((item) => ({
       ...item,
-      addressId: ethereumChain.id,
+      baseChainUUID: ethereumChain.id,
       chainId: String(parseInt(item.chainId, 16)),
       line: ethereumChain.line,
     }));
@@ -155,7 +157,7 @@ export default function Entry() {
       supportedSwapChains.data?.oneInch.evm.send.find((sendChain) => sendChain.chainId === String(parseInt(item.chainId, 16))),
     ).map((item) => ({
       ...item,
-      addressId: ethereumChain.id,
+      baseChainUUID: ethereumChain.id,
       chainId: String(parseInt(item.chainId, 16)),
       line: ethereumChain.line,
     }));
@@ -171,7 +173,7 @@ export default function Entry() {
         ),
     ).map((item) => ({
       ...item,
-      addressId: item.id,
+      baseChainUUID: item.id,
       networkName: item.chainName,
     }));
 
@@ -179,7 +181,7 @@ export default function Entry() {
       (item) => osmosisChain.id === item.id && supportedCosmosChain.data?.chains.find((cosmosChain) => cosmosChain.chain_id === item.chainId),
     ).map((item) => ({
       ...item,
-      addressId: item.id,
+      baseChainUUID: item.id,
       networkName: item.chainName,
     }));
 
@@ -236,7 +238,7 @@ export default function Entry() {
         squidChains?.find((squidChain) => squidChain.chainType === 'evm' && String(parseInt(item.chainId, 16)) === squidChain.chainId),
     ).map((item) => ({
       ...item,
-      addressId: ethereumChain.id,
+      baseChainUUID: ethereumChain.id,
       chainId: String(parseInt(item.chainId, 16)),
       line: ethereumChain.line,
     }));
@@ -245,7 +247,7 @@ export default function Entry() {
       supportedSwapChains.data?.oneInch.evm.receive.find((receiveChain) => receiveChain.chainId === String(parseInt(item.chainId, 16))),
     ).map((item) => ({
       ...item,
-      addressId: ethereumChain.id,
+      baseChainUUID: ethereumChain.id,
       chainId: String(parseInt(item.chainId, 16)),
       line: ethereumChain.line,
     }));
@@ -254,7 +256,7 @@ export default function Entry() {
       (item) => osmosisChain.id === item.id && supportedCosmosChain.data?.chains.find((cosmosChain) => cosmosChain.chain_id === item.chainId),
     ).map((item) => ({
       ...item,
-      addressId: item.id,
+      baseChainUUID: item.id,
       networkName: item.chainName,
     }));
 
@@ -269,7 +271,7 @@ export default function Entry() {
         ),
     ).map((item) => ({
       ...item,
-      addressId: item.id,
+      baseChainUUID: item.id,
       networkName: item.chainName,
     }));
 
@@ -334,11 +336,11 @@ export default function Entry() {
   );
 
   const currentFromAddress = useMemo(
-    () => (currentFromChain && accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentFromChain.addressId]) || '',
+    () => (currentFromChain && accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentFromChain.baseChainUUID]) || '',
     [accounts?.data, currentAccount.id, currentFromChain],
   );
   const currentToAddress = useMemo(
-    () => (currentToChain && accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentToChain.addressId]) || '',
+    () => (currentToChain && accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentToChain.baseChainUUID]) || '',
     [accounts?.data, currentAccount.id, currentToChain],
   );
 
@@ -1365,7 +1367,7 @@ export default function Entry() {
   return (
     <>
       <Container>
-        <SubSideHeader title={t('pages.Wallet.Swap.entry.title')}>
+        <SubSideHeader title={t('pages.Wallet.Swap.entry.title')} onClick={() => navigateBack()}>
           <SideButton onClick={() => setIsOpenSlippageDialog(true)}>
             <Management24Icon />
           </SideButton>
@@ -1854,12 +1856,13 @@ type EntryErrorProps = {
 };
 
 export function EntryError({ errorMessage }: EntryErrorProps) {
+  const { navigateBack } = useNavigate();
   const { t } = useTranslation();
 
   return (
     <>
       <Container>
-        <SubSideHeader title={t('pages.Wallet.Swap.entry.title')}>
+        <SubSideHeader title={t('pages.Wallet.Swap.entry.title')} onClick={() => navigateBack()}>
           <SideButton disabled>
             <Management24Icon />
           </SideButton>

@@ -814,7 +814,13 @@
                 "Interact": {
                   "index": {
                     "contractAddress": "계약 주소",
-                    "data": "데이터"
+                    "contractMethod": "메서드 명",
+                    "data": "데이터",
+                    "expectedOutput": "최소 교환 수량",
+                    "fromToken": "From",
+                    "receiverAddress": "받는 주소",
+                    "swapAmount": "수량",
+                    "toToken": "To"
                   }
                 },
                 "Send": {
