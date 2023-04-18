@@ -54,17 +54,17 @@ export default function Entry() {
     try {
       const nodeInfo = await get<NodeInfoPayload>(`${data.restURL}/cosmos/base/tendermint/v1beta1/node_info`);
 
-      if (!nodeInfo?.node_info?.network) {
+      if (!nodeInfo?.default_node_info?.network) {
         throw new Error(t('pages.Chain.Cosmos.Chain.Add.entry.restURLError'));
       }
-      if (invalidChainIds.includes(nodeInfo?.node_info?.network)) {
+      if (invalidChainIds.includes(nodeInfo?.default_node_info?.network)) {
         throw new Error(t('pages.Chain.Cosmos.Chain.Add.entry.chainID.invalid'));
       }
       const newChain: CosmosChain = {
         id: uuidv4(),
         line: 'COSMOS',
         type: data.type ?? '',
-        chainId: nodeInfo.node_info.network,
+        chainId: nodeInfo.default_node_info.network,
         chainName: data.chainName,
         displayDenom: data.displayDenom,
         baseDenom: data.baseDenom,

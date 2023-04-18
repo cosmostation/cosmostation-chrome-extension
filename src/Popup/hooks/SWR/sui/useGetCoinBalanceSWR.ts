@@ -1,34 +1,36 @@
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
-import type { SuiObjectResponseQuery } from '@mysten/sui.js';
 
 import { SUI } from '~/constants/chain/sui/sui';
-import { isAxiosError, post } from '~/Popup/utils/axios';
+import { post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
-import type { GetObjectsOwnedByAddressResponse } from '~/types/sui/rpc';
+import type { GetCoinBalanceResponse } from '~/types/sui/rpc';
 
 import { useChromeStorage } from '../../useChromeStorage';
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
 import { useAccounts } from '../cache/useAccounts';
 
 type FetchParams = {
-  url: string;
   address: string;
-  query: SuiObjectResponseQuery;
+  url: string;
+  coinType: string;
   method: string;
 };
 
-type UseGetObjectsOwnedByAddressSWRProps = {
+type UseGetCoinBalanceSWRProps = {
   address?: string;
+  coinType?: string;
   network?: SuiNetwork;
-  query?: SuiObjectResponseQuery;
 };
-export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseGetObjectsOwnedByAddressSWRProps, config?: SWRConfiguration) {
+
+export function useGetCoinBalanceSWR({ address, network, coinType }: UseGetCoinBalanceSWRProps, config?: SWRConfiguration) {
   const chain = SUI;
+
+  const { currentSuiNetwork } = useCurrentSuiNetwork();
+
   const accounts = useAccounts(config?.suspense);
   const { chromeStorage } = useChromeStorage();
-  const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
 
@@ -36,36 +38,26 @@ export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseG
 
   const fetcher = async (params: FetchParams) => {
     try {
-      return await post<GetObjectsOwnedByAddressResponse>(params.url, {
+      return await post<GetCoinBalanceResponse>(params.url, {
         jsonrpc: '2.0',
         method: params.method,
-        params: [
-          params.address,
-          {
-            ...params.query,
-          },
-        ],
+        params: [params.address, params.coinType],
         id: params.address,
       });
     } catch (e) {
-      if (isAxiosError(e)) {
-        if (e.response?.status === 404) {
-          return null;
-        }
-      }
-      throw e;
+      return null;
     }
   };
 
-  const { data, error, mutate } = useSWR<GetObjectsOwnedByAddressResponse | null, AxiosError>(
-    { url: rpcURL, address: addr, query, method: 'suix_getOwnedObjects' },
+  const { data, error, mutate } = useSWR<GetCoinBalanceResponse | null, AxiosError>(
+    { address: addr, url: rpcURL, coinType, method: 'suix_getBalance' },
     fetcher,
     {
       revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
+      dedupingInterval: 14000,
+      refreshInterval: 15000,
       errorRetryCount: 0,
-      isPaused: () => !addr,
+      isPaused: () => !addr || !coinType,
       ...config,
     },
   );

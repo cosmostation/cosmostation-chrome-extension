@@ -116,7 +116,7 @@ export default function Routes({ children }: RoutesType) {
         navigate('/popup/aptos/sign-message');
       }
 
-      if (chromeStorage.queues[0].message.method === 'sui_signAndExecuteTransaction') {
+      if (chromeStorage.queues[0].message.method === 'sui_signAndExecuteTransactionBlock') {
         navigate('/popup/sui/transaction');
       }
     }

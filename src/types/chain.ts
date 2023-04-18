@@ -53,6 +53,7 @@ export type CosmosChain = {
   gasRate: GasRate;
   gas: Gas;
   cosmWasm?: boolean;
+  custom?: 'no-stake';
 } & CommonChain;
 
 export type CosmosCW20Token = {
@@ -149,6 +150,7 @@ export type SuiNetwork = {
   imageURL?: string;
   explorerURL?: string;
   coinGeckoId?: string;
+  decimals: number;
 };
 
 export type EthereumERC20Token = {

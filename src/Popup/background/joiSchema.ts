@@ -30,8 +30,8 @@ import type {
   WalletSwitchEthereumChain,
   WalletWatchAsset,
 } from '~/types/message/ethereum';
-import type { SuiExecuteMoveCall } from '~/types/message/sui';
 
+// import type { SuiExecuteMoveCall } from '~/types/message/sui';
 import { getChainIdRegex } from '../utils/common';
 
 const numberRegex = /^([0-9]+|[0-9]+(\.[0-9]+))$/;
@@ -464,22 +464,22 @@ export const suiConnectSchema = () =>
         .required(),
     );
 
-export const suiExecuteMoveCallSchema = () =>
-  Joi.array()
-    .label('params')
-    .min(1)
-    .max(1)
-    .required()
-    .items(
-      Joi.object<SuiExecuteMoveCall['params'][0]>({
-        packageObjectId: Joi.string().required(),
-        module: Joi.string().required(),
-        function: Joi.string().required(),
-        gasPayment: Joi.string().optional(),
-        gasBudget: Joi.number().required(),
-        typeArguments: Joi.array().required(),
-        arguments: Joi.array().required(),
-      }).unknown(),
-    );
+// export const suiExecuteMoveCallSchema = () =>
+//   Joi.array()
+//     .label('params')
+//     .min(1)
+//     .max(1)
+//     .required()
+//     .items(
+//       Joi.object<SuiExecuteMoveCall['params'][0]>({
+//         packageObjectId: Joi.string().required(),
+//         module: Joi.string().required(),
+//         function: Joi.string().required(),
+//         gasPayment: Joi.string().optional(),
+//         gasBudget: Joi.number().required(),
+//         typeArguments: Joi.array().required(),
+//         arguments: Joi.array().required(),
+//       }).unknown(),
+//     );
 
 export const suiExecuteSerializedMoveCallSchema = () => Joi.array().label('params').min(1).max(1).required().items(Joi.string().base64());

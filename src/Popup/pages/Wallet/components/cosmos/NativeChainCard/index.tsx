@@ -301,7 +301,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   );
 
   return (
-    <Container>
+    <Container data-is-no-expanded={chain.custom === 'no-stake'}>
       <FirstLineContainer>
         <FirstLineLeftContainer>
           <AddressButton onClick={handleOnClickCopy}>{currentAddress}</AddressButton>
@@ -335,157 +335,105 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         </Number>
       </ThirdLineContainer>
 
-      <StyledAccordion expanded={expanded}>
-        <StyledAccordionSummary />
-        <StyledAccordionDetails>
-          <FourthLineContainer>
-            <FourthLineContainerItem>
-              <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.available')}</Typography>
-              </FourthLineContainerItemLeft>
-              <FourthLineContainerItemRight>
-                <Tooltip title={displayAvailableAmount} arrow placement="bottom-end">
-                  <span>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                      {displayAvailableAmount}
-                    </Number>
-                  </span>
-                </Tooltip>
-              </FourthLineContainerItemRight>
-            </FourthLineContainerItem>
-            <FourthLineContainerItem>
-              <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.delegated')}</Typography>
-              </FourthLineContainerItemLeft>
-              <FourthLineContainerItemRight>
-                <Tooltip title={displayDelegationAmount} arrow placement="bottom-end">
-                  <span>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                      {displayDelegationAmount}
-                    </Number>
-                  </span>
-                </Tooltip>
-              </FourthLineContainerItemRight>
-            </FourthLineContainerItem>
-            <FourthLineContainerItem>
-              <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.unbonding')}</Typography>
-              </FourthLineContainerItemLeft>
-              <FourthLineContainerItemRight>
-                <Tooltip title={displayUnDelegationAmount} arrow placement="bottom-end">
-                  <span>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                      {displayUnDelegationAmount}
-                    </Number>
-                  </span>
-                </Tooltip>
-              </FourthLineContainerItemRight>
-            </FourthLineContainerItem>
-            <FourthLineContainerItem>
-              <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.reward')}</Typography>
-              </FourthLineContainerItemLeft>
-              <FourthLineContainerItemRight>
-                <Tooltip title={displayRewardAmount} arrow placement="bottom-end">
-                  <span>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                      {displayRewardAmount}
-                    </Number>
-                  </span>
-                </Tooltip>
-              </FourthLineContainerItemRight>
-            </FourthLineContainerItem>
-            <FourthLineContainerItem>
-              <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.vesting')}</Typography>
-              </FourthLineContainerItemLeft>
-              <FourthLineContainerItemRight>
-                <Tooltip title={displayVestingNotDelegationAmount} arrow placement="bottom-end">
-                  <span>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                      {displayVestingNotDelegationAmount}
-                    </Number>
-                  </span>
-                </Tooltip>
-              </FourthLineContainerItemRight>
-            </FourthLineContainerItem>
-            {chain.id === KAVA.id && (
+      {chain.custom !== 'no-stake' && (
+        <StyledAccordion expanded={expanded}>
+          <StyledAccordionSummary />
+          <StyledAccordionDetails>
+            <FourthLineContainer>
               <FourthLineContainerItem>
                 <FourthLineContainerItemLeft>
-                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.incentive')}</Typography>
+                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.available')}</Typography>
                 </FourthLineContainerItemLeft>
                 <FourthLineContainerItemRight>
-                  <Tooltip title={displayIncentiveAmount} arrow placement="bottom-end">
+                  <Tooltip title={displayAvailableAmount} arrow placement="bottom-end">
                     <span>
                       <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                        {displayIncentiveAmount}
+                        {displayAvailableAmount}
                       </Number>
                     </span>
                   </Tooltip>
                 </FourthLineContainerItemRight>
               </FourthLineContainerItem>
-            )}
-          </FourthLineContainer>
-          <ClaimButtonContainer>
-            <ClaimButton
-              Icon={Reward16Icon}
-              type="button"
-              disabled={!isPossibleClaimReward}
-              onClick={async () => {
-                if (rewardAminoTx && rewardSimulate.data?.gas_info?.gas_used && isPossibleClaimReward) {
-                  await enQueue({
-                    messageId: '',
-                    origin: '',
-                    channel: 'inApp',
-                    message: {
-                      method: 'cos_signAmino',
-                      params: {
-                        chainName: chain.chainName,
-                        doc: {
-                          ...rewardAminoTx,
-                          fee: { amount: [{ amount: '0', denom: chain.baseDenom }], gas: times(rewardSimulate.data.gas_info.gas_used, getDefaultAV(chain), 0) },
-                        },
-                        isEditFee: true,
-                        isEditMemo: true,
-                      },
-                    },
-                  });
-
-                  if (currentAccount.type === 'LEDGER') {
-                    await openWindow();
-                    window.close();
-                  }
-                }
-              }}
-            >
-              {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
-            </ClaimButton>
-            {operatorAddress && (
+              <FourthLineContainerItem>
+                <FourthLineContainerItemLeft>
+                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.delegated')}</Typography>
+                </FourthLineContainerItemLeft>
+                <FourthLineContainerItemRight>
+                  <Tooltip title={displayDelegationAmount} arrow placement="bottom-end">
+                    <span>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                        {displayDelegationAmount}
+                      </Number>
+                    </span>
+                  </Tooltip>
+                </FourthLineContainerItemRight>
+              </FourthLineContainerItem>
+              <FourthLineContainerItem>
+                <FourthLineContainerItemLeft>
+                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.unbonding')}</Typography>
+                </FourthLineContainerItemLeft>
+                <FourthLineContainerItemRight>
+                  <Tooltip title={displayUnDelegationAmount} arrow placement="bottom-end">
+                    <span>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                        {displayUnDelegationAmount}
+                      </Number>
+                    </span>
+                  </Tooltip>
+                </FourthLineContainerItemRight>
+              </FourthLineContainerItem>
+              <FourthLineContainerItem>
+                <FourthLineContainerItemLeft>
+                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.reward')}</Typography>
+                </FourthLineContainerItemLeft>
+                <FourthLineContainerItemRight>
+                  <Tooltip title={displayRewardAmount} arrow placement="bottom-end">
+                    <span>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                        {displayRewardAmount}
+                      </Number>
+                    </span>
+                  </Tooltip>
+                </FourthLineContainerItemRight>
+              </FourthLineContainerItem>
+              <FourthLineContainerItem>
+                <FourthLineContainerItemLeft>
+                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.vesting')}</Typography>
+                </FourthLineContainerItemLeft>
+                <FourthLineContainerItemRight>
+                  <Tooltip title={displayVestingNotDelegationAmount} arrow placement="bottom-end">
+                    <span>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                        {displayVestingNotDelegationAmount}
+                      </Number>
+                    </span>
+                  </Tooltip>
+                </FourthLineContainerItemRight>
+              </FourthLineContainerItem>
+              {chain.id === KAVA.id && (
+                <FourthLineContainerItem>
+                  <FourthLineContainerItemLeft>
+                    <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.incentive')}</Typography>
+                  </FourthLineContainerItemLeft>
+                  <FourthLineContainerItemRight>
+                    <Tooltip title={displayIncentiveAmount} arrow placement="bottom-end">
+                      <span>
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                          {displayIncentiveAmount}
+                        </Number>
+                      </span>
+                    </Tooltip>
+                  </FourthLineContainerItemRight>
+                </FourthLineContainerItem>
+              )}
+            </FourthLineContainer>
+            <ClaimButtonContainer>
               <ClaimButton
                 Icon={Reward16Icon}
                 type="button"
-                disabled={!isPossibleClaimCommission}
+                disabled={!isPossibleClaimReward}
                 onClick={async () => {
-                  if (chain.id === EVMOS.id && commissionDirectTx && isPossibleClaimCommission) {
-                    await enQueue({
-                      messageId: '',
-                      origin: '',
-                      channel: 'inApp',
-                      message: {
-                        method: 'cos_signDirect',
-                        params: {
-                          chainName: chain.chainName,
-                          doc: {
-                            ...commissionDirectTx,
-                          },
-                          isEditFee: true,
-                          isEditMemo: true,
-                        },
-                      },
-                    });
-                  }
-
-                  if (chain.id !== EVMOS.id && commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
+                  if (rewardAminoTx && rewardSimulate.data?.gas_info?.gas_used && isPossibleClaimReward) {
                     await enQueue({
                       messageId: '',
                       origin: '',
@@ -495,10 +443,10 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                         params: {
                           chainName: chain.chainName,
                           doc: {
-                            ...commissionAminoTx,
+                            ...rewardAminoTx,
                             fee: {
                               amount: [{ amount: '0', denom: chain.baseDenom }],
-                              gas: times(commissionSimulate.data.gas_info.gas_used, getDefaultAV(chain), 0),
+                              gas: times(rewardSimulate.data.gas_info.gas_used, getDefaultAV(chain), 0),
                             },
                           },
                           isEditFee: true,
@@ -514,12 +462,69 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                   }
                 }}
               >
-                {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
+                {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
               </ClaimButton>
-            )}
-          </ClaimButtonContainer>
-        </StyledAccordionDetails>
-      </StyledAccordion>
+              {operatorAddress && (
+                <ClaimButton
+                  Icon={Reward16Icon}
+                  type="button"
+                  disabled={!isPossibleClaimCommission}
+                  onClick={async () => {
+                    if (chain.id === EVMOS.id && commissionDirectTx && isPossibleClaimCommission) {
+                      await enQueue({
+                        messageId: '',
+                        origin: '',
+                        channel: 'inApp',
+                        message: {
+                          method: 'cos_signDirect',
+                          params: {
+                            chainName: chain.chainName,
+                            doc: {
+                              ...commissionDirectTx,
+                            },
+                            isEditFee: true,
+                            isEditMemo: true,
+                          },
+                        },
+                      });
+                    }
+
+                    if (chain.id !== EVMOS.id && commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
+                      await enQueue({
+                        messageId: '',
+                        origin: '',
+                        channel: 'inApp',
+                        message: {
+                          method: 'cos_signAmino',
+                          params: {
+                            chainName: chain.chainName,
+                            doc: {
+                              ...commissionAminoTx,
+                              fee: {
+                                amount: [{ amount: '0', denom: chain.baseDenom }],
+                                gas: times(commissionSimulate.data.gas_info.gas_used, getDefaultAV(chain), 0),
+                              },
+                            },
+                            isEditFee: true,
+                            isEditMemo: true,
+                          },
+                        },
+                      });
+
+                      if (currentAccount.type === 'LEDGER') {
+                        await openWindow();
+                        window.close();
+                      }
+                    }
+                  }}
+                >
+                  {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
+                </ClaimButton>
+              )}
+            </ClaimButtonContainer>
+          </StyledAccordionDetails>
+        </StyledAccordion>
+      )}
 
       <ButtonContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
@@ -540,18 +545,20 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         )}
       </ButtonContainer>
 
-      <ExpandedButton
-        data-is-expanded={expanded ? 1 : 0}
-        type="button"
-        onClick={() => {
-          setExpanded((prev) => {
-            localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
-            return !prev;
-          });
-        }}
-      >
-        <BottomArrow20Icon />
-      </ExpandedButton>
+      {chain.custom !== 'no-stake' && (
+        <ExpandedButton
+          data-is-expanded={expanded ? 1 : 0}
+          type="button"
+          onClick={() => {
+            setExpanded((prev) => {
+              localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
+              return !prev;
+            });
+          }}
+        >
+          <BottomArrow20Icon />
+        </ExpandedButton>
+      )}
     </Container>
   );
 }
@@ -596,7 +603,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   };
 
   return (
-    <Container>
+    <Container data-is-no-expanded={chain.custom === 'no-stake'}>
       <FirstLineContainer>
         <FirstLineLeftContainer>
           <AddressButton onClick={handleOnClickCopy}>{address}</AddressButton>
@@ -624,73 +631,75 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         <Skeleton width="8rem" height="1.9rem" />
       </ThirdLineContainer>
 
-      <StyledAccordion expanded={expanded}>
-        <StyledAccordionSummary />
-        <StyledAccordionDetails>
-          <FourthLineContainer>
-            <FourthLineContainerItem>
-              <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.available')}</Typography>
-              </FourthLineContainerItemLeft>
-              <FourthLineContainerItemRight>
-                <Skeleton width="8rem" height="1.9rem" />
-              </FourthLineContainerItemRight>
-            </FourthLineContainerItem>
-            <FourthLineContainerItem>
-              <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.delegated')}</Typography>
-              </FourthLineContainerItemLeft>
-              <FourthLineContainerItemRight>
-                <Skeleton width="8rem" height="1.9rem" />
-              </FourthLineContainerItemRight>
-            </FourthLineContainerItem>
-            <FourthLineContainerItem>
-              <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.unbonding')}</Typography>
-              </FourthLineContainerItemLeft>
-              <FourthLineContainerItemRight>
-                <Skeleton width="8rem" height="1.9rem" />
-              </FourthLineContainerItemRight>
-            </FourthLineContainerItem>
-            <FourthLineContainerItem>
-              <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.reward')}</Typography>
-              </FourthLineContainerItemLeft>
-              <FourthLineContainerItemRight>
-                <Skeleton width="8rem" height="1.9rem" />
-              </FourthLineContainerItemRight>
-            </FourthLineContainerItem>
-            <FourthLineContainerItem>
-              <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.vesting')}</Typography>
-              </FourthLineContainerItemLeft>
-              <FourthLineContainerItemRight>
-                <Skeleton width="8rem" height="1.9rem" />
-              </FourthLineContainerItemRight>
-            </FourthLineContainerItem>
-            {chain.id === KAVA.id && (
+      {chain.custom !== 'no-stake' && (
+        <StyledAccordion expanded={expanded}>
+          <StyledAccordionSummary />
+          <StyledAccordionDetails>
+            <FourthLineContainer>
               <FourthLineContainerItem>
                 <FourthLineContainerItemLeft>
-                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.incentive')}</Typography>
+                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.available')}</Typography>
                 </FourthLineContainerItemLeft>
                 <FourthLineContainerItemRight>
                   <Skeleton width="8rem" height="1.9rem" />
                 </FourthLineContainerItemRight>
               </FourthLineContainerItem>
-            )}
-          </FourthLineContainer>
-          <ClaimButtonContainer>
-            <ClaimButton Icon={Reward16Icon} type="button" disabled>
-              {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
-            </ClaimButton>
-            {operatorAddress && (
+              <FourthLineContainerItem>
+                <FourthLineContainerItemLeft>
+                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.delegated')}</Typography>
+                </FourthLineContainerItemLeft>
+                <FourthLineContainerItemRight>
+                  <Skeleton width="8rem" height="1.9rem" />
+                </FourthLineContainerItemRight>
+              </FourthLineContainerItem>
+              <FourthLineContainerItem>
+                <FourthLineContainerItemLeft>
+                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.unbonding')}</Typography>
+                </FourthLineContainerItemLeft>
+                <FourthLineContainerItemRight>
+                  <Skeleton width="8rem" height="1.9rem" />
+                </FourthLineContainerItemRight>
+              </FourthLineContainerItem>
+              <FourthLineContainerItem>
+                <FourthLineContainerItemLeft>
+                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.reward')}</Typography>
+                </FourthLineContainerItemLeft>
+                <FourthLineContainerItemRight>
+                  <Skeleton width="8rem" height="1.9rem" />
+                </FourthLineContainerItemRight>
+              </FourthLineContainerItem>
+              <FourthLineContainerItem>
+                <FourthLineContainerItemLeft>
+                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.vesting')}</Typography>
+                </FourthLineContainerItemLeft>
+                <FourthLineContainerItemRight>
+                  <Skeleton width="8rem" height="1.9rem" />
+                </FourthLineContainerItemRight>
+              </FourthLineContainerItem>
+              {chain.id === KAVA.id && (
+                <FourthLineContainerItem>
+                  <FourthLineContainerItemLeft>
+                    <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.incentive')}</Typography>
+                  </FourthLineContainerItemLeft>
+                  <FourthLineContainerItemRight>
+                    <Skeleton width="8rem" height="1.9rem" />
+                  </FourthLineContainerItemRight>
+                </FourthLineContainerItem>
+              )}
+            </FourthLineContainer>
+            <ClaimButtonContainer>
               <ClaimButton Icon={Reward16Icon} type="button" disabled>
-                {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
+                {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
               </ClaimButton>
-            )}
-          </ClaimButtonContainer>
-        </StyledAccordionDetails>
-      </StyledAccordion>
+              {operatorAddress && (
+                <ClaimButton Icon={Reward16Icon} type="button" disabled>
+                  {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
+                </ClaimButton>
+              )}
+            </ClaimButtonContainer>
+          </StyledAccordionDetails>
+        </StyledAccordion>
+      )}
 
       <ButtonContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
@@ -711,18 +720,20 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         )}
       </ButtonContainer>
 
-      <ExpandedButton
-        data-is-expanded={expanded ? 1 : 0}
-        type="button"
-        onClick={() => {
-          setExpanded((prev) => {
-            localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
-            return !prev;
-          });
-        }}
-      >
-        <BottomArrow20Icon />
-      </ExpandedButton>
+      {chain.custom !== 'no-stake' && (
+        <ExpandedButton
+          data-is-expanded={expanded ? 1 : 0}
+          type="button"
+          onClick={() => {
+            setExpanded((prev) => {
+              localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
+              return !prev;
+            });
+          }}
+        >
+          <BottomArrow20Icon />
+        </ExpandedButton>
+      )}
     </Container>
   );
 }

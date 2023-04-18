@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef } from 'react';
 import type { PopoverProps } from '@mui/material';
 
+import { SUI_COIN } from '~/constants/sui';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
-import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
+import { useGetAllBalancesSWR } from '~/Popup/hooks/SWR/sui/useGetAllBalancesSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { getCoinType, isExists } from '~/Popup/utils/sui';
 import type { SuiChain } from '~/types/chain';
 
 import CoinItem from './components/CoinItem';
@@ -21,15 +20,14 @@ export default function CoinPopover({ currentCoinType, onClickCoin, onClose, cha
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address }, { suspense: true });
+  const { data: allCoinBalances } = useGetAllBalancesSWR({ address }, { suspense: true });
 
-  const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
-
-  const suiCoinObjects = useMemo(() => objects?.filter(isExists).filter((object) => !!object.result?.details.data.fields.balance) || [], [objects]);
-
-  const suiCoinNames = useMemo(
-    () => Array.from(new Set(suiCoinObjects.map((object) => getCoinType(object.result?.details.data.type)))).filter((name) => !!name),
-    [suiCoinObjects],
+  const suiAvailableCoins = useMemo(
+    () =>
+      allCoinBalances?.result
+        ? [...allCoinBalances.result.filter((coin) => coin.coinType === SUI_COIN), ...allCoinBalances.result.filter((coin) => coin.coinType !== SUI_COIN)]
+        : [],
+    [allCoinBalances?.result],
   );
 
   useEffect(() => {
@@ -41,17 +39,17 @@ export default function CoinPopover({ currentCoinType, onClickCoin, onClose, cha
   return (
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
-        {suiCoinNames.map((coinType) => {
-          const isActive = currentCoinType === coinType;
+        {suiAvailableCoins.map((coin) => {
+          const isActive = currentCoinType === coin.coinType;
           return (
             <CoinItem
-              key={coinType || 'native'}
-              coinType={coinType}
+              key={coin.coinType}
+              coin={coin}
               chain={chain}
               isActive={isActive}
               ref={isActive ? ref : undefined}
               onClick={() => {
-                onClickCoin?.(coinType);
+                onClickCoin?.(coin.coinType);
                 onClose?.({}, 'backdropClick');
               }}
             />

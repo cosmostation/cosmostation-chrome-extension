@@ -1,5 +1,8 @@
-@rpcURL=https://fullnode.devnet.sui.io
-# @rpcURL=https://fullnode.testnet.sui.io
+# @rpcURL=https://fullnode.devnet.sui.io
+# @rpcURL=https://rpc-sui-testnet.cosmostation.io/
+@rpcURL=https://fullnode.testnet.sui.io:443/
+
+
 
 ### 
 POST {{rpcURL}}
@@ -18,8 +21,17 @@ content-type: application/json
 
 {
     "jsonrpc": "2.0",
-    "method": "sui_getObjectsOwnedByAddress",
-    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe"],
+    "method": "suix_getOwnedObjects",
+    "params": ["0x67b11c023bced7ae79530b653e81e37116836acf24d536e6ffbd4bf37159d3cf",
+      {
+        "options": {
+          "showType": true,
+          "showDisplay": true,
+        },
+      },
+      null,
+      null,
+    ],
     "id": 0
 }
 
@@ -69,8 +81,8 @@ content-type: application/json
 
 {
     "jsonrpc": "2.0",
-    "method": "sui_getBalance",
-    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe", "0x2::sui::SUI"],
+    "method": "suix_getBalance",
+    "params": ["0x67b11c023bced7ae79530b653e81e37116836acf24d536e6ffbd4bf37159d3cf", "0x2::sui::SUI"],
     "id": 1
 }
 
@@ -80,8 +92,8 @@ content-type: application/json
 
 {
     "jsonrpc": "2.0",
-    "method": "sui_getBalance",
-    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe", "0x2::sui::SUI"],
+    "method": "suix_getBalance",
+    "params": ["0x67b11c023bced7ae79530b653e81e37116836acf24d536e6ffbd4bf37159d3cf", "0x2::sui::SUI"],
     "id": 1
 }
 
@@ -91,7 +103,7 @@ content-type: application/json
 
 {
     "jsonrpc": "2.0",
-    "method": "sui_getAllCoins",
-    "params": ["0x5632792adaf0a5d33c77f3dd020aa31cb4fa8dfe"],
+    "method": "suix_getAllBalances",
+    "params": ["0x67b11c023bced7ae79530b653e81e37116836acf24d536e6ffbd4bf37159d3cf"],
     "id": 1
 }

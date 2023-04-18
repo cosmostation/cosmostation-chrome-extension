@@ -65,7 +65,7 @@
           "language": "Language",
           "ledger": "Ledger",
           "lock": "Lock",
-          "provider": "Provider"
+          "provider": "Prioritize"
         }
       }
     },
@@ -973,10 +973,10 @@
       },
       "Provider": {
         "entry": {
-          "description": "Provider service gets activated when the selected wallet extensions are switched off on chrome://extensions or not installed on your PC"
+          "description": "Prioritize service gets activated when the selected wallet extensions are switched off on chrome://extensions or not installed on your PC"
         },
         "layout": {
-          "title": "Provider"
+          "title": "Prioritize"
         }
       }
     },
@@ -1130,6 +1130,22 @@
             }
           },
           "Sui": {
+            "components": {
+              "CoinButton": {
+                "index": {
+                  "available": "Available"
+                }
+              },
+              "CoinPopover": {
+                "components": {
+                  "CoinItem": {
+                    "index": {
+                      "available": "Available"
+                    }
+                  }
+                }
+              }
+            },
             "index": {
               "amountPlaceholder": "Amount",
               "insufficientAmount": "Insufficient amount",

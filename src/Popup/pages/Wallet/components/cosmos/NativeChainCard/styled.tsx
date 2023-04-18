@@ -5,14 +5,18 @@ import { styled } from '@mui/material/styles';
 import AbsoluteLoading from '~/Popup/components/AbsoluteLoading';
 import IconButton from '~/Popup/components/common/IconButton';
 
-export const Container = styled('div')(({ theme }) => ({
+type ContainerProps = {
+  'data-is-no-expanded'?: boolean;
+};
+
+export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => ({
   backgroundColor: theme.colors.base02,
 
   width: '100%',
 
   borderRadius: '0.8rem',
 
-  padding: '1.6rem 1.6rem 0',
+  padding: props['data-is-no-expanded'] ? '1.6rem 1.6rem 0.6rem' : '1.6rem 1.6rem 0',
 
   position: 'relative',
 }));

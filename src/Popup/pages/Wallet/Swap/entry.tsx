@@ -870,7 +870,7 @@ export default function Entry() {
       return {
         account_number: String(account.data.value.account_number),
         sequence,
-        chain_id: nodeInfo.data?.node_info?.network ?? osmosisChain.chainId,
+        chain_id: nodeInfo.data?.default_node_info?.network ?? osmosisChain.chainId,
         fee: { amount: [{ amount: '1', denom: currentFeeToken.address }], gas: COSMOS_DEFAULT_SWAP_GAS },
         memo: '',
         msgs: [
@@ -902,7 +902,7 @@ export default function Entry() {
     account.data?.value.account_number,
     account.data?.value.sequence,
     currentFeeToken?.address,
-    nodeInfo.data?.node_info?.network,
+    nodeInfo.data?.default_node_info?.network,
     osmosisChain.chainId,
     osmoSwapMath.currentPoolId,
     currentToToken?.address,

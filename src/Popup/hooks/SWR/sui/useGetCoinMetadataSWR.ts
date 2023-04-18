@@ -11,6 +11,7 @@ import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
 type FetchParams = {
   url: string;
   coinType: string;
+  method: string;
 };
 
 type UseGetCoinMetadataSWRProps = {
@@ -27,7 +28,7 @@ export function useGetCoinMetadataSWR({ network, coinType }: UseGetCoinMetadataS
     try {
       return await post<GetCoinMetadataResponse>(params.url, {
         jsonrpc: '2.0',
-        method: 'sui_getCoinMetadata',
+        method: params.method,
         params: [params.coinType],
         id: params.coinType,
       });
@@ -36,7 +37,7 @@ export function useGetCoinMetadataSWR({ network, coinType }: UseGetCoinMetadataS
     }
   };
 
-  const { data, error, mutate } = useSWR<GetCoinMetadataResponse | null, AxiosError>({ url: rpcURL, coinType }, fetcher, {
+  const { data, error, mutate } = useSWR<GetCoinMetadataResponse | null, AxiosError>({ url: rpcURL, coinType, method: 'suix_getCoinMetadata' }, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,

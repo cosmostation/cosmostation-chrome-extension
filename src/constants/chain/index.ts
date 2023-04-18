@@ -47,6 +47,7 @@ import { LIKE_COIN } from './cosmos/likeCoin';
 import { LUM } from './cosmos/lum';
 import { MARS } from './cosmos/mars';
 import { MEDIBLOC } from './cosmos/medibloc';
+import { NOBLE } from './cosmos/noble';
 import { NYX, NYX_FEE_BASE_DENOMS, NYX_GAS_RATES } from './cosmos/nyx';
 import { OMNIFLIX } from './cosmos/omniflix';
 import { ONOMY } from './cosmos/onomy';
@@ -142,6 +143,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   LUM,
   MARS,
   MEDIBLOC,
+  NOBLE,
   NYX,
   OMNIFLIX,
   ONOMY,

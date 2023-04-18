@@ -1,10 +1,5 @@
-import type {
-  CertifiedTransaction,
-  ExecuteTransactionRequestType,
-  MoveCallTransaction,
-  SuiFinalizedEffects,
-  UnserializedSignableTransaction,
-} from '@mysten/sui.js';
+import type { MoveCallTransaction } from '@mysten/sui.js';
+import type { SuiSignAndExecuteTransactionBlockInput } from '@mysten/wallet-standard';
 
 import type { SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 
@@ -36,7 +31,7 @@ export type SuiExecuteMoveCall = {
   id?: number | string;
 };
 
-export type SuiExecuteMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
+// export type SuiExecuteMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
 
 export type SuiExecuteSerializedMoveCall = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__EXECUTE_SERIALIZED_MOVE_CALL;
@@ -44,15 +39,16 @@ export type SuiExecuteSerializedMoveCall = {
   id?: number | string;
 };
 
-export type SuiExecuteSerializedMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
-
-export type SuiSignAndExecuteTransaction = {
-  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION;
-  params: [UnserializedSignableTransaction | string] | [UnserializedSignableTransaction | string, ExecuteTransactionRequestType];
-  id?: number | string;
+// export type SuiExecuteSerializedMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
+type SuiSignAndExecuteTransactionBlockSerializedInput = Omit<SuiSignAndExecuteTransactionBlockInput, 'transactionBlock' | 'chain' | 'account'> & {
+  transactionBlockSerialized: string;
 };
 
-export type SuiSignAndExecuteTransactionResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
+export type SuiSignAndExecuteTransactionBlock = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION_BLOCK;
+  params: [SuiSignAndExecuteTransactionBlockSerializedInput];
+  id?: number | string;
+};
 
 export type SuiGetAccountResponse = {
   address: string;

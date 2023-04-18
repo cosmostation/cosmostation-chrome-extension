@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
-import { Base64DataBuffer, Ed25519Keypair, JsonRpcProvider, RawSigner } from '@mysten/sui.js';
+import { Connection, Ed25519Keypair, JsonRpcProvider, RawSigner, TransactionBlock } from '@mysten/sui.js';
 
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -11,7 +11,7 @@ import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
-import { useDryRunTransactionSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionSWR';
+import { useDryRunTransactionBlockSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionBlockSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -20,11 +20,11 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Sui/components/Header';
-import { toDisplayDenomAmount } from '~/Popup/utils/big';
+import { gt, minus, plus, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
-import type { SuiSignAndExecuteTransaction, SuiSignAndExecuteTransactionResponse } from '~/types/message/sui';
+import type { SuiSignAndExecuteTransactionBlock } from '~/types/message/sui';
 
 import Tx from './components/Tx';
 import TxMessage from './components/TxMessage';
@@ -49,7 +49,7 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 
 type EntryProps = {
-  queue: Queue<SuiSignAndExecuteTransaction>;
+  queue: Queue<SuiSignAndExecuteTransactionBlock>;
 };
 
 export default function Entry({ queue }: EntryProps) {
@@ -79,39 +79,57 @@ export default function Entry({ queue }: EntryProps) {
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-  const provider = useMemo(() => new JsonRpcProvider(currentSuiNetwork.rpcURL), [currentSuiNetwork.rpcURL]);
+  const provider = useMemo(
+    () =>
+      new JsonRpcProvider(
+        new Connection({
+          fullnode: currentSuiNetwork.rpcURL,
+        }),
+      ),
+    [currentSuiNetwork.rpcURL],
+  );
 
-  const keypair = useMemo(() => Ed25519Keypair.fromSeed(keyPair!.privateKey!), [keyPair]);
+  const keypair = useMemo(() => Ed25519Keypair.fromSecretKey(keyPair!.privateKey!), [keyPair]);
 
   const rawSigner = useMemo(() => new RawSigner(keypair, provider), [keypair, provider]);
 
-  const transaction = useMemo(() => {
-    if (typeof params[0] === 'string') {
-      return new Base64DataBuffer(params[0]);
-    }
+  const transactionBlock = useMemo(() => TransactionBlock.from(params[0].transactionBlockSerialized), [params]);
 
-    return params[0];
-  }, [params]);
-
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionSWR({ rawSigner, transaction });
+  const transactionBlockInput = useMemo(
+    () => ({
+      options: {
+        showInput: true,
+        showEffects: true,
+        showEvents: true,
+      },
+      ...params[0],
+      transactionBlockSerialized: undefined,
+      transactionBlock,
+    }),
+    [params, transactionBlock],
+  );
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ rawSigner, transactionBlock });
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
-  const decimals = useMemo(() => coinMetadata?.result?.decimals || 0, [coinMetadata?.result?.decimals]);
+  const decimals = useMemo(
+    () => coinMetadata?.result?.decimals || currentSuiNetwork.decimals || 0,
+    [coinMetadata?.result?.decimals, currentSuiNetwork.decimals],
+  );
 
-  const symbol = useMemo(() => coinMetadata?.result?.symbol || '', [coinMetadata?.result?.symbol]);
+  const symbol = useMemo(() => coinMetadata?.result?.symbol || 'SUI', [coinMetadata?.result?.symbol]);
 
   const expectedBaseFee = useMemo(() => {
-    if (dryRunTransaction?.gasUsed) {
-      const storageCost = dryRunTransaction.gasUsed.storageCost - dryRunTransaction.gasUsed.storageRebate;
+    if (dryRunTransaction?.result?.effects.gasUsed) {
+      const storageCost = minus(dryRunTransaction.result.effects.gasUsed.storageCost, dryRunTransaction.result.effects.gasUsed.storageRebate);
 
-      const cost = dryRunTransaction.gasUsed.computationCost + (storageCost > 0 ? storageCost : 0);
+      const cost = plus(dryRunTransaction.result.effects.gasUsed.computationCost, gt(storageCost, 0) ? storageCost : 0);
 
       return String(cost);
     }
 
     return '0';
-  }, [dryRunTransaction?.gasUsed]);
+  }, [dryRunTransaction?.result?.effects.gasUsed]);
 
   const expectedDisplayFee = useMemo(() => toDisplayDenomAmount(expectedBaseFee, decimals), [decimals, expectedBaseFee]);
 
@@ -119,17 +137,11 @@ export default function Entry({ queue }: EntryProps) {
     setTabValue(newTabValue);
   };
 
-  const baseBudgetFee = useMemo(() => {
-    if (typeof params[0] === 'string') {
-      return 0;
-    }
-
-    return params[0].data.gasBudget || 0;
-  }, [params]);
+  const baseBudgetFee = useMemo(() => transactionBlock.blockData?.gasConfig?.budget || 0, [transactionBlock.blockData?.gasConfig?.budget]);
 
   const displayBudgetFee = useMemo(() => toDisplayDenomAmount(baseBudgetFee, decimals), [baseBudgetFee, decimals]);
 
-  const isDiabled = useMemo(() => !(dryRunTransaction?.status.status === 'success'), [dryRunTransaction?.status.status]);
+  const isDiabled = useMemo(() => !(dryRunTransaction?.result?.effects.status.status === 'success'), [dryRunTransaction?.result?.effects.status.status]);
 
   useEffect(() => {
     if (dryRunTransactionError?.message) {
@@ -138,15 +150,15 @@ export default function Entry({ queue }: EntryProps) {
       setErrorMessage(dryRunTransactionError.message.substring(idx === -1 ? 0 : idx + 1).trim());
     }
 
-    if (dryRunTransaction?.status.error) {
-      setErrorMessage(dryRunTransaction.status.error);
+    if (dryRunTransaction?.result?.effects.status.error) {
+      setErrorMessage(dryRunTransaction?.result.effects.status.error);
     }
 
     if (dryRunTransaction === null) {
       setErrorMessage('Unknown Error');
     }
 
-    if (dryRunTransaction?.status.status === 'success') {
+    if (dryRunTransaction?.result?.effects.status.status === 'success') {
       setErrorMessage('');
     }
   }, [dryRunTransaction, dryRunTransactionError?.message]);
@@ -160,7 +172,7 @@ export default function Entry({ queue }: EntryProps) {
           <Tab label="Data" />
         </Tabs>
         <StyledTabPanel value={tabValue} index={0}>
-          <TxMessage transaction={params[0]} />
+          <TxMessage transactionBlock={transactionBlock} />
           <FeeContainer>
             <FeeInfoContainer>
               <FeeLeftContainer>
@@ -183,33 +195,31 @@ export default function Entry({ queue }: EntryProps) {
                 </FeeRightColumnContainer>
               </FeeRightContainer>
             </FeeInfoContainer>
-            {!(transaction instanceof Base64DataBuffer) && (
-              <FeeInfoContainer>
-                <FeeLeftContainer>
-                  <Typography variant="h5">{t('pages.Popup.Sui.Transaction.entry.maxFee')}</Typography>
-                </FeeLeftContainer>
-                <FeeRightContainer>
-                  <FeeRightColumnContainer>
-                    <FeeRightAmountContainer>
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                        {displayBudgetFee}
-                      </Number>
-                      &nbsp;
-                      <Typography variant="h5n">{symbol}</Typography>
-                    </FeeRightAmountContainer>
-                    <FeeRightValueContainer>
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                        0
-                      </Number>
-                    </FeeRightValueContainer>
-                  </FeeRightColumnContainer>
-                </FeeRightContainer>
-              </FeeInfoContainer>
-            )}
+            <FeeInfoContainer>
+              <FeeLeftContainer>
+                <Typography variant="h5">{t('pages.Popup.Sui.Transaction.entry.maxFee')}</Typography>
+              </FeeLeftContainer>
+              <FeeRightContainer>
+                <FeeRightColumnContainer>
+                  <FeeRightAmountContainer>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                      {displayBudgetFee}
+                    </Number>
+                    &nbsp;
+                    <Typography variant="h5n">{symbol}</Typography>
+                  </FeeRightAmountContainer>
+                  <FeeRightValueContainer>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                      0
+                    </Number>
+                  </FeeRightValueContainer>
+                </FeeRightColumnContainer>
+              </FeeRightContainer>
+            </FeeInfoContainer>
           </FeeContainer>
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
-          <Tx transaction={params[0]} />
+          <Tx transactionBlock={transactionBlock} />
         </StyledTabPanel>
       </ContentContainer>
       <BottomContainer>
@@ -251,46 +261,17 @@ export default function Entry({ queue }: EntryProps) {
               onClick={async () => {
                 try {
                   setIsProgress(true);
-                  const response = await rawSigner.signAndExecuteTransaction(transaction);
+                  const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
 
-                  if ('EffectsCert' in response) {
-                    const result: SuiSignAndExecuteTransactionResponse = {
-                      certificate: response.EffectsCert.certificate,
-                      effects: response.EffectsCert.effects.effects as unknown as SuiSignAndExecuteTransactionResponse['effects'],
-                    };
-
-                    responseToWeb({
-                      response: {
-                        result,
-                      },
-                      message,
-                      messageId,
-                      origin,
-                    });
-                  } else if ('certificate' in response && 'effects' in response) {
-                    const result: SuiSignAndExecuteTransactionResponse = {
-                      certificate: response.certificate as unknown as SuiSignAndExecuteTransactionResponse['certificate'],
-                      effects: response.effects.effects as unknown as SuiSignAndExecuteTransactionResponse['effects'],
-                    };
-
-                    responseToWeb({
-                      response: {
-                        result,
-                      },
-                      message,
-                      messageId,
-                      origin,
-                    });
-                  } else {
-                    responseToWeb({
-                      response: {
-                        result: response,
-                      },
-                      message,
-                      messageId,
-                      origin,
-                    });
-                  }
+                  responseToWeb({
+                    response: {
+                      result: response,
+                    },
+                    message,
+                    messageId,
+                    origin,
+                  });
+                  // }
 
                   if (queue.channel === 'inApp') {
                     enqueueSnackbar('success');

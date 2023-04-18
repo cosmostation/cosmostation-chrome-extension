@@ -2,51 +2,70 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { post } from '~/Popup/utils/axios';
+import { isAxiosError, post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
-import type { GetObjectResponse } from '~/types/sui/rpc';
+import type { GetObjectsResponse } from '~/types/sui/rpc';
 
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
 
+type Options = {
+  showType?: boolean;
+  showContent?: boolean;
+  showBcs?: boolean;
+  showOwner?: boolean;
+  showPreviousTransaction?: boolean;
+  showStorageRebate?: boolean;
+  showDisplay?: boolean;
+};
+
 type FetchParams = {
   url: string;
-  payload: string;
+  objectIds: string[];
+  method: string;
+  options: Options;
 };
 
-type UseGetObjectsOwnedByAddressSWRProps = {
-  objectIds?: string[];
+type UseGetObjectsSWRProps = {
+  objectIds: string[];
   network?: SuiNetwork;
+  options?: Options;
 };
-
-export function useGetObjectsSWR({ network, objectIds }: UseGetObjectsOwnedByAddressSWRProps, config?: SWRConfiguration) {
+export function useGetObjectsSWR({ network, objectIds, options }: UseGetObjectsSWRProps, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
 
-  const payload = objectIds?.map((objectId) => ({
-    jsonrpc: '2.0',
-    method: 'sui_getObject',
-    params: [objectId],
-    id: objectId,
-  }));
-
-  const fetcher = (params: FetchParams) => {
-    if (params.payload && !params.payload.length) {
-      return null;
+  const fetcher = async (params: FetchParams) => {
+    try {
+      return await post<GetObjectsResponse>(params.url, {
+        jsonrpc: '2.0',
+        method: params.method,
+        params: [
+          [...params.objectIds],
+          {
+            ...params.options,
+          },
+        ],
+        id: params.objectIds[0],
+      });
+    } catch (e) {
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
+          return null;
+        }
+      }
+      throw e;
     }
-
-    return post<GetObjectResponse[]>(params.url, payload);
   };
 
-  const { data, error, mutate } = useSWR<GetObjectResponse[] | null, AxiosError>({ url: rpcURL, payload }, fetcher, {
+  const { data, error, mutate } = useSWR<GetObjectsResponse | null, AxiosError>({ url: rpcURL, objectIds, options, method: 'sui_multiGetObjects' }, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 10000,
-    refreshInterval: 11000,
+    revalidateIfStale: false,
+    revalidateOnReconnect: false,
     errorRetryCount: 0,
+    isPaused: () => !objectIds,
     ...config,
   });
 
-  const returnData = Array.isArray(data) ? data : null;
-
-  return { data: returnData, error, mutate };
+  return { data, error, mutate };
 }

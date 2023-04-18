@@ -2,20 +2,17 @@ import type { ComponentProps } from 'react';
 import { forwardRef, useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import { SUI_COIN } from '~/constants/sui';
+import { SUI_COIN, SUI_TOKEN_TEMPORARY_DECIMALS } from '~/constants/sui';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
-import { useGetObjectsOwnedByAddressSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsOwnedByAddressSWR';
-import { useGetObjectsSWR } from '~/Popup/hooks/SWR/sui/useGetObjectsSWR';
-import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { plus, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { getCoinType, isExists } from '~/Popup/utils/sui';
 import type { SuiChain } from '~/types/chain';
+import type { GetCoinBalance } from '~/types/sui/rpc';
 
 import {
   CoinButton,
@@ -31,41 +28,28 @@ import Check16Icon from '~/images/icons/Check16.svg';
 
 type CoinItemProps = ComponentProps<typeof CoinButton> & {
   isActive?: boolean;
-  coinType: string;
+  coin: GetCoinBalance;
   chain: SuiChain;
 };
 
-const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coinType, chain, ...remainder }, ref) => {
+const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin, chain, ...remainder }, ref) => {
   const { t } = useTranslation();
+  const { currentSuiNetwork } = useCurrentSuiNetwork();
 
-  const { currentAccount } = useCurrentAccount();
+  const splitedCoinType = coin.coinType.split('::');
 
-  const accounts = useAccounts(true);
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: coin.coinType }, { suspense: true });
 
-  const splitedCoinType = coinType.split('::');
-
-  const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
-
-  const { data: objectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address }, { suspense: true });
-
-  const { data: objects } = useGetObjectsSWR({ objectIds: objectsOwnedByAddress?.result?.map((object) => object.objectId) }, { suspense: true });
-
-  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType }, { suspense: true });
-
-  const decimals = useMemo(() => coinMetadata?.result?.decimals || 0, [coinMetadata?.result?.decimals]);
-
-  const suiCoinObjects = useMemo(
-    () => objects?.filter(isExists).filter((object) => getCoinType(object.result?.details.data.type || '') === coinType) || [],
-    [coinType, objects],
+  const decimals = useMemo(
+    () => (coinMetadata?.result?.decimals || coin.coinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
+    [coin.coinType, coinMetadata?.result?.decimals, currentSuiNetwork.decimals],
   );
 
-  const coinObjects = useMemo(() => suiCoinObjects.filter((object) => getCoinType(object.result?.details.data.type) === coinType), [coinType, suiCoinObjects]);
-
-  const baseAmount = useMemo(() => coinObjects.reduce((ac, cu) => plus(ac, cu.result?.details.data.fields.balance || '0'), '0'), [coinObjects]);
+  const baseAmount = useMemo(() => coin.totalBalance || '0', [coin.totalBalance]);
 
   const imageURL = useMemo(
-    () => (coinMetadata?.result?.iconUrl || coinType === SUI_COIN ? chain.imageURL : undefined),
-    [chain.imageURL, coinMetadata?.result?.iconUrl, coinType],
+    () => (coinMetadata?.result?.iconUrl || coin.coinType === SUI_COIN ? chain.imageURL : undefined),
+    [chain.imageURL, coin.coinType, coinMetadata?.result?.iconUrl],
   );
 
   const displayDenom = useMemo(() => coinMetadata?.result?.symbol || splitedCoinType[2] || '', [coinMetadata?.result?.symbol, splitedCoinType]);
@@ -83,7 +67,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coinT
             <Typography variant="h5">{displayDenom}</Typography>
           </CoinLeftDisplayDenomContainer>
           <CoinLeftAvailableContainer>
-            <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Ethereum.components.CoinPopover.components.CoinItem.index.available')} :</Typography>{' '}
+            <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Sui.components.CoinPopover.components.CoinItem.index.available')} :</Typography>{' '}
             <Tooltip title={displayAmount} arrow placement="top">
               <span>
                 <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={getDisplayMaxDecimals(decimals)}>
