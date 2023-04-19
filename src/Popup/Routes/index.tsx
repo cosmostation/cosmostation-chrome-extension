@@ -63,6 +63,7 @@ import SettingConnectedSites from '~/Popup/pages/Setting/ConnectedSites';
 import SettingLedger from '~/Popup/pages/Setting/Ledger';
 import SettingProvider from '~/Popup/pages/Setting/Provider';
 import Wallet from '~/Popup/pages/Wallet';
+import WalletOsmosisSwap from '~/Popup/pages/Wallet/OsmosisSwap';
 import WalletReceive from '~/Popup/pages/Wallet/Receive';
 import WalletSend from '~/Popup/pages/Wallet/Send';
 import WalletSwap from '~/Popup/pages/Wallet/Swap';
@@ -98,6 +99,7 @@ export default function Routes() {
           <Route path={PATH.WALLET__SWAP} element={<WalletSwap />}>
             <Route path=":id" element={<WalletSwap />} />
           </Route>
+          <Route path={PATH.WALLET__OSMOSIS_SWAP} element={<WalletOsmosisSwap />} />
           <Route path={PATH.WALLET__RECEIVE} element={<WalletReceive />} />
 
           <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />

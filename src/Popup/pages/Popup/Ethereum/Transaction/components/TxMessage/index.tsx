@@ -1,4 +1,3 @@
-import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { DetermineTxType } from '~/Popup/utils/ethereum';
 import type { EthereumTx } from '~/types/message/ethereum';
 
@@ -13,17 +12,15 @@ import TransferFrom from './messages/TransferFrom';
 export type TxMessageProps = { determineTxType?: DetermineTxType; tx: EthereumTx };
 
 export default function TxMessage({ determineTxType, tx }: TxMessageProps) {
-  const { currentQueue } = useCurrentQueue();
-
-  if (determineTxType?.txDescription && determineTxType?.type === 'approve') {
+  if (determineTxType?.txDescription && determineTxType.contractKind === 'erc20' && determineTxType?.type === 'approve') {
     return <Approve determineTxType={determineTxType} tx={tx} />;
   }
 
-  if (determineTxType?.txDescription && determineTxType?.type === 'transfer') {
+  if (determineTxType?.txDescription && determineTxType.contractKind === 'erc20' && determineTxType?.type === 'transfer') {
     return <Transfer determineTxType={determineTxType} tx={tx} />;
   }
 
-  if (determineTxType?.txDescription && determineTxType?.type === 'transferfrom') {
+  if (determineTxType?.txDescription && determineTxType.contractKind === 'erc20' && determineTxType?.type === 'transferfrom') {
     return <TransferFrom determineTxType={determineTxType} tx={tx} />;
   }
 
@@ -35,7 +32,11 @@ export default function TxMessage({ determineTxType, tx }: TxMessageProps) {
     return <Deploy determineTxType={determineTxType} tx={tx} />;
   }
 
-  if (currentQueue?.channel === 'inApp' && (determineTxType?.type === 'swap' || determineTxType?.type === 'unoswap')) {
+  if (
+    determineTxType?.txDescription &&
+    determineTxType.contractKind === 'oneInch' &&
+    (determineTxType?.type === 'swap' || determineTxType?.type === 'unoswap')
+  ) {
     return <OneInchSwap determineTxType={determineTxType} tx={tx} />;
   }
 

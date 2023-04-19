@@ -1421,11 +1421,15 @@ export default function Entry() {
                     )
                   }
                   onChange={(e) => {
-                    if (!isDecimal(e.currentTarget.value, 6 || 0) && e.currentTarget.value) {
+                    if (!isDecimal(e.currentTarget.value, currentFromToken?.decimals || 0) && e.currentTarget.value) {
                       return;
                     }
 
-                    setInputDisplayAmount(e.currentTarget.value);
+                    if (gt(e.currentTarget.value || '0', currentFromTokenDisplayBalance)) {
+                      setInputDisplayAmount(currentFromTokenDisplayBalance);
+                    } else {
+                      setInputDisplayAmount(e.currentTarget.value);
+                    }
                   }}
                   value={inputDisplayAmount}
                   placeholder="0"

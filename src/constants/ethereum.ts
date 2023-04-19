@@ -16,6 +16,11 @@ export const ETHEREUM_TX_TYPE = {
   PERSONAL_SIGN: 'personalSign',
 } as const;
 
+export const ETHEREUM_CONTRACT_KIND = {
+  ERC20: 'erc20',
+  ONEINCH: 'oneInch',
+} as const;
+
 export const FEE_TYPE = {
   BASIC: 'BASIC',
   EIP_1559: 'EIP-1559',

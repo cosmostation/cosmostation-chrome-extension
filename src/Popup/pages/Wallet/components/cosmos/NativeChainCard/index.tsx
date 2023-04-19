@@ -534,8 +534,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
         {chain.id === OSMOSIS.id && (
-          <IconButtonContainer sx={{ display: 'none' }}>
-            <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/swap')}>
+          <IconButtonContainer>
+            <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/osmosisSwap')}>
               <SwapIcon />
             </UnitIconButton>
             <UnitIconButton disabled sx={{ display: 'none' }}>
@@ -709,7 +709,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
         {chain.id === OSMOSIS.id && (
-          <IconButtonContainer sx={{ display: 'none' }}>
+          <IconButtonContainer>
             <UnitIconButton disabled>
               <SwapIcon />
             </UnitIconButton>
@@ -823,7 +823,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
         {chain.id === OSMOSIS.id && (
-          <IconButtonContainer sx={{ display: 'none' }}>
+          <IconButtonContainer>
             <UnitIconButton disabled>
               <SwapIcon />
             </UnitIconButton>
