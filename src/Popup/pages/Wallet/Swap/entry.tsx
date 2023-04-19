@@ -1128,7 +1128,7 @@ export default function Entry() {
 
     if (currentSwapAPI === 'squid') {
       if (gt(estimatedToTokenDisplayAmountPrice, '100000')) {
-        return t('pages.Wallet.Swap.entry.invalidTxSize');
+        return t('pages.Wallet.Swap.entry.oversizedSwap');
       }
       if (gt(priceImpactPercent, '3')) {
         return t('pages.Wallet.Swap.entry.invalidPriceImpact');
@@ -1631,7 +1631,7 @@ export default function Entry() {
               {(currentSwapAPI === 'osmo' || currentSwapAPI === '1inch') && (
                 <SwapInfoBodyTextContainer>
                   <SwapInfoBodyLeftContainer>
-                    <Typography variant="h6">{t('pages.Wallet.Swap.entry.txCost')}</Typography>
+                    <Typography variant="h6">{t('pages.Wallet.Swap.entry.gasFee')}</Typography>
                   </SwapInfoBodyLeftContainer>
                   <SwapInfoBodyRightContainer>
                     {isLoadingSwapData ? (
