@@ -110,7 +110,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
     () => currentChainAssets.data.filter((item) => convertAssetNameToCosmos(item.prevChain || '')),
     [currentChainAssets.data],
   );
-
   const coinAll = useMemo(
     () => [
       {

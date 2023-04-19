@@ -59,11 +59,14 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
     [nativeTokenBalance?.data?.result, tokenBalance.data, tokenInfo.address, tokenInfo.balance],
   );
 
-  const coinDisplayDenomAmount = toDisplayDenomAmount(amount, gt(amount, '0') ? tokenInfo.decimals : 0);
+  const coinDisplayDenomAmount = useMemo(() => toDisplayDenomAmount(amount, gt(amount, '0') ? tokenInfo.decimals : 0), [amount, tokenInfo.decimals]);
 
-  const coinPrice = (tokenInfo.coinGeckoId && coinGeckoPrice.data?.[tokenInfo.coinGeckoId]?.[chromeStorage.currency]) || 0;
+  const coinPrice = useMemo(
+    () => (tokenInfo.coinGeckoId && coinGeckoPrice.data?.[tokenInfo.coinGeckoId]?.[chromeStorage.currency]) || 0,
+    [chromeStorage.currency, coinGeckoPrice.data, tokenInfo.coinGeckoId],
+  );
 
-  const coinAmountPrice = times(coinDisplayDenomAmount, coinPrice);
+  const coinAmountPrice = useMemo(() => times(coinDisplayDenomAmount, coinPrice), [coinDisplayDenomAmount, coinPrice]);
 
   return (
     <TokenButton

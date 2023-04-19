@@ -26,7 +26,7 @@ export function useOsmoSwapMath(osmoSwapMathProps?: useOsmoSwapMathProps) {
     [poolsAssetData.data],
   );
 
-  const uniquePoolDenomList = poolDenomList.filter((denom, idx, arr) => arr.findIndex((item) => item === denom) === idx);
+  const uniquePoolDenomList = useMemo(() => poolDenomList.filter((denom, idx, arr) => arr.findIndex((item) => item === denom) === idx), [poolDenomList]);
 
   const currentPool = useMemo(
     () =>
