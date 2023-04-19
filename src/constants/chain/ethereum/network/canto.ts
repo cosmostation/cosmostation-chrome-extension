@@ -9,6 +9,6 @@ export const CANTO: EthereumNetwork = {
   imageURL: cantoImg,
   displayDenom: 'CANTO',
   decimals: 18,
-  explorerURL: 'https://evm.explorer.canto.io',
+  explorerURL: 'https://mintscan.io/canto',
   coinGeckoId: 'canto',
 };

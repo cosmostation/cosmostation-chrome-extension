@@ -9,6 +9,6 @@ export const KAVA: EthereumNetwork = {
   imageURL: COSMOS_KAVA.imageURL,
   displayDenom: COSMOS_KAVA.displayDenom,
   decimals: 18,
-  explorerURL: 'https://explorer.kava.io',
+  explorerURL: 'https://mintscan.io/kava',
   coinGeckoId: COSMOS_KAVA.coinGeckoId,
 };
