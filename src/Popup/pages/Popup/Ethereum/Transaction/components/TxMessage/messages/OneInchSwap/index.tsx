@@ -177,18 +177,6 @@ export default function OneInchSwap({ tx, determineTxType }: OneInchSwapProps) {
               <Typography variant="h5">{shorterAddress(to, 32)}</Typography>
             </ValueContainer>
           </ContentItemContainer>
-
-          {!args && (
-            <ContentItemContainer sx={{ marginTop: '0.8rem' }}>
-              <LabelContainer>
-                <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.Interact.index.data')}</Typography>
-                <CopyButton text={data} />
-              </LabelContainer>
-              <ValueContainer>
-                <Typography variant="h5">{data}</Typography>
-              </ValueContainer>
-            </ContentItemContainer>
-          )}
         </SwapTxMessageContentContainer>
       </SwapTxMessageContainer>
     );

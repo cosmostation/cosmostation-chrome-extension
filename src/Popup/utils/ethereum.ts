@@ -125,6 +125,27 @@ export async function determineTxType(txParams: EthereumTx): Promise<DetermineTx
 
   let txDescription;
 
+  let result: EthereumTxType = ETHEREUM_TX_TYPE.SIMPLE_SEND;
+
+  let contractCode: string | null = null;
+
+  if (isEqualsIgnoringCase(to, ONEINCH_CONTRACT_ADDRESS) && to) {
+    const { contractCode: resultCode, isContractAddress } = await readAddressAsContract(to);
+
+    contractCode = resultCode;
+
+    txDescription = oneInchParse(txParams);
+    if (isContractAddress) {
+      if (txDescription?.name === ETHEREUM_TX_TYPE.SWAP) {
+        result = ETHEREUM_TX_TYPE.SWAP;
+      }
+      if (txDescription?.name === ETHEREUM_TX_TYPE.UNOSWAP) {
+        result = ETHEREUM_TX_TYPE.UNOSWAP;
+      }
+    }
+    return { type: result, getCodeResponse: contractCode, txDescription };
+  }
+
   txDescription = erc20Parse(txParams);
   const name = txDescription?.name;
 
@@ -132,15 +153,11 @@ export async function determineTxType(txParams: EthereumTx): Promise<DetermineTx
     (methodName) => isEqualsIgnoringCase(methodName, name),
   );
 
-  let result: EthereumTxType = ETHEREUM_TX_TYPE.SIMPLE_SEND;
-
   if (data && tokenMethodName) {
     result = tokenMethodName;
   } else if (data && !to) {
     result = ETHEREUM_TX_TYPE.DEPLOY_CONTRACT;
   }
-
-  let contractCode: string | null = null;
 
   if (result === ETHEREUM_TX_TYPE.SIMPLE_SEND && to) {
     const { contractCode: resultCode, isContractAddress } = await readAddressAsContract(to);
@@ -149,15 +166,6 @@ export async function determineTxType(txParams: EthereumTx): Promise<DetermineTx
 
     if (isContractAddress) {
       result = ETHEREUM_TX_TYPE.CONTRACT_INTERACTION;
-      if (to === ONEINCH_CONTRACT_ADDRESS) {
-        txDescription = oneInchParse(txParams);
-        if (txDescription?.name === ETHEREUM_TX_TYPE.SWAP) {
-          result = ETHEREUM_TX_TYPE.SWAP;
-        }
-        if (txDescription?.name === ETHEREUM_TX_TYPE.UNOSWAP) {
-          result = ETHEREUM_TX_TYPE.UNOSWAP;
-        }
-      }
     }
   }
 
