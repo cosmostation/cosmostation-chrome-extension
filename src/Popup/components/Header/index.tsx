@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
+import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
+import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { PATH } from '~/constants/route';
 import IconButton from '~/Popup/components/common/IconButton';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -38,7 +40,7 @@ export default function Header({ isShowMenuButton = true, isShowPageButton = tru
 
   const buttonPath = ([PATH.DASHBOARD, PATH.WALLET] as string[]).includes(pathname) ? (rootPath === PATH.DASHBOARD ? PATH.WALLET : PATH.DASHBOARD) : rootPath;
 
-  const swapChainId = currentChain.line === 'COSMOS' ? currentChain.id : currentChain.line === 'ETHEREUM' ? currentEthereumNetwork.id : '';
+  const swapChainId = currentChain.line === 'COSMOS' ? OSMOSIS.id : currentChain.line === 'ETHEREUM' ? currentEthereumNetwork.id : ETHEREUM.id;
   return (
     <Container>
       <LeftContentContainer>
