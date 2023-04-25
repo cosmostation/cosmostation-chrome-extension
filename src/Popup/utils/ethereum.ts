@@ -164,7 +164,6 @@ export async function determineTxType(txParams: EthereumTx): Promise<DetermineTx
     contractKind = ETHEREUM_CONTRACT_KIND.ERC20;
   } else if (data && !to) {
     result = ETHEREUM_TX_TYPE.DEPLOY_CONTRACT;
-    contractKind = ETHEREUM_CONTRACT_KIND.ERC20;
   }
 
   if (result === ETHEREUM_TX_TYPE.SIMPLE_SEND && to) {
