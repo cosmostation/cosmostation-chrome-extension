@@ -1177,6 +1177,14 @@
           "SwapCoinContainer": {
             "components": {
               "ChainListBottomSheet": {
+                "components": {
+                  "ChainItem": {
+                    "index": {
+                      "unAvailable1": "Swaps to",
+                      "unAvailable2": "coming soon"
+                    }
+                  }
+                },
                 "index": {
                   "chainBottomListTitle": "Select a chain",
                   "searchChainPlaceholder": "Search chains"

@@ -5,7 +5,7 @@ export type IntegratedSwapEVMChain = EthereumNetwork & { line: 'ETHEREUM'; baseC
 
 export type IntegratedSwapCosmosChain = CosmosChain & { baseChainUUID: string; networkName: string };
 
-export type IntegratedSwapChain = IntegratedSwapEVMChain | IntegratedSwapCosmosChain;
+export type IntegratedSwapChain = (IntegratedSwapEVMChain | IntegratedSwapCosmosChain) & { isUnavailable?: boolean };
 
 export type IntegratedSwapCosmosToken = AssetV3 & {
   address: string;

@@ -249,23 +249,59 @@ export default function Entry() {
       networkName: item.chainName,
     }));
 
+    const integratedEVMChains = [...squidEVMChains, ...oneInchEVMChains].filter(
+      (chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx,
+    );
+
     const integratedCosmosChains = [...squidCosmosChains, ...osmoSwapChain].filter(
       (chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx,
     );
 
     if (currentFromChain) {
+      const originChains = [...integratedEVMChains, ...integratedCosmosChains];
       if (
         (!squidEVMChains.find((item) => item.id === currentFromChain.id) && oneInchEVMChains.find((item) => item.id === currentFromChain.id)) ||
         currentFromChain.id === osmosisChain.id
       ) {
-        return [currentFromChain];
-      }
+        const availableChains = [currentFromChain];
 
-      if (squidEVMChains.find((item) => item.id === currentFromChain.id) && !oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
-        return [...squidEVMChains.filter((item) => item.id !== currentFromChain.id), ...integratedCosmosChains];
+        return [
+          ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
+          ...originChains
+            .filter((item) => !availableChains.find((chain) => chain.id === item.id))
+            .map((item) => ({
+              ...item,
+              isUnavailable: true,
+            })),
+        ];
       }
+      if (squidEVMChains.find((item) => item.id === currentFromChain.id) && !oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
+        const availableChains = [...squidEVMChains.filter((item) => item.id !== currentFromChain.id), ...integratedCosmosChains];
+
+        return [
+          ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
+          ...originChains
+            .filter((item) => !availableChains.find((chain) => chain.id === item.id))
+            .map((item) => ({
+              ...item,
+              isUnavailable: true,
+            })),
+        ];
+      }
+      const availableChains = [...squidEVMChains, ...integratedCosmosChains];
+
+      return [
+        ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
+        ...originChains
+          .filter((item) => !availableChains.find((chain) => chain.id === item.id))
+          .map((item) => ({
+            ...item,
+            isUnavailable: true,
+          })),
+      ];
     }
-    return [...squidEVMChains, ...integratedCosmosChains];
+
+    return [];
   }, [
     currentFromChain,
     ethereumChain.id,
@@ -1234,7 +1270,7 @@ export default function Entry() {
       setCurrentToChain(filteredToChainList.find((item) => item.id === currentFromChain.id) || filteredToChainList[0]);
     }
 
-    if (currentToChain && !filteredToChainList.find((item) => item.id === currentToChain.id)) {
+    if (currentToChain && filteredToChainList.filter((item) => item.isUnavailable).find((item) => item.id === currentToChain.id)) {
       setCurrentToChain(filteredToChainList[0]);
     }
   }, [filteredFromChains, filteredToChainList, currentSwapAPI, currentFromChain, currentToChain]);

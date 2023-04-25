@@ -2,6 +2,7 @@ import { styled } from '@mui/material/styles';
 
 type ChainButtonProps = {
   'data-is-active'?: boolean;
+  'data-is-unavailable'?: boolean;
 };
 
 export const ChainButton = styled('button')<ChainButtonProps>(({ theme, ...props }) => ({
@@ -20,9 +21,15 @@ export const ChainButton = styled('button')<ChainButtonProps>(({ theme, ...props
   alignItems: 'center',
 
   cursor: 'pointer',
-
+  '&:disabled': {
+    opacity: 0.5,
+    color: theme.colors.text02,
+  },
   '&:hover': {
     backgroundColor: theme.colors.base03,
+    '&:disabled': {
+      backgroundColor: 'transparent',
+    },
   },
 }));
 
@@ -39,9 +46,18 @@ export const ChainButtonLeftImageContainer = styled('div')({
 });
 
 export const ChainButtonLeftTitleContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+}));
+
+export const ChainButtonLeftColumnContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+
+  alignItems: 'flex-start',
+
   marginLeft: '0.8rem',
 
-  color: theme.colors.text01,
+  color: theme.colors.text02,
 }));
 
 export const ChainButtonRightIconContainer = styled('div')(({ theme }) => ({

@@ -1177,6 +1177,14 @@
           "SwapCoinContainer": {
             "components": {
               "ChainListBottomSheet": {
+                "components": {
+                  "ChainItem": {
+                    "index": {
+                      "unAvailable1": "곧 지원될 예정입니다",
+                      "unAvailable2": ""
+                    }
+                  }
+                },
                 "index": {
                   "chainBottomListTitle": "체인을 선택하세요",
                   "searchChainPlaceholder": "체인 검색"
