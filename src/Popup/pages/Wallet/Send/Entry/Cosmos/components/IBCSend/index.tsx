@@ -4,7 +4,6 @@ import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS } from '~/constants/chain';
-import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
@@ -362,7 +361,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           memo: currentMemo,
           msgs: [
             {
-              type: chain.chainName === SHENTU.chainName ? 'bank/MsgTransfer' : 'cosmos-sdk/MsgTransfer',
+              type: 'cosmos-sdk/MsgTransfer',
               value: {
                 receiver: currentDepositAddress,
                 sender: senderAddress,
@@ -426,7 +425,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
     account.data?.value.account_number,
     account.data?.value.sequence,
     chain.chainId,
-    chain.chainName,
     chain.type,
     currentCoinOrToken,
     currentDisplayAmount,
