@@ -607,7 +607,7 @@ export default function Entry({ queue }: EntryProps) {
                         if (queue.channel === 'inApp') {
                           enqueueSnackbar('success');
                         }
-                        if (queue.channel === 'inApp' && txType.data?.type === 'approve') {
+                        if (queue.channel === 'inApp' && txType.data?.contractKind === 'erc20' && txType.data?.type === 'approve') {
                           await deQueue(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path);
                         } else {
                           await deQueue();
