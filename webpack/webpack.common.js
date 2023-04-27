@@ -1,9 +1,6 @@
 const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
 const webpack = require('webpack');
-const Dotenv = require('dotenv-webpack');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-
 const srcDir = path.join(__dirname, '..', 'src');
 
 module.exports = {
@@ -64,10 +61,6 @@ module.exports = {
     },
   },
   plugins: [
-    new CopyPlugin({
-      patterns: [{ from: '.', to: '../', context: 'public' }],
-      options: {},
-    }),
     new webpack.ProvidePlugin({
       process: 'process/browser',
       Buffer: ['buffer', 'Buffer'],
