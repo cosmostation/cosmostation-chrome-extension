@@ -135,7 +135,7 @@ export function isAminoSend(msg: Msg): msg is Msg<MsgSend> {
 }
 
 export function isAminoIBCSend(msg: Msg): msg is Msg<MsgTransfer> {
-  return msg.type === 'cosmos-sdk/MsgTransfer' || msg.type === 'bank/MsgTransfer';
+  return msg.type === 'cosmos-sdk/MsgTransfer';
 }
 
 export function isAminoReward(msg: Msg): msg is Msg<MsgReward> {
