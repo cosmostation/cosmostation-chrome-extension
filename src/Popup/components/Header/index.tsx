@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 
 import { PATH } from '~/constants/route';
 import IconButton from '~/Popup/components/common/IconButton';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 
 import Drawer from './Drawer';
@@ -22,11 +22,11 @@ type HeaderProps = {
 
 export default function Header({ isShowMenuButton = true, isShowPageButton = true }: HeaderProps) {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { pathname } = useLocation();
   const { navigate } = useNavigate();
 
-  const { rootPath } = chromeStorage;
+  const { rootPath } = extensionStorage;
 
   const buttonPath = ([PATH.DASHBOARD, PATH.WALLET] as string[]).includes(pathname) ? (rootPath === PATH.DASHBOARD ? PATH.WALLET : PATH.DASHBOARD) : rootPath;
 

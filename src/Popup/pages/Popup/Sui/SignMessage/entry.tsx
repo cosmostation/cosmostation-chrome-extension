@@ -15,7 +15,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Aptos/components/Header';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { AptosSignMessage, AptosSignMessageResponse } from '~/types/message/aptos';
 
 import {

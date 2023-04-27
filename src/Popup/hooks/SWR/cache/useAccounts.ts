@@ -1,10 +1,10 @@
 import useSWR from 'swr';
 
 import { CHAINS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import type { AccountType } from '~/types/chromeStorage';
+import type { AccountType } from '~/types/extensionStorage';
 
 type AccountList = {
   id: string;
@@ -13,10 +13,10 @@ type AccountList = {
 };
 
 export function useAccounts(suspense?: boolean) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentPassword } = useCurrentPassword();
 
-  const { accounts, additionalChains } = chromeStorage;
+  const { accounts, additionalChains } = extensionStorage;
 
   const fetcher = () =>
     new Promise<AccountList[]>((res) => {

@@ -3,7 +3,7 @@ import type { SuiSignAndExecuteTransactionBlockInput } from '@mysten/wallet-stan
 
 import type { SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 
-import type { SuiPermissionType } from '../chromeStorage';
+import type { SuiPermissionType } from '../extensionStorage';
 
 export type SuiPopupMethodType = ValueOf<typeof SUI_POPUP_METHOD_TYPE>;
 export type SuiNoPopupMethodType = ValueOf<typeof SUI_NO_POPUP_METHOD_TYPE>;

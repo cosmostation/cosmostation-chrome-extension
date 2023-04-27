@@ -101,7 +101,8 @@
     "uuid": "^8.3.2",
     "web3": "^1.7.3",
     "web3-eth-contract": "^1.7.3",
-    "web3-utils": "^1.7.3"
+    "web3-utils": "^1.7.3",
+    "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {
     "@keplr-wallet/types": "^0.10.20",
@@ -119,6 +120,7 @@
     "@types/secp256k1": "^4.0.3",
     "@types/tiny-secp256k1": "^2.0.1",
     "@types/uuid": "^8.3.3",
+    "@types/webextension-polyfill": "^0.10.0",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
     "assert": "^2.0.0",

@@ -1,7 +1,7 @@
 import { Ed25519PublicKey } from '@mysten/sui.js';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
-import { chromeStorage } from '~/Popup/utils/chromeStorage';
+import { extensionStorage } from '~/Popup/utils/extensionStorage';
 import type { GetObject, GetObjectExists, Result } from '~/types/sui/rpc';
 
 import { SuiRPCError } from './error';
@@ -32,7 +32,7 @@ export function getCoinType(type?: string) {
 }
 
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
-  const { currentSuiNetwork } = await chromeStorage();
+  const { currentSuiNetwork } = await extensionStorage();
 
   const rpcURL = url ?? currentSuiNetwork.rpcURL;
 

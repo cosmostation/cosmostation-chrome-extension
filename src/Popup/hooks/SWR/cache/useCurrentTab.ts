@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 
-import { getCurrentTab } from '~/Popup/utils/chromeTabs';
+import { getCurrentTab } from '~/Popup/utils/extensionTabs';
 
 export function useCurrentTab(suspense?: boolean) {
   const fetcher = () => getCurrentTab();

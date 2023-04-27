@@ -7,12 +7,12 @@ import { joiResolver } from '@hookform/resolvers/joi';
 
 import { CHAINS } from '~/constants/chain';
 import Button from '~/Popup/components/common/Button';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { aptosAddressRegex, ethereumAddressRegex, getCosmosAddressRegex } from '~/Popup/utils/regex';
-import type { AddressInfo } from '~/types/chromeStorage';
+import type { AddressInfo } from '~/types/extensionStorage';
 
 import ChainButton from './components/ChainButton';
 import { ButtonContainer, Container, InputContainer, MarginTop8Container, StyledChainPopover, StyledInput, StyledTextarea } from './styled';
@@ -29,10 +29,10 @@ export default function Entry() {
 
   const [isCustom, setIsCustom] = useState(!!currentAdditionalChains.find((item) => item.id === chain.id));
 
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { addressBook } = chromeStorage;
+  const { addressBook } = extensionStorage;
 
   const regex = (() => {
     if (chain.line === 'COSMOS') {
@@ -73,7 +73,7 @@ export default function Entry() {
     const newAddressInfo: AddressInfo = { id: uuidv4(), chainId: chain.id, ...data };
 
     const newAddressBook = [...addressBook, newAddressInfo];
-    await setChromeStorage('addressBook', newAddressBook);
+    await setExtensionStorage('addressBook', newAddressBook);
     enqueueSnackbar('success');
     reset();
   };

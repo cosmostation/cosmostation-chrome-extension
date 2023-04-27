@@ -1,6 +1,6 @@
 import i18n, { t } from 'i18next';
 
-import { getStorage } from '~/Popup/utils/chromeStorage';
+import { getStorage } from '~/Popup/utils/extensionStorage';
 
 export async function initI18n() {
   const language = await getStorage('language');

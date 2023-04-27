@@ -24,12 +24,12 @@ import { useNetVersionSWR } from '~/Popup/hooks/SWR/ethereum/useNetVersionSWR';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useTransactionCountSWR } from '~/Popup/hooks/SWR/ethereum/useTransactionCountSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useInterval } from '~/Popup/hooks/useInterval';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
@@ -40,8 +40,8 @@ import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
-import type { Queue } from '~/types/chromeStorage';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
+import type { Queue } from '~/types/extensionStorage';
 import type { EthSendTransaction, EthSendTransactionResponse, EthSignTransaction, EthSignTransactionResponse } from '~/types/message/ethereum';
 
 import FeeEIP1559Dialog from './components/FeeEIP1559Dialog';
@@ -83,7 +83,7 @@ type EntryProps = {
 
 export default function Entry({ queue }: EntryProps) {
   const chain = ETHEREUM;
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const { setLoadingLedgerSigning } = useLoading();
@@ -115,7 +115,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
   const { deQueue } = useCurrentQueue();
 
   const { currentAccount } = useCurrentAccount();

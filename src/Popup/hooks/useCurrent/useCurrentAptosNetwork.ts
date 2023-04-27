@@ -1,15 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { APTOS_NETWORKS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { emitToWeb } from '~/Popup/utils/message';
 // import { emitToWeb } from '~/Popup/utils/message';
 import type { AptosNetwork } from '~/types/chain';
 
 export function useCurrentAptosNetwork() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
-  const { selectedAptosNetworkId, additionalAptosNetworks, allowedOrigins } = chromeStorage;
+  const { selectedAptosNetworkId, additionalAptosNetworks, allowedOrigins } = extensionStorage;
 
   const allNetworks = [...APTOS_NETWORKS, ...additionalAptosNetworks];
 
@@ -20,7 +20,7 @@ export function useCurrentAptosNetwork() {
   const setCurrentAptosNetwork = async (network: AptosNetwork) => {
     const newSelectedAptosNetworkId = network.id;
 
-    await setChromeStorage('selectedAptosNetworkId', newSelectedAptosNetworkId);
+    await setExtensionStorage('selectedAptosNetworkId', newSelectedAptosNetworkId);
 
     const origins = Array.from(new Set(allowedOrigins.map((item) => item.origin)));
 
@@ -34,7 +34,7 @@ export function useCurrentAptosNetwork() {
 
     const newAdditionalAptosNetworks = additionalAptosNetworks.filter((item) => item.id !== network.id);
 
-    await setChromeStorage('additionalAptosNetworks', newAdditionalAptosNetworks);
+    await setExtensionStorage('additionalAptosNetworks', newAdditionalAptosNetworks);
   };
 
   const addAptosNetwork = async (network: Omit<AptosNetwork, 'id'>) => {
@@ -49,7 +49,7 @@ export function useCurrentAptosNetwork() {
       { ...network, id: beforeNetwork?.id || uuidv4() },
     ];
 
-    await setChromeStorage('additionalAptosNetworks', newAdditionalAptosNetworks);
+    await setExtensionStorage('additionalAptosNetworks', newAdditionalAptosNetworks);
   };
 
   return {

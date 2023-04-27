@@ -22,16 +22,16 @@ import { useRewardSWR } from '~/Popup/hooks/SWR/cosmos/useRewardSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useValidatorsSWR } from '~/Popup/hooks/SWR/useValidatorsSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { openWindow } from '~/Popup/utils/extensionWindows';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
@@ -87,7 +87,7 @@ const EXPANDED_KEY = 'wallet-cosmos-expanded';
 export default function NativeChainCard({ chain, isCustom = false }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const reward = useRewardSWR(chain);
   const validators = useValidatorsSWR();
 
@@ -112,7 +112,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const { decimals, coinGeckoId, explorerURL } = chain;
 
-  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[chromeStorage.currency]) || 0, [chromeStorage.currency, coinGeckoId, data]);
+  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [extensionStorage.currency, coinGeckoId, data]);
 
   const displayAmount = useMemo(() => toDisplayDenomAmount(totalAmount, decimals), [decimals, totalAmount]);
 
@@ -330,7 +330,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>
-        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={chromeStorage.currency}>
+        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
           {value}
         </Number>
       </ThirdLineContainer>

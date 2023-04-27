@@ -1,20 +1,20 @@
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { closeWindow } from '~/Popup/utils/chromeWindows';
-import type { Queue } from '~/types/chromeStorage';
+import { closeWindow } from '~/Popup/utils/extensionWindows';
+import type { Queue } from '~/types/extensionStorage';
 
 export function useCurrentQueue() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { navigate } = useNavigate();
 
-  const { queues } = chromeStorage;
+  const { queues } = extensionStorage;
 
   const currentQueue = queues.length > 0 ? queues[0] : null;
 
   const deQueue = async () => {
     const newQueues = queues.slice(1);
 
-    await setChromeStorage('queues', newQueues);
+    await setExtensionStorage('queues', newQueues);
 
     if (newQueues.length === 0) {
       await closeWindow(currentQueue?.windowId);
@@ -25,7 +25,7 @@ export function useCurrentQueue() {
   };
 
   const enQueue = async (queue: Queue) => {
-    await setChromeStorage('queues', [...queues, queue]);
+    await setExtensionStorage('queues', [...queues, queue]);
   };
   return {
     currentQueue,

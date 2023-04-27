@@ -4,8 +4,8 @@ import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { shorterAddress, toHex } from '~/Popup/utils/string';
@@ -29,12 +29,12 @@ import type { TxMessageProps } from '../../index';
 type SendProps = TxMessageProps;
 
 export default function Send({ tx }: SendProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { t } = useTranslation();
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
   const { displayDenom, coinGeckoId } = currentEthereumNetwork;
   const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
 

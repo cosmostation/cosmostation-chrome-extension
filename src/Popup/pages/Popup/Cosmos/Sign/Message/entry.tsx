@@ -22,7 +22,7 @@ import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { CosSignMessage, CosSignMessageResponse } from '~/types/message/cosmos';
 
 import TxMessage from './components/TxMessage';

@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material';
 
 import { shorterAddress } from '~/Popup/utils/string';
-import type { AccountType } from '~/types/chromeStorage';
+import type { AccountType } from '~/types/extensionStorage';
 
 import {
   ConnectBadge,

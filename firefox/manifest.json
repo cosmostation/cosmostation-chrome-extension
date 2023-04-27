@@ -6,12 +6,12 @@
   "action": {
     "default_icon": {
       "16": "icon16-dark.png",
-      "19": "icon48-dark.png",
-      "32": "icon48-dark.png",
-      "38": "icon48-dark.png",
-      "64": "icon48-dark.png",
+      "19": "icon19-dark.png",
+      "32": "icon32-dark.png",
+      "38": "icon38-dark.png",
+      "64": "icon64-dark.png",
       "128": "icon128-dark.png",
-      "512": "icon128-dark.png"
+      "512": "icon512-dark.png"
     },
     "default_title": "Cosmostation Wallet",
     "default_popup": "popup.html"
@@ -23,9 +23,14 @@
   },
   "icons": {
     "16": "icon16-dark.png",
+    "19": "icon19-dark.png",
+    "32": "icon32-dark.png",
+    "38": "icon38-dark.png",
     "48": "icon48-dark.png",
+    "64": "icon64-dark.png",
     "128": "icon128-dark.png",
-    "256": "icon256-dark.png"
+    "256": "icon256-dark.png",
+    "512": "icon512-dark.png"
   },
   "content_scripts": [
     {

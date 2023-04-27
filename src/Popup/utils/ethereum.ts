@@ -8,8 +8,8 @@ import { signTypedData as baseSignTypedData } from '@metamask/eth-sig-util';
 import { ERC20_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
-import { chromeStorage } from '~/Popup/utils/chromeStorage';
 import { EthereumRPCError } from '~/Popup/utils/error';
+import { extensionStorage } from '~/Popup/utils/extensionStorage';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumTxType } from '~/types/ethereum/common';
 import type { CustomTypedMessage, EthereumTx } from '~/types/message/ethereum';
@@ -55,7 +55,7 @@ export function rpcResponse(result: unknown, id?: number | string) {
 }
 
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
-  const { currentEthereumNetwork } = await chromeStorage();
+  const { currentEthereumNetwork } = await extensionStorage();
 
   const rpcURL = url ?? currentEthereumNetwork.rpcURL;
 

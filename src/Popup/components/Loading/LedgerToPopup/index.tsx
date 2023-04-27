@@ -4,14 +4,14 @@ import { Typography } from '@mui/material';
 import Button from '~/Popup/components/common/Button';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { getCurrentWindow, openWindow } from '~/Popup/utils/chromeWindows';
+import { getCurrentWindow, openWindow } from '~/Popup/utils/extensionWindows';
 
 import { ButtonContainer, Container, DescriptionContainer } from './styled';
 
 import Browser16Icon from '~/images/icons/Browser16.svg';
 
 export default function LedgerToPopup() {
-  const [chromeWindow, setChromeWindow] = useState<chrome.windows.Window | undefined>();
+  const [chromeWindow, setChromeWindow] = useState<chrome.windows.Window | browser.windows.Window | undefined>();
 
   const { t } = useTranslation();
   const { currentAccount } = useCurrentAccount();

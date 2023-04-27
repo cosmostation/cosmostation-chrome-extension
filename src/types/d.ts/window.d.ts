@@ -104,10 +104,10 @@ type Aptos = {
 
 type Sui = {
   request: (message: import('~/types/message').SuiRequestMessage) => Promise<T>;
-  connect: (permissions: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
+  connect: (permissions: import('~/types/extensionStorage').SuiPermissionType[]) => Promise<boolean>;
   disconnect: () => Promise<import('~/types/message/sui').SuiDisconnectResponse>;
-  requestPermissions: (permissions?: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
-  hasPermissions: (permissions?: import('~/types/chromeStorage').SuiPermissionType[]) => Promise<boolean>;
+  requestPermissions: (permissions?: import('~/types/extensionStorage').SuiPermissionType[]) => Promise<boolean>;
+  hasPermissions: (permissions?: import('~/types/extensionStorage').SuiPermissionType[]) => Promise<boolean>;
   getAccounts: () => Promise<string[]>;
   getPublicKey: () => Promise<string>;
   getChain: () => Promise<string>;

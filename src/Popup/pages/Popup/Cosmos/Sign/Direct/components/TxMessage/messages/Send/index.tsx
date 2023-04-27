@@ -4,7 +4,7 @@ import { CURRENCY_DECIMALS } from '~/constants/currency';
 import Number from '~/Popup/components/common/Number';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase, shorterAddress } from '~/Popup/utils/string';
@@ -32,12 +32,12 @@ type SendProps = {
 };
 
 export default function Send({ msg, chain, isMultipleMsgs }: SendProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { coins, ibcCoins } = useCoinListSWR(chain);
   const { t } = useTranslation();
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
   const { displayDenom, baseDenom, decimals, coinGeckoId } = chain;
 
   const { value } = msg;

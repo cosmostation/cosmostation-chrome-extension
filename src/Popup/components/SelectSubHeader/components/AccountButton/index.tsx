@@ -5,7 +5,7 @@ import { Typography } from '@mui/material';
 import { useCurrentTab } from '~/Popup/hooks/SWR/cache/useCurrentTab';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { AccountWithName } from '~/types/chromeStorage';
+import type { AccountWithName } from '~/types/extensionStorage';
 
 import ConnectDialog from './ConnectDialog';
 import {

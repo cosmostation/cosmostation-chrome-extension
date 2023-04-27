@@ -1,5 +1,7 @@
-export async function openTab(path?: string): Promise<chrome.tabs.Tab> {
-  const url = chrome.runtime.getURL(`popup.html${path ? `#${path}` : ''}`);
+import { extension } from '~/Popup/utils/extension';
+
+export async function openTab(path?: string): Promise<chrome.tabs.Tab | browser.tabs.Tab> {
+  const url = extension.runtime.getURL(`popup.html${path ? `#${path}` : ''}`);
 
   const current = await getCurrent();
 
@@ -18,11 +20,11 @@ export async function openTab(path?: string): Promise<chrome.tabs.Tab> {
   });
 }
 
-export function getCurrent(): Promise<chrome.tabs.Tab | undefined> {
+export function getCurrent(): Promise<chrome.tabs.Tab | browser.tabs.Tab | undefined> {
   return new Promise((res, rej) => {
-    chrome.tabs.getCurrent((tab) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
+    void extension.tabs.getCurrent((tab) => {
+      if (extension.runtime.lastError) {
+        rej(extension.runtime.lastError);
       }
 
       res(tab);
@@ -32,7 +34,7 @@ export function getCurrent(): Promise<chrome.tabs.Tab | undefined> {
 
 export async function getCurrentTab() {
   const queryOptions = { active: true, currentWindow: true };
-  const [tab] = await chrome.tabs.query(queryOptions);
+  const [tab] = await extension.tabs.query(queryOptions);
 
   const origin = tab?.url ? new URL(tab.url).origin : undefined;
   return { ...tab, origin };

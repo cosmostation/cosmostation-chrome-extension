@@ -6,7 +6,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { openWindow } from '~/Popup/utils/chromeWindows';
+import { openWindow } from '~/Popup/utils/extensionWindows';
 
 import { ButtonContainer, Container, LedgerConnectIcon, LedgerWarningIcon, TextContainer } from './styled';
 

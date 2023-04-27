@@ -3,8 +3,8 @@ import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import SettingAccordion from '~/Popup/components/SettingAccordion';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { getSiteIconURL } from '~/Popup/utils/common';
 
 import {
@@ -21,11 +21,11 @@ import {
 import Close16Icon from '~/images/icons/Close16.svg';
 
 export default function Entry() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const { accounts, accountName, allowedOrigins, autoSigns } = chromeStorage;
+  const { accounts, accountName, allowedOrigins, autoSigns } = extensionStorage;
 
   const { currentAccount } = useCurrentAccount();
 
@@ -73,10 +73,10 @@ export default function Entry() {
                       <StyledIconButton
                         onClick={async () => {
                           const newAllowedOrigins = allowedOrigins.filter((item) => !(origin.accountId === item.accountId && origin.origin === item.origin));
-                          await setChromeStorage('allowedOrigins', newAllowedOrigins);
+                          await setExtensionStorage('allowedOrigins', newAllowedOrigins);
 
                           const newAutoSigns = autoSigns.filter((autoSign) => !(autoSign.accountId === origin.accountId && autoSign.origin === origin.origin));
-                          await setChromeStorage('autoSigns', newAutoSigns);
+                          await setExtensionStorage('autoSigns', newAutoSigns);
                         }}
                       >
                         <Close16Icon />

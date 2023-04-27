@@ -1,11 +1,11 @@
 import { CHAINS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { Chain } from '~/types/chain';
 
 export function useCurrentAllowedChains() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
-  const { allowedChainIds } = chromeStorage;
+  const { allowedChainIds } = extensionStorage;
 
   const allChains = [...CHAINS];
 
@@ -16,7 +16,7 @@ export function useCurrentAllowedChains() {
       return;
     }
 
-    await setChromeStorage('allowedChainIds', [...allowedChainIds, chain.id]);
+    await setExtensionStorage('allowedChainIds', [...allowedChainIds, chain.id]);
   };
 
   const removeAllowedChainId = async (chain: Chain) => {
@@ -26,7 +26,7 @@ export function useCurrentAllowedChains() {
 
     const newAllowedChainIds = allowedChainIds.filter((allowedChainId) => allowedChainId !== chain.id);
 
-    await setChromeStorage('allowedChainIds', newAllowedChainIds);
+    await setExtensionStorage('allowedChainIds', newAllowedChainIds);
   };
 
   return { currentAllowedChains, addAllowedChainId, removeAllowedChainId };
