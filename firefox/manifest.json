@@ -4,8 +4,22 @@
   "description": "Non-custodial multi-chain extension wallet powered by Cosmostation, the interchain validator.",
   "version": "0.4.22",
   "action": {
-    "default_icon": { "16": "icon16-dark.png", "24": "icon24-dark.png", "32": "icon32-dark.png" },
+    "default_icon": {
+      "16": "icon16-dark.png",
+      "19": "icon48-dark.png",
+      "32": "icon48-dark.png",
+      "38": "icon48-dark.png",
+      "64": "icon48-dark.png",
+      "128": "icon128-dark.png",
+      "512": "icon128-dark.png"
+    },
+    "default_title": "Cosmostation Wallet",
     "default_popup": "popup.html"
+  },
+  "author": "https://www.cosmostation.io",
+  "background": {
+    "scripts": ["js/background.js"],
+    "persistent": true
   },
   "icons": {
     "16": "icon16-dark.png",
@@ -21,10 +35,7 @@
       "all_frames": true
     }
   ],
-  "background": {
-    "service_worker": "js/background.js"
-  },
-  "permissions": ["storage", "unlimitedStorage"],
+  "permissions": ["storage", "unlimitedStorage", "clipboardWrite", "activeTab", "webRequest", "https://*/*"],
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
