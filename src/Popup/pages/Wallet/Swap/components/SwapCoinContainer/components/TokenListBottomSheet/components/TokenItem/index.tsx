@@ -1,19 +1,14 @@
 import { forwardRef, useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import { EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
-import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import type { EthereumToken } from '~/types/chain';
-import type { IntegratedSwapEVMChain, IntegratedSwapToken } from '~/types/swap/asset';
+import type { IntegratedSwapToken } from '~/types/swap/asset';
 
 import {
   TokenButton,
@@ -35,29 +30,14 @@ type TokenItemProps = {
   tokenInfo: IntegratedSwapToken;
   isActive: boolean;
   onClickToken: (clickedToken: IntegratedSwapToken) => void;
-  currentNetwork?: IntegratedSwapEVMChain;
 };
 
-const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, onClickToken, isActive, currentNetwork }, ref) => {
+const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, onClickToken, isActive }, ref) => {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { chromeStorage } = useChromeStorage();
   const { currency } = chromeStorage;
 
-  const nativeTokenBalance = useBalanceSWR(currentNetwork);
-  const tokenBalance = useTokenBalanceSWR({
-    network: currentNetwork,
-    token: currentNetwork?.line === 'ETHEREUM' ? (tokenInfo as EthereumToken) : undefined,
-  });
-
-  const amount = useMemo(
-    () =>
-      gt(tokenInfo.balance || '0', '0')
-        ? tokenInfo.balance || '0'
-        : isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, tokenInfo.address)
-        ? BigInt(nativeTokenBalance?.data?.result || '0').toString(10)
-        : BigInt(tokenBalance.data || '0').toString(10) || '0',
-    [nativeTokenBalance?.data?.result, tokenBalance.data, tokenInfo.address, tokenInfo.balance],
-  );
+  const amount = useMemo(() => tokenInfo.balance || '0', [tokenInfo.balance]);
 
   const coinDisplayDenomAmount = useMemo(() => toDisplayDenomAmount(amount, gt(amount, '0') ? tokenInfo.decimals : 0), [amount, tokenInfo.decimals]);
 

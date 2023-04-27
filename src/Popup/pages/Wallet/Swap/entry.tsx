@@ -275,6 +275,7 @@ export default function Entry() {
             })),
         ];
       }
+
       if (squidEVMChains.find((item) => item.id === currentFromChain.id) && !oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
         const availableChains = [...squidEVMChains.filter((item) => item.id !== currentFromChain.id), ...integratedCosmosChains];
 
@@ -288,17 +289,20 @@ export default function Entry() {
             })),
         ];
       }
-      const availableChains = [...squidEVMChains, ...integratedCosmosChains];
 
-      return [
-        ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
-        ...originChains
-          .filter((item) => !availableChains.find((chain) => chain.id === item.id))
-          .map((item) => ({
-            ...item,
-            isUnavailable: true,
-          })),
-      ];
+      if (squidEVMChains.find((item) => item.id === currentFromChain.id) && oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
+        const availableChains = [...squidEVMChains, ...integratedCosmosChains];
+
+        return [
+          ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
+          ...originChains
+            .filter((item) => !availableChains.find((chain) => chain.id === item.id))
+            .map((item) => ({
+              ...item,
+              isUnavailable: true,
+            })),
+        ];
+      }
     }
 
     return [];
@@ -425,7 +429,13 @@ export default function Entry() {
       const filteredTokens = Object.values(oneInchTokens.data.tokens);
 
       return [
-        ...filteredTokens.filter((item) => item.tags.includes('native')).map((item) => ({ ...item, coinGeckoId: currentEthereumNetwork.coinGeckoId })),
+        ...filteredTokens
+          .filter((item) => item.tags.includes('native'))
+          .map((item) => ({
+            ...item,
+            balance: BigInt(currentFromEVMNativeBalance.data?.result || '0').toString(10),
+            coinGeckoId: currentEthereumNetwork.coinGeckoId,
+          })),
         ...filteredTokens.filter((item) => currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))),
         ...filteredTokens.filter(
           (item) =>
@@ -450,7 +460,9 @@ export default function Entry() {
       const filteredTokens = filterSquidTokens(currentFromChain?.chainId);
 
       return [
-        ...filteredTokens.filter((item) => isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address)),
+        ...filteredTokens
+          .filter((item) => isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address))
+          .map((item) => ({ ...item, balance: BigInt(currentFromEVMNativeBalance.data?.result || '0').toString(10) })),
         ...filteredTokens.filter((item) => currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))),
         ...filteredTokens.filter(
           (item) =>
@@ -475,6 +487,7 @@ export default function Entry() {
     osmosisAssets.data,
     osmoSwapMath.uniquePoolDenomList,
     cosmosFromChainBalance.data?.balance,
+    currentFromEVMNativeBalance,
     currentEthereumNetwork.coinGeckoId,
     supportedOneInchTokens,
     filterSquidTokens,
@@ -497,7 +510,13 @@ export default function Entry() {
       const filteredTokenList = Object.values(oneInchTokens.data.tokens);
 
       return [
-        ...filteredTokenList.filter((item) => item.tags.includes('native')).map((item) => ({ ...item, coinGeckoId: currentEthereumNetwork.coinGeckoId })),
+        ...filteredTokenList
+          .filter((item) => item.tags.includes('native'))
+          .map((item) => ({
+            ...item,
+            balance: BigInt(currentToEVMNativeBalance.data?.result || '0').toString(10),
+            coinGeckoId: currentEthereumNetwork.coinGeckoId,
+          })),
         ...filteredTokenList.filter((item) => currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))),
         ...filteredTokenList.filter(
           (item) =>
@@ -522,7 +541,9 @@ export default function Entry() {
       const filteredTokenList = filterSquidTokens(currentToChain?.chainId);
 
       return [
-        ...filteredTokenList.filter((item) => isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address)),
+        ...filteredTokenList
+          .filter((item) => isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address))
+          .map((item) => ({ ...item, balance: BigInt(currentToEVMNativeBalance.data?.result || '0').toString(10) })),
         ...filteredTokenList.filter((item) => currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))),
         ...filteredTokenList.filter(
           (item) =>
@@ -575,6 +596,7 @@ export default function Entry() {
     filteredFromTokenList,
     osmoSwapMath.poolsAssetData.data,
     currentFromToken?.address,
+    currentToEVMNativeBalance.data?.result,
     currentEthereumNetwork.coinGeckoId,
     supportedOneInchTokens,
     filterSquidTokens,

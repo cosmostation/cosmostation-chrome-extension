@@ -11,3 +11,8 @@ export type ERC20ContractMethods = {
 };
 
 export type ERC20ContractBalanceOfPayload = string;
+
+export type ERC20ContractBalancesOfPayload = {
+  id: string;
+  balance: ERC20ContractBalanceOfPayload;
+};

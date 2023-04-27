@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
 
+import { ETHEREUM, EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
 import IntersectionObserver from '~/Popup/components/IntersectionObserver';
+import { useTokensBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokensBalanceSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { gt } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
+import type { EthereumToken } from '~/types/chain';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 
 import TokenItem from './components/TokenItem';
@@ -49,6 +53,30 @@ export default function TokenListBottomSheet({
         : availableTokenList?.slice(0, viewLimit) || [],
     [availableTokenList, viewLimit, search],
   );
+
+  const { data: tokensBalance } = useTokensBalanceSWR({
+    network: currentSelectedChain?.line === ETHEREUM.line ? currentSelectedChain : undefined,
+    tokens: filteredTokenList as Omit<EthereumToken, 'id' | 'ethereumNetworkId'>[],
+  });
+
+  const sortedTokenList = useMemo(() => {
+    const relocatedTokenList = filteredTokenList.map((item) => {
+      const tokenBalanceData = tokensBalance?.find(
+        (tokenBalance) => tokenBalance.status === 'fulfilled' && isEqualsIgnoringCase(tokenBalance.value.id, item.address),
+      );
+
+      return {
+        ...item,
+        balance: item.balance || (tokenBalanceData?.status === 'fulfilled' && gt(tokenBalanceData.value.balance, '0') ? tokenBalanceData.value.balance : '0'),
+      };
+    });
+
+    return [
+      ...relocatedTokenList.filter((item) => isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address)),
+      ...relocatedTokenList.filter((item) => !isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address) && gt(item.balance, '0')),
+      ...relocatedTokenList.filter((item) => !isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address) && !gt(item.balance, '0')),
+    ];
+  }, [filteredTokenList, tokensBalance]);
 
   useEffect(() => {
     if (search.length > 1) {
@@ -100,14 +128,13 @@ export default function TokenListBottomSheet({
         />
         <AssetList>
           <div ref={topRef} />
-          {filteredTokenList?.map((item) => {
+          {sortedTokenList?.map((item) => {
             const isActive = isEqualsIgnoringCase(item.address, currentSelectedToken?.address);
             return (
               <TokenItem
                 isActive={isActive}
                 key={item.address}
                 ref={isActive ? ref : undefined}
-                currentNetwork={currentSelectedChain?.line === 'ETHEREUM' ? currentSelectedChain : undefined}
                 tokenInfo={item}
                 onClickToken={(clickedToken) => {
                   onClickToken(clickedToken);
