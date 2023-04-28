@@ -42,15 +42,23 @@ export default function Init({ children }: InitType) {
   const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
 
   const handleOnStorageChange = (_: unknown, areaName: string) => {
-    if (areaName === 'local') {
-      void (async () => {
-        setExtensionStorage({ ...extensionStorageDefault, ...(await getAllStorage()) });
-      })();
-    }
+    if (process.env.BROWSER === 'chrome') {
+      if (areaName === 'local') {
+        void (async () => {
+          setExtensionStorage({ ...extensionStorageDefault, ...(await getAllStorage()) });
+        })();
+      }
 
-    if (areaName === 'session') {
+      if (areaName === 'session') {
+        void (async () => {
+          setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...(await getAllSessionStorage()) });
+        })();
+      }
+    } else {
       void (async () => {
-        setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...(await getAllSessionStorage()) });
+        const allStorage = await getAllStorage();
+        setExtensionStorage({ ...extensionStorageDefault, ...allStorage });
+        setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...allStorage });
       })();
     }
   };

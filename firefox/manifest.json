@@ -18,8 +18,7 @@
   },
   "author": "https://www.cosmostation.io",
   "background": {
-    "scripts": ["js/background.js"],
-    "persistent": true
+    "scripts": ["js/background.js"]
   },
   "icons": {
     "16": "icon16-dark.png",
@@ -40,7 +39,7 @@
       "all_frames": true
     }
   ],
-  "permissions": ["storage", "unlimitedStorage", "clipboardWrite", "activeTab", "webRequest", "https://*/*"],
+  "permissions": ["storage", "unlimitedStorage", "clipboardWrite", "activeTab", "webRequest"],
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {

@@ -183,3 +183,8 @@ export type ListenerMessage<T = unknown> = {
   type: ListenerType;
   message?: T;
 };
+
+export type PopupToBackgroundMessage<T> = {
+  type: MessageType;
+  value: T;
+};

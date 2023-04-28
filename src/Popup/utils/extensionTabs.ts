@@ -9,9 +9,9 @@ export async function openTab(path?: string): Promise<chrome.tabs.Tab | browser.
     if (current) {
       res(current);
     } else {
-      chrome.tabs.create({ active: true, url }, (tab) => {
-        if (chrome.runtime.lastError) {
-          rej(chrome.runtime.lastError);
+      void extension.tabs.create({ active: true, url }, (tab) => {
+        if (extension.runtime.lastError) {
+          rej(extension.runtime.lastError);
         }
 
         res(tab);

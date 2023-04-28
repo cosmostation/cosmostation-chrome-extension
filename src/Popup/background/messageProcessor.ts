@@ -30,6 +30,7 @@ import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TY
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
 import { SUI_METHOD_TYPE, SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { aesDecrypt } from '~/Popup/utils/crypto';
 import { AptosRPCError, CommonRPCError, CosmosRPCError, EthereumRPCError, SuiRPCError } from '~/Popup/utils/error';
 import { requestRPC as ethereumRequestRPC, signTypedData } from '~/Popup/utils/ethereum';
 import { extensionSessionStorage } from '~/Popup/utils/extensionSessionStorage';
@@ -148,6 +149,12 @@ const setQueues = debounce(
 
 // contentScrpit to background
 export async function cstob(request: ContentScriptToBackgroundEventMessage<RequestMessage>) {
+  const sessionStorage = await extensionSessionStorage();
+
+  const currentPassword = sessionStorage?.password
+    ? aesDecrypt(sessionStorage.password.value, `${sessionStorage.password.key}${sessionStorage.password.time}`)
+    : null;
+
   if (request.line === 'COMMON') {
     const commonNoPopupMethods = Object.values(COMMON_NO_POPUP_METHOD_TYPE) as string[];
     const commonMethods = Object.values(COMMON_METHOD_TYPE) as string[];
@@ -217,8 +224,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
       const { currentAccount, currentAccountName, additionalChains, currentAllowedChains, currentAccountAllowedOrigins, accounts, autoSigns, allowedOrigins } =
         await extensionStorage();
-
-      const { currentPassword } = await extensionSessionStorage();
 
       if (accounts.length === 0) {
         throw new CosmosRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
@@ -1127,8 +1132,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
     const { additionalEthereumNetworks, currentEthereumNetwork, currentAccountAllowedOrigins, currentAccount } = await extensionStorage();
 
-    const { currentPassword } = await extensionSessionStorage();
-
     const { message, messageId, origin } = request;
 
     try {
@@ -1699,8 +1702,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
     const { currentAccountAllowedOrigins, currentAccount, allowedOrigins, currentAptosNetwork } = await extensionStorage();
 
-    const { currentPassword } = await extensionSessionStorage();
-
     const { message, messageId, origin } = request;
 
     if (currentAccount.type === 'LEDGER') {
@@ -1858,8 +1859,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const suiNoPopupMethods = Object.values(SUI_NO_POPUP_METHOD_TYPE) as string[];
 
     const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins, currentSuiNetwork } = await extensionStorage();
-
-    const { currentPassword } = await extensionSessionStorage();
 
     const { message, messageId, origin } = request;
 
