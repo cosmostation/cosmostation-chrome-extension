@@ -60,8 +60,8 @@ export function useGetObjectsSWR({ network, objectIds, options }: UseGetObjectsS
 
   const { data, error, mutate } = useSWR<GetObjectsResponse | null, AxiosError>({ url: rpcURL, objectIds, options, method: 'sui_multiGetObjects' }, fetcher, {
     revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
+    dedupingInterval: 14000,
+    refreshInterval: 15000,
     errorRetryCount: 0,
     isPaused: () => !objectIds,
     ...config,

@@ -62,8 +62,8 @@ export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseG
     fetcher,
     {
       revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
+      dedupingInterval: 14000,
+      refreshInterval: 15000,
       errorRetryCount: 0,
       isPaused: () => !addr,
       ...config,
