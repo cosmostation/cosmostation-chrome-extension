@@ -7,7 +7,7 @@ import { APTOS } from '~/constants/chain/aptos/aptos';
 import { MAINNET as APTOS_NETWORK_MAINNET } from '~/constants/chain/aptos/network/mainnet';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { TESTNET as SUI_NETWORK_TESTNET } from '~/constants/chain/sui/network/testnet';
+import { MAINNET as SUI_NETWORK_MAINNET } from '~/constants/chain/sui/network/mainnet';
 import { SUI } from '~/constants/chain/sui/sui';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -146,7 +146,7 @@ export default function Init({ children }: InitType) {
       }
 
       if (legacySuiNetworkIds.includes(originChromeStorage.selectedSuiNetworkId)) {
-        await setStorage('selectedSuiNetworkId', SUI_NETWORK_TESTNET.id);
+        await setStorage('selectedSuiNetworkId', SUI_NETWORK_MAINNET.id);
       }
 
       const legacyChainIds = ['88ce1a83-0180-4601-a3d7-12089f586dd8'];
@@ -196,7 +196,7 @@ export default function Init({ children }: InitType) {
       }
 
       if (!originChromeStorage.selectedSuiNetworkId) {
-        await setStorage('selectedSuiNetworkId', SUI_NETWORK_TESTNET.id);
+        await setStorage('selectedSuiNetworkId', SUI_NETWORK_MAINNET.id);
       }
 
       const currentTime = new Date().getTime();

@@ -12,7 +12,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import type { SuiChain } from '~/types/chain';
-import type { GetCoinBalance } from '~/types/sui/rpc';
+import type { TokenBalanceObject } from '~/types/sui/rpc';
 
 import {
   CoinButton,
@@ -28,7 +28,7 @@ import Check16Icon from '~/images/icons/Check16.svg';
 
 type CoinItemProps = ComponentProps<typeof CoinButton> & {
   isActive?: boolean;
-  coin: GetCoinBalance;
+  coin: TokenBalanceObject;
   chain: SuiChain;
 };
 
@@ -38,14 +38,14 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin,
 
   const splitedCoinType = coin.coinType.split('::');
 
-  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: coin.coinType }, { suspense: true });
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: coin.coinType });
 
   const decimals = useMemo(
     () => (coinMetadata?.result?.decimals || coin.coinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
     [coin.coinType, coinMetadata?.result?.decimals, currentSuiNetwork.decimals],
   );
 
-  const baseAmount = useMemo(() => coin.totalBalance || '0', [coin.totalBalance]);
+  const baseAmount = useMemo(() => coin.balance || '0', [coin.balance]);
 
   const imageURL = useMemo(
     () => (coinMetadata?.result?.iconUrl || coin.coinType === SUI_COIN ? chain.imageURL : undefined),

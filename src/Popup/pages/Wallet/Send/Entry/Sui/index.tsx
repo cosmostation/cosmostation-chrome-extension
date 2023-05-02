@@ -13,9 +13,9 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useDryRunTransactionBlockSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionBlockSWR';
-import { useGetAllBalancesSWR } from '~/Popup/hooks/SWR/sui/useGetAllBalancesSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useGetCoinsSWR } from '~/Popup/hooks/SWR/sui/useGetCoinsSWR';
+import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -70,9 +70,7 @@ export default function Sui({ chain }: SuiProps) {
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { data: allCoinBalances } = useGetAllBalancesSWR({ address }, { suspense: true });
-
-  const suiAvailableCoins = useMemo(() => allCoinBalances?.result || [], [allCoinBalances?.result]);
+  const { totalSuiTokenBalanceObjects: suiAvailableCoins } = useTokenBalanceSWR({ address });
 
   const suiAvailableCoinTypes = useMemo(() => suiAvailableCoins.map((object) => object.coinType), [suiAvailableCoins]);
 
@@ -84,7 +82,7 @@ export default function Sui({ chain }: SuiProps) {
 
   const [debouncedCurrentDisplayAmount] = useDebounce(currentDisplayAmount, 700);
 
-  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: currentCoinType }, { suspense: true });
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: currentCoinType });
 
   const decimals = useMemo(
     () => (coinMetadata?.result?.decimals || currentCoinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
@@ -101,7 +99,7 @@ export default function Sui({ chain }: SuiProps) {
 
   const currentCoin = useMemo(() => suiAvailableCoins.find((object) => object.coinType === currentCoinType), [currentCoinType, suiAvailableCoins]);
 
-  const currentCoinBaseAmount = useMemo(() => currentCoin?.totalBalance || '0', [currentCoin]);
+  const currentCoinBaseAmount = useMemo(() => currentCoin?.balance || '0', [currentCoin]);
 
   const currentCoinDisplayAmount = useMemo(() => toDisplayDenomAmount(currentCoinBaseAmount, decimals), [currentCoinBaseAmount, decimals]);
 

@@ -9,7 +9,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import type { GetCoinBalance } from '~/types/sui/rpc';
+import type { TokenBalanceObject } from '~/types/sui/rpc';
 
 import {
   LeftContainer,
@@ -25,7 +25,7 @@ import {
 } from './styled';
 
 type CoinItemProps = {
-  coin: GetCoinBalance;
+  coin: TokenBalanceObject;
   onClick?: () => void;
   disabled?: boolean;
 };
@@ -35,13 +35,13 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
 
   const splitedCoinType = coin.coinType.split('::');
 
-  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: coin.coinType }, { suspense: true });
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: coin.coinType });
 
   const { currency } = chromeStorage;
 
   const displayAmount = useMemo(
-    () => toDisplayDenomAmount(coin.totalBalance, coinMetadata?.result?.decimals || SUI_TOKEN_TEMPORARY_DECIMALS),
-    [coin.totalBalance, coinMetadata?.result?.decimals],
+    () => toDisplayDenomAmount(coin.balance, coinMetadata?.result?.decimals || SUI_TOKEN_TEMPORARY_DECIMALS),
+    [coin.balance, coinMetadata?.result?.decimals],
   );
   const displayDenom = coinMetadata?.result?.symbol || splitedCoinType[2] || '';
 
