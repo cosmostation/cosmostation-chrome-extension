@@ -16,8 +16,8 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useGetCoinBalanceSWR } from '~/Popup/hooks/SWR/sui/useGetCoinBalanceSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
+import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -75,11 +75,11 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const { data: coinBalance, mutate: mutateCoinBalance } = useGetCoinBalanceSWR({ address: currentAddress, coinType: SUI_COIN }, { suspense: true });
+  const { coinBalance, mutateTokenBalance } = useTokenBalanceSWR({ address: currentAddress });
 
-  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN }, { suspense: true });
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
-  const amount = useMemo(() => BigInt(coinBalance?.result?.totalBalance || '0').toString(), [coinBalance?.result?.totalBalance]);
+  const amount = useMemo(() => BigInt(coinBalance || '0').toString(), [coinBalance]);
 
   const decimals = useMemo(
     () => coinMetadata?.result?.decimals || currentSuiNetwork.decimals || 0,
@@ -134,7 +134,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
       if (!response.error) {
         setTimeout(() => {
           enqueueSnackbar('success faucet');
-          void mutateCoinBalance();
+          void mutateTokenBalance();
           setIsDiabledFaucet(false);
         }, 5000);
       }
@@ -296,7 +296,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
 
-  useGetCoinBalanceSWR({ address: currentAddress, coinType: SUI_COIN });
+  useTokenBalanceSWR({ address: currentAddress });
   useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
   const { enqueueSnackbar } = useSnackbar();

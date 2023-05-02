@@ -7,8 +7,8 @@ import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useGetAllBalancesSWR } from '~/Popup/hooks/SWR/sui/useGetAllBalancesSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
+import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -38,20 +38,18 @@ export default function CoinButton({ coinType, chain, isActive, ...remainder }: 
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType }, { suspense: true });
+  const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType });
 
   const decimals = useMemo(
     () => (coinMetadata?.result?.decimals || coinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
     [coinMetadata?.result?.decimals, coinType, currentSuiNetwork.decimals],
   );
 
-  const { data: allCoinBalances } = useGetAllBalancesSWR({ address }, { suspense: true });
-
-  const suiAvailableCoins = useMemo(() => allCoinBalances?.result || [], [allCoinBalances?.result]);
+  const { totalSuiTokenBalanceObjects: suiAvailableCoins } = useTokenBalanceSWR({ address });
 
   const currentCoin = useMemo(() => suiAvailableCoins.find((object) => object.coinType === coinType), [suiAvailableCoins, coinType]);
 
-  const baseAmount = useMemo(() => currentCoin?.totalBalance || '0', [currentCoin?.totalBalance]);
+  const baseAmount = useMemo(() => currentCoin?.balance || '0', [currentCoin?.balance]);
 
   const imageURL = useMemo(
     () => (coinMetadata?.result?.iconUrl || coinType === SUI_COIN ? chain.imageURL : undefined),

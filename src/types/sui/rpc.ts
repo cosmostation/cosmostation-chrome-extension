@@ -55,7 +55,7 @@ export type GetObjectsOwnedByAddress = {
 
 export type GetObjectsOwnedByAddressResponse = Result<GetObjectsOwnedByAddress>;
 
-export type GetObjectsResponse = Result<SuiObjectResponse>;
+export type GetObjectsResponse = Result<SuiObjectResponse[]>;
 
 export type DryRunTransactionBlockSWRResponse = Result<DryRunTransactionBlockResponse>;
 
@@ -113,8 +113,8 @@ export type GetObjectResponse = Result<GetObject>;
 export type GetCoinMetadata = {
   decimals: number;
   description: string;
-  iconUrl: string | null;
-  id: string | null;
+  iconUrl?: string;
+  id?: string;
   name: string;
   symbol: string;
 };
@@ -131,6 +131,11 @@ export type GetCoinBalance = {
   coinType: string;
   lockedBalance: lockedBalance;
   totalBalance: string;
+};
+
+export type TokenBalanceObject = {
+  coinType: string;
+  balance: string;
 };
 
 export type GetCoinBalanceResponse = Result<GetCoinBalance>;

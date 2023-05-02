@@ -11,6 +11,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
+import { useCurrentShownSuiNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownSuiNetworks';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import AptosChainItem, {
   AptosChainItemError,
@@ -30,8 +31,9 @@ import EthereumChainItem, {
 } from '~/Popup/pages/Dashboard/components/ChainItem/components/EthereumChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { plus } from '~/Popup/utils/big';
-import type { AptosChain, Chain, CosmosChain, EthereumChain } from '~/types/chain';
+import type { AptosChain, Chain, CosmosChain, EthereumChain, SuiChain } from '~/types/chain';
 
+import SuiChainItem, { SuiChainItemError, SuiChainItemLedgerCheck, SuiChainItemSkeleton } from './components/ChainItem/components/SuiChainItem';
 import {
   ChainList,
   ChainListContainer,
@@ -59,6 +61,8 @@ export default function Entry() {
   const { currentAccount } = useCurrentAccount();
   const { currentShownEthereumNetwork } = useCurrentShownEthereumNetworks();
   const { currentShownAptosNetwork } = useCurrentShownAptosNetworks();
+  const { currentShownSuiNetwork } = useCurrentShownSuiNetworks();
+
   const dashboard = useRecoilValue(dashboardState);
 
   const { navigate } = useNavigate();
@@ -68,13 +72,15 @@ export default function Entry() {
   const cosmosChainList = chainList.filter(isCosmos);
   const ethereumChainList = chainList.filter(isEthereum);
   const aptosChainList = chainList.filter(isAptos);
+  const suiChainList = chainList.filter(isSui);
 
   const cosmosChainNames = cosmosChainList.map((item) => item.chain.chainName);
   const ethereumNetworkList =
     ethereumChainList.length > 0 ? currentShownEthereumNetwork.filter((network) => !cosmosChainNames.includes(network.networkName)) : [];
   const aptosNetworkList = aptosChainList.length > 0 ? currentShownAptosNetwork : [];
+  const suiNetworkList = suiChainList.length > 0 ? currentShownSuiNetwork : [];
 
-  const chainCnt = cosmosChainList.length + ethereumNetworkList.length + aptosNetworkList.length;
+  const chainCnt = cosmosChainList.length + ethereumNetworkList.length + aptosNetworkList.length + suiNetworkList.length;
 
   const totalAmount =
     typeof dashboard?.[currentAccount.id] === 'object' ? Object.values(dashboard[currentAccount.id]).reduce((acc, cur) => plus(acc, cur), '0') : '0';
@@ -159,6 +165,23 @@ export default function Entry() {
               </AptosChainItemLedgerCheck>
             )),
           )}
+
+          {suiChainList.map((item) =>
+            suiNetworkList.map((network) => (
+              <SuiChainItemLedgerCheck key={`${currentAccount.id}${item.chain.id}${network.id}`} network={network}>
+                <ErrorBoundary
+                  FallbackComponent={
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    (props) => <SuiChainItemError {...props} chain={item.chain} network={network} />
+                  }
+                >
+                  <Suspense fallback={<SuiChainItemSkeleton chain={item.chain} network={network} />}>
+                    <SuiChainItem key={item.chain.id} chain={item.chain} network={network} />
+                  </Suspense>
+                </ErrorBoundary>
+              </SuiChainItemLedgerCheck>
+            )),
+          )}
         </ChainList>
       </ChainListContainer>
     </Container>
@@ -175,4 +198,8 @@ function isEthereum(item: ChainItem): item is ChainItem<EthereumChain> {
 
 function isAptos(item: ChainItem): item is ChainItem<AptosChain> {
   return item.chain.line === 'APTOS';
+}
+
+function isSui(item: ChainItem): item is ChainItem<SuiChain> {
+  return item.chain.line === 'SUI';
 }
