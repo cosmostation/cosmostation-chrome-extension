@@ -79,17 +79,21 @@ export function useTokenBalanceSWR({ network, address, options }: UseTokenBalanc
 
   const filteredTokenBalanceObjects = useMemo(() => {
     const copiedList = objects?.result ? [...objects.result] : [];
+    return copiedList
+      .filter((item) => getCoinType(item.data?.type) !== SUI_COIN && item.data?.content?.dataType === 'moveObject')
+      .map((item, _, array) => ({
+        balance:
+          array.reduce((ac, cu) => {
+            if (item.data?.type === cu.data?.type && cu.data?.content?.dataType === 'moveObject')
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              return plus(ac, cu.data?.content.fields.balance || '0');
 
-    return (
-      copiedList
-        ?.filter((item) => getCoinType(item.data?.type) && getCoinType(item.data?.type) !== SUI_COIN && item.data?.content?.dataType === 'moveObject')
-        .map((object) => ({
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          balance: object.data?.content?.dataType === 'moveObject' ? (object.data?.content.fields.balance as string) : '0',
-          coinType: getCoinType(object.data?.type),
-        })) || []
-    );
-  }, [objects]);
+            return ac;
+          }, '0') || '0',
+        coinType: getCoinType(item.data?.type),
+      }))
+      .filter((chainItem, idx, arr) => arr.findIndex((item) => item.coinType === chainItem.coinType) === idx && chainItem.balance && chainItem.coinType);
+  }, [objects?.result]);
 
   const totalSuiTokenBalanceObjects = useMemo(
     () => [{ balance: coinBalance, coinType: SUI_COIN }, ...filteredTokenBalanceObjects],
