@@ -1445,11 +1445,7 @@ export default function Entry() {
                       return;
                     }
 
-                    if (gt(e.currentTarget.value || '0', currentFromTokenDisplayBalance)) {
-                      setInputDisplayAmount(currentFromTokenDisplayBalance);
-                    } else {
-                      setInputDisplayAmount(e.currentTarget.value);
-                    }
+                    setInputDisplayAmount(e.currentTarget.value);
                   }}
                   value={inputDisplayAmount}
                   placeholder="0"
