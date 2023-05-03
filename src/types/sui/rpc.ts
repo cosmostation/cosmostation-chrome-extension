@@ -133,7 +133,7 @@ export type GetCoinBalance = {
   totalBalance: string;
 };
 
-export type TokenBalanceObject = {
+export type CoinObject = {
   coinType: string;
   balance: string;
 } & SuiObjectResponse;
