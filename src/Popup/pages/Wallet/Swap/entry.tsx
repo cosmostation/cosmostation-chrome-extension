@@ -37,6 +37,7 @@ import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSW
 import { useSupportSwapChainsSWR } from '~/Popup/hooks/SWR/integratedSwap/useSupportSwapChainsSWR';
 import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/squid/useSquidAssetsSWR';
 import { useSquidRouteSWR } from '~/Popup/hooks/SWR/squid/useSquidRouteSWR';
+import { useSquidTokensSWR } from '~/Popup/hooks/SWR/squid/useSquidTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -98,8 +99,6 @@ import Permission16Icon from '~/images/icons/Permission16.svg';
 import SquidLogoIcon from '~/images/icons/SquidLogo.svg';
 import SwapIcon from '~/images/icons/Swap.svg';
 
-import evm_assets from './assets/evm_assets.json';
-
 export default function Entry() {
   const osmosisChain = OSMOSIS;
   const ethereumChain = ETHEREUM;
@@ -113,6 +112,7 @@ export default function Entry() {
   const { enQueue } = useCurrentQueue();
   const nodeInfo = useNodeInfoSWR(osmosisChain);
   const supportedCosmosChain = useSupportChainsSWR({ suspense: true });
+  const supportedSquidTokens = useSquidTokensSWR();
   const { chromeStorage } = useChromeStorage();
   const { ethereumTokens } = chromeStorage;
   const { currency } = chromeStorage;
@@ -568,7 +568,9 @@ export default function Entry() {
             item.address !== 'uusdc' &&
             isEqualsIgnoringCase(
               item.address,
-              evm_assets.mainnet.find((asset) => asset.contracts.find((contract) => isEqualsIgnoringCase(contract.address, currentFromToken?.address)))?.id,
+              supportedSquidTokens.data?.mainnet.find((token) =>
+                token.contracts.find((contract) => isEqualsIgnoringCase(contract.address, currentFromToken?.address)),
+              )?.id,
             ),
         ),
       ].map((item) => ({
@@ -600,6 +602,7 @@ export default function Entry() {
     currentEthereumNetwork.coinGeckoId,
     supportedOneInchTokens,
     filterSquidTokens,
+    supportedSquidTokens.data?.mainnet,
     osmosisAssets.data,
     cosmosToChainBalance.data?.balance,
   ]);
@@ -700,14 +703,14 @@ export default function Entry() {
                 (asset) =>
                   asset.counter_party?.denom &&
                   asset.counter_party.denom ===
-                    evm_assets.mainnet.find((evmAsset) =>
-                      evmAsset.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, item.token.address)),
+                    supportedSquidTokens.data?.mainnet.find((token) =>
+                      token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, item.token.address)),
                     )?.id,
               )?.coinGeckoId || item.token.coingeckoId,
           },
         }))
         .filter((chainItem, idx, arr) => arr.findIndex((item) => item.token.address === chainItem.token.address) === idx),
-    [osmosisAssets.data, squidRoute.data?.route.estimate.feeCosts],
+    [osmosisAssets.data, squidRoute.data?.route.estimate.feeCosts, supportedSquidTokens.data?.mainnet],
   );
 
   const squidSourceChainFeeAmount = useMemo(() => squidSourceChainGasCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0', [squidSourceChainGasCosts]);
@@ -1034,8 +1037,8 @@ export default function Entry() {
                   (asset) =>
                     asset.counter_party?.denom &&
                     asset.counter_party.denom ===
-                      evm_assets.mainnet.find((evmAsset) =>
-                        evmAsset.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, cu.token.address)),
+                      supportedSquidTokens.data?.mainnet.find((token) =>
+                        token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, cu.token.address)),
                       )?.id,
                 )?.coinGeckoId || cu.token.coingeckoId
               ]?.[chromeStorage.currency] || 0,
@@ -1043,7 +1046,7 @@ export default function Entry() {
           ),
         '0',
       ) || '0',
-    [chromeStorage.currency, coinGeckoPrice.data, osmosisAssets.data, squidRoute.data?.route.estimate.feeCosts],
+    [chromeStorage.currency, coinGeckoPrice.data, osmosisAssets.data, squidRoute.data?.route.estimate.feeCosts, supportedSquidTokens.data?.mainnet],
   );
 
   const estimatedFeePrice = useMemo(() => {

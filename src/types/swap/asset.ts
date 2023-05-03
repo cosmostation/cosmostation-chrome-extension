@@ -22,6 +22,27 @@ export type IntegratedSwapEVMToken = Omit<EthereumToken, 'id' | 'ethereumNetwork
 
 export type IntegratedSwapToken = IntegratedSwapEVMToken | IntegratedSwapCosmosToken;
 
+export type SquidTokensPayload = {
+  mainnet: SupportNetwork[];
+  testnet: SupportNetwork[];
+};
+
+export type SupportNetwork = {
+  id: string;
+  name: string;
+  symbol: string;
+  image: string;
+  contracts: Contract[];
+};
+
+export type Contract = {
+  chain: string;
+  address: string;
+  symbol: string;
+  decimals: number;
+  transfer_fee: number;
+};
+
 export type SupportSwapChainPayload = {
   oneInch: SupportedChain;
   squid: SupportedChain;
