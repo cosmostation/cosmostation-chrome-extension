@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
 import { SUI_COIN } from '~/constants/sui';
-import { plus } from '~/Popup/utils/big';
+import { gt, plus } from '~/Popup/utils/big';
 import { getCoinType } from '~/Popup/utils/sui';
 import type { SuiNetwork } from '~/types/chain';
 
@@ -60,50 +60,30 @@ export function useTokenBalanceSWR({ network, address, options }: UseTokenBalanc
     ...config,
   });
 
-  const coinBalance = useMemo(() => {
-    const copiedList = objects?.result ? [...objects.result] : [];
-
-    return (
-      copiedList?.reduce((result, object) => {
-        const suiObject = getCoinType(object.data?.type) === SUI_COIN;
-
-        if (suiObject && object.data?.content?.dataType === 'moveObject') {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          return plus(result, object.data.content.fields.balance as string);
-        }
-
-        return result;
-      }, '0') || '0'
-    );
-  }, [objects?.result]);
-
   const filteredTokenBalanceObjects = useMemo(() => {
     const copiedList = objects?.result ? [...objects.result] : [];
     return copiedList
-      .filter((item) => getCoinType(item.data?.type) !== SUI_COIN && item.data?.content?.dataType === 'moveObject')
+      .filter((item) => getCoinType(item.data?.type) && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
       .map((item, _, array) => ({
         balance:
           array.reduce((ac, cu) => {
             if (item.data?.type === cu.data?.type && cu.data?.content?.dataType === 'moveObject')
               // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              return plus(ac, cu.data?.content.fields.balance || '0');
+              return plus(ac, (cu.data?.content.fields.balance as string) || '0');
 
             return ac;
           }, '0') || '0',
         coinType: getCoinType(item.data?.type),
+        ...item,
       }))
-      .filter((chainItem, idx, arr) => arr.findIndex((item) => item.coinType === chainItem.coinType) === idx && chainItem.balance && chainItem.coinType);
+      .filter((object, idx, arr) => arr.findIndex((item) => item.data?.type === object.data?.type) === idx && gt(object.balance, '0') && object.coinType)
+      .sort((coin) => (coin.coinType === SUI_COIN ? -1 : 1));
   }, [objects?.result]);
-
-  const totalSuiTokenBalanceObjects = useMemo(
-    () => [{ balance: coinBalance, coinType: SUI_COIN }, ...filteredTokenBalanceObjects],
-    [coinBalance, filteredTokenBalanceObjects],
-  );
 
   const mutateTokenBalance = useCallback(() => {
     void mutateGetObjectsOwnedByAddress();
     void mutateGetObjects();
   }, [mutateGetObjects, mutateGetObjectsOwnedByAddress]);
 
-  return { coinBalance, filteredTokenBalanceObjects, totalSuiTokenBalanceObjects, mutateTokenBalance };
+  return { filteredTokenBalanceObjects, mutateTokenBalance };
 }

@@ -3,6 +3,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
 import { SUI } from '~/constants/chain/sui/sui';
+import { SUI_COIN } from '~/constants/sui';
 import Empty from '~/Popup/components/common/Empty';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceSWR';
@@ -39,7 +40,9 @@ export default function CoinList() {
 
   const { filteredTokenBalanceObjects } = useTokenBalanceSWR({ address: currentAddress });
 
-  const isExistToken = filteredTokenBalanceObjects && !!filteredTokenBalanceObjects.length;
+  const tokenList = useMemo(() => filteredTokenBalanceObjects.filter((item) => item.coinType !== SUI_COIN), [filteredTokenBalanceObjects]);
+
+  const isExistToken = !!tokenList.length;
 
   if (!isExistToken) {
     return null;
@@ -50,16 +53,16 @@ export default function CoinList() {
       <ListTitleContainer>
         <ListTitleLeftContainer>
           <ListTitleLeftTextContainer>
-            <Typography variant="h6">{t('pages.Wallet.components.aptos.CoinList.index.coin')}</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.sui.CoinList.index.coin')}</Typography>
           </ListTitleLeftTextContainer>
           <ListTitleLeftCountContainer>
-            <Typography variant="h6">{isExistToken ? `${filteredTokenBalanceObjects.length}` : ''}</Typography>
+            <Typography variant="h6">{isExistToken ? `${tokenList.length}` : ''}</Typography>
           </ListTitleLeftCountContainer>
         </ListTitleLeftContainer>
         <ListTitleRightContainer />
       </ListTitleContainer>
       <ListContainer>
-        {filteredTokenBalanceObjects.map((coin) => (
+        {tokenList.map((coin) => (
           <ErrorBoundary key={coin.coinType} FallbackComponent={Empty}>
             <Suspense fallback={<CoinItemSkeleton coin={coin} />}>
               <CoinItem coin={coin} onClick={() => navigate(`/wallet/send/${coin.coinType}` as unknown as Path)} />

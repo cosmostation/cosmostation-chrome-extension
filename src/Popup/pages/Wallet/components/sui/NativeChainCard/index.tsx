@@ -75,11 +75,13 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const { coinBalance, mutateTokenBalance } = useTokenBalanceSWR({ address: currentAddress });
+  const { filteredTokenBalanceObjects, mutateTokenBalance } = useTokenBalanceSWR({ address: currentAddress });
+
+  const suiCoin = useMemo(() => filteredTokenBalanceObjects.find((item) => item.coinType === SUI_COIN), [filteredTokenBalanceObjects]);
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
-  const amount = useMemo(() => BigInt(coinBalance || '0').toString(), [coinBalance]);
+  const amount = useMemo(() => BigInt(suiCoin?.balance || '0').toString(), [suiCoin?.balance]);
 
   const decimals = useMemo(
     () => coinMetadata?.result?.decimals || currentSuiNetwork.decimals || 0,

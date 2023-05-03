@@ -19,7 +19,7 @@ export default function CoinPopover({ currentCoinType, onClickCoin, onClose, cha
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { totalSuiTokenBalanceObjects: suiAvailableCoins } = useTokenBalanceSWR({ address });
+  const { filteredTokenBalanceObjects: suiAvailableCoins } = useTokenBalanceSWR({ address });
 
   useEffect(() => {
     if (remainder.open) {
