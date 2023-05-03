@@ -75,9 +75,9 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const { filteredTokenBalanceObjects, mutateTokenBalance } = useTokenBalanceSWR({ address: currentAddress });
+  const { coinObjects, mutateTokenBalance } = useTokenBalanceSWR({ address: currentAddress });
 
-  const suiCoin = useMemo(() => filteredTokenBalanceObjects.find((item) => item.coinType === SUI_COIN), [filteredTokenBalanceObjects]);
+  const suiCoin = useMemo(() => coinObjects.find((item) => item.coinType === SUI_COIN), [coinObjects]);
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 

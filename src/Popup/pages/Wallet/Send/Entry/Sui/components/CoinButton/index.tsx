@@ -45,7 +45,7 @@ export default function CoinButton({ coinType, chain, isActive, ...remainder }: 
     [coinMetadata?.result?.decimals, coinType, currentSuiNetwork.decimals],
   );
 
-  const { filteredTokenBalanceObjects: suiAvailableCoins } = useTokenBalanceSWR({ address });
+  const { coinObjects: suiAvailableCoins } = useTokenBalanceSWR({ address });
 
   const currentCoin = useMemo(() => suiAvailableCoins.find((object) => object.coinType === coinType), [suiAvailableCoins, coinType]);
 

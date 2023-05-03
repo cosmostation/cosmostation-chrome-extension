@@ -70,7 +70,7 @@ export default function Sui({ chain }: SuiProps) {
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { filteredTokenBalanceObjects: suiAvailableCoins } = useTokenBalanceSWR({ address });
+  const { coinObjects: suiAvailableCoins } = useTokenBalanceSWR({ address });
 
   const suiAvailableCoinTypes = useMemo(() => suiAvailableCoins.map((object) => object.coinType), [suiAvailableCoins]);
 

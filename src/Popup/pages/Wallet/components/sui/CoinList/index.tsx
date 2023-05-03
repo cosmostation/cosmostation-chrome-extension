@@ -38,9 +38,9 @@ export default function CoinList() {
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const { filteredTokenBalanceObjects } = useTokenBalanceSWR({ address: currentAddress });
+  const { coinObjects } = useTokenBalanceSWR({ address: currentAddress });
 
-  const tokenList = useMemo(() => filteredTokenBalanceObjects.filter((item) => item.coinType !== SUI_COIN), [filteredTokenBalanceObjects]);
+  const tokenList = useMemo(() => coinObjects.filter((item) => item.coinType !== SUI_COIN), [coinObjects]);
 
   const isExistToken = !!tokenList.length;
 

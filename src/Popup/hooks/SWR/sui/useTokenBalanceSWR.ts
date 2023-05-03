@@ -60,7 +60,7 @@ export function useTokenBalanceSWR({ network, address, options }: UseTokenBalanc
     ...config,
   });
 
-  const filteredTokenBalanceObjects = useMemo(() => {
+  const coinObjects = useMemo(() => {
     const copiedList = objects?.result ? [...objects.result] : [];
     return copiedList
       .filter((item) => getCoinType(item.data?.type) && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
@@ -85,5 +85,5 @@ export function useTokenBalanceSWR({ network, address, options }: UseTokenBalanc
     void mutateGetObjects();
   }, [mutateGetObjects, mutateGetObjectsOwnedByAddress]);
 
-  return { filteredTokenBalanceObjects, mutateTokenBalance };
+  return { coinObjects, mutateTokenBalance };
 }

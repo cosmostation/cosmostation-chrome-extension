@@ -40,9 +40,9 @@ export default function SuiChainItem({ chain, network }: SuiChainItemProps) {
 
   const setDashboard = useSetRecoilState(dashboardState);
 
-  const { filteredTokenBalanceObjects } = useTokenBalanceSWR({ address: currentAddress, network });
+  const { coinObjects } = useTokenBalanceSWR({ address: currentAddress, network });
 
-  const totalAmount = useMemo(() => filteredTokenBalanceObjects.find((item) => item.coinType === SUI_COIN)?.balance || '0', [filteredTokenBalanceObjects]);
+  const totalAmount = useMemo(() => coinObjects.find((item) => item.coinType === SUI_COIN)?.balance || '0', [coinObjects]);
 
   const price = useMemo(
     () => (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[chromeStorage.currency]) || 0,
