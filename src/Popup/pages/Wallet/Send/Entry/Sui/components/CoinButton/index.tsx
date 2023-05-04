@@ -8,7 +8,7 @@ import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
-import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceSWR';
+import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -45,7 +45,7 @@ export default function CoinButton({ coinType, chain, isActive, ...remainder }: 
     [coinMetadata?.result?.decimals, coinType, currentSuiNetwork.decimals],
   );
 
-  const { coinObjects: suiAvailableCoins } = useTokenBalanceSWR({ address });
+  const { tokenBalanceObjects: suiAvailableCoins } = useTokenBalanceObjectsSWR({ address });
 
   const currentCoin = useMemo(() => suiAvailableCoins.find((object) => object.coinType === coinType), [suiAvailableCoins, coinType]);
 

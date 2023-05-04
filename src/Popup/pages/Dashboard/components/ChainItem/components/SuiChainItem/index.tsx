@@ -4,7 +4,7 @@ import { useSetRecoilState } from 'recoil';
 
 import { SUI_COIN } from '~/constants/sui';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceSWR';
+import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -40,9 +40,9 @@ export default function SuiChainItem({ chain, network }: SuiChainItemProps) {
 
   const setDashboard = useSetRecoilState(dashboardState);
 
-  const { coinObjects } = useTokenBalanceSWR({ address: currentAddress, network });
+  const { tokenBalanceObjects } = useTokenBalanceObjectsSWR({ address: currentAddress, network });
 
-  const totalAmount = useMemo(() => coinObjects.find((item) => item.coinType === SUI_COIN)?.balance || '0', [coinObjects]);
+  const totalAmount = useMemo(() => tokenBalanceObjects.find((item) => item.coinType === SUI_COIN)?.balance || '0', [tokenBalanceObjects]);
 
   const price = useMemo(
     () => (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[chromeStorage.currency]) || 0,
@@ -106,7 +106,7 @@ export function SuiChainItemSkeleton({ chain, network }: SuiChainItemProps) {
 }
 
 export function SuiChainItemError({ chain, network, resetErrorBoundary }: SuiChainItemProps & FallbackProps) {
-  useTokenBalanceSWR({});
+  useTokenBalanceObjectsSWR({});
 
   const { setCurrentSuiNetwork } = useCurrentSuiNetwork();
 

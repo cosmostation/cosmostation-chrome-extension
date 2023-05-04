@@ -6,7 +6,7 @@ import { SUI } from '~/constants/chain/sui/sui';
 import { SUI_COIN } from '~/constants/sui';
 import Empty from '~/Popup/components/common/Empty';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceSWR';
+import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -38,9 +38,9 @@ export default function CoinList() {
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const { coinObjects } = useTokenBalanceSWR({ address: currentAddress });
+  const { tokenBalanceObjects } = useTokenBalanceObjectsSWR({ address: currentAddress });
 
-  const tokenList = useMemo(() => coinObjects.filter((item) => item.coinType !== SUI_COIN), [coinObjects]);
+  const tokenList = useMemo(() => tokenBalanceObjects.filter((item) => item.coinType !== SUI_COIN), [tokenBalanceObjects]);
 
   const isExistToken = !!tokenList.length;
 

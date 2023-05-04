@@ -13,6 +13,7 @@ import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
 import { useDryRunTransactionBlockSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionBlockSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
+import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -20,7 +21,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Sui/components/Header';
-import { gt, minus, plus, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { gt, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/chromeStorage';
@@ -59,11 +60,16 @@ export default function Entry({ queue }: EntryProps) {
   const { params } = message;
 
   const { chromeStorage } = useChromeStorage();
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { enqueueSnackbar } = useSnackbar();
 
   const { currency } = chromeStorage;
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
+
+  const { coinGeckoId } = currentSuiNetwork;
+
+  const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
 
   const { deQueue } = useCurrentQueue();
 
@@ -133,6 +139,8 @@ export default function Entry({ queue }: EntryProps) {
 
   const expectedDisplayFee = useMemo(() => toDisplayDenomAmount(expectedBaseFee, decimals), [decimals, expectedBaseFee]);
 
+  const expectedDisplayFeePrice = useMemo(() => times(expectedDisplayFee, price), [expectedDisplayFee, price]);
+
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
   };
@@ -140,6 +148,8 @@ export default function Entry({ queue }: EntryProps) {
   const baseBudgetFee = useMemo(() => transactionBlock.blockData?.gasConfig?.budget || 0, [transactionBlock.blockData?.gasConfig?.budget]);
 
   const displayBudgetFee = useMemo(() => toDisplayDenomAmount(baseBudgetFee, decimals), [baseBudgetFee, decimals]);
+
+  const displayBudgetFeePrice = useMemo(() => times(displayBudgetFee, price), [displayBudgetFee, price]);
 
   const isDiabled = useMemo(() => !(dryRunTransaction?.result?.effects.status.status === 'success'), [dryRunTransaction?.result?.effects.status.status]);
 
@@ -189,7 +199,7 @@ export default function Entry({ queue }: EntryProps) {
                   </FeeRightAmountContainer>
                   <FeeRightValueContainer>
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                      0
+                      {expectedDisplayFeePrice}
                     </Number>
                   </FeeRightValueContainer>
                 </FeeRightColumnContainer>
@@ -210,7 +220,7 @@ export default function Entry({ queue }: EntryProps) {
                   </FeeRightAmountContainer>
                   <FeeRightValueContainer>
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                      0
+                      {displayBudgetFeePrice}
                     </Number>
                   </FeeRightValueContainer>
                 </FeeRightColumnContainer>

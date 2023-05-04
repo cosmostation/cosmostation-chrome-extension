@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { PopoverProps } from '@mui/material';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceSWR';
+import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import type { SuiChain } from '~/types/chain';
 
@@ -19,7 +19,7 @@ export default function CoinPopover({ currentCoinType, onClickCoin, onClose, cha
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { coinObjects: suiAvailableCoins } = useTokenBalanceSWR({ address });
+  const { tokenBalanceObjects: suiAvailableCoins } = useTokenBalanceObjectsSWR({ address });
 
   useEffect(() => {
     if (remainder.open) {

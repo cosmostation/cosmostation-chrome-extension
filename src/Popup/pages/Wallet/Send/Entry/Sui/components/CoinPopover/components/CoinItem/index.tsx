@@ -12,7 +12,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import type { SuiChain } from '~/types/chain';
-import type { CoinObject } from '~/types/sui/rpc';
+import type { TokenBalanceObject } from '~/types/sui/rpc';
 
 import {
   CoinButton,
@@ -28,7 +28,7 @@ import Check16Icon from '~/images/icons/Check16.svg';
 
 type CoinItemProps = ComponentProps<typeof CoinButton> & {
   isActive?: boolean;
-  coin: CoinObject;
+  coin: TokenBalanceObject;
   chain: SuiChain;
 };
 

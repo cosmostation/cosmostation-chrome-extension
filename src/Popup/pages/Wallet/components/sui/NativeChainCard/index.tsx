@@ -17,7 +17,8 @@ import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
-import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceSWR';
+import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
+import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -64,6 +65,7 @@ type NativeChainCardProps = {
 export default function NativeChainCard({ chain, isCustom }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { chromeStorage } = useChromeStorage();
+  const { data } = useCoinGeckoPriceSWR();
   const { currentSuiNetwork } = useCurrentSuiNetwork();
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
@@ -75,9 +77,9 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const { coinObjects, mutateTokenBalance } = useTokenBalanceSWR({ address: currentAddress });
+  const { tokenBalanceObjects, mutateTokenBalanceObjects } = useTokenBalanceObjectsSWR({ address: currentAddress });
 
-  const suiCoin = useMemo(() => coinObjects.find((item) => item.coinType === SUI_COIN), [coinObjects]);
+  const suiCoin = useMemo(() => tokenBalanceObjects.find((item) => item.coinType === SUI_COIN), [tokenBalanceObjects]);
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
@@ -94,14 +96,14 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const { navigate } = useNavigate();
 
-  const { explorerURL } = currentSuiNetwork;
+  const { explorerURL, coinGeckoId } = currentSuiNetwork;
 
   const imageURL = useMemo(
     () => currentSuiNetwork.imageURL || coinMetadata?.result?.iconUrl || undefined,
     [coinMetadata?.result?.iconUrl, currentSuiNetwork.imageURL],
   );
 
-  const price = 0;
+  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[chromeStorage.currency]) || 0, [chromeStorage.currency, coinGeckoId, data]);
 
   const value = times(price, displayAmount);
 
@@ -136,7 +138,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
       if (!response.error) {
         setTimeout(() => {
           enqueueSnackbar('success faucet');
-          void mutateTokenBalance();
+          void mutateTokenBalanceObjects();
           setIsDiabledFaucet(false);
         }, 5000);
       }
@@ -302,7 +304,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
 
-  useTokenBalanceSWR({ address: currentAddress });
+  useTokenBalanceObjectsSWR({ address: currentAddress });
   useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
   const { enqueueSnackbar } = useSnackbar();
