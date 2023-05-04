@@ -156,7 +156,11 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {explorerURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/address/${currentAddress}?network=${currentSuiNetwork.networkName === 'Testnet' ? 'testnet' : 'devnet'}`);
+                window.open(
+                  `${explorerURL}/address/${currentAddress}?network=${
+                    currentSuiNetwork.networkName === 'Mainnet' ? 'mainnet' : currentSuiNetwork.networkName === 'Testnet' ? 'testnet' : 'devnet'
+                  }`,
+                );
               }}
             >
               <ExplorerIcon />
