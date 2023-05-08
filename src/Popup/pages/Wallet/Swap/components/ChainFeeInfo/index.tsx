@@ -1,4 +1,4 @@
-import type { FeeCost, GasCost } from '@0xsquid/sdk';
+import type { TokenData } from '@0xsquid/sdk';
 import { Typography } from '@mui/material';
 
 import NumberText from '~/Popup/components/common/Number';
@@ -8,9 +8,14 @@ import { fix, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 
 import { Container, LeftTextContainer, RightTextContainer, TextContainer } from './styled';
 
+type FeeInfo = {
+  amount: string;
+  feeToken?: TokenData;
+};
+
 type ChainFeeInfoProps = {
   title: string;
-  feeInfo: FeeCost[] | GasCost[] | undefined;
+  feeInfo?: FeeInfo[];
   isTildeAmount?: boolean;
 };
 
@@ -25,15 +30,15 @@ export default function ChainFeeInfo({ title, feeInfo, isTildeAmount = false }: 
         <Typography variant="h7n">{title}</Typography>
       </LeftTextContainer>
       <RightTextContainer>
-        {feeInfo?.map((item, idx) => {
-          const displayFeeAmount = String(parseFloat(fix(toDisplayDenomAmount(item.amount || '0', item.token?.decimals), 5)));
+        {feeInfo?.map((item) => {
+          const displayFeeAmount = String(parseFloat(fix(toDisplayDenomAmount(item.amount || '0', item.feeToken?.decimals || 0), 5)));
 
-          const feeTokenPrice = (item.token?.coingeckoId && coinGeckoPrice.data?.[item.token.coingeckoId]?.[chromeStorage.currency]) || 0;
+          const feeTokenPrice = (item.feeToken?.coingeckoId && coinGeckoPrice.data?.[item.feeToken?.coingeckoId]?.[chromeStorage.currency]) || 0;
           const feeAmountPrice = times(displayFeeAmount, feeTokenPrice);
 
-          const feeText = `${isTildeAmount ? '~' : ''} ${displayFeeAmount} ${item.token?.symbol}`;
+          const feeText = `${isTildeAmount ? '~' : ''} ${!gt(displayFeeAmount, '0') ? '<' : ''} ${displayFeeAmount} ${item.feeToken?.symbol || ''}`;
           return (
-            <TextContainer key={item.token.address.concat(String(idx))}>
+            <TextContainer key={item.feeToken?.address}>
               <Typography variant="h7n">{feeText}</Typography>
               &nbsp;
               {gt(feeAmountPrice, '0') && (

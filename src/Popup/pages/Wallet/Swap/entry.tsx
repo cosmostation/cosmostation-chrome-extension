@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
-import type { GetRoute } from '@0xsquid/sdk';
+import type { GetRoute, TokenData } from '@0xsquid/sdk';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS, ETHEREUM_NETWORKS } from '~/constants/chain';
@@ -679,39 +679,59 @@ export default function Entry() {
 
   const squidProcessingTime = useMemo(() => divide(squidRoute.data?.route.estimate.estimatedRouteDuration || '0', '60'), [squidRoute.data]);
 
-  const squidSourceChainGasCosts = useMemo(
-    () =>
-      squidRoute.data?.route.estimate.gasCosts
-        .map((item, _, array) => ({
-          ...item,
-          amount: array.reduce((ac, cu) => (item.token.address === cu.token.address ? plus(ac, cu.amount) : ac), '0'),
-        }))
-        .filter((chainItem, idx, arr) => arr.findIndex((item) => item.token.address === chainItem.token.address) === idx),
-    [squidRoute.data?.route.estimate.gasCosts],
-  );
+  const squidSourceChainGasCosts = useMemo(() => {
+    const feeTokenAddressList = Array.from(new Set([...(squidRoute.data?.route.estimate.gasCosts.map((item) => item.token.address) || [])]));
 
-  const squidCrossChainFeeCosts = useMemo(
-    () =>
-      squidRoute.data?.route.estimate.feeCosts
-        .map((item, _, array) => ({
-          ...item,
-          amount: array.reduce((ac, cu) => (item.token.address === cu.token.address ? plus(ac, cu.amount) : ac), '0'),
-          token: {
-            ...item.token,
-            coingeckoId:
-              osmosisAssets.data.find(
-                (asset) =>
-                  asset.counter_party?.denom &&
-                  asset.counter_party.denom ===
-                    supportedSquidTokens.data?.mainnet.find((token) =>
-                      token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, item.token.address)),
-                    )?.id,
-              )?.coinGeckoId || item.token.coingeckoId,
-          },
-        }))
-        .filter((chainItem, idx, arr) => arr.findIndex((item) => item.token.address === chainItem.token.address) === idx),
-    [osmosisAssets.data, squidRoute.data?.route.estimate.feeCosts, supportedSquidTokens.data?.mainnet],
-  );
+    return feeTokenAddressList.map((item) => ({
+      amount:
+        squidRoute.data?.route.estimate.gasCosts
+          .filter((gasCost) => isEqualsIgnoringCase(gasCost.token.address, item))
+          .reduce((ac, cu) => (isEqualsIgnoringCase(item, cu.token.address) ? plus(ac, cu.amount) : ac), '0') || '0',
+      feeToken: squidRoute.data?.route.estimate.gasCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token,
+      feeItems: [...(squidRoute.data?.route.estimate.gasCosts.filter((fee) => isEqualsIgnoringCase(fee.token.address, item)) || [])],
+    }));
+  }, [squidRoute.data?.route.estimate.gasCosts]);
+
+  const squidCrossChainFeeCosts = useMemo(() => {
+    const feeTokenAddressList = Array.from(new Set([...(squidRoute.data?.route.estimate.feeCosts.map((item) => item.token.address) || [])]));
+
+    return feeTokenAddressList.map((item) => ({
+      amount:
+        squidRoute.data?.route.estimate.feeCosts
+          .filter((feeCost) => isEqualsIgnoringCase(feeCost.token.address, item) && feeCost.name !== 'Express Fee')
+          .reduce((ac, cu) => (isEqualsIgnoringCase(item, cu.token.address) ? plus(ac, cu.amount) : ac), '0') || '0',
+      feeToken: {
+        ...squidRoute.data?.route.estimate.feeCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token,
+        coingeckoId:
+          osmosisAssets.data.find(
+            (asset) =>
+              asset.counter_party?.denom &&
+              asset.counter_party.denom ===
+                supportedSquidTokens.data?.mainnet.find((token) => token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, item)))
+                  ?.id,
+          )?.coinGeckoId || squidRoute.data?.route.estimate.feeCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token.coingeckoId,
+      } as TokenData | undefined,
+      feeItems: [
+        ...(squidRoute.data?.route.estimate.feeCosts
+          .filter((fee) => isEqualsIgnoringCase(fee.token.address, item))
+          .map((fee) => ({
+            ...fee,
+            token: {
+              ...fee.token,
+              coingeckoId:
+                osmosisAssets.data.find(
+                  (asset) =>
+                    asset.counter_party?.denom &&
+                    asset.counter_party.denom ===
+                      supportedSquidTokens.data?.mainnet.find((token) =>
+                        token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, fee.token.address)),
+                      )?.id,
+                )?.coinGeckoId || fee.token.coingeckoId,
+            },
+          })) || []),
+      ],
+    }));
+  }, [osmosisAssets.data, squidRoute.data?.route.estimate.feeCosts, supportedSquidTokens.data?.mainnet]);
 
   const squidSourceChainFeeAmount = useMemo(() => squidSourceChainGasCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0', [squidSourceChainGasCosts]);
 
@@ -983,10 +1003,10 @@ export default function Entry() {
 
     if (currentSwapAPI === 'squid') {
       if (
-        squidRoute.data?.route.estimate.gasCosts.every(
+        squidSourceChainGasCosts.every(
           (item, idx) =>
-            isEqualsIgnoringCase(item.token.address, squidRoute.data?.route.estimate.feeCosts[idx].token.address) &&
-            isEqualsIgnoringCase(item.token.address, EVM_NATIVE_TOKEN_ADDRESS),
+            isEqualsIgnoringCase(item.feeToken?.address, squidCrossChainFeeCosts[idx].feeToken?.address) &&
+            isEqualsIgnoringCase(item.feeToken?.address, EVM_NATIVE_TOKEN_ADDRESS),
         )
       ) {
         return plus(squidSourceChainFeeAmount, squidCrossChainFeeAmount);
@@ -1000,9 +1020,9 @@ export default function Entry() {
     oneInchRoute.data,
     estimatedGas,
     osmosisChain.gasRate.low,
-    squidRoute.data?.route.estimate.gasCosts,
-    squidRoute.data?.route.estimate.feeCosts,
+    squidSourceChainGasCosts,
     squidSourceChainFeeAmount,
+    squidCrossChainFeeCosts,
     squidCrossChainFeeAmount,
   ]);
 
@@ -1013,40 +1033,34 @@ export default function Entry() {
 
   const squidSourceChainTotalFeePrice = useMemo(
     () =>
-      squidRoute.data?.route.estimate.gasCosts.reduce(
-        (ac, cu) =>
-          plus(
-            ac,
-            times(toDisplayDenomAmount(cu.amount || '0', cu.token.decimals || 0), coinGeckoPrice.data?.[cu.token.coingeckoId]?.[chromeStorage.currency] || 0),
-          ),
-        '0',
-      ) || '0',
-    [chromeStorage.currency, coinGeckoPrice.data, squidRoute.data?.route.estimate.gasCosts],
-  );
-
-  const squidCrossChainTotalFeePrice = useMemo(
-    () =>
-      squidRoute.data?.route.estimate.feeCosts?.reduce(
+      squidSourceChainGasCosts.reduce(
         (ac, cu) =>
           plus(
             ac,
             times(
-              toDisplayDenomAmount(cu.amount || '0', cu.token.decimals || 0),
-              coinGeckoPrice.data?.[
-                osmosisAssets.data.find(
-                  (asset) =>
-                    asset.counter_party?.denom &&
-                    asset.counter_party.denom ===
-                      supportedSquidTokens.data?.mainnet.find((token) =>
-                        token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, cu.token.address)),
-                      )?.id,
-                )?.coinGeckoId || cu.token.coingeckoId
-              ]?.[chromeStorage.currency] || 0,
+              toDisplayDenomAmount(cu.amount || '0', cu.feeToken?.decimals || 0),
+              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[chromeStorage.currency]) || '0',
             ),
           ),
         '0',
       ) || '0',
-    [chromeStorage.currency, coinGeckoPrice.data, osmosisAssets.data, squidRoute.data?.route.estimate.feeCosts, supportedSquidTokens.data?.mainnet],
+    [chromeStorage.currency, coinGeckoPrice.data, squidSourceChainGasCosts],
+  );
+
+  const squidCrossChainTotalFeePrice = useMemo(
+    () =>
+      squidCrossChainFeeCosts?.reduce(
+        (ac, cu) =>
+          plus(
+            ac,
+            times(
+              toDisplayDenomAmount(cu.amount || '0', cu.feeToken?.decimals || 0),
+              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[chromeStorage.currency]) || '0',
+            ),
+          ),
+        '0',
+      ) || '0',
+    [chromeStorage.currency, coinGeckoPrice.data, squidCrossChainFeeCosts],
   );
 
   const estimatedFeePrice = useMemo(() => {
@@ -1735,7 +1749,7 @@ export default function Entry() {
                         <Skeleton width="4rem" height="1.5rem" />
                       ) : gt(squidProcessingTime, '0') ? (
                         <SwapInfoBodyRightTextContainer>
-                          <Typography variant="h6n">{`~ ${squidProcessingTime}`}</Typography>
+                          <Typography variant="h6n">{`~ ${String(parseFloat(fix(squidProcessingTime, 2)))}`}</Typography>
                           &nbsp;
                           <Typography variant="h6n">{t('pages.Wallet.Swap.entry.minutes')}</Typography>
                         </SwapInfoBodyRightTextContainer>
