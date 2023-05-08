@@ -101,7 +101,6 @@ import SwapIcon from '~/images/icons/Swap.svg';
 
 export default function Entry() {
   const osmosisChain = OSMOSIS;
-  const ethereumChain = ETHEREUM;
   const { t, language } = useTranslation();
   const { navigateBack } = useNavigate();
   const { currentAccount } = useCurrentAccount();
@@ -145,18 +144,18 @@ export default function Entry() {
         squidChains?.find((squidChain) => squidChain.chainType === 'evm' && String(parseInt(item.chainId, 16)) === squidChain.chainId),
     ).map((item) => ({
       ...item,
-      baseChainUUID: ethereumChain.id,
+      baseChainUUID: ETHEREUM.id,
       chainId: String(parseInt(item.chainId, 16)),
-      line: ethereumChain.line,
+      line: ETHEREUM.line,
     }));
 
     const oneInchEVMChains = ETHEREUM_NETWORKS.filter((item) =>
       supportedSwapChains.data?.oneInch.evm.send.find((sendChain) => sendChain.chainId === String(parseInt(item.chainId, 16))),
     ).map((item) => ({
       ...item,
-      baseChainUUID: ethereumChain.id,
+      baseChainUUID: ETHEREUM.id,
       chainId: String(parseInt(item.chainId, 16)),
-      line: ethereumChain.line,
+      line: ETHEREUM.line,
     }));
 
     const squidCosmosChains = COSMOS_CHAINS.filter(
@@ -192,8 +191,6 @@ export default function Entry() {
 
     return [...integratedEVMChains, ...integratedCosmosChains];
   }, [
-    ethereumChain.id,
-    ethereumChain.line,
     osmosisChain.id,
     squidChains,
     supportedCosmosChain.data?.chains,
@@ -212,18 +209,18 @@ export default function Entry() {
         squidChains?.find((squidChain) => squidChain.chainType === 'evm' && String(parseInt(item.chainId, 16)) === squidChain.chainId),
     ).map((item) => ({
       ...item,
-      baseChainUUID: ethereumChain.id,
+      baseChainUUID: ETHEREUM.id,
       chainId: String(parseInt(item.chainId, 16)),
-      line: ethereumChain.line,
+      line: ETHEREUM.line,
     }));
 
     const oneInchEVMChains = ETHEREUM_NETWORKS.filter((item) =>
       supportedSwapChains.data?.oneInch.evm.receive.find((receiveChain) => receiveChain.chainId === String(parseInt(item.chainId, 16))),
     ).map((item) => ({
       ...item,
-      baseChainUUID: ethereumChain.id,
+      baseChainUUID: ETHEREUM.id,
       chainId: String(parseInt(item.chainId, 16)),
-      line: ethereumChain.line,
+      line: ETHEREUM.line,
     }));
 
     const osmoSwapChain = COSMOS_CHAINS.filter(
@@ -308,8 +305,6 @@ export default function Entry() {
     return [];
   }, [
     currentFromChain,
-    ethereumChain.id,
-    ethereumChain.line,
     osmosisChain.id,
     squidChains,
     supportedCosmosChain.data?.chains,
@@ -352,16 +347,16 @@ export default function Entry() {
   const cosmosFromChainBalance = useBalanceSWR(currentFromChain as CosmosChain);
   const cosmosToChainBalance = useBalanceSWR(currentToChain as CosmosChain);
 
-  const currentFromEVMNativeBalance = useNativeBalanceSWR(currentFromChain?.line === ethereumChain.line ? currentFromChain : undefined);
+  const currentFromEVMNativeBalance = useNativeBalanceSWR(currentFromChain?.line === ETHEREUM.line ? currentFromChain : undefined);
   const currentFromEVMTokenBalance = useTokenBalanceSWR({
-    network: currentFromChain?.line === ethereumChain.line ? currentFromChain : undefined,
-    token: currentFromChain?.line === ethereumChain.line ? (currentFromToken as EthereumToken) : undefined,
+    network: currentFromChain?.line === ETHEREUM.line ? currentFromChain : undefined,
+    token: currentFromChain?.line === ETHEREUM.line ? (currentFromToken as EthereumToken) : undefined,
   });
 
-  const currentToEVMNativeBalance = useNativeBalanceSWR(currentToChain?.line === ethereumChain.line ? currentToChain : undefined);
+  const currentToEVMNativeBalance = useNativeBalanceSWR(currentToChain?.line === ETHEREUM.line ? currentToChain : undefined);
   const currentToEVMTokenBalance = useTokenBalanceSWR({
-    network: currentToChain?.line === ethereumChain.line ? currentToChain : undefined,
-    token: currentToChain?.line === ethereumChain.line ? (currentToToken as EthereumToken) : undefined,
+    network: currentToChain?.line === ETHEREUM.line ? currentToChain : undefined,
+    token: currentToChain?.line === ETHEREUM.line ? (currentToToken as EthereumToken) : undefined,
   });
 
   const currentFromTokenBalance = useMemo(
@@ -537,7 +532,7 @@ export default function Entry() {
       }));
     }
 
-    if (currentSwapAPI === 'squid' && currentToChain?.line === ethereumChain.line) {
+    if (currentSwapAPI === 'squid' && currentToChain?.line === ETHEREUM.line) {
       const filteredTokenList = filterSquidTokens(currentToChain?.chainId);
 
       return [
@@ -594,7 +589,6 @@ export default function Entry() {
     currentToChain?.line,
     currentToChain?.id,
     currentToChain?.chainId,
-    ethereumChain.line,
     filteredFromTokenList,
     osmoSwapMath.poolsAssetData.data,
     currentFromToken?.address,
@@ -624,13 +618,13 @@ export default function Entry() {
           return isEqualsIgnoringCase(item.address, osmosisChain.baseDenom);
         }
 
-        if (currentFromChain?.line === ethereumChain.line) {
+        if (currentFromChain?.line === ETHEREUM.line) {
           return isEqualsIgnoringCase(item.address, EVM_NATIVE_TOKEN_ADDRESS);
         }
 
         return undefined;
       }),
-    [currentFromChain?.line, ethereumChain.line, filteredFromTokenList, osmosisChain.baseDenom],
+    [currentFromChain?.line, filteredFromTokenList, osmosisChain.baseDenom],
   );
 
   const currentFeeTokenBalance = useMemo(() => {
@@ -1096,7 +1090,7 @@ export default function Entry() {
     const tmpFromChain = currentFromChain;
 
     if (currentSwapAPI === 'squid') {
-      if (currentToChain?.line === ethereumChain.line) {
+      if (currentToChain?.line === ETHEREUM.line) {
         setCurrentFromChain(currentToChain);
       }
       if (currentToChain?.line === osmosisChain.line) {
@@ -1109,7 +1103,7 @@ export default function Entry() {
     setCurrentToToken(tmpFromToken);
 
     setInputDisplayAmount('');
-  }, [currentFromChain, currentFromToken, currentSwapAPI, currentToChain, currentToToken, ethereumChain.line, filteredFromChains, osmosisChain.line]);
+  }, [currentFromChain, currentFromToken, currentSwapAPI, currentToChain, currentToToken, filteredFromChains, osmosisChain.line]);
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -1395,16 +1389,16 @@ export default function Entry() {
   }, [currentSwapAPI, currentFromToken]);
 
   useEffect(() => {
-    if (currentFromChain?.line === ethereumChain.line) {
+    if (currentFromChain?.line === ETHEREUM.line) {
       void setCurrentEthereumNetwork(currentFromChain);
-      if (currentChain.line !== ethereumChain.line) {
-        void setCurrentChain(ethereumChain);
+      if (currentChain.line !== ETHEREUM.line) {
+        void setCurrentChain(ETHEREUM);
       }
     }
     if (currentFromChain?.line === 'COSMOS' && currentChain.line !== 'COSMOS') {
       void setCurrentChain(osmosisChain);
     }
-  }, [currentChain.line, currentFromChain, currentSwapAPI, ethereumChain, osmosisChain, setCurrentChain, setCurrentEthereumNetwork]);
+  }, [currentChain.line, currentFromChain, currentSwapAPI, osmosisChain, setCurrentChain, setCurrentEthereumNetwork]);
 
   return (
     <>
