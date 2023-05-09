@@ -9,5 +9,4 @@ export const TESTNET: SuiNetwork = {
   explorerURL: 'https://explorer.sui.io',
   displayDenom: 'SUI',
   decimals: 9,
-  coinGeckoId: 'sui',
 };

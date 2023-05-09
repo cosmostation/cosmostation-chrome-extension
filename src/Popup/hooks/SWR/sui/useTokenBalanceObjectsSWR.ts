@@ -74,7 +74,7 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
       .map((type) => ({
         balance: objects?.result
           ? objects.result
-              .filter((item) => type === item.data?.type && item.data?.content?.dataType === 'moveObject')
+              .filter((item) => type === item.data?.type && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
               .reduce((ac, cu) => {
                 if (cu.data?.content?.dataType === 'moveObject')
                   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -84,7 +84,12 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
               }, '0')
           : '0',
         coinType: getCoinType(type),
-        objects: [...(objects?.result?.filter((item) => type === item.data?.type) || [])],
+        objects: [
+          ...(objects?.result?.filter(
+            (item) =>
+              type === item.data?.type && type === item.data?.type && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer,
+          ) || []),
+        ],
       }))
       .sort((coin) => (coin.coinType === SUI_COIN ? -1 : 1));
   }, [objects?.result]);
