@@ -76,9 +76,8 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
           ? objects.result
               .filter((item) => type === item.data?.type && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
               .reduce((ac, cu) => {
-                if (cu.data?.content?.dataType === 'moveObject')
-                  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                  return plus(ac, (cu.data?.content.fields.balance as string) || '0');
+                if (cu.data?.content?.dataType === 'moveObject' && typeof cu.data?.content.fields.balance === 'string')
+                  return plus(ac, cu.data?.content.fields.balance || '0');
 
                 return ac;
               }, '0')
