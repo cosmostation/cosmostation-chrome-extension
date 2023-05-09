@@ -136,7 +136,8 @@ export type GetCoinBalance = {
 export type TokenBalanceObject = {
   coinType: string;
   balance: string;
-};
+  objects: SuiObjectResponse[];
+} & SuiObjectResponse;
 
 export type GetCoinBalanceResponse = Result<GetCoinBalance>;
 

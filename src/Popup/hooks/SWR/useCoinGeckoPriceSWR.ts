@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios';
 import useSWR from 'swr';
 
-import { ETHEREUM_NETWORKS } from '~/constants/chain';
+import { ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { CURRENCY_TYPE } from '~/constants/chromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { get } from '~/Popup/utils/axios';
@@ -26,9 +26,17 @@ export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const cosmosTokenCoinGeckoIds = cosmosTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!);
   const cosmosAssetsCoinGeckoIds = cosmosAssets.data.map((item) => item.coinGeckoId);
   const aptosAssetsCoinGeckoIds = aptosAssets.data.map((item) => item.coinGeckoId);
+  const suiTokenCoinGeckoIds = SUI_NETWORKS.map((item) => item.coinGeckoId);
 
   const allCoinGeckoIds = Array.from(
-    new Set([...networkCoinGeckoIds, ...ethereumTokenCoinGeckoIds, ...cosmosTokenCoinGeckoIds, ...cosmosAssetsCoinGeckoIds, ...aptosAssetsCoinGeckoIds]),
+    new Set([
+      ...networkCoinGeckoIds,
+      ...ethereumTokenCoinGeckoIds,
+      ...cosmosTokenCoinGeckoIds,
+      ...cosmosAssetsCoinGeckoIds,
+      ...aptosAssetsCoinGeckoIds,
+      ...suiTokenCoinGeckoIds,
+    ]),
   ).filter((item) => item);
   const joinedAllCoinGeckoIds = allCoinGeckoIds.length > 0 ? `,${allCoinGeckoIds.join(',')}` : '';
 
