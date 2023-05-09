@@ -1280,6 +1280,11 @@
           }
         },
         "sui": {
+          "CoinList": {
+            "index": {
+              "coin": "Coin"
+            }
+          },
           "NativeChainCard": {
             "index": {
               "copied": "Copied",

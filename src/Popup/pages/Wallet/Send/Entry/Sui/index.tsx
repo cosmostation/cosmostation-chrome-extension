@@ -15,7 +15,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useDryRunTransactionBlockSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionBlockSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useGetCoinsSWR } from '~/Popup/hooks/SWR/sui/useGetCoinsSWR';
-import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceSWR';
+import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -70,7 +70,7 @@ export default function Sui({ chain }: SuiProps) {
 
   const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
-  const { totalSuiTokenBalanceObjects: suiAvailableCoins } = useTokenBalanceSWR({ address });
+  const { tokenBalanceObjects: suiAvailableCoins } = useTokenBalanceObjectsSWR({ address });
 
   const suiAvailableCoinTypes = useMemo(() => suiAvailableCoins.map((object) => object.coinType), [suiAvailableCoins]);
 
