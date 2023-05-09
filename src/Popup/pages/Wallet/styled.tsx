@@ -1,5 +1,7 @@
 import { styled } from '@mui/material/styles';
 
+import { TabPanel } from '~/Popup/components/common/Tab';
+
 export const Container = styled('div')({
   width: '100%',
   height: '100%',
@@ -27,5 +29,13 @@ export const BottomContainer = styled('div')({
 
   display: 'flex',
   flexDirection: 'column',
+  overflow: 'hidden',
+});
+
+export const StyledTabPanel = styled(TabPanel)({
+  marginTop: '0',
+  display: 'flex',
+  flexDirection: 'column',
+
   overflow: 'hidden',
 });
