@@ -42,7 +42,7 @@ export default function NFTList() {
     const nftNameList = Array.from(
       new Set([
         ...(nftObjects
-          ?.filter((item) => item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer && getObjectDisplay(item).data?.name)
+          ?.filter((item) => item.data?.content?.dataType === 'moveObject' && getObjectDisplay(item).data?.name)
           .map((item) => getObjectDisplay(item).data?.name || '') || []),
       ]),
     );
@@ -53,7 +53,9 @@ export default function NFTList() {
       infos.push({ type: item, name: item, count: nftObjects.filter((object) => item === getObjectDisplay(object).data?.name).length });
     });
 
-    infos.push({ type: 'etc', name: 'ETC', count: nftObjects.filter((object) => !getObjectDisplay(object).data?.name).length });
+    if (nftObjects && nftObjects?.filter((item) => !getObjectDisplay(item).data?.name).length) {
+      infos.push({ type: 'etc', name: 'ETC', count: nftObjects.filter((object) => !getObjectDisplay(object).data?.name).length });
+    }
 
     return infos;
   }, [nftObjects]);

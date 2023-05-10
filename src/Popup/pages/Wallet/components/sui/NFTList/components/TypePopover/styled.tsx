@@ -56,7 +56,7 @@ export const TypeLeftContainer = styled('div')({
 export const TypeLeftTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 
-  maxWidth: '6rem',
+  maxWidth: '8rem',
 
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',
