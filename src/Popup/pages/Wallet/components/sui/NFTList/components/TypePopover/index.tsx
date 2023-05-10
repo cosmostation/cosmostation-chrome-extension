@@ -2,12 +2,14 @@ import { useEffect, useRef } from 'react';
 import type { PopoverProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
+import Tooltip from '~/Popup/components/common/Tooltip';
+
 import { Container, StyledPopover, TypeButton, TypeLeftContainer, TypeLeftNumberContainer, TypeLeftTextContainer, TypeRightContainer } from './styled';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 
 export type TypeInfo = {
-  type: 'all' | 'native' | 'bridge' | 'ibc' | 'cw20';
+  type: string;
   name: string;
   count: string | number;
 };
@@ -40,9 +42,11 @@ export default function TypePopover({ typeInfos, currentTypeInfo, onClickType, o
               }}
             >
               <TypeLeftContainer>
-                <TypeLeftTextContainer>
-                  <Typography variant="h6">{item.name}</Typography>
-                </TypeLeftTextContainer>
+                <Tooltip title={item.name} placement="top" arrow>
+                  <TypeLeftTextContainer>
+                    <Typography variant="h6">{item.name}</Typography>
+                  </TypeLeftTextContainer>
+                </Tooltip>
                 <TypeLeftNumberContainer>
                   <Typography variant="h6">{item.count}</Typography>
                 </TypeLeftNumberContainer>

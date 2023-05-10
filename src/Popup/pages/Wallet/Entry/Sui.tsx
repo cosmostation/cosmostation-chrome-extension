@@ -10,6 +10,7 @@ import type { SuiChain } from '~/types/chain';
 import LedgerCheck from '../components/LedgerCheck';
 import CoinList from '../components/sui/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/sui/NativeChainCard';
+import NFTList from '../components/sui/NFTList';
 import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer, StyledTabPanel } from '../styled';
 
 type SuiProps = {
@@ -55,7 +56,9 @@ export default function Sui({ chain }: SuiProps) {
           </BottomContainer>
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
-          empty
+          <BottomContainer>
+            <NFTList />
+          </BottomContainer>
         </StyledTabPanel>
       </>
     </Container>

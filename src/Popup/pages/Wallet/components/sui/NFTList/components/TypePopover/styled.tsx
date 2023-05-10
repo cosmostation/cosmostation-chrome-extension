@@ -8,7 +8,7 @@ export const StyledPopover = styled(Popover)({
 
     '& > div': {
       width: '16rem',
-      maxHeight: '25rem',
+      maxHeight: '15rem',
     },
   },
 });
@@ -55,6 +55,16 @@ export const TypeLeftContainer = styled('div')({
 
 export const TypeLeftTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+
+  maxWidth: '6rem',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const TypeLeftNumberContainer = styled('div')(({ theme }) => ({
@@ -69,7 +79,6 @@ export const TypeRightContainer = styled('div')(({ theme }) => ({
 
   '& > svg': {
     '& > path': {
-      stroke: theme.colors.base06,
       fill: theme.colors.base06,
     },
   },
