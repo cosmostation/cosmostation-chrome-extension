@@ -63,8 +63,7 @@ export const ObjectImageContainer = styled('div')({
     height: '14.8rem',
   },
 });
-
-export const ObjectNameTextContainer = styled('div')(({ theme }) => ({
+export const ObjectDescriptionTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 
   maxWidth: '100%',
@@ -78,7 +77,7 @@ export const ObjectNameTextContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-export const ObjectDescriptionTextContainer = styled('div')(({ theme }) => ({
+export const ObjectNameTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 
   maxWidth: '100%',

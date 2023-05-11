@@ -7,6 +7,7 @@ export const PATH = {
   WALLET__SEND: '/wallet/send',
   WALLET__SWAP: '/wallet/swap',
   WALLET__RECEIVE: '/wallet/receive',
+  WALLET__NFT_DETAIL: '/wallet/nft-detail',
 
   SETTING__CHANGE_PASSWORD: '/setting/change-password',
   SETTING__CHANGE_LANGUAGE: '/setting/change-language',

@@ -17,31 +17,31 @@ type NFTCardItemProps = {
 
 export default function NFTCardItem({ nftObject, onClick, disabled }: NFTCardItemProps) {
   const nftMeta = useMemo(() => {
-    const { name, description, creator, image_url, link, project_url } = getObjectDisplay(nftObject).data || {};
+    const { name, description, image_url } = getObjectDisplay(nftObject).data || {};
 
     return {
       name: name || '',
       description: description || '',
       imageUrl: image_url || '',
-      link: link || '',
-      projectUrl: project_url || '',
-      creator: creator || '',
+      objectId: nftObject.data?.objectId || '',
     };
   }, [nftObject]);
+
+  const { name, imageUrl, objectId, description } = nftMeta;
 
   return (
     <StyledButton onClick={onClick} disabled={disabled}>
       <BodyContainer>
-        <ObjectImageContainer>{nftMeta.imageUrl ? <Image src={nftMeta.imageUrl} /> : <Image src={unknownNFTImg} />}</ObjectImageContainer>
+        <ObjectImageContainer>{imageUrl ? <Image src={imageUrl} /> : <Image src={unknownNFTImg} />}</ObjectImageContainer>
       </BodyContainer>
 
       <BottomContainer>
-        <ObjectNameTextContainer>
-          <Typography variant="h5">{nftMeta.name || nftObject.data?.objectId}</Typography>
-        </ObjectNameTextContainer>
         <ObjectDescriptionTextContainer>
-          <Typography variant="h5">{nftMeta.description}</Typography>
+          <Typography variant="h5">{description}</Typography>
         </ObjectDescriptionTextContainer>
+        <ObjectNameTextContainer>
+          <Typography variant="h5">{name || objectId}</Typography>
+        </ObjectNameTextContainer>
       </BottomContainer>
     </StyledButton>
   );

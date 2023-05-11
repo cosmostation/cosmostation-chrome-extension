@@ -17,7 +17,7 @@ export function isExists(object: Result<GetObject>): object is Result<GetObjectE
 }
 
 export function getCoinType(type?: string) {
-  if (!type) {
+  if (!type || type?.split('::')[1] !== 'coin') {
     return '';
   }
 

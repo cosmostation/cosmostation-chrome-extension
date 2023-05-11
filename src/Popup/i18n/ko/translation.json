@@ -975,6 +975,32 @@
       }
     },
     "Wallet": {
+      "NFTDetail": {
+        "Entry": {
+          "Sui": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "copied": "복사 되었습니다.",
+                  "creator": "제작자",
+                  "description": "NFT 설명",
+                  "link": "주소",
+                  "objectId": "오브젝트 Id",
+                  "ownerAddress": "소유주",
+                  "projectUrl": "홈페이지"
+                }
+              }
+            },
+            "index": {
+              "send": "NFT 보내기",
+              "untransferableObject": "보낼 수 없는 NFT입니다"
+            }
+          }
+        },
+        "layout": {
+          "title": "NFT 상세"
+        }
+      },
       "Receive": {
         "Entry": {
           "Aptos": {

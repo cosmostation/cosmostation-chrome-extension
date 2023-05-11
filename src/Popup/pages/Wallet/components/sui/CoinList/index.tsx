@@ -21,7 +21,13 @@ import {
   ListTitleLeftCountContainer,
   ListTitleLeftTextContainer,
   ListTitleRightContainer,
+  NoCoinContainer,
+  NoCoinHeaderTextContainer,
+  NoCoinSubTextContainer,
+  NoCoinTextContainer,
 } from './styled';
+
+import NoCoinIcon from '~/images/icons/NoCoin.svg';
 
 export default function CoinList() {
   const chain = SUI;
@@ -45,7 +51,19 @@ export default function CoinList() {
   const isExistToken = !!tokenList.length;
 
   if (!isExistToken) {
-    return null;
+    return (
+      <NoCoinContainer>
+        <NoCoinIcon />
+        <NoCoinTextContainer>
+          <NoCoinHeaderTextContainer>
+            <Typography variant="h4">No Coins</Typography>
+          </NoCoinHeaderTextContainer>
+          <NoCoinSubTextContainer>
+            <Typography variant="h4">Recent Coins will show up here</Typography>
+          </NoCoinSubTextContainer>
+        </NoCoinTextContainer>
+      </NoCoinContainer>
+    );
   }
 
   return (

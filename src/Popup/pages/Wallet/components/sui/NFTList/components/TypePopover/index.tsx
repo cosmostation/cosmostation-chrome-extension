@@ -14,7 +14,7 @@ export type TypeInfo = {
   count: string | number;
 };
 
-type TypePopoverProps = Omit<PopoverProps, 'children'> & { currentTypeInfo: TypeInfo; typeInfos: TypeInfo[]; onClickType?: (coinInfo: TypeInfo) => void };
+type TypePopoverProps = Omit<PopoverProps, 'children'> & { currentTypeInfo?: TypeInfo; typeInfos: TypeInfo[]; onClickType?: (coinInfo: TypeInfo) => void };
 
 export default function TypePopover({ typeInfos, currentTypeInfo, onClickType, onClose, ...remainder }: TypePopoverProps) {
   const ref = useRef<HTMLButtonElement>(null);
@@ -29,7 +29,7 @@ export default function TypePopover({ typeInfos, currentTypeInfo, onClickType, o
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
         {typeInfos.map((item) => {
-          const isActive = currentTypeInfo.type === item.type;
+          const isActive = currentTypeInfo?.type === item.type;
           return (
             <TypeButton
               type="button"

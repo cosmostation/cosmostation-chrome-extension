@@ -43,42 +43,30 @@ export const ListContainer = styled('div')({
   overflow: 'auto',
 });
 
-export const AddTokenButton = styled('button')(({ theme }) => ({
-  padding: 0,
-  border: 0,
-
+export const NoNFTContainer = styled('div')({
   display: 'flex',
+  flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
 
-  backgroundColor: theme.colors.base02,
-  borderRadius: '0.8rem',
+  marginTop: '6.8rem',
 
-  width: '100%',
-  height: '5.8rem',
+  rowGap: '0.8rem',
+});
 
-  '&:hover': {
-    backgroundColor: theme.colors.base03,
+export const NoNFTTextContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
 
-    cursor: 'pointer',
-  },
+  rowGap: '0.4rem',
+});
 
-  '&:disabled': {
-    backgroundColor: theme.colors.base02,
-
-    '&:hover': {
-      cursor: 'default',
-    },
-  },
-
-  '& > svg': {
-    fill: theme.accentColors.purple01,
-    '& > path': { fill: theme.accentColors.purple01 },
-  },
+export const NoNFTHeaderTextContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
 }));
 
-export const AddTokenTextContainer = styled('div')(({ theme }) => ({
-  marginLeft: '0.4rem',
-
-  color: theme.colors.text01,
+export const NoNFTSubTextContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text02,
 }));

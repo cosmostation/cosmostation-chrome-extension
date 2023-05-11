@@ -1,5 +1,6 @@
 import { Suspense, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { Typography } from '@mui/material';
 import { getObjectDisplay } from '@mysten/sui.js';
 
 import { SUI } from '~/constants/chain/sui/sui';
@@ -7,20 +8,31 @@ import Empty from '~/Popup/components/common/Empty';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
+import type { Path } from '~/types/route';
 
 import NFTCardItem, { NFTCardItemSkeleton } from './components/NFTCardItem';
 import TypeButton from './components/TypeButton';
 import type { TypeInfo } from './components/TypePopover';
 import TypePopover from './components/TypePopover';
-// import { useNavigate } from '~/Popup/hooks/useNavigate';
-// import type { Path } from '~/types/route';
-// import TypePopover from './components/TypePopover';
-import { Container, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
+import {
+  Container,
+  ListContainer,
+  ListTitleContainer,
+  ListTitleLeftContainer,
+  ListTitleRightContainer,
+  NoNFTContainer,
+  NoNFTHeaderTextContainer,
+  NoNFTSubTextContainer,
+  NoNFTTextContainer,
+} from './styled';
+
+import NoNFTIcon from '~/images/icons/NoNFT.svg';
 
 export default function NFTList() {
   const chain = SUI;
 
-  // const { navigate } = useNavigate();
+  const { navigate } = useNavigate();
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
@@ -62,19 +74,31 @@ export default function NFTList() {
 
   const [currentType, setCurrentType] = useState(typeInfos[0].type);
 
-  const currentTypeInfo = useMemo(() => typeInfos.find((item) => item.type === currentType)!, [currentType, typeInfos]);
+  const currentTypeInfo = useMemo(() => typeInfos.find((item) => item.type === currentType), [currentType, typeInfos]);
 
   const isExistNFT = nftObjects && !!nftObjects.length;
 
   const filteredNFTObjects = useMemo(() => {
     if (currentType === 'all') return nftObjects;
-    if (currentType === 'etc') return nftObjects.filter((item) => !getObjectDisplay(item).data?.name);
+    if (currentType === 'etc') return nftObjects.filter((item) => !getObjectDisplay(item).data?.name) || [];
 
-    return nftObjects.filter((item) => currentTypeInfo.name === getObjectDisplay(item).data?.name);
-  }, [currentType, currentTypeInfo.name, nftObjects]);
+    return nftObjects.filter((item) => currentTypeInfo?.name === getObjectDisplay(item).data?.name) || [];
+  }, [currentType, currentTypeInfo?.name, nftObjects]);
 
   if (!isExistNFT) {
-    return null;
+    return (
+      <NoNFTContainer>
+        <NoNFTIcon />
+        <NoNFTTextContainer>
+          <NoNFTHeaderTextContainer>
+            <Typography variant="h4">No NFTs</Typography>
+          </NoNFTHeaderTextContainer>
+          <NoNFTSubTextContainer>
+            <Typography variant="h4">Recent NFTs will show up here</Typography>
+          </NoNFTSubTextContainer>
+        </NoNFTTextContainer>
+      </NoNFTContainer>
+    );
   }
 
   return (
@@ -82,8 +106,8 @@ export default function NFTList() {
       <ListTitleContainer>
         <ListTitleLeftContainer>
           <TypeButton
-            text={currentTypeInfo.name}
-            number={currentTypeInfo.count}
+            text={currentTypeInfo?.name}
+            number={currentTypeInfo?.count}
             onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
             isActive={isOpenPopover}
           />
@@ -94,8 +118,7 @@ export default function NFTList() {
         {filteredNFTObjects.map((nft) => (
           <ErrorBoundary key={nft.data?.objectId} FallbackComponent={Empty}>
             <Suspense fallback={<NFTCardItemSkeleton />}>
-              {/* onClick 일단 삭제처리 */}
-              <NFTCardItem nftObject={nft} />
+              <NFTCardItem nftObject={nft} onClick={() => navigate(`/wallet/nft-detail/${nft.data?.objectId || ''}` as unknown as Path)} />
             </Suspense>
           </ErrorBoundary>
         ))}

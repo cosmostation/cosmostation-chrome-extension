@@ -975,6 +975,32 @@
       }
     },
     "Wallet": {
+      "NFTDetail": {
+        "Entry": {
+          "Sui": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "copied": "Copied",
+                  "creator": "Created by",
+                  "description": "Description",
+                  "link": "Link",
+                  "objectId": "Object Id",
+                  "ownerAddress": "Owner",
+                  "projectUrl": "Website"
+                }
+              }
+            },
+            "index": {
+              "send": "NFT Send",
+              "untransferableObject": "Untransferable object"
+            }
+          }
+        },
+        "layout": {
+          "title": "NFT Detail"
+        }
+      },
       "Receive": {
         "Entry": {
           "Aptos": {
