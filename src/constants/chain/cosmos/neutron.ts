@@ -6,7 +6,7 @@ export const NEUTRON: CosmosChain = {
   id: '04c17220-88ee-478c-84c8-44c716b8562e',
   line: 'COSMOS',
   type: '',
-  chainId: 'pion-1',
+  chainId: 'neutron-1',
   chainName: 'Neutron',
   restURL: 'https://lcd-neutron.cosmostation.io',
   imageURL: neutronImg,
@@ -27,4 +27,5 @@ export const NEUTRON: CosmosChain = {
     average: '0.025',
   },
   gas: { send: '100000' },
+  custom: 'no-stake',
 };
