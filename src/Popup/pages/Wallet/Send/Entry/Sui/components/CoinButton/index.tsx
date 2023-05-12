@@ -41,7 +41,7 @@ export default function CoinButton({ coinType, chain, isActive, ...remainder }: 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType });
 
   const decimals = useMemo(
-    () => (coinMetadata?.result?.decimals || coinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
+    () => coinMetadata?.result?.decimals || (coinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
     [coinMetadata?.result?.decimals, coinType, currentSuiNetwork.decimals],
   );
 
@@ -57,7 +57,7 @@ export default function CoinButton({ coinType, chain, isActive, ...remainder }: 
   );
 
   const displayDenom = useMemo(() => coinMetadata?.result?.symbol || splitedCoinType[2] || '', [coinMetadata?.result?.symbol, splitedCoinType]);
-  const displayAmount = toDisplayDenomAmount(baseAmount, decimals);
+  const displayAmount = useMemo(() => toDisplayDenomAmount(baseAmount, decimals), [baseAmount, decimals]);
 
   return (
     <Button type="button" {...remainder}>
