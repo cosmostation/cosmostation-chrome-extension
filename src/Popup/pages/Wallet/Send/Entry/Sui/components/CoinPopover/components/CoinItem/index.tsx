@@ -41,7 +41,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin,
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: coin.coinType });
 
   const decimals = useMemo(
-    () => (coinMetadata?.result?.decimals || coin.coinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
+    () => coinMetadata?.result?.decimals || (coin.coinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
     [coin.coinType, coinMetadata?.result?.decimals, currentSuiNetwork.decimals],
   );
 
