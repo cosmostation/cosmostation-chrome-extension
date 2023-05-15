@@ -17,6 +17,7 @@ import type {
   SuiGetChainResponse,
   SuiGetPermissionsResponse,
 } from '~/types/message/sui';
+import type { SuiStandardEvent } from '~/types/sui';
 
 const request = (message: SuiRequestMessage) =>
   new Promise((res, rej) => {
@@ -131,6 +132,50 @@ const on = (eventName: SuiListenerType, eventHandler: (data: any) => void) => {
   return () => off(eventName, eventHandler);
 };
 
+const standardEventOn = (eventName: string, eventHandler: (data: SuiStandardEvent) => void) => {
+  if (eventName === 'change') {
+    const handler = (event: MessageEvent<ListenerMessage<ResponseMessage>>) => {
+      if (event.data?.isCosmostation && event.data?.line === 'SUI') {
+        if (event.data?.message?.result) {
+          if (event.data?.type === 'accountChange') {
+            eventHandler({ type: 'wallet-status-changed', accounts: event.data?.message?.result as string[] });
+          }
+
+          if (event.data?.type === 'networkChange') {
+            eventHandler({ type: 'wallet-status-changed', network: { env: event.data?.message?.result as string } });
+          }
+        }
+      }
+    };
+
+    window.addEventListener('message', handler);
+
+    window.cosmostation.handlerInfos.push({ line: 'SUI', eventName: 'sui_standard_event', originHandler: eventHandler, handler });
+
+    return () => window.removeEventListener('message', handler);
+  }
+
+  return () => undefined;
+};
+
+const standardEventOff = (eventName: string, eventHandler: (data: SuiStandardEvent) => void) => {
+  if (eventName === 'change') {
+    const handlerInfos = window.cosmostation.handlerInfos.filter(
+      (item) => item.line === 'SUI' && item.eventName === 'sui_standard_event' && item.originHandler === eventHandler,
+    );
+
+    const notHandlerInfos = window.cosmostation.handlerInfos.filter(
+      (item) => !(item.line === 'SUI' && item.eventName === 'sui_standard_event' && item.originHandler === eventHandler),
+    );
+
+    handlerInfos.forEach((handlerInfo) => {
+      window.removeEventListener('message', handlerInfo.handler);
+    });
+
+    window.cosmostation.handlerInfos = notHandlerInfos;
+  }
+};
+
 class SuiStandard implements Wallet {
   version: '1.0.0';
 
@@ -178,7 +223,8 @@ class SuiStandard implements Wallet {
 
       'standard:events': {
         version: '1.0.0',
-        on,
+        on: standardEventOn,
+        off: standardEventOff,
       },
 
       'sui:signAndExecuteTransactionBlock': {

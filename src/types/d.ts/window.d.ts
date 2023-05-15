@@ -28,7 +28,8 @@ interface Window {
     handlerInfos: {
       line: import('~/types/chain').LineType;
       eventName: string;
-      originHandler: (data: unknown) => void;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      originHandler: (data: any) => void;
       handler: (event: MessageEvent<ListenerMessage>) => void;
     }[];
     providers: {
