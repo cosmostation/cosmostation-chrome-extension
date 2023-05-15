@@ -30,6 +30,8 @@ const accentColors: AccentColors = {
   white: '#FFFFFF',
   green: '#27BD69',
   red: '#CD1A1A',
+  blue01: '#4472DE',
+  blue02: '#3B61BA',
 };
 
 const htmlFontSize = 10;

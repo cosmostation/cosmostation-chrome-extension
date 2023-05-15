@@ -984,10 +984,9 @@
                   "copied": "복사 되었습니다.",
                   "creator": "제작자",
                   "description": "NFT 설명",
-                  "link": "주소",
                   "objectId": "오브젝트 Id",
                   "ownerAddress": "소유주",
-                  "projectUrl": "홈페이지"
+                  "url": "URL"
                 }
               }
             },

@@ -1,16 +1,13 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Typography } from '@mui/material';
-import { getObjectDisplay } from '@mysten/sui.js';
+import { getObjectDisplay, getObjectOwner } from '@mysten/sui.js';
 
-import { SUI } from '~/constants/chain/sui/sui';
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Button from '~/Popup/components/common/Button';
-import Image from '~/Popup/components/common/Image';
+import NFTImage from '~/Popup/components/common/NFTImage';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
-import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
@@ -34,16 +31,7 @@ export default function Sui() {
   const { t } = useTranslation();
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
-  const chain = SUI;
   const { explorerURL, networkName } = currentSuiNetwork;
-  const { currentAccount } = useCurrentAccount();
-
-  const accounts = useAccounts();
-
-  const currentAddress = useMemo(
-    () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '',
-    [accounts?.data, chain.id, currentAccount.id],
-  );
 
   const params = useParams();
 
@@ -55,6 +43,7 @@ export default function Sui() {
     if (filteredNFTObject?.data && filteredNFTObject.data?.content?.dataType === 'moveObject') {
       const { name, description, creator, image_url, link, project_url } = getObjectDisplay(filteredNFTObject).data || {};
 
+      const objectOwner = getObjectOwner(filteredNFTObject);
       return {
         name: name || '',
         description: description || '',
@@ -63,12 +52,17 @@ export default function Sui() {
         projectUrl: project_url || '',
         creator: creator || '',
         objectId: filteredNFTObject.data.objectId || '',
-        ownerAddress: currentAddress,
+        ownerAddress:
+          objectOwner && objectOwner !== 'Immutable' && 'AddressOwner' in objectOwner
+            ? objectOwner.AddressOwner
+            : objectOwner && objectOwner !== 'Immutable' && 'ObjectOwner' in objectOwner
+            ? objectOwner.ObjectOwner
+            : '',
         objectFieldData: { ...filteredNFTObject.data?.content.fields },
       };
     }
     return {};
-  }, [currentAddress, filteredNFTObject]);
+  }, [filteredNFTObject]);
 
   const { name, imageUrl, objectId } = nftMeta;
 
@@ -86,7 +80,7 @@ export default function Sui() {
     <>
       <Container>
         <ContentContainer>
-          <NFTImageContainer> {imageUrl ? <Image src={imageUrl} /> : <Image src={unknownNFTImg} />}</NFTImageContainer>
+          <NFTImageContainer> {imageUrl ? <NFTImage src={imageUrl} /> : <NFTImage src={unknownNFTImg} />}</NFTImageContainer>
           <NFTInfoContainer>
             <NFTInfoHeaderContainer>
               <NFTInfoHeaderTextContainer>

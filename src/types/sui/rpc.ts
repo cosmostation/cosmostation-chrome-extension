@@ -144,3 +144,22 @@ export type GetCoinBalanceResponse = Result<GetCoinBalance>;
 export type GetAllBalances = GetCoinBalance[];
 
 export type GetAllBalancesResponse = Result<GetAllBalances>;
+
+export type DynamicFieldPage = {
+  data: {
+    type: 'DynamicField' | 'DynamicObject';
+    objectType: string;
+    objectId: string;
+    version: number;
+    digest: string;
+    name: {
+      type: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      value?: any;
+    };
+    bcsName: string;
+  }[];
+  nextCursor: string | null;
+  hasNextPage: boolean;
+};
+export type GetDynamicFieldsResponse = Result<DynamicFieldPage>;

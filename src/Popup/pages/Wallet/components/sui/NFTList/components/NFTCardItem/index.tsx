@@ -4,7 +4,7 @@ import type { SuiObjectResponse } from '@mysten/sui.js';
 import { getObjectDisplay } from '@mysten/sui.js';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
-import Image from '~/Popup/components/common/Image';
+import NFTImage from '~/Popup/components/common/NFTImage';
 import Skeleton from '~/Popup/components/common/Skeleton';
 
 import { BodyContainer, BottomContainer, ObjectDescriptionTextContainer, ObjectImageContainer, ObjectNameTextContainer, StyledButton } from './styled';
@@ -32,7 +32,7 @@ export default function NFTCardItem({ nftObject, onClick, disabled }: NFTCardIte
   return (
     <StyledButton onClick={onClick} disabled={disabled}>
       <BodyContainer>
-        <ObjectImageContainer>{imageUrl ? <Image src={imageUrl} /> : <Image src={unknownNFTImg} />}</ObjectImageContainer>
+        <ObjectImageContainer>{imageUrl ? <NFTImage src={imageUrl} /> : <NFTImage src={unknownNFTImg} />}</ObjectImageContainer>
       </BodyContainer>
 
       <BottomContainer>
@@ -52,7 +52,7 @@ export function NFTCardItemSkeleton() {
     <StyledButton disabled>
       <BodyContainer>
         <ObjectImageContainer>
-          <Image src={unknownNFTImg} />
+          <NFTImage src={unknownNFTImg} />
         </ObjectImageContainer>
       </BodyContainer>
       <BottomContainer>

@@ -1,3 +1,4 @@
+import type { SuiObjectData } from '@mysten/sui.js';
 import { Ed25519PublicKey } from '@mysten/sui.js';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -29,6 +30,10 @@ export function getCoinType(type?: string) {
   }
 
   return '';
+}
+
+export function isKiosk(data: SuiObjectData) {
+  return !!data.type && data.type.includes('kiosk') && !!data.content && 'fields' in data.content && 'kiosk' in data.content.fields;
 }
 
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {

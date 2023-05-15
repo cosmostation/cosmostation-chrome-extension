@@ -2,8 +2,10 @@ import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 import { getObjectDisplay } from '@mysten/sui.js';
 
+import { isKiosk } from '~/Popup/utils/sui';
 import type { SuiNetwork } from '~/types/chain';
 
+import { useGetDynamicFieldsSWR } from './useGetDynamicFieldsSWR';
 import { useGetObjectsOwnedByAddressSWR } from './useGetObjectsOwnedByAddressSWR';
 import { useGetObjectsSWR } from './useGetObjectsSWR';
 import { useCurrentAccount } from '../../useCurrent/useCurrentAccount';
@@ -61,10 +63,44 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
 
   const nftObjects = useMemo(() => objects?.result?.filter((item) => getObjectDisplay(item).data) || [], [objects?.result]);
 
+  const kioskTypeObjects = useMemo(() => nftObjects.filter((item) => item.data && isKiosk(item.data)), [nftObjects]);
+
+  const kioskTypeObjectsDynamicFields = useGetDynamicFieldsSWR({
+    network,
+    parentObjectIds: [...kioskTypeObjects.map((item) => getObjectDisplay(item).data?.kiosk || '')],
+    ...config,
+  });
+
+  const filteredDynamicFieldPages = useMemo(
+    () => kioskTypeObjectsDynamicFields.returnData?.filter((item) => item?.data.find((data) => data.name.type === '0x2::kiosk::Item')) || [],
+    [kioskTypeObjectsDynamicFields.returnData],
+  );
+
+  const { data: kioskObjects, mutate: mutateGetKioskObjects } = useGetObjectsSWR({
+    network,
+    objectIds: [...filteredDynamicFieldPages.map((item) => item?.data.find((data) => data.name.type === '0x2::kiosk::Item')?.objectId || '')],
+    options: {
+      showType: true,
+      showContent: true,
+      showOwner: true,
+      showDisplay: true,
+    },
+    ...options,
+    ...config,
+  });
+
+  const kioskNFTObjects = useMemo(() => kioskObjects?.result?.filter((item) => getObjectDisplay(item).data) || [], [kioskObjects?.result]);
+
+  const ownedNFTObjects = [
+    ...kioskNFTObjects,
+    ...nftObjects.filter((item) => !kioskTypeObjects.find((object) => object.data?.objectId === item.data?.objectId)),
+  ];
+
   const mutateNFTObjects = useCallback(() => {
     void mutateGetObjectsOwnedByAddress();
     void mutateGetObjects();
-  }, [mutateGetObjects, mutateGetObjectsOwnedByAddress]);
+    void mutateGetKioskObjects();
+  }, [mutateGetObjects, mutateGetObjectsOwnedByAddress, mutateGetKioskObjects]);
 
-  return { nftObjects, mutateNFTObjects };
+  return { nftObjects: ownedNFTObjects, mutateNFTObjects };
 }

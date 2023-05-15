@@ -984,10 +984,9 @@
                   "copied": "Copied",
                   "creator": "Created by",
                   "description": "Description",
-                  "link": "Link",
                   "objectId": "Object Id",
                   "ownerAddress": "Owner",
-                  "projectUrl": "Website"
+                  "url": "URL"
                 }
               }
             },

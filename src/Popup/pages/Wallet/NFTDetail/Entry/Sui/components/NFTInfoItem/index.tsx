@@ -9,7 +9,6 @@ import { shorterAddress } from '~/Popup/utils/string';
 import { ItemColumnContainer, ItemContainer, ItemRightContainer, ItemTitleContainer, ItemValueContainer, StyledIconButton, URLButton } from './styled';
 
 import Copy16Icon from '~/images/icons/Copy16.svg';
-import Explorer16Icon from '~/images/icons/Explorer16.svg';
 
 type NFTMetaType = {
   name?: string;
@@ -33,8 +32,11 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
 
   const { description, creator, link, projectUrl, objectId, ownerAddress } = nftMeta;
 
-  const shorterCurrentAddress = useMemo(() => shorterAddress(ownerAddress, 14), [ownerAddress]);
+  const shorterOwnerAddress = useMemo(() => shorterAddress(ownerAddress, 14), [ownerAddress]);
   const shorterObjectId = useMemo(() => shorterAddress(objectId, 14), [objectId]);
+
+  const shorterLink = useMemo(() => shorterAddress(link, 20), [link]);
+  const shorterProjectUrl = useMemo(() => shorterAddress(projectUrl, 20), [projectUrl]);
 
   const handleOnClickCopy = (copyString?: string) => {
     if (copyString && copy(copyString)) {
@@ -44,18 +46,21 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
 
   return (
     <>
-      <ItemContainer>
-        <ItemTitleContainer>
-          <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.ownerAddress')}</Typography>
-        </ItemTitleContainer>
-        <ItemRightContainer>
-          <Typography variant="h5">{shorterCurrentAddress}</Typography>
+      {shorterOwnerAddress && (
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.ownerAddress')}</Typography>
+          </ItemTitleContainer>
 
-          <StyledIconButton onClick={() => handleOnClickCopy(ownerAddress)}>
-            <Copy16Icon />
-          </StyledIconButton>
-        </ItemRightContainer>
-      </ItemContainer>
+          <ItemRightContainer>
+            <Typography variant="h5">{shorterOwnerAddress}</Typography>
+
+            <StyledIconButton onClick={() => handleOnClickCopy(ownerAddress)}>
+              <Copy16Icon />
+            </StyledIconButton>
+          </ItemRightContainer>
+        </ItemContainer>
+      )}
 
       <ItemContainer>
         <ItemTitleContainer>
@@ -84,14 +89,12 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
       {link && (
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.link')}</Typography>
+            <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.url')}</Typography>
           </ItemTitleContainer>
           <ItemRightContainer>
-            <Typography variant="h5">{link}</Typography>
-
-            <StyledIconButton onClick={() => window.open(link)}>
-              <Explorer16Icon />
-            </StyledIconButton>
+            <URLButton type="button" onClick={() => window.open(link)}>
+              <Typography variant="h5">{shorterLink}</Typography>
+            </URLButton>
           </ItemRightContainer>
         </ItemContainer>
       )}
@@ -99,18 +102,12 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
       {projectUrl && (
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.projectUrl')}</Typography>
+            <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.url')}</Typography>
           </ItemTitleContainer>
           <ItemRightContainer>
             <URLButton type="button" onClick={() => window.open(projectUrl)}>
-              <Typography variant="h5">{projectUrl}</Typography>
+              <Typography variant="h5">{shorterProjectUrl}</Typography>
             </URLButton>
-            {/* NOTE Choose url button style
-            <Typography variant="h5">{projectUrl}</Typography>
-
-            <StyledIconButton onClick={() => window.open(projectUrl)}>
-              <Explorer16Icon />
-            </StyledIconButton>  */}
           </ItemRightContainer>
         </ItemContainer>
       )}
@@ -120,9 +117,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.description')}</Typography>
           </ItemTitleContainer>
-          <ItemValueContainer>
-            <Typography variant="h5">{description}</Typography>
-          </ItemValueContainer>
+          <ItemValueContainer>{description}</ItemValueContainer>
         </ItemColumnContainer>
       )}
     </>

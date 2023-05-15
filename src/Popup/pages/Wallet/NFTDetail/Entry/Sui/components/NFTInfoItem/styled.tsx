@@ -26,6 +26,12 @@ export const ItemTitleContainer = styled('div')(({ theme }) => ({
 
 export const ItemValueContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+
+  fontFamily: theme.typography.h5.fontFamily,
+  fontStyle: theme.typography.h5.fontStyle,
+  fontSize: theme.typography.h5.fontSize,
+  lineHeight: '2rem',
+  letterSpacing: theme.typography.h5.letterSpacing,
 }));
 
 export const ItemRightContainer = styled('div')(({ theme }) => ({
@@ -47,26 +53,34 @@ export const ItemRightContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const StyledIconButton = styled(IconButton)({
+export const StyledIconButton = styled(IconButton)(({ theme }) => ({
   padding: '0',
   margin: '0',
 
   '& svg': {
     width: '1.6rem',
     height: '1.6rem',
+    '& > path': {
+      fill: theme.colors.base05,
+    },
+    '&:hover': {
+      '& > path': {
+        fill: theme.colors.base06,
+      },
+    },
   },
-});
+}));
 
 export const URLButton = styled('button')(({ theme }) => ({
   border: 0,
 
-  color: theme.accentColors.purple01,
+  color: theme.accentColors.blue01,
 
   backgroundColor: 'transparent',
 
   cursor: 'pointer',
 
   '&:hover': {
-    color: theme.accentColors.purple02,
+    color: theme.accentColors.blue02,
   },
 }));
