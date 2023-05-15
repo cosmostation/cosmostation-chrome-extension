@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import useSWR from 'swr';
 
+import { NEUTRON } from '~/constants/chain/cosmos/neutron';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { get, isAxiosError } from '~/Popup/utils/axios';
@@ -21,6 +22,10 @@ export function useUndelegationSWR(chain: CosmosChain, suspense?: boolean) {
 
   const fetcher = async (fetchUrl: string) => {
     try {
+      if (chain.id === NEUTRON.id) {
+        return null;
+      }
+
       return await get<UnbondingPayload>(fetchUrl);
     } catch (e: unknown) {
       if (isAxiosError(e)) {

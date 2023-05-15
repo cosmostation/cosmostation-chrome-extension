@@ -85,7 +85,7 @@ export default function Sui({ chain }: SuiProps) {
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: currentCoinType });
 
   const decimals = useMemo(
-    () => (coinMetadata?.result?.decimals || currentCoinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
+    () => coinMetadata?.result?.decimals || (currentCoinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
     [coinMetadata?.result?.decimals, currentCoinType, currentSuiNetwork.decimals],
   );
 
