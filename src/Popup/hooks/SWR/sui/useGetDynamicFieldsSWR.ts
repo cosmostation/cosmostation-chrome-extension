@@ -67,7 +67,7 @@ export function useGetDynamicFieldsSWR({ parentObjectIds, network }: UseGetDynam
     ?.filter((item) => item.status === 'fulfilled')
     .map((item) => {
       if (item.status === 'fulfilled') {
-        return item.value?.result;
+        return item.value;
       }
       return undefined;
     });
