@@ -35,6 +35,21 @@ export const NFTImageContainer = styled('div')({
   },
 });
 
+export const NFTEditionMarkContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  width: '4.2rem',
+  height: '1.9rem',
+
+  borderRadius: '1.2rem',
+
+  color: theme.colors.text01,
+
+  backgroundImage: `linear-gradient(90deg, #9C6CFF 37.5%, #05D2DD 100%)`,
+}));
+
 export const NFTInfoContainer = styled('div')({
   width: '100%',
 
@@ -55,8 +70,15 @@ export const NFTInfoHeaderContainer = styled('div')(({ theme }) => ({
   borderBottom: `0.1rem solid ${theme.colors.base04}`,
 }));
 
+export const NFTInfoLeftHeaderContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+
+  columnGap: '0.8rem',
+});
+
 export const NFTInfoHeaderTextContainer = styled('div')({
-  maxWidth: 'calc(100% - 3.2rem)',
+  maxWidth: '20rem',
 
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',
@@ -77,7 +99,9 @@ export const NFTInfoBodyContainer = styled('div')({
   rowGap: '1rem',
 });
 
-export const StyledIconButton = styled(IconButton)({});
+export const StyledIconButton = styled(IconButton)({
+  padding: '0',
+});
 
 export const BottomContainer = styled('div')({
   position: 'absolute',

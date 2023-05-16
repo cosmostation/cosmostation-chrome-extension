@@ -84,3 +84,23 @@ export const URLButton = styled('button')(({ theme }) => ({
     color: theme.accentColors.blue02,
   },
 }));
+
+export const AttributeContainer = styled('div')(({ theme }) => ({
+  width: '100%',
+
+  display: 'flex',
+  flexDirection: 'column',
+
+  rowGap: '1rem',
+
+  borderTop: `0.1rem solid ${theme.colors.base04}`,
+}));
+
+export const AttributeHeaderContainer = styled('div')(({ theme }) => ({
+  marginTop: '1.6rem',
+
+  display: 'flex',
+  justifyContent: 'flex-start',
+
+  color: theme.colors.text01,
+}));

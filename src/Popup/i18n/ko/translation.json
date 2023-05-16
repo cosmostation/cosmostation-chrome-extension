@@ -1000,6 +1000,22 @@
           "title": "NFT 상세"
         }
       },
+      "NFTSend": {
+        "Entry": {
+          "Sui": {
+            "index": {
+              "insufficientAmount": "수량이 부족합니다.",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "invalidAmount": "수량을 입력하세요.",
+              "recipientAddressPlaceholder": "수신인 주소",
+              "sendButton": "보내기"
+            }
+          }
+        },
+        "layout": {
+          "title": "NFT Send"
+        }
+      },
       "Receive": {
         "Entry": {
           "Aptos": {

@@ -52,17 +52,36 @@ export const BottomContainer = styled('div')({
 });
 
 export const ObjectImageContainer = styled('div')({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-
   '& > img': {
     borderRadius: '0.8rem',
 
     width: '14.8rem',
     height: '14.8rem',
   },
+
+  position: 'relative',
 });
+
+export const ObjectAbsoluteEditionMarkContainer = styled('div')(({ theme }) => ({
+  position: 'absolute',
+
+  left: '0.8rem',
+  bottom: '0.8rem',
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  width: '4.2rem',
+  height: '1.9rem',
+
+  borderRadius: '1.2rem',
+
+  color: theme.colors.text01,
+
+  backgroundImage: `linear-gradient(90deg, #9C6CFF 37.5%, #05D2DD 100%)`,
+}));
+
 export const ObjectDescriptionTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 

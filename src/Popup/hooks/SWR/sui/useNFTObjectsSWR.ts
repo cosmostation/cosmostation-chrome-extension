@@ -41,66 +41,68 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
 
   const addr = useMemo(() => address || currentAddress, [address, currentAddress]);
 
-  const { data: objectsOwnedByAddress, mutate: mutateGetObjectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: addr, network, ...config });
+  const { data: objectsOwnedByAddress, mutate: mutateGetObjectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: addr, network }, { ...config });
 
   const objectIdList = useMemo(
     () => (objectsOwnedByAddress?.result && objectsOwnedByAddress?.result.data.map((item) => item.data?.objectId || '')) || [],
     [objectsOwnedByAddress?.result],
   );
 
-  const { data: objects, mutate: mutateGetObjects } = useGetObjectsSWR({
-    network,
-    objectIds: objectIdList,
-    options: {
-      showType: true,
-      showContent: true,
-      showOwner: true,
-      showDisplay: true,
+  const { data: objects, mutate: mutateGetObjects } = useGetObjectsSWR(
+    {
+      network,
+      objectIds: objectIdList,
+      options: {
+        showType: true,
+        showContent: true,
+        showOwner: true,
+        showDisplay: true,
+      },
+      ...options,
     },
-    ...options,
-    ...config,
-  });
+    { ...config },
+  );
 
   const nftObjects = useMemo(() => objects?.result?.filter((item) => getObjectDisplay(item).data) || [], [objects?.result]);
 
   const kioskTypeObjects = useMemo(() => nftObjects.filter((item) => item.data && isKiosk(item.data)), [nftObjects]);
 
-  const kioskTypeObjectsDynamicFields = useGetDynamicFieldsSWR({
-    network,
-    parentObjectIds: [...kioskTypeObjects.map((item) => getObjectDisplay(item).data?.kiosk || '')],
-    ...config,
-  });
-
-  const filteredDynamicFieldPages = useMemo(
-    () => kioskTypeObjectsDynamicFields.returnData?.filter((item) => item?.data.find((data) => data.name.type === '0x2::kiosk::Item')) || [],
-    [kioskTypeObjectsDynamicFields.returnData],
+  const { returnData: kioskTypeObjectsDynamicFields, mutate: mutateGetDynamicFields } = useGetDynamicFieldsSWR(
+    {
+      network,
+      parentObjectIds: [...kioskTypeObjects.map((item) => getObjectDisplay(item).data?.kiosk || '')],
+    },
+    { ...config },
   );
 
-  const { data: kioskObjects, mutate: mutateGetKioskObjects } = useGetObjectsSWR({
-    network,
-    objectIds: [...filteredDynamicFieldPages.map((item) => item?.data.find((data) => data.name.type === '0x2::kiosk::Item')?.objectId || '')],
-    options: {
-      showType: true,
-      showContent: true,
-      showOwner: true,
-      showDisplay: true,
+  const { data: kioskObjects, mutate: mutateGetKioskObjects } = useGetObjectsSWR(
+    {
+      network,
+      objectIds: [
+        ...(kioskTypeObjectsDynamicFields?.map((item) => item?.result?.data.find((data) => data.name.type === '0x2::kiosk::Item')?.objectId || '') || []),
+      ],
+      options: {
+        showType: true,
+        showContent: true,
+        showOwner: true,
+        showDisplay: true,
+      },
+      ...options,
     },
-    ...options,
-    ...config,
-  });
+    { ...config },
+  );
 
+  // NOTE Need origin objects field
   const kioskNFTObjects = useMemo(() => kioskObjects?.result?.filter((item) => getObjectDisplay(item).data) || [], [kioskObjects?.result]);
 
-  const ownedNFTObjects = [
-    ...kioskNFTObjects,
-    ...nftObjects.filter((item) => !kioskTypeObjects.find((object) => object.data?.objectId === item.data?.objectId)),
-  ];
+  const ownedNFTObjects = useMemo(() => [...kioskNFTObjects, ...nftObjects], [kioskNFTObjects, nftObjects]);
 
   const mutateNFTObjects = useCallback(() => {
     void mutateGetObjectsOwnedByAddress();
     void mutateGetObjects();
+    void mutateGetDynamicFields();
     void mutateGetKioskObjects();
-  }, [mutateGetObjects, mutateGetObjectsOwnedByAddress, mutateGetKioskObjects]);
+  }, [mutateGetObjectsOwnedByAddress, mutateGetObjects, mutateGetDynamicFields, mutateGetKioskObjects]);
 
   return { nftObjects: ownedNFTObjects, mutateNFTObjects };
 }

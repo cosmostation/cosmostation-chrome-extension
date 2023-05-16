@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Typography } from '@mui/material';
-import { getObjectDisplay, getObjectOwner } from '@mysten/sui.js';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Button from '~/Popup/components/common/Button';
@@ -9,19 +8,24 @@ import NFTImage from '~/Popup/components/common/NFTImage';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
+import { getNFTMeta } from '~/Popup/utils/sui';
+import type { Path } from '~/types/route';
 
 import NFTInfoItem from './components/NFTInfoItem';
 import {
   BottomContainer,
   Container,
   ContentContainer,
+  NFTEditionMarkContainer,
   NFTImageContainer,
   NFTInfoBodyContainer,
   NFTInfoContainer,
   NFTInfoHeaderContainer,
   NFTInfoHeaderTextContainer,
+  NFTInfoLeftHeaderContainer,
   StyledIconButton,
 } from './styled';
 
@@ -29,6 +33,8 @@ import ExplorerIcon from '~/images/icons/Explorer.svg';
 
 export default function Sui() {
   const { t } = useTranslation();
+  const { navigate } = useNavigate();
+
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { explorerURL, networkName } = currentSuiNetwork;
@@ -37,45 +43,23 @@ export default function Sui() {
 
   const { nftObjects } = useNFTObjectsSWR({});
 
-  const filteredNFTObject = useMemo(() => nftObjects.find((item) => isEqualsIgnoringCase(item.data?.objectId, params.id)), [nftObjects, params]);
+  const currentNFTObject = useMemo(() => nftObjects.find((item) => isEqualsIgnoringCase(item.data?.objectId, params.id)), [nftObjects, params]);
 
-  const nftMeta = useMemo(() => {
-    if (filteredNFTObject?.data && filteredNFTObject.data?.content?.dataType === 'moveObject') {
-      const { name, description, creator, image_url, link, project_url } = getObjectDisplay(filteredNFTObject).data || {};
-
-      const objectOwner = getObjectOwner(filteredNFTObject);
-      return {
-        name: name || '',
-        description: description || '',
-        imageUrl: image_url || '',
-        link: link || '',
-        projectUrl: project_url || '',
-        creator: creator || '',
-        objectId: filteredNFTObject.data.objectId || '',
-        ownerAddress:
-          objectOwner && objectOwner !== 'Immutable' && 'AddressOwner' in objectOwner
-            ? objectOwner.AddressOwner
-            : objectOwner && objectOwner !== 'Immutable' && 'ObjectOwner' in objectOwner
-            ? objectOwner.ObjectOwner
-            : '',
-        objectFieldData: { ...filteredNFTObject.data?.content.fields },
-      };
-    }
-    return {};
-  }, [filteredNFTObject]);
+  const nftMeta = useMemo(() => getNFTMeta(currentNFTObject), [currentNFTObject]);
 
   const { name, imageUrl, objectId } = nftMeta;
 
   const errorMessage = useMemo(() => {
-    if (!(filteredNFTObject?.data?.content?.dataType === 'moveObject' && filteredNFTObject?.data?.content.hasPublicTransfer)) {
+    if (!(currentNFTObject?.data?.content?.dataType === 'moveObject' && currentNFTObject?.data?.content.hasPublicTransfer)) {
       return t('pages.Wallet.NFTDetail.Entry.Sui.index.untransferableObject');
     }
 
     return '';
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredNFTObject?.data?.content?.dataType, t]);
+  }, [currentNFTObject?.data?.content?.dataType, t]);
 
+  const isRare = true;
   return (
     <>
       <Container>
@@ -83,9 +67,17 @@ export default function Sui() {
           <NFTImageContainer> {imageUrl ? <NFTImage src={imageUrl} /> : <NFTImage src={unknownNFTImg} />}</NFTImageContainer>
           <NFTInfoContainer>
             <NFTInfoHeaderContainer>
-              <NFTInfoHeaderTextContainer>
-                <Typography variant="h3">{name || objectId}</Typography>
-              </NFTInfoHeaderTextContainer>
+              <NFTInfoLeftHeaderContainer>
+                <NFTInfoHeaderTextContainer>
+                  <Typography variant="h3">{name || objectId || 'UNKNOWN'}</Typography>
+                </NFTInfoHeaderTextContainer>
+
+                {isRare && (
+                  <NFTEditionMarkContainer>
+                    <Typography variant="h6">Rare</Typography>
+                  </NFTEditionMarkContainer>
+                )}
+              </NFTInfoLeftHeaderContainer>
 
               <StyledIconButton onClick={() => window.open(`${explorerURL || ''}/object/${objectId || ''}?network=${networkName.toLowerCase()}`)}>
                 <ExplorerIcon />
@@ -100,26 +92,7 @@ export default function Sui() {
         <BottomContainer>
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
             <div>
-              <Button
-                type="button"
-                disabled={!!errorMessage}
-                // onClick={async () => {
-                //   if (swapAminoTx) {
-                //     await enQueue({
-                //       messageId: '',
-                //       origin: '',
-                //       channel: 'inApp',
-                //       message: {
-                //         method: 'cos_signAmino',
-                //         params: {
-                //           chainName: chain.chainName,
-                //           doc: { ...swapAminoTx, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }], gas: currentGas } },
-                //         },
-                //       },
-                //     });
-                //   }
-                // }}
-              >
+              <Button type="button" disabled={!!errorMessage} onClick={() => navigate(`/wallet/nft-send/${objectId || ''}` as unknown as Path)}>
                 {t('pages.Wallet.NFTDetail.Entry.Sui.index.send')}
               </Button>
             </div>

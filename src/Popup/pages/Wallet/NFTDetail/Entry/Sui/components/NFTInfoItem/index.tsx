@@ -6,7 +6,17 @@ import { Typography } from '@mui/material';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { shorterAddress } from '~/Popup/utils/string';
 
-import { ItemColumnContainer, ItemContainer, ItemRightContainer, ItemTitleContainer, ItemValueContainer, StyledIconButton, URLButton } from './styled';
+import {
+  // AttributeContainer,
+  // AttributeHeaderContainer,
+  ItemColumnContainer,
+  ItemContainer,
+  ItemRightContainer,
+  ItemTitleContainer,
+  ItemValueContainer,
+  StyledIconButton,
+  URLButton,
+} from './styled';
 
 import Copy16Icon from '~/images/icons/Copy16.svg';
 
@@ -43,6 +53,9 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
       enqueueSnackbar(t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.copied'));
     }
   };
+
+  // NOTE record 객체에서 키값을 뽑아내고
+  // 해당 키 리스트로 맵핑 돌려서 값 추출해서 오른쪽에 박기
 
   return (
     <>
@@ -120,6 +133,23 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
           <ItemValueContainer>{description}</ItemValueContainer>
         </ItemColumnContainer>
       )}
+
+      {/* {objectFieldData && (
+        <AttributeContainer>
+          <AttributeHeaderContainer>
+            <Typography variant="h3">Attribute</Typography>
+          </AttributeHeaderContainer>
+
+          {objectFieldData.map((item) => (
+            <ItemColumnContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.description')}</Typography>
+              </ItemTitleContainer>
+              <ItemValueContainer>{description}</ItemValueContainer>
+            </ItemColumnContainer>
+          ))}
+        </AttributeContainer>
+      )} */}
     </>
   );
 }

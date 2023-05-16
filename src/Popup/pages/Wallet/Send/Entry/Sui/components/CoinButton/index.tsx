@@ -52,7 +52,7 @@ export default function CoinButton({ coinType, chain, isActive, ...remainder }: 
   const baseAmount = useMemo(() => currentCoin?.balance || '0', [currentCoin?.balance]);
 
   const imageURL = useMemo(
-    () => (coinMetadata?.result?.iconUrl || coinType === SUI_COIN ? chain.imageURL : undefined),
+    () => coinMetadata?.result?.iconUrl || (coinType === SUI_COIN ? chain.imageURL : undefined),
     [chain.imageURL, coinMetadata?.result?.iconUrl, coinType],
   );
 

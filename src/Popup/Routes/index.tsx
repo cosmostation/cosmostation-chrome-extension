@@ -64,6 +64,7 @@ import SettingLedger from '~/Popup/pages/Setting/Ledger';
 import SettingProvider from '~/Popup/pages/Setting/Provider';
 import Wallet from '~/Popup/pages/Wallet';
 import NFTDetail from '~/Popup/pages/Wallet/NFTDetail';
+import WalletNFTSend from '~/Popup/pages/Wallet/NFTSend';
 import WalletReceive from '~/Popup/pages/Wallet/Receive';
 import WalletSend from '~/Popup/pages/Wallet/Send';
 import WalletSwap from '~/Popup/pages/Wallet/Swap';
@@ -95,6 +96,9 @@ export default function Routes() {
           <Route path={PATH.WALLET} element={<Wallet />} />
           <Route path={PATH.WALLET__SEND} element={<WalletSend />}>
             <Route path=":id" element={<WalletSend />} />
+          </Route>
+          <Route path={PATH.WALLET__NFT_SEND} element={<WalletNFTSend />}>
+            <Route path=":id" element={<WalletNFTSend />} />
           </Route>
           <Route path={PATH.WALLET__SWAP} element={<WalletSwap />} />
           <Route path={PATH.WALLET__RECEIVE} element={<WalletReceive />} />

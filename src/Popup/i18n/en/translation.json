@@ -1000,6 +1000,22 @@
           "title": "NFT Detail"
         }
       },
+      "NFTSend": {
+        "Entry": {
+          "Sui": {
+            "index": {
+              "insufficientAmount": "Insufficient amount",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          }
+        },
+        "layout": {
+          "title": "NFT Send"
+        }
+      },
       "Receive": {
         "Entry": {
           "Aptos": {

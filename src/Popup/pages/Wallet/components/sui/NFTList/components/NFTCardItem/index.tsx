@@ -1,13 +1,21 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 import type { SuiObjectResponse } from '@mysten/sui.js';
-import { getObjectDisplay } from '@mysten/sui.js';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import NFTImage from '~/Popup/components/common/NFTImage';
 import Skeleton from '~/Popup/components/common/Skeleton';
+import { getNFTMeta } from '~/Popup/utils/sui';
 
-import { BodyContainer, BottomContainer, ObjectDescriptionTextContainer, ObjectImageContainer, ObjectNameTextContainer, StyledButton } from './styled';
+import {
+  BodyContainer,
+  BottomContainer,
+  ObjectAbsoluteEditionMarkContainer,
+  ObjectDescriptionTextContainer,
+  ObjectImageContainer,
+  ObjectNameTextContainer,
+  StyledButton,
+} from './styled';
 
 type NFTCardItemProps = {
   nftObject: SuiObjectResponse;
@@ -16,23 +24,26 @@ type NFTCardItemProps = {
 };
 
 export default function NFTCardItem({ nftObject, onClick, disabled }: NFTCardItemProps) {
-  const nftMeta = useMemo(() => {
-    const { name, description, image_url } = getObjectDisplay(nftObject).data || {};
+  const { name, imageUrl, objectId, description } = useMemo(() => getNFTMeta(nftObject), [nftObject]);
 
-    return {
-      name: name || '',
-      description: description || '',
-      imageUrl: image_url || '',
-      objectId: nftObject.data?.objectId || '',
-    };
-  }, [nftObject]);
-
-  const { name, imageUrl, objectId, description } = nftMeta;
-
+  const isRare = true;
   return (
     <StyledButton onClick={onClick} disabled={disabled}>
       <BodyContainer>
-        <ObjectImageContainer>{imageUrl ? <NFTImage src={imageUrl} /> : <NFTImage src={unknownNFTImg} />}</ObjectImageContainer>
+        <ObjectImageContainer>
+          {imageUrl ? (
+            <>
+              <NFTImage src={imageUrl} />
+              {isRare && (
+                <ObjectAbsoluteEditionMarkContainer>
+                  <Typography variant="h6">Rare</Typography>
+                </ObjectAbsoluteEditionMarkContainer>
+              )}
+            </>
+          ) : (
+            <NFTImage src={unknownNFTImg} />
+          )}
+        </ObjectImageContainer>
       </BodyContainer>
 
       <BottomContainer>
