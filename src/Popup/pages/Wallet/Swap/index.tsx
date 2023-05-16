@@ -1,21 +1,22 @@
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import Empty from '~/Popup/components/common/Empty';
 import Lock from '~/Popup/components/Lock';
-import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 
-import Entry from './entry';
+import Entry, { EntryError } from './entry';
 import Layout from './layout';
 
 export default function Wallet() {
-  const { currentChain } = useCurrentChain();
+  const { t } = useTranslation();
 
   return (
     <Lock>
       <Layout>
-        <ErrorBoundary fallback={<Empty />}>
-          <Suspense fallback={null}>{currentChain.line === 'COSMOS' && <Entry chain={currentChain} />}</Suspense>
+        <ErrorBoundary fallback={<EntryError errorMessage={t('pages.Wallet.Swap.index.networkError')} />}>
+          <Suspense fallback={<EntryError errorMessage={t('pages.Wallet.Swap.index.fetchingData')} />}>
+            <Entry />
+          </Suspense>
         </ErrorBoundary>
       </Layout>
     </Lock>

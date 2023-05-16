@@ -35,7 +35,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, token
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const balance = useBalanceSWR();
-  const tokenBalace = useTokenBalanceSWR(token);
+  const tokenBalace = useTokenBalanceSWR({ token });
 
   const isNative = token === null;
 

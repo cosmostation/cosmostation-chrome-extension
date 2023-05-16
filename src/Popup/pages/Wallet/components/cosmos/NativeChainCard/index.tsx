@@ -535,7 +535,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         </Button>
         {chain.id === OSMOSIS.id && (
           <IconButtonContainer>
-            <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/swap')}>
+            <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/osmosis-swap')}>
               <SwapIcon />
             </UnitIconButton>
             <UnitIconButton disabled sx={{ display: 'none' }}>

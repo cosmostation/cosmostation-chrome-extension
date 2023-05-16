@@ -814,7 +814,13 @@
                 "Interact": {
                   "index": {
                     "contractAddress": "Contract address",
-                    "data": "Data"
+                    "contractMethod": "Contract Method",
+                    "data": "Data",
+                    "expectedOutput": "Expected Output",
+                    "fromToken": "From",
+                    "receiverAddress": "Receiver Address",
+                    "swapAmount": "Swap Amount",
+                    "toToken": "To"
                   }
                 },
                 "Send": {
@@ -975,6 +981,38 @@
       }
     },
     "Wallet": {
+      "OsmosisSwap": {
+        "components": {
+          "CoinListBottomSheet": {
+            "index": {
+              "searchPlaceholder": "Search",
+              "title": "Select a coin"
+            }
+          },
+          "SlippageSettingDialog": {
+            "confirm": "Confirm",
+            "slippageTolerance": "Slippage tolerance",
+            "title": "Setting",
+            "toleranceInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage."
+          }
+        },
+        "entry": {
+          "availableAmount": "Available",
+          "excessiveSwap": "Can't swap Token more than Token amounts in the pool",
+          "expectedOutput": "Expected Output",
+          "insufficientAmount": "Insufficient amount",
+          "insufficientFeeAmount": "Insufficient fee",
+          "invalidAmount": "Invalid amount",
+          "invalidOutputAmount": "Invalid output amount",
+          "invalidPriceImpact": "Too high Price Impact",
+          "minimumReceived": "Minimum received after slippage",
+          "networkError": "Network Error",
+          "priceImpact": "Price Impact",
+          "swapButton": "Swap",
+          "swapFee": "Swap Fee",
+          "title": "Swap"
+        }
+      },
       "Receive": {
         "Entry": {
           "Aptos": {
@@ -1123,9 +1161,6 @@
         }
       },
       "Swap": {
-        "Entry": {
-          "swapButton": "Swap"
-        },
         "components": {
           "CoinListBottomSheet": {
             "index": {
@@ -1138,22 +1173,79 @@
             "slippageTolerance": "Slippage tolerance",
             "title": "Setting",
             "toleranceInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage."
+          },
+          "SwapCoinContainer": {
+            "components": {
+              "ChainListBottomSheet": {
+                "components": {
+                  "ChainItem": {
+                    "index": {
+                      "unAvailable1": "Swaps to",
+                      "unAvailable2": "coming soon"
+                    }
+                  }
+                },
+                "index": {
+                  "chainBottomListTitle": "Select a chain",
+                  "searchChainPlaceholder": "Search chains"
+                }
+              },
+              "TokenListBottomSheet": {
+                "index": {
+                  "searchTokenPlaceholder": "Search tokens",
+                  "tokenBottomListTitle": "Select a token"
+                }
+              }
+            },
+            "index": {
+              "availableAmount": "Available",
+              "balance": "Balance",
+              "selectChain": "Select chain",
+              "selectCoin": "Select token"
+            }
           }
         },
         "entry": {
+          "allowanceWarning": "Swap Router uses signed permit approvals. This allows you to approve 1inch smart contract access to your selected tokens and swap in one single transaction.",
           "availableAmount": "Available",
+          "balanceWarningDescription1": "You do not have enough",
+          "balanceWarningDescription2": " to cover the swap amount and the estimated gas costs for this transfer. Set your input amount to",
+          "balanceWarningDescription3": "or below to cover gas costs.",
           "excessiveSwap": "Can't swap Token more than Token amounts in the pool",
+          "exchangeRate": "Exchange Rate",
           "expectedOutput": "Expected Output",
+          "gasFee": "Gas Fee",
+          "gasFees": "Gas fees before refund",
+          "gasFeesInfo": "We overstimate gas by 50% to guarantee your trade. Any gas we don’t use will be refunded by Axelar.",
           "insufficientAmount": "Insufficient amount",
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",
           "invalidOutputAmount": "Invalid output amount",
           "invalidPriceImpact": "Too high Price Impact",
+          "invalidSwapTx": "Invalid tx data",
+          "lessThanFeeWarningDescription1": "You do not have enough balance to cover the estimated gas costs for this transaction. Make sure you have more than",
+          "lessThanFeeWarningDescription2": "before trying again.",
+          "liquidityWarning": "The size of this trade is large compared to the available liquidity. Reduce the swap amount to get a better price.",
           "minimumReceived": "Minimum received after slippage",
+          "minutes": "minutes",
           "networkError": "Network Error",
+          "oversizedSwap": "Oversized Swap",
+          "permissionButton": "Give permission to use tokens",
           "priceImpact": "Price Impact",
+          "processingTime": "Estimated processing time",
+          "receiveWarningMessage": "Tx may revert and return axlUSDC on the destination chain if market volatility is high. You can swap axlUSDC to desired token when this happens.",
+          "swapButton": "Swap",
+          "swapButtonOn": "Swap on",
           "swapFee": "Swap Fee",
-          "title": "Swap"
+          "swapInfoDescription1": "Due to slippage",
+          "swapInfoDescription2": ", the final amount you receive and the estimated amount may differ. You will receive at least",
+          "swapInfoDescription3": "",
+          "title": "Swap",
+          "txSizeWarning": "Transaction size is currently limited to $10,000. Please decrease the size of your transaction and try again."
+        },
+        "index": {
+          "fetchingData": "Fetching Data",
+          "networkError": "Network Error"
         }
       },
       "components": {

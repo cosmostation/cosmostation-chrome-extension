@@ -6,6 +6,7 @@ export const PATH = {
   WALLET: '/wallet',
   WALLET__SEND: '/wallet/send',
   WALLET__SWAP: '/wallet/swap',
+  WALLET__OSMOSIS_SWAP: '/wallet/osmosis-swap',
   WALLET__RECEIVE: '/wallet/receive',
 
   SETTING__CHANGE_PASSWORD: '/setting/change-password',

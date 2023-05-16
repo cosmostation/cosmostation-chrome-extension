@@ -43,9 +43,9 @@ export default function TransferFrom({ tx, determineTxType }: TransferFromProps)
   const price = (token?.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0;
 
   const tokenAddress = token?.displayDenom || shorterAddress(to, 32);
-  const fromAddress = (determineTxType?.erc20?.args?.[0] as undefined | string) || '';
-  const toAddress = (determineTxType?.erc20?.args?.[1] as undefined | string) || '';
-  const amount = (determineTxType?.erc20?.args?.[2] as BigNumber | undefined)?.toString(10) || '';
+  const fromAddress = (determineTxType?.txDescription?.args?.[0] as undefined | string) || '';
+  const toAddress = (determineTxType?.txDescription?.args?.[1] as undefined | string) || '';
+  const amount = (determineTxType?.txDescription?.args?.[2] as BigNumber | undefined)?.toString(10) || '';
 
   const displayAmount = useMemo(() => {
     try {

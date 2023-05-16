@@ -62,8 +62,8 @@ export default function Transfer({ tx, determineTxType }: TransferProps) {
   const price = (token?.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0;
 
   const tokenAddress = token?.displayDenom || shorterAddress(to, 32);
-  const grantedAddress = (determineTxType?.erc20?.args?.[0] as undefined | string) || '';
-  const amount = (determineTxType?.erc20?.args?.[1] as BigNumber | undefined)?.toString(10) || '';
+  const grantedAddress = (determineTxType?.txDescription?.args?.[0] as undefined | string) || '';
+  const amount = (determineTxType?.txDescription?.args?.[1] as BigNumber | undefined)?.toString(10) || '';
 
   const displayAmount = useMemo(() => {
     try {
