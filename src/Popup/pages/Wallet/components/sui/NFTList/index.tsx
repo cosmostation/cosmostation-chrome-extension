@@ -1,37 +1,30 @@
 import { Suspense, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Typography } from '@mui/material';
 import { getObjectDisplay } from '@mysten/sui.js';
 
-import { SUI } from '~/constants/chain/sui/sui';
 import Empty from '~/Popup/components/common/Empty';
+import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { getNFTMeta } from '~/Popup/utils/sui';
+import type { SuiChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
 import NFTCardItem, { NFTCardItemSkeleton } from './components/NFTCardItem';
 import TypeButton from './components/TypeButton';
 import type { TypeInfo } from './components/TypePopover';
 import TypePopover from './components/TypePopover';
-import {
-  Container,
-  ListContainer,
-  ListTitleContainer,
-  ListTitleLeftContainer,
-  ListTitleRightContainer,
-  NoNFTContainer,
-  NoNFTHeaderTextContainer,
-  NoNFTSubTextContainer,
-  NoNFTTextContainer,
-} from './styled';
+import { Container, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
 
 import NoNFTIcon from '~/images/icons/NoNFT.svg';
 
-export default function NFTList() {
-  const chain = SUI;
+type NFTListProps = {
+  chain: SuiChain;
+};
 
+export default function NFTList({ chain }: NFTListProps) {
   const { navigate } = useNavigate();
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -86,19 +79,7 @@ export default function NFTList() {
   }, [currentType, currentTypeInfo?.name, nftObjects]);
 
   if (!isExistNFT) {
-    return (
-      <NoNFTContainer>
-        <NoNFTIcon />
-        <NoNFTTextContainer>
-          <NoNFTHeaderTextContainer>
-            <Typography variant="h4">No NFTs</Typography>
-          </NoNFTHeaderTextContainer>
-          <NoNFTSubTextContainer>
-            <Typography variant="h4">Recent NFTs will show up here</Typography>
-          </NoNFTSubTextContainer>
-        </NoNFTTextContainer>
-      </NoNFTContainer>
-    );
+    return <EmptyAsset style={{ marginTop: '8.5rem' }} Icon={NoNFTIcon} headerText="No NFTs" subHeaderText="Recent NFTs will show up here" />;
   }
 
   return (
@@ -106,6 +87,7 @@ export default function NFTList() {
       <ListTitleContainer>
         <ListTitleLeftContainer>
           <TypeButton
+            style={{ display: 'none' }}
             text={currentTypeInfo?.name}
             number={currentTypeInfo?.count}
             onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
@@ -115,13 +97,16 @@ export default function NFTList() {
         <ListTitleRightContainer />
       </ListTitleContainer>
       <ListContainer>
-        {filteredNFTObjects.map((nft) => (
-          <ErrorBoundary key={nft.data?.objectId} FallbackComponent={Empty}>
-            <Suspense fallback={<NFTCardItemSkeleton />}>
-              <NFTCardItem nftObject={nft} onClick={() => navigate(`/wallet/nft-detail/${nft.data?.objectId || ''}` as unknown as Path)} />
-            </Suspense>
-          </ErrorBoundary>
-        ))}
+        {filteredNFTObjects.map((nft) => {
+          const nftMeta = getNFTMeta(nft);
+          return (
+            <ErrorBoundary key={nft.data?.objectId} FallbackComponent={Empty}>
+              <Suspense fallback={<NFTCardItemSkeleton />}>
+                <NFTCardItem nftMeta={nftMeta} onClick={() => navigate(`/wallet/nft-detail/${nft.data?.objectId || ''}` as unknown as Path)} />
+              </Suspense>
+            </ErrorBoundary>
+          );
+        })}
       </ListContainer>
       <TypePopover
         marginThreshold={0}

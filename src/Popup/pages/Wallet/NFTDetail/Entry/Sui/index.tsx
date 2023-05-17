@@ -4,14 +4,14 @@ import { Typography } from '@mui/material';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Button from '~/Popup/components/common/Button';
-import NFTImage from '~/Popup/components/common/NFTImage';
+import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import { getNFTMeta } from '~/Popup/utils/sui';
+import { convertIpfs, getNFTMeta } from '~/Popup/utils/sui';
 import type { Path } from '~/types/route';
 
 import NFTInfoItem from './components/NFTInfoItem';
@@ -47,7 +47,7 @@ export default function Sui() {
 
   const nftMeta = useMemo(() => getNFTMeta(currentNFTObject), [currentNFTObject]);
 
-  const { name, imageUrl, objectId } = nftMeta;
+  const { name, imageUrl, objectId, isRare } = nftMeta;
 
   const errorMessage = useMemo(() => {
     if (!(currentNFTObject?.data?.content?.dataType === 'moveObject' && currentNFTObject?.data?.content.hasPublicTransfer)) {
@@ -59,12 +59,13 @@ export default function Sui() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentNFTObject?.data?.content?.dataType, t]);
 
-  const isRare = true;
   return (
     <>
       <Container>
         <ContentContainer>
-          <NFTImageContainer> {imageUrl ? <NFTImage src={imageUrl} /> : <NFTImage src={unknownNFTImg} />}</NFTImageContainer>
+          <NFTImageContainer>
+            <Image src={convertIpfs(imageUrl)} defaultImgSrc={unknownNFTImg} />
+          </NFTImageContainer>
           <NFTInfoContainer>
             <NFTInfoHeaderContainer>
               <NFTInfoLeftHeaderContainer>

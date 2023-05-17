@@ -41,7 +41,7 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
 
   const addr = useMemo(() => address || currentAddress, [address, currentAddress]);
 
-  const { data: objectsOwnedByAddress, mutate: mutateGetObjectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: addr, network }, { ...config });
+  const { data: objectsOwnedByAddress, mutate: mutateGetObjectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: addr, network }, config);
 
   const objectIdList = useMemo(
     () => (objectsOwnedByAddress?.result && objectsOwnedByAddress?.result.data.map((item) => item.data?.objectId || '')) || [],
@@ -60,7 +60,7 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
       },
       ...options,
     },
-    { ...config },
+    config,
   );
 
   const nftObjects = useMemo(() => objects?.result?.filter((item) => getObjectDisplay(item).data) || [], [objects?.result]);
@@ -72,15 +72,13 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
       network,
       parentObjectIds: [...kioskTypeObjects.map((item) => getObjectDisplay(item).data?.kiosk || '')],
     },
-    { ...config },
+    config,
   );
 
   const { data: kioskObjects, mutate: mutateGetKioskObjects } = useGetObjectsSWR(
     {
       network,
-      objectIds: [
-        ...(kioskTypeObjectsDynamicFields?.map((item) => item?.result?.data.find((data) => data.name.type === '0x2::kiosk::Item')?.objectId || '') || []),
-      ],
+      objectIds: [...(kioskTypeObjectsDynamicFields?.map((item) => item?.result?.data.find((data) => data.name.type.includes('kiosk'))?.objectId || '') || [])],
       options: {
         showType: true,
         showContent: true,
@@ -89,10 +87,9 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
       },
       ...options,
     },
-    { ...config },
+    config,
   );
 
-  // NOTE Need origin objects field
   const kioskNFTObjects = useMemo(() => kioskObjects?.result?.filter((item) => getObjectDisplay(item).data) || [], [kioskObjects?.result]);
 
   const ownedNFTObjects = useMemo(() => [...kioskNFTObjects, ...nftObjects], [kioskNFTObjects, nftObjects]);

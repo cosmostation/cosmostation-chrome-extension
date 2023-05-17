@@ -117,7 +117,7 @@ export default function Sui({ chain }: SuiProps) {
   // const isOpenPopover = Boolean(popoverAnchorEl);
 
   const sendTxBlock = useMemo<TransactionBlockType | undefined>(() => {
-    if (!currentNFTObject?.data?.objectId) {
+    if (!currentNFTObject?.data?.objectId || !recipientAddress) {
       return undefined;
     }
 
@@ -157,7 +157,7 @@ export default function Sui({ chain }: SuiProps) {
       return t('pages.Wallet.NFTSend.Entry.Sui.index.invalidAmount');
     }
 
-    if (gt(expectedDisplayFee || '0', currentFeeCoinBalance)) {
+    if (gt(expectedBaseFee || '0', currentFeeCoinBalance)) {
       return t('pages.Wallet.NFTSend.Entry.Sui.index.insufficientAmount');
     }
 
@@ -180,7 +180,7 @@ export default function Sui({ chain }: SuiProps) {
     recipientAddress,
     address,
     currentFeeCoinBalance,
-    expectedDisplayFee,
+    expectedBaseFee,
     dryRunTransactionError?.message,
     dryRunTransaction?.result?.effects.status.error,
     dryRunTransaction?.result?.effects.status.status,
@@ -234,7 +234,7 @@ export default function Sui({ chain }: SuiProps) {
                 type="button"
                 disabled={!!errorMessage}
                 onClick={async () => {
-                  if (!currentNFTObjectId) {
+                  if (!currentNFTObjectId || !sendTxBlock) {
                     return;
                   }
 

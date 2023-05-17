@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { shorterAddress } from '~/Popup/utils/string';
+import type { SuiNFTMetaType } from '~/types/nft/nftMeta';
 
 import {
   // AttributeContainer,
@@ -20,20 +21,8 @@ import {
 
 import Copy16Icon from '~/images/icons/Copy16.svg';
 
-type NFTMetaType = {
-  name?: string;
-  description?: string;
-  imageUrl?: string;
-  link?: string;
-  projectUrl?: string;
-  creator?: string;
-  objectId?: string;
-  ownerAddress?: string;
-  objectFieldData?: Record<string, unknown>;
-};
-
 type NFTInfoItemProps = {
-  nftMeta: NFTMetaType;
+  nftMeta: SuiNFTMetaType;
 };
 
 export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
@@ -54,8 +43,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
     }
   };
 
-  // NOTE record 객체에서 키값을 뽑아내고
-  // 해당 키 리스트로 맵핑 돌려서 값 추출해서 오른쪽에 박기
+  // const objectFieldKeys = useMemo(() => (objectFieldData ? Object.keys(objectFieldData) : []), [objectFieldData]);
 
   return (
     <>
@@ -133,20 +121,22 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
           <ItemValueContainer>{description}</ItemValueContainer>
         </ItemColumnContainer>
       )}
-
-      {/* {objectFieldData && (
+      {/* 
+      {objectFieldKeys && objectFieldData && (
         <AttributeContainer>
           <AttributeHeaderContainer>
-            <Typography variant="h3">Attribute</Typography>
+            <Typography variant="h4">Attributes</Typography>
           </AttributeHeaderContainer>
 
-          {objectFieldData.map((item) => (
-            <ItemColumnContainer>
+          {objectFieldKeys.map((item) => (
+            <ItemContainer key={item}>
               <ItemTitleContainer>
-                <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.description')}</Typography>
+                <Typography variant="h5">{item}</Typography>
               </ItemTitleContainer>
-              <ItemValueContainer>{description}</ItemValueContainer>
-            </ItemColumnContainer>
+              <ItemRightContainer>
+                <Typography variant="h5">1</Typography>
+              </ItemRightContainer>
+            </ItemContainer>
           ))}
         </AttributeContainer>
       )} */}

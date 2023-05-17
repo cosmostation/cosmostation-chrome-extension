@@ -3,6 +3,7 @@ import { Ed25519PublicKey, getObjectDisplay, getObjectOwner } from '@mysten/sui.
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { chromeStorage } from '~/Popup/utils/chromeStorage';
+import type { SuiNFTMetaType } from '~/types/nft/nftMeta';
 import type { GetObject, GetObjectExists, Result } from '~/types/sui/rpc';
 
 import { SuiRPCError } from './error';
@@ -36,7 +37,12 @@ export function isKiosk(data: SuiObjectData) {
   return !!data.type && data.type.includes('kiosk') && !!data.content && 'fields' in data.content && 'kiosk' in data.content.fields;
 }
 
-export function getNFTMeta(data?: SuiObjectResponse) {
+export function convertIpfs(url?: string) {
+  if (!url) return '';
+  return url.replace(/^ipfs:\/\//, 'https://ipfs.io/ipfs/');
+}
+
+export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMetaType {
   if (data && data.data?.content?.dataType === 'moveObject') {
     const { name, description, creator, image_url, link, project_url } = getObjectDisplay(data).data || {};
 
@@ -56,6 +62,7 @@ export function getNFTMeta(data?: SuiObjectResponse) {
           ? objectOwner.ObjectOwner
           : '',
       objectFieldData: { ...data.data?.content.fields },
+      isRare: false,
     };
   }
   return {};

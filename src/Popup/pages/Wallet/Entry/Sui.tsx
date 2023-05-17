@@ -33,8 +33,8 @@ export default function Sui({ chain }: SuiProps) {
       <HeaderContainer>
         <Header />
       </HeaderContainer>
-      <>
-        <LedgerCheck>
+      <LedgerCheck>
+        <>
           <NativeChainCardContainer>
             <ErrorBoundary
               // eslint-disable-next-line react/no-unstable-nested-components
@@ -45,22 +45,22 @@ export default function Sui({ chain }: SuiProps) {
               </Suspense>
             </ErrorBoundary>
           </NativeChainCardContainer>
-        </LedgerCheck>
-        <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
-          <Tab label="Coins" />
-          <Tab label="NFTs" />
-        </Tabs>
-        <StyledTabPanel value={tabValue} index={0}>
-          <BottomContainer>
-            <CoinList />
-          </BottomContainer>
-        </StyledTabPanel>
-        <StyledTabPanel value={tabValue} index={1}>
-          <BottomContainer>
-            <NFTList />
-          </BottomContainer>
-        </StyledTabPanel>
-      </>
+          <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
+            <Tab label="Coins" />
+            <Tab label="NFTs" />
+          </Tabs>
+          <StyledTabPanel value={tabValue} index={0}>
+            <BottomContainer sx={{ marginTop: '0.9rem' }}>
+              <CoinList chain={chain} />
+            </BottomContainer>
+          </StyledTabPanel>
+          <StyledTabPanel value={tabValue} index={1}>
+            <BottomContainer sx={{ marginTop: '0.9rem' }}>
+              <NFTList chain={chain} />
+            </BottomContainer>
+          </StyledTabPanel>
+        </>
+      </LedgerCheck>
     </Container>
   );
 }

@@ -41,7 +41,7 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
 
   const addr = useMemo(() => address || currentAddress, [address, currentAddress]);
 
-  const { data: objectsOwnedByAddress, mutate: mutateGetObjectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: addr, network }, { ...config });
+  const { data: objectsOwnedByAddress, mutate: mutateGetObjectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: addr, network }, config);
 
   const objectIdList = useMemo(
     () => (objectsOwnedByAddress?.result && objectsOwnedByAddress?.result.data.map((item) => item.data?.objectId || '')) || [],
@@ -60,7 +60,7 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
       },
       ...options,
     },
-    { ...config },
+    config,
   );
 
   const tokenBalanceObjects = useMemo(() => {

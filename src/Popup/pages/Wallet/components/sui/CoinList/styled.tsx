@@ -48,31 +48,3 @@ export const ListContainer = styled('div')({
 
   overflow: 'auto',
 });
-
-export const NoCoinContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-
-  marginTop: '6.8rem',
-
-  rowGap: '0.8rem',
-});
-
-export const NoCoinTextContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-
-  rowGap: '0.4rem',
-});
-
-export const NoCoinHeaderTextContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text01,
-}));
-
-export const NoCoinSubTextContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text02,
-}));

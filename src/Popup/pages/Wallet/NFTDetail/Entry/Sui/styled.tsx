@@ -45,7 +45,7 @@ export const NFTEditionMarkContainer = styled('div')(({ theme }) => ({
 
   borderRadius: '1.2rem',
 
-  color: theme.colors.text01,
+  color: theme.accentColors.white,
 
   backgroundImage: `linear-gradient(90deg, #9C6CFF 37.5%, #05D2DD 100%)`,
 }));

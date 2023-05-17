@@ -1,11 +1,10 @@
-import { useMemo } from 'react';
 import { Typography } from '@mui/material';
-import type { SuiObjectResponse } from '@mysten/sui.js';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
-import NFTImage from '~/Popup/components/common/NFTImage';
+import Image from '~/Popup/components/common/Image';
 import Skeleton from '~/Popup/components/common/Skeleton';
-import { getNFTMeta } from '~/Popup/utils/sui';
+import { convertIpfs } from '~/Popup/utils/sui';
+import type { SuiNFTMetaType } from '~/types/nft/nftMeta';
 
 import {
   BodyContainer,
@@ -18,31 +17,26 @@ import {
 } from './styled';
 
 type NFTCardItemProps = {
-  nftObject: SuiObjectResponse;
+  nftMeta: SuiNFTMetaType;
   onClick?: () => void;
   disabled?: boolean;
 };
 
-export default function NFTCardItem({ nftObject, onClick, disabled }: NFTCardItemProps) {
-  const { name, imageUrl, objectId, description } = useMemo(() => getNFTMeta(nftObject), [nftObject]);
+export default function NFTCardItem({ nftMeta, onClick, disabled }: NFTCardItemProps) {
+  const { name, imageUrl, objectId, description, isRare } = nftMeta;
 
-  const isRare = true;
   return (
     <StyledButton onClick={onClick} disabled={disabled}>
       <BodyContainer>
         <ObjectImageContainer>
-          {imageUrl ? (
-            <>
-              <NFTImage src={imageUrl} />
-              {isRare && (
-                <ObjectAbsoluteEditionMarkContainer>
-                  <Typography variant="h6">Rare</Typography>
-                </ObjectAbsoluteEditionMarkContainer>
-              )}
-            </>
-          ) : (
-            <NFTImage src={unknownNFTImg} />
-          )}
+          <>
+            <Image src={convertIpfs(imageUrl)} defaultImgSrc={unknownNFTImg} />
+            {isRare && (
+              <ObjectAbsoluteEditionMarkContainer>
+                <Typography variant="h6">Rare</Typography>
+              </ObjectAbsoluteEditionMarkContainer>
+            )}
+          </>
         </ObjectImageContainer>
       </BodyContainer>
 
@@ -63,7 +57,7 @@ export function NFTCardItemSkeleton() {
     <StyledButton disabled>
       <BodyContainer>
         <ObjectImageContainer>
-          <NFTImage src={unknownNFTImg} />
+          <Image src={unknownNFTImg} />
         </ObjectImageContainer>
       </BodyContainer>
       <BottomContainer>
