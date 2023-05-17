@@ -1,20 +1,33 @@
 export async function openTab(path?: string): Promise<chrome.tabs.Tab> {
   const url = chrome.runtime.getURL(`popup.html${path ? `#${path}` : ''}`);
 
-  const current = await getCurrent();
+  return new Promise((res, rej) => {
+    chrome.tabs.create({ active: true, url }, (tab) => {
+      if (chrome.runtime.lastError) {
+        rej(chrome.runtime.lastError);
+      }
+
+      res(tab);
+    });
+  });
+}
+
+export async function closeTab(id?: number): Promise<void> {
+  const currentTabId = id || (await getCurrentTab()).id;
 
   return new Promise((res, rej) => {
-    if (current) {
-      res(current);
-    } else {
-      chrome.tabs.create({ active: true, url }, (tab) => {
-        if (chrome.runtime.lastError) {
-          rej(chrome.runtime.lastError);
-        }
-
-        res(tab);
-      });
+    if (!currentTabId) {
+      res();
+      return;
     }
+
+    void chrome.tabs.remove(currentTabId, () => {
+      if (chrome.runtime.lastError) {
+        rej(chrome.runtime.lastError);
+      }
+
+      res();
+    });
   });
 }
 

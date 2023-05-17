@@ -7,7 +7,7 @@ import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
-import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
+import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -236,7 +236,7 @@ export default function Entry({ queue, chain }: EntryProps) {
           </Button>
         </BottomButtonContainer>
       </BottomContainer>
-      <LedgerToPopup />
+      <LedgerToTab />
     </Container>
   );
 }

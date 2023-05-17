@@ -13,7 +13,7 @@ import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
 import Divider from '~/Popup/components/common/Divider';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
-import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
+import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -248,7 +248,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                 {t('components.requests.LedgerPublicKeyRequest.index.completeButton')}
               </Button>
             </BottomContainer>
-            <LedgerToPopup />
+            <LedgerToTab />
           </Container>
         </BaseLayout>
       );

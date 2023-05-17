@@ -17,7 +17,7 @@ import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import GasSettingDialog from '~/Popup/components/GasSettingDialog';
-import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
+import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/1inch/useOneInchTokensSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useDetermineTxTypeSWR } from '~/Popup/hooks/SWR/ethereum/useDetermineTxTypeSWR';
@@ -637,7 +637,7 @@ export default function Entry({ queue }: EntryProps) {
             </Tooltip>
           </BottomButtonContainer>
         </BottomContainer>
-        <LedgerToPopup />
+        <LedgerToTab />
       </Container>
       <GasSettingDialog
         open={isOpenGasDialog}

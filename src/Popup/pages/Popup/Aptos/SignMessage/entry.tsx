@@ -6,7 +6,7 @@ import { APTOS } from '~/constants/chain/aptos/aptos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
-import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
+import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -142,7 +142,7 @@ export default function Entry({ queue }: EntryProps) {
           </Button>
         </BottomButtonContainer>
       </BottomContainer>
-      <LedgerToPopup />
+      <LedgerToTab />
     </Container>
   );
 }

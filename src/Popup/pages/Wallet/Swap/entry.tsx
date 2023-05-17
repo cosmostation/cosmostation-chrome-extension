@@ -47,7 +47,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { openWindow } from '~/Popup/utils/chromeWindows';
+import { openTab } from '~/Popup/utils/chromeTabs';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -1783,8 +1783,10 @@ export default function Entry() {
                       });
 
                       if (currentAccount.type === 'LEDGER') {
-                        await openWindow();
-                        window.close();
+                        if (window.outerWidth < 450) {
+                          await openTab();
+                          window.close();
+                        }
                       }
                     }
                   }}
@@ -1816,8 +1818,10 @@ export default function Entry() {
                       });
 
                       if (currentAccount.type === 'LEDGER') {
-                        await openWindow();
-                        window.close();
+                        if (window.outerWidth < 450) {
+                          await openTab();
+                          window.close();
+                        }
                       }
                     }
                     if (currentSwapAPI === 'osmo' && osmoSwapAminoTx && currentFeeToken?.address) {

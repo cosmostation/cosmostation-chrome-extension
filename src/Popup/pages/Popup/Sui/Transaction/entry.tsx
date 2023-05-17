@@ -10,7 +10,7 @@ import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
-import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
+import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import { useDryRunTransactionBlockSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionBlockSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -301,7 +301,7 @@ export default function Entry({ queue }: EntryProps) {
           {/* </Tooltip> */}
         </BottomButtonContainer>
       </BottomContainer>
-      <LedgerToPopup />
+      <LedgerToTab />
     </Container>
   );
 }
