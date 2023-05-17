@@ -24,7 +24,7 @@ export function useCurrentQueue() {
     if (newQueues.length === 0) {
       await closeWindow(currentQueue?.windowId);
 
-      if (currentAccount.type === 'LEDGER' && window.outerHeight > 450) {
+      if (currentAccount.type === 'LEDGER') {
         await closeTab();
       }
 
