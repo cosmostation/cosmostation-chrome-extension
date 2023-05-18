@@ -10,7 +10,7 @@ import { plus } from '~/Popup/utils/big';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { Amount } from '~/types/cosmos/common';
-import type { IncentiveClaims, IncentiveHardClaims, IncentivePayload } from '~/types/cosmos/incentive';
+import type { IncentiveClaims, IncentiveHardLiquidityProviderClaims, IncentivePayload } from '~/types/cosmos/incentive';
 
 export function useIncentiveSWR(chain: CosmosChain, suspense?: boolean) {
   const accounts = useAccounts(suspense);
@@ -42,16 +42,17 @@ export function useIncentiveSWR(chain: CosmosChain, suspense?: boolean) {
   };
 
   const getClaimReward = useCallback(
-    (claims: IncentiveHardClaims[] | IncentiveClaims[] | null): Amount[] => claims?.map((claim) => parseReward(claim.base_claim.reward))?.flat() || [],
+    (claims: IncentiveHardLiquidityProviderClaims[] | IncentiveClaims[] | null): Amount[] =>
+      claims?.map((claim) => parseReward(claim.base_claim.reward))?.flat() || [],
     [],
   );
 
   const incentives = useMemo(() => {
     if (data) {
-      const hardClaimsReward = getClaimReward(data.result.hard_claims);
-      const usdxMintingReward = getClaimReward(data.result.usdx_minting_claims);
-      const delegationReward = getClaimReward(data.result.delegator_claims);
-      const swapRewards = getClaimReward(data.result.swap_claims);
+      const hardClaimsReward = getClaimReward(data.hard_liquidity_provider_claims);
+      const usdxMintingReward = getClaimReward(data.usdx_minting_claims);
+      const delegationReward = getClaimReward(data.delegator_claims);
+      const swapRewards = getClaimReward(data.swap_claims);
 
       return [...hardClaimsReward, ...usdxMintingReward, ...delegationReward, ...swapRewards];
     }
