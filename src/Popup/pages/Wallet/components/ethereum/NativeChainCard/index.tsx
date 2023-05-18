@@ -12,6 +12,8 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useNFT721BalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721BalanceSWR';
+import { useNFT1155URISWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC1155/useNFT1155URISWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -61,6 +63,21 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
   const balance = useBalanceSWR(undefined, { suspense: true });
+
+  // NOTE Test codes, would be deleted
+  const testNFTContractAddress = '0x495f947276749ce646f68ac8c248420045cb7b5e';
+  const tokenId = '76759802801251205939224547784789707739691712882438043889149637722920242380801';
+
+  const testNFT721ContractAddress = '0x61628D84d0871A38F102D5F16F4E69Ee91d6cdD9';
+  const testOwnerAddress = '0x04560162A2dcd153Fea7449eb3e834dD700DE854';
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const token721Id = '5955';
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const test1 = useNFT1155URISWR({ contractAddress: testNFTContractAddress, tokenId });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const test2 = useNFT721BalanceSWR({ contractAddress: testNFT721ContractAddress, ownerAddress: testOwnerAddress });
 
   const { t } = useTranslation();
 
