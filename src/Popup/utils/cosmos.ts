@@ -54,7 +54,7 @@ export function cosmosURL(chain: CosmosChain) {
     getRewards: (address: string) => `${restURL}/cosmos/distribution/v1beta1/delegators/${address}/rewards`,
     getUndelegations: (address: string) => `${restURL}/cosmos/staking/v1beta1/delegators/${address}/unbonding_delegations`,
     getAccount: (address: string) => `${restURL}/cosmos/auth/v1beta1/accounts/${address}`,
-    getIncentive: (address: string) => (chainName === KAVA.chainName ? `${restURL}/incentive/rewards?owner=${address}` : ''),
+    getIncentive: (address: string) => (chainName === KAVA.chainName ? `${restURL}/kava/incentive/v1beta1/rewards?owner=${address}` : ''),
     postBroadcast: () => `${restURL}/cosmos/tx/v1beta1/txs`,
     getCW20TokenInfo: (contractAddress: string) => `${restURL}/wasm/contract/${contractAddress}/smart/${toHex('{"token_info":{}}')}?encoding=utf-8`,
     getCW20Balance: (contractAddress: string, address: string) =>

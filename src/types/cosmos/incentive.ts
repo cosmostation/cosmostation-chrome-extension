@@ -15,7 +15,7 @@ type IncentiveSupplyRewardIndex = {
   reward_indexes: IncentiveRewardIndex[];
 };
 
-export type IncentiveHardClaims = {
+export type IncentiveHardLiquidityProviderClaims = {
   base_claim: IncentiveBaseClaim;
   supply_reward_indexes: IncentiveSupplyRewardIndex[] | null;
   borrow_reward_indexes: IncentiveSupplyRewardIndex[] | null;
@@ -27,13 +27,10 @@ export type IncentiveClaims = {
 };
 
 export type Incentive = {
-  hard_claims: IncentiveHardClaims[] | null;
+  hard_liquidity_provider_claims: IncentiveHardLiquidityProviderClaims[] | null;
   usdx_minting_claims: IncentiveClaims[] | null;
   delegator_claims: IncentiveClaims[] | null;
   swap_claims: IncentiveClaims[] | null;
 };
 
-export type IncentivePayload = {
-  height: string;
-  result: Incentive;
-};
+export type IncentivePayload = Incentive;
