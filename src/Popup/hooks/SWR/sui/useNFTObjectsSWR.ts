@@ -78,7 +78,9 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
   const { data: kioskObjects, mutate: mutateGetKioskObjects } = useGetObjectsSWR(
     {
       network,
-      objectIds: [...(kioskTypeObjectsDynamicFields?.map((item) => item?.result?.data.find((data) => data.name.type.includes('kiosk'))?.objectId || '') || [])],
+      objectIds: [
+        ...(kioskTypeObjectsDynamicFields?.map((item) => item?.result?.data.find((data) => data.name.type.includes('kiosk::Item'))?.objectId || '') || []),
+      ],
       options: {
         showType: true,
         showContent: true,
