@@ -49,7 +49,7 @@ export default function CoinListBottomSheet({ currentSelectedCoin, availableCoin
       <Container>
         <Header>
           <HeaderTitle>
-            <Typography variant="h4">{t('pages.Wallet.Swap.components.CoinListBottomSheet.index.title')}</Typography>
+            <Typography variant="h4">{t('pages.Wallet.OsmosisSwap.components.CoinListBottomSheet.index.title')}</Typography>
           </HeaderTitle>
           <StyledButton
             onClick={() => {
@@ -66,7 +66,7 @@ export default function CoinListBottomSheet({ currentSelectedCoin, availableCoin
               <StyledSearch20Icon />
             </InputAdornment>
           }
-          placeholder={t('pages.Wallet.Swap.components.CoinListBottomSheet.index.searchPlaceholder')}
+          placeholder={t('pages.Wallet.OsmosisSwap.components.CoinListBottomSheet.index.searchPlaceholder')}
           value={search}
           onChange={(event) => {
             setSearch(event.currentTarget.value);

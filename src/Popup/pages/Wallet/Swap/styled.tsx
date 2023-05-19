@@ -1,7 +1,8 @@
 import { styled } from '@mui/material/styles';
+import { tooltipClasses } from '@mui/material/Tooltip';
 
 import IconButton from '~/Popup/components/common/IconButton';
-import Input from '~/Popup/components/common/Input';
+import Tooltip from '~/Popup/components/common/Tooltip';
 
 export const Container = styled('div')({
   height: '100%',
@@ -14,202 +15,100 @@ export const Container = styled('div')({
 });
 
 export const SwapContainer = styled('div')({
-  marginTop: '1.4rem',
-
   display: 'flex',
   flexDirection: 'column',
 
   rowGap: '0.8rem',
   position: 'relative',
+
+  marginBottom: '0.8rem',
 });
 
 export const SwapIconButton = styled(IconButton)(({ theme }) => ({
-  padding: '0.6rem',
+  '&.MuiIconButton-root': {
+    padding: '0.6rem',
 
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: `translate(-50%, -50%)`,
-  borderRadius: '5rem',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: `translate(-50%, -50%)`,
+    borderRadius: '5rem',
 
-  backgroundColor: theme.colors.base04,
+    backgroundColor: theme.colors.base04,
 
-  '&:hover': {
-    backgroundColor: theme.colors.base05,
-  },
-}));
-
-export const SwapCoinContainer = styled('div')(({ theme }) => ({
-  padding: '1.3rem 1.6rem 2.5rem',
-
-  background: theme.colors.base02,
-  borderRadius: '0.8rem',
-}));
-
-export const SwapCoinHeaderContainer = styled('div')({
-  height: '1.8rem',
-
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-});
-
-export const SwapCoinBodyLeftHeaderContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text02,
-}));
-
-export const SwapCoinBodyRightHeaderContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  color: theme.colors.text02,
-}));
-
-export const StyledInput = styled(Input)(({ theme }) => ({
-  '&.MuiOutlinedInput-root': {
-    width: '13rem',
-    '.MuiOutlinedInput-input': {
-      height: '1.8rem',
-      textAlign: 'right',
-      fontFamily: theme.typography.h4n.fontFamily,
-      fontStyle: theme.typography.h4n.fontStyle,
-      fontSize: theme.typography.h4n.fontSize,
-      lineHeight: theme.typography.h4n.lineHeight,
-      letterSpacing: theme.typography.h4n.letterSpacing,
-
-      '&::placeholder': {
-        fontFamily: theme.typography.h4n.fontFamily,
-        fontStyle: theme.typography.h4n.fontStyle,
-        fontSize: theme.typography.h4n.fontSize,
-        lineHeight: theme.typography.h4n.lineHeight,
-        letterSpacing: theme.typography.h4n.letterSpacing,
-
-        color: theme.colors.text02,
-        opacity: 1,
-      },
+    '&:hover': {
+      backgroundColor: theme.colors.base05,
     },
-    '.MuiOutlinedInput-notchedOutline': {
-      border: `none`,
-    },
-    '& .MuiOutlinedInput-input': {
-      padding: '0',
-    },
-    '&.Mui-focused': {
-      '.MuiOutlinedInput-notchedOutline': {
-        border: 'none',
+    '&:disabled': {
+      backgroundColor: theme.colors.base01,
+      '&:hover': {
+        backgroundColor: theme.colors.base01,
       },
     },
   },
 }));
 
 export const MaxButton = styled('button')(({ theme }) => ({
-  padding: '0',
+  padding: '0.4rem 0.8rem',
   border: 0,
+  borderRadius: '5rem',
 
-  marginLeft: '0.4rem',
-
-  backgroundColor: 'transparent',
-  color: theme.accentColors.purple01,
-
-  cursor: 'pointer',
-
-  textDecorationLine: 'underline',
-  '&:hover': {
-    color: theme.accentColors.purple02,
-  },
-}));
-
-export const SwapCoinBodyContainer = styled('div')({
-  paddingTop: '0.9rem',
-
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-});
-
-type SwapCoinBodyLeftButtonProps = {
-  'data-is-active'?: boolean;
-};
-
-export const SwapCoinBodyLeftButton = styled('button')<SwapCoinBodyLeftButtonProps>(({ theme, ...props }) => ({
-  backgroundColor: 'transparent',
-  border: `none`,
-
-  padding: '0',
-
-  display: 'flex',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-
-  cursor: 'pointer',
-
-  '& > svg': {
-    transform: props['data-is-active'] ? 'rotate(180deg)' : 'none',
-    '& > path': {
-      stroke: theme.colors.base05,
-    },
-  },
-  '&:hover': {
-    '& > svg': {
-      '& > path': {
-        stroke: theme.colors.base06,
-      },
-    },
-  },
-}));
-
-export const SwapCoinBodyLeftImageContainer = styled('div')({
-  width: '3.2rem',
-  height: '3.2rem',
-  '& > img': {
-    width: '3.2rem',
-    height: '3.2rem',
-  },
-});
-
-export const SwapCoinBodyLeftInfoContainer = styled('div')({
   marginLeft: '0.8rem',
+
+  height: 'max-content',
+
   display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
+  justifyContent: 'center',
+  alignItems: 'center',
 
-  rowGap: '0.2rem',
+  backgroundColor: theme.accentColors.purple01,
+  color: theme.accentColors.white,
 
-  marginRight: '0.3rem',
-});
+  cursor: 'pointer',
 
-export const SwapCoinBodyLeftTitleContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text01,
+  '&:hover': {
+    backgroundColor: theme.accentColors.purple02,
+  },
 }));
 
-export const SwapCoinBodyLeftSubTitleContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text02,
-  textAlign: 'left',
+type SwapCoinInputAmountContainerProps = {
+  'data-is-error'?: boolean;
+};
+
+export const SwapCoinInputAmountContainer = styled('div')<SwapCoinInputAmountContainerProps>(({ ...props }) => ({
+  marginBottom: props['data-is-error'] ? '0.1rem' : '1.6rem',
 }));
 
-export const SwapCoinBodyRightContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-end',
-});
-
-type SwapCoinBodyRightTitleContainerProps = {
+type SwapCoinOutputAmountContainerProps = {
   'data-is-active'?: boolean;
 };
 
-export const SwapCoinBodyRightTitleContainer = styled('div')<SwapCoinBodyRightTitleContainerProps>(({ theme, ...props }) => ({
-  height: '1.8rem',
-  width: '13rem',
+export const SwapCoinOutputAmountContainer = styled('div')<SwapCoinOutputAmountContainerProps>(({ theme, ...props }) => ({
+  height: '2.6rem',
+
   color: props['data-is-active'] ? theme.colors.text01 : theme.colors.text02,
+  opacity: props['data-is-active'] ? 1 : 0.8,
 
-  textAlign: 'right',
   overflow: 'hidden',
+
+  marginBottom: '1.6rem',
 }));
 
-export const SwapCoinBodyRightSubTitleContainer = styled('div')(({ theme }) => ({
-  height: '1.7rem',
+export const OutputAmountCircularProgressContainer = styled('div')({
+  height: '4.2rem',
+});
 
-  color: theme.colors.text02,
-}));
+export const MinimumReceivedCircularProgressContainer = styled('div')({
+  height: '2.2rem',
+});
+
+export const BodyContainer = styled('div')({
+  margin: '0 -1.6rem',
+  padding: '0 1.6rem',
+
+  height: 'calc(100% - 11rem)',
+  overflow: 'auto',
+});
 
 export const SwapInfoContainer = styled('div')(({ theme }) => ({
   padding: '1.6rem',
@@ -222,7 +121,75 @@ export const SwapInfoContainer = styled('div')(({ theme }) => ({
 
 export const SwapInfoHeaderContainer = styled('div')(({ theme }) => ({
   display: 'flex',
+  flexDirection: 'column',
+
+  justifyContent: 'flex-start',
+  alignItems: 'flex-start',
+
   color: theme.colors.text01,
+}));
+export const SwapInfoHeaderTextContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+
+  columnGap: '0.2rem',
+});
+
+export const SwapInfoSubHeaderContainer = styled('div')({
+  height: '2.2rem',
+
+  display: 'flex',
+});
+
+export const StyledTooltipTitleContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+}));
+
+export const StyledTooltipBodyContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+
+  marginTop: '0.8rem',
+
+  rowGap: '0.5rem',
+});
+
+export const SwapInfoStyledTooltip = styled(Tooltip)(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.colors.base02,
+    marginLeft: '1.75rem',
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    marginTop: '0.7rem !important',
+    marginRight: '3.5rem',
+
+    backgroundColor: theme.colors.base02,
+
+    padding: '0.8rem',
+    textAlign: 'start',
+
+    maxWidth: '23.5rem',
+    maxHeight: 'fit-content',
+  },
+}));
+
+export const GasInfoStyledTooltip = styled(Tooltip)(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.colors.base02,
+    marginLeft: '-1.5rem',
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    marginBottom: '0.7rem !important',
+    marginLeft: '3rem',
+
+    backgroundColor: theme.colors.base02,
+
+    padding: '0.8rem',
+    textAlign: 'start',
+
+    maxWidth: '26.7rem',
+    maxHeight: 'fit-content',
+  },
 }));
 
 export const SwapInfoBodyContainer = styled('div')({
@@ -239,7 +206,22 @@ export const SwapInfoBodyTextContainer = styled('div')({
 });
 
 export const SwapInfoBodyLeftContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+
+  columnGap: '0.2rem',
+
   color: theme.colors.text02,
+}));
+
+export const SwapInfoBodyLeftIconContainer = styled('div')(({ theme }) => ({
+  height: '1.6rem',
+  '& > svg': {
+    fill: theme.colors.base05,
+    '&:hover': {
+      fill: theme.colors.base06,
+    },
+  },
 }));
 
 export const SwapInfoBodyRightContainer = styled('div')(({ theme }) => ({
@@ -265,54 +247,33 @@ export const BottomContainer = styled('div')({
   bottom: '1.6rem',
 });
 
-export const TopContainer = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  position: 'relative',
-
-  backgroundColor: 'transparent',
+export const SideButton = styled(IconButton)({
+  padding: '0',
 });
 
-export const TextContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  height: '2.8rem',
-
-  color: theme.colors.text01,
-}));
-
-export const BackButton = styled('button')(({ theme }) => ({
-  left: 0,
-
-  width: '2.8rem',
-  height: '2.8rem',
-
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  position: 'absolute',
-
-  backgroundColor: theme.colors.base03,
-
-  borderRadius: '50%',
-
+export const FeePriceButton = styled('button')({
   border: 0,
-  margin: 0,
+  padding: 0,
+
+  backgroundColor: 'transparent',
 
   cursor: 'pointer',
+});
 
-  '& svg': {
-    fill: theme.colors.base06,
+export const FeePriceButtonTextContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+
+  color: theme.colors.text01,
+
+  '&:hover': {
+    color: theme.colors.text02,
   },
 }));
 
-export const SideButton = styled(IconButton)({
-  right: 0,
-  position: 'absolute',
-  padding: '0',
+export const ButtonTextIconContaier = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+
+  columnGap: '0.4rem',
 });

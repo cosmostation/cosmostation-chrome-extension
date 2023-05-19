@@ -6,7 +6,7 @@ import type { AbiItem } from 'web3-utils';
 
 import { ERC20_ABI } from '~/constants/abi';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import type { EthereumToken } from '~/types/chain';
+import type { EthereumNetwork, EthereumToken } from '~/types/chain';
 import type { ERC20ContractBalanceOfPayload, ERC20ContractMethods } from '~/types/ethereum/contract';
 
 import { useCurrentAccount } from '../../useCurrent/useCurrentAccount';
@@ -20,7 +20,12 @@ type FetcherParams = {
   address: string;
 };
 
-export function useTokenBalanceSWR(token?: Omit<EthereumToken, 'id' | 'ethereumNetworkId'> | null, config?: SWRConfiguration) {
+type UseTokenBalanceSWR = {
+  network?: EthereumNetwork;
+  token?: Omit<EthereumToken, 'id' | 'ethereumNetworkId'> | null;
+};
+
+export function useTokenBalanceSWR({ network, token }: UseTokenBalanceSWR, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
   const accounts = useAccounts(config?.suspense);
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
@@ -28,6 +33,8 @@ export function useTokenBalanceSWR(token?: Omit<EthereumToken, 'id' | 'ethereumN
   const { currentAccount } = useCurrentAccount();
 
   const address = accounts.data?.find((account) => account.id === currentAccount.id)?.address[currentChain.id] || '';
+
+  const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
 
   const fetcher = (params: FetcherParams) => {
     const provider = new Web3.providers.HttpProvider(params.rpcURL, {
@@ -45,18 +52,14 @@ export function useTokenBalanceSWR(token?: Omit<EthereumToken, 'id' | 'ethereumN
     return methods.balanceOf(params.address).call() as Promise<ERC20ContractBalanceOfPayload>;
   };
 
-  const { data, error, mutate } = useSWR<ERC20ContractBalanceOfPayload, AxiosError>(
-    { rpcURL: currentEthereumNetwork.rpcURL, tokenAddress: token?.address, address },
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 14000,
-      refreshInterval: 15000,
-      errorRetryCount: 0,
-      isPaused: () => currentChain.id !== ETHEREUM.id || !address || !token?.address,
-      ...config,
-    },
-  );
+  const { data, error, mutate } = useSWR<ERC20ContractBalanceOfPayload, AxiosError>({ rpcURL, tokenAddress: token?.address, address }, fetcher, {
+    revalidateOnFocus: false,
+    dedupingInterval: 14000,
+    refreshInterval: 15000,
+    errorRetryCount: 0,
+    isPaused: () => currentChain.id !== ETHEREUM.id || !address || !token?.address || !rpcURL,
+    ...config,
+  });
 
   return { data, error, mutate };
 }

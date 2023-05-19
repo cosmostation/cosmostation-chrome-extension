@@ -5,13 +5,14 @@ import { Interface } from '@ethersproject/abi';
 import type { MessageTypes, SignTypedDataVersion, TypedMessage } from '@metamask/eth-sig-util';
 import { signTypedData as baseSignTypedData } from '@metamask/eth-sig-util';
 
-import { ERC20_ABI } from '~/constants/abi';
+import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
+import { ERC20_ABI, ONE_INCH_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
-import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
+import { ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { chromeStorage } from '~/Popup/utils/chromeStorage';
 import { EthereumRPCError } from '~/Popup/utils/error';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
-import type { EthereumTxType } from '~/types/ethereum/common';
+import type { EthereumContractKind, EthereumTxType } from '~/types/ethereum/common';
 import type { CustomTypedMessage, EthereumTx } from '~/types/message/ethereum';
 
 export function toUTF8(hex: string) {
@@ -85,6 +86,8 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
 
 const erc20Interface = new Interface(ERC20_ABI);
 
+const oneInchInterface = new Interface(ONE_INCH_ABI);
+
 export function erc20Parse(tx: EthereumTx) {
   const { data } = tx;
 
@@ -98,30 +101,70 @@ export function erc20Parse(tx: EthereumTx) {
   }
 }
 
+export function oneInchParse(tx: EthereumTx) {
+  const { data } = tx;
+
+  if (!data) {
+    return null;
+  }
+  try {
+    return oneInchInterface.parseTransaction({ data });
+  } catch {
+    return null;
+  }
+}
+
 export type DetermineTxType = {
   type: EthereumTxType;
-  erc20: TransactionDescription | null;
+  txDescription: TransactionDescription | null;
+  contractKind?: EthereumContractKind;
   getCodeResponse: string | null;
 };
 
 export async function determineTxType(txParams: EthereumTx): Promise<DetermineTxType> {
   const { data, to } = txParams;
-  const erc20 = erc20Parse(txParams);
-  const name = erc20?.name;
+
+  let txDescription;
+
+  let result: EthereumTxType = ETHEREUM_TX_TYPE.SIMPLE_SEND;
+
+  let contractCode: string | null = null;
+
+  let contractKind;
+
+  if (isEqualsIgnoringCase(to, ONEINCH_CONTRACT_ADDRESS) && to) {
+    const { contractCode: resultCode, isContractAddress } = await readAddressAsContract(to);
+
+    contractCode = resultCode;
+
+    txDescription = oneInchParse(txParams);
+
+    contractKind = ETHEREUM_CONTRACT_KIND.ONEINCH;
+
+    if (isContractAddress) {
+      if (txDescription?.name === ETHEREUM_TX_TYPE.SWAP) {
+        result = ETHEREUM_TX_TYPE.SWAP;
+      }
+      if (txDescription?.name === ETHEREUM_TX_TYPE.UNOSWAP) {
+        result = ETHEREUM_TX_TYPE.UNOSWAP;
+      }
+    }
+    return { type: result, getCodeResponse: contractCode, txDescription, contractKind };
+  }
+
+  txDescription = erc20Parse(txParams);
+  const name = txDescription?.name;
 
   const tokenMethodName = [ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM].find(
     (methodName) => isEqualsIgnoringCase(methodName, name),
   );
 
-  let result: EthereumTxType = ETHEREUM_TX_TYPE.SIMPLE_SEND;
-
   if (data && tokenMethodName) {
     result = tokenMethodName;
+    contractKind = ETHEREUM_CONTRACT_KIND.ERC20;
   } else if (data && !to) {
     result = ETHEREUM_TX_TYPE.DEPLOY_CONTRACT;
   }
-
-  let contractCode: string | null = null;
 
   if (result === ETHEREUM_TX_TYPE.SIMPLE_SEND && to) {
     const { contractCode: resultCode, isContractAddress } = await readAddressAsContract(to);
@@ -133,7 +176,7 @@ export async function determineTxType(txParams: EthereumTx): Promise<DetermineTx
     }
   }
 
-  return { type: result, getCodeResponse: contractCode, erc20 };
+  return { type: result, getCodeResponse: contractCode, txDescription, contractKind };
 }
 
 export async function readAddressAsContract(address: string) {

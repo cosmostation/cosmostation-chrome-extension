@@ -24,7 +24,7 @@ type TokenItemProps = {
 };
 
 export default function TokenItem({ token, disabled, onClick }: TokenItemProps) {
-  const tokenBalance = useTokenBalanceSWR(token);
+  const tokenBalance = useTokenBalanceSWR({ token });
 
   const amount = tokenBalance.data || '0';
   const displayAmount = toDisplayDenomAmount(amount, token.decimals);

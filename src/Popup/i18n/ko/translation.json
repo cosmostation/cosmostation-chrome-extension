@@ -814,7 +814,13 @@
                 "Interact": {
                   "index": {
                     "contractAddress": "계약 주소",
-                    "data": "데이터"
+                    "contractMethod": "컨트랙트 메소드",
+                    "data": "데이터",
+                    "expectedOutput": "최소 교환 수량",
+                    "fromToken": "From",
+                    "receiverAddress": "받는 주소",
+                    "swapAmount": "수량",
+                    "toToken": "To"
                   }
                 },
                 "Send": {
@@ -975,6 +981,38 @@
       }
     },
     "Wallet": {
+      "OsmosisSwap": {
+        "components": {
+          "CoinListBottomSheet": {
+            "index": {
+              "searchPlaceholder": "검색",
+              "title": "토큰 선택하세요"
+            }
+          },
+          "SlippageSettingDialog": {
+            "confirm": "확인",
+            "slippageTolerance": "슬리피지 허용치",
+            "title": "설정",
+            "toleranceInfo": "교환 비율이 해당 값 이상일 경우 거래가 취소됩니다."
+          }
+        },
+        "entry": {
+          "availableAmount": "사용 가능 수량",
+          "excessiveSwap": "유동성 풀에 예치된 토큰의 수량보다 더 교환할 수 없습니다.",
+          "expectedOutput": "예상 교환치",
+          "insufficientAmount": "수량이 부족합니다.",
+          "insufficientFeeAmount": "수수료가 부족합니다.",
+          "invalidAmount": "수량을 입력하세요.",
+          "invalidOutputAmount": "예상 교환치가 없습니다.",
+          "invalidPriceImpact": "가격 변동치가 지나치게 높습니다.",
+          "minimumReceived": "슬리피지 이후 받을 최소 수량",
+          "networkError": "네트워크 오류",
+          "priceImpact": "가격 변동치",
+          "swapButton": "교환",
+          "swapFee": "교환 수수료",
+          "title": "교환"
+        }
+      },
       "NFTDetail": {
         "Entry": {
           "Sui": {
@@ -1164,9 +1202,6 @@
         }
       },
       "Swap": {
-        "Entry": {
-          "swapButton": "교환"
-        },
         "components": {
           "CoinListBottomSheet": {
             "index": {
@@ -1179,22 +1214,79 @@
             "slippageTolerance": "슬리피지 허용치",
             "title": "설정",
             "toleranceInfo": "교환 비율이 해당 값 이상일 경우 거래가 취소됩니다."
+          },
+          "SwapCoinContainer": {
+            "components": {
+              "ChainListBottomSheet": {
+                "components": {
+                  "ChainItem": {
+                    "index": {
+                      "unAvailable1": "곧 지원될 예정입니다",
+                      "unAvailable2": ""
+                    }
+                  }
+                },
+                "index": {
+                  "chainBottomListTitle": "체인을 선택하세요",
+                  "searchChainPlaceholder": "체인 검색"
+                }
+              },
+              "TokenListBottomSheet": {
+                "index": {
+                  "searchTokenPlaceholder": "토큰 검색",
+                  "tokenBottomListTitle": "토큰을 선택하세요"
+                }
+              }
+            },
+            "index": {
+              "availableAmount": "사용 가능 수량",
+              "balance": "보유 수량",
+              "selectChain": "체인 선택하기",
+              "selectCoin": "토큰 선택하기"
+            }
           }
         },
         "entry": {
+          "allowanceWarning": "Swap Router 접근에 대한 승인이 필요합니다: 선택된 토큰들에 대한 1inch 스마트컨트랙트 접근을 허용하고, 단일 tx을 통해 스왑을 진행합니다.",
           "availableAmount": "사용 가능 수량",
+          "balanceWarningDescription1": "스왑 금액과 예상 가스비를 위한",
+          "balanceWarningDescription2": "가 부족합니다. 금액을",
+          "balanceWarningDescription3": "이하로 입력하세요.",
           "excessiveSwap": "유동성 풀에 예치된 토큰의 수량보다 더 교환할 수 없습니다.",
+          "exchangeRate": "교환 비율",
           "expectedOutput": "예상 교환치",
+          "gasFee": "가스비",
+          "gasFees": "가스비 (환불 전)",
+          "gasFeesInfo": "스왑 tx 전송을 보장하기 위해 Axelar 에서는 가스비를 50% 높게 책정하고 있습니다. 미사용분은 사용자에게 환불됩니다.",
           "insufficientAmount": "수량이 부족합니다.",
           "insufficientFeeAmount": "수수료가 부족합니다.",
           "invalidAmount": "수량을 입력하세요.",
           "invalidOutputAmount": "예상 교환치가 없습니다.",
           "invalidPriceImpact": "가격 변동치가 지나치게 높습니다.",
+          "invalidSwapTx": "Invalid tx data",
+          "lessThanFeeWarningDescription1": "예상 가스비를 위한 잔액이 부족합니다. 잔액이",
+          "lessThanFeeWarningDescription2": "이상인지 확인하세요.",
+          "liquidityWarning": "해당 스왑을 진행하기에 풀 유동성이 부족합니다. 스왑 금액을 낮추고 다시 시도하세요.",
           "minimumReceived": "슬리피지 이후 받을 최소 수량",
+          "minutes": "분",
           "networkError": "네트워크 오류",
+          "oversizedSwap": "1회 스왑 가능 한도를 초과했습니다.",
+          "permissionButton": "토큰 사용을 승인합니다.",
           "priceImpact": "가격 변동치",
+          "processingTime": "예상 소요 시간",
+          "receiveWarningMessage": "시장 변동성이 높을 시, 설정한 output 토큰이 아닌 axlUSDC 토큰이 스왑되어 나올 수 있습니다. 이후 해당 axlUSDC를 원하는 토큰으로 스왑하세요.",
+          "swapButton": "교환",
+          "swapButtonOn": "에서 교환",
           "swapFee": "교환 수수료",
-          "title": "교환"
+          "swapInfoDescription1": "슬리피지",
+          "swapInfoDescription2": "로 인해 최종 수령 금액과 예상 수령 금액이 다를 수 있습니다. 최소",
+          "swapInfoDescription3": "를 받게됩니다.",
+          "title": "교환",
+          "txSizeWarning": "1회 스왑할 수 있는 최대 금액은 $10,000 입니다. 스왑 금액을 낮추고 다시 시도하세요."
+        },
+        "index": {
+          "fetchingData": "데이터를 가져오는 중입니다",
+          "networkError": "네트워크 오류"
         }
       },
       "components": {

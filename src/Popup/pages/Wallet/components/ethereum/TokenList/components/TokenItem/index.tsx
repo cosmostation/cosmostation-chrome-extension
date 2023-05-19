@@ -42,7 +42,7 @@ type TokenItemProps = {
 export default function TokenItem({ token, disabled, onClick, onClickDelete }: TokenItemProps) {
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const tokenBalance = useTokenBalanceSWR(token, { suspense: true });
+  const tokenBalance = useTokenBalanceSWR({ token }, { suspense: true });
 
   const { currency } = chromeStorage;
   const amount = tokenBalance.data || '0';
@@ -122,7 +122,7 @@ export function TokenItemSkeleton({ token }: TokenItemSkeletonProps) {
 type TokenItemErrorProps = Pick<TokenItemProps, 'token' | 'onClickDelete'> & FallbackProps;
 
 export function TokenItemError({ token, onClickDelete, resetErrorBoundary }: TokenItemErrorProps) {
-  const tokenBalance = useTokenBalanceSWR(token);
+  const tokenBalance = useTokenBalanceSWR({ token });
   const [isLoading, setIsLoading] = useState(false);
 
   const isInvalid = tokenBalance.error?.message.startsWith("Returned values aren't valid") || false;

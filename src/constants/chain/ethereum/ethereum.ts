@@ -13,3 +13,5 @@ export const ETHEREUM: EthereumChain = {
     change: '0',
   },
 };
+
+export const EVM_NATIVE_TOKEN_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
