@@ -8,7 +8,6 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { getNFTMeta } from '~/Popup/utils/sui';
 import type { SuiChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
@@ -97,16 +96,13 @@ export default function NFTList({ chain }: NFTListProps) {
         <ListTitleRightContainer />
       </ListTitleContainer>
       <ListContainer>
-        {filteredNFTObjects.map((nft) => {
-          const nftMeta = getNFTMeta(nft);
-          return (
-            <ErrorBoundary key={nft.data?.objectId} FallbackComponent={Empty}>
-              <Suspense fallback={<NFTCardItemSkeleton />}>
-                <NFTCardItem nftMeta={nftMeta} onClick={() => navigate(`/wallet/nft-detail/${nft.data?.objectId || ''}` as unknown as Path)} />
-              </Suspense>
-            </ErrorBoundary>
-          );
-        })}
+        {filteredNFTObjects.map((nft) => (
+          <ErrorBoundary key={nft.data?.objectId} FallbackComponent={Empty}>
+            <Suspense fallback={<NFTCardItemSkeleton />}>
+              <NFTCardItem nftObject={nft} onClick={() => navigate(`/wallet/nft-detail/${nft.data?.objectId || ''}` as unknown as Path)} />
+            </Suspense>
+          </ErrorBoundary>
+        ))}
       </ListContainer>
       <TypePopover
         marginThreshold={0}

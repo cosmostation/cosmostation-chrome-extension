@@ -981,6 +981,48 @@
       }
     },
     "Wallet": {
+      "NFTDetail": {
+        "Entry": {
+          "Sui": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "copied": "Copied",
+                  "creator": "Created by",
+                  "description": "Description",
+                  "objectId": "Object Id",
+                  "ownerAddress": "Owner",
+                  "url": "URL"
+                }
+              }
+            },
+            "index": {
+              "send": "NFT Send",
+              "untransferableObject": "Untransferable object"
+            }
+          }
+        },
+        "layout": {
+          "title": "NFT Detail"
+        }
+      },
+      "NFTSend": {
+        "Entry": {
+          "Sui": {
+            "index": {
+              "fee": "Fee",
+              "insufficientAmount": "Insufficient amount",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          }
+        },
+        "layout": {
+          "title": "NFT Send"
+        }
+      },
       "OsmosisSwap": {
         "components": {
           "CoinListBottomSheet": {
@@ -1011,47 +1053,6 @@
           "swapButton": "Swap",
           "swapFee": "Swap Fee",
           "title": "Swap"
-        }
-      },
-      "NFTDetail": {
-        "Entry": {
-          "Sui": {
-            "components": {
-              "NFTInfoItem": {
-                "index": {
-                  "copied": "Copied",
-                  "creator": "Created by",
-                  "description": "Description",
-                  "objectId": "Object Id",
-                  "ownerAddress": "Owner",
-                  "url": "URL"
-                }
-              }
-            },
-            "index": {
-              "send": "NFT Send",
-              "untransferableObject": "Untransferable object"
-            }
-          }
-        },
-        "layout": {
-          "title": "NFT Detail"
-        }
-      },
-      "NFTSend": {
-        "Entry": {
-          "Sui": {
-            "index": {
-              "insufficientAmount": "Insufficient amount",
-              "invalidAddress": "Invalid address",
-              "invalidAmount": "Invalid amount",
-              "recipientAddressPlaceholder": "Recipient address",
-              "sendButton": "Send"
-            }
-          }
-        },
-        "layout": {
-          "title": "NFT Send"
         }
       },
       "Receive": {

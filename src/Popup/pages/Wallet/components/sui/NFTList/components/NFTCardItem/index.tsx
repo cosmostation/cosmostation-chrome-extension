@@ -1,10 +1,11 @@
+import { useMemo } from 'react';
 import { Typography } from '@mui/material';
+import type { SuiObjectResponse } from '@mysten/sui.js';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Skeleton from '~/Popup/components/common/Skeleton';
-import { convertIpfs } from '~/Popup/utils/sui';
-import type { SuiNFTMetaType } from '~/types/nft/nftMeta';
+import { convertIpfs, getNFTMeta } from '~/Popup/utils/sui';
 
 import {
   BodyContainer,
@@ -17,20 +18,22 @@ import {
 } from './styled';
 
 type NFTCardItemProps = {
-  nftMeta: SuiNFTMetaType;
+  nftObject: SuiObjectResponse;
   onClick?: () => void;
   disabled?: boolean;
 };
 
-export default function NFTCardItem({ nftMeta, onClick, disabled }: NFTCardItemProps) {
-  const { name, imageUrl, objectId, description, isRare } = nftMeta;
+export default function NFTCardItem({ nftObject, onClick, disabled }: NFTCardItemProps) {
+  const nftMeta = useMemo(() => getNFTMeta(nftObject), [nftObject]);
+
+  const { name, imageURL, objectId, description, isRare } = nftMeta;
 
   return (
     <StyledButton onClick={onClick} disabled={disabled}>
       <BodyContainer>
         <ObjectImageContainer>
           <>
-            <Image src={convertIpfs(imageUrl)} defaultImgSrc={unknownNFTImg} />
+            <Image src={convertIpfs(imageURL)} defaultImgSrc={unknownNFTImg} />
             {isRare && (
               <ObjectAbsoluteEditionMarkContainer>
                 <Typography variant="h6">Rare</Typography>

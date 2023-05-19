@@ -50,7 +50,7 @@ export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMetaType {
     return {
       name: name || '',
       description: description || '',
-      imageUrl: image_url || '',
+      imageURL: image_url || '',
       link: link || '',
       projectUrl: project_url || '',
       creator: creator || '',
@@ -62,6 +62,7 @@ export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMetaType {
           ? objectOwner.ObjectOwner
           : '',
       objectFieldData: { ...data.data?.content.fields },
+      type: data.data.type,
       isRare: false,
     };
   }

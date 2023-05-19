@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { InputAdornment } from '@mui/material';
+import { InputAdornment, Typography } from '@mui/material';
 import type { TransactionBlock as TransactionBlockType } from '@mysten/sui.js';
 import { Connection, Ed25519Keypair, JsonRpcProvider, RawSigner, TransactionBlock } from '@mysten/sui.js';
 
@@ -8,6 +8,7 @@ import { SUI_COIN, SUI_TOKEN_TEMPORARY_DECIMALS } from '~/constants/sui';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
+import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
@@ -28,7 +29,21 @@ import { suiAddressRegex } from '~/Popup/utils/regex';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { SuiChain } from '~/types/chain';
 
-import { BottomContainer, Container, Div, StyledInput } from './styled';
+import NFTButton from './components/NFTButton';
+import NFTPopover from './components/NFTPopover';
+import {
+  BottomContainer,
+  Container,
+  Div,
+  FeeContainer,
+  FeeInfoContainer,
+  FeeLeftContainer,
+  FeeRightAmountContainer,
+  FeeRightColumnContainer,
+  FeeRightContainer,
+  FeeRightValueContainer,
+  StyledInput,
+} from './styled';
 
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
@@ -90,7 +105,9 @@ export default function Sui({ chain }: SuiProps) {
 
   const availableNFTObjectsIds = useMemo(() => availableNFTObjects.map((object) => object.data?.objectId), [availableNFTObjects]);
 
-  const [currentNFTObjectId] = useState<string | undefined>(availableNFTObjectsIds.includes(params.id || '') ? params.id : availableNFTObjectsIds[0]);
+  const [currentNFTObjectId, setCurrentNFTObjectId] = useState<string | undefined>(
+    availableNFTObjectsIds.includes(params.id || '') ? params.id : availableNFTObjectsIds[0],
+  );
 
   const currentNFTObject = useMemo(
     () => nftObjects.find((item) => isEqualsIgnoringCase(item.data?.objectId, currentNFTObjectId)),
@@ -108,23 +125,33 @@ export default function Sui({ chain }: SuiProps) {
     [coinMetadata?.result?.decimals, currentFeeCoin?.coinType, currentSuiNetwork.decimals],
   );
 
+  const feeCoinDisplayDenom = useMemo(
+    () => coinMetadata?.result?.symbol || (currentFeeCoin?.coinType === SUI_COIN ? currentSuiNetwork.imageURL : ''),
+    [coinMetadata?.result?.symbol, currentFeeCoin?.coinType, currentSuiNetwork.imageURL],
+  );
+
   const [recipientAddress, setRecipientAddress] = useState('');
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
 
-  // const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  // const isOpenPopover = Boolean(popoverAnchorEl);
+  const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const isOpenPopover = Boolean(popoverAnchorEl);
 
   const sendTxBlock = useMemo<TransactionBlockType | undefined>(() => {
-    if (!currentNFTObject?.data?.objectId || !recipientAddress) {
+    if (
+      !currentNFTObject?.data?.objectId ||
+      !recipientAddress ||
+      !(currentNFTObject.data.content?.dataType === 'moveObject' && currentNFTObject.data.content.hasPublicTransfer)
+    ) {
       return undefined;
     }
 
     const tx = new TransactionBlock();
     tx.transferObjects([tx.object(currentNFTObject.data.objectId)], tx.pure(recipientAddress));
     return tx;
-  }, [recipientAddress, currentNFTObject?.data?.objectId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentNFTObject?.data?.objectId, currentNFTObject?.data?.content?.dataType, recipientAddress]);
 
   const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ rawSigner, transactionBlock: sendTxBlock });
 
@@ -161,6 +188,10 @@ export default function Sui({ chain }: SuiProps) {
       return t('pages.Wallet.NFTSend.Entry.Sui.index.insufficientAmount');
     }
 
+    if (dryRunTransaction?.error?.message) {
+      return dryRunTransaction?.error?.message;
+    }
+
     if (dryRunTransactionError?.message) {
       const idx = dryRunTransactionError.message.lastIndexOf(':');
 
@@ -181,9 +212,10 @@ export default function Sui({ chain }: SuiProps) {
     address,
     currentFeeCoinBalance,
     expectedBaseFee,
-    dryRunTransactionError?.message,
+    dryRunTransaction?.error?.message,
     dryRunTransaction?.result?.effects.status.error,
     dryRunTransaction?.result?.effects.status.status,
+    dryRunTransactionError?.message,
     t,
   ]);
 
@@ -191,6 +223,19 @@ export default function Sui({ chain }: SuiProps) {
     <>
       <Container>
         <Div>
+          {currentNFTObjectId && (
+            <NFTButton
+              nftObjectId={currentNFTObjectId}
+              isActive={isOpenPopover}
+              chain={chain}
+              onClick={(event) => {
+                setPopoverAnchorEl(event.currentTarget);
+              }}
+            />
+          )}
+        </Div>
+
+        <Div sx={{ marginTop: '0.8rem' }}>
           <StyledInput
             endAdornment={
               <>
@@ -211,21 +256,30 @@ export default function Sui({ chain }: SuiProps) {
             value={recipientAddress}
           />
         </Div>
-        <Div sx={{ marginTop: '0.8rem' }}>
-          {/* {currentCoinType && (
-            <CoinButton
-              coinType={currentCoinType}
-              isActive={isOpenPopover}
-              chain={chain}
-              onClick={(event) => {
-                setPopoverAnchorEl(event.currentTarget);
-              }}
-            />
-          )} */}
-          {currentNFTObject?.data?.objectId}
-        </Div>
-        <Div>{expectedDisplayFee}</Div>
-        <Div>{expectedDisplayFeePrice}</Div>
+
+        <FeeContainer>
+          <FeeInfoContainer>
+            <FeeLeftContainer>
+              <Typography variant="h5">{t('pages.Wallet.NFTSend.Entry.Sui.index.fee')}</Typography>
+            </FeeLeftContainer>
+            <FeeRightContainer>
+              <FeeRightColumnContainer>
+                <FeeRightAmountContainer>
+                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                    {expectedDisplayFee}
+                  </Number>
+                  &nbsp;
+                  <Typography variant="h5n">{feeCoinDisplayDenom}</Typography>
+                </FeeRightAmountContainer>
+                <FeeRightValueContainer>
+                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                    {expectedDisplayFeePrice}
+                  </Number>
+                </FeeRightValueContainer>
+              </FeeRightColumnContainer>
+            </FeeRightContainer>
+          </FeeInfoContainer>
+        </FeeContainer>
 
         <BottomContainer>
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
@@ -275,15 +329,15 @@ export default function Sui({ chain }: SuiProps) {
           }}
         />
       </Container>
-      {/* <CoinPopover
+      <NFTPopover
         marginThreshold={0}
-        currentCoinType={currentCoinType}
+        currentNFTObjectId={currentNFTObjectId}
         open={isOpenPopover}
         chain={chain}
         onClose={() => setPopoverAnchorEl(null)}
-        onClickCoin={(coinType) => {
-          if (currentCoinType !== coinType) {
-            setCurrentCoinType(coinType);
+        onClickNFT={(nftObjectId) => {
+          if (currentNFTObjectId !== nftObjectId) {
+            setCurrentNFTObjectId(nftObjectId);
           }
         }}
         anchorEl={popoverAnchorEl}
@@ -295,9 +349,7 @@ export default function Sui({ chain }: SuiProps) {
           vertical: 'top',
           horizontal: 'left',
         }}
-      /> */}
+      />
     </>
   );
 }
-
-// NOTE need sui suspense component
