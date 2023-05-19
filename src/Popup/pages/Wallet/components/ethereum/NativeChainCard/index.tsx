@@ -13,6 +13,7 @@ import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFT721BalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721BalanceSWR';
+import { useNFT721URISWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721URISWR';
 import { useNFT1155URISWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC1155/useNFT1155URISWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -68,16 +69,20 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
   const testNFTContractAddress = '0x495f947276749ce646f68ac8c248420045cb7b5e';
   const tokenId = '76759802801251205939224547784789707739691712882438043889149637722920242380801';
 
-  const testNFT721ContractAddress = '0x61628D84d0871A38F102D5F16F4E69Ee91d6cdD9';
-  const testOwnerAddress = '0x04560162A2dcd153Fea7449eb3e834dD700DE854';
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const token721Id = '5955';
+  // NOTE NFT 등록시에 본인의 NFT만 등록할 수 있도록 owner 조사해야할 듯
+  const testNFT721ContractAddress = '0x0FCBD68251819928C8f6D182fC04bE733fA94170';
+  const testNFT721TokenId = '2972';
+  const testOwnerAddress = '0x56d4101F5Ee2E5F253aA9e3471a5C08C0fFC87D5';
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const test1 = useNFT1155URISWR({ contractAddress: testNFTContractAddress, tokenId });
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const test2 = useNFT721BalanceSWR({ contractAddress: testNFT721ContractAddress, ownerAddress: testOwnerAddress });
+  // NOTE ownerof로 nft소유주 확인가능
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const test3 = useNFT721URISWR({ contractAddress: testNFT721ContractAddress, tokenId: testNFT721TokenId });
 
   const { t } = useTranslation();
 

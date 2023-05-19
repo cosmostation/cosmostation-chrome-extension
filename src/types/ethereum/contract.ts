@@ -20,6 +20,7 @@ export type ERC721ContractMethods = {
   getApproved: (tokenId: string) => ContractSendMethod;
   isApprovedForAll: (owner: string, operator: string) => ContractSendMethod;
   tokenOfOwnerByIndex: (owner: string, index: number) => ContractSendMethod;
+  tokenURI: (tokenId: string) => ContractSendMethod;
 };
 
 export type ERC1155ContractMethods = {
@@ -41,6 +42,10 @@ export type ERC20ContractBalancesOfPayload = {
 };
 
 export type ERC721BalanceOfPayload = string;
+
+export type ERC721URIPayload = string;
+
+export type ERC721OwnerPayload = string;
 
 export type ERC1155URIPayload = string;
 
