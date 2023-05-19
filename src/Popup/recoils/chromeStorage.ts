@@ -42,6 +42,8 @@ export const chromeStorageDefault: ChromeStorage = {
   ethereumTokens: [],
   cosmosTokens: [],
 
+  ethereumNFTs: [],
+
   autoSigns: [],
 
   ledgerTransportType: 'USB',

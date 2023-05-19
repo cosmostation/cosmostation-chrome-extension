@@ -99,6 +99,7 @@ function background() {
         await setStorage('additionalChains', []);
         await setStorage('additionalEthereumNetworks', []);
         await setStorage('ethereumTokens', []);
+        await setStorage('ethereumNFTs', []);
         await setStorage('encryptedPassword', null);
         await setStorage('selectedAccountId', '');
 

@@ -6,6 +6,7 @@ import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
 
 import type { RequestMessage } from './message';
+import type { EthereumNFT } from './nft';
 
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
 export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
@@ -124,6 +125,8 @@ export type ChromeStorage = {
 
   cosmosTokens: CosmosToken[];
   ethereumTokens: EthereumToken[];
+
+  ethereumNFTs: EthereumNFT[];
 
   suiPermissions: SuiPermission[];
 
