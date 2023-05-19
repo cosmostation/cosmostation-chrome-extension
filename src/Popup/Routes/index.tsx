@@ -63,7 +63,7 @@ import SettingConnectedSites from '~/Popup/pages/Setting/ConnectedSites';
 import SettingLedger from '~/Popup/pages/Setting/Ledger';
 import SettingProvider from '~/Popup/pages/Setting/Provider';
 import Wallet from '~/Popup/pages/Wallet';
-import NFTDetail from '~/Popup/pages/Wallet/NFTDetail';
+import WalletNFTDetail from '~/Popup/pages/Wallet/NFTDetail';
 import WalletNFTSend from '~/Popup/pages/Wallet/NFTSend';
 import WalletReceive from '~/Popup/pages/Wallet/Receive';
 import WalletSend from '~/Popup/pages/Wallet/Send';
@@ -102,8 +102,8 @@ export default function Routes() {
           </Route>
           <Route path={PATH.WALLET__SWAP} element={<WalletSwap />} />
           <Route path={PATH.WALLET__RECEIVE} element={<WalletReceive />} />
-          <Route path={PATH.WALLET__NFT_DETAIL} element={<NFTDetail />}>
-            <Route path=":id" element={<NFTDetail />} />
+          <Route path={PATH.WALLET__NFT_DETAIL} element={<WalletNFTDetail />}>
+            <Route path=":id" element={<WalletNFTDetail />} />
           </Route>
 
           <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />
