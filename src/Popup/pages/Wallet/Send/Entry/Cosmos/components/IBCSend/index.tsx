@@ -28,7 +28,7 @@ import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmo
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { openWindow } from '~/Popup/utils/chromeWindows';
+import { openTab } from '~/Popup/utils/chromeTabs';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, convertCosmosToAssetName, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -645,8 +645,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
                 }
 
                 if (currentAccount.type === 'LEDGER') {
-                  await openWindow();
-                  window.close();
+                  if (window.outerWidth < 450) {
+                    await openTab();
+                    window.close();
+                  }
                 }
               }}
             >

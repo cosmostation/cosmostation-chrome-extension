@@ -6,7 +6,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { openWindow } from '~/Popup/utils/chromeWindows';
+import { openTab } from '~/Popup/utils/chromeTabs';
 
 import { ButtonContainer, Container, LedgerConnectIcon, LedgerWarningIcon, TextContainer } from './styled';
 
@@ -49,8 +49,11 @@ export default function LedgerCheck({ children }: LedgerCheckProps) {
         },
       });
     }
-    await openWindow();
-    window.close();
+
+    if (window.outerWidth < 450) {
+      await openTab();
+      window.close();
+    }
   };
 
   if (currentAccount.type === 'LEDGER') {
