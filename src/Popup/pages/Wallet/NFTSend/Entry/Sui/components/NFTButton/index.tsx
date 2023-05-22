@@ -48,8 +48,8 @@ export default function NFTButton({ nftObjectId, chain, isActive, ...remainder }
 
   const { imageURL, name, type, objectId } = nftMeta;
 
-  const shorterObjectId = useMemo(() => shorterAddress(objectId, 25), [objectId]);
-  const shorterObjectType = useMemo(() => shorterAddress(type, 25), [type]);
+  const shorterObjectId = useMemo(() => shorterAddress(objectId, 23), [objectId]);
+  const shorterObjectType = useMemo(() => shorterAddress(type, 23), [type]);
 
   return (
     <Button type="button" {...remainder}>
@@ -59,7 +59,9 @@ export default function NFTButton({ nftObjectId, chain, isActive, ...remainder }
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Typography variant="h5">{name || '-'}</Typography>
+            <Tooltip title={name || '-'} placement="top" arrow>
+              <Typography variant="h5">{name || '-'}</Typography>
+            </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>
             <Tooltip title={objectId || ''} placement="top" arrow>

@@ -31,10 +31,6 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   '&:hover': {
     backgroundColor: theme.colors.base03,
-
-    '#deleteButton': {
-      display: 'block',
-    },
   },
 }));
 
@@ -72,7 +68,9 @@ export const ObjectAbsoluteEditionMarkContainer = styled('div')(({ theme }) => (
   justifyContent: 'center',
   alignItems: 'center',
 
-  width: '4.2rem',
+  padding: '0 0.8rem',
+
+  width: 'fit-content',
   height: '1.9rem',
 
   borderRadius: '1.2rem',

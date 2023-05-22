@@ -20,23 +20,22 @@ import {
 type NFTCardItemProps = {
   nftObject: SuiObjectResponse;
   onClick?: () => void;
-  disabled?: boolean;
 };
 
-export default function NFTCardItem({ nftObject, onClick, disabled }: NFTCardItemProps) {
+export default function NFTCardItem({ nftObject, onClick }: NFTCardItemProps) {
   const nftMeta = useMemo(() => getNFTMeta(nftObject), [nftObject]);
 
-  const { name, imageURL, objectId, description, isRare } = nftMeta;
+  const { name, imageURL, objectId, description, rarity } = nftMeta;
 
   return (
-    <StyledButton onClick={onClick} disabled={disabled}>
+    <StyledButton onClick={onClick}>
       <BodyContainer>
         <ObjectImageContainer>
           <>
             <Image src={convertIpfs(imageURL)} defaultImgSrc={unknownNFTImg} />
-            {isRare && (
+            {rarity && (
               <ObjectAbsoluteEditionMarkContainer>
-                <Typography variant="h6">Rare</Typography>
+                <Typography variant="h6">{rarity}</Typography>
               </ObjectAbsoluteEditionMarkContainer>
             )}
           </>

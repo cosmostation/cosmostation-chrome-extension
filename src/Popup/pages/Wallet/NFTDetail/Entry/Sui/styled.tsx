@@ -40,7 +40,9 @@ export const NFTEditionMarkContainer = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   alignItems: 'center',
 
-  width: '4.2rem',
+  padding: '0 0.8rem',
+
+  width: 'fit-content',
   height: '1.9rem',
 
   borderRadius: '1.2rem',
@@ -78,7 +80,7 @@ export const NFTInfoLeftHeaderContainer = styled('div')({
 });
 
 export const NFTInfoHeaderTextContainer = styled('div')({
-  maxWidth: '20rem',
+  maxWidth: '23rem',
 
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',

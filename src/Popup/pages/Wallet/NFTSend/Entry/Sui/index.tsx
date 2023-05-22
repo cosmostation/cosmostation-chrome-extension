@@ -52,7 +52,7 @@ type SuiProps = {
   chain: SuiChain;
 };
 
-const DEFAULT_GAS_BUDGET = 20000;
+const DEFAULT_GAS_BUDGET = '20000';
 
 export default function Sui({ chain }: SuiProps) {
   const { t } = useTranslation();
@@ -69,8 +69,6 @@ export default function Sui({ chain }: SuiProps) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { coinGeckoId } = currentSuiNetwork;
-
-  const feeCoinPrice = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 
   const params = useParams();
 
@@ -119,6 +117,8 @@ export default function Sui({ chain }: SuiProps) {
   const currentFeeCoinBalance = useMemo(() => currentFeeCoin?.balance || '0', [currentFeeCoin]);
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: currentFeeCoin?.coinType });
+
+  const feeCoinPrice = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 
   const feeCoinDecimals = useMemo(
     () => coinMetadata?.result?.decimals || (currentFeeCoin?.coinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),
@@ -184,7 +184,7 @@ export default function Sui({ chain }: SuiProps) {
       return t('pages.Wallet.NFTSend.Entry.Sui.index.invalidAmount');
     }
 
-    if (gt(expectedBaseFee || '0', currentFeeCoinBalance)) {
+    if (gt(expectedBaseFee, currentFeeCoinBalance)) {
       return t('pages.Wallet.NFTSend.Entry.Sui.index.insufficientAmount');
     }
 

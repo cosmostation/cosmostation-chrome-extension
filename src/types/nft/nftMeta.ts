@@ -1,4 +1,4 @@
-export type SuiNFTMetaType = {
+export type SuiNFTMeta = {
   name?: string;
   description?: string;
   imageURL?: string;
@@ -9,5 +9,5 @@ export type SuiNFTMetaType = {
   ownerAddress?: string;
   objectFieldData?: Record<string, unknown>;
   type?: string;
-  isRare?: boolean;
+  rarity?: '';
 };

@@ -3,7 +3,7 @@ import { Ed25519PublicKey, getObjectDisplay, getObjectOwner } from '@mysten/sui.
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { chromeStorage } from '~/Popup/utils/chromeStorage';
-import type { SuiNFTMetaType } from '~/types/nft/nftMeta';
+import type { SuiNFTMeta } from '~/types/nft/nftMeta';
 import type { GetObject, GetObjectExists, Result } from '~/types/sui/rpc';
 
 import { SuiRPCError } from './error';
@@ -42,7 +42,7 @@ export function convertIpfs(url?: string) {
   return url.replace(/^ipfs:\/\//, 'https://ipfs.io/ipfs/');
 }
 
-export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMetaType {
+export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMeta {
   if (data && data.data?.content?.dataType === 'moveObject') {
     const { name, description, creator, image_url, link, project_url } = getObjectDisplay(data).data || {};
 
@@ -63,7 +63,7 @@ export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMetaType {
           : '',
       objectFieldData: { ...data.data?.content.fields },
       type: data.data.type,
-      isRare: false,
+      rarity: '',
     };
   }
   return {};

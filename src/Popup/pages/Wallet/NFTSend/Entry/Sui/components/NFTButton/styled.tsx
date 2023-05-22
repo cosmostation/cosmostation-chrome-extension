@@ -46,6 +46,16 @@ export const LeftInfoContainer = styled('div')({
 export const LeftInfoHeaderContainer = styled('div')(({ theme }) => ({
   textAlign: 'left',
   color: theme.colors.text01,
+
+  maxWidth: '20rem',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const LeftInfoBodyContainer = styled('div')(({ theme }) => ({

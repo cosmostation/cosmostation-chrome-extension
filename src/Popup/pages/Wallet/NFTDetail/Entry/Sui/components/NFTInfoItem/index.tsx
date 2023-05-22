@@ -3,26 +3,17 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { shorterAddress } from '~/Popup/utils/string';
-import type { SuiNFTMetaType } from '~/types/nft/nftMeta';
+import type { SuiNFTMeta } from '~/types/nft/nftMeta';
 
-import {
-  // AttributeContainer,
-  // AttributeHeaderContainer,
-  ItemColumnContainer,
-  ItemContainer,
-  ItemRightContainer,
-  ItemTitleContainer,
-  ItemValueContainer,
-  StyledIconButton,
-  URLButton,
-} from './styled';
+import { ItemColumnContainer, ItemContainer, ItemRightContainer, ItemTitleContainer, ItemValueContainer, StyledIconButton, URLButton } from './styled';
 
 import Copy16Icon from '~/images/icons/Copy16.svg';
 
 type NFTInfoItemProps = {
-  nftMeta: SuiNFTMetaType;
+  nftMeta: SuiNFTMeta;
 };
 
 export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
@@ -33,6 +24,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
 
   const shorterOwnerAddress = useMemo(() => shorterAddress(ownerAddress, 14), [ownerAddress]);
   const shorterObjectId = useMemo(() => shorterAddress(objectId, 14), [objectId]);
+  const shorterCreatorAddress = useMemo(() => shorterAddress(creator, 14), [creator]);
 
   const shorterLink = useMemo(() => shorterAddress(link, 20), [link]);
   const shorterProjectUrl = useMemo(() => shorterAddress(projectUrl, 20), [projectUrl]);
@@ -43,8 +35,6 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
     }
   };
 
-  // const objectFieldKeys = useMemo(() => (objectFieldData ? Object.keys(objectFieldData) : []), [objectFieldData]);
-
   return (
     <>
       {shorterOwnerAddress && (
@@ -54,7 +44,9 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
           </ItemTitleContainer>
 
           <ItemRightContainer>
-            <Typography variant="h5">{shorterOwnerAddress}</Typography>
+            <Tooltip title={ownerAddress || ''} placement="top" arrow>
+              <Typography variant="h5">{shorterOwnerAddress}</Typography>
+            </Tooltip>
 
             <StyledIconButton onClick={() => handleOnClickCopy(ownerAddress)}>
               <Copy16Icon />
@@ -68,7 +60,9 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
           <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.objectId')}</Typography>
         </ItemTitleContainer>
         <ItemRightContainer>
-          <Typography variant="h5">{shorterObjectId}</Typography>
+          <Tooltip title={objectId || ''} placement="top" arrow>
+            <Typography variant="h5">{shorterObjectId}</Typography>
+          </Tooltip>
 
           <StyledIconButton onClick={() => handleOnClickCopy(objectId)}>
             <Copy16Icon />
@@ -76,13 +70,19 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
         </ItemRightContainer>
       </ItemContainer>
 
-      {creator && (
+      {shorterCreatorAddress && (
         <ItemContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.creator')}</Typography>
           </ItemTitleContainer>
           <ItemRightContainer>
-            <Typography variant="h5">{shorterAddress(creator)}</Typography>
+            <Tooltip title={creator || ''} placement="top" arrow>
+              <Typography variant="h5">{shorterCreatorAddress}</Typography>
+            </Tooltip>
+
+            <StyledIconButton onClick={() => handleOnClickCopy(creator)}>
+              <Copy16Icon />
+            </StyledIconButton>
           </ItemRightContainer>
         </ItemContainer>
       )}
@@ -121,25 +121,6 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
           <ItemValueContainer>{description}</ItemValueContainer>
         </ItemColumnContainer>
       )}
-      {/* 
-      {objectFieldKeys && objectFieldData && (
-        <AttributeContainer>
-          <AttributeHeaderContainer>
-            <Typography variant="h4">Attributes</Typography>
-          </AttributeHeaderContainer>
-
-          {objectFieldKeys.map((item) => (
-            <ItemContainer key={item}>
-              <ItemTitleContainer>
-                <Typography variant="h5">{item}</Typography>
-              </ItemTitleContainer>
-              <ItemRightContainer>
-                <Typography variant="h5">1</Typography>
-              </ItemRightContainer>
-            </ItemContainer>
-          ))}
-        </AttributeContainer>
-      )} */}
     </>
   );
 }

@@ -34,8 +34,8 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nftObje
 
   const { imageURL, name, type, objectId } = nftMeta;
 
-  const shorterObjectId = useMemo(() => shorterAddress(objectId, 25), [objectId]);
-  const shorterObjectType = useMemo(() => shorterAddress(type, 25), [type]);
+  const shorterObjectId = useMemo(() => shorterAddress(objectId, 23), [objectId]);
+  const shorterObjectType = useMemo(() => shorterAddress(type, 23), [type]);
 
   return (
     <NFTButton type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
@@ -45,7 +45,9 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nftObje
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Typography variant="h5">{name || '-'}</Typography>
+            <Tooltip title={name || '-'} placement="top" arrow>
+              <Typography variant="h5">{name || '-'}</Typography>
+            </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>
             <Tooltip title={objectId || ''} placement="top" arrow>

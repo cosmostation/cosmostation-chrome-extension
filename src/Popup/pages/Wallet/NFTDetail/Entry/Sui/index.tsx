@@ -47,7 +47,7 @@ export default function Sui() {
 
   const nftMeta = useMemo(() => getNFTMeta(currentNFTObject), [currentNFTObject]);
 
-  const { name, imageURL, objectId, isRare } = nftMeta;
+  const { name, imageURL, objectId, rarity } = nftMeta;
 
   const errorMessage = useMemo(() => {
     if (!(currentNFTObject?.data?.content?.dataType === 'moveObject' && currentNFTObject?.data?.content.hasPublicTransfer)) {
@@ -70,12 +70,14 @@ export default function Sui() {
             <NFTInfoHeaderContainer>
               <NFTInfoLeftHeaderContainer>
                 <NFTInfoHeaderTextContainer>
-                  <Typography variant="h3">{name || objectId || 'UNKNOWN'}</Typography>
+                  <Tooltip title={name || objectId || ''} placement="top" arrow>
+                    <Typography variant="h3">{name || objectId || ''}</Typography>
+                  </Tooltip>
                 </NFTInfoHeaderTextContainer>
 
-                {isRare && (
+                {rarity && (
                   <NFTEditionMarkContainer>
-                    <Typography variant="h6">Rare</Typography>
+                    <Typography variant="h6">{rarity}</Typography>
                   </NFTEditionMarkContainer>
                 )}
               </NFTInfoLeftHeaderContainer>
