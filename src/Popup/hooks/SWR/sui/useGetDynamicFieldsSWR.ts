@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -15,16 +14,12 @@ type FetcherParams = {
   method: string;
 };
 
-type MultiFetcherParams = {
-  fetcherParamsList: FetcherParams[];
-};
-
 type UseGetDynamicFieldsSWRProps = {
-  parentObjectIds: string[];
+  parentObjectId?: string;
   network?: SuiNetwork;
 };
 
-export function useGetDynamicFieldsSWR({ parentObjectIds, network }: UseGetDynamicFieldsSWRProps, config?: SWRConfiguration) {
+export function useGetDynamicFieldsSWR({ parentObjectId, network }: UseGetDynamicFieldsSWRProps, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
@@ -42,35 +37,18 @@ export function useGetDynamicFieldsSWR({ parentObjectIds, network }: UseGetDynam
     }
   };
 
-  const multiFetcher = (params: MultiFetcherParams) => Promise.allSettled(params.fetcherParamsList.map((item) => fetcher(item)));
-
-  const fetcherParamsList: FetcherParams[] = useMemo(
-    () =>
-      parentObjectIds.map((item) => ({
-        url: rpcURL,
-        parentObjectId: item,
-        method: 'suix_getDynamicFields',
-      })) || [],
-    [parentObjectIds, rpcURL],
+  const { data, error, mutate } = useSWR<GetDynamicFieldsResponse | null, AxiosError>(
+    { url: rpcURL, parentObjectId, method: 'suix_getDynamicFields' },
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 14000,
+      refreshInterval: 15000,
+      errorRetryCount: 0,
+      isPaused: () => !parentObjectId,
+      ...config,
+    },
   );
 
-  const { data, error, mutate } = useSWR<PromiseSettledResult<GetDynamicFieldsResponse | null>[], AxiosError>({ fetcherParamsList }, multiFetcher, {
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
-    errorRetryCount: 0,
-    isPaused: () => !parentObjectIds,
-    ...config,
-  });
-
-  const returnData = data
-    ?.filter((item) => item.status === 'fulfilled')
-    .map((item) => {
-      if (item.status === 'fulfilled') {
-        return item.value;
-      }
-      return undefined;
-    });
-
-  return { returnData, error, mutate };
+  return { data, error, mutate };
 }
