@@ -2534,6 +2534,14 @@
   dependencies:
     bs58 "^5.0.0"
 
+"@mysten/ledgerjs-hw-app-sui@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@mysten/ledgerjs-hw-app-sui/-/ledgerjs-hw-app-sui-0.2.0.tgz#d9d8872a0c1188a8833cce2d28648d943fd0cd09"
+  integrity sha512-LcGJoItmVrUQaJWu0uYMEx14y4iTRfPPdDJFjqCTnC3f4Bzgl7vZGNNulmUStRWg8HhFp3xV1mnU9PHbxOYXLQ==
+  dependencies:
+    "@ledgerhq/hw-transport" "^6.28.2"
+    fast-sha256 "^1.3.0"
+
 "@mysten/sui.js@0.31.0", "@mysten/sui.js@^0.31.0":
   version "0.31.0"
   resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.31.0.tgz#299c2942af271a9d6f235fe8a7378b9143e3cbb8"
@@ -6459,6 +6467,11 @@ fast-levenshtein@^2.0.6, fast-levenshtein@~2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/fast-levenshtein/-/fast-levenshtein-2.0.6.tgz#3d8a5c66883a16a30ca8643e851f19baa7797917"
   integrity sha1-PYpcZog6FqMMqGQ+hR8Zuqd5eRc=
+
+fast-sha256@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/fast-sha256/-/fast-sha256-1.3.0.tgz#7916ba2054eeb255982608cccd0f6660c79b7ae6"
+  integrity sha512-n11RGP/lrWEFI/bWdygLxhI+pVeo1ZYIVwvvPkW7azl/rOy+F3HYRZ2K5zeE9mmkhQppyv9sQFx0JM9UabnpPQ==
 
 fastest-levenshtein@^1.0.12:
   version "1.0.12"

@@ -14,14 +14,14 @@ export function useLedgerTransport6282() {
 
   return {
     transport: transport.current,
-    createTransport: async () => {
+    createTransport6282: async () => {
       if (transport.current) {
         return transport.current;
       }
       // eslint-disable-next-line no-return-assign
       return (transport.current = await createTransport62713(ledgerTransportType));
     },
-    closeTransport: async () => {
+    closeTransport6282: async () => {
       await transport.current?.close();
       transport.current = undefined;
     },
