@@ -19,7 +19,8 @@ export type ERC721ContractMethods = {
   setApprovalForAll: (operator: string, approved: boolean) => ContractSendMethod;
   getApproved: (tokenId: string) => ContractSendMethod;
   isApprovedForAll: (owner: string, operator: string) => ContractSendMethod;
-  tokenOfOwnerByIndex: (owner: string, index: number) => ContractSendMethod;
+  // FIXME index를 숫자가 아닌 스트링으로 한번 바꿨는데 아니면 숫자로 바꿀것
+  tokenOfOwnerByIndex: (owner: string, index: string) => ContractSendMethod;
   tokenURI: (tokenId: string) => ContractSendMethod;
 };
 
@@ -46,6 +47,8 @@ export type ERC721BalanceOfPayload = string;
 export type ERC721URIPayload = string;
 
 export type ERC721OwnerPayload = string;
+
+export type ERC721TokenOfOwnerByIndexPayload = string;
 
 export type ERC1155URIPayload = string;
 

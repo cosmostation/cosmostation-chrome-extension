@@ -47,6 +47,7 @@ export function useNFT1155URISWR({ network, contractAddress, tokenId }: UseNFT11
     return methods.uri(params.tokenId).call() as Promise<ERC1155URIPayload>;
   };
 
+  // NOTE 'https://api.opensea.io/api/v1/metadata/0x495f947276749Ce646f68AC8c248420045cb7b5e/0x{id}'
   const { data, error, mutate } = useSWR<ERC1155URIPayload, AxiosError>({ rpcURL, contractAddress, tokenId }, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
