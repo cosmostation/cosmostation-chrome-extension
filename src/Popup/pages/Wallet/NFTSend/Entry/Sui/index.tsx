@@ -126,8 +126,8 @@ export default function Sui({ chain }: SuiProps) {
   );
 
   const feeCoinDisplayDenom = useMemo(
-    () => coinMetadata?.result?.symbol || (currentFeeCoin?.coinType === SUI_COIN ? currentSuiNetwork.imageURL : ''),
-    [coinMetadata?.result?.symbol, currentFeeCoin?.coinType, currentSuiNetwork.imageURL],
+    () => coinMetadata?.result?.symbol || (currentFeeCoin?.coinType === SUI_COIN ? currentSuiNetwork.displayDenom : ''),
+    [coinMetadata?.result?.symbol, currentFeeCoin?.coinType, currentSuiNetwork.displayDenom],
   );
 
   const [recipientAddress, setRecipientAddress] = useState('');

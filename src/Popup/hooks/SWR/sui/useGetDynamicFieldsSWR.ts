@@ -26,6 +26,10 @@ export function useGetDynamicFieldsSWR({ parentObjectId, network }: UseGetDynami
 
   const fetcher = async (params: FetcherParams) => {
     try {
+      if (!parentObjectId) {
+        return null;
+      }
+
       return await post<GetDynamicFieldsResponse>(params.url, {
         jsonrpc: '2.0',
         method: params.method,
@@ -45,7 +49,6 @@ export function useGetDynamicFieldsSWR({ parentObjectId, network }: UseGetDynami
       dedupingInterval: 14000,
       refreshInterval: 15000,
       errorRetryCount: 0,
-      isPaused: () => !parentObjectId,
       ...config,
     },
   );
