@@ -20,6 +20,9 @@ export type ERC721ContractMethods = {
   getApproved: (tokenId: string) => ContractSendMethod;
   isApprovedForAll: (owner: string, operator: string) => ContractSendMethod;
   // FIXME index를 숫자가 아닌 스트링으로 한번 바꿨는데 아니면 숫자로 바꿀것
+  // NOTE optional 메서드라 지원하는 컨트랙이 있고 아닌 컨트랙이 있음
+  // NOTE Interface로 721인지 1155인지 구분지어 놓고 메서드 호출!
+  // NOTE 인터페이스로 구분지을 수 있는 먼저 테스트 후 작업 진행
   tokenOfOwnerByIndex: (owner: string, index: string) => ContractSendMethod;
   tokenURI: (tokenId: string) => ContractSendMethod;
 };
