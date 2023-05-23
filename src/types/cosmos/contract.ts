@@ -5,6 +5,14 @@ export type SmartPayload = {
   };
 };
 
+export type NFTInfoPayload = {
+  token_uri: string;
+};
+
+export type NFTIdPayload = {
+  tokens: string[];
+};
+
 export type TokenInfo = {
   name: string;
   symbol: string;
