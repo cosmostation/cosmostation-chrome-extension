@@ -9,7 +9,7 @@ import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
-import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
+import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -294,8 +294,8 @@ export default function Entry({ queue, chain }: EntryProps) {
                     }
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
-                    setLoadingLedgerSigning(false);
                   } finally {
+                    setLoadingLedgerSigning(false);
                     await closeTransport();
                   }
                 }}
@@ -306,7 +306,7 @@ export default function Entry({ queue, chain }: EntryProps) {
           </Tooltip>
         </BottomButtonContainer>
       </BottomContainer>
-      <LedgerToPopup />
+      <LedgerToTab />
     </Container>
   );
 }

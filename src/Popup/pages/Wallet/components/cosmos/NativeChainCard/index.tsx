@@ -29,7 +29,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { openWindow } from '~/Popup/utils/chromeWindows';
+import { openTab } from '~/Popup/utils/chromeTabs';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -456,8 +456,10 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                     });
 
                     if (currentAccount.type === 'LEDGER') {
-                      await openWindow();
-                      window.close();
+                      if (window.outerWidth < 450) {
+                        await openTab();
+                        window.close();
+                      }
                     }
                   }
                 }}
@@ -512,8 +514,10 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                       });
 
                       if (currentAccount.type === 'LEDGER') {
-                        await openWindow();
-                        window.close();
+                        if (window.outerWidth < 450) {
+                          await openTab();
+                          window.close();
+                        }
                       }
                     }
                   }}

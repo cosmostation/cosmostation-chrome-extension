@@ -11,7 +11,7 @@ import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
-import LedgerToPopup from '~/Popup/components/Loading/LedgerToPopup';
+import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
 import { useEstimateGasPriceSWR } from '~/Popup/hooks/SWR/aptos/useEstimateGasPriceSWR';
@@ -366,7 +366,7 @@ export default function Entry({ queue }: EntryProps) {
           {/* </Tooltip> */}
         </BottomButtonContainer>
       </BottomContainer>
-      <LedgerToPopup />
+      <LedgerToTab />
     </Container>
   );
 }

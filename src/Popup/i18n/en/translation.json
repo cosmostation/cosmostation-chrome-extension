@@ -70,10 +70,10 @@
       }
     },
     "Loading": {
-      "LedgerToPopup": {
+      "LedgerToTab": {
         "index": {
           "continue": "Continue",
-          "description": "Complete the process on browser pop-up"
+          "description": "Complete the process on browser tab"
         }
       }
     },

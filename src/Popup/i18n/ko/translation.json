@@ -70,10 +70,10 @@
       }
     },
     "Loading": {
-      "LedgerToPopup": {
+      "LedgerToTab": {
         "index": {
           "continue": "계속하기",
-          "description": "팝업창에서 작업을 완료해주세요"
+          "description": "브라우저에서 작업을 완료해주세요"
         }
       }
     },

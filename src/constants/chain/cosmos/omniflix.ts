@@ -20,7 +20,7 @@ export const OMNIFLIX: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'omniflix' },
-  coinGeckoId: 'omniflix',
+  coinGeckoId: 'omniflix-network',
   explorerURL: `${MINTSCAN_URL}/omniflix`,
   gasRate: {
     tiny: '0.001',
