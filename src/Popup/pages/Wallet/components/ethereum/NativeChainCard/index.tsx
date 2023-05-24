@@ -13,9 +13,11 @@ import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFT721BalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721BalanceSWR';
+import { useNFT721CheckSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721CheckSWR';
 import { useNFT721OwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721OwnerSWR';
 import { useNFT721TokenOfOwnerByIndexSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721TokenOfOwnerByIndexSWR';
 import { useNFT721URISWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721URISWR';
+import { useNFT1155BalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC1155/useNFT1155BalanceSWR';
 import { useNFT1155URISWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC1155/useNFT1155URISWR';
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
@@ -92,6 +94,25 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const test1 = useNFT1155URISWR({ contractAddress: testNFTContractAddress, tokenId });
+
+  // const test22 = useNFT1155BalanceBatchSWR({ contractAddress: testNFTContractAddress, ownerAddress: '0x5aB2d1f5069dd2f9aeEC3b0A8e923B1cdbe7Fc44', tokenId });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const test33 = useNFT1155BalanceSWR({ contractAddress: testNFTContractAddress, ownerAddress: '0x5aB2d1f5069dd2f9aeEC3b0A8e923B1cdbe7Fc44', tokenId });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const test44 = useNFT1155BalanceSWR({ contractAddress: miladyNFT721ContractAddress, tokenId: miladyNFT721TokenId });
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const adsfs3123 = useNFT721CheckSWR({ contractAddress: testNFTContractAddress });
+
+  // const adsfs = useNFT1155CheckSWR({ contractAddress: testNFTContractAddress });
+
+  // console.log('🚀 ~ file: index.tsx:114 ~ NativeChainCard ~ adsfs:', adsfs);
+
+  // const testtest = useGetNFTStandardSWR({ contractAddress: testNFTContractAddress });
+
+  // console.log('🚀 ~ file: index.tsx:117 ~ NativeChainCard ~ testtest:', testtest);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   // const test2 = useNFT721BalanceSWR({ contractAddress: testNFT721ContractAddress, ownerAddress: testOwnerAddress });

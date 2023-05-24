@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -18,25 +19,29 @@ type FetcherParams = {
   rpcURL: string;
   contractAddress: string;
   tokenId: string;
-  address: string;
+  ownerAddress: string;
 };
 
 type UseNFT1155BalanceSWR = {
   network?: EthereumNetwork;
   contractAddress?: string;
+  ownerAddress?: string;
   tokenId?: string;
-  // 기존 param.address지우고 owneraddress로 변경
 };
 
-// NOTE need test
-export function useNFT1155BalanceSWR({ network, contractAddress, tokenId }: UseNFT1155BalanceSWR, config?: SWRConfiguration) {
+export function useNFT1155BalanceSWR({ network, contractAddress, ownerAddress, tokenId }: UseNFT1155BalanceSWR, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
   const accounts = useAccounts(config?.suspense);
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { currentAccount } = useCurrentAccount();
 
-  const address = accounts.data?.find((account) => account.id === currentAccount.id)?.address[currentChain.id] || '';
+  const currentAddress = useMemo(
+    () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[currentChain.id] || '',
+    [accounts?.data, currentAccount.id, currentChain.id],
+  );
+
+  const addr = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
   const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
 
@@ -55,15 +60,15 @@ export function useNFT1155BalanceSWR({ network, contractAddress, tokenId }: UseN
 
     const methods = contract.methods as ERC1155ContractMethods;
 
-    return methods.balanceOf(params.address, params.tokenId).call() as Promise<ERC1155BalanceOfPayload>;
+    return methods.balanceOf(params.ownerAddress, params.tokenId).call() as Promise<ERC1155BalanceOfPayload>;
   };
 
-  const { data, error, mutate } = useSWR<ERC1155BalanceOfPayload, AxiosError>({ rpcURL, contractAddress, address, tokenId }, fetcher, {
+  const { data, error, mutate } = useSWR<ERC1155BalanceOfPayload, AxiosError>({ rpcURL, contractAddress, ownerAddress: addr, tokenId }, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,
     errorRetryCount: 0,
-    isPaused: () => currentChain.id !== ETHEREUM.id || !address || !contractAddress || !tokenId || !rpcURL,
+    isPaused: () => currentChain.id !== ETHEREUM.id || !addr || !contractAddress || !tokenId || !rpcURL,
     ...config,
   });
 

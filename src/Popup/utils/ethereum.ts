@@ -1,5 +1,6 @@
 import { Address, ecsign, hashPersonalMessage, isHexString, stripHexPrefix, toBuffer, toChecksumAddress, toRpcSig } from 'ethereumjs-util';
 import * as TinySecp256k1 from 'tiny-secp256k1';
+import Web3 from 'web3';
 import type { TransactionDescription } from '@ethersproject/abi';
 import { Interface } from '@ethersproject/abi';
 import type { MessageTypes, SignTypedDataVersion, TypedMessage } from '@metamask/eth-sig-util';
@@ -198,4 +199,15 @@ export function signTypedData<T extends MessageTypes>(
 ) {
   const dataToSign = (data.domain.salt ? { ...data, domain: { ...data.domain, salt: Buffer.from(toHex(data.domain.salt), 'hex') } } : data) as TypedMessage<T>;
   return baseSignTypedData({ privateKey, data: dataToSign, version });
+}
+
+export function getTokenType(tokenContractAddress: string): 'ERC721' | 'ERC1155' {
+  // ERC721 토큰의 경우, balanceOf와 tokenURI 함수가 반드시 존재함
+  const web3 = new Web3();
+
+  const isERC721 =
+    web3.eth.abi.encodeFunctionSignature(`balanceOf(${tokenContractAddress})`) === '0x70a08231' &&
+    web3.eth.abi.encodeFunctionSignature('tokenURI(uint256)') === '0x0e89341c';
+
+  return isERC721 ? 'ERC721' : 'ERC1155';
 }

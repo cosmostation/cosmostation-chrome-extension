@@ -7,29 +7,25 @@ import type { AbiItem } from 'web3-utils';
 import { ERC721_ABI } from '~/constants/abi';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import type { EthereumNetwork } from '~/types/chain';
-import type { ERC721ContractMethods, ERC721TokenOfOwnerByIndexPayload } from '~/types/ethereum/contract';
+import type { ERC1155CheckPayload, ERC1155ContractMethods } from '~/types/ethereum/contract';
 
 import { useCurrentChain } from '../../../../useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '../../../../useCurrent/useCurrentEthereumNetwork';
 
 type FetcherParams = {
   rpcURL: string;
+  interfaceId: string;
   contractAddress: string;
-  ownerAddress: string;
-  quantity: number;
 };
 
-type UseNFT721TokenOfOwnerByIndexSWR = {
+type UseNFT1155CheckSWR = {
   network?: EthereumNetwork;
   contractAddress?: string;
-  ownerAddress?: string;
-  quantity?: number;
 };
 
-export function useNFT721TokenOfOwnerByIndexSWR(
-  { network, contractAddress, ownerAddress, quantity }: UseNFT721TokenOfOwnerByIndexSWR,
-  config?: SWRConfiguration,
-) {
+const ERC1155_INTERFACE_FNHASH = '0xd9b67a26';
+
+export function useNFT1155CheckSWR({ network, contractAddress }: UseNFT1155CheckSWR, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
@@ -48,17 +44,17 @@ export function useNFT721TokenOfOwnerByIndexSWR(
 
     const contract = new web3.eth.Contract(ERC721_ABI as AbiItem[], params.contractAddress);
 
-    const methods = contract.methods as ERC721ContractMethods;
-    // NOTE need more research for errors
-    return methods.tokenOfOwnerByIndex(params.ownerAddress, params.quantity).call() as Promise<ERC721TokenOfOwnerByIndexPayload>;
+    // NOTE 721로 했을때는 동작했는데 1155로 했을때 안나올수도
+    const methods = contract.methods as ERC1155ContractMethods;
+
+    return methods.supportsInterface(params.interfaceId).call() as Promise<ERC1155CheckPayload>;
   };
 
-  const { data, error, mutate } = useSWR<ERC721TokenOfOwnerByIndexPayload, AxiosError>({ rpcURL, contractAddress, ownerAddress, quantity }, fetcher, {
+  const { data, error, mutate } = useSWR<ERC1155CheckPayload, AxiosError>({ rpcURL, contractAddress, interfaceId: ERC1155_INTERFACE_FNHASH }, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
-    errorRetryCount: 0,
-    isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !ownerAddress || !quantity || !rpcURL,
+    revalidateIfStale: false,
+    revalidateOnReconnect: false,
+    isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !rpcURL,
     ...config,
   });
 
