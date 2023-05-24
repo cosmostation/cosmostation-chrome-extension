@@ -1,7 +1,9 @@
-import { Ed25519PublicKey } from '@mysten/sui.js';
+import type { SuiObjectData, SuiObjectResponse } from '@mysten/sui.js';
+import { Ed25519PublicKey, getObjectDisplay, getObjectOwner } from '@mysten/sui.js';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { chromeStorage } from '~/Popup/utils/chromeStorage';
+import type { SuiNFTMeta } from '~/types/nft/nftMeta';
 import type { GetObject, GetObjectExists, Result } from '~/types/sui/rpc';
 
 import { SuiRPCError } from './error';
@@ -17,7 +19,7 @@ export function isExists(object: Result<GetObject>): object is Result<GetObjectE
 }
 
 export function getCoinType(type?: string) {
-  if (!type) {
+  if (!type || type?.split('::')[1] !== 'coin') {
     return '';
   }
 
@@ -29,6 +31,42 @@ export function getCoinType(type?: string) {
   }
 
   return '';
+}
+
+export function isKiosk(data: SuiObjectData) {
+  return !!data.type && data.type.includes('kiosk') && !!data.content && 'fields' in data.content && 'kiosk' in data.content.fields;
+}
+
+export function convertIpfs(url?: string) {
+  if (!url) return '';
+  return url.replace(/^ipfs:\/\//, 'https://ipfs.io/ipfs/');
+}
+
+export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMeta {
+  if (data && data.data?.content?.dataType === 'moveObject') {
+    const { name, description, creator, image_url, link, project_url } = getObjectDisplay(data).data || {};
+
+    const objectOwner = getObjectOwner(data);
+    return {
+      name: name || '',
+      description: description || '',
+      imageURL: image_url || '',
+      link: link || '',
+      projectUrl: project_url || '',
+      creator: creator || '',
+      objectId: data.data.objectId || '',
+      ownerAddress:
+        objectOwner && objectOwner !== 'Immutable' && 'AddressOwner' in objectOwner
+          ? objectOwner.AddressOwner
+          : objectOwner && objectOwner !== 'Immutable' && 'ObjectOwner' in objectOwner
+          ? objectOwner.ObjectOwner
+          : '',
+      objectFieldData: { ...data.data?.content.fields },
+      type: data.data.type,
+      rarity: '',
+    };
+  }
+  return {};
 }
 
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {

@@ -8,6 +8,8 @@ export const PATH = {
   WALLET__SWAP: '/wallet/swap',
   WALLET__OSMOSIS_SWAP: '/wallet/osmosis-swap',
   WALLET__RECEIVE: '/wallet/receive',
+  WALLET__NFT_DETAIL: '/wallet/nft-detail',
+  WALLET__NFT_SEND: '/wallet/nft-send',
 
   SETTING__CHANGE_PASSWORD: '/setting/change-password',
   SETTING__CHANGE_LANGUAGE: '/setting/change-language',

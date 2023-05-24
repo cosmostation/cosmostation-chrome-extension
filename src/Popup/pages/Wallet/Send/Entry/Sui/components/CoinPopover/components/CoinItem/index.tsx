@@ -48,7 +48,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin,
   const baseAmount = useMemo(() => coin.balance || '0', [coin.balance]);
 
   const imageURL = useMemo(
-    () => (coinMetadata?.result?.iconUrl || coin.coinType === SUI_COIN ? chain.imageURL : undefined),
+    () => coinMetadata?.result?.iconUrl || (coin.coinType === SUI_COIN ? chain.imageURL : undefined),
     [chain.imageURL, coin.coinType, coinMetadata?.result?.iconUrl],
   );
 

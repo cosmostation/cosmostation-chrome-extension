@@ -1,6 +1,8 @@
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
+import Empty from '~/Popup/components/common/Empty';
+import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Header from '~/Popup/components/SelectSubHeader';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
@@ -9,7 +11,8 @@ import type { SuiChain } from '~/types/chain';
 import LedgerCheck from '../components/LedgerCheck';
 import CoinList from '../components/sui/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/sui/NativeChainCard';
-import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
+import NFTList from '../components/sui/NFTList';
+import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer, StyledTabPanel } from '../styled';
 
 type SuiProps = {
   chain: SuiChain;
@@ -18,6 +21,11 @@ type SuiProps = {
 export default function Sui({ chain }: SuiProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentSuiNetwork, additionalSuiNetworks } = useCurrentSuiNetwork();
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+    setTabValue(newTabValue);
+  };
 
   const isCustom = useMemo(() => !!additionalSuiNetworks.find((item) => item.id === currentSuiNetwork.id), [additionalSuiNetworks, currentSuiNetwork.id]);
 
@@ -26,8 +34,8 @@ export default function Sui({ chain }: SuiProps) {
       <HeaderContainer>
         <Header />
       </HeaderContainer>
-      <>
-        <LedgerCheck>
+      <LedgerCheck>
+        <>
           <NativeChainCardContainer>
             <ErrorBoundary
               // eslint-disable-next-line react/no-unstable-nested-components
@@ -38,11 +46,30 @@ export default function Sui({ chain }: SuiProps) {
               </Suspense>
             </ErrorBoundary>
           </NativeChainCardContainer>
-        </LedgerCheck>
-        <BottomContainer>
-          <CoinList />
-        </BottomContainer>
-      </>
+          <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
+            <Tab label="Coins" />
+            <Tab label="NFTs" />
+          </Tabs>
+          <StyledTabPanel value={tabValue} index={0}>
+            <BottomContainer sx={{ marginTop: '0.9rem' }}>
+              <ErrorBoundary fallback={<Empty />}>
+                <Suspense fallback={null}>
+                  <CoinList chain={chain} />
+                </Suspense>
+              </ErrorBoundary>
+            </BottomContainer>
+          </StyledTabPanel>
+          <StyledTabPanel value={tabValue} index={1}>
+            <BottomContainer sx={{ marginTop: '0.9rem' }}>
+              <ErrorBoundary fallback={<Empty />}>
+                <Suspense fallback={null}>
+                  <NFTList chain={chain} />
+                </Suspense>
+              </ErrorBoundary>
+            </BottomContainer>
+          </StyledTabPanel>
+        </>
+      </LedgerCheck>
     </Container>
   );
 }

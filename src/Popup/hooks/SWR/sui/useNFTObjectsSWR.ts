@@ -1,11 +1,11 @@
 import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
+import { getObjectDisplay } from '@mysten/sui.js';
 
-import { SUI_COIN } from '~/constants/sui';
-import { plus } from '~/Popup/utils/big';
-import { getCoinType } from '~/Popup/utils/sui';
+import { isKiosk } from '~/Popup/utils/sui';
 import type { SuiNetwork } from '~/types/chain';
 
+import { useGetDynamicFieldsSWR } from './useGetDynamicFieldsSWR';
 import { useGetObjectsOwnedByAddressSWR } from './useGetObjectsOwnedByAddressSWR';
 import { useGetObjectsSWR } from './useGetObjectsSWR';
 import { useCurrentAccount } from '../../useCurrent/useCurrentAccount';
@@ -22,13 +22,13 @@ type Options = {
   showDisplay?: boolean;
 };
 
-type UseTokenBalanceObjectsSWRProps = {
+type UseNFTObjectsSWRProps = {
   address?: string;
   network?: SuiNetwork;
   options?: Options;
 };
 
-export function useTokenBalanceObjectsSWR({ network, address, options }: UseTokenBalanceObjectsSWRProps, config?: SWRConfiguration) {
+export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWRProps, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
 
   const { currentAccount } = useCurrentAccount();
@@ -63,42 +63,50 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
     config,
   );
 
-  const tokenBalanceObjects = useMemo(() => {
-    const coinObjectsTypeList = Array.from(
-      new Set([
-        ...(objects?.result
-          ?.filter((item) => getCoinType(item.data?.type) && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
-          .map((item) => item.data?.type) || []),
-      ]),
-    );
+  const nftObjects = useMemo(() => objects?.result?.filter((item) => getObjectDisplay(item).data) || [], [objects?.result]);
 
-    return coinObjectsTypeList
-      .map((type) => ({
-        balance: objects?.result
-          ? objects.result
-              .filter((item) => type === item.data?.type && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
-              .reduce((ac, cu) => {
-                if (cu.data?.content?.dataType === 'moveObject' && typeof cu.data?.content.fields.balance === 'string')
-                  return plus(ac, cu.data?.content.fields.balance || '0');
+  const kioskObject = useMemo(() => nftObjects.find((item) => item.data && isKiosk(item.data)), [nftObjects]);
 
-                return ac;
-              }, '0')
-          : '0',
-        coinType: getCoinType(type),
-        objects: [
-          ...(objects?.result?.filter(
-            (item) =>
-              type === item.data?.type && type === item.data?.type && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer,
-          ) || []),
-        ],
-      }))
-      .sort((coin) => (coin.coinType === SUI_COIN ? -1 : 1));
-  }, [objects?.result]);
+  const kioskObjectParentId = useMemo(() => (kioskObject ? getObjectDisplay(kioskObject).data?.kiosk : ''), [kioskObject]);
 
-  const mutateTokenBalanceObjects = useCallback(() => {
+  const { data: kioskObjectDynamicFields, mutate: mutateGetDynamicFields } = useGetDynamicFieldsSWR(
+    {
+      network,
+      parentObjectId: kioskObjectParentId,
+    },
+    config,
+  );
+
+  const kioskDynamicFieldsObjectIds = useMemo(
+    () => kioskObjectDynamicFields?.result?.data.map((item) => item.objectId) || [],
+    [kioskObjectDynamicFields?.result?.data],
+  );
+
+  const { data: kioskObjects, mutate: mutateGetKioskObjects } = useGetObjectsSWR(
+    {
+      network,
+      objectIds: kioskDynamicFieldsObjectIds,
+      options: {
+        showType: true,
+        showContent: true,
+        showOwner: true,
+        showDisplay: true,
+      },
+      ...options,
+    },
+    config,
+  );
+
+  const kioskNFTObjects = useMemo(() => kioskObjects?.result?.filter((item) => getObjectDisplay(item).data) || [], [kioskObjects?.result]);
+
+  const ownedNFTObjects = useMemo(() => [...kioskNFTObjects, ...nftObjects], [kioskNFTObjects, nftObjects]);
+
+  const mutateNFTObjects = useCallback(() => {
     void mutateGetObjectsOwnedByAddress();
     void mutateGetObjects();
-  }, [mutateGetObjects, mutateGetObjectsOwnedByAddress]);
+    void mutateGetDynamicFields();
+    void mutateGetKioskObjects();
+  }, [mutateGetObjectsOwnedByAddress, mutateGetObjects, mutateGetDynamicFields, mutateGetKioskObjects]);
 
-  return { tokenBalanceObjects, mutateTokenBalanceObjects };
+  return { nftObjects: ownedNFTObjects, mutateNFTObjects };
 }
