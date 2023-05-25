@@ -12,14 +12,6 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useNFT721BalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721BalanceSWR';
-import { useNFT721CheckSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721CheckSWR';
-import { useNFT721OwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721OwnerSWR';
-import { useNFT721TokenOfOwnerByIndexSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721TokenOfOwnerByIndexSWR';
-import { useNFT721URISWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721URISWR';
-import { useNFT1155BalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC1155/useNFT1155BalanceSWR';
-import { useNFT1155URISWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC1155/useNFT1155URISWR';
-import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -69,75 +61,6 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
   const balance = useBalanceSWR(undefined, { suspense: true });
-
-  // NOTE Test codes, would be deleted
-  const testNFTContractAddress = '0x495f947276749Ce646f68AC8c248420045cb7b5e';
-  const tokenId = '76759802801251205939224547784789707739691712882438043889149637722920242380801';
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const testNFT721ContractAddress = '0x0FCBD68251819928C8f6D182fC04bE733fA94170';
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const testNFT721TokenId = '2972';
-
-  const miladyNFT721ContractAddress = '0x8182B2010F98FcB4A89738090ED25622780A2452';
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const miladyNFT721TokenId = '9837';
-
-  const dooddle = '0x20d93d65ADa7ee46235f95f5995AE5c5dC5AC44c';
-  const dooddleTokenId = '13448407947994005218329819046404085674119224815530332939657499008818210288923';
-
-  // NOTE 제작자
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const testOwnerAddress = '0x56d4101F5Ee2E5F253aA9e3471a5C08C0fFC87D5';
-  const nftHolderAddress = '0x653325aFDb00DD741Fee25a694467eBA17E8e93D';
-  // NOTE balanceOf로 보유한 총 nft갯수를 가져온다 -> tokenOfOwnerByIndex를 해당 index만큼 돌려서 리스트를 가져온다.
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const test1 = useNFT1155URISWR({ contractAddress: testNFTContractAddress, tokenId });
-
-  // const test22 = useNFT1155BalanceBatchSWR({ contractAddress: testNFTContractAddress, ownerAddress: '0x5aB2d1f5069dd2f9aeEC3b0A8e923B1cdbe7Fc44', tokenId });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const test33 = useNFT1155BalanceSWR({ contractAddress: testNFTContractAddress, ownerAddress: '0x5aB2d1f5069dd2f9aeEC3b0A8e923B1cdbe7Fc44', tokenId });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const test44 = useNFT1155BalanceSWR({ contractAddress: miladyNFT721ContractAddress, tokenId: miladyNFT721TokenId });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const adsfs3123 = useNFT721CheckSWR({ contractAddress: testNFTContractAddress });
-
-  // const adsfs = useNFT1155CheckSWR({ contractAddress: testNFTContractAddress });
-
-  // console.log('🚀 ~ file: index.tsx:114 ~ NativeChainCard ~ adsfs:', adsfs);
-
-  // const testtest = useGetNFTStandardSWR({ contractAddress: testNFTContractAddress });
-
-  // console.log('🚀 ~ file: index.tsx:117 ~ NativeChainCard ~ testtest:', testtest);
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // const test2 = useNFT721BalanceSWR({ contractAddress: testNFT721ContractAddress, ownerAddress: testOwnerAddress });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const testHolder = useNFT721BalanceSWR({ contractAddress: miladyNFT721ContractAddress, ownerAddress: nftHolderAddress });
-
-  // NOTE return OwnerAddress
-  // NOTE uri swr과 키값이 동일함
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const testOwner = useNFT721OwnerSWR({ contractAddress: testNFT721ContractAddress, tokenId: testNFT721TokenId });
-
-  // NOTE need erc1155 ownerOF method
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const testGetNFT = useNFT721TokenOfOwnerByIndexSWR({
-    contractAddress: miladyNFT721ContractAddress,
-    ownerAddress: nftHolderAddress,
-    quantity: 20,
-  });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const test3 = useNFT721URISWR({ contractAddress: dooddle, tokenId: dooddleTokenId });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const aaa = useGetNFTMetaSWR(test3.data);
 
   const { t } = useTranslation();
 

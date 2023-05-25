@@ -48,8 +48,7 @@ export function useNFT721OwnerSWR({ network, contractAddress, tokenId }: UseNFT7
     return methods.ownerOf(params.tokenId).call() as Promise<ERC721OwnerPayload>;
   };
 
-  // NOTE need swr specific key
-  const { data, error, mutate } = useSWR<ERC721OwnerPayload, AxiosError>({ rpcURL, contractAddress, tokenId }, fetcher, {
+  const { data, error, mutate } = useSWR<ERC721OwnerPayload, AxiosError>({ id: 'NFT_721_OWNER_OF', rpcURL, contractAddress, tokenId }, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,

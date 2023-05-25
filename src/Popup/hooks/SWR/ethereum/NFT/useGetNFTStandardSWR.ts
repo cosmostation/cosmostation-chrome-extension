@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
+import { TOKEN_TYPE } from '~/constants/ethereum';
 import type { EthereumNetwork } from '~/types/chain';
 
 import { useNFT721CheckSWR } from './ERC721/useNFT721CheckSWR';
@@ -18,12 +19,12 @@ export function useGetNFTStandardSWR({ network, contractAddress }: UseGetNFTStan
 
   const tokenType = useMemo(() => {
     if (isNFT721 && !isNFT1155) {
-      return 'ERC721';
+      return TOKEN_TYPE.ERC721;
     }
     if (!isNFT721 && isNFT1155) {
-      return 'ERC1155';
+      return TOKEN_TYPE.ERC1155;
     }
-    return '';
+    return undefined;
   }, [isNFT1155, isNFT721]);
 
   return { data: tokenType };

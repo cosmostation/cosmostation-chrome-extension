@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/nft';
 
 import { useCurrentEthereumNetwork } from './useCurrentEthereumNetwork';
@@ -17,7 +18,11 @@ export function useCurrentEthereumNFTs() {
 
   const addEthereumNFT = async (nft: AddEthereumNFTParams) => {
     const newEthereumNFTs = [
-      ...ethereumNFTs.filter((item) => !(item.tokenId.toLowerCase() === nft.tokenId.toLowerCase() && item.ethereumNetworkId === currentEthereumNetwork.id)),
+      ...ethereumNFTs.filter(
+        (item) =>
+          !(isEqualsIgnoringCase(item.tokenId, nft.tokenId) && isEqualsIgnoringCase(item.address, nft.address)) &&
+          item.ethereumNetworkId === currentEthereumNetwork.id,
+      ),
       { ...nft, id: uuidv4(), ethereumNetworkId: currentEthereumNetwork.id },
     ];
 
@@ -25,14 +30,20 @@ export function useCurrentEthereumNFTs() {
   };
 
   const addEthereumNFTs = async (nfts: AddEthereumNFTParams[]) => {
-    const filteredNFTs = nfts.filter((nft, idx, self) => self.findIndex((item) => item.tokenId.toLowerCase() === nft.tokenId.toLowerCase()) === idx);
-
-    const nftsTokenId = filteredNFTs.map((nft) => nft.tokenId.toLowerCase());
+    const filteredNFTs = nfts.filter(
+      (nft, idx, self) => self.findIndex((item) => isEqualsIgnoringCase(item.tokenId, nft.tokenId) && isEqualsIgnoringCase(item.address, nft.address)) === idx,
+    );
 
     const newNFTs = filteredNFTs.map((nft) => ({ ...nft, id: uuidv4(), ethereumNetworkId: currentEthereumNetwork.id }));
 
     const newEthereumNFTs = [
-      ...ethereumNFTs.filter((item) => !(nftsTokenId.includes(item.tokenId.toLowerCase()) && item.ethereumNetworkId === currentEthereumNetwork.id)),
+      ...ethereumNFTs.filter(
+        (item) =>
+          !(
+            filteredNFTs.find((nft) => isEqualsIgnoringCase(item.tokenId, nft.tokenId) && isEqualsIgnoringCase(item.address, nft.address)) &&
+            item.ethereumNetworkId === currentEthereumNetwork.id
+          ),
+      ),
       ...newNFTs,
     ];
 
@@ -40,7 +51,7 @@ export function useCurrentEthereumNFTs() {
   };
 
   const removeEthereumNFT = async (nft: EthereumNFT) => {
-    const newEthereumNFTs = ethereumNFTs.filter((item) => item.id !== nft.id);
+    const newEthereumNFTs = ethereumNFTs.filter((item) => !(item.id === nft.id));
 
     await setChromeStorage('ethereumNFTs', newEthereumNFTs);
   };

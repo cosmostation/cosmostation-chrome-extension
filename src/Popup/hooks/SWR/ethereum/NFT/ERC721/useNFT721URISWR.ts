@@ -31,6 +31,7 @@ export function useNFT721URISWR({ network, contractAddress, tokenId }: UseNFT721
   const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
 
   const fetcher = (params: FetcherParams) => {
+    // FIXME 여기서 owner체크 && 토큰 스탠다드 체크 아니면 null내보내기
     const provider = new Web3.providers.HttpProvider(params.rpcURL, {
       headers: [
         {
@@ -48,7 +49,7 @@ export function useNFT721URISWR({ network, contractAddress, tokenId }: UseNFT721
     return methods.tokenURI(params.tokenId).call() as Promise<ERC721URIPayload>;
   };
 
-  const { data, error, mutate } = useSWR<ERC721URIPayload, AxiosError>({ rpcURL, contractAddress, tokenId }, fetcher, {
+  const { data, error, mutate } = useSWR<ERC721URIPayload, AxiosError>({ id: 'NFT_721_URI', rpcURL, contractAddress, tokenId }, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,

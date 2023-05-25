@@ -6,6 +6,11 @@ export type EthereumERC721Token = {
   ethereumNetworkId: string;
   tokenType: typeof ETHEREUM_TOKEN_TYPE.ERC721;
   address: string;
+  name?: string;
+  description?: string;
+  imageURL?: string;
+  metaURI?: string;
+  rarity?: string;
 };
 
 export type EthereumERC1155Token = {
@@ -14,6 +19,11 @@ export type EthereumERC1155Token = {
   ethereumNetworkId: string;
   tokenType: typeof ETHEREUM_TOKEN_TYPE.ERC1155;
   address: string;
+  name?: string;
+  description?: string;
+  imageURL?: string;
+  metaURI?: string;
+  rarity?: string;
 };
 
 export type EthereumNFT = EthereumERC721Token | EthereumERC1155Token;

@@ -511,6 +511,23 @@
         }
       },
       "Ethereum": {
+        "NFT": {
+          "Add": {
+            "entry": {
+              "addNFTSnackbar": "NFT가 추가 되었습니다.",
+              "addressPlaceholder": "NFT 계약주소",
+              "information": "찾고 있는 토큰이 목록에 없으면 \"커스텀 NFT 추가\"를 클릭하십시오.",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "preview": "NFT 미리보기",
+              "previewSubText": "본인 소유의 NFT 정보를 입력할 시 이미지가 보여집니다.",
+              "submitButton": "커스텀 NFT 추가",
+              "tokenIdPlaceholder": "토큰 ID"
+            },
+            "layout": {
+              "title": "NFT 가져오기"
+            }
+          }
+        },
         "Network": {
           "Add": {
             "entry": {
@@ -1390,6 +1407,11 @@
           }
         },
         "ethereum": {
+          "NFTList": {
+            "index": {
+              "importNFTButton": "NFT 가져오기"
+            }
+          },
           "NativeChainCard": {
             "index": {
               "copied": "복사 되었습니다.",

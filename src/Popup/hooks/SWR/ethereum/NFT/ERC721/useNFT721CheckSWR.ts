@@ -23,7 +23,7 @@ type UseNFT721CheckSWR = {
   contractAddress?: string;
 };
 
-const ERC721_INTERFACE_FNHASH = '0x01ffc9a7';
+const ERC721_INTERFACE_FNHASH = '0x80ac58cd';
 
 export function useNFT721CheckSWR({ network, contractAddress }: UseNFT721CheckSWR, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
