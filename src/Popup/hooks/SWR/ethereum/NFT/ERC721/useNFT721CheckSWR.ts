@@ -21,7 +21,6 @@ type FetcherParams = {
 type UseNFT721CheckSWR = {
   network?: EthereumNetwork;
   contractAddress?: string;
-  interfaceId?: string;
 };
 
 const ERC721_INTERFACE_FNHASH = '0x01ffc9a7';

@@ -16,7 +16,7 @@ export default function Routes({ children }: RoutesType) {
 
   useEffect(() => {
     void (async () => {
-      if (chromeStorage.accounts.length < 1) {
+      if (chromeStorage.accounts.length < 1 && window.outerWidth < 450) {
         await openTab();
       }
 

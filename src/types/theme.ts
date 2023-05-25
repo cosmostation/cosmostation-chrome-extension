@@ -51,4 +51,6 @@ export type AccentColors = {
   white: string;
   green: string;
   red: string;
+  blue01: string;
+  blue02: string;
 };
