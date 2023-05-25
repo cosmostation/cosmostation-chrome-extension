@@ -14,7 +14,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { openTab } from '~/Popup/utils/chromeTabs';
+import { debouncedOpenTab } from '~/Popup/utils/chromeTabs';
 import type { EthereumChain, EthereumNetwork } from '~/types/chain';
 
 type EthereumChainItemProps = {
@@ -126,10 +126,7 @@ export function EthereumChainItemLedgerCheck({ chain, network, children }: Ether
       },
     });
 
-    if (window.outerWidth < 450) {
-      await openTab();
-      window.close();
-    }
+    await debouncedOpenTab();
   };
 
   const { networkName, imageURL } = network;
