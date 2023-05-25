@@ -122,16 +122,10 @@ export const DeleteButton = styled('div')(({ theme }) => ({
 
   display: 'none',
 
-  padding: '0.1rem',
-
-  height: '1.6rem',
-  width: '1.6rem',
-
   borderRadius: '50%',
 
   backgroundColor: theme.accentColors.red,
 
-  // NOTE 엑스 아이콘 위치 안맞음
   '& > svg': {
     fill: theme.accentColors.white,
     '& > path': {
