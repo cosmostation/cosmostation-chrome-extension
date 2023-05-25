@@ -16,6 +16,7 @@ import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSW
 import { useGetNFTStandardSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTStandardSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
+import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { equal } from '~/Popup/utils/big';
 import { ethereumAddressRegex } from '~/Popup/utils/regex';
@@ -37,6 +38,7 @@ import NFTErrorIcon from '~/images/icons/NFTError.svg';
 import NFTPreviewIcon from '~/images/icons/NFTPreview.svg';
 
 export default function Entry() {
+  const { navigate } = useNavigate();
   const { addEthereumNFT } = useCurrentEthereumNFTs();
   const { t } = useTranslation();
 
@@ -141,6 +143,8 @@ export default function Entry() {
       }
     } catch (e) {
       enqueueSnackbar('fail', { variant: 'error' });
+    } finally {
+      navigate('/');
     }
   };
 

@@ -2,6 +2,7 @@ import { Suspense, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
+import AddButton from '~/Popup/components/AddButton';
 import Empty from '~/Popup/components/common/Empty';
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -52,6 +53,7 @@ export default function NFTList() {
 
   const isExistNFT = !!currentEthereumNFTs.length;
 
+  // NOTE 여기서 ownercheck
   const filteredNFTObjects = useMemo(() => {
     if (currentType === 'all') return currentEthereumNFTs;
     if (currentType === 'etc') return currentEthereumNFTs;
@@ -63,18 +65,23 @@ export default function NFTList() {
 
   return (
     <Container>
-      <ListTitleContainer>
-        <ListTitleLeftContainer>
-          <TypeButton
-            text={currentTypeInfo?.name}
-            number={currentTypeInfo?.count}
-            onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
-            isActive={isOpenPopover}
-          />
-        </ListTitleLeftContainer>
-        {/* NOTE import 버튼 구현해야함 */}
-        <ListTitleRightContainer />
-      </ListTitleContainer>
+      {isExistNFT && (
+        <ListTitleContainer>
+          <ListTitleLeftContainer>
+            <TypeButton
+              text={currentTypeInfo?.name}
+              number={currentTypeInfo?.count}
+              onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
+              isActive={isOpenPopover}
+            />
+          </ListTitleLeftContainer>
+          <ListTitleRightContainer>
+            <AddButton type="button" onClick={addToken}>
+              {t('pages.Wallet.components.ethereum.NFTList.index.importNFTButton')}
+            </AddButton>
+          </ListTitleRightContainer>
+        </ListTitleContainer>
+      )}
       {isExistNFT ? (
         <ListContainer>
           {filteredNFTObjects.map((nft) => {
