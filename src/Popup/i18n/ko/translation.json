@@ -72,8 +72,9 @@
     "Loading": {
       "LedgerToTab": {
         "index": {
+          "cancel": "취소하기",
           "continue": "계속하기",
-          "description": "브라우저에서 작업을 완료해주세요"
+          "description": "탭에서 작업을 완료해주세요"
         }
       }
     },

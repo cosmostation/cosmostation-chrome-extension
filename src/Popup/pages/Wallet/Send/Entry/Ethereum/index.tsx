@@ -22,7 +22,7 @@ import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEth
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { openTab } from '~/Popup/utils/chromeTabs';
+import { debouncedOpenTab } from '~/Popup/utils/chromeTabs';
 import { ethereumAddressRegex } from '~/Popup/utils/regex';
 import { toHex } from '~/Popup/utils/string';
 import type { EthereumChain } from '~/types/chain';
@@ -258,10 +258,7 @@ export default function Ethereum({ chain }: EthereumProps) {
                   });
 
                   if (currentAccount.type === 'LEDGER') {
-                    if (window.outerWidth < 450) {
-                      await openTab();
-                      window.close();
-                    }
+                    await debouncedOpenTab();
                   }
                 }}
               >

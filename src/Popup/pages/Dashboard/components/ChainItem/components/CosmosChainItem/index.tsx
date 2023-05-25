@@ -13,7 +13,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton, ChainItemTerminated } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { openTab } from '~/Popup/utils/chromeTabs';
+import { debouncedOpenTab } from '~/Popup/utils/chromeTabs';
 import type { CosmosChain } from '~/types/chain';
 
 type CosmosChainItemProps = {
@@ -132,10 +132,7 @@ export function CosmosChainLedgerCheck({ chain, children }: CosmosChainItemProps
       },
     });
 
-    if (window.outerWidth < 450) {
-      await openTab();
-      window.close();
-    }
+    await debouncedOpenTab();
   };
 
   const { chainName, imageURL } = chain;

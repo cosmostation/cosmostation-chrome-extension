@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { openTab } from '~/Popup/utils/chromeTabs';
+import { debouncedOpenTab } from '~/Popup/utils/chromeTabs';
 
 type RoutesType = {
   children: JSX.Element;
@@ -16,8 +16,8 @@ export default function Routes({ children }: RoutesType) {
 
   useEffect(() => {
     void (async () => {
-      if (chromeStorage.accounts.length < 1 && window.outerWidth < 450) {
-        await openTab();
+      if (chromeStorage.accounts.length < 1) {
+        await debouncedOpenTab();
       }
 
       setIsLoading(false);

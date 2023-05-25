@@ -1,7 +1,19 @@
+import { debounce } from 'lodash';
+
+import { getCurrentWindow } from './chromeWindows';
+
 export async function openTab(path?: string): Promise<chrome.tabs.Tab> {
+  const currentTab = await getCurrent();
+  const currentWindow = await getCurrentWindow();
+
   const url = chrome.runtime.getURL(`popup.html${path ? `#${path}` : ''}`);
 
   return new Promise((res, rej) => {
+    if (currentTab && currentWindow?.type !== 'popup') {
+      res(currentTab);
+      return;
+    }
+
     chrome.tabs.create({ active: true, url }, (tab) => {
       if (chrome.runtime.lastError) {
         rej(chrome.runtime.lastError);
@@ -12,8 +24,10 @@ export async function openTab(path?: string): Promise<chrome.tabs.Tab> {
   });
 }
 
+export const debouncedOpenTab = debounce(openTab, 100);
+
 export async function closeTab(id?: number): Promise<void> {
-  const currentTabId = id || (await getCurrentTab()).id;
+  const currentTabId = id || (await getCurrent())?.id;
 
   return new Promise((res, rej) => {
     if (!currentTabId) {
