@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { useSnackbar } from 'notistack';
 import EthereumApp from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
+import Sui from '@mysten/ledgerjs-hw-app-sui';
 
-// import Sui from '@mysten/ledgerjs-hw-app-sui';
 import { COSMOS_CHAINS } from '~/constants/chain';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -23,7 +23,6 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
-import { useLedgerTransport6282 } from '~/Popup/hooks/useLedgerTransport6282';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
@@ -67,7 +66,6 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
   const { setLoadingOverlay } = useLoading();
 
   const { closeTransport, createTransport } = useLedgerTransport();
-  const { closeTransport6282 } = useLedgerTransport6282();
 
   const { t } = useTranslation();
 
@@ -194,8 +192,9 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
                     const newAccounts = [...accounts];
 
+                    const transport = await createTransport();
+
                     if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
-                      const transport = await createTransport();
                       const cosmosApp = new CosmosApp(transport);
 
                       const result = await cosmosApp.getPublicKey([44, 118, 0, 0, Number(currentAccount.bip44.addressIndex)]);
@@ -210,7 +209,6 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                     }
 
                     if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) {
-                      const transport = await createTransport();
                       const cosmosApp = new CosmosApp(transport);
 
                       const result = await cosmosApp.getPublicKey([44, 371, 0, 0, Number(currentAccount.bip44.addressIndex)]);
@@ -225,7 +223,6 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                     }
 
                     if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG) {
-                      const transport = await createTransport();
                       const cosmosApp = new CosmosApp(transport);
 
                       const result = await cosmosApp.getPublicKey([44, 394, 0, 0, Number(currentAccount.bip44.addressIndex)]);
@@ -240,7 +237,6 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                     }
 
                     if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
-                      const transport = await createTransport();
                       const ethereumApp = new EthereumApp(transport);
 
                       const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}`;
@@ -256,22 +252,22 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                     }
 
                     if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI) {
-                      // const transport = await createTransport6282();
-                      // const suiApp = new Sui(transport);
-                      // const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}`;
-                      // const result = await suiApp.getPublicKey(path);
-                      // console.log(result);
-                      // const publicKey = Buffer.from(result.publicKey).toString('hex');
-                      // if (accountIndex > -1) {
-                      //   newAccounts.splice(accountIndex, 1, { ...currentAccount, suiPublicKey: publicKey });
-                      //   await setChromeStorage('accounts', newAccounts);
-                      // }
+                      const suiApp = new Sui(transport);
+
+                      const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
+
+                      const result = await suiApp.getPublicKey(path);
+
+                      const publicKey = Buffer.from(result.publicKey).toString('hex');
+                      if (accountIndex > -1) {
+                        newAccounts.splice(accountIndex, 1, { ...currentAccount, suiPublicKey: publicKey });
+                        await setChromeStorage('accounts', newAccounts);
+                      }
                     }
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                   } finally {
                     await closeTransport();
-                    await closeTransport6282();
                     setLoadingOverlay(false);
                   }
                 }}

@@ -273,6 +273,8 @@ export default function Entry({ queue }: EntryProps) {
                   setIsProgress(true);
                   const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
 
+                  // provider.executeTransactionBlock({})
+
                   responseToWeb({
                     response: {
                       result: response,
