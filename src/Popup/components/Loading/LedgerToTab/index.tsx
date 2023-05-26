@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { isMobile } from 'is-mobile';
 import { Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
@@ -30,7 +31,11 @@ export default function LedgerToTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if ((chromeWindow?.type !== 'normal' || (chromeWindow?.type === 'normal' && !chromeTab)) && currentAccount.type === 'LEDGER') {
+  if (
+    (chromeWindow?.type !== 'normal' || (chromeWindow?.type === 'normal' && !chromeTab)) &&
+    !isMobile({ ua: window.navigator.userAgent, tablet: true }) &&
+    currentAccount.type === 'LEDGER'
+  ) {
     return (
       <Container>
         <DescriptionContainer>
