@@ -50,6 +50,18 @@ export default function LedgerCheck({ children }: LedgerCheckProps) {
       });
     }
 
+    if (currentChain.line === 'SUI') {
+      await enQueue({
+        messageId: '',
+        origin: '',
+        channel: 'inApp',
+        message: {
+          method: 'sui_connect',
+          params: [],
+        },
+      });
+    }
+
     await debouncedOpenTab();
   };
 
