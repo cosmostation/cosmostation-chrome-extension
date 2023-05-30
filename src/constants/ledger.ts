@@ -5,8 +5,8 @@ import { ETHEREUM } from './chain/ethereum/ethereum';
 import { SUI } from './chain/sui/sui';
 
 export const TRANSPORT_TYPE = {
-  USB: 'USB',
   HID: 'HID',
+  USB: 'USB',
   // BLUETOOTH: 'Bluetooth',
 } as const;
 
