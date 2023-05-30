@@ -1046,6 +1046,16 @@
       },
       "NFTSend": {
         "Entry": {
+          "Ethereum": {
+            "index": {
+              "fee": "Fee",
+              "insufficientAmount": "Insufficient amount",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          },
           "Sui": {
             "index": {
               "fee": "Fee",

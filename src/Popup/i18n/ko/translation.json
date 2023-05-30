@@ -1000,24 +1000,6 @@
     "Wallet": {
       "NFTDetail": {
         "Entry": {
-          "sui": {
-            "components": {
-              "NFTInfoItem": {
-                "index": {
-                  "copied": "복사 되었습니다.",
-                  "creator": "제작자",
-                  "description": "NFT 설명",
-                  "objectId": "오브젝트 Id",
-                  "ownerAddress": "소유주",
-                  "url": "URL"
-                }
-              }
-            },
-            "index": {
-              "send": "NFT 보내기",
-              "untransferableObject": "보낼 수 없는 NFT입니다"
-            }
-          },
           "ethereum": {
             "components": {
               "NFTInfoItem": {
@@ -1038,6 +1020,24 @@
               "send": "NFT 보내기",
               "untransferableObject": "보낼 수 없는 NFT입니다"
             }
+          },
+          "sui": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "copied": "복사 되었습니다.",
+                  "creator": "제작자",
+                  "description": "NFT 설명",
+                  "objectId": "오브젝트 Id",
+                  "ownerAddress": "소유주",
+                  "url": "URL"
+                }
+              }
+            },
+            "index": {
+              "send": "NFT 보내기",
+              "untransferableObject": "보낼 수 없는 NFT입니다"
+            }
           }
         },
         "layout": {
@@ -1046,6 +1046,16 @@
       },
       "NFTSend": {
         "Entry": {
+          "Ethereum": {
+            "index": {
+              "fee": "수수료",
+              "insufficientAmount": "수량이 부족합니다.",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "invalidAmount": "수량을 입력하세요.",
+              "recipientAddressPlaceholder": "수신인 주소",
+              "sendButton": "보내기"
+            }
+          },
           "Sui": {
             "index": {
               "fee": "수수료",
