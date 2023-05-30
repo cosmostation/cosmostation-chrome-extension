@@ -21,7 +21,7 @@ import {
   RightContainer,
 } from './styled';
 
-import Check16Icon from '~/images/icons/Check16.svg';
+import Check24Icon from '~/images/icons/Check24.svg';
 
 type NFTItemProps = ComponentProps<typeof NFTButton> & {
   isActive?: boolean;
@@ -34,8 +34,8 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nftObje
 
   const { imageURL, name, type, objectId } = nftMeta;
 
-  const shorterObjectId = useMemo(() => shorterAddress(objectId, 23), [objectId]);
-  const shorterObjectType = useMemo(() => shorterAddress(type, 23), [type]);
+  const shorterObjectId = useMemo(() => shorterAddress(objectId, 20), [objectId]);
+  const shorterObjectType = useMemo(() => shorterAddress(type, 20), [type]);
 
   return (
     <NFTButton type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
@@ -61,7 +61,7 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nftObje
           </LeftInfoFooterContainer>
         </LeftInfoContainer>
       </LeftContainer>
-      <RightContainer>{isActive && <Check16Icon />}</RightContainer>
+      <RightContainer>{isActive && <Check24Icon />}</RightContainer>
     </NFTButton>
   );
 });
