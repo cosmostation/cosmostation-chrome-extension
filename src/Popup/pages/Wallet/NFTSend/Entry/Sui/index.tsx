@@ -129,6 +129,7 @@ export default function Sui({ chain }: SuiProps) {
     }
 
     const tx = new TransactionBlock();
+    tx.setSenderIfNotSet(address);
     tx.transferObjects([tx.object(currentNFTObject.data.objectId)], tx.pure(recipientAddress));
     return tx;
     // eslint-disable-next-line react-hooks/exhaustive-deps
