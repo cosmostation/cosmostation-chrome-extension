@@ -31,7 +31,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
 
   const handleOnClickCopy = (copyString?: string) => {
     if (copyString && copy(copyString)) {
-      enqueueSnackbar(t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.copied'));
+      enqueueSnackbar(t('pages.Wallet.NFTDetail.Entry.sui.components.NFTInfoItem.index.copied'));
     }
   };
 
@@ -41,7 +41,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
         <ItemContainer>
           <ItemTitleContainer>
             <Typography variant="h5" lineHeight="1.3rem">
-              {t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.ownerAddress')}
+              {t('pages.Wallet.NFTDetail.Entry.sui.components.NFTInfoItem.index.ownerAddress')}
             </Typography>
           </ItemTitleContainer>
 
@@ -62,7 +62,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
       <ItemContainer>
         <ItemTitleContainer>
           <Typography variant="h5" lineHeight="1.3rem">
-            {t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.objectId')}
+            {t('pages.Wallet.NFTDetail.Entry.sui.components.NFTInfoItem.index.objectId')}
           </Typography>
         </ItemTitleContainer>
         <ItemRightContainer>
@@ -82,7 +82,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
         <ItemContainer>
           <ItemTitleContainer>
             <Typography variant="h5" lineHeight="1.3rem">
-              {t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.creator')}
+              {t('pages.Wallet.NFTDetail.Entry.sui.components.NFTInfoItem.index.creator')}
             </Typography>
           </ItemTitleContainer>
           <ItemRightContainer>
@@ -103,7 +103,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
         <ItemContainer>
           <ItemTitleContainer>
             <Typography variant="h5" lineHeight="1.3rem">
-              {t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.url')}
+              {t('pages.Wallet.NFTDetail.Entry.sui.components.NFTInfoItem.index.url')}
             </Typography>
           </ItemTitleContainer>
           <ItemRightContainer>
@@ -120,7 +120,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
         <ItemContainer>
           <ItemTitleContainer>
             <Typography variant="h5" lineHeight="1.3rem">
-              {t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.url')}
+              {t('pages.Wallet.NFTDetail.Entry.sui.components.NFTInfoItem.index.url')}
             </Typography>
           </ItemTitleContainer>
           <ItemRightContainer>
@@ -137,7 +137,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
         <ItemColumnContainer>
           <ItemTitleContainer>
             <Typography variant="h5" lineHeight="1.3rem">
-              {t('pages.Wallet.NFTDetail.Entry.Sui.components.NFTInfoItem.index.description')}
+              {t('pages.Wallet.NFTDetail.Entry.sui.components.NFTInfoItem.index.description')}
             </Typography>
           </ItemTitleContainer>
           <ItemValueContainer>{description}</ItemValueContainer>

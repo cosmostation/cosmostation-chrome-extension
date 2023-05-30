@@ -1,10 +1,12 @@
-import { Suspense, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Header from '~/Popup/components/SelectSubHeader';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { gte } from '~/Popup/utils/big';
 import type { EthereumChain } from '~/types/chain';
 
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/ethereum/NativeChainCard';
@@ -18,18 +20,46 @@ type EthereumProps = {
 };
 
 export default function Ethereum({ chain }: EthereumProps) {
+  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { tabPath } = chromeStorage;
+
   const { currentAccount } = useCurrentAccount();
   const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
-  // FIXME 이전 선택한 탭이 꺼지고 다시켜졌을때 유지할 수 있도록
-  const [tabValue, setTabValue] = useState(0);
+
+  const [tabValue, setTabValue] = useState(tabPath.ethereum.tabPath || 0);
+
+  const tabLabels = ['Coins', 'NFTs'];
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
   };
+
   const isCustom = useMemo(
     () => !!additionalEthereumNetworks.find((item) => item.id === currentEthereumNetwork.id),
     [additionalEthereumNetworks, currentEthereumNetwork.id],
   );
+
+  useEffect(() => {
+    if (gte(tabPath.ethereum.tabPath, tabLabels.length)) {
+      void setChromeStorage('tabPath', {
+        ...tabPath,
+        ethereum: {
+          tabPath: 0,
+        },
+      });
+
+      setTabValue(0);
+    }
+
+    void setChromeStorage('tabPath', {
+      ...tabPath,
+      ethereum: {
+        tabPath: tabValue,
+      },
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabValue]);
 
   return (
     <Container key={`${currentAccount.id}-${currentEthereumNetwork.id}`}>
@@ -49,8 +79,9 @@ export default function Ethereum({ chain }: EthereumProps) {
             </ErrorBoundary>
           </NativeChainCardContainer>
           <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
-            <Tab label="Coins" />
-            <Tab label="NFTs" />
+            {tabLabels.map((item) => (
+              <Tab key={item} label={item} />
+            ))}
           </Tabs>
           <StyledTabPanel value={tabValue} index={0}>
             <BottomContainer sx={{ marginTop: '0.9rem' }}>

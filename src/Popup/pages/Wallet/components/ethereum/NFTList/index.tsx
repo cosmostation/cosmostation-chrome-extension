@@ -13,11 +13,20 @@ import NFTCardItem, { NFTCardItemSkeleton } from './components/NFTCardItem';
 import TypeButton from './components/TypeButton';
 import type { TypeInfo } from './components/TypePopover';
 import TypePopover from './components/TypePopover';
-import { AddTokenButton, AddTokenTextContainer, Container, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
+import {
+  AddTokenButton,
+  AddTokenTextContainer,
+  Container,
+  ListContainer,
+  ListTitleContainer,
+  ListTitleLeftContainer,
+  ListTitleLeftCountContainer,
+  ListTitleLeftTextContainer,
+  ListTitleRightContainer,
+} from './styled';
 
 import Plus16Icon from '~/images/icons/Plus16.svg';
 
-// NOTE nft를 소유하지 않은경우 해당 nft item이 바로 사라지는게 아니라 X표시를 해놓기는 해야함
 export default function NFTList() {
   const { navigate } = useNavigate();
   const { t } = useTranslation();
@@ -53,7 +62,6 @@ export default function NFTList() {
 
   const isExistNFT = !!currentEthereumNFTs.length;
 
-  // NOTE 여기서 ownercheck
   const filteredNFTObjects = useMemo(() => {
     if (currentType === 'all') return currentEthereumNFTs;
     if (currentType === 'etc') return currentEthereumNFTs;
@@ -69,11 +77,18 @@ export default function NFTList() {
         <ListTitleContainer>
           <ListTitleLeftContainer>
             <TypeButton
+              style={{ display: 'none' }}
               text={currentTypeInfo?.name}
               number={currentTypeInfo?.count}
               onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
               isActive={isOpenPopover}
             />
+            <ListTitleLeftTextContainer>
+              <Typography variant="h6">{t('pages.Wallet.components.ethereum.NFTList.index.nft')}</Typography>
+            </ListTitleLeftTextContainer>
+            <ListTitleLeftCountContainer>
+              <Typography variant="h6">{isExistNFT ? `${currentEthereumNFTs.length}` : ''}</Typography>
+            </ListTitleLeftCountContainer>
           </ListTitleLeftContainer>
           <ListTitleRightContainer>
             <AddButton type="button" onClick={addToken}>

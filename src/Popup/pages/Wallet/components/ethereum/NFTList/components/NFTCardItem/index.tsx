@@ -1,8 +1,13 @@
+import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Skeleton from '~/Popup/components/common/Skeleton';
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTOwnerSWR';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import type { EthereumNFT } from '~/types/nft';
 
 import {
@@ -25,10 +30,22 @@ type NFTCardItemProps = {
 };
 
 export default function NFTCardItem({ nftObject, onClick, onClickDelete }: NFTCardItemProps) {
-  const { name, imageURL, rarity, description, tokenId } = nftObject;
+  const { currentChain } = useCurrentChain();
+  const accounts = useAccounts(true);
+
+  const { currentAccount } = useCurrentAccount();
+
+  const currentAddress = useMemo(
+    () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[currentChain.id] || '',
+    [accounts?.data, currentAccount.id, currentChain.id],
+  );
+
+  const { name, imageURL, rarity, description, tokenId, address } = nftObject;
+
+  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId });
 
   return (
-    <StyledButton onClick={onClick}>
+    <StyledButton disabled={!isOwnedNFT} onClick={onClick}>
       <BodyContainer>
         <ObjectImageContainer>
           <>

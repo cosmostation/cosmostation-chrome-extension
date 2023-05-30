@@ -65,6 +65,7 @@ export default function Entry() {
   const { data: nft721OwnerAddress } = useNFT721OwnerSWR({ contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
   const { data: nft1155Balance } = useNFT1155BalanceSWR({ contractAddress: debouncedContractAddress, ownerAddress: currentAddress, tokenId: debouncedTokenId });
 
+  // NOTE 로딩 컴포넌트 구현 필요
   const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
 
   const errorType = useMemo(() => {
@@ -112,7 +113,7 @@ export default function Entry() {
     }
     if (errorType === 'noNFTData') {
       // NOTE need i18
-      return 'No data, Check you input right value';
+      return 'No data, Check you input right value & network';
     }
     if (errorType === 'misMatch') {
       // NOTE need i18
@@ -128,11 +129,13 @@ export default function Entry() {
         const newNFT = {
           tokenId: debouncedTokenId,
           tokenType: currentNFTStandard,
-          name: nftMeta.name || '',
+          name: nftMeta.name,
           address: debouncedContractAddress,
           description: nftMeta.description,
           imageURL: nftMeta.image,
           metaURI: nftMeta.metaURI,
+          attributes: nftMeta.attributes?.filter((item) => item.trait_type && item.value),
+          externalLink: nftMeta.external_url,
         };
 
         await addEthereumNFT({

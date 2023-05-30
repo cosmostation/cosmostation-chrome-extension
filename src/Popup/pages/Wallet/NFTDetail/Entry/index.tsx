@@ -1,9 +1,14 @@
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 
-import Sui from './Sui';
+import Ethereum from './ethereum';
+import Sui from './sui';
 
 export default function Entry() {
   const { currentChain } = useCurrentChain();
+
+  if (currentChain.line === 'ETHEREUM') {
+    return <Ethereum chain={currentChain} />;
+  }
 
   if (currentChain.line === 'SUI') {
     return <Sui />;

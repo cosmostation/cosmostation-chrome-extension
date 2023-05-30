@@ -25,7 +25,7 @@ export const StyledButton = styled('button')(({ theme }) => ({
     cursor: 'default',
 
     '&:hover': {
-      backgroundColor: theme.colors.base02,
+      backgroundColor: theme.colors.red01,
     },
   },
 

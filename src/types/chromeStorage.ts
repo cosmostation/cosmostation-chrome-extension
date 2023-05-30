@@ -13,6 +13,21 @@ export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 export type CurrencyType = ValueOf<typeof CURRENCY_TYPE>;
 export type SuiPermissionType = ValueOf<typeof PERMISSION>;
 
+export type TabPath = {
+  ethereum: {
+    tabPath: number;
+  };
+  cosmos: {
+    tabPath: number;
+  };
+  sui: {
+    tabPath: number;
+  };
+  aptos: {
+    tabPath: number;
+  };
+};
+
 export type AccountCommon = {
   id: string;
 };
@@ -102,6 +117,7 @@ export type ChromeStorage = {
   addressBook: AddressInfo[];
 
   rootPath: Path;
+  tabPath: TabPath;
 
   selectedAccountId: Account['id'];
 

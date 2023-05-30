@@ -11,6 +11,11 @@ export type EthereumERC721Token = {
   imageURL?: string;
   metaURI?: string;
   rarity?: string;
+  externalLink?: string;
+  attributes?: {
+    trait_type: string;
+    value: string | number;
+  }[];
 };
 
 export type EthereumERC1155Token = {
@@ -24,6 +29,11 @@ export type EthereumERC1155Token = {
   imageURL?: string;
   metaURI?: string;
   rarity?: string;
+  externalLink?: string;
+  attributes?: {
+    trait_type: string;
+    value: string | number;
+  }[];
 };
 
 export type EthereumNFT = EthereumERC721Token | EthereumERC1155Token;

@@ -1000,7 +1000,28 @@
     "Wallet": {
       "NFTDetail": {
         "Entry": {
-          "Sui": {
+          "ethereum": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "attributes": "Attributes",
+                  "contractAddress": "Contract address",
+                  "copied": "Copied",
+                  "description": "Description",
+                  "ownerAddress": "Owner",
+                  "tokenId": "Token ID",
+                  "tokenType": "Token Standard",
+                  "url": "URL"
+                }
+              }
+            },
+            "index": {
+              "notOwnedNFT": "The owner of this NFT is not you",
+              "send": "NFT Send",
+              "untransferableObject": "Untransferable object"
+            }
+          },
+          "sui": {
             "components": {
               "NFTInfoItem": {
                 "index": {
@@ -1409,7 +1430,8 @@
         "ethereum": {
           "NFTList": {
             "index": {
-              "importNFTButton": "Import NFTs"
+              "importNFTButton": "Import NFTs",
+              "nft": "NFT"
             }
           },
           "NativeChainCard": {
@@ -1439,6 +1461,11 @@
           "CoinList": {
             "index": {
               "coin": "Coin"
+            }
+          },
+          "NFTList": {
+            "index": {
+              "nft": "NFT"
             }
           },
           "NativeChainCard": {

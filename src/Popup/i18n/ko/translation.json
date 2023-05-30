@@ -1000,7 +1000,7 @@
     "Wallet": {
       "NFTDetail": {
         "Entry": {
-          "Sui": {
+          "sui": {
             "components": {
               "NFTInfoItem": {
                 "index": {
@@ -1014,6 +1014,27 @@
               }
             },
             "index": {
+              "send": "NFT 보내기",
+              "untransferableObject": "보낼 수 없는 NFT입니다"
+            }
+          },
+          "ethereum": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "attributes": "속성",
+                  "contractAddress": "계약 주소",
+                  "copied": "복사 되었습니다.",
+                  "description": "NFT 설명",
+                  "ownerAddress": "소유주",
+                  "tokenId": "토큰 ID",
+                  "tokenType": "토큰 표준",
+                  "url": "URL"
+                }
+              }
+            },
+            "index": {
+              "notOwnedNFT": "이 NFT의 소유주가 아닙니다",
               "send": "NFT 보내기",
               "untransferableObject": "보낼 수 없는 NFT입니다"
             }
@@ -1409,7 +1430,8 @@
         "ethereum": {
           "NFTList": {
             "index": {
-              "importNFTButton": "NFT 가져오기"
+              "importNFTButton": "NFT 가져오기",
+              "nft": "NFT"
             }
           },
           "NativeChainCard": {
@@ -1439,6 +1461,11 @@
           "CoinList": {
             "index": {
               "coin": "코인"
+            }
+          },
+          "NFTList": {
+            "index": {
+              "nft": "NFT"
             }
           },
           "NativeChainCard": {

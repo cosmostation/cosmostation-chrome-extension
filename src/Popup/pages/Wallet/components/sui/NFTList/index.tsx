@@ -1,5 +1,6 @@
 import { Suspense, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { Typography } from '@mui/material';
 import { getObjectDisplay } from '@mysten/sui.js';
 
 import Empty from '~/Popup/components/common/Empty';
@@ -8,6 +9,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { SuiChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
@@ -15,7 +17,15 @@ import NFTCardItem, { NFTCardItemSkeleton } from './components/NFTCardItem';
 import TypeButton from './components/TypeButton';
 import type { TypeInfo } from './components/TypePopover';
 import TypePopover from './components/TypePopover';
-import { Container, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
+import {
+  Container,
+  ListContainer,
+  ListTitleContainer,
+  ListTitleLeftContainer,
+  ListTitleLeftCountContainer,
+  ListTitleLeftTextContainer,
+  ListTitleRightContainer,
+} from './styled';
 
 import NoNFTIcon from '~/images/icons/NoNFT.svg';
 
@@ -25,6 +35,7 @@ type NFTListProps = {
 
 export default function NFTList({ chain }: NFTListProps) {
   const { navigate } = useNavigate();
+  const { t } = useTranslation();
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
@@ -92,6 +103,12 @@ export default function NFTList({ chain }: NFTListProps) {
             onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
             isActive={isOpenPopover}
           />
+          <ListTitleLeftTextContainer>
+            <Typography variant="h6">{t('pages.Wallet.components.sui.NFTList.index.nft')}</Typography>
+          </ListTitleLeftTextContainer>
+          <ListTitleLeftCountContainer>
+            <Typography variant="h6">{isExistNFT ? `${nftObjects.length}` : ''}</Typography>
+          </ListTitleLeftCountContainer>
         </ListTitleLeftContainer>
         <ListTitleRightContainer />
       </ListTitleContainer>

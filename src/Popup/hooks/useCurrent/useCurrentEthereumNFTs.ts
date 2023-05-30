@@ -20,8 +20,11 @@ export function useCurrentEthereumNFTs() {
     const newEthereumNFTs = [
       ...ethereumNFTs.filter(
         (item) =>
-          !(isEqualsIgnoringCase(item.tokenId, nft.tokenId) && isEqualsIgnoringCase(item.address, nft.address)) &&
-          item.ethereumNetworkId === currentEthereumNetwork.id,
+          !(
+            isEqualsIgnoringCase(item.tokenId, nft.tokenId) &&
+            isEqualsIgnoringCase(item.address, nft.address) &&
+            item.ethereumNetworkId === currentEthereumNetwork.id
+          ),
       ),
       { ...nft, id: uuidv4(), ethereumNetworkId: currentEthereumNetwork.id },
     ];

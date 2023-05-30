@@ -24,6 +24,20 @@ export const chromeStorageDefault: ChromeStorage = {
   currency: '' as CurrencyType,
 
   rootPath: PATH.DASHBOARD,
+  tabPath: {
+    ethereum: {
+      tabPath: 0,
+    },
+    cosmos: {
+      tabPath: 0,
+    },
+    sui: {
+      tabPath: 0,
+    },
+    aptos: {
+      tabPath: 0,
+    },
+  },
 
   allowedChainIds: [],
   allowedOrigins: [],

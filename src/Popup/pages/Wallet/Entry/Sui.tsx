@@ -1,11 +1,13 @@
-import { Suspense, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Empty from '~/Popup/components/common/Empty';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Header from '~/Popup/components/SelectSubHeader';
+import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { gte } from '~/Popup/utils/big';
 import type { SuiChain } from '~/types/chain';
 
 import LedgerCheck from '../components/LedgerCheck';
@@ -19,15 +21,42 @@ type SuiProps = {
 };
 
 export default function Sui({ chain }: SuiProps) {
+  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { tabPath } = chromeStorage;
+
   const { currentAccount } = useCurrentAccount();
   const { currentSuiNetwork, additionalSuiNetworks } = useCurrentSuiNetwork();
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(tabPath.sui.tabPath || 0);
+
+  const tabLabels = ['Coins', 'NFTs'];
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
   };
 
   const isCustom = useMemo(() => !!additionalSuiNetworks.find((item) => item.id === currentSuiNetwork.id), [additionalSuiNetworks, currentSuiNetwork.id]);
+
+  useEffect(() => {
+    if (gte(tabPath.sui.tabPath, tabLabels.length)) {
+      void setChromeStorage('tabPath', {
+        ...tabPath,
+        sui: {
+          tabPath: 0,
+        },
+      });
+
+      setTabValue(0);
+    }
+
+    void setChromeStorage('tabPath', {
+      ...tabPath,
+      sui: {
+        tabPath: tabValue,
+      },
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabValue]);
 
   return (
     <Container key={`${currentAccount.id}-${currentSuiNetwork.id}`}>
@@ -47,8 +76,9 @@ export default function Sui({ chain }: SuiProps) {
             </ErrorBoundary>
           </NativeChainCardContainer>
           <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
-            <Tab label="Coins" />
-            <Tab label="NFTs" />
+            {tabLabels.map((item) => (
+              <Tab key={item} label={item} />
+            ))}
           </Tabs>
           <StyledTabPanel value={tabValue} index={0}>
             <BottomContainer sx={{ marginTop: '0.9rem' }}>

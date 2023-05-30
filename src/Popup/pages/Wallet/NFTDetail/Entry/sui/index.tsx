@@ -51,7 +51,7 @@ export default function Sui() {
 
   const errorMessage = useMemo(() => {
     if (!(currentNFTObject?.data?.content?.dataType === 'moveObject' && currentNFTObject?.data?.content.hasPublicTransfer)) {
-      return t('pages.Wallet.NFTDetail.Entry.Sui.index.untransferableObject');
+      return t('pages.Wallet.NFTDetail.Entry.sui.index.untransferableObject');
     }
 
     return '';
@@ -96,7 +96,8 @@ export default function Sui() {
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
             <div>
               <Button type="button" disabled={!!errorMessage} onClick={() => navigate(`/wallet/nft-send/${objectId || ''}` as unknown as Path)}>
-                {t('pages.Wallet.NFTDetail.Entry.Sui.index.send')}
+                {/* NOTE Sui ->sui */}
+                {t('pages.Wallet.NFTDetail.Entry.sui.index.send')}
               </Button>
             </div>
           </Tooltip>
