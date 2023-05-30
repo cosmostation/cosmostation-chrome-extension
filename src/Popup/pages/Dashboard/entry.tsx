@@ -168,7 +168,7 @@ export default function Entry() {
 
           {suiChainList.map((item) =>
             suiNetworkList.map((network) => (
-              <SuiChainItemLedgerCheck key={`${currentAccount.id}${item.chain.id}${network.id}`} network={network}>
+              <SuiChainItemLedgerCheck chain={item.chain} key={`${currentAccount.id}${item.chain.id}${network.id}`} network={network}>
                 <ErrorBoundary
                   FallbackComponent={
                     // eslint-disable-next-line react/no-unstable-nested-components
