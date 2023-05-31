@@ -36,6 +36,14 @@ void (() => {
       window.cosmostation.ethereum.networkVersion = `${parseInt(chainId as string, 16)}`;
     });
 
+    const cosmostationEvent = new CustomEvent('cosmostation_keystorechange', { cancelable: true });
+
+    window.addEventListener('message', (event: MessageEvent<ListenerMessage>) => {
+      if (event.data?.isCosmostation && event.data?.type === 'accountChanged' && event.data?.line === 'COSMOS') {
+        window.dispatchEvent(cosmostationEvent);
+      }
+    });
+
     const providers = (await window.cosmostation.common.request({ method: 'com_providers' })) as ComProvidersResponse;
 
     if (providers.keplr && !window.keplr) {
