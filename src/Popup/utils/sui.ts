@@ -34,11 +34,7 @@ export function getCoinType(type?: string) {
 }
 
 export function getNFTType(type?: string) {
-  if (!type || !type?.split('::')[2]) {
-    return '';
-  }
-
-  return type?.split('::')[2];
+  return type?.split('::')[2] || '';
 }
 
 export function isKiosk(data: SuiObjectData) {

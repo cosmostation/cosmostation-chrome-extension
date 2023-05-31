@@ -70,11 +70,9 @@ export default function NFTList({ chain }: NFTListProps) {
   const filteredNFTObjects = useMemo(() => {
     if (currentType === 'all') return nftObjects;
     if (currentType === 'etc')
-      return (
-        nftObjects.filter((object, _, array) => array.filter((item) => item.data?.type?.split('::')[2] === object.data?.type?.split('::')[2]).length < 2) || []
-      );
+      return nftObjects.filter((object, _, array) => array.filter((item) => getNFTType(item.data?.type) === getNFTType(object.data?.type)).length < 2) || [];
 
-    return nftObjects.filter((item) => currentTypeInfo?.name === item.data?.type?.split('::')[2]) || [];
+    return nftObjects.filter((item) => currentTypeInfo?.name === getNFTType(item.data?.type)) || [];
   }, [currentType, currentTypeInfo?.name, nftObjects]);
 
   if (!isExistNFT) {
