@@ -10,6 +10,7 @@ import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { debouncedOpenTab } from '~/Popup/utils/chromeTabs';
 
 import ItemButton from './components/ItemButton';
 import {
@@ -38,6 +39,7 @@ import Connect24Icon from '~/images/icons/Connect24.svg';
 import Cosmostation14Icon from '~/images/icons/Cosmostation14.svg';
 import Currency24Icon from '~/images/icons/Currency24.svg';
 import DarkMode24Icon from '~/images/icons/DarkMode24.svg';
+import Expand24Icon from '~/images/icons/Expand24.svg';
 import Guide24Icon from '~/images/icons/Guide24.svg';
 import HelpIcon from '~/images/icons/Help.svg';
 import LanguageChangeIcon from '~/images/icons/LanguageChange.svg';
@@ -96,6 +98,15 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
                 />
               </ItemRightContainer>
             </ItemToggleContainer>
+
+            <ItemButton
+              Icon={Expand24Icon}
+              onClick={() => {
+                void debouncedOpenTab();
+              }}
+            >
+              {t('components.Header.Drawer.index.expand')}
+            </ItemButton>
 
             <ItemButton Icon={AddressBook24Icon} onClick={() => navigate('/setting/address-book', { isDuplicateCheck: true })}>
               {t('components.Header.Drawer.index.addressBook')}
