@@ -130,6 +130,7 @@ export default function Entry() {
           tokenId: debouncedTokenId,
           tokenType: currentNFTStandard,
           name: nftMeta.name,
+          ownerAddress: currentAddress,
           address: debouncedContractAddress,
           description: nftMeta.description,
           imageURL: nftMeta.image,

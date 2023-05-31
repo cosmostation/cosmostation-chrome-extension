@@ -39,7 +39,7 @@ export function isKiosk(data: SuiObjectData) {
 
 export function convertIpfs(url?: string) {
   if (!url) return '';
-  return url.replace(/^ipfs:\/\//, 'https://ipfs.io/ipfs/');
+  return url.replace(/^ipfs:\/\// || /^ipfs:\//, 'https://ipfs.io/ipfs/');
 }
 
 export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMeta {

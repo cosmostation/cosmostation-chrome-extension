@@ -4,9 +4,12 @@ import { Typography } from '@mui/material';
 
 import AddButton from '~/Popup/components/AddButton';
 import Empty from '~/Popup/components/common/Empty';
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import type { EthereumChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
 import NFTCardItem, { NFTCardItemSkeleton } from './components/NFTCardItem';
@@ -27,7 +30,11 @@ import {
 
 import Plus16Icon from '~/images/icons/Plus16.svg';
 
-export default function NFTList() {
+type NFTListProps = {
+  chain: EthereumChain;
+};
+
+export default function NFTList({ chain }: NFTListProps) {
   const { navigate } = useNavigate();
   const { t } = useTranslation();
 
@@ -36,38 +43,49 @@ export default function NFTList() {
 
   const { currentEthereumNFTs, removeEthereumNFT } = useCurrentEthereumNFTs();
 
+  const { currentAccount } = useCurrentAccount();
+
+  const accounts = useAccounts(true);
+
+  const currentAddress = useMemo(
+    () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '',
+    [accounts?.data, chain.id, currentAccount.id],
+  );
+
+  const ownedEthereumNFTs = useMemo(() => currentEthereumNFTs.filter((item) => item.ownerAddress === currentAddress), [currentAddress, currentEthereumNFTs]);
+
   const typeInfos = useMemo(() => {
     const infos: TypeInfo[] = [];
 
     // NOTE name말고 다른 컬렉션으로 할 것
-    // const nftNameList = currentEthereumNFTs.map((item) => item.name);
+    // const nftNameList = ownedEthereumNFTs.map((item) => item.name);
 
-    infos.push({ type: 'all', name: 'All Assets', count: currentEthereumNFTs.length });
+    infos.push({ type: 'all', name: 'All Assets', count: ownedEthereumNFTs.length });
 
     // NOTE name말고 다른 컬렉션으로 할 것
     // nftNameList.forEach((item) => {
-    //   infos.push({ type: item, name: item, count: currentEthereumNFTs.filter((nft) => item === nft.name).length });
+    //   infos.push({ type: item, name: item, count: ownedEthereumNFTs.filter((nft) => item === nft.name).length });
     // });
 
-    if (currentEthereumNFTs?.filter((item) => !item.description).length) {
-      infos.push({ type: 'etc', name: 'ETC', count: currentEthereumNFTs.filter((nft) => !nft.description).length });
+    if (ownedEthereumNFTs?.filter((item) => !item.description).length) {
+      infos.push({ type: 'etc', name: 'ETC', count: ownedEthereumNFTs.filter((nft) => !nft.description).length });
     }
 
     return infos;
-  }, [currentEthereumNFTs]);
+  }, [ownedEthereumNFTs]);
 
   const [currentType, setCurrentType] = useState(typeInfos[0].type);
 
   const currentTypeInfo = useMemo(() => typeInfos.find((item) => item.type === currentType), [currentType, typeInfos]);
 
-  const isExistNFT = !!currentEthereumNFTs.length;
+  const isExistNFT = !!ownedEthereumNFTs.length;
 
   const filteredNFTObjects = useMemo(() => {
-    if (currentType === 'all') return currentEthereumNFTs;
-    if (currentType === 'etc') return currentEthereumNFTs;
+    if (currentType === 'all') return ownedEthereumNFTs;
+    if (currentType === 'etc') return ownedEthereumNFTs;
 
-    return currentEthereumNFTs.filter((item) => currentTypeInfo?.name === item.id) || [];
-  }, [currentEthereumNFTs, currentType, currentTypeInfo?.name]);
+    return ownedEthereumNFTs.filter((item) => currentTypeInfo?.name === item.id) || [];
+  }, [ownedEthereumNFTs, currentType, currentTypeInfo?.name]);
 
   const addToken = () => navigate('/chain/ethereum/nft/add');
 

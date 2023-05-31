@@ -24,16 +24,15 @@ import Copy16Icon from '~/images/icons/Copy16.svg';
 
 type NFTInfoItemProps = {
   nftMeta: EthereumNFT;
-  walletAddress: string;
 };
 
-export default function NFTInfoItem({ nftMeta, walletAddress }: NFTInfoItemProps) {
+export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { description, tokenType, address, externalLink, attributes, tokenId } = nftMeta;
+  const { description, tokenType, address, externalLink, attributes, tokenId, ownerAddress } = nftMeta;
 
-  const shorterOwnerAddress = useMemo(() => shorterAddress(walletAddress, 14), [walletAddress]);
+  const shorterOwnerAddress = useMemo(() => shorterAddress(ownerAddress, 14), [ownerAddress]);
   const shorterContractAddress = useMemo(() => shorterAddress(address, 14), [address]);
 
   const shorterProjectUrl = useMemo(() => shorterAddress(externalLink, 20), [externalLink]);
@@ -55,11 +54,11 @@ export default function NFTInfoItem({ nftMeta, walletAddress }: NFTInfoItemProps
           </ItemTitleContainer>
 
           <ItemRightContainer>
-            <Tooltip title={walletAddress || ''} placement="top" arrow>
+            <Tooltip title={ownerAddress} placement="top" arrow>
               <Typography variant="h5">{shorterOwnerAddress}</Typography>
             </Tooltip>
 
-            <StyledIconButton onClick={() => handleOnClickCopy(walletAddress)}>
+            <StyledIconButton onClick={() => handleOnClickCopy(ownerAddress)}>
               <Copy16Icon />
             </StyledIconButton>
           </ItemRightContainer>

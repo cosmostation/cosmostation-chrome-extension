@@ -90,7 +90,7 @@ export default function Ethereum({ chain }: EthereumProps) {
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>
             <BottomContainer sx={{ marginTop: '0.9rem' }}>
-              <NFTList />
+              <NFTList chain={chain} />
             </BottomContainer>
           </StyledTabPanel>
         </>

@@ -5,6 +5,7 @@ import { Typography } from '@mui/material';
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
+import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTOwnerSWR';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/nft';
 
@@ -27,7 +28,9 @@ type NFTItemProps = ComponentProps<typeof NFTButton> & {
 };
 
 const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ...remainder }, ref) => {
-  const { imageURL, name, tokenId, tokenType, address } = nft;
+  const { imageURL, name, tokenId, tokenType, address, ownerAddress } = nft;
+
+  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress, tokenId });
 
   const shorterContractAddress = useMemo(() => shorterAddress(address, 20), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 20), [tokenId]);
@@ -35,7 +38,7 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
   const tokenStandard = useMemo(() => tokenType?.replace('ERC', 'ERC-'), [tokenType]);
 
   return (
-    <NFTButton type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
+    <NFTButton style={{ display: isOwnedNFT ? 'flex' : 'none' }} type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
       <LeftContainer>
         <LeftImageContainer>
           <Image src={imageURL} defaultImgSrc={unknownNFTImg} />

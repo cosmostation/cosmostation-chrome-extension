@@ -7,7 +7,7 @@ import type { MessageTypes, SignTypedDataVersion, TypedMessage } from '@metamask
 import { signTypedData as baseSignTypedData } from '@metamask/eth-sig-util';
 
 import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
-import { ERC20_ABI, ONE_INCH_ABI } from '~/constants/abi';
+import { ERC20_ABI, ERC721_ABI, ONE_INCH_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import { chromeStorage } from '~/Popup/utils/chromeStorage';
@@ -87,6 +87,8 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
 
 const erc20Interface = new Interface(ERC20_ABI);
 
+const erc721Interface = new Interface(ERC721_ABI);
+
 const oneInchInterface = new Interface(ONE_INCH_ABI);
 
 export function erc20Parse(tx: EthereumTx) {
@@ -97,6 +99,19 @@ export function erc20Parse(tx: EthereumTx) {
   }
   try {
     return erc20Interface.parseTransaction({ data });
+  } catch {
+    return null;
+  }
+}
+
+export function erc721Parse(tx: EthereumTx) {
+  const { data } = tx;
+
+  if (!data) {
+    return null;
+  }
+  try {
+    return erc721Interface.parseTransaction({ data });
   } catch {
     return null;
   }

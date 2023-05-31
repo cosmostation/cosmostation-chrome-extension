@@ -58,7 +58,10 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const { currentEthereumNFTs } = useCurrentEthereumNFTs();
 
-  const currentNFTObject = useMemo(() => currentEthereumNFTs.find((item) => isEqualsIgnoringCase(item.id, params.id)), [currentEthereumNFTs, params.id]);
+  const currentNFTObject = useMemo(
+    () => currentEthereumNFTs.find((item) => isEqualsIgnoringCase(item.id, params.id)) || null,
+    [currentEthereumNFTs, params.id],
+  );
 
   const { name, imageURL, rarity, address, id, tokenId } = currentNFTObject || {};
 
@@ -103,7 +106,7 @@ export default function Ethereum({ chain }: EthereumProps) {
             </NFTInfoHeaderContainer>
             {currentNFTObject && (
               <NFTInfoBodyContainer>
-                <NFTInfoItem nftMeta={currentNFTObject} walletAddress={currentAddress} />
+                <NFTInfoItem nftMeta={currentNFTObject} />
               </NFTInfoBodyContainer>
             )}
           </NFTInfoContainer>

@@ -82,7 +82,10 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const [currentNFTId, setCurrentNFTId] = useState<string | undefined>(availableNFTIds.includes(params.id || '') ? params.id : availableNFTIds[0]);
 
-  const currentNFT = useMemo(() => currentEthereumNFTs.find((item) => isEqualsIgnoringCase(item.id, currentNFTId)), [currentEthereumNFTs, currentNFTId]);
+  const currentNFT = useMemo(
+    () => currentEthereumNFTs.find((item) => isEqualsIgnoringCase(item.id, currentNFTId)) || null,
+    [currentEthereumNFTs, currentNFTId],
+  );
 
   const fee = useFeeSWR();
 
@@ -124,16 +127,14 @@ export default function Ethereum({ chain }: EthereumProps) {
     });
     const web3 = new Web3(provider);
 
-    const contract = new web3.eth.Contract(ERC721_ABI as AbiItem[], currentNFT?.address);
+    const contract = new web3.eth.Contract(ERC721_ABI as AbiItem[], currentNFT.address);
     const methods = contract.methods as ERC721ContractMethods;
 
-    const data = ethereumAddressRegex.test(recipientAddress)
-      ? methods.transferFrom(address, recipientAddress, currentNFT?.tokenId || '').encodeABI()
-      : undefined;
+    const data = ethereumAddressRegex.test(recipientAddress) ? methods.transferFrom(address, recipientAddress, currentNFT.tokenId).encodeABI() : undefined;
 
     return {
       from: address,
-      to: recipientAddress,
+      to: currentNFT.address,
       data,
     };
   }, [address, currentEthereumNetwork.rpcURL, currentNFT, recipientAddress]);

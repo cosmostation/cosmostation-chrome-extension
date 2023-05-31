@@ -27,14 +27,14 @@ export function useGetNFTMetaSWR({ network, contractAddress, tokenId }: UseNFT72
 
   const paramURL = useMemo(() => {
     if (currentNFTStandard === ETHEREUM_TOKEN_TYPE.ERC721) {
-      if (nft721MetaURI?.includes('ipfs::')) {
+      if (nft721MetaURI?.includes('ipfs:')) {
         return convertIpfs(nft721MetaURI);
       }
       return nft721MetaURI;
     }
 
     if (currentNFTStandard === ETHEREUM_TOKEN_TYPE.ERC1155) {
-      if (nft1155MetaURI?.includes('ipfs::')) {
+      if (nft1155MetaURI?.includes('ipfs:')) {
         return convertIpfs(nft1155MetaURI);
       }
       if (nft1155MetaURI?.includes('api.opensea.io')) {
@@ -60,6 +60,7 @@ export function useGetNFTMetaSWR({ network, contractAddress, tokenId }: UseNFT72
   const returnData = data
     ? {
         ...data,
+        image: convertIpfs(data.image),
         metaURI: paramURL,
       }
     : undefined;

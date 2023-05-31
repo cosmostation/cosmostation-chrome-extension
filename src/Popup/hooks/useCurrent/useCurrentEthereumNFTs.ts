@@ -23,6 +23,7 @@ export function useCurrentEthereumNFTs() {
           !(
             isEqualsIgnoringCase(item.tokenId, nft.tokenId) &&
             isEqualsIgnoringCase(item.address, nft.address) &&
+            isEqualsIgnoringCase(item.ownerAddress, nft.ownerAddress) &&
             item.ethereumNetworkId === currentEthereumNetwork.id
           ),
       ),
@@ -34,7 +35,13 @@ export function useCurrentEthereumNFTs() {
 
   const addEthereumNFTs = async (nfts: AddEthereumNFTParams[]) => {
     const filteredNFTs = nfts.filter(
-      (nft, idx, self) => self.findIndex((item) => isEqualsIgnoringCase(item.tokenId, nft.tokenId) && isEqualsIgnoringCase(item.address, nft.address)) === idx,
+      (nft, idx, self) =>
+        self.findIndex(
+          (item) =>
+            isEqualsIgnoringCase(item.tokenId, nft.tokenId) &&
+            isEqualsIgnoringCase(item.address, nft.address) &&
+            isEqualsIgnoringCase(item.ownerAddress, nft.ownerAddress),
+        ) === idx,
     );
 
     const newNFTs = filteredNFTs.map((nft) => ({ ...nft, id: uuidv4(), ethereumNetworkId: currentEthereumNetwork.id }));
@@ -43,8 +50,12 @@ export function useCurrentEthereumNFTs() {
       ...ethereumNFTs.filter(
         (item) =>
           !(
-            filteredNFTs.find((nft) => isEqualsIgnoringCase(item.tokenId, nft.tokenId) && isEqualsIgnoringCase(item.address, nft.address)) &&
-            item.ethereumNetworkId === currentEthereumNetwork.id
+            filteredNFTs.find(
+              (nft) =>
+                isEqualsIgnoringCase(item.tokenId, nft.tokenId) &&
+                isEqualsIgnoringCase(item.address, nft.address) &&
+                isEqualsIgnoringCase(item.ownerAddress, nft.ownerAddress),
+            ) && item.ethereumNetworkId === currentEthereumNetwork.id
           ),
       ),
       ...newNFTs,

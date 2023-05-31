@@ -5,6 +5,7 @@ export type EthereumERC721Token = {
   tokenId: string;
   ethereumNetworkId: string;
   tokenType: typeof ETHEREUM_TOKEN_TYPE.ERC721;
+  ownerAddress: string;
   address: string;
   name?: string;
   description?: string;
@@ -23,6 +24,7 @@ export type EthereumERC1155Token = {
   tokenId: string;
   ethereumNetworkId: string;
   tokenType: typeof ETHEREUM_TOKEN_TYPE.ERC1155;
+  ownerAddress: string;
   address: string;
   name?: string;
   description?: string;
