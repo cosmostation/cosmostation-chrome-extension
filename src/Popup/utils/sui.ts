@@ -33,6 +33,14 @@ export function getCoinType(type?: string) {
   return '';
 }
 
+export function getNFTType(type?: string) {
+  if (!type || !type?.split('::')[2]) {
+    return '';
+  }
+
+  return type?.split('::')[2];
+}
+
 export function isKiosk(data: SuiObjectData) {
   return !!data.type && data.type.includes('kiosk') && !!data.content && 'fields' in data.content && 'kiosk' in data.content.fields;
 }
