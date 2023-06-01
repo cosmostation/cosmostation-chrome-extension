@@ -1868,10 +1868,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
         ?.filter((permission) => permission.accountId === currentAccount.id && permission.origin === origin)
         .map((permission) => permission.permission) || [];
 
-    if (currentAccount.type === 'LEDGER') {
-      throw new SuiRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
-    }
-
     try {
       if (!message?.method || !suiMethods.includes(message.method)) {
         throw new SuiRPCError(RPC_ERROR.UNSUPPORTED_METHOD, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNSUPPORTED_METHOD], message?.id);

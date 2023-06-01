@@ -2,13 +2,16 @@ import { useMemo } from 'react';
 import { useSnackbar } from 'notistack';
 import EthereumApp from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
+import Sui from '@mysten/ledgerjs-hw-app-sui';
 
 import { COSMOS_CHAINS } from '~/constants/chain';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import { COSMOS_POPUP_METHOD_TYPE } from '~/constants/message/cosmos';
 import { ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
+import { SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
 import Divider from '~/Popup/components/common/Divider';
@@ -46,6 +49,7 @@ import Step2CosmosIcon from './assets/Step2Cosmos.svg';
 import Step2CryptoOrg from './assets/Step2CryptoOrg.svg';
 import Step2EthereumIcon from './assets/Step2Ethereum.svg';
 import Step2Medibloc from './assets/Step2Medibloc.svg';
+import Step2Sui from './assets/Step2Sui.svg';
 import BottomArrow28Icon from '~/images/icons/BottomArrow28.svg';
 
 type AccessRequestProps = {
@@ -68,6 +72,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
   const { accounts } = chromeStorage;
 
   const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
+  const suiPopupMethods = Object.values(SUI_POPUP_METHOD_TYPE) as string[];
 
   const chain = useMemo(() => {
     if (isCosmos(currentQueue) && !!currentQueue?.message?.params?.chainName) {
@@ -78,8 +83,12 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
       return ETHEREUM;
     }
 
+    if (suiPopupMethods.includes(currentQueue?.message?.method || '')) {
+      return SUI;
+    }
+
     return undefined;
-  }, [currentCosmosAdditionalChains, currentQueue, ethereumPopupMethods]);
+  }, [currentCosmosAdditionalChains, currentQueue, ethereumPopupMethods, suiPopupMethods]);
 
   if (currentAccount.type === 'LEDGER' && chain && currentQueue) {
     if (
@@ -93,13 +102,15 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
       (!currentAccount.cosmosPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS && chain.line === 'COSMOS') ||
       (!currentAccount.mediblocPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC && chain.line === 'COSMOS') ||
       (!currentAccount.cryptoOrgPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG && chain.line === 'COSMOS') ||
-      (!currentAccount.ethereumPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM && chain.line === 'ETHEREUM')
+      (!currentAccount.ethereumPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM && chain.line === 'ETHEREUM') ||
+      (!currentAccount.suiPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI && chain.line === 'SUI')
     ) {
       const Step2 = (() => {
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) return Step2CosmosIcon;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) return Step2EthereumIcon;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) return Step2Medibloc;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG) return Step2CryptoOrg;
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI) return Step2Sui;
         return null;
       })();
 
@@ -108,6 +119,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) return 'Ethereum';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) return 'Medibloc';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG) return 'Crypto.org Chain';
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI) return 'Sui';
         return null;
       })();
 
@@ -175,11 +187,12 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                 onClick={async () => {
                   try {
                     setLoadingOverlay(true);
-                    const transport = await createTransport();
 
                     const accountIndex = accounts.findIndex((account) => account.id === currentAccount.id);
 
                     const newAccounts = [...accounts];
+
+                    const transport = await createTransport();
 
                     if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
                       const cosmosApp = new CosmosApp(transport);
@@ -234,6 +247,20 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                       if (accountIndex > -1) {
                         newAccounts.splice(accountIndex, 1, { ...currentAccount, ethereumPublicKey: publicKey });
 
+                        await setChromeStorage('accounts', newAccounts);
+                      }
+                    }
+
+                    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI) {
+                      const suiApp = new Sui(transport);
+
+                      const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
+
+                      const result = await suiApp.getPublicKey(path);
+
+                      const publicKey = Buffer.from(result.publicKey).toString('hex');
+                      if (accountIndex > -1) {
+                        newAccounts.splice(accountIndex, 1, { ...currentAccount, suiPublicKey: publicKey });
                         await setChromeStorage('accounts', newAccounts);
                       }
                     }

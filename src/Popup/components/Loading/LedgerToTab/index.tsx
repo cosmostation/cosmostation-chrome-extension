@@ -47,7 +47,11 @@ export default function LedgerToTab() {
             type="button"
             typoVarient="h5"
             onClick={async () => {
-              await openTab();
+              const tab = await openTab();
+
+              if (chromeWindow?.type === 'popup' && tab?.windowId) {
+                void chrome.windows.update(tab?.windowId, { focused: true });
+              }
             }}
           >
             {t('components.Loading.LedgerToTab.index.continue')}
