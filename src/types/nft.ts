@@ -17,6 +17,14 @@ export type EthereumERC721Token = {
     trait_type: string;
     value: string | number;
   }[];
+  traits?: {
+    display_type?: string;
+    max_value?: number;
+    order?: null;
+    trait_count: number;
+    trait_type: string;
+    value: string | number;
+  }[];
 };
 
 export type EthereumERC1155Token = {
@@ -33,6 +41,14 @@ export type EthereumERC1155Token = {
   rarity?: string;
   externalLink?: string;
   attributes?: {
+    trait_type: string;
+    value: string | number;
+  }[];
+  traits?: {
+    display_type?: string;
+    max_value?: number;
+    order?: null;
+    trait_count: number;
     trait_type: string;
     value: string | number;
   }[];

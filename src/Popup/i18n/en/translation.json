@@ -840,6 +840,17 @@
                     "toToken": "To"
                   }
                 },
+                "NFT": {
+                  "ERC721": {
+                    "TransferFrom": {
+                      "index": {
+                        "fromAddress": "From address",
+                        "toAddress": "To address",
+                        "contractAddress": "Contract address"
+                      }
+                    }
+                  }
+                },
                 "Send": {
                   "index": {
                     "amount": "Amount",

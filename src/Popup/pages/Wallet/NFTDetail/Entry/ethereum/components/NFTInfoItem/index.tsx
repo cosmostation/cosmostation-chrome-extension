@@ -30,14 +30,15 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { description, tokenType, address, externalLink, attributes, tokenId, ownerAddress } = nftMeta;
+  const { description, tokenType, address, externalLink, attributes, traits, tokenId, ownerAddress } = nftMeta;
 
   const shorterOwnerAddress = useMemo(() => shorterAddress(ownerAddress, 14), [ownerAddress]);
   const shorterContractAddress = useMemo(() => shorterAddress(address, 14), [address]);
+  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 14), [tokenId]);
 
-  const shorterProjectUrl = useMemo(() => shorterAddress(externalLink, 20), [externalLink]);
+  const shorterExternalUrl = useMemo(() => shorterAddress(externalLink, 20), [externalLink]);
 
-  const tokenStandard = useMemo(() => tokenType.replace('ERC', 'ERC-'), [tokenType]);
+  const displayTokenStandard = useMemo(() => tokenType.replace('ERC', 'ERC-'), [tokenType]);
 
   const handleOnClickCopy = (copyString?: string) => {
     if (copyString && copy(copyString)) {
@@ -45,6 +46,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
     }
   };
 
+  // NOTE 복사 버튼 정렬 맞추기
   return (
     <>
       {shorterOwnerAddress && (
@@ -86,7 +88,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
         </ItemTitleContainer>
         <ItemRightContainer>
           <Tooltip title={tokenId || ''} placement="top" arrow>
-            <Typography variant="h5">{tokenId}</Typography>
+            <Typography variant="h5">{shorterTokenId}</Typography>
           </Tooltip>
 
           <StyledIconButton onClick={() => handleOnClickCopy(tokenId)}>
@@ -100,7 +102,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
           <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.tokenType')}</Typography>
         </ItemTitleContainer>
         <ItemRightContainer>
-          <Typography variant="h5">{tokenStandard}</Typography>
+          <Typography variant="h5">{displayTokenStandard}</Typography>
         </ItemRightContainer>
       </ItemContainer>
 
@@ -111,7 +113,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
           </ItemTitleContainer>
           <ItemRightContainer>
             <URLButton type="button" onClick={() => window.open(externalLink)}>
-              <Typography variant="h5">{shorterProjectUrl}</Typography>
+              <Typography variant="h5">{shorterExternalUrl}</Typography>
             </URLButton>
           </ItemRightContainer>
         </ItemContainer>
@@ -126,12 +128,22 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
         </ItemColumnContainer>
       )}
 
-      {attributes && (
+      {(attributes || traits) && (
         <AttributeContainer>
           <AttributeHeaderContainer>
             <Typography variant="h4">{t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.attributes')}</Typography>
           </AttributeHeaderContainer>
-          {attributes.map((item) => (
+          {attributes?.map((item) => (
+            <ItemContainer key={item.trait_type}>
+              <ItemTitleContainer>
+                <Typography variant="h5">{item.trait_type || ''}</Typography>
+              </ItemTitleContainer>
+              <ItemRightContainer>
+                <Typography variant="h5">{item.value || ''}</Typography>
+              </ItemRightContainer>
+            </ItemContainer>
+          ))}
+          {traits?.map((item) => (
             <ItemContainer key={item.trait_type}>
               <ItemTitleContainer>
                 <Typography variant="h5">{item.trait_type || ''}</Typography>

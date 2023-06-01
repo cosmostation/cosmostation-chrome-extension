@@ -4,23 +4,19 @@ import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
 
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { TOKEN_TYPE } from '~/constants/ethereum';
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useNFT721OwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC721/useNFT721OwnerSWR';
-import { useNFT1155BalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/ERC1155/useNFT1155BalanceSWR';
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
+import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTOwnerSWR';
 import { useGetNFTStandardSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTStandardSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { equal } from '~/Popup/utils/big';
 import { ethereumAddressRegex } from '~/Popup/utils/regex';
-import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 
 import {
   ButtonContainer,
@@ -62,29 +58,27 @@ export default function Entry() {
 
   const { data: currentNFTStandard } = useGetNFTStandardSWR({ contractAddress: debouncedContractAddress });
 
-  const { data: nft721OwnerAddress } = useNFT721OwnerSWR({ contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
-  const { data: nft1155Balance } = useNFT1155BalanceSWR({ contractAddress: debouncedContractAddress, ownerAddress: currentAddress, tokenId: debouncedTokenId });
+  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: debouncedContractAddress, ownerAddress: currentAddress, tokenId: debouncedTokenId });
 
   // NOTE 로딩 컴포넌트 구현 필요
   const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
 
   const errorType = useMemo(() => {
-    if (debouncedContractAddress && !ethereumAddressRegex.test(debouncedContractAddress)) {
-      return 'invalidAddress';
-    }
-    if (!nftMeta) {
-      return 'noNFTData';
-    }
+    if (debouncedContractAddress && debouncedTokenId) {
+      if (!ethereumAddressRegex.test(debouncedContractAddress)) {
+        return 'invalidAddress';
+      }
+      if (!nftMeta) {
+        return 'noNFTData';
+      }
 
-    if (debouncedTokenId && currentNFTStandard === TOKEN_TYPE.ERC721 && nft721OwnerAddress && !isEqualsIgnoringCase(currentAddress, nft721OwnerAddress)) {
-      return 'misMatch';
-    }
-    if (debouncedTokenId && currentNFTStandard === TOKEN_TYPE.ERC1155 && equal('0', nft1155Balance || '0')) {
-      return 'misMatch';
+      if (!isOwnedNFT) {
+        return 'misMatch';
+      }
     }
 
     return '';
-  }, [debouncedContractAddress, debouncedTokenId, currentNFTStandard, nft721OwnerAddress, currentAddress, nft1155Balance, nftMeta]);
+  }, [debouncedContractAddress, debouncedTokenId, nftMeta, isOwnedNFT]);
 
   const nftPreviewIcon = useMemo(() => {
     if (errorType && debouncedContractAddress && debouncedTokenId) {
@@ -136,7 +130,8 @@ export default function Entry() {
           imageURL: nftMeta.image,
           metaURI: nftMeta.metaURI,
           attributes: nftMeta.attributes?.filter((item) => item.trait_type && item.value),
-          externalLink: nftMeta.external_url,
+          externalLink: nftMeta.external_link,
+          traits: nftMeta.traits,
         };
 
         await addEthereumNFT({

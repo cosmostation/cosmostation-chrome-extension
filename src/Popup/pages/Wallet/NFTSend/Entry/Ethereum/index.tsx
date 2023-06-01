@@ -130,6 +130,7 @@ export default function Ethereum({ chain }: EthereumProps) {
     const contract = new web3.eth.Contract(ERC721_ABI as AbiItem[], currentNFT.address);
     const methods = contract.methods as ERC721ContractMethods;
 
+    // NOTE ethers.js로 encodeAbi대응되는 메서드가 있는 지 확인
     const data = ethereumAddressRegex.test(recipientAddress) ? methods.transferFrom(address, recipientAddress, currentNFT.tokenId).encodeABI() : undefined;
 
     return {

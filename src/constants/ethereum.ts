@@ -18,6 +18,8 @@ export const ETHEREUM_TX_TYPE = {
 
 export const ETHEREUM_CONTRACT_KIND = {
   ERC20: 'erc20',
+  ERC721: 'erc721',
+  ERC1155: 'erc1155',
   ONEINCH: 'oneInch',
 } as const;
 

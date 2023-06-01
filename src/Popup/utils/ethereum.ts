@@ -1,19 +1,20 @@
 import { Address, ecsign, hashPersonalMessage, isHexString, stripHexPrefix, toBuffer, toChecksumAddress, toRpcSig } from 'ethereumjs-util';
+import { ethers, FetchRequest } from 'ethers';
 import * as TinySecp256k1 from 'tiny-secp256k1';
-import Web3 from 'web3';
 import type { TransactionDescription } from '@ethersproject/abi';
 import { Interface } from '@ethersproject/abi';
 import type { MessageTypes, SignTypedDataVersion, TypedMessage } from '@metamask/eth-sig-util';
 import { signTypedData as baseSignTypedData } from '@metamask/eth-sig-util';
 
 import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
-import { ERC20_ABI, ERC721_ABI, ONE_INCH_ABI } from '~/constants/abi';
+import { ERC20_ABI, ERC721_ABI, ERC1155_ABI, ONE_INCH_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
-import { ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE } from '~/constants/ethereum';
+import { ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE, TOKEN_TYPE } from '~/constants/ethereum';
 import { chromeStorage } from '~/Popup/utils/chromeStorage';
 import { EthereumRPCError } from '~/Popup/utils/error';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumContractKind, EthereumTxType } from '~/types/ethereum/common';
+import type { ERC721CheckPayload, ERC1155CheckPayload } from '~/types/ethereum/contract';
 import type { CustomTypedMessage, EthereumTx } from '~/types/message/ethereum';
 
 export function toUTF8(hex: string) {
@@ -137,7 +138,36 @@ export type DetermineTxType = {
   getCodeResponse: string | null;
 };
 
-export async function determineTxType(txParams: EthereumTx): Promise<DetermineTxType> {
+export async function determineNFTType(rpcURL?: string, contractAddress?: string) {
+  if (!rpcURL || !contractAddress) {
+    return null;
+  }
+
+  const customFetchRequest = new FetchRequest(rpcURL);
+
+  customFetchRequest.setHeader('Cosmostation', `extension/${String(process.env.VERSION)}`);
+
+  const provider = new ethers.JsonRpcProvider(customFetchRequest);
+
+  const erc721Contract = new ethers.Contract(contractAddress, ERC721_ABI, provider);
+  const erc1155Contract = new ethers.Contract(contractAddress, ERC1155_ABI, provider);
+
+  const erc721ContractCall = erc721Contract.supportsInterface('0x80ac58cd') as Promise<ERC721CheckPayload>;
+  const erc721Response = await erc721ContractCall;
+
+  const erc1155ContractCall = erc1155Contract.supportsInterface('0xd9b67a26') as Promise<ERC1155CheckPayload>;
+  const erc1155Response = await erc1155ContractCall;
+
+  if (erc721Response && !erc1155Response) {
+    return TOKEN_TYPE.ERC721;
+  }
+  if (!erc721Response && erc1155Response) {
+    return TOKEN_TYPE.ERC1155;
+  }
+  return null;
+}
+
+export async function determineTxType(txParams: EthereumTx, rpcURL?: string): Promise<DetermineTxType> {
   const { data, to } = txParams;
 
   let txDescription;
@@ -165,6 +195,24 @@ export async function determineTxType(txParams: EthereumTx): Promise<DetermineTx
         result = ETHEREUM_TX_TYPE.UNOSWAP;
       }
     }
+    return { type: result, getCodeResponse: contractCode, txDescription, contractKind };
+  }
+
+  const tokenStandard = await determineNFTType(rpcURL, to);
+
+  if (tokenStandard === 'ERC721') {
+    txDescription = erc721Parse(txParams);
+    const name = txDescription?.name;
+
+    const tokenMethodName = [ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM].find(
+      (methodName) => isEqualsIgnoringCase(methodName, name),
+    );
+
+    if (data && tokenMethodName) {
+      result = tokenMethodName;
+      contractKind = ETHEREUM_CONTRACT_KIND.ERC721;
+    }
+
     return { type: result, getCodeResponse: contractCode, txDescription, contractKind };
   }
 
@@ -214,15 +262,4 @@ export function signTypedData<T extends MessageTypes>(
 ) {
   const dataToSign = (data.domain.salt ? { ...data, domain: { ...data.domain, salt: Buffer.from(toHex(data.domain.salt), 'hex') } } : data) as TypedMessage<T>;
   return baseSignTypedData({ privateKey, data: dataToSign, version });
-}
-
-export function getTokenType(tokenContractAddress: string): 'ERC721' | 'ERC1155' {
-  // ERC721 토큰의 경우, balanceOf와 tokenURI 함수가 반드시 존재함
-  const web3 = new Web3();
-
-  const isERC721 =
-    web3.eth.abi.encodeFunctionSignature(`balanceOf(${tokenContractAddress})`) === '0x70a08231' &&
-    web3.eth.abi.encodeFunctionSignature('tokenURI(uint256)') === '0x0e89341c';
-
-  return isERC721 ? 'ERC721' : 'ERC1155';
 }
