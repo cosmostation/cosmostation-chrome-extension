@@ -5,7 +5,7 @@ import { CURRENCY_DECIMALS } from '~/constants/currency';
 import Number from '~/Popup/components/common/Number';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase, shorterAddress } from '~/Popup/utils/string';

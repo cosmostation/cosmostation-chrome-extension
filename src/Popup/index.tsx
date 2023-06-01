@@ -14,7 +14,7 @@ import { THEME_TYPE } from '~/constants/theme';
 import LoadingLedgerSigning from '~/Popup/components/Loading/LedgerSigning';
 import LoadingOverlay from '~/Popup/components/Loading/Overlay';
 import Wrapper from '~/Popup/components/Wrapper';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import Routes from '~/Popup/Routes';
 import { darkEnTheme, darkKoTheme, lightEnTheme, lightKoTheme } from '~/Popup/styles/theme';
 

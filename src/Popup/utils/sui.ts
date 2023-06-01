@@ -2,7 +2,7 @@ import type { SuiObjectData, SuiObjectResponse } from '@mysten/sui.js';
 import { Ed25519PublicKey, getObjectDisplay, getObjectOwner } from '@mysten/sui.js';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
-import { chromeStorage } from '~/Popup/utils/chromeStorage';
+import { chromeStorage } from '~/Popup/utils/extensionStorage';
 import type { SuiNFTMeta } from '~/types/nft/nftMeta';
 import type { GetObject, GetObjectExists, Result } from '~/types/sui/rpc';
 

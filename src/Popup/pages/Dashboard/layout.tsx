@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 
 import BaseLayout from '~/Popup/components/BaseLayout';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { disposableLoadingState } from '~/Popup/recoils/loading';
 

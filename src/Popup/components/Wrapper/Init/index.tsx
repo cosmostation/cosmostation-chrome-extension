@@ -13,8 +13,8 @@ import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { chromeSessionStorageDefault, chromeSessionStorageState } from '~/Popup/recoils/chromeSessionStorage';
 import { chromeStorageDefault, chromeStorageState } from '~/Popup/recoils/chromeStorage';
-import { getAllSessionStorage } from '~/Popup/utils/chromeSessionStorage';
-import { getAllStorage, setStorage } from '~/Popup/utils/chromeStorage';
+import { getAllSessionStorage } from '~/Popup/utils/extensionSessionStorage';
+import { getAllStorage, setStorage } from '~/Popup/utils/extensionStorage';
 import type { Chain, CosmosChain } from '~/types/chain';
 import type { LanguageType, Providers } from '~/types/chromeStorage';
 

@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, equal, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { FeeCoin, GasRate, GasRateKey } from '~/types/chain';

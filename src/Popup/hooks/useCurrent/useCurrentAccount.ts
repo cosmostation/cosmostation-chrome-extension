@@ -5,9 +5,9 @@ import { CHAINS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import { openTab } from '~/Popup/utils/chromeTabs';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { openTab } from '~/Popup/utils/extensionTabs';
 import { emitToWeb } from '~/Popup/utils/message';
 import type { Account, AccountWithName, SuiPermissionType } from '~/types/chromeStorage';
 

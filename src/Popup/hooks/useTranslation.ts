@@ -1,6 +1,6 @@
 import { useTranslation as useBaseTranslation } from 'react-i18next';
 
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { LanguageType } from '~/types/chromeStorage';
 
 export function useTranslation() {

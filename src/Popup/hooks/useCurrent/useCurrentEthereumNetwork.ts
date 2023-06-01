@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { emitToWeb } from '~/Popup/utils/message';
 import type { EthereumNetwork } from '~/types/chain';
 

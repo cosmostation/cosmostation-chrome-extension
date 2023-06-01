@@ -8,7 +8,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { getCoinAddress } from '~/Popup/utils/aptos';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { X1CoinCoinstore } from '~/types/aptos/accounts';

@@ -2,7 +2,9 @@ import { styled } from '@mui/material/styles';
 
 export const Body = styled('div')(({ theme }) => ({
   width: '100%',
+  minWidth: '36rem',
   height: '100vh',
+  minHeight: '60rem',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',

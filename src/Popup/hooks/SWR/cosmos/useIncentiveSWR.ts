@@ -4,7 +4,7 @@ import { reduceBy } from 'ramda';
 import useSWR from 'swr';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { get } from '~/Popup/utils/axios';
 import { plus } from '~/Popup/utils/big';
 import { cosmosURL } from '~/Popup/utils/cosmos';

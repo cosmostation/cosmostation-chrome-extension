@@ -4,7 +4,7 @@ import useSWR from 'swr';
 
 import { NEUTRON } from '~/constants/chain/cosmos/neutron';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { get, isAxiosError } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';

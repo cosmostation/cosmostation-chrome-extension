@@ -6,10 +6,10 @@ import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
-import { setSessionStorage } from '~/Popup/utils/chromeSessionStorage';
-import { getStorage, setStorage } from '~/Popup/utils/chromeStorage';
-import { openTab } from '~/Popup/utils/chromeTabs';
-import { closeWindow } from '~/Popup/utils/chromeWindows';
+import { setSessionStorage } from '~/Popup/utils/extensionSessionStorage';
+import { getStorage, setStorage } from '~/Popup/utils/extensionStorage';
+import { openTab } from '~/Popup/utils/extensionTabs';
+import { closeWindow } from '~/Popup/utils/extensionWindows';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
@@ -19,10 +19,9 @@ import { cstob } from './messageProcessor';
 
 function background() {
   chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, _, sendResponse) => {
-    sendResponse();
-
     if (request?.type === MESSAGE_TYPE.REQUEST__CONTENT_SCRIPT_TO_BACKGROUND) {
       void cstob(request);
+      sendResponse();
     }
   });
 

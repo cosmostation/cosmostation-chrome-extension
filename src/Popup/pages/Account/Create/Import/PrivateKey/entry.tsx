@@ -5,9 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { joiResolver } from '@hookform/resolvers/joi';
 
 import Button from '~/Popup/components/common/Button';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { disposableLoadingState } from '~/Popup/recoils/loading';

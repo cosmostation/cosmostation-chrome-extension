@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { EthereumToken } from '~/types/chain';
 
 import { useCurrentEthereumNetwork } from './useCurrentEthereumNetwork';

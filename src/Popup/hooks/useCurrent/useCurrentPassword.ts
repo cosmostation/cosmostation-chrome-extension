@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { useChromeSessionStorage } from '~/Popup/hooks/useChromeSessionStorage';
+import { useChromeSessionStorage } from '~/Popup/hooks/useExtensionSessionStorage';
 import { aesDecrypt, aesEncrypt } from '~/Popup/utils/crypto';
 
 export function useCurrentPassword() {

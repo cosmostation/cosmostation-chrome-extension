@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { CosmosToken } from '~/types/chain';
 
 import { useCurrentChain } from './useCurrentChain';

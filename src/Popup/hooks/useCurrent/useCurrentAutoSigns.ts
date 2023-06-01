@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { AutoSign } from '~/types/chromeStorage';
 
 import { useInterval } from '../useInterval';

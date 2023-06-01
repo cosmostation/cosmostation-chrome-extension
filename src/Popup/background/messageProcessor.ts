@@ -29,12 +29,12 @@ import { COMMON_METHOD_TYPE, COMMON_NO_POPUP_METHOD_TYPE } from '~/constants/mes
 import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/message/cosmos';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
 import { SUI_METHOD_TYPE, SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
-import { chromeSessionStorage } from '~/Popup/utils/chromeSessionStorage';
-import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/chromeStorage';
-import { openWindow } from '~/Popup/utils/chromeWindows';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { AptosRPCError, CommonRPCError, CosmosRPCError, EthereumRPCError, SuiRPCError } from '~/Popup/utils/error';
 import { requestRPC as ethereumRequestRPC, signTypedData } from '~/Popup/utils/ethereum';
+import { chromeSessionStorage } from '~/Popup/utils/extensionSessionStorage';
+import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/extensionStorage';
+import { openWindow } from '~/Popup/utils/extensionWindows';
 import { responseToWeb } from '~/Popup/utils/message';
 import { toHex } from '~/Popup/utils/string';
 import { requestRPC as suiRequestRPC } from '~/Popup/utils/sui';

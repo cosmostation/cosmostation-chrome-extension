@@ -10,7 +10,7 @@ import type { SimplePrice } from '~/types/coinGecko';
 
 import { useAssetsSWR as useAptosAssetsSWR } from './aptos/useAssetsSWR';
 import { useAssetsSWR as useCosmosAssetsSWR } from './cosmos/useAssetsSWR';
-import { useChromeStorage } from '../useChromeStorage';
+import { useChromeStorage } from '../useExtensionStorage';
 
 export function useCoinGeckoPriceSWR(suspense?: boolean) {
   const { currentAllowedChains } = useCurrentAllowedChains();

@@ -4,7 +4,7 @@ import useSWR from 'swr';
 
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { get, isAxiosError } from '~/Popup/utils/axios';
 import type { ResourcesPayload } from '~/types/aptos/accounts';
 import type { AptosNetwork } from '~/types/chain';

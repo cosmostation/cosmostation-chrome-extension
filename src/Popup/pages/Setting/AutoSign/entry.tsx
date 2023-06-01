@@ -4,10 +4,10 @@ import { Typography } from '@mui/material';
 import { COSMOS_CHAINS } from '~/constants/chain';
 import Image from '~/Popup/components/common/Image';
 import SettingAccordion from '~/Popup/components/SettingAccordion';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentAutoSigns } from '~/Popup/hooks/useCurrent/useCurrentAutoSigns';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { getSiteIconURL } from '~/Popup/utils/common';
 import { timeToString } from '~/Popup/utils/string';
 

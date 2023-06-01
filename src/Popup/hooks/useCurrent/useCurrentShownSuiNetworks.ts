@@ -1,5 +1,5 @@
 import { SUI_NETWORKS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { SuiNetwork } from '~/types/chain';
 
 export function useCurrentShownSuiNetworks() {

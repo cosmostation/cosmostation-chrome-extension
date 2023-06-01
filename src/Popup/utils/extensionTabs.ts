@@ -1,6 +1,6 @@
 import { debounce } from 'lodash';
 
-import { getCurrentWindow } from './chromeWindows';
+import { getCurrentWindow } from './extensionWindows';
 
 export async function openTab(path?: string): Promise<chrome.tabs.Tab> {
   const currentTab = await getCurrent();

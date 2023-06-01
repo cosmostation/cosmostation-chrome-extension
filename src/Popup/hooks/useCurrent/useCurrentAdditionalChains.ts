@@ -1,4 +1,4 @@
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { Chain, CosmosChain, EthereumChain } from '~/types/chain';
 
 export function useCurrentAdditionalChains() {

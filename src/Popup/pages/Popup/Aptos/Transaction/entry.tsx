@@ -18,11 +18,11 @@ import { useEstimateGasPriceSWR } from '~/Popup/hooks/SWR/aptos/useEstimateGasPr
 import { useGenerateTransactionSWR } from '~/Popup/hooks/SWR/aptos/useGenerateTransactionSWR';
 import { useSimulateTransactionSWR } from '~/Popup/hooks/SWR/aptos/useSimulateTransactionSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Aptos/components/Header';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';

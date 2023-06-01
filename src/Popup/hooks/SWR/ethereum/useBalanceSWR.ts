@@ -4,8 +4,8 @@ import useSWR from 'swr';
 
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { post } from '~/Popup/utils/axios';
 import type { EthereumNetwork } from '~/types/chain';
 import type { BalancePayload } from '~/types/ethereum/rpc';

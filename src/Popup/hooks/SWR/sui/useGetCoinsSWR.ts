@@ -7,8 +7,8 @@ import { isAxiosError, post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
 import type { GetCoinsResponse } from '~/types/sui/rpc';
 
-import { useChromeStorage } from '../../useChromeStorage';
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
+import { useChromeStorage } from '../../useExtensionStorage';
 import { useAccounts } from '../cache/useAccounts';
 
 type FetchParams = {

@@ -3,7 +3,7 @@ import type Transport from '@ledgerhq/hw-transport';
 
 import { createTransport } from '~/Popup/utils/ledger';
 
-import { useChromeStorage } from './useChromeStorage';
+import { useChromeStorage } from './useExtensionStorage';
 
 export function useLedgerTransport() {
   const transport = useRef<Transport | undefined>(undefined);

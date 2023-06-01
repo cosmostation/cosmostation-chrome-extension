@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 
 import NumberText from '~/Popup/components/common/Number';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { fix, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 
 import { Container, LeftTextContainer, RightTextContainer, TextContainer } from './styled';

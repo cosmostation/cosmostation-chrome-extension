@@ -1,8 +1,8 @@
 import useSWR from 'swr';
 
 import { CHAINS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import type { AccountType } from '~/types/chromeStorage';
 

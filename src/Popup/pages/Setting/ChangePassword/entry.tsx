@@ -6,8 +6,8 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import Button from '~/Popup/components/common/Button';
 import Divider from '~/Popup/components/common/Divider';
 import Input from '~/Popup/components/common/Input';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { aesDecrypt, aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 

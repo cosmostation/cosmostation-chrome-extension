@@ -5,9 +5,9 @@ import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { PATH } from '~/constants/route';
 import IconButton from '~/Popup/components/common/IconButton';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import type { Path } from '~/types/route';
 

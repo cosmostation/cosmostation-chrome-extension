@@ -4,8 +4,8 @@ import useSWR from 'swr';
 
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { SubmitTransactionRequest } from '~/types/aptos/aptosClient';
 import type { AptosSignPayload } from '~/types/message/aptos';
 

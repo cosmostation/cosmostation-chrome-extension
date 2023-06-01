@@ -1,6 +1,6 @@
 import { TRANSPORT_TYPE } from '~/constants/ledger';
 import SelectButton from '~/Popup/components/SelectButton';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 
 import { Container, ListContainer } from './styled';
 

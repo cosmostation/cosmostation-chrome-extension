@@ -1,7 +1,7 @@
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { closeTab } from '~/Popup/utils/chromeTabs';
-import { closeWindow } from '~/Popup/utils/chromeWindows';
+import { closeTab } from '~/Popup/utils/extensionTabs';
+import { closeWindow } from '~/Popup/utils/extensionWindows';
 import type { Queue } from '~/types/chromeStorage';
 import type { Path } from '~/types/route';
 

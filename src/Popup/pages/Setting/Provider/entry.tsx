@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import aptosImg from '~/images/etc/aptos.png';
 import keplrImg from '~/images/etc/keplr.png';
 import metamaskImg from '~/images/etc/metamask.png';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import Item from './components/Item';

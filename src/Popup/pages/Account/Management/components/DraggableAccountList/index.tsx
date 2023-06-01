@@ -6,7 +6,7 @@ import { useSnackbar } from 'notistack';
 import { DND_ITEM_TYPE } from '~/constants/dnd';
 import IconTextButton from '~/Popup/components/common/IconTextButton';
 import SubSideHeader from '~/Popup/components/SubSideHeader';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Account, AccountName } from '~/types/chromeStorage';

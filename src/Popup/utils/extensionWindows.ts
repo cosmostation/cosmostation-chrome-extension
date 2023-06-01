@@ -1,4 +1,4 @@
-import { getStorage, setStorage } from './chromeStorage';
+import { getStorage, setStorage } from './extensionStorage';
 
 export async function openWindow(): Promise<chrome.windows.Window | undefined> {
   const url = chrome.runtime.getURL('popup.html');

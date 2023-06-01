@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import Password from '~/Popup/pages/Account/Initialize/components/Password';
 import { newMnemonicAccountState, newPrivateKeyAccountState } from '~/Popup/recoils/newAccount';

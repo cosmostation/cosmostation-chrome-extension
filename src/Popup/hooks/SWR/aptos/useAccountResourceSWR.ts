@@ -7,8 +7,8 @@ import { get, isAxiosError } from '~/Popup/utils/axios';
 import type { AccountType, ReturnType } from '~/types/aptos/accounts';
 import type { AptosNetwork } from '~/types/chain';
 
-import { useChromeStorage } from '../../useChromeStorage';
 import { useCurrentAptosNetwork } from '../../useCurrent/useCurrentAptosNetwork';
+import { useChromeStorage } from '../../useExtensionStorage';
 import { useAccounts } from '../cache/useAccounts';
 
 type FetchParams = {

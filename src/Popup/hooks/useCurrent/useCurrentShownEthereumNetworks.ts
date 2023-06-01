@@ -1,5 +1,5 @@
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { EthereumNetwork } from '~/types/chain';
 
 export function useCurrentShownEthereumNetworks() {

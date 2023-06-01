@@ -1,7 +1,7 @@
 import { Route, Routes as BaseRoutes } from 'react-router-dom';
 
 import { PATH } from '~/constants/route';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import AccountCreate from '~/Popup/pages/Account/Create';
 import AccountCreateImportMnemonic from '~/Popup/pages/Account/Create/Import/Mnemonic';
 import AccountCreateImportPrivateKey from '~/Popup/pages/Account/Create/Import/PrivateKey';

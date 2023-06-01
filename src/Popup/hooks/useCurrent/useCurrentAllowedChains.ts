@@ -1,5 +1,5 @@
 import { CHAINS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { Chain } from '~/types/chain';
 
 export function useCurrentAllowedChains() {

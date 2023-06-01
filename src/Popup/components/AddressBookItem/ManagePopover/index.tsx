@@ -1,7 +1,7 @@
 import { useSnackbar } from 'notistack';
 import type { PopoverProps } from '@mui/material';
 
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { AddressInfo } from '~/types/chromeStorage';
 
