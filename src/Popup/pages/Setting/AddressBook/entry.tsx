@@ -5,7 +5,7 @@ import AddButton from '~/Popup/components/AddButton';
 import AddressBookItem from '~/Popup/components/AddressBookItem';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Path } from '~/types/route';
@@ -24,11 +24,11 @@ import {
 import Plus16Icon from '~/images/icons/Plus16.svg';
 
 export default function Entry() {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentChain } = useCurrentChain();
   const { currentAdditionalChains } = useCurrentAdditionalChains();
 
-  const { addressBook } = chromeStorage;
+  const { addressBook } = extensionStorage;
 
   const [isCustom, setIsCustom] = useState(!!currentAdditionalChains.find((item) => item.id === currentChain.id));
 

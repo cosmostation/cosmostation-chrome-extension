@@ -1,10 +1,10 @@
 import { useRecoilValue } from 'recoil';
 
-import { chromeStorageState } from '~/Popup/recoils/chromeStorage';
+import { extensionStorageState } from '~/Popup/recoils/extensionStorage';
 import { setStorage } from '~/Popup/utils/extensionStorage';
 
-export function useChromeStorage() {
-  const chromeStorage = useRecoilValue(chromeStorageState);
+export function useExtensionStorage() {
+  const extensionStorage = useRecoilValue(extensionStorageState);
 
-  return { chromeStorage, setChromeStorage: setStorage };
+  return { extensionStorage, setExtensionStorage: setStorage };
 }

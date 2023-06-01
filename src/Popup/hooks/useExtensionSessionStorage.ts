@@ -1,6 +1,6 @@
 import { useRecoilValue } from 'recoil';
 
-import { chromeSessionStorageState } from '~/Popup/recoils/chromeSessionStorage';
+import { chromeSessionStorageState } from '~/Popup/recoils/extensionSessionStorage';
 import { setSessionStorage } from '~/Popup/utils/extensionSessionStorage';
 
 export function useChromeSessionStorage() {

@@ -14,7 +14,7 @@ import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllo
 import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useCurrentShownSuiNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownSuiNetworks';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { AptosNetwork, Chain, EthereumNetwork, SuiNetwork } from '~/types/chain';
 
@@ -40,7 +40,7 @@ export default function Entry() {
   const [debouncedOpenSearch] = useDebounce(search, 300);
   const [debouncedCloseSearch] = useDebounce(debouncedOpenSearch, 800);
 
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { addAllowedChainId, removeAllowedChainId } = useCurrentAllowedChains();
   const { addShownEthereumNetwork, removeShownEthereumNetwork } = useCurrentShownEthereumNetworks();
   const { addShownAptosNetwork, removeShownAptosNetwork } = useCurrentShownAptosNetworks();
@@ -66,7 +66,7 @@ export default function Entry() {
 
   const { t } = useTranslation();
 
-  const { allowedChainIds, shownEthereumNetworkIds, shownAptosNetworkIds, shownSuiNetworkIds } = chromeStorage;
+  const { allowedChainIds, shownEthereumNetworkIds, shownAptosNetworkIds, shownSuiNetworkIds } = extensionStorage;
 
   const filteredEthereumNetworks = useMemo(() => {
     if (debouncedOpenSearch) {

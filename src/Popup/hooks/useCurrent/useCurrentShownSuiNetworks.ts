@@ -1,11 +1,11 @@
 import { SUI_NETWORKS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { SuiNetwork } from '~/types/chain';
 
 export function useCurrentShownSuiNetworks() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
-  const { shownSuiNetworkIds } = chromeStorage;
+  const { shownSuiNetworkIds } = extensionStorage;
 
   const currentShownSuiNetwork = SUI_NETWORKS.filter((network) => shownSuiNetworkIds.includes(network.id));
 
@@ -14,7 +14,7 @@ export function useCurrentShownSuiNetworks() {
       return;
     }
 
-    await setChromeStorage('shownSuiNetworkIds', [...shownSuiNetworkIds, network.id]);
+    await setExtensionStorage('shownSuiNetworkIds', [...shownSuiNetworkIds, network.id]);
   };
 
   const addShownSuiNetworks = async (networks: SuiNetwork[]) => {
@@ -22,7 +22,7 @@ export function useCurrentShownSuiNetworks() {
 
     const newShownSuiNetworkIds = Array.from(new Set([...shownSuiNetworkIds, ...networkIds]));
 
-    await setChromeStorage('shownSuiNetworkIds', newShownSuiNetworkIds);
+    await setExtensionStorage('shownSuiNetworkIds', newShownSuiNetworkIds);
   };
 
   const removeShownSuiNetwork = async (network: SuiNetwork) => {
@@ -32,7 +32,7 @@ export function useCurrentShownSuiNetworks() {
 
     const newShownSuiNetworkIds = shownSuiNetworkIds.filter((shownSuiNetworkId) => shownSuiNetworkId !== network.id);
 
-    await setChromeStorage('shownSuiNetworkIds', newShownSuiNetworkIds);
+    await setExtensionStorage('shownSuiNetworkIds', newShownSuiNetworkIds);
   };
 
   const removeShownSuiNetworks = async (networks: SuiNetwork[]) => {
@@ -40,7 +40,7 @@ export function useCurrentShownSuiNetworks() {
 
     const newShownSuiNetworkIds = shownSuiNetworkIds.filter((shownSuiNetworkId) => !networkIds.includes(shownSuiNetworkId));
 
-    await setChromeStorage('shownSuiNetworkIds', newShownSuiNetworkIds);
+    await setExtensionStorage('shownSuiNetworkIds', newShownSuiNetworkIds);
   };
 
   return {

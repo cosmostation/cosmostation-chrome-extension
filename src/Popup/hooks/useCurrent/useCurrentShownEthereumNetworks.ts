@@ -1,11 +1,11 @@
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { EthereumNetwork } from '~/types/chain';
 
 export function useCurrentShownEthereumNetworks() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
-  const { shownEthereumNetworkIds } = chromeStorage;
+  const { shownEthereumNetworkIds } = extensionStorage;
 
   const currentShownEthereumNetwork = ETHEREUM_NETWORKS.filter((network) => shownEthereumNetworkIds.includes(network.id));
 
@@ -14,7 +14,7 @@ export function useCurrentShownEthereumNetworks() {
       return;
     }
 
-    await setChromeStorage('shownEthereumNetworkIds', [...shownEthereumNetworkIds, network.id]);
+    await setExtensionStorage('shownEthereumNetworkIds', [...shownEthereumNetworkIds, network.id]);
   };
 
   const addShownEthereumNetworks = async (networks: EthereumNetwork[]) => {
@@ -22,7 +22,7 @@ export function useCurrentShownEthereumNetworks() {
 
     const newShownEthereumNetworkIds = Array.from(new Set([...shownEthereumNetworkIds, ...networkIds]));
 
-    await setChromeStorage('shownEthereumNetworkIds', newShownEthereumNetworkIds);
+    await setExtensionStorage('shownEthereumNetworkIds', newShownEthereumNetworkIds);
   };
 
   const removeShownEthereumNetwork = async (network: EthereumNetwork) => {
@@ -32,7 +32,7 @@ export function useCurrentShownEthereumNetworks() {
 
     const newShownEthereumNetworkIds = shownEthereumNetworkIds.filter((shownEthereumNetworkId) => shownEthereumNetworkId !== network.id);
 
-    await setChromeStorage('shownEthereumNetworkIds', newShownEthereumNetworkIds);
+    await setExtensionStorage('shownEthereumNetworkIds', newShownEthereumNetworkIds);
   };
 
   const removeShownEthereumNetworks = async (networks: EthereumNetwork[]) => {
@@ -40,7 +40,7 @@ export function useCurrentShownEthereumNetworks() {
 
     const newShownEthereumNetworkIds = shownEthereumNetworkIds.filter((shownEthereumNetworkId) => !networkIds.includes(shownEthereumNetworkId));
 
-    await setChromeStorage('shownEthereumNetworkIds', newShownEthereumNetworkIds);
+    await setExtensionStorage('shownEthereumNetworkIds', newShownEthereumNetworkIds);
   };
 
   return {

@@ -16,7 +16,7 @@ import {
 import { getAddress as getEthereumAddress } from '~/Popup/utils/ethereum';
 import { getAddress as getSuiAddress } from '~/Popup/utils/sui';
 import type { Chain } from '~/types/chain';
-import type { Account } from '~/types/chromeStorage';
+import type { Account } from '~/types/extensionStorage';
 
 export function getAddress(chain: Chain, publicKey?: Buffer) {
   if (!publicKey) {

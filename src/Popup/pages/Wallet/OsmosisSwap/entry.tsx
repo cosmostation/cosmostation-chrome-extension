@@ -19,7 +19,7 @@ import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -89,8 +89,8 @@ export default function Entry({ chain }: EntryProps) {
 
   const { enQueue } = useCurrentQueue();
   const nodeInfo = useNodeInfoSWR(chain);
-  const { chromeStorage } = useChromeStorage();
-  const { currency } = chromeStorage;
+  const { extensionStorage } = useExtensionStorage();
+  const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const currentChainAssets = useAssetsSWR(chain);
   const balance = useBalanceSWR(chain);
@@ -318,12 +318,12 @@ export default function Entry({ chain }: EntryProps) {
   const [isOpenedOutputCoinList, setIsOpenedOutputCoinList] = useState(false);
 
   const inputCoinPrice = useMemo(
-    () => (inputCoin?.coinGeckoId && coinGeckoPrice.data?.[inputCoin?.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoPrice.data, inputCoin?.coinGeckoId],
+    () => (inputCoin?.coinGeckoId && coinGeckoPrice.data?.[inputCoin?.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoPrice.data, inputCoin?.coinGeckoId],
   );
   const outputCoinPrice = useMemo(
-    () => (outputCoin?.coinGeckoId && coinGeckoPrice.data?.[outputCoin?.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoPrice.data, outputCoin?.coinGeckoId],
+    () => (outputCoin?.coinGeckoId && coinGeckoPrice.data?.[outputCoin?.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoPrice.data, outputCoin?.coinGeckoId],
   );
 
   const inputCoinAmountPrice = useMemo(() => times(inputDisplayAmount || '0', inputCoinPrice), [inputDisplayAmount, inputCoinPrice]);

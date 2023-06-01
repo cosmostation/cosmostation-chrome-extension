@@ -33,16 +33,16 @@ import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { AptosRPCError, CommonRPCError, CosmosRPCError, EthereumRPCError, SuiRPCError } from '~/Popup/utils/error';
 import { requestRPC as ethereumRequestRPC, signTypedData } from '~/Popup/utils/ethereum';
 import { chromeSessionStorage } from '~/Popup/utils/extensionSessionStorage';
-import { chromeStorage, getStorage, setStorage } from '~/Popup/utils/extensionStorage';
+import { extensionStorage, getStorage, setStorage } from '~/Popup/utils/extensionStorage';
 import { openWindow } from '~/Popup/utils/extensionWindows';
 import { responseToWeb } from '~/Popup/utils/message';
 import { toHex } from '~/Popup/utils/string';
 import { requestRPC as suiRequestRPC } from '~/Popup/utils/sui';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
-import type { Queue } from '~/types/chromeStorage';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { Balance, SmartPayload, TokenInfo } from '~/types/cosmos/contract';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
+import type { Queue } from '~/types/extensionStorage';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
 import type { AptosConnectResponse, AptosIsConnectedResponse, AptosNetworkResponse, AptosSignMessage, AptosSignTransaction } from '~/types/message/aptos';
 import type { ComProvidersResponse } from '~/types/message/common';
@@ -160,7 +160,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
       }
       const { method } = message;
 
-      const { providers } = await chromeStorage();
+      const { providers } = await extensionStorage();
 
       if (commonNoPopupMethods.includes(method)) {
         if (method === 'com_providers') {
@@ -216,7 +216,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
       const { method } = message;
 
       const { currentAccount, currentAccountName, additionalChains, currentAllowedChains, currentAccountAllowedOrigins, accounts, autoSigns, allowedOrigins } =
-        await chromeStorage();
+        await extensionStorage();
 
       const { currentPassword } = await chromeSessionStorage();
 
@@ -1125,7 +1125,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
     const ethereumNoPopupMethods = Object.values(ETHEREUM_NO_POPUP_METHOD_TYPE) as string[];
 
-    const { additionalEthereumNetworks, currentEthereumNetwork, currentAccountAllowedOrigins, currentAccount } = await chromeStorage();
+    const { additionalEthereumNetworks, currentEthereumNetwork, currentAccountAllowedOrigins, currentAccount } = await extensionStorage();
 
     const { currentPassword } = await chromeSessionStorage();
 
@@ -1697,7 +1697,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const aptosPopupMethods = Object.values(APTOS_POPUP_METHOD_TYPE) as string[];
     const aptosNoPopupMethods = Object.values(APTOS_NO_POPUP_METHOD_TYPE) as string[];
 
-    const { currentAccountAllowedOrigins, currentAccount, allowedOrigins, currentAptosNetwork } = await chromeStorage();
+    const { currentAccountAllowedOrigins, currentAccount, allowedOrigins, currentAptosNetwork } = await extensionStorage();
 
     const { currentPassword } = await chromeSessionStorage();
 
@@ -1857,7 +1857,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const suiPopupMethods = Object.values(SUI_POPUP_METHOD_TYPE) as string[];
     const suiNoPopupMethods = Object.values(SUI_NO_POPUP_METHOD_TYPE) as string[];
 
-    const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins, currentSuiNetwork } = await chromeStorage();
+    const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins, currentSuiNetwork } = await extensionStorage();
 
     const { currentPassword } = await chromeSessionStorage();
 

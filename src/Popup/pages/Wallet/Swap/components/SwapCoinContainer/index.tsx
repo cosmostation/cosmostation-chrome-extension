@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt } from '~/Popup/utils/big';
 import { shorterAddress } from '~/Popup/utils/string';
@@ -41,8 +41,8 @@ type SwapCoinContainerProps = {
 };
 
 export default function SwapCoinContainer({ isChainAvailable = true, ...remainder }: SwapCoinContainerProps) {
-  const { chromeStorage } = useChromeStorage();
-  const { currency } = chromeStorage;
+  const { extensionStorage } = useExtensionStorage();
+  const { currency } = extensionStorage;
   const { t } = useTranslation();
 
   const [isOpenedChainList, setisOpenedChainList] = useState(false);

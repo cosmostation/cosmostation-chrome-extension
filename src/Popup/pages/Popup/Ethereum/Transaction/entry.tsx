@@ -31,7 +31,7 @@ import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEt
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useInterval } from '~/Popup/hooks/useInterval';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
@@ -43,8 +43,8 @@ import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { OneInchSwapTxData } from '~/types/1inch/contract';
-import type { Queue } from '~/types/chromeStorage';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
+import type { Queue } from '~/types/extensionStorage';
 import type { EthSendTransaction, EthSendTransactionResponse, EthSignTransaction, EthSignTransactionResponse } from '~/types/message/ethereum';
 import type { Path } from '~/types/route';
 
@@ -87,7 +87,7 @@ type EntryProps = {
 
 export default function Entry({ queue }: EntryProps) {
   const chain = ETHEREUM;
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const { setLoadingLedgerSigning } = useLoading();
@@ -119,7 +119,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
   const { deQueue } = useCurrentQueue();
 
   const { currentAccount } = useCurrentAccount();

@@ -9,7 +9,7 @@ import type { SuiNetwork } from '~/types/chain';
 import type { GetObjectsOwnedByAddressResponse } from '~/types/sui/rpc';
 
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
-import { useChromeStorage } from '../../useExtensionStorage';
+import { useExtensionStorage } from '../../useExtensionStorage';
 import { useAccounts } from '../cache/useAccounts';
 
 type FetchParams = {
@@ -27,12 +27,12 @@ type UseGetObjectsOwnedByAddressSWRProps = {
 export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseGetObjectsOwnedByAddressSWRProps, config?: SWRConfiguration) {
   const chain = SUI;
   const accounts = useAccounts(config?.suspense);
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
 
-  const addr = address || accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
+  const addr = address || accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
 
   const fetcher = async (params: FetchParams) => {
     try {

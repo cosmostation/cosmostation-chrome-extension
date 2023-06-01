@@ -6,7 +6,7 @@ import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import IconButton from '~/Popup/pages/Account/Initialize/components/IconButton';
@@ -25,32 +25,32 @@ export default function Entry() {
 
   const resetNewAccount = useResetRecoilState(newMnemonicAccountState);
 
-  const { setChromeStorage } = useChromeStorage();
+  const { setExtensionStorage } = useExtensionStorage();
 
   const { setCurrentPassword } = useCurrentPassword();
 
   useEffect(() => {
     resetNewAccount();
 
-    void setChromeStorage('queues', []);
-    void setChromeStorage('windowId', null);
-    void setChromeStorage('accounts', []);
-    void setChromeStorage('accountName', {});
-    void setChromeStorage('additionalChains', []);
-    void setChromeStorage('additionalEthereumNetworks', []);
-    void setChromeStorage('encryptedPassword', null);
-    void setChromeStorage('selectedAccountId', '');
+    void setExtensionStorage('queues', []);
+    void setExtensionStorage('windowId', null);
+    void setExtensionStorage('accounts', []);
+    void setExtensionStorage('accountName', {});
+    void setExtensionStorage('additionalChains', []);
+    void setExtensionStorage('additionalEthereumNetworks', []);
+    void setExtensionStorage('encryptedPassword', null);
+    void setExtensionStorage('selectedAccountId', '');
 
-    void setChromeStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id]);
-    void setChromeStorage('shownEthereumNetworkIds', [...ETHEREUM_NETWORKS.map((network) => network.id)]);
-    void setChromeStorage('shownAptosNetworkIds', [...APTOS_NETWORKS.map((network) => network.id)]);
-    void setChromeStorage('shownSuiNetworkIds', [...SUI_NETWORKS.map((network) => network.id)]);
-    void setChromeStorage('allowedOrigins', []);
-    void setChromeStorage('selectedChainId', '');
-    void setChromeStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
-    void setChromeStorage('selectedAptosNetworkId', APTOS_NETWORKS[0].id);
-    void setChromeStorage('selectedSuiNetworkId', SUI_NETWORKS[0].id);
-    void setChromeStorage('encryptedPassword', null);
+    void setExtensionStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id]);
+    void setExtensionStorage('shownEthereumNetworkIds', [...ETHEREUM_NETWORKS.map((network) => network.id)]);
+    void setExtensionStorage('shownAptosNetworkIds', [...APTOS_NETWORKS.map((network) => network.id)]);
+    void setExtensionStorage('shownSuiNetworkIds', [...SUI_NETWORKS.map((network) => network.id)]);
+    void setExtensionStorage('allowedOrigins', []);
+    void setExtensionStorage('selectedChainId', '');
+    void setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
+    void setExtensionStorage('selectedAptosNetworkId', APTOS_NETWORKS[0].id);
+    void setExtensionStorage('selectedSuiNetworkId', SUI_NETWORKS[0].id);
+    void setExtensionStorage('encryptedPassword', null);
 
     void setCurrentPassword(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps

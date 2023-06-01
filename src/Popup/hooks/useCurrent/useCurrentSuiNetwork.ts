@@ -1,15 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { SUI_NETWORKS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { emitToWeb } from '~/Popup/utils/message';
 // import { emitToWeb } from '~/Popup/utils/message';
 import type { SuiNetwork } from '~/types/chain';
 
 export function useCurrentSuiNetwork() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
-  const { selectedSuiNetworkId, additionalSuiNetworks, allowedOrigins } = chromeStorage;
+  const { selectedSuiNetworkId, additionalSuiNetworks, allowedOrigins } = extensionStorage;
 
   const allNetworks = [...SUI_NETWORKS, ...additionalSuiNetworks];
 
@@ -20,7 +20,7 @@ export function useCurrentSuiNetwork() {
   const setCurrentSuiNetwork = async (network: SuiNetwork) => {
     const newSelectedSuiNetworkId = network.id;
 
-    await setChromeStorage('selectedSuiNetworkId', newSelectedSuiNetworkId);
+    await setExtensionStorage('selectedSuiNetworkId', newSelectedSuiNetworkId);
 
     const origins = Array.from(new Set(allowedOrigins.map((item) => item.origin)));
 
@@ -34,7 +34,7 @@ export function useCurrentSuiNetwork() {
 
     const newAdditionalSuiNetworks = additionalSuiNetworks.filter((item) => item.id !== network.id);
 
-    await setChromeStorage('additionalSuiNetworks', newAdditionalSuiNetworks);
+    await setExtensionStorage('additionalSuiNetworks', newAdditionalSuiNetworks);
   };
 
   const addSuiNetwork = async (network: Omit<SuiNetwork, 'id'>) => {
@@ -49,7 +49,7 @@ export function useCurrentSuiNetwork() {
       { ...network, id: beforeNetwork?.id || uuidv4() },
     ];
 
-    await setChromeStorage('additionalSuiNetworks', newAdditionalSuiNetworks);
+    await setExtensionStorage('additionalSuiNetworks', newAdditionalSuiNetworks);
   };
 
   return {

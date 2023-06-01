@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 
 import BaseLayout from '~/Popup/components/BaseLayout';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { disposableLoadingState } from '~/Popup/recoils/loading';
 
@@ -14,7 +14,7 @@ export default function Layout({ children }: LayoutProps) {
   const [isAlready, setIsAlready] = useRecoilState(disposableLoadingState);
   const { setLoadingOverlay } = useLoading();
 
-  const { setChromeStorage } = useChromeStorage();
+  const { setExtensionStorage } = useExtensionStorage();
 
   useEffect(() => {
     if (!isAlready) {
@@ -26,7 +26,7 @@ export default function Layout({ children }: LayoutProps) {
       }, 1000);
     }
 
-    void setChromeStorage('rootPath', '/dashboard');
+    void setExtensionStorage('rootPath', '/dashboard');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return <BaseLayout useHeader={{}}>{children}</BaseLayout>;

@@ -43,7 +43,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -112,9 +112,9 @@ export default function Entry() {
   const nodeInfo = useNodeInfoSWR(osmosisChain);
   const supportedCosmosChain = useSupportChainsSWR({ suspense: true });
   const supportedSquidTokens = useSquidTokensSWR();
-  const { chromeStorage } = useChromeStorage();
-  const { ethereumTokens } = chromeStorage;
-  const { currency } = chromeStorage;
+  const { extensionStorage } = useExtensionStorage();
+  const { ethereumTokens } = extensionStorage;
+  const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const osmosisAssets = useCosmosAssetsSWR(osmosisChain);
   const supportedSwapChains = useSupportSwapChainsSWR({ suspense: true });
@@ -602,13 +602,13 @@ export default function Entry() {
   ]);
 
   const currentFromTokenPrice = useMemo(
-    () => (currentFromToken?.coinGeckoId && coinGeckoPrice.data?.[currentFromToken?.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoPrice.data, currentFromToken?.coinGeckoId],
+    () => (currentFromToken?.coinGeckoId && coinGeckoPrice.data?.[currentFromToken?.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoPrice.data, currentFromToken?.coinGeckoId],
   );
 
   const currentToTokenPrice = useMemo(
-    () => (currentToToken?.coinGeckoId && coinGeckoPrice.data?.[currentToToken.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoPrice.data, currentToToken?.coinGeckoId],
+    () => (currentToToken?.coinGeckoId && coinGeckoPrice.data?.[currentToToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoPrice.data, currentToToken?.coinGeckoId],
   );
 
   const currentFeeToken = useMemo(
@@ -640,8 +640,8 @@ export default function Entry() {
   }, [currentSwapAPI, cosmosFromChainBalance.data?.balance, osmosisChain.baseDenom, currentFromEVMNativeBalance?.data?.result]);
 
   const currentFeeTokenPrice = useMemo(
-    () => (currentFeeToken?.coinGeckoId && coinGeckoPrice.data?.[currentFeeToken.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoPrice.data, currentFeeToken?.coinGeckoId],
+    () => (currentFeeToken?.coinGeckoId && coinGeckoPrice.data?.[currentFeeToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoPrice.data, currentFeeToken?.coinGeckoId],
   );
 
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
@@ -1033,12 +1033,12 @@ export default function Entry() {
             ac,
             times(
               toDisplayDenomAmount(cu.amount || '0', cu.feeToken?.decimals || 0),
-              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[chromeStorage.currency]) || '0',
+              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[extensionStorage.currency]) || '0',
             ),
           ),
         '0',
       ) || '0',
-    [chromeStorage.currency, coinGeckoPrice.data, squidSourceChainGasCosts],
+    [extensionStorage.currency, coinGeckoPrice.data, squidSourceChainGasCosts],
   );
 
   const squidCrossChainTotalFeePrice = useMemo(
@@ -1049,12 +1049,12 @@ export default function Entry() {
             ac,
             times(
               toDisplayDenomAmount(cu.amount || '0', cu.feeToken?.decimals || 0),
-              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[chromeStorage.currency]) || '0',
+              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[extensionStorage.currency]) || '0',
             ),
           ),
         '0',
       ) || '0',
-    [chromeStorage.currency, coinGeckoPrice.data, squidCrossChainFeeCosts],
+    [extensionStorage.currency, coinGeckoPrice.data, squidCrossChainFeeCosts],
   );
 
   const estimatedFeePrice = useMemo(() => {

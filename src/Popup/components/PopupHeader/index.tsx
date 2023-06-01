@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import { shorterAddress } from '~/Popup/utils/string';
-import type { AccountType } from '~/types/chromeStorage';
+import type { AccountType } from '~/types/extensionStorage';
 
 import {
   AccountContainer,

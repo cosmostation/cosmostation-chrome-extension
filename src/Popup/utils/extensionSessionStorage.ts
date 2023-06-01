@@ -1,5 +1,5 @@
 import { aesDecrypt } from '~/Popup/utils/crypto';
-import type { ChromeSessionStorage, ChromeSessionStorageKeys } from '~/types/chromeStorage';
+import type { ChromeSessionStorage, ChromeSessionStorageKeys } from '~/types/extensionStorage';
 
 export function getSessionStorage<T extends ChromeSessionStorageKeys>(key: T): Promise<ChromeSessionStorage[T]> {
   return new Promise((res, rej) => {

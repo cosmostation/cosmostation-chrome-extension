@@ -7,12 +7,12 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import Button from '~/Popup/components/common/Button';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { disposableLoadingState } from '~/Popup/recoils/loading';
 import { aesEncrypt, sha512 } from '~/Popup/utils/crypto';
-import type { Account, AccountCommon, PrivateKeyAccount } from '~/types/chromeStorage';
+import type { Account, AccountCommon, PrivateKeyAccount } from '~/types/extensionStorage';
 
 import { BottomContainer, Container, InputContainer, StyledInput48, StyledInput140 } from './styled';
 import type { PrivateKeyForm } from './useSchema';
@@ -33,7 +33,7 @@ export default function Entry() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   const setDisposableLoading = useSetRecoilState(disposableLoadingState);
 
@@ -57,7 +57,7 @@ export default function Entry() {
 
     const privateKey = data.privateKey.startsWith('0x') ? data.privateKey.substring(2) : data.privateKey;
 
-    const privateKeyRestoreStrings = chromeStorage.accounts.filter(isPrivateKeyAccount).map((account) => account.encryptedRestoreString);
+    const privateKeyRestoreStrings = extensionStorage.accounts.filter(isPrivateKeyAccount).map((account) => account.encryptedRestoreString);
 
     if (privateKeyRestoreStrings.includes(sha512(privateKey))) {
       enqueueSnackbar('이미 존재하는 개인키 입니다.', { variant: 'error' });

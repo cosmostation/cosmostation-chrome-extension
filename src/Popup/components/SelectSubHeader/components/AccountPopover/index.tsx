@@ -6,7 +6,7 @@ import Popover from '~/Popup/components/common/Popover';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCurrentTab } from '~/Popup/hooks/SWR/cache/useCurrentTab';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
@@ -18,7 +18,7 @@ import SettingIcon24 from '~/images/icons/Setting24.svg';
 type AccountPopoverProps = Omit<PopoverProps, 'children'>;
 
 export default function AccountPopover({ onClose, ...remainder }: AccountPopoverProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { setCurrentAccount } = useCurrentAccount();
   const { navigate } = useNavigate();
 
@@ -27,9 +27,9 @@ export default function AccountPopover({ onClose, ...remainder }: AccountPopover
   const { data } = useAccounts(true);
   const currentTab = useCurrentTab(true);
 
-  const { selectedAccountId, selectedChainId, allowedOrigins } = chromeStorage;
+  const { selectedAccountId, selectedChainId, allowedOrigins } = extensionStorage;
 
-  const { accountName } = chromeStorage;
+  const { accountName } = extensionStorage;
 
   return (
     <Popover {...remainder} onClose={onClose}>

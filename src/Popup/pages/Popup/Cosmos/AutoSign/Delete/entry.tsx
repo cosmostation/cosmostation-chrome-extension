@@ -5,9 +5,9 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentAutoSigns } from '~/Popup/hooks/useCurrent/useCurrentAutoSigns';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { CosDeleteAutoSign, CosDeleteAutoSignResponse } from '~/types/message/cosmos';
 
 type EntryProps = {
@@ -17,10 +17,10 @@ type EntryProps = {
 export default function Entry({ queue }: EntryProps) {
   const { deQueue } = useCurrentQueue();
   const { currentAccount } = useCurrentAccount();
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
-  const { autoSigns } = chromeStorage;
+  const { autoSigns } = extensionStorage;
   const { removeAutoSign } = useCurrentAutoSigns();
 
   const cosmosChains = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains];

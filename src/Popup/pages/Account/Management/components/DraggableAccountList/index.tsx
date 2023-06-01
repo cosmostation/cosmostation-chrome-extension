@@ -6,10 +6,10 @@ import { useSnackbar } from 'notistack';
 import { DND_ITEM_TYPE } from '~/constants/dnd';
 import IconTextButton from '~/Popup/components/common/IconTextButton';
 import SubSideHeader from '~/Popup/components/SubSideHeader';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { Account, AccountName } from '~/types/chromeStorage';
+import type { Account, AccountName } from '~/types/extensionStorage';
 
 import { ListContainer, SideButtonContainer } from './styeld';
 import type { IndexedAccount } from '../../entry';
@@ -28,7 +28,7 @@ export default function DraggableAccountList({ accounts, accountName, onClose }:
   const { t } = useTranslation();
   const { navigateBack } = useNavigate();
 
-  const { setChromeStorage } = useChromeStorage();
+  const { setExtensionStorage } = useExtensionStorage();
   const { enqueueSnackbar } = useSnackbar();
 
   const [indexedAccounts, setIndexedAccounts] = useState<IndexedAccount[]>(
@@ -96,7 +96,7 @@ export default function DraggableAccountList({ accounts, accountName, onClose }:
               ) {
                 onClose();
               } else {
-                await setChromeStorage('accounts', revertedAccount);
+                await setExtensionStorage('accounts', revertedAccount);
                 onClose();
                 enqueueSnackbar(t('pages.Account.Management.components.DraggableAccountList.index.successSnackbar'));
               }

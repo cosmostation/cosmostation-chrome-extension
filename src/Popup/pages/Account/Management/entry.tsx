@@ -3,10 +3,10 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import SubSideHeader from '~/Popup/components/SubSideHeader';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { Account } from '~/types/chromeStorage';
+import type { Account } from '~/types/extensionStorage';
 
 import AccountItem from './components/AccountItem';
 import DraggableAccountList from './components/DraggableAccountList';
@@ -18,7 +18,7 @@ import ListEdit24Icon from '~/images/icons/ListEdit24.svg';
 export type IndexedAccount = Account & { index: number };
 
 export default function Entry() {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   const { navigate, navigateBack } = useNavigate();
 
@@ -28,7 +28,7 @@ export default function Entry() {
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
 
-  const { accounts, accountName } = chromeStorage;
+  const { accounts, accountName } = extensionStorage;
 
   const { t } = useTranslation();
 

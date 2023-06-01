@@ -6,11 +6,11 @@ import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { EthcSwitchNetwork, EthcSwitchNetworkResponse } from '~/types/message/ethereum';
 
 import {
@@ -32,7 +32,7 @@ type EntryProps = {
 };
 
 export default function Entry({ queue }: EntryProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { deQueue } = useCurrentQueue();
 
   const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
@@ -41,7 +41,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const { message, messageId, origin } = queue;
 
-  const allEthereumNetworks = [...ETHEREUM_NETWORKS, ...chromeStorage.additionalEthereumNetworks];
+  const allEthereumNetworks = [...ETHEREUM_NETWORKS, ...extensionStorage.additionalEthereumNetworks];
 
   const requestNetwork = allEthereumNetworks.find((item) => item.chainId === message.params[0]);
 

@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CommonChain } from '~/types/chain';
 
@@ -23,12 +23,12 @@ export default function AccountAddressBookBottomSheet({
   onClose,
   ...remainder
 }: AccountAddressBookBottomSheetProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   const { data } = useAccounts(true);
 
   const { currentAccount } = useCurrentAccount();
-  const { accountName } = chromeStorage;
+  const { accountName } = extensionStorage;
 
   const { t } = useTranslation();
 

@@ -8,7 +8,7 @@ import type { AccountType, ReturnType } from '~/types/aptos/accounts';
 import type { AptosNetwork } from '~/types/chain';
 
 import { useCurrentAptosNetwork } from '../../useCurrent/useCurrentAptosNetwork';
-import { useChromeStorage } from '../../useExtensionStorage';
+import { useExtensionStorage } from '../../useExtensionStorage';
 import { useAccounts } from '../cache/useAccounts';
 
 type FetchParams = {
@@ -32,12 +32,12 @@ export function useAccountResourceSWR<T extends AccountType>(
 
   const chain = APTOS;
   const accounts = useAccounts(config?.suspense);
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentAptosNetwork } = useCurrentAptosNetwork();
 
   const { restURL } = network || currentAptosNetwork;
 
-  const addr = address || accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
+  const addr = address || accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
 
   const fetcher = async (params: FetchParams) => {
     try {

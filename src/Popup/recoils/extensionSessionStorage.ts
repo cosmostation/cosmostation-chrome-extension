@@ -1,6 +1,6 @@
 import { atom } from 'recoil';
 
-import type { ChromeSessionStorage } from '~/types/chromeStorage';
+import type { ChromeSessionStorage } from '~/types/extensionStorage';
 
 export const chromeSessionStorageDefault: ChromeSessionStorage = {
   password: null,

@@ -14,21 +14,21 @@ import { THEME_TYPE } from '~/constants/theme';
 import LoadingLedgerSigning from '~/Popup/components/Loading/LedgerSigning';
 import LoadingOverlay from '~/Popup/components/Loading/Overlay';
 import Wrapper from '~/Popup/components/Wrapper';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import Routes from '~/Popup/Routes';
 import { darkEnTheme, darkKoTheme, lightEnTheme, lightKoTheme } from '~/Popup/styles/theme';
 
 import Info16Icon from '~/images/icons/Info16.svg';
 
 function Popup() {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   const theme = createTheme({
-    ...(chromeStorage.theme === THEME_TYPE.LIGHT
-      ? chromeStorage.language === 'ko'
+    ...(extensionStorage.theme === THEME_TYPE.LIGHT
+      ? extensionStorage.language === 'ko'
         ? lightKoTheme
         : lightEnTheme
-      : chromeStorage.language === 'ko'
+      : extensionStorage.language === 'ko'
       ? darkKoTheme
       : darkEnTheme),
   });

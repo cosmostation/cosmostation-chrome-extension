@@ -21,8 +21,8 @@ import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, decodeProtobufMessage, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
-import type { Queue } from '~/types/chromeStorage';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
+import type { Queue } from '~/types/extensionStorage';
 import type { CosSignDirect, CosSignDirectResponse } from '~/types/message/cosmos';
 
 import TxMessage from './components/TxMessage';

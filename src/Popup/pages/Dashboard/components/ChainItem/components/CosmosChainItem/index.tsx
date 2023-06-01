@@ -8,7 +8,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton, ChainItemTerminated } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
@@ -21,7 +21,7 @@ type CosmosChainItemProps = {
 };
 
 export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const setDashboard = useSetRecoilState(dashboardState);
   const { currentAccount } = useCurrentAccount();
   const { data } = useCoinGeckoPriceSWR();
@@ -35,10 +35,10 @@ export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
     setDashboard((prev) => ({
       [currentAccount.id]: {
         ...prev?.[currentAccount.id],
-        [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && data?.[coinGeckoId]?.[chromeStorage.currency]) || 0) || '0',
+        [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0) || '0',
       },
     }));
-  }, [chain.id, chromeStorage.currency, coinGeckoId, data, decimals, setDashboard, totalAmount, currentAccount.id]);
+  }, [chain.id, extensionStorage.currency, coinGeckoId, data, decimals, setDashboard, totalAmount, currentAccount.id]);
 
   useEffect(
     () => () => {

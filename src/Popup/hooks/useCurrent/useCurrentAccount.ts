@@ -5,19 +5,19 @@ import { CHAINS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { openTab } from '~/Popup/utils/extensionTabs';
 import { emitToWeb } from '~/Popup/utils/message';
-import type { Account, AccountWithName, SuiPermissionType } from '~/types/chromeStorage';
+import type { Account, AccountWithName, SuiPermissionType } from '~/types/extensionStorage';
 
 import { useCurrentPassword } from './useCurrentPassword';
 
 export function useCurrentAccount() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { currentPassword } = useCurrentPassword();
 
-  const { selectedAccountId, accounts, accountName, allowedOrigins, additionalChains, autoSigns, suiPermissions } = chromeStorage;
+  const { selectedAccountId, accounts, accountName, allowedOrigins, additionalChains, autoSigns, suiPermissions } = extensionStorage;
 
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
 
@@ -33,23 +33,23 @@ export function useCurrentAccount() {
 
   const addAllowedOrigin = async (origin: string) => {
     const newAllowedOrigins = [...allowedOrigins, { origin, accountId: currentAccount.id }];
-    await setChromeStorage('allowedOrigins', newAllowedOrigins);
+    await setExtensionStorage('allowedOrigins', newAllowedOrigins);
   };
 
   const removeAllowedOrigin = async (origin: string) => {
     const newAllowedOrigins = allowedOrigins.filter((allowedOrigin) => !(allowedOrigin.accountId === selectedAccountId && allowedOrigin.origin === origin));
-    await setChromeStorage('allowedOrigins', newAllowedOrigins);
+    await setExtensionStorage('allowedOrigins', newAllowedOrigins);
 
     const newAutoSigns = autoSigns.filter((autoSign) => !(autoSign.accountId === selectedAccountId && autoSign.origin === origin));
-    await setChromeStorage('autoSigns', newAutoSigns);
+    await setExtensionStorage('autoSigns', newAutoSigns);
   };
 
   const setCurrentAccount = async (id: string) => {
-    const isExist = !!chromeStorage.accounts.find((account) => account.id === id);
+    const isExist = !!extensionStorage.accounts.find((account) => account.id === id);
 
-    const newAccountId = isExist ? id : chromeStorage.accounts[0].id;
+    const newAccountId = isExist ? id : extensionStorage.accounts[0].id;
 
-    await setChromeStorage('selectedAccountId', newAccountId);
+    await setExtensionStorage('selectedAccountId', newAccountId);
 
     const origins = Array.from(new Set(allowedOrigins.map((item) => item.origin)));
 
@@ -88,25 +88,25 @@ export function useCurrentAccount() {
 
   const addAccount = async (accountInfo: AccountWithName) => {
     const { name, ...account } = accountInfo;
-    await setChromeStorage('accounts', [...accounts, account]);
+    await setExtensionStorage('accounts', [...accounts, account]);
 
-    await setChromeStorage('accountName', { ...accountName, [account.id]: name });
+    await setExtensionStorage('accountName', { ...accountName, [account.id]: name });
   };
 
   const removeAccount = async (account: Account) => {
     const newAccounts = accounts.filter((acc) => acc.id !== account.id);
 
-    if (account.id === chromeStorage.selectedAccountId) {
-      await setChromeStorage('selectedAccountId', newAccounts?.[0]?.id ?? '');
+    if (account.id === extensionStorage.selectedAccountId) {
+      await setExtensionStorage('selectedAccountId', newAccounts?.[0]?.id ?? '');
     }
 
-    await setChromeStorage('accounts', newAccounts);
+    await setExtensionStorage('accounts', newAccounts);
 
     const deepCopiedAccountName = cloneDeep(accountName);
 
     delete deepCopiedAccountName[account.id];
 
-    await setChromeStorage('accountName', deepCopiedAccountName);
+    await setExtensionStorage('accountName', deepCopiedAccountName);
 
     [...CHAINS, ...additionalChains].forEach((item) => {
       const key = `${account.id}${item.id}`;
@@ -125,7 +125,7 @@ export function useCurrentAccount() {
       ...permissions.map((permission) => ({ id: uuidv4(), accountId: currentAccount.id, permission, origin })),
     ];
 
-    await setChromeStorage('suiPermissions', newSuiPermissions);
+    await setExtensionStorage('suiPermissions', newSuiPermissions);
   };
 
   const removeSuiPermissions = async (permissions: SuiPermissionType[], origin: string) => {
@@ -133,7 +133,7 @@ export function useCurrentAccount() {
       (permission) =>
         !(permission.accountId === currentAccount.id && permission.origin === origin && permissions.some((item) => item === permission.permission)),
     );
-    await setChromeStorage('suiPermissions', newSuiPermissions);
+    await setExtensionStorage('suiPermissions', newSuiPermissions);
   };
   return {
     currentAccount: { ...currentAccount, name: currentAccountName },

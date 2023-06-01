@@ -22,13 +22,13 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Aptos/components/Header';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type {
   AptosSignAndSubmitTransaction,
   AptosSignAndSubmitTransactionResponse,
@@ -69,9 +69,9 @@ type EntryProps = {
 
 export default function Entry({ queue }: EntryProps) {
   const chain = APTOS;
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
 
   const assets = useAssetsSWR();
   const coinGeckoPrice = useCoinGeckoPriceSWR();

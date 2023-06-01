@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, equal, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { FeeCoin, GasRate, GasRateKey } from '~/types/chain';
@@ -54,7 +54,7 @@ export default function Fee({
   onChangeGas,
   onChangeFeeCoin,
 }: FeeProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { decimals, displayDenom, coinGeckoId } = feeCoin;
 
   const { average, tiny, low } = gasRate;
@@ -64,11 +64,11 @@ export default function Fee({
   const [isOpenGasDialog, setIsOpenGasDialog] = useState(false);
   const [isOpenFeeDialog, setIsOpenFeeDialog] = useState(false);
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
+  const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[extensionStorage.currency]) || 0;
 
   const displayFee = toDisplayDenomAmount(ceil(baseFee), decimals);
   const value = times(displayFee, chainPrice);

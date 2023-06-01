@@ -3,14 +3,14 @@ import type Transport from '@ledgerhq/hw-transport';
 
 import { createTransport } from '~/Popup/utils/ledger';
 
-import { useChromeStorage } from './useExtensionStorage';
+import { useExtensionStorage } from './useExtensionStorage';
 
 export function useLedgerTransport() {
   const transport = useRef<Transport | undefined>(undefined);
 
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
-  const { ledgerTransportType } = chromeStorage;
+  const { ledgerTransportType } = extensionStorage;
 
   return {
     transport: transport.current,

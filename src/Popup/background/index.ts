@@ -11,7 +11,7 @@ import { getStorage, setStorage } from '~/Popup/utils/extensionStorage';
 import { openTab } from '~/Popup/utils/extensionTabs';
 import { closeWindow } from '~/Popup/utils/extensionWindows';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { CurrencyType, LanguageType, Queue } from '~/types/chromeStorage';
+import type { CurrencyType, LanguageType, Queue } from '~/types/extensionStorage';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
 import type { ThemeType } from '~/types/theme';
 

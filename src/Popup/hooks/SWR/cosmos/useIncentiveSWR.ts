@@ -4,7 +4,7 @@ import { reduceBy } from 'ramda';
 import useSWR from 'swr';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { get } from '~/Popup/utils/axios';
 import { plus } from '~/Popup/utils/big';
 import { cosmosURL } from '~/Popup/utils/cosmos';
@@ -14,9 +14,9 @@ import type { IncentiveClaims, IncentiveHardLiquidityProviderClaims, IncentivePa
 
 export function useIncentiveSWR(chain: CosmosChain, suspense?: boolean) {
   const accounts = useAccounts(suspense);
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
-  const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
+  const address = accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
 
   const { getIncentive } = cosmosURL(chain);
 

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { EthereumToken } from '~/types/chain';
 
 import { useCurrentEthereumNetwork } from './useCurrentEthereumNetwork';
@@ -8,10 +8,10 @@ import { useCurrentEthereumNetwork } from './useCurrentEthereumNetwork';
 type AddEthereumTokenParams = Omit<EthereumToken, 'id' | 'ethereumNetworkId'>;
 
 export function useCurrentEthereumTokens() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const { ethereumTokens } = chromeStorage;
+  const { ethereumTokens } = extensionStorage;
 
   const currentEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentEthereumNetwork.id);
 
@@ -21,7 +21,7 @@ export function useCurrentEthereumTokens() {
       { ...token, id: uuidv4(), ethereumNetworkId: currentEthereumNetwork.id },
     ];
 
-    await setChromeStorage('ethereumTokens', newEthereumTokens);
+    await setExtensionStorage('ethereumTokens', newEthereumTokens);
   };
 
   const addEthereumTokens = async (tokens: AddEthereumTokenParams[]) => {
@@ -36,13 +36,13 @@ export function useCurrentEthereumTokens() {
       ...newTokens,
     ];
 
-    await setChromeStorage('ethereumTokens', newEthereumTokens);
+    await setExtensionStorage('ethereumTokens', newEthereumTokens);
   };
 
   const removeEthereumToken = async (token: EthereumToken) => {
     const newEthereumTokens = ethereumTokens.filter((item) => item.id !== token.id);
 
-    await setChromeStorage('ethereumTokens', newEthereumTokens);
+    await setExtensionStorage('ethereumTokens', newEthereumTokens);
   };
 
   return { currentEthereumTokens, addEthereumToken, removeEthereumToken, addEthereumTokens };

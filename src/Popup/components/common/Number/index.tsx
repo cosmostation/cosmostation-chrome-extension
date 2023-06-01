@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 
 import { CURRENCY_DECIMALS, CURRENCY_SYMBOL } from '~/constants/currency';
 import { fix } from '~/Popup/utils/big';
-import type { CurrencyType } from '~/types/chromeStorage';
+import type { CurrencyType } from '~/types/extensionStorage';
 import type { NumberTypos } from '~/types/theme';
 
 type NumberProps = {

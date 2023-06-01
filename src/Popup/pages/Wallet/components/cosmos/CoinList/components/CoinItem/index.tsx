@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 
 import {
@@ -31,10 +31,10 @@ type CoinItemProps = {
 };
 
 export default function CoinItem({ disabled, imageURL, amount, decimals = 0, displayDenom, channel, onClick, coinGeckoId }: CoinItemProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
+  const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[extensionStorage.currency]) || 0;
 
   const displayAmount = toDisplayDenomAmount(amount, decimals);
 
@@ -64,7 +64,7 @@ export default function CoinItem({ disabled, imageURL, amount, decimals = 0, dis
           </RightTextValueContainer>
 
           <RightTextChangeRateContainer>
-            <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={chromeStorage.currency}>
+            <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={extensionStorage.currency}>
               {value}
             </Number>
           </RightTextChangeRateContainer>
