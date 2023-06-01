@@ -9,11 +9,11 @@ import { SUI } from '~/constants/chain/sui/sui';
 import Divider from '~/Popup/components/common/Divider';
 import Image from '~/Popup/components/common/Image';
 import Switch from '~/Popup/components/common/Switch';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useCurrentShownSuiNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownSuiNetworks';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Chain } from '~/types/chain';
 
@@ -42,9 +42,9 @@ export default function SelectChain() {
   const { addShownAptosNetworks, removeShownAptosNetworks } = useCurrentShownAptosNetworks();
   const { addShownSuiNetworks, removeShownSuiNetworks } = useCurrentShownSuiNetworks();
 
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
-  const { allowedChainIds } = chromeStorage;
+  const { allowedChainIds } = extensionStorage;
 
   const filteredCosmosChains = search ? COSMOS_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : COSMOS_CHAINS;
   const filteredEthereumChains = search ? ETHEREUM_CHAINS.filter((chain) => chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) : ETHEREUM_CHAINS;

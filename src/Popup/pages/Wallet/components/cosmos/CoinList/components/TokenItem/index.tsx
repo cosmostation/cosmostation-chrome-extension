@@ -7,7 +7,7 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
@@ -40,9 +40,9 @@ type TokenItemProps = {
 };
 
 export default function TokenItem({ chain, token, address, onClick, onClickDelete }: TokenItemProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
 
   const { decimals, displayDenom, imageURL, coinGeckoId } = token;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
@@ -53,7 +53,7 @@ export default function TokenItem({ chain, token, address, onClick, onClickDelet
 
   const displayAmount = toDisplayDenomAmount(amount, decimals);
 
-  const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
+  const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[extensionStorage.currency]) || 0;
   const value = times(displayAmount, price);
 
   return (

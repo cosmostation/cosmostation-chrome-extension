@@ -1,4 +1,4 @@
-import { CURRENCY_TYPE } from './chromeStorage';
+import { CURRENCY_TYPE } from './extensionStorage';
 
 export const CURRENCY_SYMBOL = {
   [CURRENCY_TYPE.USD]: '$',

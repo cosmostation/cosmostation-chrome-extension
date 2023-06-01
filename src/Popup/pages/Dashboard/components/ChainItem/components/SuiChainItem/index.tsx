@@ -7,16 +7,16 @@ import { SUI_COIN } from '~/constants/sui';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { debouncedOpenTab } from '~/Popup/utils/chromeTabs';
+import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import type { SuiChain, SuiNetwork } from '~/types/chain';
 
 type SuiChainItemProps = {
@@ -25,7 +25,7 @@ type SuiChainItemProps = {
 };
 
 export default function SuiChainItem({ chain, network }: SuiChainItemProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentAccount } = useCurrentAccount();
   const { data: coinGeckoData } = useCoinGeckoPriceSWR();
   const { setCurrentSuiNetwork } = useCurrentSuiNetwork();
@@ -48,8 +48,8 @@ export default function SuiChainItem({ chain, network }: SuiChainItemProps) {
   const totalAmount = useMemo(() => tokenBalanceObjects.find((item) => item.coinType === SUI_COIN)?.balance || '0', [tokenBalanceObjects]);
 
   const price = useMemo(
-    () => (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoData, coinGeckoId],
+    () => (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoData, coinGeckoId],
   );
 
   useEffect(() => {

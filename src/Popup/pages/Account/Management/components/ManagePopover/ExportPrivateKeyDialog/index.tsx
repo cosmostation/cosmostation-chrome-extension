@@ -7,13 +7,13 @@ import { Typography } from '@mui/material';
 import ChainButton from '~/Popup/components/ChainButton';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { getKeyPair } from '~/Popup/utils/common';
 import { sha512 } from '~/Popup/utils/crypto';
-import type { Account } from '~/types/chromeStorage';
+import type { Account } from '~/types/extensionStorage';
 
 import PrivateKeyView from './PrivateKeyView';
 import {
@@ -37,7 +37,7 @@ import Info16Icon from '~/images/icons/Info16.svg';
 type ExportPrivateKeyDialogProps = Omit<DialogProps, 'children'> & { account: Account; popoverOnClose?: PopoverProps['onClose'] };
 
 export default function ExportPrivateKeyDialog({ onClose, account, ...remainder }: ExportPrivateKeyDialogProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   const { currentChain } = useCurrentChain();
 
@@ -47,7 +47,7 @@ export default function ExportPrivateKeyDialog({ onClose, account, ...remainder 
 
   const [chain, setChain] = useState(currentChain);
 
-  const { accountName, encryptedPassword } = chromeStorage;
+  const { accountName, encryptedPassword } = extensionStorage;
 
   const [password, setPassword] = useState('');
 

@@ -17,10 +17,10 @@ import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataS
 import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
 import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { suiAddressRegex } from '~/Popup/utils/regex';
@@ -57,11 +57,11 @@ export default function Sui({ chain }: SuiProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { enQueue } = useCurrentQueue();
 
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   const { currentAccount } = useCurrentAccount();
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 

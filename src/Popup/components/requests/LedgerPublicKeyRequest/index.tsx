@@ -18,16 +18,16 @@ import Divider from '~/Popup/components/common/Divider';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import PopupHeader from '~/Popup/components/PopupHeader';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { RequestMessage } from '~/types/message';
 
 import {
@@ -57,7 +57,7 @@ type AccessRequestProps = {
 };
 
 export default function LedgerPublicKeyRequest({ children }: AccessRequestProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { currentQueue, deQueue } = useCurrentQueue();
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
   const { currentAccount } = useCurrentAccount();
@@ -69,7 +69,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
   const { t } = useTranslation();
 
-  const { accounts } = chromeStorage;
+  const { accounts } = extensionStorage;
 
   const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
   const suiPopupMethods = Object.values(SUI_POPUP_METHOD_TYPE) as string[];
@@ -204,7 +204,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                       if (accountIndex > -1) {
                         newAccounts.splice(accountIndex, 1, { ...currentAccount, cosmosPublicKey: publicKey });
 
-                        await setChromeStorage('accounts', newAccounts);
+                        await setExtensionStorage('accounts', newAccounts);
                       }
                     }
 
@@ -218,7 +218,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                       if (accountIndex > -1) {
                         newAccounts.splice(accountIndex, 1, { ...currentAccount, mediblocPublicKey: publicKey });
 
-                        await setChromeStorage('accounts', newAccounts);
+                        await setExtensionStorage('accounts', newAccounts);
                       }
                     }
 
@@ -232,7 +232,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                       if (accountIndex > -1) {
                         newAccounts.splice(accountIndex, 1, { ...currentAccount, cryptoOrgPublicKey: publicKey });
 
-                        await setChromeStorage('accounts', newAccounts);
+                        await setExtensionStorage('accounts', newAccounts);
                       }
                     }
 
@@ -247,7 +247,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                       if (accountIndex > -1) {
                         newAccounts.splice(accountIndex, 1, { ...currentAccount, ethereumPublicKey: publicKey });
 
-                        await setChromeStorage('accounts', newAccounts);
+                        await setExtensionStorage('accounts', newAccounts);
                       }
                     }
 
@@ -261,7 +261,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                       const publicKey = Buffer.from(result.publicKey).toString('hex');
                       if (accountIndex > -1) {
                         newAccounts.splice(accountIndex, 1, { ...currentAccount, suiPublicKey: publicKey });
-                        await setChromeStorage('accounts', newAccounts);
+                        await setExtensionStorage('accounts', newAccounts);
                       }
                     }
                   } catch (e) {

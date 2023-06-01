@@ -6,10 +6,10 @@ import type { DialogProps, PopoverProps } from '@mui/material';
 import { CHAINS } from '~/constants/chain';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ethereumAddressRegex, getCosmosAddressRegex } from '~/Popup/utils/regex';
-import type { AddressInfo } from '~/types/chromeStorage';
+import type { AddressInfo } from '~/types/extensionStorage';
 
 import { Container, MarginTop8Div, StyledButton, StyledInput, StyledTextArea } from './styled';
 import type { AddressBookForm } from './useSchema';
@@ -18,11 +18,11 @@ import { useSchema } from './useSchema';
 type EditDialogProps = Omit<DialogProps, 'children'> & { addressInfo: AddressInfo; popoverOnClose?: PopoverProps['onClose'] };
 
 export default function EditDialog({ onClose, addressInfo, ...remainder }: EditDialogProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { enqueueSnackbar } = useSnackbar();
 
   const { t } = useTranslation();
-  const { addressBook } = chromeStorage;
+  const { addressBook } = extensionStorage;
   const { address, label, memo, chainId } = addressInfo;
 
   const chain = CHAINS.find((item) => item.id === chainId);
@@ -66,7 +66,7 @@ export default function EditDialog({ onClose, addressInfo, ...remainder }: EditD
       const copiedAddressBook = addressBook.slice();
 
       copiedAddressBook.splice(itemIndex, 1, { ...addressInfo, ...data });
-      await setChromeStorage('addressBook', copiedAddressBook);
+      await setExtensionStorage('addressBook', copiedAddressBook);
       enqueueSnackbar('success');
     }
 

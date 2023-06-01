@@ -1,4 +1,5 @@
 import { MESSAGE_TYPE } from '~/constants/message';
+import { extension } from '~/Popup/utils/extension';
 import type { BackgroundToContentScriptEventMessage, ListenerMessage, ResponseMessage } from '~/types/message';
 
 export function responseToWeb<T, U>(data: Omit<BackgroundToContentScriptEventMessage<T, U>, 'type'>) {
@@ -11,14 +12,14 @@ export function responseToWeb<T, U>(data: Omit<BackgroundToContentScriptEventMes
   };
 
   if (data.tabId) {
-    chrome.tabs.sendMessage(data.tabId, toContentScriptMessage);
+    void extension.tabs.sendMessage(data.tabId, toContentScriptMessage);
   } else {
     if (!data.origin) return;
 
-    chrome.tabs.query({ url: `${data.origin}/*` }, (tabs) => {
+    void extension.tabs.query({ url: `${data.origin}/*` }, (tabs) => {
       tabs.forEach((tab) => {
         if (tab.id) {
-          chrome.tabs.sendMessage(tab.id, toContentScriptMessage);
+          void extension.tabs.sendMessage(tab.id, toContentScriptMessage);
         }
       });
     });
@@ -34,10 +35,10 @@ export function emitToWeb(data: Omit<ListenerMessage<ResponseMessage>, 'isCosmos
   };
 
   origins.forEach((origin) => {
-    chrome.tabs.query({ url: `${origin}/*` }, (tabs) => {
+    void extension.tabs.query({ url: `${origin}/*` }, (tabs) => {
       tabs.forEach((tab) => {
         if (tab.id) {
-          chrome.tabs.sendMessage(tab.id, toContentScriptMessage);
+          void extension.tabs.sendMessage(tab.id, toContentScriptMessage);
         }
       });
     });

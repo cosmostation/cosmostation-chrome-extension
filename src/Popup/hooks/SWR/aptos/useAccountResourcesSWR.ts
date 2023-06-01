@@ -4,7 +4,7 @@ import useSWR from 'swr';
 
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { get, isAxiosError } from '~/Popup/utils/axios';
 import type { ResourcesPayload } from '~/types/aptos/accounts';
 import type { AptosNetwork } from '~/types/chain';
@@ -24,12 +24,12 @@ type useAccountResourcesSWRProps = {
 export function useAccountResourcesSWR({ address, network }: useAccountResourcesSWRProps, config?: SWRConfiguration) {
   const chain = APTOS;
   const accounts = useAccounts(config?.suspense);
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentAptosNetwork } = useCurrentAptosNetwork();
 
   const { restURL } = network || currentAptosNetwork;
 
-  const addr = address || accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
+  const addr = address || accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
 
   const fetcher = async (params: FetchParams) => {
     try {

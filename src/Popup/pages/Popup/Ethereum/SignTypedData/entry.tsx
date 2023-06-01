@@ -23,7 +23,7 @@ import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { signTypedData } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { CustomTypedMessage, EthSignTypedData, EthSignTypedDataResponse } from '~/types/message/ethereum';
 
 import {

@@ -20,7 +20,7 @@ import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { personalSign, toUTF8 } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { PersonalSign, PersonalSignResponse } from '~/types/message/ethereum';
 
 import {

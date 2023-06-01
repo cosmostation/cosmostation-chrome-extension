@@ -4,7 +4,7 @@ import { Typography } from '@mui/material';
 import { CHAINS } from '~/constants/chain';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { shorterAddress } from '~/Popup/utils/string';
-import type { AddressInfo } from '~/types/chromeStorage';
+import type { AddressInfo } from '~/types/extensionStorage';
 
 import ManagePopover from './ManagePopover';
 import { AddressContainer, Container, LabelContainer, LabelLeftContainer, LabelRightContainer, MemoContainer, StyledButton, StyledImage } from './styled';

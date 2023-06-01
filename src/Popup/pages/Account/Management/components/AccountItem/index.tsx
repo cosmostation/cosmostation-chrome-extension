@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 
-import type { AccountType } from '~/types/chromeStorage';
+import type { AccountType } from '~/types/extensionStorage';
 
 import { Container, LeftContainer, LeftLedgerContainer, LeftTextContainer, RightContainer, StyledButton } from './styled';
 

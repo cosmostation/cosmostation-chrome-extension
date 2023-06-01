@@ -1,15 +1,15 @@
 import { useCallback, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
-import type { AutoSign } from '~/types/chromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
+import type { AutoSign } from '~/types/extensionStorage';
 
 import { useInterval } from '../useInterval';
 
 export function useCurrentAutoSigns(isInterval = false) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
-  const { autoSigns } = chromeStorage;
+  const { autoSigns } = extensionStorage;
 
   const [currentTime, setCurrentTime] = useState(new Date().getTime());
 
@@ -27,17 +27,17 @@ export function useCurrentAutoSigns(isInterval = false) {
         ...autoSigns.filter((item) => !(item.accountId === autoSign.accountId && item.chainId === autoSign.chainId && item.origin === autoSign.origin)),
         { id: uuidv4(), ...autoSign },
       ];
-      await setChromeStorage('autoSigns', newAutoSigns);
+      await setExtensionStorage('autoSigns', newAutoSigns);
     },
-    [autoSigns, setChromeStorage],
+    [autoSigns, setExtensionStorage],
   );
 
   const removeAutoSign = useCallback(
     async (autoSign: AutoSign) => {
       const newAutoSigns = autoSigns.filter((item) => item.id !== autoSign.id);
-      await setChromeStorage('autoSigns', newAutoSigns);
+      await setExtensionStorage('autoSigns', newAutoSigns);
     },
-    [autoSigns, setChromeStorage],
+    [autoSigns, setExtensionStorage],
   );
 
   return {

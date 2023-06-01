@@ -8,7 +8,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { getCoinAddress } from '~/Popup/utils/aptos';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { X1CoinCoinstore } from '~/types/aptos/accounts';
@@ -33,12 +33,12 @@ type CoinItemProps = {
 };
 
 export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   const coinAddress = getCoinAddress(coin.type);
   const accountAddress = coinAddress.split('::')[0];
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 

@@ -6,16 +6,16 @@ import Button from '~/Popup/components/common/Button';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { getCurrent, openTab } from '~/Popup/utils/chromeTabs';
-import { getCurrentWindow } from '~/Popup/utils/chromeWindows';
+import { getCurrent, openTab } from '~/Popup/utils/extensionTabs';
+import { getCurrentWindow, updateWindow } from '~/Popup/utils/extensionWindows';
 
 import { ButtonContainer, Container, DescriptionContainer } from './styled';
 
 import Browser16Icon from '~/images/icons/Browser16.svg';
 
 export default function LedgerToTab() {
-  const [chromeWindow, setChromeWindow] = useState<chrome.windows.Window | undefined>();
-  const [chromeTab, setChromeTab] = useState<chrome.tabs.Tab | undefined>();
+  const [extensionWindow, setExtensionWindow] = useState<chrome.windows.Window | browser.windows.Window | undefined>();
+  const [extensionTab, setExtensionTab] = useState<chrome.tabs.Tab | browser.tabs.Tab | undefined>();
 
   const { deQueue } = useCurrentQueue();
 
@@ -24,15 +24,15 @@ export default function LedgerToTab() {
 
   useEffect(() => {
     void (async () => {
-      setChromeWindow(await getCurrentWindow());
-      setChromeTab(await getCurrent());
+      setExtensionWindow(await getCurrentWindow());
+      setExtensionTab(await getCurrent());
     })();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (
-    (chromeWindow?.type !== 'normal' || (chromeWindow?.type === 'normal' && !chromeTab)) &&
+    (extensionWindow?.type !== 'normal' || (extensionWindow?.type === 'normal' && !extensionTab)) &&
     !isMobile({ ua: window.navigator.userAgent, tablet: true }) &&
     currentAccount.type === 'LEDGER'
   ) {
@@ -49,8 +49,8 @@ export default function LedgerToTab() {
             onClick={async () => {
               const tab = await openTab();
 
-              if (chromeWindow?.type === 'popup' && tab?.windowId) {
-                void chrome.windows.update(tab?.windowId, { focused: true });
+              if (extensionWindow?.type === 'popup' && tab?.windowId) {
+                void updateWindow(tab?.windowId, { focused: true });
               }
             }}
           >

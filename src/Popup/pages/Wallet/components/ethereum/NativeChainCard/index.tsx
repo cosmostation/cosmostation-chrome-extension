@@ -14,10 +14,10 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -56,7 +56,7 @@ type NativeChainCardProps = {
 
 export default function NativeChainCard({ chain, isCustom }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
@@ -72,7 +72,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const amount = BigInt(balance?.data?.result || '0').toString();
 
-  const price = (coinGeckoId && data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
+  const price = (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0;
 
   const displayAmount = toDisplayDenomAmount(amount, decimals);
 
@@ -120,7 +120,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>
-        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={chromeStorage.currency}>
+        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
           {value}
         </Number>
       </ThirdLineContainer>

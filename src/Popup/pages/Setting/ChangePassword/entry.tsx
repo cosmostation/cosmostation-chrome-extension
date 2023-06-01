@@ -6,8 +6,8 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import Button from '~/Popup/components/common/Button';
 import Divider from '~/Popup/components/common/Divider';
 import Input from '~/Popup/components/common/Input';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { aesDecrypt, aesEncrypt, sha512 } from '~/Popup/utils/crypto';
 
@@ -16,8 +16,8 @@ import type { ChangePasswordForm } from './useSchema';
 import { useSchema } from './useSchema';
 
 export default function Entry() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { changePasswordForm } = useSchema({ encryptedPassword: chromeStorage.encryptedPassword! });
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
+  const { changePasswordForm } = useSchema({ encryptedPassword: extensionStorage.encryptedPassword! });
   const { setCurrentPassword } = useCurrentPassword();
   const { t } = useTranslation();
   const [password, setPassword] = useState('');
@@ -36,7 +36,7 @@ export default function Entry() {
   });
 
   const submit = async (data: ChangePasswordForm) => {
-    const { accounts } = chromeStorage;
+    const { accounts } = extensionStorage;
 
     const newAccounts = accounts.map((account) => {
       if (account.type === 'MNEMONIC') {
@@ -54,9 +54,9 @@ export default function Entry() {
       return account;
     });
 
-    await setChromeStorage('accounts', newAccounts);
+    await setExtensionStorage('accounts', newAccounts);
 
-    await setChromeStorage('encryptedPassword', sha512(data.newPassword));
+    await setExtensionStorage('encryptedPassword', sha512(data.newPassword));
 
     await setCurrentPassword(data.newPassword);
 

@@ -6,11 +6,11 @@ import Button from '~/Popup/components/common/Button';
 import Divider from '~/Popup/components/common/Divider';
 import IconButton from '~/Popup/components/common/IconButton';
 import Switch from '~/Popup/components/common/Switch';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { debouncedOpenTab } from '~/Popup/utils/chromeTabs';
+import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 
 import ItemButton from './components/ItemButton';
 import {
@@ -52,12 +52,12 @@ import Provider24Icon from '~/images/icons/Provider24.svg';
 type DrawerProps = Omit<BaseDrawerProps, 'children'>;
 
 export default function Drawer({ onClose, ...remainder }: DrawerProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { navigate } = useNavigate();
   const { setCurrentPassword } = useCurrentPassword();
   const { t } = useTranslation();
 
-  const isDarkMode = chromeStorage.theme === THEME_TYPE.DARK;
+  const isDarkMode = extensionStorage.theme === THEME_TYPE.DARK;
 
   return (
     <StyledDrawer {...remainder} onClose={onClose}>
@@ -93,7 +93,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
                 <Switch
                   checked={isDarkMode}
                   onChange={async (event) => {
-                    await setChromeStorage('theme', event.currentTarget.checked ? THEME_TYPE.DARK : THEME_TYPE.LIGHT);
+                    await setExtensionStorage('theme', event.currentTarget.checked ? THEME_TYPE.DARK : THEME_TYPE.LIGHT);
                   }}
                 />
               </ItemRightContainer>

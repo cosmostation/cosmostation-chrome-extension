@@ -5,9 +5,9 @@ import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { PATH } from '~/constants/route';
 import IconButton from '~/Popup/components/common/IconButton';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import type { Path } from '~/types/route';
 
@@ -29,14 +29,14 @@ type HeaderProps = {
 
 export default function Header({ isShowMenuButton = true, isShowPageButton = true, isShowSwapButton = true }: HeaderProps) {
   const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentChain } = useCurrentChain();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { pathname } = useLocation();
   const { navigate } = useNavigate();
 
-  const { rootPath } = chromeStorage;
+  const { rootPath } = extensionStorage;
 
   const buttonPath = ([PATH.DASHBOARD, PATH.WALLET] as string[]).includes(pathname) ? (rootPath === PATH.DASHBOARD ? PATH.WALLET : PATH.DASHBOARD) : rootPath;
 

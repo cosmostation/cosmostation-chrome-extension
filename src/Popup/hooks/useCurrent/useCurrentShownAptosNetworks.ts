@@ -1,11 +1,11 @@
 import { APTOS_NETWORKS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { AptosNetwork } from '~/types/chain';
 
 export function useCurrentShownAptosNetworks() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
-  const { shownAptosNetworkIds } = chromeStorage;
+  const { shownAptosNetworkIds } = extensionStorage;
 
   const currentShownAptosNetwork = APTOS_NETWORKS.filter((network) => shownAptosNetworkIds.includes(network.id));
 
@@ -14,7 +14,7 @@ export function useCurrentShownAptosNetworks() {
       return;
     }
 
-    await setChromeStorage('shownAptosNetworkIds', [...shownAptosNetworkIds, network.id]);
+    await setExtensionStorage('shownAptosNetworkIds', [...shownAptosNetworkIds, network.id]);
   };
 
   const addShownAptosNetworks = async (networks: AptosNetwork[]) => {
@@ -22,7 +22,7 @@ export function useCurrentShownAptosNetworks() {
 
     const newShownAptosNetworkIds = Array.from(new Set([...shownAptosNetworkIds, ...networkIds]));
 
-    await setChromeStorage('shownAptosNetworkIds', newShownAptosNetworkIds);
+    await setExtensionStorage('shownAptosNetworkIds', newShownAptosNetworkIds);
   };
 
   const removeShownAptosNetwork = async (network: AptosNetwork) => {
@@ -32,7 +32,7 @@ export function useCurrentShownAptosNetworks() {
 
     const newShownAptosNetworkIds = shownAptosNetworkIds.filter((shownAptosNetworkId) => shownAptosNetworkId !== network.id);
 
-    await setChromeStorage('shownAptosNetworkIds', newShownAptosNetworkIds);
+    await setExtensionStorage('shownAptosNetworkIds', newShownAptosNetworkIds);
   };
 
   const removeShownAptosNetworks = async (networks: AptosNetwork[]) => {
@@ -40,7 +40,7 @@ export function useCurrentShownAptosNetworks() {
 
     const newShownAptosNetworkIds = shownAptosNetworkIds.filter((shownAptosNetworkId) => !networkIds.includes(shownAptosNetworkId));
 
-    await setChromeStorage('shownAptosNetworkIds', newShownAptosNetworkIds);
+    await setExtensionStorage('shownAptosNetworkIds', newShownAptosNetworkIds);
   };
 
   return {
