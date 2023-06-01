@@ -44,7 +44,7 @@ export const extensionStorageDefault: ExtensionStorage = {
 
   autoSigns: [],
 
-  ledgerTransportType: 'USB',
+  ledgerTransportType: 'HID',
 
   providers: { keplr: false, metamask: false, aptos: false },
 };

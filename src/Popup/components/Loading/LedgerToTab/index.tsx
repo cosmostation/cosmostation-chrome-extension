@@ -7,7 +7,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { getCurrent, openTab } from '~/Popup/utils/extensionTabs';
-import { getCurrentWindow } from '~/Popup/utils/extensionWindows';
+import { getCurrentWindow, updateWindow } from '~/Popup/utils/extensionWindows';
 
 import { ButtonContainer, Container, DescriptionContainer } from './styled';
 
@@ -47,7 +47,11 @@ export default function LedgerToTab() {
             type="button"
             typoVarient="h5"
             onClick={async () => {
-              await openTab();
+              const tab = await openTab();
+
+              if (extensionWindow?.type === 'popup' && tab?.windowId) {
+                void updateWindow(tab?.windowId, { focused: true });
+              }
             }}
           >
             {t('components.Loading.LedgerToTab.index.continue')}

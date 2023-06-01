@@ -1,7 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
-import { Connection, Ed25519Keypair, JsonRpcProvider, RawSigner, TransactionBlock } from '@mysten/sui.js';
+import Sui from '@mysten/ledgerjs-hw-app-sui';
+import {
+  Connection,
+  Ed25519Keypair,
+  Ed25519PublicKey,
+  IntentScope,
+  JsonRpcProvider,
+  messageWithIntent,
+  RawSigner,
+  toSerializedSignature,
+  TransactionBlock,
+} from '@mysten/sui.js';
 
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -11,6 +22,7 @@ import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useDryRunTransactionBlockSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionBlockSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -19,6 +31,8 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
+import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Sui/components/Header';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -64,6 +78,9 @@ export default function Entry({ queue }: EntryProps) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { currency } = extensionStorage;
+  const { setLoadingLedgerSigning } = useLoading();
+
+  const { closeTransport, createTransport } = useLedgerTransport();
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
@@ -79,6 +96,12 @@ export default function Entry({ queue }: EntryProps) {
   const { currentPassword } = useCurrentPassword();
   const [isProgress, setIsProgress] = useState(false);
 
+  const accounts = useAccounts(true);
+
+  const address = useMemo(
+    () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '',
+    [accounts.data, chain.id, currentAccount.id],
+  );
   const { t } = useTranslation();
 
   const [tabValue, setTabValue] = useState(0);
@@ -95,26 +118,28 @@ export default function Entry({ queue }: EntryProps) {
     [currentSuiNetwork.rpcURL],
   );
 
-  const keypair = useMemo(() => Ed25519Keypair.fromSecretKey(keyPair!.privateKey!), [keyPair]);
+  const transactionBlock = useMemo(() => {
+    const txBlock = TransactionBlock.from(params[0].transactionBlockSerialized);
+    txBlock.setSenderIfNotSet(address);
 
-  const rawSigner = useMemo(() => new RawSigner(keypair, provider), [keypair, provider]);
-
-  const transactionBlock = useMemo(() => TransactionBlock.from(params[0].transactionBlockSerialized), [params]);
+    return txBlock;
+  }, [address, params]);
 
   const transactionBlockInput = useMemo(
     () => ({
+      ...params[0],
       options: {
         showInput: true,
         showEffects: true,
         showEvents: true,
+        ...params[0]?.options,
       },
-      ...params[0],
       transactionBlockSerialized: undefined,
       transactionBlock,
     }),
     [params, transactionBlock],
   );
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ rawSigner, transactionBlock });
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ transactionBlock });
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
@@ -271,17 +296,69 @@ export default function Entry({ queue }: EntryProps) {
               onClick={async () => {
                 try {
                   setIsProgress(true);
-                  const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
 
-                  responseToWeb({
-                    response: {
-                      result: response,
-                    },
-                    message,
-                    messageId,
-                    origin,
-                  });
-                  // }
+                  if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
+                    const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
+
+                    const rawSigner = new RawSigner(keypair, provider);
+
+                    const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
+
+                    responseToWeb({
+                      response: {
+                        result: response,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
+                  }
+
+                  if (currentAccount.type === 'LEDGER') {
+                    setLoadingLedgerSigning(true);
+                    const transport = await createTransport();
+                    const suiApp = new Sui(transport);
+
+                    const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
+
+                    const transactionBlockBytes = await transactionBlock.build({ provider });
+
+                    const intentMessage = messageWithIntent(IntentScope.TransactionData, transactionBlockBytes);
+
+                    const { signature } = await suiApp.signTransaction(path, intentMessage);
+
+                    if (!keyPair?.publicKey) {
+                      throw new Error('public key is not found');
+                    }
+
+                    const pubKey = new Ed25519PublicKey(keyPair.publicKey);
+
+                    const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', pubKey });
+
+                    const response = await provider.executeTransactionBlock({
+                      transactionBlock: transactionBlockBytes,
+                      signature: serializedSignature,
+                    });
+
+                    const txBlock = await provider.getTransactionBlock({
+                      digest: response.digest,
+                      options: {
+                        showInput: true,
+                        showEffects: true,
+                        showEvents: true,
+                        ...params[0]?.options,
+                      },
+                    });
+
+                    responseToWeb({
+                      response: {
+                        result: txBlock,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
+                  }
 
                   if (queue.channel === 'inApp') {
                     enqueueSnackbar('success');
@@ -291,6 +368,8 @@ export default function Entry({ queue }: EntryProps) {
                 } catch (e) {
                   enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                 } finally {
+                  await closeTransport();
+                  setLoadingLedgerSigning(false);
                   setIsProgress(false);
                 }
               }}

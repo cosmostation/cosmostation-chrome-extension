@@ -5,6 +5,7 @@ import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/cha
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { SUI } from '~/constants/chain/sui/sui';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -41,7 +42,7 @@ export default function Entry() {
     void setExtensionStorage('encryptedPassword', null);
     void setExtensionStorage('selectedAccountId', '');
 
-    void setExtensionStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id]);
+    void setExtensionStorage('allowedChainIds', [ETHEREUM.id, COSMOS.id, APTOS.id, SUI.id]);
     void setExtensionStorage('shownEthereumNetworkIds', [...ETHEREUM_NETWORKS.map((network) => network.id)]);
     void setExtensionStorage('shownAptosNetworkIds', [...APTOS_NETWORKS.map((network) => network.id)]);
     void setExtensionStorage('shownSuiNetworkIds', [...SUI_NETWORKS.map((network) => network.id)]);

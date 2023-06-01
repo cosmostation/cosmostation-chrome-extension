@@ -84,6 +84,14 @@ export async function closeWindow(id?: number): Promise<void> {
   });
 }
 
+export function updateWindow(windowId: number, updateInfo: chrome.windows.UpdateInfo | browser.windows._UpdateUpdateInfo) {
+  if (process.env.BROWSER === 'chrome') {
+    return chrome.windows.update(windowId, updateInfo as chrome.windows.UpdateInfo);
+  }
+
+  return browser.windows.update(windowId, updateInfo as browser.windows._UpdateUpdateInfo);
+}
+
 export function getWindow(windowId: number): Promise<chrome.windows.Window | browser.windows.Window | undefined> {
   return new Promise((res, rej) => {
     if (process.env.BROWSER === 'chrome') {
