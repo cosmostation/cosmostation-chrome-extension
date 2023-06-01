@@ -32,6 +32,7 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
+import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Sui/components/Header';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -71,6 +72,8 @@ export default function Entry({ queue }: EntryProps) {
 
   const { message, messageId, origin } = queue;
   const { params } = message;
+
+  const { setLoadingLedgerSigning } = useLoading();
 
   const { chromeStorage } = useChromeStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
@@ -313,6 +316,7 @@ export default function Entry({ queue }: EntryProps) {
                   }
 
                   if (currentAccount.type === 'LEDGER') {
+                    setLoadingLedgerSigning(true);
                     const transport = await createTransport();
                     const suiApp = new Sui(transport);
 
@@ -366,6 +370,7 @@ export default function Entry({ queue }: EntryProps) {
                   enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                 } finally {
                   await closeTransport();
+                  setLoadingLedgerSigning(false);
                   setIsProgress(false);
                 }
               }}
