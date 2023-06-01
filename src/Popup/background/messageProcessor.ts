@@ -32,7 +32,7 @@ import { SUI_METHOD_TYPE, SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { AptosRPCError, CommonRPCError, CosmosRPCError, EthereumRPCError, SuiRPCError } from '~/Popup/utils/error';
 import { requestRPC as ethereumRequestRPC, signTypedData } from '~/Popup/utils/ethereum';
-import { chromeSessionStorage } from '~/Popup/utils/extensionSessionStorage';
+import { extensionSessionStorage } from '~/Popup/utils/extensionSessionStorage';
 import { extensionStorage, getStorage, setStorage } from '~/Popup/utils/extensionStorage';
 import { openWindow } from '~/Popup/utils/extensionWindows';
 import { responseToWeb } from '~/Popup/utils/message';
@@ -218,7 +218,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
       const { currentAccount, currentAccountName, additionalChains, currentAllowedChains, currentAccountAllowedOrigins, accounts, autoSigns, allowedOrigins } =
         await extensionStorage();
 
-      const { currentPassword } = await chromeSessionStorage();
+      const { currentPassword } = await extensionSessionStorage();
 
       if (accounts.length === 0) {
         throw new CosmosRPCError(RPC_ERROR.INVALID_REQUEST, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_REQUEST]);
@@ -1127,7 +1127,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
     const { additionalEthereumNetworks, currentEthereumNetwork, currentAccountAllowedOrigins, currentAccount } = await extensionStorage();
 
-    const { currentPassword } = await chromeSessionStorage();
+    const { currentPassword } = await extensionSessionStorage();
 
     const { message, messageId, origin } = request;
 
@@ -1699,7 +1699,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
     const { currentAccountAllowedOrigins, currentAccount, allowedOrigins, currentAptosNetwork } = await extensionStorage();
 
-    const { currentPassword } = await chromeSessionStorage();
+    const { currentPassword } = await extensionSessionStorage();
 
     const { message, messageId, origin } = request;
 
@@ -1859,7 +1859,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
     const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins, currentSuiNetwork } = await extensionStorage();
 
-    const { currentPassword } = await chromeSessionStorage();
+    const { currentPassword } = await extensionSessionStorage();
 
     const { message, messageId, origin } = request;
 

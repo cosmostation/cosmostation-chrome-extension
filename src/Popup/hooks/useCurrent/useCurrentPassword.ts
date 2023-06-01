@@ -1,16 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { useChromeSessionStorage } from '~/Popup/hooks/useExtensionSessionStorage';
+import { useExtensionSessionStorage } from '~/Popup/hooks/useExtensionSessionStorage';
 import { aesDecrypt, aesEncrypt } from '~/Popup/utils/crypto';
 
 export function useCurrentPassword() {
-  const { chromeSessionStorage, setChromeSessionStorage } = useChromeSessionStorage();
+  const { extensionSessionStorage, setExtensionSessionStorage } = useExtensionSessionStorage();
 
   const setCurrentPassword = async (password: string | null) => {
     const time = new Date().getTime();
     const key = uuidv4();
 
-    await setChromeSessionStorage(
+    await setExtensionSessionStorage(
       'password',
       password
         ? {
@@ -22,8 +22,8 @@ export function useCurrentPassword() {
     );
   };
 
-  const currentPassword = chromeSessionStorage.password
-    ? aesDecrypt(chromeSessionStorage.password.value, `${chromeSessionStorage.password.key}${chromeSessionStorage.password.time}`)
+  const currentPassword = extensionSessionStorage.password
+    ? aesDecrypt(extensionSessionStorage.password.value, `${extensionSessionStorage.password.key}${extensionSessionStorage.password.time}`)
     : null;
 
   return { currentPassword, setCurrentPassword };

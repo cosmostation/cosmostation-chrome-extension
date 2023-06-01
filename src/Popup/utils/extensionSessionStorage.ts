@@ -34,7 +34,7 @@ export function setSessionStorage<T extends ChromeSessionStorageKeys>(key: T, va
   });
 }
 
-export async function chromeSessionStorage() {
+export async function extensionSessionStorage() {
   const storage = await getAllSessionStorage();
 
   const currentPassword = storage.password ? aesDecrypt(storage.password.value, `${storage.password.key}${storage.password.time}`) : null;

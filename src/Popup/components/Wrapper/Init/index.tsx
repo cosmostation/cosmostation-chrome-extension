@@ -11,7 +11,7 @@ import { MAINNET as SUI_NETWORK_MAINNET } from '~/constants/chain/sui/network/ma
 import { SUI } from '~/constants/chain/sui/sui';
 import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/extensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { chromeSessionStorageDefault, chromeSessionStorageState } from '~/Popup/recoils/extensionSessionStorage';
+import { extensionSessionStorageDefault, extensionSessionStorageState } from '~/Popup/recoils/extensionSessionStorage';
 import { extensionStorageDefault, extensionStorageState } from '~/Popup/recoils/extensionStorage';
 import { getAllSessionStorage } from '~/Popup/utils/extensionSessionStorage';
 import { getAllStorage, setStorage } from '~/Popup/utils/extensionStorage';
@@ -26,7 +26,7 @@ export default function Init({ children }: InitType) {
   const [isLoading, setIsLoading] = useState(true);
 
   const [extensionStorage, setExtensionStorage] = useRecoilState(extensionStorageState);
-  const setChromeSessionStorage = useSetRecoilState(chromeSessionStorageState);
+  const setExtensionSessionStorage = useSetRecoilState(extensionSessionStorageState);
 
   const { changeLanguage, language } = useTranslation();
 
@@ -49,7 +49,7 @@ export default function Init({ children }: InitType) {
 
     if (areaName === 'session') {
       void (async () => {
-        setChromeSessionStorage({ ...chromeSessionStorageDefault, ...(await getAllSessionStorage()) });
+        setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...(await getAllSessionStorage()) });
       })();
     }
   };
@@ -59,7 +59,7 @@ export default function Init({ children }: InitType) {
 
     void (async () => {
       const originChromeSessionStorage = await getAllSessionStorage();
-      setChromeSessionStorage({ ...chromeSessionStorageDefault, ...originChromeSessionStorage });
+      setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...originChromeSessionStorage });
 
       const originExtensionStorage = await getAllStorage();
       setExtensionStorage({ ...extensionStorageDefault, ...originExtensionStorage });
