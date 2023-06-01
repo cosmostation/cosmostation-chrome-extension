@@ -1,12 +1,14 @@
 import { debounce } from 'lodash';
 
+import { extension } from '~/Popup/utils/extension';
+
 import { getCurrentWindow } from './extensionWindows';
 
-export async function openTab(path?: string): Promise<chrome.tabs.Tab> {
+export async function openTab(path?: string): Promise<chrome.tabs.Tab | browser.tabs.Tab> {
   const currentTab = await getCurrent();
   const currentWindow = await getCurrentWindow();
 
-  const url = chrome.runtime.getURL(`popup.html${path ? `#${path}` : ''}`);
+  const url = extension.runtime.getURL(`popup.html${path ? `#${path}` : ''}`);
 
   return new Promise((res, rej) => {
     if (currentTab && currentWindow?.type !== 'popup') {
@@ -14,9 +16,9 @@ export async function openTab(path?: string): Promise<chrome.tabs.Tab> {
       return;
     }
 
-    chrome.tabs.create({ active: true, url }, (tab) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
+    void extension.tabs.create({ active: true, url }, (tab) => {
+      if (extension.runtime.lastError) {
+        rej(extension.runtime.lastError);
       }
 
       res(tab);
@@ -35,9 +37,9 @@ export async function closeTab(id?: number): Promise<void> {
       return;
     }
 
-    void chrome.tabs.remove(currentTabId, () => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
+    void extension.tabs.remove(currentTabId, () => {
+      if (extension.runtime.lastError) {
+        rej(extension.runtime.lastError);
       }
 
       res();
@@ -45,11 +47,11 @@ export async function closeTab(id?: number): Promise<void> {
   });
 }
 
-export function getCurrent(): Promise<chrome.tabs.Tab | undefined> {
+export function getCurrent(): Promise<chrome.tabs.Tab | browser.tabs.Tab | undefined> {
   return new Promise((res, rej) => {
-    chrome.tabs.getCurrent((tab) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
+    void extension.tabs.getCurrent((tab) => {
+      if (extension.runtime.lastError) {
+        rej(extension.runtime.lastError);
       }
 
       res(tab);
@@ -59,7 +61,7 @@ export function getCurrent(): Promise<chrome.tabs.Tab | undefined> {
 
 export async function getCurrentTab() {
   const queryOptions = { active: true, currentWindow: true };
-  const [tab] = await chrome.tabs.query(queryOptions);
+  const [tab] = await extension.tabs.query(queryOptions);
 
   const origin = tab?.url ? new URL(tab.url).origin : undefined;
   return { ...tab, origin };

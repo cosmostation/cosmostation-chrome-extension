@@ -13,6 +13,7 @@ import { CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/extensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { extensionSessionStorageDefault, extensionSessionStorageState } from '~/Popup/recoils/extensionSessionStorage';
 import { extensionStorageDefault, extensionStorageState } from '~/Popup/recoils/extensionStorage';
+import { extension } from '~/Popup/utils/extension';
 import { getAllSessionStorage } from '~/Popup/utils/extensionSessionStorage';
 import { getAllStorage, setStorage } from '~/Popup/utils/extensionStorage';
 import type { Chain, CosmosChain } from '~/types/chain';
@@ -40,26 +41,30 @@ export default function Init({ children }: InitType) {
   const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
   const officialEthereumNetworkChainIds = ETHEREUM_NETWORKS.map((item) => item.chainId);
 
-  const handleOnStorageChange = (_: unknown, areaName: 'sync' | 'local' | 'managed' | 'session') => {
-    if (areaName === 'local') {
-      void (async () => {
-        setExtensionStorage({ ...extensionStorageDefault, ...(await getAllStorage()) });
-      })();
-    }
+  const handleOnStorageChange = (_: unknown, areaName: string) => {
+    void (async () => {
+      if (process.env.BROWSER === 'chrome') {
+        if (areaName === 'local') {
+          setExtensionStorage({ ...extensionStorageDefault, ...(await getAllStorage()) });
+        }
 
-    if (areaName === 'session') {
-      void (async () => {
-        setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...(await getAllSessionStorage()) });
-      })();
-    }
+        if (areaName === 'session') {
+          setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...(await getAllSessionStorage()) });
+        }
+      } else {
+        const allStorage = await getAllStorage();
+        setExtensionStorage({ ...extensionStorageDefault, ...allStorage });
+        setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...allStorage });
+      }
+    })();
   };
 
   useEffect(() => {
-    chrome.storage.onChanged.addListener(handleOnStorageChange);
+    extension.storage.onChanged.addListener(handleOnStorageChange);
 
     void (async () => {
-      const originChromeSessionStorage = await getAllSessionStorage();
-      setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...originChromeSessionStorage });
+      const originExtensionSessionStorage = await getAllSessionStorage();
+      setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...originExtensionSessionStorage });
 
       const originExtensionStorage = await getAllStorage();
       setExtensionStorage({ ...extensionStorageDefault, ...originExtensionStorage });
@@ -226,7 +231,7 @@ export default function Init({ children }: InitType) {
     })();
 
     return () => {
-      chrome.storage.onChanged.removeListener(handleOnStorageChange);
+      extension.storage.onChanged.removeListener(handleOnStorageChange);
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

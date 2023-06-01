@@ -1,12 +1,12 @@
 import { atom } from 'recoil';
 
-import type { ChromeSessionStorage } from '~/types/extensionStorage';
+import type { ExtensionSessionStorage } from '~/types/extensionStorage';
 
-export const extensionSessionStorageDefault: ChromeSessionStorage = {
+export const extensionSessionStorageDefault: ExtensionSessionStorage = {
   password: null,
 };
 
-export const extensionSessionStorageState = atom<ChromeSessionStorage>({
+export const extensionSessionStorageState = atom<ExtensionSessionStorage>({
   key: 'extensionSessionStorageState',
   default: extensionSessionStorageDefault,
 });

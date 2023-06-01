@@ -142,8 +142,8 @@ export type Password = {
   time: number;
 };
 
-export type ChromeSessionStorage = {
+export type ExtensionSessionStorage = {
   password: Password | null;
 };
 
-export type ChromeSessionStorageKeys = keyof ChromeSessionStorage;
+export type ExtensionSessionStorageKeys = keyof ExtensionSessionStorage;

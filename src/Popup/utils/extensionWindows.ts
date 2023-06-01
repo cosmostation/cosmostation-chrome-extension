@@ -1,7 +1,9 @@
+import { extension } from '~/Popup/utils/extension';
+
 import { getStorage, setStorage } from './extensionStorage';
 
-export async function openWindow(): Promise<chrome.windows.Window | undefined> {
-  const url = chrome.runtime.getURL('popup.html');
+export async function openWindow(): Promise<chrome.windows.Window | browser.windows.Window | undefined> {
+  const url = extension.runtime.getURL('popup.html');
 
   const queues = await getStorage('queues');
 
@@ -28,20 +30,35 @@ export async function openWindow(): Promise<chrome.windows.Window | undefined> {
     if (currentWindows.length > 0) {
       res(currentWindows[0]);
       if (currentWindows[0]?.id) {
-        void chrome.windows.update(currentWindows[0].id, { focused: true });
+        void extension.windows.update(currentWindows[0].id, { focused: true });
       }
       return;
     }
 
-    chrome.windows.create({ width: 375, height: 640, url, type: 'popup' }, (window) => {
-      void (async () => {
-        if (chrome.runtime.lastError) {
-          rej(chrome.runtime.lastError);
-        }
-        await setStorage('windowId', window?.id ?? null);
-        res(window);
-      })();
-    });
+    const width = 375;
+    const height = 640;
+
+    if (process.env.BROWSER === 'chrome') {
+      chrome.windows.create({ width, height, url, type: 'popup' }, (window) => {
+        void (async () => {
+          if (extension.runtime.lastError) {
+            rej(extension.runtime.lastError);
+          }
+          await setStorage('windowId', window?.id ?? null);
+          res(window);
+        })();
+      });
+    } else {
+      void browser.windows.create({ width, height, url, type: 'popup' }).then((window) => {
+        void (async () => {
+          if (extension.runtime.lastError) {
+            rej(extension.runtime.lastError);
+          }
+          await setStorage('windowId', window?.id ?? null);
+          res(window);
+        })();
+      });
+    }
   });
 }
 
@@ -57,9 +74,9 @@ export async function closeWindow(id?: number): Promise<void> {
       return;
     }
 
-    chrome.windows.remove(currentWindow.id, () => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
+    void extension.windows.remove(currentWindow.id, () => {
+      if (extension.runtime.lastError) {
+        rej(extension.runtime.lastError);
       }
 
       res();
@@ -67,27 +84,48 @@ export async function closeWindow(id?: number): Promise<void> {
   });
 }
 
-export function getWindow(windowId: number): Promise<chrome.windows.Window | undefined> {
+export function getWindow(windowId: number): Promise<chrome.windows.Window | browser.windows.Window | undefined> {
   return new Promise((res, rej) => {
-    chrome.windows.getAll((windows) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
-      }
+    if (process.env.BROWSER === 'chrome') {
+      void chrome.windows.getAll((windows) => {
+        if (extension.runtime.lastError) {
+          rej(extension.runtime.lastError);
+        }
 
-      const specificWindow = windows.find((window) => window.id === windowId);
-      res(specificWindow);
-    });
+        const specificWindow = windows.find((window) => window.id === windowId);
+        res(specificWindow);
+      });
+    } else {
+      void browser.windows.getAll().then((windows) => {
+        if (extension.runtime.lastError) {
+          rej(extension.runtime.lastError);
+        }
+
+        const specificWindow = windows.find((window) => window.id === windowId);
+        res(specificWindow);
+      });
+    }
   });
 }
 
-export function getCurrentWindow(): Promise<chrome.windows.Window | undefined> {
+export function getCurrentWindow(): Promise<chrome.windows.Window | browser.windows.Window | undefined> {
   return new Promise((res, rej) => {
-    chrome.windows.getCurrent((windows) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
-      }
+    if (process.env.BROWSER === 'chrome') {
+      void chrome.windows.getCurrent((windows) => {
+        if (chrome.runtime.lastError) {
+          rej(chrome.runtime.lastError);
+        }
 
-      res(windows);
-    });
+        res(windows);
+      });
+    } else {
+      void browser.windows.getCurrent().then((windows) => {
+        if (browser.runtime.lastError) {
+          rej(browser.runtime.lastError);
+        }
+
+        res(windows);
+      });
+    }
   });
 }

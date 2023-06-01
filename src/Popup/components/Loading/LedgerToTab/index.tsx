@@ -14,8 +14,8 @@ import { ButtonContainer, Container, DescriptionContainer } from './styled';
 import Browser16Icon from '~/images/icons/Browser16.svg';
 
 export default function LedgerToTab() {
-  const [extensionWindow, setExtensionWindow] = useState<chrome.windows.Window | undefined>();
-  const [extensionTab, setExtensionTab] = useState<chrome.tabs.Tab | undefined>();
+  const [extensionWindow, setExtensionWindow] = useState<chrome.windows.Window | browser.windows.Window | undefined>();
+  const [extensionTab, setExtensionTab] = useState<chrome.tabs.Tab | browser.tabs.Tab | undefined>();
 
   const { deQueue } = useCurrentQueue();
 

@@ -1,37 +1,51 @@
 import { aesDecrypt } from '~/Popup/utils/crypto';
-import type { ChromeSessionStorage, ChromeSessionStorageKeys } from '~/types/extensionStorage';
+import type { ExtensionSessionStorage, ExtensionSessionStorageKeys } from '~/types/extensionStorage';
 
-export function getSessionStorage<T extends ChromeSessionStorageKeys>(key: T): Promise<ChromeSessionStorage[T]> {
-  return new Promise((res, rej) => {
-    chrome.storage.session.get(key, (items) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
-      }
-      res((items ? items[key] : undefined) as ChromeSessionStorage[T]);
+export async function getSessionStorage<T extends ExtensionSessionStorageKeys>(key: T): Promise<ExtensionSessionStorage[T]> {
+  if (process.env.BROWSER === 'chrome') {
+    return new Promise((res, rej) => {
+      chrome.storage.session.get(key, (items) => {
+        if (chrome.runtime.lastError) {
+          rej(chrome.runtime.lastError);
+        }
+        res((items ? items[key] : undefined) as ExtensionSessionStorage[T]);
+      });
     });
-  });
+  }
+  const localStorage = await browser.storage.local.get(key);
+
+  return localStorage[key] as ExtensionSessionStorage[T];
 }
 
-export function getAllSessionStorage(): Promise<ChromeSessionStorage> {
-  return new Promise((res, rej) => {
-    chrome.storage.session.get(null, (items) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
-      }
-      res(items as ChromeSessionStorage);
+export async function getAllSessionStorage(): Promise<ExtensionSessionStorage> {
+  if (process.env.BROWSER === 'chrome') {
+    return new Promise((res, rej) => {
+      chrome.storage.session.get(null, (items) => {
+        if (chrome.runtime.lastError) {
+          rej(chrome.runtime.lastError);
+        }
+        res(items as ExtensionSessionStorage);
+      });
     });
-  });
+  }
+  const localStorage = await browser.storage.local.get();
+
+  return localStorage as ExtensionSessionStorage;
 }
 
-export function setSessionStorage<T extends ChromeSessionStorageKeys>(key: T, value: ChromeSessionStorage[T]): Promise<true> {
-  return new Promise((res, rej) => {
-    chrome.storage.session.set({ [key]: value }, () => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
-      }
-      res(true);
+export async function setSessionStorage<T extends ExtensionSessionStorageKeys>(key: T, value: ExtensionSessionStorage[T]): Promise<true> {
+  if (process.env.BROWSER === 'chrome') {
+    return new Promise((res, rej) => {
+      chrome.storage.session.set({ [key]: value }, () => {
+        if (chrome.runtime.lastError) {
+          rej(chrome.runtime.lastError);
+        }
+        res(true);
+      });
     });
-  });
+  }
+  await browser.storage.local.set({ [key]: value });
+  return true;
 }
 
 export async function extensionSessionStorage() {

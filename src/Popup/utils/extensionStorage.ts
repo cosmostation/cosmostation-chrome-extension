@@ -2,37 +2,51 @@ import { APTOS_NETWORKS, CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/const
 import { extensionStorageDefault } from '~/Popup/recoils/extensionStorage';
 import type { ExtensionStorage, ExtensionStorageKeys } from '~/types/extensionStorage';
 
-export function getStorage<T extends ExtensionStorageKeys>(key: T): Promise<ExtensionStorage[T]> {
-  return new Promise((res, rej) => {
-    chrome.storage.local.get(key, (items) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
-      }
-      res((items ? items[key] : undefined) as ExtensionStorage[T]);
+export async function getStorage<T extends ExtensionStorageKeys>(key: T): Promise<ExtensionStorage[T]> {
+  if (process.env.BROWSER === 'chrome') {
+    return new Promise((res, rej) => {
+      chrome.storage.local.get(key, (items) => {
+        if (chrome.runtime.lastError) {
+          rej(chrome.runtime.lastError);
+        }
+        res((items ? items[key] : undefined) as ExtensionStorage[T]);
+      });
     });
-  });
+  }
+  const localStorage = await browser.storage.local.get(key);
+
+  return localStorage[key] as ExtensionStorage[T];
 }
 
-export function getAllStorage(): Promise<ExtensionStorage> {
-  return new Promise((res, rej) => {
-    chrome.storage.local.get(null, (items) => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
-      }
-      res(items as ExtensionStorage);
+export async function getAllStorage(): Promise<ExtensionStorage> {
+  if (process.env.BROWSER === 'chrome') {
+    return new Promise((res, rej) => {
+      chrome.storage.local.get(null, (items) => {
+        if (chrome.runtime.lastError) {
+          rej(chrome.runtime.lastError);
+        }
+        res(items as ExtensionStorage);
+      });
     });
-  });
+  }
+  const localStorage = await browser.storage.local.get();
+
+  return localStorage as ExtensionStorage;
 }
 
-export function setStorage<T extends ExtensionStorageKeys>(key: T, value: ExtensionStorage[T]): Promise<true> {
-  return new Promise((res, rej) => {
-    chrome.storage.local.set({ [key]: value }, () => {
-      if (chrome.runtime.lastError) {
-        rej(chrome.runtime.lastError);
-      }
-      res(true);
+export async function setStorage<T extends ExtensionStorageKeys>(key: T, value: ExtensionStorage[T]): Promise<true> {
+  if (process.env.BROWSER === 'chrome') {
+    return new Promise((res, rej) => {
+      chrome.storage.local.set({ [key]: value }, () => {
+        if (chrome.runtime.lastError) {
+          rej(chrome.runtime.lastError);
+        }
+        res(true);
+      });
     });
-  });
+  }
+  await browser.storage.local.set({ [key]: value });
+  return true;
 }
 
 export async function extensionStorage() {

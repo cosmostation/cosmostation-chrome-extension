@@ -6,6 +6,7 @@ import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
 import { PATH } from '~/constants/route';
+import { extension } from '~/Popup/utils/extension';
 import { setSessionStorage } from '~/Popup/utils/extensionSessionStorage';
 import { getStorage, setStorage } from '~/Popup/utils/extensionStorage';
 import { openTab } from '~/Popup/utils/extensionTabs';
@@ -18,30 +19,30 @@ import type { ThemeType } from '~/types/theme';
 import { cstob } from './messageProcessor';
 
 function background() {
-  chrome.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, _, sendResponse) => {
+  extension.runtime.onMessage.addListener((request: ContentScriptToBackgroundEventMessage<RequestMessage>, _, sendResponse) => {
     if (request?.type === MESSAGE_TYPE.REQUEST__CONTENT_SCRIPT_TO_BACKGROUND) {
       void cstob(request);
       sendResponse();
     }
   });
 
-  chrome.storage.onChanged.addListener((changes) => {
+  extension.storage.onChanged.addListener((changes) => {
     // eslint-disable-next-line no-restricted-syntax
     for (const [key, { newValue }] of Object.entries(changes)) {
       if (key === 'queues') {
         const newQueues = newValue as Queue[] | undefined;
         const text = newQueues ? `${newQueues.length > 0 ? newQueues.length : ''}` : '';
-        void chrome.action.setBadgeText({ text });
+        void extension.action.setBadgeText({ text });
       }
 
       if (key === 'theme') {
         const newTheme = newValue as ThemeType;
-        void chrome.action.setIcon({ path: newTheme === 'LIGHT' ? '/icon128.png' : '/icon128-dark.png' });
+        void extension.action.setIcon({ path: newTheme === 'LIGHT' ? '/icon128.png' : '/icon128-dark.png' });
       }
     }
   });
 
-  chrome.windows.onRemoved.addListener((windowId) => {
+  extension.windows.onRemoved.addListener((windowId) => {
     void (async () => {
       const queues = await getStorage('queues');
 
@@ -79,7 +80,7 @@ function background() {
     })();
   });
 
-  chrome.runtime.onStartup.addListener(() => {
+  extension.runtime.onStartup.addListener(() => {
     void (async () => {
       await setStorage('queues', []);
       await setStorage('windowId', null);
@@ -88,7 +89,7 @@ function background() {
     })();
   });
 
-  chrome.runtime.onInstalled.addListener((details) => {
+  extension.runtime.onInstalled.addListener((details) => {
     void (async () => {
       if (details.reason === 'install') {
         await setStorage('queues', []);
@@ -126,8 +127,8 @@ function background() {
     })();
   });
 
-  void chrome.action.setBadgeBackgroundColor({ color: '#7C4FFC' });
-  void chrome.action.setBadgeText({ text: '' });
+  void extension.action.setBadgeBackgroundColor({ color: '#7C4FFC' });
+  void extension.action.setBadgeText({ text: '' });
 }
 
 background();
