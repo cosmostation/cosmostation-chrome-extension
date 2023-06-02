@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 
 import NumberText from '~/Popup/components/common/Number';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { fix, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 
 import { Container, LeftTextContainer, RightTextContainer, TextContainer } from './styled';
@@ -20,8 +20,8 @@ type ChainFeeInfoProps = {
 };
 
 export default function ChainFeeInfo({ title, feeInfo, isTildeAmount = false }: ChainFeeInfoProps) {
-  const { chromeStorage } = useChromeStorage();
-  const { currency } = chromeStorage;
+  const { extensionStorage } = useExtensionStorage();
+  const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   return (
@@ -33,7 +33,7 @@ export default function ChainFeeInfo({ title, feeInfo, isTildeAmount = false }: 
         {feeInfo?.map((item) => {
           const displayFeeAmount = String(parseFloat(fix(toDisplayDenomAmount(item.amount || '0', item.feeToken?.decimals || 0), 5)));
 
-          const feeTokenPrice = (item.feeToken?.coingeckoId && coinGeckoPrice.data?.[item.feeToken?.coingeckoId]?.[chromeStorage.currency]) || 0;
+          const feeTokenPrice = (item.feeToken?.coingeckoId && coinGeckoPrice.data?.[item.feeToken?.coingeckoId]?.[extensionStorage.currency]) || 0;
           const feeAmountPrice = times(displayFeeAmount, feeTokenPrice);
 
           const feeText = `${isTildeAmount ? '~' : ''} ${!gt(displayFeeAmount, '0') ? '<' : ''} ${displayFeeAmount} ${item.feeToken?.symbol || ''}`;

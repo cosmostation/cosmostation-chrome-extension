@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import Password from '~/Popup/pages/Account/Initialize/components/Password';
 import { newMnemonicAccountState } from '~/Popup/recoils/newAccount';
@@ -13,7 +13,7 @@ import { Container } from './styled';
 
 export default function Entry() {
   const { navigateBack, navigate } = useNavigate();
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
   const newAccount = useRecoilValue(newMnemonicAccountState);
 
@@ -30,10 +30,10 @@ export default function Entry() {
         onSubmit={async (data) => {
           const accountId = uuidv4();
 
-          await setChromeStorage('encryptedPassword', sha512(data.password));
+          await setExtensionStorage('encryptedPassword', sha512(data.password));
 
-          await setChromeStorage('accounts', [
-            ...chromeStorage.accounts,
+          await setExtensionStorage('accounts', [
+            ...extensionStorage.accounts,
             {
               id: accountId,
               type: 'MNEMONIC',
@@ -44,13 +44,13 @@ export default function Entry() {
             },
           ]);
 
-          await setChromeStorage('selectedAccountId', accountId);
+          await setExtensionStorage('selectedAccountId', accountId);
 
-          await setChromeStorage('accountName', { ...chromeStorage.accountName, [accountId]: newAccount.accountName });
+          await setExtensionStorage('accountName', { ...extensionStorage.accountName, [accountId]: newAccount.accountName });
 
-          await setChromeStorage('selectedChainId', chromeStorage.allowedChainIds[0]);
+          await setExtensionStorage('selectedChainId', extensionStorage.allowedChainIds[0]);
 
-          await setChromeStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
+          await setExtensionStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
 
           navigate('/account/initialize/complete');
         }}

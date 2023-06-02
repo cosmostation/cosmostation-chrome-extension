@@ -7,7 +7,7 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { EthereumToken } from '~/types/chain';
@@ -40,11 +40,11 @@ type TokenItemProps = {
 };
 
 export default function TokenItem({ token, disabled, onClick, onClickDelete }: TokenItemProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const tokenBalance = useTokenBalanceSWR({ token }, { suspense: true });
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
   const amount = tokenBalance.data || '0';
   const price = (token.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0;
   const displayAmount = toDisplayDenomAmount(amount, token.decimals);

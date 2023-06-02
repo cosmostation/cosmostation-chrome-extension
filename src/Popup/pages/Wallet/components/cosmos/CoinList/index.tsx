@@ -5,8 +5,8 @@ import { Typography } from '@mui/material';
 import AddButton from '~/Popup/components/AddButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt } from '~/Popup/utils/big';
@@ -29,12 +29,12 @@ type CoinListProps = {
 export default function CoinList({ chain }: CoinListProps) {
   const { coins, ibcCoins } = useCoinListSWR(chain);
 
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { t } = useTranslation();
 
   const accounts = useAccounts(true);
 
-  const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
+  const address = accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);

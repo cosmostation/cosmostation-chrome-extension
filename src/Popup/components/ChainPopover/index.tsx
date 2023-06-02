@@ -5,7 +5,6 @@ import { Typography } from '@mui/material';
 import { APTOS_CHAINS, COSMOS_CHAINS, ETHEREUM_CHAINS, SUI_CHAINS } from '~/constants/chain';
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
@@ -13,6 +12,7 @@ import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurren
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useCurrentShownSuiNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownSuiNetworks';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { Chain } from '~/types/chain';
@@ -41,7 +41,7 @@ type ChainPopoverProps = Omit<PopoverProps, 'children'> & {
 export default function ChainPopover({ onClose, currentChain, onClickChain, isOnlyChain = false, ...remainder }: ChainPopoverProps) {
   const { navigate } = useNavigate();
   const { setCurrentChain } = useCurrentChain();
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { currentEthereumNetwork, setCurrentEthereumNetwork, removeEthereumNetwork } = useCurrentEthereumNetwork();
   const { currentShownEthereumNetwork } = useCurrentShownEthereumNetworks();
 
@@ -53,7 +53,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
 
   const { t } = useTranslation();
 
-  const { allowedChainIds, additionalChains, additionalEthereumNetworks, additionalAptosNetworks, additionalSuiNetworks } = chromeStorage;
+  const { allowedChainIds, additionalChains, additionalEthereumNetworks, additionalAptosNetworks, additionalSuiNetworks } = extensionStorage;
 
   const allowedCosmosChain = useMemo(() => COSMOS_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
   const allowedEthereumChain = useMemo(() => ETHEREUM_CHAINS.filter((chain) => allowedChainIds.includes(chain.id)), [allowedChainIds]);
@@ -172,7 +172,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
                       }
                       const newAdditionalChains = additionalChains.filter((item) => item.id !== chain.id);
 
-                      await setChromeStorage('additionalChains', newAdditionalChains);
+                      await setExtensionStorage('additionalChains', newAdditionalChains);
                     }}
                     imgSrc={chain.imageURL}
                     isCustom

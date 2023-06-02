@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 import type { TransactionBlock as TransactionBlockType } from '@mysten/sui.js';
-import { Connection, Ed25519Keypair, JsonRpcProvider, RawSigner, TransactionBlock } from '@mysten/sui.js';
+import { TransactionBlock } from '@mysten/sui.js';
 
 import { SUI_COIN, SUI_TOKEN_TEMPORARY_DECIMALS } from '~/constants/sui';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
@@ -17,12 +17,10 @@ import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataS
 import { useGetCoinsSWR } from '~/Popup/hooks/SWR/sui/useGetCoinsSWR';
 import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, isDecimal, lte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getKeyPair } from '~/Popup/utils/common';
 import { suiAddressRegex } from '~/Popup/utils/regex';
 import type { SuiChain } from '~/types/chain';
 
@@ -41,7 +39,6 @@ const DEFAULT_GAS_BUDGET = 20000;
 
 export default function Sui({ chain }: SuiProps) {
   const { currentAccount } = useCurrentAccount();
-  const { currentPassword } = useCurrentPassword();
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
@@ -49,22 +46,6 @@ export default function Sui({ chain }: SuiProps) {
 
   const { t } = useTranslation();
   const { enQueue } = useCurrentQueue();
-
-  const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-
-  const provider = useMemo(
-    () =>
-      new JsonRpcProvider(
-        new Connection({
-          fullnode: currentSuiNetwork.rpcURL,
-        }),
-      ),
-    [currentSuiNetwork.rpcURL],
-  );
-
-  const keypair = useMemo(() => Ed25519Keypair.fromSecretKey(keyPair!.privateKey!), [keyPair]);
-
-  const rawSigner = useMemo(() => new RawSigner(keypair, provider), [keypair, provider]);
 
   const accounts = useAccounts(true);
 
@@ -115,6 +96,8 @@ export default function Sui({ chain }: SuiProps) {
     }
     const tx = new TransactionBlock();
 
+    tx.setSenderIfNotSet(address);
+
     const [primaryCoin, ...mergeCoins] = filteredOwnedEqualCoins?.filter((coin) => coin.coinType === currentCoinType) || [];
 
     if (currentCoinType === SUI_COIN) {
@@ -134,9 +117,9 @@ export default function Sui({ chain }: SuiProps) {
     }
 
     return tx;
-  }, [baseAmount, currentAddress, currentCoinType, debouncedCurrentDisplayAmount, filteredOwnedEqualCoins]);
+  }, [address, baseAmount, currentAddress, currentCoinType, debouncedCurrentDisplayAmount, filteredOwnedEqualCoins]);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ rawSigner, transactionBlock: sendTxBlock });
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ transactionBlock: sendTxBlock });
 
   const currentGasBudget = useMemo(() => {
     if (dryRunTransaction?.result?.effects.status.status === 'success') {

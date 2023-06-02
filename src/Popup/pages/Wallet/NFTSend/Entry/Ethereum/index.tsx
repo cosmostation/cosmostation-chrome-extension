@@ -16,11 +16,11 @@ import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { ethereumAddressRegex } from '~/Popup/utils/regex';
@@ -57,11 +57,11 @@ export default function Ethereum({ chain }: EthereumProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { enQueue } = useCurrentQueue();
 
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   const { currentAccount } = useCurrentAccount();
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
 
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 

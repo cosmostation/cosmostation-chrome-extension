@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import aptosImg from '~/images/etc/aptos.png';
 import keplrImg from '~/images/etc/keplr.png';
 import metamaskImg from '~/images/etc/metamask.png';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 
 import Item from './components/Item';
@@ -12,11 +12,11 @@ import { BottomDescriptionContainer, BottomDescriptionInfoIconContainer, BottomD
 import Info16Icon from '~/images/icons/Info16.svg';
 
 export default function Entry() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
   const { t } = useTranslation();
 
-  const { providers } = chromeStorage;
+  const { providers } = extensionStorage;
 
   return (
     <Container>
@@ -26,7 +26,7 @@ export default function Entry() {
           switchProps={{
             checked: providers.metamask,
             onChange: (_, checked) => {
-              void setChromeStorage('providers', { ...providers, metamask: checked });
+              void setExtensionStorage('providers', { ...providers, metamask: checked });
             },
           }}
         >
@@ -37,7 +37,7 @@ export default function Entry() {
           switchProps={{
             checked: providers.keplr,
             onChange: (_, checked) => {
-              void setChromeStorage('providers', { ...providers, keplr: checked });
+              void setExtensionStorage('providers', { ...providers, keplr: checked });
             },
           }}
         >
@@ -49,7 +49,7 @@ export default function Entry() {
           switchProps={{
             checked: providers.aptos,
             onChange: (_, checked) => {
-              void setChromeStorage('providers', { ...providers, aptos: checked });
+              void setExtensionStorage('providers', { ...providers, aptos: checked });
             },
           }}
         >

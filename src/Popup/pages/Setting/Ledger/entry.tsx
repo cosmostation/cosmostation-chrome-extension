@@ -1,13 +1,13 @@
 import { TRANSPORT_TYPE } from '~/constants/ledger';
 import SelectButton from '~/Popup/components/SelectButton';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 
 import { Container, ListContainer } from './styled';
 
 export default function Entry() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
-  const { ledgerTransportType } = chromeStorage;
+  const { ledgerTransportType } = extensionStorage;
 
   const transportTypes = Object.values(TRANSPORT_TYPE);
   return (
@@ -17,7 +17,7 @@ export default function Entry() {
           <SelectButton
             key={transportType}
             isActive={transportType === ledgerTransportType}
-            onClick={() => setChromeStorage('ledgerTransportType', transportType)}
+            onClick={() => setExtensionStorage('ledgerTransportType', transportType)}
           >
             {transportType}
           </SelectButton>

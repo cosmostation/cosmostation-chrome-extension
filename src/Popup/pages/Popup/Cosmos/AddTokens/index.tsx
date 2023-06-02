@@ -3,7 +3,7 @@ import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { CosAddTokensCW20Internal } from '~/types/message/cosmos';
 
 import Entry from './entry';

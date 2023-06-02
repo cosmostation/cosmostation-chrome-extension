@@ -1,7 +1,5 @@
 import { Suspense, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Typography } from '@mui/material';
-import { getObjectDisplay } from '@mysten/sui.js';
 
 import Empty from '~/Popup/components/common/Empty';
 import EmptyAsset from '~/Popup/components/EmptyAsset';
@@ -9,7 +7,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
-import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { getNFTType } from '~/Popup/utils/sui';
 import type { SuiChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
@@ -17,15 +15,7 @@ import NFTCardItem, { NFTCardItemSkeleton } from './components/NFTCardItem';
 import TypeButton from './components/TypeButton';
 import type { TypeInfo } from './components/TypePopover';
 import TypePopover from './components/TypePopover';
-import {
-  Container,
-  ListContainer,
-  ListTitleContainer,
-  ListTitleLeftContainer,
-  ListTitleLeftCountContainer,
-  ListTitleLeftTextContainer,
-  ListTitleRightContainer,
-} from './styled';
+import { Container, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
 
 import NoNFTIcon from '~/images/icons/NoNFT.svg';
 
@@ -35,7 +25,6 @@ type NFTListProps = {
 
 export default function NFTList({ chain }: NFTListProps) {
   const { navigate } = useNavigate();
-  const { t } = useTranslation();
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
@@ -54,24 +43,21 @@ export default function NFTList({ chain }: NFTListProps) {
   const typeInfos = useMemo(() => {
     const infos: TypeInfo[] = [];
 
-    const nftNameList = Array.from(
-      new Set([
-        ...(nftObjects
-          ?.filter((item) => item.data?.content?.dataType === 'moveObject' && getObjectDisplay(item).data?.name)
-          .map((item) => getObjectDisplay(item).data?.name || '') || []),
-      ]),
-    );
+    const nftTypeList = Array.from(new Set([...(nftObjects.map((item) => getNFTType(item.data?.type)) || [])]));
 
     infos.push({ type: 'all', name: 'All Assets', count: nftObjects.length });
 
-    nftNameList.forEach((item) => {
-      infos.push({ type: item, name: item, count: nftObjects.filter((object) => item === getObjectDisplay(object).data?.name).length });
+    nftTypeList.forEach((item) => {
+      if (nftObjects.filter((object) => item === getNFTType(object.data?.type)).length > 1) {
+        infos.push({ type: item, name: item, count: nftObjects.filter((object) => item === getNFTType(object.data?.type)).length });
+      }
     });
 
-    if (nftObjects && nftObjects?.filter((item) => !getObjectDisplay(item).data?.name).length) {
-      infos.push({ type: 'etc', name: 'ETC', count: nftObjects.filter((object) => !getObjectDisplay(object).data?.name).length });
-    }
-
+    infos.push({
+      type: 'etc',
+      name: 'ETC',
+      count: nftObjects.filter((object, _, array) => array.filter((item) => getNFTType(item.data?.type) === getNFTType(object.data?.type)).length < 2).length,
+    });
     return infos;
   }, [nftObjects]);
 
@@ -83,9 +69,10 @@ export default function NFTList({ chain }: NFTListProps) {
 
   const filteredNFTObjects = useMemo(() => {
     if (currentType === 'all') return nftObjects;
-    if (currentType === 'etc') return nftObjects.filter((item) => !getObjectDisplay(item).data?.name) || [];
+    if (currentType === 'etc')
+      return nftObjects.filter((object, _, array) => array.filter((item) => getNFTType(item.data?.type) === getNFTType(object.data?.type)).length < 2) || [];
 
-    return nftObjects.filter((item) => currentTypeInfo?.name === getObjectDisplay(item).data?.name) || [];
+    return nftObjects.filter((item) => currentTypeInfo?.name === getNFTType(item.data?.type)) || [];
   }, [currentType, currentTypeInfo?.name, nftObjects]);
 
   if (!isExistNFT) {
@@ -97,18 +84,11 @@ export default function NFTList({ chain }: NFTListProps) {
       <ListTitleContainer>
         <ListTitleLeftContainer>
           <TypeButton
-            style={{ display: 'none' }}
             text={currentTypeInfo?.name}
             number={currentTypeInfo?.count}
             onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
             isActive={isOpenPopover}
           />
-          <ListTitleLeftTextContainer>
-            <Typography variant="h6">{t('pages.Wallet.components.sui.NFTList.index.nft')}</Typography>
-          </ListTitleLeftTextContainer>
-          <ListTitleLeftCountContainer>
-            <Typography variant="h6">{isExistNFT ? `${nftObjects.length}` : ''}</Typography>
-          </ListTitleLeftCountContainer>
         </ListTitleLeftContainer>
         <ListTitleRightContainer />
       </ListTitleContainer>

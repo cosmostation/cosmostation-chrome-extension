@@ -1,7 +1,7 @@
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { EthcAddTokens } from '~/types/message/ethereum';
 
 import Entry from './entry';

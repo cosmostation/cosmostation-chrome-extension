@@ -14,7 +14,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { CosAddTokensCW20Internal, CosAddTokensCW20Response } from '~/types/message/cosmos';
 
 import TokenItem from './components/TokenItem';

@@ -60,6 +60,7 @@
           "connectedSites": "Connected sites",
           "currency": "Currency",
           "darkMode": "Dark mode",
+          "expand": "Expand view",
           "guide": "Guide",
           "helpSupport": "Help & Support",
           "language": "Language",
@@ -72,6 +73,7 @@
     "Loading": {
       "LedgerToTab": {
         "index": {
+          "cancel": "Cancel",
           "continue": "Continue",
           "description": "Complete the process on browser tab"
         }

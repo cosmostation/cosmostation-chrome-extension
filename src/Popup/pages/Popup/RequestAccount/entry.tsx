@@ -4,10 +4,10 @@ import { CHAINS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CosmosChain } from '~/types/chain';
@@ -18,11 +18,11 @@ import type { SuiConnectResponse, SuiGetAccountResponse } from '~/types/message/
 
 export default function Entry() {
   const { currentQueue, deQueue } = useCurrentQueue();
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentPassword } = useCurrentPassword();
   const { currentAccount } = useCurrentAccount();
 
-  const { additionalChains } = chromeStorage;
+  const { additionalChains } = extensionStorage;
 
   useEffect(() => {
     if ((currentQueue?.message.method === 'cos_requestAccount' || currentQueue?.message.method === 'ten_requestAccount') && currentPassword) {

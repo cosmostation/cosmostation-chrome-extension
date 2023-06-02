@@ -1,17 +1,17 @@
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { Chain, CosmosChain, EthereumChain } from '~/types/chain';
 
 export function useCurrentAdditionalChains() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
-  const { additionalChains } = chromeStorage;
+  const { additionalChains } = extensionStorage;
 
   const cosmosAdditionalChains = additionalChains.filter((chain) => chain.line === 'COSMOS') as CosmosChain[];
   const ethereumAdditionalChains = additionalChains.filter((chain) => chain.line === 'ETHEREUM') as EthereumChain[];
 
-  const addAdditionalChains = (chain: Chain) => setChromeStorage('additionalChains', [...additionalChains, chain]);
+  const addAdditionalChains = (chain: Chain) => setExtensionStorage('additionalChains', [...additionalChains, chain]);
   const removeAdditionalChains = (chain: Chain) =>
-    setChromeStorage(
+    setExtensionStorage(
       'additionalChains',
       additionalChains.filter((item) => item.id !== chain.id),
     );

@@ -19,10 +19,10 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -64,7 +64,7 @@ type NativeChainCardProps = {
 
 export default function NativeChainCard({ chain, isCustom }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { data } = useCoinGeckoPriceSWR();
   const { currentSuiNetwork } = useCurrentSuiNetwork();
   const { enqueueSnackbar } = useSnackbar();
@@ -103,7 +103,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     [coinMetadata?.result?.iconUrl, currentSuiNetwork.imageURL],
   );
 
-  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[chromeStorage.currency]) || 0, [chromeStorage.currency, coinGeckoId, data]);
+  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [extensionStorage.currency, coinGeckoId, data]);
 
   const value = times(price, displayAmount);
 
@@ -182,7 +182,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
         </SecondLineRightContainer>
       </SecondLineContainer>
       <ThirdLineContainer>
-        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={chromeStorage.currency}>
+        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
           {value}
         </Number>
       </ThirdLineContainer>

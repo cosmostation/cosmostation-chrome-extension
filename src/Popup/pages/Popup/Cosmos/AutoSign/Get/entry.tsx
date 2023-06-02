@@ -6,7 +6,7 @@ import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentA
 import { useCurrentAutoSigns } from '~/Popup/hooks/useCurrent/useCurrentAutoSigns';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { CosGetAutoSign, CosGetAutoSignResponse } from '~/types/message/cosmos';
 
 type EntryProps = {

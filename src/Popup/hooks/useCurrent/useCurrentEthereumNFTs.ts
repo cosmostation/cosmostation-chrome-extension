@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/nft';
 
@@ -9,10 +9,10 @@ import { useCurrentEthereumNetwork } from './useCurrentEthereumNetwork';
 type AddEthereumNFTParams = Omit<EthereumNFT, 'id' | 'ethereumNetworkId'>;
 
 export function useCurrentEthereumNFTs() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const { ethereumNFTs } = chromeStorage;
+  const { ethereumNFTs } = extensionStorage;
 
   const currentEthereumNFTs = ethereumNFTs.filter((item) => item.ethereumNetworkId === currentEthereumNetwork.id);
 
@@ -30,7 +30,7 @@ export function useCurrentEthereumNFTs() {
       { ...nft, id: uuidv4(), ethereumNetworkId: currentEthereumNetwork.id },
     ];
 
-    await setChromeStorage('ethereumNFTs', newEthereumNFTs);
+    await setExtensionStorage('ethereumNFTs', newEthereumNFTs);
   };
 
   const addEthereumNFTs = async (nfts: AddEthereumNFTParams[]) => {
@@ -61,13 +61,13 @@ export function useCurrentEthereumNFTs() {
       ...newNFTs,
     ];
 
-    await setChromeStorage('ethereumNFTs', newEthereumNFTs);
+    await setExtensionStorage('ethereumNFTs', newEthereumNFTs);
   };
 
   const removeEthereumNFT = async (nft: EthereumNFT) => {
     const newEthereumNFTs = ethereumNFTs.filter((item) => !(item.id === nft.id));
 
-    await setChromeStorage('ethereumNFTs', newEthereumNFTs);
+    await setExtensionStorage('ethereumNFTs', newEthereumNFTs);
   };
 
   return { currentEthereumNFTs, addEthereumNFT, removeEthereumNFT, addEthereumNFTs };

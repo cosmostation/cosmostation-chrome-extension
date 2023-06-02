@@ -4,9 +4,9 @@ import { ErrorBoundary } from 'react-error-boundary';
 import Empty from '~/Popup/components/common/Empty';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Header from '~/Popup/components/SelectSubHeader';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { gte } from '~/Popup/utils/big';
 import type { EthereumChain } from '~/types/chain';
 
@@ -21,8 +21,8 @@ type EthereumProps = {
 };
 
 export default function Ethereum({ chain }: EthereumProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { tabPath } = chromeStorage;
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
+  const { tabPath } = extensionStorage;
 
   const { currentAccount } = useCurrentAccount();
   const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
@@ -42,7 +42,7 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   useEffect(() => {
     if (gte(tabPath.ethereum.tabPath, tabLabels.length)) {
-      void setChromeStorage('tabPath', {
+      void setExtensionStorage('tabPath', {
         ...tabPath,
         ethereum: {
           tabPath: 0,
@@ -52,7 +52,7 @@ export default function Ethereum({ chain }: EthereumProps) {
       setTabValue(0);
     }
 
-    void setChromeStorage('tabPath', {
+    void setExtensionStorage('tabPath', {
       ...tabPath,
       ethereum: {
         tabPath: tabValue,

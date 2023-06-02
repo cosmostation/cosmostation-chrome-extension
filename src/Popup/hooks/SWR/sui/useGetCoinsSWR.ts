@@ -7,8 +7,8 @@ import { isAxiosError, post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
 import type { GetCoinsResponse } from '~/types/sui/rpc';
 
-import { useChromeStorage } from '../../useChromeStorage';
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
+import { useExtensionStorage } from '../../useExtensionStorage';
 import { useAccounts } from '../cache/useAccounts';
 
 type FetchParams = {
@@ -32,12 +32,12 @@ const MAX_COINS_PER_REQUEST = 100;
 export function useGetCoinsSWR({ network, address, coinType, cursor, limit }: UseGetCoinsSWRProps, config?: SWRConfiguration) {
   const chain = SUI;
   const accounts = useAccounts(config?.suspense);
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
 
-  const addr = address || accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
+  const addr = address || accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
 
   const fetcher = async (params: FetchParams) => {
     try {

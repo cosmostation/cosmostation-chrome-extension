@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
 
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 
 export default function HOME() {
   const { navigate } = useNavigate();
-  const { chromeStorage } = useChromeStorage();
-  const { rootPath } = chromeStorage;
+  const { extensionStorage } = useExtensionStorage();
+  const { rootPath } = extensionStorage;
 
   useEffect(() => {
-    if (chromeStorage.accounts.length < 1) {
+    if (extensionStorage.accounts.length < 1) {
       navigate('/account/initialize/welcome', { replace: true });
     } else if (rootPath) {
       navigate(rootPath, { replace: true });

@@ -8,7 +8,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { EthcAddNetwork, EthcAddNetworkResponse } from '~/types/message/ethereum';
 
 import {

@@ -5,10 +5,10 @@ import type { DialogProps, PopoverProps } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { aesDecrypt, sha512 } from '~/Popup/utils/crypto';
-import type { Account } from '~/types/chromeStorage';
+import type { Account } from '~/types/extensionStorage';
 
 import MnemonicView from './MnemonicView';
 import { Container, StyledButton, StyledInput } from './styled';
@@ -18,9 +18,9 @@ import { useSchema } from './useSchema';
 type ExportMnemonicDialogProps = Omit<DialogProps, 'children'> & { account: Account; popoverOnClose?: PopoverProps['onClose'] };
 
 export default function ExportMnemonicDialog({ onClose, account, ...remainder }: ExportMnemonicDialogProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
-  const { accountName, encryptedPassword } = chromeStorage;
+  const { accountName, encryptedPassword } = extensionStorage;
 
   const [password, setPassword] = useState('');
 

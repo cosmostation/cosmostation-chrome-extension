@@ -2,12 +2,12 @@ import { Typography } from '@mui/material';
 
 import AddButton from '~/Popup/components/AddButton';
 import AddressBookItem from '~/Popup/components/AddressBookItem';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain } from '~/types/chain';
-import type { AddressInfo } from '~/types/chromeStorage';
+import type { AddressInfo } from '~/types/extensionStorage';
 
 import { AddressList, Container, Header, HeaderTitle, StyledBottomSheet } from './styled';
 
@@ -17,11 +17,11 @@ type AddressBookBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottom
 };
 
 export default function AddressBookBottomSheet({ chain, onClickAddress, onClose, ...remainder }: AddressBookBottomSheetProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentChain } = useCurrentChain();
   const { t } = useTranslation();
 
-  const { addressBook } = chromeStorage;
+  const { addressBook } = extensionStorage;
   const { navigate } = useNavigate();
   const filteredAddressBook = addressBook.filter((item) => (chain ? item.chainId === chain.id : item.chainId === currentChain.id));
 

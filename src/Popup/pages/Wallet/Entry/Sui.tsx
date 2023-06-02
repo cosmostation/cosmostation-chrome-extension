@@ -4,9 +4,9 @@ import { ErrorBoundary } from 'react-error-boundary';
 import Empty from '~/Popup/components/common/Empty';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Header from '~/Popup/components/SelectSubHeader';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { gte } from '~/Popup/utils/big';
 import type { SuiChain } from '~/types/chain';
 
@@ -21,8 +21,8 @@ type SuiProps = {
 };
 
 export default function Sui({ chain }: SuiProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
-  const { tabPath } = chromeStorage;
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
+  const { tabPath } = extensionStorage;
 
   const { currentAccount } = useCurrentAccount();
   const { currentSuiNetwork, additionalSuiNetworks } = useCurrentSuiNetwork();
@@ -38,7 +38,7 @@ export default function Sui({ chain }: SuiProps) {
 
   useEffect(() => {
     if (gte(tabPath.sui.tabPath, tabLabels.length)) {
-      void setChromeStorage('tabPath', {
+      void setExtensionStorage('tabPath', {
         ...tabPath,
         sui: {
           tabPath: 0,
@@ -48,7 +48,7 @@ export default function Sui({ chain }: SuiProps) {
       setTabValue(0);
     }
 
-    void setChromeStorage('tabPath', {
+    void setExtensionStorage('tabPath', {
       ...tabPath,
       sui: {
         tabPath: tabValue,

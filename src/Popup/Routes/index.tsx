@@ -1,7 +1,7 @@
 import { Route, Routes as BaseRoutes } from 'react-router-dom';
 
 import { PATH } from '~/constants/route';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import AccountCreate from '~/Popup/pages/Account/Create';
 import AccountCreateImportMnemonic from '~/Popup/pages/Account/Create/Import/Mnemonic';
 import AccountCreateImportPrivateKey from '~/Popup/pages/Account/Create/Import/PrivateKey';
@@ -72,11 +72,11 @@ import WalletSend from '~/Popup/pages/Wallet/Send';
 import WalletSwap from '~/Popup/pages/Wallet/Swap';
 
 export default function Routes() {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   return (
     <BaseRoutes>
-      {chromeStorage.accounts.length === 0 ? (
+      {extensionStorage.accounts.length === 0 ? (
         <>
           <Route path={PATH.ACCOUNT__INITIALIZE} element={<AccountInitialize />} />
           <Route path={PATH.ACCOUNT__INITIALIZE__WELCOME} element={<AccountInitializeWelcome />} />

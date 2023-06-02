@@ -7,12 +7,12 @@ import { Typography } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { disposableLoadingState } from '~/Popup/recoils/loading';
 import { sha512 } from '~/Popup/utils/crypto';
-import type { Account } from '~/types/chromeStorage';
+import type { Account } from '~/types/extensionStorage';
 
 import { Container, DescriptionContainer, DescriptionImageContainer, DescriptionTextContainer, StyledButton, StyledInput } from './styled';
 import type { PasswordForm } from './useSchema';
@@ -23,13 +23,13 @@ import Info16Icon from '~/images/icons/Info16.svg';
 type ExportMnemonicDialogProps = Omit<DialogProps, 'children'> & { account: Account; popoverOnClose?: PopoverProps['onClose'] };
 
 export default function DeleteDialog({ onClose, account, ...remainder }: ExportMnemonicDialogProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   const { removeAccount } = useCurrentAccount();
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { accountName, encryptedPassword } = chromeStorage;
+  const { accountName, encryptedPassword } = extensionStorage;
 
   const setDisposableLoading = useSetRecoilState(disposableLoadingState);
 

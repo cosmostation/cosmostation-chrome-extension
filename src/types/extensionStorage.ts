@@ -1,4 +1,4 @@
-import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/chromeStorage';
+import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/extensionStorage';
 import type { PERMISSION } from '~/constants/sui';
 import type { AptosNetwork, BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken, SuiNetwork } from '~/types/chain';
 import type { TransportType } from '~/types/ledger';
@@ -59,6 +59,7 @@ export type LedgerAccount = {
   ethereumPublicKey?: string;
   mediblocPublicKey?: string;
   cryptoOrgPublicKey?: string;
+  suiPublicKey?: string;
 };
 
 export type Account = AccountCommon & (MnemonicAccount | PrivateKeyAccount | LedgerAccount);
@@ -104,7 +105,7 @@ export type SuiPermission = {
   permission: SuiPermissionType;
 };
 
-export type ChromeStorage = {
+export type ExtensionStorage = {
   encryptedPassword: string | null;
   accounts: Account[];
   accountName: AccountName;
@@ -153,7 +154,7 @@ export type ChromeStorage = {
   providers: Providers;
 };
 
-export type ChromeStorageKeys = keyof ChromeStorage;
+export type ExtensionStorageKeys = keyof ExtensionStorage;
 
 export type Password = {
   key: string;
@@ -161,8 +162,8 @@ export type Password = {
   time: number;
 };
 
-export type ChromeSessionStorage = {
+export type ExtensionSessionStorage = {
   password: Password | null;
 };
 
-export type ChromeSessionStorageKeys = keyof ChromeSessionStorage;
+export type ExtensionSessionStorageKeys = keyof ExtensionSessionStorage;
