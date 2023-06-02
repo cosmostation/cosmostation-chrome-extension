@@ -4,7 +4,9 @@ import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import Tooltip from '~/Popup/components/common/Tooltip';
+import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBalanceSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { gt } from '~/Popup/utils/big';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/nft';
 
@@ -40,13 +42,14 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
 
   const displayTokenStandard = useMemo(() => tokenType.replace('ERC', 'ERC-'), [tokenType]);
 
+  const { data: nftBalance } = useGetNFTBalanceSWR({ contractAddress: address, ownerAddress, tokenId });
+
   const handleOnClickCopy = (copyString?: string) => {
     if (copyString && copy(copyString)) {
       enqueueSnackbar(t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.copied'));
     }
   };
 
-  // NOTE 복사 버튼 정렬 맞추기
   return (
     <>
       {shorterOwnerAddress && (
@@ -105,6 +108,17 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
           <Typography variant="h5">{displayTokenStandard}</Typography>
         </ItemRightContainer>
       </ItemContainer>
+
+      {tokenType === 'ERC1155' && gt(nftBalance || '0', '0') && (
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.balance')}</Typography>
+          </ItemTitleContainer>
+          <ItemRightContainer>
+            <Typography variant="h5">{nftBalance}</Typography>
+          </ItemRightContainer>
+        </ItemContainer>
+      )}
 
       {externalLink && (
         <ItemContainer>

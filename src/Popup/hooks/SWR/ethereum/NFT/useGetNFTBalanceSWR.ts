@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import { ethers, FetchRequest } from 'ethers';
 import type { SWRConfiguration } from 'swr';
@@ -9,27 +8,27 @@ import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { TOKEN_TYPE } from '~/constants/ethereum';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
-import { get } from '~/Popup/utils/axios';
-import { convertIpfs } from '~/Popup/utils/sui';
 import type { EthereumNetwork } from '~/types/chain';
-import type { ERC721URIPayload, ERC1155URIPayload } from '~/types/ethereum/contract';
-import type { GetNFTMetaPayload, GetNFTURIPayload } from '~/types/ethereum/nft';
+import type { ERC721BalanceOfPayload, ERC1155BalanceOfPayload } from '~/types/ethereum/contract';
+import type { GetNFTURIPayload } from '~/types/ethereum/nft';
 
 import { useGetNFTStandardSWR } from './useGetNFTStandardSWR';
 
 type FetcherParams = {
   rpcURL: string;
   contractAddress: string;
+  ownerAddress: string;
   tokenId: string;
 };
 
-type UseGetNFTMetaSWR = {
+type UseGetNFTBalanceSWR = {
   network?: EthereumNetwork;
   contractAddress?: string;
+  ownerAddress?: string;
   tokenId?: string;
 };
 
-export function useGetNFTMetaSWR({ network, contractAddress, tokenId }: UseGetNFTMetaSWR, config?: SWRConfiguration) {
+export function useGetNFTBalanceSWR({ network, contractAddress, ownerAddress, tokenId }: UseGetNFTBalanceSWR, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
@@ -37,7 +36,7 @@ export function useGetNFTMetaSWR({ network, contractAddress, tokenId }: UseGetNF
 
   const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
 
-  const nftMetaURIfetcher = async (params: FetcherParams) => {
+  const fetcher = async (params: FetcherParams) => {
     const customFetchRequest = new FetchRequest(rpcURL);
 
     customFetchRequest.setHeader('Cosmostation', `extension/${String(process.env.VERSION)}`);
@@ -48,17 +47,18 @@ export function useGetNFTMetaSWR({ network, contractAddress, tokenId }: UseGetNF
       if (currentNFTStandard === TOKEN_TYPE.ERC721) {
         const erc721Contract = new ethers.Contract(params.contractAddress, ERC721_ABI, provider);
 
-        const erc721ContractCall = erc721Contract.tokenURI(params.tokenId) as Promise<ERC721URIPayload>;
+        const erc721ContractCall = erc721Contract.balanceOf(params.ownerAddress) as Promise<ERC721BalanceOfPayload>;
         const erc721ContractCallResponse = await erc721ContractCall;
-        return erc721ContractCallResponse;
+        return BigInt(erc721ContractCallResponse).toString(10);
       }
 
       if (currentNFTStandard === TOKEN_TYPE.ERC1155) {
         const erc1155Contract = new ethers.Contract(params.contractAddress, ERC1155_ABI, provider);
 
-        const erc1155ContractCall = erc1155Contract.uri(params.tokenId) as Promise<ERC1155URIPayload>;
+        const erc1155ContractCall = erc1155Contract.balanceOf(params.ownerAddress, params.tokenId) as Promise<ERC1155BalanceOfPayload>;
         const erc1155ContractCallResponse = await erc1155ContractCall;
-        return erc1155ContractCallResponse;
+
+        return BigInt(erc1155ContractCallResponse).toString(10);
       }
     } catch (e) {
       return null;
@@ -67,44 +67,14 @@ export function useGetNFTMetaSWR({ network, contractAddress, tokenId }: UseGetNF
     return null;
   };
 
-  const { data: nftMetaURI } = useSWR<GetNFTURIPayload | null, AxiosError>({ rpcURL, contractAddress, tokenId }, nftMetaURIfetcher, {
+  const { data, error, mutate } = useSWR<GetNFTURIPayload | null, AxiosError>({ id: 'balance', rpcURL, contractAddress, ownerAddress, tokenId }, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,
     errorRetryCount: 0,
-    isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !rpcURL,
+    isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !ownerAddress || !rpcURL,
     ...config,
   });
 
-  const paramURL = useMemo(() => {
-    if (nftMetaURI?.includes('ipfs:')) {
-      return convertIpfs(nftMetaURI);
-    }
-
-    if (nftMetaURI?.includes('api.opensea.io')) {
-      return nftMetaURI.replace('0x{id}', tokenId || '');
-    }
-    return nftMetaURI || '';
-  }, [nftMetaURI, tokenId]);
-
-  const fetcher = (fetchUrl: string) => get<GetNFTMetaPayload>(fetchUrl);
-
-  const { data, error, mutate } = useSWR<GetNFTMetaPayload, AxiosError>(paramURL, fetcher, {
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
-    errorRetryCount: 0,
-    isPaused: () => !paramURL,
-    ...config,
-  });
-
-  const returnData = data
-    ? {
-        ...data,
-        image: convertIpfs(data.image),
-        metaURI: paramURL,
-      }
-    : undefined;
-
-  return { data: returnData, error, mutate };
+  return { data, error, mutate };
 }

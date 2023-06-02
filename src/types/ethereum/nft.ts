@@ -24,6 +24,6 @@ export type GetNFTMetaPayload = {
 
 export type GetNFTOwnerPayload = boolean;
 
-export type GetNFTStandardPayload = typeof TOKEN_TYPE.ERC1155 | typeof TOKEN_TYPE.ERC721 | undefined;
+export type GetNFTStandardPayload = typeof TOKEN_TYPE.ERC1155 | typeof TOKEN_TYPE.ERC721;
 
 export type GetNFTURIPayload = string;

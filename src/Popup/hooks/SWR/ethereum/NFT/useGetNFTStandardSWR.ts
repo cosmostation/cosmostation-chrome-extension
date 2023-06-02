@@ -42,24 +42,28 @@ export function useGetNFTStandardSWR({ network, contractAddress }: UseGetNFTStan
 
     const erc721Contract = new ethers.Contract(params.contractAddress, ERC721_ABI, provider);
 
-    const erc721ContractCall = erc721Contract.supportsInterface(params.erc721InterfaceId) as Promise<ERC721CheckPayload>;
-    const erc721ContractCallResponse = await erc721ContractCall;
-    if (erc721ContractCallResponse) {
-      return TOKEN_TYPE.ERC721;
+    try {
+      const erc721ContractCall = erc721Contract.supportsInterface(params.erc721InterfaceId) as Promise<ERC721CheckPayload>;
+      const erc721ContractCallResponse = await erc721ContractCall;
+      if (erc721ContractCallResponse) {
+        return TOKEN_TYPE.ERC721;
+      }
+
+      const erc1155Contract = new ethers.Contract(params.contractAddress, ERC1155_ABI, provider);
+
+      const erc1155ContractCall = erc1155Contract.supportsInterface(params.erc1155InterfaceId) as Promise<ERC1155CheckPayload>;
+      const erc1155ContractResponse = await erc1155ContractCall;
+      if (erc1155ContractResponse) {
+        return TOKEN_TYPE.ERC1155;
+      }
+    } catch (e) {
+      return null;
     }
 
-    const erc1155Contract = new ethers.Contract(params.contractAddress, ERC1155_ABI, provider);
-
-    const erc1155ContractCall = erc1155Contract.supportsInterface(params.erc1155InterfaceId) as Promise<ERC1155CheckPayload>;
-    const erc1155ContractResponse = await erc1155ContractCall;
-    if (erc1155ContractResponse) {
-      return TOKEN_TYPE.ERC1155;
-    }
-
-    return undefined;
+    return null;
   };
 
-  const { data, error, mutate } = useSWR<GetNFTStandardPayload, AxiosError>(
+  const { data, error, mutate } = useSWR<GetNFTStandardPayload | null, AxiosError>(
     { rpcURL, contractAddress, erc721InterfaceId: ERC721_INTERFACE_ID, erc1155InterfaceId: ERC1155_INTERFACE_ID },
     fetcher,
     {

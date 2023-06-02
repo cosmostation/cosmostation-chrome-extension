@@ -9,6 +9,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { EthereumChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
@@ -16,17 +17,7 @@ import NFTCardItem, { NFTCardItemSkeleton } from './components/NFTCardItem';
 import TypeButton from './components/TypeButton';
 import type { TypeInfo } from './components/TypePopover';
 import TypePopover from './components/TypePopover';
-import {
-  AddTokenButton,
-  AddTokenTextContainer,
-  Container,
-  ListContainer,
-  ListTitleContainer,
-  ListTitleLeftContainer,
-  ListTitleLeftCountContainer,
-  ListTitleLeftTextContainer,
-  ListTitleRightContainer,
-} from './styled';
+import { AddTokenButton, AddTokenTextContainer, Container, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
 
 import Plus16Icon from '~/images/icons/Plus16.svg';
 
@@ -52,24 +43,22 @@ export default function NFTList({ chain }: NFTListProps) {
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const ownedEthereumNFTs = useMemo(() => currentEthereumNFTs.filter((item) => item.ownerAddress === currentAddress), [currentAddress, currentEthereumNFTs]);
+  const ownedEthereumNFTs = useMemo(
+    () => currentEthereumNFTs.filter((item) => isEqualsIgnoringCase(item.ownerAddress, currentAddress)),
+    [currentAddress, currentEthereumNFTs],
+  );
 
+  // NOTE need to select type criteria
   const typeInfos = useMemo(() => {
     const infos: TypeInfo[] = [];
 
-    // NOTE name말고 다른 컬렉션으로 할 것
-    // const nftNameList = ownedEthereumNFTs.map((item) => item.name);
+    const nftTypeList = Array.from(new Set([...ownedEthereumNFTs.map((item) => item.tokenType)]));
 
     infos.push({ type: 'all', name: 'All Assets', count: ownedEthereumNFTs.length });
 
-    // NOTE name말고 다른 컬렉션으로 할 것
-    // nftNameList.forEach((item) => {
-    //   infos.push({ type: item, name: item, count: ownedEthereumNFTs.filter((nft) => item === nft.name).length });
-    // });
-
-    if (ownedEthereumNFTs?.filter((item) => !item.description).length) {
-      infos.push({ type: 'etc', name: 'ETC', count: ownedEthereumNFTs.filter((nft) => !nft.description).length });
-    }
+    nftTypeList.forEach((item) => {
+      infos.push({ type: item, name: item.replace('ERC', 'ERC-'), count: ownedEthereumNFTs.filter((nft) => item === nft.tokenType).length });
+    });
 
     return infos;
   }, [ownedEthereumNFTs]);
@@ -82,9 +71,8 @@ export default function NFTList({ chain }: NFTListProps) {
 
   const filteredNFTObjects = useMemo(() => {
     if (currentType === 'all') return ownedEthereumNFTs;
-    if (currentType === 'etc') return ownedEthereumNFTs;
 
-    return ownedEthereumNFTs.filter((item) => currentTypeInfo?.name === item.id) || [];
+    return ownedEthereumNFTs.filter((item) => currentTypeInfo?.name === item.tokenType) || [];
   }, [ownedEthereumNFTs, currentType, currentTypeInfo?.name]);
 
   const addToken = () => navigate('/chain/ethereum/nft/add');
@@ -95,18 +83,17 @@ export default function NFTList({ chain }: NFTListProps) {
         <ListTitleContainer>
           <ListTitleLeftContainer>
             <TypeButton
-              style={{ display: 'none' }}
               text={currentTypeInfo?.name}
               number={currentTypeInfo?.count}
               onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
               isActive={isOpenPopover}
             />
-            <ListTitleLeftTextContainer>
+            {/* <ListTitleLeftTextContainer>
               <Typography variant="h6">{t('pages.Wallet.components.ethereum.NFTList.index.nft')}</Typography>
             </ListTitleLeftTextContainer>
             <ListTitleLeftCountContainer>
-              <Typography variant="h6">{isExistNFT ? `${currentEthereumNFTs.length}` : ''}</Typography>
-            </ListTitleLeftCountContainer>
+              <Typography variant="h6">{isExistNFT ? `${ownedEthereumNFTs.length}` : ''}</Typography>
+            </ListTitleLeftCountContainer> */}
           </ListTitleLeftContainer>
           <ListTitleRightContainer>
             <AddButton type="button" onClick={addToken}>

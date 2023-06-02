@@ -841,12 +841,21 @@
                   }
                 },
                 "NFT": {
+                  "ERC1155": {
+                    "SafeTransferFrom": {
+                      "index": {
+                        "contractAddress": "Contract address",
+                        "fromAddress": "From address",
+                        "toAddress": "To address"
+                      }
+                    }
+                  },
                   "ERC721": {
                     "TransferFrom": {
                       "index": {
+                        "contractAddress": "Contract address",
                         "fromAddress": "From address",
-                        "toAddress": "To address",
-                        "contractAddress": "Contract address"
+                        "toAddress": "To address"
                       }
                     }
                   }
@@ -1016,6 +1025,7 @@
               "NFTInfoItem": {
                 "index": {
                   "attributes": "Attributes",
+                  "balance": "Balance",
                   "contractAddress": "Contract address",
                   "copied": "Copied",
                   "description": "Description",

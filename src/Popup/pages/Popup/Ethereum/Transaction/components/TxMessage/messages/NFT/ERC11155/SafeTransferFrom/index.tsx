@@ -8,9 +8,9 @@ import type { TxMessageProps } from '../../../..';
 import Container from '../../../../components/Container';
 import CopyButton from '../../../../components/CopyButton';
 
-type ERC721TransferFromProps = TxMessageProps;
+type ERC1155SafeTransferFromProps = TxMessageProps;
 
-export default function ERC721TransferFrom({ tx, determineTxType }: ERC721TransferFromProps) {
+export default function ERC1155SafeTransferFrom({ tx, determineTxType }: ERC1155SafeTransferFromProps) {
   const { t } = useTranslation();
   const { to } = tx;
 
@@ -19,12 +19,12 @@ export default function ERC721TransferFrom({ tx, determineTxType }: ERC721Transf
   const toAddress = (determineTxType?.txDescription?.args?.[1] as undefined | string) || '';
 
   return (
-    <Container title="TransferFrom (ERC721)">
+    <Container title="SafeTransferFrom (ERC1155)">
       <ContentContainer>
         <AddressContainer>
           <LabelContainer>
             <Typography variant="h5">
-              {t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.NFT.ERC721.TransferFrom.index.contractAddress')}
+              {t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.NFT.ERC1155.SafeTransferFrom.index.contractAddress')}
             </Typography>
             <CopyButton text={to} />
           </LabelContainer>
@@ -36,7 +36,7 @@ export default function ERC721TransferFrom({ tx, determineTxType }: ERC721Transf
         <AddressContainer sx={{ marginTop: '0.8rem' }}>
           <LabelContainer>
             <Typography variant="h5">
-              {t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.NFT.ERC721.TransferFrom.index.fromAddress')}
+              {t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.NFT.ERC1155.SafeTransferFrom.index.fromAddress')}
             </Typography>
             <CopyButton text={fromAddress} />
           </LabelContainer>
@@ -48,7 +48,7 @@ export default function ERC721TransferFrom({ tx, determineTxType }: ERC721Transf
         <AddressContainer sx={{ marginTop: '0.4rem' }}>
           <LabelContainer>
             <Typography variant="h5">
-              {t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.NFT.ERC721.TransferFrom.index.toAddress')}
+              {t('pages.Popup.Ethereum.SignTransaction.components.TxMessage.messages.NFT.ERC1155.SafeTransferFrom.index.toAddress')}
             </Typography>
             <CopyButton text={toAddress} />
           </LabelContainer>

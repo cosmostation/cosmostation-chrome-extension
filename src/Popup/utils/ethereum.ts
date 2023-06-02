@@ -90,6 +90,8 @@ const erc20Interface = new Interface(ERC20_ABI);
 
 const erc721Interface = new Interface(ERC721_ABI);
 
+const erc1155Interface = new Interface(ERC1155_ABI);
+
 const oneInchInterface = new Interface(ONE_INCH_ABI);
 
 export function erc20Parse(tx: EthereumTx) {
@@ -113,6 +115,19 @@ export function erc721Parse(tx: EthereumTx) {
   }
   try {
     return erc721Interface.parseTransaction({ data });
+  } catch {
+    return null;
+  }
+}
+
+export function erc1155Parse(tx: EthereumTx) {
+  const { data } = tx;
+
+  if (!data) {
+    return null;
+  }
+  try {
+    return erc1155Interface.parseTransaction({ data });
   } catch {
     return null;
   }
@@ -151,19 +166,23 @@ export async function determineNFTType(rpcURL?: string, contractAddress?: string
 
   const erc721Contract = new ethers.Contract(contractAddress, ERC721_ABI, provider);
   const erc1155Contract = new ethers.Contract(contractAddress, ERC1155_ABI, provider);
+  try {
+    const erc721ContractCall = erc721Contract.supportsInterface('0x80ac58cd') as Promise<ERC721CheckPayload>;
+    const erc721Response = await erc721ContractCall;
 
-  const erc721ContractCall = erc721Contract.supportsInterface('0x80ac58cd') as Promise<ERC721CheckPayload>;
-  const erc721Response = await erc721ContractCall;
+    const erc1155ContractCall = erc1155Contract.supportsInterface('0xd9b67a26') as Promise<ERC1155CheckPayload>;
+    const erc1155Response = await erc1155ContractCall;
 
-  const erc1155ContractCall = erc1155Contract.supportsInterface('0xd9b67a26') as Promise<ERC1155CheckPayload>;
-  const erc1155Response = await erc1155ContractCall;
-
-  if (erc721Response && !erc1155Response) {
-    return TOKEN_TYPE.ERC721;
+    if (erc721Response && !erc1155Response) {
+      return TOKEN_TYPE.ERC721;
+    }
+    if (!erc721Response && erc1155Response) {
+      return TOKEN_TYPE.ERC1155;
+    }
+  } catch (e) {
+    return null;
   }
-  if (!erc721Response && erc1155Response) {
-    return TOKEN_TYPE.ERC1155;
-  }
+
   return null;
 }
 
@@ -204,13 +223,30 @@ export async function determineTxType(txParams: EthereumTx, rpcURL?: string): Pr
     txDescription = erc721Parse(txParams);
     const name = txDescription?.name;
 
-    const tokenMethodName = [ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM].find(
-      (methodName) => isEqualsIgnoringCase(methodName, name),
+    const tokenMethodName = [ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM].find((methodName) =>
+      isEqualsIgnoringCase(methodName, name),
     );
 
     if (data && tokenMethodName) {
       result = tokenMethodName;
       contractKind = ETHEREUM_CONTRACT_KIND.ERC721;
+    }
+
+    return { type: result, getCodeResponse: contractCode, txDescription, contractKind };
+  }
+
+  if (tokenStandard === 'ERC1155') {
+    txDescription = erc1155Parse(txParams);
+
+    const name = txDescription?.name;
+
+    const tokenMethodName = [ETHEREUM_TX_TYPE.TOKEN_METHOD_IS_APPROVED_FOR_ALL, ETHEREUM_TX_TYPE.TOKEN_METHOD_SAFE_TRANSFER_FROM].find((methodName) =>
+      isEqualsIgnoringCase(methodName, name),
+    );
+
+    if (data && tokenMethodName) {
+      result = tokenMethodName;
+      contractKind = ETHEREUM_CONTRACT_KIND.ERC1155;
     }
 
     return { type: result, getCodeResponse: contractCode, txDescription, contractKind };

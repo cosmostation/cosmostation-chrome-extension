@@ -34,7 +34,7 @@ export default function NFTButton({ nftId, isActive, ...remainder }: NFTButtonPr
   const { imageURL, name, address, tokenType, tokenId } = currentNFT || {};
 
   const shorterContractAddress = useMemo(() => shorterAddress(address, 23), [address]);
-  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 23), [tokenId]);
+  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 17), [tokenId]);
 
   const tokenStandard = useMemo(() => tokenType?.replace('ERC', 'ERC-'), [tokenType]);
 
@@ -56,7 +56,7 @@ export default function NFTButton({ nftId, isActive, ...remainder }: NFTButtonPr
             </Tooltip>
           </LeftInfoBodyContainer>
           <LeftInfoFooterContainer>
-            <Tooltip title={shorterTokenId || ''} placement="top" arrow>
+            <Tooltip title={tokenId || ''} placement="top" arrow>
               <Typography variant="h6">{shorterTokenId}</Typography>
             </Tooltip>
             /<Typography variant="h6">{tokenStandard}</Typography>

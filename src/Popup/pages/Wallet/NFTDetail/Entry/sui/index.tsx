@@ -96,7 +96,6 @@ export default function Sui() {
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
             <div>
               <Button type="button" disabled={!!errorMessage} onClick={() => navigate(`/wallet/nft-send/${objectId || ''}` as unknown as Path)}>
-                {/* NOTE Sui ->sui */}
                 {t('pages.Wallet.NFTDetail.Entry.sui.index.send')}
               </Button>
             </div>

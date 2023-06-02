@@ -33,7 +33,7 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
   const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress, tokenId });
 
   const shorterContractAddress = useMemo(() => shorterAddress(address, 20), [address]);
-  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 20), [tokenId]);
+  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 13), [tokenId]);
 
   const tokenStandard = useMemo(() => tokenType?.replace('ERC', 'ERC-'), [tokenType]);
 

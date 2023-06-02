@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import Web3 from 'web3';
-import type { AbiItem } from 'web3-utils';
+import { ethers, FetchRequest } from 'ethers';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { ERC721_ABI } from '~/constants/abi';
+import { ERC721_ABI, ERC1155_ABI } from '~/constants/abi';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
@@ -12,6 +11,7 @@ import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useGetNFTStandardSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTStandardSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
@@ -26,7 +26,6 @@ import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { ethereumAddressRegex } from '~/Popup/utils/regex';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumChain } from '~/types/chain';
-import type { ERC721ContractMethods } from '~/types/ethereum/contract';
 
 import NFTButton from './components/NFTButton';
 import NFTPopover from './components/NFTPopover';
@@ -76,7 +75,7 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const { currentEthereumNFTs } = useCurrentEthereumNFTs();
 
-  const availableNFTs = useMemo(() => currentEthereumNFTs.filter((item) => item.tokenType === 'ERC721'), [currentEthereumNFTs]);
+  const availableNFTs = useMemo(() => currentEthereumNFTs.filter((item) => item.tokenType), [currentEthereumNFTs]);
 
   const availableNFTIds = useMemo(() => availableNFTs.map((nft) => nft.id), [availableNFTs]);
 
@@ -86,6 +85,8 @@ export default function Ethereum({ chain }: EthereumProps) {
     () => currentEthereumNFTs.find((item) => isEqualsIgnoringCase(item.id, currentNFTId)) || null,
     [currentEthereumNFTs, currentNFTId],
   );
+
+  const { data: nftStandard } = useGetNFTStandardSWR({ contractAddress: currentNFT?.address });
 
   const fee = useFeeSWR();
 
@@ -107,38 +108,60 @@ export default function Ethereum({ chain }: EthereumProps) {
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
 
-  // NOTE need fix
   const sendTx = useMemo(() => {
     if (currentNFT === null) {
       return {
         from: address,
         to: recipientAddress,
-        // value: amount,
       };
     }
 
-    const provider = new Web3.providers.HttpProvider(currentEthereumNetwork.rpcURL, {
-      headers: [
-        {
-          name: 'Cosmostation',
-          value: `extension/${String(process.env.VERSION)}`,
-        },
-      ],
-    });
-    const web3 = new Web3(provider);
+    const customFetchRequest = new FetchRequest(currentEthereumNetwork.rpcURL);
 
-    const contract = new web3.eth.Contract(ERC721_ABI as AbiItem[], currentNFT.address);
-    const methods = contract.methods as ERC721ContractMethods;
+    customFetchRequest.setHeader('Cosmostation', `extension/${String(process.env.VERSION)}`);
 
-    // NOTE ethers.js로 encodeAbi대응되는 메서드가 있는 지 확인
-    const data = ethereumAddressRegex.test(recipientAddress) ? methods.transferFrom(address, recipientAddress, currentNFT.tokenId).encodeABI() : undefined;
+    const provider = new ethers.JsonRpcProvider(customFetchRequest);
+
+    if (nftStandard === 'ERC721') {
+      const erc721Contract = new ethers.Contract(currentNFT.address, ERC721_ABI, provider);
+
+      const data = ethereumAddressRegex.test(recipientAddress)
+        ? erc721Contract.interface.encodeFunctionData('transferFrom', [address, recipientAddress, currentNFT.tokenId])
+        : undefined;
+
+      return {
+        from: address,
+        to: currentNFT.address,
+        data,
+      };
+    }
+    if (nftStandard === 'ERC1155') {
+      const erc1155Contract = new ethers.Contract(currentNFT.address, ERC1155_ABI, provider);
+
+      // NOTE 몇개 전송할 건지 갯수도 받을 수 있는 input 창이 필요함
+      const sendAmount = '1';
+      const data = ethereumAddressRegex.test(recipientAddress)
+        ? erc1155Contract.interface.encodeFunctionData('safeTransferFrom', [
+            address,
+            recipientAddress,
+            currentNFT.tokenId,
+            sendAmount,
+            `${ethers.hexlify(ethers.toUtf8Bytes(`${currentNFT.metaURI || ''}`))}`,
+          ])
+        : undefined;
+
+      return {
+        from: address,
+        to: currentNFT.address,
+        data,
+      };
+    }
 
     return {
       from: address,
-      to: currentNFT.address,
-      data,
+      to: recipientAddress,
     };
-  }, [address, currentEthereumNetwork.rpcURL, currentNFT, recipientAddress]);
+  }, [address, currentEthereumNetwork.rpcURL, currentNFT, nftStandard, recipientAddress]);
 
   const estimateGas = useEstimateGasSWR([sendTx]);
 

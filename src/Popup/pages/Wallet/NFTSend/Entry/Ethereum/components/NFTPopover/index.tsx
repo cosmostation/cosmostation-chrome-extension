@@ -5,6 +5,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 
 import NFTItem from './components/NFTItem';
 import { Container, StyledPopover } from './styled';
@@ -26,8 +27,8 @@ export default function NFTPopover({ currentNFTId, onClickNFT, onClose, ...remai
 
   const { currentEthereumNFTs } = useCurrentEthereumNFTs();
 
-  const filteredNFTObjects = useMemo(
-    () => currentEthereumNFTs.filter((item) => item.tokenType === 'ERC721' && item.ownerAddress === currentAddress),
+  const filteredNFTs = useMemo(
+    () => currentEthereumNFTs.filter((item) => isEqualsIgnoringCase(item.ownerAddress, currentAddress)),
     [currentAddress, currentEthereumNFTs],
   );
 
@@ -40,7 +41,7 @@ export default function NFTPopover({ currentNFTId, onClickNFT, onClose, ...remai
   return (
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
-        {filteredNFTObjects.map((nft) => {
+        {filteredNFTs.map((nft) => {
           const isActive = currentNFTId === nft.id;
           return (
             <NFTItem

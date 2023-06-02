@@ -841,6 +841,15 @@
                   }
                 },
                 "NFT": {
+                  "ERC1155": {
+                    "SafeTransferFrom": {
+                      "index": {
+                        "contractAddress": "계약 주소",
+                        "fromAddress": "보내는 주소",
+                        "toAddress": "받는 주소"
+                      }
+                    }
+                  },
                   "ERC721": {
                     "TransferFrom": {
                       "index": {
@@ -1016,6 +1025,7 @@
               "NFTInfoItem": {
                 "index": {
                   "attributes": "속성",
+                  "balance": "보유 수량",
                   "contractAddress": "계약 주소",
                   "copied": "복사 되었습니다.",
                   "description": "NFT 설명",

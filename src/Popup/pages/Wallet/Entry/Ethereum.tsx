@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
+import Empty from '~/Popup/components/common/Empty';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Header from '~/Popup/components/SelectSubHeader';
 import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
@@ -90,7 +91,11 @@ export default function Ethereum({ chain }: EthereumProps) {
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>
             <BottomContainer sx={{ marginTop: '0.9rem' }}>
-              <NFTList chain={chain} />
+              <ErrorBoundary fallback={<Empty />}>
+                <Suspense fallback={null}>
+                  <NFTList chain={chain} />
+                </Suspense>
+              </ErrorBoundary>
             </BottomContainer>
           </StyledTabPanel>
         </>

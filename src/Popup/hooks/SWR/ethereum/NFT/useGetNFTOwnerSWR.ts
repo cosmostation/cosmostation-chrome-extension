@@ -58,30 +58,31 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
 
     const provider = new ethers.JsonRpcProvider(customFetchRequest);
 
-    if (tokenStandard === TOKEN_TYPE.ERC721) {
-      const erc721Contract = new ethers.Contract(params.contractAddress, ERC721_ABI, provider);
+    try {
+      if (tokenStandard === TOKEN_TYPE.ERC721) {
+        const erc721Contract = new ethers.Contract(params.contractAddress, ERC721_ABI, provider);
 
-      const erc721ContractCall = erc721Contract.ownerOf(params.tokenId) as Promise<ERC721OwnerPayload>;
-      const erc721ContractCallResponse = await erc721ContractCall;
+        const erc721ContractCall = erc721Contract.ownerOf(params.tokenId) as Promise<ERC721OwnerPayload>;
+        const erc721ContractCallResponse = await erc721ContractCall;
 
-      if (isEqualsIgnoringCase(erc721ContractCallResponse, params.ownerAddress)) {
-        return true;
+        return isEqualsIgnoringCase(erc721ContractCallResponse, params.ownerAddress);
       }
-    }
-    if (tokenStandard === TOKEN_TYPE.ERC1155) {
-      const erc1155Contract = new ethers.Contract(params.contractAddress, ERC1155_ABI, provider);
+      if (tokenStandard === TOKEN_TYPE.ERC1155) {
+        const erc1155Contract = new ethers.Contract(params.contractAddress, ERC1155_ABI, provider);
 
-      const erc1155ContractCall = erc1155Contract.balanceOf(params.ownerAddress, params.tokenId) as Promise<ERC1155BalanceOfPayload>;
-      const erc1155ContractCallResponse = await erc1155ContractCall;
+        const erc1155ContractCall = erc1155Contract.balanceOf(params.ownerAddress, params.tokenId) as Promise<ERC1155BalanceOfPayload>;
+        const erc1155ContractCallResponse = await erc1155ContractCall;
 
-      if (gt(erc1155ContractCallResponse, '0')) {
-        return true;
+        return gt(BigInt(erc1155ContractCallResponse).toString(10), '0');
       }
+    } catch (e) {
+      return null;
     }
-    return false;
+
+    return null;
   };
 
-  const { data, error, mutate } = useSWR<GetNFTOwnerPayload, AxiosError>({ rpcURL, contractAddress, tokenId, ownerAddress: walletAddress }, fetcher, {
+  const { data, error, mutate } = useSWR<GetNFTOwnerPayload | null, AxiosError>({ rpcURL, contractAddress, tokenId, ownerAddress: walletAddress }, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,

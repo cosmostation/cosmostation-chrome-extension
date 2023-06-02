@@ -65,7 +65,7 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const { name, imageURL, rarity, address, id, tokenId } = currentNFTObject || {};
 
-  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId });
+  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId }, { suspense: true });
 
   const errorMessage = useMemo(() => {
     if (!isOwnedNFT) {
