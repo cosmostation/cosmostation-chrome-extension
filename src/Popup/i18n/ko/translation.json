@@ -1075,6 +1075,8 @@
               "insufficientAmount": "수량이 부족합니다.",
               "invalidAddress": "유효하지 않은 주소입니다.",
               "invalidAmount": "수량을 입력하세요.",
+              "invalidSendNFTQuantity": "유효하지 않은 NFT 수량입니다.",
+              "quantityPlaceholder": "NFT 수량",
               "recipientAddressPlaceholder": "수신인 주소",
               "sendButton": "보내기"
             }

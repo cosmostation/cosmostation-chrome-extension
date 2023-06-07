@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import type { EthereumNFT } from '~/types/nft';
+import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import { useCurrentEthereumNetwork } from './useCurrentEthereumNetwork';
 

@@ -5,10 +5,11 @@ import { Typography } from '@mui/material';
 
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBalanceSWR';
+import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt } from '~/Popup/utils/big';
 import { shorterAddress } from '~/Popup/utils/string';
-import type { EthereumNFT } from '~/types/nft';
+import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import {
   AttributeContainer,
@@ -25,24 +26,26 @@ import {
 import Copy16Icon from '~/images/icons/Copy16.svg';
 
 type NFTInfoItemProps = {
-  nftMeta: EthereumNFT;
+  nft: EthereumNFT;
 };
 
-export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
+export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { description, tokenType, address, externalLink, attributes, traits, tokenId, ownerAddress } = nftMeta;
+  const { tokenType, address, tokenId, ownerAddress } = nft;
+
+  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId });
 
   const shorterOwnerAddress = useMemo(() => shorterAddress(ownerAddress, 14), [ownerAddress]);
   const shorterContractAddress = useMemo(() => shorterAddress(address, 14), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 14), [tokenId]);
 
-  const shorterExternalUrl = useMemo(() => shorterAddress(externalLink, 20), [externalLink]);
+  const shorterExternalURL = useMemo(() => shorterAddress(nftMeta?.externalLink, 20), [nftMeta?.externalLink]);
 
   const displayTokenStandard = useMemo(() => tokenType.replace('ERC', 'ERC-'), [tokenType]);
 
-  const { data: nftBalance } = useGetNFTBalanceSWR({ contractAddress: address, ownerAddress, tokenId });
+  const { data: nftBalance } = useGetNFTBalanceSWR({ contractAddress: address, tokenId });
 
   const handleOnClickCopy = (copyString?: string) => {
     if (copyString && copy(copyString)) {
@@ -120,34 +123,34 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
         </ItemContainer>
       )}
 
-      {externalLink && (
+      {nftMeta?.externalLink && (
         <ItemContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.url')}</Typography>
           </ItemTitleContainer>
           <ItemRightContainer>
-            <URLButton type="button" onClick={() => window.open(externalLink)}>
-              <Typography variant="h5">{shorterExternalUrl}</Typography>
+            <URLButton type="button" onClick={() => window.open(nftMeta.externalLink)}>
+              <Typography variant="h5">{shorterExternalURL}</Typography>
             </URLButton>
           </ItemRightContainer>
         </ItemContainer>
       )}
 
-      {description && (
+      {nftMeta?.description && (
         <ItemColumnContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.description')}</Typography>
           </ItemTitleContainer>
-          <ItemValueContainer>{description}</ItemValueContainer>
+          <ItemValueContainer>{nftMeta.description}</ItemValueContainer>
         </ItemColumnContainer>
       )}
 
-      {(attributes || traits) && (
+      {(nftMeta?.attributes || nftMeta?.traits) && (
         <AttributeContainer>
           <AttributeHeaderContainer>
             <Typography variant="h4">{t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.attributes')}</Typography>
           </AttributeHeaderContainer>
-          {attributes?.map((item) => (
+          {nftMeta.attributes?.map((item) => (
             <ItemContainer key={item.trait_type}>
               <ItemTitleContainer>
                 <Typography variant="h5">{item.trait_type || ''}</Typography>
@@ -157,7 +160,7 @@ export default function NFTInfoItem({ nftMeta }: NFTInfoItemProps) {
               </ItemRightContainer>
             </ItemContainer>
           ))}
-          {traits?.map((item) => (
+          {nftMeta.traits?.map((item) => (
             <ItemContainer key={item.trait_type}>
               <ItemTitleContainer>
                 <Typography variant="h5">{item.trait_type || ''}</Typography>

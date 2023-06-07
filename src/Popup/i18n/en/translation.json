@@ -1075,6 +1075,8 @@
               "insufficientAmount": "Insufficient amount",
               "invalidAddress": "Invalid address",
               "invalidAmount": "Invalid amount",
+              "invalidSendNFTQuantity": "Invalid NFT Amount",
+              "quantityPlaceholder": "Quantity",
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"
             }

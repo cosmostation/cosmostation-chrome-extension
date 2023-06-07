@@ -82,14 +82,18 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
     return null;
   };
 
-  const { data, error, mutate } = useSWR<GetNFTOwnerPayload | null, AxiosError>({ rpcURL, contractAddress, tokenId, ownerAddress: walletAddress }, fetcher, {
-    revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
-    errorRetryCount: 0,
-    isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !rpcURL,
-    ...config,
-  });
+  const { data, isValidating, error, mutate } = useSWR<GetNFTOwnerPayload | null, AxiosError>(
+    { rpcURL, contractAddress, tokenId, ownerAddress: walletAddress },
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 14000,
+      refreshInterval: 15000,
+      errorRetryCount: 0,
+      isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !walletAddress || !rpcURL,
+      ...config,
+    },
+  );
 
-  return { data, error, mutate };
+  return { data, isValidating, error, mutate };
 }

@@ -6,13 +6,14 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
+import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import NFTItem from './components/NFTItem';
 import { Container, StyledPopover } from './styled';
 
-type NFTPopoverProps = Omit<PopoverProps, 'children'> & { currentNFTId?: string; onClickNFT?: (nftObjectId: string) => void };
+type NFTPopoverProps = Omit<PopoverProps, 'children'> & { currentNFT?: EthereumNFT; onClickNFT?: (nft: EthereumNFT) => void };
 
-export default function NFTPopover({ currentNFTId, onClickNFT, onClose, ...remainder }: NFTPopoverProps) {
+export default function NFTPopover({ currentNFT, onClickNFT, onClose, ...remainder }: NFTPopoverProps) {
   const { currentChain } = useCurrentChain();
   const accounts = useAccounts();
 
@@ -42,7 +43,7 @@ export default function NFTPopover({ currentNFTId, onClickNFT, onClose, ...remai
     <StyledPopover onClose={onClose} {...remainder}>
       <Container>
         {filteredNFTs.map((nft) => {
-          const isActive = currentNFTId === nft.id;
+          const isActive = currentNFT?.id === nft.id;
           return (
             <NFTItem
               key={nft.id}
@@ -50,7 +51,7 @@ export default function NFTPopover({ currentNFTId, onClickNFT, onClose, ...remai
               isActive={isActive}
               ref={isActive ? ref : undefined}
               onClick={() => {
-                onClickNFT?.(nft.id);
+                onClickNFT?.(nft);
                 onClose?.({}, 'backdropClick');
               }}
             />

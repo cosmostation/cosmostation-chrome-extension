@@ -5,8 +5,9 @@ import { Typography } from '@mui/material';
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
+import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { shorterAddress } from '~/Popup/utils/string';
+import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import {
   Button,
@@ -23,15 +24,13 @@ import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
 
 type NFTButtonProps = ComponentProps<typeof Button> & {
   isActive?: boolean;
-  nftId: string;
+  currentNFT: EthereumNFT;
 };
 
-export default function NFTButton({ nftId, isActive, ...remainder }: NFTButtonProps) {
-  const { currentEthereumNFTs } = useCurrentEthereumNFTs();
+export default function NFTButton({ currentNFT, isActive, ...remainder }: NFTButtonProps) {
+  const { address, tokenType, tokenId } = currentNFT || {};
 
-  const currentNFT = useMemo(() => currentEthereumNFTs.find((nft) => nft.id === nftId), [currentEthereumNFTs, nftId]);
-
-  const { imageURL, name, address, tokenType, tokenId } = currentNFT || {};
+  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId });
 
   const shorterContractAddress = useMemo(() => shorterAddress(address, 23), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 17), [tokenId]);
@@ -42,12 +41,12 @@ export default function NFTButton({ nftId, isActive, ...remainder }: NFTButtonPr
     <Button type="button" {...remainder}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image src={imageURL} defaultImgSrc={unknownNFTImg} />
+          <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Tooltip title={name || '-'} placement="top" arrow>
-              <Typography variant="h5">{name || '-'}</Typography>
+            <Tooltip title={nftMeta?.name || '-'} placement="top" arrow>
+              <Typography variant="h5">{nftMeta?.name || '-'}</Typography>
             </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>

@@ -23,10 +23,6 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   '&:disabled': {
     cursor: 'default',
-
-    '&:hover': {
-      backgroundColor: theme.colors.red01,
-    },
   },
 
   '&:hover': {
@@ -37,6 +33,36 @@ export const StyledButton = styled('button')(({ theme }) => ({
       justifyContent: 'center',
       alignItems: 'center',
     },
+  },
+}));
+
+export const SkeletonButton = styled('button')(({ theme }) => ({
+  width: '16.4rem',
+
+  position: 'relative',
+
+  backgroundColor: theme.colors.base02,
+  border: 0,
+
+  padding: '0.8rem',
+
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+
+  rowGap: '1rem',
+
+  borderRadius: '0.8rem',
+
+  cursor: 'pointer',
+
+  '&:disabled': {
+    cursor: 'default',
+  },
+
+  '&:hover': {
+    backgroundColor: theme.colors.base03,
   },
 }));
 
@@ -116,6 +142,7 @@ export const ObjectNameTextContainer = styled('div')(({ theme }) => ({
 
 export const DeleteButton = styled('div')(({ theme }) => ({
   position: 'absolute',
+  zIndex: 1,
 
   top: '-0.4rem',
   right: '-0.4rem',
@@ -132,4 +159,24 @@ export const DeleteButton = styled('div')(({ theme }) => ({
       fill: theme.accentColors.white,
     },
   },
+}));
+
+export const BlurredImage = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  zIndex: 1,
+
+  width: '14.8rem',
+  height: '14.8rem',
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  borderRadius: '0.8rem',
+
+  backgroundColor: 'rgba(0, 0, 0, 0.6)',
+
+  backdropFilter: 'blur(0.1rem)',
+
+  color: theme.accentColors.white,
 }));

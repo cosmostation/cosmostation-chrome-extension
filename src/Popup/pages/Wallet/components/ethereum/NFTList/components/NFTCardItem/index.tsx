@@ -5,12 +5,15 @@ import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTOwnerSWR';
+import { useGetNFTURISWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTURISWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
-import type { EthereumNFT } from '~/types/nft';
+import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import {
+  BlurredImage,
   BodyContainer,
   BottomContainer,
   DeleteButton,
@@ -18,18 +21,19 @@ import {
   ObjectDescriptionTextContainer,
   ObjectImageContainer,
   ObjectNameTextContainer,
+  SkeletonButton,
   StyledButton,
 } from './styled';
 
 import Close16Icon from '~/images/icons/Close16.svg';
 
 type NFTCardItemProps = {
-  nftObject: EthereumNFT;
+  nft: EthereumNFT;
   onClick?: () => void;
   onClickDelete?: () => void;
 };
 
-export default function NFTCardItem({ nftObject, onClick, onClickDelete }: NFTCardItemProps) {
+export default function NFTCardItem({ nft, onClick, onClickDelete }: NFTCardItemProps) {
   const { currentChain } = useCurrentChain();
   const accounts = useAccounts(true);
 
@@ -40,8 +44,14 @@ export default function NFTCardItem({ nftObject, onClick, onClickDelete }: NFTCa
     [accounts?.data, currentAccount.id, currentChain.id],
   );
 
-  const { name, imageURL, rarity, description, tokenId, address } = nftObject;
+  const { tokenId, address } = nft;
 
+  // NOTE need suspense
+  const { data: nftMetaURI } = useGetNFTURISWR({ contractAddress: address, tokenId });
+
+  const { data: nftMeta } = useGetNFTMetaSWR({ metaURI: nftMetaURI, contractAddress: address, tokenId });
+
+  // FIXME refetch시 본인 소유 아니라고 나옴
   const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId }, { suspense: true });
 
   return (
@@ -49,12 +59,19 @@ export default function NFTCardItem({ nftObject, onClick, onClickDelete }: NFTCa
       <BodyContainer>
         <ObjectImageContainer>
           <>
-            <Image src={imageURL} defaultImgSrc={unknownNFTImg} />
-            {rarity && (
+            {!isOwnedNFT && (
+              <BlurredImage>
+                <Typography variant="h4">Not Owned NFT</Typography>
+              </BlurredImage>
+            )}
+            <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
+
+            {nftMeta?.rarity && (
               <ObjectAbsoluteEditionMarkContainer>
-                <Typography variant="h6">{rarity}</Typography>
+                <Typography variant="h6">{nftMeta.rarity}</Typography>
               </ObjectAbsoluteEditionMarkContainer>
             )}
+
             <DeleteButton
               id="deleteButton"
               onClick={(e) => {
@@ -70,10 +87,10 @@ export default function NFTCardItem({ nftObject, onClick, onClickDelete }: NFTCa
 
       <BottomContainer>
         <ObjectDescriptionTextContainer>
-          <Typography variant="h5">{description}</Typography>
+          <Typography variant="h5">{nftMeta?.description || address}</Typography>
         </ObjectDescriptionTextContainer>
         <ObjectNameTextContainer>
-          <Typography variant="h5">{name || tokenId}</Typography>
+          <Typography variant="h5">{nftMeta?.name || tokenId}</Typography>
         </ObjectNameTextContainer>
       </BottomContainer>
     </StyledButton>
@@ -82,7 +99,7 @@ export default function NFTCardItem({ nftObject, onClick, onClickDelete }: NFTCa
 
 export function NFTCardItemSkeleton() {
   return (
-    <StyledButton disabled>
+    <SkeletonButton disabled>
       <BodyContainer>
         <ObjectImageContainer>
           <Image src={unknownNFTImg} />
@@ -96,6 +113,6 @@ export function NFTCardItemSkeleton() {
           <Skeleton width={40} variant="text" />
         </ObjectDescriptionTextContainer>
       </BottomContainer>
-    </StyledButton>
+    </SkeletonButton>
   );
 }

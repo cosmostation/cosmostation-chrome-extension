@@ -27,6 +27,7 @@ import {
   NFTPreviewHeaderContainer,
   PreviewNFTImageContainer,
   PreviewNFTNameContainer,
+  StyledAbsoluteLoading,
   StyledInput,
 } from './styled';
 
@@ -52,33 +53,44 @@ export default function Entry() {
 
   const [currentContractAddress, setCurrentContractAddress] = useState('');
   const [debouncedContractAddress] = useDebounce(currentContractAddress, 500);
+  const [debouncedContractAddress2] = useDebounce(currentContractAddress, 1000);
 
   const [currentTokenId, setCurrentTokenId] = useState('');
   const [debouncedTokenId] = useDebounce(currentTokenId, 500);
+  // NOTE Look for a better way to use debounce
+  const [debouncedTokenId2] = useDebounce(currentTokenId, 1000);
 
   const { data: currentNFTStandard } = useGetNFTStandardSWR({ contractAddress: debouncedContractAddress });
 
-  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: debouncedContractAddress, ownerAddress: currentAddress, tokenId: debouncedTokenId });
+  const { data: isOwnedNFT, isValidating: isValidatingOwner } = useGetNFTOwnerSWR({
+    contractAddress: debouncedContractAddress,
+    ownerAddress: currentAddress,
+    tokenId: debouncedTokenId,
+  });
 
-  // NOTE 로딩 컴포넌트 구현 필요
-  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
+  const {
+    data: nftMeta,
+    isValidating: isValidatingMetaData,
+    error,
+  } = useGetNFTMetaSWR({ contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
 
+  const isLoadingData = useMemo(() => isValidatingOwner || isValidatingMetaData, [isValidatingMetaData, isValidatingOwner]);
+  // NOTE check & fix error
   const errorType = useMemo(() => {
-    if (debouncedContractAddress && debouncedTokenId) {
-      if (!ethereumAddressRegex.test(debouncedContractAddress)) {
-        return 'invalidAddress';
-      }
-      if (!nftMeta) {
-        return 'noNFTData';
-      }
-
+    if (!ethereumAddressRegex.test(debouncedContractAddress)) {
+      return 'invalidAddress';
+    }
+    if (currentContractAddress && currentTokenId && debouncedContractAddress2 && debouncedTokenId2 && !isLoadingData) {
       if (!isOwnedNFT) {
         return 'misMatch';
+      }
+      if (error) {
+        return 'error';
       }
     }
 
     return '';
-  }, [debouncedContractAddress, debouncedTokenId, nftMeta, isOwnedNFT]);
+  }, [currentContractAddress, currentTokenId, debouncedContractAddress, debouncedContractAddress2, debouncedTokenId2, error, isLoadingData, isOwnedNFT]);
 
   const nftPreviewIcon = useMemo(() => {
     if (errorType && debouncedContractAddress && debouncedTokenId) {
@@ -88,34 +100,42 @@ export default function Entry() {
   }, [debouncedContractAddress, debouncedTokenId, errorType]);
 
   const nftPreviewHeaderText = useMemo(() => {
-    if (errorType === 'invalidAddress') {
-      return 'Invalid Contract Address';
-    }
-    if (errorType === 'noNFTData') {
-      return 'Not Found';
-    }
-    if (errorType === 'misMatch') {
-      return 'Mismatch';
+    if (debouncedContractAddress && debouncedTokenId) {
+      if (errorType === 'invalidAddress') {
+        return 'Invalid Contract Address';
+      }
+
+      if (errorType === 'misMatch') {
+        return 'Mismatch';
+      }
+
+      if (errorType === 'error') {
+        return 'Error';
+      }
     }
 
     return 'IMG Preview';
-  }, [errorType]);
+  }, [debouncedContractAddress, debouncedTokenId, errorType]);
 
   const nftPreviewSubText = useMemo(() => {
-    if (errorType === 'invalidAddress') {
-      return t('pages.Chain.Ethereum.NFT.Add.entry.invalidAddress');
-    }
-    if (errorType === 'noNFTData') {
-      // NOTE need i18
-      return 'No data, Check you input right value & network';
-    }
-    if (errorType === 'misMatch') {
-      // NOTE need i18
-      return 'Ownership information does not match.';
+    if (debouncedContractAddress && debouncedTokenId) {
+      if (errorType === 'invalidAddress') {
+        return t('pages.Chain.Ethereum.NFT.Add.entry.invalidAddress');
+      }
+
+      if (errorType === 'misMatch') {
+        // NOTE need i18
+        return 'Ownership information does not match.';
+      }
+
+      if (errorType === 'error') {
+        // NOTE need i18
+        return 'An error has occurred. please try again';
+      }
     }
 
     return t('pages.Chain.Ethereum.NFT.Add.entry.previewSubText');
-  }, [errorType, t]);
+  }, [debouncedContractAddress, debouncedTokenId, errorType, t]);
 
   const submit = async () => {
     try {
@@ -123,15 +143,8 @@ export default function Entry() {
         const newNFT = {
           tokenId: debouncedTokenId,
           tokenType: currentNFTStandard,
-          name: nftMeta.name,
           ownerAddress: currentAddress,
           address: debouncedContractAddress,
-          description: nftMeta.description,
-          imageURL: nftMeta.image,
-          metaURI: nftMeta.metaURI,
-          attributes: nftMeta.attributes?.filter((item) => item.trait_type && item.value),
-          externalLink: nftMeta.external_link,
-          traits: nftMeta.traits,
         };
 
         await addEthereumNFT({
@@ -171,10 +184,12 @@ export default function Entry() {
           <Typography variant="h6">{t('pages.Chain.Ethereum.NFT.Add.entry.preview')}</Typography>
         </NFTPreviewHeaderContainer>
         <NFTPreviewBodyContainer>
-          {!errorType && nftMeta ? (
+          {isLoadingData ? (
+            <StyledAbsoluteLoading size="4rem" />
+          ) : !errorType && nftMeta ? (
             <>
               <PreviewNFTImageContainer>
-                <Image src={nftMeta?.image} defaultImgSrc={unknownNFTImg} />
+                <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
               </PreviewNFTImageContainer>
               <PreviewNFTNameContainer>
                 <Typography variant="h3">{nftMeta?.name}</Typography>
@@ -186,7 +201,8 @@ export default function Entry() {
         </NFTPreviewBodyContainer>
       </NFTPreviewContainer>
       <ButtonContainer>
-        <Button type="submit" disabled={!!errorType} onClick={submit}>
+        {/* FIXME check condition */}
+        <Button type="submit" disabled={!!errorType || isLoadingData || !(currentContractAddress && currentTokenId)} onClick={submit}>
           {t('pages.Chain.Ethereum.NFT.Add.entry.submitButton')}
         </Button>
       </ButtonContainer>

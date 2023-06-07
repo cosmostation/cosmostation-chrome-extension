@@ -72,8 +72,8 @@ export default function NFTList({ chain }: NFTListProps) {
   const filteredNFTObjects = useMemo(() => {
     if (currentType === 'all') return ownedEthereumNFTs;
 
-    return ownedEthereumNFTs.filter((item) => currentTypeInfo?.name === item.tokenType) || [];
-  }, [ownedEthereumNFTs, currentType, currentTypeInfo?.name]);
+    return ownedEthereumNFTs.filter((item) => currentTypeInfo?.type === item.tokenType) || [];
+  }, [ownedEthereumNFTs, currentType, currentTypeInfo?.type]);
 
   const addToken = () => navigate('/chain/ethereum/nft/add');
 
@@ -112,7 +112,7 @@ export default function NFTList({ chain }: NFTListProps) {
               <ErrorBoundary key={nft.id} FallbackComponent={Empty}>
                 <Suspense fallback={<NFTCardItemSkeleton />}>
                   <NFTCardItem
-                    nftObject={nft}
+                    nft={nft}
                     onClickDelete={handleOnClickDelete}
                     onClick={() => navigate(`/wallet/nft-detail/${nft.id || ''}` as unknown as Path)}
                   />

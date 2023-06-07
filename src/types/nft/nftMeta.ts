@@ -11,3 +11,24 @@ export type SuiNFTMeta = {
   type?: string;
   rarity?: '';
 };
+
+export type EthereumNFTMeta = {
+  name?: string;
+  description?: string;
+  imageURL?: string;
+  metaURI?: string;
+  rarity?: string;
+  externalLink?: string;
+  attributes?: {
+    trait_type: string;
+    value: string | number;
+  }[];
+  traits?: {
+    display_type?: string;
+    max_value?: number;
+    order?: null;
+    trait_count: number;
+    trait_type: string;
+    value: string | number;
+  }[];
+};

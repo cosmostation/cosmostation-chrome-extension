@@ -7,11 +7,12 @@ import { ERC721_ABI, ERC1155_ABI } from '~/constants/abi';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
-import Number from '~/Popup/components/common/Number';
+import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useGetNFTStandardSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTStandardSWR';
+import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBalanceSWR';
+import { useGetNFTURISWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTURISWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
@@ -22,10 +23,11 @@ import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEther
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { gt, lt, lte, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { ethereumAddressRegex } from '~/Popup/utils/regex';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumChain } from '~/types/chain';
+import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import NFTButton from './components/NFTButton';
 import NFTPopover from './components/NFTPopover';
@@ -75,18 +77,18 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const { currentEthereumNFTs } = useCurrentEthereumNFTs();
 
-  const availableNFTs = useMemo(() => currentEthereumNFTs.filter((item) => item.tokenType), [currentEthereumNFTs]);
-
-  const availableNFTIds = useMemo(() => availableNFTs.map((nft) => nft.id), [availableNFTs]);
-
-  const [currentNFTId, setCurrentNFTId] = useState<string | undefined>(availableNFTIds.includes(params.id || '') ? params.id : availableNFTIds[0]);
-
-  const currentNFT = useMemo(
-    () => currentEthereumNFTs.find((item) => isEqualsIgnoringCase(item.id, currentNFTId)) || null,
-    [currentEthereumNFTs, currentNFTId],
+  const [currentNFT, setCurrentNFT] = useState<EthereumNFT>(
+    currentEthereumNFTs.find((item) => isEqualsIgnoringCase(item.id, params.id)) || currentEthereumNFTs[0],
   );
 
-  const { data: nftStandard } = useGetNFTStandardSWR({ contractAddress: currentNFT?.address });
+  const { data: currentNFTBalance } = useGetNFTBalanceSWR(
+    {
+      contractAddress: currentNFT.address,
+      ownerAddress: address,
+      tokenId: currentNFT.tokenId,
+    },
+    { suspense: true },
+  );
 
   const fee = useFeeSWR();
 
@@ -101,12 +103,15 @@ export default function Ethereum({ chain }: EthereumProps) {
   const feeCoinDisplayDenom = useMemo(() => displayDenom, [displayDenom]);
 
   const [recipientAddress, setRecipientAddress] = useState('');
+  const [currentSendQuantity, setCurrentSendQuantity] = useState('');
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
+
+  const { data: metaURI } = useGetNFTURISWR({ contractAddress: currentNFT.address, tokenId: currentNFT.tokenId });
 
   const sendTx = useMemo(() => {
     if (currentNFT === null) {
@@ -122,7 +127,7 @@ export default function Ethereum({ chain }: EthereumProps) {
 
     const provider = new ethers.JsonRpcProvider(customFetchRequest);
 
-    if (nftStandard === 'ERC721') {
+    if (currentNFT.tokenType === 'ERC721') {
       const erc721Contract = new ethers.Contract(currentNFT.address, ERC721_ABI, provider);
 
       const data = ethereumAddressRegex.test(recipientAddress)
@@ -135,18 +140,16 @@ export default function Ethereum({ chain }: EthereumProps) {
         data,
       };
     }
-    if (nftStandard === 'ERC1155') {
+    if (currentNFT.tokenType === 'ERC1155' && metaURI) {
       const erc1155Contract = new ethers.Contract(currentNFT.address, ERC1155_ABI, provider);
 
-      // NOTE 몇개 전송할 건지 갯수도 받을 수 있는 input 창이 필요함
-      const sendAmount = '1';
       const data = ethereumAddressRegex.test(recipientAddress)
         ? erc1155Contract.interface.encodeFunctionData('safeTransferFrom', [
             address,
             recipientAddress,
             currentNFT.tokenId,
-            sendAmount,
-            `${ethers.hexlify(ethers.toUtf8Bytes(`${currentNFT.metaURI || ''}`))}`,
+            Number(currentSendQuantity),
+            `${ethers.hexlify(ethers.toUtf8Bytes(`${metaURI}`))}`,
           ])
         : undefined;
 
@@ -161,7 +164,7 @@ export default function Ethereum({ chain }: EthereumProps) {
       from: address,
       to: recipientAddress,
     };
-  }, [address, currentEthereumNetwork.rpcURL, currentNFT, nftStandard, recipientAddress]);
+  }, [address, currentEthereumNetwork.rpcURL, currentNFT, currentSendQuantity, metaURI, recipientAddress]);
 
   const estimateGas = useEstimateGasSWR([sendTx]);
 
@@ -185,6 +188,16 @@ export default function Ethereum({ chain }: EthereumProps) {
       return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidAddress');
     }
 
+    if (currentNFT.tokenType === 'ERC1155') {
+      if (!currentSendQuantity) {
+        return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidSendNFTQuantity');
+      }
+
+      if (currentNFTBalance && lt(currentNFTBalance, currentSendQuantity)) {
+        return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidSendNFTQuantity');
+      }
+    }
+
     if (address.toLowerCase() === recipientAddress.toLowerCase()) {
       return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidAddress');
     }
@@ -198,15 +211,15 @@ export default function Ethereum({ chain }: EthereumProps) {
     }
 
     return '';
-  }, [address, expectedBaseFee, feeCoinBaseBalance, recipientAddress, t]);
+  }, [address, currentNFT.tokenType, currentNFTBalance, currentSendQuantity, expectedBaseFee, feeCoinBaseBalance, recipientAddress, t]);
 
   return (
     <>
       <Container>
         <Div>
-          {currentNFTId && (
+          {currentNFT && (
             <NFTButton
-              nftId={currentNFTId}
+              currentNFT={currentNFT}
               isActive={isOpenPopover}
               onClick={(event) => {
                 setPopoverAnchorEl(event.currentTarget);
@@ -236,6 +249,21 @@ export default function Ethereum({ chain }: EthereumProps) {
             value={recipientAddress}
           />
         </Div>
+        {currentNFT.tokenType === 'ERC1155' && (
+          <Div sx={{ marginTop: '0.8rem' }}>
+            <StyledInput
+              type="number"
+              placeholder={t('pages.Wallet.NFTSend.Entry.Ethereum.index.quantityPlaceholder')}
+              onChange={(e) => {
+                if ((lte(e.currentTarget.value, '0') || (currentNFTBalance && lt(currentNFTBalance, e.currentTarget.value))) && e.currentTarget.value) {
+                  return;
+                }
+                setCurrentSendQuantity(e.currentTarget.value);
+              }}
+              value={currentSendQuantity}
+            />
+          </Div>
+        )}
 
         <FeeContainer>
           <FeeInfoContainer>
@@ -245,16 +273,16 @@ export default function Ethereum({ chain }: EthereumProps) {
             <FeeRightContainer>
               <FeeRightColumnContainer>
                 <FeeRightAmountContainer>
-                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                  <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
                     {expectedDisplayFee}
-                  </Number>
+                  </NumberText>
                   &nbsp;
                   <Typography variant="h5n">{feeCoinDisplayDenom}</Typography>
                 </FeeRightAmountContainer>
                 <FeeRightValueContainer>
-                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                  <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
                     {expectedDisplayFeePrice}
-                  </Number>
+                  </NumberText>
                 </FeeRightValueContainer>
               </FeeRightColumnContainer>
             </FeeRightContainer>
@@ -312,12 +340,13 @@ export default function Ethereum({ chain }: EthereumProps) {
       </Container>
       <NFTPopover
         marginThreshold={0}
-        currentNFTId={currentNFTId}
+        currentNFT={currentNFT}
         open={isOpenPopover}
         onClose={() => setPopoverAnchorEl(null)}
-        onClickNFT={(nftId) => {
-          if (currentNFTId !== nftId) {
-            setCurrentNFTId(nftId);
+        onClickNFT={(nft) => {
+          if (currentNFT !== nft) {
+            setCurrentNFT(nft);
+            setCurrentSendQuantity('');
           }
         }}
         anchorEl={popoverAnchorEl}

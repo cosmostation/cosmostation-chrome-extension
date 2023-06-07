@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import { ethers, FetchRequest } from 'ethers';
 import type { SWRConfiguration } from 'swr';
@@ -6,13 +7,15 @@ import useSWR from 'swr';
 import { ERC721_ABI, ERC1155_ABI } from '~/constants/abi';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { TOKEN_TYPE } from '~/constants/ethereum';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import type { EthereumNetwork } from '~/types/chain';
 import type { ERC721BalanceOfPayload, ERC1155BalanceOfPayload } from '~/types/ethereum/contract';
-import type { GetNFTURIPayload } from '~/types/ethereum/nft';
+import type { GetNFTBalancePayload } from '~/types/ethereum/nft';
 
 import { useGetNFTStandardSWR } from './useGetNFTStandardSWR';
+import { useAccounts } from '../../cache/useAccounts';
 
 type FetcherParams = {
   rpcURL: string;
@@ -32,7 +35,18 @@ export function useGetNFTBalanceSWR({ network, contractAddress, ownerAddress, to
   const { currentChain } = useCurrentChain();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const { data: currentNFTStandard } = useGetNFTStandardSWR({ contractAddress });
+  const { data: currentNFTStandard } = useGetNFTStandardSWR({ contractAddress }, config);
+
+  const accounts = useAccounts(config?.suspense);
+
+  const { currentAccount } = useCurrentAccount();
+
+  const currentAddress = useMemo(
+    () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[currentChain.id] || '',
+    [accounts?.data, currentAccount.id, currentChain.id],
+  );
+
+  const walletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
   const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
 
@@ -67,14 +81,18 @@ export function useGetNFTBalanceSWR({ network, contractAddress, ownerAddress, to
     return null;
   };
 
-  const { data, error, mutate } = useSWR<GetNFTURIPayload | null, AxiosError>({ id: 'balance', rpcURL, contractAddress, ownerAddress, tokenId }, fetcher, {
-    revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
-    errorRetryCount: 0,
-    isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !ownerAddress || !rpcURL,
-    ...config,
-  });
+  const { data, error, mutate } = useSWR<GetNFTBalancePayload | null, AxiosError>(
+    { id: 'balance', rpcURL, contractAddress, ownerAddress: walletAddress, tokenId },
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 14000,
+      refreshInterval: 15000,
+      errorRetryCount: 0,
+      isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !walletAddress || !rpcURL,
+      ...config,
+    },
+  );
 
   return { data, error, mutate };
 }

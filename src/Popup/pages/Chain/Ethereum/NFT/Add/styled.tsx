@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles';
 
+import AbsoluteLoading from '~/Popup/components/AbsoluteLoading';
 import Input from '~/Popup/components/common/Input';
 
 export const Container = styled('div')({
@@ -32,6 +33,8 @@ export const NFTPreviewContainer = styled('div')(({ theme }) => ({
   borderRadius: '0.8rem',
 
   backgroundColor: theme.colors.base02,
+
+  position: 'relative',
 }));
 
 export const NFTPreviewHeaderContainer = styled('div')(({ theme }) => ({
@@ -64,3 +67,7 @@ export const PreviewNFTNameContainer = styled('div')(({ theme }) => ({
 
   color: theme.colors.text01,
 }));
+
+export const StyledAbsoluteLoading = styled(AbsoluteLoading)({
+  borderRadius: '0.8rem',
+});

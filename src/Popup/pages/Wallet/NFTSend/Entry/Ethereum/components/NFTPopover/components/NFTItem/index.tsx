@@ -5,9 +5,10 @@ import { Typography } from '@mui/material';
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
+import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTOwnerSWR';
 import { shorterAddress } from '~/Popup/utils/string';
-import type { EthereumNFT } from '~/types/nft';
+import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import {
   LeftContainer,
@@ -28,25 +29,27 @@ type NFTItemProps = ComponentProps<typeof NFTButton> & {
 };
 
 const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ...remainder }, ref) => {
-  const { imageURL, name, tokenId, tokenType, address, ownerAddress } = nft;
+  const { tokenId, tokenType, address, ownerAddress } = nft;
+
+  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId });
 
   const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress, tokenId });
 
   const shorterContractAddress = useMemo(() => shorterAddress(address, 20), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 13), [tokenId]);
 
-  const tokenStandard = useMemo(() => tokenType?.replace('ERC', 'ERC-'), [tokenType]);
+  const displayTokenStandard = useMemo(() => tokenType?.replace('ERC', 'ERC-'), [tokenType]);
 
   return (
     <NFTButton style={{ display: isOwnedNFT ? 'flex' : 'none' }} type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image src={imageURL} defaultImgSrc={unknownNFTImg} />
+          <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Tooltip title={name || '-'} placement="top" arrow>
-              <Typography variant="h5">{name || '-'}</Typography>
+            <Tooltip title={nftMeta?.name || '-'} placement="top" arrow>
+              <Typography variant="h5">{nftMeta?.name || '-'}</Typography>
             </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>
@@ -58,7 +61,7 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
             <Tooltip title={tokenId || ''} placement="top" arrow>
               <Typography variant="h6">{shorterTokenId}</Typography>
             </Tooltip>
-            /<Typography variant="h6">{tokenStandard}</Typography>
+            /<Typography variant="h6">{displayTokenStandard}</Typography>
           </LeftInfoFooterContainer>
         </LeftInfoContainer>
       </LeftContainer>
