@@ -5,8 +5,8 @@ import type { TransportType } from '~/types/ledger';
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
 
+import type { EthereumNFT } from './ethereum/nft';
 import type { RequestMessage } from './message';
-import type { EthereumNFT } from './nft';
 
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
 export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
