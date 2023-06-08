@@ -45,6 +45,10 @@ export const NFTPreviewHeaderContainer = styled('div')(({ theme }) => ({
 
 export const NFTPreviewBodyContainer = styled('div')({
   height: '100%',
+  overflow: 'auto',
+
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-all',
 
   display: 'flex',
   flexDirection: 'column',

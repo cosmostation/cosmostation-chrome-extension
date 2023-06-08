@@ -3,7 +3,8 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { get } from '~/Popup/utils/axios';
+import { get, isAxiosError } from '~/Popup/utils/axios';
+import { httpsRegex } from '~/Popup/utils/regex';
 import { convertIpfs } from '~/Popup/utils/sui';
 import type { EthereumNetwork } from '~/types/chain';
 import type { GetNFTMetaPayload } from '~/types/ethereum/nft';
@@ -19,20 +20,28 @@ type UseGetNFTMetaSWR = {
 };
 
 export function useGetNFTMetaSWR({ network, metaURI, contractAddress, tokenId }: UseGetNFTMetaSWR, config?: SWRConfiguration) {
-  const nftURI = useGetNFTURISWR({ network, contractAddress, tokenId }, config);
+  const nftURI = useGetNFTURISWR({ network, contractAddress, tokenId });
 
   const paramURL = useMemo(() => metaURI || nftURI.data, [metaURI, nftURI.data]);
 
   const fetcher = async (fetchUrl: string) => {
     try {
-      // NOTE 정규식 체크 추가
-      if (nftURI.error) {
+      if (!httpsRegex.test(fetchUrl)) {
         return null;
+      }
+
+      if (nftURI.error) {
+        throw nftURI.error;
       }
 
       return await get<GetNFTMetaPayload>(fetchUrl);
     } catch (e) {
-      return null;
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
+          return null;
+        }
+      }
+      throw e;
     }
   };
 
@@ -40,8 +49,10 @@ export function useGetNFTMetaSWR({ network, metaURI, contractAddress, tokenId }:
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    errorRetryCount: 0,
-    isPaused: () => !paramURL,
+    errorRetryCount: 5,
+    errorRetryInterval: 5000,
+    // NOTE  need !nftURI.data ??
+    isPaused: () => !paramURL || !nftURI.data,
     ...config,
   });
 
@@ -50,6 +61,8 @@ export function useGetNFTMetaSWR({ network, metaURI, contractAddress, tokenId }:
         name: data.name,
         description: data.description,
         imageURL: convertIpfs(data.image),
+        // NOTE 변환 전 값 OR 변환 후 값을 보여줄 지 결정이 필요함
+        metaURI: paramURL,
         attributes: data.attributes?.filter((item) => item.trait_type && item.value),
         externalLink: data.external_link,
         traits: data.traits,

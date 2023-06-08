@@ -47,28 +47,27 @@ export default function NFTCardItem({ nft, onClick, onClickDelete }: NFTCardItem
   const { tokenId, address } = nft;
 
   // NOTE need suspense
-  const { data: nftMetaURI } = useGetNFTURISWR({ contractAddress: address, tokenId });
+  const nftMetaURI = useGetNFTURISWR({ contractAddress: address, tokenId }, { suspense: true });
 
-  const { data: nftMeta } = useGetNFTMetaSWR({ metaURI: nftMetaURI, contractAddress: address, tokenId });
+  const nftMeta = useGetNFTMetaSWR({ metaURI: nftMetaURI.data, contractAddress: address, tokenId }, { suspense: true });
 
-  // FIXME refetch시 본인 소유 아니라고 나옴
-  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId }, { suspense: true });
+  const isOwnedNFT = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId }, { suspense: true });
 
   return (
-    <StyledButton disabled={!isOwnedNFT} onClick={onClick}>
+    <StyledButton disabled={!isOwnedNFT.data} onClick={onClick}>
       <BodyContainer>
         <ObjectImageContainer>
           <>
-            {!isOwnedNFT && (
+            {!isOwnedNFT.data && (
               <BlurredImage>
                 <Typography variant="h4">Not Owned NFT</Typography>
               </BlurredImage>
             )}
-            <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
+            <Image src={nftMeta.data?.imageURL} defaultImgSrc={unknownNFTImg} />
 
-            {nftMeta?.rarity && (
+            {nftMeta.data?.rarity && (
               <ObjectAbsoluteEditionMarkContainer>
-                <Typography variant="h6">{nftMeta.rarity}</Typography>
+                <Typography variant="h6">{nftMeta.data.rarity}</Typography>
               </ObjectAbsoluteEditionMarkContainer>
             )}
 
@@ -87,10 +86,10 @@ export default function NFTCardItem({ nft, onClick, onClickDelete }: NFTCardItem
 
       <BottomContainer>
         <ObjectDescriptionTextContainer>
-          <Typography variant="h5">{nftMeta?.description || address}</Typography>
+          <Typography variant="h5">{nftMeta.data?.description || address}</Typography>
         </ObjectDescriptionTextContainer>
         <ObjectNameTextContainer>
-          <Typography variant="h5">{nftMeta?.name || tokenId}</Typography>
+          <Typography variant="h5">{nftMeta.data?.name || tokenId}</Typography>
         </ObjectNameTextContainer>
       </BottomContainer>
     </StyledButton>

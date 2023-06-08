@@ -14,7 +14,7 @@ import { EthereumRPCError } from '~/Popup/utils/error';
 import { extensionStorage } from '~/Popup/utils/extensionStorage';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumContractKind, EthereumTxType } from '~/types/ethereum/common';
-import type { ERC721CheckPayload, ERC1155CheckPayload } from '~/types/ethereum/contract';
+import type { ERC721SupportInterfacePayload, ERC1155SupportInterfacePayload } from '~/types/ethereum/contract';
 import type { CustomTypedMessage, EthereumTx } from '~/types/message/ethereum';
 
 export function toUTF8(hex: string) {
@@ -167,10 +167,10 @@ export async function determineNFTType(rpcURL?: string, contractAddress?: string
   const erc721Contract = new ethers.Contract(contractAddress, ERC721_ABI, provider);
   const erc1155Contract = new ethers.Contract(contractAddress, ERC1155_ABI, provider);
   try {
-    const erc721ContractCall = erc721Contract.supportsInterface('0x80ac58cd') as Promise<ERC721CheckPayload>;
+    const erc721ContractCall = erc721Contract.supportsInterface('0x80ac58cd') as Promise<ERC721SupportInterfacePayload>;
     const erc721Response = await erc721ContractCall;
 
-    const erc1155ContractCall = erc1155Contract.supportsInterface('0xd9b67a26') as Promise<ERC1155CheckPayload>;
+    const erc1155ContractCall = erc1155Contract.supportsInterface('0xd9b67a26') as Promise<ERC1155SupportInterfacePayload>;
     const erc1155Response = await erc1155ContractCall;
 
     if (erc721Response && !erc1155Response) {

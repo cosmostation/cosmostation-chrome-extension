@@ -10,6 +10,7 @@ import { TOKEN_TYPE } from '~/constants/ethereum';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { isAxiosError } from '~/Popup/utils/axios';
 import { gt } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { EthereumNetwork } from '~/types/chain';
@@ -45,11 +46,13 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
     [accounts?.data, currentAccount.id, currentChain.id],
   );
 
+  console.log('🚀 ~ file: useGetNFTOwnerSWR.ts:49 ~ useGetNFTOwnerSWR ~ currentAddress:', currentAddress);
+
   const walletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
   const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
 
-  const { data: tokenStandard } = useGetNFTStandardSWR({ contractAddress }, config);
+  const { data: getNFTStandard, error: getNFTStandardError } = useGetNFTStandardSWR({ contractAddress }, config);
 
   const fetcher = async (params: FetcherParams) => {
     const customFetchRequest = new FetchRequest(rpcURL);
@@ -59,7 +62,10 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
     const provider = new ethers.JsonRpcProvider(customFetchRequest);
 
     try {
-      if (tokenStandard === TOKEN_TYPE.ERC721) {
+      if (getNFTStandardError) {
+        throw getNFTStandardError;
+      }
+      if (getNFTStandard === TOKEN_TYPE.ERC721) {
         const erc721Contract = new ethers.Contract(params.contractAddress, ERC721_ABI, provider);
 
         const erc721ContractCall = erc721Contract.ownerOf(params.tokenId) as Promise<ERC721OwnerPayload>;
@@ -67,7 +73,7 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
 
         return isEqualsIgnoringCase(erc721ContractCallResponse, params.ownerAddress);
       }
-      if (tokenStandard === TOKEN_TYPE.ERC1155) {
+      if (getNFTStandard === TOKEN_TYPE.ERC1155) {
         const erc1155Contract = new ethers.Contract(params.contractAddress, ERC1155_ABI, provider);
 
         const erc1155ContractCall = erc1155Contract.balanceOf(params.ownerAddress, params.tokenId) as Promise<ERC1155BalanceOfPayload>;
@@ -76,20 +82,27 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
         return gt(BigInt(erc1155ContractCallResponse).toString(10), '0');
       }
     } catch (e) {
-      return null;
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
+          return null;
+        }
+      }
+      throw e;
     }
 
     return null;
   };
 
   const { data, isValidating, error, mutate } = useSWR<GetNFTOwnerPayload | null, AxiosError>(
-    { rpcURL, contractAddress, tokenId, ownerAddress: walletAddress },
+    { id: 'owner', rpcURL, contractAddress, tokenId, ownerAddress: walletAddress },
     fetcher,
     {
       revalidateOnFocus: false,
       dedupingInterval: 14000,
       refreshInterval: 15000,
-      errorRetryCount: 0,
+      errorRetryCount: 5,
+      errorRetryInterval: 5000,
+
       isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !walletAddress || !rpcURL,
       ...config,
     },

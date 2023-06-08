@@ -520,6 +520,7 @@
               "addressPlaceholder": "NFT contract address",
               "information": "If the token you're looking for is not on the list, click \"Import a custom NFT\"",
               "invalidAddress": "Invalid address",
+              "invalidTokenId": "Invalid token ID",
               "preview": "NFT Preview",
               "previewSubText": "When you enter your own NFT information, the image is displayed",
               "submitButton": "Add custom NFT",

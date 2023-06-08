@@ -46,7 +46,7 @@ export type ERC721BalanceOfPayload = string;
 
 export type ERC721URIPayload = string;
 
-export type ERC721CheckPayload = boolean;
+export type ERC721SupportInterfacePayload = boolean;
 
 export type ERC721OwnerPayload = string;
 
@@ -54,6 +54,6 @@ export type ERC721TokenOfOwnerByIndexPayload = string;
 
 export type ERC1155URIPayload = string;
 
-export type ERC1155CheckPayload = boolean;
+export type ERC1155SupportInterfacePayload = boolean;
 
 export type ERC1155BalanceOfPayload = string;

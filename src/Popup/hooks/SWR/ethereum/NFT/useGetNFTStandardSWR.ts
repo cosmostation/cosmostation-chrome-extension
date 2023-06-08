@@ -8,8 +8,9 @@ import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { TOKEN_TYPE } from '~/constants/ethereum';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { isAxiosError } from '~/Popup/utils/axios';
 import type { EthereumNetwork } from '~/types/chain';
-import type { ERC721CheckPayload, ERC1155CheckPayload } from '~/types/ethereum/contract';
+import type { ERC721SupportInterfacePayload, ERC1155SupportInterfacePayload } from '~/types/ethereum/contract';
 import type { GetNFTStandardPayload } from '~/types/ethereum/nft';
 
 type FetcherParams = {
@@ -40,26 +41,32 @@ export function useGetNFTStandardSWR({ network, contractAddress }: UseGetNFTStan
 
     const provider = new ethers.JsonRpcProvider(customFetchRequest);
 
-    const erc721Contract = new ethers.Contract(params.contractAddress, ERC721_ABI, provider);
-
     try {
-      const erc721ContractCall = erc721Contract.supportsInterface(params.erc721InterfaceId) as Promise<ERC721CheckPayload>;
+      const erc721Contract = new ethers.Contract(params.contractAddress, ERC721_ABI, provider);
+
+      const erc721ContractCall = erc721Contract.supportsInterface(params.erc721InterfaceId) as Promise<ERC721SupportInterfacePayload>;
       const erc721ContractCallResponse = await erc721ContractCall;
+
       if (erc721ContractCallResponse) {
         return TOKEN_TYPE.ERC721;
       }
 
       const erc1155Contract = new ethers.Contract(params.contractAddress, ERC1155_ABI, provider);
 
-      const erc1155ContractCall = erc1155Contract.supportsInterface(params.erc1155InterfaceId) as Promise<ERC1155CheckPayload>;
+      const erc1155ContractCall = erc1155Contract.supportsInterface(params.erc1155InterfaceId) as Promise<ERC1155SupportInterfacePayload>;
       const erc1155ContractResponse = await erc1155ContractCall;
+
       if (erc1155ContractResponse) {
         return TOKEN_TYPE.ERC1155;
       }
     } catch (e) {
-      return null;
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
+          return null;
+        }
+      }
+      throw e;
     }
-
     return null;
   };
 
@@ -70,7 +77,8 @@ export function useGetNFTStandardSWR({ network, contractAddress }: UseGetNFTStan
       revalidateOnFocus: false,
       revalidateIfStale: false,
       revalidateOnReconnect: false,
-      errorRetryCount: 0,
+      errorRetryCount: 5,
+      errorRetryInterval: 5000,
       isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !rpcURL,
       ...config,
     },

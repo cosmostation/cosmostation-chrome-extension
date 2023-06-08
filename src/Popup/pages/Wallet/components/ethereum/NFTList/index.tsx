@@ -49,6 +49,7 @@ export default function NFTList({ chain }: NFTListProps) {
   );
 
   // NOTE need to select type criteria
+  // NOTE error난 컴포넌트 안보여줄거면 여기서 숫자 조절 해야함
   const typeInfos = useMemo(() => {
     const infos: TypeInfo[] = [];
 
@@ -109,6 +110,7 @@ export default function NFTList({ chain }: NFTListProps) {
               await removeEthereumNFT(nft);
             };
             return (
+              // FIXME TokenItemError 따라서 에러 처리
               <ErrorBoundary key={nft.id} FallbackComponent={Empty}>
                 <Suspense fallback={<NFTCardItemSkeleton />}>
                   <NFTCardItem
