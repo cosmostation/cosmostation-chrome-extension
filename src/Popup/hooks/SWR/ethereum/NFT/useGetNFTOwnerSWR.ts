@@ -46,8 +46,6 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
     [accounts?.data, currentAccount.id, currentChain.id],
   );
 
-  console.log('🚀 ~ file: useGetNFTOwnerSWR.ts:49 ~ useGetNFTOwnerSWR ~ currentAddress:', currentAddress);
-
   const walletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
   const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
