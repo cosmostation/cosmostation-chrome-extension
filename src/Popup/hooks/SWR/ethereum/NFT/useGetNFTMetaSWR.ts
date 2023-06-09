@@ -3,6 +3,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import type { TOKEN_TYPE } from '~/constants/ethereum';
 import { get, isAxiosError } from '~/Popup/utils/axios';
 import { httpsRegex } from '~/Popup/utils/regex';
 import { convertIpfs } from '~/Popup/utils/sui';
@@ -14,15 +15,27 @@ import { useGetNFTURISWR } from './useGetNFTURISWR';
 
 type UseGetNFTMetaSWR = {
   network?: EthereumNetwork;
-  metaURI?: string;
   contractAddress?: string;
   tokenId?: string;
+  tokenStandard?: typeof TOKEN_TYPE.ERC1155 | typeof TOKEN_TYPE.ERC721;
 };
 
-export function useGetNFTMetaSWR({ network, metaURI, contractAddress, tokenId }: UseGetNFTMetaSWR, config?: SWRConfiguration) {
-  const nftURI = useGetNFTURISWR({ network, contractAddress, tokenId });
+export function useGetNFTMetaSWR({ network, contractAddress, tokenId, tokenStandard }: UseGetNFTMetaSWR, config?: SWRConfiguration) {
+  const getNFTURI = useGetNFTURISWR({ network, contractAddress, tokenId, tokenStandard }, config);
 
-  const paramURL = useMemo(() => metaURI || nftURI.data, [metaURI, nftURI.data]);
+  const paramURL = useMemo(() => {
+    if (getNFTURI.data) {
+      if (getNFTURI.data.includes('ipfs:')) {
+        return convertIpfs(getNFTURI.data);
+      }
+
+      if (getNFTURI.data.includes('api.opensea.io')) {
+        return getNFTURI.data.replace('0x{id}', tokenId || '');
+      }
+      return getNFTURI.data;
+    }
+    return '';
+  }, [getNFTURI.data, tokenId]);
 
   const fetcher = async (fetchUrl: string) => {
     try {
@@ -30,8 +43,8 @@ export function useGetNFTMetaSWR({ network, metaURI, contractAddress, tokenId }:
         return null;
       }
 
-      if (nftURI.error) {
-        throw nftURI.error;
+      if (getNFTURI.error) {
+        throw getNFTURI.error;
       }
 
       return await get<GetNFTMetaPayload>(fetchUrl);
@@ -51,8 +64,7 @@ export function useGetNFTMetaSWR({ network, metaURI, contractAddress, tokenId }:
     revalidateOnReconnect: false,
     errorRetryCount: 5,
     errorRetryInterval: 5000,
-    // NOTE  need !nftURI.data ??
-    isPaused: () => !paramURL || !nftURI.data,
+    isPaused: () => !paramURL || !getNFTURI.data,
     ...config,
   });
 
@@ -61,8 +73,6 @@ export function useGetNFTMetaSWR({ network, metaURI, contractAddress, tokenId }:
         name: data.name,
         description: data.description,
         imageURL: convertIpfs(data.image),
-        // NOTE 변환 전 값 OR 변환 후 값을 보여줄 지 결정이 필요함
-        metaURI: paramURL,
         attributes: data.attributes?.filter((item) => item.trait_type && item.value),
         externalLink: data.external_link,
         traits: data.traits,

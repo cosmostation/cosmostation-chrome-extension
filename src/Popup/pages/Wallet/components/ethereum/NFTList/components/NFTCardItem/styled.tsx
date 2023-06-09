@@ -1,5 +1,8 @@
 import { styled } from '@mui/material/styles';
 
+import AbsoluteLoading from '~/Popup/components/AbsoluteLoading';
+import IconButton from '~/Popup/components/common/IconButton';
+
 export const StyledButton = styled('button')(({ theme }) => ({
   width: '16.4rem',
 
@@ -79,6 +82,27 @@ export const BottomContainer = styled('div')({
   rowGap: '0.2rem',
 });
 
+export const BottomErrorContainer = styled('div')({
+  width: '100%',
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+});
+
+export const BottomErrorLeftContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'flex-start',
+
+  rowGap: '0.2rem',
+
+  maxWidth: '12rem',
+});
+
+export const BottomErrorRightContainer = styled('div')({});
+
 export const ObjectImageContainer = styled('div')({
   '& > img': {
     borderRadius: '0.8rem',
@@ -140,6 +164,24 @@ export const ObjectNameTextContainer = styled('div')(({ theme }) => ({
   },
 }));
 
+export const BottomErrorHeaderContainer = styled('div')(({ theme }) => ({
+  color: theme.accentColors.red,
+}));
+
+export const BottomErrorFooterContainer = styled('div')(({ theme }) => ({
+  maxWidth: '100%',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+
+  color: theme.colors.text01,
+}));
+
 export const DeleteButton = styled('div')(({ theme }) => ({
   position: 'absolute',
   zIndex: 1,
@@ -180,3 +222,18 @@ export const BlurredImage = styled('div')(({ theme }) => ({
 
   color: theme.accentColors.white,
 }));
+
+export const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  padding: '0',
+
+  '& svg': {
+    fill: theme.colors.base05,
+    '& > path': {
+      fill: theme.colors.base05,
+    },
+  },
+}));
+
+export const StyledAbsoluteLoading = styled(AbsoluteLoading)({
+  borderRadius: '0.8rem',
+});

@@ -35,7 +35,9 @@ export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
 
   const { tokenType, address, tokenId, ownerAddress } = nft;
 
-  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId });
+  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
+
+  const { data: nftBalance } = useGetNFTBalanceSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
   const shorterOwnerAddress = useMemo(() => shorterAddress(ownerAddress, 14), [ownerAddress]);
   const shorterContractAddress = useMemo(() => shorterAddress(address, 14), [address]);
@@ -44,8 +46,6 @@ export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
   const shorterExternalURL = useMemo(() => shorterAddress(nftMeta?.externalLink, 20), [nftMeta?.externalLink]);
 
   const displayTokenStandard = useMemo(() => tokenType.replace('ERC', 'ERC-'), [tokenType]);
-
-  const { data: nftBalance } = useGetNFTBalanceSWR({ contractAddress: address, tokenId });
 
   const handleOnClickCopy = (copyString?: string) => {
     if (copyString && copy(copyString)) {

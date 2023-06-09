@@ -57,15 +57,21 @@ export default function Entry() {
   const [currentTokenId, setCurrentTokenId] = useState('');
   const [debouncedTokenId] = useDebounce(currentTokenId, 500);
 
+  // NOTE 이거는 서스펜스 해야할 듯
   const currentNFTStandard = useGetNFTStandardSWR({ contractAddress: debouncedContractAddress });
 
   const nftOwnedData = useGetNFTOwnerSWR({
     contractAddress: debouncedContractAddress,
     ownerAddress: currentAddress,
     tokenId: debouncedTokenId,
+    tokenStandard: currentNFTStandard.data ? currentNFTStandard.data : undefined,
   });
 
-  const nftMeta = useGetNFTMetaSWR({ contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
+  const nftMeta = useGetNFTMetaSWR({
+    contractAddress: debouncedContractAddress,
+    tokenId: debouncedTokenId,
+    tokenStandard: currentNFTStandard.data ? currentNFTStandard.data : undefined,
+  });
 
   const isLoadingData = useMemo(() => nftOwnedData.isValidating || nftMeta.isValidating, [nftMeta.isValidating, nftOwnedData.isValidating]);
 

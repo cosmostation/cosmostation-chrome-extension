@@ -3,7 +3,6 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
 import AddButton from '~/Popup/components/AddButton';
-import Empty from '~/Popup/components/common/Empty';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
@@ -13,7 +12,7 @@ import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { EthereumChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
-import NFTCardItem, { NFTCardItemSkeleton } from './components/NFTCardItem';
+import NFTCardItem, { NFTCardItemError, NFTCardItemSkeleton } from './components/NFTCardItem';
 import TypeButton from './components/TypeButton';
 import type { TypeInfo } from './components/TypePopover';
 import TypePopover from './components/TypePopover';
@@ -48,8 +47,6 @@ export default function NFTList({ chain }: NFTListProps) {
     [currentAddress, currentEthereumNFTs],
   );
 
-  // NOTE need to select type criteria
-  // NOTE error난 컴포넌트 안보여줄거면 여기서 숫자 조절 해야함
   const typeInfos = useMemo(() => {
     const infos: TypeInfo[] = [];
 
@@ -110,8 +107,13 @@ export default function NFTList({ chain }: NFTListProps) {
               await removeEthereumNFT(nft);
             };
             return (
-              // FIXME TokenItemError 따라서 에러 처리
-              <ErrorBoundary key={nft.id} FallbackComponent={Empty}>
+              <ErrorBoundary
+                key={nft.id}
+                FallbackComponent={
+                  // eslint-disable-next-line react/no-unstable-nested-components
+                  (props) => <NFTCardItemError {...props} nft={nft} onClickDelete={handleOnClickDelete} />
+                }
+              >
                 <Suspense fallback={<NFTCardItemSkeleton />}>
                   <NFTCardItem
                     nft={nft}

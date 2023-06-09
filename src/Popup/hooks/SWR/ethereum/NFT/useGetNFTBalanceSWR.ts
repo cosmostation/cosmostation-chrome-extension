@@ -14,7 +14,6 @@ import type { EthereumNetwork } from '~/types/chain';
 import type { ERC721BalanceOfPayload, ERC1155BalanceOfPayload } from '~/types/ethereum/contract';
 import type { GetNFTBalancePayload } from '~/types/ethereum/nft';
 
-import { useGetNFTStandardSWR } from './useGetNFTStandardSWR';
 import { useAccounts } from '../../cache/useAccounts';
 
 type FetcherParams = {
@@ -22,6 +21,7 @@ type FetcherParams = {
   contractAddress: string;
   ownerAddress: string;
   tokenId: string;
+  tokenStandard: typeof TOKEN_TYPE.ERC1155 | typeof TOKEN_TYPE.ERC721;
 };
 
 type UseGetNFTBalanceSWR = {
@@ -29,14 +29,12 @@ type UseGetNFTBalanceSWR = {
   contractAddress?: string;
   ownerAddress?: string;
   tokenId?: string;
+  tokenStandard?: typeof TOKEN_TYPE.ERC1155 | typeof TOKEN_TYPE.ERC721;
 };
 
-export function useGetNFTBalanceSWR({ network, contractAddress, ownerAddress, tokenId }: UseGetNFTBalanceSWR, config?: SWRConfiguration) {
+export function useGetNFTBalanceSWR({ network, contractAddress, ownerAddress, tokenId, tokenStandard }: UseGetNFTBalanceSWR, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
-
-  const { data: currentNFTStandard } = useGetNFTStandardSWR({ contractAddress }, config);
-
   const accounts = useAccounts(config?.suspense);
 
   const { currentAccount } = useCurrentAccount();
@@ -58,7 +56,7 @@ export function useGetNFTBalanceSWR({ network, contractAddress, ownerAddress, to
     const provider = new ethers.JsonRpcProvider(customFetchRequest);
 
     try {
-      if (currentNFTStandard === TOKEN_TYPE.ERC721) {
+      if (params.tokenStandard === TOKEN_TYPE.ERC721) {
         const erc721Contract = new ethers.Contract(params.contractAddress, ERC721_ABI, provider);
 
         const erc721ContractCall = erc721Contract.balanceOf(params.ownerAddress) as Promise<ERC721BalanceOfPayload>;
@@ -66,7 +64,7 @@ export function useGetNFTBalanceSWR({ network, contractAddress, ownerAddress, to
         return BigInt(erc721ContractCallResponse).toString(10);
       }
 
-      if (currentNFTStandard === TOKEN_TYPE.ERC1155) {
+      if (params.tokenStandard === TOKEN_TYPE.ERC1155) {
         const erc1155Contract = new ethers.Contract(params.contractAddress, ERC1155_ABI, provider);
 
         const erc1155ContractCall = erc1155Contract.balanceOf(params.ownerAddress, params.tokenId) as Promise<ERC1155BalanceOfPayload>;
@@ -82,14 +80,14 @@ export function useGetNFTBalanceSWR({ network, contractAddress, ownerAddress, to
   };
 
   const { data, error, mutate } = useSWR<GetNFTBalancePayload | null, AxiosError>(
-    { id: 'balance', rpcURL, contractAddress, ownerAddress: walletAddress, tokenId },
+    { id: 'balance', rpcURL, contractAddress, ownerAddress: walletAddress, tokenId, tokenStandard },
     fetcher,
     {
       revalidateOnFocus: false,
       dedupingInterval: 14000,
       refreshInterval: 15000,
       errorRetryCount: 0,
-      isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !walletAddress || !rpcURL,
+      isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !tokenStandard || !walletAddress || !rpcURL,
       ...config,
     },
   );

@@ -1077,6 +1077,7 @@
               "invalidAddress": "Invalid address",
               "invalidAmount": "Invalid amount",
               "invalidSendNFTQuantity": "Invalid NFT Amount",
+              "invalidURI": "Failed to get NFT information",
               "quantityPlaceholder": "Quantity",
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"
@@ -1465,6 +1466,13 @@
         },
         "ethereum": {
           "NFTList": {
+            "components": {
+              "NFTCardItem": {
+                "index": {
+                  "networkError": "Network Error"
+                }
+              }
+            },
             "index": {
               "importNFTButton": "Import NFTs",
               "nft": "NFT"

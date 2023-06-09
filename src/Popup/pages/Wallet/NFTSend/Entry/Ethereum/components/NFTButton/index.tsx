@@ -30,7 +30,7 @@ type NFTButtonProps = ComponentProps<typeof Button> & {
 export default function NFTButton({ currentNFT, isActive, ...remainder }: NFTButtonProps) {
   const { address, tokenType, tokenId } = currentNFT || {};
 
-  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId });
+  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
   const shorterContractAddress = useMemo(() => shorterAddress(address, 23), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 17), [tokenId]);

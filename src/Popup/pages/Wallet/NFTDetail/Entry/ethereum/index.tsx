@@ -61,11 +61,11 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const currentNFT = useMemo(() => currentEthereumNFTs.find((item) => isEqualsIgnoringCase(item.id, params.id)) || null, [currentEthereumNFTs, params.id]);
 
-  const { address, id, tokenId } = currentNFT || {};
+  const { address, id, tokenId, tokenType } = currentNFT || {};
 
-  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId });
+  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
-  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId });
+  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId, tokenStandard: tokenType });
 
   const errorMessage = useMemo(() => {
     if (!isOwnedNFT) {
@@ -86,8 +86,8 @@ export default function Ethereum({ chain }: EthereumProps) {
             <NFTInfoHeaderContainer>
               <NFTInfoLeftHeaderContainer>
                 <NFTInfoHeaderTextContainer>
-                  <Tooltip title={nftMeta?.name || ''} placement="top" arrow>
-                    <Typography variant="h3">{nftMeta?.name || ''}</Typography>
+                  <Tooltip title={nftMeta?.name || tokenId || ''} placement="top" arrow>
+                    <Typography variant="h3">{nftMeta?.name || tokenId || ''}</Typography>
                   </Tooltip>
                 </NFTInfoHeaderTextContainer>
 

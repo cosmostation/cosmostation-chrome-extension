@@ -81,14 +81,12 @@ export default function Ethereum({ chain }: EthereumProps) {
     currentEthereumNFTs.find((item) => isEqualsIgnoringCase(item.id, params.id)) || currentEthereumNFTs[0],
   );
 
-  const { data: currentNFTBalance } = useGetNFTBalanceSWR(
-    {
-      contractAddress: currentNFT.address,
-      ownerAddress: address,
-      tokenId: currentNFT.tokenId,
-    },
-    { suspense: true },
-  );
+  const { data: currentNFTBalance } = useGetNFTBalanceSWR({
+    contractAddress: currentNFT.address,
+    ownerAddress: address,
+    tokenId: currentNFT.tokenId,
+    tokenStandard: currentNFT.tokenType,
+  });
 
   const fee = useFeeSWR();
 
@@ -188,16 +186,6 @@ export default function Ethereum({ chain }: EthereumProps) {
       return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidAddress');
     }
 
-    if (currentNFT.tokenType === 'ERC1155') {
-      if (!currentSendQuantity) {
-        return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidSendNFTQuantity');
-      }
-
-      if (currentNFTBalance && lt(currentNFTBalance, currentSendQuantity)) {
-        return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidSendNFTQuantity');
-      }
-    }
-
     if (address.toLowerCase() === recipientAddress.toLowerCase()) {
       return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidAddress');
     }
@@ -210,8 +198,22 @@ export default function Ethereum({ chain }: EthereumProps) {
       return t('pages.Wallet.NFTSend.Entry.Ethereum.index.insufficientAmount');
     }
 
+    if (currentNFT.tokenType === 'ERC1155') {
+      if (!currentSendQuantity) {
+        return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidSendNFTQuantity');
+      }
+
+      if (currentNFTBalance && lt(currentNFTBalance, currentSendQuantity)) {
+        return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidSendNFTQuantity');
+      }
+
+      if (!metaURI) {
+        return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidURI');
+      }
+    }
+
     return '';
-  }, [address, currentNFT.tokenType, currentNFTBalance, currentSendQuantity, expectedBaseFee, feeCoinBaseBalance, recipientAddress, t]);
+  }, [address, currentNFT.tokenType, currentNFTBalance, currentSendQuantity, expectedBaseFee, feeCoinBaseBalance, metaURI, recipientAddress, t]);
 
   return (
     <>
@@ -296,22 +298,20 @@ export default function Ethereum({ chain }: EthereumProps) {
                 type="button"
                 disabled={!!errorMessage}
                 onClick={async () => {
-                  if (sendTx) {
-                    await enQueue({
-                      messageId: '',
-                      origin: '',
-                      channel: 'inApp',
-                      message: {
-                        method: 'eth_sendTransaction',
-                        params: [
-                          {
-                            ...sendTx,
-                            gas: toHex(baseEstimateGas, { addPrefix: true, isStringNumber: true }),
-                          },
-                        ],
-                      },
-                    });
-                  }
+                  await enQueue({
+                    messageId: '',
+                    origin: '',
+                    channel: 'inApp',
+                    message: {
+                      method: 'eth_sendTransaction',
+                      params: [
+                        {
+                          ...sendTx,
+                          gas: toHex(baseEstimateGas, { addPrefix: true, isStringNumber: true }),
+                        },
+                      ],
+                    },
+                  });
                 }}
               >
                 {t('pages.Wallet.NFTSend.Entry.Ethereum.index.sendButton')}

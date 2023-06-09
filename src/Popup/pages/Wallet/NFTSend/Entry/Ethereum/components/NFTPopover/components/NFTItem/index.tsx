@@ -31,9 +31,9 @@ type NFTItemProps = ComponentProps<typeof NFTButton> & {
 const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ...remainder }, ref) => {
   const { tokenId, tokenType, address, ownerAddress } = nft;
 
-  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId });
+  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
-  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress, tokenId });
+  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress, tokenId, tokenStandard: tokenType });
 
   const shorterContractAddress = useMemo(() => shorterAddress(address, 20), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 13), [tokenId]);
