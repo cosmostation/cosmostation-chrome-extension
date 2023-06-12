@@ -11,6 +11,8 @@ import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import {
+  InvalidImageContainer,
+  InvalidImageTextContainer,
   LeftContainer,
   LeftImageContainer,
   LeftInfoBodyContainer,
@@ -44,7 +46,15 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
     <NFTButton style={{ display: isOwnedNFT ? 'flex' : 'none' }} type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
+          {nftMeta?.imageURL ? (
+            <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
+          ) : (
+            <InvalidImageContainer>
+              <InvalidImageTextContainer>
+                <Typography variant="h6">{tokenId}</Typography>
+              </InvalidImageTextContainer>
+            </InvalidImageContainer>
+          )}
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>

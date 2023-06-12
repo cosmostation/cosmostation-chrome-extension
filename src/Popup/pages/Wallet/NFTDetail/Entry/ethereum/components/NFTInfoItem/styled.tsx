@@ -83,6 +83,16 @@ export const URLButton = styled('button')(({ theme }) => ({
   '&:hover': {
     color: theme.accentColors.blue02,
   },
+
+  maxWidth: '17rem',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const AttributeContainer = styled('div')(({ theme }) => ({

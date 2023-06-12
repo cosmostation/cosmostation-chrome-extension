@@ -6,8 +6,10 @@ import { Typography } from '@mui/material';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBalanceSWR';
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
+import { useGetNFTURISWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTURISWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt } from '~/Popup/utils/big';
+import { httpsRegex } from '~/Popup/utils/regex';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/ethereum/nft';
 
@@ -35,6 +37,8 @@ export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
 
   const { tokenType, address, tokenId, ownerAddress } = nft;
 
+  const { data: nftMetaSourceURI } = useGetNFTURISWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
+
   const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
   const { data: nftBalance } = useGetNFTBalanceSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
@@ -44,6 +48,7 @@ export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 14), [tokenId]);
 
   const shorterExternalURL = useMemo(() => shorterAddress(nftMeta?.externalLink, 20), [nftMeta?.externalLink]);
+  const shorterSourceURL = useMemo(() => shorterAddress(nftMetaSourceURI || '', 20), [nftMetaSourceURI]);
 
   const displayTokenStandard = useMemo(() => tokenType.replace('ERC', 'ERC-'), [tokenType]);
 
@@ -123,6 +128,19 @@ export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
         </ItemContainer>
       )}
 
+      {nftMetaSourceURI && (
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.source')}</Typography>
+          </ItemTitleContainer>
+          <ItemRightContainer>
+            <URLButton type="button" onClick={() => window.open(nftMetaSourceURI)}>
+              <Typography variant="h5">{shorterSourceURL}</Typography>
+            </URLButton>
+          </ItemRightContainer>
+        </ItemContainer>
+      )}
+
       {nftMeta?.externalLink && (
         <ItemContainer>
           <ItemTitleContainer>
@@ -166,7 +184,13 @@ export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
                 <Typography variant="h5">{item.trait_type || ''}</Typography>
               </ItemTitleContainer>
               <ItemRightContainer>
-                <Typography variant="h5">{item.value || ''}</Typography>
+                {httpsRegex.test(String(item.value)) ? (
+                  <URLButton type="button" onClick={() => window.open(String(item.value))}>
+                    <Typography variant="h5">{item.value || ''}</Typography>
+                  </URLButton>
+                ) : (
+                  <Typography variant="h5">{item.value || ''}</Typography>
+                )}
               </ItemRightContainer>
             </ItemContainer>
           ))}

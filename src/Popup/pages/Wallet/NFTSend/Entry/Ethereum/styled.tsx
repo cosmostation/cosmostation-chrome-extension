@@ -65,3 +65,26 @@ export const FeeRightValueContainer = styled('div')(({ theme }) => ({
 
   color: theme.colors.text02,
 }));
+
+export const MaxButton = styled('button')(({ theme }) => ({
+  padding: '0.4rem 0.8rem',
+  border: 0,
+  borderRadius: '5rem',
+
+  marginLeft: '0.8rem',
+
+  height: 'max-content',
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  backgroundColor: theme.accentColors.purple01,
+  color: theme.accentColors.white,
+
+  cursor: 'pointer',
+
+  '&:hover': {
+    backgroundColor: theme.accentColors.purple02,
+  },
+}));

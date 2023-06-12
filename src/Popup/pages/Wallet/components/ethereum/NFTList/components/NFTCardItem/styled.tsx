@@ -86,7 +86,7 @@ export const BottomErrorContainer = styled('div')({
   width: '100%',
 
   display: 'flex',
-  justifyContent: 'center',
+  justifyContent: 'space-between',
   alignItems: 'center',
 });
 
@@ -103,7 +103,7 @@ export const BottomErrorLeftContainer = styled('div')({
 
 export const BottomErrorRightContainer = styled('div')({});
 
-export const ObjectImageContainer = styled('div')({
+export const NFTImageContainer = styled('div')({
   '& > img': {
     borderRadius: '0.8rem',
 
@@ -114,7 +114,7 @@ export const ObjectImageContainer = styled('div')({
   position: 'relative',
 });
 
-export const ObjectAbsoluteEditionMarkContainer = styled('div')(({ theme }) => ({
+export const NFTAbsoluteEditionMarkContainer = styled('div')(({ theme }) => ({
   position: 'absolute',
 
   left: '0.8rem',
@@ -136,7 +136,7 @@ export const ObjectAbsoluteEditionMarkContainer = styled('div')(({ theme }) => (
   backgroundImage: `linear-gradient(90deg, #9C6CFF 37.5%, #05D2DD 100%)`,
 }));
 
-export const ObjectDescriptionTextContainer = styled('div')(({ theme }) => ({
+export const NFTDescriptionTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 
   maxWidth: '100%',
@@ -150,7 +150,7 @@ export const ObjectDescriptionTextContainer = styled('div')(({ theme }) => ({
   },
 }));
 
-export const ObjectNameTextContainer = styled('div')(({ theme }) => ({
+export const NFTNameTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 
   maxWidth: '100%',
@@ -222,6 +222,33 @@ export const BlurredImage = styled('div')(({ theme }) => ({
 
   color: theme.accentColors.white,
 }));
+
+export const InvalidImageContainer = styled('div')(({ theme }) => ({
+  width: '14.8rem',
+  height: '14.8rem',
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  borderRadius: '0.8rem',
+
+  color: theme.colors.text01,
+
+  backgroundColor: theme.colors.base04,
+}));
+
+export const InvalidImageTextContainer = styled('div')({
+  maxWidth: '12rem',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
 
 export const StyledIconButton = styled(IconButton)(({ theme }) => ({
   padding: '0',

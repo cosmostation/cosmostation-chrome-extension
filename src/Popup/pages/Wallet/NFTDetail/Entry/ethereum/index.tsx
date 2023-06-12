@@ -30,6 +30,8 @@ import {
   NFTInfoHeaderContainer,
   NFTInfoHeaderTextContainer,
   NFTInfoLeftHeaderContainer,
+  NFTInvalidImageContainer,
+  NFTInvalidImageTextContainer,
   StyledIconButton,
 } from './styled';
 
@@ -80,7 +82,15 @@ export default function Ethereum({ chain }: EthereumProps) {
       <Container>
         <ContentContainer>
           <NFTImageContainer>
-            <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
+            {nftMeta?.imageURL ? (
+              <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
+            ) : (
+              <NFTInvalidImageContainer>
+                <NFTInvalidImageTextContainer>
+                  <Typography variant="h3">{tokenId}</Typography>
+                </NFTInvalidImageTextContainer>
+              </NFTInvalidImageContainer>
+            )}
           </NFTImageContainer>
           <NFTInfoContainer>
             <NFTInfoHeaderContainer>

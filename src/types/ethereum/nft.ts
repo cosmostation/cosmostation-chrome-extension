@@ -21,7 +21,6 @@ export type EthereumERC1155Token = {
 export type EthereumNFT = EthereumERC721Token | EthereumERC1155Token;
 
 export type GetNFTMetaPayload = {
-  metaURI?: string;
   name?: string;
   description?: string;
   image?: string;

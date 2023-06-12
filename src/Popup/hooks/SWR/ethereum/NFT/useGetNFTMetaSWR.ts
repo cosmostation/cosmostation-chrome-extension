@@ -9,7 +9,6 @@ import { httpsRegex } from '~/Popup/utils/regex';
 import { convertIpfs } from '~/Popup/utils/sui';
 import type { EthereumNetwork } from '~/types/chain';
 import type { GetNFTMetaPayload } from '~/types/ethereum/nft';
-import type { EthereumNFTMeta } from '~/types/nft/nftMeta';
 
 import { useGetNFTURISWR } from './useGetNFTURISWR';
 
@@ -31,6 +30,10 @@ export function useGetNFTMetaSWR({ network, contractAddress, tokenId, tokenStand
 
       if (getNFTURI.data.includes('api.opensea.io')) {
         return getNFTURI.data.replace('0x{id}', tokenId || '');
+      }
+
+      if (getNFTURI.data.includes('{id}')) {
+        return getNFTURI.data.replace('{id}', tokenId || '');
       }
       return getNFTURI.data;
     }
@@ -69,15 +72,17 @@ export function useGetNFTMetaSWR({ network, contractAddress, tokenId, tokenStand
   });
 
   const returnData = data
-    ? ({
-        name: data.name,
-        description: data.description,
+    ? {
+        ...data,
+        animationURL: data.animation_url,
+        animation_url: undefined,
         imageURL: convertIpfs(data.image),
+        image: undefined,
         attributes: data.attributes?.filter((item) => item.trait_type && item.value),
         externalLink: data.external_link,
-        traits: data.traits,
+        external_link: undefined,
         rarity: data.edition,
-      } as EthereumNFTMeta)
+      }
     : undefined;
 
   return { data: returnData, isValidating, error, mutate };

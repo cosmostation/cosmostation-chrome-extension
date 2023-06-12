@@ -24,10 +24,12 @@ import {
   BottomErrorLeftContainer,
   BottomErrorRightContainer,
   DeleteButton,
-  ObjectAbsoluteEditionMarkContainer,
-  ObjectDescriptionTextContainer,
-  ObjectImageContainer,
-  ObjectNameTextContainer,
+  InvalidImageContainer,
+  InvalidImageTextContainer,
+  NFTAbsoluteEditionMarkContainer,
+  NFTDescriptionTextContainer,
+  NFTImageContainer,
+  NFTNameTextContainer,
   SkeletonButton,
   StyledAbsoluteLoading,
   StyledButton,
@@ -58,28 +60,36 @@ export default function NFTCardItem({ nft, onClick, onClickDelete }: NFTCardItem
 
   // NOTE https 정규식 체크 후 이미지 다르게 보여주기용 변수
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const nftMetaURI = useGetNFTURISWR({ contractAddress: address, tokenId, tokenStandard: tokenType }, { suspense: true });
+  const getNFTURI = useGetNFTURISWR({ contractAddress: address, tokenId, tokenStandard: tokenType }, { suspense: true });
 
-  const nftMeta = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType }, { suspense: true });
+  const getNFTMeta = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
-  const isOwnedNFT = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId, tokenStandard: tokenType }, { suspense: true });
+  const getNFTOwnership = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId, tokenStandard: tokenType }, { suspense: true });
 
   return (
-    <StyledButton disabled={!isOwnedNFT.data} onClick={onClick}>
+    <StyledButton disabled={!getNFTOwnership.data} onClick={onClick}>
       <BodyContainer>
-        <ObjectImageContainer>
+        <NFTImageContainer>
           <>
-            {!isOwnedNFT.data && (
+            {!getNFTOwnership.data && (
               <BlurredImage>
                 <Typography variant="h4">Not Owned NFT</Typography>
               </BlurredImage>
             )}
-            <Image src={nftMeta.data?.imageURL} defaultImgSrc={unknownNFTImg} />
+            {getNFTMeta.data?.imageURL ? (
+              <Image src={getNFTMeta.data?.imageURL} defaultImgSrc={unknownNFTImg} />
+            ) : (
+              <InvalidImageContainer>
+                <InvalidImageTextContainer>
+                  <Typography variant="h4">{tokenId}</Typography>
+                </InvalidImageTextContainer>
+              </InvalidImageContainer>
+            )}
 
-            {nftMeta.data?.rarity && (
-              <ObjectAbsoluteEditionMarkContainer>
-                <Typography variant="h6">{nftMeta.data.rarity}</Typography>
-              </ObjectAbsoluteEditionMarkContainer>
+            {getNFTMeta.data?.rarity && (
+              <NFTAbsoluteEditionMarkContainer>
+                <Typography variant="h6">{getNFTMeta.data.rarity}</Typography>
+              </NFTAbsoluteEditionMarkContainer>
             )}
 
             <DeleteButton
@@ -92,16 +102,16 @@ export default function NFTCardItem({ nft, onClick, onClickDelete }: NFTCardItem
               <Close16Icon />
             </DeleteButton>
           </>
-        </ObjectImageContainer>
+        </NFTImageContainer>
       </BodyContainer>
 
       <BottomContainer>
-        <ObjectDescriptionTextContainer>
-          <Typography variant="h6">{nftMeta.data?.description || address}</Typography>
-        </ObjectDescriptionTextContainer>
-        <ObjectNameTextContainer>
-          <Typography variant="h5">{nftMeta.data?.name || tokenId}</Typography>
-        </ObjectNameTextContainer>
+        <NFTDescriptionTextContainer>
+          <Typography variant="h6">{getNFTMeta.data?.description || address}</Typography>
+        </NFTDescriptionTextContainer>
+        <NFTNameTextContainer>
+          <Typography variant="h5">{getNFTMeta.data?.name || tokenId}</Typography>
+        </NFTNameTextContainer>
       </BottomContainer>
     </StyledButton>
   );
@@ -111,17 +121,17 @@ export function NFTCardItemSkeleton() {
   return (
     <SkeletonButton disabled>
       <BodyContainer>
-        <ObjectImageContainer>
+        <NFTImageContainer>
           <Image src={unknownNFTImg} />
-        </ObjectImageContainer>
+        </NFTImageContainer>
       </BodyContainer>
       <BottomContainer>
-        <ObjectNameTextContainer>
+        <NFTNameTextContainer>
           <Skeleton width={40} variant="text" />
-        </ObjectNameTextContainer>
-        <ObjectDescriptionTextContainer>
+        </NFTNameTextContainer>
+        <NFTDescriptionTextContainer>
           <Skeleton width={40} variant="text" />
-        </ObjectDescriptionTextContainer>
+        </NFTDescriptionTextContainer>
       </BottomContainer>
     </SkeletonButton>
   );
@@ -143,7 +153,7 @@ export function NFTCardItemError({ nft, onClickDelete, resetErrorBoundary }: NFT
   return (
     <StyledButton disabled>
       <BodyContainer>
-        <ObjectImageContainer>
+        <NFTImageContainer>
           <Image src={unknownNFTImg} />
 
           <DeleteButton
@@ -155,7 +165,7 @@ export function NFTCardItemError({ nft, onClickDelete, resetErrorBoundary }: NFT
           >
             <Close16Icon />
           </DeleteButton>
-        </ObjectImageContainer>
+        </NFTImageContainer>
       </BodyContainer>
       <BottomErrorContainer>
         <BottomErrorLeftContainer>

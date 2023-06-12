@@ -68,15 +68,19 @@ export function useGetNFTURISWR({ network, contractAddress, tokenId, tokenStanda
     return null;
   };
 
-  const { data, error, mutate } = useSWR<GetNFTURIPayload | null, AxiosError>({ id: 'uri', rpcURL, contractAddress, tokenId, tokenStandard }, fetcher, {
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
-    errorRetryCount: 5,
-    errorRetryInterval: 5000,
-    isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !tokenStandard || !rpcURL,
-    ...config,
-  });
+  const { data, isValidating, error, mutate } = useSWR<GetNFTURIPayload | null, AxiosError>(
+    { id: 'uri', rpcURL, contractAddress, tokenId, tokenStandard },
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+      errorRetryCount: 5,
+      errorRetryInterval: 5000,
+      isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !tokenStandard || !rpcURL,
+      ...config,
+    },
+  );
 
-  return { data, error, mutate };
+  return { data, isValidating, error, mutate };
 }

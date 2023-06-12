@@ -38,10 +38,43 @@ export const NFTPreviewContainer = styled('div')(({ theme }) => ({
 }));
 
 export const NFTPreviewHeaderContainer = styled('div')(({ theme }) => ({
+  height: 'fit-content',
+
   textAlign: 'start',
 
   color: theme.colors.text02,
 }));
+
+export const NFTPreviewBodyContentContainer = styled('div')({
+  height: '100%',
+  overflow: 'auto',
+});
+
+export const InvalidPreviewNFTImageContainer = styled('div')(({ theme }) => ({
+  width: '20rem',
+  height: '20rem',
+
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  color: theme.colors.text01,
+  backgroundColor: theme.colors.base04,
+
+  borderRadius: '0.8rem',
+}));
+
+export const InvalidPreviewNFTImageTextContainer = styled('div')({
+  maxWidth: '18rem',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
 
 export const NFTPreviewBodyContainer = styled('div')({
   height: '100%',
@@ -52,12 +85,17 @@ export const NFTPreviewBodyContainer = styled('div')({
 
   display: 'flex',
   flexDirection: 'column',
-
   justifyContent: 'center',
   alignItems: 'center',
+
+  padding: '1.6rem 0',
 });
 
 export const PreviewNFTImageContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
   '& > img': {
     borderRadius: '0.8rem',
 
@@ -66,7 +104,7 @@ export const PreviewNFTImageContainer = styled('div')({
   },
 });
 
-export const PreviewNFTNameContainer = styled('div')(({ theme }) => ({
+export const PreviewNFTSubtitleContainer = styled('div')(({ theme }) => ({
   marginTop: '1.6rem',
 
   color: theme.colors.text01,

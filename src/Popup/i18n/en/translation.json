@@ -1033,6 +1033,7 @@
                   "copied": "Copied",
                   "description": "Description",
                   "ownerAddress": "Owner",
+                  "source": "Source",
                   "tokenId": "Token ID",
                   "tokenType": "Token Standard",
                   "url": "URL"
@@ -1077,7 +1078,7 @@
               "invalidAddress": "Invalid address",
               "invalidAmount": "Invalid amount",
               "invalidSendNFTQuantity": "Invalid NFT Amount",
-              "invalidURI": "Failed to get NFT information",
+              "networkError": "Network Error",
               "quantityPlaceholder": "Quantity",
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"

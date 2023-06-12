@@ -16,7 +16,7 @@ export type EthereumNFTMeta = {
   name?: string;
   description?: string;
   imageURL?: string;
-  metaURI?: string;
+  animationURL?: string;
   rarity?: string;
   externalLink?: string;
   attributes?: {

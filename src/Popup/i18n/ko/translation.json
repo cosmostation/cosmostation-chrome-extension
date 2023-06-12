@@ -1033,6 +1033,7 @@
                   "copied": "복사 되었습니다.",
                   "description": "NFT 설명",
                   "ownerAddress": "소유주",
+                  "source": "소스",
                   "tokenId": "토큰 ID",
                   "tokenType": "토큰 표준",
                   "url": "URL"
@@ -1077,7 +1078,7 @@
               "invalidAddress": "유효하지 않은 주소입니다.",
               "invalidAmount": "수량을 입력하세요.",
               "invalidSendNFTQuantity": "유효하지 않은 NFT 수량입니다.",
-              "invalidURI": "NFT 정보를 가져오지 못했습니다.",
+              "networkError": "네트워크 오류",
               "quantityPlaceholder": "NFT 수량",
               "recipientAddressPlaceholder": "수신인 주소",
               "sendButton": "보내기"

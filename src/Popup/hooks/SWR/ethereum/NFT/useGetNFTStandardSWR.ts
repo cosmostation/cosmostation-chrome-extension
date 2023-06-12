@@ -70,7 +70,7 @@ export function useGetNFTStandardSWR({ network, contractAddress }: UseGetNFTStan
     return null;
   };
 
-  const { data, error, mutate } = useSWR<GetNFTStandardPayload | null, AxiosError>(
+  const { data, isValidating, error, mutate } = useSWR<GetNFTStandardPayload | null, AxiosError>(
     { rpcURL, contractAddress, erc721InterfaceId: ERC721_INTERFACE_ID, erc1155InterfaceId: ERC1155_INTERFACE_ID },
     fetcher,
     {
@@ -84,5 +84,5 @@ export function useGetNFTStandardSWR({ network, contractAddress }: UseGetNFTStan
     },
   );
 
-  return { data, error, mutate };
+  return { data, isValidating, error, mutate };
 }

@@ -23,7 +23,7 @@ import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEther
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { gt, lt, lte, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { ethereumAddressRegex } from '~/Popup/utils/regex';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumChain } from '~/types/chain';
@@ -42,6 +42,7 @@ import {
   FeeRightColumnContainer,
   FeeRightContainer,
   FeeRightValueContainer,
+  MaxButton,
   StyledInput,
 } from './styled';
 
@@ -88,6 +89,8 @@ export default function Ethereum({ chain }: EthereumProps) {
     tokenStandard: currentNFT.tokenType,
   });
 
+  const { data: metaURI } = useGetNFTURISWR({ contractAddress: currentNFT.address, tokenId: currentNFT.tokenId, tokenStandard: currentNFT.tokenType });
+
   const fee = useFeeSWR();
 
   const balance = useBalanceSWR();
@@ -108,8 +111,6 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
-
-  const { data: metaURI } = useGetNFTURISWR({ contractAddress: currentNFT.address, tokenId: currentNFT.tokenId });
 
   const sendTx = useMemo(() => {
     if (currentNFT === null) {
@@ -199,16 +200,16 @@ export default function Ethereum({ chain }: EthereumProps) {
     }
 
     if (currentNFT.tokenType === 'ERC1155') {
+      if (!currentNFTBalance || !metaURI) {
+        return t('pages.Wallet.NFTSend.Entry.Ethereum.index.networkError');
+      }
+
       if (!currentSendQuantity) {
         return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidSendNFTQuantity');
       }
 
-      if (currentNFTBalance && lt(currentNFTBalance, currentSendQuantity)) {
+      if (gt(currentSendQuantity, currentNFTBalance)) {
         return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidSendNFTQuantity');
-      }
-
-      if (!metaURI) {
-        return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidURI');
       }
     }
 
@@ -254,10 +255,21 @@ export default function Ethereum({ chain }: EthereumProps) {
         {currentNFT.tokenType === 'ERC1155' && (
           <Div sx={{ marginTop: '0.8rem' }}>
             <StyledInput
-              type="number"
               placeholder={t('pages.Wallet.NFTSend.Entry.Ethereum.index.quantityPlaceholder')}
+              endAdornment={
+                <InputAdornment position="end">
+                  <MaxButton
+                    type="button"
+                    onClick={() => {
+                      setCurrentSendQuantity(currentNFTBalance || '');
+                    }}
+                  >
+                    <Typography variant="h7">MAX</Typography>
+                  </MaxButton>
+                </InputAdornment>
+              }
               onChange={(e) => {
-                if ((lte(e.currentTarget.value, '0') || (currentNFTBalance && lt(currentNFTBalance, e.currentTarget.value))) && e.currentTarget.value) {
+                if (gt(e.currentTarget.value || '0', currentNFTBalance || '0') && e.currentTarget.value) {
                   return;
                 }
                 setCurrentSendQuantity(e.currentTarget.value);

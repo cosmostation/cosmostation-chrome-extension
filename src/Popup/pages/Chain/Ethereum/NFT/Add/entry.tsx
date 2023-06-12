@@ -12,6 +12,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTOwnerSWR';
 import { useGetNFTStandardSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTStandardSWR';
+import { useGetNFTURISWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTURISWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -22,11 +23,14 @@ import {
   ButtonContainer,
   Container,
   Div,
+  InvalidPreviewNFTImageContainer,
+  InvalidPreviewNFTImageTextContainer,
   NFTPreviewBodyContainer,
+  NFTPreviewBodyContentContainer,
   NFTPreviewContainer,
   NFTPreviewHeaderContainer,
   PreviewNFTImageContainer,
-  PreviewNFTNameContainer,
+  PreviewNFTSubtitleContainer,
   StyledAbsoluteLoading,
   StyledInput,
 } from './styled';
@@ -57,27 +61,33 @@ export default function Entry() {
   const [currentTokenId, setCurrentTokenId] = useState('');
   const [debouncedTokenId] = useDebounce(currentTokenId, 500);
 
-  // NOTE 이거는 서스펜스 해야할 듯
   const currentNFTStandard = useGetNFTStandardSWR({ contractAddress: debouncedContractAddress });
 
-  const nftOwnedData = useGetNFTOwnerSWR({
+  const getNFTURI = useGetNFTURISWR({
+    contractAddress: debouncedContractAddress,
+    tokenId: debouncedTokenId,
+    tokenStandard: currentNFTStandard.data ? currentNFTStandard.data : undefined,
+  });
+
+  const getNFTOwnership = useGetNFTOwnerSWR({
     contractAddress: debouncedContractAddress,
     ownerAddress: currentAddress,
     tokenId: debouncedTokenId,
     tokenStandard: currentNFTStandard.data ? currentNFTStandard.data : undefined,
   });
 
-  const nftMeta = useGetNFTMetaSWR({
+  // NOTE nft 훅 관련 변수명 나중에 싹 다 통일
+  const getNFTMeta = useGetNFTMetaSWR({
     contractAddress: debouncedContractAddress,
     tokenId: debouncedTokenId,
     tokenStandard: currentNFTStandard.data ? currentNFTStandard.data : undefined,
   });
 
-  const isLoadingData = useMemo(() => nftOwnedData.isValidating || nftMeta.isValidating, [nftMeta.isValidating, nftOwnedData.isValidating]);
+  const isLoadingData = useMemo(
+    () => getNFTOwnership.isValidating || getNFTMeta.isValidating || currentNFTStandard.isValidating || getNFTURI.isValidating,
+    [currentNFTStandard.isValidating, getNFTMeta.isValidating, getNFTOwnership.isValidating, getNFTURI.isValidating],
+  );
 
-  // NOTE owner check => true + httpRegex.test => false ==> 이럴떄는 토큰 아이디만 노출
-
-  // NOTE need check
   const errorType = useMemo(() => {
     if (!ethereumAddressRegex.test(debouncedContractAddress)) {
       return 'invalidAddress';
@@ -86,18 +96,19 @@ export default function Entry() {
       return 'invalidTokenId';
     }
 
-    if (!isLoadingData) {
-      if (!nftOwnedData.data) {
-        return 'misMatch';
-      }
-      if (nftOwnedData.error || currentNFTStandard.error) {
-        return 'networkError';
-      }
+    if (getNFTOwnership.error || currentNFTStandard.error) {
+      return 'networkError';
+    }
+
+    if (!getNFTURI.data) {
+      return 'notFound';
+    }
+    if (!getNFTOwnership.data) {
+      return 'misMatch';
     }
 
     return '';
-  }, [currentNFTStandard.error, debouncedContractAddress, debouncedTokenId, isLoadingData, nftOwnedData.data, nftOwnedData.error]);
-
+  }, [currentNFTStandard.error, debouncedContractAddress, debouncedTokenId, getNFTURI.data, getNFTOwnership.data, getNFTOwnership.error]);
   const nftPreviewIcon = useMemo(() => {
     if (errorType && debouncedContractAddress && debouncedTokenId) {
       return NFTErrorIcon;
@@ -113,6 +124,10 @@ export default function Entry() {
 
       if (errorType === 'invalidTokenId') {
         return 'Invalid Token ID';
+      }
+
+      if (errorType === 'notFound') {
+        return 'Not Found';
       }
 
       if (errorType === 'misMatch') {
@@ -137,6 +152,11 @@ export default function Entry() {
         return t('pages.Chain.Ethereum.NFT.Add.entry.invalidTokenId');
       }
 
+      if (errorType === 'notFound') {
+        // NOTE need i18
+        return 'No NFT';
+      }
+
       if (errorType === 'misMatch') {
         // NOTE need i18
         return 'Ownership information does not match.';
@@ -151,12 +171,9 @@ export default function Entry() {
     return t('pages.Chain.Ethereum.NFT.Add.entry.previewSubText');
   }, [debouncedContractAddress, debouncedTokenId, errorType, t]);
 
-  // NOTE https regex 가 valid하다면 && meta 데이터가 있다면
-  // <Typography variant="h6">{JSON.stringify(modifyTx, null, 4)}</Typography>
-
   const submit = async () => {
     try {
-      if (debouncedContractAddress && debouncedTokenId && currentNFTStandard.data && nftMeta) {
+      if (debouncedContractAddress && debouncedTokenId && currentNFTStandard.data && getNFTMeta) {
         const newNFT = {
           tokenId: debouncedTokenId,
           tokenType: currentNFTStandard.data,
@@ -203,24 +220,41 @@ export default function Entry() {
         <NFTPreviewBodyContainer>
           {isLoadingData ? (
             <StyledAbsoluteLoading size="4rem" />
-          ) : !errorType && nftMeta ? (
-            <>
-              <Typography variant="h6">{JSON.stringify(nftMeta.data, null, 4)}</Typography>
-
-              <PreviewNFTImageContainer>
-                <Image src={nftMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} />
-              </PreviewNFTImageContainer>
-              <PreviewNFTNameContainer>
-                <Typography variant="h3">{nftMeta?.data?.name}</Typography>
-              </PreviewNFTNameContainer>
-            </>
+          ) : !errorType && !!currentContractAddress && !!currentTokenId ? (
+            currentNFTStandard.data === 'ERC721' ? (
+              <>
+                <PreviewNFTImageContainer>
+                  <Image src={getNFTMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} />
+                </PreviewNFTImageContainer>
+                <PreviewNFTSubtitleContainer>
+                  <Typography variant="h3">{getNFTMeta?.data?.name || getNFTURI.data}</Typography>
+                </PreviewNFTSubtitleContainer>
+              </>
+            ) : (
+              <NFTPreviewBodyContentContainer>
+                {getNFTMeta.data && <Typography variant="h6">{JSON.stringify(getNFTMeta.data, null, 4)}</Typography>}
+                <PreviewNFTImageContainer>
+                  {getNFTMeta?.data?.imageURL ? (
+                    <Image src={getNFTMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} />
+                  ) : (
+                    <InvalidPreviewNFTImageContainer>
+                      <InvalidPreviewNFTImageTextContainer>
+                        <Typography variant="h3">{debouncedTokenId}</Typography>
+                      </InvalidPreviewNFTImageTextContainer>
+                    </InvalidPreviewNFTImageContainer>
+                  )}
+                </PreviewNFTImageContainer>
+                {/* <PreviewNSubtitlemeContainer>
+                  <Typography variant="h3">{getNFTMeta?.data?.name || getNFTURI.data}</Typography>
+                </PreviewNFTSubtitleContainer> */}
+              </NFTPreviewBodyContentContainer>
+            )
           ) : (
             <EmptyAsset Icon={nftPreviewIcon} headerText={nftPreviewHeaderText} subHeaderText={nftPreviewSubText} />
           )}
         </NFTPreviewBodyContainer>
       </NFTPreviewContainer>
       <ButtonContainer>
-        {/* FIXME check condition */}
         <Button type="submit" disabled={!!errorType} onClick={submit}>
           {t('pages.Chain.Ethereum.NFT.Add.entry.submitButton')}
         </Button>
