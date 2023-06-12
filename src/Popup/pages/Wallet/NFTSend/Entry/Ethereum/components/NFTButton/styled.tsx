@@ -25,11 +25,11 @@ export const LeftContainer = styled('div')({
 });
 
 export const LeftImageContainer = styled('div')({
-  width: '6.4rem',
-  height: '6.4rem',
   '& > img': {
     width: '6.4rem',
     height: '6.4rem',
+
+    borderRadius: '0.4rem',
   },
 });
 
@@ -79,7 +79,7 @@ export const InvalidImageContainer = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   alignItems: 'center',
 
-  borderRadius: '0.8rem',
+  borderRadius: '0.4rem',
 
   color: theme.colors.text01,
 
