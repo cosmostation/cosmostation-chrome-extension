@@ -26,9 +26,10 @@ export default function Sui({ chain }: SuiProps) {
 
   const { currentAccount } = useCurrentAccount();
   const { currentSuiNetwork, additionalSuiNetworks } = useCurrentSuiNetwork();
-  const [tabValue, setTabValue] = useState(tabPath.sui.tabPath || 0);
 
   const tabLabels = ['Coins', 'NFTs'];
+
+  const [tabValue, setTabValue] = useState(!gte(tabPath.sui.tabPath, tabLabels.length) ? tabPath.sui.tabPath : 0);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);

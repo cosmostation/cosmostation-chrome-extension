@@ -59,6 +59,10 @@ export const LeftInfoHeaderContainer = styled('div')(({ theme }) => ({
 }));
 
 export const LeftInfoBodyContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+
   color: theme.colors.text01,
 }));
 

@@ -1,5 +1,6 @@
 import { atom } from 'recoil';
 
+import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import { PATH } from '~/constants/route';
 import { THEME_TYPE } from '~/constants/theme';
 import type { CurrencyType, ExtensionStorage, LanguageType } from '~/types/extensionStorage';
@@ -25,9 +26,12 @@ export const extensionStorageDefault: ExtensionStorage = {
 
   rootPath: PATH.DASHBOARD,
   tabPath: {
-    ethereum: {
-      tabPath: 0,
-    },
+    ethereum: [
+      ...ETHEREUM_NETWORKS.map((network) => ({
+        networkId: network.id,
+        tabPath: 0,
+      })),
+    ],
     cosmos: {
       tabPath: 0,
     },

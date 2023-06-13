@@ -109,9 +109,10 @@ function background() {
 
         await setStorage('rootPath', PATH.DASHBOARD);
         await setStorage('tabPath', {
-          ethereum: {
+          ethereum: ETHEREUM_NETWORKS.map((network) => ({
+            networkId: network.id,
             tabPath: 0,
-          },
+          })),
           cosmos: {
             tabPath: 0,
           },

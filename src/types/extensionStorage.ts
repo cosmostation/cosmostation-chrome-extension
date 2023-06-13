@@ -15,8 +15,9 @@ export type SuiPermissionType = ValueOf<typeof PERMISSION>;
 
 export type TabPath = {
   ethereum: {
+    networkId: string;
     tabPath: number;
-  };
+  }[];
   cosmos: {
     tabPath: number;
   };

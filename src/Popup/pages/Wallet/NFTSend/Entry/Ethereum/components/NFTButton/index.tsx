@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
+import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBalanceSWR';
@@ -12,8 +13,8 @@ import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import {
   Button,
-  InvalidImageContainer,
-  InvalidImageTextContainer,
+  // InvalidImageContainer,
+  // InvalidImageTextContainer,
   LeftContainer,
   LeftImageContainer,
   LeftInfoBodyContainer,
@@ -35,19 +36,16 @@ export default function NFTButton({ currentNFT, isActive, ...remainder }: NFTBut
 
   const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
-  // NOTE erc1155일때 밸런스 보여줘야함
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: nftBalance } = useGetNFTBalanceSWR({
-    contractAddress: currentNFT.address,
-    ownerAddress: address,
-    tokenId: currentNFT.tokenId,
-    tokenStandard: currentNFT.tokenType,
+    contractAddress: address,
+    tokenId,
+    tokenStandard: tokenType,
   });
 
-  const shorterContractAddress = useMemo(() => shorterAddress(address, 23), [address]);
-  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 17), [tokenId]);
+  const shorterContractAddress = useMemo(() => shorterAddress(address, 10), [address]);
+  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 10), [tokenId]);
 
-  const tokenStandard = useMemo(() => tokenType?.replace('ERC', 'ERC-'), [tokenType]);
+  const displayTokenStandard = useMemo(() => tokenType?.replace('ERC', 'ERC-'), [tokenType]);
 
   return (
     <Button type="button" {...remainder}>
@@ -56,11 +54,12 @@ export default function NFTButton({ currentNFT, isActive, ...remainder }: NFTBut
           {nftMeta?.imageURL ? (
             <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
           ) : (
-            <InvalidImageContainer>
-              <InvalidImageTextContainer>
-                <Typography variant="h6">{tokenId}</Typography>
-              </InvalidImageTextContainer>
-            </InvalidImageContainer>
+            <Image src={unreadableNFTImg} />
+            // <InvalidImageContainer>
+            //   <InvalidImageTextContainer>
+            //     <Typography variant="h6">{tokenId}</Typography>
+            //   </InvalidImageTextContainer>
+            // </InvalidImageContainer>
           )}
         </LeftImageContainer>
         <LeftInfoContainer>
@@ -73,12 +72,14 @@ export default function NFTButton({ currentNFT, isActive, ...remainder }: NFTBut
             <Tooltip title={address || ''} placement="top" arrow>
               <Typography variant="h6">{shorterContractAddress}</Typography>
             </Tooltip>
-          </LeftInfoBodyContainer>
-          <LeftInfoFooterContainer>
+            &nbsp;/&nbsp;
             <Tooltip title={tokenId || ''} placement="top" arrow>
               <Typography variant="h6">{shorterTokenId}</Typography>
             </Tooltip>
-            /<Typography variant="h6">{tokenStandard}</Typography>
+          </LeftInfoBodyContainer>
+          <LeftInfoFooterContainer>
+            <Typography variant="h6">{displayTokenStandard}</Typography>
+            {currentNFT.tokenType === 'ERC1155' && <Typography variant="h6">{`/ Balance: ${nftBalance || '0'}`}</Typography>}
           </LeftInfoFooterContainer>
         </LeftInfoContainer>
       </LeftContainer>

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Typography } from '@mui/material';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
+import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
@@ -30,8 +31,8 @@ import {
   NFTInfoHeaderContainer,
   NFTInfoHeaderTextContainer,
   NFTInfoLeftHeaderContainer,
-  NFTInvalidImageContainer,
-  NFTInvalidImageTextContainer,
+  // NFTInvalidImageContainer,
+  // NFTInvalidImageTextContainer,
   StyledIconButton,
 } from './styled';
 
@@ -85,11 +86,12 @@ export default function Ethereum({ chain }: EthereumProps) {
             {nftMeta?.imageURL ? (
               <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
             ) : (
-              <NFTInvalidImageContainer>
-                <NFTInvalidImageTextContainer>
-                  <Typography variant="h3">{tokenId}</Typography>
-                </NFTInvalidImageTextContainer>
-              </NFTInvalidImageContainer>
+              <Image src={unreadableNFTImg} />
+              // <NFTInvalidImageContainer>
+              //   <NFTInvalidImageTextContainer>
+              //     <Typography variant="h3">{tokenId}</Typography>
+              //   </NFTInvalidImageTextContainer>
+              // </NFTInvalidImageContainer>
             )}
           </NFTImageContainer>
           <NFTInfoContainer>

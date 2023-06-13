@@ -27,9 +27,15 @@ export default function Ethereum({ chain }: EthereumProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
 
-  const [tabValue, setTabValue] = useState(tabPath.ethereum.tabPath || 0);
-
   const tabLabels = ['Coins', 'NFTs'];
+
+  const currentTabPath = useMemo(
+    // NOTE 방어코드 추가할 것
+    () => tabPath.ethereum.find((item) => item.networkId === currentEthereumNetwork.id)!,
+    [currentEthereumNetwork.id, tabPath.ethereum],
+  );
+
+  const [tabValue, setTabValue] = useState(currentTabPath.tabPath);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -41,12 +47,17 @@ export default function Ethereum({ chain }: EthereumProps) {
   );
 
   useEffect(() => {
-    if (gte(tabPath.ethereum.tabPath, tabLabels.length)) {
+    if (gte(tabPath.ethereum.find((item) => item.networkId === currentEthereumNetwork.id)?.tabPath || 0, tabLabels.length)) {
       void setExtensionStorage('tabPath', {
         ...tabPath,
-        ethereum: {
-          tabPath: 0,
-        },
+        ethereum: tabPath.ethereum.map((item) =>
+          item.networkId === currentEthereumNetwork.id
+            ? {
+                ...item,
+                tabPath: 0,
+              }
+            : item,
+        ),
       });
 
       setTabValue(0);
@@ -54,13 +65,19 @@ export default function Ethereum({ chain }: EthereumProps) {
 
     void setExtensionStorage('tabPath', {
       ...tabPath,
-      ethereum: {
-        tabPath: tabValue,
-      },
-    });
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabValue]);
+      ethereum: [
+        ...tabPath.ethereum.map((item) =>
+          item.networkId === currentEthereumNetwork.id
+            ? {
+                ...item,
+                tabPath: tabValue,
+              }
+            : item,
+        ),
+      ],
+    });
+  }, [currentEthereumNetwork.id, setExtensionStorage, tabLabels.length, tabPath, tabValue]);
 
   return (
     <Container key={`${currentAccount.id}-${currentEthereumNetwork.id}`}>

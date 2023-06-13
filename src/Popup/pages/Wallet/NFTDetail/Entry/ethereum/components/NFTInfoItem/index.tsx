@@ -117,29 +117,29 @@ export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
         </ItemRightContainer>
       </ItemContainer>
 
-      {tokenType === 'ERC1155' && gt(nftBalance || '0', '0') && (
+      {tokenType === 'ERC1155' && (
         <ItemContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.balance')}</Typography>
           </ItemTitleContainer>
-          <ItemRightContainer>
-            <Typography variant="h5">{nftBalance}</Typography>
-          </ItemRightContainer>
+          <ItemRightContainer>{gt(nftBalance || '0', '0') && <Typography variant="h5">{nftBalance || '-'}</Typography>}</ItemRightContainer>
         </ItemContainer>
       )}
 
-      {nftMetaSourceURI && (
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.source')}</Typography>
-          </ItemTitleContainer>
-          <ItemRightContainer>
-            <URLButton type="button" onClick={() => window.open(nftMetaSourceURI)}>
-              <Typography variant="h5">{shorterSourceURL}</Typography>
+      <ItemContainer>
+        <ItemTitleContainer>
+          <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.source')}</Typography>
+        </ItemTitleContainer>
+        <ItemRightContainer>
+          {httpsRegex.test(nftMetaSourceURI || '') ? (
+            <URLButton type="button" onClick={() => window.open(nftMetaSourceURI || '')}>
+              <Typography variant="h5">{shorterSourceURL || '-'}</Typography>
             </URLButton>
-          </ItemRightContainer>
-        </ItemContainer>
-      )}
+          ) : (
+            <Typography variant="h5">{shorterSourceURL || '-'}</Typography>
+          )}
+        </ItemRightContainer>
+      </ItemContainer>
 
       {nftMeta?.externalLink && (
         <ItemContainer>

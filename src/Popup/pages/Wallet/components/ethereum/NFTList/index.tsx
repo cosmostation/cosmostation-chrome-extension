@@ -67,7 +67,7 @@ export default function NFTList({ chain }: NFTListProps) {
 
   const isExistNFT = !!ownedEthereumNFTs.length;
 
-  const filteredNFTObjects = useMemo(() => {
+  const filteredNFTs = useMemo(() => {
     if (currentType === 'all') return ownedEthereumNFTs;
 
     return ownedEthereumNFTs.filter((item) => currentTypeInfo?.type === item.tokenType) || [];
@@ -86,12 +86,6 @@ export default function NFTList({ chain }: NFTListProps) {
               onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
               isActive={isOpenPopover}
             />
-            {/* <ListTitleLeftTextContainer>
-              <Typography variant="h6">{t('pages.Wallet.components.ethereum.NFTList.index.nft')}</Typography>
-            </ListTitleLeftTextContainer>
-            <ListTitleLeftCountContainer>
-              <Typography variant="h6">{isExistNFT ? `${ownedEthereumNFTs.length}` : ''}</Typography>
-            </ListTitleLeftCountContainer> */}
           </ListTitleLeftContainer>
           <ListTitleRightContainer>
             <AddButton type="button" onClick={addToken}>
@@ -102,7 +96,7 @@ export default function NFTList({ chain }: NFTListProps) {
       )}
       {isExistNFT ? (
         <ListContainer>
-          {filteredNFTObjects.map((nft) => {
+          {filteredNFTs.map((nft) => {
             const handleOnClickDelete = async () => {
               await removeEthereumNFT(nft);
             };

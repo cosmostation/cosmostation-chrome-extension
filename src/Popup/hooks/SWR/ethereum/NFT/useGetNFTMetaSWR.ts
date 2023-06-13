@@ -82,6 +82,7 @@ export function useGetNFTMetaSWR({ network, contractAddress, tokenId, tokenStand
         externalLink: data.external_link,
         external_link: undefined,
         rarity: data.edition,
+        edition: undefined,
       }
     : undefined;
 

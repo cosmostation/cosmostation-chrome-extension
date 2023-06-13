@@ -84,8 +84,8 @@ export default function Entry() {
   });
 
   const isLoadingData = useMemo(
-    () => getNFTOwnership.isValidating || getNFTMeta.isValidating || currentNFTStandard.isValidating || getNFTURI.isValidating,
-    [currentNFTStandard.isValidating, getNFTMeta.isValidating, getNFTOwnership.isValidating, getNFTURI.isValidating],
+    () => getNFTOwnership.isValidating || getNFTMeta.isValidating || getNFTURI.isValidating,
+    [getNFTMeta.isValidating, getNFTOwnership.isValidating, getNFTURI.isValidating],
   );
 
   const errorType = useMemo(() => {
@@ -96,17 +96,17 @@ export default function Entry() {
       return 'invalidTokenId';
     }
 
-    if (getNFTOwnership.error || currentNFTStandard.error) {
-      return 'networkError';
-    }
-
     if (!getNFTURI.data) {
       return 'notFound';
     }
+
     if (!getNFTOwnership.data) {
       return 'misMatch';
     }
 
+    if (getNFTOwnership.error || currentNFTStandard.error) {
+      return 'networkError';
+    }
     return '';
   }, [currentNFTStandard.error, debouncedContractAddress, debouncedTokenId, getNFTURI.data, getNFTOwnership.data, getNFTOwnership.error]);
   const nftPreviewIcon = useMemo(() => {
@@ -220,7 +220,7 @@ export default function Entry() {
         <NFTPreviewBodyContainer>
           {isLoadingData ? (
             <StyledAbsoluteLoading size="4rem" />
-          ) : !errorType && !!currentContractAddress && !!currentTokenId ? (
+          ) : !errorType ? (
             currentNFTStandard.data === 'ERC721' ? (
               <>
                 <PreviewNFTImageContainer>
@@ -232,6 +232,8 @@ export default function Entry() {
               </>
             ) : (
               <NFTPreviewBodyContentContainer>
+                {getNFTURI && <Typography variant="h6">{getNFTURI.data}</Typography>}
+
                 {getNFTMeta.data && <Typography variant="h6">{JSON.stringify(getNFTMeta.data, null, 4)}</Typography>}
                 <PreviewNFTImageContainer>
                   {getNFTMeta?.data?.imageURL ? (

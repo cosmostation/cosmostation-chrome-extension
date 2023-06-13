@@ -3,16 +3,18 @@ import { forwardRef, useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
+import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
+import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBalanceSWR';
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTOwnerSWR';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import {
-  InvalidImageContainer,
-  InvalidImageTextContainer,
+  // InvalidImageContainer,
+  // InvalidImageTextContainer,
   LeftContainer,
   LeftImageContainer,
   LeftInfoBodyContainer,
@@ -37,8 +39,14 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
 
   const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress, tokenId, tokenStandard: tokenType });
 
-  const shorterContractAddress = useMemo(() => shorterAddress(address, 20), [address]);
-  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 13), [tokenId]);
+  const { data: nftBalance } = useGetNFTBalanceSWR({
+    contractAddress: address,
+    tokenId,
+    tokenStandard: tokenType,
+  });
+
+  const shorterContractAddress = useMemo(() => shorterAddress(address, 10), [address]);
+  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 10), [tokenId]);
 
   const displayTokenStandard = useMemo(() => tokenType?.replace('ERC', 'ERC-'), [tokenType]);
 
@@ -49,11 +57,12 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
           {nftMeta?.imageURL ? (
             <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
           ) : (
-            <InvalidImageContainer>
-              <InvalidImageTextContainer>
-                <Typography variant="h6">{tokenId}</Typography>
-              </InvalidImageTextContainer>
-            </InvalidImageContainer>
+            <Image src={unreadableNFTImg} />
+            // <InvalidImageContainer>
+            //   <InvalidImageTextContainer>
+            //     <Typography variant="h6">{tokenId}</Typography>
+            //   </InvalidImageTextContainer>
+            // </InvalidImageContainer>
           )}
         </LeftImageContainer>
         <LeftInfoContainer>
@@ -66,12 +75,14 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
             <Tooltip title={address || ''} placement="top" arrow>
               <Typography variant="h6">{shorterContractAddress}</Typography>
             </Tooltip>
-          </LeftInfoBodyContainer>
-          <LeftInfoFooterContainer>
+            &nbsp;/&nbsp;
             <Tooltip title={tokenId || ''} placement="top" arrow>
               <Typography variant="h6">{shorterTokenId}</Typography>
             </Tooltip>
-            /<Typography variant="h6">{displayTokenStandard}</Typography>
+          </LeftInfoBodyContainer>
+          <LeftInfoFooterContainer>
+            <Typography variant="h6">{displayTokenStandard}</Typography>
+            {tokenType === 'ERC1155' && <Typography variant="h6">{`/ Balance: ${nftBalance || '0'}`}</Typography>}
           </LeftInfoFooterContainer>
         </LeftInfoContainer>
       </LeftContainer>

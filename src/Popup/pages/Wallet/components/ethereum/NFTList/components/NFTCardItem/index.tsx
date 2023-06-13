@@ -3,6 +3,7 @@ import type { FallbackProps } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
+import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
@@ -24,8 +25,8 @@ import {
   BottomErrorLeftContainer,
   BottomErrorRightContainer,
   DeleteButton,
-  InvalidImageContainer,
-  InvalidImageTextContainer,
+  // InvalidImageContainer,
+  // InvalidImageTextContainer,
   NFTAbsoluteEditionMarkContainer,
   NFTDescriptionTextContainer,
   NFTImageContainer,
@@ -58,10 +59,6 @@ export default function NFTCardItem({ nft, onClick, onClickDelete }: NFTCardItem
 
   const { tokenId, address, tokenType } = nft;
 
-  // NOTE https 정규식 체크 후 이미지 다르게 보여주기용 변수
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const getNFTURI = useGetNFTURISWR({ contractAddress: address, tokenId, tokenStandard: tokenType }, { suspense: true });
-
   const getNFTMeta = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
   const getNFTOwnership = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId, tokenStandard: tokenType }, { suspense: true });
@@ -79,11 +76,13 @@ export default function NFTCardItem({ nft, onClick, onClickDelete }: NFTCardItem
             {getNFTMeta.data?.imageURL ? (
               <Image src={getNFTMeta.data?.imageURL} defaultImgSrc={unknownNFTImg} />
             ) : (
-              <InvalidImageContainer>
-                <InvalidImageTextContainer>
-                  <Typography variant="h4">{tokenId}</Typography>
-                </InvalidImageTextContainer>
-              </InvalidImageContainer>
+              <Image src={unreadableNFTImg} />
+
+              // <InvalidImageContainer>
+              //   <InvalidImageTextContainer>
+              //     <Typography variant="h4">{tokenId}</Typography>
+              //   </InvalidImageTextContainer>
+              // </InvalidImageContainer>
             )}
 
             {getNFTMeta.data?.rarity && (
