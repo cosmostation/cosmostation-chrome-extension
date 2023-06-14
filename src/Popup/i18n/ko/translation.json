@@ -1044,6 +1044,7 @@
               }
             },
             "index": {
+              "information": "Cosmostation는 소스 URL에서 미디어 파일을 가져옵니다. 이러한 URL은 때때로 NFT가 민팅된 마켓플레이스에서 변경되기도 합니다.",
               "notOwnedNFT": "이 NFT의 소유주가 아닙니다",
               "send": "NFT 보내기",
               "untransferableObject": "보낼 수 없는 NFT입니다"
@@ -1075,6 +1076,22 @@
       "NFTSend": {
         "Entry": {
           "Ethereum": {
+            "components": {
+              "NFTButton": {
+                "index": {
+                  "balance": "보유 수량"
+                }
+              },
+              "NFTPopover": {
+                "components": {
+                  "NFTItem": {
+                    "index": {
+                      "balance": "보유 수량"
+                    }
+                  }
+                }
+              }
+            },
             "index": {
               "fee": "수수료",
               "insufficientAmount": "수량이 부족합니다.",

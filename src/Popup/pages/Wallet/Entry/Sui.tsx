@@ -22,14 +22,14 @@ type SuiProps = {
 
 export default function Sui({ chain }: SuiProps) {
   const { extensionStorage, setExtensionStorage } = useExtensionStorage();
-  const { tabPath } = extensionStorage;
+  const { homeTabPath } = extensionStorage;
 
   const { currentAccount } = useCurrentAccount();
   const { currentSuiNetwork, additionalSuiNetworks } = useCurrentSuiNetwork();
 
   const tabLabels = ['Coins', 'NFTs'];
 
-  const [tabValue, setTabValue] = useState(!gte(tabPath.sui.tabPath, tabLabels.length) ? tabPath.sui.tabPath : 0);
+  const [tabValue, setTabValue] = useState(!gte(homeTabPath.sui.tabValue, tabLabels.length) ? homeTabPath.sui.tabValue : 0);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -38,21 +38,21 @@ export default function Sui({ chain }: SuiProps) {
   const isCustom = useMemo(() => !!additionalSuiNetworks.find((item) => item.id === currentSuiNetwork.id), [additionalSuiNetworks, currentSuiNetwork.id]);
 
   useEffect(() => {
-    if (gte(tabPath.sui.tabPath, tabLabels.length)) {
-      void setExtensionStorage('tabPath', {
-        ...tabPath,
+    if (gte(homeTabPath.sui.tabValue, tabLabels.length)) {
+      void setExtensionStorage('homeTabPath', {
+        ...homeTabPath,
         sui: {
-          tabPath: 0,
+          tabValue: 0,
         },
       });
 
       setTabValue(0);
     }
 
-    void setExtensionStorage('tabPath', {
-      ...tabPath,
+    void setExtensionStorage('homeTabPath', {
+      ...homeTabPath,
       sui: {
-        tabPath: tabValue,
+        tabValue,
       },
     });
 

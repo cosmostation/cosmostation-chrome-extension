@@ -65,7 +65,7 @@ export function useGetNFTMetaSWR({ network, contractAddress, tokenId, tokenStand
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    errorRetryCount: 5,
+    errorRetryCount: 3,
     errorRetryInterval: 5000,
     isPaused: () => !paramURL || !getNFTURI.data,
     ...config,

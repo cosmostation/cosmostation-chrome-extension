@@ -1044,6 +1044,7 @@
               }
             },
             "index": {
+              "information": "Import media files from the URI. These URI are sometimes changed in marketplaces where NFTs are minted.",
               "notOwnedNFT": "The owner of this NFT is not you",
               "send": "NFT Send",
               "untransferableObject": "Untransferable object"
@@ -1075,6 +1076,22 @@
       "NFTSend": {
         "Entry": {
           "Ethereum": {
+            "components": {
+              "NFTButton": {
+                "index": {
+                  "balance": "Balance"
+                }
+              },
+              "NFTPopover": {
+                "components": {
+                  "NFTItem": {
+                    "index": {
+                      "balance": "Balance"
+                    }
+                  }
+                }
+              }
+            },
             "index": {
               "fee": "Fee",
               "insufficientAmount": "Insufficient amount",

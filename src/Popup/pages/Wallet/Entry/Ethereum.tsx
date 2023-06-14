@@ -22,23 +22,34 @@ type EthereumProps = {
 
 export default function Ethereum({ chain }: EthereumProps) {
   const { extensionStorage, setExtensionStorage } = useExtensionStorage();
-  const { tabPath } = extensionStorage;
+  const { homeTabPath } = extensionStorage;
 
   const { currentAccount } = useCurrentAccount();
   const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
 
   const tabLabels = ['Coins', 'NFTs'];
 
-  const currentTabPath = useMemo(
-    // NOTE 방어코드 추가할 것
-    () => tabPath.ethereum.find((item) => item.networkId === currentEthereumNetwork.id)!,
-    [currentEthereumNetwork.id, tabPath.ethereum],
-  );
-
-  const [tabValue, setTabValue] = useState(currentTabPath.tabPath);
+  // NOTE 질문?: 이게 currentTabPath잘 가져오는데도 useState변수 초기화시에는 값을 그 값을 안가져오고
+  // NOTE 이전의 값을 가져오는 이유가 뭘까?... context?
+  const [tabValue, setTabValue] = useState(homeTabPath.ethereum.find((item) => item.networkId === currentEthereumNetwork.id)?.tabValue || 0);
 
   const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
+
+    void setExtensionStorage('homeTabPath', {
+      ...homeTabPath,
+
+      ethereum: [
+        ...homeTabPath.ethereum.map((item) =>
+          item.networkId === currentEthereumNetwork.id
+            ? {
+                ...item,
+                tabValue: newTabValue,
+              }
+            : item,
+        ),
+      ],
+    });
   };
 
   const isCustom = useMemo(
@@ -47,14 +58,21 @@ export default function Ethereum({ chain }: EthereumProps) {
   );
 
   useEffect(() => {
-    if (gte(tabPath.ethereum.find((item) => item.networkId === currentEthereumNetwork.id)?.tabPath || 0, tabLabels.length)) {
-      void setExtensionStorage('tabPath', {
-        ...tabPath,
-        ethereum: tabPath.ethereum.map((item) =>
+    if (homeTabPath.ethereum.find((item) => item.networkId === currentEthereumNetwork.id)?.tabValue !== tabValue) {
+      setTabValue(homeTabPath.ethereum.find((item) => item.networkId === currentEthereumNetwork.id)?.tabValue || 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentEthereumNetwork.id]);
+
+  useEffect(() => {
+    if (gte(homeTabPath.ethereum.find((item) => item.networkId === currentEthereumNetwork.id)?.tabValue || 0, tabLabels.length)) {
+      void setExtensionStorage('homeTabPath', {
+        ...homeTabPath,
+        ethereum: homeTabPath.ethereum.map((item) =>
           item.networkId === currentEthereumNetwork.id
             ? {
                 ...item,
-                tabPath: 0,
+                tabValue: 0,
               }
             : item,
         ),
@@ -62,22 +80,7 @@ export default function Ethereum({ chain }: EthereumProps) {
 
       setTabValue(0);
     }
-
-    void setExtensionStorage('tabPath', {
-      ...tabPath,
-
-      ethereum: [
-        ...tabPath.ethereum.map((item) =>
-          item.networkId === currentEthereumNetwork.id
-            ? {
-                ...item,
-                tabPath: tabValue,
-              }
-            : item,
-        ),
-      ],
-    });
-  }, [currentEthereumNetwork.id, setExtensionStorage, tabLabels.length, tabPath, tabValue]);
+  }, [currentEthereumNetwork.id, homeTabPath, setExtensionStorage, tabLabels.length]);
 
   return (
     <Container key={`${currentAccount.id}-${currentEthereumNetwork.id}`}>

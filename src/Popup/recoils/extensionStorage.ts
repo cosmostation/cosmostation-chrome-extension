@@ -25,21 +25,21 @@ export const extensionStorageDefault: ExtensionStorage = {
   currency: '' as CurrencyType,
 
   rootPath: PATH.DASHBOARD,
-  tabPath: {
+  homeTabPath: {
     ethereum: [
       ...ETHEREUM_NETWORKS.map((network) => ({
         networkId: network.id,
-        tabPath: 0,
+        tabValue: 0,
       })),
     ],
     cosmos: {
-      tabPath: 0,
+      tabValue: 0,
     },
     sui: {
-      tabPath: 0,
+      tabValue: 0,
     },
     aptos: {
-      tabPath: 0,
+      tabValue: 0,
     },
   },
 

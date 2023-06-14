@@ -9,6 +9,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBalanceSWR';
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTOwnerSWR';
+import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/ethereum/nft';
@@ -32,6 +33,8 @@ type NFTItemProps = ComponentProps<typeof NFTButton> & {
 };
 
 const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ...remainder }, ref) => {
+  const { t } = useTranslation();
+
   const { tokenId, tokenType, address, ownerAddress } = nft;
 
   const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
@@ -72,7 +75,11 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
           </LeftInfoBodyContainer>
           <LeftInfoFooterContainer>
             <Typography variant="h6">{displayTokenStandard}</Typography>
-            {tokenType === 'ERC1155' && <Typography variant="h6">{`/ Balance: ${nftBalance || '0'}`}</Typography>}
+            {tokenType === 'ERC1155' && (
+              <Typography variant="h6">{`/ ${t('pages.Wallet.NFTSend.Entry.Ethereum.components.NFTPopover.components.NFTItem.index.balance')}: ${
+                nftBalance || '0'
+              }`}</Typography>
+            )}
           </LeftInfoFooterContainer>
         </LeftInfoContainer>
       </LeftContainer>

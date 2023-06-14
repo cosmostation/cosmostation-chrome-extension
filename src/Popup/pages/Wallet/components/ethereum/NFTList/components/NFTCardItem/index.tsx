@@ -161,7 +161,7 @@ export function NFTCardItemError({ nft, onClickDelete, resetErrorBoundary }: NFT
             <Typography variant="h6">{t('pages.Wallet.components.ethereum.NFTList.components.NFTCardItem.index.networkError')}</Typography>
           </BottomErrorHeaderContainer>
           <BottomErrorFooterContainer>
-            <Typography variant="h5">{nft.tokenId}</Typography>
+            <Typography variant="h5">{toDisplayTokenId(nft.tokenId)}</Typography>
           </BottomErrorFooterContainer>
         </BottomErrorLeftContainer>
         <BottomErrorRightContainer>

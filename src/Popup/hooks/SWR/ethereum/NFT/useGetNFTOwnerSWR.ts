@@ -94,7 +94,7 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
       revalidateOnFocus: false,
       dedupingInterval: 14000,
       refreshInterval: 15000,
-      errorRetryCount: 5,
+      errorRetryCount: 3,
       errorRetryInterval: 5000,
 
       isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !tokenStandard || !walletAddress || !rpcURL,

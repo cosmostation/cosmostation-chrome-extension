@@ -6,13 +6,18 @@ export const Container = styled('div')({
   height: '100%',
   padding: '0.8rem 1.6rem 1.2rem',
 
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'flex-start',
   position: 'relative',
 });
 
-export const ContentContainer = styled('div')(({ theme }) => ({
+export const ContentContainer = styled('div')({
+  height: 'calc(100% - 7rem)',
+  overflow: 'auto',
+
+  margin: '0 -1.6rem',
+  padding: '0 1.6rem',
+});
+
+export const NFTContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -22,8 +27,7 @@ export const ContentContainer = styled('div')(({ theme }) => ({
 
   padding: '1.6rem',
 
-  height: 'calc(100% - 7rem)',
-  overflow: 'auto',
+  marginBottom: '0.8rem',
 }));
 
 export const NFTImageContainer = styled('div')({

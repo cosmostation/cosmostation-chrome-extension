@@ -6,6 +6,7 @@ import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
+import InformContainer from '~/Popup/components/common/InformContainer';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
@@ -25,6 +26,7 @@ import {
   BottomContainer,
   Container,
   ContentContainer,
+  NFTContainer,
   NFTEditionMarkContainer,
   NFTImageContainer,
   NFTInfoBodyContainer,
@@ -78,9 +80,9 @@ export default function Ethereum({ chain }: EthereumProps) {
   }, [isOwnedNFT, t]);
 
   return (
-    <>
-      <Container>
-        <ContentContainer>
+    <Container>
+      <ContentContainer>
+        <NFTContainer>
           <NFTImageContainer>
             {nftMeta?.imageURL ? <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
           </NFTImageContainer>
@@ -109,18 +111,22 @@ export default function Ethereum({ chain }: EthereumProps) {
               </NFTInfoBodyContainer>
             )}
           </NFTInfoContainer>
-        </ContentContainer>
-        <BottomContainer>
-          <Tooltip varient="error" title={errorMessage} placement="top" arrow>
-            <div>
-              <Button type="button" disabled={!!errorMessage} onClick={() => navigate(`/wallet/nft-send/${id || ''}` as unknown as Path)}>
-                {t('pages.Wallet.NFTDetail.Entry.ethereum.index.send')}
-              </Button>
-            </div>
-          </Tooltip>
-        </BottomContainer>
-      </Container>
-      );
-    </>
+        </NFTContainer>
+
+        <InformContainer varient="info">
+          <Typography variant="h6">{t('pages.Wallet.NFTDetail.Entry.ethereum.index.information')}</Typography>
+        </InformContainer>
+      </ContentContainer>
+
+      <BottomContainer>
+        <Tooltip varient="error" title={errorMessage} placement="top" arrow>
+          <div>
+            <Button type="button" disabled={!!errorMessage} onClick={() => navigate(`/wallet/nft-send/${id || ''}` as unknown as Path)}>
+              {t('pages.Wallet.NFTDetail.Entry.ethereum.index.send')}
+            </Button>
+          </div>
+        </Tooltip>
+      </BottomContainer>
+    </Container>
   );
 }

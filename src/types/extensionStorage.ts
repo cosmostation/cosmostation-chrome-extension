@@ -13,19 +13,19 @@ export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 export type CurrencyType = ValueOf<typeof CURRENCY_TYPE>;
 export type SuiPermissionType = ValueOf<typeof PERMISSION>;
 
-export type TabPath = {
+export type HomeTabPath = {
   ethereum: {
     networkId: string;
-    tabPath: number;
+    tabValue: number;
   }[];
   cosmos: {
-    tabPath: number;
+    tabValue: number;
   };
   sui: {
-    tabPath: number;
+    tabValue: number;
   };
   aptos: {
-    tabPath: number;
+    tabValue: number;
   };
 };
 
@@ -119,7 +119,7 @@ export type ExtensionStorage = {
   addressBook: AddressInfo[];
 
   rootPath: Path;
-  tabPath: TabPath;
+  homeTabPath: HomeTabPath;
 
   selectedAccountId: Account['id'];
 

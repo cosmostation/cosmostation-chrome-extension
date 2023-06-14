@@ -11,10 +11,10 @@ import { ETHEREUM, EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/e
 import { CURRENCY_SYMBOL } from '~/constants/currency';
 import AmountInput from '~/Popup/components/common/AmountInput';
 import Button from '~/Popup/components/common/Button';
+import InformContatiner from '~/Popup/components/common/InformContainer';
 import NumberText from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import WarningContainer from '~/Popup/components/common/WarningContainer';
 import SubSideHeader from '~/Popup/components/SubSideHeader';
 import { useOsmoSwapMath } from '~/Popup/hooks/osmoSwap/useOsmoSwapMath';
 import { useAllowanceSWR } from '~/Popup/hooks/SWR/1inch/useAllowanceSWR';
@@ -1508,9 +1508,9 @@ export default function Entry() {
           </SwapContainer>
 
           {warningMessage && (
-            <WarningContainer>
+            <InformContatiner varient="warning">
               <Typography variant="h6">{warningMessage}</Typography>
-            </WarningContainer>
+            </InformContatiner>
           )}
 
           <SwapInfoContainer>

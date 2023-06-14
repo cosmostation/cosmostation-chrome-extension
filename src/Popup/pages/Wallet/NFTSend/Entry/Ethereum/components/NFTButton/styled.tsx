@@ -47,7 +47,7 @@ export const LeftInfoHeaderContainer = styled('div')(({ theme }) => ({
   textAlign: 'left',
   color: theme.colors.text01,
 
-  maxWidth: '20rem',
+  maxWidth: '18rem',
 
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',

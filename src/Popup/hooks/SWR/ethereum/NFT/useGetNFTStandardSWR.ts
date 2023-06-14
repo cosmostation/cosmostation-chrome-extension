@@ -77,7 +77,7 @@ export function useGetNFTStandardSWR({ network, contractAddress }: UseGetNFTStan
       revalidateOnFocus: false,
       revalidateIfStale: false,
       revalidateOnReconnect: false,
-      errorRetryCount: 5,
+      errorRetryCount: 3,
       errorRetryInterval: 5000,
       isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !rpcURL,
       ...config,
