@@ -35,33 +35,6 @@ export const NFTImageContainer = styled('div')({
   },
 });
 
-export const NFTInvalidImageContainer = styled('div')(({ theme }) => ({
-  width: '20rem',
-  height: '20rem',
-
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-
-  borderRadius: '0.8rem',
-
-  color: theme.colors.text01,
-
-  backgroundColor: theme.colors.base03,
-}));
-
-export const NFTInvalidImageTextContainer = styled('div')({
-  maxWidth: '17rem',
-
-  wordBreak: 'keep-all',
-  whiteSpace: 'nowrap',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-});
-
 export const NFTEditionMarkContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',

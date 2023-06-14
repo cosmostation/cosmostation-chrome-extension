@@ -5,7 +5,8 @@ import type { SuiObjectResponse } from '@mysten/sui.js';
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Skeleton from '~/Popup/components/common/Skeleton';
-import { convertIpfs, getNFTMeta } from '~/Popup/utils/sui';
+import { convertIpfs } from '~/Popup/utils/nft';
+import { getNFTMeta } from '~/Popup/utils/sui';
 
 import {
   BodyContainer,

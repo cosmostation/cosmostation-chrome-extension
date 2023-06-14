@@ -41,33 +41,6 @@ export const LeftImageContainer = styled('div')({
   },
 });
 
-export const InvalidImageContainer = styled('div')(({ theme }) => ({
-  width: '6.4rem',
-  height: '6.4rem',
-
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-
-  borderRadius: '0.4rem',
-
-  color: theme.colors.text01,
-
-  backgroundColor: theme.colors.base04,
-}));
-
-export const InvalidImageTextContainer = styled('div')({
-  maxWidth: '5rem',
-
-  wordBreak: 'keep-all',
-  whiteSpace: 'nowrap',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-});
-
 export const LeftInfoContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',

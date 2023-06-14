@@ -13,6 +13,7 @@ import { useGetNFTURISWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTURISWR'
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { toDisplayTokenId } from '~/Popup/utils/nft';
 import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import {
@@ -25,8 +26,6 @@ import {
   BottomErrorLeftContainer,
   BottomErrorRightContainer,
   DeleteButton,
-  // InvalidImageContainer,
-  // InvalidImageTextContainer,
   NFTAbsoluteEditionMarkContainer,
   NFTDescriptionTextContainer,
   NFTImageContainer,
@@ -73,17 +72,7 @@ export default function NFTCardItem({ nft, onClick, onClickDelete }: NFTCardItem
                 <Typography variant="h4">Not Owned NFT</Typography>
               </BlurredImage>
             )}
-            {getNFTMeta.data?.imageURL ? (
-              <Image src={getNFTMeta.data?.imageURL} defaultImgSrc={unknownNFTImg} />
-            ) : (
-              <Image src={unreadableNFTImg} />
-
-              // <InvalidImageContainer>
-              //   <InvalidImageTextContainer>
-              //     <Typography variant="h4">{tokenId}</Typography>
-              //   </InvalidImageTextContainer>
-              // </InvalidImageContainer>
-            )}
+            {getNFTMeta.data?.imageURL ? <Image src={getNFTMeta.data?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
 
             {getNFTMeta.data?.rarity && (
               <NFTAbsoluteEditionMarkContainer>
@@ -109,7 +98,7 @@ export default function NFTCardItem({ nft, onClick, onClickDelete }: NFTCardItem
           <Typography variant="h6">{getNFTMeta.data?.description || address}</Typography>
         </NFTDescriptionTextContainer>
         <NFTNameTextContainer>
-          <Typography variant="h5">{getNFTMeta.data?.name || tokenId}</Typography>
+          <Typography variant="h5">{getNFTMeta.data?.name || toDisplayTokenId(tokenId)}</Typography>
         </NFTNameTextContainer>
       </BottomContainer>
     </StyledButton>

@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
+import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
 
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
+import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import EmptyAsset from '~/Popup/components/EmptyAsset';
@@ -23,18 +25,22 @@ import {
   ButtonContainer,
   Container,
   Div,
-  InvalidPreviewNFTImageContainer,
-  InvalidPreviewNFTImageTextContainer,
-  NFTPreviewBodyContainer,
-  NFTPreviewBodyContentContainer,
-  NFTPreviewContainer,
-  NFTPreviewHeaderContainer,
+  PreviewBodyContainer,
+  PreviewContainer,
+  PreviewContentContainer,
+  PreviewHeaderContainer,
+  PreviewImageItemContainer,
+  PreviewItemContainer,
+  PreviewItemHeaderContainer,
+  PreviewItemSubHeaderContainer,
   PreviewNFTImageContainer,
   PreviewNFTSubtitleContainer,
   StyledAbsoluteLoading,
+  StyledIconButton,
   StyledInput,
 } from './styled';
 
+import Copy16Icon from '~/images/icons/Copy16.svg';
 import NFTErrorIcon from '~/images/icons/NFTError.svg';
 import NFTPreviewIcon from '~/images/icons/NFTPreview.svg';
 
@@ -84,8 +90,8 @@ export default function Entry() {
   });
 
   const isLoadingData = useMemo(
-    () => getNFTOwnership.isValidating || getNFTMeta.isValidating || getNFTURI.isValidating,
-    [getNFTMeta.isValidating, getNFTOwnership.isValidating, getNFTURI.isValidating],
+    () => getNFTOwnership.isValidating || getNFTMeta.isValidating || getNFTURI.isValidating || currentNFTStandard.isValidating,
+    [currentNFTStandard.isValidating, getNFTMeta.isValidating, getNFTOwnership.isValidating, getNFTURI.isValidating],
   );
 
   const errorType = useMemo(() => {
@@ -194,6 +200,12 @@ export default function Entry() {
     }
   };
 
+  const handleOnClickCopy = (copyString?: string) => {
+    if (copyString && copy(copyString)) {
+      enqueueSnackbar(t('pages.Chain.Ethereum.NFT.Add.entry.copied'));
+    }
+  };
+
   return (
     <Container>
       <Div sx={{ marginBottom: '0.8rem' }}>
@@ -213,49 +225,83 @@ export default function Entry() {
         />
       </Div>
 
-      <NFTPreviewContainer>
-        <NFTPreviewHeaderContainer>
-          <Typography variant="h6">{t('pages.Chain.Ethereum.NFT.Add.entry.preview')}</Typography>
-        </NFTPreviewHeaderContainer>
-        <NFTPreviewBodyContainer>
-          {isLoadingData ? (
-            <StyledAbsoluteLoading size="4rem" />
-          ) : !errorType ? (
-            currentNFTStandard.data === 'ERC721' ? (
-              <>
+      <PreviewContainer>
+        {!errorType ? (
+          currentNFTStandard.data === 'ERC721' ? (
+            <>
+              <PreviewHeaderContainer>
+                <Typography variant="h6">{t('pages.Chain.Ethereum.NFT.Add.entry.preview')}</Typography>
+              </PreviewHeaderContainer>
+              <PreviewBodyContainer>
                 <PreviewNFTImageContainer>
                   <Image src={getNFTMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} />
                 </PreviewNFTImageContainer>
                 <PreviewNFTSubtitleContainer>
                   <Typography variant="h3">{getNFTMeta?.data?.name || getNFTURI.data}</Typography>
                 </PreviewNFTSubtitleContainer>
-              </>
-            ) : (
-              <NFTPreviewBodyContentContainer>
-                {getNFTURI && <Typography variant="h6">{getNFTURI.data}</Typography>}
-
-                {getNFTMeta.data && <Typography variant="h6">{JSON.stringify(getNFTMeta.data, null, 4)}</Typography>}
-                <PreviewNFTImageContainer>
-                  {getNFTMeta?.data?.imageURL ? (
-                    <Image src={getNFTMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} />
-                  ) : (
-                    <InvalidPreviewNFTImageContainer>
-                      <InvalidPreviewNFTImageTextContainer>
-                        <Typography variant="h3">{debouncedTokenId}</Typography>
-                      </InvalidPreviewNFTImageTextContainer>
-                    </InvalidPreviewNFTImageContainer>
-                  )}
-                </PreviewNFTImageContainer>
-                {/* <PreviewNSubtitlemeContainer>
-                  <Typography variant="h3">{getNFTMeta?.data?.name || getNFTURI.data}</Typography>
-                </PreviewNFTSubtitleContainer> */}
-              </NFTPreviewBodyContentContainer>
-            )
+              </PreviewBodyContainer>
+            </>
           ) : (
-            <EmptyAsset Icon={nftPreviewIcon} headerText={nftPreviewHeaderText} subHeaderText={nftPreviewSubText} />
-          )}
-        </NFTPreviewBodyContainer>
-      </NFTPreviewContainer>
+            <PreviewContentContainer>
+              <PreviewItemContainer>
+                <PreviewItemHeaderContainer>
+                  <Typography variant="h5">{t('pages.Chain.Ethereum.NFT.Add.entry.uri')}</Typography>
+
+                  <StyledIconButton
+                    disabled={!getNFTURI.data}
+                    onClick={() => {
+                      handleOnClickCopy(getNFTURI.data || '');
+                    }}
+                  >
+                    <Copy16Icon />
+                  </StyledIconButton>
+                </PreviewItemHeaderContainer>
+                <PreviewItemSubHeaderContainer>
+                  <Typography variant="h5">{getNFTURI.data}</Typography>
+                </PreviewItemSubHeaderContainer>
+              </PreviewItemContainer>
+
+              {getNFTMeta.data && (
+                <PreviewItemContainer>
+                  <PreviewItemHeaderContainer>
+                    <Typography variant="h5">{t('pages.Chain.Ethereum.NFT.Add.entry.data')}</Typography>
+
+                    <StyledIconButton
+                      onClick={() => {
+                        handleOnClickCopy(JSON.stringify(getNFTMeta.data, null, 4));
+                      }}
+                    >
+                      <Copy16Icon />
+                    </StyledIconButton>
+                  </PreviewItemHeaderContainer>
+                  <PreviewItemSubHeaderContainer>
+                    <Typography variant="h5">{JSON.stringify(getNFTMeta.data, null, 4)}</Typography>
+                  </PreviewItemSubHeaderContainer>
+                </PreviewItemContainer>
+              )}
+
+              <PreviewImageItemContainer>
+                <PreviewItemHeaderContainer>
+                  <Typography variant="h5">{t('pages.Chain.Ethereum.NFT.Add.entry.preview')}</Typography>
+                </PreviewItemHeaderContainer>
+                <PreviewNFTImageContainer>
+                  {getNFTMeta?.data?.imageURL ? <Image src={getNFTMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
+                </PreviewNFTImageContainer>
+              </PreviewImageItemContainer>
+            </PreviewContentContainer>
+          )
+        ) : (
+          <>
+            <PreviewHeaderContainer>
+              <Typography variant="h6">{t('pages.Chain.Ethereum.NFT.Add.entry.preview')}</Typography>
+            </PreviewHeaderContainer>
+            <PreviewBodyContainer>
+              <EmptyAsset Icon={nftPreviewIcon} headerText={nftPreviewHeaderText} subHeaderText={nftPreviewSubText} />
+            </PreviewBodyContainer>
+          </>
+        )}
+        {isLoadingData && currentTokenId && currentContractAddress && <StyledAbsoluteLoading size="4rem" />}
+      </PreviewContainer>
       <ButtonContainer>
         <Button type="submit" disabled={!!errorType} onClick={submit}>
           {t('pages.Chain.Ethereum.NFT.Add.entry.submitButton')}

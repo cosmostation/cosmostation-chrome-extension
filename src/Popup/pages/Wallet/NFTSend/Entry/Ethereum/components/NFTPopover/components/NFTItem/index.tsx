@@ -9,12 +9,11 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBalanceSWR';
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTOwnerSWR';
+import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import {
-  // InvalidImageContainer,
-  // InvalidImageTextContainer,
   LeftContainer,
   LeftImageContainer,
   LeftInfoBodyContainer,
@@ -45,8 +44,8 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
     tokenStandard: tokenType,
   });
 
-  const shorterContractAddress = useMemo(() => shorterAddress(address, 10), [address]);
-  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 10), [tokenId]);
+  const shorterContractAddress = useMemo(() => shorterAddress(address, 9), [address]);
+  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 9), [tokenId]);
 
   const displayTokenStandard = useMemo(() => tokenType?.replace('ERC', 'ERC-'), [tokenType]);
 
@@ -54,21 +53,12 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
     <NFTButton style={{ display: isOwnedNFT ? 'flex' : 'none' }} type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
       <LeftContainer>
         <LeftImageContainer>
-          {nftMeta?.imageURL ? (
-            <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
-          ) : (
-            <Image src={unreadableNFTImg} />
-            // <InvalidImageContainer>
-            //   <InvalidImageTextContainer>
-            //     <Typography variant="h6">{tokenId}</Typography>
-            //   </InvalidImageTextContainer>
-            // </InvalidImageContainer>
-          )}
+          {nftMeta?.imageURL ? <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Tooltip title={nftMeta?.name || '-'} placement="top" arrow>
-              <Typography variant="h5">{nftMeta?.name || '-'}</Typography>
+            <Tooltip title={nftMeta?.name || tokenId} placement="top" arrow>
+              <Typography variant="h5">{nftMeta?.name || toDisplayTokenId(tokenId)}</Typography>
             </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>

@@ -8,13 +8,12 @@ import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBalanceSWR';
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
+import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/ethereum/nft';
 
 import {
   Button,
-  // InvalidImageContainer,
-  // InvalidImageTextContainer,
   LeftContainer,
   LeftImageContainer,
   LeftInfoBodyContainer,
@@ -51,21 +50,12 @@ export default function NFTButton({ currentNFT, isActive, ...remainder }: NFTBut
     <Button type="button" {...remainder}>
       <LeftContainer>
         <LeftImageContainer>
-          {nftMeta?.imageURL ? (
-            <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
-          ) : (
-            <Image src={unreadableNFTImg} />
-            // <InvalidImageContainer>
-            //   <InvalidImageTextContainer>
-            //     <Typography variant="h6">{tokenId}</Typography>
-            //   </InvalidImageTextContainer>
-            // </InvalidImageContainer>
-          )}
+          {nftMeta?.imageURL ? <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Tooltip title={nftMeta?.name || '-'} placement="top" arrow>
-              <Typography variant="h5">{nftMeta?.name || '-'}</Typography>
+            <Tooltip title={nftMeta?.name || tokenId} placement="top" arrow>
+              <Typography variant="h5">{nftMeta?.name || toDisplayTokenId(tokenId)}</Typography>
             </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>

@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 
 import AbsoluteLoading from '~/Popup/components/AbsoluteLoading';
+import IconButton from '~/Popup/components/common/IconButton';
 import Input from '~/Popup/components/common/Input';
 
 export const Container = styled('div')({
@@ -25,7 +26,7 @@ export const StyledInput = styled(Input)({
   height: '4.8rem',
 });
 
-export const NFTPreviewContainer = styled('div')(({ theme }) => ({
+export const PreviewContainer = styled('div')(({ theme }) => ({
   height: '30.5rem',
 
   padding: '1.6rem',
@@ -37,61 +38,57 @@ export const NFTPreviewContainer = styled('div')(({ theme }) => ({
   position: 'relative',
 }));
 
-export const NFTPreviewHeaderContainer = styled('div')(({ theme }) => ({
-  height: 'fit-content',
+export const PreviewItemContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'flex-start',
 
-  textAlign: 'start',
+  rowGap: '0.4rem',
+});
+
+export const PreviewImageItemContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'flex-start',
+
+  rowGap: '2rem',
+});
+
+export const PreviewItemHeaderContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+
+  columnGap: '0.4rem',
 
   color: theme.colors.text02,
 }));
 
-export const NFTPreviewBodyContentContainer = styled('div')({
-  height: '100%',
-  overflow: 'auto',
-});
-
-export const InvalidPreviewNFTImageContainer = styled('div')(({ theme }) => ({
-  width: '20rem',
-  height: '20rem',
-
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-
+export const PreviewItemSubHeaderContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
-  backgroundColor: theme.colors.base04,
-
-  borderRadius: '0.8rem',
 }));
 
-export const InvalidPreviewNFTImageTextContainer = styled('div')({
-  maxWidth: '18rem',
+export const PreviewContentContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
 
-  wordBreak: 'keep-all',
-  whiteSpace: 'nowrap',
+  rowGap: '1.6rem',
 
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-});
+  margin: '0 -1.6rem',
+  padding: '0 1.6rem',
 
-export const NFTPreviewBodyContainer = styled('div')({
   height: '100%',
   overflow: 'auto',
 
   whiteSpace: 'pre-wrap',
   wordBreak: 'break-all',
-
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-
-  padding: '1.6rem 0',
 });
 
 export const PreviewNFTImageContainer = styled('div')({
+  width: '100%',
+
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -107,9 +104,54 @@ export const PreviewNFTImageContainer = styled('div')({
 export const PreviewNFTSubtitleContainer = styled('div')(({ theme }) => ({
   marginTop: '1.6rem',
 
+  maxWidth: '100%',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+
   color: theme.colors.text01,
 }));
 
 export const StyledAbsoluteLoading = styled(AbsoluteLoading)({
   borderRadius: '0.8rem',
 });
+
+export const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  padding: '0',
+  margin: '0',
+
+  '& svg': {
+    width: '1.6rem',
+    height: '1.6rem',
+    '& > path': {
+      fill: theme.colors.base05,
+    },
+    '&:hover': {
+      '& > path': {
+        fill: theme.colors.base06,
+      },
+    },
+  },
+}));
+
+export const PreviewBodyContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  height: '100%',
+});
+
+export const PreviewHeaderContainer = styled('div')(({ theme }) => ({
+  height: 'fit-content',
+
+  textAlign: 'start',
+
+  color: theme.colors.text02,
+}));

@@ -5,8 +5,8 @@ import useSWR from 'swr';
 
 import type { TOKEN_TYPE } from '~/constants/ethereum';
 import { get, isAxiosError } from '~/Popup/utils/axios';
+import { convertIpfs } from '~/Popup/utils/nft';
 import { httpsRegex } from '~/Popup/utils/regex';
-import { convertIpfs } from '~/Popup/utils/sui';
 import type { EthereumNetwork } from '~/types/chain';
 import type { GetNFTMetaPayload } from '~/types/ethereum/nft';
 

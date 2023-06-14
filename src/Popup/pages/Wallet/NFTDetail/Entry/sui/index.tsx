@@ -10,8 +10,9 @@ import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { convertIpfs } from '~/Popup/utils/nft';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import { convertIpfs, getNFTMeta } from '~/Popup/utils/sui';
+import { getNFTMeta } from '~/Popup/utils/sui';
 import type { Path } from '~/types/route';
 
 import NFTInfoItem from './components/NFTInfoItem';

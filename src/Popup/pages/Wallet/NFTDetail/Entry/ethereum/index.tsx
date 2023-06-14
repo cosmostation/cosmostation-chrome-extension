@@ -15,6 +15,7 @@ import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEt
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { EthereumChain } from '~/types/chain';
 import type { Path } from '~/types/route';
@@ -31,8 +32,6 @@ import {
   NFTInfoHeaderContainer,
   NFTInfoHeaderTextContainer,
   NFTInfoLeftHeaderContainer,
-  // NFTInvalidImageContainer,
-  // NFTInvalidImageTextContainer,
   StyledIconButton,
 } from './styled';
 
@@ -83,23 +82,14 @@ export default function Ethereum({ chain }: EthereumProps) {
       <Container>
         <ContentContainer>
           <NFTImageContainer>
-            {nftMeta?.imageURL ? (
-              <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
-            ) : (
-              <Image src={unreadableNFTImg} />
-              // <NFTInvalidImageContainer>
-              //   <NFTInvalidImageTextContainer>
-              //     <Typography variant="h3">{tokenId}</Typography>
-              //   </NFTInvalidImageTextContainer>
-              // </NFTInvalidImageContainer>
-            )}
+            {nftMeta?.imageURL ? <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
           </NFTImageContainer>
           <NFTInfoContainer>
             <NFTInfoHeaderContainer>
               <NFTInfoLeftHeaderContainer>
                 <NFTInfoHeaderTextContainer>
                   <Tooltip title={nftMeta?.name || tokenId || ''} placement="top" arrow>
-                    <Typography variant="h3">{nftMeta?.name || tokenId || ''}</Typography>
+                    <Typography variant="h3">{nftMeta?.name || toDisplayTokenId(tokenId)}</Typography>
                   </Tooltip>
                 </NFTInfoHeaderTextContainer>
 

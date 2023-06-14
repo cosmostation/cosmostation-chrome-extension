@@ -6,8 +6,9 @@ import type { SuiObjectResponse } from '@mysten/sui.js';
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
+import { convertIpfs } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
-import { convertIpfs, getNFTMeta } from '~/Popup/utils/sui';
+import { getNFTMeta } from '~/Popup/utils/sui';
 import type { SuiChain } from '~/types/chain';
 
 import {

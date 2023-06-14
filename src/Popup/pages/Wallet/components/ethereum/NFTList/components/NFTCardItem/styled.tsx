@@ -223,33 +223,6 @@ export const BlurredImage = styled('div')(({ theme }) => ({
   color: theme.accentColors.white,
 }));
 
-export const InvalidImageContainer = styled('div')(({ theme }) => ({
-  width: '14.8rem',
-  height: '14.8rem',
-
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-
-  borderRadius: '0.8rem',
-
-  color: theme.colors.text01,
-
-  backgroundColor: theme.colors.base04,
-}));
-
-export const InvalidImageTextContainer = styled('div')({
-  maxWidth: '12rem',
-
-  wordBreak: 'keep-all',
-  whiteSpace: 'nowrap',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-});
-
 export const StyledIconButton = styled(IconButton)(({ theme }) => ({
   padding: '0',
 
