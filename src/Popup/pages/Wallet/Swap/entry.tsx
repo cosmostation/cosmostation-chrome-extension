@@ -1349,7 +1349,7 @@ export default function Entry() {
   useEffect(() => {
     if (!filteredFromTokenList.find((item) => item.address === currentFromToken?.address && item.name === currentFromToken.name)) {
       if (currentSwapAPI === 'osmo') {
-        setCurrentFromToken(filteredFromTokenList.find((item) => item.displayDenom === COSMOS.displayDenom));
+        setCurrentFromToken(filteredFromTokenList.find((item) => item.displayDenom === COSMOS.displayDenom) || filteredFromTokenList[0]);
       }
       if (currentSwapAPI === '1inch' || currentSwapAPI === 'squid') {
         setCurrentFromToken(filteredFromTokenList[0]);
@@ -1358,7 +1358,7 @@ export default function Entry() {
 
     if (!filteredToTokenList.find((item) => item.address === currentToToken?.address && item.name === currentToToken.name)) {
       if (currentSwapAPI === 'osmo') {
-        setCurrentToToken(filteredFromTokenList.find((item) => item.displayDenom === osmosisChain.displayDenom));
+        setCurrentToToken(filteredToTokenList.find((item) => item.displayDenom === osmosisChain.displayDenom) || filteredToTokenList[0]);
       }
       if (currentSwapAPI === '1inch') {
         setCurrentToToken(filteredToTokenList.find((item) => item.displayDenom.includes('USDT')));

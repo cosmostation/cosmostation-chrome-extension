@@ -55,7 +55,7 @@ export default function Header({ isShowMenuButton = true, isShowPageButton = tru
         {isShowSwapButton && (
           <IconButton
             onClick={() => {
-              navigate(`/wallet/swap/${swapChainId}` as unknown as Path);
+              navigate(`/wallet/swap/${swapChainId}` as unknown as Path, { isDuplicateCheck: true });
             }}
           >
             <Swap24Icon />
