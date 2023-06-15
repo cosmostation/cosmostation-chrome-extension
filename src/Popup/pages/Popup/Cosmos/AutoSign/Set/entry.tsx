@@ -16,7 +16,7 @@ import { useInterval } from '~/Popup/hooks/useInterval';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { responseToWeb } from '~/Popup/utils/message';
 import { timeToString } from '~/Popup/utils/string';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { CosSetAutoSign, CosSetAutoSignResponse } from '~/types/message/cosmos';
 
 import {

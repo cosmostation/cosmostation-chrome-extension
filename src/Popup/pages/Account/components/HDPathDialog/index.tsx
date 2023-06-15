@@ -5,6 +5,8 @@ import type { DialogProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
 import { CHAINS } from '~/constants/chain';
+import { APTOS } from '~/constants/chain/aptos/aptos';
+import { SUI } from '~/constants/chain/sui/sui';
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
@@ -39,9 +41,13 @@ export default function HDPathDialog({ onClose, onSubmitHdPath, currentAddressIn
 
   const { t } = useTranslation();
   const hdPathInfos = [...CHAINS, ...currentAdditionalChains].map((item) => ({
+    id: item.id,
     name: item.chainName,
     path: `${item.bip44.purpose}/${item.bip44.coinType}/${item.bip44.account}/${item.bip44.change}`,
   }));
+
+  const apostrophesChainID = [APTOS.id, SUI.id];
+
   const {
     register,
     handleSubmit,
@@ -82,6 +88,7 @@ export default function HDPathDialog({ onClose, onSubmitHdPath, currentAddressIn
                   <Typography variant="h5">
                     {`${info.path}/`}
                     <InfoItemRightAccentSpan>{addressIndex || currentAddressIndex || '0'}</InfoItemRightAccentSpan>
+                    {apostrophesChainID.includes(info.id) ? "'" : ''}
                   </Typography>
                 </InfoItemRightContainer>
               </InfoItemContainer>

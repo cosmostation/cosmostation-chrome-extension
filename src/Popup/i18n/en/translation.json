@@ -60,6 +60,7 @@
           "connectedSites": "Connected sites",
           "currency": "Currency",
           "darkMode": "Dark mode",
+          "expand": "Expand view",
           "guide": "Guide",
           "helpSupport": "Help & Support",
           "language": "Language",
@@ -72,6 +73,7 @@
     "Loading": {
       "LedgerToTab": {
         "index": {
+          "cancel": "Cancel",
           "continue": "Continue",
           "description": "Complete the process on browser tab"
         }
@@ -981,6 +983,48 @@
       }
     },
     "Wallet": {
+      "NFTDetail": {
+        "Entry": {
+          "Sui": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "copied": "Copied",
+                  "creator": "Created by",
+                  "description": "Description",
+                  "objectId": "Object Id",
+                  "ownerAddress": "Owner",
+                  "url": "URL"
+                }
+              }
+            },
+            "index": {
+              "send": "NFT Send",
+              "untransferableObject": "Untransferable object"
+            }
+          }
+        },
+        "layout": {
+          "title": "NFT Detail"
+        }
+      },
+      "NFTSend": {
+        "Entry": {
+          "Sui": {
+            "index": {
+              "fee": "Fee",
+              "insufficientAmount": "Insufficient amount",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          }
+        },
+        "layout": {
+          "title": "NFT Send"
+        }
+      },
       "OsmosisSwap": {
         "components": {
           "CoinListBottomSheet": {

@@ -7,8 +7,8 @@ import { post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
 import type { GetCoinBalanceResponse } from '~/types/sui/rpc';
 
-import { useChromeStorage } from '../../useChromeStorage';
 import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
+import { useExtensionStorage } from '../../useExtensionStorage';
 import { useAccounts } from '../cache/useAccounts';
 
 type FetchParams = {
@@ -30,11 +30,11 @@ export function useGetCoinBalanceSWR({ address, network, coinType }: UseGetCoinB
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const accounts = useAccounts(config?.suspense);
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   const { rpcURL } = network || currentSuiNetwork;
 
-  const addr = address || accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
+  const addr = address || accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
 
   const fetcher = async (params: FetchParams) => {
     try {

@@ -6,12 +6,12 @@ import { Typography } from '@mui/material';
 import AddButton from '~/Popup/components/AddButton';
 import Number from '~/Popup/components/common/Number';
 import Header from '~/Popup/components/SelectSubHeader';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useCurrentShownSuiNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownSuiNetworks';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import AptosChainItem, {
   AptosChainItemError,
@@ -56,7 +56,7 @@ type ChainItem<T = Chain> = {
 type ChainList<T = Chain> = ChainItem<T>[];
 
 export default function Entry() {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentAllowedChains } = useCurrentAllowedChains();
   const { currentAccount } = useCurrentAccount();
   const { currentShownEthereumNetwork } = useCurrentShownEthereumNetworks();
@@ -95,7 +95,7 @@ export default function Entry() {
           <Typography variant="h5">Total Value</Typography>
         </TotalValueTextContainer>
         <TotalValueContainer>
-          <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={chromeStorage.currency}>
+          <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={extensionStorage.currency}>
             {totalAmount}
           </Number>
         </TotalValueContainer>
@@ -168,7 +168,7 @@ export default function Entry() {
 
           {suiChainList.map((item) =>
             suiNetworkList.map((network) => (
-              <SuiChainItemLedgerCheck key={`${currentAccount.id}${item.chain.id}${network.id}`} network={network}>
+              <SuiChainItemLedgerCheck chain={item.chain} key={`${currentAccount.id}${item.chain.id}${network.id}`} network={network}>
                 <ErrorBoundary
                   FallbackComponent={
                     // eslint-disable-next-line react/no-unstable-nested-components

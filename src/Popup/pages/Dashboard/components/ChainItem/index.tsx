@@ -5,7 +5,7 @@ import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 
@@ -44,12 +44,12 @@ type ChainItemProps = {
 };
 
 export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, decimals, displayDenom, onClick }: ChainItemProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { data } = useCoinGeckoPriceSWR();
 
-  const price = (coinGeckoId && data?.[coinGeckoId]?.[chromeStorage.currency]) || 0;
+  const price = (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0;
 
-  const cap = (coinGeckoId && data?.[coinGeckoId]?.[`${chromeStorage.currency}_24h_change`]) || 0;
+  const cap = (coinGeckoId && data?.[coinGeckoId]?.[`${extensionStorage.currency}_24h_change`]) || 0;
 
   const upperDisplayDenom = displayDenom.toUpperCase();
 
@@ -78,7 +78,7 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
       <RightContainer>
         <RightTextContainer>
           <RightTextValueContainer>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={chromeStorage.currency}>
+            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
               {value}
             </Number>
           </RightTextValueContainer>

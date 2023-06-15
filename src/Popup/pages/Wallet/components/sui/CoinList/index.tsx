@@ -2,14 +2,15 @@ import { Suspense, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
-import { SUI } from '~/constants/chain/sui/sui';
 import { SUI_COIN } from '~/constants/sui';
 import Empty from '~/Popup/components/common/Empty';
+import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import type { SuiChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
 import CoinItem, { CoinItemSkeleton } from './components/CoinItem';
@@ -23,9 +24,13 @@ import {
   ListTitleRightContainer,
 } from './styled';
 
-export default function CoinList() {
-  const chain = SUI;
+import NoCoinIcon from '~/images/icons/NoCoin.svg';
 
+type CoinListProps = {
+  chain: SuiChain;
+};
+
+export default function CoinList({ chain }: CoinListProps) {
   const { navigate } = useNavigate();
   const { t } = useTranslation();
 
@@ -45,7 +50,7 @@ export default function CoinList() {
   const isExistToken = !!tokenList.length;
 
   if (!isExistToken) {
-    return null;
+    return <EmptyAsset style={{ marginTop: '8.5rem' }} Icon={NoCoinIcon} headerText="No Coins" subHeaderText="Recent Coins will show up here" />;
   }
 
   return (

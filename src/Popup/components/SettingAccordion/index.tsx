@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import type { AccordionProps } from '@mui/material';
 import { Typography } from '@mui/material';
 
-import type { AccountWithName } from '~/types/chromeStorage';
+import type { AccountWithName } from '~/types/extensionStorage';
 
 import { StyledAccordion, StyledAccordionDetails, StyledAccordionSummary, StyledBottomArrow20Icon } from './styled';
 

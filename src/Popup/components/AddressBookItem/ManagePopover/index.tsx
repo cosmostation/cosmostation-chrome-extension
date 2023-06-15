@@ -1,9 +1,9 @@
 import { useSnackbar } from 'notistack';
 import type { PopoverProps } from '@mui/material';
 
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { AddressInfo } from '~/types/chromeStorage';
+import type { AddressInfo } from '~/types/extensionStorage';
 
 import ManageButton from './ManageButton';
 import { Container, StyledPopover } from './styled';
@@ -13,9 +13,9 @@ import Delete16Icon from '~/images/icons/Delete16.svg';
 type ManagePopoverProps = Omit<PopoverProps, 'children'> & { addressInfo: AddressInfo };
 
 export default function ManagePopover({ addressInfo, onClose, ...remainder }: ManagePopoverProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { enqueueSnackbar } = useSnackbar();
-  const { addressBook } = chromeStorage;
+  const { addressBook } = extensionStorage;
 
   const { t } = useTranslation();
 
@@ -27,7 +27,7 @@ export default function ManagePopover({ addressInfo, onClose, ...remainder }: Ma
           onClick={async () => {
             const newAddressBook = addressBook.filter((item) => item.id !== addressInfo.id);
 
-            await setChromeStorage('addressBook', newAddressBook);
+            await setExtensionStorage('addressBook', newAddressBook);
 
             enqueueSnackbar(t('components.AddressBookItem.ManagePopover.index.deleteSnackbar'), { variant: 'error' });
 

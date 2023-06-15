@@ -39,17 +39,17 @@ import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/squid/useSquidAssetsSWR';
 import { useSquidRouteSWR } from '~/Popup/hooks/SWR/squid/useSquidRouteSWR';
 import { useSquidTokensSWR } from '~/Popup/hooks/SWR/squid/useSquidTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { openTab } from '~/Popup/utils/chromeTabs';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { CosmosChain, EthereumToken } from '~/types/chain';
@@ -112,9 +112,9 @@ export default function Entry() {
   const nodeInfo = useNodeInfoSWR(osmosisChain);
   const supportedCosmosChain = useSupportChainsSWR({ suspense: true });
   const supportedSquidTokens = useSquidTokensSWR();
-  const { chromeStorage } = useChromeStorage();
-  const { ethereumTokens } = chromeStorage;
-  const { currency } = chromeStorage;
+  const { extensionStorage } = useExtensionStorage();
+  const { ethereumTokens } = extensionStorage;
+  const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const osmosisAssets = useCosmosAssetsSWR(osmosisChain);
   const supportedSwapChains = useSupportSwapChainsSWR({ suspense: true });
@@ -602,13 +602,13 @@ export default function Entry() {
   ]);
 
   const currentFromTokenPrice = useMemo(
-    () => (currentFromToken?.coinGeckoId && coinGeckoPrice.data?.[currentFromToken?.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoPrice.data, currentFromToken?.coinGeckoId],
+    () => (currentFromToken?.coinGeckoId && coinGeckoPrice.data?.[currentFromToken?.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoPrice.data, currentFromToken?.coinGeckoId],
   );
 
   const currentToTokenPrice = useMemo(
-    () => (currentToToken?.coinGeckoId && coinGeckoPrice.data?.[currentToToken.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoPrice.data, currentToToken?.coinGeckoId],
+    () => (currentToToken?.coinGeckoId && coinGeckoPrice.data?.[currentToToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoPrice.data, currentToToken?.coinGeckoId],
   );
 
   const currentFeeToken = useMemo(
@@ -640,8 +640,8 @@ export default function Entry() {
   }, [currentSwapAPI, cosmosFromChainBalance.data?.balance, osmosisChain.baseDenom, currentFromEVMNativeBalance?.data?.result]);
 
   const currentFeeTokenPrice = useMemo(
-    () => (currentFeeToken?.coinGeckoId && coinGeckoPrice.data?.[currentFeeToken.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoPrice.data, currentFeeToken?.coinGeckoId],
+    () => (currentFeeToken?.coinGeckoId && coinGeckoPrice.data?.[currentFeeToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoPrice.data, currentFeeToken?.coinGeckoId],
   );
 
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
@@ -1033,12 +1033,12 @@ export default function Entry() {
             ac,
             times(
               toDisplayDenomAmount(cu.amount || '0', cu.feeToken?.decimals || 0),
-              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[chromeStorage.currency]) || '0',
+              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[extensionStorage.currency]) || '0',
             ),
           ),
         '0',
       ) || '0',
-    [chromeStorage.currency, coinGeckoPrice.data, squidSourceChainGasCosts],
+    [extensionStorage.currency, coinGeckoPrice.data, squidSourceChainGasCosts],
   );
 
   const squidCrossChainTotalFeePrice = useMemo(
@@ -1049,12 +1049,12 @@ export default function Entry() {
             ac,
             times(
               toDisplayDenomAmount(cu.amount || '0', cu.feeToken?.decimals || 0),
-              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[chromeStorage.currency]) || '0',
+              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[extensionStorage.currency]) || '0',
             ),
           ),
         '0',
       ) || '0',
-    [chromeStorage.currency, coinGeckoPrice.data, squidCrossChainFeeCosts],
+    [extensionStorage.currency, coinGeckoPrice.data, squidCrossChainFeeCosts],
   );
 
   const estimatedFeePrice = useMemo(() => {
@@ -1349,7 +1349,7 @@ export default function Entry() {
   useEffect(() => {
     if (!filteredFromTokenList.find((item) => item.address === currentFromToken?.address && item.name === currentFromToken.name)) {
       if (currentSwapAPI === 'osmo') {
-        setCurrentFromToken(filteredFromTokenList.find((item) => item.displayDenom === COSMOS.displayDenom));
+        setCurrentFromToken(filteredFromTokenList.find((item) => item.displayDenom === COSMOS.displayDenom) || filteredFromTokenList[0]);
       }
       if (currentSwapAPI === '1inch' || currentSwapAPI === 'squid') {
         setCurrentFromToken(filteredFromTokenList[0]);
@@ -1358,7 +1358,7 @@ export default function Entry() {
 
     if (!filteredToTokenList.find((item) => item.address === currentToToken?.address && item.name === currentToToken.name)) {
       if (currentSwapAPI === 'osmo') {
-        setCurrentToToken(filteredFromTokenList.find((item) => item.displayDenom === osmosisChain.displayDenom));
+        setCurrentToToken(filteredToTokenList.find((item) => item.displayDenom === osmosisChain.displayDenom) || filteredToTokenList[0]);
       }
       if (currentSwapAPI === '1inch') {
         setCurrentToToken(filteredToTokenList.find((item) => item.displayDenom.includes('USDT')));
@@ -1783,10 +1783,7 @@ export default function Entry() {
                       });
 
                       if (currentAccount.type === 'LEDGER') {
-                        if (window.outerWidth < 450) {
-                          await openTab();
-                          window.close();
-                        }
+                        await debouncedOpenTab();
                       }
                     }
                   }}
@@ -1818,10 +1815,7 @@ export default function Entry() {
                       });
 
                       if (currentAccount.type === 'LEDGER') {
-                        if (window.outerWidth < 450) {
-                          await openTab();
-                          window.close();
-                        }
+                        await debouncedOpenTab();
                       }
                     }
                     if (currentSwapAPI === 'osmo' && osmoSwapAminoTx && currentFeeToken?.address) {

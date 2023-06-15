@@ -1,14 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { emitToWeb } from '~/Popup/utils/message';
 import type { EthereumNetwork } from '~/types/chain';
 
 export function useCurrentEthereumNetwork() {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
-  const { selectedEthereumNetworkId, additionalEthereumNetworks, allowedOrigins } = chromeStorage;
+  const { selectedEthereumNetworkId, additionalEthereumNetworks, allowedOrigins } = extensionStorage;
 
   const allNetworks = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks];
 
@@ -19,7 +19,7 @@ export function useCurrentEthereumNetwork() {
   const setCurrentEthereumNetwork = async (network: EthereumNetwork) => {
     const newSelectedEthereumNetworkId = network.id;
 
-    await setChromeStorage('selectedEthereumNetworkId', newSelectedEthereumNetworkId);
+    await setExtensionStorage('selectedEthereumNetworkId', newSelectedEthereumNetworkId);
 
     const origins = Array.from(new Set(allowedOrigins.map((item) => item.origin)));
     emitToWeb({ line: 'ETHEREUM', type: 'chainChanged', message: { result: network.chainId } }, origins);
@@ -32,7 +32,7 @@ export function useCurrentEthereumNetwork() {
 
     const newAdditionalEthereumNetworks = additionalEthereumNetworks.filter((item) => item.id !== network.id);
 
-    await setChromeStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
+    await setExtensionStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
   };
 
   const addEthereumNetwork = async (network: Omit<EthereumNetwork, 'id'>) => {
@@ -47,7 +47,7 @@ export function useCurrentEthereumNetwork() {
       { ...network, id: beforeNetwork?.id || uuidv4() },
     ];
 
-    await setChromeStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
+    await setExtensionStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
   };
 
   return {

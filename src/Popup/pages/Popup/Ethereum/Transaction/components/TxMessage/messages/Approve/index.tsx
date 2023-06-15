@@ -5,8 +5,8 @@ import { Typography } from '@mui/material';
 import Number from '~/Popup/components/common/Number';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase, shorterAddress } from '~/Popup/utils/string';
@@ -30,7 +30,7 @@ import type { TxMessageProps } from '../../index';
 type ApproveProps = TxMessageProps;
 
 export default function Approve({ tx, determineTxType }: ApproveProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const tokens = useTokensSWR();
@@ -53,7 +53,7 @@ export default function Approve({ tx, determineTxType }: ApproveProps) {
 
   const { t } = useTranslation();
 
-  const { currency } = chromeStorage;
+  const { currency } = extensionStorage;
 
   const { to } = tx;
 

@@ -6,7 +6,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { openTab } from '~/Popup/utils/chromeTabs';
+import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 
 import { ButtonContainer, Container, LedgerConnectIcon, LedgerWarningIcon, TextContainer } from './styled';
 
@@ -50,18 +50,26 @@ export default function LedgerCheck({ children }: LedgerCheckProps) {
       });
     }
 
-    if (window.outerWidth < 450) {
-      await openTab();
-      window.close();
+    if (currentChain.line === 'SUI') {
+      await enQueue({
+        messageId: '',
+        origin: '',
+        channel: 'inApp',
+        message: {
+          method: 'sui_connect',
+          params: [],
+        },
+      });
     }
+
+    await debouncedOpenTab();
   };
 
   if (currentAccount.type === 'LEDGER') {
     if (
       (![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG].includes(currentChain.bip44.coinType) &&
         currentChain.line === 'COSMOS') ||
-      currentChain.line === 'APTOS' ||
-      currentChain.line === 'SUI'
+      currentChain.line === 'APTOS'
     ) {
       return (
         <Container>
@@ -80,7 +88,8 @@ export default function LedgerCheck({ children }: LedgerCheckProps) {
       (!currentAccount.cosmosPublicKey && currentChain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS && currentChain.line === 'COSMOS') ||
       (!currentAccount.mediblocPublicKey && currentChain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC && currentChain.line === 'COSMOS') ||
       (!currentAccount.cryptoOrgPublicKey && currentChain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG && currentChain.line === 'COSMOS') ||
-      (!currentAccount.ethereumPublicKey && currentChain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM && currentChain.line === 'ETHEREUM')
+      (!currentAccount.ethereumPublicKey && currentChain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM && currentChain.line === 'ETHEREUM') ||
+      (!currentAccount.suiPublicKey && currentChain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI && currentChain.line === 'SUI')
     ) {
       return (
         <Container>

@@ -1,7 +1,7 @@
 import { Route, Routes as BaseRoutes } from 'react-router-dom';
 
 import { PATH } from '~/constants/route';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import AccountCreate from '~/Popup/pages/Account/Create';
 import AccountCreateImportMnemonic from '~/Popup/pages/Account/Create/Import/Mnemonic';
 import AccountCreateImportPrivateKey from '~/Popup/pages/Account/Create/Import/PrivateKey';
@@ -63,17 +63,19 @@ import SettingConnectedSites from '~/Popup/pages/Setting/ConnectedSites';
 import SettingLedger from '~/Popup/pages/Setting/Ledger';
 import SettingProvider from '~/Popup/pages/Setting/Provider';
 import Wallet from '~/Popup/pages/Wallet';
+import WalletNFTDetail from '~/Popup/pages/Wallet/NFTDetail';
+import WalletNFTSend from '~/Popup/pages/Wallet/NFTSend';
 import WalletOsmosisSwap from '~/Popup/pages/Wallet/OsmosisSwap';
 import WalletReceive from '~/Popup/pages/Wallet/Receive';
 import WalletSend from '~/Popup/pages/Wallet/Send';
 import WalletSwap from '~/Popup/pages/Wallet/Swap';
 
 export default function Routes() {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
 
   return (
     <BaseRoutes>
-      {chromeStorage.accounts.length === 0 ? (
+      {extensionStorage.accounts.length === 0 ? (
         <>
           <Route path={PATH.ACCOUNT__INITIALIZE} element={<AccountInitialize />} />
           <Route path={PATH.ACCOUNT__INITIALIZE__WELCOME} element={<AccountInitializeWelcome />} />
@@ -100,7 +102,14 @@ export default function Routes() {
             <Route path=":id" element={<WalletSwap />} />
           </Route>
           <Route path={PATH.WALLET__OSMOSIS_SWAP} element={<WalletOsmosisSwap />} />
+          <Route path={PATH.WALLET__NFT_SEND} element={<WalletNFTSend />}>
+            <Route path=":id" element={<WalletNFTSend />} />
+          </Route>
+          <Route path={PATH.WALLET__SWAP} element={<WalletSwap />} />
           <Route path={PATH.WALLET__RECEIVE} element={<WalletReceive />} />
+          <Route path={PATH.WALLET__NFT_DETAIL} element={<WalletNFTDetail />}>
+            <Route path=":id" element={<WalletNFTDetail />} />
+          </Route>
 
           <Route path={PATH.SETTING__CHANGE_PASSWORD} element={<SettingChangePassword />} />
           <Route path={PATH.SETTING__CHANGE_LANGUAGE} element={<SettingChangeLanguage />} />

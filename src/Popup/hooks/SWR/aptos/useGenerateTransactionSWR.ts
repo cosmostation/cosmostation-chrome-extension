@@ -4,8 +4,8 @@ import useSWR from 'swr';
 
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { SubmitTransactionRequest } from '~/types/aptos/aptosClient';
 import type { AptosSignPayload } from '~/types/message/aptos';
 
@@ -23,14 +23,14 @@ type useGenerateTransactionProps = {
 export function useGenerateTransactionSWR({ payload, options }: useGenerateTransactionProps, config?: SWRConfiguration) {
   const chain = APTOS;
   const accounts = useAccounts(config?.suspense);
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentAptosNetwork } = useCurrentAptosNetwork();
 
   const { restURL } = currentAptosNetwork;
 
   const aptosClient = new AptosClient(restURL);
 
-  const address = accounts.data?.find((account) => account.id === chromeStorage.selectedAccountId)?.address[chain.id] || '';
+  const address = accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
 
   const fetcher = ({ address: addr, payload: pl, options: ops }: FetchParams) => aptosClient.generateTransaction(addr, pl, ops);
 

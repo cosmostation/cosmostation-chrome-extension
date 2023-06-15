@@ -5,16 +5,16 @@ import { useSetRecoilState } from 'recoil';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { openTab } from '~/Popup/utils/chromeTabs';
+import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import type { EthereumChain, EthereumNetwork } from '~/types/chain';
 
 type EthereumChainItemProps = {
@@ -23,7 +23,7 @@ type EthereumChainItemProps = {
 };
 
 export default function EthereumChainItem({ chain, network }: EthereumChainItemProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentAccount } = useCurrentAccount();
   const { setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
   const { setCurrentChain } = useCurrentChain();
@@ -41,10 +41,11 @@ export default function EthereumChainItem({ chain, network }: EthereumChainItemP
     setDashboard((prev) => ({
       [currentAccount.id]: {
         ...prev?.[currentAccount.id],
-        [network.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[chromeStorage.currency]) || 0) || '0',
+        [network.id]:
+          times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[extensionStorage.currency]) || 0) || '0',
       },
     }));
-  }, [chromeStorage.currency, coinGeckoData, coinGeckoId, currentAccount.id, decimals, network.id, setDashboard, totalAmount]);
+  }, [extensionStorage.currency, coinGeckoData, coinGeckoId, currentAccount.id, decimals, network.id, setDashboard, totalAmount]);
 
   useEffect(
     () => () => {
@@ -126,10 +127,7 @@ export function EthereumChainItemLedgerCheck({ chain, network, children }: Ether
       },
     });
 
-    if (window.outerWidth < 450) {
-      await openTab();
-      window.close();
-    }
+    await debouncedOpenTab();
   };
 
   const { networkName, imageURL } = network;

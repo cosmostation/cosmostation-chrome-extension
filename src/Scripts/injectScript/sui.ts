@@ -6,7 +6,7 @@ import type { IdentifierArray, SuiSignAndExecuteTransactionBlockInput, SuiSignTr
 
 import { LINE_TYPE } from '~/constants/chain';
 import { MESSAGE_TYPE } from '~/constants/message';
-import type { SuiPermissionType } from '~/types/chromeStorage';
+import type { SuiPermissionType } from '~/types/extensionStorage';
 import type { ContentScriptToWebEventMessage, ListenerMessage, ResponseMessage, SuiListenerType, SuiRequestMessage } from '~/types/message';
 import type {
   SuiDisconnectResponse,

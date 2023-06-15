@@ -8,12 +8,12 @@ import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import PopupHeader from '~/Popup/components/PopupHeader';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { CosmosChain } from '~/types/chain';
-import type { Queue } from '~/types/chromeStorage';
+import type { Queue } from '~/types/extensionStorage';
 import type { CosAddChain, CosAddChainResponse } from '~/types/message/cosmos';
 
 import {
@@ -39,9 +39,9 @@ type EntryProps = {
 
 export default function Entry({ queue }: EntryProps) {
   const { deQueue } = useCurrentQueue();
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
 
-  const { additionalChains } = chromeStorage;
+  const { additionalChains } = extensionStorage;
 
   const { t, language } = useTranslation();
 
@@ -156,7 +156,7 @@ export default function Entry({ queue }: EntryProps) {
                 cosmWasm,
               };
 
-              await setChromeStorage('additionalChains', [...filteredAdditionalChains, newChain]);
+              await setExtensionStorage('additionalChains', [...filteredAdditionalChains, newChain]);
 
               const result: CosAddChainResponse = true;
 

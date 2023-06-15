@@ -5,15 +5,15 @@ import { useSetRecoilState } from 'recoil';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton, ChainItemTerminated } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { openTab } from '~/Popup/utils/chromeTabs';
+import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import type { CosmosChain } from '~/types/chain';
 
 type CosmosChainItemProps = {
@@ -21,7 +21,7 @@ type CosmosChainItemProps = {
 };
 
 export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const setDashboard = useSetRecoilState(dashboardState);
   const { currentAccount } = useCurrentAccount();
   const { data } = useCoinGeckoPriceSWR();
@@ -35,10 +35,10 @@ export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
     setDashboard((prev) => ({
       [currentAccount.id]: {
         ...prev?.[currentAccount.id],
-        [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && data?.[coinGeckoId]?.[chromeStorage.currency]) || 0) || '0',
+        [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0) || '0',
       },
     }));
-  }, [chain.id, chromeStorage.currency, coinGeckoId, data, decimals, setDashboard, totalAmount, currentAccount.id]);
+  }, [chain.id, extensionStorage.currency, coinGeckoId, data, decimals, setDashboard, totalAmount, currentAccount.id]);
 
   useEffect(
     () => () => {
@@ -132,10 +132,7 @@ export function CosmosChainLedgerCheck({ chain, children }: CosmosChainItemProps
       },
     });
 
-    if (window.outerWidth < 450) {
-      await openTab();
-      window.close();
-    }
+    await debouncedOpenTab();
   };
 
   const { chainName, imageURL } = chain;

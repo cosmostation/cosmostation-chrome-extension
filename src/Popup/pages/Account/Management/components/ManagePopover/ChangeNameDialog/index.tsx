@@ -5,9 +5,9 @@ import type { DialogProps, PopoverProps } from '@mui/material';
 
 import Dialog from '~/Popup/components/common/Dialog';
 import DialogHeader from '~/Popup/components/common/Dialog/Header';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { Account } from '~/types/chromeStorage';
+import type { Account } from '~/types/extensionStorage';
 
 import { Container, StyledButton, StyledInput } from './styled';
 import type { ChangeNameForm } from './useSchema';
@@ -16,10 +16,10 @@ import { useSchema } from './useSchema';
 type ChangeNameDialogProps = Omit<DialogProps, 'children'> & { account: Account; popoverOnClose?: PopoverProps['onClose'] };
 
 export default function ChangeNameDialog({ onClose, account, ...remainder }: ChangeNameDialogProps) {
-  const { chromeStorage, setChromeStorage } = useChromeStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { accountName } = chromeStorage;
+  const { accountName } = extensionStorage;
 
   const { changeNameForm } = useSchema();
 
@@ -43,7 +43,7 @@ export default function ChangeNameDialog({ onClose, account, ...remainder }: Cha
   };
 
   const submit = async (data: ChangeNameForm) => {
-    await setChromeStorage('accountName', { ...accountName, [account.id]: data.name });
+    await setExtensionStorage('accountName', { ...accountName, [account.id]: data.name });
     enqueueSnackbar('success rename');
     handleOnClose();
   };

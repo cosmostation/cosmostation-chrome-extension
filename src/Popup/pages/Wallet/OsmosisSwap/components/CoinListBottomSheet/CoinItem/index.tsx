@@ -5,7 +5,7 @@ import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 
@@ -33,12 +33,12 @@ type CoinItemProps = {
 };
 
 const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onClickCoin, isActive }, ref) => {
-  const { chromeStorage } = useChromeStorage();
-  const { currency } = chromeStorage;
+  const { extensionStorage } = useExtensionStorage();
+  const { currency } = extensionStorage;
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const coinPrice = (coinInfo.coinGeckoId && coinGeckoPrice.data?.[coinInfo.coinGeckoId]?.[chromeStorage.currency]) || 0;
+  const coinPrice = (coinInfo.coinGeckoId && coinGeckoPrice.data?.[coinInfo.coinGeckoId]?.[extensionStorage.currency]) || 0;
 
   const coinDisplayDenomAmount = toDisplayDenomAmount(coinInfo?.availableAmount || '0', coinInfo.decimals);
   const coinAmountPrice = times(coinDisplayDenomAmount, coinPrice);

@@ -5,7 +5,7 @@ import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import type { IntegratedSwapToken } from '~/types/swap/asset';
@@ -34,16 +34,16 @@ type TokenItemProps = {
 
 const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, onClickToken, isActive }, ref) => {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const { chromeStorage } = useChromeStorage();
-  const { currency } = chromeStorage;
+  const { extensionStorage } = useExtensionStorage();
+  const { currency } = extensionStorage;
 
   const amount = useMemo(() => tokenInfo.balance || '0', [tokenInfo.balance]);
 
   const coinDisplayDenomAmount = useMemo(() => toDisplayDenomAmount(amount, gt(amount, '0') ? tokenInfo.decimals : 0), [amount, tokenInfo.decimals]);
 
   const coinPrice = useMemo(
-    () => (tokenInfo.coinGeckoId && coinGeckoPrice.data?.[tokenInfo.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [chromeStorage.currency, coinGeckoPrice.data, tokenInfo.coinGeckoId],
+    () => (tokenInfo.coinGeckoId && coinGeckoPrice.data?.[tokenInfo.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoPrice.data, tokenInfo.coinGeckoId],
   );
 
   const coinAmountPrice = useMemo(() => times(coinDisplayDenomAmount, coinPrice), [coinDisplayDenomAmount, coinPrice]);

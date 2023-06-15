@@ -6,10 +6,10 @@ import { APTOS_COIN } from '~/constants/aptos';
 import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
@@ -22,7 +22,7 @@ type AptosChainItemProps = {
 };
 
 export default function AptosChainItem({ chain, network }: AptosChainItemProps) {
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { currentAccount } = useCurrentAccount();
   const { setCurrentAptosNetwork } = useCurrentAptosNetwork();
   const { setCurrentChain } = useCurrentChain();
@@ -52,8 +52,8 @@ export default function AptosChainItem({ chain, network }: AptosChainItemProps) 
   const { networkName } = network;
 
   const price = useMemo(
-    () => (asset?.coinGeckoId && coinGeckoData?.[asset.coinGeckoId]?.[chromeStorage.currency]) || 0,
-    [asset?.coinGeckoId, chromeStorage.currency, coinGeckoData],
+    () => (asset?.coinGeckoId && coinGeckoData?.[asset.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [asset?.coinGeckoId, extensionStorage.currency, coinGeckoData],
   );
 
   useEffect(() => {

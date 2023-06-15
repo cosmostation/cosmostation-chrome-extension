@@ -5,8 +5,8 @@ import { Typography } from '@mui/material';
 
 import BaseLayout from '~/Popup/components/BaseLayout';
 import Button from '~/Popup/components/common/Button';
-import { useChromeStorage } from '~/Popup/hooks/useChromeStorage';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { sha512 } from '~/Popup/utils/crypto';
@@ -35,9 +35,9 @@ type LockProps = {
 
 export default function Lock({ children }: LockProps) {
   const { currentPassword, setCurrentPassword } = useCurrentPassword();
-  const { chromeStorage } = useChromeStorage();
+  const { extensionStorage } = useExtensionStorage();
   const { navigate } = useNavigate();
-  const { passwordForm } = useSchema({ encryptedPassword: chromeStorage.encryptedPassword! });
+  const { passwordForm } = useSchema({ encryptedPassword: extensionStorage.encryptedPassword! });
 
   const [isOpenedLostDialog, setIsOpenedLostDialog] = useState(false);
 
@@ -62,16 +62,16 @@ export default function Lock({ children }: LockProps) {
   };
 
   useEffect(() => {
-    if (chromeStorage.accounts.length < 1) {
+    if (extensionStorage.accounts.length < 1) {
       navigate('/');
     }
-  }, [chromeStorage.accounts, navigate]);
+  }, [extensionStorage.accounts, navigate]);
 
-  if (chromeStorage.accounts.length < 1) {
+  if (extensionStorage.accounts.length < 1) {
     return null;
   }
 
-  if (currentPassword === null && chromeStorage.encryptedPassword) {
+  if (currentPassword === null && extensionStorage.encryptedPassword) {
     return (
       <BaseLayout>
         <Container>

@@ -2,6 +2,7 @@ import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { MEDIBLOC } from '~/constants/chain/cosmos/medibloc';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { SUI } from '~/constants/chain/sui/sui';
 import { getAddress as getAptosAddress } from '~/Popup/utils/aptos';
 import { getAddress as getBech32Address, getAddressForEthermint } from '~/Popup/utils/cosmos';
 import {
@@ -16,7 +17,7 @@ import {
 import { getAddress as getEthereumAddress } from '~/Popup/utils/ethereum';
 import { getAddress as getSuiAddress } from '~/Popup/utils/sui';
 import type { Chain } from '~/types/chain';
-import type { Account } from '~/types/chromeStorage';
+import type { Account } from '~/types/extensionStorage';
 
 export function getAddress(chain: Chain, publicKey?: Buffer) {
   if (!publicKey) {
@@ -93,6 +94,10 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
 
     if (chain.bip44.coinType === ETHEREUM.bip44.coinType && account.ethereumPublicKey) {
       return { privateKey: null, publicKey: Buffer.from(account.ethereumPublicKey, 'hex') };
+    }
+
+    if (chain.bip44.coinType === SUI.bip44.coinType && account.suiPublicKey) {
+      return { privateKey: null, publicKey: Buffer.from(account.suiPublicKey, 'hex') };
     }
 
     return null;

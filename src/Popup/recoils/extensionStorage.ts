@@ -2,9 +2,9 @@ import { atom } from 'recoil';
 
 import { PATH } from '~/constants/route';
 import { THEME_TYPE } from '~/constants/theme';
-import type { ChromeStorage, CurrencyType, LanguageType } from '~/types/chromeStorage';
+import type { CurrencyType, ExtensionStorage, LanguageType } from '~/types/extensionStorage';
 
-export const chromeStorageDefault: ChromeStorage = {
+export const extensionStorageDefault: ExtensionStorage = {
   theme: THEME_TYPE.LIGHT,
   accounts: [],
   accountName: {},
@@ -44,12 +44,12 @@ export const chromeStorageDefault: ChromeStorage = {
 
   autoSigns: [],
 
-  ledgerTransportType: 'USB',
+  ledgerTransportType: 'HID',
 
   providers: { keplr: false, metamask: false, aptos: false },
 };
 
-export const chromeStorageState = atom<ChromeStorage>({
-  key: 'chromeStorageState',
-  default: chromeStorageDefault,
+export const extensionStorageState = atom<ExtensionStorage>({
+  key: 'extensionStorageState',
+  default: extensionStorageDefault,
 });

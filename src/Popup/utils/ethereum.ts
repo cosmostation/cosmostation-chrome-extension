@@ -9,8 +9,8 @@ import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
 import { ERC20_ABI, ONE_INCH_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE } from '~/constants/ethereum';
-import { chromeStorage } from '~/Popup/utils/chromeStorage';
 import { EthereumRPCError } from '~/Popup/utils/error';
+import { extensionStorage } from '~/Popup/utils/extensionStorage';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumContractKind, EthereumTxType } from '~/types/ethereum/common';
 import type { CustomTypedMessage, EthereumTx } from '~/types/message/ethereum';
@@ -56,7 +56,7 @@ export function rpcResponse(result: unknown, id?: number | string) {
 }
 
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {
-  const { currentEthereumNetwork } = await chromeStorage();
+  const { currentEthereumNetwork } = await extensionStorage();
 
   const rpcURL = url ?? currentEthereumNetwork.rpcURL;
 

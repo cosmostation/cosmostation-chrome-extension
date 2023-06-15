@@ -1,8 +1,8 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
-import type { RawSigner } from '@mysten/sui.js';
-import { toB64, TransactionBlock } from '@mysten/sui.js';
+import { Connection, JsonRpcProvider, toB64, TransactionBlock } from '@mysten/sui.js';
 
 import { isAxiosError, post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
@@ -18,17 +18,26 @@ type FetchParams = {
 
 type UseDryRunTransactionBlockSWRProps = {
   network?: SuiNetwork;
-  rawSigner?: RawSigner;
   transactionBlock?: TransactionBlock | string | Uint8Array;
 };
 
-export function useDryRunTransactionBlockSWR({ transactionBlock, network, rawSigner }: UseDryRunTransactionBlockSWRProps, config?: SWRConfiguration) {
+export function useDryRunTransactionBlockSWR({ transactionBlock, network }: UseDryRunTransactionBlockSWRProps, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
 
+  const provider = useMemo(
+    () =>
+      new JsonRpcProvider(
+        new Connection({
+          fullnode: currentSuiNetwork.rpcURL,
+        }),
+      ),
+    [currentSuiNetwork.rpcURL],
+  );
+
   const fetcher = async (params: FetchParams) => {
-    if (!rawSigner || !params.transactionBlock) {
+    if (!params.transactionBlock) {
       return null;
     }
     const originTransaction =
@@ -36,13 +45,7 @@ export function useDryRunTransactionBlockSWR({ transactionBlock, network, rawSig
         ? TransactionBlock.from(params.transactionBlock)
         : params.transactionBlock;
 
-    const clonedTransaction = new TransactionBlock(originTransaction);
-
-    clonedTransaction.setSenderIfNotSet(await rawSigner.getAddress());
-
-    const buildedTransaction = await clonedTransaction.build({
-      provider: rawSigner.provider,
-    });
+    const buildedTransaction = await originTransaction.build({ provider });
 
     try {
       return await post<DryRunTransactionBlockSWRResponse>(params.url, {
@@ -69,7 +72,7 @@ export function useDryRunTransactionBlockSWR({ transactionBlock, network, rawSig
       revalidateIfStale: false,
       revalidateOnReconnect: false,
       errorRetryCount: 0,
-      isPaused: () => !transactionBlock || !rawSigner,
+      isPaused: () => !transactionBlock,
       ...config,
     },
   );

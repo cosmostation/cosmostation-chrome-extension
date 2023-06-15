@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { PopoverProps } from '@mui/material';
 
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { Account } from '~/types/chromeStorage';
+import type { Account } from '~/types/extensionStorage';
 
 import ChangeNameDialog from './ChangeNameDialog';
 import DeleteDialog from './DeleteDialog';
