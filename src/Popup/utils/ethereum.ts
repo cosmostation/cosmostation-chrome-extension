@@ -9,7 +9,7 @@ import { signTypedData as baseSignTypedData } from '@metamask/eth-sig-util';
 import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
 import { ERC20_ABI, ERC721_ABI, ERC1155_ABI, ONE_INCH_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
-import { ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE, TOKEN_TYPE } from '~/constants/ethereum';
+import { ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID, ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE, TOKEN_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
 import { extensionStorage } from '~/Popup/utils/extensionStorage';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
@@ -167,10 +167,10 @@ export async function determineNFTType(rpcURL?: string, contractAddress?: string
   const erc721Contract = new ethers.Contract(contractAddress, ERC721_ABI, provider);
   const erc1155Contract = new ethers.Contract(contractAddress, ERC1155_ABI, provider);
   try {
-    const erc721ContractCall = erc721Contract.supportsInterface('0x80ac58cd') as Promise<ERC721SupportInterfacePayload>;
+    const erc721ContractCall = erc721Contract.supportsInterface(ERC721_INTERFACE_ID) as Promise<ERC721SupportInterfacePayload>;
     const erc721Response = await erc721ContractCall;
 
-    const erc1155ContractCall = erc1155Contract.supportsInterface('0xd9b67a26') as Promise<ERC1155SupportInterfacePayload>;
+    const erc1155ContractCall = erc1155Contract.supportsInterface(ERC1155_INTERFACE_ID) as Promise<ERC1155SupportInterfacePayload>;
     const erc1155Response = await erc1155ContractCall;
 
     if (erc721Response && !erc1155Response) {
@@ -298,4 +298,14 @@ export function signTypedData<T extends MessageTypes>(
 ) {
   const dataToSign = (data.domain.salt ? { ...data, domain: { ...data.domain, salt: Buffer.from(toHex(data.domain.salt), 'hex') } } : data) as TypedMessage<T>;
   return baseSignTypedData({ privateKey, data: dataToSign, version });
+}
+
+export function toDisplayTokenStandard(tokenStandard?: string) {
+  const standardNumber = tokenStandard?.match(/\d+/g);
+
+  if (!tokenStandard || !standardNumber || standardNumber.length === 0) {
+    return '';
+  }
+
+  return 'ERC-'.concat(standardNumber[0]);
 }

@@ -10,6 +10,7 @@ import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBal
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTOwnerSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { toDisplayTokenStandard } from '~/Popup/utils/ethereum';
 import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/ethereum/nft';
@@ -41,7 +42,7 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
 
   const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress, tokenId, tokenStandard: tokenType });
 
-  const { data: nftBalance } = useGetNFTBalanceSWR({
+  const { data: currentNFTBalance } = useGetNFTBalanceSWR({
     contractAddress: address,
     tokenId,
     tokenStandard: tokenType,
@@ -50,7 +51,7 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
   const shorterContractAddress = useMemo(() => shorterAddress(address, 9), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 9), [tokenId]);
 
-  const displayTokenStandard = useMemo(() => tokenType?.replace('ERC', 'ERC-'), [tokenType]);
+  const displayTokenStandard = useMemo(() => toDisplayTokenStandard(tokenType), [tokenType]);
 
   return (
     <NFTButton style={{ display: isOwnedNFT ? 'flex' : 'none' }} type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
@@ -77,7 +78,7 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
             <Typography variant="h6">{displayTokenStandard}</Typography>
             {tokenType === 'ERC1155' && (
               <Typography variant="h6">{`/ ${t('pages.Wallet.NFTSend.Entry.Ethereum.components.NFTPopover.components.NFTItem.index.balance')}: ${
-                nftBalance || '0'
+                currentNFTBalance || '0'
               }`}</Typography>
             )}
           </LeftInfoFooterContainer>

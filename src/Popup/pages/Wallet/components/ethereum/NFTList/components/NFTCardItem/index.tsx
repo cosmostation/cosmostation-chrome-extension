@@ -58,25 +58,25 @@ export default function NFTCardItem({ nft, onClick, onClickDelete }: NFTCardItem
 
   const { tokenId, address, tokenType } = nft;
 
-  const getNFTMeta = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
+  const nftMeta = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
-  const getNFTOwnership = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId, tokenStandard: tokenType }, { suspense: true });
+  const isOwnedNFT = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress: currentAddress, tokenId, tokenStandard: tokenType }, { suspense: true });
 
   return (
-    <StyledButton disabled={!getNFTOwnership.data} onClick={onClick}>
+    <StyledButton disabled={!isOwnedNFT.data} onClick={onClick}>
       <BodyContainer>
         <NFTImageContainer>
           <>
-            {!getNFTOwnership.data && (
+            {!isOwnedNFT.data && (
               <BlurredImage>
                 <Typography variant="h4">Not Owned NFT</Typography>
               </BlurredImage>
             )}
-            {getNFTMeta.data?.imageURL ? <Image src={getNFTMeta.data?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
+            {nftMeta.data?.imageURL ? <Image src={nftMeta.data?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
 
-            {getNFTMeta.data?.rarity && (
+            {nftMeta.data?.rarity && (
               <NFTAbsoluteEditionMarkContainer>
-                <Typography variant="h6">{getNFTMeta.data.rarity}</Typography>
+                <Typography variant="h6">{nftMeta.data.rarity}</Typography>
               </NFTAbsoluteEditionMarkContainer>
             )}
 
@@ -95,10 +95,10 @@ export default function NFTCardItem({ nft, onClick, onClickDelete }: NFTCardItem
 
       <BottomContainer>
         <NFTDescriptionTextContainer>
-          <Typography variant="h6">{getNFTMeta.data?.description || address}</Typography>
+          <Typography variant="h6">{nftMeta.data?.description || address}</Typography>
         </NFTDescriptionTextContainer>
         <NFTNameTextContainer>
-          <Typography variant="h5">{getNFTMeta.data?.name || toDisplayTokenId(tokenId)}</Typography>
+          <Typography variant="h5">{nftMeta.data?.name || toDisplayTokenId(tokenId)}</Typography>
         </NFTNameTextContainer>
       </BottomContainer>
     </StyledButton>

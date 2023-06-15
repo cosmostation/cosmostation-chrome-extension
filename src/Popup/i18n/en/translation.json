@@ -1099,6 +1099,7 @@
               "invalidAmount": "Invalid amount",
               "invalidSendNFTQuantity": "Invalid NFT Amount",
               "networkError": "Network Error",
+              "notOwnedNFT": "The owner of this NFT is not you",
               "quantityPlaceholder": "Quantity",
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"

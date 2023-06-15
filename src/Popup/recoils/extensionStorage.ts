@@ -30,7 +30,6 @@ export const extensionStorageDefault: ExtensionStorage = {
       networkId: network.id,
       tabValue: 0,
     })),
-
     cosmos: COSMOS_CHAINS.map((chain) => ({
       chainId: chain.id,
       tabValue: 0,

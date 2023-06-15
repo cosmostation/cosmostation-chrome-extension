@@ -69,29 +69,28 @@ export default function Entry() {
 
   const currentNFTStandard = useGetNFTStandardSWR({ contractAddress: debouncedContractAddress });
 
-  const getNFTURI = useGetNFTURISWR({
+  const nftSourceURI = useGetNFTURISWR({
     contractAddress: debouncedContractAddress,
     tokenId: debouncedTokenId,
     tokenStandard: currentNFTStandard.data ? currentNFTStandard.data : undefined,
   });
 
-  const getNFTOwnership = useGetNFTOwnerSWR({
+  const isOwnedNFT = useGetNFTOwnerSWR({
     contractAddress: debouncedContractAddress,
     ownerAddress: currentAddress,
     tokenId: debouncedTokenId,
     tokenStandard: currentNFTStandard.data ? currentNFTStandard.data : undefined,
   });
 
-  // NOTE nft 훅 관련 변수명 나중에 싹 다 통일
-  const getNFTMeta = useGetNFTMetaSWR({
+  const nftMeta = useGetNFTMetaSWR({
     contractAddress: debouncedContractAddress,
     tokenId: debouncedTokenId,
     tokenStandard: currentNFTStandard.data ? currentNFTStandard.data : undefined,
   });
 
   const isLoadingData = useMemo(
-    () => getNFTOwnership.isValidating || getNFTMeta.isValidating || getNFTURI.isValidating || currentNFTStandard.isValidating,
-    [currentNFTStandard.isValidating, getNFTMeta.isValidating, getNFTOwnership.isValidating, getNFTURI.isValidating],
+    () => isOwnedNFT.isValidating || nftMeta.isValidating || nftSourceURI.isValidating || currentNFTStandard.isValidating,
+    [currentNFTStandard.isValidating, nftMeta.isValidating, isOwnedNFT.isValidating, nftSourceURI.isValidating],
   );
 
   const errorType = useMemo(() => {
@@ -102,19 +101,19 @@ export default function Entry() {
       return 'invalidTokenId';
     }
 
-    if (!getNFTURI.data) {
+    if (!nftSourceURI.data) {
       return 'notFound';
     }
 
-    if (!getNFTOwnership.data) {
+    if (!isOwnedNFT.data) {
       return 'misMatch';
     }
 
-    if (getNFTOwnership.error || currentNFTStandard.error) {
+    if (isOwnedNFT.error || currentNFTStandard.error) {
       return 'networkError';
     }
     return '';
-  }, [currentNFTStandard.error, debouncedContractAddress, debouncedTokenId, getNFTURI.data, getNFTOwnership.data, getNFTOwnership.error]);
+  }, [currentNFTStandard.error, debouncedContractAddress, debouncedTokenId, nftSourceURI.data, isOwnedNFT.data, isOwnedNFT.error]);
   const nftPreviewIcon = useMemo(() => {
     if (errorType && debouncedContractAddress && debouncedTokenId) {
       return NFTErrorIcon;
@@ -179,7 +178,7 @@ export default function Entry() {
 
   const submit = async () => {
     try {
-      if (debouncedContractAddress && debouncedTokenId && currentNFTStandard.data && getNFTMeta) {
+      if (debouncedContractAddress && debouncedTokenId && currentNFTStandard.data && nftMeta) {
         const newNFT = {
           tokenId: debouncedTokenId,
           tokenType: currentNFTStandard.data,
@@ -234,10 +233,10 @@ export default function Entry() {
               </PreviewHeaderContainer>
               <PreviewBodyContainer>
                 <PreviewNFTImageContainer>
-                  <Image src={getNFTMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} />
+                  <Image src={nftMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} />
                 </PreviewNFTImageContainer>
                 <PreviewNFTSubtitleContainer>
-                  <Typography variant="h3">{getNFTMeta?.data?.name || getNFTURI.data}</Typography>
+                  <Typography variant="h3">{nftMeta?.data?.name || nftSourceURI.data}</Typography>
                 </PreviewNFTSubtitleContainer>
               </PreviewBodyContainer>
             </>
@@ -248,34 +247,34 @@ export default function Entry() {
                   <Typography variant="h5">{t('pages.Chain.Ethereum.NFT.Add.entry.uri')}</Typography>
 
                   <StyledIconButton
-                    disabled={!getNFTURI.data}
+                    disabled={!nftSourceURI.data}
                     onClick={() => {
-                      handleOnClickCopy(getNFTURI.data || '');
+                      handleOnClickCopy(nftSourceURI.data || '');
                     }}
                   >
                     <Copy16Icon />
                   </StyledIconButton>
                 </PreviewItemHeaderContainer>
                 <PreviewItemSubHeaderContainer>
-                  <Typography variant="h5">{getNFTURI.data}</Typography>
+                  <Typography variant="h5">{nftSourceURI.data}</Typography>
                 </PreviewItemSubHeaderContainer>
               </PreviewItemContainer>
 
-              {getNFTMeta.data && (
+              {nftMeta.data && (
                 <PreviewItemContainer>
                   <PreviewItemHeaderContainer>
                     <Typography variant="h5">{t('pages.Chain.Ethereum.NFT.Add.entry.data')}</Typography>
 
                     <StyledIconButton
                       onClick={() => {
-                        handleOnClickCopy(JSON.stringify(getNFTMeta.data, null, 4));
+                        handleOnClickCopy(JSON.stringify(nftMeta.data, null, 4));
                       }}
                     >
                       <Copy16Icon />
                     </StyledIconButton>
                   </PreviewItemHeaderContainer>
                   <PreviewItemSubHeaderContainer>
-                    <Typography variant="h5">{JSON.stringify(getNFTMeta.data, null, 4)}</Typography>
+                    <Typography variant="h5">{JSON.stringify(nftMeta.data, null, 4)}</Typography>
                   </PreviewItemSubHeaderContainer>
                 </PreviewItemContainer>
               )}
@@ -285,7 +284,7 @@ export default function Entry() {
                   <Typography variant="h5">{t('pages.Chain.Ethereum.NFT.Add.entry.preview')}</Typography>
                 </PreviewItemHeaderContainer>
                 <PreviewNFTImageContainer>
-                  {getNFTMeta?.data?.imageURL ? <Image src={getNFTMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
+                  {nftMeta?.data?.imageURL ? <Image src={nftMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
                 </PreviewNFTImageContainer>
               </PreviewImageItemContainer>
             </PreviewContentContainer>

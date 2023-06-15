@@ -1099,6 +1099,7 @@
               "invalidAmount": "수량을 입력하세요.",
               "invalidSendNFTQuantity": "유효하지 않은 NFT 수량입니다.",
               "networkError": "네트워크 오류",
+              "notOwnedNFT": "이 NFT의 소유주가 아닙니다",
               "quantityPlaceholder": "NFT 수량",
               "recipientAddressPlaceholder": "수신인 주소",
               "sendButton": "보내기"

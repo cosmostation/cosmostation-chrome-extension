@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { ERC721_ABI, ERC1155_ABI } from '~/constants/abi';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { TOKEN_TYPE } from '~/constants/ethereum';
+import { ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID, TOKEN_TYPE } from '~/constants/ethereum';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { isAxiosError } from '~/Popup/utils/axios';
@@ -24,9 +24,6 @@ type UseGetNFTStandardSWR = {
   network?: EthereumNetwork;
   contractAddress?: string;
 };
-
-const ERC721_INTERFACE_ID = '0x80ac58cd';
-const ERC1155_INTERFACE_ID = '0xd9b67a26';
 
 export function useGetNFTStandardSWR({ network, contractAddress }: UseGetNFTStandardSWR, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();

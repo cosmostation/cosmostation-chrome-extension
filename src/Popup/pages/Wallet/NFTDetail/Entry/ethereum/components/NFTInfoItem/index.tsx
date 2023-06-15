@@ -9,6 +9,7 @@ import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSW
 import { useGetNFTURISWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTURISWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt } from '~/Popup/utils/big';
+import { toDisplayTokenStandard } from '~/Popup/utils/ethereum';
 import { httpsRegex } from '~/Popup/utils/regex';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/ethereum/nft';
@@ -41,7 +42,7 @@ export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
 
   const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
-  const { data: nftBalance } = useGetNFTBalanceSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
+  const { data: currentNFTBalance } = useGetNFTBalanceSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
   const shorterOwnerAddress = useMemo(() => shorterAddress(ownerAddress, 14), [ownerAddress]);
   const shorterContractAddress = useMemo(() => shorterAddress(address, 14), [address]);
@@ -50,7 +51,7 @@ export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
   const shorterExternalURL = useMemo(() => shorterAddress(nftMeta?.externalLink, 20), [nftMeta?.externalLink]);
   const shorterSourceURL = useMemo(() => shorterAddress(nftMetaSourceURI || '', 20), [nftMetaSourceURI]);
 
-  const displayTokenStandard = useMemo(() => tokenType.replace('ERC', 'ERC-'), [tokenType]);
+  const displayTokenStandard = useMemo(() => toDisplayTokenStandard(tokenType), [tokenType]);
 
   const handleOnClickCopy = (copyString?: string) => {
     if (copyString && copy(copyString)) {
@@ -122,7 +123,7 @@ export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.ethereum.components.NFTInfoItem.index.balance')}</Typography>
           </ItemTitleContainer>
-          <ItemRightContainer>{gt(nftBalance || '0', '0') && <Typography variant="h5">{nftBalance || '-'}</Typography>}</ItemRightContainer>
+          <ItemRightContainer>{gt(currentNFTBalance || '0', '0') && <Typography variant="h5">{currentNFTBalance || '-'}</Typography>}</ItemRightContainer>
         </ItemContainer>
       )}
 

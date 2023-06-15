@@ -12,6 +12,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBalanceSWR';
+import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTOwnerSWR';
 import { useGetNFTURISWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTURISWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
@@ -89,7 +90,9 @@ export default function Ethereum({ chain }: EthereumProps) {
     tokenStandard: currentNFT.tokenType,
   });
 
-  const { data: metaURI } = useGetNFTURISWR({ contractAddress: currentNFT.address, tokenId: currentNFT.tokenId, tokenStandard: currentNFT.tokenType });
+  const { data: nftSourceURI } = useGetNFTURISWR({ contractAddress: currentNFT.address, tokenId: currentNFT.tokenId, tokenStandard: currentNFT.tokenType });
+
+  const { data: isOwnedNFT } = useGetNFTOwnerSWR({ contractAddress: currentNFT.address, tokenId: currentNFT.tokenId, tokenStandard: currentNFT.tokenType });
 
   const fee = useFeeSWR();
 
@@ -139,7 +142,7 @@ export default function Ethereum({ chain }: EthereumProps) {
         data,
       };
     }
-    if (currentNFT.tokenType === 'ERC1155' && metaURI) {
+    if (currentNFT.tokenType === 'ERC1155' && nftSourceURI) {
       const erc1155Contract = new ethers.Contract(currentNFT.address, ERC1155_ABI, provider);
 
       const data = ethereumAddressRegex.test(recipientAddress)
@@ -148,7 +151,7 @@ export default function Ethereum({ chain }: EthereumProps) {
             recipientAddress,
             currentNFT.tokenId,
             Number(currentSendQuantity),
-            `${ethers.hexlify(ethers.toUtf8Bytes(`${metaURI}`))}`,
+            `${ethers.hexlify(ethers.toUtf8Bytes(`${nftSourceURI}`))}`,
           ])
         : undefined;
 
@@ -163,7 +166,7 @@ export default function Ethereum({ chain }: EthereumProps) {
       from: address,
       to: recipientAddress,
     };
-  }, [address, currentEthereumNetwork.rpcURL, currentNFT, currentSendQuantity, metaURI, recipientAddress]);
+  }, [address, currentEthereumNetwork.rpcURL, currentNFT, currentSendQuantity, nftSourceURI, recipientAddress]);
 
   const estimateGas = useEstimateGasSWR([sendTx]);
 
@@ -183,6 +186,9 @@ export default function Ethereum({ chain }: EthereumProps) {
   const expectedDisplayFeePrice = useMemo(() => times(expectedDisplayFee, feeCoinPrice), [expectedDisplayFee, feeCoinPrice]);
 
   const errorMessage = useMemo(() => {
+    if (!isOwnedNFT) {
+      return t('pages.Wallet.NFTSend.Entry.Ethereum.index.notOwnedNFT');
+    }
     if (!ethereumAddressRegex.test(recipientAddress)) {
       return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidAddress');
     }
@@ -200,7 +206,7 @@ export default function Ethereum({ chain }: EthereumProps) {
     }
 
     if (currentNFT.tokenType === 'ERC1155') {
-      if (!currentNFTBalance || !metaURI) {
+      if (!currentNFTBalance || !nftSourceURI) {
         return t('pages.Wallet.NFTSend.Entry.Ethereum.index.networkError');
       }
 
@@ -214,7 +220,18 @@ export default function Ethereum({ chain }: EthereumProps) {
     }
 
     return '';
-  }, [address, currentNFT.tokenType, currentNFTBalance, currentSendQuantity, expectedBaseFee, feeCoinBaseBalance, metaURI, recipientAddress, t]);
+  }, [
+    address,
+    currentNFT.tokenType,
+    currentNFTBalance,
+    currentSendQuantity,
+    expectedBaseFee,
+    feeCoinBaseBalance,
+    isOwnedNFT,
+    nftSourceURI,
+    recipientAddress,
+    t,
+  ]);
 
   return (
     <>

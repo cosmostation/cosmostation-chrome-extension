@@ -39,16 +39,14 @@ export default function Sui({ chain }: SuiProps) {
     await setExtensionStorage('homeTabPath', {
       ...homeTabPath,
 
-      sui: [
-        ...homeTabPath.sui.map((item) =>
-          item.networkId === currentSuiNetwork.id
-            ? {
-                ...item,
-                tabValue: newTabValue,
-              }
-            : item,
-        ),
-      ],
+      sui: homeTabPath.sui.map((item) =>
+        item.networkId === currentSuiNetwork.id
+          ? {
+              ...item,
+              tabValue: newTabValue,
+            }
+          : item,
+      ),
     });
   };
 

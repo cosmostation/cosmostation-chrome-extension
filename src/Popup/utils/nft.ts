@@ -1,6 +1,7 @@
 export function toDisplayTokenId(tokenId?: string) {
   if (!tokenId) return '';
-  return '#'.concat(tokenId);
+
+  return tokenId.charAt(0) === '#' ? tokenId : '#'.concat(tokenId);
 }
 
 export function convertIpfs(url?: string) {

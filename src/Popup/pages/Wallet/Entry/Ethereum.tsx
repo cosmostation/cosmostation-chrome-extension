@@ -42,16 +42,14 @@ export default function Ethereum({ chain }: EthereumProps) {
     await setExtensionStorage('homeTabPath', {
       ...homeTabPath,
 
-      ethereum: [
-        ...homeTabPath.ethereum.map((item) =>
-          item.networkId === currentEthereumNetwork.id
-            ? {
-                ...item,
-                tabValue: newTabValue,
-              }
-            : item,
-        ),
-      ],
+      ethereum: homeTabPath.ethereum.map((item) =>
+        item.networkId === currentEthereumNetwork.id
+          ? {
+              ...item,
+              tabValue: newTabValue,
+            }
+          : item,
+      ),
     });
   };
 

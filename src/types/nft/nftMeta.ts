@@ -26,7 +26,6 @@ export type EthereumNFTMeta = {
   traits?: {
     display_type?: string;
     max_value?: number;
-    order?: null;
     trait_count: number;
     trait_type: string;
     value: string | number;

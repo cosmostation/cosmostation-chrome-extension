@@ -9,6 +9,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useGetNFTBalanceSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTBalanceSWR';
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/ethereum/NFT/useGetNFTMetaSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { toDisplayTokenStandard } from '~/Popup/utils/ethereum';
 import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { EthereumNFT } from '~/types/ethereum/nft';
@@ -37,7 +38,7 @@ export default function NFTButton({ currentNFT, isActive, ...remainder }: NFTBut
 
   const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, tokenStandard: tokenType });
 
-  const { data: nftBalance } = useGetNFTBalanceSWR({
+  const { data: currentNFTBalance } = useGetNFTBalanceSWR({
     contractAddress: address,
     tokenId,
     tokenStandard: tokenType,
@@ -46,7 +47,7 @@ export default function NFTButton({ currentNFT, isActive, ...remainder }: NFTBut
   const shorterContractAddress = useMemo(() => shorterAddress(address, 10), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 10), [tokenId]);
 
-  const displayTokenStandard = useMemo(() => tokenType?.replace('ERC', 'ERC-'), [tokenType]);
+  const displayTokenStandard = useMemo(() => toDisplayTokenStandard(tokenType), [tokenType]);
 
   return (
     <Button type="button" {...remainder}>
@@ -72,7 +73,9 @@ export default function NFTButton({ currentNFT, isActive, ...remainder }: NFTBut
           <LeftInfoFooterContainer>
             <Typography variant="h6">{displayTokenStandard}</Typography>
             {currentNFT.tokenType === 'ERC1155' && (
-              <Typography variant="h6">{`/ ${t('pages.Wallet.NFTSend.Entry.Ethereum.components.NFTButton.index.balance')}: ${nftBalance || '0'}`}</Typography>
+              <Typography variant="h6">{`/ ${t('pages.Wallet.NFTSend.Entry.Ethereum.components.NFTButton.index.balance')}: ${
+                currentNFTBalance || '0'
+              }`}</Typography>
             )}
           </LeftInfoFooterContainer>
         </LeftInfoContainer>

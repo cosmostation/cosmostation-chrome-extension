@@ -44,7 +44,7 @@ export function useGetNFTBalanceSWR({ network, contractAddress, ownerAddress, to
     [accounts?.data, currentAccount.id, currentChain.id],
   );
 
-  const walletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
+  const ownerWalletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
   const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
 
@@ -80,14 +80,14 @@ export function useGetNFTBalanceSWR({ network, contractAddress, ownerAddress, to
   };
 
   const { data, error, mutate } = useSWR<GetNFTBalancePayload | null, AxiosError>(
-    { id: 'balance', rpcURL, contractAddress, ownerAddress: walletAddress, tokenId, tokenStandard },
+    { id: 'getNFTBalance', rpcURL, contractAddress, ownerAddress: ownerWalletAddress, tokenId, tokenStandard },
     fetcher,
     {
       revalidateOnFocus: false,
       dedupingInterval: 14000,
       refreshInterval: 15000,
       errorRetryCount: 0,
-      isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !tokenStandard || !walletAddress || !rpcURL,
+      isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !tokenStandard || !ownerWalletAddress || !rpcURL,
       ...config,
     },
   );

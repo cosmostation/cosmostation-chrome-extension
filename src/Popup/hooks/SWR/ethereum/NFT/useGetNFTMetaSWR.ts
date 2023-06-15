@@ -20,25 +20,25 @@ type UseGetNFTMetaSWR = {
 };
 
 export function useGetNFTMetaSWR({ network, contractAddress, tokenId, tokenStandard }: UseGetNFTMetaSWR, config?: SWRConfiguration) {
-  const getNFTURI = useGetNFTURISWR({ network, contractAddress, tokenId, tokenStandard }, config);
+  const nftSourceURI = useGetNFTURISWR({ network, contractAddress, tokenId, tokenStandard }, config);
 
   const paramURL = useMemo(() => {
-    if (getNFTURI.data) {
-      if (getNFTURI.data.includes('ipfs:')) {
-        return convertIpfs(getNFTURI.data);
+    if (nftSourceURI.data) {
+      if (nftSourceURI.data.includes('ipfs:')) {
+        return convertIpfs(nftSourceURI.data);
       }
 
-      if (getNFTURI.data.includes('api.opensea.io')) {
-        return getNFTURI.data.replace('0x{id}', tokenId || '');
+      if (nftSourceURI.data.includes('api.opensea.io')) {
+        return nftSourceURI.data.replace('0x{id}', tokenId || '');
       }
 
-      if (getNFTURI.data.includes('{id}')) {
-        return getNFTURI.data.replace('{id}', tokenId || '');
+      if (nftSourceURI.data.includes('{id}')) {
+        return nftSourceURI.data.replace('{id}', tokenId || '');
       }
-      return getNFTURI.data;
+      return nftSourceURI.data;
     }
     return '';
-  }, [getNFTURI.data, tokenId]);
+  }, [nftSourceURI.data, tokenId]);
 
   const fetcher = async (fetchUrl: string) => {
     try {
@@ -46,8 +46,8 @@ export function useGetNFTMetaSWR({ network, contractAddress, tokenId, tokenStand
         return null;
       }
 
-      if (getNFTURI.error) {
-        throw getNFTURI.error;
+      if (nftSourceURI.error) {
+        throw nftSourceURI.error;
       }
 
       return await get<GetNFTMetaPayload>(fetchUrl);
@@ -67,7 +67,7 @@ export function useGetNFTMetaSWR({ network, contractAddress, tokenId, tokenStand
     revalidateOnReconnect: false,
     errorRetryCount: 3,
     errorRetryInterval: 5000,
-    isPaused: () => !paramURL || !getNFTURI.data,
+    isPaused: () => !paramURL || !nftSourceURI.data,
     ...config,
   });
 

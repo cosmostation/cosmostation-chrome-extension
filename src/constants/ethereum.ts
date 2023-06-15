@@ -35,3 +35,6 @@ export const TOKEN_TYPE = {
   ERC721: 'ERC721',
   ERC1155: 'ERC1155',
 } as const;
+
+export const ERC721_INTERFACE_ID = '0x80ac58cd';
+export const ERC1155_INTERFACE_ID = '0xd9b67a26';

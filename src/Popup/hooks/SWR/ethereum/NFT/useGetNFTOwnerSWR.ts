@@ -47,7 +47,7 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
     [accounts?.data, currentAccount.id, currentChain.id],
   );
 
-  const walletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
+  const ownerWalletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
   const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
 
@@ -88,7 +88,7 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
   };
 
   const { data, isValidating, error, mutate } = useSWR<GetNFTOwnerPayload | null, AxiosError>(
-    { id: 'owner', rpcURL, contractAddress, tokenId, ownerAddress: walletAddress, tokenStandard },
+    { id: 'getNFTOwner', rpcURL, contractAddress, tokenId, ownerAddress: ownerWalletAddress, tokenStandard },
     fetcher,
     {
       revalidateOnFocus: false,
@@ -97,7 +97,7 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
       errorRetryCount: 3,
       errorRetryInterval: 5000,
 
-      isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !tokenStandard || !walletAddress || !rpcURL,
+      isPaused: () => currentChain.id !== ETHEREUM.id || !contractAddress || !tokenId || !tokenStandard || !ownerWalletAddress || !rpcURL,
       ...config,
     },
   );

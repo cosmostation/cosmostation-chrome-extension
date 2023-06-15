@@ -8,6 +8,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNFTs } from '~/Popup/hooks/useCurrent/useCurrentEthereumNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { toDisplayTokenStandard } from '~/Popup/utils/ethereum';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { EthereumChain } from '~/types/chain';
 import type { Path } from '~/types/route';
@@ -55,7 +56,7 @@ export default function NFTList({ chain }: NFTListProps) {
     infos.push({ type: 'all', name: 'All Assets', count: ownedEthereumNFTs.length });
 
     nftTypeList.forEach((item) => {
-      infos.push({ type: item, name: item.replace('ERC', 'ERC-'), count: ownedEthereumNFTs.filter((nft) => item === nft.tokenType).length });
+      infos.push({ type: item, name: toDisplayTokenStandard(item), count: ownedEthereumNFTs.filter((nft) => item === nft.tokenType).length });
     });
 
     return infos;
