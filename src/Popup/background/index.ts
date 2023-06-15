@@ -1,4 +1,4 @@
-import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -113,15 +113,18 @@ function background() {
             networkId: network.id,
             tabValue: 0,
           })),
-          cosmos: {
+          cosmos: COSMOS_CHAINS.map((chain) => ({
+            chainId: chain.id,
             tabValue: 0,
-          },
-          sui: {
+          })),
+          sui: SUI_NETWORKS.map((network) => ({
+            networkId: network.id,
             tabValue: 0,
-          },
-          aptos: {
+          })),
+          aptos: APTOS_NETWORKS.map((network) => ({
+            networkId: network.id,
             tabValue: 0,
-          },
+          })),
         });
 
         await setStorage('language', '' as LanguageType);

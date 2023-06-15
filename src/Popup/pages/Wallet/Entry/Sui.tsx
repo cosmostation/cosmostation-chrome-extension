@@ -29,35 +29,53 @@ export default function Sui({ chain }: SuiProps) {
 
   const tabLabels = ['Coins', 'NFTs'];
 
-  const [tabValue, setTabValue] = useState(!gte(homeTabPath.sui.tabValue, tabLabels.length) ? homeTabPath.sui.tabValue : 0);
+  const currentHomeTabPath = useMemo(() => homeTabPath.sui.find((item) => item.networkId === currentSuiNetwork.id), [currentSuiNetwork.id, homeTabPath.sui]);
 
-  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+  const [tabValue, setTabValue] = useState(gte(currentHomeTabPath?.tabValue || 0, tabLabels.length) ? currentHomeTabPath?.tabValue || 0 : 0);
+
+  const handleChange = async (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
+
+    await setExtensionStorage('homeTabPath', {
+      ...homeTabPath,
+
+      sui: [
+        ...homeTabPath.sui.map((item) =>
+          item.networkId === currentSuiNetwork.id
+            ? {
+                ...item,
+                tabValue: newTabValue,
+              }
+            : item,
+        ),
+      ],
+    });
   };
 
   const isCustom = useMemo(() => !!additionalSuiNetworks.find((item) => item.id === currentSuiNetwork.id), [additionalSuiNetworks, currentSuiNetwork.id]);
 
   useEffect(() => {
-    if (gte(homeTabPath.sui.tabValue, tabLabels.length)) {
+    if (currentHomeTabPath?.tabValue !== tabValue) {
+      setTabValue(currentHomeTabPath?.tabValue || 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSuiNetwork.id]);
+
+  useEffect(() => {
+    if (gte(currentHomeTabPath?.tabValue || 0, tabLabels.length)) {
       void setExtensionStorage('homeTabPath', {
         ...homeTabPath,
-        sui: {
-          tabValue: 0,
-        },
+        sui: homeTabPath.sui.map((item) =>
+          item.networkId === currentSuiNetwork.id
+            ? {
+                ...item,
+                tabValue: 0,
+              }
+            : item,
+        ),
       });
-
-      setTabValue(0);
     }
-
-    void setExtensionStorage('homeTabPath', {
-      ...homeTabPath,
-      sui: {
-        tabValue,
-      },
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabValue]);
+  }, [currentSuiNetwork.id, currentHomeTabPath?.tabValue, homeTabPath, setExtensionStorage, tabLabels.length]);
 
   return (
     <Container key={`${currentAccount.id}-${currentSuiNetwork.id}`}>
