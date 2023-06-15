@@ -5,6 +5,7 @@ import type { TransportType } from '~/types/ledger';
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
 
+import type { CosmosNFT } from './cosmos/nft';
 import type { EthereumNFT } from './ethereum/nft';
 import type { RequestMessage } from './message';
 
@@ -148,6 +149,7 @@ export type ExtensionStorage = {
   ethereumTokens: EthereumToken[];
 
   ethereumNFTs: EthereumNFT[];
+  cosmosNFTs: CosmosNFT[];
 
   suiPermissions: SuiPermission[];
 

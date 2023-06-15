@@ -8,17 +8,18 @@ import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
 import type { NFTInfoPayload, SmartPayload } from '~/types/cosmos/contract';
 
-type UseNFTInfoSWR = {
+type UseGetNFTURISWRProps = {
   chain: CosmosChain;
   contractAddress: string;
   tokenId: string;
 };
 
-export function useNFTInfoSWR({ chain, contractAddress, tokenId }: UseNFTInfoSWR, config?: SWRConfiguration) {
+export function useGetNFTURISWR({ chain, contractAddress, tokenId }: UseGetNFTURISWRProps, config?: SWRConfiguration) {
   const { getCW721NFTInfo } = cosmosURL(chain);
 
   const requestURL = getCW721NFTInfo(contractAddress, tokenId);
 
+  // NOTE 디폴트로 현재 선택되어있는 체인을 택하도록
   const regex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
 
   const isValidContractAddress = regex.test(contractAddress);

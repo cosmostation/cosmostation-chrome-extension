@@ -18,7 +18,6 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCollectionInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useCollectionInfoSWR';
 import { useGetNFTTokenIdsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTTokenIdsSWR';
-import { useNFTInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTInfoSWR';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import { useRewardSWR } from '~/Popup/hooks/SWR/cosmos/useRewardSWR';
@@ -105,10 +104,6 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const holder = 'stars1d8mq46wt2yxsgwrmh6hhfgycl0537w8gl8smtl';
   const testContractAddress = 'stars19jq6mj84cnt9p7sagjxqf8hxtczwc8wlpuwe4sh62w45aheseues57n420'.toLocaleLowerCase();
-  const aaa = useNFTInfoSWR({ chain, contractAddress: testContractAddress, tokenId: '1' });
-
-  // eslint-disable-next-line no-console
-  console.log('🚀 ~ file: index.tsx:108 ~ NativeChainCard ~ aaa:', aaa);
 
   const aaa2 = useCollectionInfoSWR(chain, testContractAddress);
 

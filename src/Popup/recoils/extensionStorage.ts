@@ -62,6 +62,7 @@ export const extensionStorageDefault: ExtensionStorage = {
   cosmosTokens: [],
 
   ethereumNFTs: [],
+  cosmosNFTs: [],
 
   autoSigns: [],
 
