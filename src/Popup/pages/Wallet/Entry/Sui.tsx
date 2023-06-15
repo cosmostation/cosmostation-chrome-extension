@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Empty from '~/Popup/components/common/Empty';
@@ -6,6 +6,8 @@ import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Header from '~/Popup/components/SelectSubHeader';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
+import { gte } from '~/Popup/utils/big';
 import type { SuiChain } from '~/types/chain';
 
 import LedgerCheck from '../components/LedgerCheck';
@@ -19,15 +21,59 @@ type SuiProps = {
 };
 
 export default function Sui({ chain }: SuiProps) {
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
+  const { homeTabPath } = extensionStorage;
+
   const { currentAccount } = useCurrentAccount();
   const { currentSuiNetwork, additionalSuiNetworks } = useCurrentSuiNetwork();
-  const [tabValue, setTabValue] = useState(0);
 
-  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+  const tabLabels = ['Coins', 'NFTs'];
+
+  const currentHomeTabPath = useMemo(() => homeTabPath.sui.find((item) => item.networkId === currentSuiNetwork.id), [currentSuiNetwork.id, homeTabPath.sui]);
+
+  const [tabValue, setTabValue] = useState(gte(currentHomeTabPath?.tabValue || 0, tabLabels.length) ? currentHomeTabPath?.tabValue || 0 : 0);
+
+  const handleChange = async (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
+
+    await setExtensionStorage('homeTabPath', {
+      ...homeTabPath,
+
+      sui: homeTabPath.sui.map((item) =>
+        item.networkId === currentSuiNetwork.id
+          ? {
+              ...item,
+              tabValue: newTabValue,
+            }
+          : item,
+      ),
+    });
   };
 
   const isCustom = useMemo(() => !!additionalSuiNetworks.find((item) => item.id === currentSuiNetwork.id), [additionalSuiNetworks, currentSuiNetwork.id]);
+
+  useEffect(() => {
+    if (currentHomeTabPath?.tabValue !== tabValue) {
+      setTabValue(currentHomeTabPath?.tabValue || 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSuiNetwork.id]);
+
+  useEffect(() => {
+    if (gte(currentHomeTabPath?.tabValue || 0, tabLabels.length)) {
+      void setExtensionStorage('homeTabPath', {
+        ...homeTabPath,
+        sui: homeTabPath.sui.map((item) =>
+          item.networkId === currentSuiNetwork.id
+            ? {
+                ...item,
+                tabValue: 0,
+              }
+            : item,
+        ),
+      });
+    }
+  }, [currentSuiNetwork.id, currentHomeTabPath?.tabValue, homeTabPath, setExtensionStorage, tabLabels.length]);
 
   return (
     <Container key={`${currentAccount.id}-${currentSuiNetwork.id}`}>
@@ -47,8 +93,9 @@ export default function Sui({ chain }: SuiProps) {
             </ErrorBoundary>
           </NativeChainCardContainer>
           <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
-            <Tab label="Coins" />
-            <Tab label="NFTs" />
+            {tabLabels.map((item) => (
+              <Tab key={item} label={item} />
+            ))}
           </Tabs>
           <StyledTabPanel value={tabValue} index={0}>
             <BottomContainer sx={{ marginTop: '0.9rem' }}>

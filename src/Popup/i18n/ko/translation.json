@@ -513,6 +513,27 @@
         }
       },
       "Ethereum": {
+        "NFT": {
+          "Add": {
+            "entry": {
+              "addNFTSnackbar": "NFT가 추가 되었습니다.",
+              "addressPlaceholder": "NFT 계약주소",
+              "copied": "복사 되었습니다.",
+              "data": "Data",
+              "information": "찾고 있는 토큰이 목록에 없으면 \"커스텀 NFT 추가\"를 클릭하십시오.",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "invalidTokenId": "유효하지 않은 토큰 ID입니다.",
+              "preview": "NFT 미리보기",
+              "previewSubText": "본인 소유의 NFT 정보를 입력할 시 이미지가 보여집니다.",
+              "submitButton": "커스텀 NFT 추가",
+              "tokenIdPlaceholder": "토큰 ID",
+              "uri": "URI"
+            },
+            "layout": {
+              "title": "NFT 가져오기"
+            }
+          }
+        },
         "Network": {
           "Add": {
             "entry": {
@@ -825,6 +846,26 @@
                     "toToken": "To"
                   }
                 },
+                "NFT": {
+                  "ERC1155": {
+                    "SafeTransferFrom": {
+                      "index": {
+                        "contractAddress": "계약 주소",
+                        "fromAddress": "보내는 주소",
+                        "toAddress": "받는 주소"
+                      }
+                    }
+                  },
+                  "ERC721": {
+                    "TransferFrom": {
+                      "index": {
+                        "contractAddress": "계약 주소",
+                        "fromAddress": "보내는 주소",
+                        "toAddress": "받는 주소"
+                      }
+                    }
+                  }
+                },
                 "Send": {
                   "index": {
                     "amount": "수량",
@@ -985,7 +1026,31 @@
     "Wallet": {
       "NFTDetail": {
         "Entry": {
-          "Sui": {
+          "ethereum": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "attributes": "속성",
+                  "balance": "보유 수량",
+                  "contractAddress": "계약 주소",
+                  "copied": "복사 되었습니다.",
+                  "description": "NFT 설명",
+                  "ownerAddress": "소유주",
+                  "source": "소스",
+                  "tokenId": "토큰 ID",
+                  "tokenType": "토큰 표준",
+                  "url": "URL"
+                }
+              }
+            },
+            "index": {
+              "information": "Cosmostation는 소스 URL에서 미디어 파일을 가져옵니다. 이러한 URL은 때때로 NFT가 민팅된 마켓플레이스에서 변경되기도 합니다.",
+              "notOwnedNFT": "이 NFT의 소유주가 아닙니다",
+              "send": "NFT 보내기",
+              "untransferableObject": "보낼 수 없는 NFT입니다"
+            }
+          },
+          "sui": {
             "components": {
               "NFTInfoItem": {
                 "index": {
@@ -1010,6 +1075,36 @@
       },
       "NFTSend": {
         "Entry": {
+          "Ethereum": {
+            "components": {
+              "NFTButton": {
+                "index": {
+                  "balance": "보유 수량"
+                }
+              },
+              "NFTPopover": {
+                "components": {
+                  "NFTItem": {
+                    "index": {
+                      "balance": "보유 수량"
+                    }
+                  }
+                }
+              }
+            },
+            "index": {
+              "fee": "수수료",
+              "insufficientAmount": "수량이 부족합니다.",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "invalidAmount": "수량을 입력하세요.",
+              "invalidSendNFTQuantity": "유효하지 않은 NFT 수량입니다.",
+              "networkError": "네트워크 오류",
+              "notOwnedNFT": "이 NFT의 소유주가 아닙니다",
+              "quantityPlaceholder": "NFT 수량",
+              "recipientAddressPlaceholder": "수신인 주소",
+              "sendButton": "보내기"
+            }
+          },
           "Sui": {
             "index": {
               "fee": "수수료",
@@ -1392,6 +1487,19 @@
           }
         },
         "ethereum": {
+          "NFTList": {
+            "components": {
+              "NFTCardItem": {
+                "index": {
+                  "networkError": "네트워크 오류"
+                }
+              }
+            },
+            "index": {
+              "importNFTButton": "NFT 가져오기",
+              "nft": "NFT"
+            }
+          },
           "NativeChainCard": {
             "index": {
               "copied": "복사 되었습니다.",
@@ -1419,6 +1527,11 @@
           "CoinList": {
             "index": {
               "coin": "코인"
+            }
+          },
+          "NFTList": {
+            "index": {
+              "nft": "NFT"
             }
           },
           "NativeChainCard": {

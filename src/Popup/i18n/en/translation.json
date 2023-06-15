@@ -513,6 +513,27 @@
         }
       },
       "Ethereum": {
+        "NFT": {
+          "Add": {
+            "entry": {
+              "addNFTSnackbar": "NFT added",
+              "addressPlaceholder": "NFT contract address",
+              "copied": "Copied",
+              "data": "Data",
+              "information": "If the token you're looking for is not on the list, click \"Import a custom NFT\"",
+              "invalidAddress": "Invalid address",
+              "invalidTokenId": "Invalid token ID",
+              "preview": "NFT Preview",
+              "previewSubText": "When you enter your own NFT information, the image is displayed",
+              "submitButton": "Add custom NFT",
+              "tokenIdPlaceholder": "NFT token ID",
+              "uri": "URI"
+            },
+            "layout": {
+              "title": "Import NFT"
+            }
+          }
+        },
         "Network": {
           "Add": {
             "entry": {
@@ -825,6 +846,26 @@
                     "toToken": "To"
                   }
                 },
+                "NFT": {
+                  "ERC1155": {
+                    "SafeTransferFrom": {
+                      "index": {
+                        "contractAddress": "Contract address",
+                        "fromAddress": "From address",
+                        "toAddress": "To address"
+                      }
+                    }
+                  },
+                  "ERC721": {
+                    "TransferFrom": {
+                      "index": {
+                        "contractAddress": "Contract address",
+                        "fromAddress": "From address",
+                        "toAddress": "To address"
+                      }
+                    }
+                  }
+                },
                 "Send": {
                   "index": {
                     "amount": "Amount",
@@ -985,7 +1026,31 @@
     "Wallet": {
       "NFTDetail": {
         "Entry": {
-          "Sui": {
+          "ethereum": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "attributes": "Attributes",
+                  "balance": "Balance",
+                  "contractAddress": "Contract address",
+                  "copied": "Copied",
+                  "description": "Description",
+                  "ownerAddress": "Owner",
+                  "source": "Source",
+                  "tokenId": "Token ID",
+                  "tokenType": "Token Standard",
+                  "url": "URL"
+                }
+              }
+            },
+            "index": {
+              "information": "Import media files from the URI. These URI are sometimes changed in marketplaces where NFTs are minted.",
+              "notOwnedNFT": "The owner of this NFT is not you",
+              "send": "NFT Send",
+              "untransferableObject": "Untransferable object"
+            }
+          },
+          "sui": {
             "components": {
               "NFTInfoItem": {
                 "index": {
@@ -1010,6 +1075,36 @@
       },
       "NFTSend": {
         "Entry": {
+          "Ethereum": {
+            "components": {
+              "NFTButton": {
+                "index": {
+                  "balance": "Balance"
+                }
+              },
+              "NFTPopover": {
+                "components": {
+                  "NFTItem": {
+                    "index": {
+                      "balance": "Balance"
+                    }
+                  }
+                }
+              }
+            },
+            "index": {
+              "fee": "Fee",
+              "insufficientAmount": "Insufficient amount",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "invalidSendNFTQuantity": "Invalid NFT Amount",
+              "networkError": "Network Error",
+              "notOwnedNFT": "The owner of this NFT is not you",
+              "quantityPlaceholder": "Quantity",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          },
           "Sui": {
             "index": {
               "fee": "Fee",
@@ -1392,6 +1487,19 @@
           }
         },
         "ethereum": {
+          "NFTList": {
+            "components": {
+              "NFTCardItem": {
+                "index": {
+                  "networkError": "Network Error"
+                }
+              }
+            },
+            "index": {
+              "importNFTButton": "Import NFTs",
+              "nft": "NFT"
+            }
+          },
           "NativeChainCard": {
             "index": {
               "copied": "Copied",
@@ -1419,6 +1527,11 @@
           "CoinList": {
             "index": {
               "coin": "Coin"
+            }
+          },
+          "NFTList": {
+            "index": {
+              "nft": "NFT"
             }
           },
           "NativeChainCard": {

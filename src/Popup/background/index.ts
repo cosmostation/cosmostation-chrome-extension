@@ -1,4 +1,4 @@
-import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -99,6 +99,7 @@ function background() {
         await setStorage('additionalChains', []);
         await setStorage('additionalEthereumNetworks', []);
         await setStorage('ethereumTokens', []);
+        await setStorage('ethereumNFTs', []);
         await setStorage('encryptedPassword', null);
         await setStorage('selectedAccountId', '');
 
@@ -107,6 +108,24 @@ function background() {
         await setStorage('theme', '' as ThemeType);
 
         await setStorage('rootPath', PATH.DASHBOARD);
+        await setStorage('homeTabPath', {
+          ethereum: ETHEREUM_NETWORKS.map((network) => ({
+            networkId: network.id,
+            tabValue: 0,
+          })),
+          cosmos: COSMOS_CHAINS.map((chain) => ({
+            chainId: chain.id,
+            tabValue: 0,
+          })),
+          sui: SUI_NETWORKS.map((network) => ({
+            networkId: network.id,
+            tabValue: 0,
+          })),
+          aptos: APTOS_NETWORKS.map((network) => ({
+            networkId: network.id,
+            tabValue: 0,
+          })),
+        });
 
         await setStorage('language', '' as LanguageType);
         await setStorage('currency', '' as CurrencyType);
