@@ -130,7 +130,7 @@ export const cosSignAminoParamsSchema = (chainNames: string[], chainId: string) 
       fee: Joi.object<Fee>({
         amount: Joi.array()
           .items(Joi.object<Amount>({ amount: Joi.string().required(), denom: Joi.string().required() }))
-          .required(),
+          .optional(),
         gas: Joi.string().required(),
       }),
       memo: Joi.string().allow(''),

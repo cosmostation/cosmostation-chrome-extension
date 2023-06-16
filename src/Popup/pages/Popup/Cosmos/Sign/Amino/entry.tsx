@@ -69,8 +69,8 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputGas = fee.gas;
 
-  const inputFee = fee.amount.find((item) => feeCoins.map((feeCoin) => feeCoin.baseDenom).includes(item.denom)) ||
-    fee.amount[0] || {
+  const inputFee = fee.amount?.find((item) => feeCoins.map((feeCoin) => feeCoin.baseDenom).includes(item.denom)) ||
+    fee.amount?.[0] || {
       denom: chain.baseDenom,
       amount: '0',
     };
