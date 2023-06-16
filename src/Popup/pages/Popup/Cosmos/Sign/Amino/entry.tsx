@@ -101,7 +101,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 
-  const signingFee = isEditFee ? { amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas } : doc.fee;
+  const signingFee = isEditFee ? { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas } : fee;
 
   const tx = { ...doc, memo: signingMemo, fee: signingFee };
 
@@ -110,12 +110,12 @@ export default function Entry({ queue, chain }: EntryProps) {
   };
 
   const errorMessage = useMemo(() => {
-    if (!gte(currentFeeCoin.availableAmount, baseFee)) {
+    if (!gte(currentFeeCoin.availableAmount, baseFee) && !fee.granter && !fee.payer) {
       return t('pages.Popup.Cosmos.Sign.Amino.entry.insufficientFeeAmount');
     }
 
     return '';
-  }, [baseFee, currentFeeCoin.availableAmount, t]);
+  }, [baseFee, currentFeeCoin.availableAmount, fee.granter, fee.payer, t]);
 
   return (
     <Container>
