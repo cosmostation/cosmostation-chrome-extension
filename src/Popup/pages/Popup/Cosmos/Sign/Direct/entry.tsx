@@ -71,7 +71,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
     if (foundFee) return foundFee;
 
-    if (fee?.amount?.[0].amount && fee?.amount?.[0].denom) {
+    if (fee?.amount?.[0]?.amount && fee?.amount?.[0].denom) {
       return fee.amount[0];
     }
 
