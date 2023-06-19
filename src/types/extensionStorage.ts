@@ -15,21 +15,17 @@ export type SuiPermissionType = ValueOf<typeof PERMISSION>;
 
 export type HomeTabPath = {
   ethereum: {
-    networkId: string;
     tabValue: number;
-  }[];
+  };
   cosmos: {
-    chainId: string;
     tabValue: number;
-  }[];
+  };
   sui: {
-    networkId: string;
     tabValue: number;
-  }[];
+  };
   aptos: {
-    networkId: string;
     tabValue: number;
-  }[];
+  };
 };
 
 export type AccountCommon = {

@@ -29,28 +29,10 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const tabLabels = ['Coins', 'NFTs'];
 
-  const currentHomeTabPath = useMemo(
-    () => homeTabPath.ethereum.find((item) => item.networkId === currentEthereumNetwork.id),
-    [currentEthereumNetwork.id, homeTabPath.ethereum],
-  );
+  const [tabValue, setTabValue] = useState(!gte(homeTabPath.ethereum.tabValue, tabLabels.length) ? homeTabPath.ethereum.tabValue : 0);
 
-  const [tabValue, setTabValue] = useState(gte(currentHomeTabPath?.tabValue || 0, tabLabels.length) ? currentHomeTabPath?.tabValue || 0 : 0);
-
-  const handleChange = async (_: React.SyntheticEvent, newTabValue: number) => {
+  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
-
-    await setExtensionStorage('homeTabPath', {
-      ...homeTabPath,
-
-      ethereum: homeTabPath.ethereum.map((item) =>
-        item.networkId === currentEthereumNetwork.id
-          ? {
-              ...item,
-              tabValue: newTabValue,
-            }
-          : item,
-      ),
-    });
   };
 
   const isCustom = useMemo(
@@ -59,27 +41,24 @@ export default function Ethereum({ chain }: EthereumProps) {
   );
 
   useEffect(() => {
-    if (currentHomeTabPath?.tabValue !== tabValue) {
-      setTabValue(currentHomeTabPath?.tabValue || 0);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentEthereumNetwork.id]);
-
-  useEffect(() => {
-    if (gte(currentHomeTabPath?.tabValue || 0, tabLabels.length)) {
+    if (gte(homeTabPath.ethereum.tabValue, tabLabels.length)) {
       void setExtensionStorage('homeTabPath', {
         ...homeTabPath,
-        ethereum: homeTabPath.ethereum.map((item) =>
-          item.networkId === currentEthereumNetwork.id
-            ? {
-                ...item,
-                tabValue: 0,
-              }
-            : item,
-        ),
+        ethereum: {
+          tabValue: 0,
+        },
       });
+
+      setTabValue(0);
     }
-  }, [currentEthereumNetwork.id, currentHomeTabPath?.tabValue, homeTabPath, setExtensionStorage, tabLabels.length]);
+
+    void setExtensionStorage('homeTabPath', {
+      ...homeTabPath,
+      ethereum: {
+        tabValue,
+      },
+    });
+  }, [homeTabPath, setExtensionStorage, tabLabels.length, tabValue]);
 
   return (
     <Container key={`${currentAccount.id}-${currentEthereumNetwork.id}`}>
