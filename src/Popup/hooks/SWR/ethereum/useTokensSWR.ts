@@ -48,6 +48,7 @@ export function useTokensSWR(config?: SWRConfiguration) {
       displayDenom: item.symbol,
       imageURL: item.image ? `https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${item.image}` : undefined,
       coinGeckoId: item.coinGeckoId,
+      default: item.default,
     })) || [];
 
   return { data: returnData, error, mutate };

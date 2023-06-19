@@ -35,11 +35,12 @@ type TokenItemProps = {
   chain: CosmosChain;
   token: CosmosToken;
   address: string;
+  isDefault: boolean;
   onClick?: () => void;
   onClickDelete?: () => void;
 };
 
-export default function TokenItem({ chain, token, address, onClick, onClickDelete }: TokenItemProps) {
+export default function TokenItem({ chain, token, address, isDefault, onClick, onClickDelete }: TokenItemProps) {
   const { extensionStorage } = useExtensionStorage();
 
   const { currency } = extensionStorage;
@@ -81,15 +82,17 @@ export default function TokenItem({ chain, token, address, onClick, onClickDelet
             </Number>
           </RightTextChangeRateContainer>
         </RightTextContainer>
-        <DeleteButton
-          id="deleteButton"
-          onClick={(e) => {
-            e.stopPropagation();
-            onClickDelete?.();
-          }}
-        >
-          <Close16Icon />
-        </DeleteButton>
+        {!isDefault && (
+          <DeleteButton
+            id="deleteButton"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClickDelete?.();
+            }}
+          >
+            <Close16Icon />
+          </DeleteButton>
+        )}
       </RightContainer>
     </StyledButton>
   );

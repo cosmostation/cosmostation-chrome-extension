@@ -5,11 +5,13 @@ import { Typography } from '@mui/material';
 import AddButton from '~/Popup/components/AddButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
+import { useTokensSWR } from '~/Popup/hooks/SWR/cosmos/useTokensSWR';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt } from '~/Popup/utils/big';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
@@ -33,13 +35,14 @@ export default function CoinList({ chain }: CoinListProps) {
   const { t } = useTranslation();
 
   const accounts = useAccounts(true);
+  const { data } = useTokensSWR(chain);
 
   const address = accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
 
-  const { currentCosmosTokens, removeCosmosToken } = useCurrentCosmosTokens();
+  const { currentCosmosTokens, removeCosmosToken } = useCurrentCosmosTokens(chain);
 
   const nativeCoinCnt = useMemo(() => coins.filter((coin) => coin.coinType === 'native').length, [coins]);
   const bridgedCoinCnt = useMemo(() => coins.filter((coin) => coin.coinType === 'bridge').length, [coins]);
@@ -56,7 +59,15 @@ export default function CoinList({ chain }: CoinListProps) {
   );
   const sortedIbcCoins = useMemo(() => ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)), [ibcCoins]);
 
-  const sortedTokens = useMemo(() => currentCosmosTokens.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)), [currentCosmosTokens]);
+  const sortedTokens = useMemo(
+    () => [
+      ...currentCosmosTokens.filter((item) => data.find((token) => token.default && isEqualsIgnoringCase(item.address, token.address))),
+      ...currentCosmosTokens
+        .filter((item) => !data.find((token) => token.default && isEqualsIgnoringCase(item.address, token.address)))
+        .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
+    ],
+    [currentCosmosTokens, data],
+  );
 
   const typeInfos = useMemo(() => {
     const infos: TypeInfo[] = [];
@@ -160,25 +171,30 @@ export default function CoinList({ chain }: CoinListProps) {
           ))}
 
         {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'cw20') &&
-          sortedTokens.map((item) => (
-            <ErrorBoundary
-              key={item.id}
-              FallbackComponent={
-                // eslint-disable-next-line react/no-unstable-nested-components
-                (props) => <TokenItemError {...props} address={address} chain={chain} token={item} onClickDelete={() => removeCosmosToken(item)} />
-              }
-            >
-              <Suspense fallback={<TokenItemSkeleton token={item} />}>
-                <TokenItem
-                  address={address}
-                  chain={chain}
-                  token={item}
-                  onClick={() => navigate(`/wallet/send/${item.address ? `${encodeURIComponent(item.address)}` : ''}` as unknown as Path)}
-                  onClickDelete={() => removeCosmosToken(item)}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          ))}
+          sortedTokens.map((item) => {
+            const isDefault = !!data.find((token) => token.default && isEqualsIgnoringCase(item.address, token.address));
+
+            return (
+              <ErrorBoundary
+                key={item.id}
+                FallbackComponent={
+                  // eslint-disable-next-line react/no-unstable-nested-components
+                  (props) => <TokenItemError {...props} address={address} chain={chain} token={item} onClickDelete={() => removeCosmosToken(item)} />
+                }
+              >
+                <Suspense fallback={<TokenItemSkeleton token={item} />}>
+                  <TokenItem
+                    isDefault={isDefault}
+                    address={address}
+                    chain={chain}
+                    token={item}
+                    onClick={() => navigate(`/wallet/send/${item.address ? `${encodeURIComponent(item.address)}` : ''}` as unknown as Path)}
+                    onClickDelete={() => removeCosmosToken(item)}
+                  />
+                </Suspense>
+              </ErrorBoundary>
+            );
+          })}
 
         {!isExistCoinOrToken && chain.cosmWasm && (
           <AddTokenButton type="button" onClick={() => navigate('/chain/cosmos/token/add/cw20/search')}>
