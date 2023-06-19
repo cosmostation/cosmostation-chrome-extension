@@ -3,6 +3,7 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
+import { KAVA } from '~/constants/chain/ethereum/network/kava';
 import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
 import { get } from '~/Popup/utils/axios';
 import { toHex } from '~/Popup/utils/string';
@@ -13,6 +14,7 @@ import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNe
 const nameMap = {
   [ETHEREUM.id]: 'ethereum',
   [SMART_CHAIN.id]: 'smart-chain',
+  [KAVA.id]: 'kava',
 };
 
 export function useTokensSWR(config?: SWRConfiguration) {
