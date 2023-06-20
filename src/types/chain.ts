@@ -66,6 +66,7 @@ export type CosmosCW20Token = {
   decimals: number;
   imageURL?: string;
   coinGeckoId?: string;
+  default?: boolean;
 };
 
 export type CosmosToken = CosmosCW20Token;
@@ -163,6 +164,7 @@ export type EthereumERC20Token = {
   decimals: number;
   imageURL?: string;
   coinGeckoId?: string;
+  default?: boolean;
 };
 
 export type Chain = CosmosChain | EthereumChain | AptosChain | SuiChain;

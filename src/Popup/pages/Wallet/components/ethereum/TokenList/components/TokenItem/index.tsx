@@ -33,14 +33,13 @@ import Close16Icon from '~/images/icons/Close16.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
 
 type TokenItemProps = {
-  isDefault: boolean;
   token: EthereumToken;
   onClick?: () => void;
   onClickDelete?: () => void;
   disabled?: boolean;
 };
 
-export default function TokenItem({ isDefault, token, disabled, onClick, onClickDelete }: TokenItemProps) {
+export default function TokenItem({ token, disabled, onClick, onClickDelete }: TokenItemProps) {
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const tokenBalance = useTokenBalanceSWR({ token }, { suspense: true });
@@ -77,7 +76,7 @@ export default function TokenItem({ isDefault, token, disabled, onClick, onClick
             </Number>
           </RightTextChangeRateContainer>
         </RightTextContainer>
-        {!isDefault && (
+        {!token.default && (
           <DeleteButton
             id="deleteButton"
             onClick={(e) => {

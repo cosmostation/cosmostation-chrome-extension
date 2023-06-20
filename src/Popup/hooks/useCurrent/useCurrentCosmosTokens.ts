@@ -1,8 +1,7 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
-import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
 
 import { useCurrentChain } from './useCurrentChain';
@@ -16,9 +15,33 @@ export function useCurrentCosmosTokens(chain: CosmosChain) {
   const { currentChain } = useCurrentChain();
   const { data } = useTokensSWR(chain);
 
+  const defaultTokens: CosmosToken[] = useMemo(
+    () =>
+      data
+        .filter((item) => item.default)
+        .map((item) => ({
+          id: `${chain.chainId}${item.address}`,
+          address: item.address,
+          decimals: item.decimals,
+          displayDenom: item.symbol,
+          tokenType: 'CW20',
+          chainId: currentChain.id,
+          imageURL: item.image,
+          coinGeckoId: item.coinGeckoId,
+          default: item.default,
+        })),
+    [chain.chainId, currentChain.id, data],
+  );
+
   const { cosmosTokens } = extensionStorage;
 
-  const currentCosmosTokens = useMemo(() => cosmosTokens.filter((item) => item.chainId === currentChain.id), [cosmosTokens, currentChain.id]);
+  const currentCosmosTokens = useMemo(
+    () =>
+      [...defaultTokens, ...cosmosTokens.filter((item) => item.chainId === currentChain.id)].filter(
+        (token, idx, self) => self.findIndex((item) => item.address.toLowerCase() === token.address.toLowerCase()) === idx,
+      ),
+    [cosmosTokens, currentChain.id, defaultTokens],
+  );
 
   const addCosmosToken = async (token: AddCosmosTokenParams) => {
     const newCosmosTokens = [
@@ -47,51 +70,6 @@ export function useCurrentCosmosTokens(chain: CosmosChain) {
 
     await setExtensionStorage('cosmosTokens', newCosmosTokens);
   };
-
-  useEffect(() => {
-    if (data.filter((item) => item.default && !cosmosTokens.find((cosmosToken) => isEqualsIgnoringCase(cosmosToken.address, item.address)))) {
-      const newTokens = data
-        .filter((token) => token.default && !cosmosTokens.find((cosmosToken) => isEqualsIgnoringCase(cosmosToken.address, token.address)))
-        .map(
-          (token) =>
-            ({
-              id: uuidv4(),
-              address: token.address,
-              decimals: token.decimals,
-              displayDenom: token.symbol,
-              tokenType: 'CW20',
-              chainId: currentChain.id,
-              imageURL: token.image,
-              coinGeckoId: token.coinGeckoId,
-            } as CosmosToken),
-        );
-
-      const newCosmosTokens = [
-        ...cosmosTokens.filter((item) => !newTokens.find((token) => item.address === token.address && item.chainId === token.chainId)),
-        ...newTokens,
-      ];
-
-      const sortedEthereumTokens = [
-        ...newCosmosTokens
-          .filter((item) => data.find((token) => token.default && isEqualsIgnoringCase(item.address, token.address)))
-          .sort((a, b) => {
-            if (
-              data.findIndex((item) => isEqualsIgnoringCase(item.address, a.address)) > data.findIndex((item) => isEqualsIgnoringCase(item.address, b.address))
-            )
-              return 1;
-            if (
-              data.findIndex((item) => isEqualsIgnoringCase(item.address, a.address)) < data.findIndex((item) => isEqualsIgnoringCase(item.address, b.address))
-            )
-              return -1;
-
-            return 0;
-          }),
-        ...newCosmosTokens.filter((item) => !data.find((token) => token.default && isEqualsIgnoringCase(item.address, token.address))),
-      ];
-
-      void setExtensionStorage('cosmosTokens', sortedEthereumTokens);
-    }
-  }, [cosmosTokens, currentChain.id, data, setExtensionStorage]);
 
   return { currentCosmosTokens, addCosmosToken, removeCosmosToken, addCosmosTokens };
 }

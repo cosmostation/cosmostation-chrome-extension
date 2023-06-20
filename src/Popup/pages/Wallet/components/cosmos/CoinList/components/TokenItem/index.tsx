@@ -35,12 +35,11 @@ type TokenItemProps = {
   chain: CosmosChain;
   token: CosmosToken;
   address: string;
-  isDefault: boolean;
   onClick?: () => void;
   onClickDelete?: () => void;
 };
 
-export default function TokenItem({ chain, token, address, isDefault, onClick, onClickDelete }: TokenItemProps) {
+export default function TokenItem({ chain, token, address, onClick, onClickDelete }: TokenItemProps) {
   const { extensionStorage } = useExtensionStorage();
 
   const { currency } = extensionStorage;
@@ -82,7 +81,7 @@ export default function TokenItem({ chain, token, address, isDefault, onClick, o
             </Number>
           </RightTextChangeRateContainer>
         </RightTextContainer>
-        {!isDefault && (
+        {!token.default && (
           <DeleteButton
             id="deleteButton"
             onClick={(e) => {

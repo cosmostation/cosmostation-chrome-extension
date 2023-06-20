@@ -1,8 +1,7 @@
-import { useEffect } from 'react';
+import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
-import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { EthereumToken } from '~/types/chain';
 
 import { useCurrentEthereumNetwork } from './useCurrentEthereumNetwork';
@@ -15,9 +14,30 @@ export function useCurrentEthereumTokens() {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { data } = useTokensSWR();
 
+  const defaultTokens: EthereumToken[] = useMemo(
+    () =>
+      data
+        .filter((item) => item.default)
+        .map((item) => ({
+          id: `${currentEthereumNetwork.id}${item.address}`,
+          ethereumNetworkId: currentEthereumNetwork.id,
+          address: item.address,
+          name: item.name,
+          displayDenom: item.displayDenom,
+          decimals: item.decimals,
+          imageURL: item.imageURL,
+          coinGeckoId: item.coinGeckoId,
+          tokenType: 'ERC20',
+          default: item.default,
+        })),
+    [currentEthereumNetwork.id, data],
+  );
+
   const { ethereumTokens } = extensionStorage;
 
-  const currentEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentEthereumNetwork.id);
+  const currentEthereumTokens = [...defaultTokens, ...ethereumTokens.filter((item) => item.ethereumNetworkId === currentEthereumNetwork.id)].filter(
+    (token, idx, self) => self.findIndex((item) => item.address.toLowerCase() === token.address.toLowerCase()) === idx,
+  );
 
   const addEthereumToken = async (token: AddEthereumTokenParams) => {
     const newEthereumTokens = [
@@ -48,54 +68,6 @@ export function useCurrentEthereumTokens() {
 
     await setExtensionStorage('ethereumTokens', newEthereumTokens);
   };
-
-  useEffect(() => {
-    if (
-      data.filter((token) => token.default).find((token) => !ethereumTokens.find((ethereumToken) => isEqualsIgnoringCase(ethereumToken.address, token.address)))
-    ) {
-      const newTokens = data
-        .filter((token) => token.default && !ethereumTokens.find((ethereumToken) => isEqualsIgnoringCase(ethereumToken.address, token.address)))
-        .map(
-          (token) =>
-            ({
-              id: uuidv4(),
-              ethereumNetworkId: currentEthereumNetwork.id,
-              address: token.address,
-              name: token.name,
-              displayDenom: token.displayDenom,
-              decimals: token.decimals,
-              imageURL: token.imageURL,
-              coinGeckoId: token.coinGeckoId,
-              tokenType: 'ERC20',
-            } as EthereumToken),
-        );
-
-      const newEthereumTokens = [
-        ...ethereumTokens.filter((item) => !newTokens.find((token) => item.address === token.address && item.ethereumNetworkId === token.ethereumNetworkId)),
-        ...newTokens,
-      ];
-
-      const sortedEthereumTokens = [
-        ...newEthereumTokens
-          .filter((item) => data.find((token) => token.default && isEqualsIgnoringCase(item.address, token.address)))
-          .sort((a, b) => {
-            if (
-              data.findIndex((item) => isEqualsIgnoringCase(item.address, a.address)) > data.findIndex((item) => isEqualsIgnoringCase(item.address, b.address))
-            )
-              return 1;
-            if (
-              data.findIndex((item) => isEqualsIgnoringCase(item.address, a.address)) < data.findIndex((item) => isEqualsIgnoringCase(item.address, b.address))
-            )
-              return -1;
-
-            return 0;
-          }),
-        ...newEthereumTokens.filter((item) => !data.find((token) => token.default && isEqualsIgnoringCase(item.address, token.address))),
-      ];
-
-      void setExtensionStorage('ethereumTokens', sortedEthereumTokens);
-    }
-  }, [currentEthereumNetwork.id, data, ethereumTokens, setExtensionStorage]);
 
   return { currentEthereumTokens, addEthereumToken, removeEthereumToken, addEthereumTokens };
 }

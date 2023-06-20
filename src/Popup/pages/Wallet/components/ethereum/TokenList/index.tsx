@@ -7,7 +7,6 @@ import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { Path } from '~/types/route';
 
 import TokenItem, { TokenItemError, TokenItemSkeleton } from './components/TokenItem';
@@ -63,8 +62,6 @@ export default function TokenList() {
               await removeEthereumToken(token);
             };
 
-            const isDefault = !!data.find((item) => item.default && isEqualsIgnoringCase(item.address, token.address));
-
             return (
               <ErrorBoundary
                 key={token.id}
@@ -74,12 +71,7 @@ export default function TokenList() {
                 }
               >
                 <Suspense fallback={<TokenItemSkeleton token={token} />}>
-                  <TokenItem
-                    isDefault={isDefault}
-                    token={token}
-                    onClickDelete={handleOnClickDelete}
-                    onClick={() => navigate(`/wallet/send/${token.id}` as unknown as Path)}
-                  />
+                  <TokenItem token={token} onClickDelete={handleOnClickDelete} onClick={() => navigate(`/wallet/send/${token.id}` as unknown as Path)} />
                 </Suspense>
               </ErrorBoundary>
             );
