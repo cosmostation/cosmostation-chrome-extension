@@ -74,7 +74,7 @@ export default function NFTList({ chain }: NFTListProps) {
     return ownedEthereumNFTs.filter((item) => currentTypeInfo?.type === item.tokenType) || [];
   }, [ownedEthereumNFTs, currentType, currentTypeInfo?.type]);
 
-  const addToken = () => navigate('/chain/ethereum/nft/add');
+  const addNFT = () => navigate('/chain/ethereum/nft/add');
 
   return (
     <Container>
@@ -89,7 +89,7 @@ export default function NFTList({ chain }: NFTListProps) {
             />
           </ListTitleLeftContainer>
           <ListTitleRightContainer>
-            <AddButton type="button" onClick={addToken}>
+            <AddButton type="button" onClick={addNFT}>
               {t('pages.Wallet.components.ethereum.NFTList.index.importNFTButton')}
             </AddButton>
           </ListTitleRightContainer>
@@ -121,7 +121,7 @@ export default function NFTList({ chain }: NFTListProps) {
           })}
         </ListContainer>
       ) : (
-        <AddTokenButton type="button" onClick={addToken}>
+        <AddTokenButton type="button" onClick={addNFT}>
           <Plus16Icon />
           <AddTokenTextContainer>
             <Typography variant="h6">{t('pages.Wallet.components.ethereum.NFTList.index.importNFTButton')}</Typography>
