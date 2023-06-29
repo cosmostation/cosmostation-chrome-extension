@@ -81,15 +81,17 @@ export default function TokenItem({ chain, token, address, onClick, onClickDelet
             </Number>
           </RightTextChangeRateContainer>
         </RightTextContainer>
-        <DeleteButton
-          id="deleteButton"
-          onClick={(e) => {
-            e.stopPropagation();
-            onClickDelete?.();
-          }}
-        >
-          <Close16Icon />
-        </DeleteButton>
+        {!token.default && (
+          <DeleteButton
+            id="deleteButton"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClickDelete?.();
+            }}
+          >
+            <Close16Icon />
+          </DeleteButton>
+        )}
       </RightContainer>
     </StyledButton>
   );

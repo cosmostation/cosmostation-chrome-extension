@@ -49,7 +49,7 @@ export default function Entry({ chain }: EntryProps) {
   const [selectedTokens, setSelectedTokens] = useState<CosmosTokenParams[]>([]);
   const { currentChain } = useCurrentChain();
 
-  const { addCosmosTokens, currentCosmosTokens } = useCurrentCosmosTokens();
+  const { addCosmosTokens, currentCosmosTokens } = useCurrentCosmosTokens(chain);
 
   const { t } = useTranslation();
   const { navigate } = useNavigate();

@@ -81,7 +81,7 @@ export default function Send({ chain }: CosmosProps) {
 
   const { t } = useTranslation();
 
-  const { currentCosmosTokens } = useCurrentCosmosTokens();
+  const { currentCosmosTokens } = useCurrentCosmosTokens(chain);
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);

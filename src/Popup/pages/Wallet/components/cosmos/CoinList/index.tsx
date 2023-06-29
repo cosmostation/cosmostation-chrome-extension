@@ -39,7 +39,7 @@ export default function CoinList({ chain }: CoinListProps) {
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
 
-  const { currentCosmosTokens, removeCosmosToken } = useCurrentCosmosTokens();
+  const { currentCosmosTokens, removeCosmosToken } = useCurrentCosmosTokens(chain);
 
   const nativeCoinCnt = useMemo(() => coins.filter((coin) => coin.coinType === 'native').length, [coins]);
   const bridgedCoinCnt = useMemo(() => coins.filter((coin) => coin.coinType === 'bridge').length, [coins]);
@@ -56,7 +56,13 @@ export default function CoinList({ chain }: CoinListProps) {
   );
   const sortedIbcCoins = useMemo(() => ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)), [ibcCoins]);
 
-  const sortedTokens = useMemo(() => currentCosmosTokens.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)), [currentCosmosTokens]);
+  const sortedTokens = useMemo(
+    () => [
+      ...currentCosmosTokens.filter((item) => item.default),
+      ...currentCosmosTokens.filter((item) => !item.default).sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
+    ],
+    [currentCosmosTokens],
+  );
 
   const typeInfos = useMemo(() => {
     const infos: TypeInfo[] = [];
