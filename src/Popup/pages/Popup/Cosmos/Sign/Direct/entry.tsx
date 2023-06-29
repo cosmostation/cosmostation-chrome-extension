@@ -71,7 +71,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
     if (foundFee) return foundFee;
 
-    if (fee?.amount?.[0].amount && fee?.amount?.[0].denom) {
+    if (fee?.amount?.[0]?.amount && fee?.amount?.[0].denom) {
       return fee.amount[0];
     }
 
@@ -109,7 +109,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const encodedBodyBytes = cosmos.tx.v1beta1.TxBody.encode({ ...decodedBodyBytes, memo }).finish();
   const encodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode({
     ...decodedAuthInfoBytes,
-    fee: { amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas_limit: Number(gas) },
+    fee: { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas_limit: Number(gas) },
   }).finish();
 
   const bodyBytes = isEditMemo ? encodedBodyBytes : doc.body_bytes;
@@ -132,15 +132,16 @@ export default function Entry({ queue, chain }: EntryProps) {
   };
 
   const errorMessage = useMemo(() => {
-    if (!gte(currentFeeCoin.availableAmount, baseFee)) {
+    if (!gte(currentFeeCoin.availableAmount, baseFee) && !fee?.granter && !fee?.payer) {
       return t('pages.Popup.Cosmos.Sign.Direct.entry.insufficientFeeAmount');
     }
+
     if (currentAccount.type === 'LEDGER') {
       return t('pages.Popup.Cosmos.Sign.Direct.entry.invalidAccountType');
     }
 
     return '';
-  }, [baseFee, currentAccount.type, currentFeeCoin.availableAmount, t]);
+  }, [baseFee, currentAccount.type, currentFeeCoin.availableAmount, fee?.granter, fee?.payer, t]);
 
   return (
     <Container>

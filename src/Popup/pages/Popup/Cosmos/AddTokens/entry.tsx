@@ -40,7 +40,7 @@ type EntryProps = {
 export default function Entry({ queue, chain }: EntryProps) {
   const { deQueue } = useCurrentQueue();
 
-  const { addCosmosTokens } = useCurrentCosmosTokens();
+  const { addCosmosTokens } = useCurrentCosmosTokens(chain);
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();

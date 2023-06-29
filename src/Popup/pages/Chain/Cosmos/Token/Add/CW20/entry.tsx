@@ -29,7 +29,7 @@ export default function Entry({ chain }: EntryProps) {
   const tokens = useTokensSWR(chain);
 
   const { importTokenForm } = useSchema({ chain });
-  const { addCosmosToken } = useCurrentCosmosTokens();
+  const { addCosmosToken } = useCurrentCosmosTokens(chain);
   const { t } = useTranslation();
 
   const tokenInfo = useTokenInfoSWR(chain, contractAddress);

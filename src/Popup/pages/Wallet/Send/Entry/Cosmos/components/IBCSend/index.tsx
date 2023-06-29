@@ -94,7 +94,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const [isDisabled, setIsDisabled] = useState(false);
 
   const { t } = useTranslation();
-  const { currentCosmosTokens } = useCurrentCosmosTokens();
+  const { currentCosmosTokens } = useCurrentCosmosTokens(chain);
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [recipientPopoverAnchorEl, setReceiverIBCPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
