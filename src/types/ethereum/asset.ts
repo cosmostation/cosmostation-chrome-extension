@@ -7,7 +7,7 @@ export type Asset = {
   decimals: number;
   image?: string;
   coinGeckoId?: string;
-  default: boolean;
+  default?: boolean;
 };
 
 export type AssetPayload = {

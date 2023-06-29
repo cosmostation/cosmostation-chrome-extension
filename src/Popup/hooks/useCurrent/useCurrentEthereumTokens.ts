@@ -35,8 +35,12 @@ export function useCurrentEthereumTokens() {
 
   const { ethereumTokens } = extensionStorage;
 
-  const currentEthereumTokens = [...defaultTokens, ...ethereumTokens.filter((item) => item.ethereumNetworkId === currentEthereumNetwork.id)].filter(
-    (token, idx, self) => self.findIndex((item) => item.address.toLowerCase() === token.address.toLowerCase()) === idx,
+  const currentEthereumTokens = useMemo(
+    () =>
+      [...defaultTokens, ...ethereumTokens.filter((item) => item.ethereumNetworkId === currentEthereumNetwork.id)].filter(
+        (token, idx, self) => self.findIndex((item) => item.address.toLowerCase() === token.address.toLowerCase()) === idx,
+      ),
+    [currentEthereumNetwork.id, defaultTokens, ethereumTokens],
   );
 
   const addEthereumToken = async (token: AddEthereumTokenParams) => {
