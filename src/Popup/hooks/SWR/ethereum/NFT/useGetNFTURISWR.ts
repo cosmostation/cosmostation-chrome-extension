@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
-import { ethers, FetchRequest } from 'ethers';
+import { ethers } from 'ethers';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
@@ -9,7 +10,9 @@ import { TOKEN_TYPE } from '~/constants/ethereum';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { isAxiosError } from '~/Popup/utils/axios';
+import { ethersProvider } from '~/Popup/utils/ethereum';
 import type { EthereumNetwork } from '~/types/chain';
+import type { EthereumNFTStandard } from '~/types/ethereum/common';
 import type { ERC721URIPayload, ERC1155URIPayload } from '~/types/ethereum/contract';
 import type { GetNFTURIPayload } from '~/types/ethereum/nft';
 
@@ -17,28 +20,25 @@ type FetcherParams = {
   rpcURL: string;
   contractAddress: string;
   tokenId: string;
-  tokenStandard: typeof TOKEN_TYPE.ERC1155 | typeof TOKEN_TYPE.ERC721;
+  tokenStandard: EthereumNFTStandard;
 };
 
 type UseGetNFTURISWR = {
   network?: EthereumNetwork;
   contractAddress?: string;
   tokenId?: string;
-  tokenStandard?: typeof TOKEN_TYPE.ERC1155 | typeof TOKEN_TYPE.ERC721;
+  tokenStandard?: EthereumNFTStandard;
 };
 
 export function useGetNFTURISWR({ network, contractAddress, tokenId, tokenStandard }: UseGetNFTURISWR, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
+  const rpcURL = useMemo(() => network?.rpcURL || currentEthereumNetwork.rpcURL, [currentEthereumNetwork.rpcURL, network?.rpcURL]);
 
   const fetcher = async (params: FetcherParams) => {
-    const customFetchRequest = new FetchRequest(rpcURL);
+    const provider = ethersProvider(rpcURL);
 
-    customFetchRequest.setHeader('Cosmostation', `extension/${String(process.env.VERSION)}`);
-
-    const provider = new ethers.JsonRpcProvider(customFetchRequest);
     try {
       if (params.tokenStandard === TOKEN_TYPE.ERC721) {
         const erc721Contract = new ethers.Contract(params.contractAddress, ERC721_ABI, provider);

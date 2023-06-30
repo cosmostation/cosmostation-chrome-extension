@@ -14,18 +14,10 @@ export type CurrencyType = ValueOf<typeof CURRENCY_TYPE>;
 export type SuiPermissionType = ValueOf<typeof PERMISSION>;
 
 export type HomeTabPath = {
-  ethereum: {
-    tabValue: number;
-  };
-  cosmos: {
-    tabValue: number;
-  };
-  sui: {
-    tabValue: number;
-  };
-  aptos: {
-    tabValue: number;
-  };
+  ethereum: number;
+  cosmos: number;
+  sui: number;
+  aptos: number;
 };
 
 export type AccountCommon = {
@@ -118,7 +110,7 @@ export type ExtensionStorage = {
   addressBook: AddressInfo[];
 
   rootPath: Path;
-  homeTabPath: HomeTabPath;
+  homeTabIndex: HomeTabPath;
 
   selectedAccountId: Account['id'];
 

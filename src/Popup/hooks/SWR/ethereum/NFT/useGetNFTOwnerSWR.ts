@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
-import { ethers, FetchRequest } from 'ethers';
+import { ethers } from 'ethers';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
@@ -12,8 +12,10 @@ import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { isAxiosError } from '~/Popup/utils/axios';
 import { gt } from '~/Popup/utils/big';
+import { ethersProvider } from '~/Popup/utils/ethereum';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { EthereumNetwork } from '~/types/chain';
+import type { EthereumNFTStandard } from '~/types/ethereum/common';
 import type { ERC721OwnerPayload, ERC1155BalanceOfPayload } from '~/types/ethereum/contract';
 import type { GetNFTOwnerPayload } from '~/types/ethereum/nft';
 
@@ -24,7 +26,7 @@ type FetcherParams = {
   contractAddress: string;
   tokenId: string;
   ownerAddress: string;
-  tokenStandard: typeof TOKEN_TYPE.ERC1155 | typeof TOKEN_TYPE.ERC721;
+  tokenStandard: EthereumNFTStandard;
 };
 
 type UseGetNFTOwnerSWR = {
@@ -32,7 +34,7 @@ type UseGetNFTOwnerSWR = {
   ownerAddress?: string;
   contractAddress?: string;
   tokenId?: string;
-  tokenStandard?: typeof TOKEN_TYPE.ERC1155 | typeof TOKEN_TYPE.ERC721;
+  tokenStandard?: EthereumNFTStandard;
 };
 
 export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, tokenId, tokenStandard }: UseGetNFTOwnerSWR, config?: SWRConfiguration) {
@@ -49,14 +51,10 @@ export function useGetNFTOwnerSWR({ network, contractAddress, ownerAddress, toke
 
   const ownerWalletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
-  const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
+  const rpcURL = useMemo(() => network?.rpcURL || currentEthereumNetwork.rpcURL, [currentEthereumNetwork.rpcURL, network?.rpcURL]);
 
   const fetcher = async (params: FetcherParams) => {
-    const customFetchRequest = new FetchRequest(rpcURL);
-
-    customFetchRequest.setHeader('Cosmostation', `extension/${String(process.env.VERSION)}`);
-
-    const provider = new ethers.JsonRpcProvider(customFetchRequest);
+    const provider = ethersProvider(rpcURL);
 
     try {
       if (params.tokenStandard === TOKEN_TYPE.ERC721) {

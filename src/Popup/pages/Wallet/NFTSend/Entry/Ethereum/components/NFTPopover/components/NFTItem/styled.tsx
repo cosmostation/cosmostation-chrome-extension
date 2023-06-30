@@ -2,6 +2,7 @@ import { styled } from '@mui/material/styles';
 
 type NFTButtonProps = {
   'data-is-active'?: number;
+  'data-is-available'?: boolean;
 };
 
 export const NFTButton = styled('button')<NFTButtonProps>(({ theme, ...props }) => ({
@@ -15,7 +16,7 @@ export const NFTButton = styled('button')<NFTButtonProps>(({ theme, ...props }) 
   height: '8.96rem',
   width: '100%',
 
-  display: 'flex',
+  display: props['data-is-available'] ? 'flex' : 'none',
   justifyContent: 'space-between',
   alignItems: 'center',
 

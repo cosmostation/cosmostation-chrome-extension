@@ -3,11 +3,11 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import type { TOKEN_TYPE } from '~/constants/ethereum';
 import { get, isAxiosError } from '~/Popup/utils/axios';
 import { convertIpfs } from '~/Popup/utils/nft';
 import { httpsRegex } from '~/Popup/utils/regex';
 import type { EthereumNetwork } from '~/types/chain';
+import type { EthereumNFTStandard } from '~/types/ethereum/common';
 import type { GetNFTMetaPayload } from '~/types/ethereum/nft';
 
 import { useGetNFTURISWR } from './useGetNFTURISWR';
@@ -16,7 +16,7 @@ type UseGetNFTMetaSWR = {
   network?: EthereumNetwork;
   contractAddress?: string;
   tokenId?: string;
-  tokenStandard?: typeof TOKEN_TYPE.ERC1155 | typeof TOKEN_TYPE.ERC721;
+  tokenStandard?: EthereumNFTStandard;
 };
 
 export function useGetNFTMetaSWR({ network, contractAddress, tokenId, tokenStandard }: UseGetNFTMetaSWR, config?: SWRConfiguration) {

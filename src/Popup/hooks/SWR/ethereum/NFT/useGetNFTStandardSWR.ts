@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
-import { ethers, FetchRequest } from 'ethers';
+import { ethers } from 'ethers';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
@@ -9,6 +10,7 @@ import { ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID, TOKEN_TYPE } from '~/constan
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { isAxiosError } from '~/Popup/utils/axios';
+import { ethersProvider } from '~/Popup/utils/ethereum';
 import type { EthereumNetwork } from '~/types/chain';
 import type { ERC721SupportInterfacePayload, ERC1155SupportInterfacePayload } from '~/types/ethereum/contract';
 import type { GetNFTStandardPayload } from '~/types/ethereum/nft';
@@ -29,14 +31,10 @@ export function useGetNFTStandardSWR({ network, contractAddress }: UseGetNFTStan
   const { currentChain } = useCurrentChain();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
+  const rpcURL = useMemo(() => network?.rpcURL || currentEthereumNetwork.rpcURL, [currentEthereumNetwork.rpcURL, network?.rpcURL]);
 
   const fetcher = async (params: FetcherParams) => {
-    const customFetchRequest = new FetchRequest(rpcURL);
-
-    customFetchRequest.setHeader('Cosmostation', `extension/${String(process.env.VERSION)}`);
-
-    const provider = new ethers.JsonRpcProvider(customFetchRequest);
+    const provider = ethersProvider(rpcURL);
 
     try {
       const erc721Contract = new ethers.Contract(params.contractAddress, ERC721_ABI, provider);

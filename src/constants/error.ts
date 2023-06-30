@@ -73,3 +73,11 @@ export const SUI_RPC_ERROR_MESSAGE = {
   [RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]: 'The method is not supported by the ledger account.',
   [RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]: 'The chain is not supported by the ledger account.',
 } as const;
+
+export const ETHEREUM_ADD_NFT_ERROR = {
+  INVALID_CONTRACT_ADDRESS: 1,
+  INVALID_TOKEN_ID: 2,
+  INVALID_SOURCE: 3,
+  NOT_OWNED_NFT: 4,
+  NETWORK_ERROR: 5,
+} as const;

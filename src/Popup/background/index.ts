@@ -108,19 +108,11 @@ function background() {
         await setStorage('theme', '' as ThemeType);
 
         await setStorage('rootPath', PATH.DASHBOARD);
-        await setStorage('homeTabPath', {
-          ethereum: {
-            tabValue: 0,
-          },
-          cosmos: {
-            tabValue: 0,
-          },
-          sui: {
-            tabValue: 0,
-          },
-          aptos: {
-            tabValue: 0,
-          },
+        await setStorage('homeTabIndex', {
+          ethereum: 0,
+          cosmos: 0,
+          sui: 0,
+          aptos: 0,
         });
 
         await setStorage('language', '' as LanguageType);

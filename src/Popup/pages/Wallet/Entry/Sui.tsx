@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Empty from '~/Popup/components/common/Empty';
@@ -22,40 +22,36 @@ type SuiProps = {
 
 export default function Sui({ chain }: SuiProps) {
   const { extensionStorage, setExtensionStorage } = useExtensionStorage();
-  const { homeTabPath } = extensionStorage;
+  const { homeTabIndex } = extensionStorage;
 
   const { currentAccount } = useCurrentAccount();
   const { currentSuiNetwork, additionalSuiNetworks } = useCurrentSuiNetwork();
 
   const tabLabels = ['Coins', 'NFTs'];
 
-  const [tabValue, setTabValue] = useState(!gte(homeTabPath.sui.tabValue, tabLabels.length) ? homeTabPath.sui.tabValue : 0);
+  const [tabValue, setTabValue] = useState(!gte(homeTabIndex.sui, tabLabels.length) ? homeTabIndex.sui : 0);
 
-  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+  const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
-  };
+  }, []);
 
   const isCustom = useMemo(() => !!additionalSuiNetworks.find((item) => item.id === currentSuiNetwork.id), [additionalSuiNetworks, currentSuiNetwork.id]);
 
   useEffect(() => {
-    if (gte(homeTabPath.sui.tabValue, tabLabels.length)) {
-      void setExtensionStorage('homeTabPath', {
-        ...homeTabPath,
-        sui: {
-          tabValue: 0,
-        },
+    if (gte(homeTabIndex.sui, tabLabels.length)) {
+      void setExtensionStorage('homeTabIndex', {
+        ...homeTabIndex,
+        sui: 0,
       });
 
       setTabValue(0);
     }
 
-    void setExtensionStorage('homeTabPath', {
-      ...homeTabPath,
-      sui: {
-        tabValue,
-      },
+    void setExtensionStorage('homeTabIndex', {
+      ...homeTabIndex,
+      sui: tabValue,
     });
-  }, [homeTabPath, setExtensionStorage, tabLabels.length, tabValue]);
+  }, [homeTabIndex, setExtensionStorage, tabLabels.length, tabValue]);
 
   return (
     <Container key={`${currentAccount.id}-${currentSuiNetwork.id}`}>

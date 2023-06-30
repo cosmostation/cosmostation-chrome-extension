@@ -17,6 +17,14 @@ import type { EthereumContractKind, EthereumTxType } from '~/types/ethereum/comm
 import type { ERC721SupportInterfacePayload, ERC1155SupportInterfacePayload } from '~/types/ethereum/contract';
 import type { CustomTypedMessage, EthereumTx } from '~/types/message/ethereum';
 
+export function ethersProvider(rpcURL: string) {
+  const customFetchRequest = new FetchRequest(rpcURL);
+
+  customFetchRequest.setHeader('Cosmostation', `extension/${String(process.env.VERSION)}`);
+
+  return new ethers.JsonRpcProvider(customFetchRequest);
+}
+
 export function toUTF8(hex: string) {
   return Buffer.from(stripHexPrefix(hex), 'hex').toString('utf8');
 }

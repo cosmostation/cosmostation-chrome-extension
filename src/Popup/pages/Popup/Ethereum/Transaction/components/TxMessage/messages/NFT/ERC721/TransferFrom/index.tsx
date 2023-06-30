@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -14,9 +15,9 @@ export default function ERC721TransferFrom({ tx, determineTxType }: ERC721Transf
   const { t } = useTranslation();
   const { to } = tx;
 
-  const contractAddress = shorterAddress(to, 32);
-  const fromAddress = (determineTxType?.txDescription?.args?.[0] as undefined | string) || '';
-  const toAddress = (determineTxType?.txDescription?.args?.[1] as undefined | string) || '';
+  const contractAddress = useMemo(() => shorterAddress(to, 32), [to]);
+  const fromAddress = useMemo(() => (determineTxType?.txDescription?.args?.[0] as undefined | string) || '', [determineTxType?.txDescription?.args]);
+  const toAddress = useMemo(() => (determineTxType?.txDescription?.args?.[1] as undefined | string) || '', [determineTxType?.txDescription?.args]);
 
   return (
     <Container title="TransferFrom (ERC721)">
