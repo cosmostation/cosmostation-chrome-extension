@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Cosmostation Wallet",
   "description": "Non-custodial multi-chain extension wallet powered by Cosmostation, the interchain validator.",
-  "version": "0.6.11",
+  "version": "0.6.12",
   "action": {
     "default_icon": {
       "16": "icon16-dark.png",
