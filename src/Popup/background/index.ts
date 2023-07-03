@@ -94,7 +94,7 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.6.12') {
+        if (extensionManifest.version === '0.6.11') {
           void (async () => {
             await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), ARCHWAY.id]);
           })();
