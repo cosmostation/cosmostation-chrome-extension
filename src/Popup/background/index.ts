@@ -1,5 +1,6 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
+import { ARCHWAY } from '~/constants/chain/cosmos/archway';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -91,6 +92,15 @@ function background() {
 
   extension.runtime.onInstalled.addListener((details) => {
     void (async () => {
+      if (details.reason === 'update') {
+        const extensionManifest = chrome.runtime.getManifest();
+        if (extensionManifest.version === '0.6.13') {
+          void (async () => {
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), ARCHWAY.id]);
+          })();
+        }
+      }
+
       if (details.reason === 'install') {
         await setStorage('queues', []);
         await setStorage('windowId', null);
