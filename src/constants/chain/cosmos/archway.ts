@@ -28,4 +28,5 @@ export const ARCHWAY: CosmosChain = {
     average: '0',
   },
   gas: { send: '100000' },
+  cosmWasm: true,
 };
