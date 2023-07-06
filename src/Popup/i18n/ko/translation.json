@@ -524,9 +524,9 @@
               "information": "찾고 있는 토큰이 목록에 없으면 \"커스텀 NFT 추가\"를 클릭하십시오.",
               "invalidAddress": "유효하지 않은 주소입니다.",
               "invalidAddressTitle": "잘못된 주소",
-              "invalidOwnership": "소유하지 않은 NFT는 추가할 수 없습니다",
+              "invalidOwnership": "입력한 컨트랙트 주소 혹은 토큰 ID의 NFT가 본인의 소유가 아닙니다",
               "invalidOwnershipTitle": "소유하지 않은 NFT",
-              "invalidSource": "주어진 URI에서 NFT를 찾을 수 없습니다.",
+              "invalidSource": "입력한 컨트랙트 주소 혹은 토큰 ID에 NFT가 존재하지 않습니다",
               "invalidSourceTitle": "찾을 수 없음",
               "invalidTokenId": "유효하지 않은 토큰 ID입니다.",
               "invalidTokenIdTitle": "잘못된 토큰 ID",
@@ -1053,8 +1053,8 @@
               }
             },
             "index": {
-              "information": "Cosmostation는 소스 URL에서 미디어 파일을 가져옵니다. 이러한 URL은 때때로 NFT가 민팅된 마켓플레이스에서 변경되기도 합니다.",
-              "notOwnedNFT": "이 NFT의 소유주가 아닙니다",
+              "information": "Cosmostation 지갑은 소스 URL에서 가져온 NFT정보를 사용자에게 보여 주며, NFT에 대한 소유권을 지니고 있지 않습니다.",
+              "notOwnedNFT": "본인 소유가 아닌 NFT는 전송할 수 없습니다.",
               "send": "NFT 보내기",
               "untransferableObject": "보낼 수 없는 NFT입니다"
             }
@@ -1108,7 +1108,7 @@
               "invalidAmount": "수량을 입력하세요.",
               "invalidSendNFTQuantity": "유효하지 않은 NFT 수량입니다.",
               "networkError": "네트워크 오류",
-              "notOwnedNFT": "이 NFT의 소유주가 아닙니다",
+              "notOwnedNFT": "본인 소유가 아닌 NFT는 전송할 수 없습니다.",
               "quantityPlaceholder": "NFT 수량",
               "recipientAddressPlaceholder": "수신인 주소",
               "sendButton": "보내기"
