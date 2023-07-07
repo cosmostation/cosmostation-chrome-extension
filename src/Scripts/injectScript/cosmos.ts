@@ -214,6 +214,7 @@ const signAmino: Keplr['signAmino'] = async (chainId, _, signDoc) => {
         chainName: chainId,
         isEditFee: !window.cosmostation.providers.keplr.defaultOptions.sign?.preferNoSetFee,
         isEditMemo: !window.cosmostation.providers.keplr.defaultOptions.sign?.preferNoSetMemo,
+        isCheckBalance: !window.cosmostation.providers.keplr.defaultOptions.sign?.disableBalanceCheck,
         doc: signDoc as unknown as SignAminoDoc,
       },
     })) as CosSignAminoResponse;
