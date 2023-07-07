@@ -9,7 +9,6 @@ import { keccak256 } from '@ethersproject/keccak256';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
-import { CHIHUAHUA } from '~/constants/chain/cosmos/chihuahua';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
@@ -212,7 +211,7 @@ export function getMsgSignData(signer: string, message: string) {
 }
 
 export function getDefaultAV(chain?: CosmosChain) {
-  const exceptedChainIds = [PROVENANCE.id, TERITORI.id, CHIHUAHUA.id];
+  const exceptedChainIds = [PROVENANCE.id, TERITORI.id];
 
   if (chain?.id === IXO.id) {
     return '3.0';
