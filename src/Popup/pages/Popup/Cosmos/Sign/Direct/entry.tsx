@@ -51,7 +51,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { message, messageId, origin, channel } = queue;
 
   const {
-    params: { doc, isEditFee, isEditMemo, gasRate },
+    params: { doc, isEditFee, isEditMemo, isCheckBalance, gasRate },
   } = message;
 
   const { auth_info_bytes, body_bytes } = doc;
@@ -132,7 +132,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   };
 
   const errorMessage = useMemo(() => {
-    if (!gte(currentFeeCoin.availableAmount, baseFee) && !fee?.granter && !fee?.payer) {
+    if (!gte(currentFeeCoin.availableAmount, baseFee) && isCheckBalance && !fee?.granter && !fee?.payer) {
       return t('pages.Popup.Cosmos.Sign.Direct.entry.insufficientFeeAmount');
     }
 
@@ -141,7 +141,7 @@ export default function Entry({ queue, chain }: EntryProps) {
     }
 
     return '';
-  }, [baseFee, currentAccount.type, currentFeeCoin.availableAmount, fee?.granter, fee?.payer, t]);
+  }, [baseFee, currentAccount.type, currentFeeCoin.availableAmount, fee?.granter, fee?.payer, isCheckBalance, t]);
 
   return (
     <Container>

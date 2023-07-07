@@ -189,7 +189,12 @@ export type CosDeleteAutoSign = {
 
 export type CosDeleteAutoSignResponse = null;
 
-export type CosSignOptions = { isEditMemo?: boolean; isEditFee?: boolean; gasRate?: GasRate };
+export type CosSignOptions = {
+  isEditMemo?: boolean;
+  isEditFee?: boolean;
+  isCheckBalance?: boolean;
+  gasRate?: GasRate;
+};
 
 export type CosSignAminoParams = { chainName: string; doc: SignAminoDoc; signer?: string } & CosSignOptions;
 

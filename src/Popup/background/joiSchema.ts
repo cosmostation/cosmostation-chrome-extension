@@ -145,6 +145,7 @@ export const cosSignAminoParamsSchema = (chainNames: string[], chainId: string) 
     }).required(),
     isEditFee: Joi.boolean().default(true),
     isEditMemo: Joi.boolean().default(false),
+    isCheckBalance: Joi.boolean().default(true),
     gasRate: Joi.object<GasRate>({
       average: Joi.string().required().pattern(numberRegex),
       low: Joi.string().required().pattern(numberRegex),
@@ -197,6 +198,7 @@ export const cosSignDirectParamsSchema = (chainNames: string[], chainId: string)
     }).required(),
     isEditFee: Joi.boolean().default(true),
     isEditMemo: Joi.boolean().default(false),
+    isCheckBalance: Joi.boolean().default(true),
     gasRate: Joi.object<GasRate>({
       average: Joi.string().required().pattern(numberRegex),
       low: Joi.string().required().pattern(numberRegex),
