@@ -319,9 +319,9 @@ const getOfflineSignerAuto: Keplr['getOfflineSignerAuto'] = async (chainId) => {
   })) as CosRequestAccountResponse;
 
   if (account.isLedger) {
-    return getOfflineSigner(chainId);
+    return getOfflineSignerOnlyAmino(chainId);
   }
-  return getOfflineSignerOnlyAmino(chainId);
+  return getOfflineSigner(chainId);
 };
 
 export const keplr: Keplr = {
