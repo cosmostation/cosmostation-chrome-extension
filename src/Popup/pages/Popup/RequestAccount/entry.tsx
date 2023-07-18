@@ -36,11 +36,11 @@ export default function Entry() {
         const keyPair = getKeyPair(currentAccount, chain, currentPassword);
         const address = getAddress(chain, keyPair?.publicKey);
 
-        const publicKey = keyPair?.publicKey.toString('hex');
+        const publicKey = keyPair!.publicKey.toString('hex');
 
         const result: CosRequestAccountResponse = {
           address,
-          publicKey: publicKey as unknown as Uint8Array,
+          publicKey,
           name: currentAccount.name,
           isLedger: currentAccount.type === 'LEDGER',
           isEthermint: chain.type === 'ETHERMINT',

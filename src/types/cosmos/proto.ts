@@ -20,8 +20,8 @@ export type MsgCommission = {
 
 export type SignDirectDoc = {
   chain_id: string;
-  body_bytes: Uint8Array;
-  auth_info_bytes: Uint8Array;
+  body_bytes: ArrayBufferLike | number[];
+  auth_info_bytes: ArrayBufferLike | number[];
   account_number: string;
 };
 

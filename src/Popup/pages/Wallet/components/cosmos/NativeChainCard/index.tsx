@@ -237,8 +237,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         ? {
             chain_id: chain.chainId,
             account_number: account.data.value.account_number,
-            auth_info_bytes: Buffer.from(pTx.authInfoBytes).toString('hex') as unknown as Uint8Array,
-            body_bytes: Buffer.from(pTx.txBodyBytes).toString('hex') as unknown as Uint8Array,
+            auth_info_bytes: [...Array.from(pTx.authInfoBytes)],
+            body_bytes: [...Array.from(pTx.txBodyBytes)],
           }
         : undefined;
     }
