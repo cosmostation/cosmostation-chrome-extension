@@ -13,6 +13,7 @@ export const QUASAR: CosmosChain = {
   baseDenom: 'uqsr',
   displayDenom: 'QSR',
   decimals: 6,
+  coinGeckoId: 'quasar-2',
   bip44: {
     purpose: "44'",
     coinType: "118'",
