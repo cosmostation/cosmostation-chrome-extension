@@ -13,14 +13,14 @@ type FetchProps = {
 };
 
 type UseSimulateSWRProps = {
-  chain: CosmosChain;
+  chain?: CosmosChain;
   txBytes?: string;
 };
 
 export function useSimulateSWR({ chain, txBytes }: UseSimulateSWRProps, config?: SWRConfiguration) {
-  const { simulate } = cosmosURL(chain);
+  const { simulate } = (chain && cosmosURL(chain)) ?? {};
 
-  const requestURL = simulate();
+  const requestURL = simulate && simulate();
 
   const fetcher = async ({ fetchUrl, tx }: FetchProps) => {
     try {
@@ -35,7 +35,7 @@ export function useSimulateSWR({ chain, txBytes }: UseSimulateSWRProps, config?:
     revalidateIfStale: false,
     revalidateOnReconnect: false,
     errorRetryCount: 0,
-    isPaused: () => !txBytes || !requestURL,
+    isPaused: () => !txBytes || !requestURL || !chain,
     ...config,
   });
 

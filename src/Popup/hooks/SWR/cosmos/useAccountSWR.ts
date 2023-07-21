@@ -21,14 +21,14 @@ import type {
   DesmosModuleAccount,
 } from '~/types/cosmos/account';
 
-export function useAccountSWR(chain: CosmosChain, suspense?: boolean) {
+export function useAccountSWR(chain?: CosmosChain, suspense?: boolean) {
   const accounts = useAccounts(suspense);
   const { extensionStorage } = useExtensionStorage();
 
-  const address = accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
-  const { getAccount } = cosmosURL(chain);
+  const address = accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain?.id || ''] || '';
+  const { getAccount } = (chain && cosmosURL(chain)) ?? {};
 
-  const requestURL = getAccount(address);
+  const requestURL = getAccount && getAccount(address);
 
   const fetcher = async (url: string) => {
     try {
@@ -49,7 +49,7 @@ export function useAccountSWR(chain: CosmosChain, suspense?: boolean) {
     refreshInterval: 15000,
     errorRetryCount: 0,
     suspense,
-    isPaused: () => !address,
+    isPaused: () => !address || !chain,
   });
 
   const isBaseVestingAccount = (payload: AuthAccountValue | AuthBaseVestingAccount | AuthBaseWithStartAndPeriod): payload is AuthBaseVestingAccount =>

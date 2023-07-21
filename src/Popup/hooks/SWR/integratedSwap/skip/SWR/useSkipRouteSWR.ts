@@ -5,8 +5,6 @@ import useSWR from 'swr';
 import { post } from '~/Popup/utils/axios';
 import type { SkipRoutePayload } from '~/types/swap/skip';
 
-import { useCurrentChain } from '../../../../useCurrent/useCurrentChain';
-
 type SkipRouteError = {
   code: string;
   message: string;
@@ -31,8 +29,6 @@ type UseSkipRouteSWRProps = {
 };
 
 export function useSkipRouteSWR({ routeParam }: UseSkipRouteSWRProps, config?: SWRConfiguration) {
-  const { currentChain } = useCurrentChain();
-
   const requestURL = 'https://api.skip.money/v1/fungible/route';
 
   const fetcher = async ({ fetchUrl, skipRouteParam }: FetchProps) =>
@@ -53,7 +49,7 @@ export function useSkipRouteSWR({ routeParam }: UseSkipRouteSWRProps, config?: S
       revalidateIfStale: false,
       revalidateOnReconnect: false,
       errorRetryCount: 0,
-      isPaused: () => currentChain.line !== 'COSMOS' || !routeParam || !requestURL,
+      isPaused: () => !routeParam || !requestURL,
       ...config,
     },
   );

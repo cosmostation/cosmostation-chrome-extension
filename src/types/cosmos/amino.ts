@@ -26,6 +26,23 @@ export type MsgReward = {
   validator_address: string;
 };
 
+export type MsgSwap = {
+  source_port: string;
+  source_channel: string;
+  token: {
+    denom: string;
+    amount: string;
+  };
+  sender: string;
+  receiver: string;
+  timeout_height: {
+    revision_height: string;
+    revision_number: string;
+  };
+  timeout_timestamp: string;
+  memo: string;
+};
+
 export type MsgCommission = {
   validator_address: string;
 };

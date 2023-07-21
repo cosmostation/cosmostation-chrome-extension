@@ -60,6 +60,7 @@ export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
       revision_height: Number(msg.value.timeout_height.revision_height),
       revision_number: msg.value.timeout_height.revision_number ? Number(msg.value.timeout_height.revision_number) : 0,
     },
+    timeout_timestamp: msg.value.timeout_timestamp,
   });
 
   return new google.protobuf.Any({
@@ -120,6 +121,7 @@ export function convertAminoSwapExactAmmountInMessageToProto(msg: Msg<MsgSwapExa
 }
 
 export function getTxBodyBytes(signed: SignAminoDoc) {
+  // NOTE 여기서 convertAminoMessageToProto에서 메모 필드가 소실될 것으로 예상됨
   const messages = signed.msgs.map((msg) => convertAminoMessageToProto(msg)).filter((item) => item !== null) as google.protobuf.Any[];
 
   const txBody = new cosmos.tx.v1beta1.TxBody({
@@ -236,4 +238,12 @@ export function isDirectCommission(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgCommi
 
 export function isDirectCustom(msg: ProtoMsg): msg is ProtoMsg {
   return true;
+}
+
+export function convertDirectMsgTypeToAminoMsgType(typeUrl: string) {
+  if (typeUrl === '/ibc.applications.transfer.v1.MsgTransfer') {
+    return 'cosmos-sdk/MsgTransfer';
+  }
+
+  return '';
 }

@@ -9,27 +9,36 @@ export type SwapOperation = {
   denom_out: string;
 };
 
+export type Transfer = {
+  port: string;
+  channel: string;
+  chain_id: string;
+  dest_denom: string;
+  pfm_enabled: boolean;
+};
+
+export type SwapWrapper = {
+  estimated_affiliate_fee: string;
+  swap_in?: {
+    swap_venue: SwapVenue;
+    swap_operations: SwapOperation[];
+    swap_amount_in: string;
+  };
+  swap_out?: {
+    swap_venue: SwapVenue;
+    swap_operations: SwapOperation[];
+    swap_amount_out: string;
+  };
+};
+
 export type Operations = {
-  transfer: {
-    port: string;
-    channel: string;
-    chain_id: string;
-    dest_denom: string;
-    pfm_enabled: boolean;
-  };
-  swap: {
-    swap_in: {
-      swap_venue: SwapVenue;
-      swap_operations: SwapOperation[];
-      swap_amount_in: string;
-    };
-    swap_out: {
-      swap_venue: SwapVenue;
-      swap_operations: SwapOperation[];
-      swap_amount_out: string;
-    };
-    estimated_affiliate_fee: string;
-  };
+  transfer?: Transfer;
+  swap?: SwapWrapper;
+};
+
+export type Affiliates = {
+  basisPointsFee: string;
+  address: string;
 };
 
 export type SkipRoutePayload = {
@@ -43,4 +52,15 @@ export type SkipRoutePayload = {
   does_swap: boolean;
   estimated_amount_out: string;
   swap_venue: SwapVenue;
+};
+
+export type Msg = {
+  chain_id: string;
+  path: string[];
+  msg: string;
+  msg_type_url: string;
+};
+
+export type SkipSwapTxPayload = {
+  msgs: Msg[];
 };
