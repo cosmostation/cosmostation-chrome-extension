@@ -1,5 +1,5 @@
 import type { PublicKeyType } from '.';
-import type { Amount } from './common';
+import type { Amount, Height } from './common';
 
 export type PubKey = { type: PublicKeyType; value: string };
 
@@ -12,6 +12,17 @@ export type MsgSend = {
   from_address: string;
   to_address: string;
   amount: Amount[];
+};
+
+export type MsgTransfer = {
+  receiver: string;
+  sender: string;
+  source_channel: string;
+  source_port: string;
+  timeout_height: Height;
+  timeout_timestamp: Long;
+  token: Amount;
+  memo: string;
 };
 
 export type MsgCommission = {

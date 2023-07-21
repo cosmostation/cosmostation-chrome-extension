@@ -24,7 +24,6 @@ import { useSupportTokensSWR } from '~/Popup/hooks/SWR/1inch/useSupportTokensSWR
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
-import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useSupportChainsSWR } from '~/Popup/hooks/SWR/cosmos/useSupportChainsSWR';
 import { useBalanceSWR as useNativeBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
@@ -46,9 +45,8 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { getDefaultAV } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
-import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { CosmosChain, EthereumToken } from '~/types/chain';
 import type { AssetV3 as CosmosAssetV3 } from '~/types/cosmos/asset';
@@ -668,7 +666,7 @@ export default function Entry() {
 
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
 
-  const { skipRoute, skipSwapTx, memoizedSkipSwapAminoTx } = useSkipSwap(
+  const { skipRoute, skipSwapTx, memoizedSkipSwapAminoTx, memoizedSkipSwapDirectTx, skipSwapSimulatedGas } = useSkipSwap(
     currentSwapAPI === 'skip' &&
       currentFromChain &&
       currentFromChain.line === 'COSMOS' &&
@@ -943,31 +941,6 @@ export default function Entry() {
     return undefined;
   }, [allowance.data?.allowance, currentFromAddress, currentInputBaseAmount, currentSwapAPI, oneInchRoute.data, squidRoute.data]);
 
-  const [skipSwapAminoTx] = useDebounce(memoizedSkipSwapAminoTx, 700);
-
-  const skipSwapProtoTx = useMemo(() => {
-    if (skipSwapAminoTx) {
-      // NOTE 여기서 일반 IBC send처럼 인식을 해버려서 메모에 값을 못집어넣어서 오류가 생기나?
-      const pTx = protoTx(skipSwapAminoTx, '', {
-        type: getPublicKeyType(currentFromChain?.line === COSMOS.line ? currentFromChain : undefined),
-        value: '',
-      });
-
-      return pTx && protoTxBytes({ ...pTx });
-    }
-    return null;
-  }, [currentFromChain, skipSwapAminoTx]);
-
-  const skipSwapSimulate = useSimulateSWR({ chain: selectedFromCosmosChain, txBytes: skipSwapProtoTx?.tx_bytes });
-
-  const skipSwapSimulatedGas = useMemo(
-    () =>
-      skipSwapSimulate.data?.gas_info?.gas_used
-        ? times(skipSwapSimulate.data.gas_info.gas_used, getDefaultAV(currentFromChain?.line === COSMOS.line ? currentFromChain : undefined), 0)
-        : undefined,
-    [currentFromChain, skipSwapSimulate.data?.gas_info?.gas_used],
-  );
-
   const estimatedGas = useMemo(() => {
     if (currentSwapAPI === 'skip') {
       return skipSwapSimulatedGas || COSMOS_DEFAULT_SWAP_GAS;
@@ -1143,7 +1116,11 @@ export default function Entry() {
       if (skipRoute.error?.response?.data.message) {
         return skipRoute.error.response.data.message;
       }
-      if (!skipSwapAminoTx) {
+      if (skipSwapTx.error?.response?.data.message) {
+        return skipSwapTx.error.response.data.message;
+      }
+
+      if (!memoizedSkipSwapDirectTx) {
         return t('pages.Wallet.Swap.entry.invalidSwapTx');
       }
     }
@@ -1188,7 +1165,8 @@ export default function Entry() {
     currentInputBaseAmount,
     skipSupportedChains,
     skipRoute.error?.response?.data.message,
-    skipSwapAminoTx,
+    skipSwapTx.error?.response?.data.message,
+    memoizedSkipSwapDirectTx,
     integratedSwapTx,
     estimatedToTokenDisplayAmountPrice,
     priceImpactPercent,
@@ -1232,6 +1210,15 @@ export default function Entry() {
       }
     }
 
+    if (currentSwapAPI === 'skip') {
+      if (skipRoute.error?.response?.data.message) {
+        return skipRoute.error.response.data.message;
+      }
+      if (skipSwapTx.error?.response?.data.message) {
+        return skipSwapTx.error.response.data.message;
+      }
+    }
+
     if (gt(estimatedFeeBaseAmount, currentFeeTokenBalance)) {
       return `${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription1')} ${fix(
         estimatedFeeDisplayAmount,
@@ -1252,19 +1239,21 @@ export default function Entry() {
     return '';
   }, [
     currentSwapAPI,
-    allowance.data,
-    currentInputBaseAmount,
-    oneInchRoute.error,
-    t,
     estimatedFeeBaseAmount,
     currentFeeTokenBalance,
     currentFeeToken,
     currentFromToken?.address,
+    allowance.data,
+    currentInputBaseAmount,
+    oneInchRoute.error,
+    t,
     estimatedToTokenDisplayAmountPrice,
     priceImpactPercent,
     squidRoute.error,
     errorMessage,
     isDisabled,
+    skipRoute.error?.response?.data.message,
+    skipSwapTx.error?.response?.data.message,
     estimatedFeeDisplayAmount,
     currentFromTokenBalance,
     currentFromTokenDisplayBalance,
@@ -1290,6 +1279,7 @@ export default function Entry() {
     setIsDisabled(true);
 
     debouncedEnabled();
+    // NOTE 수정 필요, directTx로 변경이 스왑 버튼 활성화가 간헐적으로 껏다 켜짐
   }, [debouncedEnabled, memoizedSkipSwapAminoTx]);
 
   useEffect(() => {
@@ -1760,7 +1750,7 @@ export default function Entry() {
               <div>
                 <Button
                   type="button"
-                  disabled={!!errorMessage || isDisabled || isLoadingSwapData || (currentSwapAPI === 'skip' ? !skipSwapAminoTx : !integratedSwapTx)}
+                  disabled={!!errorMessage || isDisabled || isLoadingSwapData || (currentSwapAPI === 'skip' ? !memoizedSkipSwapDirectTx : !integratedSwapTx)}
                   onClick={async () => {
                     if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid') && integratedSwapTx) {
                       await enQueue({
@@ -1777,22 +1767,22 @@ export default function Entry() {
                         },
                       });
 
+                      // NOTE 다이렉트 사인 사용 결정 확정 뒤 유저 가드 필요
                       if (currentAccount.type === 'LEDGER') {
                         await debouncedOpenTab();
                       }
                     }
-                    if (currentSwapAPI === 'skip' && skipSwapAminoTx && currentFeeToken?.address && selectedFromCosmosChain) {
+                    if (currentSwapAPI === 'skip' && memoizedSkipSwapDirectTx && selectedFromCosmosChain) {
                       await enQueue({
                         messageId: '',
                         origin: '',
                         channel: 'inApp',
                         message: {
-                          method: 'cos_signAmino',
+                          method: 'cos_signDirect',
                           params: {
                             chainName: selectedFromCosmosChain.chainName,
                             doc: {
-                              ...skipSwapAminoTx,
-                              fee: { amount: [{ denom: currentFeeToken.address, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
+                              ...memoizedSkipSwapDirectTx,
                             },
                           },
                         },

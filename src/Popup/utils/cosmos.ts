@@ -117,12 +117,12 @@ export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer, chain: Co
   return signatureBuffer;
 }
 
-export const getPublicKeyType = (chain?: CosmosChain) => {
-  if (chain?.chainName === INJECTIVE.chainName) {
+export const getPublicKeyType = (chain: CosmosChain) => {
+  if (chain.chainName === INJECTIVE.chainName) {
     return PUBLIC_KEY_TYPE.INJ_SECP256K1;
   }
 
-  if (chain?.type === 'ETHERMINT') {
+  if (chain.type === 'ETHERMINT') {
     return PUBLIC_KEY_TYPE.ETH_SECP256K1;
   }
 

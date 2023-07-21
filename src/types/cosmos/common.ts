@@ -4,8 +4,8 @@ export type Amount = {
 };
 
 export type Height = {
-  revision_height: number;
-  revision_number: number;
+  revision_height: Long;
+  revision_number: Long;
 };
 
 export type Pagination = {

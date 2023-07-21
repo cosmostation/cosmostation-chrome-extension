@@ -129,3 +129,11 @@ export function getCapitalize(string: string) {
 export function getSiteIconURL(domain: string) {
   return `https://icon.horse/icon/${domain}?size=small`;
 }
+
+export function isJsonString(str: string): boolean {
+  try {
+    return typeof JSON.parse(str) === 'object';
+  } catch (e) {
+    return false;
+  }
+}
