@@ -3,14 +3,11 @@ import { useDebounce } from 'use-debounce';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS } from '~/constants/chain';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
-import { ceil, gt, times } from '~/Popup/utils/big';
-import { getKeyPair } from '~/Popup/utils/common';
+import { gt, times } from '~/Popup/utils/big';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { convertDirectMsgTypeToAminoMsgType, protoTx, protoTxBytes } from '~/Popup/utils/proto';
-import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
-import type { MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
+import type { MsgExecuteContract, MsgTransfer } from '~/types/cosmos/amino';
 import type { AssetV3 as CosmosAssetV3 } from '~/types/cosmos/asset';
 import type { Affiliates } from '~/types/swap/skip';
 
@@ -19,6 +16,7 @@ import type { SkipSwapTxParam } from './SWR/useSkipSwapTxSWR';
 import { useSkipSwapTxSWR } from './SWR/useSkipSwapTxSWR';
 import { useAccounts } from '../../cache/useAccounts';
 import { useAccountSWR } from '../../cosmos/useAccountSWR';
+import { useClientStateSWR } from '../../cosmos/useClientStateSWR';
 import { useNodeInfoSWR } from '../../cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '../../cosmos/useSimulateSWR';
 
@@ -40,7 +38,6 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
   const nodeInfo = useNodeInfoSWR(fromChain);
 
   const { currentAccount } = useCurrentAccount();
-  const { currentPassword } = useCurrentPassword();
 
   const skipRouteParam = useMemo<SkipRouteProps | undefined>(() => {
     if (
@@ -104,32 +101,86 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
   const skipSwapTxMsgs = useMemo(
     () =>
       skipSwapTx.data?.msgs.map((item) => {
-        const parsedMsg = JSON.parse(item.msg) as MsgTransfer;
+        if (item.msg_type_url === '/ibc.applications.transfer.v1.MsgTransfer') {
+          const parsedMsg = JSON.parse(item.msg) as MsgTransfer;
 
-        return {
-          chain_id: item.chain_id,
-          path: item.path,
-          msg_type_url: convertDirectMsgTypeToAminoMsgType(item.msg_type_url),
-          msg: {
-            source_port: parsedMsg.source_port,
-            source_channel: parsedMsg.source_channel,
-            token: parsedMsg.token,
-            sender: parsedMsg.sender,
-            receiver: parsedMsg.receiver,
-            timeout_height: {
-              revision_height: parsedMsg.timeout_height?.revision_height || '0',
-              revision_number: parsedMsg.timeout_height?.revision_number || '0',
+          return {
+            chain_id: item.chain_id,
+            path: item.path,
+            msg_type_url: convertDirectMsgTypeToAminoMsgType(item.msg_type_url),
+            msg: {
+              source_port: parsedMsg.source_port,
+              source_channel: parsedMsg.source_channel,
+              token: parsedMsg.token,
+              sender: parsedMsg.sender,
+              receiver: parsedMsg.receiver,
+              timeout_height: {
+                revision_height: parsedMsg.timeout_height.revision_height || (0 as unknown as Long),
+                revision_number: parsedMsg.timeout_height.revision_height || (0 as unknown as Long),
+              },
+              memo: parsedMsg.memo,
             },
-            timeout_timestamp: parsedMsg.timeout_timestamp,
-            memo: parsedMsg.memo,
-          },
-        };
+          };
+        }
+        if (item.msg_type_url === '/cosmwasm.wasm.v1.MsgExecuteContract') {
+          const parsedMsg = JSON.parse(item.msg) as MsgExecuteContract;
+
+          return {
+            chain_id: item.chain_id,
+            path: item.path,
+            msg_type_url: convertDirectMsgTypeToAminoMsgType(item.msg_type_url),
+            msg: {
+              sender: parsedMsg.sender,
+              contract: parsedMsg.contract,
+              funds: parsedMsg.funds,
+              msg: parsedMsg.msg,
+            },
+          };
+        }
+        return undefined;
       }) || [],
     [skipSwapTx.data?.msgs],
   );
 
-  // NOTE 모든 TX가 IBC Send일 경우에만 사용 가능, if not이면 분기 필요
-  const memoizedSkipSwapAminoTx = useMemo<SignAminoDoc<MsgTransfer> | undefined>(() => {
+  const clientState = useClientStateSWR({
+    chain: COSMOS_CHAINS.find((item) => item.chainId === skipSwapTxMsgs.find((msg) => msg?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.chain_id),
+    channelId: skipSwapTxMsgs.find((item) => item?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.msg.source_channel || '',
+    port: skipSwapTxMsgs.find((item) => item?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.msg.source_port || '',
+  });
+
+  const latestHeight = useMemo(
+    () => clientState.data?.identified_client_state?.client_state?.latest_height,
+    [clientState.data?.identified_client_state?.client_state?.latest_height],
+  );
+
+  const revisionHeight = useMemo(
+    () => (latestHeight?.revision_height ? String(1000 + parseInt(latestHeight?.revision_height, 10)) : undefined),
+    [latestHeight?.revision_height],
+  );
+
+  const revisionNumber = useMemo(() => latestHeight?.revision_number, [latestHeight?.revision_number]);
+
+  const skipSwapAminoTxMsgs = useMemo(
+    () =>
+      skipSwapTxMsgs.map((item) => {
+        if (item?.msg_type_url === 'cosmos-sdk/MsgTransfer') {
+          return {
+            ...item,
+            msg: {
+              ...item?.msg,
+              timeout_height: {
+                revision_height: revisionHeight || (0 as unknown as Long),
+                revision_number: revisionNumber || (0 as unknown as Long),
+              },
+            },
+          };
+        }
+        return item;
+      }),
+    [revisionHeight, revisionNumber, skipSwapTxMsgs],
+  );
+
+  const memoizedSkipSwapAminoTx = useMemo(() => {
     if (inputBaseAmount && gt(inputBaseAmount, '0') && account.data?.value.account_number && fromChain?.chainId && skipSwapTxMsgs.length > 0) {
       const sequence = String(account.data?.value.sequence || '0');
 
@@ -139,25 +190,25 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
         chain_id: nodeInfo.data?.default_node_info?.network ?? fromChain.chainId,
         fee: { amount: [{ amount: '1', denom: fromChain?.baseDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
         memo: '',
-        msgs: skipSwapTxMsgs.map((item) => ({
-          type: item.msg_type_url,
-          value: item.msg,
+        msgs: skipSwapAminoTxMsgs.map((item) => ({
+          type: item?.msg_type_url || '',
+          value: item?.msg || undefined,
         })),
       };
     }
 
     return undefined;
   }, [
-    inputBaseAmount,
     account.data?.value.account_number,
     account.data?.value.sequence,
-    nodeInfo.data?.default_node_info?.network,
-    fromChain?.chainId,
     fromChain?.baseDenom,
-    skipSwapTxMsgs,
+    fromChain?.chainId,
+    inputBaseAmount,
+    nodeInfo.data?.default_node_info?.network,
+    skipSwapTxMsgs.length,
+    skipSwapAminoTxMsgs,
   ]);
 
-  // NOTE 필요한가?
   const [skipSwapAminoTx] = useDebounce(memoizedSkipSwapAminoTx, 700);
 
   const skipSwapProtoTx = useMemo(() => {
@@ -179,39 +230,5 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
     [fromChain, skipSwapSimulate.data?.gas_info?.gas_used],
   );
 
-  const memoizedSkipSwapDirectTx = useMemo(() => {
-    if (memoizedSkipSwapAminoTx && fromChain) {
-      const skipSwapSimulatedAminoTx = {
-        account_number: memoizedSkipSwapAminoTx.account_number,
-        sequence: memoizedSkipSwapAminoTx.sequence,
-        chain_id: memoizedSkipSwapAminoTx.chain_id,
-        fee: {
-          amount: [{ denom: fromChain.baseDenom, amount: ceil(times(skipSwapSimulatedGas || COSMOS_DEFAULT_SWAP_GAS, fromChain.gasRate.low || '0')) }],
-          gas: skipSwapSimulatedGas || COSMOS_DEFAULT_SWAP_GAS,
-        },
-        memo: '',
-        msgs: memoizedSkipSwapAminoTx.msgs,
-      };
-
-      const keyPair = getKeyPair(currentAccount, fromChain, currentPassword);
-
-      const base64PublicKey = keyPair ? Buffer.from(keyPair.publicKey).toString('base64') : '';
-
-      const publicKeyType = getPublicKeyType(fromChain);
-
-      const pTx = protoTx(skipSwapSimulatedAminoTx, '', { type: publicKeyType, value: base64PublicKey }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
-
-      return pTx
-        ? {
-            chain_id: fromChain.chainId,
-            account_number: memoizedSkipSwapAminoTx.account_number,
-            auth_info_bytes: Buffer.from(pTx.authInfoBytes).toString('hex') as unknown as Uint8Array,
-            body_bytes: Buffer.from(pTx.txBodyBytes).toString('hex') as unknown as Uint8Array,
-          }
-        : undefined;
-    }
-    return undefined;
-  }, [currentAccount, currentPassword, fromChain, memoizedSkipSwapAminoTx, skipSwapSimulatedGas]);
-
-  return { skipRoute, skipSwapTx, memoizedSkipSwapAminoTx, memoizedSkipSwapDirectTx, skipSwapSimulatedGas };
+  return { skipRoute, skipSwapTx, skipSwapAminoTx, skipSwapSimulatedGas, latestHeight };
 }

@@ -64,10 +64,10 @@ export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
     sender: msg.value.sender,
     receiver: msg.value.receiver,
     timeout_height: {
-      revision_height: msg.value.timeout_height.revision_height as unknown as Long,
-      revision_number: msg.value.timeout_height.revision_number as unknown as Long,
+      revision_height: msg.value.timeout_height.revision_height,
+      revision_number: msg.value.timeout_height.revision_number,
     },
-    timeout_timestamp: msg.value.timeout_timestamp as unknown as Long,
+    timeout_timestamp: msg.value.timeout_timestamp,
     memo: msg.value.memo,
   });
 
@@ -129,7 +129,6 @@ export function convertAminoSwapExactAmmountInMessageToProto(msg: Msg<MsgSwapExa
 }
 
 export function getTxBodyBytes(signed: SignAminoDoc) {
-  // NOTE 여기서 convertAminoMessageToProto에서 메모 필드가 소실될 것으로 예상됨
   const messages = signed.msgs.map((msg) => convertAminoMessageToProto(msg)).filter((item) => item !== null) as google.protobuf.Any[];
 
   const txBody = new cosmos.tx.v1beta1.TxBody({
@@ -266,6 +265,9 @@ export function convertDirectMsgTypeToAminoMsgType(typeUrl: string) {
   if (typeUrl === '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission') {
     return 'cosmos-sdk/MsgWithdrawValidatorCommission';
   }
+  if (typeUrl === '/cosmwasm.wasm.v1.MsgExecuteContract') {
+    return 'wasm/MsgExecuteContract';
+  }
 
   return '';
 }
@@ -279,6 +281,9 @@ export function convertAminoMsgTypeToDirectMsgType(typeUrl: string) {
   }
   if (typeUrl === 'cosmos-sdk/MsgWithdrawValidatorCommission') {
     return '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission';
+  }
+  if (typeUrl === 'wasm/MsgExecuteContract') {
+    return '/cosmwasm.wasm.v1.MsgExecuteContract';
   }
 
   return '';

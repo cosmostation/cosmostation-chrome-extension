@@ -666,7 +666,7 @@ export default function Entry() {
 
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
 
-  const { skipRoute, skipSwapTx, memoizedSkipSwapAminoTx, memoizedSkipSwapDirectTx, skipSwapSimulatedGas } = useSkipSwap(
+  const { skipRoute, skipSwapTx, skipSwapAminoTx, skipSwapSimulatedGas, latestHeight } = useSkipSwap(
     currentSwapAPI === 'skip' &&
       currentFromChain &&
       currentFromChain.line === 'COSMOS' &&
@@ -1119,8 +1119,10 @@ export default function Entry() {
       if (skipSwapTx.error?.response?.data.message) {
         return skipSwapTx.error.response.data.message;
       }
-
-      if (!memoizedSkipSwapDirectTx) {
+      if (!latestHeight) {
+        return t('pages.Wallet.Swap.entry.timeoutHeightError');
+      }
+      if (!skipSwapAminoTx) {
         return t('pages.Wallet.Swap.entry.invalidSwapTx');
       }
     }
@@ -1166,10 +1168,11 @@ export default function Entry() {
     skipSupportedChains,
     skipRoute.error?.response?.data.message,
     skipSwapTx.error?.response?.data.message,
-    memoizedSkipSwapDirectTx,
+    skipSwapAminoTx,
     integratedSwapTx,
     estimatedToTokenDisplayAmountPrice,
     priceImpactPercent,
+    latestHeight,
   ]);
 
   const swapInfoMessage = useMemo(() => {
@@ -1279,8 +1282,8 @@ export default function Entry() {
     setIsDisabled(true);
 
     debouncedEnabled();
-    // NOTE 수정 필요, directTx로 변경이 스왑 버튼 활성화가 간헐적으로 껏다 켜짐
-  }, [debouncedEnabled, memoizedSkipSwapAminoTx]);
+    // NOTE  memoizedAminoTx 필요성 체크
+  }, [debouncedEnabled]);
 
   useEffect(() => {
     if (currentFromChain && !currentToChain) {
@@ -1750,7 +1753,7 @@ export default function Entry() {
               <div>
                 <Button
                   type="button"
-                  disabled={!!errorMessage || isDisabled || isLoadingSwapData || (currentSwapAPI === 'skip' ? !memoizedSkipSwapDirectTx : !integratedSwapTx)}
+                  disabled={!!errorMessage || isDisabled || isLoadingSwapData || (currentSwapAPI === 'skip' ? !skipSwapAminoTx : !integratedSwapTx)}
                   onClick={async () => {
                     if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid') && integratedSwapTx) {
                       await enQueue({
@@ -1767,22 +1770,22 @@ export default function Entry() {
                         },
                       });
 
-                      // NOTE 다이렉트 사인 사용 결정 확정 뒤 유저 가드 필요
                       if (currentAccount.type === 'LEDGER') {
                         await debouncedOpenTab();
                       }
                     }
-                    if (currentSwapAPI === 'skip' && memoizedSkipSwapDirectTx && selectedFromCosmosChain) {
+                    if (currentSwapAPI === 'skip' && skipSwapAminoTx && selectedFromCosmosChain && currentFeeToken) {
                       await enQueue({
                         messageId: '',
                         origin: '',
                         channel: 'inApp',
                         message: {
-                          method: 'cos_signDirect',
+                          method: 'cos_signAmino',
                           params: {
                             chainName: selectedFromCosmosChain.chainName,
                             doc: {
-                              ...memoizedSkipSwapDirectTx,
+                              ...skipSwapAminoTx,
+                              fee: { amount: [{ denom: currentFeeToken.address, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
                             },
                           },
                         },

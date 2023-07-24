@@ -265,13 +265,16 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const clientState = useClientStateSWR({ chain, channelId: selectedReceiverIBC?.channel ?? '', port: selectedReceiverIBC?.port });
 
-  const latestHeight = clientState.data?.identified_client_state?.client_state?.latest_height;
+  const latestHeight = useMemo(
+    () => clientState.data?.identified_client_state?.client_state?.latest_height,
+    [clientState.data?.identified_client_state?.client_state?.latest_height],
+  );
 
   const revisionHeight = useMemo(
     () => (latestHeight?.revision_height ? String(1000 + parseInt(latestHeight?.revision_height, 10)) : undefined),
     [latestHeight?.revision_height],
   );
-  const revisionNumber = latestHeight?.revision_number;
+  const revisionNumber = useMemo(() => latestHeight?.revision_number, [latestHeight?.revision_number]);
 
   const { feeCoins } = useCurrentFeesSWR(chain);
 
