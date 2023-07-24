@@ -259,7 +259,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
-            const publicKey = keyPair!.publicKey.toString('hex');
+            const publicKey = keyPair?.publicKey.toString('hex') || '';
 
             const result: CosRequestAccountResponse = {
               address,
@@ -780,7 +780,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
-            const publicKey = keyPair!.publicKey.toString('hex');
+            const publicKey = keyPair?.publicKey.toString('hex') || '';
 
             const result: CosAccountResponse = {
               address,
@@ -1720,7 +1720,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
-            const result: AptosConnectResponse = { address, publicKey: `0x${keyPair!.publicKey.toString('hex')}` };
+            const result: AptosConnectResponse = { address, publicKey: `0x${keyPair?.publicKey.toString('hex') || ''}` };
 
             responseToWeb({
               response: {
@@ -1918,7 +1918,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
                 const keyPair = getKeyPair(currentAccount, chain, currentPassword);
                 const address = getAddress(chain, keyPair?.publicKey);
 
-                const publicKey = `0x${keyPair!.publicKey.toString('hex')}`;
+                const publicKey = `0x${keyPair?.publicKey.toString('hex') || ''}`;
                 const result: SuiGetAccountResponse = {
                   address,
                   publicKey,
