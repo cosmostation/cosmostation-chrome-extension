@@ -259,11 +259,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
-            const publicKey = keyPair?.publicKey.toString('hex');
+            const publicKey = keyPair?.publicKey.toString('hex') || '';
 
             const result: CosRequestAccountResponse = {
               address,
-              publicKey: publicKey as unknown as Uint8Array,
+              publicKey,
               name: currentAccountName,
               isLedger: currentAccount.type === 'LEDGER',
               isEthermint: chain.type === 'ETHERMINT',
@@ -547,8 +547,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
               const { doc } = validatedParams;
 
-              const authInfoBytes = Buffer.from(doc.auth_info_bytes as unknown as string, 'hex');
-              const bodyBytes = Buffer.from(doc.body_bytes as unknown as string, 'hex');
+              const authInfoBytes = new Uint8Array(doc.auth_info_bytes);
+              const bodyBytes = new Uint8Array(doc.body_bytes);
 
               const newDoc = { ...doc, auth_info_bytes: authInfoBytes, body_bytes: bodyBytes };
 
@@ -780,11 +780,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
-            const publicKey = keyPair?.publicKey.toString('hex');
+            const publicKey = keyPair?.publicKey.toString('hex') || '';
 
             const result: CosAccountResponse = {
               address,
-              publicKey: publicKey as unknown as Uint8Array,
+              publicKey,
               name: currentAccountName,
               isLedger: currentAccount.type === 'LEDGER',
               isEthermint: chain.type === 'ETHERMINT',
@@ -1720,7 +1720,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             const keyPair = getKeyPair(currentAccount, chain, currentPassword);
             const address = getAddress(chain, keyPair?.publicKey);
 
-            const result: AptosConnectResponse = { address, publicKey: `0x${keyPair!.publicKey.toString('hex')}` };
+            const result: AptosConnectResponse = { address, publicKey: `0x${keyPair?.publicKey.toString('hex') || ''}` };
 
             responseToWeb({
               response: {
@@ -1918,7 +1918,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
                 const keyPair = getKeyPair(currentAccount, chain, currentPassword);
                 const address = getAddress(chain, keyPair?.publicKey);
 
-                const publicKey = `0x${keyPair!.publicKey.toString('hex')}`;
+                const publicKey = `0x${keyPair?.publicKey.toString('hex') || ''}`;
                 const result: SuiGetAccountResponse = {
                   address,
                   publicKey,

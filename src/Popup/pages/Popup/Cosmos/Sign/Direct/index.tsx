@@ -20,18 +20,6 @@ export default function Direct() {
   if (currentQueue && isCosSignDirect(currentQueue)) {
     const selectedChain = [...COSMOS_CHAINS, ...currentCosmosAdditionalChains].find((item) => item.chainName === currentQueue.message.params.chainName);
 
-    const { message } = currentQueue;
-    const { params } = message;
-
-    const { doc } = params;
-
-    const authInfoBytes = Buffer.from(doc.auth_info_bytes as unknown as string, 'hex');
-    const bodyBytes = Buffer.from(doc.body_bytes as unknown as string, 'hex');
-
-    const newDoc = { ...doc, auth_info_bytes: authInfoBytes, body_bytes: bodyBytes };
-
-    const newCurrentQueue = { ...currentQueue, message: { ...message, params: { ...params, doc: newDoc } } };
-
     if (selectedChain) {
       return (
         <Lock>
@@ -39,7 +27,7 @@ export default function Direct() {
             <Layout>
               <ErrorBoundary fallback={<Empty />}>
                 <Suspense fallback={null}>
-                  <Entry queue={newCurrentQueue} chain={selectedChain} />
+                  <Entry queue={currentQueue} chain={selectedChain} />
                 </Suspense>
               </ErrorBoundary>
             </Layout>
