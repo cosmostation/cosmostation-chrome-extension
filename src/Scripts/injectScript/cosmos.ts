@@ -379,11 +379,11 @@ export const tendermint = {
             data.message.method === 'ten_requestAccount' ||
             data.message.method === 'ten_account'
           ) {
-            const { publicKey } = data.response.result as CosRequestAccountResponse;
+            const response = data.response.result as CosRequestAccountResponse;
 
             res({
-              ...(data.response.result as { publicKey: string; address: string }),
-              publicKey: new Uint8Array(Buffer.from(publicKey, 'hex')),
+              ...response,
+              publicKey: new Uint8Array(Buffer.from(response.publicKey, 'hex')),
             });
           } else if (data.message.method === 'cos_signDirect' || data.message.method === 'ten_signDirect') {
             const result = data.response.result as CosSignDirectResponse;
