@@ -86,6 +86,12 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     }
   };
 
+  const explorerAccountURL = useMemo(
+    () =>
+      explorerURL ? (explorerURL.includes('mintscan') ? `${explorerURL}/accounts/${currentAddress}` : `${explorerURL}/address/${currentAddress}`) : undefined,
+    [currentAddress, explorerURL],
+  );
+
   return (
     <Container>
       <FirstLineContainer>
@@ -93,10 +99,10 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           <AddressButton onClick={handleOnClickCopy}>{currentAddress}</AddressButton>
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
-          {explorerURL && (
+          {explorerAccountURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/address/${currentAddress}`);
+                window.open(explorerAccountURL);
               }}
             >
               <ExplorerIcon />
