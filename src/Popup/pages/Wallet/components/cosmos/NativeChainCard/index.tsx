@@ -451,6 +451,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                           },
                           isEditFee: true,
                           isEditMemo: true,
+                          isCheckBalance: true,
                         },
                       },
                     });
@@ -483,6 +484,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                             },
                             isEditFee: true,
                             isEditMemo: true,
+                            isCheckBalance: true,
                           },
                         },
                       });
@@ -506,6 +508,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                             },
                             isEditFee: true,
                             isEditMemo: true,
+                            isCheckBalance: true,
                           },
                         },
                       });
