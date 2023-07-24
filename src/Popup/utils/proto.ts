@@ -196,8 +196,8 @@ export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey,
 
 export function protoTxBytes({ signature, txBodyBytes, authInfoBytes }: ProtoTxBytesProps) {
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
-    body_bytes: txBodyBytes,
-    auth_info_bytes: authInfoBytes,
+    body_bytes: new Uint8Array(txBodyBytes),
+    auth_info_bytes: new Uint8Array(authInfoBytes),
     signatures: [Buffer.from(signature, 'base64')],
   });
   const txRawBytes = cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();

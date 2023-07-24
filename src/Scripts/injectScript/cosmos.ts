@@ -39,7 +39,7 @@ export const request = (message: CosmosRequestMessage) =>
 
           res({
             ...(data.response.result as { publicKey: string; address: string }),
-            publicKey: new Uint8Array(Buffer.from(publicKey as unknown as string, 'hex')),
+            publicKey: new Uint8Array(Buffer.from(publicKey, 'hex')),
           });
         } else if (data.message.method === 'cos_signDirect' || data.message.method === 'ten_signDirect') {
           const result = data.response.result as CosSignDirectResponse;
@@ -48,8 +48,8 @@ export const request = (message: CosmosRequestMessage) =>
             ...result,
             signed_doc: {
               ...result.signed_doc,
-              auth_info_bytes: new Uint8Array(Buffer.from(result.signed_doc.auth_info_bytes as unknown as string, 'hex')),
-              body_bytes: new Uint8Array(Buffer.from(result.signed_doc.body_bytes as unknown as string, 'hex')),
+              auth_info_bytes: new Uint8Array(result.signed_doc.auth_info_bytes),
+              body_bytes: new Uint8Array(result.signed_doc.body_bytes),
             },
           };
 
@@ -70,8 +70,8 @@ export const request = (message: CosmosRequestMessage) =>
       const newDoc: SignDirectDoc = doc
         ? {
             ...doc,
-            auth_info_bytes: doc.auth_info_bytes ? (Buffer.from(doc.auth_info_bytes).toString('hex') as unknown as Uint8Array) : doc.auth_info_bytes,
-            body_bytes: doc.body_bytes ? (Buffer.from(doc.body_bytes).toString('hex') as unknown as Uint8Array) : doc.body_bytes,
+            auth_info_bytes: doc.auth_info_bytes ? [...Array.from(new Uint8Array(doc.auth_info_bytes))] : doc.auth_info_bytes,
+            body_bytes: doc.body_bytes ? [...Array.from(new Uint8Array(doc.body_bytes))] : doc.body_bytes,
           }
         : doc;
 
@@ -167,7 +167,7 @@ const getKey: Keplr['getKey'] = async (chainId) => {
     return {
       isNanoLedger: account.isLedger,
       algo: account.isEthermint ? 'ethsecp256k1' : 'secp256k1',
-      pubKey: account.publicKey,
+      pubKey: new Uint8Array(Buffer.from(account.publicKey, 'hex')),
       bech32Address: account.address,
       name: account.name,
       address: new Uint8Array(),
@@ -243,8 +243,8 @@ const signDirect: Keplr['signDirect'] = async (chainId, _, signDoc) => {
     signed: {
       accountNumber: response.signed_doc.account_number as unknown as Long,
       chainId: response.signed_doc.chain_id,
-      authInfoBytes: response.signed_doc.auth_info_bytes,
-      bodyBytes: response.signed_doc.body_bytes,
+      authInfoBytes: new Uint8Array(response.signed_doc.auth_info_bytes),
+      bodyBytes: new Uint8Array(response.signed_doc.body_bytes),
     },
     signature: { pub_key: response.pub_key, signature: response.signature },
   };
@@ -486,11 +486,11 @@ export const tendermint = {
             data.message.method === 'ten_requestAccount' ||
             data.message.method === 'ten_account'
           ) {
-            const { publicKey } = data.response.result as CosRequestAccountResponse;
+            const response = data.response.result as CosRequestAccountResponse;
 
             res({
-              ...(data.response.result as { publicKey: string; address: string }),
-              publicKey: new Uint8Array(Buffer.from(publicKey as unknown as string, 'hex')),
+              ...response,
+              publicKey: new Uint8Array(Buffer.from(response.publicKey, 'hex')),
             });
           } else if (data.message.method === 'cos_signDirect' || data.message.method === 'ten_signDirect') {
             const result = data.response.result as CosSignDirectResponse;
@@ -499,8 +499,8 @@ export const tendermint = {
               ...result,
               signed_doc: {
                 ...result.signed_doc,
-                auth_info_bytes: new Uint8Array(Buffer.from(result.signed_doc.auth_info_bytes as unknown as string, 'hex')),
-                body_bytes: new Uint8Array(Buffer.from(result.signed_doc.body_bytes as unknown as string, 'hex')),
+                auth_info_bytes: new Uint8Array(result.signed_doc.auth_info_bytes),
+                body_bytes: new Uint8Array(result.signed_doc.body_bytes),
               },
             };
 
@@ -521,8 +521,8 @@ export const tendermint = {
         const newDoc: SignDirectDoc = doc
           ? {
               ...doc,
-              auth_info_bytes: doc.auth_info_bytes ? (Buffer.from(doc.auth_info_bytes).toString('hex') as unknown as Uint8Array) : doc.auth_info_bytes,
-              body_bytes: doc.body_bytes ? (Buffer.from(doc.body_bytes).toString('hex') as unknown as Uint8Array) : doc.body_bytes,
+              auth_info_bytes: doc.auth_info_bytes ? [...Array.from(new Uint8Array(doc.auth_info_bytes))] : doc.auth_info_bytes,
+              body_bytes: doc.body_bytes ? [...Array.from(new Uint8Array(doc.body_bytes))] : doc.body_bytes,
             }
           : doc;
 
