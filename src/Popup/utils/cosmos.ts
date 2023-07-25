@@ -9,7 +9,6 @@ import { keccak256 } from '@ethersproject/keccak256';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
-import { CHIHUAHUA } from '~/constants/chain/cosmos/chihuahua';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
@@ -102,7 +101,12 @@ export function signAmino(signDoc: SignAminoDoc, privateKey: Buffer, chain: Cosm
 }
 
 export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer, chain: CosmosChain) {
-  const txSignDoc = new cosmos.tx.v1beta1.SignDoc({ ...signDoc, account_number: Number(signDoc.account_number) });
+  const txSignDoc = new cosmos.tx.v1beta1.SignDoc({
+    ...signDoc,
+    auth_info_bytes: new Uint8Array(signDoc.auth_info_bytes),
+    body_bytes: new Uint8Array(signDoc.body_bytes),
+    account_number: Number(signDoc.account_number),
+  });
 
   const txSignDocHex = Buffer.from(cosmos.tx.v1beta1.SignDoc.encode(txSignDoc).finish()).toString('hex');
 
@@ -212,7 +216,7 @@ export function getMsgSignData(signer: string, message: string) {
 }
 
 export function getDefaultAV(chain?: CosmosChain) {
-  const exceptedChainIds = [PROVENANCE.id, TERITORI.id, CHIHUAHUA.id];
+  const exceptedChainIds = [PROVENANCE.id, TERITORI.id];
 
   if (chain?.id === IXO.id) {
     return '3.0';

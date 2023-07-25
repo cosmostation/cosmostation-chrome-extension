@@ -15,6 +15,7 @@ import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
 import { MAINNET as APTOS_NETWORK__MAINNET } from './aptos/network/mainnet';
 import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
 import { AKASH } from './cosmos/akash';
+import { ARCHWAY } from './cosmos/archway';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { AXELAR } from './cosmos/axelar';
 import { BAND } from './cosmos/band';
@@ -114,6 +115,7 @@ export const COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV = '1.4';
 export const COSMOS_CHAINS: CosmosChain[] = [
   COSMOS,
   AKASH,
+  ARCHWAY,
   ASSET_MANTLE,
   AXELAR,
   BAND,
