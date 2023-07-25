@@ -513,6 +513,36 @@
         }
       },
       "Ethereum": {
+        "NFT": {
+          "Add": {
+            "entry": {
+              "addNFTSnackbar": "NFT added",
+              "addressPlaceholder": "NFT contract address",
+              "copied": "Copied",
+              "data": "Data",
+              "imagePreview": "IMG Preview",
+              "information": "If the token you're looking for is not on the list, click \"Import a custom NFT\"",
+              "invalidAddress": "Invalid address",
+              "invalidAddressTitle": "Invalid Contract Address",
+              "invalidOwnership": "The NFT is not owned by you for the given contract address or token ID.",
+              "invalidOwnershipTitle": "Ownership Mismatch",
+              "invalidSource": "NFT does not exist for the given contract address or token ID.",
+              "invalidSourceTitle": "No NFTs found",
+              "invalidTokenId": "Invalid token ID",
+              "invalidTokenIdTitle": "Invalid Token ID",
+              "networkError": "An error has occurred. please try again later",
+              "networkErrorTitle": "Network Error",
+              "preview": "NFT Preview",
+              "previewSubText": "When you enter your own NFT information, the image is displayed",
+              "submitButton": "Add custom NFT",
+              "tokenIdPlaceholder": "NFT token ID",
+              "uri": "URI"
+            },
+            "layout": {
+              "title": "Import NFT"
+            }
+          }
+        },
         "Network": {
           "Add": {
             "entry": {
@@ -825,6 +855,26 @@
                     "toToken": "To"
                   }
                 },
+                "NFT": {
+                  "ERC1155": {
+                    "SafeTransferFrom": {
+                      "index": {
+                        "contractAddress": "Contract address",
+                        "fromAddress": "From address",
+                        "toAddress": "To address"
+                      }
+                    }
+                  },
+                  "ERC721": {
+                    "TransferFrom": {
+                      "index": {
+                        "contractAddress": "Contract address",
+                        "fromAddress": "From address",
+                        "toAddress": "To address"
+                      }
+                    }
+                  }
+                },
                 "Send": {
                   "index": {
                     "amount": "Amount",
@@ -985,7 +1035,31 @@
     "Wallet": {
       "NFTDetail": {
         "Entry": {
-          "Sui": {
+          "ethereum": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "attributes": "Attributes",
+                  "balance": "Balance",
+                  "contractAddress": "Contract address",
+                  "copied": "Copied",
+                  "description": "Description",
+                  "ownerAddress": "Owner",
+                  "source": "Source",
+                  "tokenId": "Token ID",
+                  "tokenType": "Token Standard",
+                  "url": "URL"
+                }
+              }
+            },
+            "index": {
+              "information": "Cosmostation wallet displays NFT information from the source URL and does not have ownership of your NFTs.",
+              "notOwnedNFT": "You cannot transfer NFTs that you do not own.",
+              "send": "NFT Send",
+              "untransferableObject": "Untransferable object"
+            }
+          },
+          "sui": {
             "components": {
               "NFTInfoItem": {
                 "index": {
@@ -1010,6 +1084,36 @@
       },
       "NFTSend": {
         "Entry": {
+          "Ethereum": {
+            "components": {
+              "NFTButton": {
+                "index": {
+                  "balance": "Balance"
+                }
+              },
+              "NFTPopover": {
+                "components": {
+                  "NFTItem": {
+                    "index": {
+                      "balance": "Balance"
+                    }
+                  }
+                }
+              }
+            },
+            "index": {
+              "fee": "Fee",
+              "insufficientAmount": "Insufficient amount",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "invalidSendNFTQuantity": "Invalid NFT Amount",
+              "networkError": "Network Error",
+              "notOwnedNFT": "You cannot transfer NFTs that you do not own.",
+              "quantityPlaceholder": "Quantity",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          },
           "Sui": {
             "index": {
               "fee": "Fee",
@@ -1392,6 +1496,19 @@
           }
         },
         "ethereum": {
+          "NFTList": {
+            "components": {
+              "NFTCardItem": {
+                "index": {
+                  "networkError": "Network Error"
+                }
+              }
+            },
+            "index": {
+              "importNFTButton": "Import NFTs",
+              "nft": "NFT"
+            }
+          },
           "NativeChainCard": {
             "index": {
               "copied": "Copied",
@@ -1419,6 +1536,11 @@
           "CoinList": {
             "index": {
               "coin": "Coin"
+            }
+          },
+          "NFTList": {
+            "index": {
+              "nft": "NFT"
             }
           },
           "NativeChainCard": {

@@ -24,6 +24,12 @@ export const extensionStorageDefault: ExtensionStorage = {
   currency: '' as CurrencyType,
 
   rootPath: PATH.DASHBOARD,
+  homeTabIndex: {
+    ethereum: 0,
+    cosmos: 0,
+    sui: 0,
+    aptos: 0,
+  },
 
   allowedChainIds: [],
   allowedOrigins: [],
@@ -41,6 +47,8 @@ export const extensionStorageDefault: ExtensionStorage = {
 
   ethereumTokens: [],
   cosmosTokens: [],
+
+  ethereumNFTs: [],
 
   autoSigns: [],
 
