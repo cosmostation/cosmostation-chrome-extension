@@ -23,6 +23,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import type { EthereumChain } from '~/types/chain';
+import type { Path } from '~/types/route';
 
 import {
   Container,
@@ -48,6 +49,7 @@ import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
 import SendIcon from '~/images/icons/Send.svg';
+import SwapIcon16 from '~/images/icons/Swap16.svg';
 
 type NativeChainCardProps = {
   chain: EthereumChain;
@@ -132,6 +134,10 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
         <Button Icon={SendIcon} typoVarient="h5" onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
         </Button>
+        <FourthLineCenterContainer />
+        <Button Icon={SwapIcon16} typoVarient="h5" onClick={() => navigate(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path)}>
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
+        </Button>
       </FourthLineContainer>
     </Container>
   );
@@ -207,6 +213,10 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
+        </Button>
+        <FourthLineCenterContainer />
+        <Button Icon={SwapIcon16} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
         </Button>
       </FourthLineContainer>
     </Container>
@@ -300,6 +310,10 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
         <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
+        </Button>
+        <FourthLineCenterContainer />
+        <Button Icon={SwapIcon16} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
         </Button>
       </FourthLineContainer>
       {isLoading && <StyledAbsoluteLoading size="2.5rem" />}

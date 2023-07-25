@@ -36,6 +36,7 @@ import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgCommission, MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
+import type { Path } from '~/types/route';
 
 import ClaimButton from './components/ClaimButton';
 import {
@@ -75,7 +76,8 @@ import ReceiveIcon from '~/images/icons/Receive.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
 import Reward16Icon from '~/images/icons/Reward16.svg';
 import SendIcon from '~/images/icons/Send.svg';
-import SwapIcon from '~/images/icons/Swap.svg';
+import SwapIcon16 from '~/images/icons/Swap16.svg';
+import SwapIcon from '~/images/icons/Swap24.svg';
 
 type NativeChainCardProps = {
   chain: CosmosChain;
@@ -531,8 +533,11 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         <Button Icon={SendIcon} typoVarient="h5" disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
+        <Button Icon={SwapIcon16} typoVarient="h5" onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path, { isDuplicateCheck: true })}>
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
+        </Button>
         {chain.id === OSMOSIS.id && (
-          <IconButtonContainer>
+          <IconButtonContainer sx={{ display: 'none' }}>
             <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/osmosis-swap')}>
               <SwapIcon />
             </UnitIconButton>
@@ -706,9 +711,12 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
+        <Button Icon={SwapIcon16} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
+        </Button>
         {chain.id === OSMOSIS.id && (
           <IconButtonContainer>
-            <UnitIconButton disabled>
+            <UnitIconButton disabled sx={{ display: 'none' }}>
               <SwapIcon />
             </UnitIconButton>
             <UnitIconButton disabled sx={{ display: 'none' }}>
@@ -820,9 +828,12 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
+        <Button Icon={SwapIcon16} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
+        </Button>
         {chain.id === OSMOSIS.id && (
           <IconButtonContainer>
-            <UnitIconButton disabled>
+            <UnitIconButton disabled sx={{ display: 'none' }}>
               <SwapIcon />
             </UnitIconButton>
             <UnitIconButton disabled sx={{ display: 'none' }}>

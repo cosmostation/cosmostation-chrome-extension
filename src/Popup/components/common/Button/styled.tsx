@@ -33,6 +33,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
       '& > path': {
         fill: theme.colors.text02,
+        stroke: theme.colors.text02,
       },
     },
   },

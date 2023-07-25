@@ -90,8 +90,8 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 import Management24Icon from '~/images/icons/Mangement24.svg';
 import OneInchLogoIcon from '~/images/icons/OneInchLogo.svg';
-import OsmosisLogoIcon from '~/images/icons/OsmosisLogo.svg';
 import Permission16Icon from '~/images/icons/Permission16.svg';
+import SkipLogoIcon from '~/images/icons/SkipLogoIcon.svg';
 import SquidLogoIcon from '~/images/icons/SquidLogo.svg';
 import SwapIcon from '~/images/icons/Swap.svg';
 
@@ -1810,7 +1810,7 @@ export default function Entry() {
                   <ButtonTextIconContaier>
                     {language === 'ko' ? (
                       <>
-                        {currentSwapAPI === 'skip' && <OsmosisLogoIcon />}
+                        {currentSwapAPI === 'skip' && <SkipLogoIcon />}
                         {currentSwapAPI === '1inch' && <OneInchLogoIcon />}
                         {currentSwapAPI === 'squid' && <SquidLogoIcon />}
                         {currentSwapAPI ? t('pages.Wallet.Swap.entry.swapButtonOn') : t('pages.Wallet.Swap.entry.swapButton')}
@@ -1818,7 +1818,7 @@ export default function Entry() {
                     ) : (
                       <>
                         {currentSwapAPI ? t('pages.Wallet.Swap.entry.swapButtonOn') : t('pages.Wallet.Swap.entry.swapButton')}
-                        {currentSwapAPI === 'skip' && <OsmosisLogoIcon />}
+                        {currentSwapAPI === 'skip' && <SkipLogoIcon />}
                         {currentSwapAPI === '1inch' && <OneInchLogoIcon />}
                         {currentSwapAPI === 'squid' && <SquidLogoIcon />}
                       </>

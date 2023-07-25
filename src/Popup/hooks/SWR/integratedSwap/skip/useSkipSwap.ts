@@ -147,7 +147,8 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
     [skipSwapTx.data?.msgs],
   );
 
-  const isSignDirectMode = useMemo(() => skipSwapDirectTxMsgs.length > 1, [skipSwapDirectTxMsgs.length]);
+  // TODO 그냥 빼버려, 이슈 생기면 그때 핸들ㄹ이
+  const isSignDirectMode = useMemo(() => !(skipSwapDirectTxMsgs.length > 1), [skipSwapDirectTxMsgs.length]);
 
   const clientState = useClientStateSWR({
     chain: COSMOS_CHAINS.find((item) => item.chainId === skipSwapDirectTxMsgs.find((msg) => msg?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.chain_id),
