@@ -4,6 +4,8 @@ import type { EthereumTx } from '~/types/message/ethereum';
 import Approve from './messages/Approve';
 import Deploy from './messages/Deploy';
 import Interact from './messages/Interact';
+import ERC721TransferFrom from './messages/NFT/ERC721/TransferFrom';
+import ERC1155SafeTransferFrom from './messages/NFT/ERC11155/SafeTransferFrom';
 import OneInchSwap from './messages/OneInchSwap';
 import Send from './messages/Send';
 import Transfer from './messages/Transfer';
@@ -22,6 +24,14 @@ export default function TxMessage({ determineTxType, tx }: TxMessageProps) {
 
   if (determineTxType?.txDescription && determineTxType.contractKind === 'erc20' && determineTxType?.type === 'transferfrom') {
     return <TransferFrom determineTxType={determineTxType} tx={tx} />;
+  }
+
+  if (determineTxType?.txDescription && determineTxType.contractKind === 'erc721' && determineTxType?.type === 'transferfrom') {
+    return <ERC721TransferFrom determineTxType={determineTxType} tx={tx} />;
+  }
+
+  if (determineTxType?.txDescription && determineTxType.contractKind === 'erc1155' && determineTxType?.type === 'safetransferfrom') {
+    return <ERC1155SafeTransferFrom determineTxType={determineTxType} tx={tx} />;
   }
 
   if (determineTxType?.type === 'simpleSend') {

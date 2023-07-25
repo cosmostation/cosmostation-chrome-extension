@@ -41,11 +41,6 @@ export function isKiosk(data: SuiObjectData) {
   return !!data.type && data.type.includes('kiosk') && !!data.content && 'fields' in data.content && 'kiosk' in data.content.fields;
 }
 
-export function convertIpfs(url?: string) {
-  if (!url) return '';
-  return url.replace(/^ipfs:\/\//, 'https://ipfs.io/ipfs/');
-}
-
 export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMeta {
   if (data && data.data?.content?.dataType === 'moveObject') {
     const { name, description, creator, image_url, link, project_url } = getObjectDisplay(data).data || {};

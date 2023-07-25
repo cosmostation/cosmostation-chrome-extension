@@ -10,8 +10,9 @@ import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { convertIpfs } from '~/Popup/utils/nft';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import { convertIpfs, getNFTMeta } from '~/Popup/utils/sui';
+import { getNFTMeta } from '~/Popup/utils/sui';
 import type { Path } from '~/types/route';
 
 import NFTInfoItem from './components/NFTInfoItem';
@@ -51,7 +52,7 @@ export default function Sui() {
 
   const errorMessage = useMemo(() => {
     if (!(currentNFTObject?.data?.content?.dataType === 'moveObject' && currentNFTObject?.data?.content.hasPublicTransfer)) {
-      return t('pages.Wallet.NFTDetail.Entry.Sui.index.untransferableObject');
+      return t('pages.Wallet.NFTDetail.Entry.sui.index.untransferableObject');
     }
 
     return '';
@@ -96,7 +97,7 @@ export default function Sui() {
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
             <div>
               <Button type="button" disabled={!!errorMessage} onClick={() => navigate(`/wallet/nft-send/${objectId || ''}` as unknown as Path)}>
-                {t('pages.Wallet.NFTDetail.Entry.Sui.index.send')}
+                {t('pages.Wallet.NFTDetail.Entry.sui.index.send')}
               </Button>
             </div>
           </Tooltip>

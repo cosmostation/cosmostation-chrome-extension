@@ -9,8 +9,9 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTObjectsSWR } from '~/Popup/hooks/SWR/sui/useNFTObjectsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { convertIpfs } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
-import { convertIpfs, getNFTMeta } from '~/Popup/utils/sui';
+import { getNFTMeta } from '~/Popup/utils/sui';
 import type { SuiChain } from '~/types/chain';
 
 import {

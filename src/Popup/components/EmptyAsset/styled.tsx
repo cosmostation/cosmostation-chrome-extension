@@ -23,5 +23,10 @@ export const HeaderTextContainer = styled('div')(({ theme }) => ({
 }));
 
 export const SubHeaderTextContainer = styled('div')(({ theme }) => ({
+  width: '22rem',
+
+  textAlign: 'center',
+  wordBreak: 'keep-all',
+
   color: theme.colors.text02,
 }));

@@ -30,6 +30,7 @@ export const PATH = {
 
   CHAIN__ETHEREUM__TOKEN__ADD__ERC20: '/chain/ethereum/token/add/erc20',
   CHAIN__ETHEREUM__TOKEN__ADD__ERC20__SEARCH: '/chain/ethereum/token/add/erc20/search',
+  CHAIN__ETHEREUM__NFT__ADD: '/chain/ethereum/nft/add',
   CHAIN__ETHEREUM__NETWORK__ADD: '/chain/ethereum/network/add',
 
   CHAIN__APTOS__COIN__ADD: '/chain/aptos/coin/add',

@@ -1,4 +1,4 @@
-import type { ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE, FEE_TYPE, TOKEN_TYPE } from '~/constants/ethereum';
+import type { ETHEREUM_CONTRACT_KIND, ETHEREUM_NFT_STANDARD, ETHEREUM_TX_TYPE, FEE_TYPE, TOKEN_TYPE } from '~/constants/ethereum';
 
 import type { EthereumToken } from '../chain';
 
@@ -11,3 +11,5 @@ export type EthereumTxType = ValueOf<typeof ETHEREUM_TX_TYPE>;
 export type EthereumContractKind = ValueOf<typeof ETHEREUM_CONTRACT_KIND>;
 
 export type Token = EthereumToken | null;
+
+export type EthereumNFTStandard = ValueOf<typeof ETHEREUM_NFT_STANDARD>;
