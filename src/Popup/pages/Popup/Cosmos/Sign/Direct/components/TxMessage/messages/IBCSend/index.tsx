@@ -45,7 +45,7 @@ export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
 
   const { value } = msg;
 
-  const { sender, receiver, token, memo } = value;
+  const { sender, receiver, token, memo, source_channel } = value;
 
   const itemBaseAmount = useMemo(() => token.amount, [token.amount]);
   const itemBaseDenom = useMemo(() => token.denom, [token.denom]);
@@ -54,8 +54,7 @@ export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
   const ibcCoinInfo = useMemo(() => ibcCoins.find((coin) => coin.baseDenom === itemBaseDenom), [ibcCoins, itemBaseDenom]);
 
   const memoData = useMemo(() => {
-    // NOTE Json인지 타입 체크 필요함. 안하면 깨짐
-    if (isJsonString(JSON.parse(memo) as string)) {
+    if (isJsonString(memo)) {
       const parsedMemo = JSON.parse(memo) as string;
       return YAML.dump(parsedMemo, { indent: 4 });
     }
@@ -119,7 +118,7 @@ export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
       <ContentContainer>
         <AddressContainer>
           <LabelContainer>
-            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Direct.components.TxMessage.messages.Send.index.fromAddress')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Direct.components.TxMessage.messages.IBCSend.index.fromAddress')}</Typography>
           </LabelContainer>
           <ValueContainer>
             <Typography variant="h5">{shorterAddress(sender, 32)}</Typography>
@@ -127,7 +126,7 @@ export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
         </AddressContainer>
         <AddressContainer sx={{ marginTop: '0.4rem', paddingBottom: '1.2rem' }}>
           <LabelContainer>
-            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Direct.components.TxMessage.messages.Send.index.toAddress')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Direct.components.TxMessage.messages.IBCSend.index.toAddress')}</Typography>
           </LabelContainer>
           <ValueContainer>
             <Typography variant="h5">{shorterAddress(receiver, 32)}</Typography>
@@ -136,7 +135,7 @@ export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
 
         <AmountInfoContainer key={itemBaseDenom}>
           <LeftContainer>
-            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Direct.components.TxMessage.messages.Send.index.amount')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Direct.components.TxMessage.messages.IBCSend.index.amount')}</Typography>
           </LeftContainer>
           <RightContainer>
             <RightColumnContainer>
@@ -155,10 +154,20 @@ export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
             </RightColumnContainer>
           </RightContainer>
         </AmountInfoContainer>
+
+        <AddressContainer sx={{ marginTop: '0.4rem' }}>
+          <LabelContainer>
+            <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Direct.components.TxMessage.messages.IBCSend.index.sourceChannel')}</Typography>
+          </LabelContainer>
+          <ValueContainer>
+            <Typography variant="h5">{source_channel}</Typography>
+          </ValueContainer>
+        </AddressContainer>
+
         {memoData && (
           <AddressContainer sx={{ marginTop: '0.4rem', paddingBottom: '1.2rem' }}>
             <LabelContainer>
-              <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Direct.components.TxMessage.messages.Send.index.toAddress')}</Typography>
+              <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Direct.components.TxMessage.messages.IBCSend.index.memo')}</Typography>
             </LabelContainer>
             <ValueContainer>
               <Typography variant="h5">{memoData}</Typography>

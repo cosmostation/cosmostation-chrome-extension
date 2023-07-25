@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import YAML from 'js-yaml';
 import { Typography } from '@mui/material';
 
 import { CURRENCY_DECIMALS } from '~/constants/currency';
@@ -8,6 +9,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { isJsonString } from '~/Popup/utils/common';
 import { isEqualsIgnoringCase, shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Msg, MsgTransfer } from '~/types/cosmos/amino';
@@ -39,13 +41,21 @@ export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
 
   const { value } = msg;
 
-  const { receiver, sender, source_channel, token } = value;
+  const { receiver, sender, source_channel, token, memo } = value;
 
-  const itemBaseAmount = token.amount;
-  const itemBaseDenom = token.denom;
+  const itemBaseAmount = useMemo(() => token.amount, [token.amount]);
+  const itemBaseDenom = useMemo(() => token.denom, [token.denom]);
 
-  const assetCoinInfo = coins.find((coin) => isEqualsIgnoringCase(coin.baseDenom, itemBaseDenom));
-  const ibcCoinInfo = ibcCoins.find((coin) => coin.baseDenom === itemBaseDenom);
+  const assetCoinInfo = useMemo(() => coins.find((coin) => isEqualsIgnoringCase(coin.baseDenom, itemBaseDenom)), [coins, itemBaseDenom]);
+  const ibcCoinInfo = useMemo(() => ibcCoins.find((coin) => isEqualsIgnoringCase(coin.baseDenom, itemBaseDenom)), [ibcCoins, itemBaseDenom]);
+
+  const memoData = useMemo(() => {
+    if (isJsonString(memo)) {
+      const parsedMemo = JSON.parse(memo) as string;
+      return YAML.dump(parsedMemo, { indent: 4 });
+    }
+    return memo;
+  }, [memo]);
 
   const itemDisplayAmount = useMemo(() => {
     if (itemBaseDenom === baseDenom) {
@@ -150,6 +160,17 @@ export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
             <Typography variant="h5">{source_channel}</Typography>
           </ValueContainer>
         </AddressContainer>
+
+        {memoData && (
+          <AddressContainer sx={{ marginTop: '0.4rem', paddingBottom: '1.2rem' }}>
+            <LabelContainer>
+              <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.IBCSend.index.memo')}</Typography>
+            </LabelContainer>
+            <ValueContainer>
+              <Typography variant="h5">{memoData}</Typography>
+            </ValueContainer>
+          </AddressContainer>
+        )}
       </ContentContainer>
     </Container>
   );

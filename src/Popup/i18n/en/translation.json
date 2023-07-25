@@ -652,9 +652,18 @@
                       "validatorAddress": "Validator address"
                     }
                   },
+                  "Contract": {
+                    "index": {
+                      "contract": "Contract Address",
+                      "funds": "Funds",
+                      "msg": "Msg",
+                      "sender": "Sender Address"
+                    }
+                  },
                   "IBCSend": {
                     "index": {
                       "amount": "Amount",
+                      "memo": "Memo",
                       "receiver": "Receiver Address",
                       "sender": "Sender Address",
                       "sourceChannel": "Channel"
@@ -704,6 +713,15 @@
                     "index": {
                       "title": "Claim Commission",
                       "validatorAddress": "Validator address"
+                    }
+                  },
+                  "IBCSend": {
+                    "index": {
+                      "amount": "Amount",
+                      "fromAddress": "From address",
+                      "memo": "Memo",
+                      "sourceChannel": "Channel",
+                      "toAddress": "To address"
                     }
                   },
                   "Send": {
@@ -1285,7 +1303,8 @@
           "swapInfoDescription2": ", the final amount you receive and the estimated amount may differ. You will receive at least",
           "swapInfoDescription3": "",
           "title": "Swap",
-          "txSizeWarning": "Transaction size is currently limited to $10,000. Please decrease the size of your transaction and try again."
+          "txSizeWarning": "Transaction size is currently limited to $10,000. Please decrease the size of your transaction and try again.",
+          "unableToSwap": "Unable to swap"
         },
         "index": {
           "fetchingData": "Fetching Data",

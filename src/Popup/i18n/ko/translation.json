@@ -652,9 +652,18 @@
                       "validatorAddress": "검증자 주소"
                     }
                   },
+                  "Contract": {
+                    "index": {
+                      "contract": "계약 주소",
+                      "funds": "자산",
+                      "msg": "메세지",
+                      "sender": "보내는 주소"
+                    }
+                  },
                   "IBCSend": {
                     "index": {
                       "amount": "수량",
+                      "memo": "메모",
                       "receiver": "받는 주소",
                       "sender": "보내는 주소",
                       "sourceChannel": "채널"
@@ -704,6 +713,15 @@
                     "index": {
                       "title": "커미션 받기",
                       "validatorAddress": "검증자 주소"
+                    }
+                  },
+                  "IBCSend": {
+                    "index": {
+                      "amount": "수량",
+                      "fromAddress": "보내는 주소",
+                      "memo": "메모",
+                      "sourceChannel": "채널",
+                      "toAddress": "받는 주소"
                     }
                   },
                   "Send": {
@@ -1285,7 +1303,8 @@
           "swapInfoDescription2": "로 인해 최종 수령 금액과 예상 수령 금액이 다를 수 있습니다. 최소",
           "swapInfoDescription3": "를 받게됩니다.",
           "title": "교환",
-          "txSizeWarning": "1회 스왑할 수 있는 최대 금액은 $10,000 입니다. 스왑 금액을 낮추고 다시 시도하세요."
+          "txSizeWarning": "1회 스왑할 수 있는 최대 금액은 $10,000 입니다. 스왑 금액을 낮추고 다시 시도하세요.",
+          "unableToSwap": "스왑을 할 수 없습니다"
         },
         "index": {
           "fetchingData": "데이터를 가져오는 중입니다",

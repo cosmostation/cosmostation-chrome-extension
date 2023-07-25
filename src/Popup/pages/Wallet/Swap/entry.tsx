@@ -125,7 +125,7 @@ export default function Entry() {
 
   const [isOpenSlippageDialog, setIsOpenSlippageDialog] = useState(false);
 
-  const [isFeePriceCurrencyBase, setIsFeePriceCurrencyBase] = useState(true);
+  const [isFeePriceCurrencyBase, setIsFeePriceCurrencyBase] = useState(false);
 
   const [currentSlippage, setCurrentSlippage] = useState('1');
 
@@ -342,7 +342,6 @@ export default function Entry() {
     [accounts?.data, currentAccount.id, currentToChain],
   );
 
-  // TODO 여기도 밑과 같이 구현
   const cosmosFromChainBalance = useBalanceSWR(currentFromChain.line === COSMOS.line ? currentFromChain : undefined);
   const cosmosToChainBalance = useBalanceSWR(currentToChain?.line === COSMOS.line ? currentToChain : undefined);
 
@@ -386,9 +385,13 @@ export default function Entry() {
       }));
 
       return [
-        ...filteredTokens.filter((item) => gt(item?.balance || '0', '0') && (item.type === 'staking' || item.type === 'native' || item.type === 'bridge')),
-        ...filteredTokens.filter((item) => gt(item?.balance || '0', '0') && item.type === 'ibc').sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
-        ...filteredTokens.filter((item) => !gt(item?.balance || '0', '0')).sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
+        ...filteredTokens.filter((item) => item.type === 'staking' || item.type === 'native' || item.type === 'bridge'),
+        ...filteredTokens
+          .filter((item) => gt(item?.balance || '0', '0') && item.type === 'ibc')
+          .sort((a, b) => (gt(toDisplayDenomAmount(a.balance || '0', a.decimals), toDisplayDenomAmount(b.balance || '0', b.decimals)) ? -1 : 1)),
+        ...filteredTokens
+          .filter((item) => !gt(item?.balance || '0', '0') && !(item.type === 'staking' || item.type === 'native' || item.type === 'bridge'))
+          .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
       ];
     }
 
@@ -492,12 +495,12 @@ export default function Entry() {
         symbol: undefined,
       }));
 
+      // TODO 정렬을 여기에서만 하는걸로 하자
       return [
         ...filteredTokens.filter((item) => item.type === 'staking' || item.type === 'native' || item.type === 'bridge'),
         ...filteredTokens
           .filter((item) => gt(item?.balance || '0', '0') && !(item.type === 'staking' || item.type === 'native' || item.type === 'bridge'))
-          .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
-        // TODO 토큰들 정렬 우선순위 정해야함
+          .sort((a, b) => (gt(toDisplayDenomAmount(a.balance || '0', a.decimals), toDisplayDenomAmount(b.balance || '0', b.decimals)) ? -1 : 1)),
         ...filteredTokens
           .filter((item) => !gt(item?.balance || '0', '0') && !(item.type === 'staking' || item.type === 'native' || item.type === 'bridge'))
           .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
@@ -666,7 +669,7 @@ export default function Entry() {
 
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
 
-  const { skipRoute, skipSwapTx, skipSwapAminoTx, skipSwapSimulatedGas, latestHeight } = useSkipSwap(
+  const { skipRoute, skipSwapTx, skipSwapAminoTx, memoizedSkipSwapDirectTx, skipSwapSimulatedGas, isSignDirectMode } = useSkipSwap(
     currentSwapAPI === 'skip' &&
       currentFromChain &&
       currentFromChain.line === 'COSMOS' &&
@@ -1119,8 +1122,8 @@ export default function Entry() {
       if (skipSwapTx.error?.response?.data.message) {
         return skipSwapTx.error.response.data.message;
       }
-      if (!latestHeight) {
-        return t('pages.Wallet.Swap.entry.timeoutHeightError');
+      if (!skipRoute.data?.does_swap) {
+        return t('pages.Wallet.Swap.entry.unableToSwap');
       }
       if (!skipSwapAminoTx) {
         return t('pages.Wallet.Swap.entry.invalidSwapTx');
@@ -1150,6 +1153,7 @@ export default function Entry() {
     }
     return '';
   }, [
+    skipRoute.data?.does_swap,
     filteredFromChains.length,
     filteredToChainList.length,
     currentSwapAPI,
@@ -1172,7 +1176,6 @@ export default function Entry() {
     integratedSwapTx,
     estimatedToTokenDisplayAmountPrice,
     priceImpactPercent,
-    latestHeight,
   ]);
 
   const swapInfoMessage = useMemo(() => {
@@ -1779,16 +1782,27 @@ export default function Entry() {
                         messageId: '',
                         origin: '',
                         channel: 'inApp',
-                        message: {
-                          method: 'cos_signAmino',
-                          params: {
-                            chainName: selectedFromCosmosChain.chainName,
-                            doc: {
-                              ...skipSwapAminoTx,
-                              fee: { amount: [{ denom: currentFeeToken.address, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
-                            },
-                          },
-                        },
+                        message:
+                          isSignDirectMode && memoizedSkipSwapDirectTx
+                            ? {
+                                method: 'cos_signDirect',
+                                params: {
+                                  chainName: selectedFromCosmosChain.chainName,
+                                  doc: {
+                                    ...memoizedSkipSwapDirectTx,
+                                  },
+                                },
+                              }
+                            : {
+                                method: 'cos_signAmino',
+                                params: {
+                                  chainName: selectedFromCosmosChain.chainName,
+                                  doc: {
+                                    ...skipSwapAminoTx,
+                                    fee: { amount: [{ denom: currentFeeToken.address, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
+                                  },
+                                },
+                              },
                       });
                     }
                   }}
