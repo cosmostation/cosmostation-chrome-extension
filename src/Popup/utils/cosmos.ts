@@ -19,7 +19,6 @@ import { KAVA } from '~/constants/chain/cosmos/kava';
 import { KI } from '~/constants/chain/cosmos/ki';
 import { MARS } from '~/constants/chain/cosmos/mars';
 import { PROVENANCE } from '~/constants/chain/cosmos/provenance';
-import { SIF } from '~/constants/chain/cosmos/sif';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { STARNAME } from '~/constants/chain/cosmos/starname';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
@@ -172,7 +171,6 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [CRYPTO_ORG.id]: 'crypto-org',
     [ASSET_MANTLE.id]: 'asset-mantle',
     [GRAVITY_BRIDGE.id]: 'gravity-bridge',
-    [SIF.id]: 'sifchain',
     [KI.id]: 'ki-chain',
     [STAFIHUB.id]: 'stafi',
     [FETCH_AI.id]: 'fetchai',
@@ -186,7 +184,6 @@ export function convertAssetNameToCosmos(assetName: string) {
     'crypto-org': CRYPTO_ORG,
     'asset-mantle': ASSET_MANTLE,
     'gravity-bridge': GRAVITY_BRIDGE,
-    sifchain: SIF,
     'ki-chain': KI,
     stafi: STAFIHUB,
     fetchai: FETCH_AI,
