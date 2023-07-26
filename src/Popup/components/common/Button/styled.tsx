@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 
 type StyledButtonProps = {
   'data-typo-varient': 'h4' | 'h5';
+  'data-is-green': boolean;
 };
 
 export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
@@ -13,13 +14,14 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
   borderRadius: '0.8rem',
 
-  backgroundColor: theme.accentColors.purple01,
+  backgroundColor: props['data-is-green'] ? theme.accentColors.green : theme.accentColors.purple01,
   color: theme.accentColors.white,
 
   cursor: 'pointer',
 
   '&:hover': {
-    backgroundColor: theme.accentColors.purple02,
+    backgroundColor: props['data-is-green'] ? theme.accentColors.green : theme.accentColors.purple02,
+    opacity: props['data-is-green'] ? 0.8 : 1,
   },
 
   '&:disabled': {
@@ -33,7 +35,6 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
       '& > path': {
         fill: theme.colors.text02,
-        stroke: theme.colors.text02,
       },
     },
   },

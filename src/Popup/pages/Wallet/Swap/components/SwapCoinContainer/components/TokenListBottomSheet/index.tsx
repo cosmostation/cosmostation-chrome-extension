@@ -73,19 +73,13 @@ export default function TokenListBottomSheet({
 
     const sortedListByChainLine =
       currentSelectedChain?.line === 'COSMOS'
-        ? [
-            ...relocatedTokenList.filter((item) => item.displayDenom === currentSelectedChain?.displayDenom),
-            ...relocatedTokenList.filter((item) => item.displayDenom !== currentSelectedChain?.displayDenom && gt(item.balance, '0')),
-            ...relocatedTokenList.filter((item) => item.displayDenom !== currentSelectedChain?.displayDenom && !gt(item.balance, '0')),
-          ]
-        : [
-            ...relocatedTokenList.filter((item) => isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address)),
-            ...relocatedTokenList.filter((item) => !isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address) && gt(item.balance, '0')),
-            ...relocatedTokenList.filter((item) => !isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address) && !gt(item.balance, '0')),
-          ];
+        ? relocatedTokenList
+        : [...relocatedTokenList.filter((item) => gt(item.balance, '0')), ...relocatedTokenList.filter((item) => !gt(item.balance, '0'))].sort((a) =>
+            isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, a.address) ? -1 : 1,
+          );
 
     return sortedListByChainLine;
-  }, [currentSelectedChain?.displayDenom, currentSelectedChain?.line, filteredTokenList, tokensBalance]);
+  }, [currentSelectedChain?.line, filteredTokenList, tokensBalance]);
 
   useEffect(() => {
     if (search.length > 1) {

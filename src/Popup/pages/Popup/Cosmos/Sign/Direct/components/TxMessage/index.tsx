@@ -1,8 +1,9 @@
-import { isDirectCommission, isDirectCustom, isDirectIBCSend, isDirectSend } from '~/Popup/utils/proto';
+import { isDirectCommission, isDirectCustom, isDirectExecuteContract, isDirectIBCSend, isDirectSend } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { Msg } from '~/types/cosmos/proto';
 
 import Commission from './messages/Commission';
+import Contract from './messages/Contract';
 import Custom from './messages/Custom';
 import IBCSend from './messages/IBCSend';
 import Send from './messages/Send';
@@ -20,6 +21,10 @@ export default function TxMessage({ chain, msg, isMultipleMsgs }: TxMessageProps
 
   if (isDirectCommission(msg)) {
     return <Commission msg={msg} isMultipleMsgs={isMultipleMsgs} />;
+  }
+
+  if (isDirectExecuteContract(msg)) {
+    return <Contract msg={msg} chain={chain} isMultipleMsgs={isMultipleMsgs} />;
   }
 
   if (isDirectCustom(msg)) {

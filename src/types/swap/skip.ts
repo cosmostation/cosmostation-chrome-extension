@@ -37,7 +37,7 @@ export type Operations = {
 };
 
 export type Affiliates = {
-  basisPointsFee: string;
+  basis_points_fee: string;
   address: string;
 };
 
@@ -51,7 +51,7 @@ export type SkipRoutePayload = {
   chain_ids: string[];
   does_swap: boolean;
   estimated_amount_out: string;
-  swap_venue: SwapVenue;
+  swap_venue?: SwapVenue;
 };
 
 export type Msg = {

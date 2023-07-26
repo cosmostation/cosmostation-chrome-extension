@@ -9,6 +9,7 @@ import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type {
   Msg as ProtoMsg,
   MsgCommission as ProtoMsgCommission,
+  MsgExecuteContract as ProtoMsgExecuteContract,
   MsgSend as ProtoMsgSend,
   MsgTransfer as ProtoMsgTransfer,
   ProtoTxBytesProps,
@@ -236,6 +237,10 @@ export function decodeProtobufMessage(msg: google.protobuf.IAny) {
     return { type_url: msg.type_url, value: ibc.applications.transfer.v1.MsgTransfer.decode(msg.value!) } as ProtoMsg<ProtoMsgTransfer>;
   }
 
+  if (msg.type_url === '/cosmwasm.wasm.v1.MsgExecuteContract') {
+    return { type_url: msg.type_url, value: cosmwasm.wasm.v1.MsgExecuteContract.decode(msg.value!) } as ProtoMsg<ProtoMsgExecuteContract>;
+  }
+
   return { ...msg, value: msg.value ? Buffer.from(msg.value).toString('hex') : '' } as ProtoMsg<string>;
 }
 
@@ -249,6 +254,10 @@ export function isDirectCommission(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgCommi
 
 export function isDirectIBCSend(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgTransfer> {
   return msg.type_url === '/ibc.applications.transfer.v1.MsgTransfer';
+}
+
+export function isDirectExecuteContract(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgExecuteContract> {
+  return msg.type_url === '/cosmwasm.wasm.v1.MsgExecuteContract';
 }
 
 export function isDirectCustom(msg: ProtoMsg): msg is ProtoMsg {

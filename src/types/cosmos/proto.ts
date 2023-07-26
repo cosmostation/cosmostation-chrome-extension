@@ -29,6 +29,13 @@ export type MsgCommission = {
   validator_address: string;
 };
 
+export type MsgExecuteContract<T = unknown> = {
+  sender: string;
+  contract: string;
+  msg: T;
+  funds: Amount[];
+};
+
 export type SignDirectDoc = {
   chain_id: string;
   body_bytes: Uint8Array;

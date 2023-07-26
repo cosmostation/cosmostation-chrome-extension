@@ -10,7 +10,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
-import type { Msg, MsgExecuteContract } from '~/types/cosmos/amino';
+import type { Msg, MsgExecuteContract } from '~/types/cosmos/proto';
 
 import {
   AddressContainer,

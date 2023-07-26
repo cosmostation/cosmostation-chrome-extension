@@ -45,11 +45,7 @@ export function useSkipSwapTxSWR({ swapTxParam }: UseSkipSwapTxSWRProps, config?
       operations: skipSwapTxParam?.operations,
       estimated_amount_out: skipSwapTxParam?.estimated_amount_out,
       slippage_tolerance_percent: skipSwapTxParam?.slippage,
-      affiliates:
-        skipSwapTxParam?.affiliates?.map((item) => ({
-          address: item.address,
-          basis_points_fee: item.basisPointsFee,
-        })) || [],
+      affiliates: skipSwapTxParam?.affiliates || [],
     });
 
   const { data, isValidating, error, mutate } = useSWR<SkipSwapTxPayload, AxiosError<SkipRouteError>>(

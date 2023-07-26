@@ -204,7 +204,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {t('pages.Wallet.components.sui.NativeChainCard.index.sendButton')}
         </Button>
         <FourthLineCenterContainer />
-        <Button Icon={SwapIcon16} typoVarient="h5" onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path, { isDuplicateCheck: true })}>
+        <Button Icon={SwapIcon16} isGreen typoVarient="h5" onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path, { isDuplicateCheck: true })}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
         </Button>
       </FourthLineContainer>

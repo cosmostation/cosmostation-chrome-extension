@@ -68,6 +68,7 @@ import {
   MinimumReceivedCircularProgressContainer,
   OutputAmountCircularProgressContainer,
   SideButton,
+  StyledButton,
   StyledTooltipBodyContainer,
   StyledTooltipTitleContainer,
   SwapCoinInputAmountContainer,
@@ -374,25 +375,26 @@ export default function Entry() {
     const currentFromEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentFromChain?.id);
 
     if (currentSwapAPI === 'skip') {
-      const filteredTokens = cosmosFromTokenAssets.data.map((item) => ({
-        ...item,
-        address: item.denom,
-        balance: cosmosFromChainBalance.data?.balance ? cosmosFromChainBalance.data?.balance.find((coin) => coin.denom === item.denom)?.amount : '0',
-        imageURL: item.image,
-        name: getCapitalize(item.prevChain || item.origin_chain),
-        displayDenom: item.symbol,
-        symbol: undefined,
-      }));
+      const filteredTokens = cosmosFromTokenAssets.data.map((item) => {
+        const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '1' : '1';
+        const balance = cosmosFromChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
+        const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
+        return {
+          ...item,
+          address: item.denom,
+          balance,
+          price,
+          imageURL: item.image,
+          name: getCapitalize(item.prevChain || item.origin_chain),
+          displayDenom: item.symbol,
+          symbol: undefined,
+        };
+      });
 
       return [
-        ...filteredTokens.filter((item) => item.type === 'staking' || item.type === 'native' || item.type === 'bridge'),
-        ...filteredTokens
-          .filter((item) => gt(item?.balance || '0', '0') && item.type === 'ibc')
-          .sort((a, b) => (gt(toDisplayDenomAmount(a.balance || '0', a.decimals), toDisplayDenomAmount(b.balance || '0', b.decimals)) ? -1 : 1)),
-        ...filteredTokens
-          .filter((item) => !gt(item?.balance || '0', '0') && !(item.type === 'staking' || item.type === 'native' || item.type === 'bridge'))
-          .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
-      ];
+        ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
+        ...filteredTokens.filter((item) => !gt(item.balance, '0')),
+      ].sort((a) => (currentFromChain?.displayDenom === a.displayDenom ? -1 : 1));
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
@@ -454,8 +456,11 @@ export default function Entry() {
     currentSwapAPI,
     oneInchTokens.data,
     currentFromChain?.id,
+    currentFromChain?.displayDenom,
     currentFromChain?.chainId,
     cosmosFromTokenAssets.data,
+    coinGeckoPrice.data,
+    extensionStorage.currency,
     cosmosFromChainBalance.data?.balance,
     currentFromEVMNativeBalance.data?.result,
     currentEthereumNetwork.coinGeckoId,
@@ -485,26 +490,26 @@ export default function Entry() {
     const currentToEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentToChain?.id);
 
     if (currentSwapAPI === 'skip') {
-      const filteredTokens = cosmosToTokenAssets.data.map((item) => ({
-        ...item,
-        address: item.denom,
-        balance: cosmosToChainBalance.data?.balance ? cosmosToChainBalance.data?.balance.find((coin) => coin.denom === item.denom)?.amount : '0',
-        imageURL: item.image,
-        name: getCapitalize(item.prevChain || item.origin_chain),
-        displayDenom: item.symbol,
-        symbol: undefined,
-      }));
+      const filteredTokens = cosmosToTokenAssets.data.map((item) => {
+        const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '1' : '1';
+        const balance = cosmosToChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
+        const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
+        return {
+          ...item,
+          address: item.denom,
+          balance,
+          price,
+          imageURL: item.image,
+          name: getCapitalize(item.prevChain || item.origin_chain),
+          displayDenom: item.symbol,
+          symbol: undefined,
+        };
+      });
 
-      // TODO 정렬을 여기에서만 하는걸로 하자
       return [
-        ...filteredTokens.filter((item) => item.type === 'staking' || item.type === 'native' || item.type === 'bridge'),
-        ...filteredTokens
-          .filter((item) => gt(item?.balance || '0', '0') && !(item.type === 'staking' || item.type === 'native' || item.type === 'bridge'))
-          .sort((a, b) => (gt(toDisplayDenomAmount(a.balance || '0', a.decimals), toDisplayDenomAmount(b.balance || '0', b.decimals)) ? -1 : 1)),
-        ...filteredTokens
-          .filter((item) => !gt(item?.balance || '0', '0') && !(item.type === 'staking' || item.type === 'native' || item.type === 'bridge'))
-          .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
-      ];
+        ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
+        ...filteredTokens.filter((item) => !gt(item.balance, '0')),
+      ].sort((a) => (currentToChain?.displayDenom === a.displayDenom ? -1 : 1));
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
@@ -595,8 +600,11 @@ export default function Entry() {
     oneInchTokens.data,
     currentToChain?.line,
     currentToChain?.id,
+    currentToChain?.displayDenom,
     currentToChain?.chainId,
     cosmosToTokenAssets.data,
+    coinGeckoPrice.data,
+    extensionStorage.currency,
     cosmosToChainBalance.data?.balance,
     currentToEVMNativeBalance.data?.result,
     currentEthereumNetwork.coinGeckoId,
@@ -669,7 +677,7 @@ export default function Entry() {
 
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
 
-  const { skipRoute, skipSwapTx, skipSwapAminoTx, memoizedSkipSwapDirectTx, skipSwapSimulatedGas, isSignDirectMode } = useSkipSwap(
+  const { skipRoute, memoizedSkipSwapAminoTx, skipSwapTx, skipSwapAminoTx, skipSwapSimulatedGas } = useSkipSwap(
     currentSwapAPI === 'skip' &&
       currentFromChain &&
       currentFromChain.line === 'COSMOS' &&
@@ -684,7 +692,6 @@ export default function Entry() {
           fromChain: currentFromChain as CosmosChain,
           toChain: currentToChain as CosmosChain,
           slippage: currentSlippage,
-          affiliates: [],
         }
       : undefined,
   );
@@ -1285,8 +1292,7 @@ export default function Entry() {
     setIsDisabled(true);
 
     debouncedEnabled();
-    // NOTE  memoizedAminoTx 필요성 체크
-  }, [debouncedEnabled]);
+  }, [debouncedEnabled, memoizedSkipSwapAminoTx]);
 
   useEffect(() => {
     if (currentFromChain && !currentToChain) {
@@ -1355,9 +1361,9 @@ export default function Entry() {
       if (currentSwapAPI === 'squid') {
         setCurrentToToken(filteredToTokenList[0]);
       }
-      // TODO 송,수신이 같은 체인일 때 송신은 기본토큰, 수신은 다른 토큰으로 결정(어떤 토큰을 보여줄 지 결정이 필요함)
       if (currentSwapAPI === 'skip') {
-        if (currentFromChain.id === currentToChain?.id) {
+        if (currentFromChain.id === currentToChain?.id && filteredToTokenList[1]) {
+          // FIXME 스왑 페이지 첫 진입시 1번쨰 토큰이 소팅전 1번일 경우가 있음
           setCurrentToToken(filteredToTokenList[1]);
         } else {
           setCurrentToToken(filteredToTokenList[0]);
@@ -1754,8 +1760,9 @@ export default function Entry() {
           ) : (
             <Tooltip varient="error" title={errorMessage} placement="top" arrow>
               <div>
-                <Button
+                <StyledButton
                   type="button"
+                  data-is-skip={currentSwapAPI === 'skip'}
                   disabled={!!errorMessage || isDisabled || isLoadingSwapData || (currentSwapAPI === 'skip' ? !skipSwapAminoTx : !integratedSwapTx)}
                   onClick={async () => {
                     if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid') && integratedSwapTx) {
@@ -1782,27 +1789,16 @@ export default function Entry() {
                         messageId: '',
                         origin: '',
                         channel: 'inApp',
-                        message:
-                          isSignDirectMode && memoizedSkipSwapDirectTx
-                            ? {
-                                method: 'cos_signDirect',
-                                params: {
-                                  chainName: selectedFromCosmosChain.chainName,
-                                  doc: {
-                                    ...memoizedSkipSwapDirectTx,
-                                  },
-                                },
-                              }
-                            : {
-                                method: 'cos_signAmino',
-                                params: {
-                                  chainName: selectedFromCosmosChain.chainName,
-                                  doc: {
-                                    ...skipSwapAminoTx,
-                                    fee: { amount: [{ denom: currentFeeToken.address, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
-                                  },
-                                },
-                              },
+                        message: {
+                          method: 'cos_signAmino',
+                          params: {
+                            chainName: selectedFromCosmosChain.chainName,
+                            doc: {
+                              ...skipSwapAminoTx,
+                              fee: { amount: [{ denom: currentFeeToken.address, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
+                            },
+                          },
+                        },
                       });
                     }
                   }}
@@ -1824,7 +1820,7 @@ export default function Entry() {
                       </>
                     )}
                   </ButtonTextIconContaier>
-                </Button>
+                </StyledButton>
               </div>
             </Tooltip>
           )}
