@@ -6,7 +6,7 @@ export const AFFILIATES = {
       chainId: 'osmosis-1',
       affiliate: [
         {
-          address: 'osmo1q8cjl2udxxjft3anngtap3frpm9uhjxwxdtse7',
+          address: '',
           basis_points_fee: DEFAULT_BPF,
         },
       ],
@@ -15,7 +15,7 @@ export const AFFILIATES = {
       chainId: 'neutron-1',
       affiliate: [
         {
-          address: 'osmo1q8cjl2udxxjft3anngtap3frpm9uhjxwxdtse7',
+          address: '',
           basis_points_fee: DEFAULT_BPF,
         },
       ],
