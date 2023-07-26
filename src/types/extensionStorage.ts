@@ -5,12 +5,20 @@ import type { TransportType } from '~/types/ledger';
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
 
+import type { EthereumNFT } from './ethereum/nft';
 import type { RequestMessage } from './message';
 
 export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
 export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 export type CurrencyType = ValueOf<typeof CURRENCY_TYPE>;
 export type SuiPermissionType = ValueOf<typeof PERMISSION>;
+
+export type HomeTabPath = {
+  ethereum: number;
+  cosmos: number;
+  sui: number;
+  aptos: number;
+};
 
 export type AccountCommon = {
   id: string;
@@ -102,6 +110,7 @@ export type ExtensionStorage = {
   addressBook: AddressInfo[];
 
   rootPath: Path;
+  homeTabIndex: HomeTabPath;
 
   selectedAccountId: Account['id'];
 
@@ -125,6 +134,8 @@ export type ExtensionStorage = {
 
   cosmosTokens: CosmosToken[];
   ethereumTokens: EthereumToken[];
+
+  ethereumNFTs: EthereumNFT[];
 
   suiPermissions: SuiPermission[];
 

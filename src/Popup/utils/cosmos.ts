@@ -17,6 +17,7 @@ import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { IXO } from '~/constants/chain/cosmos/ixo';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { KI } from '~/constants/chain/cosmos/ki';
+import { MARS } from '~/constants/chain/cosmos/mars';
 import { PROVENANCE } from '~/constants/chain/cosmos/provenance';
 import { SIF } from '~/constants/chain/cosmos/sif';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
@@ -101,7 +102,12 @@ export function signAmino(signDoc: SignAminoDoc, privateKey: Buffer, chain: Cosm
 }
 
 export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer, chain: CosmosChain) {
-  const txSignDoc = new cosmos.tx.v1beta1.SignDoc({ ...signDoc, account_number: Number(signDoc.account_number) });
+  const txSignDoc = new cosmos.tx.v1beta1.SignDoc({
+    ...signDoc,
+    auth_info_bytes: new Uint8Array(signDoc.auth_info_bytes),
+    body_bytes: new Uint8Array(signDoc.body_bytes),
+    account_number: Number(signDoc.account_number),
+  });
 
   const txSignDocHex = Buffer.from(cosmos.tx.v1beta1.SignDoc.encode(txSignDoc).finish()).toString('hex');
 
@@ -170,6 +176,7 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [KI.id]: 'ki-chain',
     [STAFIHUB.id]: 'stafi',
     [FETCH_AI.id]: 'fetchai',
+    [MARS.id]: 'mars-protocol',
   };
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
@@ -183,6 +190,7 @@ export function convertAssetNameToCosmos(assetName: string) {
     'ki-chain': KI,
     stafi: STAFIHUB,
     fetchai: FETCH_AI,
+    'mars-protocol': MARS,
   } as Record<string, CosmosChain | undefined>;
 
   return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);

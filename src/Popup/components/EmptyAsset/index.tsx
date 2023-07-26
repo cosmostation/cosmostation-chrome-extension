@@ -17,7 +17,7 @@ export default function EmptyAsset({ Icon, headerText, subHeaderText, ...remaind
           <Typography variant="h4">{headerText}</Typography>
         </HeaderTextContainer>
         <SubHeaderTextContainer>
-          <Typography variant="h4">{subHeaderText}</Typography>
+          <Typography variant="h5">{subHeaderText}</Typography>
         </SubHeaderTextContainer>
       </TextContainer>
     </Container>

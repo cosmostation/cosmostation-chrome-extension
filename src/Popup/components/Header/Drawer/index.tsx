@@ -144,7 +144,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
               {t('components.Header.Drawer.index.guide')}
             </ItemButton>
 
-            <ItemButton Icon={HelpIcon} onClick={() => window.open('https://cosmostation.io/about#contact')}>
+            <ItemButton Icon={HelpIcon} onClick={() => window.open('https://cosmostation.io/contact')}>
               {t('components.Header.Drawer.index.helpSupport')}
             </ItemButton>
           </ItemContainer>

@@ -54,7 +54,7 @@ export type CosAccount = {
   id?: number | string;
 };
 
-export type CosAccountResponse = { publicKey: Uint8Array; address: string; name: string; isLedger: boolean; isEthermint: boolean };
+export type CosAccountResponse = { publicKey: string; address: string; name: string; isLedger: boolean; isEthermint: boolean };
 
 export type CosSendTransactionParams = {
   chainName: string;

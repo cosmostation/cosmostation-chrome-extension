@@ -109,6 +109,7 @@ function background() {
         await setStorage('additionalChains', []);
         await setStorage('additionalEthereumNetworks', []);
         await setStorage('ethereumTokens', []);
+        await setStorage('ethereumNFTs', []);
         await setStorage('encryptedPassword', null);
         await setStorage('selectedAccountId', '');
 
@@ -117,6 +118,12 @@ function background() {
         await setStorage('theme', '' as ThemeType);
 
         await setStorage('rootPath', PATH.DASHBOARD);
+        await setStorage('homeTabIndex', {
+          ethereum: 0,
+          cosmos: 0,
+          sui: 0,
+          aptos: 0,
+        });
 
         await setStorage('language', '' as LanguageType);
         await setStorage('currency', '' as CurrencyType);

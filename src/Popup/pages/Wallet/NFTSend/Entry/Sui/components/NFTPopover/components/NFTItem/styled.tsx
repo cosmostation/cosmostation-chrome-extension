@@ -33,11 +33,11 @@ export const LeftContainer = styled('div')({
 });
 
 export const LeftImageContainer = styled('div')({
-  width: '6.4rem',
-  height: '6.4rem',
   '& > img': {
     width: '6.4rem',
     height: '6.4rem',
+
+    borderRadius: '0.4rem',
   },
 });
 
@@ -55,7 +55,7 @@ export const LeftInfoHeaderContainer = styled('div')(({ theme }) => ({
   textAlign: 'left',
   color: theme.colors.text01,
 
-  maxWidth: '17rem',
+  maxWidth: '15rem',
 
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',
@@ -75,13 +75,6 @@ export const LeftInfoFooterContainer = styled('div')(({ theme }) => ({
 }));
 
 export const RightContainer = styled('div')(({ theme }) => ({
-  height: '100%',
-
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-
   '& > svg': {
     '& > path': {
       fill: theme.colors.base06,
