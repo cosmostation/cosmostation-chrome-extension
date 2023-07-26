@@ -11,15 +11,6 @@ module.exports = {
     injectScript: { import: path.join(srcDir, 'Scripts/injectScript/index.ts') },
     warningScript: { import: path.join(srcDir, 'Scripts/warningScript.ts') },
   },
-  optimization: {
-    splitChunks: {
-      name: 'vendor',
-      chunks(chunk) {
-        const notChunks = ['background', 'injectScript'];
-        return !notChunks.includes(chunk.name);
-      },
-    },
-  },
   module: {
     rules: [
       {
