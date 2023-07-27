@@ -24,6 +24,7 @@ import { useSupportTokensSWR } from '~/Popup/hooks/SWR/1inch/useSupportTokensSWR
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
+import { useGasRateSWR } from '~/Popup/hooks/SWR/cosmos/useGasRateSWR';
 import { useSupportChainsSWR } from '~/Popup/hooks/SWR/cosmos/useSupportChainsSWR';
 import { useBalanceSWR as useNativeBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
@@ -67,6 +68,7 @@ import {
   MaxButton,
   MinimumReceivedCircularProgressContainer,
   OutputAmountCircularProgressContainer,
+  ProcessingTimeStyledTooltip,
   SideButton,
   StyledButton,
   StyledTooltipBodyContainer,
@@ -678,13 +680,7 @@ export default function Entry() {
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
 
   const { skipRoute, memoizedSkipSwapAminoTx, skipSwapTx, skipSwapAminoTx, skipSwapSimulatedGas } = useSkipSwap(
-    currentSwapAPI === 'skip' &&
-      currentFromChain &&
-      currentFromChain.line === 'COSMOS' &&
-      gt(currentInputBaseAmount, '0') &&
-      currentToChain &&
-      currentFromToken &&
-      currentToToken
+    currentSwapAPI === 'skip' && currentFromChain.line === 'COSMOS' && gt(currentInputBaseAmount, '0') && currentToChain && currentFromToken && currentToToken
       ? {
           inputBaseAmount: currentInputBaseAmount,
           srcCoin: currentFromToken as CosmosAssetV3,
@@ -967,9 +963,11 @@ export default function Entry() {
     return '0';
   }, [currentSwapAPI, oneInchRoute.data, skipSwapSimulatedGas, squidRoute.data]);
 
+  const cosmosGasRate = useGasRateSWR(selectedFromCosmosChain);
+
   const estimatedFeeBaseAmount = useMemo(() => {
-    if (currentSwapAPI === 'skip') {
-      return ceil(times(estimatedGas, selectedFromCosmosChain?.gasRate.low || '0'));
+    if (currentSwapAPI === 'skip' && selectedFromCosmosChain) {
+      return ceil(times(estimatedGas, cosmosGasRate.data[selectedFromCosmosChain.baseDenom].low));
     }
 
     if (currentSwapAPI === '1inch' && oneInchRoute.data) {
@@ -992,9 +990,10 @@ export default function Entry() {
     return '0';
   }, [
     currentSwapAPI,
+    selectedFromCosmosChain,
     oneInchRoute.data,
     estimatedGas,
-    selectedFromCosmosChain?.gasRate.low,
+    cosmosGasRate.data,
     squidSourceChainGasCosts,
     squidSourceChainFeeAmount,
     squidCrossChainFeeCosts,
@@ -1718,6 +1717,35 @@ export default function Entry() {
                     </SwapInfoBodyRightContainer>
                   </SwapInfoBodyTextContainer>
                 </>
+              )}
+              {currentSwapAPI === 'skip' && (
+                <SwapInfoBodyTextContainer>
+                  <SwapInfoBodyLeftContainer>
+                    <Typography variant="h6">{t('pages.Wallet.Swap.entry.processingTime')}</Typography>
+                  </SwapInfoBodyLeftContainer>
+
+                  <SwapInfoBodyRightContainer>
+                    {isLoadingSwapData ? (
+                      <Skeleton width="4rem" height="1.5rem" />
+                    ) : memoizedSkipSwapAminoTx ? (
+                      <SwapInfoBodyRightTextContainer>
+                        <>
+                          <Typography variant="h6n">~ 0.5</Typography>
+                          &nbsp;
+                          <Typography variant="h6n">{t('pages.Wallet.Swap.entry.minutes')}</Typography>
+                          &nbsp;
+                          <ProcessingTimeStyledTooltip title={t('pages.Wallet.Swap.entry.ibcRelayingTimeInfo')} placement="top" arrow>
+                            <SwapInfoBodyLeftIconContainer>
+                              <Info16Icon />
+                            </SwapInfoBodyLeftIconContainer>
+                          </ProcessingTimeStyledTooltip>
+                        </>
+                      </SwapInfoBodyRightTextContainer>
+                    ) : (
+                      <Typography variant="h6">-</Typography>
+                    )}
+                  </SwapInfoBodyRightContainer>
+                </SwapInfoBodyTextContainer>
               )}
             </SwapInfoBodyContainer>
           </SwapInfoContainer>

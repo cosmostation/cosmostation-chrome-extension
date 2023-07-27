@@ -1383,6 +1383,7 @@
           "gasFee": "Gas Fee",
           "gasFees": "Gas fees before refund",
           "gasFeesInfo": "We overstimate gas by 50% to guarantee your trade. Any gas we don’t use will be refunded by Axelar.",
+          "ibcRelayingTimeInfo": "IBC transfers typically take 10-30 seconds, but delays can occur due to relayer issues, especially on low IBC volume chains.",
           "insufficientAmount": "Insufficient amount",
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",

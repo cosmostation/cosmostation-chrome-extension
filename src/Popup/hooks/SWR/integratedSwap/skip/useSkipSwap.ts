@@ -40,15 +40,7 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
   const { currentAccount } = useCurrentAccount();
 
   const skipRouteParam = useMemo<SkipRouteProps | undefined>(() => {
-    if (
-      inputBaseAmount &&
-      gt(inputBaseAmount || '0', '0') &&
-      srcCoin?.denom &&
-      fromChain?.line === 'COSMOS' &&
-      fromChain?.chainId &&
-      destCoin?.denom &&
-      toChain?.chainId
-    ) {
+    if (inputBaseAmount && gt(inputBaseAmount || '0', '0') && srcCoin?.denom && fromChain?.chainId && destCoin?.denom && toChain?.chainId) {
       return {
         amountIn: inputBaseAmount,
         sourceAssetDenom: srcCoin.denom,
@@ -59,7 +51,7 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
       };
     }
     return undefined;
-  }, [destCoin?.denom, fromChain?.chainId, fromChain?.line, inputBaseAmount, srcCoin?.denom, toChain?.chainId]);
+  }, [destCoin?.denom, fromChain?.chainId, inputBaseAmount, srcCoin?.denom, toChain?.chainId]);
 
   const skipRoute = useSkipRouteSWR({ routeParam: skipRouteParam });
 
@@ -72,7 +64,7 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
         return { ...acc, [chainId]: address };
       }, {});
     }
-    return [];
+    return {};
   }, [currentAccountAddresses, skipRoute.data?.chain_ids, skipRoute.data?.does_swap]);
 
   const affiliates = useMemo<Affiliates[]>(() => {
@@ -83,16 +75,7 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
   }, [skipRoute.data?.does_swap, skipRoute.data?.swap_venue?.chain_id]);
 
   const skipSwapTxParam = useMemo<SkipSwapTxParam | undefined>(() => {
-    if (
-      skipRoute.data?.does_swap &&
-      skipRoute.data &&
-      skipRoute.data.chain_ids &&
-      skipRoute.data.chain_ids.length > 0 &&
-      skipRoute.data.operations &&
-      skipRoute.data.operations.length > 0 &&
-      slippage &&
-      apiRequiredAddresses
-    ) {
+    if (skipRoute.data?.does_swap && skipRoute.data.chain_ids.length > 0 && skipRoute.data.operations.length > 0 && slippage && apiRequiredAddresses) {
       return {
         ...skipRoute.data,
         affiliates,
@@ -173,7 +156,7 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
   const skipSwapAminoTxMsgs = useMemo(
     () =>
       skipSwapParsedTx.map((item) => {
-        if (item?.msg_type_url === 'cosmos-sdk/MsgTransfer' && latestHeight) {
+        if (item?.msg_type_url === 'cosmos-sdk/MsgTransfer' && revisionHeight && revisionNumber) {
           return {
             ...item,
             msg: {
@@ -188,11 +171,11 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
         }
         return item;
       }),
-    [latestHeight, revisionHeight, revisionNumber, skipSwapParsedTx],
+    [revisionHeight, revisionNumber, skipSwapParsedTx],
   );
 
   const memoizedSkipSwapAminoTx = useMemo(() => {
-    if (inputBaseAmount && gt(inputBaseAmount, '0') && account.data?.value.account_number && fromChain?.chainId && skipSwapParsedTx.length > 0) {
+    if (inputBaseAmount && gt(inputBaseAmount, '0') && account.data?.value.account_number && fromChain?.chainId && skipSwapAminoTxMsgs.length > 0) {
       const sequence = String(account.data?.value.sequence || '0');
 
       return {
@@ -217,7 +200,6 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
     inputBaseAmount,
     nodeInfo.data?.default_node_info?.network,
     skipSwapAminoTxMsgs,
-    skipSwapParsedTx,
   ]);
 
   const [skipSwapAminoTx] = useDebounce(memoizedSkipSwapAminoTx, 700);

@@ -193,6 +193,25 @@ export const GasInfoStyledTooltip = styled(Tooltip)(({ theme }) => ({
   },
 }));
 
+export const ProcessingTimeStyledTooltip = styled(Tooltip)(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.colors.base02,
+    marginLeft: '8rem',
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    marginTop: '0.7rem !important',
+    marginRight: '16rem',
+
+    backgroundColor: theme.colors.base02,
+
+    padding: '0.8rem',
+    textAlign: 'start',
+
+    maxWidth: '23.5rem',
+    maxHeight: 'fit-content',
+  },
+}));
+
 export const SwapInfoBodyContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',

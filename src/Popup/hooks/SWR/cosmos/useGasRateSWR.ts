@@ -9,7 +9,7 @@ import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain, GasRate } from '~/types/chain';
 import type { GasRateResponse } from '~/types/cosmos/gasRate';
 
-export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
+export function useGasRateSWR(chain?: CosmosChain, config?: SWRConfiguration) {
   const fetcher = async () => {
     try {
       return await get<GasRateResponse>('https://api.mintscan.io/v2/utils/gas_prices');
@@ -27,15 +27,17 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
     ...config,
   });
 
-  const mappedName = convertCosmosToAssetName(chain);
+  const mappedName = chain && convertCosmosToAssetName(chain);
 
   const gasRate = useMemo(() => (data ? data.find((item) => item.chain === mappedName)?.rate ?? [] : []), [data, mappedName]);
 
   const returnData: Record<string, GasRate> = useMemo(() => {
     const result: Record<string, GasRate> =
-      chain.baseDenom === NYX.baseDenom
+      chain?.baseDenom === NYX.baseDenom
         ? { [NYX.baseDenom]: NYX_GAS_RATES.find((item) => item.chainId === NYX.id)!.gasRate }
-        : { [chain.baseDenom]: chain.gasRate };
+        : chain
+        ? { [chain.baseDenom]: chain.gasRate }
+        : {};
 
     gasRate.forEach((gr, idx) => {
       const splitedItems = gr.split(',');
@@ -81,7 +83,7 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
     });
 
     return result;
-  }, [chain.baseDenom, chain.gasRate, gasRate]);
+  }, [chain, gasRate]);
 
   return { data: returnData, error, mutate };
 }
