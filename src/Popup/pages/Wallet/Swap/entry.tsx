@@ -101,13 +101,10 @@ export default function Entry() {
   const { t, language } = useTranslation();
   const { navigateBack } = useNavigate();
   const { currentAccount } = useCurrentAccount();
-  // FIXME 밑에서 currentChain을 바꿔줘야 얘도 잘 실행될텐데, 지금 allowed체인만 set가능해서 작동안할듯
-  // TODO 선택 가능한 체인(스킵일떄)에서 allowed안되어있으면 체인 선택 못하게 막거나 vs 강제로 allowed해줘야함
   const accounts = useAccounts();
   const params = useParams();
   const skipSupportedChains = useSkipSupportChainsSWR({ suspense: true });
 
-  // TODO 스퀴드 수신 체인에 뉴트론 지원하고 있음
   const { enQueue } = useCurrentQueue();
   const supportedCosmosChain = useSupportChainsSWR({ suspense: true });
   const supportedSquidTokens = useSquidTokensSWR();
@@ -1265,7 +1262,6 @@ export default function Entry() {
       }
       if (currentSwapAPI === 'skip') {
         if (currentFromChain.id === currentToChain?.id && filteredToTokenList[1]) {
-          // FIXME 스왑 페이지 첫 진입시 1번쨰 토큰이 소팅전 1번일 경우가 있음
           setCurrentToToken(filteredToTokenList[1]);
         } else {
           setCurrentToToken(filteredToTokenList[0]);
