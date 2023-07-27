@@ -3,6 +3,7 @@ import type { BigNumber } from 'bignumber.js';
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
@@ -15,6 +16,7 @@ import {
   AddressContainer,
   AmountInfoContainer,
   ContentContainer,
+  DenomContainer,
   LabelContainer,
   LeftContainer,
   RightAmountContainer,
@@ -105,17 +107,27 @@ export default function Approve({ tx, determineTxType }: ApproveProps) {
           <RightContainer>
             <RightColumnContainer>
               <RightAmountContainer>
-                <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                  {displayAmount}
-                </Number>
+                <Tooltip title={displayAmount} arrow placement="top">
+                  <span>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" ellipsisMaxWidth="15">
+                      {displayAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
                 &nbsp;
-                <Typography variant="h5n">{token?.displayDenom}</Typography>
+                <DenomContainer>
+                  <Typography variant="h5">{token?.displayDenom}</Typography>
+                </DenomContainer>
               </RightAmountContainer>
               <RightValueContainer>
                 {value !== '0' && (
-                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                    {value}
-                  </Number>
+                  <Tooltip title={value} arrow placement="top">
+                    <span>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency} ellipsisMaxWidth="15">
+                        {value}
+                      </Number>
+                    </span>
+                  </Tooltip>
                 )}
               </RightValueContainer>
             </RightColumnContainer>

@@ -3,6 +3,7 @@ import YAML from 'js-yaml';
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
@@ -16,6 +17,7 @@ import {
   AddressContainer,
   AmountInfoContainer,
   ContentContainer,
+  DenomContainer,
   LabelContainer,
   LeftContainer,
   RightAmountContainer,
@@ -94,7 +96,11 @@ export default function Contract({ msg, chain, isMultipleMsgs }: ContractProps) 
                       {item.displayDenomAmount}
                     </Number>
                     &nbsp;
-                    <Typography variant="h5n">{item.denom}</Typography>
+                    <DenomContainer>
+                      <Tooltip title={item.denom} arrow placement="top">
+                        <Typography variant="h5n">{item.denom}</Typography>
+                      </Tooltip>
+                    </DenomContainer>
                   </RightAmountContainer>
                   <RightValueContainer>
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>

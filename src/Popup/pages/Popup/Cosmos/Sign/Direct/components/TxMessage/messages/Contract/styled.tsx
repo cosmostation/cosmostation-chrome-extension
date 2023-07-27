@@ -44,6 +44,7 @@ export const RightColumnContainer = styled('div')({});
 export const RightAmountContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-end',
+  alignItems: 'center',
 
   color: theme.colors.text01,
 }));
@@ -56,3 +57,15 @@ export const RightValueContainer = styled('div')(({ theme }) => ({
 
   color: theme.colors.text02,
 }));
+
+export const DenomContainer = styled('div')({
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '10rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});

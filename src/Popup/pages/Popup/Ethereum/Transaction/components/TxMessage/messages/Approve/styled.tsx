@@ -44,6 +44,18 @@ export const RightAmountContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
+export const DenomContainer = styled('div')({
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '10rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
 export const RightValueContainer = styled('div')(({ theme }) => ({
   marginTop: '0.2rem',
 

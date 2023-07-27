@@ -21,14 +21,14 @@ import type {
   DesmosModuleAccount,
 } from '~/types/cosmos/account';
 
-export function useAccountSWR(chain?: CosmosChain, suspense?: boolean) {
+export function useAccountSWR(chain: CosmosChain, suspense?: boolean) {
   const accounts = useAccounts(suspense);
   const { extensionStorage } = useExtensionStorage();
 
   const address = accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain?.id || ''] || '';
-  const { getAccount } = (chain && cosmosURL(chain)) ?? {};
+  const { getAccount } = cosmosURL(chain);
 
-  const requestURL = getAccount && getAccount(address);
+  const requestURL = getAccount(address);
 
   const fetcher = async (url: string) => {
     try {

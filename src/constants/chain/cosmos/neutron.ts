@@ -21,6 +21,7 @@ export const NEUTRON: CosmosChain = {
   },
   bech32Prefix: { address: 'neutron' },
   explorerURL: `${MINTSCAN_URL}/neutron`,
+  coinGeckoId: 'neutron-3',
   gasRate: {
     tiny: '0.025',
     low: '0.025',

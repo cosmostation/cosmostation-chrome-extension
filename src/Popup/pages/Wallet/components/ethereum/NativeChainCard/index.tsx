@@ -141,7 +141,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
         </Button>
         <FourthLineCenterContainer />
-        <Button Icon={SwapIcon16} isGreen typoVarient="h5" onClick={() => navigate(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path)}>
+        <Button Icon={SwapIcon16} accentColor="green" typoVarient="h5" onClick={() => navigate(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path)}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
         </Button>
       </FourthLineContainer>

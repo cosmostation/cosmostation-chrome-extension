@@ -34,8 +34,8 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
   const { inputBaseAmount, slippage, srcChain: fromChain, srcCoin, destChain: toChain, destCoin } = skipSwapProps ?? {};
 
   const accounts = useAccounts();
-  const account = useAccountSWR(fromChain);
-  const nodeInfo = useNodeInfoSWR(fromChain);
+  const account = useAccountSWR(fromChain || COSMOS_CHAINS[0]);
+  const nodeInfo = useNodeInfoSWR(fromChain || COSMOS_CHAINS[0]);
 
   const { currentAccount } = useCurrentAccount();
 
@@ -136,7 +136,9 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
   );
 
   const clientState = useClientStateSWR({
-    chain: COSMOS_CHAINS.find((item) => item.chainId === skipSwapParsedTx.find((msg) => msg?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.chain_id),
+    chain:
+      COSMOS_CHAINS.find((item) => item.chainId === skipSwapParsedTx.find((msg) => msg?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.chain_id) ||
+      COSMOS_CHAINS[0],
     channelId: skipSwapParsedTx.find((item) => item?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.msg.source_channel || '',
     port: skipSwapParsedTx.find((item) => item?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.msg.source_port || '',
   });
@@ -216,10 +218,12 @@ export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
     return null;
   }, [fromChain, skipSwapAminoTx]);
 
-  const skipSwapSimulate = useSimulateSWR({ chain: fromChain, txBytes: skipSwapProtoTx?.tx_bytes });
+  // TODO 다른 방식 고려해보기
+  const skipSwapSimulate = useSimulateSWR({ chain: fromChain || COSMOS_CHAINS[0], txBytes: skipSwapProtoTx?.tx_bytes });
 
   const skipSwapSimulatedGas = useMemo(
     () => (skipSwapSimulate.data?.gas_info?.gas_used ? times(skipSwapSimulate.data.gas_info.gas_used, getDefaultAV(fromChain), 0) : undefined),
+
     [fromChain, skipSwapSimulate.data?.gas_info?.gas_used],
   );
 

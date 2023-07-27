@@ -18,6 +18,7 @@ import {
   AddressContainer,
   AmountInfoContainer,
   ContentContainer,
+  DenomContainer,
   LabelContainer,
   LeftContainer,
   RightAmountContainer,
@@ -141,7 +142,9 @@ export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
                   {itemDisplayAmount}
                 </Number>
                 &nbsp;
-                <Typography variant="h5n">{itemDisplayDenom}</Typography>
+                <DenomContainer>
+                  <Typography variant="h5">{itemDisplayDenom}</Typography>
+                </DenomContainer>
               </RightAmountContainer>
               <RightValueContainer>
                 <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>

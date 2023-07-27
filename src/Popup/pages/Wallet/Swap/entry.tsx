@@ -710,6 +710,7 @@ export default function Entry() {
       : undefined,
   );
 
+  // TODO 컴포넌트 화
   const allowance = useAllowanceSWR(
     currentSwapAPI === '1inch' && currentFromChain.line === ETHEREUM.line && currentFromToken?.address && currentFromChain?.chainId
       ? {
@@ -895,11 +896,11 @@ export default function Entry() {
     return '0';
   }, [currentSwapAPI, oneInchRoute.data, skipSwapSimulatedGas, squidRoute.data]);
 
-  const cosmosGasRate = useGasRateSWR(selectedFromCosmosChain);
+  const cosmosGasRate = useGasRateSWR(selectedFromCosmosChain || COSMOS);
 
   const estimatedFeeBaseAmount = useMemo(() => {
     if (currentSwapAPI === 'skip' && selectedFromCosmosChain) {
-      return ceil(times(estimatedGas, cosmosGasRate.data[selectedFromCosmosChain.baseDenom].low));
+      return ceil(times(estimatedGas, cosmosGasRate.data[selectedFromCosmosChain.baseDenom].low || selectedFromCosmosChain.gasRate.low));
     }
 
     if (currentSwapAPI === '1inch' && oneInchRoute.data) {
@@ -1097,66 +1098,69 @@ export default function Entry() {
   }, [currency, currentSlippage, currentToToken, estimatedToTokenDisplayAmountPrice, estimatedToTokenDisplayMinAmount, t]);
 
   const warningMessage = useMemo(() => {
-    if (currentSwapAPI === '1inch') {
-      if (allowance.data && !gt(allowance.data.allowance, currentInputBaseAmount)) {
-        return t('pages.Wallet.Swap.entry.allowanceWarning');
-      }
-      if (oneInchRoute.error) {
-        return oneInchRoute.error.response?.data.description;
-      }
-    }
-
-    if (currentSwapAPI === 'squid') {
-      if (gt(estimatedToTokenDisplayAmountPrice, '100000')) {
-        return t('pages.Wallet.Swap.entry.txSizeWarning');
-      }
-      if (gt(priceImpactPercent, '3')) {
-        return t('pages.Wallet.Swap.entry.liquidityWarning');
-      }
-      if (squidRoute.error) {
-        return squidRoute.error.errors?.map(({ message }) => message).join('\n');
+    if (gt(currentInputBaseAmount, '0') && !isLoadingSwapData) {
+      if (currentSwapAPI === '1inch') {
+        if (allowance.data && !gt(allowance.data.allowance, currentInputBaseAmount)) {
+          return t('pages.Wallet.Swap.entry.allowanceWarning');
+        }
+        if (oneInchRoute.error) {
+          return oneInchRoute.error.response?.data.description;
+        }
       }
 
-      if (!errorMessage && !isDisabled) {
-        return t('pages.Wallet.Swap.entry.receiveWarningMessage');
-      }
-    }
+      if (currentSwapAPI === 'squid') {
+        if (gt(estimatedToTokenDisplayAmountPrice, '100000')) {
+          return t('pages.Wallet.Swap.entry.txSizeWarning');
+        }
+        if (gt(priceImpactPercent, '3')) {
+          return t('pages.Wallet.Swap.entry.liquidityWarning');
+        }
+        if (squidRoute.error) {
+          return squidRoute.error.errors?.map(({ message }) => message).join('\n');
+        }
 
-    if (currentSwapAPI === 'skip') {
-      if (skipRoute.error?.response?.data.message) {
-        return skipRoute.error.response.data.message;
+        if (!errorMessage && !isDisabled) {
+          return t('pages.Wallet.Swap.entry.receiveWarningMessage');
+        }
       }
-      if (skipSwapTx.error?.response?.data.message) {
-        return skipSwapTx.error.response.data.message;
+
+      if (currentSwapAPI === 'skip') {
+        if (skipRoute.error?.response?.data.message) {
+          return skipRoute.error.response.data.message;
+        }
+        if (skipSwapTx.error?.response?.data.message) {
+          return skipSwapTx.error.response.data.message;
+        }
       }
-    }
 
-    if (gt(estimatedFeeBaseAmount, currentFeeTokenBalance)) {
-      return `${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription1')} ${fix(
-        estimatedFeeDisplayAmount,
-        getDisplayMaxDecimals(currentFeeToken?.decimals),
-      )} ${currentFeeToken?.displayDenom || ''} ${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription2')}`;
-    }
+      if (gt(estimatedFeeBaseAmount, currentFeeTokenBalance)) {
+        return `${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription1')} ${fix(
+          estimatedFeeDisplayAmount,
+          getDisplayMaxDecimals(currentFeeToken?.decimals),
+        )} ${currentFeeToken?.displayDenom || ''} ${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription2')}`;
+      }
 
-    if (currentFeeToken && isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken.address)) {
-      if (gt(plus(currentInputBaseAmount, estimatedFeeBaseAmount), currentFromTokenBalance)) {
-        return `${t('pages.Wallet.Swap.entry.balanceWarningDescription1')} ${currentFeeToken?.displayDenom}${t(
-          'pages.Wallet.Swap.entry.balanceWarningDescription2',
-        )} ${fix(minus(currentFromTokenDisplayBalance, estimatedFeeDisplayAmount), getDisplayMaxDecimals(currentFeeToken.decimals))} ${
-          currentFeeToken?.displayDenom
-        } ${t('pages.Wallet.Swap.entry.balanceWarningDescription3')}`;
+      if (currentFeeToken && isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken.address)) {
+        if (gt(plus(currentInputBaseAmount, estimatedFeeBaseAmount), currentFromTokenBalance)) {
+          return `${t('pages.Wallet.Swap.entry.balanceWarningDescription1')} ${currentFeeToken?.displayDenom}${t(
+            'pages.Wallet.Swap.entry.balanceWarningDescription2',
+          )} ${fix(minus(currentFromTokenDisplayBalance, estimatedFeeDisplayAmount), getDisplayMaxDecimals(currentFeeToken.decimals))} ${
+            currentFeeToken?.displayDenom
+          } ${t('pages.Wallet.Swap.entry.balanceWarningDescription3')}`;
+        }
       }
     }
 
     return '';
   }, [
+    isLoadingSwapData,
+    currentInputBaseAmount,
     currentSwapAPI,
     estimatedFeeBaseAmount,
     currentFeeTokenBalance,
     currentFeeToken,
     currentFromToken?.address,
     allowance.data,
-    currentInputBaseAmount,
     oneInchRoute.error,
     t,
     estimatedToTokenDisplayAmountPrice,
@@ -1724,6 +1728,9 @@ export default function Entry() {
                               ...skipSwapAminoTx,
                               fee: { amount: [{ denom: currentFeeToken.address, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
                             },
+                            isEditFee: true,
+                            isEditMemo: true,
+                            isCheckBalance: true,
                           },
                         },
                       });

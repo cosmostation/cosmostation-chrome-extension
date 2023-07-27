@@ -6,10 +6,10 @@ import { cosmosURL } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { NodeInfoPayload } from '~/types/cosmos/nodeInfo';
 
-export function useNodeInfoSWR(chain?: CosmosChain, suspense?: boolean) {
-  const { getNodeInfo } = (chain && cosmosURL(chain)) ?? {};
+export function useNodeInfoSWR(chain: CosmosChain, suspense?: boolean) {
+  const { getNodeInfo } = cosmosURL(chain);
 
-  const requestURL = getNodeInfo && getNodeInfo();
+  const requestURL = getNodeInfo();
 
   const fetcher = (fetchUrl: string) => get<NodeInfoPayload>(fetchUrl);
 
