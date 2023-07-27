@@ -40,6 +40,7 @@ export const RightColumnContainer = styled('div')({});
 export const RightAmountContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-end',
+  alignItems: 'center',
 
   color: theme.colors.text01,
 }));

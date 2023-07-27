@@ -116,7 +116,7 @@ export default function Approve({ tx, determineTxType }: ApproveProps) {
                 </Tooltip>
                 &nbsp;
                 <DenomContainer>
-                  <Typography variant="h5">{token?.displayDenom}</Typography>
+                  <Typography variant="h5n">{token?.displayDenom}</Typography>
                 </DenomContainer>
               </RightAmountContainer>
               <RightValueContainer>
