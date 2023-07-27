@@ -26,12 +26,12 @@ type useSkipSwapProps = {
   slippage: string;
   srcCoin: CosmosAssetV3;
   destCoin: CosmosAssetV3;
-  fromChain: CosmosChain;
-  toChain: CosmosChain;
+  srcChain: CosmosChain;
+  destChain: CosmosChain;
 };
 
 export function useSkipSwap(skipSwapProps?: useSkipSwapProps) {
-  const { inputBaseAmount, slippage, fromChain, srcCoin, toChain, destCoin } = skipSwapProps ?? {};
+  const { inputBaseAmount, slippage, srcChain: fromChain, srcCoin, destChain: toChain, destCoin } = skipSwapProps ?? {};
 
   const accounts = useAccounts();
   const account = useAccountSWR(fromChain);

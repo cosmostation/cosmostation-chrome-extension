@@ -613,7 +613,7 @@ export default function Entry({ queue }: EntryProps) {
                           await deQueue();
                         }
                       }
-                      if (oneInchSwapDstToken) {
+                      if (oneInchSwapDstToken && oneInchSwapDstToken.symbol !== currentEthereumNetwork.displayDenom) {
                         const newToken = {
                           address: oneInchSwapDstToken.address,
                           displayDenom: oneInchSwapDstToken.symbol,
