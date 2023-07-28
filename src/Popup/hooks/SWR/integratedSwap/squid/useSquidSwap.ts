@@ -1,50 +1,53 @@
 import { useMemo } from 'react';
 import type { GetRoute, TokenData } from '@0xsquid/sdk';
 
+import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
+import type { IntegratedSwapChain, IntegratedSwapToken, SquidTokensPayload } from '~/types/swap/asset';
 
 import { useSquidRouteSWR } from './SWR/useSquidRouteSWR';
-import { useSquidTokensSWR } from './SWR/useSquidTokensSWR';
 import { useCoinGeckoPriceSWR } from '../../useCoinGeckoPriceSWR';
 
-type useSquidSwapProps = {
+type UseSquidSwapProps = {
   inputBaseAmount: string;
-  slippage: string;
-  receiverAddress: string;
-  fromToken: IntegratedSwapToken;
-  toToken: IntegratedSwapToken;
   fromChain: IntegratedSwapChain;
   toChain: IntegratedSwapChain;
+  fromToken: IntegratedSwapToken;
+  toToken: IntegratedSwapToken;
+  supportedSquidTokens: SquidTokensPayload;
+  receiverAddress: string;
+  slippage: string;
 };
 
-export function useSquidSwap(squidSwapProps?: useSquidSwapProps) {
-  const { inputBaseAmount, slippage, receiverAddress, fromChain, fromToken: srcCoin, toChain, toToken: destCoin } = squidSwapProps ?? {};
+// FIXME 네이티브 아닌 토큰 사용할 때는 approve 필요
+export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
+  const { inputBaseAmount = '0', fromChain, toChain, fromToken, toToken, supportedSquidTokens, receiverAddress, slippage = '1' } = squidSwapProps ?? {};
 
-  const cosmosToTokenAssets = useCosmosAssetsSWR(toChain?.line === 'COSMOS' ? toChain : undefined);
+  const cosmosToTokenAssets = useCosmosAssetsSWR(toChain?.line === COSMOS.line ? toChain : undefined);
 
-  const supportedSquidTokens = useSquidTokensSWR();
   const { extensionStorage } = useExtensionStorage();
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const squidRouteParam = useMemo<GetRoute | undefined>(() => {
-    if (fromChain?.chainId && toChain?.chainId && srcCoin?.address && destCoin?.address && receiverAddress && inputBaseAmount && gt(inputBaseAmount, '0')) {
+    if (fromChain?.chainId && fromToken?.address && gt(inputBaseAmount, '0') && toChain?.chainId && toToken?.address && receiverAddress) {
       return {
         fromChain: fromChain.chainId,
-        fromToken: srcCoin.address,
+        fromToken: fromToken.address,
         fromAmount: inputBaseAmount,
         toChain: toChain.chainId,
-        toToken: destCoin.address,
+        toToken: toToken.address,
         toAddress: receiverAddress,
         slippage: Number(slippage),
+        enableForecall: true,
       };
     }
     return undefined;
-  }, [destCoin?.address, fromChain?.chainId, inputBaseAmount, receiverAddress, slippage, srcCoin?.address, toChain?.chainId]);
+  }, [toToken?.address, fromChain?.chainId, inputBaseAmount, receiverAddress, slippage, fromToken?.address, toChain?.chainId]);
+
   const squidRoute = useSquidRouteSWR(squidRouteParam);
 
   const squidProcessingTime = useMemo(() => divide(squidRoute.data?.route.estimate.estimatedRouteDuration || '0', '60'), [squidRoute.data]);
@@ -77,8 +80,7 @@ export function useSquidSwap(squidSwapProps?: useSquidSwapProps) {
             (asset) =>
               asset.counter_party?.denom &&
               asset.counter_party.denom ===
-                supportedSquidTokens.data?.mainnet.find((token) => token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, item)))
-                  ?.id,
+                supportedSquidTokens?.mainnet.find((token) => token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, item)))?.id,
           )?.coinGeckoId || squidRoute.data?.route.estimate.feeCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token.coingeckoId,
       } as TokenData | undefined,
       feeItems: [
@@ -93,7 +95,7 @@ export function useSquidSwap(squidSwapProps?: useSquidSwapProps) {
                   (asset) =>
                     asset.counter_party?.denom &&
                     asset.counter_party.denom ===
-                      supportedSquidTokens.data?.mainnet.find((token) =>
+                      supportedSquidTokens?.mainnet.find((token) =>
                         token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, fee.token.address)),
                       )?.id,
                 )?.coinGeckoId || fee.token.coingeckoId,
@@ -101,7 +103,7 @@ export function useSquidSwap(squidSwapProps?: useSquidSwapProps) {
           })) || []),
       ],
     }));
-  }, [cosmosToTokenAssets.data, squidRoute.data?.route.estimate.feeCosts, supportedSquidTokens.data?.mainnet]);
+  }, [cosmosToTokenAssets.data, squidRoute.data?.route.estimate.feeCosts, supportedSquidTokens?.mainnet]);
 
   const squidSourceChainFeeAmount = useMemo(() => squidSourceChainGasCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0', [squidSourceChainGasCosts]);
 

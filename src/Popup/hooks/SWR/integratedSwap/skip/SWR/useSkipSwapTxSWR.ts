@@ -28,10 +28,10 @@ type ChainIdToAddressMap = {
 export type SkipSwapTxParam = SkipRoutePayload & SkipSwapTxParamProps;
 
 type UseSkipSwapTxSWRProps = {
-  swapTxParam?: SkipSwapTxParam;
+  skipSwapTxParam?: SkipSwapTxParam;
 };
 
-export function useSkipSwapTxSWR({ swapTxParam }: UseSkipSwapTxSWRProps, config?: SWRConfiguration) {
+export function useSkipSwapTxSWR({ skipSwapTxParam: swapTxParam }: UseSkipSwapTxSWRProps, config?: SWRConfiguration) {
   const requestURL = ' https://api.skip.money/v1/fungible/msgs';
 
   const fetcher = async ({ fetchUrl, skipSwapTxParam }: FetchProps) =>

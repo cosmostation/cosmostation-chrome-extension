@@ -11,22 +11,22 @@ import { useOneInchSwapTxSWR } from './SWR/useOneInchSwapTxSWR';
 import { useEstimateGasSWR } from '../../ethereum/useEstimateGasSWR';
 import { useFeeSWR } from '../../ethereum/useFeeSWR';
 
-type useOneInchSwapProps = {
+type UseOneInchSwapProps = {
   inputBaseAmount: string;
-  slippage: string;
-  senderAddress: string;
+  fromChain: IntegratedSwapChain;
   fromToken: IntegratedSwapToken;
   toToken: IntegratedSwapToken;
-  fromChain: IntegratedSwapChain;
+  senderAddress: string;
+  slippage: string;
 };
 
-export function useOneInchSwap(oneInchSwapProps?: useOneInchSwapProps) {
-  const { inputBaseAmount, slippage, fromChain, senderAddress, fromToken: srcCoin, toToken: destCoin } = oneInchSwapProps ?? {};
+export function useOneInchSwap(oneInchSwapProps?: UseOneInchSwapProps) {
+  const { inputBaseAmount = '0', fromChain, fromToken, toToken, senderAddress, slippage = '1' } = oneInchSwapProps ?? {};
 
   const allowance = useAllowanceSWR(
-    destCoin?.address && senderAddress && fromChain?.chainId
+    fromToken?.address && senderAddress && fromChain?.chainId
       ? {
-          tokenAddress: destCoin.address,
+          tokenAddress: fromToken.address,
           walletAddress: senderAddress,
           chainId: fromChain.chainId,
         }
@@ -34,9 +34,9 @@ export function useOneInchSwap(oneInchSwapProps?: useOneInchSwapProps) {
   );
 
   const allowanceTxData = useAllowanceTxSWR(
-    allowance.data && inputBaseAmount && !gt(allowance.data.allowance, inputBaseAmount) && srcCoin?.address && fromChain?.chainId
+    !gt(allowance.data?.allowance || '0', inputBaseAmount) && fromToken?.address && fromChain?.chainId
       ? {
-          tokenAddress: srcCoin.address,
+          tokenAddress: fromToken.address,
           chainId: fromChain.chainId,
         }
       : undefined,
@@ -75,18 +75,16 @@ export function useOneInchSwap(oneInchSwapProps?: useOneInchSwapProps) {
 
   const oneInchRouteParam = useMemo<UseOneInchSwapSWRProps | undefined>(() => {
     if (
-      srcCoin?.address &&
-      destCoin?.address &&
-      fromChain?.chainId &&
-      inputBaseAmount &&
+      fromToken?.address &&
+      toToken?.address &&
+      senderAddress &&
       gt(inputBaseAmount, '0') &&
       gt(allowance.data?.allowance || '0', inputBaseAmount) &&
-      slippage &&
-      senderAddress
+      fromChain?.chainId
     ) {
       return {
-        fromTokenAddress: srcCoin.address,
-        toTokenAddress: destCoin.address,
+        fromTokenAddress: fromToken.address,
+        toTokenAddress: toToken.address,
         fromAddress: senderAddress,
         slippage,
         amount: inputBaseAmount,
@@ -94,7 +92,7 @@ export function useOneInchSwap(oneInchSwapProps?: useOneInchSwapProps) {
       };
     }
     return undefined;
-  }, [srcCoin?.address, destCoin?.address, fromChain?.chainId, inputBaseAmount, allowance.data?.allowance, slippage, senderAddress]);
+  }, [fromToken?.address, toToken?.address, fromChain?.chainId, inputBaseAmount, allowance.data?.allowance, slippage, senderAddress]);
 
   const oneInchRoute = useOneInchSwapTxSWR(oneInchRouteParam);
 

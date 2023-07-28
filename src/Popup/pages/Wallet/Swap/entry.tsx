@@ -98,24 +98,23 @@ export default function Entry() {
   const { currentAccount } = useCurrentAccount();
   const accounts = useAccounts();
   const params = useParams();
+
+  const supportedSwapChains = useSupportSwapChainsSWR({ suspense: true });
+
   const skipSupportedChains = useSkipSupportChainsSWR({ suspense: true });
+  const supportedCosmosChain = useSupportChainsSWR({ suspense: true });
+
+  const { squidChains, filterSquidTokens } = useSquidAssetsSWR();
 
   const { enQueue } = useCurrentQueue();
-  const supportedCosmosChain = useSupportChainsSWR({ suspense: true });
-  const supportedSquidTokens = useSquidTokensSWR();
+
   const { extensionStorage } = useExtensionStorage();
   const { ethereumTokens } = extensionStorage;
   const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const supportedSwapChains = useSupportSwapChainsSWR({ suspense: true });
-
   const { currentChain, setCurrentChain } = useCurrentChain();
   const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
-
-  const { squidChains, filterSquidTokens } = useSquidAssetsSWR();
-
-  const SupportedOneInchTokens = useSupportTokensSWR();
 
   const [isOpenSlippageDialog, setIsOpenSlippageDialog] = useState(false);
 
@@ -124,8 +123,6 @@ export default function Entry() {
   const [currentSlippage, setCurrentSlippage] = useState('1');
 
   const [currentSwapAPI, setCurrentSwapAPI] = useState<IntegratedSwapAPI>();
-
-  const [currentToChain, setCurrentToChain] = useState<IntegratedSwapChain>();
 
   const filteredFromChains: IntegratedSwapChain[] = useMemo(() => {
     const squidEVMChains = ETHEREUM_NETWORKS.filter(
@@ -195,6 +192,8 @@ export default function Entry() {
   );
 
   const selectedFromCosmosChain = useMemo(() => (currentFromChain.line === 'COSMOS' ? currentFromChain : undefined), [currentFromChain]);
+
+  const [currentToChain, setCurrentToChain] = useState<IntegratedSwapChain>();
 
   const filteredToChainList: IntegratedSwapChain[] = useMemo(() => {
     const squidEVMChains = ETHEREUM_NETWORKS.filter(
@@ -354,14 +353,18 @@ export default function Entry() {
     token: currentToChain?.line === ETHEREUM.line ? (currentToToken as EthereumToken) : undefined,
   });
 
+  const supportedSquidTokens = useSquidTokensSWR();
+
+  const selected30OneInchTokens = useSupportTokensSWR();
+
   const oneInchTokens = useOneInchTokensSWR(currentSwapAPI === '1inch' ? String(parseInt(currentEthereumNetwork.chainId, 16)) : undefined);
 
   const supportedOneInchTokens = useMemo(
     () =>
-      currentSwapAPI === '1inch' && SupportedOneInchTokens.data?.[String(parseInt(currentEthereumNetwork.chainId, 16))]
-        ? Object.values(SupportedOneInchTokens.data[String(parseInt(currentEthereumNetwork.chainId, 16))])
+      currentSwapAPI === '1inch' && selected30OneInchTokens.data?.[String(parseInt(currentEthereumNetwork.chainId, 16))]
+        ? Object.values(selected30OneInchTokens.data[String(parseInt(currentEthereumNetwork.chainId, 16))])
         : [],
-    [SupportedOneInchTokens.data, currentEthereumNetwork.chainId, currentSwapAPI],
+    [selected30OneInchTokens.data, currentEthereumNetwork.chainId, currentSwapAPI],
   );
 
   const filteredFromTokenList: IntegratedSwapToken[] = useMemo(() => {
@@ -369,7 +372,7 @@ export default function Entry() {
 
     if (currentSwapAPI === 'skip') {
       const filteredTokens = cosmosFromTokenAssets.data.map((item) => {
-        const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '1' : '1';
+        const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
         const balance = cosmosFromChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
         const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
         return {
@@ -479,12 +482,17 @@ export default function Entry() {
     [currentFromToken?.decimals, currentFromTokenBalance],
   );
 
+  const currentFromTokenPrice = useMemo(
+    () => (currentFromToken?.coinGeckoId && coinGeckoPrice.data?.[currentFromToken?.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoPrice.data, currentFromToken?.coinGeckoId],
+  );
+
   const filteredToTokenList: IntegratedSwapToken[] = useMemo(() => {
     const currentToEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentToChain?.id);
 
     if (currentSwapAPI === 'skip') {
       const filteredTokens = cosmosToTokenAssets.data.map((item) => {
-        const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '1' : '1';
+        const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
         const balance = cosmosToChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
         const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
         return {
@@ -625,11 +633,6 @@ export default function Entry() {
     [currentToToken?.decimals, currentToTokenBalance],
   );
 
-  const currentFromTokenPrice = useMemo(
-    () => (currentFromToken?.coinGeckoId && coinGeckoPrice.data?.[currentFromToken?.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, currentFromToken?.coinGeckoId],
-  );
-
   const currentToTokenPrice = useMemo(
     () => (currentToToken?.coinGeckoId && coinGeckoPrice.data?.[currentToToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
     [extensionStorage.currency, coinGeckoPrice.data, currentToToken?.coinGeckoId],
@@ -671,13 +674,13 @@ export default function Entry() {
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
 
   const { skipRoute, memoizedSkipSwapAminoTx, skipSwapTx, skipSwapAminoTx, skipSwapSimulatedGas } = useSkipSwap(
-    currentSwapAPI === 'skip' && currentFromChain.line === 'COSMOS' && gt(currentInputBaseAmount, '0') && currentToChain && currentFromToken && currentToToken
+    currentSwapAPI === 'skip' && gt(currentInputBaseAmount, '0') && currentFromChain && currentToChain && currentFromToken && currentToToken
       ? {
           inputBaseAmount: currentInputBaseAmount,
-          srcCoin: currentFromToken as CosmosAssetV3,
-          destCoin: currentToToken as CosmosAssetV3,
-          srcChain: currentFromChain as CosmosChain,
-          destChain: currentToChain as CosmosChain,
+          fromChain: currentFromChain as CosmosChain,
+          toChain: currentToChain as CosmosChain,
+          fromToken: currentFromToken as CosmosAssetV3,
+          toToken: currentToToken as CosmosAssetV3,
           slippage: currentSlippage,
         }
       : undefined,
@@ -692,13 +695,21 @@ export default function Entry() {
     squidCrossChainFeeAmount,
     estimatedSquidFeePrice,
   } = useSquidSwap(
-    currentSwapAPI === 'squid' && currentFromToken && currentToToken?.address && currentFromChain?.chainId && currentToChain?.chainId
+    currentSwapAPI === 'squid' &&
+      gt(currentInputBaseAmount, '0') &&
+      currentFromChain &&
+      currentToChain &&
+      currentFromToken &&
+      currentToToken &&
+      supportedSquidTokens.data &&
+      currentToAddress
       ? {
-          fromChain: currentFromChain,
-          fromToken: currentFromToken,
           inputBaseAmount: currentInputBaseAmount,
+          fromChain: currentFromChain,
           toChain: currentToChain,
+          fromToken: currentFromToken,
           toToken: currentToToken,
+          supportedSquidTokens: supportedSquidTokens.data,
           receiverAddress: currentToAddress,
           slippage: currentSlippage,
         }
@@ -708,9 +719,9 @@ export default function Entry() {
   const { oneInchRoute, allowance, allowanceBaseEstimatedGas, allowanceTx, allowanceTxBaseFee } = useOneInchSwap(
     currentSwapAPI === '1inch' && currentFromChain && currentFromToken && currentToToken && currentFromAddress
       ? {
+          inputBaseAmount: currentInputBaseAmount,
           fromChain: currentFromChain,
           fromToken: currentFromToken,
-          inputBaseAmount: currentInputBaseAmount,
           toToken: currentToToken,
           senderAddress: currentFromAddress,
           slippage: currentSlippage,
