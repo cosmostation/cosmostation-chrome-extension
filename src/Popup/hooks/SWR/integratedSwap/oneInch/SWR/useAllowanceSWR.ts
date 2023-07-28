@@ -4,10 +4,9 @@ import useSWR from 'swr';
 
 import { ONEINCH_BASE_URL } from '~/constants/1inch';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { get } from '~/Popup/utils/axios';
 import type { AllowancePayload } from '~/types/1inch/allowance';
-
-import { useCurrentChain } from '../../useCurrent/useCurrentChain';
 
 type UseAllowanceSWRProps = {
   tokenAddress: string;

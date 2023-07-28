@@ -5,20 +5,19 @@ import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/use
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import type { EthereumNetwork } from '~/types/chain';
-import type { IntegratedSwapChain, IntegratedSwapEVMToken } from '~/types/swap/asset';
+import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 
-import { useSquidRouteSWR } from '../../squid/useSquidRouteSWR';
-import { useSquidTokensSWR } from '../../squid/useSquidTokensSWR';
+import { useSquidRouteSWR } from './SWR/useSquidRouteSWR';
+import { useSquidTokensSWR } from './SWR/useSquidTokensSWR';
 import { useCoinGeckoPriceSWR } from '../../useCoinGeckoPriceSWR';
 
 type useSquidSwapProps = {
   inputBaseAmount: string;
   slippage: string;
   receiverAddress: string;
-  fromToken: IntegratedSwapEVMToken;
-  toToken: IntegratedSwapEVMToken;
-  fromChain: EthereumNetwork;
+  fromToken: IntegratedSwapToken;
+  toToken: IntegratedSwapToken;
+  fromChain: IntegratedSwapChain;
   toChain: IntegratedSwapChain;
 };
 

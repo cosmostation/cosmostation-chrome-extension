@@ -14,27 +14,22 @@ import NumberText from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import SubSideHeader from '~/Popup/components/SubSideHeader';
-import { useAllowanceSWR } from '~/Popup/hooks/SWR/1inch/useAllowanceSWR';
-import { useAllowanceTxSWR } from '~/Popup/hooks/SWR/1inch/useAllowanceTxSWR';
-import type { UseOneInchSwapSWRProps } from '~/Popup/hooks/SWR/1inch/useOneInchSwapTxSWR';
-import { useOneInchSwapTxSWR } from '~/Popup/hooks/SWR/1inch/useOneInchSwapTxSWR';
-import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/1inch/useOneInchTokensSWR';
-import { useSupportTokensSWR } from '~/Popup/hooks/SWR/1inch/useSupportTokensSWR';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
 import { useGasRateSWR } from '~/Popup/hooks/SWR/cosmos/useGasRateSWR';
 import { useSupportChainsSWR } from '~/Popup/hooks/SWR/cosmos/useSupportChainsSWR';
 import { useBalanceSWR as useNativeBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
-import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
-import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
+import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useOneInchTokensSWR';
+import { useSupportTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useSupportTokensSWR';
+import { useOneInchSwap } from '~/Popup/hooks/SWR/integratedSwap/oneInch/useOneInchSwap';
 import { useSkipSupportChainsSWR } from '~/Popup/hooks/SWR/integratedSwap/skip/SWR/useSkipSupportChainsSWR';
 import { useSkipSwap } from '~/Popup/hooks/SWR/integratedSwap/skip/useSkipSwap';
+import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/integratedSwap/squid/SWR/useSquidAssetsSWR';
+import { useSquidTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/squid/SWR/useSquidTokensSWR';
 import { useSquidSwap } from '~/Popup/hooks/SWR/integratedSwap/squid/useSquidSwap';
 import { useSupportSwapChainsSWR } from '~/Popup/hooks/SWR/integratedSwap/useSupportSwapChainsSWR';
-import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/squid/useSquidAssetsSWR';
-import { useSquidTokensSWR } from '~/Popup/hooks/SWR/squid/useSquidTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
@@ -48,7 +43,7 @@ import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDefaultAV } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
-import type { CosmosChain, EthereumNetwork, EthereumToken } from '~/types/chain';
+import type { CosmosChain, EthereumToken } from '~/types/chain';
 import type { AssetV3 as CosmosAssetV3 } from '~/types/cosmos/asset';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 import type { IntegratedSwapAPI } from '~/types/swap/integratedSwap';
@@ -699,7 +694,7 @@ export default function Entry() {
   } = useSquidSwap(
     currentSwapAPI === 'squid' && currentFromToken && currentToToken?.address && currentFromChain?.chainId && currentToChain?.chainId
       ? {
-          fromChain: currentFromChain as EthereumNetwork,
+          fromChain: currentFromChain,
           fromToken: currentFromToken,
           inputBaseAmount: currentInputBaseAmount,
           toChain: currentToChain,
@@ -710,88 +705,18 @@ export default function Entry() {
       : undefined,
   );
 
-  // TODO 컴포넌트 화
-  const allowance = useAllowanceSWR(
-    currentSwapAPI === '1inch' && currentFromChain.line === ETHEREUM.line && currentFromToken?.address && currentFromChain?.chainId
+  const { oneInchRoute, allowance, allowanceBaseEstimatedGas, allowanceTx, allowanceTxBaseFee } = useOneInchSwap(
+    currentSwapAPI === '1inch' && currentFromChain && currentFromToken && currentToToken && currentFromAddress
       ? {
-          tokenAddress: currentFromToken.address,
-          walletAddress: currentFromAddress,
-          chainId: currentFromChain.chainId,
+          fromChain: currentFromChain,
+          fromToken: currentFromToken,
+          inputBaseAmount: currentInputBaseAmount,
+          toToken: currentToToken,
+          senderAddress: currentFromAddress,
+          slippage: currentSlippage,
         }
       : undefined,
   );
-
-  const allowanceTxData = useAllowanceTxSWR(
-    allowance.data && !gt(allowance.data.allowance, currentInputBaseAmount) && currentFromToken?.address && currentFromChain?.chainId
-      ? {
-          tokenAddress: currentFromToken.address,
-          chainId: currentFromChain.chainId,
-        }
-      : undefined,
-  );
-
-  const allowanceTx = useMemo(() => {
-    if (allowanceTxData.data) {
-      return {
-        from: currentFromAddress,
-        to: allowanceTxData.data.to,
-        data: allowanceTxData.data.data,
-        value: toHex(allowanceTxData.data.value, { addPrefix: true, isStringNumber: true }),
-      };
-    }
-
-    return {
-      from: '',
-      to: '',
-    };
-  }, [allowanceTxData, currentFromAddress]);
-
-  const allowanceFee = useFeeSWR();
-
-  const allowanceEstimatedGas = useEstimateGasSWR([allowanceTx]);
-
-  const allowanceBaseEstimatedGas = useMemo(() => BigInt(allowanceEstimatedGas.data?.result || '21000').toString(10), [allowanceEstimatedGas.data?.result]);
-
-  const allowanceBaseFeePerGas = useMemo(() => {
-    if (allowanceFee.type === 'BASIC') return allowanceFee.currentGasPrice || '0';
-    if (allowanceFee.type === 'EIP-1559') return allowanceFee.currentFee?.average.maxBaseFeePerGas || '0';
-
-    return '0';
-  }, [allowanceFee.currentFee?.average.maxBaseFeePerGas, allowanceFee.currentGasPrice, allowanceFee.type]);
-
-  const allowanceTxBaseFee = useMemo(() => times(allowanceBaseFeePerGas, allowanceBaseEstimatedGas), [allowanceBaseEstimatedGas, allowanceBaseFeePerGas]);
-
-  const oneInchRouteParam = useMemo<UseOneInchSwapSWRProps | undefined>(() => {
-    if (
-      currentSwapAPI === '1inch' &&
-      currentFromToken?.address &&
-      currentToToken?.address &&
-      currentFromChain?.chainId &&
-      gt(currentInputBaseAmount, '0') &&
-      gt(allowance.data?.allowance || '0', currentInputBaseAmount)
-    ) {
-      return {
-        fromTokenAddress: currentFromToken.address,
-        toTokenAddress: currentToToken.address,
-        fromAddress: currentFromAddress,
-        slippage: currentSlippage,
-        amount: currentInputBaseAmount,
-        chainId: currentFromChain.chainId,
-      };
-    }
-    return undefined;
-  }, [
-    allowance.data?.allowance,
-    currentFromAddress,
-    currentFromChain?.chainId,
-    currentFromToken?.address,
-    currentInputBaseAmount,
-    currentSlippage,
-    currentSwapAPI,
-    currentToToken?.address,
-  ]);
-
-  const oneInchRoute = useOneInchSwapTxSWR(oneInchRouteParam);
 
   const isLoadingSwapData = useMemo(() => {
     if (currentSwapAPI === '1inch') return oneInchRoute.isValidating;
