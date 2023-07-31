@@ -25,7 +25,7 @@ export function useAccountSWR(chain: CosmosChain, suspense?: boolean) {
   const accounts = useAccounts(suspense);
   const { extensionStorage } = useExtensionStorage();
 
-  const address = accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain?.id || ''] || '';
+  const address = accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
   const { getAccount } = cosmosURL(chain);
 
   const requestURL = getAccount(address);

@@ -335,8 +335,8 @@ export default function Entry() {
     [accounts?.data, currentAccount.id, currentToChain],
   );
 
-  const cosmosFromChainBalance = useBalanceSWR(currentFromChain.line === COSMOS.line ? currentFromChain : undefined);
-  const cosmosToChainBalance = useBalanceSWR(currentToChain?.line === COSMOS.line ? currentToChain : undefined);
+  const cosmosFromChainBalance = useBalanceSWR(currentFromChain.line === COSMOS.line ? currentFromChain : COSMOS);
+  const cosmosToChainBalance = useBalanceSWR(currentToChain?.line === COSMOS.line ? currentToChain : COSMOS);
 
   const cosmosFromTokenAssets = useCosmosAssetsSWR(currentFromChain.line === COSMOS.line ? currentFromChain : undefined);
   const cosmosToTokenAssets = useCosmosAssetsSWR(currentToChain?.line === COSMOS.line ? currentToChain : undefined);

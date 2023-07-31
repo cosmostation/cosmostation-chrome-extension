@@ -16,12 +16,12 @@ type FetchProps = {
 };
 
 type SkipSwapTxParamProps = {
-  chainIdsToAddresses: ChainIdToAddressMap;
+  chainIdsToAddresses: ChainIdsToAddressMap;
   slippage: string;
   affiliates?: Affiliates[];
 };
 
-type ChainIdToAddressMap = {
+type ChainIdsToAddressMap = {
   [chainId: string]: string;
 };
 

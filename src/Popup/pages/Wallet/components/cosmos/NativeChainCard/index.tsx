@@ -536,12 +536,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         <Button Icon={SendIcon} typoVarient="h5" disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
-        <Button
-          Icon={SwapIcon16}
-          accentColor="green"
-          typoVarient="h5"
-          onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path, { isDuplicateCheck: true })}
-        >
+        <Button Icon={SwapIcon16} accentColor="green" typoVarient="h5" onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path)}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
         </Button>
         {chain.id === OSMOSIS.id && (

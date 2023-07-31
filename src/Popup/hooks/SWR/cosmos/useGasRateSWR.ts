@@ -33,7 +33,7 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
 
   const returnData: Record<string, GasRate> = useMemo(() => {
     const result: Record<string, GasRate> =
-      chain?.baseDenom === NYX.baseDenom
+      chain.baseDenom === NYX.baseDenom
         ? { [NYX.baseDenom]: NYX_GAS_RATES.find((item) => item.chainId === NYX.id)!.gasRate }
         : { [chain.baseDenom]: chain.gasRate };
 

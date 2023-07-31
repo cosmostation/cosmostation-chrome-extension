@@ -22,7 +22,6 @@ type UseSquidSwapProps = {
   slippage: string;
 };
 
-// FIXME 네이티브 아닌 토큰 사용할 때는 approve 필요
 export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
   const { inputBaseAmount = '0', fromChain, toChain, fromToken, toToken, supportedSquidTokens, receiverAddress, slippage = '1' } = squidSwapProps ?? {};
 
