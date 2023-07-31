@@ -9,6 +9,7 @@ import { ETHEREUM, EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/e
 import { CURRENCY_SYMBOL } from '~/constants/currency';
 import AmountInput from '~/Popup/components/common/AmountInput';
 import Button from '~/Popup/components/common/Button';
+import Image from '~/Popup/components/common/Image';
 import InformContatiner from '~/Popup/components/common/InformContainer';
 import NumberText from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
@@ -82,6 +83,7 @@ import {
   SwapInfoHeaderTextContainer,
   SwapInfoStyledTooltip,
   SwapInfoSubHeaderContainer,
+  SwapVenueImageContainer,
 } from './styled';
 
 import Info16Icon from '~/images/icons/Info16.svg';
@@ -1637,9 +1639,13 @@ export default function Entry() {
                     <SwapInfoBodyRightContainer>
                       {isLoadingSwapData ? (
                         <Skeleton width="4rem" height="1.5rem" />
-                      ) : skipSwapVenueChain?.chainName ? (
+                      ) : skipSwapVenueChain ? (
                         <SwapInfoBodyRightTextContainer>
-                          <Typography variant="h6n">{skipSwapVenueChain?.chainName}</Typography>
+                          <SwapVenueImageContainer>
+                            <Image src={skipSwapVenueChain.imageURL} />
+                          </SwapVenueImageContainer>
+                          &nbsp;
+                          <Typography variant="h6n">{skipSwapVenueChain.chainName}</Typography>
                         </SwapInfoBodyRightTextContainer>
                       ) : (
                         <Typography variant="h6">-</Typography>

@@ -312,3 +312,12 @@ export const StyledButton = styled(Button)<StyledButtonProps>(({ theme, ...props
     },
   },
 }));
+
+export const SwapVenueImageContainer = styled('div')({
+  width: '1.6rem',
+  height: '1.6rem',
+  '& > img': {
+    width: '1.6rem',
+    height: '1.6rem',
+  },
+});
