@@ -55,6 +55,11 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
 
   const skipRoute = useSkipRouteSWR({ routeParam: skipRouteParam });
 
+  const skipSwapVenueChain = useMemo(
+    () => COSMOS_CHAINS.find((item) => item.chainId === skipRoute.data?.swap_venue?.chain_id),
+    [skipRoute.data?.swap_venue?.chain_id],
+  );
+
   const currentAccountAddresses = useMemo(() => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address, [accounts?.data, currentAccount.id]);
 
   const apiRequiredAddresses = useMemo(() => {
@@ -226,5 +231,5 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
     [fromChain, skipSwapSimulate.data?.gas_info?.gas_used],
   );
 
-  return { skipRoute, skipSwapTx, memoizedSkipSwapAminoTx, skipSwapAminoTx, skipSwapSimulatedGas };
+  return { skipRoute, skipSwapVenueChain, skipSwapTx, memoizedSkipSwapAminoTx, skipSwapAminoTx, skipSwapSimulatedGas };
 }

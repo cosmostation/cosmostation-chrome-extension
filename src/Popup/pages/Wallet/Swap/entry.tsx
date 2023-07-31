@@ -673,7 +673,7 @@ export default function Entry() {
 
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
 
-  const { skipRoute, memoizedSkipSwapAminoTx, skipSwapTx, skipSwapAminoTx, skipSwapSimulatedGas } = useSkipSwap(
+  const { skipRoute, skipSwapVenueChain, memoizedSkipSwapAminoTx, skipSwapTx, skipSwapAminoTx, skipSwapSimulatedGas } = useSkipSwap(
     currentSwapAPI === 'skip' && gt(currentInputBaseAmount, '0') && currentFromChain && currentToChain && currentFromToken && currentToToken
       ? {
           inputBaseAmount: currentInputBaseAmount,
@@ -1600,33 +1600,53 @@ export default function Entry() {
                 </>
               )}
               {currentSwapAPI === 'skip' && (
-                <SwapInfoBodyTextContainer>
-                  <SwapInfoBodyLeftContainer>
-                    <Typography variant="h6">{t('pages.Wallet.Swap.entry.processingTime')}</Typography>
-                  </SwapInfoBodyLeftContainer>
+                <>
+                  <SwapInfoBodyTextContainer>
+                    <SwapInfoBodyLeftContainer>
+                      <Typography variant="h6">{t('pages.Wallet.Swap.entry.processingTime')}</Typography>
+                    </SwapInfoBodyLeftContainer>
 
-                  <SwapInfoBodyRightContainer>
-                    {isLoadingSwapData ? (
-                      <Skeleton width="4rem" height="1.5rem" />
-                    ) : memoizedSkipSwapAminoTx ? (
-                      <SwapInfoBodyRightTextContainer>
-                        <>
-                          <Typography variant="h6n">~ 0.5</Typography>
-                          &nbsp;
-                          <Typography variant="h6n">{t('pages.Wallet.Swap.entry.minutes')}</Typography>
-                          &nbsp;
-                          <ProcessingTimeStyledTooltip title={t('pages.Wallet.Swap.entry.ibcRelayingTimeInfo')} placement="top" arrow>
-                            <SwapInfoBodyLeftIconContainer>
-                              <Info16Icon />
-                            </SwapInfoBodyLeftIconContainer>
-                          </ProcessingTimeStyledTooltip>
-                        </>
-                      </SwapInfoBodyRightTextContainer>
-                    ) : (
-                      <Typography variant="h6">-</Typography>
-                    )}
-                  </SwapInfoBodyRightContainer>
-                </SwapInfoBodyTextContainer>
+                    <SwapInfoBodyRightContainer>
+                      {isLoadingSwapData ? (
+                        <Skeleton width="4rem" height="1.5rem" />
+                      ) : memoizedSkipSwapAminoTx ? (
+                        <SwapInfoBodyRightTextContainer>
+                          <>
+                            <Typography variant="h6n">~ 0.5</Typography>
+                            &nbsp;
+                            <Typography variant="h6n">{t('pages.Wallet.Swap.entry.minutes')}</Typography>
+                            &nbsp;
+                            <ProcessingTimeStyledTooltip title={t('pages.Wallet.Swap.entry.ibcRelayingTimeInfo')} placement="top" arrow>
+                              <SwapInfoBodyLeftIconContainer>
+                                <Info16Icon />
+                              </SwapInfoBodyLeftIconContainer>
+                            </ProcessingTimeStyledTooltip>
+                          </>
+                        </SwapInfoBodyRightTextContainer>
+                      ) : (
+                        <Typography variant="h6">-</Typography>
+                      )}
+                    </SwapInfoBodyRightContainer>
+                  </SwapInfoBodyTextContainer>
+
+                  <SwapInfoBodyTextContainer>
+                    <SwapInfoBodyLeftContainer>
+                      <Typography variant="h6">{t('pages.Wallet.Swap.entry.swapVenue')}</Typography>
+                    </SwapInfoBodyLeftContainer>
+
+                    <SwapInfoBodyRightContainer>
+                      {isLoadingSwapData ? (
+                        <Skeleton width="4rem" height="1.5rem" />
+                      ) : skipSwapVenueChain?.chainName ? (
+                        <SwapInfoBodyRightTextContainer>
+                          <Typography variant="h6n">{skipSwapVenueChain?.chainName}</Typography>
+                        </SwapInfoBodyRightTextContainer>
+                      ) : (
+                        <Typography variant="h6">-</Typography>
+                      )}
+                    </SwapInfoBodyRightContainer>
+                  </SwapInfoBodyTextContainer>
+                </>
               )}
             </SwapInfoBodyContainer>
           </SwapInfoContainer>

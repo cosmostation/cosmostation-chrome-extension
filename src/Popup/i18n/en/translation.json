@@ -1407,6 +1407,7 @@
           "swapInfoDescription1": "Due to slippage",
           "swapInfoDescription2": ", the final amount you receive and the estimated amount may differ. You will receive at least",
           "swapInfoDescription3": "",
+          "swapVenue": "Swap Venue",
           "title": "Swap",
           "txSizeWarning": "Transaction size is currently limited to $10,000. Please decrease the size of your transaction and try again.",
           "unableToSwap": "Unable to swap"
