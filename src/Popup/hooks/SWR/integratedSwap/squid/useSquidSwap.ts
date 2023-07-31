@@ -1,14 +1,20 @@
 import { useMemo } from 'react';
 import type { GetRoute, TokenData } from '@0xsquid/sdk';
+import { Interface } from '@ethersproject/abi';
 
+import { ERC20_ABI } from '~/constants/abi';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { SQUID_CONTRACT_ADDRESS, SQUID_MAX_APPROVE_AMOUNT } from '~/constants/squid';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { IntegratedSwapChain, IntegratedSwapToken, SquidTokensPayload } from '~/types/swap/asset';
 
+import { useAllowanceSWR } from './SWR/useAllowanceSWR';
 import { useSquidRouteSWR } from './SWR/useSquidRouteSWR';
+import { useEstimateGasSWR } from '../../ethereum/useEstimateGasSWR';
+import { useFeeSWR } from '../../ethereum/useFeeSWR';
 import { useCoinGeckoPriceSWR } from '../../useCoinGeckoPriceSWR';
 
 type UseSquidSwapProps = {
@@ -18,18 +24,71 @@ type UseSquidSwapProps = {
   fromToken: IntegratedSwapToken;
   toToken: IntegratedSwapToken;
   supportedSquidTokens: SquidTokensPayload;
+  senderAddress: string;
   receiverAddress: string;
   slippage: string;
 };
 
 export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
-  const { inputBaseAmount = '0', fromChain, toChain, fromToken, toToken, supportedSquidTokens, receiverAddress, slippage = '1' } = squidSwapProps ?? {};
+  const {
+    inputBaseAmount = '0',
+    fromChain,
+    toChain,
+    fromToken,
+    toToken,
+    supportedSquidTokens,
+    senderAddress,
+    receiverAddress,
+    slippage = '1',
+  } = squidSwapProps ?? {};
 
   const cosmosToTokenAssets = useCosmosAssetsSWR(toChain?.line === COSMOS.line ? toChain : undefined);
 
   const { extensionStorage } = useExtensionStorage();
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
+
+  const allowance = useAllowanceSWR(
+    senderAddress && fromToken?.address && fromChain?.chainId
+      ? {
+          owner: senderAddress,
+          spender: SQUID_CONTRACT_ADDRESS,
+          tokenAddress: fromToken.address,
+          chainId: fromChain.chainId,
+        }
+      : undefined,
+  );
+
+  const allowanceTx = useMemo(() => {
+    if (senderAddress && fromToken?.address) {
+      const erc20ABI = new Interface(ERC20_ABI);
+
+      return {
+        from: senderAddress,
+        to: fromToken.address,
+        data: erc20ABI.encodeFunctionData('approve', [SQUID_CONTRACT_ADDRESS, SQUID_MAX_APPROVE_AMOUNT]),
+      };
+    }
+    return {
+      from: '',
+      to: '',
+    };
+  }, [fromToken?.address, senderAddress]);
+
+  const allowanceFee = useFeeSWR();
+
+  const allowanceEstimatedGas = useEstimateGasSWR([allowanceTx]);
+
+  const allowanceBaseEstimatedGas = useMemo(() => BigInt(allowanceEstimatedGas.data?.result || '21000').toString(10), [allowanceEstimatedGas.data?.result]);
+
+  const allowanceBaseFeePerGas = useMemo(() => {
+    if (allowanceFee.type === 'BASIC') return allowanceFee.currentGasPrice || '0';
+    if (allowanceFee.type === 'EIP-1559') return allowanceFee.currentFee?.average.maxBaseFeePerGas || '0';
+
+    return '0';
+  }, [allowanceFee.currentFee?.average.maxBaseFeePerGas, allowanceFee.currentGasPrice, allowanceFee.type]);
+
+  const allowanceTxBaseFee = useMemo(() => times(allowanceBaseFeePerGas, allowanceBaseEstimatedGas), [allowanceBaseEstimatedGas, allowanceBaseFeePerGas]);
 
   const squidRouteParam = useMemo<GetRoute | undefined>(() => {
     if (fromChain?.chainId && fromToken?.address && gt(inputBaseAmount, '0') && toChain?.chainId && toToken?.address && receiverAddress) {
@@ -153,5 +212,9 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
     squidSourceChainFeeAmount,
     squidCrossChainFeeAmount,
     estimatedSquidFeePrice,
+    allowance,
+    allowanceTx,
+    allowanceTxBaseFee,
+    allowanceBaseEstimatedGas,
   };
 }

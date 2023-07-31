@@ -694,15 +694,12 @@ export default function Entry() {
     squidSourceChainFeeAmount,
     squidCrossChainFeeAmount,
     estimatedSquidFeePrice,
+    allowance: squidAllowance,
+    allowanceTx: squidAllowanceTx,
+    allowanceTxBaseFee: squidAllowanceTxBaseFee,
+    allowanceBaseEstimatedGas: squidAllowanceBaseEstimatedGas,
   } = useSquidSwap(
-    currentSwapAPI === 'squid' &&
-      gt(currentInputBaseAmount, '0') &&
-      currentFromChain &&
-      currentToChain &&
-      currentFromToken &&
-      currentToToken &&
-      supportedSquidTokens.data &&
-      currentToAddress
+    currentSwapAPI === 'squid' && currentFromChain && currentToChain && currentFromToken && currentToToken && supportedSquidTokens.data && currentToAddress
       ? {
           inputBaseAmount: currentInputBaseAmount,
           fromChain: currentFromChain,
@@ -710,13 +707,20 @@ export default function Entry() {
           fromToken: currentFromToken,
           toToken: currentToToken,
           supportedSquidTokens: supportedSquidTokens.data,
+          senderAddress: currentFromAddress,
           receiverAddress: currentToAddress,
           slippage: currentSlippage,
         }
       : undefined,
   );
 
-  const { oneInchRoute, allowance, allowanceBaseEstimatedGas, allowanceTx, allowanceTxBaseFee } = useOneInchSwap(
+  const {
+    oneInchRoute,
+    allowance: oneInchAllowance,
+    allowanceBaseEstimatedGas: oneInchAllowanceBaseEstimatedGas,
+    allowanceTx: oneInchAllowanceTx,
+    allowanceTxBaseFee: oneInchAllowanceTxBaseFee,
+  } = useOneInchSwap(
     currentSwapAPI === '1inch' && currentFromChain && currentFromToken && currentToToken && currentFromAddress
       ? {
           inputBaseAmount: currentInputBaseAmount,
@@ -728,6 +732,36 @@ export default function Entry() {
         }
       : undefined,
   );
+
+  const integratedAllowance = useMemo(() => {
+    if (currentSwapAPI === '1inch')
+      return {
+        allowance: oneInchAllowance.data?.allowance,
+        allowanceTx: oneInchAllowanceTx,
+        allowanceTxBaseFee: oneInchAllowanceTxBaseFee,
+        allowanceBaseEstimatedGas: oneInchAllowanceBaseEstimatedGas,
+      };
+
+    if (currentSwapAPI === 'squid')
+      return {
+        allowance: squidAllowance.data,
+        allowanceTx: squidAllowanceTx,
+        allowanceTxBaseFee: squidAllowanceTxBaseFee,
+        allowanceBaseEstimatedGas: squidAllowanceBaseEstimatedGas,
+      };
+
+    return undefined;
+  }, [
+    currentSwapAPI,
+    oneInchAllowance.data?.allowance,
+    oneInchAllowanceBaseEstimatedGas,
+    oneInchAllowanceTx,
+    oneInchAllowanceTxBaseFee,
+    squidAllowance.data,
+    squidAllowanceBaseEstimatedGas,
+    squidAllowanceTx,
+    squidAllowanceTxBaseFee,
+  ]);
 
   const isLoadingSwapData = useMemo(() => {
     if (currentSwapAPI === '1inch') return oneInchRoute.isValidating;
@@ -793,28 +827,30 @@ export default function Entry() {
   }, [currentSwapAPI, squidRoute.data]);
 
   const integratedSwapTx = useMemo(() => {
-    if (currentSwapAPI === '1inch' && gt(allowance.data?.allowance || '0', currentInputBaseAmount) && oneInchRoute.data) {
-      return {
-        from: oneInchRoute.data.tx.from,
-        to: oneInchRoute.data.tx.to,
-        data: oneInchRoute.data.tx.data,
-        value: toHex(oneInchRoute.data.tx.value, { addPrefix: true, isStringNumber: true }),
-        gas: toHex(times(oneInchRoute.data.tx.gas, getDefaultAV(), 0), { addPrefix: true, isStringNumber: true }),
-      };
-    }
+    if (gt(integratedAllowance?.allowance || '0', currentInputBaseAmount)) {
+      if (currentSwapAPI === '1inch' && oneInchRoute.data) {
+        return {
+          from: oneInchRoute.data.tx.from,
+          to: oneInchRoute.data.tx.to,
+          data: oneInchRoute.data.tx.data,
+          value: toHex(oneInchRoute.data.tx.value, { addPrefix: true, isStringNumber: true }),
+          gas: toHex(times(oneInchRoute.data.tx.gas, getDefaultAV(), 0), { addPrefix: true, isStringNumber: true }),
+        };
+      }
 
-    if (currentSwapAPI === 'squid' && squidRoute.data) {
-      return {
-        from: currentFromAddress,
-        to: squidRoute.data.route.transactionRequest.targetAddress,
-        data: squidRoute.data.route.transactionRequest.data,
-        value: toHex(squidRoute.data.route.transactionRequest.value, { addPrefix: true, isStringNumber: true }),
-        gas: toHex(squidRoute.data.route.transactionRequest.gasLimit, { addPrefix: true, isStringNumber: true }),
-      };
+      if (currentSwapAPI === 'squid' && squidRoute.data) {
+        return {
+          from: currentFromAddress,
+          to: squidRoute.data.route.transactionRequest.targetAddress,
+          data: squidRoute.data.route.transactionRequest.data,
+          value: toHex(squidRoute.data.route.transactionRequest.value, { addPrefix: true, isStringNumber: true }),
+          gas: toHex(squidRoute.data.route.transactionRequest.gasLimit, { addPrefix: true, isStringNumber: true }),
+        };
+      }
     }
 
     return undefined;
-  }, [allowance.data?.allowance, currentFromAddress, currentInputBaseAmount, currentSwapAPI, oneInchRoute.data, squidRoute.data]);
+  }, [currentFromAddress, currentInputBaseAmount, currentSwapAPI, integratedAllowance, oneInchRoute.data, squidRoute.data]);
 
   const estimatedGas = useMemo(() => {
     if (currentSwapAPI === 'skip') {
@@ -1035,10 +1071,11 @@ export default function Entry() {
 
   const warningMessage = useMemo(() => {
     if (gt(currentInputBaseAmount, '0') && !isLoadingSwapData) {
+      if (integratedAllowance?.allowance && !gt(integratedAllowance.allowance, currentInputBaseAmount)) {
+        return t('pages.Wallet.Swap.entry.allowanceWarning');
+      }
+
       if (currentSwapAPI === '1inch') {
-        if (allowance.data && !gt(allowance.data.allowance, currentInputBaseAmount)) {
-          return t('pages.Wallet.Swap.entry.allowanceWarning');
-        }
         if (oneInchRoute.error) {
           return oneInchRoute.error.response?.data.description;
         }
@@ -1089,16 +1126,16 @@ export default function Entry() {
 
     return '';
   }, [
-    isLoadingSwapData,
     currentInputBaseAmount,
+    isLoadingSwapData,
+    integratedAllowance?.allowance,
     currentSwapAPI,
     estimatedFeeBaseAmount,
     currentFeeTokenBalance,
     currentFeeToken,
     currentFromToken?.address,
-    allowance.data,
-    oneInchRoute.error,
     t,
+    oneInchRoute.error,
     estimatedToTokenDisplayAmountPrice,
     priceImpactPercent,
     squidRoute.error,
@@ -1121,11 +1158,11 @@ export default function Entry() {
   }, [currentFromTokenDisplayBalance, inputDisplayAmount, t]);
 
   const allowanceErrorMessage = useMemo(() => {
-    if (gte(currentInputBaseAmount, allowance.data?.allowance || '0') && gte(allowanceTxBaseFee, currentFeeTokenBalance)) {
+    if (gte(currentInputBaseAmount, integratedAllowance?.allowance || '0') && gte(integratedAllowance?.allowanceTxBaseFee || '0', currentFeeTokenBalance)) {
       return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
     }
     return '';
-  }, [allowance.data, allowanceTxBaseFee, currentFeeTokenBalance, currentInputBaseAmount, t]);
+  }, [integratedAllowance?.allowance, integratedAllowance?.allowanceTxBaseFee, currentFeeTokenBalance, currentInputBaseAmount, t]);
 
   useEffect(() => {
     setIsDisabled(true);
@@ -1227,8 +1264,13 @@ export default function Entry() {
   ]);
 
   useEffect(() => {
-    if (currentSwapAPI === '1inch' && currentFromToken) {
-      void allowance.mutate();
+    if (currentFromToken) {
+      if (currentSwapAPI === '1inch') {
+        void oneInchAllowance.mutate();
+      }
+      if (currentSwapAPI === 'squid') {
+        void squidAllowance.mutate();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSwapAPI, currentFromToken]);
@@ -1590,15 +1632,18 @@ export default function Entry() {
           </SwapInfoContainer>
         </BodyContainer>
         <BottomContainer>
-          {currentSwapAPI === '1inch' && allowance.data && !gt(allowance.data.allowance, currentInputBaseAmount) && allowanceTx ? (
+          {(currentSwapAPI === '1inch' || currentSwapAPI === 'squid') &&
+          integratedAllowance?.allowance &&
+          !gt(integratedAllowance.allowance, currentInputBaseAmount) &&
+          integratedAllowance.allowanceTx ? (
             <Tooltip varient="error" title={allowanceErrorMessage} placement="top" arrow>
               <div>
                 <Button
                   Icon={Permission16Icon}
                   type="button"
-                  disabled={!allowanceTx || !!allowanceErrorMessage}
+                  disabled={!integratedAllowance.allowanceTx || !!allowanceErrorMessage}
                   onClick={async () => {
-                    if (currentSwapAPI === '1inch' && allowanceTx) {
+                    if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid') && integratedAllowance.allowanceTx) {
                       await enQueue({
                         messageId: '',
                         origin: '',
@@ -1607,8 +1652,8 @@ export default function Entry() {
                           method: 'eth_sendTransaction',
                           params: [
                             {
-                              ...allowanceTx,
-                              gas: toHex(allowanceBaseEstimatedGas, { addPrefix: true, isStringNumber: true }),
+                              ...integratedAllowance.allowanceTx,
+                              gas: toHex(integratedAllowance.allowanceBaseEstimatedGas, { addPrefix: true, isStringNumber: true }),
                             },
                           ],
                         },

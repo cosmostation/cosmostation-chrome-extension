@@ -1372,7 +1372,7 @@
           }
         },
         "entry": {
-          "allowanceWarning": "Swap Router uses signed permit approvals. This allows you to approve 1inch smart contract access to your selected tokens and swap in one single transaction.",
+          "allowanceWarning": "Swap Router uses signed permit approvals. This allows you to approve smart contract access to your selected tokens and swap in one single transaction.",
           "availableAmount": "Available",
           "balanceWarningDescription1": "You do not have enough",
           "balanceWarningDescription2": " to cover the swap amount and the estimated gas costs for this transfer. Set your input amount to",

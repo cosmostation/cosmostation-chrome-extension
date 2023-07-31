@@ -8,6 +8,9 @@ export function useSquidSWR(config?: SWRConfiguration) {
   const fetcher = async (baseUrl: string) => {
     const squid = new Squid({
       baseUrl,
+      executionSettings: {
+        infiniteApproval: true,
+      },
     });
 
     try {
