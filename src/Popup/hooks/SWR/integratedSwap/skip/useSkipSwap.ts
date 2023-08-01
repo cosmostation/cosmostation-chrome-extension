@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useDebounce } from 'use-debounce';
 
-import { AFFILIATES, DEFAULT_BPF } from '~/constants/affiliates';
 import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS } from '~/constants/chain';
+import { AFFILIATES, DEFAULT_BPF } from '~/constants/skip';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { gt, times } from '~/Popup/utils/big';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
