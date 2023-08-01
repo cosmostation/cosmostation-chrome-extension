@@ -546,7 +546,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         >
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
         </Button>
-        {/* NOTE Legacy Osmosis Swap & Moon pay functions */}
+        {/* NOTE Legacy Osmosis Swap & Moon pay features */}
         {chain.id === OSMOSIS.id && (
           <IconButtonContainer sx={{ display: 'none' }}>
             <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/osmosis-swap')}>
