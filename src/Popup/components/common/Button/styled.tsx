@@ -1,11 +1,12 @@
 import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
-import type { AccentColors } from '~/types/theme';
+import type { AccentColorsType } from '~/types/theme';
 
 type StyledButtonProps = {
   'data-typo-varient': 'h4' | 'h5';
-  'data-accent-color'?: string;
+  'data-accent-color': AccentColorsType;
+  'data-accent-hover-color': AccentColorsType;
 };
 
 export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
@@ -16,15 +17,13 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
 
   borderRadius: '0.8rem',
 
-  backgroundColor: props['data-accent-color'] ? theme.accentColors[props['data-accent-color'] as keyof AccentColors] : theme.accentColors.purple01,
+  backgroundColor: theme.accentColors[props['data-accent-color']],
   color: theme.accentColors.white,
 
   cursor: 'pointer',
 
   '&:hover': {
-    backgroundColor: props['data-accent-color'] ? theme.accentColors[props['data-accent-color'] as keyof AccentColors] : theme.accentColors.purple02,
-
-    opacity: props['data-accent-color'] ? 0.8 : 1,
+    backgroundColor: theme.accentColors[props['data-accent-hover-color']],
   },
 
   '&:disabled': {

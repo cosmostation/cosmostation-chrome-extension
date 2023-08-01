@@ -8,6 +8,7 @@ import { Connection, JsonRpcProvider } from '@mysten/sui.js';
 import { DEVNET } from '~/constants/chain/sui/network/devnet';
 import { TESTNET } from '~/constants/chain/sui/network/testnet';
 import { SUI_COIN } from '~/constants/sui';
+import { ACCENT_COLORS } from '~/constants/theme';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
@@ -204,7 +205,13 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {t('pages.Wallet.components.sui.NativeChainCard.index.sendButton')}
         </Button>
         <FourthLineCenterContainer />
-        <Button Icon={SwapIcon16} accentColor="green" typoVarient="h5" onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path)}>
+        <Button
+          Icon={SwapIcon16}
+          accentColor={ACCENT_COLORS.GREEN01}
+          hoverAccentColor={ACCENT_COLORS.GREEN02}
+          typoVarient="h5"
+          onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path)}
+        >
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
         </Button>
       </FourthLineContainer>

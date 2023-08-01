@@ -2,6 +2,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { SKIP_BASE_URL } from '~/constants/skip';
 import { post } from '~/Popup/utils/axios';
 import type { SkipRoutePayload } from '~/types/swap/skip';
 
@@ -29,7 +30,7 @@ type UseSkipRouteSWRProps = {
 };
 
 export function useSkipRouteSWR({ routeParam }: UseSkipRouteSWRProps, config?: SWRConfiguration) {
-  const requestURL = 'https://api.skip.money/v1/fungible/route';
+  const requestURL = `${SKIP_BASE_URL}/v1/fungible/route`;
 
   const fetcher = async ({ fetchUrl, skipRouteParam }: FetchProps) =>
     post<SkipRoutePayload>(fetchUrl, {
@@ -46,8 +47,8 @@ export function useSkipRouteSWR({ routeParam }: UseSkipRouteSWRProps, config?: S
     fetcher,
     {
       revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
+      dedupingInterval: 14000,
+      refreshInterval: 15000,
       errorRetryCount: 0,
       isPaused: () => !routeParam || !requestURL,
       ...config,

@@ -21,7 +21,12 @@ type UseOneInchSwapProps = {
 };
 
 export function useOneInchSwap(oneInchSwapProps?: UseOneInchSwapProps) {
-  const { inputBaseAmount = '0', fromChain, fromToken, toToken, senderAddress, slippage = '1' } = oneInchSwapProps ?? {};
+  const inputBaseAmount = useMemo(() => oneInchSwapProps?.inputBaseAmount || '0', [oneInchSwapProps?.inputBaseAmount]);
+  const fromChain = useMemo(() => oneInchSwapProps?.fromChain, [oneInchSwapProps?.fromChain]);
+  const fromToken = useMemo(() => oneInchSwapProps?.fromToken, [oneInchSwapProps?.fromToken]);
+  const toToken = useMemo(() => oneInchSwapProps?.toToken, [oneInchSwapProps?.toToken]);
+  const senderAddress = useMemo(() => oneInchSwapProps?.senderAddress, [oneInchSwapProps?.senderAddress]);
+  const slippage = useMemo(() => oneInchSwapProps?.slippage || '1', [oneInchSwapProps?.slippage]);
 
   const allowance = useAllowanceSWR(
     fromToken?.address && senderAddress && fromChain?.chainId

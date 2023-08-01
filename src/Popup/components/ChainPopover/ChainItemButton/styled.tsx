@@ -119,5 +119,5 @@ export const BackgroundActive = styled('div')(({ theme }) => ({
   width: '0.6rem',
   height: '0.6rem',
   borderRadius: '50%',
-  backgroundColor: theme.accentColors.green,
+  backgroundColor: theme.accentColors.green01,
 }));

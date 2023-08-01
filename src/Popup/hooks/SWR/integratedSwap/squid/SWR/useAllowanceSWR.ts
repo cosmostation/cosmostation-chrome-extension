@@ -35,8 +35,8 @@ export function useAllowanceSWR(allowanceParam?: Allowance, config?: SWRConfigur
 
   const { data, isValidating, error, mutate } = useSWR<string | null, RouteError>(allowanceParam, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
+    dedupingInterval: 11000,
+    refreshInterval: 12000,
     errorRetryCount: 0,
     isPaused: () => !allowanceParam,
     ...config,

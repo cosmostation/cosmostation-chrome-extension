@@ -8,6 +8,7 @@ import { COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
 import { EVMOS } from '~/constants/chain/cosmos/evmos';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
+import { ACCENT_COLORS } from '~/constants/theme';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
@@ -536,9 +537,16 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         <Button Icon={SendIcon} typoVarient="h5" disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
-        <Button Icon={SwapIcon16} accentColor="green" typoVarient="h5" onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path)}>
+        <Button
+          Icon={SwapIcon16}
+          accentColor={ACCENT_COLORS.GREEN01}
+          hoverAccentColor={ACCENT_COLORS.GREEN02}
+          typoVarient="h5"
+          onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path)}
+        >
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
         </Button>
+        {/* NOTE Legacy Osmosis Swap & Moon pay functions */}
         {chain.id === OSMOSIS.id && (
           <IconButtonContainer sx={{ display: 'none' }}>
             <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/osmosis-swap')}>

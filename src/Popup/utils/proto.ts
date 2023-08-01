@@ -65,10 +65,10 @@ export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
     sender: msg.value.sender,
     receiver: msg.value.receiver,
     timeout_height: {
-      revision_height: msg.value.timeout_height.revision_height,
-      revision_number: msg.value.timeout_height.revision_number,
+      revision_height: msg.value.timeout_height.revision_height as unknown as Long,
+      revision_number: msg.value.timeout_height.revision_number as unknown as Long,
     },
-    timeout_timestamp: msg.value.timeout_timestamp,
+    timeout_timestamp: msg.value.timeout_timestamp as unknown as Long,
     memo: msg.value.memo,
   });
 

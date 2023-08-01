@@ -45,7 +45,7 @@ export const Body = styled('div')(({ theme }) => ({
       },
 
       '&.SnackbarItem-variantSuccess': {
-        backgroundColor: theme.accentColors.green,
+        backgroundColor: theme.accentColors.green01,
         color: theme.accentColors.white,
       },
 

@@ -59,13 +59,19 @@ export default function Approve({ tx, determineTxType }: ApproveProps) {
 
   const { to } = tx;
 
-  const token = allTokens.find((item) => isEqualsIgnoringCase(to, item.address));
+  const token = useMemo(() => allTokens.find((item) => isEqualsIgnoringCase(to, item.address)), [allTokens, to]);
 
-  const price = (token?.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0;
+  const price = useMemo(
+    () => (token?.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0,
+    [coinGeckoPrice.data, currency, token?.coinGeckoId],
+  );
 
-  const tokenAddress = token?.displayDenom || shorterAddress(to, 32);
-  const toAddress = (determineTxType?.txDescription?.args?.[0] as undefined | string) || '';
-  const amount = (determineTxType?.txDescription?.args?.[1] as BigNumber | undefined)?.toString(10) || '';
+  const tokenAddress = useMemo(() => token?.displayDenom || shorterAddress(to, 32), [to, token?.displayDenom]);
+  const toAddress = useMemo(() => (determineTxType?.txDescription?.args?.[0] as undefined | string) || '', [determineTxType?.txDescription?.args]);
+  const amount = useMemo(
+    () => (determineTxType?.txDescription?.args?.[1] as BigNumber | undefined)?.toString(10) || '',
+    [determineTxType?.txDescription?.args],
+  );
 
   const displayAmount = useMemo(() => {
     try {
@@ -75,7 +81,7 @@ export default function Approve({ tx, determineTxType }: ApproveProps) {
     }
   }, [amount, token?.decimals]);
 
-  const value = times(displayAmount, price);
+  const value = useMemo(() => times(displayAmount, price), [displayAmount, price]);
 
   return (
     <Container title="Approve (ERC20)">
@@ -108,11 +114,13 @@ export default function Approve({ tx, determineTxType }: ApproveProps) {
             <RightColumnContainer>
               <RightAmountContainer>
                 <Tooltip title={displayAmount} arrow placement="top">
-                  <span>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" ellipsisMaxWidth="15">
-                      {displayAmount}
-                    </Number>
-                  </span>
+                  <DenomContainer>
+                    <div>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                        {displayAmount}
+                      </Number>
+                    </div>
+                  </DenomContainer>
                 </Tooltip>
                 &nbsp;
                 <DenomContainer>
@@ -122,11 +130,13 @@ export default function Approve({ tx, determineTxType }: ApproveProps) {
               <RightValueContainer>
                 {value !== '0' && (
                   <Tooltip title={value} arrow placement="top">
-                    <span>
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency} ellipsisMaxWidth="15">
-                        {value}
-                      </Number>
-                    </span>
+                    <DenomContainer>
+                      <div>
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                          {value}
+                        </Number>
+                      </div>
+                    </DenomContainer>
                   </Tooltip>
                 )}
               </RightValueContainer>

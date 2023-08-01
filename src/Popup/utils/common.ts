@@ -133,7 +133,7 @@ export function getSiteIconURL(domain: string) {
 export function isJsonString(str: string): boolean {
   try {
     return typeof JSON.parse(str) === 'object';
-  } catch (e) {
+  } catch {
     return false;
   }
 }

@@ -36,7 +36,7 @@ export type MsgTransfer = {
   source_channel: string;
   source_port: string;
   timeout_height: Height;
-  timeout_timestamp: Long;
+  timeout_timestamp: number;
   token: Amount;
   memo: string;
 };

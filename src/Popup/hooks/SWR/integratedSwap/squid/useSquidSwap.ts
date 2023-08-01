@@ -30,17 +30,15 @@ type UseSquidSwapProps = {
 };
 
 export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
-  const {
-    inputBaseAmount = '0',
-    fromChain,
-    toChain,
-    fromToken,
-    toToken,
-    supportedSquidTokens,
-    senderAddress,
-    receiverAddress,
-    slippage = '1',
-  } = squidSwapProps ?? {};
+  const inputBaseAmount = useMemo(() => squidSwapProps?.inputBaseAmount || '0', [squidSwapProps?.inputBaseAmount]);
+  const fromChain = useMemo(() => squidSwapProps?.fromChain, [squidSwapProps?.fromChain]);
+  const toChain = useMemo(() => squidSwapProps?.toChain, [squidSwapProps?.toChain]);
+  const fromToken = useMemo(() => squidSwapProps?.fromToken, [squidSwapProps?.fromToken]);
+  const toToken = useMemo(() => squidSwapProps?.toToken, [squidSwapProps?.toToken]);
+  const supportedSquidTokens = useMemo(() => squidSwapProps?.supportedSquidTokens, [squidSwapProps?.supportedSquidTokens]);
+  const senderAddress = useMemo(() => squidSwapProps?.senderAddress, [squidSwapProps?.senderAddress]);
+  const receiverAddress = useMemo(() => squidSwapProps?.receiverAddress, [squidSwapProps?.receiverAddress]);
+  const slippage = useMemo(() => squidSwapProps?.slippage || '1', [squidSwapProps?.slippage]);
 
   const cosmosToTokenAssets = useCosmosAssetsSWR(toChain?.line === COSMOS.line ? toChain : undefined);
 

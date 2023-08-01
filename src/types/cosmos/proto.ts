@@ -1,7 +1,12 @@
 import type { PublicKeyType } from '.';
-import type { Amount, Height } from './common';
+import type { Amount } from './common';
 
 export type PubKey = { type: PublicKeyType; value: string };
+
+export type Height = {
+  revision_height: Long;
+  revision_number: Long;
+};
 
 export type Msg<T = unknown> = {
   type_url: string;

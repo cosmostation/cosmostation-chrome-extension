@@ -4,6 +4,7 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import { ACCENT_COLORS } from '~/constants/theme';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
@@ -141,7 +142,13 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
         </Button>
         <FourthLineCenterContainer />
-        <Button Icon={SwapIcon16} accentColor="green" typoVarient="h5" onClick={() => navigate(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path)}>
+        <Button
+          Icon={SwapIcon16}
+          accentColor={ACCENT_COLORS.GREEN01}
+          hoverAccentColor={ACCENT_COLORS.GREEN02}
+          typoVarient="h5"
+          onClick={() => navigate(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path)}
+        >
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
         </Button>
       </FourthLineContainer>

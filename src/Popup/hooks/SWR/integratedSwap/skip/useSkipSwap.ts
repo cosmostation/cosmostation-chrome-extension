@@ -31,7 +31,12 @@ type UseSkipSwapProps = {
 };
 
 export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
-  const { inputBaseAmount = '0', fromChain, toChain, fromToken, toToken, slippage = '1' } = skipSwapProps ?? {};
+  const inputBaseAmount = useMemo(() => skipSwapProps?.inputBaseAmount || '0', [skipSwapProps?.inputBaseAmount]);
+  const fromChain = useMemo(() => skipSwapProps?.fromChain, [skipSwapProps?.fromChain]);
+  const toChain = useMemo(() => skipSwapProps?.toChain, [skipSwapProps?.toChain]);
+  const fromToken = useMemo(() => skipSwapProps?.fromToken, [skipSwapProps?.fromToken]);
+  const toToken = useMemo(() => skipSwapProps?.toToken, [skipSwapProps?.toToken]);
+  const slippage = useMemo(() => skipSwapProps?.slippage || '1', [skipSwapProps?.slippage]);
 
   const accounts = useAccounts();
   const account = useAccountSWR(fromChain || COSMOS_CHAINS[0]);

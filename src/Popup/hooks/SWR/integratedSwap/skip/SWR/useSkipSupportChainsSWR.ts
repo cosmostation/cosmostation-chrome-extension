@@ -2,11 +2,12 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { SKIP_BASE_URL } from '~/constants/skip';
 import { get } from '~/Popup/utils/axios';
 import type { SupportedSkipChain } from '~/types/swap/asset';
 
 export function useSkipSupportChainsSWR(config?: SWRConfiguration) {
-  const requestURL = `https://api.skip.money/v1/info/chains`;
+  const requestURL = `${SKIP_BASE_URL}/v1/info/chains`;
 
   const fetcher = (fetchUrl: string) => get<SupportedSkipChain>(fetchUrl);
 

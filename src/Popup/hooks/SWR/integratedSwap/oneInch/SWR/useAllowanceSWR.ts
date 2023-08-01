@@ -25,8 +25,9 @@ export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: 
 
   const { data, error, mutate } = useSWR<AllowancePayload, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
+    dedupingInterval: 11000,
+    refreshInterval: 12000,
+    errorRetryCount: 0,
     isPaused: () => currentChain.id !== ETHEREUM.id || !allowanceParam,
     ...config,
   });
