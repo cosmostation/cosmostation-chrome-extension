@@ -9,7 +9,6 @@ import { keccak256 } from '@ethersproject/keccak256';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
-import { CHIHUAHUA } from '~/constants/chain/cosmos/chihuahua';
 import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
@@ -18,8 +17,8 @@ import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { IXO } from '~/constants/chain/cosmos/ixo';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { KI } from '~/constants/chain/cosmos/ki';
+import { MARS } from '~/constants/chain/cosmos/mars';
 import { PROVENANCE } from '~/constants/chain/cosmos/provenance';
-import { SIF } from '~/constants/chain/cosmos/sif';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { STARNAME } from '~/constants/chain/cosmos/starname';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
@@ -109,7 +108,12 @@ export function signAmino(signDoc: SignAminoDoc, privateKey: Buffer, chain: Cosm
 }
 
 export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer, chain: CosmosChain) {
-  const txSignDoc = new cosmos.tx.v1beta1.SignDoc({ ...signDoc, account_number: Number(signDoc.account_number) });
+  const txSignDoc = new cosmos.tx.v1beta1.SignDoc({
+    ...signDoc,
+    auth_info_bytes: new Uint8Array(signDoc.auth_info_bytes),
+    body_bytes: new Uint8Array(signDoc.body_bytes),
+    account_number: Number(signDoc.account_number),
+  });
 
   const txSignDocHex = Buffer.from(cosmos.tx.v1beta1.SignDoc.encode(txSignDoc).finish()).toString('hex');
 
@@ -174,10 +178,10 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [CRYPTO_ORG.id]: 'crypto-org',
     [ASSET_MANTLE.id]: 'asset-mantle',
     [GRAVITY_BRIDGE.id]: 'gravity-bridge',
-    [SIF.id]: 'sifchain',
     [KI.id]: 'ki-chain',
     [STAFIHUB.id]: 'stafi',
     [FETCH_AI.id]: 'fetchai',
+    [MARS.id]: 'mars-protocol',
   };
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
@@ -187,10 +191,10 @@ export function convertAssetNameToCosmos(assetName: string) {
     'crypto-org': CRYPTO_ORG,
     'asset-mantle': ASSET_MANTLE,
     'gravity-bridge': GRAVITY_BRIDGE,
-    sifchain: SIF,
     'ki-chain': KI,
     stafi: STAFIHUB,
     fetchai: FETCH_AI,
+    'mars-protocol': MARS,
   } as Record<string, CosmosChain | undefined>;
 
   return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);
@@ -219,7 +223,7 @@ export function getMsgSignData(signer: string, message: string) {
 }
 
 export function getDefaultAV(chain?: CosmosChain) {
-  const exceptedChainIds = [PROVENANCE.id, TERITORI.id, CHIHUAHUA.id];
+  const exceptedChainIds = [PROVENANCE.id, TERITORI.id];
 
   if (chain?.id === IXO.id) {
     return '3.0';

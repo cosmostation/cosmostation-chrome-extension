@@ -24,19 +24,11 @@ export const extensionStorageDefault: ExtensionStorage = {
   currency: '' as CurrencyType,
 
   rootPath: PATH.DASHBOARD,
-  homeTabPath: {
-    ethereum: {
-      tabValue: 0,
-    },
-    cosmos: {
-      tabValue: 0,
-    },
-    sui: {
-      tabValue: 0,
-    },
-    aptos: {
-      tabValue: 0,
-    },
+  homeTabIndex: {
+    ethereum: 0,
+    cosmos: 0,
+    sui: 0,
+    aptos: 0,
   },
 
   allowedChainIds: [],

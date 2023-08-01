@@ -5,6 +5,7 @@ import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
 
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { ETHEREUM_ADD_NFT_ERROR } from '~/constants/error';
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Button from '~/Popup/components/common/Button';
@@ -95,22 +96,22 @@ export default function Entry() {
 
   const errorType = useMemo(() => {
     if (!ethereumAddressRegex.test(debouncedContractAddress)) {
-      return 'invalidAddress';
+      return ETHEREUM_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS;
     }
     if (!debouncedTokenId) {
-      return 'invalidTokenId';
+      return ETHEREUM_ADD_NFT_ERROR.INVALID_TOKEN_ID;
     }
 
     if (!nftSourceURI.data) {
-      return 'notFound';
+      return ETHEREUM_ADD_NFT_ERROR.INVALID_SOURCE;
     }
 
     if (!isOwnedNFT.data) {
-      return 'misMatch';
+      return ETHEREUM_ADD_NFT_ERROR.NOT_OWNED_NFT;
     }
 
     if (isOwnedNFT.error || currentNFTStandard.error) {
-      return 'networkError';
+      return ETHEREUM_ADD_NFT_ERROR.NETWORK_ERROR;
     }
     return '';
   }, [currentNFTStandard.error, debouncedContractAddress, debouncedTokenId, nftSourceURI.data, isOwnedNFT.data, isOwnedNFT.error]);
@@ -123,53 +124,50 @@ export default function Entry() {
 
   const nftPreviewHeaderText = useMemo(() => {
     if (debouncedContractAddress && debouncedTokenId) {
-      if (errorType === 'invalidAddress') {
-        return 'Invalid Contract Address';
+      if (errorType === ETHEREUM_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS) {
+        return t('pages.Chain.Ethereum.NFT.Add.entry.invalidAddressTitle');
       }
 
-      if (errorType === 'invalidTokenId') {
-        return 'Invalid Token ID';
+      if (errorType === ETHEREUM_ADD_NFT_ERROR.INVALID_TOKEN_ID) {
+        return t('pages.Chain.Ethereum.NFT.Add.entry.invalidTokenIdTitle');
       }
 
-      if (errorType === 'notFound') {
-        return 'Not Found';
+      if (errorType === ETHEREUM_ADD_NFT_ERROR.INVALID_SOURCE) {
+        return t('pages.Chain.Ethereum.NFT.Add.entry.invalidSourceTitle');
       }
 
-      if (errorType === 'misMatch') {
-        return 'Mismatch';
+      if (errorType === ETHEREUM_ADD_NFT_ERROR.NOT_OWNED_NFT) {
+        return t('pages.Chain.Ethereum.NFT.Add.entry.invalidOwnershipTitle');
       }
 
-      if (errorType === 'networkError') {
-        return 'Error';
+      if (errorType === ETHEREUM_ADD_NFT_ERROR.NETWORK_ERROR) {
+        return t('pages.Chain.Ethereum.NFT.Add.entry.networkErrorTitle');
       }
     }
 
-    return 'IMG Preview';
-  }, [debouncedContractAddress, debouncedTokenId, errorType]);
+    return t('pages.Chain.Ethereum.NFT.Add.entry.imagePreview');
+  }, [debouncedContractAddress, debouncedTokenId, errorType, t]);
 
   const nftPreviewSubText = useMemo(() => {
     if (debouncedContractAddress && debouncedTokenId) {
-      if (errorType === 'invalidAddress') {
+      if (errorType === ETHEREUM_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS) {
         return t('pages.Chain.Ethereum.NFT.Add.entry.invalidAddress');
       }
 
-      if (errorType === 'invalidTokenId') {
+      if (errorType === ETHEREUM_ADD_NFT_ERROR.INVALID_TOKEN_ID) {
         return t('pages.Chain.Ethereum.NFT.Add.entry.invalidTokenId');
       }
 
-      if (errorType === 'notFound') {
-        // NOTE need i18
-        return 'No NFT';
+      if (errorType === ETHEREUM_ADD_NFT_ERROR.INVALID_SOURCE) {
+        return t('pages.Chain.Ethereum.NFT.Add.entry.invalidSource');
       }
 
-      if (errorType === 'misMatch') {
-        // NOTE need i18
-        return 'Ownership information does not match.';
+      if (errorType === ETHEREUM_ADD_NFT_ERROR.NOT_OWNED_NFT) {
+        return t('pages.Chain.Ethereum.NFT.Add.entry.invalidOwnership');
       }
 
-      if (errorType === 'networkError') {
-        // NOTE need i18
-        return 'An error has occurred. please try again later';
+      if (errorType === ETHEREUM_ADD_NFT_ERROR.NETWORK_ERROR) {
+        return t('pages.Chain.Ethereum.NFT.Add.entry.networkError');
       }
     }
 

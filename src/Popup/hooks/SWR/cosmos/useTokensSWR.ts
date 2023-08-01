@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -28,14 +29,18 @@ export function useTokensSWR(chain: CosmosChain, config?: SWRConfiguration) {
     ...config,
   });
 
-  const returnData: CW20AssetResponse['assets'] = data?.assets
-    ? [
-        ...data.assets.map((item) => ({
-          ...item,
-          image: item.image ? `https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${item.image}` : undefined,
-        })),
-      ]
-    : [];
+  const returnData: CW20AssetResponse['assets'] = useMemo(
+    () =>
+      data?.assets
+        ? [
+            ...data.assets.map((item) => ({
+              ...item,
+              image: item.image ? `https://raw.githubusercontent.com/cosmostation/chainlist/main/chain/${item.image}` : undefined,
+            })),
+          ]
+        : [],
+    [data?.assets],
+  );
 
   return { data: returnData, error, mutate };
 }

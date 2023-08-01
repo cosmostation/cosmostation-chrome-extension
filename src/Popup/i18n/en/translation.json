@@ -520,9 +520,18 @@
               "addressPlaceholder": "NFT contract address",
               "copied": "Copied",
               "data": "Data",
+              "imagePreview": "IMG Preview",
               "information": "If the token you're looking for is not on the list, click \"Import a custom NFT\"",
               "invalidAddress": "Invalid address",
+              "invalidAddressTitle": "Invalid Contract Address",
+              "invalidOwnership": "The NFT is not owned by you for the given contract address or token ID.",
+              "invalidOwnershipTitle": "Ownership Mismatch",
+              "invalidSource": "NFT does not exist for the given contract address or token ID.",
+              "invalidSourceTitle": "No NFTs found",
               "invalidTokenId": "Invalid token ID",
+              "invalidTokenIdTitle": "Invalid Token ID",
+              "networkError": "An error has occurred. please try again later",
+              "networkErrorTitle": "Network Error",
               "preview": "NFT Preview",
               "previewSubText": "When you enter your own NFT information, the image is displayed",
               "submitButton": "Add custom NFT",
@@ -1044,8 +1053,8 @@
               }
             },
             "index": {
-              "information": "Import media files from the URI. These URI are sometimes changed in marketplaces where NFTs are minted.",
-              "notOwnedNFT": "The owner of this NFT is not you",
+              "information": "Cosmostation wallet displays NFT information from the source URL and does not have ownership of your NFTs.",
+              "notOwnedNFT": "You cannot transfer NFTs that you do not own.",
               "send": "NFT Send",
               "untransferableObject": "Untransferable object"
             }
@@ -1099,7 +1108,7 @@
               "invalidAmount": "Invalid amount",
               "invalidSendNFTQuantity": "Invalid NFT Amount",
               "networkError": "Network Error",
-              "notOwnedNFT": "The owner of this NFT is not you",
+              "notOwnedNFT": "You cannot transfer NFTs that you do not own.",
               "quantityPlaceholder": "Quantity",
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"

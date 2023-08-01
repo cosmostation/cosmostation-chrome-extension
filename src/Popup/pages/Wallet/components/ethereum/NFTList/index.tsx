@@ -66,7 +66,7 @@ export default function NFTList({ chain }: NFTListProps) {
 
   const currentTypeInfo = useMemo(() => typeInfos.find((item) => item.type === currentType), [currentType, typeInfos]);
 
-  const isExistNFT = !!ownedEthereumNFTs.length;
+  const isExistNFT = useMemo(() => !!ownedEthereumNFTs.length, [ownedEthereumNFTs.length]);
 
   const filteredNFTs = useMemo(() => {
     if (currentType === 'all') return ownedEthereumNFTs;

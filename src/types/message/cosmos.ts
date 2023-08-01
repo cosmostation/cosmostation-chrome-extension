@@ -54,7 +54,7 @@ export type CosAccount = {
   id?: number | string;
 };
 
-export type CosAccountResponse = { publicKey: Uint8Array; address: string; name: string; isLedger: boolean; isEthermint: boolean };
+export type CosAccountResponse = { publicKey: string; address: string; name: string; isLedger: boolean; isEthermint: boolean };
 
 export type CosSendTransactionParams = {
   chainName: string;
@@ -189,7 +189,12 @@ export type CosDeleteAutoSign = {
 
 export type CosDeleteAutoSignResponse = null;
 
-export type CosSignOptions = { isEditMemo?: boolean; isEditFee?: boolean; gasRate?: GasRate };
+export type CosSignOptions = {
+  isEditMemo?: boolean;
+  isEditFee?: boolean;
+  isCheckBalance?: boolean;
+  gasRate?: GasRate;
+};
 
 export type CosSignAminoParams = { chainName: string; doc: SignAminoDoc; signer?: string } & CosSignOptions;
 

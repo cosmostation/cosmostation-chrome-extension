@@ -21,7 +21,6 @@ import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, decodeProtobufMessage, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
-import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type { Queue } from '~/types/extensionStorage';
 import type { CosSignDirect, CosSignDirectResponse } from '~/types/message/cosmos';
 
@@ -51,10 +50,11 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { message, messageId, origin, channel } = queue;
 
   const {
-    params: { doc, isEditFee, isEditMemo, gasRate },
+    params: { doc, isEditFee, isEditMemo, isCheckBalance, gasRate },
   } = message;
 
-  const { auth_info_bytes, body_bytes } = doc;
+  const auth_info_bytes = new Uint8Array(doc.auth_info_bytes);
+  const body_bytes = new Uint8Array(doc.body_bytes);
 
   const decodedBodyBytes = cosmos.tx.v1beta1.TxBody.decode(body_bytes);
   const decodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.decode(auth_info_bytes);
@@ -71,7 +71,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
     if (foundFee) return foundFee;
 
-    if (fee?.amount?.[0].amount && fee?.amount?.[0].denom) {
+    if (fee?.amount?.[0]?.amount && fee?.amount?.[0].denom) {
       return fee.amount[0];
     }
 
@@ -109,11 +109,11 @@ export default function Entry({ queue, chain }: EntryProps) {
   const encodedBodyBytes = cosmos.tx.v1beta1.TxBody.encode({ ...decodedBodyBytes, memo }).finish();
   const encodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode({
     ...decodedAuthInfoBytes,
-    fee: { amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas_limit: Number(gas) },
+    fee: { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas_limit: Number(gas) },
   }).finish();
 
-  const bodyBytes = isEditMemo ? encodedBodyBytes : doc.body_bytes;
-  const authInfoBytes = isEditFee ? encodedAuthInfoBytes : doc.auth_info_bytes;
+  const bodyBytes = isEditMemo ? encodedBodyBytes : body_bytes;
+  const authInfoBytes = isEditFee ? encodedAuthInfoBytes : auth_info_bytes;
 
   const decodedChangedBodyBytes = cosmos.tx.v1beta1.TxBody.decode(bodyBytes);
   const decodedChangedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.decode(authInfoBytes);
@@ -132,15 +132,16 @@ export default function Entry({ queue, chain }: EntryProps) {
   };
 
   const errorMessage = useMemo(() => {
-    if (!gte(currentFeeCoin.availableAmount, baseFee)) {
+    if (!gte(currentFeeCoin.availableAmount, baseFee) && isCheckBalance && !fee?.granter && !fee?.payer) {
       return t('pages.Popup.Cosmos.Sign.Direct.entry.insufficientFeeAmount');
     }
+
     if (currentAccount.type === 'LEDGER') {
       return t('pages.Popup.Cosmos.Sign.Direct.entry.invalidAccountType');
     }
 
     return '';
-  }, [baseFee, currentAccount.type, currentFeeCoin.availableAmount, t]);
+  }, [baseFee, currentAccount.type, currentFeeCoin.availableAmount, fee?.granter, fee?.payer, isCheckBalance, t]);
 
   return (
     <Container>
@@ -262,16 +263,16 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                       const pubKey = { type: publicKeyType, value: base64PublicKey };
 
-                      const signedDocHex = {
+                      const signedDocArray = {
                         ...doc,
-                        body_bytes: Buffer.from(bodyBytes).toString('hex'),
-                        auth_info_bytes: Buffer.from(authInfoBytes).toString('hex'),
+                        body_bytes: [...Array.from(bodyBytes)],
+                        auth_info_bytes: [...Array.from(authInfoBytes)],
                       };
 
                       const result: CosSignDirectResponse = {
                         signature: base64Signature,
                         pub_key: pubKey,
-                        signed_doc: signedDocHex as unknown as SignDirectDoc,
+                        signed_doc: signedDocArray,
                       };
 
                       responseToWeb({

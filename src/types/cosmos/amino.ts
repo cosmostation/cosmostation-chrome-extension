@@ -1,7 +1,12 @@
 import type { Amount, Height } from './common';
 import type { SwapAmountInRoute, SwapCoin } from '../osmosisSwap/swap';
 
-export type Fee = { amount: Amount[]; gas: string };
+export type Fee = {
+  amount: Amount[];
+  gas: string;
+  payer?: string;
+  granter?: string;
+};
 
 export type Msg<T = unknown> = {
   type: string;

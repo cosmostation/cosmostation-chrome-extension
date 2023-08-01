@@ -75,7 +75,10 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const accounts = useAccounts(true);
 
-  const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
+  const address = useMemo(
+    () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '',
+    [accounts.data, chain.id, currentAccount.id],
+  );
 
   const { currentEthereumNFTs } = useCurrentEthereumNFTs();
 
@@ -193,7 +196,7 @@ export default function Ethereum({ chain }: EthereumProps) {
       return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidAddress');
     }
 
-    if (address.toLowerCase() === recipientAddress.toLowerCase()) {
+    if (isEqualsIgnoringCase(address, recipientAddress)) {
       return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidAddress');
     }
 

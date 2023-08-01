@@ -15,6 +15,7 @@ import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
 import { MAINNET as APTOS_NETWORK__MAINNET } from './aptos/network/mainnet';
 import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
 import { AKASH } from './cosmos/akash';
+import { ARCHWAY } from './cosmos/archway';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { AXELAR } from './cosmos/axelar';
 import { BAND } from './cosmos/band';
@@ -40,8 +41,6 @@ import { IXO } from './cosmos/ixo';
 import { JUNO } from './cosmos/juno';
 import { KAVA } from './cosmos/kava';
 import { KI } from './cosmos/ki';
-import { KONSTELLATION } from './cosmos/konstellation';
-import { KUJIRA } from './cosmos/kujira';
 import { KYVE } from './cosmos/kyve';
 import { LIKE_COIN } from './cosmos/likeCoin';
 import { LUM } from './cosmos/lum';
@@ -63,7 +62,6 @@ import { RIZON } from './cosmos/rizon';
 import { SECRET } from './cosmos/secret';
 import { SENTINEL } from './cosmos/sentinel';
 import { SHENTU } from './cosmos/shentu';
-import { SIF } from './cosmos/sif';
 import { SOMMELIER } from './cosmos/sommelier';
 import { STAFIHUB } from './cosmos/stafihub';
 import { STARGAZE } from './cosmos/stargaze';
@@ -114,6 +112,7 @@ export const COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV = '1.4';
 export const COSMOS_CHAINS: CosmosChain[] = [
   COSMOS,
   AKASH,
+  ARCHWAY,
   ASSET_MANTLE,
   AXELAR,
   BAND,
@@ -138,8 +137,6 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   JUNO,
   KAVA,
   KI,
-  KONSTELLATION,
-  KUJIRA,
   KYVE,
   LIKE_COIN,
   LUM,
@@ -160,7 +157,6 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   SECRET,
   SENTINEL,
   SHENTU,
-  SIF,
   SOMMELIER,
   STAFIHUB,
   STARGAZE,

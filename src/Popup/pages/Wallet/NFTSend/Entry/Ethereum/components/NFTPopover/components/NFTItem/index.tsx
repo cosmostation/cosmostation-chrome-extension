@@ -54,7 +54,7 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ isActive, nft, ..
   const displayTokenStandard = useMemo(() => toDisplayTokenStandard(tokenType), [tokenType]);
 
   return (
-    <NFTButton style={{ display: isOwnedNFT ? 'flex' : 'none' }} type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
+    <NFTButton type="button" data-is-available={!!isOwnedNFT} data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
       <LeftContainer>
         <LeftImageContainer>
           {nftMeta?.imageURL ? <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}

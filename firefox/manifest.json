@@ -1,8 +1,13 @@
 {
   "manifest_version": 3,
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "support@cosmostation.io"
+    }
+  },
   "name": "Cosmostation Wallet",
   "description": "Non-custodial multi-chain extension wallet powered by Cosmostation, the interchain validator.",
-  "version": "0.6.7",
+  "version": "0.6.20",
   "action": {
     "default_icon": {
       "16": "icon16-dark.png",
