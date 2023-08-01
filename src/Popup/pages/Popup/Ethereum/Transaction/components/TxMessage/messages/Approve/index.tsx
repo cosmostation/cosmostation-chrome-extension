@@ -16,7 +16,7 @@ import {
   AddressContainer,
   AmountInfoContainer,
   ContentContainer,
-  DenomContainer,
+  EllipsedContainer,
   LabelContainer,
   LeftContainer,
   RightAmountContainer,
@@ -114,29 +114,29 @@ export default function Approve({ tx, determineTxType }: ApproveProps) {
             <RightColumnContainer>
               <RightAmountContainer>
                 <Tooltip title={displayAmount} arrow placement="top">
-                  <DenomContainer>
+                  <EllipsedContainer>
                     <div>
                       <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
                         {displayAmount}
                       </Number>
                     </div>
-                  </DenomContainer>
+                  </EllipsedContainer>
                 </Tooltip>
                 &nbsp;
-                <DenomContainer>
+                <EllipsedContainer>
                   <Typography variant="h5n">{token?.displayDenom}</Typography>
-                </DenomContainer>
+                </EllipsedContainer>
               </RightAmountContainer>
               <RightValueContainer>
                 {value !== '0' && (
                   <Tooltip title={value} arrow placement="top">
-                    <DenomContainer>
+                    <EllipsedContainer>
                       <div>
                         <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
                           {value}
                         </Number>
                       </div>
-                    </DenomContainer>
+                    </EllipsedContainer>
                   </Tooltip>
                 )}
               </RightValueContainer>

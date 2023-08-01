@@ -45,7 +45,7 @@ export const RightAmountContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const DenomContainer = styled('div')({
+export const EllipsedContainer = styled('div')({
   whiteSpace: 'nowrap',
   wordBreak: 'keep-all',
 
