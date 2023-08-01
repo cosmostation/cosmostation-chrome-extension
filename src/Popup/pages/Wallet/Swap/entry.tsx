@@ -1308,10 +1308,7 @@ export default function Entry() {
                 setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => {
-                if (
-                  ((currentSwapAPI === 'skip' && currentFromChain.id === currentToChain?.id) || currentSwapAPI === '1inch') &&
-                  isEqualsIgnoringCase(clickedCoin.address, currentToToken?.address)
-                ) {
+                if (currentFromChain.id === currentToChain?.id && isEqualsIgnoringCase(clickedCoin.address, currentToToken?.address)) {
                   void swapAssetInfo();
                 } else {
                   setCurrentFromToken(clickedCoin);
@@ -1364,10 +1361,7 @@ export default function Entry() {
                 setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => {
-                if (
-                  ((currentSwapAPI === 'skip' && currentFromChain.id === currentToChain?.id) || currentSwapAPI === '1inch') &&
-                  isEqualsIgnoringCase(clickedCoin.address, currentFromToken?.address)
-                ) {
+                if (currentFromChain.id === currentToChain?.id && isEqualsIgnoringCase(clickedCoin.address, currentFromToken?.address)) {
                   void swapAssetInfo();
                 } else {
                   setCurrentToToken(clickedCoin);
