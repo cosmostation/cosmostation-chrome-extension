@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Empty from '~/Popup/components/common/Empty';
@@ -26,58 +26,36 @@ export default function Cosmos({ chain }: CosmosProps) {
   useCoinGeckoPriceSWR();
 
   const { extensionStorage, setExtensionStorage } = useExtensionStorage();
-  const { homeTabPath } = extensionStorage;
+  const { homeTabIndex } = extensionStorage;
 
   const { currentAccount } = useCurrentAccount();
 
   const tabLabels = ['Coins', 'NFTs'];
 
-  const currentHomeTabPath = useMemo(() => homeTabPath.cosmos.find((item) => item.chainId === chain.id), [chain.id, homeTabPath.cosmos]);
+  const [tabValue, setTabValue] = useState(!gte(homeTabIndex.cosmos, tabLabels.length) ? homeTabIndex.cosmos : 0);
 
-  const [tabValue, setTabValue] = useState(gte(currentHomeTabPath?.tabValue || 0, tabLabels.length) ? currentHomeTabPath?.tabValue || 0 : 0);
-
-  const handleChange = async (_: React.SyntheticEvent, newTabValue: number) => {
+  const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
-
-    await setExtensionStorage('homeTabPath', {
-      ...homeTabPath,
-
-      cosmos: homeTabPath.cosmos.map((item) =>
-        item.chainId === chain.id
-          ? {
-              ...item,
-              tabValue: newTabValue,
-            }
-          : item,
-      ),
-    });
-  };
+  }, []);
 
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
   const isCustom = useMemo(() => !!currentCosmosAdditionalChains.find((item) => item.id === chain.id), [chain.id, currentCosmosAdditionalChains]);
 
   useEffect(() => {
-    if (currentHomeTabPath?.tabValue !== tabValue) {
-      setTabValue(currentHomeTabPath?.tabValue || 0);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chain.id]);
-
-  useEffect(() => {
-    if (gte(currentHomeTabPath?.tabValue || 0, tabLabels.length)) {
-      void setExtensionStorage('homeTabPath', {
-        ...homeTabPath,
-        cosmos: homeTabPath.cosmos.map((item) =>
-          item.chainId === chain.id
-            ? {
-                ...item,
-                tabValue: 0,
-              }
-            : item,
-        ),
+    if (gte(homeTabIndex.cosmos, tabLabels.length)) {
+      void setExtensionStorage('homeTabIndex', {
+        ...homeTabIndex,
+        cosmos: 0,
       });
+
+      setTabValue(0);
     }
-  }, [chain.id, currentHomeTabPath?.tabValue, homeTabPath, setExtensionStorage, tabLabels.length]);
+
+    void setExtensionStorage('homeTabIndex', {
+      ...homeTabIndex,
+      cosmos: tabValue,
+    });
+  }, [homeTabIndex, setExtensionStorage, tabLabels.length, tabValue]);
 
   return (
     <Container key={`${chain.id}-${currentAccount.id}`}>

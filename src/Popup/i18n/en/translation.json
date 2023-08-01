@@ -508,6 +508,13 @@
                 "submitButton": "Add custom token",
                 "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
               }
+            },
+            "CW721": {
+              "Search": {
+                "layout": {
+                  "title": "Import NFTs"
+                }
+              }
             }
           }
         }
@@ -1466,6 +1473,18 @@
             },
             "index": {
               "importTokenButton": "Import token"
+            }
+          },
+          "NFTList": {
+            "components": {
+              "NFTCardItem": {
+                "index": {
+                  "networkError": "Network Error"
+                }
+              }
+            },
+            "index": {
+              "importNFTButton": "Import NFTs"
             }
           },
           "NativeChainCard": {

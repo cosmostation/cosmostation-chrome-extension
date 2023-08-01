@@ -79,7 +79,7 @@ export default function NFTList({ chain }: NFTListProps) {
   }, [currentType, ownedCosmosNFTs, currentTypeInfo?.type]);
 
   // NOTE 전체 토큰 가져오는 페이지로 선이동(이더리움 토큰 참조할 것)
-  const addToken = () => navigate('/chain/ethereum/token/add/erc20/search');
+  const addToken = () => navigate('/chain/cosmos/nft/add/cw721/search');
 
   return (
     <Container>
