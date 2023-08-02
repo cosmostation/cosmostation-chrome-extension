@@ -4,6 +4,7 @@ import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS } from '~/constants/chain';
+import { ARCHWAY } from '~/constants/chain/cosmos/archway';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
@@ -15,6 +16,7 @@ import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButto
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+import { useArchIDSWR } from '~/Popup/hooks/SWR/cosmos/useArchIDSWR';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
@@ -142,9 +144,18 @@ export default function Send({ chain }: CosmosProps) {
 
   const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
 
-  const { data: ICNS } = useICNSSWR({ name: addressRegex.test(debouncedCurrentAddress) ? '' : debouncedCurrentAddress });
+  const { data: ICNS } = useICNSSWR({ name: addressRegex.test(debouncedCurrentAddress) || chain.id === ARCHWAY.id ? '' : debouncedCurrentAddress });
 
-  const currentDepositAddress = useMemo(() => ICNS?.data.address || currentAddress, [ICNS?.data.address, currentAddress]);
+  const { data: ArchID } = useArchIDSWR({ archID: addressRegex.test(debouncedCurrentAddress) || chain.id !== ARCHWAY.id ? '' : debouncedCurrentAddress });
+
+  const nameResolvedAddress = useMemo(() => {
+    if (chain.id === ARCHWAY.id) {
+      return ArchID?.data?.address;
+    }
+    return ICNS?.data.bech32_address;
+  }, [ArchID?.data?.address, ICNS?.data.bech32_address, chain.id]);
+
+  const currentDepositAddress = useMemo(() => nameResolvedAddress || currentAddress, [nameResolvedAddress, currentAddress]);
 
   const currentCoinOrToken = useMemo(
     () =>
@@ -396,13 +407,13 @@ export default function Send({ chain }: CosmosProps) {
           value={currentAddress}
         />
       </div>
-      {ICNS?.data.address && (
+      {nameResolvedAddress && (
         <AddressContainer>
           <CheckAddressIconContainer>
             <CheckAddress16Icon />
           </CheckAddressIconContainer>
           <Address>
-            <Typography variant="h7">{ICNS.data.address}</Typography>
+            <Typography variant="h7">{nameResolvedAddress}</Typography>
           </Address>
         </AddressContainer>
       )}
