@@ -258,10 +258,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     cosmosChain: selectedReceiverIBC?.chain,
   });
 
-  const currentDepositAddress = useMemo(
-    () => (ICNS?.data.bech32_address ? ICNS.data.bech32_address : currentAddress),
-    [ICNS?.data.bech32_address, currentAddress],
-  );
+  const currentDepositAddress = useMemo(() => ICNS?.data.address || currentAddress, [ICNS?.data.address, currentAddress]);
 
   const clientState = useClientStateSWR({ chain, channelId: selectedReceiverIBC?.channel ?? '', port: selectedReceiverIBC?.port });
 
@@ -542,14 +539,14 @@ export default function IBCSend({ chain }: IBCSendProps) {
             value={currentAddress}
           />
         </MarginTop8Div>
-        {ICNS?.data.bech32_address && (
+        {ICNS?.data.address && (
           <MarginTop8Div>
             <AddressContainer>
               <CheckAddressIconContainer>
                 <CheckAddress16Icon />
               </CheckAddressIconContainer>
               <Address>
-                <Typography variant="h7">{ICNS.data.bech32_address}</Typography>
+                <Typography variant="h7">{ICNS.data.address}</Typography>
               </Address>
             </AddressContainer>
           </MarginTop8Div>
