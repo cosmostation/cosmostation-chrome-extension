@@ -267,7 +267,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const nameResolvedAddress = useMemo(() => {
     if (selectedReceiverIBC?.chain.id === ARCHWAY.id) {
-      return ArchID?.data?.address;
+      return ArchID?.data.address;
     }
     return ICNS?.data.bech32_address;
   }, [ArchID?.data?.address, ICNS?.data.bech32_address, selectedReceiverIBC?.chain.id]);

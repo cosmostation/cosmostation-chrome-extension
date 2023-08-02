@@ -150,7 +150,7 @@ export default function Send({ chain }: CosmosProps) {
 
   const nameResolvedAddress = useMemo(() => {
     if (chain.id === ARCHWAY.id) {
-      return ArchID?.data?.address;
+      return ArchID?.data.address;
     }
     return ICNS?.data.bech32_address;
   }, [ArchID?.data?.address, ICNS?.data.bech32_address, chain.id]);
