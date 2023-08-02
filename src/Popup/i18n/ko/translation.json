@@ -1409,8 +1409,7 @@
           "swapInfoDescription3": "를 받게됩니다.",
           "swapVenue": "스왑 플랫폼",
           "title": "교환",
-          "txSizeWarning": "1회 스왑할 수 있는 최대 금액은 $10,000 입니다. 스왑 금액을 낮추고 다시 시도하세요.",
-          "unableToSwap": "스왑을 할 수 없습니다"
+          "txSizeWarning": "1회 스왑할 수 있는 최대 금액은 $10,000 입니다. 스왑 금액을 낮추고 다시 시도하세요."
         },
         "index": {
           "fetchingData": "데이터를 가져오는 중입니다",

@@ -1003,9 +1003,6 @@ export default function Entry() {
       if (skipSwapTx.error?.response?.data.message) {
         return skipSwapTx.error.response.data.message;
       }
-      if (!skipRoute.data?.does_swap) {
-        return t('pages.Wallet.Swap.entry.unableToSwap');
-      }
       if (!skipSwapAminoTx) {
         return t('pages.Wallet.Swap.entry.invalidSwapTx');
       }
@@ -1034,7 +1031,6 @@ export default function Entry() {
     }
     return '';
   }, [
-    skipRoute.data?.does_swap,
     filteredFromChains.length,
     filteredToChainList.length,
     currentSwapAPI,

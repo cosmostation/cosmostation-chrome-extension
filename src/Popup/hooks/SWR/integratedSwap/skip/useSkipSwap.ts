@@ -68,24 +68,24 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
   const currentAccountAddresses = useMemo(() => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address, [accounts?.data, currentAccount.id]);
 
   const apiRequiredAddresses = useMemo(() => {
-    if (skipRoute.data?.does_swap) {
-      return skipRoute.data?.chain_ids.reduce((acc, chainId) => {
+    if (skipRoute.data) {
+      return skipRoute.data.chain_ids.reduce((acc, chainId) => {
         const address = currentAccountAddresses?.[COSMOS_CHAINS.find((item) => item.chainId === chainId)?.id || ''] || '';
         return { ...acc, [chainId]: address };
       }, {});
     }
     return {};
-  }, [currentAccountAddresses, skipRoute.data?.chain_ids, skipRoute.data?.does_swap]);
+  }, [currentAccountAddresses, skipRoute.data]);
 
   const affiliates = useMemo<Affiliates[]>(() => {
-    if (skipRoute.data?.does_swap && gt(DEFAULT_BPF, '0')) {
+    if (gt(DEFAULT_BPF, '0')) {
       return AFFILIATES.cosmos.find((item) => item.chainId === skipRoute.data?.swap_venue?.chain_id)?.affiliate || [];
     }
     return [];
-  }, [skipRoute.data?.does_swap, skipRoute.data?.swap_venue?.chain_id]);
+  }, [skipRoute.data?.swap_venue?.chain_id]);
 
   const skipSwapTxParam = useMemo<SkipSwapTxParam | undefined>(() => {
-    if (skipRoute.data?.does_swap && skipRoute.data.chain_ids.length > 0 && skipRoute.data.operations.length > 0 && apiRequiredAddresses) {
+    if (skipRoute.data && skipRoute.data.chain_ids.length > 0 && skipRoute.data.operations.length > 0 && apiRequiredAddresses) {
       return {
         ...skipRoute.data,
         affiliates,
