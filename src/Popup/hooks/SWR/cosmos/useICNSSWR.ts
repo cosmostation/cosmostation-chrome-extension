@@ -59,7 +59,7 @@ export function useICNSSWR({ name, cosmosChain }: UseICNSSWRProps, config?: SWRC
           address: osmosisICNS.data.bech32_address,
           expiration: undefined,
         },
-      } as ICNSResponse;
+      };
     } catch {
       return null;
     }
