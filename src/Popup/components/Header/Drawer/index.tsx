@@ -145,12 +145,12 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
               {t('components.Header.Drawer.index.guide')}
             </ItemButton>
 
-            <ItemButton Icon={HelpIcon} onClick={() => window.open('https://cosmostation.io/contact')}>
-              {t('components.Header.Drawer.index.helpSupport')}
+            <ItemButton Icon={SettingIcon24} onClick={() => navigate('/chain/management', { isDuplicateCheck: true })}>
+              {t('components.Header.Drawer.index.customChain')}
             </ItemButton>
 
-            <ItemButton Icon={SettingIcon24} onClick={() => navigate('/chain/management', { isDuplicateCheck: true })}>
-              {t('components.Header.Drawer.index.chainManagement')}
+            <ItemButton Icon={HelpIcon} onClick={() => window.open('https://cosmostation.io/contact')}>
+              {t('components.Header.Drawer.index.helpSupport')}
             </ItemButton>
           </ItemContainer>
         </UpContainer>
