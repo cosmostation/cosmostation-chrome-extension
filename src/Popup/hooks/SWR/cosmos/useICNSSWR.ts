@@ -32,7 +32,7 @@ export function useICNSSWR({ name, cosmosChain }: UseICNSSWRProps, config?: SWRC
       }
 
       if (props.chain.id === ARCHWAY.id) {
-        const archId = props.name.includes('.arch') ? props.name : `${props.name}.arch`;
+        const archId = props.name.endsWith('.arch') ? props.name : `${props.name}.arch`;
 
         const nameToBase64 = Buffer.from(
           JSON.stringify({
