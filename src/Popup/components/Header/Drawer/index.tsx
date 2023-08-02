@@ -146,7 +146,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
             </ItemButton>
 
             <ItemButton Icon={SettingIcon24} onClick={() => navigate('/chain/management', { isDuplicateCheck: true })}>
-              {t('components.Header.Drawer.index.customChain')}
+              {t('components.Header.Drawer.index.addCustomChain')}
             </ItemButton>
 
             <ItemButton Icon={HelpIcon} onClick={() => window.open('https://cosmostation.io/contact')}>

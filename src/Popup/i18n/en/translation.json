@@ -56,7 +56,7 @@
         "index": {
           "addressBook": "Address book",
           "autoSign": "Auto sign",
-          "customChain": "Custom chain",
+          "addCustomChain": "Add Custom Chain",
           "changePassword": "Change password",
           "connectedSites": "Connected sites",
           "currency": "Currency",

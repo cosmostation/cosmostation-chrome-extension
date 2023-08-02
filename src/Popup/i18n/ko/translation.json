@@ -56,7 +56,7 @@
         "index": {
           "addressBook": "주소록",
           "autoSign": "자동 서명",
-          "customChain": "커스텀 체인",
+          "addCustomChain": "커스텀 체인 추가",
           "changePassword": "비밀번호 변경",
           "connectedSites": "연결 된 사이트",
           "currency": "통화",
