@@ -7,7 +7,7 @@ import Layout from './layout';
 export default function CW721() {
   const { currentChain } = useCurrentChain();
 
-  // NOTE 기존의 코드는 currentChain.line === 'COSMOS' && currentChain.cosmWasm 이었음
+  // NOTE && currentChain.cosmWasm
   if (currentChain.line === 'COSMOS') {
     return (
       <Lock>

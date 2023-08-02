@@ -4,11 +4,11 @@ import { Typography } from '@mui/material';
 
 import AddButton from '~/Popup/components/AddButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useGetContractsInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetContractsInfoSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { toDisplayTokenStandard } from '~/Popup/utils/ethereum';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Path } from '~/types/route';
@@ -48,23 +48,27 @@ export default function NFTList({ chain }: NFTListProps) {
     [currentAddress, currentCosmosNFTs],
   );
 
-  // NOTE 여기서 컬렉션 이름 가져오는 로직 추가
+  const nftContractAddresses = useMemo(() => currentCosmosNFTs.map((item) => item.address), [currentCosmosNFTs]);
 
-  // NOTE 컬렉션 훅 promise all로 가져오기
+  const nftContractsInfo = useGetContractsInfoSWR(chain, nftContractAddresses);
 
   const typeInfos = useMemo(() => {
     const infos: TypeInfo[] = [];
 
-    const nftTypeList = Array.from(new Set([...ownedCosmosNFTs.map((item) => item.chainUniqueId)]));
-
     infos.push({ type: 'all', name: 'All Assets', count: ownedCosmosNFTs.length });
 
-    nftTypeList.forEach((item) => {
-      infos.push({ type: item, name: toDisplayTokenStandard(item), count: ownedCosmosNFTs.filter((nft) => item === nft.chainUniqueId).length });
+    nftContractsInfo.data?.forEach((item) => {
+      infos.push({
+        type: item?.contractAddress || '',
+        name: item?.name || '',
+        count: ownedCosmosNFTs.filter((nft) => item?.contractAddress === nft.address).length,
+      });
+
+      // NOTE 컨트랙인포로 조회안되는 애들은 etc로 넣자
     });
 
     return infos;
-  }, [ownedCosmosNFTs]);
+  }, [nftContractsInfo.data, ownedCosmosNFTs]);
 
   const [currentType, setCurrentType] = useState(typeInfos[0].type);
 
@@ -75,7 +79,7 @@ export default function NFTList({ chain }: NFTListProps) {
   const filteredNFTs = useMemo(() => {
     if (currentType === 'all') return ownedCosmosNFTs;
 
-    return ownedCosmosNFTs.filter((item) => currentTypeInfo?.type === item.chainUniqueId) || [];
+    return ownedCosmosNFTs.filter((item) => currentTypeInfo?.type === item.address) || [];
   }, [currentType, ownedCosmosNFTs, currentTypeInfo?.type]);
 
   // NOTE 전체 토큰 가져오는 페이지로 선이동(이더리움 토큰 참조할 것)

@@ -483,6 +483,29 @@
             }
           }
         },
+        "NFT": {
+          "Add": {
+            "CW721": {
+              "Search": {
+                "entry": {
+                  "nftIconText1": "Add custom NFTs to manage on",
+                  "nftIconText2": "Cosmostation Extension.",
+                  "addNFTSnackbar": "NFT added",
+                  "importCustomNFTButton": "Import a custom NFT",
+                  "searchPlaceholder": "Search NFTs",
+                  "submitButton": "Import NFT",
+                  "warning": "Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click \"Import a custom token\"."
+                },
+                "layout": {
+                  "title": "Import NFTs"
+                }
+              },
+              "layout": {
+                "title": "Import NFTs"
+              }
+            }
+          }
+        },
         "Token": {
           "Add": {
             "CW20": {

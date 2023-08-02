@@ -6,7 +6,8 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { SmartPayload, TokenInfo } from '~/types/cosmos/contract';
+import type { SmartPayload } from '~/types/cosmos/contract';
+import type { ContractInfo } from '~/types/cosmos/nft';
 
 export function useContractInfoSWR(chain: CosmosChain, contractAddress: string, config?: SWRConfiguration) {
   const { getCW721ContractInfo } = cosmosURL(chain);
@@ -33,7 +34,7 @@ export function useContractInfoSWR(chain: CosmosChain, contractAddress: string, 
     ...config,
   });
 
-  const returnData = data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as TokenInfo) : undefined;
+  const returnData = data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as ContractInfo) : undefined;
 
   return { data: returnData, error, mutate };
 }

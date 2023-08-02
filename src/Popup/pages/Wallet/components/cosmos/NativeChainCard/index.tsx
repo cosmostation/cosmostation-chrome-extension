@@ -16,7 +16,8 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useCollectionInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useCollectionInfoSWR';
+// import { useCollectionInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useCollectionInfoSWR';
+// import { useContractInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useContractInfoSWR';
 import { useGetNFTTokenIdsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTTokenIdsSWR';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
@@ -105,10 +106,9 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const holder = 'stars1d8mq46wt2yxsgwrmh6hhfgycl0537w8gl8smtl';
   const testContractAddress = 'stars19jq6mj84cnt9p7sagjxqf8hxtczwc8wlpuwe4sh62w45aheseues57n420'.toLocaleLowerCase();
 
-  const aaa2 = useCollectionInfoSWR(chain, testContractAddress);
+  // const aaa2 = useCollectionInfoSWR(chain, testContractAddress);
 
-  // eslint-disable-next-line no-console
-  console.log('🚀 ~ file: index.tsx:112 ~ NativeChainCard ~ aaa2:', aaa2);
+  // const aaa3123 = useContractInfoSWR(chain, testContractAddress);
 
   const aaa3 = useGetNFTTokenIdsSWR({ chain, contractAddress: testContractAddress, ownerAddress: holder, limit: '2' });
 

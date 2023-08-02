@@ -11,7 +11,7 @@ export default function Layout({ children }: LayoutProps) {
 
   const { t } = useTranslation();
   return (
-    <BaseLayout useHeader={{}} useSubHeader={{ title: t('pages.Chain.Ethereum.Token.Add.ERC20.layout.title'), onClick: () => navigateBack() }}>
+    <BaseLayout useHeader={{}} useSubHeader={{ title: t('pages.Chain.Cosmos.NFT.Add.CW721.layout.title'), onClick: () => navigateBack() }}>
       {children}
     </BaseLayout>
   );
