@@ -1088,11 +1088,14 @@
               "NFTInfoItem": {
                 "index": {
                   "attributes": "Attributes",
+                  "collection": "Collection",
                   "contractAddress": "Contract address",
                   "copied": "Copied",
                   "description": "Description",
+                  "name": "Name",
                   "ownerAddress": "Owner",
                   "source": "Source",
+                  "symbol": "Symbol",
                   "tokenId": "Token ID",
                   "tokenType": "Token Standard"
                 }

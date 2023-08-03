@@ -30,7 +30,7 @@ export type CollectionInfo = {
   contractAddress?: string;
   creator: string;
   description: string;
-  external_url: string;
+  external_url?: string;
   image: string;
   royalty_info: {
     payment_address: string;
@@ -41,7 +41,7 @@ export type CollectionInfo = {
 export type ContractInfo = {
   name: string;
   symbol: string;
-  contractAddress: string;
+  contractAddress?: string;
 };
 
 export type NFTURIInfo = {
