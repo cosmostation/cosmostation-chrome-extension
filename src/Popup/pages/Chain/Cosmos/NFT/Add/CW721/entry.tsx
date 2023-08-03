@@ -12,7 +12,7 @@ import Input from '~/Popup/components/common/Input';
 import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTMetaSWR';
-import { useGetNFTTokenIdsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTTokenIdsSWR';
+import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTOwnerSWR';
 import { useGetNFTURISWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTURISWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
@@ -64,17 +64,15 @@ export default function Entry({ chain }: EntryProps) {
 
   const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
 
-  const ownedNFTs = useGetNFTTokenIdsSWR({ chain, contractAddress: debouncedContractAddress, ownerAddress: currentAddress });
-
-  const isOwnedNFT = useMemo(() => ownedNFTs.data?.tokens.includes(debouncedTokenId), [debouncedTokenId, ownedNFTs.data?.tokens]);
+  const isOwnedNFT = useGetNFTOwnerSWR({ chain, contractAddress: debouncedContractAddress, tokenId: debouncedTokenId, ownerAddress: currentAddress });
 
   const nftSourceURI = useGetNFTURISWR({ chain, contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
 
   const nftMeta = useGetNFTMetaSWR({ chain, contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
 
   const isLoadingData = useMemo(
-    () => nftSourceURI.isValidating || ownedNFTs.isValidating || nftMeta.isValidating,
-    [nftMeta.isValidating, nftSourceURI.isValidating, ownedNFTs.isValidating],
+    () => nftSourceURI.isValidating || isOwnedNFT.isValidating || nftMeta.isValidating,
+    [isOwnedNFT.isValidating, nftMeta.isValidating, nftSourceURI.isValidating],
   );
 
   const errorType = useMemo(() => {
@@ -89,15 +87,15 @@ export default function Entry({ chain }: EntryProps) {
       return COSMOS_ADD_NFT_ERROR.INVALID_SOURCE;
     }
 
-    if (!isOwnedNFT) {
+    if (!isOwnedNFT.isOwnedNFT) {
       return COSMOS_ADD_NFT_ERROR.NOT_OWNED_NFT;
     }
 
-    if (ownedNFTs.error || nftMeta.error) {
+    if (isOwnedNFT.error || nftMeta.error) {
       return COSMOS_ADD_NFT_ERROR.NETWORK_ERROR;
     }
     return undefined;
-  }, [addressRegex, debouncedContractAddress, debouncedTokenId, isOwnedNFT, nftMeta.error, nftSourceURI.data, ownedNFTs.error]);
+  }, [addressRegex, debouncedContractAddress, debouncedTokenId, isOwnedNFT.error, isOwnedNFT.isOwnedNFT, nftMeta.error, nftSourceURI.data]);
 
   const nftPreviewIcon = useMemo(() => {
     if (errorType && debouncedContractAddress && debouncedTokenId) {
@@ -106,12 +104,6 @@ export default function Entry({ chain }: EntryProps) {
     return NFTPreviewIcon;
   }, [debouncedContractAddress, debouncedTokenId, errorType]);
 
-  // "ipfs://bafybeibiwbgqzne2o4dqpkxgnpcyqkxwj6daqzhe33a4tjnpc3h6noufme/metadata/2195"
-  // https://ipfs.mintscan.io/ipfs/bafybeibs4bln5recdqpaqo5e4nt55kll35asn2d3aa2xskxq4ntqxfjjjm/images/6395.png
-  // https://ipfs.io/ipfs/bafybeibiwbgqzne2o4dqpkxgnpcyqkxwj6daqzhe33a4tjnpc3h6noufme/metadata/6395
-
-  // https://ipfs.mintscan.io/ipfs/bafybeif6v6ntzhdobsafan5axpg27v7fnxwc64in3ec2qollrg37hfhbbm/images/2195.png
-  // https://ipfs.mintscan.io/ipfs/bafybeiczlj6shvelqposdghrsy4vmeln6dhk37wolidd62ue4mptto6dmy/images/2195.png
   const nftPreviewHeaderText = useMemo(() => {
     if (debouncedContractAddress && debouncedTokenId) {
       if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS) {

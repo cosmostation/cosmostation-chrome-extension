@@ -1083,6 +1083,27 @@
     "Wallet": {
       "NFTDetail": {
         "Entry": {
+          "cosmos": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "attributes": "속성",
+                  "contractAddress": "계약 주소",
+                  "copied": "복사 되었습니다.",
+                  "description": "NFT 설명",
+                  "ownerAddress": "소유주",
+                  "source": "소스",
+                  "tokenId": "토큰 ID",
+                  "tokenType": "토큰 표준"
+                }
+              }
+            },
+            "index": {
+              "information": "Cosmostation 지갑은 소스 URL에서 가져온 NFT정보를 사용자에게 보여 주며, NFT에 대한 소유권을 지니고 있지 않습니다.",
+              "notOwnedNFT": "본인 소유가 아닌 NFT는 전송할 수 없습니다.",
+              "send": "NFT 보내기"
+            }
+          },
           "ethereum": {
             "components": {
               "NFTInfoItem": {

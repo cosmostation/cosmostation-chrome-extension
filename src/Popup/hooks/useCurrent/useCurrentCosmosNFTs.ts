@@ -6,7 +6,7 @@ import type { CosmosNFT } from '~/types/cosmos/nft';
 
 import { useCurrentChain } from './useCurrentChain';
 
-type AddCosmosNFTParams = Omit<CosmosNFT, 'id' | 'chainUniqueId'>;
+type AddCosmosNFTParams = Omit<CosmosNFT, 'id' | 'baseChainUUID'>;
 
 export function useCurrentCosmosNFTs() {
   const { extensionStorage, setExtensionStorage } = useExtensionStorage();
@@ -15,7 +15,7 @@ export function useCurrentCosmosNFTs() {
 
   const { cosmosNFTs } = extensionStorage;
 
-  const currentCosmosNFTs = cosmosNFTs.filter((item) => item.chainUniqueId === currentChain.id);
+  const currentCosmosNFTs = cosmosNFTs.filter((item) => item.baseChainUUID === currentChain.id);
 
   const addCosmosNFT = async (nft: AddCosmosNFTParams) => {
     const newCosmosNFTs = [
@@ -25,10 +25,10 @@ export function useCurrentCosmosNFTs() {
             isEqualsIgnoringCase(item.tokenId, nft.tokenId) &&
             isEqualsIgnoringCase(item.address, nft.address) &&
             isEqualsIgnoringCase(item.ownerAddress, nft.ownerAddress) &&
-            item.chainUniqueId === currentChain.id
+            item.baseChainUUID === currentChain.id
           ),
       ),
-      { ...nft, id: uuidv4(), chainUniqueId: currentChain.id },
+      { ...nft, id: uuidv4(), baseChainUUID: currentChain.id },
     ];
 
     await setExtensionStorage('cosmosNFTs', newCosmosNFTs);
@@ -45,7 +45,7 @@ export function useCurrentCosmosNFTs() {
         ) === idx,
     );
 
-    const newNFTs = filteredNFTs.map((nft) => ({ ...nft, id: uuidv4(), chainUniqueId: currentChain.id }));
+    const newNFTs = filteredNFTs.map((nft) => ({ ...nft, id: uuidv4(), baseChainUUID: currentChain.id }));
 
     const newCosmosNFTs = [
       ...cosmosNFTs.filter(
@@ -56,7 +56,7 @@ export function useCurrentCosmosNFTs() {
                 isEqualsIgnoringCase(item.tokenId, nft.tokenId) &&
                 isEqualsIgnoringCase(item.address, nft.address) &&
                 isEqualsIgnoringCase(item.ownerAddress, nft.ownerAddress),
-            ) && item.chainUniqueId === currentChain.id
+            ) && item.baseChainUUID === currentChain.id
           ),
       ),
       ...newNFTs,

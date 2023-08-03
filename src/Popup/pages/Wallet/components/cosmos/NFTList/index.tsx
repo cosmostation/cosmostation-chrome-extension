@@ -48,7 +48,7 @@ export default function NFTList({ chain }: NFTListProps) {
     [currentAddress, currentCosmosNFTs],
   );
 
-  const nftContractAddresses = useMemo(() => currentCosmosNFTs.map((item) => item.address), [currentCosmosNFTs]);
+  const nftContractAddresses = useMemo(() => Array.from(new Set(currentCosmosNFTs.map((item) => item.address))), [currentCosmosNFTs]);
 
   const nftContractsInfo = useGetContractsInfoSWR(chain, nftContractAddresses);
 
@@ -63,9 +63,15 @@ export default function NFTList({ chain }: NFTListProps) {
         name: item?.name || '',
         count: ownedCosmosNFTs.filter((nft) => item?.contractAddress === nft.address).length,
       });
-
-      // NOTE 컨트랙인포로 조회안되는 애들은 etc로 넣자
     });
+
+    if (ownedCosmosNFTs.filter((item) => !nftContractsInfo.data?.find((contractInfo) => contractInfo?.contractAddress === item.address)).length > 1) {
+      infos.push({
+        type: 'etc',
+        name: 'ETC',
+        count: ownedCosmosNFTs.filter((item) => !nftContractsInfo.data?.find((contractInfo) => contractInfo?.contractAddress === item.address)).length,
+      });
+    }
 
     return infos;
   }, [nftContractsInfo.data, ownedCosmosNFTs]);
@@ -79,11 +85,13 @@ export default function NFTList({ chain }: NFTListProps) {
   const filteredNFTs = useMemo(() => {
     if (currentType === 'all') return ownedCosmosNFTs;
 
-    return ownedCosmosNFTs.filter((item) => currentTypeInfo?.type === item.address) || [];
-  }, [currentType, ownedCosmosNFTs, currentTypeInfo?.type]);
+    if (currentType === 'etc')
+      return ownedCosmosNFTs.filter((item) => !nftContractsInfo.data?.find((contractInfo) => contractInfo?.contractAddress === item.address));
 
-  // NOTE 전체 토큰 가져오는 페이지로 선이동(이더리움 토큰 참조할 것)
-  const addToken = () => navigate('/chain/cosmos/nft/add/cw721/search');
+    return ownedCosmosNFTs.filter((item) => currentTypeInfo?.type === item.address) || [];
+  }, [currentType, ownedCosmosNFTs, nftContractsInfo.data, currentTypeInfo?.type]);
+
+  const addNFT = () => navigate('/chain/cosmos/nft/add/cw721/search');
 
   return (
     <Container>
@@ -98,7 +106,7 @@ export default function NFTList({ chain }: NFTListProps) {
             />
           </ListTitleLeftContainer>
           <ListTitleRightContainer>
-            <AddButton type="button" onClick={addToken}>
+            <AddButton type="button" onClick={addNFT}>
               {t('pages.Wallet.components.cosmos.NFTList.index.importNFTButton')}
             </AddButton>
           </ListTitleRightContainer>
@@ -131,7 +139,7 @@ export default function NFTList({ chain }: NFTListProps) {
           })}
         </ListContainer>
       ) : (
-        <AddTokenButton type="button" onClick={addToken}>
+        <AddTokenButton type="button" onClick={addNFT}>
           <Plus16Icon />
           <AddTokenTextContainer>
             <Typography variant="h6">{t('pages.Wallet.components.cosmos.NFTList.index.importNFTButton')}</Typography>

@@ -1083,6 +1083,27 @@
     "Wallet": {
       "NFTDetail": {
         "Entry": {
+          "cosmos": {
+            "components": {
+              "NFTInfoItem": {
+                "index": {
+                  "attributes": "Attributes",
+                  "contractAddress": "Contract address",
+                  "copied": "Copied",
+                  "description": "Description",
+                  "ownerAddress": "Owner",
+                  "source": "Source",
+                  "tokenId": "Token ID",
+                  "tokenType": "Token Standard"
+                }
+              }
+            },
+            "index": {
+              "information": "Cosmostation wallet displays NFT information from the source URL and does not have ownership of your NFTs.",
+              "notOwnedNFT": "You cannot transfer NFTs that you do not own.",
+              "send": "NFT Send"
+            }
+          },
           "ethereum": {
             "components": {
               "NFTInfoItem": {

@@ -53,6 +53,11 @@ export default function Entry({ chain }: EntryProps) {
       name: 'Mantra Punks',
       symbol: 'MTP',
     },
+    {
+      address: 'stars1vej848r9f4mwkuaea5j3pwclsvm3g8s5ustxpau4mmx435qu6q9syc20wa',
+      name: 'SG721-Venus',
+      symbol: 'VENUS',
+    },
   ];
 
   const { enqueueSnackbar } = useSnackbar();
@@ -154,7 +159,7 @@ export default function Entry({ chain }: EntryProps) {
         {isExistNFT ? (
           <NFTList>
             {filteredNFTs.map((token) => {
-              const isActive = !!selectedNFTs.find((check) => check.address === token?.contractAddress);
+              const isActive = !!selectedNFTs.find((check) => check.address === token.contractAddress && check.tokenId === token.tokenId);
               return (
                 <NFTItem
                   key={token.contractAddress + token.tokenId}
@@ -163,14 +168,16 @@ export default function Entry({ chain }: EntryProps) {
                   tokenId={token.tokenId}
                   onClick={() => {
                     if (isActive) {
-                      setSelectedNFTs(selectedNFTs.filter((selectedNFT) => selectedNFT.address !== token.contractAddress));
+                      setSelectedNFTs(
+                        selectedNFTs.filter((selectedNFT) => !(selectedNFT.address === token.contractAddress && selectedNFT.tokenId === token.tokenId)),
+                      );
                     } else {
                       setSelectedNFTs([
                         ...selectedNFTs,
                         {
                           address: token.contractAddress,
                           tokenId: token.tokenId,
-                          chainUniqueId: chain.id,
+                          baseChainUUID: chain.id,
                           tokenType: 'CW721',
                           ownerAddress: currentAddress,
                         },

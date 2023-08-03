@@ -28,10 +28,13 @@ export function useGetNFTOwnerSWR({ chain, contractAddress, ownerAddress, tokenI
 
   const ownerWalletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
-  const ownedTokenIds = useGetNFTTokenIdsSWR({ chain, contractAddress: contractAddress || '', ownerAddress: ownerWalletAddress, limit: '2' });
+  const ownedTokenIds = useGetNFTTokenIdsSWR({ chain, contractAddress: contractAddress || '', ownerAddress: ownerWalletAddress });
 
-  // NOTE 수정 필요
-  const isOwnedNFT = useMemo(() => (tokenId ? ownedTokenIds.data?.tokens.includes(tokenId) : undefined), [ownedTokenIds.data?.tokens, tokenId]);
+  const isValidating = useMemo(() => ownedTokenIds.isValidating, [ownedTokenIds.isValidating]);
 
-  return { isOwnedNFT };
+  const error = useMemo(() => ownedTokenIds.error, [ownedTokenIds.error]);
+
+  const isOwnedNFT = useMemo(() => (tokenId ? ownedTokenIds.data?.tokens.includes(tokenId) : false), [ownedTokenIds.data?.tokens, tokenId]);
+
+  return { isOwnedNFT, isValidating, error };
 }
