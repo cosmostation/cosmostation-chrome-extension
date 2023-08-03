@@ -1156,6 +1156,17 @@
       },
       "NFTSend": {
         "Entry": {
+          "Cosmos": {
+            "index": {
+              "insufficientAmount": "수량이 부족합니다.",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "invalidAmount": "수량을 입력하세요.",
+              "memoPlaceholder": "메모 (선택사항)",
+              "notOwnedNFT": "본인 소유가 아닌 NFT는 전송할 수 없습니다.",
+              "recipientAddressPlaceholder": "수신인 주소",
+              "sendButton": "보내기"
+            }
+          },
           "Ethereum": {
             "components": {
               "NFTButton": {

@@ -1156,6 +1156,17 @@
       },
       "NFTSend": {
         "Entry": {
+          "Cosmos": {
+            "index": {
+              "insufficientAmount": "Insufficient amount",
+              "invalidAddress": "Invalid address",
+              "invalidAmount": "Invalid amount",
+              "memoPlaceholder": "Memo (option)",
+              "notOwnedNFT": "You cannot transfer NFTs that you do not own.",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          },
           "Ethereum": {
             "components": {
               "NFTButton": {
