@@ -6,7 +6,7 @@ import { get } from '~/Popup/utils/axios';
 import type { SupportChainPayload } from '~/types/cosmos/supportChains';
 
 export function useSupportChainsSWR(config?: SWRConfiguration) {
-  const requestURL = `https://api.mintscan.io/v1/meta/support/chains`;
+  const requestURL = `https://front.api.mintscan.io/v1/meta/support/chains`;
 
   const fetcher = (fetchUrl: string) => get<SupportChainPayload>(fetchUrl);
 

@@ -12,7 +12,7 @@ import type { GasRateResponse } from '~/types/cosmos/gasRate';
 export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const fetcher = async () => {
     try {
-      return await get<GasRateResponse>('https://api.mintscan.io/v2/utils/gas_prices');
+      return await get<GasRateResponse>('https://front.api.mintscan.io/v2/utils/gas_prices');
     } catch {
       return null;
     }
