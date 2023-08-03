@@ -38,7 +38,7 @@ export const StyledCircularTab = styled(Tab)(({ theme }) => ({
     textTransform: 'capitalize',
     backgroundColor: 'transparent',
   },
-  '&.Mui-selected': { opacity: 1, color: theme.colors.text01 },
+  '&.Mui-selected': { opacity: 1, color: theme.accentColors.white },
 }));
 
 export const CircularTabPanelContainer = styled('div')({
