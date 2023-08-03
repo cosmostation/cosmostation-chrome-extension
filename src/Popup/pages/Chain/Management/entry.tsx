@@ -11,10 +11,6 @@ export default function Entry() {
   return (
     <Container>
       <ListContainer>
-        <MenuButton onClick={() => navigate('/chain/management/use', { isDuplicateCheck: true })}>
-          {t('pages.Chain.Management.entry.chainManagement')}
-        </MenuButton>
-
         <MenuButton onClick={() => navigate('/chain/ethereum/network/add', { isDuplicateCheck: true })}>
           {t('pages.Chain.Management.entry.addEthereumNetwork')}
         </MenuButton>
