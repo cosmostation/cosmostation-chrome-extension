@@ -4,6 +4,7 @@ import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS } from '~/constants/chain';
+import { ARCHWAY } from '~/constants/chain/cosmos/archway';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
@@ -14,6 +15,7 @@ import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButto
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+import { useArchIDSWR } from '~/Popup/hooks/SWR/cosmos/useArchIDSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useClientStateSWR } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
 import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
@@ -254,14 +256,23 @@ export default function IBCSend({ chain }: IBCSendProps) {
   );
 
   const { data: ICNS } = useICNSSWR({
-    name: addressRegex.test(debouncedCurrentAddress) ? '' : debouncedCurrentAddress,
+    name: addressRegex.test(debouncedCurrentAddress) || selectedReceiverIBC?.chain.id === ARCHWAY.id ? '' : debouncedCurrentAddress,
     cosmosChain: selectedReceiverIBC?.chain,
   });
 
-  const currentDepositAddress = useMemo(
-    () => (ICNS?.data.bech32_address ? ICNS.data.bech32_address : currentAddress),
-    [ICNS?.data.bech32_address, currentAddress],
-  );
+  const { data: ArchID } = useArchIDSWR({
+    archID: addressRegex.test(debouncedCurrentAddress) || selectedReceiverIBC?.chain.id !== ARCHWAY.id ? '' : debouncedCurrentAddress,
+    cosmosChain: selectedReceiverIBC?.chain,
+  });
+
+  const nameResolvedAddress = useMemo(() => {
+    if (selectedReceiverIBC?.chain.id === ARCHWAY.id) {
+      return ArchID?.data.address;
+    }
+    return ICNS?.data.bech32_address;
+  }, [ArchID?.data?.address, ICNS?.data.bech32_address, selectedReceiverIBC?.chain.id]);
+
+  const currentDepositAddress = useMemo(() => nameResolvedAddress || currentAddress, [nameResolvedAddress, currentAddress]);
 
   const clientState = useClientStateSWR({ chain, channelId: selectedReceiverIBC?.channel ?? '', port: selectedReceiverIBC?.port });
 
@@ -542,14 +553,14 @@ export default function IBCSend({ chain }: IBCSendProps) {
             value={currentAddress}
           />
         </MarginTop8Div>
-        {ICNS?.data.bech32_address && (
+        {nameResolvedAddress && (
           <MarginTop8Div>
             <AddressContainer>
               <CheckAddressIconContainer>
                 <CheckAddress16Icon />
               </CheckAddressIconContainer>
               <Address>
-                <Typography variant="h7">{ICNS.data.bech32_address}</Typography>
+                <Typography variant="h7">{nameResolvedAddress}</Typography>
               </Address>
             </AddressContainer>
           </MarginTop8Div>
