@@ -6,8 +6,7 @@ import { InputAdornment, Typography } from '@mui/material';
 import Button from '~/Popup/components/common/Button';
 import InformContainer from '~/Popup/components/common/InformContainer';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-// import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTMetaSWR';
-// import { useGetNFTsMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTsMetaSWR';
+import { useGetNFTsMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTsMetaSWR';
 import { useGetNFTsURISWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTsURISWR';
 import { useGetOwnedNFTTokenIDsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetOwnedNFTTokenIDsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -22,16 +21,16 @@ import {
   ButtonContainer,
   Container,
   ContentsContainer,
-  Div,
-  ImportCustomTokenButton,
-  ImportCustomTokenImage,
-  ImportCustomTokenText,
+  ImportCustomNFTButton,
+  ImportCustomNFTButtonContainer,
+  ImportCustomNFTImage,
+  ImportCustomNFTText,
+  NFTIconBox,
+  NFTIconText,
+  NFTList,
+  NoNFTIcon,
   StyledInput,
   StyledSearch20Icon,
-  TokenIconBox,
-  TokenIconText,
-  TokenList,
-  TokensIcon,
 } from './styled';
 
 import Plus16Icon from '~/images/icons/Plus16.svg';
@@ -59,7 +58,7 @@ export default function Entry({ chain }: EntryProps) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
-  const [selectedTokens, setSelectedTokens] = useState<CosmosNFTParams[]>([]);
+  const [selectedNFTs, setSelectedNFTs] = useState<CosmosNFTParams[]>([]);
 
   const { addCosmosNFTs, currentCosmosNFTs } = useCurrentCosmosNFTs();
 
@@ -98,51 +97,47 @@ export default function Entry({ chain }: EntryProps) {
     [ownedNFTTokenIds],
   );
 
-  const filteredUniqueTokens = useMemo(
+  const notAddedNFTs = useMemo(
     () => flattendOwnedNFTTokenIds.filter((item) => !currentCosmosNFTs.find((nfts) => nfts.address === item.contractAddress && nfts.tokenId === item.tokenId)),
     [currentCosmosNFTs, flattendOwnedNFTTokenIds],
   );
 
-  // NOTE 토큰 URI 가져오기
-  const ownedNFTsURI = useGetNFTsURISWR({ chain, nftInfos: filteredUniqueTokens });
+  const ownedNFTsURI = useGetNFTsURISWR({ chain, nftInfos: notAddedNFTs });
 
-  // NOTE validNFTs의 메타정보 가져오기/ ipfs파싱방식이 달라서 그런가 작동하지 않음
-  // const testtest = useGetNFTsMetaSWR({ chain, nftInfos: filteredUniqueTokens });
-  // const testtesttest = useGetNFTMetaSWR({ chain, contractAddress: filteredUniqueTokens[0]?.contractAddress, tokenId: filteredUniqueTokens[0]?.tokenId });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const testtest = useGetNFTsMetaSWR({ chain, nftInfos: notAddedNFTs });
 
-  // https://ipfs.mintscan.io/ipfs/bafybeibs4bln5recdqpaqo5e4nt55kll35asn2d3aa2xskxq4ntqxfjjjm/images/6395.png
-  // https://ipfs.tech/bafybeibiwbgqzne2o4dqpkxgnpcyqkxwj6daqzhe33a4tjnpc3h6noufme/metadata/2195
   const [debouncedSearch] = useDebounce(search, 500);
 
   // NOTE 컬렉션 명, nft 이름으로 필터링
   // NOTE NFTsMeta로 가져온 리스트로 필터링 하기
-  const filteredTokens = debouncedSearch
+  const filteredNFTs = debouncedSearch
     ? ownedNFTsURI.data?.filter((item) => item?.contractAddress && item?.contractAddress.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) || []
     : ownedNFTsURI.data || [];
 
   const handleOnSubmit = async () => {
-    await addCosmosNFTs(selectedTokens);
-    setSelectedTokens([]);
+    await addCosmosNFTs(selectedNFTs);
+    setSelectedNFTs([]);
     enqueueSnackbar(t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.addNFTSnackbar'));
   };
 
-  const isExistNFT = !!filteredTokens.length;
+  const isExistNFT = !!filteredNFTs.length;
 
   return (
     <Container>
       <InformContainer varient="info">
         <Typography variant="h6">{t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.warning')}</Typography>
       </InformContainer>
-      <Div>
-        <ImportCustomTokenButton onClick={() => navigate('/chain/cosmos/nft/add/cw721')}>
-          <ImportCustomTokenImage>
+      <ImportCustomNFTButtonContainer>
+        <ImportCustomNFTButton onClick={() => navigate('/chain/cosmos/nft/add/cw721')}>
+          <ImportCustomNFTImage>
             <Plus16Icon />
-          </ImportCustomTokenImage>
-          <ImportCustomTokenText>
+          </ImportCustomNFTImage>
+          <ImportCustomNFTText>
             <Typography variant="h5">{t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.importCustomNFTButton')}</Typography>
-          </ImportCustomTokenText>
-        </ImportCustomTokenButton>
-      </Div>
+          </ImportCustomNFTText>
+        </ImportCustomNFTButton>
+      </ImportCustomNFTButtonContainer>
       <StyledInput
         startAdornment={
           <InputAdornment position="start">
@@ -157,9 +152,9 @@ export default function Entry({ chain }: EntryProps) {
       />
       <ContentsContainer>
         {isExistNFT ? (
-          <TokenList>
-            {filteredTokens.map((token) => {
-              const isActive = !!selectedTokens.find((check) => check.address === token?.contractAddress);
+          <NFTList>
+            {filteredNFTs.map((token) => {
+              const isActive = !!selectedNFTs.find((check) => check.address === token?.contractAddress);
               return (
                 <NFTItem
                   key={token.contractAddress + token.tokenId}
@@ -168,10 +163,10 @@ export default function Entry({ chain }: EntryProps) {
                   tokenId={token.tokenId}
                   onClick={() => {
                     if (isActive) {
-                      setSelectedTokens(selectedTokens.filter((selectedToken) => selectedToken.address !== token.contractAddress));
+                      setSelectedNFTs(selectedNFTs.filter((selectedNFT) => selectedNFT.address !== token.contractAddress));
                     } else {
-                      setSelectedTokens([
-                        ...selectedTokens,
+                      setSelectedNFTs([
+                        ...selectedNFTs,
                         {
                           address: token.contractAddress,
                           tokenId: token.tokenId,
@@ -186,22 +181,22 @@ export default function Entry({ chain }: EntryProps) {
                 />
               );
             })}
-          </TokenList>
+          </NFTList>
         ) : (
-          <TokenIconBox>
-            <TokensIcon />
-            <TokenIconText>
+          <NFTIconBox>
+            <NoNFTIcon />
+            <NFTIconText>
               <Typography variant="h6">
                 {t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.nftIconText1')}
                 <br />
                 {t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.nftIconText2')}
               </Typography>
-            </TokenIconText>
-          </TokenIconBox>
+            </NFTIconText>
+          </NFTIconBox>
         )}
       </ContentsContainer>
       <ButtonContainer>
-        <Button onClick={handleOnSubmit} disabled={selectedTokens.length === 0}>
+        <Button onClick={handleOnSubmit} disabled={selectedNFTs.length === 0}>
           {t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.submitButton')}
         </Button>
       </ButtonContainer>

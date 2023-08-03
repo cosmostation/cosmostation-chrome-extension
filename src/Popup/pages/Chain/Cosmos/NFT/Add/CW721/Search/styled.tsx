@@ -2,8 +2,8 @@ import { styled } from '@mui/material/styles';
 
 import Input from '~/Popup/components/common/Input';
 
+import NoNFT40 from '~/images/icons/NoNFT40.svg';
 import Search20Icon from '~/images/icons/Search20.svg';
-import Tokens from '~/images/icons/Tokens.svg';
 
 export const Container = styled('div')({
   width: '100%',
@@ -12,31 +12,11 @@ export const Container = styled('div')({
   position: 'relative',
 });
 
-export const Div = styled('div')({});
-
-export const WarningContainer = styled('div')({
-  padding: '1.2rem 1.6rem',
-  display: 'flex',
-  backgroundColor: 'rgba(205, 26, 26, 0.15)',
-  borderRadius: '0.8rem',
-  marginBottom: '1.6rem',
+export const ImportCustomNFTButtonContainer = styled('div')({
+  marginTop: '1.6rem',
 });
 
-export const WarningIconContainer = styled('div')(({ theme }) => ({
-  '& > svg': {
-    fill: theme.accentColors.red,
-    '& > path': {
-      fill: theme.accentColors.red,
-    },
-  },
-}));
-
-export const WarningTextContainer = styled('div')(({ theme }) => ({
-  marginLeft: '0.4rem',
-  color: theme.colors.text01,
-}));
-
-export const ImportCustomTokenButton = styled('button')(({ theme }) => ({
+export const ImportCustomNFTButton = styled('button')(({ theme }) => ({
   padding: 0,
   border: 0,
   marginBottom: '1.2rem',
@@ -53,7 +33,7 @@ export const ImportCustomTokenButton = styled('button')(({ theme }) => ({
   },
 }));
 
-export const ImportCustomTokenImage = styled('div')(({ theme }) => ({
+export const ImportCustomNFTImage = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -65,7 +45,7 @@ export const ImportCustomTokenImage = styled('div')(({ theme }) => ({
   },
 }));
 
-export const ImportCustomTokenText = styled('div')(({ theme }) => ({
+export const ImportCustomNFTText = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
@@ -81,24 +61,23 @@ export const ContentsContainer = styled('div')({
   justifyContent: 'center',
 });
 
-export const TokenIconBox = styled('div')({
+export const NFTIconBox = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
   alignItems: 'center',
 });
 
-export const TokensIcon = styled(Tokens)(({ theme }) => ({
-  stroke: theme.colors.base05,
+export const NoNFTIcon = styled(NoNFT40)({
   marginBottom: '0.8rem',
-}));
+});
 
-export const TokenIconText = styled('div')(({ theme }) => ({
+export const NFTIconText = styled('div')(({ theme }) => ({
   color: theme.colors.base05,
   textAlign: 'center',
 }));
 
-export const TokenList = styled('div')({
+export const NFTList = styled('div')({
   display: 'grid',
   alignContent: 'start',
   gridTemplateColumns: '1fr',

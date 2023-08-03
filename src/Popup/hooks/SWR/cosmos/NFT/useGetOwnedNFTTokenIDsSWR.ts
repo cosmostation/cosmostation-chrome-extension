@@ -78,19 +78,20 @@ export function useGetOwnedNFTTokenIDsSWR({ chain, contractAddresses, ownerAddre
   );
 
   // NOTE 이거 참조해서 다른코드도 undefined제거
-  const returnData = data
-    ?.map((item) => {
-      if (item.status === 'fulfilled') {
-        if (item.value?.data.result.smart) {
-          return {
-            ...JSON.parse(Buffer.from(item.value.data.result.smart, 'base64').toString('utf-8')),
-            contractAddress: item.value.contractAddress,
-          } as OwnedTokenIds;
+  const returnData =
+    (data
+      ?.map((item) => {
+        if (item.status === 'fulfilled') {
+          if (item.value?.data.result.smart) {
+            return {
+              ...JSON.parse(Buffer.from(item.value.data.result.smart, 'base64').toString('utf-8')),
+              contractAddress: item.value.contractAddress,
+            } as OwnedTokenIds;
+          }
         }
-      }
-      return undefined;
-    })
-    .filter(Boolean) as OwnedTokenIds[];
+        return undefined;
+      })
+      .filter((item) => !!item) as OwnedTokenIds[]) || [];
 
   return { data: returnData, error, mutate };
 }

@@ -16,8 +16,13 @@ type NFTInfo = {
   tokenId: string;
 };
 
+type FetcherParams = {
+  tokenURI: string;
+  nftInfo: NFTInfo;
+};
+
 type MultiFetcherParams = {
-  fetcherParam: string[];
+  fetcherParam: FetcherParams[];
 };
 
 type UseGetNFTsMetaSWR = {
@@ -28,9 +33,19 @@ type UseGetNFTsMetaSWR = {
 export function useGetNFTsMetaSWR({ chain, nftInfos }: UseGetNFTsMetaSWR, config?: SWRConfiguration) {
   const ownedNFTSourceURI = useGetNFTsURISWR({ chain, nftInfos }, config);
 
-  const paramURLs = useMemo(() => ownedNFTSourceURI.data?.map((item) => item?.token_uri).filter((item) => item !== undefined), [ownedNFTSourceURI.data]);
+  const fetcherParams = useMemo(
+    () =>
+      ownedNFTSourceURI.data.map((item) => ({
+        tokenURI: item?.token_uri,
+        nftInfo: {
+          contractAddress: item?.contractAddress,
+          tokenId: item?.tokenId,
+        },
+      })),
+    [ownedNFTSourceURI.data],
+  );
 
-  const fetcher = async (fetchUrl: string) => {
+  const fetcher = async (fetchUrl: string, nftInfo: NFTInfo) => {
     try {
       if (!httpsRegex.test(fetchUrl)) {
         return null;
@@ -40,7 +55,12 @@ export function useGetNFTsMetaSWR({ chain, nftInfos }: UseGetNFTsMetaSWR, config
       //   throw nftSourceURI.error;
       // }
 
-      return await get<GetNFTMetaPayload>(fetchUrl);
+      const nftMeta = await get<GetNFTMetaPayload>(fetchUrl);
+      return {
+        ...nftMeta,
+        contractAddress: nftInfo.contractAddress,
+        tokenId: nftInfo.tokenId,
+      };
     } catch (e) {
       if (isAxiosError(e)) {
         if (e.response?.status === 404) {
@@ -54,14 +74,15 @@ export function useGetNFTsMetaSWR({ chain, nftInfos }: UseGetNFTsMetaSWR, config
   const multiFetcher = (params: MultiFetcherParams) =>
     Promise.allSettled(
       params.fetcherParam.map((item) => {
-        const converted = item.includes('ipfs:') ? convertIpfs(item) : item;
+        const converted = item.tokenURI.includes('ipfs:') ? convertIpfs(item.tokenURI) : item.tokenURI;
 
-        return converted ? fetcher(converted) : null;
+        // NOTE decodeURIComponent(link.replaceAll('https://', ''))
+        return converted ? fetcher(converted, item.nftInfo) : null;
       }),
     );
 
   const { data, isValidating, error, mutate } = useSWR<PromiseSettledResult<GetNFTMetaPayload | null>[], AxiosError>(
-    { fetcherParam: paramURLs },
+    { fetcherParam: fetcherParams },
     multiFetcher,
     {
       revalidateOnFocus: false,
@@ -84,6 +105,8 @@ export function useGetNFTsMetaSWR({ chain, nftInfos }: UseGetNFTsMetaSWR, config
                 image: undefined,
                 attributes: item.value.attributes?.filter((attribute) => attribute.trait_type && attribute.value),
                 rarity: '',
+                contractAddress: item.value.contractAddress,
+                tokenId: item.value.tokenId,
               }
             : undefined;
         }

@@ -488,17 +488,35 @@
             "CW721": {
               "Search": {
                 "entry": {
-                  "nftIconText1": "Add custom NFTs to manage on",
-                  "nftIconText2": "Cosmostation Extension.",
                   "addNFTSnackbar": "NFT added",
                   "importCustomNFTButton": "Import a custom NFT",
+                  "nftIconText1": "Add custom NFTs to manage on",
+                  "nftIconText2": "Cosmostation Extension.",
                   "searchPlaceholder": "Search NFTs",
                   "submitButton": "Import NFT",
-                  "warning": "Cosmostation provides a list of selected tokens across multiple networks. If the token you're looking for is not on the list, click \"Import a custom token\"."
+                  "warning": "Cosmostation provides a list of selected NFT collections. If the token you're looking for is not on the list, click \"Import a custom token\"."
                 },
                 "layout": {
                   "title": "Import NFTs"
                 }
+              },
+              "entry": {
+                "addressPlaceholder": "NFT contract address",
+                "imagePreview": "IMG Preview",
+                "invalidAddress": "Invalid address",
+                "invalidAddressTitle": "Invalid Contract Address",
+                "invalidOwnership": "The NFT is not owned by you for the given contract address or token ID.",
+                "invalidOwnershipTitle": "Ownership Mismatch",
+                "invalidSource": "NFT does not exist for the given contract address or token ID.",
+                "invalidSourceTitle": "No NFTs found",
+                "invalidTokenId": "Invalid token ID",
+                "invalidTokenIdTitle": "Invalid Token ID",
+                "networkError": "An error has occurred. please try again later",
+                "networkErrorTitle": "Network Error",
+                "preview": "NFT Preview",
+                "previewSubText": "When you enter your own NFT information, the image is displayed",
+                "submitButton": "Add custom NFT",
+                "tokenIdPlaceholder": "NFT token ID"
               },
               "layout": {
                 "title": "Import NFTs"

@@ -22,6 +22,8 @@ export type GetNFTMetaPayload = {
     value: string | number;
   }[];
   compiler?: string;
+  contractAddress: string;
+  tokenId: string;
 };
 
 export type CollectionInfo = {

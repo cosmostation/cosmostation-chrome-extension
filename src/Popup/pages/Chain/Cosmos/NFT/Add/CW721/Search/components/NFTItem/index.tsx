@@ -32,6 +32,7 @@ type NFTItemProps = {
 export default function NFTItem({ onClick, isActive, chain, contractAddress, tokenId }: NFTItemProps) {
   const nftMeta = useGetNFTMetaSWR({ chain, contractAddress, tokenId });
 
+  const shorterContractAddress = useMemo(() => shorterAddress(contractAddress, 16), [contractAddress]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 9), [tokenId]);
 
   return (
@@ -48,7 +49,7 @@ export default function NFTItem({ onClick, isActive, chain, contractAddress, tok
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>
             <Tooltip title={contractAddress} placement="top" arrow>
-              <Typography variant="h6">{contractAddress}</Typography>
+              <Typography variant="h6">{shorterContractAddress}</Typography>
             </Tooltip>
             &nbsp;/&nbsp;
             <Tooltip title={tokenId || ''} placement="top" arrow>

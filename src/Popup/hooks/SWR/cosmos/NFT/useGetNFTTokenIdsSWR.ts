@@ -32,7 +32,7 @@ export function useGetNFTTokenIdsSWR({ chain, contractAddress, ownerAddress, lim
     }
   };
 
-  const { data, error, mutate } = useSWR<SmartPayload | null, AxiosError>(requestURL, fetcher, {
+  const { data, isValidating, error, mutate } = useSWR<SmartPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 3600000,
     errorRetryCount: 0,
@@ -42,5 +42,5 @@ export function useGetNFTTokenIdsSWR({ chain, contractAddress, ownerAddress, lim
 
   const returnData = data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as NFTIdPayload) : undefined;
 
-  return { data: returnData, error, mutate };
+  return { data: returnData, isValidating, error, mutate };
 }
