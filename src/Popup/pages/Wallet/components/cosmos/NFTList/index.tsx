@@ -48,7 +48,7 @@ export default function NFTList({ chain }: NFTListProps) {
     [currentAddress, currentCosmosNFTs],
   );
 
-  const nftContractAddresses = useMemo(() => Array.from(new Set(currentCosmosNFTs.map((item) => item.address))), [currentCosmosNFTs]);
+  const nftContractAddresses = useMemo(() => Array.from(new Set(ownedCosmosNFTs.map((item) => item.address))), [ownedCosmosNFTs]);
 
   const nftContractsInfo = useGetContractsInfoSWR(chain, nftContractAddresses);
 

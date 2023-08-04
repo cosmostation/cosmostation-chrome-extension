@@ -62,9 +62,9 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const currentNFT = useMemo(() => currentCosmosNFTs.find((item) => isEqualsIgnoringCase(item.id, params.id)) || null, [currentCosmosNFTs, params.id]);
 
-  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: currentNFT?.address, tokenId: currentNFT?.tokenId, chain });
+  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: currentNFT?.address || '', tokenId: currentNFT?.tokenId || '', chain });
 
-  const isOwnedNFT = useGetNFTOwnerSWR({ contractAddress: currentNFT?.address, tokenId: currentNFT?.tokenId, chain });
+  const isOwnedNFT = useGetNFTOwnerSWR({ contractAddress: currentNFT?.address || '', ownerAddress: currentAddress, tokenId: currentNFT?.tokenId || '', chain });
 
   const errorMessage = useMemo(() => {
     if (!isOwnedNFT.isOwnedNFT) {
@@ -96,7 +96,7 @@ export default function Cosmos({ chain }: CosmosProps) {
                   </NFTEditionMarkContainer>
                 )}
               </NFTInfoLeftHeaderContainer>
-              <StyledIconButton onClick={() => window.open(`${explorerURL || ''}/token/${currentNFT?.tokenId || ''}?a=${currentAddress}`)}>
+              <StyledIconButton onClick={() => window.open(`${explorerURL || ''}/wasm/contract/${currentNFT?.address || ''}`)}>
                 <ExplorerIcon />
               </StyledIconButton>
             </NFTInfoHeaderContainer>

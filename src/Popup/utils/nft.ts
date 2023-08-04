@@ -8,3 +8,8 @@ export function convertIpfs(url?: string) {
   if (!url) return '';
   return url.replace(/^ipfs:\/\// || /^ipfs:\//, 'https://ipfs.io/ipfs/');
 }
+
+export function concatJsonFileType(url?: string) {
+  if (!url) return '';
+  return url.endsWith('.json') ? url : url.concat('.json');
+}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
-import { InputAdornment, Typography } from '@mui/material';
+import { InputAdornment } from '@mui/material';
 
 import { COSMOS_DEFAULT_SEND_GAS } from '~/constants/chain';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
@@ -14,7 +14,6 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTOwnerSWR';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
-import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -31,20 +30,16 @@ import type { CosmosNFT } from '~/types/cosmos/nft';
 
 import NFTButton from './components/NFTButton';
 import NFTPopover from './components/NFTPopover';
-import { Address, AddressContainer, BottomContainer, CheckAddressIconContainer, Container, Div, StyledInput, StyledTextarea } from './styled';
+import { BottomContainer, Container, Div, StyledInput, StyledTextarea } from './styled';
 
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
-import CheckAddress16Icon from '~/images/icons/CheckAddress16.svg';
 
 type CosmosProps = {
   chain: CosmosChain;
 };
 
 export default function Cosmos({ chain }: CosmosProps) {
-  // https://www.mintscan.io/stargaze/transactions/19E02D119036A593F14C7FA5CB6B0A256D18D0DF8810A77FB97C2A161FD880DA
-  // 컨트랙트로 nft전송하는법
-  // NOTE fee컴포넌트 체크 필요
   const { t } = useTranslation();
   const { enQueue } = useCurrentQueue();
 
@@ -67,9 +62,14 @@ export default function Cosmos({ chain }: CosmosProps) {
     [accounts.data, chain.id, currentAccount.id],
   );
 
+  const [currentMemo, setCurrentMemo] = useState('');
+
+  const [recipientAddress, setRecipientAddress] = useState('');
+  const [debouncedRecipientAddress] = useDebounce(recipientAddress, 500);
+
   const [currentNFT, setCurrentNFT] = useState<CosmosNFT>(currentCosmosNFTs.find((item) => isEqualsIgnoringCase(item.id, params.id)) || currentCosmosNFTs[0]);
 
-  const isOwnedNFT = useGetNFTOwnerSWR({ contractAddress: currentNFT?.address, tokenId: currentNFT?.tokenId, chain });
+  const isOwnedNFT = useGetNFTOwnerSWR({ contractAddress: currentNFT?.address, ownerAddress: address, tokenId: currentNFT?.tokenId, chain });
 
   const { feeCoins } = useCurrentFeesSWR(chain);
 
@@ -94,19 +94,7 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate ?? chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate]);
 
-  const [currentMemo, setCurrentMemo] = useState('');
-
-  const [recipientAddress, setRecipientAddress] = useState('');
-  const [debouncedRecipientAddress] = useDebounce(recipientAddress, 500);
-
   const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
-
-  const { data: ICNS } = useICNSSWR({ name: addressRegex.test(debouncedRecipientAddress) ? '' : debouncedRecipientAddress });
-
-  const currentReceipientAddress = useMemo(
-    () => (ICNS?.data.bech32_address ? ICNS.data.bech32_address : recipientAddress),
-    [ICNS?.data.bech32_address, recipientAddress],
-  );
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
@@ -115,7 +103,7 @@ export default function Cosmos({ chain }: CosmosProps) {
   const isOpenPopover = Boolean(popoverAnchorEl);
 
   const memoizedSendAminoTx = useMemo(() => {
-    if (account.data?.value.account_number && addressRegex.test(currentReceipientAddress)) {
+    if (account.data?.value.account_number && addressRegex.test(debouncedRecipientAddress)) {
       const sequence = String(account.data?.value.sequence || '0');
 
       return {
@@ -140,7 +128,7 @@ export default function Cosmos({ chain }: CosmosProps) {
               contract: currentNFT.address,
               msg: {
                 transfer_nft: {
-                  recipient: currentReceipientAddress,
+                  recipient: debouncedRecipientAddress,
                   token_id: currentNFT.tokenId,
                 },
               },
@@ -155,7 +143,7 @@ export default function Cosmos({ chain }: CosmosProps) {
     account.data?.value.account_number,
     account.data?.value.sequence,
     addressRegex,
-    currentReceipientAddress,
+    debouncedRecipientAddress,
     nodeInfo.data?.default_node_info?.network,
     chain.chainId,
     chain.type,
@@ -189,7 +177,7 @@ export default function Cosmos({ chain }: CosmosProps) {
   const currentGas = useMemo(() => customGas || simulatedGas || sendGas, [customGas, sendGas, simulatedGas]);
 
   const errorMessage = useMemo(() => {
-    if (!isOwnedNFT) {
+    if (!isOwnedNFT.isOwnedNFT) {
       return t('pages.Wallet.NFTSend.Entry.Cosmos.index.notOwnedNFT');
     }
     if (!addressRegex.test(recipientAddress)) {
@@ -209,7 +197,7 @@ export default function Cosmos({ chain }: CosmosProps) {
     // }
 
     return '';
-  }, [address, addressRegex, currentFeeCoinDisplayAvailableAmount, isOwnedNFT, recipientAddress, t]);
+  }, [address, addressRegex, currentFeeCoinDisplayAvailableAmount, isOwnedNFT.isOwnedNFT, recipientAddress, t]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
     setTimeout(() => {
@@ -264,17 +252,6 @@ export default function Cosmos({ chain }: CosmosProps) {
             value={recipientAddress}
           />
         </Div>
-
-        {ICNS?.data.bech32_address && (
-          <AddressContainer>
-            <CheckAddressIconContainer>
-              <CheckAddress16Icon />
-            </CheckAddressIconContainer>
-            <Address>
-              <Typography variant="h7">{ICNS.data.bech32_address}</Typography>
-            </Address>
-          </AddressContainer>
-        )}
 
         <StyledTextarea
           multiline

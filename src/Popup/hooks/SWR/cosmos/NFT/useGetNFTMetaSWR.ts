@@ -4,7 +4,7 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { get, isAxiosError } from '~/Popup/utils/axios';
-import { convertIpfs } from '~/Popup/utils/nft';
+import { concatJsonFileType, convertIpfs } from '~/Popup/utils/nft';
 import { httpsRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
 import type { GetNFTMetaPayload } from '~/types/cosmos/nft';
@@ -13,8 +13,8 @@ import { useGetNFTURISWR } from './useGetNFTURISWR';
 
 type UseGetNFTMetaSWR = {
   chain: CosmosChain;
-  contractAddress?: string;
-  tokenId?: string;
+  contractAddress: string;
+  tokenId: string;
 };
 
 export function useGetNFTMetaSWR({ chain, contractAddress, tokenId }: UseGetNFTMetaSWR, config?: SWRConfiguration) {
@@ -23,16 +23,8 @@ export function useGetNFTMetaSWR({ chain, contractAddress, tokenId }: UseGetNFTM
   const paramURL = useMemo(() => {
     if (nftSourceURI.data?.token_uri) {
       if (nftSourceURI.data?.token_uri.includes('ipfs:')) {
-        return convertIpfs(nftSourceURI.data?.token_uri);
+        return concatJsonFileType(convertIpfs(nftSourceURI.data?.token_uri));
       }
-
-      //   if (nftSourceURI.data.includes('api.opensea.io')) {
-      //     return nftSourceURI.data.replace('0x{id}', tokenId || '');
-      //   }
-
-      //   if (nftSourceURI.data.includes('{id}')) {
-      //     return nftSourceURI.data.replace('{id}', tokenId || '');
-      //   }
       return nftSourceURI.data;
     }
     return '';
@@ -69,15 +61,19 @@ export function useGetNFTMetaSWR({ chain, contractAddress, tokenId }: UseGetNFTM
     ...config,
   });
 
-  const returnData = data
-    ? {
-        ...data,
-        imageURL: convertIpfs(data.image),
-        image: undefined,
-        attributes: data.attributes?.filter((item) => item.trait_type && item.value),
-        rarity: '',
-      }
-    : undefined;
+  const returnData = useMemo(
+    () =>
+      data
+        ? {
+            ...data,
+            imageURL: convertIpfs(data.image),
+            image: undefined,
+            attributes: data.attributes?.filter((item) => item.trait_type && item.value),
+            rarity: '',
+          }
+        : undefined,
+    [data],
+  );
 
   return { data: returnData, isValidating, error, mutate };
 }

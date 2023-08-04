@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -24,9 +25,9 @@ type UseGetNFTsURISWRProps = {
 };
 
 export function useGetNFTsURISWR({ chain, nftInfos }: UseGetNFTsURISWRProps, config?: SWRConfiguration) {
-  const { getCW721NFTInfo } = cosmosURL(chain);
+  const { getCW721NFTInfo } = useMemo(() => cosmosURL(chain), [chain]);
 
-  const regex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
+  const regex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
 
   const fetcher = async (fetchUrl: string, contractAddress: string, tokenId: string) => {
     try {
@@ -56,26 +57,29 @@ export function useGetNFTsURISWR({ chain, nftInfos }: UseGetNFTsURISWRProps, con
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    errorRetryCount: 0,
+    errorRetryCount: 3,
+    errorRetryInterval: 5000,
     isPaused: () => !nftInfos,
     ...config,
   });
 
-  const returnData =
-    (data
-      ?.map((item) => {
-        if (item.status === 'fulfilled') {
-          return item.value?.data.result.smart
-            ? ({
+  const returnData = useMemo(
+    () =>
+      data
+        ? data.reduce((accumulator: NFTURIInfo[], item) => {
+            if (item.status === 'fulfilled' && item.value) {
+              const newItem = {
                 ...JSON.parse(Buffer.from(item.value?.data.result.smart, 'base64').toString('utf-8')),
                 contractAddress: item.value.contractAddress,
                 tokenId: item.value.tokenId,
-              } as NFTURIInfo)
-            : undefined;
-        }
-        return undefined;
-      })
-      .filter((item) => !!item) as NFTURIInfo[]) || [];
+              } as NFTURIInfo;
+              accumulator.push(newItem);
+            }
+            return accumulator;
+          }, [])
+        : [],
+    [data],
+  );
 
   return { data: returnData, error, mutate };
 }

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -14,9 +15,9 @@ type MultiFetcherParams = {
 };
 
 export function useGetContractsInfoSWR(chain: CosmosChain, contractAddresses: string[], config?: SWRConfiguration) {
-  const { getCW721ContractInfo } = cosmosURL(chain);
+  const { getCW721ContractInfo } = useMemo(() => cosmosURL(chain), [chain]);
 
-  const regex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
+  const regex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
 
   const fetcher = async (fetchUrl: string, contractAddress: string) => {
     try {
@@ -54,17 +55,21 @@ export function useGetContractsInfoSWR(chain: CosmosChain, contractAddresses: st
     },
   );
 
-  const returnData = data?.map((item) => {
-    if (item.status === 'fulfilled') {
-      return item.value?.data.result.smart
-        ? ({
+  const returnData = useMemo(
+    () =>
+      data?.reduce((accumulator: ContractInfo[], item) => {
+        if (item.status === 'fulfilled' && item.value) {
+          const newItem = {
             ...JSON.parse(Buffer.from(item.value?.data.result.smart, 'base64').toString('utf-8')),
             contractAddress: item.value.contractAddress,
-          } as ContractInfo)
-        : undefined;
-    }
-    return undefined;
-  });
+          } as ContractInfo;
+          accumulator.push(newItem);
+        }
+        return accumulator;
+      }, []) || [],
+
+    [data],
+  );
 
   return { data: returnData, error, mutate };
 }

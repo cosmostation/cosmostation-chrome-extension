@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -10,13 +11,13 @@ import type { SmartPayload } from '~/types/cosmos/contract';
 import type { ContractInfo } from '~/types/cosmos/nft';
 
 export function useContractInfoSWR(chain: CosmosChain, contractAddress: string, config?: SWRConfiguration) {
-  const { getCW721ContractInfo } = cosmosURL(chain);
+  const { getCW721ContractInfo } = useMemo(() => cosmosURL(chain), [chain]);
 
-  const requestURL = getCW721ContractInfo(contractAddress);
+  const requestURL = useMemo(() => getCW721ContractInfo(contractAddress), [contractAddress, getCW721ContractInfo]);
 
-  const regex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
+  const regex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
 
-  const isValidContractAddress = regex.test(contractAddress);
+  const isValidContractAddress = useMemo(() => regex.test(contractAddress), [contractAddress, regex]);
 
   const fetcher = async (fetchUrl: string) => {
     try {
@@ -28,13 +29,17 @@ export function useContractInfoSWR(chain: CosmosChain, contractAddress: string, 
 
   const { data, error, mutate } = useSWR<SmartPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 3600000,
+    revalidateIfStale: false,
+    revalidateOnReconnect: false,
     errorRetryCount: 0,
     isPaused: () => !isValidContractAddress,
     ...config,
   });
 
-  const returnData = data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as ContractInfo) : undefined;
+  const returnData = useMemo(
+    () => (data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as ContractInfo) : undefined),
+    [data?.result?.smart],
+  );
 
   return { data: returnData, error, mutate };
 }

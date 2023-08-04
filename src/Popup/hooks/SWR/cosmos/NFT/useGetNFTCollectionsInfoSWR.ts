@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -19,9 +20,9 @@ type UseGetNFTCollectionsInfoSWRParams = {
 };
 
 export function useGetNFTCollectionsInfoSWR({ chain, contractAddresses }: UseGetNFTCollectionsInfoSWRParams, config?: SWRConfiguration) {
-  const { getCW721CollectionInfo } = cosmosURL(chain);
+  const { getCW721CollectionInfo } = useMemo(() => cosmosURL(chain), [chain]);
 
-  const regex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
+  const regex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
 
   const fetcher = async (fetchUrl: string, contractAddress: string) => {
     try {
@@ -59,17 +60,22 @@ export function useGetNFTCollectionsInfoSWR({ chain, contractAddresses }: UseGet
     },
   );
 
-  const returnData = data?.map((item) => {
-    if (item.status === 'fulfilled') {
-      return item.value?.data.result.smart
-        ? ({
-            ...JSON.parse(Buffer.from(item.value?.data.result.smart, 'base64').toString('utf-8')),
-            contractAddress: item.value.contractAddress,
-          } as CollectionInfo)
-        : undefined;
-    }
-    return undefined;
-  });
+  const returnData = useMemo(
+    () =>
+      data
+        ? data.reduce((accumulator: CollectionInfo[], item) => {
+            if (item.status === 'fulfilled' && item.value) {
+              const newItem = {
+                ...JSON.parse(Buffer.from(item.value?.data.result.smart, 'base64').toString('utf-8')),
+                contractAddress: item.value.contractAddress,
+              } as CollectionInfo;
+              accumulator.push(newItem);
+            }
+            return accumulator;
+          }, [])
+        : [],
+    [data],
+  );
 
   return { data: returnData, error, mutate };
 }

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -16,13 +17,13 @@ type UseGetNFTTokenIdsSWR = {
 };
 
 export function useGetNFTTokenIdsSWR({ chain, contractAddress, ownerAddress, limit = '50' }: UseGetNFTTokenIdsSWR, config?: SWRConfiguration) {
-  const { getCW721NFTIds } = cosmosURL(chain);
+  const { getCW721NFTIds } = useMemo(() => cosmosURL(chain), [chain]);
 
-  const requestURL = getCW721NFTIds(contractAddress, ownerAddress, Number(limit));
+  const requestURL = useMemo(() => getCW721NFTIds(contractAddress, ownerAddress, Number(limit)), [contractAddress, getCW721NFTIds, limit, ownerAddress]);
 
-  const regex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
+  const regex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
 
-  const isValidContractAddress = regex.test(contractAddress);
+  const isValidContractAddress = useMemo(() => regex.test(contractAddress), [contractAddress, regex]);
 
   const fetcher = async (fetchUrl: string) => {
     try {
@@ -34,13 +35,17 @@ export function useGetNFTTokenIdsSWR({ chain, contractAddress, ownerAddress, lim
 
   const { data, isValidating, error, mutate } = useSWR<SmartPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 3600000,
+    dedupingInterval: 10000,
+    refreshInterval: 11000,
     errorRetryCount: 0,
     isPaused: () => !isValidContractAddress,
     ...config,
   });
 
-  const returnData = data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as NFTIdPayload) : undefined;
+  const returnData = useMemo(
+    () => (data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as NFTIdPayload) : undefined),
+    [data?.result?.smart],
+  );
 
   return { data: returnData, isValidating, error, mutate };
 }

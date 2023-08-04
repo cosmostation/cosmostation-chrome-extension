@@ -4,10 +4,10 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { get, isAxiosError } from '~/Popup/utils/axios';
-import { convertIpfs } from '~/Popup/utils/nft';
+import { concatJsonFileType, convertIpfs } from '~/Popup/utils/nft';
 import { httpsRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { GetNFTMetaPayload } from '~/types/cosmos/nft';
+import type { CosmosNFTMeta, GetNFTMetaPayload } from '~/types/cosmos/nft';
 
 import { useGetNFTsURISWR } from './useGetNFTsURISWR';
 
@@ -51,9 +51,9 @@ export function useGetNFTsMetaSWR({ chain, nftInfos }: UseGetNFTsMetaSWR, config
         return null;
       }
 
-      // if (nftSourceURI.error) {
-      //   throw nftSourceURI.error;
-      // }
+      if (ownedNFTSourceURI.error) {
+        throw ownedNFTSourceURI.error;
+      }
 
       const nftMeta = await get<GetNFTMetaPayload>(fetchUrl);
       return {
@@ -74,10 +74,9 @@ export function useGetNFTsMetaSWR({ chain, nftInfos }: UseGetNFTsMetaSWR, config
   const multiFetcher = (params: MultiFetcherParams) =>
     Promise.allSettled(
       params.fetcherParam.map((item) => {
-        const converted = item.tokenURI.includes('ipfs:') ? convertIpfs(item.tokenURI) : item.tokenURI;
+        const convertedRequestURL = item.tokenURI.includes('ipfs:') ? concatJsonFileType(convertIpfs(item.tokenURI)) : item.tokenURI;
 
-        // NOTE decodeURIComponent(link.replaceAll('https://', ''))
-        return converted ? fetcher(converted, item.nftInfo) : null;
+        return convertedRequestURL ? fetcher(convertedRequestURL, item.nftInfo) : null;
       }),
     );
 
@@ -95,24 +94,25 @@ export function useGetNFTsMetaSWR({ chain, nftInfos }: UseGetNFTsMetaSWR, config
     },
   );
 
-  const returnData = data
-    ? data.map((item) => {
-        if (item.status === 'fulfilled') {
-          return item.value
-            ? {
-                ...item.value,
-                imageURL: convertIpfs(item.value.image),
-                image: undefined,
-                attributes: item.value.attributes?.filter((attribute) => attribute.trait_type && attribute.value),
-                rarity: '',
-                contractAddress: item.value.contractAddress,
-                tokenId: item.value.tokenId,
-              }
-            : undefined;
+  const returnData = useMemo(
+    () =>
+      data?.reduce((accumulator: CosmosNFTMeta[], item) => {
+        if (item.status === 'fulfilled' && item.value) {
+          const newItem = {
+            ...item.value,
+            imageURL: convertIpfs(item.value.image),
+            image: undefined,
+            attributes: item.value.attributes?.filter((attribute) => attribute.trait_type && attribute.value),
+            rarity: '',
+            contractAddress: item.value.contractAddress,
+            tokenId: item.value.tokenId,
+          };
+          accumulator.push(newItem);
         }
-        return undefined;
-      })
-    : [];
+        return accumulator;
+      }, []) || [],
+    [data],
+  );
 
   return { data: returnData, isValidating, error, mutate };
 }

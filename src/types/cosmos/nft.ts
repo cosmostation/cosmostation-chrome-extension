@@ -26,8 +26,26 @@ export type GetNFTMetaPayload = {
   tokenId: string;
 };
 
+export type CosmosNFTMeta = {
+  contractAddress: string;
+  tokenId: string;
+  imageURL: string;
+  rarity: string;
+  dna?: string;
+  name?: string;
+  description?: string;
+  imageHash?: string;
+  edition?: string | number;
+  date?: string | number;
+  attributes?: {
+    trait_type: string;
+    value: string | number;
+  }[];
+  compiler?: string;
+};
+
 export type CollectionInfo = {
-  contractAddress?: string;
+  contractAddress: string;
   creator: string;
   description: string;
   external_url?: string;

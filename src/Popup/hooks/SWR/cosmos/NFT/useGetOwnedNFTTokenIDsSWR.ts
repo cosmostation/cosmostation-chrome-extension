@@ -35,11 +35,11 @@ export function useGetOwnedNFTTokenIDsSWR({ chain, contractAddresses, ownerAddre
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const ownerWalletAddress = ownerAddress || currentAddress;
+  const ownerWalletAddress = useMemo(() => ownerAddress || currentAddress, [currentAddress, ownerAddress]);
 
-  const { getCW721NFTIds } = cosmosURL(chain);
+  const { getCW721NFTIds } = useMemo(() => cosmosURL(chain), [chain]);
 
-  const regex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
+  const regex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
 
   const fetcher = async (fetchUrl: string, contractAddress: string) => {
     try {
@@ -77,21 +77,22 @@ export function useGetOwnedNFTTokenIDsSWR({ chain, contractAddresses, ownerAddre
     },
   );
 
-  // NOTE 이거 참조해서 다른코드도 undefined제거
-  const returnData =
-    (data
-      ?.map((item) => {
-        if (item.status === 'fulfilled') {
-          if (item.value?.data.result.smart) {
-            return {
-              ...JSON.parse(Buffer.from(item.value.data.result.smart, 'base64').toString('utf-8')),
-              contractAddress: item.value.contractAddress,
-            } as OwnedTokenIds;
-          }
-        }
-        return undefined;
-      })
-      .filter((item) => !!item) as OwnedTokenIds[]) || [];
+  const returnData = useMemo(
+    () =>
+      data
+        ? data.reduce((accumulator: OwnedTokenIds[], item) => {
+            if (item.status === 'fulfilled' && item.value) {
+              const newItem = {
+                ...JSON.parse(Buffer.from(item.value.data.result.smart, 'base64').toString('utf-8')),
+                contractAddress: item.value.contractAddress,
+              } as OwnedTokenIds;
+              accumulator.push(newItem);
+            }
+            return accumulator;
+          }, [])
+        : [],
+    [data],
+  );
 
   return { data: returnData, error, mutate };
 }

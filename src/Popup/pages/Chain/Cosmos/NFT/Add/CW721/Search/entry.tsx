@@ -7,7 +7,6 @@ import Button from '~/Popup/components/common/Button';
 import InformContainer from '~/Popup/components/common/InformContainer';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useGetNFTsMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTsMetaSWR';
-import { useGetNFTsURISWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTsURISWR';
 import { useGetOwnedNFTTokenIDsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetOwnedNFTTokenIDsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
@@ -85,12 +84,6 @@ export default function Entry({ chain }: EntryProps) {
 
   const flattendOwnedNFTTokenIds = useMemo(
     () =>
-      // flatMap(ownedNFTTokenIds.data, (obj) =>
-      //   obj.tokens.map((tokenId) => ({
-      //     contractAddress: obj.contractAddress,
-      //     tokenId,
-      //   })),
-      // ),
       ownedNFTTokenIds.data
         ?.map((obj) =>
           obj.tokens.map((tokenId) => ({
@@ -103,26 +96,28 @@ export default function Entry({ chain }: EntryProps) {
   );
 
   const notAddedNFTs = useMemo(
-    () => flattendOwnedNFTTokenIds.filter((item) => !currentCosmosNFTs.find((nfts) => nfts.address === item.contractAddress && nfts.tokenId === item.tokenId)),
-    [currentCosmosNFTs, flattendOwnedNFTTokenIds],
+    () =>
+      flattendOwnedNFTTokenIds.filter(
+        (item) =>
+          !currentCosmosNFTs.find((nfts) => nfts.address === item.contractAddress && nfts.tokenId === item.tokenId && nfts.ownerAddress === currentAddress),
+      ),
+    [currentAddress, currentCosmosNFTs, flattendOwnedNFTTokenIds],
   );
 
-  const ownedNFTsURI = useGetNFTsURISWR({ chain, nftInfos: notAddedNFTs });
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const testtest = useGetNFTsMetaSWR({ chain, nftInfos: notAddedNFTs });
+  const ownedNFTsMeta = useGetNFTsMetaSWR({ chain, nftInfos: notAddedNFTs });
 
   const [debouncedSearch] = useDebounce(search, 500);
 
-  // NOTE 컬렉션 명, nft 이름으로 필터링
-  // NOTE NFTsMeta로 가져온 리스트로 필터링 하기
   const filteredNFTs = debouncedSearch
-    ? ownedNFTsURI.data?.filter((item) => item?.contractAddress && item?.contractAddress.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) || []
-    : ownedNFTsURI.data || [];
+    ? ownedNFTsMeta.data.filter(
+        (item) =>
+          (item?.name && item.name.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) ||
+          (item?.tokenId && item.tokenId.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1),
+      ) || []
+    : ownedNFTsMeta.data || [];
 
   const handleOnSubmit = async () => {
     await addCosmosNFTs(selectedNFTs);
-    setSelectedNFTs([]);
     enqueueSnackbar(t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.addNFTSnackbar'));
   };
 
