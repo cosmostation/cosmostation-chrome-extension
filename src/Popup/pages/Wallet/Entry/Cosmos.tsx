@@ -78,12 +78,33 @@ export default function Cosmos({ chain }: CosmosProps) {
               </ErrorBoundary>
             </NativeChainCardContainer>
 
-            <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
-              {tabLabels.map((item) => (
-                <Tab key={item} label={item} />
-              ))}
-            </Tabs>
-            <StyledTabPanel value={tabValue} index={0}>
+            {chain.cosmWasm ? (
+              <>
+                <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
+                  {tabLabels.map((item) => (
+                    <Tab key={item} label={item} />
+                  ))}
+                </Tabs>
+                <StyledTabPanel value={tabValue} index={0}>
+                  <BottomContainer sx={{ marginTop: '0.9rem' }}>
+                    <ErrorBoundary fallback={<Empty />}>
+                      <Suspense fallback={null}>
+                        <CoinList chain={chain} />
+                      </Suspense>
+                    </ErrorBoundary>
+                  </BottomContainer>
+                </StyledTabPanel>
+                <StyledTabPanel value={tabValue} index={1}>
+                  <BottomContainer sx={{ marginTop: '0.9rem' }}>
+                    <ErrorBoundary fallback={<Empty />}>
+                      <Suspense fallback={null}>
+                        <NFTList chain={chain} />
+                      </Suspense>
+                    </ErrorBoundary>
+                  </BottomContainer>
+                </StyledTabPanel>
+              </>
+            ) : (
               <BottomContainer sx={{ marginTop: '0.9rem' }}>
                 <ErrorBoundary fallback={<Empty />}>
                   <Suspense fallback={null}>
@@ -91,16 +112,7 @@ export default function Cosmos({ chain }: CosmosProps) {
                   </Suspense>
                 </ErrorBoundary>
               </BottomContainer>
-            </StyledTabPanel>
-            <StyledTabPanel value={tabValue} index={1}>
-              <BottomContainer sx={{ marginTop: '0.9rem' }}>
-                <ErrorBoundary fallback={<Empty />}>
-                  <Suspense fallback={null}>
-                    <NFTList chain={chain} />
-                  </Suspense>
-                </ErrorBoundary>
-              </BottomContainer>
-            </StyledTabPanel>
+            )}
           </>
         )}
       </LedgerCheck>

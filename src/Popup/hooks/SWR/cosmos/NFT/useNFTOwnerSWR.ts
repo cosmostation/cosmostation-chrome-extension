@@ -5,7 +5,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import type { CosmosChain } from '~/types/chain';
 
-import { useNFTTokenIdsSWR } from './useNFTTokenIdsSWR';
+import { useOwnedNFTTokenIdsSWR } from './useOwnedNFTTokenIdsSWR';
 import { useAccounts } from '../../cache/useAccounts';
 
 type UseNFTOwnerSWR = {
@@ -28,13 +28,13 @@ export function useNFTOwnerSWR({ chain, contractAddress, ownerAddress, tokenId }
 
   const ownerWalletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
-  const ownedTokenIds = useNFTTokenIdsSWR({ chain, contractAddress, ownerAddress: ownerWalletAddress });
+  const ownedTokenIds = useOwnedNFTTokenIdsSWR({ chain, contractAddress, ownerAddress: ownerWalletAddress });
 
   const isValidating = useMemo(() => ownedTokenIds.isValidating, [ownedTokenIds.isValidating]);
 
   const error = useMemo(() => ownedTokenIds.error, [ownedTokenIds.error]);
 
-  const isOwnedNFT = useMemo(() => (tokenId ? ownedTokenIds.data?.tokens.includes(tokenId) : false), [ownedTokenIds.data?.tokens, tokenId]);
+  const isOwnedNFT = useMemo(() => ownedTokenIds.data?.tokens.includes(tokenId), [ownedTokenIds.data?.tokens, tokenId]);
 
   return { isOwnedNFT, isValidating, error };
 }

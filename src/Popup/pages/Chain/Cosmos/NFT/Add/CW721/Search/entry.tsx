@@ -7,7 +7,7 @@ import Button from '~/Popup/components/common/Button';
 import InformContainer from '~/Popup/components/common/InformContainer';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTsMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTsMetaSWR';
-import { useOwnedNFTTokenIDsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useOwnedNFTTokenIDsSWR';
+import { useOwnedNFTsTokenIDsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useOwnedNFTsTokenIDsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -80,7 +80,7 @@ export default function Entry({ chain }: EntryProps) {
 
   const testContractAddresses = testList.map((test) => test.address);
 
-  const ownedNFTTokenIds = useOwnedNFTTokenIDsSWR({ chain, contractAddresses: testContractAddresses, ownerAddress: currentAddress });
+  const ownedNFTTokenIds = useOwnedNFTsTokenIDsSWR({ chain, contractAddresses: testContractAddresses, ownerAddress: currentAddress });
 
   const flattendOwnedNFTTokenIds = useMemo(
     () =>

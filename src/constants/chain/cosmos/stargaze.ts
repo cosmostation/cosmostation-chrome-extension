@@ -28,4 +28,5 @@ export const STARGAZE: CosmosChain = {
     average: '0.25',
   },
   gas: { send: '100000' },
+  cosmWasm: true,
 };

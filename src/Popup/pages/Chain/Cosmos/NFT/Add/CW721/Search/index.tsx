@@ -7,8 +7,7 @@ import Layout from './layout';
 export default function Search() {
   const { currentChain } = useCurrentChain();
 
-  // && currentChain.cosmWasm
-  if (currentChain.line === 'COSMOS') {
+  if (currentChain.line === 'COSMOS' && currentChain.cosmWasm) {
     return (
       <Lock>
         <Layout>
