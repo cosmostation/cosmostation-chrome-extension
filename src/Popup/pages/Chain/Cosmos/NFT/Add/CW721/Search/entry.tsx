@@ -43,19 +43,24 @@ type CosmosNFTParams = Omit<CosmosNFT, 'id'>;
 export default function Entry({ chain }: EntryProps) {
   const testList = [
     {
-      address: 'stars1gy069cfum2nyqw92z3emt7lsged4rgjn53kzvqzsk4aya8zl9whsh2m5ca',
-      name: 'Cosmic Robotz',
-      symbol: 'CRZ',
-    },
-    {
-      address: 'stars1p9k65klczkpn3877d9ehxamyv3kjqtpq6lldptcy6ngy74cr7c9syhgk7e',
-      name: 'Mantra Punks',
-      symbol: 'MTP',
-    },
-    {
-      address: 'stars1vej848r9f4mwkuaea5j3pwclsvm3g8s5ustxpau4mmx435qu6q9syc20wa',
-      name: 'SG721-Venus',
-      symbol: 'VENUS',
+      chainId: 'stargaze-1',
+      smartContracts: [
+        {
+          address: 'stars1gy069cfum2nyqw92z3emt7lsged4rgjn53kzvqzsk4aya8zl9whsh2m5ca',
+          name: 'Cosmic Robotz',
+          symbol: 'CRZ',
+        },
+        {
+          address: 'stars1p9k65klczkpn3877d9ehxamyv3kjqtpq6lldptcy6ngy74cr7c9syhgk7e',
+          name: 'Mantra Punks',
+          symbol: 'MTP',
+        },
+        {
+          address: 'stars1vej848r9f4mwkuaea5j3pwclsvm3g8s5ustxpau4mmx435qu6q9syc20wa',
+          name: 'SG721-Venus',
+          symbol: 'VENUS',
+        },
+      ],
     },
   ];
 
@@ -78,7 +83,7 @@ export default function Entry({ chain }: EntryProps) {
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const testContractAddresses = testList.map((test) => test.address);
+  const testContractAddresses = testList.find((item) => item.chainId === chain.id)?.smartContracts.map((nft) => nft.address) || [];
 
   const ownedNFTTokenIds = useOwnedNFTsTokenIDsSWR({ chain, contractAddresses: testContractAddresses, ownerAddress: currentAddress });
 
