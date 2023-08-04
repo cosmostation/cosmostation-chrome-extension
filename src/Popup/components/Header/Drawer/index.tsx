@@ -48,6 +48,7 @@ import Lock16 from '~/images/icons/Lock16.svg';
 import Logo24Icon from '~/images/icons/Logo28.svg';
 import PasswordChangeIcon from '~/images/icons/PasswordChange.svg';
 import Provider24Icon from '~/images/icons/Provider24.svg';
+import SettingIcon24 from '~/images/icons/Setting24.svg';
 
 type DrawerProps = Omit<BaseDrawerProps, 'children'>;
 
@@ -142,6 +143,10 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
 
             <ItemButton Icon={Guide24Icon} onClick={() => window.open('https://docs.cosmostation.io/integration-extension/installation')}>
               {t('components.Header.Drawer.index.guide')}
+            </ItemButton>
+
+            <ItemButton Icon={SettingIcon24} onClick={() => navigate('/chain/management', { isDuplicateCheck: true })}>
+              {t('components.Header.Drawer.index.addCustomChain')}
             </ItemButton>
 
             <ItemButton Icon={HelpIcon} onClick={() => window.open('https://cosmostation.io/contact')}>
