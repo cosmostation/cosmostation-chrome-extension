@@ -5,17 +5,17 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import type { CosmosChain } from '~/types/chain';
 
-import { useGetNFTTokenIdsSWR } from './useGetNFTTokenIdsSWR';
+import { useNFTTokenIdsSWR } from './useNFTTokenIdsSWR';
 import { useAccounts } from '../../cache/useAccounts';
 
-type UseGetNFTOwnerSWR = {
+type UseNFTOwnerSWR = {
   chain: CosmosChain;
   ownerAddress: string;
   contractAddress: string;
   tokenId: string;
 };
 
-export function useGetNFTOwnerSWR({ chain, contractAddress, ownerAddress, tokenId }: UseGetNFTOwnerSWR, config?: SWRConfiguration) {
+export function useNFTOwnerSWR({ chain, contractAddress, ownerAddress, tokenId }: UseNFTOwnerSWR, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
   const accounts = useAccounts(config?.suspense);
 
@@ -28,7 +28,7 @@ export function useGetNFTOwnerSWR({ chain, contractAddress, ownerAddress, tokenI
 
   const ownerWalletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
-  const ownedTokenIds = useGetNFTTokenIdsSWR({ chain, contractAddress, ownerAddress: ownerWalletAddress });
+  const ownedTokenIds = useNFTTokenIdsSWR({ chain, contractAddress, ownerAddress: ownerWalletAddress });
 
   const isValidating = useMemo(() => ownedTokenIds.isValidating, [ownedTokenIds.isValidating]);
 

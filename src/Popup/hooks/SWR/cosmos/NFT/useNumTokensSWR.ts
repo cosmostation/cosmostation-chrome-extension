@@ -7,18 +7,13 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { NFTInfoPayload, SmartPayload } from '~/types/cosmos/contract';
+import type { SmartPayload } from '~/types/cosmos/contract';
+import type { NumTokensInfo } from '~/types/cosmos/nft';
 
-type UseGetNFTURISWRProps = {
-  chain: CosmosChain;
-  contractAddress: string;
-  tokenId: string;
-};
+export function useNumTokensSWR(chain: CosmosChain, contractAddress: string, config?: SWRConfiguration) {
+  const { getCW721NumTokens } = useMemo(() => cosmosURL(chain), [chain]);
 
-export function useGetNFTURISWR({ chain, contractAddress, tokenId }: UseGetNFTURISWRProps, config?: SWRConfiguration) {
-  const { getCW721NFTInfo } = useMemo(() => cosmosURL(chain), [chain]);
-
-  const requestURL = useMemo(() => getCW721NFTInfo(contractAddress, tokenId), [contractAddress, getCW721NFTInfo, tokenId]);
+  const requestURL = useMemo(() => getCW721NumTokens(contractAddress), [contractAddress, getCW721NumTokens]);
 
   const regex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
 
@@ -32,20 +27,19 @@ export function useGetNFTURISWR({ chain, contractAddress, tokenId }: UseGetNFTUR
     }
   };
 
-  const { data, isValidating, error, mutate } = useSWR<SmartPayload | null, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<SmartPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    errorRetryCount: 3,
-    errorRetryInterval: 5000,
+    errorRetryCount: 0,
     isPaused: () => !isValidContractAddress,
     ...config,
   });
 
   const returnData = useMemo(
-    () => (data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as NFTInfoPayload) : undefined),
+    () => (data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as NumTokensInfo) : undefined),
     [data?.result?.smart],
   );
 
-  return { data: returnData, isValidating, error, mutate };
+  return { data: returnData, error, mutate };
 }

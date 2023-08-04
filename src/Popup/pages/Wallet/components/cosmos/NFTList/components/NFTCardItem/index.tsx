@@ -7,8 +7,8 @@ import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTMetaSWR';
-import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTOwnerSWR';
+import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
+import { useNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTOwnerSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayTokenId } from '~/Popup/utils/nft';
@@ -57,9 +57,9 @@ export default function NFTCardItem({ chain, nft, onClick, onClickDelete }: NFTC
 
   const { tokenId, address } = nft;
 
-  const nftMeta = useGetNFTMetaSWR({ chain, contractAddress: address, tokenId });
+  const nftMeta = useNFTMetaSWR({ chain, contractAddress: address, tokenId });
 
-  const isOwnedNFT = useGetNFTOwnerSWR({ chain, contractAddress: address, tokenId, ownerAddress: currentAddress });
+  const isOwnedNFT = useNFTOwnerSWR({ chain, contractAddress: address, tokenId, ownerAddress: currentAddress });
   return (
     <StyledButton disabled={!isOwnedNFT.isOwnedNFT} onClick={onClick}>
       <BodyContainer>
@@ -128,8 +128,8 @@ type NFTItemErrorProps = Pick<NFTCardItemProps, 'chain' | 'nft' | 'onClickDelete
 export function NFTCardItemError({ chain, nft, onClickDelete, resetErrorBoundary }: NFTItemErrorProps) {
   const { address, tokenId, ownerAddress } = nft;
 
-  useGetNFTMetaSWR({ chain, contractAddress: address, tokenId });
-  useGetNFTOwnerSWR({ chain, contractAddress: address, tokenId, ownerAddress });
+  useNFTMetaSWR({ chain, contractAddress: address, tokenId });
+  useNFTOwnerSWR({ chain, contractAddress: address, tokenId, ownerAddress });
 
   const [isLoading, setIsLoading] = useState(false);
 

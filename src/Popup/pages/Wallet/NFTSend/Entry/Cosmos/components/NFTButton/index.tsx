@@ -6,7 +6,7 @@ import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTMetaSWR';
+import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
 import { toDisplayCWTokenStandard } from '~/Popup/utils/cosmos';
 import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
@@ -35,7 +35,7 @@ type NFTButtonProps = ComponentProps<typeof Button> & {
 export default function NFTButton({ currentNFT, chain, isActive, ...remainder }: NFTButtonProps) {
   const { address, tokenType, tokenId } = currentNFT || {};
 
-  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, chain });
+  const { data: nftMeta } = useNFTMetaSWR({ contractAddress: address, tokenId, chain });
 
   const shorterContractAddress = useMemo(() => shorterAddress(address, 14), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 10), [tokenId]);

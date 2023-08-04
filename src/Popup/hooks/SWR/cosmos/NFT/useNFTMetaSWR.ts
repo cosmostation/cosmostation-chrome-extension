@@ -7,25 +7,25 @@ import { get, isAxiosError } from '~/Popup/utils/axios';
 import { concatJsonFileType, convertIpfs } from '~/Popup/utils/nft';
 import { httpsRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { GetNFTMetaPayload } from '~/types/cosmos/nft';
+import type { NFTMetaPayload } from '~/types/cosmos/nft';
 
-import { useGetNFTURISWR } from './useGetNFTURISWR';
+import { useNFTURISWR } from './useNFTURISWR';
 
-type UseGetNFTMetaSWR = {
+type UseNFTMetaSWR = {
   chain: CosmosChain;
   contractAddress: string;
   tokenId: string;
 };
 
-export function useGetNFTMetaSWR({ chain, contractAddress, tokenId }: UseGetNFTMetaSWR, config?: SWRConfiguration) {
-  const nftSourceURI = useGetNFTURISWR({ chain, contractAddress: contractAddress || '', tokenId: tokenId || '' }, config);
+export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR, config?: SWRConfiguration) {
+  const nftSourceURI = useNFTURISWR({ chain, contractAddress: contractAddress || '', tokenId: tokenId || '' }, config);
 
   const paramURL = useMemo(() => {
     if (nftSourceURI.data?.token_uri) {
       if (nftSourceURI.data?.token_uri.includes('ipfs:')) {
         return concatJsonFileType(convertIpfs(nftSourceURI.data?.token_uri));
       }
-      return nftSourceURI.data;
+      return nftSourceURI.data.token_uri;
     }
     return '';
   }, [nftSourceURI.data]);
@@ -40,7 +40,7 @@ export function useGetNFTMetaSWR({ chain, contractAddress, tokenId }: UseGetNFTM
         throw nftSourceURI.error;
       }
 
-      return await get<GetNFTMetaPayload>(fetchUrl);
+      return await get<NFTMetaPayload>(fetchUrl);
     } catch (e) {
       if (isAxiosError(e)) {
         if (e.response?.status === 404) {
@@ -51,7 +51,7 @@ export function useGetNFTMetaSWR({ chain, contractAddress, tokenId }: UseGetNFTM
     }
   };
 
-  const { data, isValidating, error, mutate } = useSWR<GetNFTMetaPayload | null, AxiosError>(paramURL, fetcher, {
+  const { data, isValidating, error, mutate } = useSWR<NFTMetaPayload | null, AxiosError>(paramURL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,

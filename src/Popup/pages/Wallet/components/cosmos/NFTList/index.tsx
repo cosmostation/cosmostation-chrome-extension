@@ -4,7 +4,7 @@ import { Typography } from '@mui/material';
 
 import AddButton from '~/Popup/components/AddButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useGetContractsInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetContractsInfoSWR';
+import { useContractsInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useContractsInfoSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -50,7 +50,7 @@ export default function NFTList({ chain }: NFTListProps) {
 
   const nftContractAddresses = useMemo(() => Array.from(new Set(ownedCosmosNFTs.map((item) => item.address))), [ownedCosmosNFTs]);
 
-  const nftContractsInfo = useGetContractsInfoSWR(chain, nftContractAddresses);
+  const nftContractsInfo = useContractsInfoSWR(chain, nftContractAddresses);
 
   const typeInfos = useMemo(() => {
     const infos: TypeInfo[] = [];

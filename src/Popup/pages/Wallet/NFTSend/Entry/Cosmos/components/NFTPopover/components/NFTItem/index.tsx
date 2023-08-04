@@ -6,8 +6,8 @@ import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTMetaSWR';
-import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTOwnerSWR';
+import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
+import { useNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTOwnerSWR';
 import { toDisplayCWTokenStandard } from '~/Popup/utils/cosmos';
 import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
@@ -36,9 +36,9 @@ type NFTItemProps = ComponentProps<typeof NFTButton> & {
 const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ chain, nft, isActive, ...remainder }, ref) => {
   const { tokenId, tokenType, address, ownerAddress } = nft;
 
-  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, chain });
+  const { data: nftMeta } = useNFTMetaSWR({ contractAddress: address, tokenId, chain });
 
-  const isOwnedNFT = useGetNFTOwnerSWR({ contractAddress: address, ownerAddress, tokenId, chain });
+  const isOwnedNFT = useNFTOwnerSWR({ contractAddress: address, ownerAddress, tokenId, chain });
 
   const shorterContractAddress = useMemo(() => shorterAddress(address, 14), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 9), [tokenId]);

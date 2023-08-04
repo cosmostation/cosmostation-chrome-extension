@@ -7,9 +7,9 @@ import { get, isAxiosError } from '~/Popup/utils/axios';
 import { concatJsonFileType, convertIpfs } from '~/Popup/utils/nft';
 import { httpsRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { CosmosNFTMeta, GetNFTMetaPayload } from '~/types/cosmos/nft';
+import type { CosmosNFTMeta, NFTMetaPayload } from '~/types/cosmos/nft';
 
-import { useGetNFTsURISWR } from './useGetNFTsURISWR';
+import { useNFTsURISWR } from './useNFTsURISWR';
 
 type NFTInfo = {
   contractAddress: string;
@@ -25,13 +25,13 @@ type MultiFetcherParams = {
   fetcherParam: FetcherParams[];
 };
 
-type UseGetNFTsMetaSWR = {
+type UseNFTsMetaSWR = {
   chain: CosmosChain;
   nftInfos: NFTInfo[];
 };
 
-export function useGetNFTsMetaSWR({ chain, nftInfos }: UseGetNFTsMetaSWR, config?: SWRConfiguration) {
-  const ownedNFTSourceURI = useGetNFTsURISWR({ chain, nftInfos }, config);
+export function useNFTsMetaSWR({ chain, nftInfos }: UseNFTsMetaSWR, config?: SWRConfiguration) {
+  const ownedNFTSourceURI = useNFTsURISWR({ chain, nftInfos }, config);
 
   const fetcherParams = useMemo(
     () =>
@@ -55,7 +55,7 @@ export function useGetNFTsMetaSWR({ chain, nftInfos }: UseGetNFTsMetaSWR, config
         throw ownedNFTSourceURI.error;
       }
 
-      const nftMeta = await get<GetNFTMetaPayload>(fetchUrl);
+      const nftMeta = await get<NFTMetaPayload>(fetchUrl);
       return {
         ...nftMeta,
         contractAddress: nftInfo.contractAddress,
@@ -80,7 +80,7 @@ export function useGetNFTsMetaSWR({ chain, nftInfos }: UseGetNFTsMetaSWR, config
       }),
     );
 
-  const { data, isValidating, error, mutate } = useSWR<PromiseSettledResult<GetNFTMetaPayload | null>[], AxiosError>(
+  const { data, isValidating, error, mutate } = useSWR<PromiseSettledResult<NFTMetaPayload | null>[], AxiosError>(
     { fetcherParam: fetcherParams },
     multiFetcher,
     {

@@ -6,8 +6,8 @@ import { InputAdornment, Typography } from '@mui/material';
 import Button from '~/Popup/components/common/Button';
 import InformContainer from '~/Popup/components/common/InformContainer';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useGetNFTsMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTsMetaSWR';
-import { useGetOwnedNFTTokenIDsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetOwnedNFTTokenIDsSWR';
+import { useNFTsMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTsMetaSWR';
+import { useOwnedNFTTokenIDsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useOwnedNFTTokenIDsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -80,7 +80,7 @@ export default function Entry({ chain }: EntryProps) {
 
   const testContractAddresses = testList.map((test) => test.address);
 
-  const ownedNFTTokenIds = useGetOwnedNFTTokenIDsSWR({ chain, contractAddresses: testContractAddresses, ownerAddress: currentAddress });
+  const ownedNFTTokenIds = useOwnedNFTTokenIDsSWR({ chain, contractAddresses: testContractAddresses, ownerAddress: currentAddress });
 
   const flattendOwnedNFTTokenIds = useMemo(
     () =>
@@ -104,7 +104,7 @@ export default function Entry({ chain }: EntryProps) {
     [currentAddress, currentCosmosNFTs, flattendOwnedNFTTokenIds],
   );
 
-  const ownedNFTsMeta = useGetNFTsMetaSWR({ chain, nftInfos: notAddedNFTs });
+  const ownedNFTsMeta = useNFTsMetaSWR({ chain, nftInfos: notAddedNFTs });
 
   const [debouncedSearch] = useDebounce(search, 500);
 

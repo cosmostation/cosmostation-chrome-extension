@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
-import { InputAdornment } from '@mui/material';
+import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_SEND_GAS } from '~/constants/chain';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
@@ -11,16 +11,17 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTOwnerSWR';
+import { useNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTOwnerSWR';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
+import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { ceil, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
@@ -30,10 +31,11 @@ import type { CosmosNFT } from '~/types/cosmos/nft';
 
 import NFTButton from './components/NFTButton';
 import NFTPopover from './components/NFTPopover';
-import { BottomContainer, Container, Div, StyledInput, StyledTextarea } from './styled';
+import { Address, AddressContainer, BottomContainer, CheckAddressIconContainer, Container, Div, StyledInput, StyledTextarea } from './styled';
 
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
+import CheckAddress16Icon from '~/images/icons/CheckAddress16.svg';
 
 type CosmosProps = {
   chain: CosmosChain;
@@ -67,9 +69,15 @@ export default function Cosmos({ chain }: CosmosProps) {
   const [recipientAddress, setRecipientAddress] = useState('');
   const [debouncedRecipientAddress] = useDebounce(recipientAddress, 500);
 
+  const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
+
+  const { data: ICNS } = useICNSSWR({ name: addressRegex.test(debouncedRecipientAddress) ? '' : debouncedRecipientAddress });
+
+  const currentReceipientAddress = useMemo(() => ICNS?.data.bech32_address || recipientAddress, [ICNS?.data.bech32_address, recipientAddress]);
+
   const [currentNFT, setCurrentNFT] = useState<CosmosNFT>(currentCosmosNFTs.find((item) => isEqualsIgnoringCase(item.id, params.id)) || currentCosmosNFTs[0]);
 
-  const isOwnedNFT = useGetNFTOwnerSWR({ contractAddress: currentNFT?.address, ownerAddress: address, tokenId: currentNFT?.tokenId, chain });
+  const isOwnedNFT = useNFTOwnerSWR({ contractAddress: currentNFT?.address, ownerAddress: address, tokenId: currentNFT?.tokenId, chain });
 
   const { feeCoins } = useCurrentFeesSWR(chain);
 
@@ -94,8 +102,6 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate ?? chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate]);
 
-  const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39]), [chain.bech32Prefix.address]);
-
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
 
@@ -103,7 +109,7 @@ export default function Cosmos({ chain }: CosmosProps) {
   const isOpenPopover = Boolean(popoverAnchorEl);
 
   const memoizedSendAminoTx = useMemo(() => {
-    if (account.data?.value.account_number && addressRegex.test(debouncedRecipientAddress)) {
+    if (account.data?.value.account_number && addressRegex.test(currentReceipientAddress)) {
       const sequence = String(account.data?.value.sequence || '0');
 
       return {
@@ -128,7 +134,7 @@ export default function Cosmos({ chain }: CosmosProps) {
               contract: currentNFT.address,
               msg: {
                 transfer_nft: {
-                  recipient: debouncedRecipientAddress,
+                  recipient: currentReceipientAddress,
                   token_id: currentNFT.tokenId,
                 },
               },
@@ -143,7 +149,7 @@ export default function Cosmos({ chain }: CosmosProps) {
     account.data?.value.account_number,
     account.data?.value.sequence,
     addressRegex,
-    debouncedRecipientAddress,
+    currentReceipientAddress,
     nodeInfo.data?.default_node_info?.network,
     chain.chainId,
     chain.type,
@@ -180,11 +186,11 @@ export default function Cosmos({ chain }: CosmosProps) {
     if (!isOwnedNFT.isOwnedNFT) {
       return t('pages.Wallet.NFTSend.Entry.Cosmos.index.notOwnedNFT');
     }
-    if (!addressRegex.test(recipientAddress)) {
+    if (!addressRegex.test(currentReceipientAddress)) {
       return t('pages.Wallet.NFTSend.Entry.Cosmos.index.invalidAddress');
     }
 
-    if (isEqualsIgnoringCase(address, recipientAddress)) {
+    if (isEqualsIgnoringCase(address, currentReceipientAddress)) {
       return t('pages.Wallet.NFTSend.Entry.Cosmos.index.invalidAddress');
     }
 
@@ -192,12 +198,21 @@ export default function Cosmos({ chain }: CosmosProps) {
       return t('pages.Wallet.NFTSend.Entry.Cosmos.index.invalidAmount');
     }
 
-    // if (gt(expectedBaseFee, feeCoinBaseBalance)) {
-    //   return t('pages.Wallet.NFTSend.Entry.Cosmos.index.insufficientAmount');
-    // }
+    if (gt(currentCeilFeeAmount, currentFeeCoin.availableAmount)) {
+      return t('pages.Wallet.NFTSend.Entry.Cosmos.index.insufficientAmount');
+    }
 
     return '';
-  }, [address, addressRegex, currentFeeCoinDisplayAvailableAmount, isOwnedNFT.isOwnedNFT, recipientAddress, t]);
+  }, [
+    isOwnedNFT.isOwnedNFT,
+    addressRegex,
+    currentReceipientAddress,
+    address,
+    currentFeeCoinDisplayAvailableAmount,
+    currentCeilFeeAmount,
+    currentFeeCoin.availableAmount,
+    t,
+  ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
     setTimeout(() => {
@@ -252,6 +267,17 @@ export default function Cosmos({ chain }: CosmosProps) {
             value={recipientAddress}
           />
         </Div>
+
+        {ICNS?.data.bech32_address && (
+          <AddressContainer>
+            <CheckAddressIconContainer>
+              <CheckAddress16Icon />
+            </CheckAddressIconContainer>
+            <Address>
+              <Typography variant="h7">{ICNS.data.bech32_address}</Typography>
+            </Address>
+          </AddressContainer>
+        )}
 
         <StyledTextarea
           multiline

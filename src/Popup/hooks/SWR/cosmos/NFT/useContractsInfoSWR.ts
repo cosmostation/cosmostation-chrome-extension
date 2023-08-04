@@ -7,14 +7,14 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { GetNFTContractInfoPayload, SmartPayload } from '~/types/cosmos/contract';
+import type { NFTContractInfoPayload, SmartPayload } from '~/types/cosmos/contract';
 import type { ContractInfo } from '~/types/cosmos/nft';
 
 type MultiFetcherParams = {
   fetcherParam: string[];
 };
 
-export function useGetContractsInfoSWR(chain: CosmosChain, contractAddresses: string[], config?: SWRConfiguration) {
+export function useContractsInfoSWR(chain: CosmosChain, contractAddresses: string[], config?: SWRConfiguration) {
   const { getCW721ContractInfo } = useMemo(() => cosmosURL(chain), [chain]);
 
   const regex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
@@ -42,18 +42,14 @@ export function useGetContractsInfoSWR(chain: CosmosChain, contractAddresses: st
       }),
     );
 
-  const { data, error, mutate } = useSWR<PromiseSettledResult<GetNFTContractInfoPayload | null>[], AxiosError>(
-    { fetcherParam: contractAddresses },
-    multiFetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
-      errorRetryCount: 0,
-      isPaused: () => !contractAddresses,
-      ...config,
-    },
-  );
+  const { data, error, mutate } = useSWR<PromiseSettledResult<NFTContractInfoPayload | null>[], AxiosError>({ fetcherParam: contractAddresses }, multiFetcher, {
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+    revalidateOnReconnect: false,
+    errorRetryCount: 0,
+    isPaused: () => !contractAddresses,
+    ...config,
+  });
 
   const returnData = useMemo(
     () =>

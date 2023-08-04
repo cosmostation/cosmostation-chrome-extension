@@ -5,23 +5,23 @@ export type SmartPayload = {
   };
 };
 
-export type GetNFTCollectionInfoPayload = {
+export type NFTCollectionInfoPayload = {
   contractAddress: string;
   data: SmartPayload;
 };
 
-export type GetNFTContractInfoPayload = {
+export type NFTContractInfoPayload = {
   contractAddress: string;
   data: SmartPayload;
 };
 
-export type GetNFTsURIPayload = {
+export type NFTsURIPayload = {
   contractAddress: string;
   tokenId: string;
   data: SmartPayload;
 };
 
-export type GetOwnedNFTTokenIdsPayload = {
+export type OwnedNFTTokenIdsPayload = {
   contractAddress: string;
   data: SmartPayload;
 };

@@ -1093,6 +1093,7 @@
                   "copied": "Copied",
                   "description": "Description",
                   "name": "Name",
+                  "numberOfNFT": "Number of NFT",
                   "ownerAddress": "Owner",
                   "source": "Source",
                   "symbol": "Symbol",

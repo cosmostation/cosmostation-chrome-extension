@@ -11,9 +11,9 @@ import Image from '~/Popup/components/common/Image';
 import Input from '~/Popup/components/common/Input';
 import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTMetaSWR';
-import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTOwnerSWR';
-import { useGetNFTURISWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTURISWR';
+import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
+import { useNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTOwnerSWR';
+import { useNFTURISWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTURISWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -64,11 +64,11 @@ export default function Entry({ chain }: EntryProps) {
 
   const addressRegex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
 
-  const isOwnedNFT = useGetNFTOwnerSWR({ chain, contractAddress: debouncedContractAddress, tokenId: debouncedTokenId, ownerAddress: currentAddress });
+  const isOwnedNFT = useNFTOwnerSWR({ chain, contractAddress: debouncedContractAddress, tokenId: debouncedTokenId, ownerAddress: currentAddress });
 
-  const nftSourceURI = useGetNFTURISWR({ chain, contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
+  const nftSourceURI = useNFTURISWR({ chain, contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
 
-  const nftMeta = useGetNFTMetaSWR({ chain, contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
+  const nftMeta = useNFTMetaSWR({ chain, contractAddress: debouncedContractAddress, tokenId: debouncedTokenId });
 
   const isLoadingData = useMemo(
     () => nftSourceURI.isValidating || isOwnedNFT.isValidating || nftMeta.isValidating,

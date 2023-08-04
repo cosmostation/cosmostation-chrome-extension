@@ -8,7 +8,7 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { GetOwnedNFTTokenIdsPayload, SmartPayload } from '~/types/cosmos/contract';
+import type { OwnedNFTTokenIdsPayload, SmartPayload } from '~/types/cosmos/contract';
 import type { OwnedTokenIds } from '~/types/cosmos/nft';
 
 import { useAccounts } from '../../cache/useAccounts';
@@ -18,14 +18,14 @@ type MultiFetcherParams = {
   ownerAddress: string;
 };
 
-type UseGetOwnedNFTTokenIDsSWRSWR = {
+type UseOwnedNFTTokenIDsSWRSWR = {
   chain: CosmosChain;
   contractAddresses: string[];
   ownerAddress: string;
   limit?: string;
 };
 
-export function useGetOwnedNFTTokenIDsSWR({ chain, contractAddresses, ownerAddress, limit = '50' }: UseGetOwnedNFTTokenIDsSWRSWR, config?: SWRConfiguration) {
+export function useOwnedNFTTokenIDsSWR({ chain, contractAddresses, ownerAddress, limit = '50' }: UseOwnedNFTTokenIDsSWRSWR, config?: SWRConfiguration) {
   const accounts = useAccounts(config?.suspense);
 
   const { currentAccount } = useCurrentAccount();
@@ -64,7 +64,7 @@ export function useGetOwnedNFTTokenIDsSWR({ chain, contractAddresses, ownerAddre
       }),
     );
 
-  const { data, error, mutate } = useSWR<PromiseSettledResult<GetOwnedNFTTokenIdsPayload | null>[], AxiosError>(
+  const { data, error, mutate } = useSWR<PromiseSettledResult<OwnedNFTTokenIdsPayload | null>[], AxiosError>(
     { fetcherParam: contractAddresses, ownerAddress: ownerWalletAddress },
     multiFetcher,
     {

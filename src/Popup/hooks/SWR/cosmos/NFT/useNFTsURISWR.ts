@@ -7,28 +7,34 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { GetNFTCollectionInfoPayload, SmartPayload } from '~/types/cosmos/contract';
-import type { CollectionInfo } from '~/types/cosmos/nft';
+import type { NFTsURIPayload, SmartPayload } from '~/types/cosmos/contract';
+import type { NFTURIInfo } from '~/types/cosmos/nft';
+
+type NFTInfo = {
+  contractAddress: string;
+  tokenId: string;
+};
 
 type MultiFetcherParams = {
-  fetcherParam: string[];
+  fetcherParam: NFTInfo[];
 };
 
-type UseGetNFTCollectionsInfoSWRParams = {
+type UseNFTsURISWRProps = {
   chain: CosmosChain;
-  contractAddresses: string[];
+  nftInfos: NFTInfo[];
 };
 
-export function useGetNFTCollectionsInfoSWR({ chain, contractAddresses }: UseGetNFTCollectionsInfoSWRParams, config?: SWRConfiguration) {
-  const { getCW721CollectionInfo } = useMemo(() => cosmosURL(chain), [chain]);
+export function useNFTsURISWR({ chain, nftInfos }: UseNFTsURISWRProps, config?: SWRConfiguration) {
+  const { getCW721NFTInfo } = useMemo(() => cosmosURL(chain), [chain]);
 
   const regex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
 
-  const fetcher = async (fetchUrl: string, contractAddress: string) => {
+  const fetcher = async (fetchUrl: string, contractAddress: string, tokenId: string) => {
     try {
       const returnData = await get<SmartPayload>(fetchUrl);
       return {
         contractAddress,
+        tokenId,
         data: returnData,
       };
     } catch (e: unknown) {
@@ -39,36 +45,34 @@ export function useGetNFTCollectionsInfoSWR({ chain, contractAddresses }: UseGet
   const multiFetcher = (params: MultiFetcherParams) =>
     Promise.allSettled(
       params.fetcherParam.map((item) => {
-        const requestURL = getCW721CollectionInfo(item);
+        const requestURL = getCW721NFTInfo(item.contractAddress, item.tokenId);
 
-        const isValidContractAddress = regex.test(item);
+        const isValidContractAddress = regex.test(item.contractAddress);
 
-        return isValidContractAddress ? fetcher(requestURL, item) : null;
+        return isValidContractAddress ? fetcher(requestURL, item.contractAddress, item.tokenId) : null;
       }),
     );
 
-  const { data, error, mutate } = useSWR<PromiseSettledResult<GetNFTCollectionInfoPayload | null>[], AxiosError>(
-    { id: 'nftCollection', fetcherParam: contractAddresses },
-    multiFetcher,
-    {
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
-      errorRetryCount: 0,
-      isPaused: () => !contractAddresses,
-      ...config,
-    },
-  );
+  const { data, error, mutate } = useSWR<PromiseSettledResult<NFTsURIPayload | null>[], AxiosError>({ fetcherParam: nftInfos }, multiFetcher, {
+    revalidateOnFocus: false,
+    revalidateIfStale: false,
+    revalidateOnReconnect: false,
+    errorRetryCount: 3,
+    errorRetryInterval: 5000,
+    isPaused: () => !nftInfos,
+    ...config,
+  });
 
   const returnData = useMemo(
     () =>
       data
-        ? data.reduce((accumulator: CollectionInfo[], item) => {
+        ? data.reduce((accumulator: NFTURIInfo[], item) => {
             if (item.status === 'fulfilled' && item.value) {
               const newItem = {
                 ...JSON.parse(Buffer.from(item.value?.data.result.smart, 'base64').toString('utf-8')),
                 contractAddress: item.value.contractAddress,
-              } as CollectionInfo;
+                tokenId: item.value.tokenId,
+              } as NFTURIInfo;
               accumulator.push(newItem);
             }
             return accumulator;

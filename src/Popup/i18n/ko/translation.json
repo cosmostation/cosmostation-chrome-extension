@@ -1093,6 +1093,7 @@
                   "copied": "복사 되었습니다.",
                   "description": "NFT 설명",
                   "name": "이름",
+                  "numberOfNFT": "민팅된 NFT 수량",
                   "ownerAddress": "소유주",
                   "source": "소스",
                   "symbol": "심볼",

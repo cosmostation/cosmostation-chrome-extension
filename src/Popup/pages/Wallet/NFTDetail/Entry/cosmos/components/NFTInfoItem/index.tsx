@@ -6,8 +6,9 @@ import { Typography } from '@mui/material';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCollectionInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useCollectionInfoSWR';
 import { useContractInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useContractInfoSWR';
-import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTMetaSWR';
-import { useGetNFTURISWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTURISWR';
+import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
+import { useNFTURISWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTURISWR';
+import { useNumTokensSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNumTokensSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayCWTokenStandard } from '~/Popup/utils/cosmos';
 import { httpsRegex } from '~/Popup/utils/regex';
@@ -40,14 +41,18 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
 
   const { tokenType, address, tokenId, ownerAddress } = nft;
 
-  const { data: nftMetaSourceURI } = useGetNFTURISWR({ contractAddress: address, tokenId, chain });
+  const { data: nftMetaSourceURI } = useNFTURISWR({ contractAddress: address, tokenId, chain });
 
-  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: address, tokenId, chain });
+  const { data: nftMeta } = useNFTMetaSWR({ contractAddress: address, tokenId, chain });
 
   const { data: nftCollectionInfo } = useCollectionInfoSWR(chain, address);
 
   const { data: nftContractInfo } = useContractInfoSWR(chain, address);
 
+  const { data: mintedNFTsCount } = useNumTokensSWR(chain, address);
+
+  // "rpc error: code = Unknown desc = Error parsing into type levanamessages::nft::query::QueryMsg: unknown variant `collection_info`,
+  // expected one of `owner_of`, `approved_for_all`, `num_tokens`, `contract_info`, `nft_info`, `all_nft_info`, `tokens`, `all_tokens`, `minter`, `highest_token_id`: query wasm contract failed"
   const shorterOwnerAddress = useMemo(() => shorterAddress(ownerAddress, 14), [ownerAddress]);
   const shorterContractAddress = useMemo(() => shorterAddress(address, 14), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 14), [tokenId]);
@@ -170,7 +175,7 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
         </AttributeContainer>
       )}
 
-      {nftCollectionInfo && (
+      {(nftCollectionInfo || nftContractInfo) && (
         <AttributeContainer>
           <AttributeHeaderContainer>
             <Typography variant="h4">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.collection')}</Typography>
@@ -194,27 +199,39 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
                   <Typography variant="h5">{nftContractInfo.symbol}</Typography>
                 </ItemRightContainer>
               </ItemContainer>
+              {mintedNFTsCount?.count && (
+                <ItemContainer>
+                  <ItemTitleContainer>
+                    <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.numberOfNFT')}</Typography>
+                  </ItemTitleContainer>
+                  <ItemRightContainer>
+                    <Typography variant="h5">{mintedNFTsCount.count}</Typography>
+                  </ItemRightContainer>
+                </ItemContainer>
+              )}
             </>
           )}
-
-          <ItemColumnContainer>
-            <ItemTitleContainer>
-              <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.description')}</Typography>
-            </ItemTitleContainer>
-            <ItemValueContainer>{nftCollectionInfo.description}</ItemValueContainer>
-          </ItemColumnContainer>
-
-          {nftCollectionInfo.external_url && (
-            <ItemContainer>
-              <ItemTitleContainer>
-                <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.description')}</Typography>
-              </ItemTitleContainer>
-              <ItemRightContainer>
-                <URLButton type="button" onClick={() => window.open(nftCollectionInfo.external_url)}>
-                  <Typography variant="h5">{shorterCollectionExternalURL}</Typography>
-                </URLButton>
-              </ItemRightContainer>
-            </ItemContainer>
+          {nftCollectionInfo && (
+            <>
+              <ItemColumnContainer>
+                <ItemTitleContainer>
+                  <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.description')}</Typography>
+                </ItemTitleContainer>
+                <ItemValueContainer>{nftCollectionInfo.description}</ItemValueContainer>
+              </ItemColumnContainer>
+              {nftCollectionInfo.external_url && (
+                <ItemContainer>
+                  <ItemTitleContainer>
+                    <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.description')}</Typography>
+                  </ItemTitleContainer>
+                  <ItemRightContainer>
+                    <URLButton type="button" onClick={() => window.open(nftCollectionInfo.external_url)}>
+                      <Typography variant="h5">{shorterCollectionExternalURL}</Typography>
+                    </URLButton>
+                  </ItemRightContainer>
+                </ItemContainer>
+              )}
+            </>
           )}
         </AttributeContainer>
       )}

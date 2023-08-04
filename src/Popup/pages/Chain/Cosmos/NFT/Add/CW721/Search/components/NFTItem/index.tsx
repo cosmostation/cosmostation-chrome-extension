@@ -3,7 +3,7 @@ import { Tooltip, Typography } from '@mui/material';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Image from '~/Popup/components/common/Image';
-import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTMetaSWR';
+import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
 import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
@@ -30,7 +30,7 @@ type NFTItemProps = {
 };
 
 export default function NFTItem({ onClick, isActive, chain, contractAddress, tokenId }: NFTItemProps) {
-  const nftMeta = useGetNFTMetaSWR({ chain, contractAddress, tokenId });
+  const nftMeta = useNFTMetaSWR({ chain, contractAddress, tokenId });
 
   const shorterContractAddress = useMemo(() => shorterAddress(contractAddress, 16), [contractAddress]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 9), [tokenId]);

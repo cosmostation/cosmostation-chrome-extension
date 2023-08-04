@@ -9,8 +9,8 @@ import Image from '~/Popup/components/common/Image';
 import InformContainer from '~/Popup/components/common/InformContainer';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useGetNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTMetaSWR';
-import { useGetNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useGetNFTOwnerSWR';
+import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
+import { useNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTOwnerSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -62,9 +62,9 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const currentNFT = useMemo(() => currentCosmosNFTs.find((item) => isEqualsIgnoringCase(item.id, params.id)) || null, [currentCosmosNFTs, params.id]);
 
-  const { data: nftMeta } = useGetNFTMetaSWR({ contractAddress: currentNFT?.address || '', tokenId: currentNFT?.tokenId || '', chain });
+  const { data: nftMeta } = useNFTMetaSWR({ contractAddress: currentNFT?.address || '', tokenId: currentNFT?.tokenId || '', chain });
 
-  const isOwnedNFT = useGetNFTOwnerSWR({ contractAddress: currentNFT?.address || '', ownerAddress: currentAddress, tokenId: currentNFT?.tokenId || '', chain });
+  const isOwnedNFT = useNFTOwnerSWR({ contractAddress: currentNFT?.address || '', ownerAddress: currentAddress, tokenId: currentNFT?.tokenId || '', chain });
 
   const errorMessage = useMemo(() => {
     if (!isOwnedNFT.isOwnedNFT) {

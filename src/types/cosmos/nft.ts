@@ -9,7 +9,7 @@ export type CosmosNFT = {
   address: string;
 };
 
-export type GetNFTMetaPayload = {
+export type NFTMetaPayload = {
   dna?: string;
   name?: string;
   description?: string;
@@ -60,6 +60,10 @@ export type ContractInfo = {
   name: string;
   symbol: string;
   contractAddress?: string;
+};
+
+export type NumTokensInfo = {
+  count: string;
 };
 
 export type NFTURIInfo = {
