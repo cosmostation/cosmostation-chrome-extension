@@ -19,14 +19,11 @@ import type {
   CosAddChain,
   CosAddTokensCW20,
   CosAddTokensCW20Internal,
-  CosDeleteAutoSign,
   CosDisconnect,
-  CosGetAutoSign,
   CosGetBalanceCW20,
   CosGetTokenInfoCW20,
   CosRequestAccount,
   CosSendTransaction,
-  CosSetAutoSign,
   CosSignAmino,
   CosSignDirect,
   CosSignMessage,
@@ -95,9 +92,6 @@ export type EthereumRequestMessage =
 export type CosmosRequestMessage =
   | CosRequestAccount
   | CosAddChain
-  | CosSetAutoSign
-  | CosGetAutoSign
-  | CosDeleteAutoSign
   | CosSignAmino
   | CosSignDirect
   | CosSupportedChainNames

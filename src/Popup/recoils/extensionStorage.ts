@@ -50,8 +50,6 @@ export const extensionStorageDefault: ExtensionStorage = {
 
   ethereumNFTs: [],
 
-  autoSigns: [],
-
   ledgerTransportType: 'HID',
 
   providers: { keplr: false, metamask: false, aptos: false },

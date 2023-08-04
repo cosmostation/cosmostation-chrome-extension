@@ -56,18 +56,6 @@ export default function Routes({ children }: RoutesType) {
         navigate('/popup/cosmos/sign/message');
       }
 
-      if (extensionStorage.queues[0].message.method === 'cos_setAutoSign') {
-        navigate('/popup/cosmos/auto-sign/set');
-      }
-
-      if (extensionStorage.queues[0].message.method === 'cos_getAutoSign') {
-        navigate('/popup/cosmos/auto-sign/get');
-      }
-
-      if (extensionStorage.queues[0].message.method === 'cos_deleteAutoSign') {
-        navigate('/popup/cosmos/auto-sign/delete');
-      }
-
       if (extensionStorage.queues[0].message.method === 'cos_addTokensCW20Internal') {
         navigate('/popup/cosmos/add-tokens');
       }
