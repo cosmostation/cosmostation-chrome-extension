@@ -33,7 +33,6 @@ import {
 } from './styled';
 
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
-import AutoSign24Icon from '~/images/icons/AutoSign24.svg';
 import Close24Icon from '~/images/icons/Close24.svg';
 import Connect24Icon from '~/images/icons/Connect24.svg';
 import Cosmostation14Icon from '~/images/icons/Cosmostation14.svg';
@@ -48,6 +47,7 @@ import Lock16 from '~/images/icons/Lock16.svg';
 import Logo24Icon from '~/images/icons/Logo28.svg';
 import PasswordChangeIcon from '~/images/icons/PasswordChange.svg';
 import Provider24Icon from '~/images/icons/Provider24.svg';
+import SettingIcon24 from '~/images/icons/Setting24.svg';
 
 type DrawerProps = Omit<BaseDrawerProps, 'children'>;
 
@@ -116,10 +116,6 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
               {t('components.Header.Drawer.index.connectedSites')}
             </ItemButton>
 
-            <ItemButton Icon={AutoSign24Icon} onClick={() => navigate('/setting/auto-sign', { isDuplicateCheck: true })}>
-              {t('components.Header.Drawer.index.autoSign')}
-            </ItemButton>
-
             <ItemButton Icon={LanguageChangeIcon} onClick={() => navigate('/setting/change-language', { isDuplicateCheck: true })}>
               {t('components.Header.Drawer.index.language')}
             </ItemButton>
@@ -142,6 +138,10 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
 
             <ItemButton Icon={Guide24Icon} onClick={() => window.open('https://docs.cosmostation.io/integration-extension/installation')}>
               {t('components.Header.Drawer.index.guide')}
+            </ItemButton>
+
+            <ItemButton Icon={SettingIcon24} onClick={() => navigate('/chain/management', { isDuplicateCheck: true })}>
+              {t('components.Header.Drawer.index.addCustomChain')}
             </ItemButton>
 
             <ItemButton Icon={HelpIcon} onClick={() => window.open('https://cosmostation.io/contact')}>

@@ -25,7 +25,7 @@ export default function Entry() {
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const { accounts, accountName, allowedOrigins, autoSigns } = extensionStorage;
+  const { accounts, accountName, allowedOrigins } = extensionStorage;
 
   const { currentAccount } = useCurrentAccount();
 
@@ -74,9 +74,6 @@ export default function Entry() {
                         onClick={async () => {
                           const newAllowedOrigins = allowedOrigins.filter((item) => !(origin.accountId === item.accountId && origin.origin === item.origin));
                           await setExtensionStorage('allowedOrigins', newAllowedOrigins);
-
-                          const newAutoSigns = autoSigns.filter((autoSign) => !(autoSign.accountId === origin.accountId && autoSign.origin === origin.origin));
-                          await setExtensionStorage('autoSigns', newAutoSigns);
                         }}
                       >
                         <Close16Icon />

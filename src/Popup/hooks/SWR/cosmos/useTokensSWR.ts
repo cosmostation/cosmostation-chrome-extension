@@ -11,7 +11,7 @@ import type { CW20AssetResponse } from '~/types/cosmos/asset';
 export function useTokensSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const mappingName = convertCosmosToAssetName(chain);
 
-  const requestURL = `https://api.mintscan.io/v3/assets/${mappingName}/cw20`;
+  const requestURL = `https://front.api.mintscan.io/v3/assets/${mappingName}/cw20`;
 
   const fetcher = async (fetchUrl: string) => {
     try {

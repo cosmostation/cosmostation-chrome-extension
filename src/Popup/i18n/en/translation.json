@@ -55,7 +55,7 @@
       "Drawer": {
         "index": {
           "addressBook": "Address book",
-          "autoSign": "Auto sign",
+          "addCustomChain": "Add Custom Chain",
           "changePassword": "Change password",
           "connectedSites": "Connected sites",
           "currency": "Currency",
@@ -663,14 +663,6 @@
             "question": "Would you like to import these tokens?"
           }
         },
-        "AutoSign": {
-          "entry": {
-            "description1": "Activating Auto Sign can put your wallet at high risk of unconscious fund loss - activate ONLY on fully trusted dApps.",
-            "description2": "Cosmostation will NOT be responsible for any related accidents. Please proceed at your own risk.",
-            "question": "Do you want to activate Auto Sign?",
-            "warning": "WARNING!"
-          }
-        },
         "Sign": {
           "Amino": {
             "components": {
@@ -1002,11 +994,6 @@
         },
         "layout": {
           "title": "Address book"
-        }
-      },
-      "AutoSign": {
-        "layout": {
-          "title": "Auto Sign"
         }
       },
       "ChangeCurrency": {

@@ -22,7 +22,7 @@ export function useTokensSWR(config?: SWRConfiguration) {
 
   const mappingName = nameMap[currentEthereumNetwork.id] || currentEthereumNetwork.networkName.toLowerCase();
 
-  const requestURL = `https://api.mintscan.io/v3/assets/${mappingName}/erc20`;
+  const requestURL = `https://front.api.mintscan.io/v3/assets/${mappingName}/erc20`;
 
   const fetcher = async (fetchUrl: string) => {
     try {

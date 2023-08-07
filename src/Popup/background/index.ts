@@ -135,8 +135,6 @@ function background() {
         await setStorage('selectedAptosNetworkId', APTOS_NETWORKS[0].id);
         await setStorage('selectedSuiNetworkId', SUI_NETWORKS[0].id);
 
-        await setStorage('autoSigns', []);
-
         await setSessionStorage('password', null);
 
         await openTab();

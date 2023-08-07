@@ -11,7 +11,7 @@ import type { AssetV3Response } from '~/types/cosmos/asset';
 export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
   const mappingName = chain ? convertCosmosToAssetName(chain) : '';
 
-  const requestURL = 'https://api.mintscan.io/v3/assets';
+  const requestURL = 'https://front.api.mintscan.io/v3/assets';
 
   const fetcher = async (fetchUrl: string) => {
     try {

@@ -68,7 +68,7 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
             <Typography variant="h5">{t('pages.Wallet.components.Header.ChainPopover.index.title')}</Typography>
           </HeaderLeftContainer>
           <HeaderRightContainer>
-            <StyledIconButton onClick={() => navigate('/chain/management')}>
+            <StyledIconButton onClick={() => navigate('/chain/management/use')}>
               <SettingIcon24 />
             </StyledIconButton>
           </HeaderRightContainer>
