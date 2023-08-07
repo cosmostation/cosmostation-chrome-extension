@@ -10,9 +10,6 @@ export const COSMOS_POPUP_METHOD_TYPE = {
   COS__SIGN_AMINO: 'cos_signAmino',
   COS__SIGN_DIRECT: 'cos_signDirect',
   COS__SIGN_MESSAGE: 'cos_signMessage',
-  COS__GET_AUTO_SIGN: 'cos_getAutoSign',
-  COS__SET_AUTO_SIGN: 'cos_setAutoSign',
-  COS__DELETE_AUTO_SIGN: 'cos_deleteAutoSign',
   COS__ADD_TOKENS_CW20: 'cos_addTokensCW20',
   COS__ADD_TOKENS_CW20_INTERNAL: 'cos_addTokensCW20Internal',
 } as const;

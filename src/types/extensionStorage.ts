@@ -75,15 +75,6 @@ export type AddressInfo = {
   memo?: string;
 };
 
-export type AutoSign = {
-  id: string;
-  accountId: Account['id'];
-  chainId: Chain['id'];
-  origin: string;
-  startTime: number;
-  duration: number;
-};
-
 export type Providers = {
   keplr: boolean;
   metamask: boolean;
@@ -138,8 +129,6 @@ export type ExtensionStorage = {
   ethereumNFTs: EthereumNFT[];
 
   suiPermissions: SuiPermission[];
-
-  autoSigns: AutoSign[];
 
   ledgerTransportType: TransportType;
 

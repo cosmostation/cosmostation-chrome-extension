@@ -55,7 +55,6 @@
       "Drawer": {
         "index": {
           "addressBook": "주소록",
-          "autoSign": "자동 서명",
           "addCustomChain": "커스텀 체인 추가",
           "changePassword": "비밀번호 변경",
           "connectedSites": "연결 된 사이트",
@@ -664,14 +663,6 @@
             "question": "토큰들을 가져오시겠습니까?"
           }
         },
-        "AutoSign": {
-          "entry": {
-            "description1": "자동서명 기능을 활성화하면 지갑이 자금 손실 위험에 빠질 수 있습니다. 온전히 신뢰할 수 있는 dApp에서만 활성화하십시오.",
-            "description2": "Cosmostation은 자동서명 기능과 관련된 위험, 손실 또는 비용에 대해 책임을 지지 않습니다.",
-            "question": "자동서명을 활성화 하시겠습니까?",
-            "warning": "경고!"
-          }
-        },
         "Sign": {
           "Amino": {
             "components": {
@@ -985,11 +976,6 @@
         },
         "layout": {
           "title": "주소록"
-        }
-      },
-      "AutoSign": {
-        "layout": {
-          "title": "자동 서명"
         }
       },
       "ChangeCurrency": {

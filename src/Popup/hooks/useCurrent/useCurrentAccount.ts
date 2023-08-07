@@ -17,7 +17,7 @@ export function useCurrentAccount() {
   const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { currentPassword } = useCurrentPassword();
 
-  const { selectedAccountId, accounts, accountName, allowedOrigins, additionalChains, autoSigns, suiPermissions } = extensionStorage;
+  const { selectedAccountId, accounts, accountName, allowedOrigins, additionalChains, suiPermissions } = extensionStorage;
 
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
 
@@ -39,9 +39,6 @@ export function useCurrentAccount() {
   const removeAllowedOrigin = async (origin: string) => {
     const newAllowedOrigins = allowedOrigins.filter((allowedOrigin) => !(allowedOrigin.accountId === selectedAccountId && allowedOrigin.origin === origin));
     await setExtensionStorage('allowedOrigins', newAllowedOrigins);
-
-    const newAutoSigns = autoSigns.filter((autoSign) => !(autoSign.accountId === selectedAccountId && autoSign.origin === origin));
-    await setExtensionStorage('autoSigns', newAutoSigns);
   };
 
   const setCurrentAccount = async (id: string) => {

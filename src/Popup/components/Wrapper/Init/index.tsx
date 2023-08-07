@@ -206,13 +206,6 @@ export default function Init({ children }: InitType) {
         await setStorage('selectedSuiNetworkId', SUI_NETWORK_MAINNET.id);
       }
 
-      const currentTime = new Date().getTime();
-
-      if (originExtensionStorage.autoSigns?.filter((item) => item.startTime + item.duration < currentTime).length) {
-        const newAutoSigns = originExtensionStorage.autoSigns.filter((item) => item.startTime + item.duration > currentTime);
-        await setStorage('autoSigns', newAutoSigns);
-      }
-
       if (
         originExtensionStorage.providers?.aptos === undefined ||
         originExtensionStorage.providers?.metamask === undefined ||
