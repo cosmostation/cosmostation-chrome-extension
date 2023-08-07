@@ -17,13 +17,9 @@ type FetchProps = {
 };
 
 type SkipSwapTxParamProps = {
-  chainIdsToAddresses: ChainIdsToAddressMap;
+  addresses: string[];
   slippage: string;
   affiliates?: Affiliates[];
-};
-
-type ChainIdsToAddressMap = {
-  [chainId: string]: string;
 };
 
 export type SkipSwapTxParam = SkipRoutePayload & SkipSwapTxParamProps;
@@ -42,9 +38,9 @@ export function useSkipSwapTxSWR({ skipSwapTxParam: swapTxParam }: UseSkipSwapTx
       dest_asset_denom: skipSwapTxParam?.dest_asset_denom,
       dest_asset_chain_id: skipSwapTxParam?.dest_asset_chain_id,
       amount_in: skipSwapTxParam?.amount_in,
-      chain_ids_to_addresses: skipSwapTxParam?.chainIdsToAddresses,
+      address_list: skipSwapTxParam?.addresses,
       operations: skipSwapTxParam?.operations,
-      estimated_amount_out: skipSwapTxParam?.estimated_amount_out,
+      amount_out: skipSwapTxParam?.amount_out,
       slippage_tolerance_percent: skipSwapTxParam?.slippage,
       affiliates: skipSwapTxParam?.affiliates || [],
     });

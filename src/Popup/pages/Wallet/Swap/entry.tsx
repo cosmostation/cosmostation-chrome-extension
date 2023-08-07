@@ -775,8 +775,8 @@ export default function Entry() {
   }, [currentSwapAPI, oneInchRoute.isValidating, skipRoute.isValidating, skipSwapTx.isValidating, squidRoute.isValidating]);
 
   const estimatedToTokenBaseAmount = useMemo(() => {
-    if (currentSwapAPI === 'skip' && skipRoute.data?.estimated_amount_out) {
-      return skipRoute.data.estimated_amount_out;
+    if (currentSwapAPI === 'skip' && skipRoute.data?.amount_out) {
+      return skipRoute.data?.amount_out;
     }
 
     if (currentSwapAPI === '1inch' && oneInchRoute.data?.toTokenAmount) {
@@ -788,7 +788,7 @@ export default function Entry() {
     }
 
     return '0';
-  }, [currentSwapAPI, oneInchRoute.data?.toTokenAmount, skipRoute.data?.estimated_amount_out, squidRoute.data?.route.estimate.toAmount]);
+  }, [currentSwapAPI, oneInchRoute.data?.toTokenAmount, skipRoute.data?.amount_out, squidRoute.data?.route.estimate.toAmount]);
 
   const estimatedToTokenDisplayAmount = useMemo(
     () => toDisplayDenomAmount(estimatedToTokenBaseAmount, currentToToken?.decimals || 0),
@@ -997,6 +997,9 @@ export default function Entry() {
       if (!skipSupportedChains) {
         return t('pages.Wallet.Swap.entry.networkError');
       }
+      if (skipRoute.data?.txs_required && skipRoute.data?.txs_required > 1) {
+        return t('pages.Wallet.Swap.entry.multiTxSwapError');
+      }
       if (skipRoute.error?.response?.data.message) {
         return skipRoute.error.response.data.message;
       }
@@ -1047,6 +1050,7 @@ export default function Entry() {
     currentFromTokenBalance,
     currentInputBaseAmount,
     skipSupportedChains,
+    skipRoute.data?.txs_required,
     skipRoute.error?.response?.data.message,
     skipSwapTx.error?.response?.data.message,
     skipSwapAminoTx,
@@ -1096,6 +1100,9 @@ export default function Entry() {
       }
 
       if (currentSwapAPI === 'skip') {
+        if (skipRoute.data?.txs_required && skipRoute.data?.txs_required > 1) {
+          return t('pages.Wallet.Swap.entry.multiTxSwap');
+        }
         if (skipRoute.error?.response?.data.message) {
           return skipRoute.error.response.data.message;
         }
@@ -1139,6 +1146,7 @@ export default function Entry() {
     squidRoute.error,
     errorMessage,
     isDisabled,
+    skipRoute.data?.txs_required,
     skipRoute.error?.response?.data.message,
     skipSwapTx.error?.response?.data.message,
     estimatedFeeDisplayAmount,

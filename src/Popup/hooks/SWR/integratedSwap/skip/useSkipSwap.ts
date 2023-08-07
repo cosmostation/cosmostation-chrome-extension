@@ -67,15 +67,10 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
 
   const currentAccountAddresses = useMemo(() => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address, [accounts?.data, currentAccount.id]);
 
-  const apiRequiredAddresses = useMemo(() => {
-    if (skipRoute.data) {
-      return skipRoute.data.chain_ids.reduce((acc, chainId) => {
-        const address = currentAccountAddresses?.[COSMOS_CHAINS.find((item) => item.chainId === chainId)?.id || ''] || '';
-        return { ...acc, [chainId]: address };
-      }, {});
-    }
-    return {};
-  }, [currentAccountAddresses, skipRoute.data]);
+  const apiRequiredAddresses = useMemo(
+    () => skipRoute.data?.chain_ids.map((chainId) => currentAccountAddresses?.[COSMOS_CHAINS.find((item) => item.chainId === chainId)?.id || ''] || '') || [],
+    [currentAccountAddresses, skipRoute.data?.chain_ids],
+  );
 
   const affiliates = useMemo<Affiliates[]>(() => {
     if (gt(DEFAULT_BPF, '0')) {
@@ -90,7 +85,7 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
         ...skipRoute.data,
         affiliates,
         slippage,
-        chainIdsToAddresses: apiRequiredAddresses,
+        addresses: apiRequiredAddresses,
       };
     }
     return undefined;

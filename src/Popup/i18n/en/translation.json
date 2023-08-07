@@ -1395,6 +1395,8 @@
           "liquidityWarning": "The size of this trade is large compared to the available liquidity. Reduce the swap amount to get a better price.",
           "minimumReceived": "Minimum received after slippage",
           "minutes": "minutes",
+          "multiTxSwap": "Swap with multiple transactions is unavailable",
+          "multiTxSwapError": "This swap requires multiple transactions",
           "networkError": "Network Error",
           "oversizedSwap": "Oversized Swap",
           "permissionButton": "Give permission to use tokens",
