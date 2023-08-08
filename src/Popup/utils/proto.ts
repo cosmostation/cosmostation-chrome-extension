@@ -2,11 +2,19 @@ import { post } from '~/Popup/utils/axios';
 import { isAminoCommission, isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
 import { cosmwasm } from '~/proto/cosmwasm-v0.28.0.js';
-import { ibc } from '~/proto/ibc-v5.0.1.js';
+import { ibc } from '~/proto/ibc-v7.1.0.js';
 import { osmosis } from '~/proto/osmosis-v13.1.2.js';
 import type { Msg, MsgCommission, MsgExecuteContract, MsgReward, MsgSend, MsgSwapExactAmountIn, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
-import type { Msg as ProtoMsg, MsgCommission as ProtoMsgCommission, MsgSend as ProtoMsgSend, ProtoTxBytesProps, PubKey } from '~/types/cosmos/proto';
+import type {
+  Msg as ProtoMsg,
+  MsgCommission as ProtoMsgCommission,
+  MsgExecuteContract as ProtoMsgExecuteContract,
+  MsgSend as ProtoMsgSend,
+  MsgTransfer as ProtoMsgTransfer,
+  ProtoTxBytesProps,
+  PubKey,
+} from '~/types/cosmos/proto';
 
 export function convertAminoMessageToProto(msg: Msg) {
   if (isAminoSend(msg)) {
@@ -57,9 +65,11 @@ export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
     sender: msg.value.sender,
     receiver: msg.value.receiver,
     timeout_height: {
-      revision_height: Number(msg.value.timeout_height.revision_height),
-      revision_number: msg.value.timeout_height.revision_number ? Number(msg.value.timeout_height.revision_number) : 0,
+      revision_height: msg.value.timeout_height.revision_height as unknown as Long,
+      revision_number: msg.value.timeout_height.revision_number as unknown as Long,
     },
+    timeout_timestamp: msg.value.timeout_timestamp as unknown as Long,
+    memo: msg.value.memo,
   });
 
   return new google.protobuf.Any({
@@ -223,6 +233,14 @@ export function decodeProtobufMessage(msg: google.protobuf.IAny) {
     return { type_url: msg.type_url, value: cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission.decode(msg.value!) } as ProtoMsg<ProtoMsgCommission>;
   }
 
+  if (msg.type_url === '/ibc.applications.transfer.v1.MsgTransfer') {
+    return { type_url: msg.type_url, value: ibc.applications.transfer.v1.MsgTransfer.decode(msg.value!) } as ProtoMsg<ProtoMsgTransfer>;
+  }
+
+  if (msg.type_url === '/cosmwasm.wasm.v1.MsgExecuteContract') {
+    return { type_url: msg.type_url, value: cosmwasm.wasm.v1.MsgExecuteContract.decode(msg.value!) } as ProtoMsg<ProtoMsgExecuteContract>;
+  }
+
   return { ...msg, value: msg.value ? Buffer.from(msg.value).toString('hex') : '' } as ProtoMsg<string>;
 }
 
@@ -234,6 +252,48 @@ export function isDirectCommission(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgCommi
   return msg.type_url === '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission';
 }
 
+export function isDirectIBCSend(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgTransfer> {
+  return msg.type_url === '/ibc.applications.transfer.v1.MsgTransfer';
+}
+
+export function isDirectExecuteContract(msg: ProtoMsg): msg is ProtoMsg<ProtoMsgExecuteContract> {
+  return msg.type_url === '/cosmwasm.wasm.v1.MsgExecuteContract';
+}
+
 export function isDirectCustom(msg: ProtoMsg): msg is ProtoMsg {
   return true;
+}
+
+export function convertDirectMsgTypeToAminoMsgType(typeUrl: string) {
+  if (typeUrl === '/cosmos.bank.v1beta1.MsgSend') {
+    return 'cosmos-sdk/MsgSend';
+  }
+  if (typeUrl === '/ibc.applications.transfer.v1.MsgTransfer') {
+    return 'cosmos-sdk/MsgTransfer';
+  }
+  if (typeUrl === '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission') {
+    return 'cosmos-sdk/MsgWithdrawValidatorCommission';
+  }
+  if (typeUrl === '/cosmwasm.wasm.v1.MsgExecuteContract') {
+    return 'wasm/MsgExecuteContract';
+  }
+
+  return '';
+}
+
+export function convertAminoMsgTypeToDirectMsgType(typeUrl: string) {
+  if (typeUrl === 'cosmos-sdk/MsgSend') {
+    return '/cosmos.bank.v1beta1.MsgSend';
+  }
+  if (typeUrl === 'cosmos-sdk/MsgTransfer') {
+    return '/ibc.applications.transfer.v1.MsgTransfer';
+  }
+  if (typeUrl === 'cosmos-sdk/MsgWithdrawValidatorCommission') {
+    return '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission';
+  }
+  if (typeUrl === 'wasm/MsgExecuteContract') {
+    return '/cosmwasm.wasm.v1.MsgExecuteContract';
+  }
+
+  return '';
 }

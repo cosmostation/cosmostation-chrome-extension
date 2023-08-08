@@ -1,43 +1,36 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
-import type { GetRoute, TokenData } from '@0xsquid/sdk';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { CHAINS, COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
-import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import { ETHEREUM, EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
 import { CURRENCY_SYMBOL } from '~/constants/currency';
 import AmountInput from '~/Popup/components/common/AmountInput';
 import Button from '~/Popup/components/common/Button';
+import Image from '~/Popup/components/common/Image';
 import InformContatiner from '~/Popup/components/common/InformContainer';
 import NumberText from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import SubSideHeader from '~/Popup/components/SubSideHeader';
-import { useOsmoSwapMath } from '~/Popup/hooks/osmoSwap/useOsmoSwapMath';
-import { useAllowanceSWR } from '~/Popup/hooks/SWR/1inch/useAllowanceSWR';
-import { useAllowanceTxSWR } from '~/Popup/hooks/SWR/1inch/useAllowanceTxSWR';
-import type { UseOneInchSwapSWRProps } from '~/Popup/hooks/SWR/1inch/useOneInchSwapTxSWR';
-import { useOneInchSwapTxSWR } from '~/Popup/hooks/SWR/1inch/useOneInchSwapTxSWR';
-import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/1inch/useOneInchTokensSWR';
-import { useSupportTokensSWR } from '~/Popup/hooks/SWR/1inch/useSupportTokensSWR';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
-import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
-import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
+import { useGasRateSWR } from '~/Popup/hooks/SWR/cosmos/useGasRateSWR';
 import { useSupportChainsSWR } from '~/Popup/hooks/SWR/cosmos/useSupportChainsSWR';
 import { useBalanceSWR as useNativeBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
-import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
-import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
+import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useOneInchTokensSWR';
+import { useSupportTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useSupportTokensSWR';
+import { useOneInchSwap } from '~/Popup/hooks/SWR/integratedSwap/oneInch/useOneInchSwap';
+import { useSkipSupportChainsSWR } from '~/Popup/hooks/SWR/integratedSwap/skip/SWR/useSkipSupportChainsSWR';
+import { useSkipSwap } from '~/Popup/hooks/SWR/integratedSwap/skip/useSkipSwap';
+import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/integratedSwap/squid/SWR/useSquidAssetsSWR';
+import { useSquidTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/squid/SWR/useSquidTokensSWR';
+import { useSquidSwap } from '~/Popup/hooks/SWR/integratedSwap/squid/useSquidSwap';
 import { useSupportSwapChainsSWR } from '~/Popup/hooks/SWR/integratedSwap/useSupportSwapChainsSWR';
-import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/squid/useSquidAssetsSWR';
-import { useSquidRouteSWR } from '~/Popup/hooks/SWR/squid/useSquidRouteSWR';
-import { useSquidTokensSWR } from '~/Popup/hooks/SWR/squid/useSquidTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
@@ -48,9 +41,8 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { getDefaultAV } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
-import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { CosmosChain, EthereumToken } from '~/types/chain';
 import type { AssetV3 as CosmosAssetV3 } from '~/types/cosmos/asset';
@@ -71,7 +63,9 @@ import {
   MaxButton,
   MinimumReceivedCircularProgressContainer,
   OutputAmountCircularProgressContainer,
+  ProcessingTimeStyledTooltip,
   SideButton,
+  StyledButton,
   StyledTooltipBodyContainer,
   StyledTooltipTitleContainer,
   SwapCoinInputAmountContainer,
@@ -89,53 +83,48 @@ import {
   SwapInfoHeaderTextContainer,
   SwapInfoStyledTooltip,
   SwapInfoSubHeaderContainer,
+  SwapVenueImageContainer,
 } from './styled';
 
 import Info16Icon from '~/images/icons/Info16.svg';
 import Management24Icon from '~/images/icons/Mangement24.svg';
 import OneInchLogoIcon from '~/images/icons/OneInchLogo.svg';
-import OsmosisLogoIcon from '~/images/icons/OsmosisLogo.svg';
 import Permission16Icon from '~/images/icons/Permission16.svg';
+import SkipLogoIcon from '~/images/icons/SkipLogoIcon.svg';
 import SquidLogoIcon from '~/images/icons/SquidLogo.svg';
 import SwapIcon from '~/images/icons/Swap.svg';
 
 export default function Entry() {
-  const osmosisChain = OSMOSIS;
   const { t, language } = useTranslation();
   const { navigateBack } = useNavigate();
   const { currentAccount } = useCurrentAccount();
-  const account = useAccountSWR(osmosisChain, true);
-  const accounts = useAccounts(true);
+  const accounts = useAccounts();
   const params = useParams();
 
-  const { enQueue } = useCurrentQueue();
-  const nodeInfo = useNodeInfoSWR(osmosisChain);
+  const supportedSwapChains = useSupportSwapChainsSWR({ suspense: true });
+
+  const skipSupportedChains = useSkipSupportChainsSWR({ suspense: true });
   const supportedCosmosChain = useSupportChainsSWR({ suspense: true });
-  const supportedSquidTokens = useSquidTokensSWR();
+
+  const { squidChains, filterSquidTokens } = useSquidAssetsSWR();
+
+  const { enQueue } = useCurrentQueue();
+
   const { extensionStorage } = useExtensionStorage();
   const { ethereumTokens } = extensionStorage;
   const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const osmosisAssets = useCosmosAssetsSWR(osmosisChain);
-  const supportedSwapChains = useSupportSwapChainsSWR({ suspense: true });
 
   const { currentChain, setCurrentChain } = useCurrentChain();
   const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const { squidChains, filterSquidTokens } = useSquidAssetsSWR();
-
-  const SupportedOneInchTokens = useSupportTokensSWR();
-
   const [isOpenSlippageDialog, setIsOpenSlippageDialog] = useState(false);
 
-  const [isFeePriceCurrencyBase, setIsFeePriceCurrencyBase] = useState(true);
-  const [isOsmoSwapFeePriceCurrencyBase, setIsOsmoSwapFeePriceCurrencyBase] = useState(true);
+  const [isFeePriceCurrencyBase, setIsFeePriceCurrencyBase] = useState(false);
 
   const [currentSlippage, setCurrentSlippage] = useState('1');
 
   const [currentSwapAPI, setCurrentSwapAPI] = useState<IntegratedSwapAPI>();
-
-  const [currentToChain, setCurrentToChain] = useState<IntegratedSwapChain>();
 
   const filteredFromChains: IntegratedSwapChain[] = useMemo(() => {
     const squidEVMChains = ETHEREUM_NETWORKS.filter(
@@ -173,9 +162,7 @@ export default function Entry() {
       networkName: item.chainName,
     }));
 
-    const osmoSwapChain = COSMOS_CHAINS.filter(
-      (item) => osmosisChain.id === item.id && supportedCosmosChain.data?.chains.find((cosmosChain) => cosmosChain.chain_id === item.chainId),
-    ).map((item) => ({
+    const skipSwapChains = COSMOS_CHAINS.filter((item) => skipSupportedChains.data?.chains.find((chain) => chain.chain_id === item.chainId)).map((item) => ({
       ...item,
       baseChainUUID: item.id,
       networkName: item.chainName,
@@ -185,13 +172,13 @@ export default function Entry() {
       (chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx,
     );
 
-    const integratedCosmosChains = [...squidCosmosChains, ...osmoSwapChain].filter(
+    const integratedCosmosChains = [...squidCosmosChains, ...skipSwapChains].filter(
       (chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx,
     );
 
     return [...integratedEVMChains, ...integratedCosmosChains];
   }, [
-    osmosisChain.id,
+    skipSupportedChains.data?.chains,
     squidChains,
     supportedCosmosChain.data?.chains,
     supportedSwapChains.data?.oneInch.evm.send,
@@ -200,8 +187,16 @@ export default function Entry() {
   ]);
 
   const [currentFromChain, setCurrentFromChain] = useState<IntegratedSwapChain>(
-    filteredFromChains.find((item) => item.id === params.id) || filteredFromChains[0],
+    filteredFromChains.find((item) => item.id === params.id) ||
+      (CHAINS.find((item) => item.id === params.id)?.line === COSMOS.line
+        ? filteredFromChains.find((item) => item.id === COSMOS.id) || filteredFromChains[0]
+        : filteredFromChains.find((item) => item.id === ETHEREUM.id) || filteredFromChains[0]),
   );
+
+  const selectedFromCosmosChain = useMemo(() => (currentFromChain.line === 'COSMOS' ? currentFromChain : undefined), [currentFromChain]);
+
+  const [currentToChain, setCurrentToChain] = useState<IntegratedSwapChain>();
+
   const filteredToChainList: IntegratedSwapChain[] = useMemo(() => {
     const squidEVMChains = ETHEREUM_NETWORKS.filter(
       (item) =>
@@ -223,9 +218,7 @@ export default function Entry() {
       line: ETHEREUM.line,
     }));
 
-    const osmoSwapChain = COSMOS_CHAINS.filter(
-      (item) => osmosisChain.id === item.id && supportedCosmosChain.data?.chains.find((cosmosChain) => cosmosChain.chain_id === item.chainId),
-    ).map((item) => ({
+    const skipSwapChains = COSMOS_CHAINS.filter((item) => skipSupportedChains.data?.chains.find((chain) => chain.chain_id === item.chainId)).map((item) => ({
       ...item,
       baseChainUUID: item.id,
       networkName: item.chainName,
@@ -250,16 +243,13 @@ export default function Entry() {
       (chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx,
     );
 
-    const integratedCosmosChains = [...squidCosmosChains, ...osmoSwapChain].filter(
+    const integratedCosmosChains = [...skipSwapChains, ...squidCosmosChains].filter(
       (chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx,
     );
 
     if (currentFromChain) {
       const originChains = [...integratedEVMChains, ...integratedCosmosChains];
-      if (
-        (!squidEVMChains.find((item) => item.id === currentFromChain.id) && oneInchEVMChains.find((item) => item.id === currentFromChain.id)) ||
-        currentFromChain.id === osmosisChain.id
-      ) {
+      if (!squidEVMChains.find((item) => item.id === currentFromChain.id) && oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
         const availableChains = [currentFromChain];
 
         return [
@@ -274,7 +264,7 @@ export default function Entry() {
       }
 
       if (squidEVMChains.find((item) => item.id === currentFromChain.id) && !oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
-        const availableChains = [...squidEVMChains.filter((item) => item.id !== currentFromChain.id), ...integratedCosmosChains];
+        const availableChains = [...squidEVMChains.filter((item) => item.id !== currentFromChain.id), ...squidCosmosChains];
 
         return [
           ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
@@ -288,7 +278,21 @@ export default function Entry() {
       }
 
       if (squidEVMChains.find((item) => item.id === currentFromChain.id) && oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
-        const availableChains = [...squidEVMChains, ...integratedCosmosChains];
+        const availableChains = [...squidEVMChains, ...squidCosmosChains];
+
+        return [
+          ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
+          ...originChains
+            .filter((item) => !availableChains.find((chain) => chain.id === item.id))
+            .map((item) => ({
+              ...item,
+              isUnavailable: true,
+            })),
+        ];
+      }
+
+      if (currentFromChain.line === COSMOS.line) {
+        const availableChains = [...skipSwapChains];
 
         return [
           ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
@@ -305,7 +309,7 @@ export default function Entry() {
     return [];
   }, [
     currentFromChain,
-    osmosisChain.id,
+    skipSupportedChains.data?.chains,
     squidChains,
     supportedCosmosChain.data?.chains,
     supportedSwapChains.data?.oneInch.evm.receive,
@@ -324,17 +328,6 @@ export default function Entry() {
     [currentFromToken?.decimals, debouncedInputDisplayAmount],
   );
 
-  const osmoSwapMath = useOsmoSwapMath(
-    currentSwapAPI === 'osmo'
-      ? {
-          chainName: osmosisChain.chainName.toLowerCase(),
-          inputCoin: currentFromToken as CosmosAssetV3,
-          outputCoin: currentToToken as CosmosAssetV3,
-          inputBaseAmount: currentInputBaseAmount,
-        }
-      : undefined,
-  );
-
   const currentFromAddress = useMemo(
     () => (currentFromChain && accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentFromChain.baseChainUUID]) || '',
     [accounts?.data, currentAccount.id, currentFromChain],
@@ -344,8 +337,11 @@ export default function Entry() {
     [accounts?.data, currentAccount.id, currentToChain],
   );
 
-  const cosmosFromChainBalance = useBalanceSWR(currentFromChain as CosmosChain);
-  const cosmosToChainBalance = useBalanceSWR(currentToChain as CosmosChain);
+  const cosmosFromChainBalance = useBalanceSWR(currentFromChain.line === COSMOS.line ? currentFromChain : COSMOS);
+  const cosmosToChainBalance = useBalanceSWR(currentToChain?.line === COSMOS.line ? currentToChain : COSMOS);
+
+  const cosmosFromTokenAssets = useCosmosAssetsSWR(currentFromChain.line === COSMOS.line ? currentFromChain : undefined);
+  const cosmosToTokenAssets = useCosmosAssetsSWR(currentToChain?.line === COSMOS.line ? currentToChain : undefined);
 
   const currentFromEVMNativeBalance = useNativeBalanceSWR(currentFromChain?.line === ETHEREUM.line ? currentFromChain : undefined);
   const currentFromEVMTokenBalance = useTokenBalanceSWR({
@@ -359,65 +355,44 @@ export default function Entry() {
     token: currentToChain?.line === ETHEREUM.line ? (currentToToken as EthereumToken) : undefined,
   });
 
-  const currentFromTokenBalance = useMemo(
-    () =>
-      gt(currentFromToken?.balance || '0', '0')
-        ? currentFromToken?.balance || '0'
-        : isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, currentFromToken?.address)
-        ? BigInt(currentFromEVMNativeBalance.data?.result || '0').toString(10)
-        : BigInt(currentFromEVMTokenBalance.data || '0').toString(10),
-    [currentFromToken?.address, currentFromToken?.balance, currentFromEVMNativeBalance?.data?.result, currentFromEVMTokenBalance.data],
-  );
-  const currentFromTokenDisplayBalance = useMemo(
-    () => toDisplayDenomAmount(currentFromTokenBalance, currentFromToken?.decimals || 0),
-    [currentFromToken?.decimals, currentFromTokenBalance],
-  );
+  const supportedSquidTokens = useSquidTokensSWR();
 
-  const currentToTokenBalance = useMemo(
-    () =>
-      gt(currentToToken?.balance || '0', '0')
-        ? currentToToken?.balance || '0'
-        : isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, currentToToken?.address)
-        ? BigInt(currentToEVMNativeBalance.data?.result || '0').toString(10)
-        : BigInt(currentToEVMTokenBalance.data || '0').toString(10),
-    [currentToToken?.address, currentToToken?.balance, currentToEVMNativeBalance?.data?.result, currentToEVMTokenBalance.data],
-  );
-  const currentToTokenDisplayBalance = useMemo(
-    () => toDisplayDenomAmount(currentToTokenBalance, currentToToken?.decimals || 0),
-    [currentToToken?.decimals, currentToTokenBalance],
-  );
+  const selected30OneInchTokens = useSupportTokensSWR();
 
   const oneInchTokens = useOneInchTokensSWR(currentSwapAPI === '1inch' ? String(parseInt(currentEthereumNetwork.chainId, 16)) : undefined);
 
   const supportedOneInchTokens = useMemo(
     () =>
-      currentSwapAPI === '1inch' && SupportedOneInchTokens.data?.[String(parseInt(currentEthereumNetwork.chainId, 16))]
-        ? Object.values(SupportedOneInchTokens.data[String(parseInt(currentEthereumNetwork.chainId, 16))])
+      currentSwapAPI === '1inch' && selected30OneInchTokens.data?.[String(parseInt(currentEthereumNetwork.chainId, 16))]
+        ? Object.values(selected30OneInchTokens.data[String(parseInt(currentEthereumNetwork.chainId, 16))])
         : [],
-    [SupportedOneInchTokens.data, currentEthereumNetwork.chainId, currentSwapAPI],
+    [selected30OneInchTokens.data, currentEthereumNetwork.chainId, currentSwapAPI],
   );
 
   const filteredFromTokenList: IntegratedSwapToken[] = useMemo(() => {
     const currentFromEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentFromChain?.id);
 
-    if (currentSwapAPI === 'osmo') {
-      const filteredTokens = osmosisAssets.data
-        .filter((item) => osmoSwapMath.uniquePoolDenomList.includes(item.denom))
-        .map((item) => ({
+    if (currentSwapAPI === 'skip') {
+      const filteredTokens = cosmosFromTokenAssets.data.map((item) => {
+        const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
+        const balance = cosmosFromChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
+        const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
+        return {
           ...item,
           address: item.denom,
-          balance: cosmosFromChainBalance.data?.balance ? cosmosFromChainBalance.data?.balance.find((coin) => coin.denom === item.denom)?.amount : '0',
+          balance,
+          price,
           imageURL: item.image,
           name: getCapitalize(item.prevChain || item.origin_chain),
           displayDenom: item.symbol,
           symbol: undefined,
-        }));
+        };
+      });
 
       return [
-        ...filteredTokens.filter((item) => gt(item?.balance || '0', '0') && (item.type === 'staking' || item.type === 'native' || item.type === 'bridge')),
-        ...filteredTokens.filter((item) => gt(item?.balance || '0', '0') && item.type === 'ibc').sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
-        ...filteredTokens.filter((item) => !gt(item?.balance || '0', '0')).sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)),
-      ];
+        ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
+        ...filteredTokens.filter((item) => !gt(item.balance, '0')),
+      ].sort((a) => (currentFromChain?.displayDenom === a.displayDenom ? -1 : 1));
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
@@ -469,6 +444,7 @@ export default function Entry() {
         displayDenom: item.symbol,
         imageURL: item.logoURI,
         coinGeckoId: item.coingeckoId,
+        coingeckoId: undefined,
       }));
     }
 
@@ -478,27 +454,65 @@ export default function Entry() {
     currentSwapAPI,
     oneInchTokens.data,
     currentFromChain?.id,
+    currentFromChain?.displayDenom,
     currentFromChain?.chainId,
-    osmosisAssets.data,
-    osmoSwapMath.uniquePoolDenomList,
+    cosmosFromTokenAssets.data,
+    coinGeckoPrice.data,
+    extensionStorage.currency,
     cosmosFromChainBalance.data?.balance,
-    currentFromEVMNativeBalance,
+    currentFromEVMNativeBalance.data?.result,
     currentEthereumNetwork.coinGeckoId,
     supportedOneInchTokens,
     filterSquidTokens,
   ]);
 
+  const currentFromTokenBalance = useMemo(() => {
+    if (currentFromChain?.line === COSMOS.line) {
+      return filteredFromTokenList.find((item) => item.address === currentFromToken?.address)?.balance || '0';
+    }
+    if (currentFromChain?.line === ETHEREUM.line) {
+      if (isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, currentFromToken?.address)) {
+        return BigInt(currentFromEVMNativeBalance.data?.result || '0').toString(10);
+      }
+      return BigInt(currentFromEVMTokenBalance.data || '0').toString(10);
+    }
+    return '0';
+  }, [currentFromChain?.line, filteredFromTokenList, currentFromToken?.address, currentFromEVMTokenBalance.data, currentFromEVMNativeBalance.data?.result]);
+
+  const currentFromTokenDisplayBalance = useMemo(
+    () => toDisplayDenomAmount(currentFromTokenBalance, currentFromToken?.decimals || 0),
+    [currentFromToken?.decimals, currentFromTokenBalance],
+  );
+
+  const currentFromTokenPrice = useMemo(
+    () => (currentFromToken?.coinGeckoId && coinGeckoPrice.data?.[currentFromToken?.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [extensionStorage.currency, coinGeckoPrice.data, currentFromToken?.coinGeckoId],
+  );
+
   const filteredToTokenList: IntegratedSwapToken[] = useMemo(() => {
     const currentToEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentToChain?.id);
 
-    if (currentSwapAPI === 'osmo') {
-      return filteredFromTokenList.filter((token) =>
-        osmoSwapMath.poolsAssetData.data?.find(
-          (item) =>
-            (isEqualsIgnoringCase(item.adenom, token.address) && isEqualsIgnoringCase(item.bdenom, currentFromToken?.address)) ||
-            (isEqualsIgnoringCase(item.adenom, currentFromToken?.address) && isEqualsIgnoringCase(item.bdenom, token.address)),
-        ),
-      );
+    if (currentSwapAPI === 'skip') {
+      const filteredTokens = cosmosToTokenAssets.data.map((item) => {
+        const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
+        const balance = cosmosToChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
+        const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
+        return {
+          ...item,
+          address: item.denom,
+          balance,
+          price,
+          imageURL: item.image,
+          name: getCapitalize(item.prevChain || item.origin_chain),
+          displayDenom: item.symbol,
+          symbol: undefined,
+        };
+      });
+
+      return [
+        ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
+        ...filteredTokens.filter((item) => !gt(item.balance, '0')),
+      ].sort((a) => (currentToChain?.displayDenom === a.displayDenom ? -1 : 1));
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
@@ -550,10 +564,11 @@ export default function Entry() {
         displayDenom: item.symbol,
         imageURL: item.logoURI,
         coinGeckoId: item.coingeckoId,
+        coingeckoId: undefined,
       }));
     }
 
-    if (currentSwapAPI === 'squid' && currentToChain?.line === 'COSMOS') {
+    if (currentSwapAPI === 'squid' && currentToChain?.line === COSMOS.line) {
       const filteredTokenList = filterSquidTokens(currentToChain?.chainId);
 
       return [
@@ -572,12 +587,12 @@ export default function Entry() {
         ...item,
         displayDenom: item.symbol,
         imageURL: item.logoURI,
-        coinGeckoId: osmosisAssets.data.find((asset) => asset.counter_party?.denom === item.address)?.coinGeckoId || item.coingeckoId,
-        balance: cosmosToChainBalance.data?.balance
-          ? cosmosToChainBalance.data?.balance.find((coin) =>
-              isEqualsIgnoringCase(coin.denom, osmosisAssets.data.find((asset) => asset.counter_party?.denom === item.address)?.denom),
-            )?.amount
-          : '0',
+        coinGeckoId: cosmosToTokenAssets.data.find((asset) => asset.counter_party?.denom === item.address)?.coinGeckoId || item.coingeckoId,
+        coingeckoId: undefined,
+        balance:
+          cosmosToChainBalance.data?.balance?.find((coin) =>
+            isEqualsIgnoringCase(coin.denom, cosmosToTokenAssets.data.find((asset) => asset.counter_party?.denom === item.address)?.denom),
+          )?.amount || '0',
       }));
     }
 
@@ -588,22 +603,36 @@ export default function Entry() {
     oneInchTokens.data,
     currentToChain?.line,
     currentToChain?.id,
+    currentToChain?.displayDenom,
     currentToChain?.chainId,
-    filteredFromTokenList,
-    osmoSwapMath.poolsAssetData.data,
-    currentFromToken?.address,
+    cosmosToTokenAssets.data,
+    coinGeckoPrice.data,
+    extensionStorage.currency,
+    cosmosToChainBalance.data?.balance,
     currentToEVMNativeBalance.data?.result,
     currentEthereumNetwork.coinGeckoId,
     supportedOneInchTokens,
     filterSquidTokens,
     supportedSquidTokens.data?.mainnet,
-    osmosisAssets.data,
-    cosmosToChainBalance.data?.balance,
+    currentFromToken?.address,
   ]);
 
-  const currentFromTokenPrice = useMemo(
-    () => (currentFromToken?.coinGeckoId && coinGeckoPrice.data?.[currentFromToken?.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, currentFromToken?.coinGeckoId],
+  const currentToTokenBalance = useMemo(() => {
+    if (currentToChain?.line === COSMOS.line) {
+      return filteredToTokenList.find((item) => item.address === currentToToken?.address)?.balance || '0';
+    }
+    if (currentToChain?.line === ETHEREUM.line) {
+      if (isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, currentToToken?.address)) {
+        return BigInt(currentToEVMNativeBalance.data?.result || '0').toString(10);
+      }
+      return BigInt(currentToEVMTokenBalance.data || '0').toString(10);
+    }
+    return '0';
+  }, [currentToChain?.line, filteredToTokenList, currentToToken?.address, currentToEVMTokenBalance.data, currentToEVMNativeBalance.data?.result]);
+
+  const currentToTokenDisplayBalance = useMemo(
+    () => toDisplayDenomAmount(currentToTokenBalance, currentToToken?.decimals || 0),
+    [currentToToken?.decimals, currentToTokenBalance],
   );
 
   const currentToTokenPrice = useMemo(
@@ -614,8 +643,8 @@ export default function Entry() {
   const currentFeeToken = useMemo(
     () =>
       filteredFromTokenList.find((item) => {
-        if (currentFromChain?.line === 'COSMOS') {
-          return isEqualsIgnoringCase(item.address, osmosisChain.baseDenom);
+        if (currentFromChain?.line === COSMOS.line) {
+          return isEqualsIgnoringCase(item.address, selectedFromCosmosChain?.baseDenom);
         }
 
         if (currentFromChain?.line === ETHEREUM.line) {
@@ -624,12 +653,12 @@ export default function Entry() {
 
         return undefined;
       }),
-    [currentFromChain?.line, filteredFromTokenList, osmosisChain.baseDenom],
+    [currentFromChain?.line, filteredFromTokenList, selectedFromCosmosChain?.baseDenom],
   );
 
   const currentFeeTokenBalance = useMemo(() => {
-    if (currentSwapAPI === 'osmo') {
-      return cosmosFromChainBalance.data?.balance?.find((item) => isEqualsIgnoringCase(item.denom, osmosisChain.baseDenom))?.amount || '0';
+    if (currentSwapAPI === 'skip') {
+      return cosmosFromChainBalance.data?.balance?.find((item) => isEqualsIgnoringCase(item.denom, selectedFromCosmosChain?.baseDenom))?.amount || '0';
     }
 
     if (currentSwapAPI === '1inch' || currentSwapAPI === 'squid') {
@@ -637,7 +666,7 @@ export default function Entry() {
     }
 
     return '0';
-  }, [currentSwapAPI, cosmosFromChainBalance.data?.balance, osmosisChain.baseDenom, currentFromEVMNativeBalance?.data?.result]);
+  }, [currentSwapAPI, cosmosFromChainBalance.data?.balance, selectedFromCosmosChain?.baseDenom, currentFromEVMNativeBalance?.data?.result]);
 
   const currentFeeTokenPrice = useMemo(
     () => (currentFeeToken?.coinGeckoId && coinGeckoPrice.data?.[currentFeeToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
@@ -646,196 +675,120 @@ export default function Entry() {
 
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
 
-  const squidRouteParam = useMemo<GetRoute | undefined>(() => {
-    if (
-      currentSwapAPI === 'squid' &&
-      currentFromChain?.chainId &&
-      currentToChain?.chainId &&
-      currentFromToken?.address &&
-      currentToToken?.address &&
-      currentToAddress &&
-      gt(currentInputBaseAmount, '0')
-    ) {
-      return {
-        fromChain: currentFromChain.chainId,
-        fromToken: currentFromToken.address,
-        fromAmount: currentInputBaseAmount,
-        toChain: currentToChain.chainId,
-        toToken: currentToToken.address,
-        toAddress: currentToAddress,
-        slippage: Number(currentSlippage),
-      };
-    }
-    return undefined;
-  }, [currentFromChain, currentFromToken, currentInputBaseAmount, currentSlippage, currentSwapAPI, currentToAddress, currentToChain, currentToToken]);
-
-  const squidRoute = useSquidRouteSWR(squidRouteParam);
-
-  const squidProcessingTime = useMemo(() => divide(squidRoute.data?.route.estimate.estimatedRouteDuration || '0', '60'), [squidRoute.data]);
-
-  const squidSourceChainGasCosts = useMemo(() => {
-    const feeTokenAddressList = Array.from(new Set([...(squidRoute.data?.route.estimate.gasCosts.map((item) => item.token.address) || [])]));
-
-    return feeTokenAddressList.map((item) => ({
-      amount:
-        squidRoute.data?.route.estimate.gasCosts
-          .filter((gasCost) => isEqualsIgnoringCase(gasCost.token.address, item))
-          .reduce((ac, cu) => (isEqualsIgnoringCase(item, cu.token.address) ? plus(ac, cu.amount) : ac), '0') || '0',
-      feeToken: squidRoute.data?.route.estimate.gasCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token,
-      feeItems: [...(squidRoute.data?.route.estimate.gasCosts.filter((fee) => isEqualsIgnoringCase(fee.token.address, item)) || [])],
-    }));
-  }, [squidRoute.data?.route.estimate.gasCosts]);
-
-  const squidCrossChainFeeCosts = useMemo(() => {
-    const feeTokenAddressList = Array.from(new Set([...(squidRoute.data?.route.estimate.feeCosts.map((item) => item.token.address) || [])]));
-
-    return feeTokenAddressList.map((item) => ({
-      amount:
-        squidRoute.data?.route.estimate.feeCosts
-          .filter((feeCost) => isEqualsIgnoringCase(feeCost.token.address, item) && feeCost.name !== 'Express Fee')
-          .reduce((ac, cu) => (isEqualsIgnoringCase(item, cu.token.address) ? plus(ac, cu.amount) : ac), '0') || '0',
-      feeToken: {
-        ...squidRoute.data?.route.estimate.feeCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token,
-        coingeckoId:
-          osmosisAssets.data.find(
-            (asset) =>
-              asset.counter_party?.denom &&
-              asset.counter_party.denom ===
-                supportedSquidTokens.data?.mainnet.find((token) => token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, item)))
-                  ?.id,
-          )?.coinGeckoId || squidRoute.data?.route.estimate.feeCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token.coingeckoId,
-      } as TokenData | undefined,
-      feeItems: [
-        ...(squidRoute.data?.route.estimate.feeCosts
-          .filter((fee) => isEqualsIgnoringCase(fee.token.address, item))
-          .map((fee) => ({
-            ...fee,
-            token: {
-              ...fee.token,
-              coingeckoId:
-                osmosisAssets.data.find(
-                  (asset) =>
-                    asset.counter_party?.denom &&
-                    asset.counter_party.denom ===
-                      supportedSquidTokens.data?.mainnet.find((token) =>
-                        token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, fee.token.address)),
-                      )?.id,
-                )?.coinGeckoId || fee.token.coingeckoId,
-            },
-          })) || []),
-      ],
-    }));
-  }, [osmosisAssets.data, squidRoute.data?.route.estimate.feeCosts, supportedSquidTokens.data?.mainnet]);
-
-  const squidSourceChainFeeAmount = useMemo(() => squidSourceChainGasCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0', [squidSourceChainGasCosts]);
-
-  const squidCrossChainFeeAmount = useMemo(() => squidCrossChainFeeCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0', [squidCrossChainFeeCosts]);
-
-  const allowance = useAllowanceSWR(
-    currentSwapAPI === '1inch' && currentFromToken?.address && currentFromChain?.chainId
+  const { skipRoute, skipSwapVenueChain, memoizedSkipSwapAminoTx, skipSwapTx, skipSwapAminoTx, skipSwapSimulatedGas } = useSkipSwap(
+    currentSwapAPI === 'skip' && gt(currentInputBaseAmount, '0') && currentFromChain && currentToChain && currentFromToken && currentToToken
       ? {
-          tokenAddress: currentFromToken.address,
-          walletAddress: currentFromAddress,
-          chainId: currentFromChain.chainId,
+          inputBaseAmount: currentInputBaseAmount,
+          fromChain: currentFromChain as CosmosChain,
+          toChain: currentToChain as CosmosChain,
+          fromToken: currentFromToken as CosmosAssetV3,
+          toToken: currentToToken as CosmosAssetV3,
+          slippage: currentSlippage,
         }
       : undefined,
   );
 
-  const allowanceTxData = useAllowanceTxSWR(
-    allowance.data && !gt(allowance.data.allowance, currentInputBaseAmount) && currentFromToken?.address && currentFromChain?.chainId
+  const {
+    squidRoute,
+    squidProcessingTime,
+    squidSourceChainGasCosts,
+    squidCrossChainFeeCosts,
+    squidSourceChainFeeAmount,
+    squidCrossChainFeeAmount,
+    estimatedSquidFeePrice,
+    allowance: squidAllowance,
+    allowanceTx: squidAllowanceTx,
+    allowanceTxBaseFee: squidAllowanceTxBaseFee,
+    allowanceBaseEstimatedGas: squidAllowanceBaseEstimatedGas,
+  } = useSquidSwap(
+    currentSwapAPI === 'squid' && currentFromChain && currentToChain && currentFromToken && currentToToken && supportedSquidTokens.data && currentToAddress
       ? {
-          tokenAddress: currentFromToken.address,
-          chainId: currentFromChain.chainId,
+          inputBaseAmount: currentInputBaseAmount,
+          fromChain: currentFromChain,
+          toChain: currentToChain,
+          fromToken: currentFromToken,
+          toToken: currentToToken,
+          supportedSquidTokens: supportedSquidTokens.data,
+          senderAddress: currentFromAddress,
+          receiverAddress: currentToAddress,
+          slippage: currentSlippage,
         }
       : undefined,
   );
 
-  const allowanceTx = useMemo(() => {
-    if (allowanceTxData.data) {
+  const {
+    oneInchRoute,
+    allowance: oneInchAllowance,
+    allowanceBaseEstimatedGas: oneInchAllowanceBaseEstimatedGas,
+    allowanceTx: oneInchAllowanceTx,
+    allowanceTxBaseFee: oneInchAllowanceTxBaseFee,
+  } = useOneInchSwap(
+    currentSwapAPI === '1inch' && currentFromChain && currentFromToken && currentToToken && currentFromAddress
+      ? {
+          inputBaseAmount: currentInputBaseAmount,
+          fromChain: currentFromChain,
+          fromToken: currentFromToken,
+          toToken: currentToToken,
+          senderAddress: currentFromAddress,
+          slippage: currentSlippage,
+        }
+      : undefined,
+  );
+
+  const integratedAllowance = useMemo(() => {
+    if (currentSwapAPI === '1inch')
       return {
-        from: currentFromAddress,
-        to: allowanceTxData.data.to,
-        data: allowanceTxData.data.data,
-        value: toHex(allowanceTxData.data.value, { addPrefix: true, isStringNumber: true }),
+        allowance: oneInchAllowance.data?.allowance,
+        allowanceTx: oneInchAllowanceTx,
+        allowanceTxBaseFee: oneInchAllowanceTxBaseFee,
+        allowanceBaseEstimatedGas: oneInchAllowanceBaseEstimatedGas,
       };
-    }
 
-    return {
-      from: '',
-      to: '',
-    };
-  }, [allowanceTxData, currentFromAddress]);
-
-  const allowanceFee = useFeeSWR();
-
-  const allowanceEstimatedGas = useEstimateGasSWR([allowanceTx]);
-
-  const allowanceBaseEstimatedGas = useMemo(() => BigInt(allowanceEstimatedGas.data?.result || '21000').toString(10), [allowanceEstimatedGas.data?.result]);
-
-  const allowanceBaseFeePerGas = useMemo(() => {
-    if (allowanceFee.type === 'BASIC') return allowanceFee.currentGasPrice || '0';
-    if (allowanceFee.type === 'EIP-1559') return allowanceFee.currentFee?.average.maxBaseFeePerGas || '0';
-
-    return '0';
-  }, [allowanceFee.currentFee?.average.maxBaseFeePerGas, allowanceFee.currentGasPrice, allowanceFee.type]);
-
-  const allowanceTxBaseFee = useMemo(() => times(allowanceBaseFeePerGas, allowanceBaseEstimatedGas), [allowanceBaseEstimatedGas, allowanceBaseFeePerGas]);
-
-  const oneInchRouteParam = useMemo<UseOneInchSwapSWRProps | undefined>(() => {
-    if (
-      currentSwapAPI === '1inch' &&
-      currentFromToken?.address &&
-      currentToToken?.address &&
-      currentFromChain?.chainId &&
-      gt(currentInputBaseAmount, '0') &&
-      gt(allowance.data?.allowance || '0', currentInputBaseAmount)
-    ) {
+    if (currentSwapAPI === 'squid')
       return {
-        fromTokenAddress: currentFromToken.address,
-        toTokenAddress: currentToToken.address,
-        fromAddress: currentFromAddress,
-        slippage: currentSlippage,
-        amount: currentInputBaseAmount,
-        chainId: currentFromChain.chainId,
+        allowance: squidAllowance.data,
+        allowanceTx: squidAllowanceTx,
+        allowanceTxBaseFee: squidAllowanceTxBaseFee,
+        allowanceBaseEstimatedGas: squidAllowanceBaseEstimatedGas,
       };
-    }
+
     return undefined;
   }, [
-    allowance.data?.allowance,
-    currentFromAddress,
-    currentFromChain?.chainId,
-    currentFromToken?.address,
-    currentInputBaseAmount,
-    currentSlippage,
     currentSwapAPI,
-    currentToToken?.address,
+    oneInchAllowance.data?.allowance,
+    oneInchAllowanceBaseEstimatedGas,
+    oneInchAllowanceTx,
+    oneInchAllowanceTxBaseFee,
+    squidAllowance.data,
+    squidAllowanceBaseEstimatedGas,
+    squidAllowanceTx,
+    squidAllowanceTxBaseFee,
   ]);
-
-  const oneInchRoute = useOneInchSwapTxSWR(oneInchRouteParam);
 
   const isLoadingSwapData = useMemo(() => {
     if (currentSwapAPI === '1inch') return oneInchRoute.isValidating;
 
     if (currentSwapAPI === 'squid') return squidRoute.isValidating;
 
+    if (currentSwapAPI === 'skip') return skipRoute.isValidating || skipSwapTx.isValidating;
     return false;
-  }, [currentSwapAPI, oneInchRoute.isValidating, squidRoute.isValidating]);
+  }, [currentSwapAPI, oneInchRoute.isValidating, skipRoute.isValidating, skipSwapTx.isValidating, squidRoute.isValidating]);
 
   const estimatedToTokenBaseAmount = useMemo(() => {
-    if (currentSwapAPI === 'osmo') {
-      return osmoSwapMath.estimatedOutputBaseAmount;
+    if (currentSwapAPI === 'skip' && skipRoute.data?.amount_out) {
+      return skipRoute.data?.amount_out;
     }
 
-    if (currentSwapAPI === '1inch' && oneInchRoute.data) {
+    if (currentSwapAPI === '1inch' && oneInchRoute.data?.toTokenAmount) {
       return oneInchRoute.data.toTokenAmount;
     }
 
-    if (currentSwapAPI === 'squid' && squidRoute.data) {
+    if (currentSwapAPI === 'squid' && squidRoute.data?.route.estimate.toAmount) {
       return squidRoute.data.route.estimate.toAmount;
     }
 
     return '0';
-  }, [currentSwapAPI, oneInchRoute.data, squidRoute.data, osmoSwapMath.estimatedOutputBaseAmount]);
+  }, [currentSwapAPI, oneInchRoute.data?.toTokenAmount, skipRoute.data?.amount_out, squidRoute.data?.route.estimate.toAmount]);
 
   const estimatedToTokenDisplayAmount = useMemo(
     () => toDisplayDenomAmount(estimatedToTokenBaseAmount, currentToToken?.decimals || 0),
@@ -858,121 +811,52 @@ export default function Entry() {
   );
 
   const outputAmountOf1Token = useMemo(() => {
-    if (currentSwapAPI === 'osmo') {
-      return osmoSwapMath.exchangeRate;
+    if ((currentSwapAPI === 'skip' || currentSwapAPI === '1inch') && gt(inputDisplayAmount || '0', '0') && gt(estimatedToTokenDisplayAmount || '0', '0')) {
+      return divide(estimatedToTokenDisplayAmount, inputDisplayAmount);
     }
     if (currentSwapAPI === 'squid' && squidRoute.data?.route.estimate.exchangeRate) {
       return squidRoute.data.route.estimate.exchangeRate;
     }
     return '0';
-  }, [currentSwapAPI, osmoSwapMath.exchangeRate, squidRoute.data?.route.estimate.exchangeRate]);
+  }, [currentSwapAPI, inputDisplayAmount, estimatedToTokenDisplayAmount, squidRoute.data?.route.estimate.exchangeRate]);
 
   const priceImpactPercent = useMemo(() => {
-    if (currentSwapAPI === 'osmo') {
-      return osmoSwapMath.priceImpact;
-    }
-
     if (currentSwapAPI === 'squid' && squidRoute.data) {
       return squidRoute.data.route.estimate.aggregatePriceImpact;
     }
 
     return '0';
-  }, [currentSwapAPI, osmoSwapMath.priceImpact, squidRoute.data]);
+  }, [currentSwapAPI, squidRoute.data]);
 
   const integratedSwapTx = useMemo(() => {
-    if (currentSwapAPI === '1inch' && gt(allowance.data?.allowance || '0', currentInputBaseAmount) && oneInchRoute.data) {
-      return {
-        from: oneInchRoute.data.tx.from,
-        to: oneInchRoute.data.tx.to,
-        data: oneInchRoute.data.tx.data,
-        value: toHex(oneInchRoute.data.tx.value, { addPrefix: true, isStringNumber: true }),
-        gas: toHex(times(oneInchRoute.data.tx.gas, getDefaultAV(), 0), { addPrefix: true, isStringNumber: true }),
-      };
-    }
+    if (gt(integratedAllowance?.allowance || '0', currentInputBaseAmount)) {
+      if (currentSwapAPI === '1inch' && oneInchRoute.data) {
+        return {
+          from: oneInchRoute.data.tx.from,
+          to: oneInchRoute.data.tx.to,
+          data: oneInchRoute.data.tx.data,
+          value: toHex(oneInchRoute.data.tx.value, { addPrefix: true, isStringNumber: true }),
+          gas: toHex(times(oneInchRoute.data.tx.gas, getDefaultAV(), 0), { addPrefix: true, isStringNumber: true }),
+        };
+      }
 
-    if (currentSwapAPI === 'squid' && squidRoute.data) {
-      return {
-        from: currentFromAddress,
-        to: squidRoute.data.route.transactionRequest.targetAddress,
-        data: squidRoute.data.route.transactionRequest.data,
-        value: toHex(squidRoute.data.route.transactionRequest.value, { addPrefix: true, isStringNumber: true }),
-        gas: toHex(squidRoute.data.route.transactionRequest.gasLimit, { addPrefix: true, isStringNumber: true }),
-      };
-    }
-
-    return undefined;
-  }, [allowance.data?.allowance, currentFromAddress, currentInputBaseAmount, currentSwapAPI, oneInchRoute.data, squidRoute.data]);
-
-  const memoizedOsmoSwapAminoTx = useMemo(() => {
-    if (currentSwapAPI === 'osmo' && inputDisplayAmount && account.data?.value.account_number && currentFeeToken?.address) {
-      const sequence = String(account.data?.value.sequence || '0');
-
-      return {
-        account_number: String(account.data.value.account_number),
-        sequence,
-        chain_id: nodeInfo.data?.default_node_info?.network ?? osmosisChain.chainId,
-        fee: { amount: [{ amount: '1', denom: currentFeeToken.address }], gas: COSMOS_DEFAULT_SWAP_GAS },
-        memo: '',
-        msgs: [
-          {
-            type: 'osmosis/gamm/swap-exact-amount-in',
-            value: {
-              routes: [
-                {
-                  pool_id: osmoSwapMath.currentPoolId,
-                  token_out_denom: currentToToken?.address,
-                },
-              ],
-              sender: currentFromAddress,
-              token_in: {
-                amount: currentInputBaseAmount,
-                denom: currentFromToken?.address,
-              },
-              token_out_min_amount: fix(estimatedToTokenBaseMinAmount, 0),
-            },
-          },
-        ],
-      };
+      if (currentSwapAPI === 'squid' && squidRoute.data) {
+        return {
+          from: currentFromAddress,
+          to: squidRoute.data.route.transactionRequest.targetAddress,
+          data: squidRoute.data.route.transactionRequest.data,
+          value: toHex(squidRoute.data.route.transactionRequest.value, { addPrefix: true, isStringNumber: true }),
+          gas: toHex(squidRoute.data.route.transactionRequest.gasLimit, { addPrefix: true, isStringNumber: true }),
+        };
+      }
     }
 
     return undefined;
-  }, [
-    currentSwapAPI,
-    inputDisplayAmount,
-    account.data?.value.account_number,
-    account.data?.value.sequence,
-    currentFeeToken?.address,
-    nodeInfo.data?.default_node_info?.network,
-    osmosisChain.chainId,
-    osmoSwapMath.currentPoolId,
-    currentToToken?.address,
-    currentFromAddress,
-    currentInputBaseAmount,
-    currentFromToken?.address,
-    estimatedToTokenBaseMinAmount,
-  ]);
-
-  const [osmoSwapAminoTx] = useDebounce(memoizedOsmoSwapAminoTx, 700);
-
-  const osmoSwapProtoTx = useMemo(() => {
-    if (osmoSwapAminoTx) {
-      const pTx = protoTx(osmoSwapAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(osmosisChain), value: '' });
-
-      return pTx && protoTxBytes({ ...pTx });
-    }
-    return null;
-  }, [osmosisChain, osmoSwapAminoTx]);
-
-  const osmoSwapSimulate = useSimulateSWR({ chain: osmosisChain, txBytes: osmoSwapProtoTx?.tx_bytes });
-
-  const osmoSwapSimulatedGas = useMemo(
-    () => (osmoSwapSimulate.data?.gas_info?.gas_used ? times(osmoSwapSimulate.data.gas_info.gas_used, getDefaultAV(osmosisChain), 0) : undefined),
-    [osmosisChain, osmoSwapSimulate.data?.gas_info?.gas_used],
-  );
+  }, [currentFromAddress, currentInputBaseAmount, currentSwapAPI, integratedAllowance, oneInchRoute.data, squidRoute.data]);
 
   const estimatedGas = useMemo(() => {
-    if (currentSwapAPI === 'osmo') {
-      return osmoSwapSimulatedGas || COSMOS_DEFAULT_SWAP_GAS;
+    if (currentSwapAPI === 'skip') {
+      return skipSwapSimulatedGas || COSMOS_DEFAULT_SWAP_GAS;
     }
 
     if (currentSwapAPI === '1inch' && oneInchRoute.data) {
@@ -984,11 +868,13 @@ export default function Entry() {
     }
 
     return '0';
-  }, [currentSwapAPI, oneInchRoute.data, osmoSwapSimulatedGas, squidRoute.data]);
+  }, [currentSwapAPI, oneInchRoute.data, skipSwapSimulatedGas, squidRoute.data]);
+
+  const cosmosGasRate = useGasRateSWR(selectedFromCosmosChain || COSMOS);
 
   const estimatedFeeBaseAmount = useMemo(() => {
-    if (currentSwapAPI === 'osmo') {
-      return ceil(times(estimatedGas, osmosisChain.gasRate.low));
+    if (currentSwapAPI === 'skip' && selectedFromCosmosChain) {
+      return ceil(times(estimatedGas, cosmosGasRate.data[selectedFromCosmosChain.baseDenom].low || selectedFromCosmosChain.gasRate.low));
     }
 
     if (currentSwapAPI === '1inch' && oneInchRoute.data) {
@@ -1011,9 +897,10 @@ export default function Entry() {
     return '0';
   }, [
     currentSwapAPI,
+    selectedFromCosmosChain,
     oneInchRoute.data,
     estimatedGas,
-    osmosisChain.gasRate.low,
+    cosmosGasRate.data,
     squidSourceChainGasCosts,
     squidSourceChainFeeAmount,
     squidCrossChainFeeCosts,
@@ -1025,56 +912,17 @@ export default function Entry() {
     [currentFeeToken?.decimals, estimatedFeeBaseAmount],
   );
 
-  const squidSourceChainTotalFeePrice = useMemo(
-    () =>
-      squidSourceChainGasCosts.reduce(
-        (ac, cu) =>
-          plus(
-            ac,
-            times(
-              toDisplayDenomAmount(cu.amount || '0', cu.feeToken?.decimals || 0),
-              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[extensionStorage.currency]) || '0',
-            ),
-          ),
-        '0',
-      ) || '0',
-    [extensionStorage.currency, coinGeckoPrice.data, squidSourceChainGasCosts],
-  );
-
-  const squidCrossChainTotalFeePrice = useMemo(
-    () =>
-      squidCrossChainFeeCosts?.reduce(
-        (ac, cu) =>
-          plus(
-            ac,
-            times(
-              toDisplayDenomAmount(cu.amount || '0', cu.feeToken?.decimals || 0),
-              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[extensionStorage.currency]) || '0',
-            ),
-          ),
-        '0',
-      ) || '0',
-    [extensionStorage.currency, coinGeckoPrice.data, squidCrossChainFeeCosts],
-  );
-
   const estimatedFeePrice = useMemo(() => {
-    if (currentSwapAPI === 'osmo' || currentSwapAPI === '1inch') {
+    if (currentSwapAPI === 'skip' || currentSwapAPI === '1inch') {
       return times(estimatedFeeDisplayAmount, currentFeeTokenPrice);
     }
 
     if (currentSwapAPI === 'squid') {
-      return plus(squidSourceChainTotalFeePrice, squidCrossChainTotalFeePrice);
+      return estimatedSquidFeePrice;
     }
 
     return '0';
-  }, [currentSwapAPI, estimatedFeeDisplayAmount, currentFeeTokenPrice, squidSourceChainTotalFeePrice, squidCrossChainTotalFeePrice]);
-
-  const currentOsmoSwapFeeDisplayAmount = useMemo(
-    () => times(inputDisplayAmount || '0', osmoSwapMath.swapServiceFeeRate),
-    [inputDisplayAmount, osmoSwapMath.swapServiceFeeRate],
-  );
-
-  const osmoSwapFeePrice = useMemo(() => times(currentFeeTokenPrice, currentOsmoSwapFeeDisplayAmount), [currentFeeTokenPrice, currentOsmoSwapFeeDisplayAmount]);
+  }, [currentSwapAPI, estimatedFeeDisplayAmount, currentFeeTokenPrice, estimatedSquidFeePrice]);
 
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentFromTokenDisplayBalance, estimatedFeeDisplayAmount);
@@ -1093,17 +941,24 @@ export default function Entry() {
       if (currentToChain?.line === ETHEREUM.line) {
         setCurrentFromChain(currentToChain);
       }
-      if (currentToChain?.line === osmosisChain.line) {
+      if (currentToChain?.line === COSMOS.line) {
         setCurrentFromChain(filteredFromChains[0].id === tmpFromChain?.id ? filteredFromChains[1] : filteredFromChains[0]);
       }
       setCurrentToChain(tmpFromChain);
+    }
+
+    if (currentSwapAPI === 'skip') {
+      if (currentFromChain.id !== currentToChain?.id && currentToChain) {
+        setCurrentFromChain(currentToChain);
+        setCurrentToChain(tmpFromChain);
+      }
     }
 
     setCurrentFromToken(currentToToken);
     setCurrentToToken(tmpFromToken);
 
     setInputDisplayAmount('');
-  }, [currentFromChain, currentFromToken, currentSwapAPI, currentToChain, currentToToken, filteredFromChains, osmosisChain.line]);
+  }, [currentFromChain, currentFromToken, currentSwapAPI, currentToChain, currentToToken, filteredFromChains]);
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -1138,17 +993,20 @@ export default function Entry() {
       return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
     }
 
-    if (currentSwapAPI === 'osmo') {
-      if (!osmoSwapMath.poolData.data || !osmoSwapMath.poolsAssetData.data) {
+    if (currentSwapAPI === 'skip') {
+      if (!skipSupportedChains) {
         return t('pages.Wallet.Swap.entry.networkError');
       }
-      if (gt(currentInputBaseAmount, osmoSwapMath.tokenBalanceIn || '0')) {
-        return t('pages.Wallet.Swap.entry.excessiveSwap');
+      if (skipRoute.data?.txs_required && skipRoute.data?.txs_required > 1) {
+        return t('pages.Wallet.Swap.entry.multiTxSwapError');
       }
-      if (gt(priceImpactPercent, '10')) {
-        return t('pages.Wallet.Swap.entry.invalidPriceImpact');
+      if (skipRoute.error?.response?.data.message) {
+        return skipRoute.error.response.data.message;
       }
-      if (!osmoSwapAminoTx) {
+      if (skipSwapTx.error?.response?.data.message) {
+        return skipSwapTx.error.response.data.message;
+      }
+      if (!skipSwapAminoTx) {
         return t('pages.Wallet.Swap.entry.invalidSwapTx');
       }
     }
@@ -1191,13 +1049,14 @@ export default function Entry() {
     t,
     currentFromTokenBalance,
     currentInputBaseAmount,
-    osmoSwapMath.poolData.data,
-    osmoSwapMath.poolsAssetData.data,
-    osmoSwapMath.tokenBalanceIn,
-    priceImpactPercent,
-    osmoSwapAminoTx,
+    skipSupportedChains,
+    skipRoute.data?.txs_required,
+    skipRoute.error?.response?.data.message,
+    skipSwapTx.error?.response?.data.message,
+    skipSwapAminoTx,
     integratedSwapTx,
     estimatedToTokenDisplayAmountPrice,
+    priceImpactPercent,
   ]);
 
   const swapInfoMessage = useMemo(() => {
@@ -1213,64 +1072,83 @@ export default function Entry() {
   }, [currency, currentSlippage, currentToToken, estimatedToTokenDisplayAmountPrice, estimatedToTokenDisplayMinAmount, t]);
 
   const warningMessage = useMemo(() => {
-    if (currentSwapAPI === '1inch') {
-      if (allowance.data && !gt(allowance.data.allowance, currentInputBaseAmount)) {
+    if (gt(currentInputBaseAmount, '0') && !isLoadingSwapData) {
+      if (integratedAllowance?.allowance && !gt(integratedAllowance.allowance, currentInputBaseAmount)) {
         return t('pages.Wallet.Swap.entry.allowanceWarning');
       }
-      if (oneInchRoute.error) {
-        return oneInchRoute.error.response?.data.description;
-      }
-    }
 
-    if (currentSwapAPI === 'squid') {
-      if (gt(estimatedToTokenDisplayAmountPrice, '100000')) {
-        return t('pages.Wallet.Swap.entry.txSizeWarning');
-      }
-      if (gt(priceImpactPercent, '3')) {
-        return t('pages.Wallet.Swap.entry.liquidityWarning');
-      }
-      if (squidRoute.error) {
-        return squidRoute.error.errors?.map(({ message }) => message).join('\n');
+      if (currentSwapAPI === '1inch') {
+        if (oneInchRoute.error) {
+          return oneInchRoute.error.response?.data.description;
+        }
       }
 
-      if (!errorMessage && !isDisabled) {
-        return t('pages.Wallet.Swap.entry.receiveWarningMessage');
+      if (currentSwapAPI === 'squid') {
+        if (gt(estimatedToTokenDisplayAmountPrice, '100000')) {
+          return t('pages.Wallet.Swap.entry.txSizeWarning');
+        }
+        if (gt(priceImpactPercent, '3')) {
+          return t('pages.Wallet.Swap.entry.liquidityWarning');
+        }
+        if (squidRoute.error) {
+          return squidRoute.error.errors?.map(({ message }) => message).join('\n');
+        }
+
+        if (!errorMessage && !isDisabled) {
+          return t('pages.Wallet.Swap.entry.receiveWarningMessage');
+        }
       }
-    }
 
-    if (gt(estimatedFeeBaseAmount, currentFeeTokenBalance)) {
-      return `${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription1')} ${fix(
-        estimatedFeeDisplayAmount,
-        getDisplayMaxDecimals(currentFeeToken?.decimals),
-      )} ${currentFeeToken?.displayDenom || ''} ${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription2')}`;
-    }
+      if (currentSwapAPI === 'skip') {
+        if (skipRoute.data?.txs_required && skipRoute.data?.txs_required > 1) {
+          return t('pages.Wallet.Swap.entry.multiTxSwap');
+        }
+        if (skipRoute.error?.response?.data.message) {
+          return skipRoute.error.response.data.message;
+        }
+        if (skipSwapTx.error?.response?.data.message) {
+          return skipSwapTx.error.response.data.message;
+        }
+      }
 
-    if (currentFeeToken && isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken.address)) {
-      if (gt(plus(currentInputBaseAmount, estimatedFeeBaseAmount), currentFromTokenBalance)) {
-        return `${t('pages.Wallet.Swap.entry.balanceWarningDescription1')} ${currentFeeToken?.displayDenom}${t(
-          'pages.Wallet.Swap.entry.balanceWarningDescription2',
-        )} ${fix(minus(currentFromTokenDisplayBalance, estimatedFeeDisplayAmount), getDisplayMaxDecimals(currentFeeToken.decimals))} ${
-          currentFeeToken?.displayDenom
-        } ${t('pages.Wallet.Swap.entry.balanceWarningDescription3')}`;
+      if (gt(estimatedFeeBaseAmount, currentFeeTokenBalance)) {
+        return `${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription1')} ${fix(
+          estimatedFeeDisplayAmount,
+          getDisplayMaxDecimals(currentFeeToken?.decimals),
+        )} ${currentFeeToken?.displayDenom || ''} ${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription2')}`;
+      }
+
+      if (currentFeeToken && isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken.address)) {
+        if (gt(plus(currentInputBaseAmount, estimatedFeeBaseAmount), currentFromTokenBalance)) {
+          return `${t('pages.Wallet.Swap.entry.balanceWarningDescription1')} ${currentFeeToken?.displayDenom}${t(
+            'pages.Wallet.Swap.entry.balanceWarningDescription2',
+          )} ${fix(minus(currentFromTokenDisplayBalance, estimatedFeeDisplayAmount), getDisplayMaxDecimals(currentFeeToken.decimals))} ${
+            currentFeeToken?.displayDenom
+          } ${t('pages.Wallet.Swap.entry.balanceWarningDescription3')}`;
+        }
       }
     }
 
     return '';
   }, [
-    currentSwapAPI,
-    allowance.data,
     currentInputBaseAmount,
-    oneInchRoute.error,
-    t,
+    isLoadingSwapData,
+    integratedAllowance?.allowance,
+    currentSwapAPI,
     estimatedFeeBaseAmount,
     currentFeeTokenBalance,
     currentFeeToken,
     currentFromToken?.address,
+    t,
+    oneInchRoute.error,
     estimatedToTokenDisplayAmountPrice,
     priceImpactPercent,
     squidRoute.error,
     errorMessage,
     isDisabled,
+    skipRoute.data?.txs_required,
+    skipRoute.error?.response?.data.message,
+    skipSwapTx.error?.response?.data.message,
     estimatedFeeDisplayAmount,
     currentFromTokenBalance,
     currentFromTokenDisplayBalance,
@@ -1286,17 +1164,17 @@ export default function Entry() {
   }, [currentFromTokenDisplayBalance, inputDisplayAmount, t]);
 
   const allowanceErrorMessage = useMemo(() => {
-    if (gte(currentInputBaseAmount, allowance.data?.allowance || '0') && gte(allowanceTxBaseFee, currentFeeTokenBalance)) {
+    if (gte(currentInputBaseAmount, integratedAllowance?.allowance || '0') && gte(integratedAllowance?.allowanceTxBaseFee || '0', currentFeeTokenBalance)) {
       return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
     }
     return '';
-  }, [allowance.data, allowanceTxBaseFee, currentFeeTokenBalance, currentInputBaseAmount, t]);
+  }, [integratedAllowance?.allowance, integratedAllowance?.allowanceTxBaseFee, currentFeeTokenBalance, currentInputBaseAmount, t]);
 
   useEffect(() => {
     setIsDisabled(true);
 
     debouncedEnabled();
-  }, [debouncedEnabled, memoizedOsmoSwapAminoTx]);
+  }, [debouncedEnabled, memoizedSkipSwapAminoTx]);
 
   useEffect(() => {
     if (currentFromChain && !currentToChain) {
@@ -1304,7 +1182,11 @@ export default function Entry() {
     }
 
     if (currentToChain && filteredToChainList.filter((item) => item.isUnavailable).find((item) => item.id === currentToChain.id)) {
-      setCurrentToChain(filteredToChainList[0]);
+      if (currentFromChain.line === COSMOS.line) {
+        setCurrentToChain(filteredToChainList.find((item) => item.id === currentFromChain.id) || filteredToChainList[0]);
+      } else {
+        setCurrentToChain(filteredToChainList[0]);
+      }
     }
   }, [filteredFromChains, filteredToChainList, currentSwapAPI, currentFromChain, currentToChain]);
 
@@ -1312,8 +1194,8 @@ export default function Entry() {
     if (!currentFromChain || !currentToChain) {
       setCurrentSwapAPI(undefined);
     }
-    if (currentFromChain?.id === osmosisChain.id && currentToChain?.id === osmosisChain.id) {
-      setCurrentSwapAPI('osmo');
+    if (currentFromChain.line === COSMOS.line && currentToChain?.line === COSMOS.line) {
+      setCurrentSwapAPI('skip');
     }
     if (
       currentFromChain?.id === currentToChain?.id &&
@@ -1322,7 +1204,6 @@ export default function Entry() {
     ) {
       setCurrentSwapAPI('1inch');
     }
-
     if (
       currentFromChain?.id !== currentToChain?.id &&
       (supportedSwapChains.data?.squid.evm.send.find((sendChain) => sendChain.chainId === currentFromChain?.chainId) ||
@@ -1333,7 +1214,6 @@ export default function Entry() {
       setCurrentSwapAPI('squid');
     }
   }, [
-    osmosisChain.id,
     currentFromChain,
     currentFromChain?.id,
     currentToChain,
@@ -1348,8 +1228,8 @@ export default function Entry() {
 
   useEffect(() => {
     if (!filteredFromTokenList.find((item) => item.address === currentFromToken?.address && item.name === currentFromToken.name)) {
-      if (currentSwapAPI === 'osmo') {
-        setCurrentFromToken(filteredFromTokenList.find((item) => item.displayDenom === COSMOS.displayDenom) || filteredFromTokenList[0]);
+      if (currentSwapAPI === 'skip') {
+        setCurrentFromToken(filteredFromTokenList.find((item) => item.displayDenom === currentFromChain.displayDenom) || filteredFromTokenList[0]);
       }
       if (currentSwapAPI === '1inch' || currentSwapAPI === 'squid') {
         setCurrentFromToken(filteredFromTokenList[0]);
@@ -1357,19 +1237,29 @@ export default function Entry() {
     }
 
     if (!filteredToTokenList.find((item) => item.address === currentToToken?.address && item.name === currentToToken.name)) {
-      if (currentSwapAPI === 'osmo') {
-        setCurrentToToken(filteredToTokenList.find((item) => item.displayDenom === osmosisChain.displayDenom) || filteredToTokenList[0]);
-      }
       if (currentSwapAPI === '1inch') {
         setCurrentToToken(filteredToTokenList.find((item) => item.displayDenom.includes('USDT')));
       }
       if (currentSwapAPI === 'squid') {
         setCurrentToToken(filteredToTokenList[0]);
       }
+      if (currentSwapAPI === 'skip') {
+        if (currentFromChain.id === currentToChain?.id && filteredToTokenList[1]) {
+          setCurrentToToken(filteredToTokenList[1]);
+        } else {
+          setCurrentToToken(filteredToTokenList[0]);
+        }
+      }
+    }
+
+    if (currentSwapAPI === 'skip') {
+      if (currentFromChain.id === currentToChain?.id && currentFromToken?.address === currentToToken?.address) {
+        setCurrentToToken(filteredToTokenList.filter((item) => item.address !== currentToToken?.address)[0]);
+      }
     }
   }, [
     currentFromChain,
-    currentFromChain?.id,
+    currentFromChain.id,
     currentFromToken,
     currentSwapAPI,
     currentToChain,
@@ -1377,13 +1267,16 @@ export default function Entry() {
     currentToToken,
     filteredFromTokenList,
     filteredToTokenList,
-    osmosisChain.displayDenom,
-    osmosisChain.id,
   ]);
 
   useEffect(() => {
-    if (currentSwapAPI === '1inch' && currentFromToken) {
-      void allowance.mutate();
+    if (currentFromToken) {
+      if (currentSwapAPI === '1inch') {
+        void oneInchAllowance.mutate();
+      }
+      if (currentSwapAPI === 'squid') {
+        void squidAllowance.mutate();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSwapAPI, currentFromToken]);
@@ -1395,10 +1288,7 @@ export default function Entry() {
         void setCurrentChain(ETHEREUM);
       }
     }
-    if (currentFromChain?.line === 'COSMOS' && currentChain.line !== 'COSMOS') {
-      void setCurrentChain(osmosisChain);
-    }
-  }, [currentChain.line, currentFromChain, currentSwapAPI, osmosisChain, setCurrentChain, setCurrentEthereumNetwork]);
+  }, [currentChain.line, currentFromChain, setCurrentChain, setCurrentEthereumNetwork]);
 
   return (
     <>
@@ -1422,7 +1312,7 @@ export default function Entry() {
                 setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => {
-                if (currentSwapAPI === '1inch' && isEqualsIgnoringCase(clickedCoin.address, currentToToken?.address)) {
+                if (currentFromChain.id === currentToChain?.id && isEqualsIgnoringCase(clickedCoin.address, currentToToken?.address)) {
                   void swapAssetInfo();
                 } else {
                   setCurrentFromToken(clickedCoin);
@@ -1475,7 +1365,7 @@ export default function Entry() {
                 setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => {
-                if (currentSwapAPI === '1inch' && isEqualsIgnoringCase(clickedCoin.address, currentFromToken?.address)) {
+                if (currentFromChain.id === currentToChain?.id && isEqualsIgnoringCase(clickedCoin.address, currentFromToken?.address)) {
                   void swapAssetInfo();
                 } else {
                   setCurrentToToken(clickedCoin);
@@ -1550,101 +1440,56 @@ export default function Entry() {
               </SwapInfoSubHeaderContainer>
             </SwapInfoHeaderContainer>
             <SwapInfoBodyContainer>
-              {(currentSwapAPI === 'osmo' || currentSwapAPI === 'squid') && (
-                <>
-                  <SwapInfoBodyTextContainer>
-                    <SwapInfoBodyLeftContainer>
-                      <Typography variant="h6">{t('pages.Wallet.Swap.entry.exchangeRate')}</Typography>
-                    </SwapInfoBodyLeftContainer>
-                    <SwapInfoBodyRightContainer>
-                      {isLoadingSwapData ? (
-                        <Skeleton width="10rem" height="1.5rem" />
-                      ) : gt(outputAmountOf1Token, '0') ? (
-                        <SwapInfoBodyRightTextContainer>
-                          <Typography variant="h6n">{`1 ${currentFromToken?.displayDenom || ''} ≈`} </Typography>
-                          &nbsp;
-                          <Tooltip title={outputAmountOf1Token} arrow placement="top">
-                            <span>
-                              <NumberText
-                                typoOfIntegers="h6n"
-                                typoOfDecimals="h7n"
-                                fixed={gt(outputAmountOf1Token, '0') ? getDisplayMaxDecimals(currentToToken?.decimals) : 0}
-                              >
-                                {outputAmountOf1Token}
-                              </NumberText>
-                            </span>
-                          </Tooltip>
-                          &nbsp;
-                          <Typography variant="h6n">{currentToToken?.displayDenom}</Typography>
-                        </SwapInfoBodyRightTextContainer>
-                      ) : (
-                        <Typography variant="h6">-</Typography>
-                      )}
-                    </SwapInfoBodyRightContainer>
-                  </SwapInfoBodyTextContainer>
-
-                  <SwapInfoBodyTextContainer>
-                    <SwapInfoBodyLeftContainer>
-                      <Typography variant="h6">{t('pages.Wallet.Swap.entry.priceImpact')}</Typography>
-                    </SwapInfoBodyLeftContainer>
-                    <SwapInfoBodyRightContainer>
-                      {isLoadingSwapData ? (
-                        <Skeleton width="4rem" height="1.5rem" />
-                      ) : priceImpactPercent !== '0' ? (
-                        <SwapInfoBodyRightTextContainer data-is-invalid={gt(priceImpactPercent, currentSwapAPI === 'osmo' ? '10' : '5')}>
-                          <Typography variant="h6n">{` ${gt(priceImpactPercent, '0') ? `-` : ``} ${
-                            lt(priceImpactPercent.replace('-', ''), 0.01) ? `<` : ``
-                          }`}</Typography>
-                          &nbsp;
-                          <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
-                            {priceImpactPercent.replace('-', '')}
+              <SwapInfoBodyTextContainer>
+                <SwapInfoBodyLeftContainer>
+                  <Typography variant="h6">{t('pages.Wallet.Swap.entry.exchangeRate')}</Typography>
+                </SwapInfoBodyLeftContainer>
+                <SwapInfoBodyRightContainer>
+                  {isLoadingSwapData ? (
+                    <Skeleton width="10rem" height="1.5rem" />
+                  ) : gt(outputAmountOf1Token, '0') ? (
+                    <SwapInfoBodyRightTextContainer>
+                      <Typography variant="h6n">{`1 ${currentFromToken?.displayDenom || ''} ≈`} </Typography>
+                      &nbsp;
+                      <Tooltip title={outputAmountOf1Token} arrow placement="top">
+                        <span>
+                          <NumberText
+                            typoOfIntegers="h6n"
+                            typoOfDecimals="h7n"
+                            fixed={gt(outputAmountOf1Token, '0') ? getDisplayMaxDecimals(currentToToken?.decimals) : 0}
+                          >
+                            {outputAmountOf1Token}
                           </NumberText>
-                          <Typography variant="h6n">%</Typography>
-                        </SwapInfoBodyRightTextContainer>
-                      ) : (
-                        <Typography variant="h6">-</Typography>
-                      )}
-                    </SwapInfoBodyRightContainer>
-                  </SwapInfoBodyTextContainer>
-                </>
-              )}
+                        </span>
+                      </Tooltip>
+                      &nbsp;
+                      <Typography variant="h6n">{currentToToken?.displayDenom}</Typography>
+                    </SwapInfoBodyRightTextContainer>
+                  ) : (
+                    <Typography variant="h6">-</Typography>
+                  )}
+                </SwapInfoBodyRightContainer>
+              </SwapInfoBodyTextContainer>
 
-              {currentSwapAPI === 'osmo' && (
+              {currentSwapAPI === 'squid' && (
                 <SwapInfoBodyTextContainer>
                   <SwapInfoBodyLeftContainer>
-                    <Typography variant="h6">
-                      {t('pages.Wallet.Swap.entry.swapFee')} ({times(osmoSwapMath.swapServiceFeeRate, '100')}%)
-                    </Typography>
+                    <Typography variant="h6">{t('pages.Wallet.Swap.entry.priceImpact')}</Typography>
                   </SwapInfoBodyLeftContainer>
                   <SwapInfoBodyRightContainer>
-                    {gt(osmoSwapFeePrice, '0') ? (
-                      <FeePriceButton type="button" onClick={() => setIsOsmoSwapFeePriceCurrencyBase(!isOsmoSwapFeePriceCurrencyBase)}>
-                        <FeePriceButtonTextContainer>
-                          {isOsmoSwapFeePriceCurrencyBase ? (
-                            <>
-                              <Typography variant="h6n">{` ≈ ${lt(osmoSwapFeePrice, '0.01') ? `<` : ``} ${CURRENCY_SYMBOL[currency]}`}</Typography>
-                              &nbsp;
-                              <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
-                                {osmoSwapFeePrice}
-                              </NumberText>
-                            </>
-                          ) : (
-                            <>
-                              <Tooltip title={currentOsmoSwapFeeDisplayAmount} arrow placement="top">
-                                <span>
-                                  <Typography variant="h6n">≈</Typography>
-                                  &nbsp;
-                                  <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={currentFeeToken?.decimals}>
-                                    {currentOsmoSwapFeeDisplayAmount}
-                                  </NumberText>
-                                </span>
-                              </Tooltip>
-                              &nbsp;
-                              <Typography variant="h6n"> {currentFeeToken?.displayDenom}</Typography>
-                            </>
-                          )}
-                        </FeePriceButtonTextContainer>
-                      </FeePriceButton>
+                    {isLoadingSwapData ? (
+                      <Skeleton width="4rem" height="1.5rem" />
+                    ) : priceImpactPercent !== '0' ? (
+                      <SwapInfoBodyRightTextContainer data-is-invalid={gt(priceImpactPercent, '5')}>
+                        <Typography variant="h6n">{` ${gt(priceImpactPercent, '0') ? `-` : ``} ${
+                          lt(priceImpactPercent.replace('-', ''), 0.01) ? `<` : ``
+                        }`}</Typography>
+                        &nbsp;
+                        <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
+                          {priceImpactPercent.replace('-', '')}
+                        </NumberText>
+                        <Typography variant="h6n">%</Typography>
+                      </SwapInfoBodyRightTextContainer>
                     ) : (
                       <Typography variant="h6">-</Typography>
                     )}
@@ -1652,7 +1497,7 @@ export default function Entry() {
                 </SwapInfoBodyTextContainer>
               )}
 
-              {(currentSwapAPI === 'osmo' || currentSwapAPI === '1inch') && (
+              {(currentSwapAPI === 'skip' || currentSwapAPI === '1inch') && (
                 <SwapInfoBodyTextContainer>
                   <SwapInfoBodyLeftContainer>
                     <Typography variant="h6">{t('pages.Wallet.Swap.entry.gasFee')}</Typography>
@@ -1754,19 +1599,75 @@ export default function Entry() {
                   </SwapInfoBodyTextContainer>
                 </>
               )}
+              {currentSwapAPI === 'skip' && (
+                <>
+                  <SwapInfoBodyTextContainer>
+                    <SwapInfoBodyLeftContainer>
+                      <Typography variant="h6">{t('pages.Wallet.Swap.entry.processingTime')}</Typography>
+                    </SwapInfoBodyLeftContainer>
+
+                    <SwapInfoBodyRightContainer>
+                      {isLoadingSwapData ? (
+                        <Skeleton width="4rem" height="1.5rem" />
+                      ) : memoizedSkipSwapAminoTx ? (
+                        <SwapInfoBodyRightTextContainer>
+                          <>
+                            <Typography variant="h6n">~ 0.5</Typography>
+                            &nbsp;
+                            <Typography variant="h6n">{t('pages.Wallet.Swap.entry.minutes')}</Typography>
+                            &nbsp;
+                            <ProcessingTimeStyledTooltip title={t('pages.Wallet.Swap.entry.ibcRelayingTimeInfo')} placement="top" arrow>
+                              <SwapInfoBodyLeftIconContainer>
+                                <Info16Icon />
+                              </SwapInfoBodyLeftIconContainer>
+                            </ProcessingTimeStyledTooltip>
+                          </>
+                        </SwapInfoBodyRightTextContainer>
+                      ) : (
+                        <Typography variant="h6">-</Typography>
+                      )}
+                    </SwapInfoBodyRightContainer>
+                  </SwapInfoBodyTextContainer>
+
+                  <SwapInfoBodyTextContainer>
+                    <SwapInfoBodyLeftContainer>
+                      <Typography variant="h6">{t('pages.Wallet.Swap.entry.swapVenue')}</Typography>
+                    </SwapInfoBodyLeftContainer>
+
+                    <SwapInfoBodyRightContainer>
+                      {isLoadingSwapData ? (
+                        <Skeleton width="4rem" height="1.5rem" />
+                      ) : skipSwapVenueChain ? (
+                        <SwapInfoBodyRightTextContainer>
+                          <SwapVenueImageContainer>
+                            <Image src={skipSwapVenueChain.imageURL} />
+                          </SwapVenueImageContainer>
+                          &nbsp;
+                          <Typography variant="h6n">{skipSwapVenueChain.chainName}</Typography>
+                        </SwapInfoBodyRightTextContainer>
+                      ) : (
+                        <Typography variant="h6">-</Typography>
+                      )}
+                    </SwapInfoBodyRightContainer>
+                  </SwapInfoBodyTextContainer>
+                </>
+              )}
             </SwapInfoBodyContainer>
           </SwapInfoContainer>
         </BodyContainer>
         <BottomContainer>
-          {currentSwapAPI === '1inch' && allowance.data && !gt(allowance.data.allowance, currentInputBaseAmount) && allowanceTx ? (
+          {(currentSwapAPI === '1inch' || currentSwapAPI === 'squid') &&
+          integratedAllowance?.allowance &&
+          !gt(integratedAllowance.allowance, currentInputBaseAmount) &&
+          integratedAllowance.allowanceTx ? (
             <Tooltip varient="error" title={allowanceErrorMessage} placement="top" arrow>
               <div>
                 <Button
                   Icon={Permission16Icon}
                   type="button"
-                  disabled={!allowanceTx || !!allowanceErrorMessage}
+                  disabled={!integratedAllowance.allowanceTx || !!allowanceErrorMessage}
                   onClick={async () => {
-                    if (currentSwapAPI === '1inch' && allowanceTx) {
+                    if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid') && integratedAllowance.allowanceTx) {
                       await enQueue({
                         messageId: '',
                         origin: '',
@@ -1775,8 +1676,8 @@ export default function Entry() {
                           method: 'eth_sendTransaction',
                           params: [
                             {
-                              ...allowanceTx,
-                              gas: toHex(allowanceBaseEstimatedGas, { addPrefix: true, isStringNumber: true }),
+                              ...integratedAllowance.allowanceTx,
+                              gas: toHex(integratedAllowance.allowanceBaseEstimatedGas, { addPrefix: true, isStringNumber: true }),
                             },
                           ],
                         },
@@ -1795,9 +1696,10 @@ export default function Entry() {
           ) : (
             <Tooltip varient="error" title={errorMessage} placement="top" arrow>
               <div>
-                <Button
+                <StyledButton
                   type="button"
-                  disabled={!!errorMessage || isDisabled || isLoadingSwapData || (currentSwapAPI === 'osmo' ? !osmoSwapAminoTx : !integratedSwapTx)}
+                  data-is-skip={currentSwapAPI === 'skip'}
+                  disabled={!!errorMessage || isDisabled || isLoadingSwapData || (currentSwapAPI === 'skip' ? !skipSwapAminoTx : !integratedSwapTx)}
                   onClick={async () => {
                     if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid') && integratedSwapTx) {
                       await enQueue({
@@ -1818,7 +1720,7 @@ export default function Entry() {
                         await debouncedOpenTab();
                       }
                     }
-                    if (currentSwapAPI === 'osmo' && osmoSwapAminoTx && currentFeeToken?.address) {
+                    if (currentSwapAPI === 'skip' && skipSwapAminoTx && selectedFromCosmosChain && currentFeeToken) {
                       await enQueue({
                         messageId: '',
                         origin: '',
@@ -1826,11 +1728,14 @@ export default function Entry() {
                         message: {
                           method: 'cos_signAmino',
                           params: {
-                            chainName: osmosisChain.chainName,
+                            chainName: selectedFromCosmosChain.chainName,
                             doc: {
-                              ...osmoSwapAminoTx,
+                              ...skipSwapAminoTx,
                               fee: { amount: [{ denom: currentFeeToken.address, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
                             },
+                            isEditFee: true,
+                            isEditMemo: true,
+                            isCheckBalance: true,
                           },
                         },
                       });
@@ -1840,7 +1745,7 @@ export default function Entry() {
                   <ButtonTextIconContaier>
                     {language === 'ko' ? (
                       <>
-                        {currentSwapAPI === 'osmo' && <OsmosisLogoIcon />}
+                        {currentSwapAPI === 'skip' && <SkipLogoIcon />}
                         {currentSwapAPI === '1inch' && <OneInchLogoIcon />}
                         {currentSwapAPI === 'squid' && <SquidLogoIcon />}
                         {currentSwapAPI ? t('pages.Wallet.Swap.entry.swapButtonOn') : t('pages.Wallet.Swap.entry.swapButton')}
@@ -1848,13 +1753,13 @@ export default function Entry() {
                     ) : (
                       <>
                         {currentSwapAPI ? t('pages.Wallet.Swap.entry.swapButtonOn') : t('pages.Wallet.Swap.entry.swapButton')}
-                        {currentSwapAPI === 'osmo' && <OsmosisLogoIcon />}
+                        {currentSwapAPI === 'skip' && <SkipLogoIcon />}
                         {currentSwapAPI === '1inch' && <OneInchLogoIcon />}
                         {currentSwapAPI === 'squid' && <SquidLogoIcon />}
                       </>
                     )}
                   </ButtonTextIconContaier>
-                </Button>
+                </StyledButton>
               </div>
             </Tooltip>
           )}

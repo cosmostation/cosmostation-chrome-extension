@@ -49,7 +49,7 @@ export function useAccountSWR(chain: CosmosChain, suspense?: boolean) {
     refreshInterval: 15000,
     errorRetryCount: 0,
     suspense,
-    isPaused: () => !address,
+    isPaused: () => !address || !chain,
   });
 
   const isBaseVestingAccount = (payload: AuthAccountValue | AuthBaseVestingAccount | AuthBaseWithStartAndPeriod): payload is AuthBaseVestingAccount =>

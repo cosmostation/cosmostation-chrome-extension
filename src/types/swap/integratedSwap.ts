@@ -1,1 +1,1 @@
-export type IntegratedSwapAPI = 'osmo' | '1inch' | 'squid' | undefined;
+export type IntegratedSwapAPI = 'skip' | '1inch' | 'squid' | undefined;

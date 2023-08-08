@@ -35,7 +35,7 @@ export function useSimulateSWR({ chain, txBytes }: UseSimulateSWRProps, config?:
     revalidateIfStale: false,
     revalidateOnReconnect: false,
     errorRetryCount: 0,
-    isPaused: () => !txBytes || !requestURL,
+    isPaused: () => !txBytes || !requestURL || !chain,
     ...config,
   });
 

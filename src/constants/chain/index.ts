@@ -142,6 +142,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   LUM,
   MARS,
   MEDIBLOC,
+  NEUTRON,
   NOBLE,
   NYX,
   OMNIFLIX,
@@ -166,7 +167,6 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   TGRADE,
   UMEE,
   XPLA,
-  NEUTRON,
 ];
 
 export const COSMOS_FEE_BASE_DENOMS: CosmosFeeBaseDenom[] = [...NYX_FEE_BASE_DENOMS];
