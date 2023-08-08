@@ -61,7 +61,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const decodedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(body_bytes), [body_bytes]);
   const decodedAuthInfoBytes = useMemo(() => cosmos.tx.v1beta1.AuthInfo.decode(auth_info_bytes), [auth_info_bytes]);
 
-  const { fee } = useMemo(() => decodedAuthInfoBytes, [decodedAuthInfoBytes]);
+  const { fee } = decodedAuthInfoBytes;
 
   const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
   const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
@@ -127,7 +127,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const decodedChangedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(bodyBytes), [bodyBytes]);
   const decodedChangedAuthInfoBytes = useMemo(() => cosmos.tx.v1beta1.AuthInfo.decode(authInfoBytes), [authInfoBytes]);
 
-  const { messages } = useMemo(() => decodedChangedBodyBytes, [decodedChangedBodyBytes]);
+  const { messages } = decodedChangedBodyBytes;
   const msgs = useMemo(() => messages.map((item) => decodeProtobufMessage(item)), [messages]);
 
   const tx = useMemo(

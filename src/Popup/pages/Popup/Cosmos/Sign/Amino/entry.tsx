@@ -64,7 +64,7 @@ export default function Entry({ queue, chain }: EntryProps) {
     params: { doc, isEditFee, isEditMemo, isCheckBalance, gasRate },
   } = message;
 
-  const { fee, msgs } = useMemo(() => doc, [doc]);
+  const { fee, msgs } = doc;
 
   const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
   const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);

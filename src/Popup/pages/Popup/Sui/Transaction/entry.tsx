@@ -85,7 +85,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
-  const { coinGeckoId } = useMemo(() => currentSuiNetwork, [currentSuiNetwork]);
+  const { coinGeckoId } = currentSuiNetwork;
 
   const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 

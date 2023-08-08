@@ -130,7 +130,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const netVersion = useNetVersionSWR();
 
-  const { displayDenom, coinGeckoId, decimals } = useMemo(() => currentEthereumNetwork, [currentEthereumNetwork]);
+  const { displayDenom, coinGeckoId, decimals } = currentEthereumNetwork;
 
   const { t } = useTranslation();
 
