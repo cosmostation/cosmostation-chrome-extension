@@ -40,7 +40,7 @@ import { toHex } from '~/Popup/utils/string';
 import { requestRPC as suiRequestRPC } from '~/Popup/utils/sui';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
-import type { Balance, SmartPayload, TokenInfo } from '~/types/cosmos/contract';
+import type { CW20BalanceResponse, CW20TokenInfoResponse } from '~/types/cosmos/contract';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { Queue } from '~/types/extensionStorage';
 import type { ContentScriptToBackgroundEventMessage, RequestMessage } from '~/types/message';
@@ -443,8 +443,8 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
               await Promise.all(
                 uniqueTokens.map(async (token) => {
                   try {
-                    const response = await get<SmartPayload>(getCW20TokenInfo(token.contractAddress));
-                    const result = JSON.parse(Buffer.from(response?.result?.smart, 'base64').toString('utf-8')) as TokenInfo;
+                    const response = await get<CW20TokenInfoResponse>(getCW20TokenInfo(token.contractAddress));
+                    const result = response.data;
                     const cosmosToken: CosmosToken = {
                       id: uuidv4(),
                       address: token.contractAddress,
@@ -695,9 +695,9 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           try {
             const { getCW20Balance } = cosmosURL(chain);
-            const response = await get<SmartPayload>(getCW20Balance(params.contractAddress, params.address));
+            const response = await get<CW20BalanceResponse>(getCW20Balance(params.contractAddress, params.address));
 
-            const amount = (JSON.parse(Buffer.from(response?.result?.smart, 'base64').toString('utf-8')) as Balance)?.balance || '0';
+            const amount = response.data.balance || '0';
 
             responseToWeb({
               response: {
@@ -767,9 +767,9 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           try {
             const { getCW20TokenInfo } = cosmosURL(chain);
-            const response = await get<SmartPayload>(getCW20TokenInfo(params.contractAddress));
+            const response = await get<CW20TokenInfoResponse>(getCW20TokenInfo(params.contractAddress));
 
-            const result = JSON.parse(Buffer.from(response?.result?.smart, 'base64').toString('utf-8')) as TokenInfo;
+            const result = response.data;
 
             responseToWeb({
               response: {
