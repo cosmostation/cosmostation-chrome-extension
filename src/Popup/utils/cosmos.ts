@@ -59,17 +59,12 @@ export function cosmosURL(chain: CosmosChain) {
     getCW20Balance: (contractAddress: string, address: string) =>
       `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64(`{"balance":{"address":"${address}"}}`)}`,
     getCW721NFTInfo: (contractAddress: string, tokenId: string) =>
-      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64(`{"nft_info":{"token_id":"${tokenId}"}}`)}?encoding=utf-8`,
+      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64(`{"nft_info":{"token_id":"${tokenId}"}}`)}`,
     getCW721NFTIds: (contractAddress: string, ownerAddress: string, limit = 50) =>
-      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64(
-        `{"tokens":{"owner":"${ownerAddress}","limit":${limit},"start_after":"0"}}`,
-      )}?encoding=utf-8`,
-    getCW721ContractInfo: (contractAddress: string) =>
-      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"contract_info":{}}')}?encoding=utf-8`,
-    getCW721NumTokens: (contractAddress: string) =>
-      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"num_tokens":{}}')}?encoding=utf-8`,
-    getCW721CollectionInfo: (contractAddress: string) =>
-      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"collection_info":{}}')}?encoding=utf-8`,
+      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64(`{"tokens":{"owner":"${ownerAddress}","limit":${limit},"start_after":"0"}}`)}`,
+    getCW721ContractInfo: (contractAddress: string) => `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"contract_info":{}}')}`,
+    getCW721NumTokens: (contractAddress: string) => `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"num_tokens":{}}')}`,
+    getCW721CollectionInfo: (contractAddress: string) => `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"collection_info":{}}')}`,
     getClientState: (channelId: string, port?: string) =>
       `${restURL}/ibc/core/channel/${isV1BetaClientState ? 'v1beta1' : 'v1'}/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
     simulate: () => `${restURL}/cosmos/tx/v1beta1/simulate`,

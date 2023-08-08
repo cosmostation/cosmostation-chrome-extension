@@ -18,7 +18,7 @@ export type CollectionInfoPayload = {
   };
 };
 
-export type NFTCollectionsInfoPayload = {
+export type CollectionsInfoPayload = {
   contractAddress: string;
   creator: string;
   description: string;
@@ -60,7 +60,7 @@ export type NFTInfoPayload = {
   };
 };
 
-export type NFTIdPayload = {
+export type NFTIDPayload = {
   data: {
     tokens: string[];
   };

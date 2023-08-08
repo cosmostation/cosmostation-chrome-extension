@@ -8,7 +8,7 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { NFTIdPayload, OwnedNFTTokenIDsPayload } from '~/types/cosmos/contract';
+import type { NFTIDPayload, OwnedNFTTokenIDsPayload } from '~/types/cosmos/contract';
 
 import { useAccounts } from '../../cache/useAccounts';
 
@@ -42,7 +42,7 @@ export function useOwnedNFTsTokenIDsSWR({ chain, contractAddresses, ownerAddress
 
   const fetcher = async (fetchUrl: string, contractAddress: string) => {
     try {
-      const retrunData = await get<NFTIdPayload>(fetchUrl);
+      const retrunData = await get<NFTIDPayload>(fetchUrl);
       return {
         contractAddress,
         ...retrunData.data,

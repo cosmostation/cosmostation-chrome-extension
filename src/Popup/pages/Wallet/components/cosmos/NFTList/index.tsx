@@ -43,53 +43,53 @@ export default function NFTList({ chain }: NFTListProps) {
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const ownedCosmosNFTs = useMemo(
+  const currentAccountCosmosNFTs = useMemo(
     () => currentCosmosNFTs.filter((item) => isEqualsIgnoringCase(item.ownerAddress, currentAddress)),
     [currentAddress, currentCosmosNFTs],
   );
 
-  const nftContractAddresses = useMemo(() => Array.from(new Set(ownedCosmosNFTs.map((item) => item.address))), [ownedCosmosNFTs]);
+  const nftContractAddresses = useMemo(() => Array.from(new Set(currentAccountCosmosNFTs.map((item) => item.address))), [currentAccountCosmosNFTs]);
 
   const nftContractsInfo = useContractsInfoSWR(chain, nftContractAddresses);
 
   const typeInfos = useMemo(() => {
     const infos: TypeInfo[] = [];
 
-    infos.push({ type: 'all', name: 'All Assets', count: ownedCosmosNFTs.length });
+    infos.push({ type: 'all', name: 'All Assets', count: currentAccountCosmosNFTs.length });
 
     nftContractsInfo.data?.forEach((item) => {
       infos.push({
         type: item?.contractAddress || '',
         name: item?.name || '',
-        count: ownedCosmosNFTs.filter((nft) => item?.contractAddress === nft.address).length,
+        count: currentAccountCosmosNFTs.filter((nft) => item?.contractAddress === nft.address).length,
       });
     });
 
-    if (ownedCosmosNFTs.filter((item) => !nftContractsInfo.data?.find((contractInfo) => contractInfo?.contractAddress === item.address)).length > 1) {
+    if (currentAccountCosmosNFTs.filter((item) => !nftContractsInfo.data?.find((contractInfo) => contractInfo?.contractAddress === item.address)).length > 1) {
       infos.push({
         type: 'etc',
         name: 'ETC',
-        count: ownedCosmosNFTs.filter((item) => !nftContractsInfo.data?.find((contractInfo) => contractInfo?.contractAddress === item.address)).length,
+        count: currentAccountCosmosNFTs.filter((item) => !nftContractsInfo.data?.find((contractInfo) => contractInfo?.contractAddress === item.address)).length,
       });
     }
 
     return infos;
-  }, [nftContractsInfo.data, ownedCosmosNFTs]);
+  }, [nftContractsInfo.data, currentAccountCosmosNFTs]);
 
   const [currentType, setCurrentType] = useState(typeInfos[0].type);
 
   const currentTypeInfo = useMemo(() => typeInfos.find((item) => item.type === currentType), [currentType, typeInfos]);
 
-  const isExistNFT = !!ownedCosmosNFTs.length;
+  const isExistNFT = !!currentAccountCosmosNFTs.length;
 
   const filteredNFTs = useMemo(() => {
-    if (currentType === 'all') return ownedCosmosNFTs;
+    if (currentType === 'all') return currentAccountCosmosNFTs;
 
     if (currentType === 'etc')
-      return ownedCosmosNFTs.filter((item) => !nftContractsInfo.data?.find((contractInfo) => contractInfo.contractAddress === item.address));
+      return currentAccountCosmosNFTs.filter((item) => !nftContractsInfo.data?.find((contractInfo) => contractInfo.contractAddress === item.address));
 
-    return ownedCosmosNFTs.filter((item) => currentTypeInfo?.type === item.address) || [];
-  }, [currentType, ownedCosmosNFTs, nftContractsInfo.data, currentTypeInfo?.type]);
+    return currentAccountCosmosNFTs.filter((item) => currentTypeInfo?.type === item.address) || [];
+  }, [currentType, currentAccountCosmosNFTs, nftContractsInfo.data, currentTypeInfo?.type]);
 
   const addNFT = () => navigate('/chain/cosmos/nft/add/cw721/search');
 

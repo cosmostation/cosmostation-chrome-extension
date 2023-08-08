@@ -7,18 +7,18 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { CollectionInfoPayload, NFTCollectionsInfoPayload } from '~/types/cosmos/contract';
+import type { CollectionInfoPayload, CollectionsInfoPayload } from '~/types/cosmos/contract';
 
 type MultiFetcherParams = {
   fetcherParam: string[];
 };
 
-type UseNFTCollectionsInfoSWRParams = {
+type UseCollectionsInfoSWRParams = {
   chain: CosmosChain;
   contractAddresses: string[];
 };
 
-export function useNFTCollectionsInfoSWR({ chain, contractAddresses }: UseNFTCollectionsInfoSWRParams, config?: SWRConfiguration) {
+export function useCollectionsInfoSWR({ chain, contractAddresses }: UseCollectionsInfoSWRParams, config?: SWRConfiguration) {
   const { getCW721CollectionInfo } = useMemo(() => cosmosURL(chain), [chain]);
 
   const regex = useMemo(() => getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]), [chain.bech32Prefix.address]);
@@ -46,7 +46,7 @@ export function useNFTCollectionsInfoSWR({ chain, contractAddresses }: UseNFTCol
       }),
     );
 
-  const { data, error, mutate } = useSWR<PromiseSettledResult<NFTCollectionsInfoPayload | null>[], AxiosError>(
+  const { data, error, mutate } = useSWR<PromiseSettledResult<CollectionsInfoPayload | null>[], AxiosError>(
     { id: 'nftsCollection', fetcherParam: contractAddresses },
     multiFetcher,
     {
@@ -61,7 +61,7 @@ export function useNFTCollectionsInfoSWR({ chain, contractAddresses }: UseNFTCol
 
   const returnData = useMemo(
     () =>
-      data?.reduce((accumulator: NFTCollectionsInfoPayload[], item) => {
+      data?.reduce((accumulator: CollectionsInfoPayload[], item) => {
         if (item.status === 'fulfilled' && item.value) {
           const newItem = { ...item.value };
           accumulator.push(newItem);

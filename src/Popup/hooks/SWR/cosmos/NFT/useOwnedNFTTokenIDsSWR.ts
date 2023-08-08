@@ -7,7 +7,7 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { NFTIdPayload } from '~/types/cosmos/contract';
+import type { NFTIDPayload } from '~/types/cosmos/contract';
 
 type UseOwnedNFTTokenIDsSWR = {
   chain: CosmosChain;
@@ -27,13 +27,13 @@ export function useOwnedNFTTokenIDsSWR({ chain, contractAddress, ownerAddress, l
 
   const fetcher = async (fetchUrl: string) => {
     try {
-      return await get<NFTIdPayload>(fetchUrl);
+      return await get<NFTIDPayload>(fetchUrl);
     } catch (e: unknown) {
       return null;
     }
   };
 
-  const { data, isValidating, error, mutate } = useSWR<NFTIdPayload | null, AxiosError>(requestURL, fetcher, {
+  const { data, isValidating, error, mutate } = useSWR<NFTIDPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 10000,
     refreshInterval: 11000,
