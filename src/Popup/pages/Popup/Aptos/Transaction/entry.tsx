@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AptosAccount, AptosClient } from 'aptos';
 import { useSnackbar } from 'notistack';
 import { useDebouncedCallback } from 'use-debounce';
@@ -80,7 +80,10 @@ export default function Entry({ queue }: EntryProps) {
 
   const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
 
-  const price = (asset?.coinGeckoId && coinGeckoPrice.data?.[asset.coinGeckoId]?.[currency]) || 0;
+  const price = useMemo(
+    () => (asset?.coinGeckoId && coinGeckoPrice.data?.[asset.coinGeckoId]?.[currency]) || 0,
+    [asset?.coinGeckoId, coinGeckoPrice.data, currency],
+  );
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -104,14 +107,16 @@ export default function Entry({ queue }: EntryProps) {
 
   const { t } = useTranslation();
 
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
   const [tabValue, setTabValue] = useState(0);
 
-  const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+  const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
 
   const aptosAccount = useMemo(() => new AptosAccount(keyPair!.privateKey!), [keyPair]);
 
-  const { message, messageId, origin, channel } = queue;
-  const { params, method } = message;
+  const { message, messageId, origin, channel } = useMemo(() => queue, [queue]);
+  const { params, method } = useMemo(() => message, [message]);
 
   const estimateGasPrice = useEstimateGasPriceSWR();
 
@@ -173,9 +178,13 @@ export default function Entry({ queue }: EntryProps) {
 
   const currentDisplayMaxFeeValue = useMemo(() => times(currentDisplayMaxFee, price, 0), [currentDisplayMaxFee, price]);
 
-  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+  const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
-  };
+  }, []);
+
+  const handleButtonDisabled = useCallback(() => {
+    setButtonDisabled(true);
+  }, []);
 
   const [isReloading, setIsReloading] = useState(false);
 
@@ -315,9 +324,11 @@ export default function Entry({ queue }: EntryProps) {
           {/* <Tooltip title={errorMessage} varient="error" placement="top"> */}
           <div>
             <Button
-              disabled={(typeof maxGas !== 'undefined' && maxGas !== maxGasAmount) || isLoadingFee || !!errorMessage}
+              disabled={(typeof maxGas !== 'undefined' && maxGas !== maxGasAmount) || isLoadingFee || !!errorMessage || buttonDisabled}
               onClick={async () => {
                 try {
+                  handleButtonDisabled();
+
                   if (generateTransaction.data) {
                     const signedTx = await aptosClient.signTransaction(aptosAccount, generateTransaction.data);
 

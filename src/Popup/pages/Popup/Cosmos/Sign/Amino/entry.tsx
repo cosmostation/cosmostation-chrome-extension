@@ -211,6 +211,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                 onClick={async () => {
                   try {
                     handleButtonDisabled();
+
                     if (!keyPair) {
                       throw new Error('key pair does not exist');
                     }
