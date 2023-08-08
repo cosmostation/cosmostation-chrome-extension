@@ -5,11 +5,19 @@ export type SmartPayload = {
   };
 };
 
-export type TokenInfo = {
-  name: string;
-  symbol: string;
-  decimals: number;
-  total_supply: string;
+export type CW20BalanceResponse = {
+  data: {
+    balance?: string;
+  };
+};
+
+export type CW20TokenInfoResponse = {
+  data: {
+    name: string;
+    symbol: string;
+    decimals: number;
+    total_supply: string;
+  };
 };
 
 export type Balance = {

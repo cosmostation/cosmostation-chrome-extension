@@ -6,7 +6,7 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { Balance, SmartPayload } from '~/types/cosmos/contract';
+import type { CW20BalanceResponse } from '~/types/cosmos/contract';
 
 export function useTokenBalanceSWR(chain: CosmosChain, contractAddress: string, address: string, config?: SWRConfiguration) {
   const { getCW20Balance } = cosmosURL(chain);
@@ -18,9 +18,9 @@ export function useTokenBalanceSWR(chain: CosmosChain, contractAddress: string, 
   const isValidContractAddress = regex.test(contractAddress);
   const isValidAddress = regex.test(address);
 
-  const fetcher = (fetchUrl: string) => get<SmartPayload>(fetchUrl);
+  const fetcher = (fetchUrl: string) => get<CW20BalanceResponse>(fetchUrl);
 
-  const { data, error, mutate } = useSWR<SmartPayload, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<CW20BalanceResponse, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,
@@ -29,7 +29,7 @@ export function useTokenBalanceSWR(chain: CosmosChain, contractAddress: string, 
     ...config,
   });
 
-  const returnData = data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as Balance) : undefined;
+  const returnData = data?.data;
 
   return { data: returnData, error, mutate };
 }
