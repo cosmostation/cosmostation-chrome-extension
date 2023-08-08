@@ -54,15 +54,15 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { t } = useTranslation();
 
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [isProgress, setIsProgress] = useState(false);
 
   const { feeCoins } = useCurrentFeesSWR(chain, { suspense: true });
 
-  const { message, messageId, origin, channel } = useMemo(() => queue, [queue]);
+  const { message, messageId, origin, channel } = queue;
 
   const {
     params: { doc, isEditFee, isEditMemo, isCheckBalance, gasRate },
-  } = useMemo(() => message, [message]);
+  } = message;
 
   const { fee, msgs } = useMemo(() => doc, [doc]);
 
@@ -120,10 +120,6 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-  }, []);
-
-  const handleButtonDisabled = useCallback(() => {
-    setButtonDisabled(true);
   }, []);
 
   const errorMessage = useMemo(() => {
@@ -207,10 +203,11 @@ export default function Entry({ queue, chain }: EntryProps) {
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
             <div>
               <Button
-                disabled={!!errorMessage || buttonDisabled}
+                disabled={!!errorMessage}
+                isProgress={isProgress}
                 onClick={async () => {
                   try {
-                    handleButtonDisabled();
+                    setIsProgress(true);
 
                     if (!keyPair) {
                       throw new Error('key pair does not exist');
@@ -315,6 +312,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                   } finally {
                     setLoadingLedgerSigning(false);
+                    setIsProgress(false);
                     await closeTransport();
                   }
                 }}

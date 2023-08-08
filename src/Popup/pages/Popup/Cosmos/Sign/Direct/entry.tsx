@@ -45,15 +45,15 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { t } = useTranslation();
 
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [isProgress, setIsProgress] = useState(false);
 
   const { feeCoins } = useCurrentFeesSWR(chain, { suspense: true });
 
-  const { message, messageId, origin, channel } = useMemo(() => queue, [queue]);
+  const { message, messageId, origin, channel } = queue;
 
   const {
     params: { doc, isEditFee, isEditMemo, isCheckBalance, gasRate },
-  } = useMemo(() => message, [message]);
+  } = message;
 
   const auth_info_bytes = useMemo(() => new Uint8Array(doc.auth_info_bytes), [doc.auth_info_bytes]);
   const body_bytes = useMemo(() => new Uint8Array(doc.body_bytes), [doc.body_bytes]);
@@ -143,10 +143,6 @@ export default function Entry({ queue, chain }: EntryProps) {
     setValue(newValue);
   }, []);
 
-  const handleButtonDisabled = useCallback(() => {
-    setButtonDisabled(true);
-  }, []);
-
   const errorMessage = useMemo(() => {
     if (!gte(currentFeeCoin.availableAmount, baseFee) && isCheckBalance && !fee?.granter && !fee?.payer) {
       return t('pages.Popup.Cosmos.Sign.Direct.entry.insufficientFeeAmount');
@@ -231,10 +227,11 @@ export default function Entry({ queue, chain }: EntryProps) {
           <Tooltip varient="error" title={errorMessage} placement="top" arrow>
             <div>
               <Button
-                disabled={!!errorMessage || buttonDisabled}
+                disabled={!!errorMessage}
+                isProgress={isProgress}
                 onClick={async () => {
                   try {
-                    handleButtonDisabled();
+                    setIsProgress(true);
 
                     if (!keyPair?.privateKey) {
                       throw new Error('Unknown Error');
@@ -305,6 +302,8 @@ export default function Entry({ queue, chain }: EntryProps) {
                     }
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+                  } finally {
+                    setIsProgress(false);
                   }
                 }}
               >

@@ -11,6 +11,7 @@ import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
@@ -107,7 +108,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const { t } = useTranslation();
 
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [isProgress, setIsProgress] = useState(false);
 
   const [tabValue, setTabValue] = useState(0);
 
@@ -115,8 +116,8 @@ export default function Entry({ queue }: EntryProps) {
 
   const aptosAccount = useMemo(() => new AptosAccount(keyPair!.privateKey!), [keyPair]);
 
-  const { message, messageId, origin, channel } = useMemo(() => queue, [queue]);
-  const { params, method } = useMemo(() => message, [message]);
+  const { message, messageId, origin, channel } = queue;
+  const { params, method } = message;
 
   const estimateGasPrice = useEstimateGasPriceSWR();
 
@@ -180,10 +181,6 @@ export default function Entry({ queue }: EntryProps) {
 
   const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
-  }, []);
-
-  const handleButtonDisabled = useCallback(() => {
-    setButtonDisabled(true);
   }, []);
 
   const [isReloading, setIsReloading] = useState(false);
@@ -321,60 +318,63 @@ export default function Entry({ queue }: EntryProps) {
           >
             {t('pages.Popup.Aptos.Transaction.entry.cancelButton')}
           </OutlineButton>
-          {/* <Tooltip title={errorMessage} varient="error" placement="top"> */}
-          <div>
-            <Button
-              disabled={(typeof maxGas !== 'undefined' && maxGas !== maxGasAmount) || isLoadingFee || !!errorMessage || buttonDisabled}
-              onClick={async () => {
-                try {
-                  handleButtonDisabled();
+          <Tooltip title={errorMessage} varient="error" placement="top">
+            <div>
+              <Button
+                disabled={(typeof maxGas !== 'undefined' && maxGas !== maxGasAmount) || isLoadingFee || !!errorMessage}
+                isProgress={isProgress}
+                onClick={async () => {
+                  try {
+                    setIsProgress(true);
 
-                  if (generateTransaction.data) {
-                    const signedTx = await aptosClient.signTransaction(aptosAccount, generateTransaction.data);
+                    if (generateTransaction.data) {
+                      const signedTx = await aptosClient.signTransaction(aptosAccount, generateTransaction.data);
 
-                    if (method === 'aptos_signTransaction') {
-                      const result: AptosSignTransactionResponse = `0x${Buffer.from(signedTx).toString('hex')}`;
+                      if (method === 'aptos_signTransaction') {
+                        const result: AptosSignTransactionResponse = `0x${Buffer.from(signedTx).toString('hex')}`;
 
-                      responseToWeb({
-                        response: {
-                          result,
-                        },
-                        message,
-                        messageId,
-                        origin,
-                      });
+                        responseToWeb({
+                          response: {
+                            result,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
 
-                      await deQueue();
-                    }
-
-                    if (method === 'aptos_signAndSubmitTransaction') {
-                      const result: AptosSignAndSubmitTransactionResponse = await aptosClient.submitTransaction(signedTx);
-
-                      responseToWeb({
-                        response: {
-                          result,
-                        },
-                        message,
-                        messageId,
-                        origin,
-                      });
-
-                      if (channel === 'inApp') {
-                        enqueueSnackbar('Success');
+                        await deQueue();
                       }
 
-                      await deQueue();
+                      if (method === 'aptos_signAndSubmitTransaction') {
+                        const result: AptosSignAndSubmitTransactionResponse = await aptosClient.submitTransaction(signedTx);
+
+                        responseToWeb({
+                          response: {
+                            result,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
+
+                        if (channel === 'inApp') {
+                          enqueueSnackbar('Success');
+                        }
+
+                        await deQueue();
+                      }
                     }
+                  } catch {
+                    enqueueSnackbar('Unknown Error', { variant: 'error' });
+                  } finally {
+                    setIsProgress(false);
                   }
-                } catch {
-                  enqueueSnackbar('Unknown Error', { variant: 'error' });
-                }
-              }}
-            >
-              {t('pages.Popup.Aptos.Transaction.entry.signButton')}
-            </Button>
-          </div>
-          {/* </Tooltip> */}
+                }}
+              >
+                {t('pages.Popup.Aptos.Transaction.entry.signButton')}
+              </Button>
+            </div>
+          </Tooltip>
         </BottomButtonContainer>
       </BottomContainer>
       <LedgerToTab />

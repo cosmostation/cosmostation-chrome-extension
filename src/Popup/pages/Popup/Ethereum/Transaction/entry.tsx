@@ -90,7 +90,7 @@ export default function Entry({ queue }: EntryProps) {
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [isProgress, setIsProgress] = useState(false);
 
   const { setLoadingLedgerSigning } = useLoading();
 
@@ -143,8 +143,8 @@ export default function Entry({ queue }: EntryProps) {
   const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
   const transactionCount = useTransactionCountSWR([address, 'latest']);
 
-  const { message, messageId, origin } = useMemo(() => queue, [queue]);
-  const { params } = useMemo(() => message, [message]);
+  const { message, messageId, origin } = queue;
+  const { params } = message;
 
   const [isSigningLedger, setIsSigningLedger] = useState(false);
 
@@ -333,10 +333,6 @@ export default function Entry({ queue }: EntryProps) {
     setTabValue(newTabValue);
   }, []);
 
-  const handleButtonDisabled = useCallback(() => {
-    setButtonDisabled(true);
-  }, []);
-
   useEffect(() => {
     void (async () => {
       const from = toHex(params[0].from, { addPrefix: true });
@@ -509,10 +505,11 @@ export default function Entry({ queue }: EntryProps) {
             <Tooltip title={errorMessage} varient="error" placement="top">
               <div>
                 <Button
-                  disabled={isLoadingFee || !!errorMessage || buttonDisabled}
+                  disabled={isLoadingFee || !!errorMessage}
+                  isProgress={isProgress}
                   onClick={async () => {
                     try {
-                      handleButtonDisabled();
+                      setIsProgress(true);
 
                       const signedRawTx = await (async () => {
                         const dataToSign = {
@@ -639,6 +636,7 @@ export default function Entry({ queue }: EntryProps) {
                       await closeTransport();
                       setLoadingLedgerSigning(false);
                       setIsSigningLedger(false);
+                      setIsProgress(false);
                     }
                   }}
                 >
