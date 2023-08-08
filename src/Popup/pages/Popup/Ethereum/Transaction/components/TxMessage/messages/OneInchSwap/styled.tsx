@@ -88,3 +88,15 @@ export const RightColumnContainer = styled('div')({
   flexDirection: 'column',
   alignItems: 'flex-end',
 });
+
+export const DenomContainer = styled('div')({
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '10rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});

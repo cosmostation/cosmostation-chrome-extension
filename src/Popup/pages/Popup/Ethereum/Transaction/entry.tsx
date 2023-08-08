@@ -18,13 +18,13 @@ import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import GasSettingDialog from '~/Popup/components/GasSettingDialog';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
-import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/1inch/useOneInchTokensSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useDetermineTxTypeSWR } from '~/Popup/hooks/SWR/ethereum/useDetermineTxTypeSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useNetVersionSWR } from '~/Popup/hooks/SWR/ethereum/useNetVersionSWR';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useTransactionCountSWR } from '~/Popup/hooks/SWR/ethereum/useTransactionCountSWR';
+import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useOneInchTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
@@ -613,7 +613,7 @@ export default function Entry({ queue }: EntryProps) {
                           await deQueue();
                         }
                       }
-                      if (oneInchSwapDstToken) {
+                      if (oneInchSwapDstToken && oneInchSwapDstToken.symbol !== currentEthereumNetwork.displayDenom) {
                         const newToken = {
                           address: oneInchSwapDstToken.address,
                           displayDenom: oneInchSwapDstToken.symbol,

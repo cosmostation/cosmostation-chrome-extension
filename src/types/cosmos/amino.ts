@@ -38,6 +38,7 @@ export type MsgTransfer = {
   timeout_height: Height;
   timeout_timestamp: number;
   token: Amount;
+  memo: string;
 };
 
 export type MsgSwapExactAmountIn = {

@@ -53,6 +53,22 @@ export type SupportedChain = {
   cosmos: ChainData;
 };
 
+export type SupportedSkipChain = {
+  chains: {
+    chain_name: string;
+    chain_id: string;
+    pfm_enabled?: boolean;
+    cosmos_sdk_version: string;
+    modules: {
+      [modulePath: string]: {
+        path: string;
+        version: string;
+        sum?: string;
+      };
+    };
+  }[];
+};
+
 export type ChainData = {
   send: ChainIdData[];
   receive: ChainIdData[];

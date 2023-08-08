@@ -28,10 +28,10 @@ type IconContainerProps = {
 
 export const IconContainer = styled('div')<IconContainerProps>(({ theme, ...props }) => ({
   '& > svg': {
-    fill: props['data-varient'] === 'info' ? theme.accentColors.green : theme.accentColors.red,
+    fill: props['data-varient'] === 'info' ? theme.accentColors.green01 : theme.accentColors.red,
 
     '& > path': {
-      fill: props['data-varient'] === 'info' ? theme.accentColors.green : theme.accentColors.red,
+      fill: props['data-varient'] === 'info' ? theme.accentColors.green01 : theme.accentColors.red,
     },
   },
 }));

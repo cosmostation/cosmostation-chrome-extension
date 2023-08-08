@@ -1,6 +1,7 @@
 import { styled } from '@mui/material/styles';
 import { tooltipClasses } from '@mui/material/Tooltip';
 
+import Button from '~/Popup/components/common/Button';
 import IconButton from '~/Popup/components/common/IconButton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 
@@ -192,6 +193,25 @@ export const GasInfoStyledTooltip = styled(Tooltip)(({ theme }) => ({
   },
 }));
 
+export const ProcessingTimeStyledTooltip = styled(Tooltip)(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.colors.base02,
+    marginLeft: '8rem',
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    marginTop: '0.7rem !important',
+    marginRight: '16rem',
+
+    backgroundColor: theme.colors.base02,
+
+    padding: '0.8rem',
+    textAlign: 'start',
+
+    maxWidth: '23.5rem',
+    maxHeight: 'fit-content',
+  },
+}));
+
 export const SwapInfoBodyContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
@@ -276,4 +296,28 @@ export const ButtonTextIconContaier = styled('div')({
   alignItems: 'center',
 
   columnGap: '0.4rem',
+});
+
+type StyledButtonProps = {
+  'data-is-skip'?: boolean;
+};
+
+export const StyledButton = styled(Button)<StyledButtonProps>(({ theme, ...props }) => ({
+  '&:disabled': {
+    '& svg': {
+      '& > path': {
+        stroke: props['data-is-skip'] ? theme.colors.text02 : 'none',
+        strokeWidth: props['data-is-skip'] ? '0.02rem' : 'none',
+      },
+    },
+  },
+}));
+
+export const SwapVenueImageContainer = styled('div')({
+  width: '1.6rem',
+  height: '1.6rem',
+  '& > img': {
+    width: '1.6rem',
+    height: '1.6rem',
+  },
 });

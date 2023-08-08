@@ -4,7 +4,7 @@ import { Typography } from '@mui/material';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/1inch/useOneInchTokensSWR';
+import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useOneInchTokensSWR';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -16,6 +16,7 @@ import CoinAmountInfoContainer from './components/CoinAmountInfoContainer';
 import {
   ContentContainer,
   ContentItemContainer,
+  DenomContainer,
   HeaderContainer,
   ImageContainer,
   LabelContainer,
@@ -89,7 +90,11 @@ export default function OneInchSwap({ tx, determineTxType }: OneInchSwapProps) {
                     <ImageContainer>
                       <Image src={srcToken?.logoURI} />
                     </ImageContainer>
-                    <Typography variant="h5">{srcToken?.name}</Typography>
+                    <DenomContainer>
+                      <Tooltip title={srcToken?.name || ''} arrow placement="top">
+                        <Typography variant="h5">{srcToken?.name}</Typography>
+                      </Tooltip>
+                    </DenomContainer>
                   </TokenContainer>
                 </ValueContainer>
               </div>
@@ -101,12 +106,16 @@ export default function OneInchSwap({ tx, determineTxType }: OneInchSwapProps) {
                   <TokenAmountContainer>
                     <Tooltip title={inputDisplayAmount} arrow placement="top">
                       <span>
-                        <Number typoOfIntegers="h5n" typoOfDecimals="h5n" fixed={getDisplayMaxDecimals(srcToken?.decimals)}>
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(srcToken?.decimals)}>
                           {inputDisplayAmount}
                         </Number>
                       </span>
                     </Tooltip>
-                    <Typography variant="h5">{srcToken?.symbol}</Typography>
+                    <DenomContainer>
+                      <Tooltip title={srcToken?.symbol || ''} arrow placement="top">
+                        <Typography variant="h5">{srcToken?.symbol}</Typography>
+                      </Tooltip>
+                    </DenomContainer>
                   </TokenAmountContainer>
                 </ValueContainer>
               </RightColumnContainer>
@@ -124,7 +133,11 @@ export default function OneInchSwap({ tx, determineTxType }: OneInchSwapProps) {
                     <ImageContainer>
                       <Image src={dstToken?.logoURI} />
                     </ImageContainer>
-                    <Typography variant="h5">{dstToken?.name}</Typography>
+                    <DenomContainer>
+                      <Tooltip title={dstToken?.name || ''} arrow placement="top">
+                        <Typography variant="h5">{dstToken?.name}</Typography>
+                      </Tooltip>
+                    </DenomContainer>
                   </TokenContainer>
                 </ValueContainer>
               </div>
@@ -137,12 +150,16 @@ export default function OneInchSwap({ tx, determineTxType }: OneInchSwapProps) {
                     <Typography variant="h5n">≈</Typography>
                     <Tooltip title={expectedOutputDisplayMinAmount} arrow placement="top">
                       <span>
-                        <Number typoOfIntegers="h5n" typoOfDecimals="h5n" fixed={getDisplayMaxDecimals(dstToken?.decimals || 0)}>
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(dstToken?.decimals || 0)}>
                           {expectedOutputDisplayMinAmount}
                         </Number>
                       </span>
                     </Tooltip>
-                    <Typography variant="h5">{dstToken?.symbol}</Typography>
+                    <DenomContainer>
+                      <Tooltip title={dstToken?.symbol || ''} arrow placement="top">
+                        <Typography variant="h5">{dstToken?.symbol}</Typography>
+                      </Tooltip>
+                    </DenomContainer>
                   </TokenAmountContainer>
                 </ValueContainer>
               </RightColumnContainer>
