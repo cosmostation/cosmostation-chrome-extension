@@ -27,6 +27,10 @@ export function timeToString(time: number) {
   )}:${toString(date.getSeconds())}`;
 }
 
+export function toBase64(str: string) {
+  return Buffer.from(str).toString('base64');
+}
+
 type toHexOptions = {
   addPrefix?: boolean;
   isStringNumber?: boolean;
