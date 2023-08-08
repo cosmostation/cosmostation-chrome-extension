@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import secp256k1 from 'secp256k1';
 import sortKeys from 'sort-keys';
@@ -54,6 +54,8 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { t } = useTranslation();
 
+  const [isProgress, setIsProgress] = useState(false);
+
   const { feeCoins } = useCurrentFeesSWR(chain, { suspense: true });
 
   const { message, messageId, origin, channel } = queue;
@@ -64,17 +66,22 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { fee, msgs } = doc;
 
-  const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-  const address = getAddress(chain, keyPair?.publicKey);
+  const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
+  const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
 
-  const inputGas = fee.gas;
+  const inputGas = useMemo(() => fee.gas, [fee.gas]);
 
-  const inputFee = fee.amount?.find((item) => feeCoins.map((feeCoin) => feeCoin.baseDenom).includes(item.denom)) ||
-    fee.amount?.[0] || {
-      denom: chain.baseDenom,
-      amount: '0',
-    };
-  const inputFeeAmount = inputFee.amount;
+  const inputFee = useMemo(
+    () =>
+      fee.amount?.find((item) => feeCoins.map((feeCoin) => feeCoin.baseDenom).includes(item.denom)) ||
+      fee.amount?.[0] || {
+        denom: chain.baseDenom,
+        amount: '0',
+      },
+    [chain.baseDenom, fee.amount, feeCoins],
+  );
+
+  const inputFeeAmount = useMemo(() => inputFee.amount, [inputFee.amount]);
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
     feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
@@ -84,30 +91,36 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
 
-  const tinyFee = times(inputGas, currentFeeGasRate.tiny);
-  const lowFee = times(inputGas, currentFeeGasRate.low);
-  const averageFee = times(inputGas, currentFeeGasRate.average);
+  const tinyFee = useMemo(() => times(inputGas, currentFeeGasRate.tiny), [currentFeeGasRate.tiny, inputGas]);
+  const lowFee = useMemo(() => times(inputGas, currentFeeGasRate.low), [currentFeeGasRate.low, inputGas]);
+  const averageFee = useMemo(() => times(inputGas, currentFeeGasRate.average), [currentFeeGasRate.average, inputGas]);
 
-  const isExistZeroFee = tinyFee === '0' || lowFee === '0' || averageFee === '0';
+  const isExistZeroFee = useMemo(() => tinyFee === '0' || lowFee === '0' || averageFee === '0', [averageFee, lowFee, tinyFee]);
 
-  const initBaseFee = isEditFee && !isExistZeroFee && lt(inputFeeAmount, '1') ? lowFee : inputFeeAmount;
+  const initBaseFee = useMemo(
+    () => (isEditFee && !isExistZeroFee && lt(inputFeeAmount, '1') ? lowFee : inputFeeAmount),
+    [inputFeeAmount, isEditFee, isExistZeroFee, lowFee],
+  );
 
   const [gas, setGas] = useState(inputGas);
   const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
   const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(doc.memo);
 
-  const signingMemo = isEditMemo ? memo : doc.memo;
+  const signingMemo = useMemo(() => (isEditMemo ? memo : doc.memo), [doc.memo, isEditMemo, memo]);
 
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 
-  const signingFee = isEditFee ? { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas } : fee;
+  const signingFee = useMemo(
+    () => (isEditFee ? { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas } : fee),
+    [ceilBaseFee, currentFeeBaseDenom, fee, gas, isEditFee],
+  );
 
-  const tx = { ...doc, memo: signingMemo, fee: signingFee };
+  const tx = useMemo(() => ({ ...doc, memo: signingMemo, fee: signingFee }), [doc, signingFee, signingMemo]);
 
-  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
+  const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-  };
+  }, []);
 
   const errorMessage = useMemo(() => {
     if (!gte(currentFeeCoin.availableAmount, baseFee) && isCheckBalance && !fee.granter && !fee.payer) {
@@ -191,8 +204,11 @@ export default function Entry({ queue, chain }: EntryProps) {
             <div>
               <Button
                 disabled={!!errorMessage}
+                isProgress={isProgress}
                 onClick={async () => {
                   try {
+                    setIsProgress(true);
+
                     if (!keyPair) {
                       throw new Error('key pair does not exist');
                     }
@@ -296,6 +312,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                   } finally {
                     setLoadingLedgerSigning(false);
+                    setIsProgress(false);
                     await closeTransport();
                   }
                 }}
