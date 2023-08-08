@@ -9,7 +9,9 @@ export const StyledContainer = styled('div')(({ theme }) => ({
   borderRadius: '0.8rem',
 
   height: '18.7rem',
-  overflow: 'auto',
+
+  display: 'flex',
+  flexDirection: 'column',
 }));
 
 export const TitleContainer = styled('div')(({ theme }) => ({
@@ -18,5 +20,4 @@ export const TitleContainer = styled('div')(({ theme }) => ({
 
 export const StyledDivider = styled(Divider)({
   marginTop: '1.6rem',
-  marginBottom: '1.2rem',
 });
