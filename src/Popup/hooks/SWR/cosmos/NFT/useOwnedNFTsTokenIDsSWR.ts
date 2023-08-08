@@ -8,8 +8,7 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { OwnedNFTTokenIdsPayload, SmartPayload } from '~/types/cosmos/contract';
-import type { OwnedTokenIds } from '~/types/cosmos/nft';
+import type { NFTIdPayload, OwnedNFTTokenIDsPayload } from '~/types/cosmos/contract';
 
 import { useAccounts } from '../../cache/useAccounts';
 
@@ -43,10 +42,10 @@ export function useOwnedNFTsTokenIDsSWR({ chain, contractAddresses, ownerAddress
 
   const fetcher = async (fetchUrl: string, contractAddress: string) => {
     try {
-      const retrunData = await get<SmartPayload>(fetchUrl);
+      const retrunData = await get<NFTIdPayload>(fetchUrl);
       return {
         contractAddress,
-        data: retrunData,
+        ...retrunData.data,
       };
     } catch (e: unknown) {
       return null;
@@ -64,7 +63,7 @@ export function useOwnedNFTsTokenIDsSWR({ chain, contractAddresses, ownerAddress
       }),
     );
 
-  const { data, error, mutate } = useSWR<PromiseSettledResult<OwnedNFTTokenIdsPayload | null>[], AxiosError>(
+  const { data, error, mutate } = useSWR<PromiseSettledResult<OwnedNFTTokenIDsPayload | null>[], AxiosError>(
     { fetcherParam: contractAddresses, ownerAddress: ownerWalletAddress },
     multiFetcher,
     {
@@ -80,12 +79,9 @@ export function useOwnedNFTsTokenIDsSWR({ chain, contractAddresses, ownerAddress
   const returnData = useMemo(
     () =>
       data
-        ? data.reduce((accumulator: OwnedTokenIds[], item) => {
+        ? data.reduce((accumulator: OwnedNFTTokenIDsPayload[], item) => {
             if (item.status === 'fulfilled' && item.value) {
-              const newItem = {
-                ...JSON.parse(Buffer.from(item.value.data.result.smart, 'base64').toString('utf-8')),
-                contractAddress: item.value.contractAddress,
-              } as OwnedTokenIds;
+              const newItem = { ...item.value };
               accumulator.push(newItem);
             }
             return accumulator;

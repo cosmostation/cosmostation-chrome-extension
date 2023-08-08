@@ -5,33 +5,71 @@ export type SmartPayload = {
   };
 };
 
-export type NFTCollectionInfoPayload = {
-  contractAddress: string;
-  data: SmartPayload;
+export type CollectionInfoPayload = {
+  data: {
+    creator: string;
+    description: string;
+    external_url?: string;
+    image: string;
+    royalty_info: {
+      payment_address: string;
+      shares: string;
+    };
+  };
 };
 
-export type NFTContractInfoPayload = {
+export type NFTCollectionsInfoPayload = {
   contractAddress: string;
-  data: SmartPayload;
+  creator: string;
+  description: string;
+  external_url?: string;
+  image: string;
+  royalty_info: {
+    payment_address: string;
+    shares: string;
+  };
+};
+
+export type ContractInfoPayload = {
+  data: {
+    name: string;
+    symbol: string;
+  };
+};
+
+export type ContractsInfoPayload = {
+  contractAddress: string;
+  name: string;
+  symbol: string;
 };
 
 export type NFTsURIPayload = {
   contractAddress: string;
   tokenId: string;
-  data: SmartPayload;
+  tokenURI: string;
 };
 
-export type OwnedNFTTokenIdsPayload = {
+export type OwnedNFTTokenIDsPayload = {
   contractAddress: string;
-  data: SmartPayload;
+  tokens: string[];
 };
 
 export type NFTInfoPayload = {
-  token_uri: string;
+  data: {
+    token_uri: string;
+  };
 };
 
 export type NFTIdPayload = {
-  tokens: string[];
+  data: {
+    tokens: string[];
+  };
+};
+
+export type NumTokensInfoPayload = {
+  data: {
+    count: string;
+  };
 };
 
 export type CW20BalanceResponse = {

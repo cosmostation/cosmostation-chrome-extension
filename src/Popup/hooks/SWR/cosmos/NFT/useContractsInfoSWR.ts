@@ -7,8 +7,7 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { NFTContractInfoPayload, SmartPayload } from '~/types/cosmos/contract';
-import type { ContractInfo } from '~/types/cosmos/nft';
+import type { ContractInfoPayload, ContractsInfoPayload } from '~/types/cosmos/contract';
 
 type MultiFetcherParams = {
   fetcherParam: string[];
@@ -21,10 +20,10 @@ export function useContractsInfoSWR(chain: CosmosChain, contractAddresses: strin
 
   const fetcher = async (fetchUrl: string, contractAddress: string) => {
     try {
-      const returnData = await get<SmartPayload>(fetchUrl);
+      const returnData = await get<ContractInfoPayload>(fetchUrl);
       return {
         contractAddress,
-        data: returnData,
+        ...returnData.data,
       };
     } catch (e: unknown) {
       return null;
@@ -42,7 +41,7 @@ export function useContractsInfoSWR(chain: CosmosChain, contractAddresses: strin
       }),
     );
 
-  const { data, error, mutate } = useSWR<PromiseSettledResult<NFTContractInfoPayload | null>[], AxiosError>({ fetcherParam: contractAddresses }, multiFetcher, {
+  const { data, error, mutate } = useSWR<PromiseSettledResult<ContractsInfoPayload | null>[], AxiosError>({ fetcherParam: contractAddresses }, multiFetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
@@ -53,12 +52,9 @@ export function useContractsInfoSWR(chain: CosmosChain, contractAddresses: strin
 
   const returnData = useMemo(
     () =>
-      data?.reduce((accumulator: ContractInfo[], item) => {
+      data?.reduce((accumulator: ContractsInfoPayload[], item) => {
         if (item.status === 'fulfilled' && item.value) {
-          const newItem = {
-            ...JSON.parse(Buffer.from(item.value?.data.result.smart, 'base64').toString('utf-8')),
-            contractAddress: item.value.contractAddress,
-          } as ContractInfo;
+          const newItem = { ...item.value };
           accumulator.push(newItem);
         }
         return accumulator;

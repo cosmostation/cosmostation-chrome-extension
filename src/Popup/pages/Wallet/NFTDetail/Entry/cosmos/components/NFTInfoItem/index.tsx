@@ -51,8 +51,6 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
 
   const { data: mintedNFTsCount } = useNumTokensSWR(chain, address);
 
-  // "rpc error: code = Unknown desc = Error parsing into type levanamessages::nft::query::QueryMsg: unknown variant `collection_info`,
-  // expected one of `owner_of`, `approved_for_all`, `num_tokens`, `contract_info`, `nft_info`, `all_nft_info`, `tokens`, `all_tokens`, `minter`, `highest_token_id`: query wasm contract failed"
   const shorterOwnerAddress = useMemo(() => shorterAddress(ownerAddress, 14), [ownerAddress]);
   const shorterContractAddress = useMemo(() => shorterAddress(address, 14), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 14), [tokenId]);

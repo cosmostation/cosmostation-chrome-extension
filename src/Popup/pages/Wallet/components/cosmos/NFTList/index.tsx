@@ -86,7 +86,7 @@ export default function NFTList({ chain }: NFTListProps) {
     if (currentType === 'all') return ownedCosmosNFTs;
 
     if (currentType === 'etc')
-      return ownedCosmosNFTs.filter((item) => !nftContractsInfo.data?.find((contractInfo) => contractInfo?.contractAddress === item.address));
+      return ownedCosmosNFTs.filter((item) => !nftContractsInfo.data?.find((contractInfo) => contractInfo.contractAddress === item.address));
 
     return ownedCosmosNFTs.filter((item) => currentTypeInfo?.type === item.address) || [];
   }, [currentType, ownedCosmosNFTs, nftContractsInfo.data, currentTypeInfo?.type]);

@@ -7,7 +7,7 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { NFTIdPayload, SmartPayload } from '~/types/cosmos/contract';
+import type { NFTIdPayload } from '~/types/cosmos/contract';
 
 type UseOwnedNFTTokenIDsSWR = {
   chain: CosmosChain;
@@ -27,13 +27,13 @@ export function useOwnedNFTTokenIDsSWR({ chain, contractAddress, ownerAddress, l
 
   const fetcher = async (fetchUrl: string) => {
     try {
-      return await get<SmartPayload>(fetchUrl);
+      return await get<NFTIdPayload>(fetchUrl);
     } catch (e: unknown) {
       return null;
     }
   };
 
-  const { data, isValidating, error, mutate } = useSWR<SmartPayload | null, AxiosError>(requestURL, fetcher, {
+  const { data, isValidating, error, mutate } = useSWR<NFTIdPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 10000,
     refreshInterval: 11000,
@@ -42,10 +42,7 @@ export function useOwnedNFTTokenIDsSWR({ chain, contractAddress, ownerAddress, l
     ...config,
   });
 
-  const returnData = useMemo(
-    () => (data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as NFTIdPayload) : undefined),
-    [data?.result?.smart],
-  );
+  const returnData = useMemo(() => data?.data, [data?.data]);
 
   return { data: returnData, isValidating, error, mutate };
 }

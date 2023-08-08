@@ -7,8 +7,7 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { SmartPayload } from '~/types/cosmos/contract';
-import type { NumTokensInfo } from '~/types/cosmos/nft';
+import type { NumTokensInfoPayload } from '~/types/cosmos/contract';
 
 export function useNumTokensSWR(chain: CosmosChain, contractAddress: string, config?: SWRConfiguration) {
   const { getCW721NumTokens } = useMemo(() => cosmosURL(chain), [chain]);
@@ -21,13 +20,13 @@ export function useNumTokensSWR(chain: CosmosChain, contractAddress: string, con
 
   const fetcher = async (fetchUrl: string) => {
     try {
-      return await get<SmartPayload>(fetchUrl);
+      return await get<NumTokensInfoPayload>(fetchUrl);
     } catch (e: unknown) {
       return null;
     }
   };
 
-  const { data, error, mutate } = useSWR<SmartPayload | null, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<NumTokensInfoPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
@@ -36,10 +35,7 @@ export function useNumTokensSWR(chain: CosmosChain, contractAddress: string, con
     ...config,
   });
 
-  const returnData = useMemo(
-    () => (data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as NumTokensInfo) : undefined),
-    [data?.result?.smart],
-  );
+  const returnData = useMemo(() => data?.data, [data?.data]);
 
   return { data: returnData, error, mutate };
 }

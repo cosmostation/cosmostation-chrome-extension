@@ -83,7 +83,7 @@ export default function Entry({ chain }: EntryProps) {
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const testContractAddresses = testList.find((item) => item.chainId === chain.id)?.smartContracts.map((nft) => nft.address) || [];
+  const testContractAddresses = testList.find((item) => item.chainId === chain.chainId)?.smartContracts.map((nft) => nft.address) || [];
 
   const ownedNFTTokenIds = useOwnedNFTsTokenIDsSWR({ chain, contractAddresses: testContractAddresses, ownerAddress: currentAddress });
 

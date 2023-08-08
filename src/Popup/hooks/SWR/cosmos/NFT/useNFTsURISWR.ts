@@ -7,8 +7,7 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { NFTsURIPayload, SmartPayload } from '~/types/cosmos/contract';
-import type { NFTURIInfo } from '~/types/cosmos/nft';
+import type { NFTInfoPayload, NFTsURIPayload } from '~/types/cosmos/contract';
 
 type NFTInfo = {
   contractAddress: string;
@@ -31,11 +30,12 @@ export function useNFTsURISWR({ chain, nftInfos }: UseNFTsURISWRProps, config?: 
 
   const fetcher = async (fetchUrl: string, contractAddress: string, tokenId: string) => {
     try {
-      const returnData = await get<SmartPayload>(fetchUrl);
+      const returnData = await get<NFTInfoPayload>(fetchUrl);
+
       return {
         contractAddress,
         tokenId,
-        data: returnData,
+        tokenURI: returnData.data.token_uri,
       };
     } catch (e: unknown) {
       return null;
@@ -66,13 +66,9 @@ export function useNFTsURISWR({ chain, nftInfos }: UseNFTsURISWRProps, config?: 
   const returnData = useMemo(
     () =>
       data
-        ? data.reduce((accumulator: NFTURIInfo[], item) => {
+        ? data.reduce((accumulator: NFTsURIPayload[], item) => {
             if (item.status === 'fulfilled' && item.value) {
-              const newItem = {
-                ...JSON.parse(Buffer.from(item.value?.data.result.smart, 'base64').toString('utf-8')),
-                contractAddress: item.value.contractAddress,
-                tokenId: item.value.tokenId,
-              } as NFTURIInfo;
+              const newItem = { ...item.value };
               accumulator.push(newItem);
             }
             return accumulator;

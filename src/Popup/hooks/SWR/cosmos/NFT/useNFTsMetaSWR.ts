@@ -36,7 +36,7 @@ export function useNFTsMetaSWR({ chain, nftInfos }: UseNFTsMetaSWR, config?: SWR
   const fetcherParams = useMemo(
     () =>
       ownedNFTSourceURI.data.map((item) => ({
-        tokenURI: item?.token_uri,
+        tokenURI: item.tokenURI,
         nftInfo: {
           contractAddress: item?.contractAddress,
           tokenId: item?.tokenId,

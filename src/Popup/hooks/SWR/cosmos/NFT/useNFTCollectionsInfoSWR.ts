@@ -7,8 +7,7 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { NFTCollectionInfoPayload, SmartPayload } from '~/types/cosmos/contract';
-import type { CollectionInfo } from '~/types/cosmos/nft';
+import type { CollectionInfoPayload, NFTCollectionsInfoPayload } from '~/types/cosmos/contract';
 
 type MultiFetcherParams = {
   fetcherParam: string[];
@@ -26,10 +25,10 @@ export function useNFTCollectionsInfoSWR({ chain, contractAddresses }: UseNFTCol
 
   const fetcher = async (fetchUrl: string, contractAddress: string) => {
     try {
-      const returnData = await get<SmartPayload>(fetchUrl);
+      const returnData = await get<CollectionInfoPayload>(fetchUrl);
       return {
         contractAddress,
-        data: returnData,
+        ...returnData.data,
       };
     } catch (e: unknown) {
       return null;
@@ -47,8 +46,8 @@ export function useNFTCollectionsInfoSWR({ chain, contractAddresses }: UseNFTCol
       }),
     );
 
-  const { data, error, mutate } = useSWR<PromiseSettledResult<NFTCollectionInfoPayload | null>[], AxiosError>(
-    { id: 'nftCollection', fetcherParam: contractAddresses },
+  const { data, error, mutate } = useSWR<PromiseSettledResult<NFTCollectionsInfoPayload | null>[], AxiosError>(
+    { id: 'nftsCollection', fetcherParam: contractAddresses },
     multiFetcher,
     {
       revalidateOnFocus: false,
@@ -62,12 +61,9 @@ export function useNFTCollectionsInfoSWR({ chain, contractAddresses }: UseNFTCol
 
   const returnData = useMemo(
     () =>
-      data?.reduce((accumulator: CollectionInfo[], item) => {
+      data?.reduce((accumulator: NFTCollectionsInfoPayload[], item) => {
         if (item.status === 'fulfilled' && item.value) {
-          const newItem = {
-            ...JSON.parse(Buffer.from(item.value?.data.result.smart, 'base64').toString('utf-8')),
-            contractAddress: item.value.contractAddress,
-          } as CollectionInfo;
+          const newItem = { ...item.value };
           accumulator.push(newItem);
         }
         return accumulator;

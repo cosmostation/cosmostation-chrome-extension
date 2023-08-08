@@ -39,7 +39,7 @@ import type {
 } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
-import { toBase64, toHex } from './string';
+import { toBase64 } from './string';
 
 export function cosmosURL(chain: CosmosChain) {
   const { restURL, chainName } = chain;
@@ -59,12 +59,17 @@ export function cosmosURL(chain: CosmosChain) {
     getCW20Balance: (contractAddress: string, address: string) =>
       `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64(`{"balance":{"address":"${address}"}}`)}`,
     getCW721NFTInfo: (contractAddress: string, tokenId: string) =>
-      `${restURL}/wasm/contract/${contractAddress}/smart/${toHex(`{"nft_info":{"token_id":"${tokenId}"}}`)}?encoding=utf-8`,
+      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64(`{"nft_info":{"token_id":"${tokenId}"}}`)}?encoding=utf-8`,
     getCW721NFTIds: (contractAddress: string, ownerAddress: string, limit = 50) =>
-      `${restURL}/wasm/contract/${contractAddress}/smart/${toHex(`{"tokens":{"owner":"${ownerAddress}","limit":${limit},"start_after":"0"}}`)}?encoding=utf-8`,
-    getCW721ContractInfo: (contractAddress: string) => `${restURL}/wasm/contract/${contractAddress}/smart/${toHex('{"contract_info":{}}')}?encoding=utf-8`,
-    getCW721NumTokens: (contractAddress: string) => `${restURL}/wasm/contract/${contractAddress}/smart/${toHex('{"num_tokens":{}}')}?encoding=utf-8`,
-    getCW721CollectionInfo: (contractAddress: string) => `${restURL}/wasm/contract/${contractAddress}/smart/${toHex('{"collection_info":{}}')}?encoding=utf-8`,
+      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64(
+        `{"tokens":{"owner":"${ownerAddress}","limit":${limit},"start_after":"0"}}`,
+      )}?encoding=utf-8`,
+    getCW721ContractInfo: (contractAddress: string) =>
+      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"contract_info":{}}')}?encoding=utf-8`,
+    getCW721NumTokens: (contractAddress: string) =>
+      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"num_tokens":{}}')}?encoding=utf-8`,
+    getCW721CollectionInfo: (contractAddress: string) =>
+      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"collection_info":{}}')}?encoding=utf-8`,
     getClientState: (channelId: string, port?: string) =>
       `${restURL}/ibc/core/channel/${isV1BetaClientState ? 'v1beta1' : 'v1'}/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
     simulate: () => `${restURL}/cosmos/tx/v1beta1/simulate`,

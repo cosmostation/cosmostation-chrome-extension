@@ -43,36 +43,3 @@ export type CosmosNFTMeta = {
   }[];
   compiler?: string;
 };
-
-export type CollectionInfo = {
-  contractAddress: string;
-  creator: string;
-  description: string;
-  external_url?: string;
-  image: string;
-  royalty_info: {
-    payment_address: string;
-    shares: string;
-  };
-};
-
-export type ContractInfo = {
-  name: string;
-  symbol: string;
-  contractAddress?: string;
-};
-
-export type NumTokensInfo = {
-  count: string;
-};
-
-export type NFTURIInfo = {
-  token_uri: string;
-  tokenId: string;
-  contractAddress: string;
-};
-
-export type OwnedTokenIds = {
-  tokens: string[];
-  contractAddress: string;
-};
