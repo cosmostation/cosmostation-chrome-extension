@@ -39,7 +39,7 @@ import type {
 } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
-import { toHex } from './string';
+import { toBase64, toHex } from './string';
 
 export function cosmosURL(chain: CosmosChain) {
   const { restURL, chainName } = chain;
@@ -55,9 +55,9 @@ export function cosmosURL(chain: CosmosChain) {
     getAccount: (address: string) => `${restURL}/cosmos/auth/v1beta1/accounts/${address}`,
     getIncentive: (address: string) => (chainName === KAVA.chainName ? `${restURL}/kava/incentive/v1beta1/rewards?owner=${address}` : ''),
     postBroadcast: () => `${restURL}/cosmos/tx/v1beta1/txs`,
-    getCW20TokenInfo: (contractAddress: string) => `${restURL}/wasm/contract/${contractAddress}/smart/${toHex('{"token_info":{}}')}?encoding=utf-8`,
+    getCW20TokenInfo: (contractAddress: string) => `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"token_info":{}}')}`,
     getCW20Balance: (contractAddress: string, address: string) =>
-      `${restURL}/wasm/contract/${contractAddress}/smart/${toHex(`{"balance":{"address":"${address}"}}`)}?encoding=utf-8`,
+      `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64(`{"balance":{"address":"${address}"}}`)}`,
     getCW721NFTInfo: (contractAddress: string, tokenId: string) =>
       `${restURL}/wasm/contract/${contractAddress}/smart/${toHex(`{"nft_info":{"token_id":"${tokenId}"}}`)}?encoding=utf-8`,
     getCW721NFTIds: (contractAddress: string, ownerAddress: string, limit = 50) =>

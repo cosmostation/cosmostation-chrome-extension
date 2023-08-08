@@ -9,14 +9,14 @@ import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
 import type { NFTIdPayload, SmartPayload } from '~/types/cosmos/contract';
 
-type UseOwnedNFTTokenIdsSWR = {
+type UseOwnedNFTTokenIDsSWR = {
   chain: CosmosChain;
   contractAddress: string;
   ownerAddress: string;
   limit?: string;
 };
 
-export function useOwnedNFTTokenIdsSWR({ chain, contractAddress, ownerAddress, limit = '50' }: UseOwnedNFTTokenIdsSWR, config?: SWRConfiguration) {
+export function useOwnedNFTTokenIDsSWR({ chain, contractAddress, ownerAddress, limit = '50' }: UseOwnedNFTTokenIDsSWR, config?: SWRConfiguration) {
   const { getCW721NFTIds } = useMemo(() => cosmosURL(chain), [chain]);
 
   const requestURL = useMemo(() => getCW721NFTIds(contractAddress, ownerAddress, Number(limit)), [contractAddress, getCW721NFTIds, limit, ownerAddress]);

@@ -11,12 +11,9 @@ import type { AptosSignMessage, AptosSignTransaction } from '~/types/message/apt
 import type {
   CosAddChain,
   CosAddTokensCW20,
-  CosDeleteAutoSign,
-  CosGetAutoSign,
   CosGetBalanceCW20,
   CosGetTokenInfoCW20,
   CosSendTransaction,
-  CosSetAutoSign,
   CosSignAmino,
   CosSignDirect,
   CosSignMessage,
@@ -83,37 +80,6 @@ export const cosAddChainParamsSchema = (chainNames: string[], officialChainIds: 
     .label('params')
     .required();
 };
-
-export const cosSetAutoSignParamsSchema = (chainNames: string[]) =>
-  Joi.object<CosSetAutoSign['params']>({
-    chainName: Joi.string()
-      .lowercase()
-      .valid(...chainNames)
-      .required(),
-    duration: Joi.number().min(0).max(3600).required(),
-  })
-    .label('params')
-    .required();
-
-export const cosGetAutoSignParamsSchema = (chainNames: string[]) =>
-  Joi.object<CosGetAutoSign['params']>({
-    chainName: Joi.string()
-      .lowercase()
-      .valid(...chainNames)
-      .required(),
-  })
-    .label('params')
-    .required();
-
-export const cosDeleteAutoSignParamsSchema = (chainNames: string[]) =>
-  Joi.object<CosDeleteAutoSign['params']>({
-    chainName: Joi.string()
-      .lowercase()
-      .valid(...chainNames)
-      .required(),
-  })
-    .label('params')
-    .required();
 
 export const cosSignAminoParamsSchema = (chainNames: string[], chainId: string) => {
   const chainIdRegex = getChainIdRegex(chainId);
@@ -199,32 +165,6 @@ export const cosSignDirectParamsSchema = (chainNames: string[], chainId: string)
     isEditFee: Joi.boolean().default(true),
     isEditMemo: Joi.boolean().default(false),
     isCheckBalance: Joi.boolean().default(true),
-    gasRate: Joi.object<GasRate>({
-      average: Joi.string().required().pattern(numberRegex),
-      low: Joi.string().required().pattern(numberRegex),
-      tiny: Joi.string().required().pattern(numberRegex),
-    }).optional(),
-  })
-    .label('params')
-    .required();
-};
-
-export const cosAutoSignSchema = (chainNames: string[], chainId: string) => {
-  const chainIdRegex = getChainIdRegex(chainId);
-
-  return Joi.object<CosSignDirect['params']>({
-    chainName: Joi.string()
-      .lowercase()
-      .valid(...chainNames)
-      .required(),
-    doc: Joi.object<SignDirectDoc>({
-      chain_id: Joi.string().trim().pattern(chainIdRegex).required(),
-      account_number: Joi.string().required(),
-      auth_info_bytes: Joi.string().hex().required(),
-      body_bytes: Joi.string().hex().required(),
-    }).required(),
-    isEditFee: Joi.boolean().default(false),
-    isEditMemo: Joi.boolean().default(false),
     gasRate: Joi.object<GasRate>({
       average: Joi.string().required().pattern(numberRegex),
       low: Joi.string().required().pattern(numberRegex),

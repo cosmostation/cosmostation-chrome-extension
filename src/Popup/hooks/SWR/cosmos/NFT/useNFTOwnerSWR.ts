@@ -5,7 +5,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import type { CosmosChain } from '~/types/chain';
 
-import { useOwnedNFTTokenIdsSWR } from './useOwnedNFTTokenIdsSWR';
+import { useOwnedNFTTokenIDsSWR } from './useOwnedNFTTokenIDsSWR';
 import { useAccounts } from '../../cache/useAccounts';
 
 type UseNFTOwnerSWR = {
@@ -28,7 +28,7 @@ export function useNFTOwnerSWR({ chain, contractAddress, ownerAddress, tokenId }
 
   const ownerWalletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
-  const ownedTokenIds = useOwnedNFTTokenIdsSWR({ chain, contractAddress, ownerAddress: ownerWalletAddress });
+  const ownedTokenIds = useOwnedNFTTokenIDsSWR({ chain, contractAddress, ownerAddress: ownerWalletAddress });
 
   const isValidating = useMemo(() => ownedTokenIds.isValidating, [ownedTokenIds.isValidating]);
 

@@ -33,7 +33,6 @@ import {
 } from './styled';
 
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
-import AutoSign24Icon from '~/images/icons/AutoSign24.svg';
 import Close24Icon from '~/images/icons/Close24.svg';
 import Connect24Icon from '~/images/icons/Connect24.svg';
 import Cosmostation14Icon from '~/images/icons/Cosmostation14.svg';
@@ -115,10 +114,6 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
 
             <ItemButton Icon={Connect24Icon} onClick={() => navigate('/setting/connected-sites', { isDuplicateCheck: true })}>
               {t('components.Header.Drawer.index.connectedSites')}
-            </ItemButton>
-
-            <ItemButton Icon={AutoSign24Icon} onClick={() => navigate('/setting/auto-sign', { isDuplicateCheck: true })}>
-              {t('components.Header.Drawer.index.autoSign')}
             </ItemButton>
 
             <ItemButton Icon={LanguageChangeIcon} onClick={() => navigate('/setting/change-language', { isDuplicateCheck: true })}>

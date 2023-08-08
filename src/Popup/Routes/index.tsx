@@ -41,9 +41,6 @@ import PopupAptosSignMessage from '~/Popup/pages/Popup/Aptos/SignMessage';
 import PopupAptosTransaction from '~/Popup/pages/Popup/Aptos/Transaction';
 import PopupCosmosAddChain from '~/Popup/pages/Popup/Cosmos/AddChain';
 import PopupCosmosAddTokens from '~/Popup/pages/Popup/Cosmos/AddTokens';
-import PopupCosmosAutoSignDelete from '~/Popup/pages/Popup/Cosmos/AutoSign/Delete';
-import PopupCosmosAutoSignGet from '~/Popup/pages/Popup/Cosmos/AutoSign/Get';
-import PopupCosmosAutoSignSet from '~/Popup/pages/Popup/Cosmos/AutoSign/Set';
 import PopupCosmosSignAmino from '~/Popup/pages/Popup/Cosmos/Sign/Amino';
 import PopupCosmosSignDirect from '~/Popup/pages/Popup/Cosmos/Sign/Direct';
 import PopupCosmosSignMessage from '~/Popup/pages/Popup/Cosmos/Sign/Message';
@@ -58,7 +55,6 @@ import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
 import PopupSuiTransaction from '~/Popup/pages/Popup/Sui/Transaction';
 import SettingAddressBook from '~/Popup/pages/Setting/AddressBook';
 import SettingAddressBookAdd from '~/Popup/pages/Setting/AddressBook/Add';
-import SettingAutoSign from '~/Popup/pages/Setting/AutoSign';
 import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
 import SettingChangeLanguage from '~/Popup/pages/Setting/ChangeLanguage';
 import SettingChangePassword from '~/Popup/pages/Setting/ChangePassword';
@@ -122,7 +118,6 @@ export default function Routes() {
             <Route path=":id" element={<SettingAddressBookAdd />} />
           </Route>
           <Route path={PATH.SETTING__CONNECTED_SITES} element={<SettingConnectedSites />} />
-          <Route path={PATH.SETTING__AUTO_SIGN} element={<SettingAutoSign />} />
           <Route path={PATH.SETTING__LEDGER} element={<SettingLedger />} />
           <Route path={PATH.SETTING__PROVIDER} element={<SettingProvider />} />
 
@@ -163,9 +158,6 @@ export default function Routes() {
 
           <Route path={PATH.POPUP__COSMOS__ADD_CHAIN} element={<PopupCosmosAddChain />} />
           <Route path={PATH.POPUP__COSMOS__ADD_TOKENS} element={<PopupCosmosAddTokens />} />
-          <Route path={PATH.POPUP__COSMOS__AUTO_SIGN__GET} element={<PopupCosmosAutoSignGet />} />
-          <Route path={PATH.POPUP__COSMOS__AUTO_SIGN__SET} element={<PopupCosmosAutoSignSet />} />
-          <Route path={PATH.POPUP__COSMOS__AUTO_SIGN__DELETE} element={<PopupCosmosAutoSignDelete />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__AMINO} element={<PopupCosmosSignAmino />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__DIRECT} element={<PopupCosmosSignDirect />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__MESSAGE} element={<PopupCosmosSignMessage />} />

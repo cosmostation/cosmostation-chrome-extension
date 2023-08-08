@@ -6,7 +6,7 @@ import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
-import type { SmartPayload, TokenInfo } from '~/types/cosmos/contract';
+import type { CW20TokenInfoResponse } from '~/types/cosmos/contract';
 
 export function useTokenInfoSWR(chain: CosmosChain, contractAddress: string, config?: SWRConfiguration) {
   const { getCW20TokenInfo } = cosmosURL(chain);
@@ -19,13 +19,13 @@ export function useTokenInfoSWR(chain: CosmosChain, contractAddress: string, con
 
   const fetcher = async (fetchUrl: string) => {
     try {
-      return await get<SmartPayload>(fetchUrl);
+      return await get<CW20TokenInfoResponse>(fetchUrl);
     } catch (e: unknown) {
       return null;
     }
   };
 
-  const { data, error, mutate } = useSWR<SmartPayload | null, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<CW20TokenInfoResponse | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 3600000,
     errorRetryCount: 0,
@@ -33,7 +33,7 @@ export function useTokenInfoSWR(chain: CosmosChain, contractAddress: string, con
     ...config,
   });
 
-  const returnData = data?.result?.smart ? (JSON.parse(Buffer.from(data?.result?.smart, 'base64').toString('utf-8')) as TokenInfo) : undefined;
+  const returnData = data?.data;
 
   return { data: returnData, error, mutate };
 }
