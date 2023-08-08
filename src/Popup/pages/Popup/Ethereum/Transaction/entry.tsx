@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type BigNumber from 'bignumber.js';
 import { rlp } from 'ethereumjs-util';
 import { useSnackbar } from 'notistack';
@@ -90,6 +90,8 @@ export default function Entry({ queue }: EntryProps) {
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
   const { setLoadingLedgerSigning } = useLoading();
 
   const { closeTransport, createTransport } = useLedgerTransport();
@@ -128,7 +130,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const netVersion = useNetVersionSWR();
 
-  const { displayDenom, coinGeckoId, decimals } = currentEthereumNetwork;
+  const { displayDenom, coinGeckoId, decimals } = useMemo(() => currentEthereumNetwork, [currentEthereumNetwork]);
 
   const { t } = useTranslation();
 
@@ -137,20 +139,23 @@ export default function Entry({ queue }: EntryProps) {
   const [isOpenGasDialog, setIsOpenGasDialog] = useState(false);
   const [isOpenGasPriceDialog, setIsOpenGasPriceDialog] = useState(false);
 
-  const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-  const address = getAddress(chain, keyPair?.publicKey);
+  const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
+  const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
   const transactionCount = useTransactionCountSWR([address, 'latest']);
 
-  const { message, messageId, origin } = queue;
-  const { params } = message;
+  const { message, messageId, origin } = useMemo(() => queue, [queue]);
+  const { params } = useMemo(() => message, [message]);
 
   const [isSigningLedger, setIsSigningLedger] = useState(false);
 
-  const originEthereumTx = params[0];
+  const originEthereumTx = useMemo(() => params[0], [params]);
 
   const txType = useDetermineTxTypeSWR(originEthereumTx);
 
-  const isCustomFee = !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas));
+  const isCustomFee = useMemo(
+    () => !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas)),
+    [originEthereumTx.gasPrice, originEthereumTx.maxFeePerGas, originEthereumTx.maxPriorityFeePerGas],
+  );
 
   const [feeMode, setFeeMode] = useState<'tiny' | 'low' | 'average' | 'custom'>(isCustomFee ? 'custom' : 'low');
   const [gas, setGas] = useState(originEthereumTx.gas ? BigInt(toHex(originEthereumTx.gas, { addPrefix: true, isStringNumber: true })).toString(10) : '21000');
@@ -256,11 +261,11 @@ export default function Entry({ queue }: EntryProps) {
     return '0';
   }, [ethereumTx.gas, ethereumTx.gasPrice, ethereumTx.maxFeePerGas]);
 
-  const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
+  const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 
-  const displayFee = toDisplayDenomAmount(baseFee, decimals);
+  const displayFee = useMemo(() => toDisplayDenomAmount(baseFee, decimals), [baseFee, decimals]);
 
-  const displayValue = times(displayFee, price);
+  const displayValue = useMemo(() => times(displayFee, price), [displayFee, price]);
 
   const isERC20 = useMemo(() => {
     const erc20Types = [ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM] as string[];
@@ -314,9 +319,9 @@ export default function Entry({ queue }: EntryProps) {
     return displayFee;
   }, [displayFee, sendDisplayAmount, txType.data?.type]);
 
-  const totalBaseAmount = toBaseDenomAmount(totalDisplayAmount, decimals);
+  const totalBaseAmount = useMemo(() => toBaseDenomAmount(totalDisplayAmount, decimals), [decimals, totalDisplayAmount]);
 
-  const baseBalance = BigInt(balance.data?.result || '0').toString(10);
+  const baseBalance = useMemo(() => BigInt(balance.data?.result || '0').toString(10), [balance.data?.result]);
   const errorMessage = useMemo(() => {
     if (gt(totalBaseAmount, baseBalance)) {
       return t('pages.Popup.Ethereum.SignTransaction.entry.insufficientAmount');
@@ -324,9 +329,13 @@ export default function Entry({ queue }: EntryProps) {
     return '';
   }, [baseBalance, t, totalBaseAmount]);
 
-  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+  const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
-  };
+  }, []);
+
+  const handleButtonDisabled = useCallback(() => {
+    setButtonDisabled(true);
+  }, []);
 
   useEffect(() => {
     void (async () => {
@@ -500,9 +509,11 @@ export default function Entry({ queue }: EntryProps) {
             <Tooltip title={errorMessage} varient="error" placement="top">
               <div>
                 <Button
-                  disabled={isLoadingFee || !!errorMessage}
+                  disabled={isLoadingFee || !!errorMessage || buttonDisabled}
                   onClick={async () => {
                     try {
+                      handleButtonDisabled();
+
                       const signedRawTx = await (async () => {
                         const dataToSign = {
                           ...ethereumTx,

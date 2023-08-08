@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 import Sui from '@mysten/ledgerjs-hw-app-sui';
@@ -70,8 +70,8 @@ type EntryProps = {
 export default function Entry({ queue }: EntryProps) {
   const chain = SUI;
 
-  const { message, messageId, origin } = queue;
-  const { params } = message;
+  const { message, messageId, origin } = useMemo(() => queue, [queue]);
+  const { params } = useMemo(() => message, [message]);
 
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
@@ -84,9 +84,9 @@ export default function Entry({ queue }: EntryProps) {
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
-  const { coinGeckoId } = currentSuiNetwork;
+  const { coinGeckoId } = useMemo(() => currentSuiNetwork, [currentSuiNetwork]);
 
-  const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
+  const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 
   const { deQueue } = useCurrentQueue();
 
@@ -104,9 +104,11 @@ export default function Entry({ queue }: EntryProps) {
   );
   const { t } = useTranslation();
 
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+
   const [tabValue, setTabValue] = useState(0);
 
-  const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+  const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
 
   const provider = useMemo(
     () =>
@@ -166,9 +168,13 @@ export default function Entry({ queue }: EntryProps) {
 
   const expectedDisplayFeePrice = useMemo(() => times(expectedDisplayFee, price), [expectedDisplayFee, price]);
 
-  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+  const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
-  };
+  }, []);
+
+  const handleButtonDisabled = useCallback(() => {
+    setButtonDisabled(true);
+  }, []);
 
   const baseBudgetFee = useMemo(() => transactionBlock.blockData?.gasConfig?.budget || 0, [transactionBlock.blockData?.gasConfig?.budget]);
 
@@ -291,10 +297,12 @@ export default function Entry({ queue }: EntryProps) {
           {/* <Tooltip title={errorMessage} varient="error" placement="top"> */}
           <div>
             <Button
-              disabled={isDiabled}
+              disabled={isDiabled || buttonDisabled}
               isProgress={isProgress}
               onClick={async () => {
                 try {
+                  handleButtonDisabled();
+
                   setIsProgress(true);
 
                   if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
