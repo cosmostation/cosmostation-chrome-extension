@@ -78,15 +78,13 @@ export function useOwnedNFTsTokenIDsSWR({ chain, contractAddresses, ownerAddress
 
   const returnData = useMemo(
     () =>
-      data
-        ? data.reduce((accumulator: OwnedNFTTokenIDsPayload[], item) => {
-            if (item.status === 'fulfilled' && item.value) {
-              const newItem = { ...item.value };
-              accumulator.push(newItem);
-            }
-            return accumulator;
-          }, [])
-        : [],
+      data?.reduce((accumulator: OwnedNFTTokenIDsPayload[], item) => {
+        if (item.status === 'fulfilled' && item.value) {
+          const newItem = { ...item.value };
+          accumulator.push(newItem);
+        }
+        return accumulator;
+      }, []) || [],
     [data],
   );
 

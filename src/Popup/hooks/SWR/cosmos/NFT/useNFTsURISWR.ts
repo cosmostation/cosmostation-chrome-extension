@@ -65,15 +65,13 @@ export function useNFTsURISWR({ chain, nftInfos }: UseNFTsURISWRProps, config?: 
 
   const returnData = useMemo(
     () =>
-      data
-        ? data.reduce((accumulator: NFTsURIPayload[], item) => {
-            if (item.status === 'fulfilled' && item.value) {
-              const newItem = { ...item.value };
-              accumulator.push(newItem);
-            }
-            return accumulator;
-          }, [])
-        : [],
+      data?.reduce((accumulator: NFTsURIPayload[], item) => {
+        if (item.status === 'fulfilled' && item.value) {
+          const newItem = { ...item.value };
+          accumulator.push(newItem);
+        }
+        return accumulator;
+      }, []) || [],
     [data],
   );
 
