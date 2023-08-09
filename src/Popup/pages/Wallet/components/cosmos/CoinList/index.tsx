@@ -100,7 +100,6 @@ export default function CoinList({ chain }: CoinListProps) {
 
   const isExistCoinOrToken = nativeCoinCnt + ibcCointCnt + tokenCnt > 0;
 
-  // NOTE coins 텍스트 나오게끔 추가해야함
   return (
     <Container>
       <ListTitleContainer>

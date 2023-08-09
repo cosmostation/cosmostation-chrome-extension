@@ -57,7 +57,6 @@ export default function NFTItem({ onClick, isActive, chain, contractAddress, tok
             </Tooltip>
           </LeftInfoBodyContainer>
           <LeftInfoFooterContainer>
-            {/* NOTE 토큰 타입? 컬렉션명? 뭐보여주지 */}
             <Typography variant="h6">CW-721</Typography>
           </LeftInfoFooterContainer>
         </LeftInfoContainer>
