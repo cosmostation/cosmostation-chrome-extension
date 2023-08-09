@@ -17,14 +17,14 @@ type MultiFetcherParams = {
   ownerAddress: string;
 };
 
-type UseOwnedNFTsTokenIDsSWRSWR = {
+type UseOwnedNFTsTokenIDsSWR = {
   chain: CosmosChain;
   contractAddresses: string[];
   ownerAddress: string;
   limit?: string;
 };
 
-export function useOwnedNFTsTokenIDsSWR({ chain, contractAddresses, ownerAddress, limit = '50' }: UseOwnedNFTsTokenIDsSWRSWR, config?: SWRConfiguration) {
+export function useOwnedNFTsTokenIDsSWR({ chain, contractAddresses, ownerAddress, limit = '50' }: UseOwnedNFTsTokenIDsSWR, config?: SWRConfiguration) {
   const accounts = useAccounts(config?.suspense);
 
   const { currentAccount } = useCurrentAccount();
@@ -68,8 +68,8 @@ export function useOwnedNFTsTokenIDsSWR({ chain, contractAddresses, ownerAddress
     multiFetcher,
     {
       revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnReconnect: false,
+      dedupingInterval: 10000,
+      refreshInterval: 11000,
       errorRetryCount: 0,
       isPaused: () => !contractAddresses || !ownerWalletAddress,
       ...config,

@@ -13,7 +13,7 @@ import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosN
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain } from '~/types/chain';
-import type { CosmosNFT } from '~/types/cosmos/nft';
+import type { CosmosNFT, CosmwasmSmartContract } from '~/types/cosmos/nft';
 
 import NFTItem from './components/NFTItem';
 import {
@@ -41,28 +41,7 @@ type EntryProps = {
 type CosmosNFTParams = Omit<CosmosNFT, 'id'>;
 
 export default function Entry({ chain }: EntryProps) {
-  const testList = [
-    {
-      chainId: 'stargaze-1',
-      smartContracts: [
-        {
-          address: 'stars1gy069cfum2nyqw92z3emt7lsged4rgjn53kzvqzsk4aya8zl9whsh2m5ca',
-          name: 'Cosmic Robotz',
-          symbol: 'CRZ',
-        },
-        {
-          address: 'stars1p9k65klczkpn3877d9ehxamyv3kjqtpq6lldptcy6ngy74cr7c9syhgk7e',
-          name: 'Mantra Punks',
-          symbol: 'MTP',
-        },
-        {
-          address: 'stars1vej848r9f4mwkuaea5j3pwclsvm3g8s5ustxpau4mmx435qu6q9syc20wa',
-          name: 'SG721-Venus',
-          symbol: 'VENUS',
-        },
-      ],
-    },
-  ];
+  const nftSmartContracts = [] as CosmwasmSmartContract[];
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -83,13 +62,13 @@ export default function Entry({ chain }: EntryProps) {
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const testContractAddresses = testList.find((item) => item.chainId === chain.chainId)?.smartContracts.map((nft) => nft.address) || [];
+  const nftSmartContractAddresses = nftSmartContracts.find((item) => item.chainId === chain.chainId)?.smartContracts.map((nft) => nft.address) || [];
 
-  const ownedNFTTokenIds = useOwnedNFTsTokenIDsSWR({ chain, contractAddresses: testContractAddresses, ownerAddress: currentAddress });
+  const ownedNFTTokenIDs = useOwnedNFTsTokenIDsSWR({ chain, contractAddresses: nftSmartContractAddresses, ownerAddress: currentAddress });
 
-  const flattendOwnedNFTTokenIds = useMemo(
+  const flattendOwnedNFTTokenIDs = useMemo(
     () =>
-      ownedNFTTokenIds.data
+      ownedNFTTokenIDs.data
         ?.map((obj) =>
           obj.tokens.map((tokenId) => ({
             contractAddress: obj.contractAddress,
@@ -97,16 +76,16 @@ export default function Entry({ chain }: EntryProps) {
           })),
         )
         .reduce((acc, arr) => acc.concat(arr), []) || [],
-    [ownedNFTTokenIds],
+    [ownedNFTTokenIDs],
   );
 
   const notAddedNFTs = useMemo(
     () =>
-      flattendOwnedNFTTokenIds.filter(
+      flattendOwnedNFTTokenIDs.filter(
         (item) =>
           !currentCosmosNFTs.find((nfts) => nfts.address === item.contractAddress && nfts.tokenId === item.tokenId && nfts.ownerAddress === currentAddress),
       ),
-    [currentAddress, currentCosmosNFTs, flattendOwnedNFTTokenIds],
+    [currentAddress, currentCosmosNFTs, flattendOwnedNFTTokenIDs],
   );
 
   const ownedNFTsMeta = useNFTsMetaSWR({ chain, nftInfos: notAddedNFTs });

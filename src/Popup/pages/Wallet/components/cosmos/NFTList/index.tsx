@@ -80,7 +80,7 @@ export default function NFTList({ chain }: NFTListProps) {
 
   const currentTypeInfo = useMemo(() => typeInfos.find((item) => item.type === currentType), [currentType, typeInfos]);
 
-  const isExistNFT = !!currentAccountCosmosNFTs.length;
+  const isExistNFT = useMemo(() => !!currentAccountCosmosNFTs.length, [currentAccountCosmosNFTs.length]);
 
   const filteredNFTs = useMemo(() => {
     if (currentType === 'all') return currentAccountCosmosNFTs;
