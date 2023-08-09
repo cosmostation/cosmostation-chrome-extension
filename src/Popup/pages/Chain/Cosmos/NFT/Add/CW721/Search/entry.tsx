@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
@@ -46,6 +46,8 @@ export default function Entry({ chain }: EntryProps) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
+  const [debouncedSearch] = useDebounce(search, 500);
+
   const [selectedNFTs, setSelectedNFTs] = useState<CosmosNFTParams[]>([]);
 
   const { addCosmosNFTs, currentCosmosNFTs } = useCurrentCosmosNFTs();
@@ -90,22 +92,20 @@ export default function Entry({ chain }: EntryProps) {
 
   const ownedNFTsMeta = useNFTsMetaSWR({ chain, nftInfos: notAddedNFTs });
 
-  const [debouncedSearch] = useDebounce(search, 500);
-
   const filteredNFTs = debouncedSearch
     ? ownedNFTsMeta.data.filter(
         (item) =>
           (item?.name && item.name.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) ||
           (item?.tokenId && item.tokenId.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1),
-      ) || []
-    : ownedNFTsMeta.data || [];
+      )
+    : ownedNFTsMeta.data;
 
-  const handleOnSubmit = async () => {
+  const handleOnSubmit = useCallback(async () => {
     await addCosmosNFTs(selectedNFTs);
     enqueueSnackbar(t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.addNFTSnackbar'));
-  };
+  }, [addCosmosNFTs, enqueueSnackbar, selectedNFTs, t]);
 
-  const isExistNFT = !!filteredNFTs.length;
+  const isExistNFT = useMemo(() => !!filteredNFTs.length, [filteredNFTs.length]);
 
   return (
     <Container>

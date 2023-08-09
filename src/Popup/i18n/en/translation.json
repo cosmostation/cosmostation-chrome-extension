@@ -1091,6 +1091,7 @@
             },
             "index": {
               "information": "Cosmostation wallet displays NFT information from the source URL and does not have ownership of your NFTs.",
+              "networkError": "Network Error",
               "notOwnedNFT": "You cannot transfer NFTs that you do not own.",
               "send": "NFT Send"
             }
@@ -1150,6 +1151,7 @@
               "invalidAddress": "Invalid address",
               "invalidAmount": "Invalid amount",
               "memoPlaceholder": "Memo (option)",
+              "networkError": "Network Error",
               "notOwnedNFT": "You cannot transfer NFTs that you do not own.",
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"

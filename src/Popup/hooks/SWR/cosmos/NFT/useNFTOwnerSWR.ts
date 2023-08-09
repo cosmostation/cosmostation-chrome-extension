@@ -10,12 +10,12 @@ import { useAccounts } from '../../cache/useAccounts';
 
 type UseNFTOwnerSWR = {
   chain: CosmosChain;
-  ownerAddress: string;
   contractAddress: string;
   tokenId: string;
+  ownerAddress?: string;
 };
 
-export function useNFTOwnerSWR({ chain, contractAddress, ownerAddress, tokenId }: UseNFTOwnerSWR, config?: SWRConfiguration) {
+export function useNFTOwnerSWR({ chain, contractAddress, tokenId, ownerAddress }: UseNFTOwnerSWR, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
   const accounts = useAccounts(config?.suspense);
 
@@ -28,7 +28,7 @@ export function useNFTOwnerSWR({ chain, contractAddress, ownerAddress, tokenId }
 
   const ownerWalletAddress = useMemo(() => ownerAddress || currentAddress, [ownerAddress, currentAddress]);
 
-  const ownedTokenIds = useOwnedNFTTokenIDsSWR({ chain, contractAddress, ownerAddress: ownerWalletAddress });
+  const ownedTokenIds = useOwnedNFTTokenIDsSWR({ chain, contractAddress, ownerAddress: ownerWalletAddress }, config);
 
   const isValidating = useMemo(() => ownedTokenIds.isValidating, [ownedTokenIds.isValidating]);
 

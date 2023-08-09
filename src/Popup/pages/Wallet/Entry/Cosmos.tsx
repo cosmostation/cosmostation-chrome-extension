@@ -105,7 +105,7 @@ export default function Cosmos({ chain }: CosmosProps) {
                 </StyledTabPanel>
               </>
             ) : (
-              <BottomContainer sx={{ marginTop: '0.9rem' }}>
+              <BottomContainer>
                 <ErrorBoundary fallback={<Empty />}>
                   <Suspense fallback={null}>
                     <CoinList chain={chain} />

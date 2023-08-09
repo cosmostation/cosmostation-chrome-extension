@@ -33,7 +33,7 @@ type NFTButtonProps = ComponentProps<typeof Button> & {
 };
 
 export default function NFTButton({ currentNFT, chain, isActive, ...remainder }: NFTButtonProps) {
-  const { address, tokenType, tokenId } = currentNFT || {};
+  const { address, tokenType, tokenId } = currentNFT;
 
   const { data: nftMeta } = useNFTMetaSWR({ contractAddress: address, tokenId, chain });
 

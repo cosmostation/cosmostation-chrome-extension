@@ -67,12 +67,15 @@ export default function Cosmos({ chain }: CosmosProps) {
   const isOwnedNFT = useNFTOwnerSWR({ contractAddress: currentNFT?.address || '', ownerAddress: currentAddress, tokenId: currentNFT?.tokenId || '', chain });
 
   const errorMessage = useMemo(() => {
+    if (isOwnedNFT.error) {
+      return t('pages.Wallet.NFTDetail.Entry.cosmos.index.networkError');
+    }
     if (!isOwnedNFT.isOwnedNFT) {
       return t('pages.Wallet.NFTDetail.Entry.cosmos.index.notOwnedNFT');
     }
 
     return '';
-  }, [isOwnedNFT.isOwnedNFT, t]);
+  }, [isOwnedNFT.error, isOwnedNFT.isOwnedNFT, t]);
 
   return (
     <Container>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
@@ -60,11 +60,14 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
 
   const displayTokenStandard = useMemo(() => toDisplayCWTokenStandard(tokenType), [tokenType]);
 
-  const handleOnClickCopy = (copyString?: string) => {
-    if (copyString && copy(copyString)) {
-      enqueueSnackbar(t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.copied'));
-    }
-  };
+  const handleOnClickCopy = useCallback(
+    (copyString?: string) => {
+      if (copyString && copy(copyString)) {
+        enqueueSnackbar(t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.copied'));
+      }
+    },
+    [enqueueSnackbar, t],
+  );
 
   return (
     <>

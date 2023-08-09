@@ -1091,6 +1091,7 @@
             },
             "index": {
               "information": "Cosmostation 지갑은 소스 URL에서 가져온 NFT정보를 사용자에게 보여 주며, NFT에 대한 소유권을 지니고 있지 않습니다.",
+              "networkError": "네트워크 오류",
               "notOwnedNFT": "본인 소유가 아닌 NFT는 전송할 수 없습니다.",
               "send": "NFT 보내기"
             }
@@ -1150,6 +1151,7 @@
               "invalidAddress": "유효하지 않은 주소입니다.",
               "invalidAmount": "수량을 입력하세요.",
               "memoPlaceholder": "메모 (선택사항)",
+              "networkError": "네트워크 오류",
               "notOwnedNFT": "본인 소유가 아닌 NFT는 전송할 수 없습니다.",
               "recipientAddressPlaceholder": "수신인 주소",
               "sendButton": "보내기"

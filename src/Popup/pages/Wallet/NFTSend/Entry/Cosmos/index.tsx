@@ -77,7 +77,7 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const [currentNFT, setCurrentNFT] = useState<CosmosNFT>(currentCosmosNFTs.find((item) => isEqualsIgnoringCase(item.id, params.id)) || currentCosmosNFTs[0]);
 
-  const isOwnedNFT = useNFTOwnerSWR({ contractAddress: currentNFT?.address, ownerAddress: address, tokenId: currentNFT?.tokenId, chain });
+  const isOwnedNFT = useNFTOwnerSWR({ contractAddress: currentNFT.address, ownerAddress: address, tokenId: currentNFT.tokenId, chain });
 
   const { feeCoins } = useCurrentFeesSWR(chain);
 
@@ -183,9 +183,14 @@ export default function Cosmos({ chain }: CosmosProps) {
   const currentGas = useMemo(() => customGas || simulatedGas || sendGas, [customGas, sendGas, simulatedGas]);
 
   const errorMessage = useMemo(() => {
+    if (isOwnedNFT.error) {
+      return t('pages.Wallet.NFTSend.Entry.Cosmos.index.networkError');
+    }
+
     if (!isOwnedNFT.isOwnedNFT) {
       return t('pages.Wallet.NFTSend.Entry.Cosmos.index.notOwnedNFT');
     }
+
     if (!addressRegex.test(currentReceipientAddress)) {
       return t('pages.Wallet.NFTSend.Entry.Cosmos.index.invalidAddress');
     }
@@ -204,6 +209,7 @@ export default function Cosmos({ chain }: CosmosProps) {
 
     return '';
   }, [
+    isOwnedNFT.error,
     isOwnedNFT.isOwnedNFT,
     addressRegex,
     currentReceipientAddress,
@@ -234,16 +240,14 @@ export default function Cosmos({ chain }: CosmosProps) {
     <>
       <Container>
         <Div>
-          {currentNFT && (
-            <NFTButton
-              chain={chain}
-              currentNFT={currentNFT}
-              isActive={isOpenPopover}
-              onClick={(event) => {
-                setPopoverAnchorEl(event.currentTarget);
-              }}
-            />
-          )}
+          <NFTButton
+            chain={chain}
+            currentNFT={currentNFT}
+            isActive={isOpenPopover}
+            onClick={(event) => {
+              setPopoverAnchorEl(event.currentTarget);
+            }}
+          />
         </Div>
 
         <Div sx={{ margin: '0.8rem 0' }}>

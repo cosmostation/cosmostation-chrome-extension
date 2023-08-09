@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useDebounce } from 'use-debounce';
 import { Typography } from '@mui/material';
@@ -156,7 +156,7 @@ export default function Entry({ chain }: EntryProps) {
     return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.previewSubText');
   }, [debouncedContractAddress, debouncedTokenId, errorType, t]);
 
-  const submit = async () => {
+  const submit = useCallback(async () => {
     try {
       if (debouncedContractAddress && debouncedTokenId) {
         const newNFT = {
@@ -175,7 +175,8 @@ export default function Entry({ chain }: EntryProps) {
     } finally {
       navigate('/');
     }
-  };
+  }, [addCosmosNFT, currentAddress, debouncedContractAddress, debouncedTokenId, enqueueSnackbar, navigate]);
+
   return (
     <Container>
       <Div sx={{ marginBottom: '0.8rem' }}>

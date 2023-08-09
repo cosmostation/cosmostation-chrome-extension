@@ -9,6 +9,7 @@ import Skeleton from '~/Popup/components/common/Skeleton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
 import { useNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTOwnerSWR';
+import { useNFTURISWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTURISWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayTokenId } from '~/Popup/utils/nft';
@@ -59,13 +60,14 @@ export default function NFTCardItem({ chain, nft, onClick, onClickDelete }: NFTC
 
   const nftMeta = useNFTMetaSWR({ chain, contractAddress: address, tokenId });
 
-  const isOwnedNFT = useNFTOwnerSWR({ chain, contractAddress: address, tokenId, ownerAddress: currentAddress });
+  const isOwnedNFT = useNFTOwnerSWR({ chain, contractAddress: address, tokenId, ownerAddress: currentAddress }, { suspense: true });
+
   return (
     <StyledButton disabled={!isOwnedNFT.isOwnedNFT} onClick={onClick}>
       <BodyContainer>
         <NFTImageContainer>
           <>
-            {!isOwnedNFT.isOwnedNFT && (
+            {isOwnedNFT.isOwnedNFT && !isOwnedNFT.isOwnedNFT && (
               <BlurredImage>
                 <Typography variant="h4">Not Owned NFT</Typography>
               </BlurredImage>
@@ -128,6 +130,7 @@ type NFTItemErrorProps = Pick<NFTCardItemProps, 'chain' | 'nft' | 'onClickDelete
 export function NFTCardItemError({ chain, nft, onClickDelete, resetErrorBoundary }: NFTItemErrorProps) {
   const { address, tokenId, ownerAddress } = nft;
 
+  useNFTURISWR({ chain, contractAddress: address, tokenId });
   useNFTMetaSWR({ chain, contractAddress: address, tokenId });
   useNFTOwnerSWR({ chain, contractAddress: address, tokenId, ownerAddress });
 

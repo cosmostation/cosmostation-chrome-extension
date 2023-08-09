@@ -3,7 +3,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { get } from '~/Popup/utils/axios';
+import { get, isAxiosError } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
@@ -28,8 +28,13 @@ export function useOwnedNFTTokenIDsSWR({ chain, contractAddress, ownerAddress, l
   const fetcher = async (fetchUrl: string) => {
     try {
       return await get<NFTIDPayload>(fetchUrl);
-    } catch (e: unknown) {
-      return null;
+    } catch (e) {
+      if (isAxiosError(e)) {
+        if (e.response?.status === 404) {
+          return null;
+        }
+      }
+      throw e;
     }
   };
 
