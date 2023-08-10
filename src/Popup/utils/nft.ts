@@ -30,8 +30,10 @@ export function isIpfsUrl(url?: string) {
   return url.startsWith('ipfs://') || url.startsWith('ipfs:/');
 }
 
-export async function getIpfsData(CID: string): Promise<{ imageURL: string; metaData?: Record<string, unknown> } | null> {
+export async function getIpfsData(ipfsURL: string): Promise<{ imageURL: string; metaData?: Record<string, unknown> } | null> {
   try {
+    const CID = getIpfsCID(ipfsURL);
+
     let response = await axios.get<Record<string, unknown>>(CID, { validateStatus: (status) => status < 500 });
 
     if (response.status === 404 && !CID.endsWith('.json')) {
