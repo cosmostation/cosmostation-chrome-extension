@@ -18,3 +18,10 @@ export const CURRENCY_TYPE = {
   BTC: 'btc',
   ETH: 'eth',
 } as const;
+
+export const HOME_TAB_INDEX_TYPE = {
+  ETHEREUM: 'ethereum',
+  COSMOS: 'cosmos',
+  SUI: 'sui',
+  APTOS: 'aptos',
+} as const;

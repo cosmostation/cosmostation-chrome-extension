@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
@@ -15,7 +16,7 @@ export function useCurrentCosmosNFTs() {
 
   const { cosmosNFTs } = extensionStorage;
 
-  const currentCosmosNFTs = cosmosNFTs.filter((item) => item.baseChainUUID === currentChain.id);
+  const currentCosmosNFTs = useMemo(() => cosmosNFTs.filter((item) => item.baseChainUUID === currentChain.id), [cosmosNFTs, currentChain.id]);
 
   const addCosmosNFT = async (nft: AddCosmosNFTParams) => {
     const newCosmosNFTs = [

@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Empty from '~/Popup/components/common/Empty';
@@ -7,7 +7,7 @@ import Header from '~/Popup/components/SelectSubHeader';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
-import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useCurrentTabIndex } from '~/Popup/hooks/useCurrent/useCurrentTabIndex';
 import { gte } from '~/Popup/utils/big';
 import type { CosmosChain } from '~/types/chain';
 
@@ -25,37 +25,27 @@ type CosmosProps = {
 export default function Cosmos({ chain }: CosmosProps) {
   useCoinGeckoPriceSWR();
 
-  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
-  const { homeTabIndex } = extensionStorage;
+  const { currentTabIndex, setCurrentTabIndex } = useCurrentTabIndex();
 
   const { currentAccount } = useCurrentAccount();
 
   const tabLabels = ['Coins', 'NFTs'];
 
-  const [tabValue, setTabValue] = useState(!gte(homeTabIndex.cosmos, tabLabels.length) ? homeTabIndex.cosmos : 0);
+  const currentHomeTabIndex = useMemo(() => (gte(currentTabIndex, tabLabels.length) ? 0 : currentTabIndex), [currentTabIndex, tabLabels.length]);
 
-  const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
-    setTabValue(newTabValue);
-  }, []);
+  const [tabValue, setTabValue] = useState(currentHomeTabIndex);
+
+  const handleChange = useCallback(
+    (_: React.SyntheticEvent, newTabValue: number) => {
+      setTabValue(newTabValue);
+
+      setCurrentTabIndex(newTabValue);
+    },
+    [setCurrentTabIndex],
+  );
 
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
   const isCustom = useMemo(() => !!currentCosmosAdditionalChains.find((item) => item.id === chain.id), [chain.id, currentCosmosAdditionalChains]);
-
-  useEffect(() => {
-    if (gte(homeTabIndex.cosmos, tabLabels.length)) {
-      void setExtensionStorage('homeTabIndex', {
-        ...homeTabIndex,
-        cosmos: 0,
-      });
-
-      setTabValue(0);
-    }
-
-    void setExtensionStorage('homeTabIndex', {
-      ...homeTabIndex,
-      cosmos: tabValue,
-    });
-  }, [homeTabIndex, setExtensionStorage, tabLabels.length, tabValue]);
 
   return (
     <Container key={`${chain.id}-${currentAccount.id}`}>
