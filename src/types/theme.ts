@@ -1,4 +1,4 @@
-import type { THEME_TYPE } from '~/constants/theme';
+import type { ACCENT_COLORS, THEME_TYPE } from '~/constants/theme';
 
 export type ThemeType = ValueOf<typeof THEME_TYPE>;
 
@@ -49,8 +49,11 @@ export type AccentColors = {
   purple01: string;
   purple02: string;
   white: string;
-  green: string;
+  green01: string;
+  green02: string;
   red: string;
   blue01: string;
   blue02: string;
 };
+
+export type AccentColorsType = ValueOf<typeof ACCENT_COLORS>;

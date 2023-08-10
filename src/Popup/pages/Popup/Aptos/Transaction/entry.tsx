@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AptosAccount, AptosClient } from 'aptos';
 import { useSnackbar } from 'notistack';
 import { useDebouncedCallback } from 'use-debounce';
@@ -11,6 +11,7 @@ import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
@@ -80,7 +81,10 @@ export default function Entry({ queue }: EntryProps) {
 
   const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
 
-  const price = (asset?.coinGeckoId && coinGeckoPrice.data?.[asset.coinGeckoId]?.[currency]) || 0;
+  const price = useMemo(
+    () => (asset?.coinGeckoId && coinGeckoPrice.data?.[asset.coinGeckoId]?.[currency]) || 0,
+    [asset?.coinGeckoId, coinGeckoPrice.data, currency],
+  );
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -104,9 +108,11 @@ export default function Entry({ queue }: EntryProps) {
 
   const { t } = useTranslation();
 
+  const [isProgress, setIsProgress] = useState(false);
+
   const [tabValue, setTabValue] = useState(0);
 
-  const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+  const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
 
   const aptosAccount = useMemo(() => new AptosAccount(keyPair!.privateKey!), [keyPair]);
 
@@ -173,9 +179,9 @@ export default function Entry({ queue }: EntryProps) {
 
   const currentDisplayMaxFeeValue = useMemo(() => times(currentDisplayMaxFee, price, 0), [currentDisplayMaxFee, price]);
 
-  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+  const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
-  };
+  }, []);
 
   const [isReloading, setIsReloading] = useState(false);
 
@@ -312,58 +318,63 @@ export default function Entry({ queue }: EntryProps) {
           >
             {t('pages.Popup.Aptos.Transaction.entry.cancelButton')}
           </OutlineButton>
-          {/* <Tooltip title={errorMessage} varient="error" placement="top"> */}
-          <div>
-            <Button
-              disabled={(typeof maxGas !== 'undefined' && maxGas !== maxGasAmount) || isLoadingFee || !!errorMessage}
-              onClick={async () => {
-                try {
-                  if (generateTransaction.data) {
-                    const signedTx = await aptosClient.signTransaction(aptosAccount, generateTransaction.data);
+          <Tooltip title={errorMessage} varient="error" placement="top">
+            <div>
+              <Button
+                disabled={(typeof maxGas !== 'undefined' && maxGas !== maxGasAmount) || isLoadingFee || !!errorMessage}
+                isProgress={isProgress}
+                onClick={async () => {
+                  try {
+                    setIsProgress(true);
 
-                    if (method === 'aptos_signTransaction') {
-                      const result: AptosSignTransactionResponse = `0x${Buffer.from(signedTx).toString('hex')}`;
+                    if (generateTransaction.data) {
+                      const signedTx = await aptosClient.signTransaction(aptosAccount, generateTransaction.data);
 
-                      responseToWeb({
-                        response: {
-                          result,
-                        },
-                        message,
-                        messageId,
-                        origin,
-                      });
+                      if (method === 'aptos_signTransaction') {
+                        const result: AptosSignTransactionResponse = `0x${Buffer.from(signedTx).toString('hex')}`;
 
-                      await deQueue();
-                    }
+                        responseToWeb({
+                          response: {
+                            result,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
 
-                    if (method === 'aptos_signAndSubmitTransaction') {
-                      const result: AptosSignAndSubmitTransactionResponse = await aptosClient.submitTransaction(signedTx);
-
-                      responseToWeb({
-                        response: {
-                          result,
-                        },
-                        message,
-                        messageId,
-                        origin,
-                      });
-
-                      if (channel === 'inApp') {
-                        enqueueSnackbar('Success');
+                        await deQueue();
                       }
 
-                      await deQueue();
+                      if (method === 'aptos_signAndSubmitTransaction') {
+                        const result: AptosSignAndSubmitTransactionResponse = await aptosClient.submitTransaction(signedTx);
+
+                        responseToWeb({
+                          response: {
+                            result,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
+
+                        if (channel === 'inApp') {
+                          enqueueSnackbar('Success');
+                        }
+
+                        await deQueue();
+                      }
                     }
+                  } catch {
+                    enqueueSnackbar('Unknown Error', { variant: 'error' });
+                  } finally {
+                    setIsProgress(false);
                   }
-                } catch {
-                  enqueueSnackbar('Unknown Error', { variant: 'error' });
-                }
-              }}
-            >
-              {t('pages.Popup.Aptos.Transaction.entry.signButton')}
-            </Button>
-          </div>
-          {/* </Tooltip> */}
+                }}
+              >
+                {t('pages.Popup.Aptos.Transaction.entry.signButton')}
+              </Button>
+            </div>
+          </Tooltip>
         </BottomButtonContainer>
       </BottomContainer>
       <LedgerToTab />

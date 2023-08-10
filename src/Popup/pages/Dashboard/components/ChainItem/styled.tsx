@@ -121,7 +121,7 @@ type RightTextChangeRateContainerProps = {
 };
 
 export const RightTextChangeRateContainer = styled('div')<RightTextChangeRateContainerProps>(({ theme, ...props }) => ({
-  color: props['data-color'] === 'red' ? theme.accentColors.red : props['data-color'] === 'green' ? theme.accentColors.green : theme.colors.text02,
+  color: props['data-color'] === 'red' ? theme.accentColors.red : props['data-color'] === 'green' ? theme.accentColors.green01 : theme.colors.text02,
 }));
 
 export const StyledAbsoluteLoading = styled(AbsoluteLoading)({

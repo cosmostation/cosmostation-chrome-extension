@@ -8,6 +8,7 @@ import { Connection, JsonRpcProvider } from '@mysten/sui.js';
 import { DEVNET } from '~/constants/chain/sui/network/devnet';
 import { TESTNET } from '~/constants/chain/sui/network/testnet';
 import { SUI_COIN } from '~/constants/sui';
+import { ACCENT_COLORS } from '~/constants/theme';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
@@ -28,6 +29,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import type { SuiChain } from '~/types/chain';
+import type { Path } from '~/types/route';
 
 import FaucetButton from './components/FaucetButton';
 import {
@@ -56,6 +58,7 @@ import ReceiveIcon from '~/images/icons/Receive.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
 import Reward16Icon from '~/images/icons/Reward16.svg';
 import SendIcon from '~/images/icons/Send.svg';
+import SwapIcon16 from '~/images/icons/Swap16.svg';
 
 type NativeChainCardProps = {
   chain: SuiChain;
@@ -201,6 +204,16 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
         <Button Icon={SendIcon} typoVarient="h5" onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.sui.NativeChainCard.index.sendButton')}
         </Button>
+        <FourthLineCenterContainer />
+        <Button
+          Icon={SwapIcon16}
+          accentColor={ACCENT_COLORS.GREEN01}
+          hoverAccentColor={ACCENT_COLORS.GREEN02}
+          typoVarient="h5"
+          onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path)}
+        >
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
+        </Button>
       </FourthLineContainer>
     </Container>
   );
@@ -283,6 +296,10 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.sui.NativeChainCard.index.sendButton')}
+        </Button>
+        <FourthLineCenterContainer />
+        <Button Icon={SwapIcon16} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
         </Button>
       </FourthLineContainer>
     </Container>
@@ -388,6 +405,10 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
         <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.sui.NativeChainCard.index.sendButton')}
+        </Button>
+        <FourthLineCenterContainer />
+        <Button Icon={SwapIcon16} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
         </Button>
       </FourthLineContainer>
       {isLoading && <StyledAbsoluteLoading size="2.5rem" />}

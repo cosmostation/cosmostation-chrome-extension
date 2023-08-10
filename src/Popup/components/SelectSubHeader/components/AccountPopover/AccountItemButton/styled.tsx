@@ -109,5 +109,5 @@ export const ConnectBadge = styled('div')<ConnectBadgeProps>(({ theme, ...props 
 
   borderRadius: '50%',
 
-  backgroundColor: props['data-is-connected'] ? theme.accentColors.green : theme.accentColors.red,
+  backgroundColor: props['data-is-connected'] ? theme.accentColors.green01 : theme.accentColors.red,
 }));

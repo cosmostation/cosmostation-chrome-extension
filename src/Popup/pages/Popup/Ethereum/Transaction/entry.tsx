@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type BigNumber from 'bignumber.js';
 import { rlp } from 'ethereumjs-util';
 import { useSnackbar } from 'notistack';
@@ -18,13 +18,13 @@ import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import GasSettingDialog from '~/Popup/components/GasSettingDialog';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
-import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/1inch/useOneInchTokensSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useDetermineTxTypeSWR } from '~/Popup/hooks/SWR/ethereum/useDetermineTxTypeSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useNetVersionSWR } from '~/Popup/hooks/SWR/ethereum/useNetVersionSWR';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useTransactionCountSWR } from '~/Popup/hooks/SWR/ethereum/useTransactionCountSWR';
+import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useOneInchTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
@@ -90,6 +90,8 @@ export default function Entry({ queue }: EntryProps) {
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
+  const [isProgress, setIsProgress] = useState(false);
+
   const { setLoadingLedgerSigning } = useLoading();
 
   const { closeTransport, createTransport } = useLedgerTransport();
@@ -137,8 +139,8 @@ export default function Entry({ queue }: EntryProps) {
   const [isOpenGasDialog, setIsOpenGasDialog] = useState(false);
   const [isOpenGasPriceDialog, setIsOpenGasPriceDialog] = useState(false);
 
-  const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-  const address = getAddress(chain, keyPair?.publicKey);
+  const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
+  const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
   const transactionCount = useTransactionCountSWR([address, 'latest']);
 
   const { message, messageId, origin } = queue;
@@ -146,11 +148,14 @@ export default function Entry({ queue }: EntryProps) {
 
   const [isSigningLedger, setIsSigningLedger] = useState(false);
 
-  const originEthereumTx = params[0];
+  const originEthereumTx = useMemo(() => params[0], [params]);
 
   const txType = useDetermineTxTypeSWR(originEthereumTx);
 
-  const isCustomFee = !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas));
+  const isCustomFee = useMemo(
+    () => !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas)),
+    [originEthereumTx.gasPrice, originEthereumTx.maxFeePerGas, originEthereumTx.maxPriorityFeePerGas],
+  );
 
   const [feeMode, setFeeMode] = useState<'tiny' | 'low' | 'average' | 'custom'>(isCustomFee ? 'custom' : 'low');
   const [gas, setGas] = useState(originEthereumTx.gas ? BigInt(toHex(originEthereumTx.gas, { addPrefix: true, isStringNumber: true })).toString(10) : '21000');
@@ -256,11 +261,11 @@ export default function Entry({ queue }: EntryProps) {
     return '0';
   }, [ethereumTx.gas, ethereumTx.gasPrice, ethereumTx.maxFeePerGas]);
 
-  const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
+  const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 
-  const displayFee = toDisplayDenomAmount(baseFee, decimals);
+  const displayFee = useMemo(() => toDisplayDenomAmount(baseFee, decimals), [baseFee, decimals]);
 
-  const displayValue = times(displayFee, price);
+  const displayValue = useMemo(() => times(displayFee, price), [displayFee, price]);
 
   const isERC20 = useMemo(() => {
     const erc20Types = [ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM] as string[];
@@ -314,9 +319,9 @@ export default function Entry({ queue }: EntryProps) {
     return displayFee;
   }, [displayFee, sendDisplayAmount, txType.data?.type]);
 
-  const totalBaseAmount = toBaseDenomAmount(totalDisplayAmount, decimals);
+  const totalBaseAmount = useMemo(() => toBaseDenomAmount(totalDisplayAmount, decimals), [decimals, totalDisplayAmount]);
 
-  const baseBalance = BigInt(balance.data?.result || '0').toString(10);
+  const baseBalance = useMemo(() => BigInt(balance.data?.result || '0').toString(10), [balance.data?.result]);
   const errorMessage = useMemo(() => {
     if (gt(totalBaseAmount, baseBalance)) {
       return t('pages.Popup.Ethereum.SignTransaction.entry.insufficientAmount');
@@ -324,9 +329,9 @@ export default function Entry({ queue }: EntryProps) {
     return '';
   }, [baseBalance, t, totalBaseAmount]);
 
-  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+  const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
-  };
+  }, []);
 
   useEffect(() => {
     void (async () => {
@@ -501,8 +506,11 @@ export default function Entry({ queue }: EntryProps) {
               <div>
                 <Button
                   disabled={isLoadingFee || !!errorMessage}
+                  isProgress={isProgress}
                   onClick={async () => {
                     try {
+                      setIsProgress(true);
+
                       const signedRawTx = await (async () => {
                         const dataToSign = {
                           ...ethereumTx,
@@ -613,7 +621,7 @@ export default function Entry({ queue }: EntryProps) {
                           await deQueue();
                         }
                       }
-                      if (oneInchSwapDstToken) {
+                      if (oneInchSwapDstToken && oneInchSwapDstToken.symbol !== currentEthereumNetwork.displayDenom) {
                         const newToken = {
                           address: oneInchSwapDstToken.address,
                           displayDenom: oneInchSwapDstToken.symbol,
@@ -628,6 +636,7 @@ export default function Entry({ queue }: EntryProps) {
                       await closeTransport();
                       setLoadingLedgerSigning(false);
                       setIsSigningLedger(false);
+                      setIsProgress(false);
                     }
                   }}
                 >

@@ -158,7 +158,7 @@ export function isAminoCommission(msg: Msg): msg is Msg<MsgCommission> {
 }
 
 export function isAminoSwapExactAmountIn(msg: Msg): msg is Msg<MsgSwapExactAmountIn> {
-  return msg.type === 'osmosis/gamm/swap-exact-amount-in';
+  return msg.type === 'osmosis/gamm/swap-exact-amount-in' || msg.type === 'osmosis/poolmanager/swap-exact-amount-in';
 }
 
 export function isAminoExecuteContract(msg: Msg): msg is Msg<MsgExecuteContract> {

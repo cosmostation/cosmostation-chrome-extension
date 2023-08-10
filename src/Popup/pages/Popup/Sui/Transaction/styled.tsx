@@ -133,7 +133,7 @@ export const BottomButtonContainer = styled('div')({
 export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
   marginLeft: '0.4rem',
   '&.MuiCircularProgress-root': {
-    color: theme.accentColors.green,
+    color: theme.accentColors.green01,
   },
 }));
 

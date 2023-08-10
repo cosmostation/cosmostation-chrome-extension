@@ -3,8 +3,13 @@ import { styled } from '@mui/material/styles';
 export const ContentContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 
+  margin: '0 -1.6rem',
+  padding: '1.2rem 1.6rem 0',
+
   whiteSpace: 'pre-wrap',
   wordBreak: 'break-all',
+
+  overflow: 'auto',
 }));
 
 export const AddressContainer = styled('div')({});
@@ -40,9 +45,22 @@ export const RightColumnContainer = styled('div')({});
 export const RightAmountContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-end',
+  alignItems: 'center',
 
   color: theme.colors.text01,
 }));
+
+export const EllipsedContainer = styled('div')({
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '10rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
 
 export const RightValueContainer = styled('div')(({ theme }) => ({
   marginTop: '0.2rem',

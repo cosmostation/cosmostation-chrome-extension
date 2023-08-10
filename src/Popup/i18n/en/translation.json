@@ -722,9 +722,18 @@
                       "validatorAddress": "Validator address"
                     }
                   },
+                  "Contract": {
+                    "index": {
+                      "contract": "Contract Address",
+                      "funds": "Funds",
+                      "msg": "Msg",
+                      "sender": "Sender Address"
+                    }
+                  },
                   "IBCSend": {
                     "index": {
                       "amount": "Amount",
+                      "memo": "Memo",
                       "receiver": "Receiver Address",
                       "sender": "Sender Address",
                       "sourceChannel": "Channel"
@@ -774,6 +783,15 @@
                     "index": {
                       "title": "Claim Commission",
                       "validatorAddress": "Validator address"
+                    }
+                  },
+                  "IBCSend": {
+                    "index": {
+                      "amount": "Amount",
+                      "fromAddress": "From address",
+                      "memo": "Memo",
+                      "sourceChannel": "Channel",
+                      "toAddress": "To address"
                     }
                   },
                   "Send": {
@@ -1427,7 +1445,7 @@
           }
         },
         "entry": {
-          "allowanceWarning": "Swap Router uses signed permit approvals. This allows you to approve 1inch smart contract access to your selected tokens and swap in one single transaction.",
+          "allowanceWarning": "Swap Router uses signed permit approvals. This allows you to approve smart contract access to your selected tokens and swap in one single transaction.",
           "availableAmount": "Available",
           "balanceWarningDescription1": "You do not have enough",
           "balanceWarningDescription2": " to cover the swap amount and the estimated gas costs for this transfer. Set your input amount to",
@@ -1438,6 +1456,7 @@
           "gasFee": "Gas Fee",
           "gasFees": "Gas fees before refund",
           "gasFeesInfo": "We overstimate gas by 50% to guarantee your trade. Any gas we don’t use will be refunded by Axelar.",
+          "ibcRelayingTimeInfo": "IBC transfers typically take 10-30 seconds, but delays can occur due to relayer issues, especially on low IBC volume chains.",
           "insufficientAmount": "Insufficient amount",
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",
@@ -1449,6 +1468,8 @@
           "liquidityWarning": "The size of this trade is large compared to the available liquidity. Reduce the swap amount to get a better price.",
           "minimumReceived": "Minimum received after slippage",
           "minutes": "minutes",
+          "multiTxSwap": "Swap with multiple transactions is unavailable",
+          "multiTxSwapError": "This swap requires multiple transactions",
           "networkError": "Network Error",
           "oversizedSwap": "Oversized Swap",
           "permissionButton": "Give permission to use tokens",
@@ -1461,6 +1482,7 @@
           "swapInfoDescription1": "Due to slippage",
           "swapInfoDescription2": ", the final amount you receive and the estimated amount may differ. You will receive at least",
           "swapInfoDescription3": "",
+          "swapVenue": "Swap Venue",
           "title": "Swap",
           "txSizeWarning": "Transaction size is currently limited to $10,000. Please decrease the size of your transaction and try again."
         },
@@ -1565,6 +1587,7 @@
               "networkError": "Network Error",
               "reward": "Reward",
               "sendButton": "Send",
+              "swapButton": "Swap",
               "unbonding": "Unbonding",
               "vesting": "Vesting"
             }

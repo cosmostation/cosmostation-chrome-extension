@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 import Sui from '@mysten/ledgerjs-hw-app-sui';
@@ -21,6 +21,7 @@ import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, Tabs } from '~/Popup/components/common/Tab';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useDryRunTransactionBlockSWR } from '~/Popup/hooks/SWR/sui/useDryRunTransactionBlockSWR';
@@ -86,7 +87,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const { coinGeckoId } = currentSuiNetwork;
 
-  const price = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
+  const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 
   const { deQueue } = useCurrentQueue();
 
@@ -106,7 +107,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const [tabValue, setTabValue] = useState(0);
 
-  const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+  const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
 
   const provider = useMemo(
     () =>
@@ -166,9 +167,9 @@ export default function Entry({ queue }: EntryProps) {
 
   const expectedDisplayFeePrice = useMemo(() => times(expectedDisplayFee, price), [expectedDisplayFee, price]);
 
-  const handleChange = (_: React.SyntheticEvent, newTabValue: number) => {
+  const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
-  };
+  }, []);
 
   const baseBudgetFee = useMemo(() => transactionBlock.blockData?.gasConfig?.budget || 0, [transactionBlock.blockData?.gasConfig?.budget]);
 
@@ -288,96 +289,96 @@ export default function Entry({ queue }: EntryProps) {
           >
             {t('pages.Popup.Sui.Transaction.entry.cancelButton')}
           </OutlineButton>
-          {/* <Tooltip title={errorMessage} varient="error" placement="top"> */}
-          <div>
-            <Button
-              disabled={isDiabled}
-              isProgress={isProgress}
-              onClick={async () => {
-                try {
-                  setIsProgress(true);
+          <Tooltip title={errorMessage} varient="error" placement="top">
+            <div>
+              <Button
+                disabled={isDiabled}
+                isProgress={isProgress}
+                onClick={async () => {
+                  try {
+                    setIsProgress(true);
 
-                  if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
-                    const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
+                    if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
+                      const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
-                    const rawSigner = new RawSigner(keypair, provider);
+                      const rawSigner = new RawSigner(keypair, provider);
 
-                    const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
+                      const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
 
-                    responseToWeb({
-                      response: {
-                        result: response,
-                      },
-                      message,
-                      messageId,
-                      origin,
-                    });
-                  }
-
-                  if (currentAccount.type === 'LEDGER') {
-                    setLoadingLedgerSigning(true);
-                    const transport = await createTransport();
-                    const suiApp = new Sui(transport);
-
-                    const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
-
-                    const transactionBlockBytes = await transactionBlock.build({ provider });
-
-                    const intentMessage = messageWithIntent(IntentScope.TransactionData, transactionBlockBytes);
-
-                    const { signature } = await suiApp.signTransaction(path, intentMessage);
-
-                    if (!keyPair?.publicKey) {
-                      throw new Error('public key is not found');
+                      responseToWeb({
+                        response: {
+                          result: response,
+                        },
+                        message,
+                        messageId,
+                        origin,
+                      });
                     }
 
-                    const pubKey = new Ed25519PublicKey(keyPair.publicKey);
+                    if (currentAccount.type === 'LEDGER') {
+                      setLoadingLedgerSigning(true);
+                      const transport = await createTransport();
+                      const suiApp = new Sui(transport);
 
-                    const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', pubKey });
+                      const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
 
-                    const response = await provider.executeTransactionBlock({
-                      transactionBlock: transactionBlockBytes,
-                      signature: serializedSignature,
-                    });
+                      const transactionBlockBytes = await transactionBlock.build({ provider });
 
-                    const txBlock = await provider.getTransactionBlock({
-                      digest: response.digest,
-                      options: {
-                        showInput: true,
-                        showEffects: true,
-                        showEvents: true,
-                        ...params[0]?.options,
-                      },
-                    });
+                      const intentMessage = messageWithIntent(IntentScope.TransactionData, transactionBlockBytes);
 
-                    responseToWeb({
-                      response: {
-                        result: txBlock,
-                      },
-                      message,
-                      messageId,
-                      origin,
-                    });
+                      const { signature } = await suiApp.signTransaction(path, intentMessage);
+
+                      if (!keyPair?.publicKey) {
+                        throw new Error('public key is not found');
+                      }
+
+                      const pubKey = new Ed25519PublicKey(keyPair.publicKey);
+
+                      const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', pubKey });
+
+                      const response = await provider.executeTransactionBlock({
+                        transactionBlock: transactionBlockBytes,
+                        signature: serializedSignature,
+                      });
+
+                      const txBlock = await provider.getTransactionBlock({
+                        digest: response.digest,
+                        options: {
+                          showInput: true,
+                          showEffects: true,
+                          showEvents: true,
+                          ...params[0]?.options,
+                        },
+                      });
+
+                      responseToWeb({
+                        response: {
+                          result: txBlock,
+                        },
+                        message,
+                        messageId,
+                        origin,
+                      });
+                    }
+
+                    if (queue.channel === 'inApp') {
+                      enqueueSnackbar('success');
+                    }
+
+                    await deQueue();
+                  } catch (e) {
+                    enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+                  } finally {
+                    await closeTransport();
+                    setLoadingLedgerSigning(false);
+                    setIsProgress(false);
                   }
-
-                  if (queue.channel === 'inApp') {
-                    enqueueSnackbar('success');
-                  }
-
-                  await deQueue();
-                } catch (e) {
-                  enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
-                } finally {
-                  await closeTransport();
-                  setLoadingLedgerSigning(false);
-                  setIsProgress(false);
-                }
-              }}
-            >
-              {t('pages.Popup.Sui.Transaction.entry.signButton')}
-            </Button>
-          </div>
-          {/* </Tooltip> */}
+                }}
+              >
+                {t('pages.Popup.Sui.Transaction.entry.signButton')}
+              </Button>
+            </div>
+          </Tooltip>
         </BottomButtonContainer>
       </BottomContainer>
       <LedgerToTab />

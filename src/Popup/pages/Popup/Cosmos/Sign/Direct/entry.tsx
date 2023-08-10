@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
@@ -45,6 +45,8 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { t } = useTranslation();
 
+  const [isProgress, setIsProgress] = useState(false);
+
   const { feeCoins } = useCurrentFeesSWR(chain, { suspense: true });
 
   const { message, messageId, origin, channel } = queue;
@@ -53,18 +55,18 @@ export default function Entry({ queue, chain }: EntryProps) {
     params: { doc, isEditFee, isEditMemo, isCheckBalance, gasRate },
   } = message;
 
-  const auth_info_bytes = new Uint8Array(doc.auth_info_bytes);
-  const body_bytes = new Uint8Array(doc.body_bytes);
+  const auth_info_bytes = useMemo(() => new Uint8Array(doc.auth_info_bytes), [doc.auth_info_bytes]);
+  const body_bytes = useMemo(() => new Uint8Array(doc.body_bytes), [doc.body_bytes]);
 
-  const decodedBodyBytes = cosmos.tx.v1beta1.TxBody.decode(body_bytes);
-  const decodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.decode(auth_info_bytes);
+  const decodedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(body_bytes), [body_bytes]);
+  const decodedAuthInfoBytes = useMemo(() => cosmos.tx.v1beta1.AuthInfo.decode(auth_info_bytes), [auth_info_bytes]);
 
   const { fee } = decodedAuthInfoBytes;
 
-  const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-  const address = getAddress(chain, keyPair?.publicKey);
+  const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
+  const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
 
-  const inputGas = fee?.gas_limit ? String(fee.gas_limit) : COSMOS_DEFAULT_GAS;
+  const inputGas = useMemo(() => (fee?.gas_limit ? String(fee.gas_limit) : COSMOS_DEFAULT_GAS), [fee?.gas_limit]);
 
   const inputFee = useMemo(() => {
     const foundFee = fee?.amount?.find((item) => item?.denom && item?.amount && feeCoins.map((feeCoin) => feeCoin.baseDenom).includes(item?.denom || ''));
@@ -81,7 +83,7 @@ export default function Entry({ queue, chain }: EntryProps) {
     };
   }, [chain.baseDenom, fee?.amount, feeCoins]);
 
-  const inputFeeAmount = inputFee.amount || '0';
+  const inputFeeAmount = useMemo(() => inputFee.amount || '0', [inputFee.amount]);
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
     feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
@@ -91,13 +93,16 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
 
-  const tinyFee = times(inputGas, currentFeeGasRate.tiny);
-  const lowFee = times(inputGas, currentFeeGasRate.low);
-  const averageFee = times(inputGas, currentFeeGasRate.average);
+  const tinyFee = useMemo(() => times(inputGas, currentFeeGasRate.tiny), [currentFeeGasRate.tiny, inputGas]);
+  const lowFee = useMemo(() => times(inputGas, currentFeeGasRate.low), [currentFeeGasRate.low, inputGas]);
+  const averageFee = useMemo(() => times(inputGas, currentFeeGasRate.average), [currentFeeGasRate.average, inputGas]);
 
-  const isExistZeroFee = tinyFee === '0' || lowFee === '0' || averageFee === '0';
+  const isExistZeroFee = useMemo(() => tinyFee === '0' || lowFee === '0' || averageFee === '0', [averageFee, lowFee, tinyFee]);
 
-  const initBaseFee = isEditFee && !isExistZeroFee && lt(inputFeeAmount, '1') ? lowFee : inputFeeAmount;
+  const initBaseFee = useMemo(
+    () => (isEditFee && !isExistZeroFee && lt(inputFeeAmount, '1') ? lowFee : inputFeeAmount),
+    [inputFeeAmount, isEditFee, isExistZeroFee, lowFee],
+  );
 
   const [gas, setGas] = useState(inputGas);
   const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
@@ -106,30 +111,37 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 
-  const encodedBodyBytes = cosmos.tx.v1beta1.TxBody.encode({ ...decodedBodyBytes, memo }).finish();
-  const encodedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.encode({
-    ...decodedAuthInfoBytes,
-    fee: { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas_limit: Number(gas) },
-  }).finish();
+  const encodedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.encode({ ...decodedBodyBytes, memo }).finish(), [decodedBodyBytes, memo]);
+  const encodedAuthInfoBytes = useMemo(
+    () =>
+      cosmos.tx.v1beta1.AuthInfo.encode({
+        ...decodedAuthInfoBytes,
+        fee: { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas_limit: Number(gas) },
+      }).finish(),
+    [ceilBaseFee, currentFeeBaseDenom, decodedAuthInfoBytes, fee, gas],
+  );
 
-  const bodyBytes = isEditMemo ? encodedBodyBytes : body_bytes;
-  const authInfoBytes = isEditFee ? encodedAuthInfoBytes : auth_info_bytes;
+  const bodyBytes = useMemo(() => (isEditMemo ? encodedBodyBytes : body_bytes), [body_bytes, encodedBodyBytes, isEditMemo]);
+  const authInfoBytes = useMemo(() => (isEditFee ? encodedAuthInfoBytes : auth_info_bytes), [auth_info_bytes, encodedAuthInfoBytes, isEditFee]);
 
-  const decodedChangedBodyBytes = cosmos.tx.v1beta1.TxBody.decode(bodyBytes);
-  const decodedChangedAuthInfoBytes = cosmos.tx.v1beta1.AuthInfo.decode(authInfoBytes);
+  const decodedChangedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(bodyBytes), [bodyBytes]);
+  const decodedChangedAuthInfoBytes = useMemo(() => cosmos.tx.v1beta1.AuthInfo.decode(authInfoBytes), [authInfoBytes]);
 
   const { messages } = decodedChangedBodyBytes;
-  const msgs = messages.map((item) => decodeProtobufMessage(item));
+  const msgs = useMemo(() => messages.map((item) => decodeProtobufMessage(item)), [messages]);
 
-  const tx = {
-    ...doc,
-    body_bytes: { ...decodedChangedBodyBytes, messages: msgs },
-    auth_info_bytes: decodedChangedAuthInfoBytes,
-  };
+  const tx = useMemo(
+    () => ({
+      ...doc,
+      body_bytes: { ...decodedChangedBodyBytes, messages: msgs },
+      auth_info_bytes: decodedChangedAuthInfoBytes,
+    }),
+    [decodedChangedAuthInfoBytes, decodedChangedBodyBytes, doc, msgs],
+  );
 
-  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
+  const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-  };
+  }, []);
 
   const errorMessage = useMemo(() => {
     if (!gte(currentFeeCoin.availableAmount, baseFee) && isCheckBalance && !fee?.granter && !fee?.payer) {
@@ -216,8 +228,11 @@ export default function Entry({ queue, chain }: EntryProps) {
             <div>
               <Button
                 disabled={!!errorMessage}
+                isProgress={isProgress}
                 onClick={async () => {
                   try {
+                    setIsProgress(true);
+
                     if (!keyPair?.privateKey) {
                       throw new Error('Unknown Error');
                     }
@@ -287,6 +302,8 @@ export default function Entry({ queue, chain }: EntryProps) {
                     }
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+                  } finally {
+                    setIsProgress(false);
                   }
                 }}
               >

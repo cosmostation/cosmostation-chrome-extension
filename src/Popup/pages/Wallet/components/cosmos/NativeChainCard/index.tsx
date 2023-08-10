@@ -7,7 +7,7 @@ import { Typography } from '@mui/material';
 import { COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
 import { EVMOS } from '~/constants/chain/cosmos/evmos';
 import { KAVA } from '~/constants/chain/cosmos/kava';
-import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
+import { ACCENT_COLORS } from '~/constants/theme';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
@@ -36,6 +36,7 @@ import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgCommission, MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
+import type { Path } from '~/types/route';
 
 import ClaimButton from './components/ClaimButton';
 import {
@@ -51,7 +52,6 @@ import {
   FourthLineContainerItem,
   FourthLineContainerItemLeft,
   FourthLineContainerItemRight,
-  IconButtonContainer,
   SecondLineContainer,
   SecondLineLeftAbsoluteImageContainer,
   SecondLineLeftContainer,
@@ -65,17 +65,15 @@ import {
   StyledIconButton,
   StyledRetryIconButton,
   ThirdLineContainer,
-  UnitIconButton,
 } from './styled';
 
 import BottomArrow20Icon from '~/images/icons/BottomArrow20.svg';
-import BuyIcon from '~/images/icons/Buy.svg';
 import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
 import Reward16Icon from '~/images/icons/Reward16.svg';
 import SendIcon from '~/images/icons/Send.svg';
-import SwapIcon from '~/images/icons/Swap.svg';
+import SwapIcon16 from '~/images/icons/Swap16.svg';
 
 type NativeChainCardProps = {
   chain: CosmosChain;
@@ -534,16 +532,15 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         <Button Icon={SendIcon} typoVarient="h5" disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
-        {chain.id === OSMOSIS.id && (
-          <IconButtonContainer>
-            <UnitIconButton disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/osmosis-swap')}>
-              <SwapIcon />
-            </UnitIconButton>
-            <UnitIconButton disabled sx={{ display: 'none' }}>
-              <BuyIcon />
-            </UnitIconButton>
-          </IconButtonContainer>
-        )}
+        <Button
+          Icon={SwapIcon16}
+          accentColor={ACCENT_COLORS.GREEN01}
+          hoverAccentColor={ACCENT_COLORS.GREEN02}
+          typoVarient="h5"
+          onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path)}
+        >
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
+        </Button>
       </ButtonContainer>
 
       {chain.custom !== 'no-stake' && (
@@ -709,16 +706,9 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
-        {chain.id === OSMOSIS.id && (
-          <IconButtonContainer>
-            <UnitIconButton disabled>
-              <SwapIcon />
-            </UnitIconButton>
-            <UnitIconButton disabled sx={{ display: 'none' }}>
-              <BuyIcon />
-            </UnitIconButton>
-          </IconButtonContainer>
-        )}
+        <Button Icon={SwapIcon16} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
+        </Button>
       </ButtonContainer>
 
       {chain.custom !== 'no-stake' && (
@@ -823,16 +813,9 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
-        {chain.id === OSMOSIS.id && (
-          <IconButtonContainer>
-            <UnitIconButton disabled>
-              <SwapIcon />
-            </UnitIconButton>
-            <UnitIconButton disabled sx={{ display: 'none' }}>
-              <BuyIcon />
-            </UnitIconButton>
-          </IconButtonContainer>
-        )}
+        <Button Icon={SwapIcon16} typoVarient="h5" disabled>
+          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
+        </Button>
       </ButtonContainer>
       {isLoading && <StyledAbsoluteLoading size="2.5rem" />}
     </Container>
