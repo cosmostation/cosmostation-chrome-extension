@@ -8,12 +8,13 @@ import InformContainer from '~/Popup/components/common/InformContainer';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTsMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTsMetaSWR';
 import { useOwnedNFTsTokenIDsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useOwnedNFTsTokenIDsSWR';
+import { useSupportContractsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useSupportContractsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain } from '~/types/chain';
-import type { CosmosNFT, CosmwasmSmartContract } from '~/types/cosmos/nft';
+import type { CosmosNFT } from '~/types/cosmos/nft';
 
 import NFTItem from './components/NFTItem';
 import {
@@ -41,8 +42,6 @@ type EntryProps = {
 type CosmosNFTParams = Omit<CosmosNFT, 'id'>;
 
 export default function Entry({ chain }: EntryProps) {
-  const nftSmartContracts = [] as CosmwasmSmartContract[];
-
   const { enqueueSnackbar } = useSnackbar();
 
   const [search, setSearch] = useState('');
@@ -64,7 +63,9 @@ export default function Entry({ chain }: EntryProps) {
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const nftSmartContractAddresses = nftSmartContracts.find((item) => item.chainId === chain.chainId)?.smartContracts.map((nft) => nft.address) || [];
+  const supportContracts = useSupportContractsSWR(chain);
+
+  const nftSmartContractAddresses = useMemo(() => supportContracts.data?.map((item) => item.contractAddress) || [], [supportContracts.data]);
 
   const ownedNFTTokenIDs = useOwnedNFTsTokenIDsSWR({ chain, contractAddresses: nftSmartContractAddresses, ownerAddress: currentAddress });
 

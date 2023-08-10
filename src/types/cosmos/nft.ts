@@ -43,12 +43,3 @@ export type CosmosNFTMeta = {
   }[];
   compiler?: string;
 };
-
-export type CosmwasmSmartContract = {
-  chainId: string;
-  smartContracts: {
-    address: string;
-    name?: string;
-    symbol?: string;
-  }[];
-};
