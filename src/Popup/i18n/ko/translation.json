@@ -54,8 +54,8 @@
     "Header": {
       "Drawer": {
         "index": {
-          "addressBook": "주소록",
           "addCustomChain": "커스텀 체인 추가",
+          "addressBook": "주소록",
           "changePassword": "비밀번호 변경",
           "connectedSites": "연결 된 사이트",
           "currency": "통화",
@@ -489,12 +489,12 @@
               "Search": {
                 "entry": {
                   "addNFTSnackbar": "NFT가 추가 되었습니다.",
+                  "contractAddressPlaceholder": "NFT 컨트랙트 주소",
                   "importCustomNFTButton": "커스텀 NFT 추가",
                   "nftIconText1": "Cosmostation 지갑에서 관리할",
                   "nftIconText2": "사용자 커스텀 NFT를 추가하세요.",
                   "searchPlaceholder": "NFT 검색",
-                  "submitButton": "NFT 가져오기",
-                  "warning": "찾고 있는 NFT가 목록에 없으면 \"커스텀 NFT 추가\"를 클릭하십시오."
+                  "submitButton": "NFT 가져오기"
                 },
                 "layout": {
                   "title": "NFT 가져오기"

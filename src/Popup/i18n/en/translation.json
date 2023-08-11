@@ -54,8 +54,8 @@
     "Header": {
       "Drawer": {
         "index": {
-          "addressBook": "Address book",
           "addCustomChain": "Add Custom Chain",
+          "addressBook": "Address book",
           "changePassword": "Change password",
           "connectedSites": "Connected sites",
           "currency": "Currency",
@@ -489,12 +489,12 @@
               "Search": {
                 "entry": {
                   "addNFTSnackbar": "NFT added",
+                  "contractAddressPlaceholder": "Contract address",
                   "importCustomNFTButton": "Import a custom NFT",
                   "nftIconText1": "Add custom NFTs to manage on",
                   "nftIconText2": "Cosmostation Extension.",
                   "searchPlaceholder": "Search NFTs",
-                  "submitButton": "Import NFT",
-                  "warning": "Cosmostation provides a list of selected NFT collections. If the token you're looking for is not on the list, click \"Import a custom token\"."
+                  "submitButton": "Import NFT"
                 },
                 "layout": {
                   "title": "Import NFTs"
