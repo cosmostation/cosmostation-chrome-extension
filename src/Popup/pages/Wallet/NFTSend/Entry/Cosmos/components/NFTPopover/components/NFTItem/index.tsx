@@ -53,8 +53,8 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ chain, nft, isAct
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Tooltip title={nftMeta?.name || tokenId} placement="top" arrow>
-              <Typography variant="h5">{nftMeta?.name || toDisplayTokenId(tokenId)}</Typography>
+            <Tooltip title={nftMeta?.metaData?.name || tokenId} placement="top" arrow>
+              <Typography variant="h5">{nftMeta?.metaData?.name || toDisplayTokenId(tokenId)}</Typography>
             </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>

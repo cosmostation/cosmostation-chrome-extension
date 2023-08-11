@@ -22,24 +22,11 @@ export type NFTMetaPayload = {
     value: string | number;
   }[];
   compiler?: string;
-  contractAddress: string;
-  tokenId: string;
 };
 
-export type CosmosNFTMeta = {
+export type NFTMetaResponse = {
+  imageURL: string;
+  metaData?: NFTMetaPayload;
   contractAddress: string;
   tokenId: string;
-  imageURL: string;
-  rarity: string;
-  dna?: string;
-  name?: string;
-  description?: string;
-  imageHash?: string;
-  edition?: string | number;
-  date?: string | number;
-  attributes?: {
-    trait_type: string;
-    value: string | number;
-  }[];
-  compiler?: string;
 };

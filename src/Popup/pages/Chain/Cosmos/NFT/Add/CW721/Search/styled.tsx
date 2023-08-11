@@ -57,11 +57,11 @@ export const ButtonContainer = styled('div')({
 
 export const ContentsContainer = styled('div')({
   height: '22.5rem',
-  display: 'flex',
-  justifyContent: 'center',
 });
 
 export const NFTIconBox = styled('div')({
+  height: '100%',
+
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -78,12 +78,16 @@ export const NFTIconText = styled('div')(({ theme }) => ({
 }));
 
 export const NFTList = styled('div')({
+  height: '100%',
+
   display: 'grid',
   alignContent: 'start',
   gridTemplateColumns: '1fr',
-  width: '32.8rem',
   rowGap: '0.4rem',
   overflow: 'auto',
+
+  margin: '0 -1.6rem',
+  padding: '0 1.6rem 0.1rem',
 });
 
 export const StyledSearch20Icon = styled(Search20Icon)(({ theme }) => ({

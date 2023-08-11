@@ -3,13 +3,18 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { get, isAxiosError } from '~/Popup/utils/axios';
-import { concatJsonFileType, convertIpfs } from '~/Popup/utils/nft';
-import { httpsRegex } from '~/Popup/utils/regex';
+import { isAxiosError } from '~/Popup/utils/axios';
+import { getIpfsData } from '~/Popup/utils/nft';
 import type { CosmosChain } from '~/types/chain';
-import type { NFTMetaPayload } from '~/types/cosmos/nft';
+import type { NFTMetaResponse } from '~/types/cosmos/nft';
 
 import { useNFTURISWR } from './useNFTURISWR';
+
+type FetcherParams = {
+  fetchUrl: string;
+  contractAddress: string;
+  tokenId: string;
+};
 
 type UseNFTMetaSWR = {
   chain: CosmosChain;
@@ -18,29 +23,17 @@ type UseNFTMetaSWR = {
 };
 
 export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR, config?: SWRConfiguration) {
-  const nftSourceURI = useNFTURISWR({ chain, contractAddress: contractAddress || '', tokenId: tokenId || '' }, config);
+  const nftSourceURI = useNFTURISWR({ chain, contractAddress, tokenId }, config);
 
-  const paramURL = useMemo(() => {
-    if (nftSourceURI.data?.token_uri) {
-      if (nftSourceURI.data?.token_uri.includes('ipfs:')) {
-        return concatJsonFileType(convertIpfs(nftSourceURI.data?.token_uri));
-      }
-      return nftSourceURI.data.token_uri;
-    }
-    return '';
-  }, [nftSourceURI.data]);
+  const fetchUrl = useMemo(() => nftSourceURI.data?.token_uri || '', [nftSourceURI.data]);
 
-  const fetcher = async (fetchUrl: string) => {
+  const fetcher = async (fetchParam: FetcherParams) => {
     try {
-      if (!httpsRegex.test(fetchUrl)) {
-        return null;
-      }
-
       if (nftSourceURI.error) {
         throw nftSourceURI.error;
       }
 
-      return await get<NFTMetaPayload>(fetchUrl);
+      return await getIpfsData(fetchParam.fetchUrl, fetchParam.contractAddress, fetchParam.tokenId);
     } catch (e) {
       if (isAxiosError(e)) {
         if (e.response?.status === 404) {
@@ -51,29 +44,23 @@ export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR
     }
   };
 
-  const { data, isValidating, error, mutate } = useSWR<NFTMetaPayload | null, AxiosError>(paramURL, fetcher, {
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
-    errorRetryCount: 3,
-    errorRetryInterval: 5000,
-    isPaused: () => !paramURL || !nftSourceURI.data,
-    ...config,
-  });
-
-  const returnData = useMemo(
-    () =>
-      data
-        ? {
-            ...data,
-            imageURL: convertIpfs(data.image),
-            image: undefined,
-            attributes: data.attributes?.filter((item) => item.trait_type && item.value),
-            rarity: '',
-          }
-        : undefined,
-    [data],
+  const { data, isValidating, error, mutate } = useSWR<NFTMetaResponse | null, AxiosError>(
+    {
+      fetchUrl,
+      contractAddress,
+      tokenId,
+    },
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+      errorRetryCount: 3,
+      errorRetryInterval: 5000,
+      isPaused: () => !contractAddress || !tokenId,
+      ...config,
+    },
   );
 
-  return { data: returnData, isValidating, error, mutate };
+  return { data, isValidating, error, mutate };
 }

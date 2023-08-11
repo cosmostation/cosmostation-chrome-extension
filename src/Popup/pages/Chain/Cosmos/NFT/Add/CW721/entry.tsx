@@ -98,14 +98,14 @@ export default function Entry({ chain }: EntryProps) {
   }, [addressRegex, debouncedContractAddress, debouncedTokenId, isOwnedNFT.error, isOwnedNFT.isOwnedNFT, nftMeta.error, nftSourceURI.data]);
 
   const nftPreviewIcon = useMemo(() => {
-    if (errorType && debouncedContractAddress && debouncedTokenId) {
+    if (errorType && debouncedContractAddress && debouncedTokenId && !isLoadingData) {
       return NFTErrorIcon;
     }
     return NFTPreviewIcon;
-  }, [debouncedContractAddress, debouncedTokenId, errorType]);
+  }, [debouncedContractAddress, debouncedTokenId, errorType, isLoadingData]);
 
   const nftPreviewHeaderText = useMemo(() => {
-    if (debouncedContractAddress && debouncedTokenId) {
+    if (debouncedContractAddress && debouncedTokenId && !isLoadingData) {
       if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS) {
         return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.invalidAddressTitle');
       }
@@ -128,10 +128,10 @@ export default function Entry({ chain }: EntryProps) {
     }
 
     return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.imagePreview');
-  }, [debouncedContractAddress, debouncedTokenId, errorType, t]);
+  }, [debouncedContractAddress, debouncedTokenId, errorType, isLoadingData, t]);
 
   const nftPreviewSubText = useMemo(() => {
-    if (debouncedContractAddress && debouncedTokenId) {
+    if (debouncedContractAddress && debouncedTokenId && !isLoadingData) {
       if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS) {
         return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.invalidAddress');
       }
@@ -154,7 +154,7 @@ export default function Entry({ chain }: EntryProps) {
     }
 
     return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.previewSubText');
-  }, [debouncedContractAddress, debouncedTokenId, errorType, t]);
+  }, [debouncedContractAddress, debouncedTokenId, errorType, isLoadingData, t]);
 
   const submit = useCallback(async () => {
     try {
@@ -207,7 +207,7 @@ export default function Entry({ chain }: EntryProps) {
                 <Image src={nftMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} />
               </PreviewNFTImageContainer>
               <PreviewNFTSubtitleContainer>
-                <Typography variant="h3">{nftMeta?.data?.name || nftSourceURI.data?.token_uri}</Typography>
+                <Typography variant="h3">{nftMeta.data?.metaData?.name || nftSourceURI.data?.token_uri}</Typography>
               </PreviewNFTSubtitleContainer>
             </PreviewBodyContainer>
           </>

@@ -26,7 +26,6 @@ import {
   BottomErrorLeftContainer,
   BottomErrorRightContainer,
   DeleteButton,
-  NFTAbsoluteEditionMarkContainer,
   NFTDescriptionTextContainer,
   NFTImageContainer,
   NFTNameTextContainer,
@@ -74,12 +73,6 @@ export default function NFTCardItem({ chain, nft, onClick, onClickDelete }: NFTC
             )}
             {nftMeta.data?.imageURL ? <Image src={nftMeta.data?.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
 
-            {nftMeta.data?.rarity && (
-              <NFTAbsoluteEditionMarkContainer>
-                <Typography variant="h6">{nftMeta.data.rarity}</Typography>
-              </NFTAbsoluteEditionMarkContainer>
-            )}
-
             <DeleteButton
               id="deleteButton"
               onClick={(e) => {
@@ -95,10 +88,10 @@ export default function NFTCardItem({ chain, nft, onClick, onClickDelete }: NFTC
 
       <BottomContainer>
         <NFTDescriptionTextContainer>
-          <Typography variant="h6">{nftMeta.data?.description || address}</Typography>
+          <Typography variant="h6">{nftMeta.data?.metaData?.description || address}</Typography>
         </NFTDescriptionTextContainer>
         <NFTNameTextContainer>
-          <Typography variant="h5">{nftMeta.data?.name || toDisplayTokenId(tokenId)}</Typography>
+          <Typography variant="h5">{nftMeta.data?.metaData?.name || toDisplayTokenId(tokenId)}</Typography>
         </NFTNameTextContainer>
       </BottomContainer>
     </StyledButton>

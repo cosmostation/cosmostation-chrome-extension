@@ -1,5 +1,7 @@
 import Axios from 'axios';
 
+import type { NFTMetaPayload, NFTMetaResponse } from '~/types/cosmos/nft';
+
 export function toDisplayTokenId(tokenId?: string) {
   if (!tokenId) return '';
 
@@ -8,7 +10,7 @@ export function toDisplayTokenId(tokenId?: string) {
 
 export function convertIpfs(url?: string) {
   if (!url) return '';
-  return url.replace(/^ipfs:\/\// || /^ipfs:\//, 'https://ipfs.io/ipfs/');
+  return url.replace(/^ipfs:\/\/?/, 'https://ipfs.io/ipfs/');
 }
 
 export function concatJsonFileType(url?: string) {
@@ -22,7 +24,7 @@ const axios = Axios.create({ baseURL: baseIpfsURL });
 
 export function getIpfsCID(ipfsUrl?: string) {
   if (!ipfsUrl) return '';
-  return ipfsUrl.replace(/^ipfs:\/\// || /^ipfs:\//, '');
+  return ipfsUrl.replace(/^ipfs:\/\/?/, '');
 }
 
 export function isIpfsUrl(url?: string) {
@@ -30,11 +32,11 @@ export function isIpfsUrl(url?: string) {
   return url.startsWith('ipfs://') || url.startsWith('ipfs:/');
 }
 
-export async function getIpfsData(ipfsURL: string): Promise<{ imageURL: string; metaData?: Record<string, unknown> } | null> {
+export async function getIpfsData(ipfsURL: string, contractAddress?: string, tokenId?: string): Promise<NFTMetaResponse | null> {
   try {
     const CID = getIpfsCID(ipfsURL);
 
-    let response = await axios.get<Record<string, unknown>>(CID, { validateStatus: (status) => status < 500 });
+    let response = await axios.get<NFTMetaPayload>(CID, { validateStatus: (status) => status < 500 });
 
     if (response.status === 404 && !CID.endsWith('.json')) {
       response = await axios.get(`${CID}.json`);
@@ -50,6 +52,8 @@ export async function getIpfsData(ipfsURL: string): Promise<{ imageURL: string; 
       return {
         imageURL: `${baseIpfsURL}${CID}`,
         metaData: undefined,
+        contractAddress: contractAddress ?? '',
+        tokenId: tokenId ?? '',
       };
     }
 
@@ -61,6 +65,8 @@ export async function getIpfsData(ipfsURL: string): Promise<{ imageURL: string; 
             : response.data.image
           : '',
       metaData: response.data ?? undefined,
+      contractAddress: contractAddress ?? '',
+      tokenId: tokenId ?? '',
     };
   } catch {
     return null;

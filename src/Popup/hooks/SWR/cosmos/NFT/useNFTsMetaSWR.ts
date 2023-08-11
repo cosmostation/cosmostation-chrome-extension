@@ -3,11 +3,10 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { get, isAxiosError } from '~/Popup/utils/axios';
-import { concatJsonFileType, convertIpfs } from '~/Popup/utils/nft';
-import { httpsRegex } from '~/Popup/utils/regex';
+import { isAxiosError } from '~/Popup/utils/axios';
+import { getIpfsData } from '~/Popup/utils/nft';
 import type { CosmosChain } from '~/types/chain';
-import type { CosmosNFTMeta, NFTMetaPayload } from '~/types/cosmos/nft';
+import type { NFTMetaResponse } from '~/types/cosmos/nft';
 
 import { useNFTsURISWR } from './useNFTsURISWR';
 
@@ -47,20 +46,11 @@ export function useNFTsMetaSWR({ chain, nftInfos }: UseNFTsMetaSWR, config?: SWR
 
   const fetcher = async (fetchUrl: string, nftInfo: NFTInfo) => {
     try {
-      if (!httpsRegex.test(fetchUrl)) {
-        return null;
-      }
-
       if (ownedNFTSourceURI.error) {
         throw ownedNFTSourceURI.error;
       }
 
-      const nftMeta = await get<NFTMetaPayload>(fetchUrl);
-      return {
-        ...nftMeta,
-        contractAddress: nftInfo.contractAddress,
-        tokenId: nftInfo.tokenId,
-      };
+      return await getIpfsData(fetchUrl, nftInfo.contractAddress, nftInfo.tokenId);
     } catch (e) {
       if (isAxiosError(e)) {
         if (e.response?.status === 404) {
@@ -71,16 +61,9 @@ export function useNFTsMetaSWR({ chain, nftInfos }: UseNFTsMetaSWR, config?: SWR
     }
   };
 
-  const multiFetcher = (params: MultiFetcherParams) =>
-    Promise.allSettled(
-      params.fetcherParam.map((item) => {
-        const convertedRequestURL = item.tokenURI.includes('ipfs:') ? concatJsonFileType(convertIpfs(item.tokenURI)) : item.tokenURI;
+  const multiFetcher = (params: MultiFetcherParams) => Promise.allSettled(params.fetcherParam.map((item) => fetcher(item.tokenURI, item.nftInfo)));
 
-        return convertedRequestURL ? fetcher(convertedRequestURL, item.nftInfo) : null;
-      }),
-    );
-
-  const { data, isValidating, error, mutate } = useSWR<PromiseSettledResult<NFTMetaPayload | null>[], AxiosError>(
+  const { data, isValidating, error, mutate } = useSWR<PromiseSettledResult<NFTMetaResponse | null>[], AxiosError>(
     { fetcherParam: fetcherParams },
     multiFetcher,
     {
@@ -96,16 +79,10 @@ export function useNFTsMetaSWR({ chain, nftInfos }: UseNFTsMetaSWR, config?: SWR
 
   const returnData = useMemo(
     () =>
-      data?.reduce((accumulator: CosmosNFTMeta[], item) => {
+      data?.reduce((accumulator: NFTMetaResponse[], item) => {
         if (item.status === 'fulfilled' && item.value) {
           const newItem = {
             ...item.value,
-            imageURL: convertIpfs(item.value.image),
-            image: undefined,
-            attributes: item.value.attributes?.filter((attribute) => attribute.trait_type && attribute.value),
-            rarity: '',
-            contractAddress: item.value.contractAddress,
-            tokenId: item.value.tokenId,
           };
           accumulator.push(newItem);
         }

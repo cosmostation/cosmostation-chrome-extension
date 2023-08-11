@@ -1,10 +1,11 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
 import InformContainer from '~/Popup/components/common/InformContainer';
+import IntersectionObserver from '~/Popup/components/IntersectionObserver';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTsMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTsMetaSWR';
 import { useOwnedNFTsTokenIDsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useOwnedNFTsTokenIDsSWR';
@@ -42,7 +43,11 @@ type EntryProps = {
 type CosmosNFTParams = Omit<CosmosNFT, 'id'>;
 
 export default function Entry({ chain }: EntryProps) {
+  const topRef = useRef<HTMLDivElement>(null);
+
   const { enqueueSnackbar } = useSnackbar();
+
+  const [nftLimit, setNFTLimit] = useState(30);
 
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 500);
@@ -82,7 +87,7 @@ export default function Entry({ chain }: EntryProps) {
     [ownedNFTTokenIDs],
   );
 
-  const notAddedNFTs = useMemo(
+  const notAddedNFTsInfo = useMemo(
     () =>
       flattendOwnedNFTTokenIDs.filter(
         (item) =>
@@ -91,15 +96,29 @@ export default function Entry({ chain }: EntryProps) {
     [currentAddress, currentCosmosNFTs, flattendOwnedNFTTokenIDs],
   );
 
-  const ownedNFTsMeta = useNFTsMetaSWR({ chain, nftInfos: notAddedNFTs });
+  const ownedNFTsMeta = useNFTsMetaSWR({ chain, nftInfos: notAddedNFTsInfo });
 
-  const filteredNFTs = debouncedSearch
-    ? ownedNFTsMeta.data.filter(
-        (item) =>
-          (item?.name && item.name.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) ||
-          (item?.tokenId && item.tokenId.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1),
-      )
-    : ownedNFTsMeta.data;
+  const notAddedNFTs = useMemo(
+    () =>
+      notAddedNFTsInfo.map((item) => ({
+        ...item,
+        imageURL: ownedNFTsMeta.data.find((meta) => meta.tokenId === item.tokenId && meta.contractAddress === item.contractAddress)?.imageURL || '',
+        metaData: ownedNFTsMeta.data.find((meta) => meta.tokenId === item.tokenId && meta.contractAddress === item.contractAddress)?.metaData,
+      })),
+    [notAddedNFTsInfo, ownedNFTsMeta.data],
+  );
+
+  const filteredNFTs = useMemo(
+    () =>
+      debouncedSearch
+        ? notAddedNFTs.filter(
+            (item) =>
+              (item.metaData?.name && item.metaData.name.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) ||
+              (item?.tokenId && item.tokenId.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1),
+          )
+        : notAddedNFTs,
+    [debouncedSearch, notAddedNFTs],
+  );
 
   const handleOnSubmit = useCallback(async () => {
     await addCosmosNFTs(selectedNFTs);
@@ -107,6 +126,14 @@ export default function Entry({ chain }: EntryProps) {
   }, [addCosmosNFTs, enqueueSnackbar, selectedNFTs, t]);
 
   const isExistNFT = useMemo(() => !!filteredNFTs.length, [filteredNFTs.length]);
+
+  useEffect(() => {
+    if (search.length > 1) {
+      setTimeout(() => topRef.current?.scrollIntoView(), 0);
+
+      setNFTLimit(30);
+    }
+  }, [search.length]);
 
   return (
     <Container>
@@ -138,25 +165,24 @@ export default function Entry({ chain }: EntryProps) {
       <ContentsContainer>
         {isExistNFT ? (
           <NFTList>
-            {filteredNFTs.map((token) => {
-              const isActive = !!selectedNFTs.find((check) => check.address === token.contractAddress && check.tokenId === token.tokenId);
+            <div ref={topRef} />
+            {filteredNFTs.map((nftItem) => {
+              const isActive = !!selectedNFTs.find((check) => check.address === nftItem.contractAddress && check.tokenId === nftItem.tokenId);
               return (
                 <NFTItem
-                  key={token.contractAddress + token.tokenId}
-                  chain={chain}
-                  contractAddress={token.contractAddress}
-                  tokenId={token.tokenId}
+                  key={nftItem.contractAddress + nftItem.tokenId}
+                  nft={nftItem}
                   onClick={() => {
                     if (isActive) {
                       setSelectedNFTs(
-                        selectedNFTs.filter((selectedNFT) => !(selectedNFT.address === token.contractAddress && selectedNFT.tokenId === token.tokenId)),
+                        selectedNFTs.filter((selectedNFT) => !(selectedNFT.address === nftItem.contractAddress && selectedNFT.tokenId === nftItem.tokenId)),
                       );
                     } else {
                       setSelectedNFTs([
                         ...selectedNFTs,
                         {
-                          address: token.contractAddress,
-                          tokenId: token.tokenId,
+                          address: nftItem.contractAddress,
+                          tokenId: nftItem.tokenId,
                           baseChainUUID: chain.id,
                           tokenType: 'CW721',
                           ownerAddress: currentAddress,
@@ -168,6 +194,13 @@ export default function Entry({ chain }: EntryProps) {
                 />
               );
             })}
+            {filteredNFTs?.length > nftLimit - 1 && (
+              <IntersectionObserver
+                onIntersect={() => {
+                  setNFTLimit((limit) => limit + 30);
+                }}
+              />
+            )}
           </NFTList>
         ) : (
           <NFTIconBox>

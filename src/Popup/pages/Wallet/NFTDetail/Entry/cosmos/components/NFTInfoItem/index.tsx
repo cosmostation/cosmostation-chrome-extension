@@ -149,21 +149,21 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
         </ItemRightContainer>
       </ItemContainer>
 
-      {nftMeta?.description && (
+      {nftMeta?.metaData?.description && (
         <ItemColumnContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.description')}</Typography>
           </ItemTitleContainer>
-          <ItemValueContainer>{nftMeta.description}</ItemValueContainer>
+          <ItemValueContainer>{nftMeta.metaData.description}</ItemValueContainer>
         </ItemColumnContainer>
       )}
 
-      {nftMeta?.attributes && (
+      {nftMeta?.metaData?.attributes && (
         <AttributeContainer>
           <AttributeHeaderContainer>
             <Typography variant="h4">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.attributes')}</Typography>
           </AttributeHeaderContainer>
-          {nftMeta.attributes?.map((item) => (
+          {nftMeta.metaData.attributes.map((item) => (
             <ItemContainer key={item.trait_type}>
               <ItemTitleContainer>
                 <Typography variant="h5">{item.trait_type || ''}</Typography>

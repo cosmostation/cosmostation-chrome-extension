@@ -26,7 +26,6 @@ import {
   Container,
   ContentContainer,
   NFTContainer,
-  NFTEditionMarkContainer,
   NFTImageContainer,
   NFTInfoBodyContainer,
   NFTInfoContainer,
@@ -88,16 +87,10 @@ export default function Cosmos({ chain }: CosmosProps) {
             <NFTInfoHeaderContainer>
               <NFTInfoLeftHeaderContainer>
                 <NFTInfoHeaderTextContainer>
-                  <Tooltip title={nftMeta?.name || currentNFT?.tokenId || ''} placement="top" arrow>
-                    <Typography variant="h3">{nftMeta?.name || toDisplayTokenId(currentNFT?.tokenId)}</Typography>
+                  <Tooltip title={nftMeta?.metaData?.name || currentNFT?.tokenId || ''} placement="top" arrow>
+                    <Typography variant="h3">{nftMeta?.metaData?.name || toDisplayTokenId(currentNFT?.tokenId)}</Typography>
                   </Tooltip>
                 </NFTInfoHeaderTextContainer>
-
-                {nftMeta?.rarity && (
-                  <NFTEditionMarkContainer>
-                    <Typography variant="h6">{nftMeta.rarity}</Typography>
-                  </NFTEditionMarkContainer>
-                )}
               </NFTInfoLeftHeaderContainer>
               <StyledIconButton onClick={() => window.open(`${explorerURL || ''}/wasm/contract/${currentNFT?.address || ''}`)}>
                 <ExplorerIcon />
