@@ -490,9 +490,17 @@
                 "entry": {
                   "addNFTSnackbar": "NFT added",
                   "contractAddressPlaceholder": "Contract address",
+                  "imagePreview": "__STRING_NOT_TRANSLATED__",
                   "importCustomNFTButton": "Import a custom NFT",
+                  "invalidAddress": "Invalid address",
+                  "invalidAddressTitle": "__STRING_NOT_TRANSLATED__",
+                  "invalidOwnership": "The NFT is not owned by you for the given contract address or token ID.",
+                  "invalidOwnershipTitle": "__STRING_NOT_TRANSLATED__",
+                  "networkError": "Network error",
+                  "networkErrorTitle": "__STRING_NOT_TRANSLATED__",
                   "nftIconText1": "Add custom NFTs to manage on",
                   "nftIconText2": "Cosmostation Extension.",
+                  "previewSubText": "Preview of the NFT",
                   "searchPlaceholder": "Search NFTs",
                   "submitButton": "Import NFT"
                 },

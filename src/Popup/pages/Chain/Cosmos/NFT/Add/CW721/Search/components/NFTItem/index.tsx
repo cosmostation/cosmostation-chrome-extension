@@ -3,9 +3,10 @@ import { Tooltip, Typography } from '@mui/material';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Image from '~/Popup/components/common/Image';
+import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
 import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
-import type { NFTMetaResponse } from '~/types/cosmos/nft';
+import type { CosmosChain } from '~/types/chain';
 
 import {
   LeftContainer,
@@ -21,33 +22,37 @@ import {
 import Check24Icon from '~/images/icons/Check24.svg';
 
 type NFTItemProps = {
-  nft: NFTMetaResponse;
+  chain: CosmosChain;
+  contractAddress: string;
+  tokenId: string;
   onClick?: () => void;
   isActive: boolean;
 };
 
-export default function NFTItem({ onClick, isActive, nft }: NFTItemProps) {
-  const shorterContractAddress = useMemo(() => shorterAddress(nft.contractAddress, 16), [nft.contractAddress]);
-  const shorterTokenId = useMemo(() => shorterAddress(nft.tokenId, 9), [nft.tokenId]);
+export default function NFTItem({ onClick, isActive, chain, contractAddress, tokenId }: NFTItemProps) {
+  const { data: nftMeta } = useNFTMetaSWR({ chain, contractAddress, tokenId });
+
+  const shorterContractAddress = useMemo(() => shorterAddress(contractAddress, 16), [contractAddress]);
+  const shorterTokenId = useMemo(() => shorterAddress(tokenId, 9), [tokenId]);
 
   return (
     <NFTButton type="button" onClick={onClick}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image src={nft.imageURL} defaultImgSrc={unknownNFTImg} />
+          <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Tooltip title={nft.metaData?.name || nft.tokenId} placement="top" arrow>
-              <Typography variant="h5">{nft.metaData?.name || toDisplayTokenId(nft.tokenId)}</Typography>
+            <Tooltip title={nftMeta?.metaData?.name || tokenId} placement="top" arrow>
+              <Typography variant="h5">{nftMeta?.metaData?.name || toDisplayTokenId(tokenId)}</Typography>
             </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>
-            <Tooltip title={nft.contractAddress} placement="top" arrow>
+            <Tooltip title={contractAddress} placement="top" arrow>
               <Typography variant="h6">{shorterContractAddress}</Typography>
             </Tooltip>
             &nbsp;/&nbsp;
-            <Tooltip title={nft.tokenId || ''} placement="top" arrow>
+            <Tooltip title={tokenId || ''} placement="top" arrow>
               <Typography variant="h6">{shorterTokenId}</Typography>
             </Tooltip>
           </LeftInfoBodyContainer>

@@ -18,7 +18,7 @@ export const ButtonContainer = styled('div')({
 });
 
 export const ContentsContainer = styled('div')({
-  height: 'calc(100% - 18.5rem)',
+  height: 'calc(100% - 19.7rem)',
 
   display: 'flex',
   flexDirection: 'column',

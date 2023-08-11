@@ -5,11 +5,11 @@ import { InputAdornment } from '@mui/material';
 
 import { COSMOS_ADD_NFT_ERROR } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
+import Divider from '~/Popup/components/common/Divider';
 import EmptyAsset from '~/Popup/components/EmptyAsset';
 import IntersectionObserver from '~/Popup/components/IntersectionObserver';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-// import { useContractsInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useContractsInfoSWR';
-import { useNFTsMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTsMetaSWR';
+import { useContractsInfoSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useContractsInfoSWR';
 import { useOwnedNFTsTokenIDsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useOwnedNFTsTokenIDsSWR';
 import { useSupportContractsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useSupportContractsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -22,8 +22,8 @@ import type { CosmosNFT } from '~/types/cosmos/nft';
 import NFTItem from './components/NFTItem';
 import { ButtonContainer, Container, ContentsContainer, NFTList, StyledInput, StyledSearch20Icon } from './styled';
 
-import NFTErrorIcon from '~/images/icons/NFTError.svg';
-import NFTPreviewIcon from '~/images/icons/NFTPreview.svg';
+import NFTError40Icon from '~/images/icons/NFTError40.svg';
+import NFTPreview40Icon from '~/images/icons/NFTPreview40.svg';
 
 type EntryProps = {
   chain: CosmosChain;
@@ -69,8 +69,7 @@ export default function Entry({ chain }: EntryProps) {
     [debouncedContractAddress, supportContracts.data],
   );
 
-  // NOTE
-  // const { data: nftContractInfo } = useContractsInfoSWR(chain, nftSmartContractAddresses);
+  const { data: nftContractInfo } = useContractsInfoSWR(chain, nftSmartContractAddresses);
 
   const ownedNFTTokenIDs = useOwnedNFTsTokenIDsSWR({
     chain,
@@ -98,113 +97,86 @@ export default function Entry({ chain }: EntryProps) {
           (item) =>
             !currentCosmosNFTs.find((nfts) => nfts.address === item.contractAddress && nfts.tokenId === item.tokenId && nfts.ownerAddress === currentAddress),
         )
-        .slice(0, nftLimit),
-    [currentAddress, currentCosmosNFTs, flattendOwnedNFTTokenIDs, nftLimit],
+        .map((item) => ({
+          ...item,
+          contractName: nftContractInfo?.find((info) => info.contractAddress === item.contractAddress)?.name,
+        })),
+    [currentAddress, currentCosmosNFTs, flattendOwnedNFTTokenIDs, nftContractInfo],
   );
 
-  const ownedNFTsMeta = useNFTsMetaSWR({ chain, nftInfos: notAddedNFTsInfo });
-
-  const notAddedNFTs = useMemo(
-    () =>
-      notAddedNFTsInfo.map((item) => ({
-        ...item,
-        imageURL: ownedNFTsMeta.data.find((meta) => meta.tokenId === item.tokenId && meta.contractAddress === item.contractAddress)?.imageURL || '',
-        metaData: ownedNFTsMeta.data.find((meta) => meta.tokenId === item.tokenId && meta.contractAddress === item.contractAddress)?.metaData,
-      })),
-    [notAddedNFTsInfo, ownedNFTsMeta.data],
-  );
-  // NOTE 디자인은 서치 바에 테두리 박스 넣는 방식으로(send시에 나오는 그 테두리 박스)
-
-  // NOTE 이 방식은 전체 리스트에서 서칭이 안되기떄문에(보이는 애만 검색이 가능), 따라서 내부에서 metadata를 페칭해야함
   const filteredNFTs = useMemo(
     () =>
       debouncedSearch
-        ? notAddedNFTs.filter(
-            (item) =>
-              // (item.contractName && item.contractName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) ||
-              (item.metaData?.name && item.metaData.name.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) ||
-              (item?.tokenId && item.tokenId.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1),
-          )
-        : notAddedNFTs,
-    [debouncedSearch, notAddedNFTs],
+        ? notAddedNFTsInfo
+            .filter(
+              (item) =>
+                (item.contractName && item.contractName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) ||
+                (item?.tokenId && item.tokenId.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1),
+            )
+            .slice(0, nftLimit)
+        : notAddedNFTsInfo.slice(0, nftLimit),
+    [debouncedSearch, nftLimit, notAddedNFTsInfo],
   );
 
+  const isExistNFT = useMemo(() => !!filteredNFTs.length, [filteredNFTs.length]);
+
+  // NOTE 번역어, 각 케이스별 보여줄 텍스트 정리필요
   const errorType = useMemo(() => {
     if (!addressRegex.test(debouncedContractAddress)) {
       return COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS;
     }
 
-    // if (!nftSourceURI.data) {
-    //   return COSMOS_ADD_NFT_ERROR.INVALID_SOURCE;
-    // }
+    if (!isExistNFT && debouncedContractAddress) {
+      return COSMOS_ADD_NFT_ERROR.NOT_OWNED_NFT;
+    }
 
-    // if (!isOwnedNFT.isOwnedNFT) {
-    //   return COSMOS_ADD_NFT_ERROR.NOT_OWNED_NFT;
-    // }
-
-    // if (isOwnedNFT.error || nftMeta.error) {
-    //   return COSMOS_ADD_NFT_ERROR.NETWORK_ERROR;
-    // }
+    if (ownedNFTTokenIDs.error || supportContracts.error) {
+      return COSMOS_ADD_NFT_ERROR.NETWORK_ERROR;
+    }
     return undefined;
-  }, [addressRegex, debouncedContractAddress]);
+  }, [addressRegex, debouncedContractAddress, isExistNFT, ownedNFTTokenIDs.error, supportContracts.error]);
 
   const nftPreviewIcon = useMemo(() => {
     if (errorType && debouncedContractAddress) {
-      return NFTErrorIcon;
+      return NFTError40Icon;
     }
-    return NFTPreviewIcon;
+    return NFTPreview40Icon;
   }, [debouncedContractAddress, errorType]);
 
   const nftPreviewHeaderText = useMemo(() => {
     if (debouncedContractAddress) {
       if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.invalidAddressTitle');
-      }
-
-      if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_TOKEN_ID) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.invalidTokenIdTitle');
-      }
-
-      if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_SOURCE) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.invalidSourceTitle');
+        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.invalidAddressTitle');
       }
 
       if (errorType === COSMOS_ADD_NFT_ERROR.NOT_OWNED_NFT) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.invalidOwnershipTitle');
+        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.invalidOwnershipTitle');
       }
 
       if (errorType === COSMOS_ADD_NFT_ERROR.NETWORK_ERROR) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.networkErrorTitle');
+        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.networkErrorTitle');
       }
     }
 
-    return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.imagePreview');
+    return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.imagePreview');
   }, [debouncedContractAddress, errorType, t]);
 
   const nftPreviewSubText = useMemo(() => {
     if (debouncedContractAddress) {
       if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.invalidAddress');
-      }
-
-      if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_TOKEN_ID) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.invalidTokenId');
-      }
-
-      if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_SOURCE) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.invalidSource');
+        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.invalidAddress');
       }
 
       if (errorType === COSMOS_ADD_NFT_ERROR.NOT_OWNED_NFT) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.invalidOwnership');
+        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.invalidOwnership');
       }
 
       if (errorType === COSMOS_ADD_NFT_ERROR.NETWORK_ERROR) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.networkError');
+        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.networkError');
       }
     }
 
-    return t('pages.Chain.Cosmos.NFT.Add.CW721.entry.previewSubText');
+    return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.previewSubText');
   }, [debouncedContractAddress, errorType, t]);
 
   const handleOnSubmit = useCallback(async () => {
@@ -212,15 +184,13 @@ export default function Entry({ chain }: EntryProps) {
     enqueueSnackbar(t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.addNFTSnackbar'));
   }, [addCosmosNFTs, enqueueSnackbar, selectedNFTs, t]);
 
-  const isExistNFT = useMemo(() => !!filteredNFTs.length, [filteredNFTs.length]);
-
   useEffect(() => {
-    if (contractAddress.length > 1) {
+    if (search.length > 1) {
       setTimeout(() => topRef.current?.scrollIntoView(), 0);
 
       setNFTLimit(30);
     }
-  }, [contractAddress.length]);
+  }, [search.length]);
 
   return (
     <Container>
@@ -231,6 +201,8 @@ export default function Entry({ chain }: EntryProps) {
           setContractAddress(event.currentTarget.value);
         }}
       />
+      <Divider />
+      <div style={{ marginBottom: '1.2rem' }} />
 
       <StyledInput
         startAdornment={
@@ -253,7 +225,9 @@ export default function Entry({ chain }: EntryProps) {
               return (
                 <NFTItem
                   key={nftItem.contractAddress + nftItem.tokenId}
-                  nft={nftItem}
+                  chain={chain}
+                  contractAddress={nftItem.contractAddress}
+                  tokenId={nftItem.tokenId}
                   onClick={() => {
                     if (isActive) {
                       setSelectedNFTs(
@@ -285,7 +259,6 @@ export default function Entry({ chain }: EntryProps) {
             )}
           </NFTList>
         ) : (
-          // NOTE 아이콘 사이즈 더 크게 조절 필요
           <EmptyAsset Icon={nftPreviewIcon} headerText={nftPreviewHeaderText} subHeaderText={nftPreviewSubText} />
         )}
       </ContentsContainer>

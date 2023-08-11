@@ -490,9 +490,17 @@
                 "entry": {
                   "addNFTSnackbar": "NFT가 추가 되었습니다.",
                   "contractAddressPlaceholder": "NFT 컨트랙트 주소",
+                  "imagePreview": "__STRING_NOT_TRANSLATED__",
                   "importCustomNFTButton": "커스텀 NFT 추가",
+                  "invalidAddress": "__STRING_NOT_TRANSLATED__",
+                  "invalidAddressTitle": "__STRING_NOT_TRANSLATED__",
+                  "invalidOwnership": "__STRING_NOT_TRANSLATED__",
+                  "invalidOwnershipTitle": "__STRING_NOT_TRANSLATED__",
+                  "networkError": "__STRING_NOT_TRANSLATED__",
+                  "networkErrorTitle": "__STRING_NOT_TRANSLATED__",
                   "nftIconText1": "Cosmostation 지갑에서 관리할",
                   "nftIconText2": "사용자 커스텀 NFT를 추가하세요.",
+                  "previewSubText": "__STRING_NOT_TRANSLATED__",
                   "searchPlaceholder": "NFT 검색",
                   "submitButton": "NFT 가져오기"
                 },
