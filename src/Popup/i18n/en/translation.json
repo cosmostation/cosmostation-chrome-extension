@@ -489,7 +489,7 @@
               "Search": {
                 "entry": {
                   "addNFTSnackbar": "NFT added",
-                  "contractAddressPlaceholder": "Contract address",
+                  "contractAddressPlaceholder": "Enter the NFT contract address",
                   "invalidAddress": "Invalid address",
                   "invalidAddressTitle": "Invalid Contract Address",
                   "networkError": "An error has occurred. please try again later",
@@ -498,7 +498,6 @@
                   "noNFTsAvailable2": "No import-ready NFTs exist",
                   "searchNFTSubText": "If the NFT you're looking for is not on the list, enter \"Contract address\".",
                   "searchNFTTitle": "Search your NFTs",
-                  "searchPlaceholder": "Search NFTs",
                   "submitButton": "Import NFT"
                 },
                 "layout": {
@@ -553,13 +552,6 @@
                 "imageURLPlaceholder": "Token Logo URL (option)",
                 "submitButton": "Add custom token",
                 "warning": "Anyone can create a token, including creating fake versions of existing tokens. Take extra cautions on scams and security risks."
-              }
-            },
-            "CW721": {
-              "Search": {
-                "layout": {
-                  "title": "Import NFTs"
-                }
               }
             }
           }

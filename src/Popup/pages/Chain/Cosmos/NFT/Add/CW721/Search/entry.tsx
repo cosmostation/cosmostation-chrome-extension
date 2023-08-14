@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment } from '@mui/material';
 
 import { COSMOS_ADD_NFT_ERROR } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
-import Divider from '~/Popup/components/common/Divider';
 import EmptyAsset from '~/Popup/components/EmptyAsset';
 import IntersectionObserver from '~/Popup/components/IntersectionObserver';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
@@ -32,14 +31,9 @@ type EntryProps = {
 type CosmosNFTParams = Omit<CosmosNFT, 'id'>;
 
 export default function Entry({ chain }: EntryProps) {
-  const topRef = useRef<HTMLDivElement>(null);
-
   const { enqueueSnackbar } = useSnackbar();
 
   const [nftLimit, setNFTLimit] = useState(30);
-
-  const [search, setSearch] = useState('');
-  const [debouncedSearch] = useDebounce(search, 500);
 
   const [contractAddress, setContractAddress] = useState('');
   const [debouncedContractAddress] = useDebounce(contractAddress, 500);
@@ -104,17 +98,9 @@ export default function Entry({ chain }: EntryProps) {
   );
 
   const filteredNFTs = useMemo(
-    () =>
-      debouncedSearch
-        ? notAddedNFTsInfo
-            .filter(
-              (item) =>
-                (item.contractName && item.contractName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) ||
-                (item?.tokenId && item.tokenId.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1),
-            )
-            .slice(0, nftLimit)
-        : notAddedNFTsInfo.slice(0, nftLimit),
-    [debouncedSearch, nftLimit, notAddedNFTsInfo],
+    () => notAddedNFTsInfo.slice(0, nftLimit),
+
+    [nftLimit, notAddedNFTsInfo],
   );
 
   const isExistNFT = useMemo(() => !!filteredNFTs.length, [filteredNFTs.length]);
@@ -124,7 +110,7 @@ export default function Entry({ chain }: EntryProps) {
       return COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS;
     }
 
-    if (!isExistNFT && (debouncedContractAddress || debouncedSearch)) {
+    if (!isExistNFT && debouncedContractAddress) {
       return COSMOS_ADD_NFT_ERROR.NO_NFTS_AVAILABLE;
     }
 
@@ -132,7 +118,7 @@ export default function Entry({ chain }: EntryProps) {
       return COSMOS_ADD_NFT_ERROR.NETWORK_ERROR;
     }
     return undefined;
-  }, [addressRegex, debouncedContractAddress, isExistNFT, ownedNFTTokenIDs.error, debouncedSearch, supportContracts.error]);
+  }, [addressRegex, debouncedContractAddress, isExistNFT, ownedNFTTokenIDs.error, supportContracts.error]);
 
   const nftPreviewIcon = useMemo(() => (errorType ? NFTError40Icon : NFTPreview40Icon), [errorType]);
 
@@ -173,42 +159,23 @@ export default function Entry({ chain }: EntryProps) {
     enqueueSnackbar(t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.addNFTSnackbar'));
   }, [addCosmosNFTs, enqueueSnackbar, selectedNFTs, t]);
 
-  useEffect(() => {
-    if (search.length > 1) {
-      setTimeout(() => topRef.current?.scrollIntoView(), 0);
-
-      setNFTLimit(30);
-    }
-  }, [search.length]);
-
   return (
     <Container>
-      <StyledInput
-        placeholder={t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.contractAddressPlaceholder')}
-        value={contractAddress}
-        onChange={(event) => {
-          setContractAddress(event.currentTarget.value);
-        }}
-      />
-      <Divider />
-      <div style={{ marginBottom: '1.2rem' }} />
-
       <StyledInput
         startAdornment={
           <InputAdornment position="start">
             <StyledSearch20Icon />
           </InputAdornment>
         }
-        placeholder={t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.searchPlaceholder')}
-        value={search}
+        placeholder={t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.contractAddressPlaceholder')}
+        value={contractAddress}
         onChange={(event) => {
-          setSearch(event.currentTarget.value);
+          setContractAddress(event.currentTarget.value);
         }}
       />
       <ContentsContainer>
         {isExistNFT ? (
           <NFTList>
-            <div ref={topRef} />
             {filteredNFTs.map((nftItem) => {
               const isActive = !!selectedNFTs.find((check) => check.address === nftItem.contractAddress && check.tokenId === nftItem.tokenId);
               return (
