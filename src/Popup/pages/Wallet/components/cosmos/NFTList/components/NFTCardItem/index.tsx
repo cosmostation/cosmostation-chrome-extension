@@ -66,7 +66,7 @@ export default function NFTCardItem({ chain, nft, onClick, onClickDelete }: NFTC
       <BodyContainer>
         <NFTImageContainer>
           <>
-            {isOwnedNFT.isOwnedNFT && !isOwnedNFT.isOwnedNFT && (
+            {!isOwnedNFT.isOwnedNFT && (
               <BlurredImage>
                 <Typography variant="h4">Not Owned NFT</Typography>
               </BlurredImage>
