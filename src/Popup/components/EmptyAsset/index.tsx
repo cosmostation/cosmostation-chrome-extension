@@ -6,9 +6,10 @@ type EmptyAssetProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivEleme
   Icon: SvgElement;
   headerText: string;
   subHeaderText: string;
+  subContainerWidth?: string;
 };
 
-export default function EmptyAsset({ Icon, headerText, subHeaderText, ...remainder }: EmptyAssetProps) {
+export default function EmptyAsset({ Icon, headerText, subHeaderText, subContainerWidth = '22', ...remainder }: EmptyAssetProps) {
   return (
     <Container {...remainder}>
       <Icon />
@@ -16,7 +17,7 @@ export default function EmptyAsset({ Icon, headerText, subHeaderText, ...remaind
         <HeaderTextContainer>
           <Typography variant="h4">{headerText}</Typography>
         </HeaderTextContainer>
-        <SubHeaderTextContainer>
+        <SubHeaderTextContainer data-width={subContainerWidth}>
           <Typography variant="h5">{subHeaderText}</Typography>
         </SubHeaderTextContainer>
       </TextContainer>

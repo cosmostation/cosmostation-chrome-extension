@@ -88,4 +88,5 @@ export const COSMOS_ADD_NFT_ERROR = {
   INVALID_SOURCE: 3,
   NOT_OWNED_NFT: 4,
   NETWORK_ERROR: 5,
+  NO_NFTS_AVAILABLE: 6,
 } as const;

@@ -60,7 +60,6 @@ export default function Entry({ chain }: EntryProps) {
     () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '',
     [accounts?.data, chain.id, currentAccount.id],
   );
-  // const currentAddress = 'stars15y38ehvexp6275ptmm4jj3qdds379nk07tw95r';
 
   const supportContracts = useSupportContractsSWR(chain);
 
@@ -120,64 +119,54 @@ export default function Entry({ chain }: EntryProps) {
 
   const isExistNFT = useMemo(() => !!filteredNFTs.length, [filteredNFTs.length]);
 
-  // NOTE 번역어, 각 케이스별 보여줄 텍스트 정리필요
   const errorType = useMemo(() => {
-    if (!addressRegex.test(debouncedContractAddress)) {
+    if (debouncedContractAddress && !addressRegex.test(debouncedContractAddress)) {
       return COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS;
     }
 
-    if (!isExistNFT && debouncedContractAddress) {
-      return COSMOS_ADD_NFT_ERROR.NOT_OWNED_NFT;
+    if (!isExistNFT && (debouncedContractAddress || debouncedSearch)) {
+      return COSMOS_ADD_NFT_ERROR.NO_NFTS_AVAILABLE;
     }
 
     if (ownedNFTTokenIDs.error || supportContracts.error) {
       return COSMOS_ADD_NFT_ERROR.NETWORK_ERROR;
     }
     return undefined;
-  }, [addressRegex, debouncedContractAddress, isExistNFT, ownedNFTTokenIDs.error, supportContracts.error]);
+  }, [addressRegex, debouncedContractAddress, isExistNFT, ownedNFTTokenIDs.error, debouncedSearch, supportContracts.error]);
 
-  const nftPreviewIcon = useMemo(() => {
-    if (errorType && debouncedContractAddress) {
-      return NFTError40Icon;
-    }
-    return NFTPreview40Icon;
-  }, [debouncedContractAddress, errorType]);
+  const nftPreviewIcon = useMemo(() => (errorType ? NFTError40Icon : NFTPreview40Icon), [errorType]);
 
   const nftPreviewHeaderText = useMemo(() => {
-    if (debouncedContractAddress) {
-      if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.invalidAddressTitle');
-      }
-
-      if (errorType === COSMOS_ADD_NFT_ERROR.NOT_OWNED_NFT) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.invalidOwnershipTitle');
-      }
-
-      if (errorType === COSMOS_ADD_NFT_ERROR.NETWORK_ERROR) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.networkErrorTitle');
-      }
+    if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS) {
+      return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.invalidAddressTitle');
     }
 
-    return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.imagePreview');
-  }, [debouncedContractAddress, errorType, t]);
+    if (errorType === COSMOS_ADD_NFT_ERROR.NETWORK_ERROR) {
+      return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.networkErrorTitle');
+    }
+
+    if (errorType === COSMOS_ADD_NFT_ERROR.NO_NFTS_AVAILABLE) {
+      return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.noNFTsAvailable1');
+    }
+
+    return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.searchNFTTitle');
+  }, [errorType, t]);
 
   const nftPreviewSubText = useMemo(() => {
-    if (debouncedContractAddress) {
-      if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.invalidAddress');
-      }
-
-      if (errorType === COSMOS_ADD_NFT_ERROR.NOT_OWNED_NFT) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.invalidOwnership');
-      }
-
-      if (errorType === COSMOS_ADD_NFT_ERROR.NETWORK_ERROR) {
-        return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.networkError');
-      }
+    if (errorType === COSMOS_ADD_NFT_ERROR.INVALID_CONTRACT_ADDRESS) {
+      return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.invalidAddress');
     }
 
-    return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.previewSubText');
-  }, [debouncedContractAddress, errorType, t]);
+    if (errorType === COSMOS_ADD_NFT_ERROR.NETWORK_ERROR) {
+      return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.networkError');
+    }
+
+    if (errorType === COSMOS_ADD_NFT_ERROR.NO_NFTS_AVAILABLE) {
+      return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.noNFTsAvailable2');
+    }
+
+    return t('pages.Chain.Cosmos.NFT.Add.CW721.Search.entry.searchNFTSubText');
+  }, [errorType, t]);
 
   const handleOnSubmit = useCallback(async () => {
     await addCosmosNFTs(selectedNFTs);
@@ -259,7 +248,7 @@ export default function Entry({ chain }: EntryProps) {
             )}
           </NFTList>
         ) : (
-          <EmptyAsset Icon={nftPreviewIcon} headerText={nftPreviewHeaderText} subHeaderText={nftPreviewSubText} />
+          <EmptyAsset Icon={nftPreviewIcon} headerText={nftPreviewHeaderText} subHeaderText={nftPreviewSubText} subContainerWidth="23" />
         )}
       </ContentsContainer>
       <ButtonContainer>
