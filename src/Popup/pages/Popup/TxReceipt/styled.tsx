@@ -1,7 +1,5 @@
 import { styled } from '@mui/material/styles';
 
-import { TabPanel } from '~/Popup/components/common/Tab';
-
 export const Container = styled('div')({
   width: '100%',
   height: '100%',
