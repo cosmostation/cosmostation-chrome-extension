@@ -10,6 +10,7 @@ import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type { AptosSignMessage, AptosSignTransaction } from '~/types/message/aptos';
 import type {
   CosAddChain,
+  CosAddNFTsCW721,
   CosAddTokensCW20,
   CosGetBalanceCW20,
   CosGetTokenInfoCW20,
@@ -230,6 +231,27 @@ export const cosAddTokensCW20ParamsSchema = (chainNames: string[], chain: Cosmos
           contractAddress: Joi.string().pattern(contractAddressRegex).required(),
           coinGeckoId: Joi.string().optional(),
           imageURL: Joi.string().optional(),
+        }),
+      )
+      .required(),
+  })
+    .label('params')
+    .required();
+};
+
+export const cosAddNFTsCW721ParamsSchema = (chainNames: string[], chain: CosmosChain) => {
+  const contractAddressRegex = getCosmosAddressRegex(chain.bech32Prefix.address, [39, 59]);
+
+  return Joi.object<CosAddNFTsCW721['params']>({
+    chainName: Joi.string()
+      .lowercase()
+      .valid(...chainNames)
+      .required(),
+    nfts: Joi.array()
+      .items(
+        Joi.object<CosAddNFTsCW721['params']['nfts'][0]>({
+          contractAddress: Joi.string().pattern(contractAddressRegex).required(),
+          tokenId: Joi.string().optional(),
         }),
       )
       .required(),

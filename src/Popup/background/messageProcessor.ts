@@ -51,6 +51,7 @@ import type {
   CosActivatedChainIdsResponse,
   CosActivatedChainNamesResponse,
   CosAddChain,
+  CosAddNFTsCW721,
   CosAddTokensCW20Internal,
   CosRequestAccountResponse,
   CosSendTransactionResponse,
@@ -92,6 +93,7 @@ import {
   aptosSignMessageSchema,
   aptosSignTransactionSchema,
   cosAddChainParamsSchema,
+  cosAddNFTsCW721ParamsSchema,
   cosAddTokensCW20ParamsSchema,
   cosGetBalanceCW20ParamsSchema,
   cosGetTokenInfoCW20ParamsSchema,
@@ -474,6 +476,56 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
                 ...request.message,
                 method: 'cos_addTokensCW20Internal',
                 params: { chainName: chain.chainName, tokens: cosmosTokens } as CosAddTokensCW20Internal['params'],
+              },
+            });
+            void setQueues();
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+        }
+
+        if (method === 'cos_addNFTsCW721') {
+          const { params } = message;
+
+          const cosmWasmChains = allChains.filter((item) => item.cosmWasm);
+          const cosmWasmChainLowercaseNames = cosmWasmChains.map((item) => item.chainName.toLowerCase());
+
+          const selectedChain = cosmWasmChains.filter((item) => item.chainId === params?.chainName);
+
+          const chainName = selectedChain.length === 1 ? selectedChain[0].chainName.toLowerCase() : params?.chainName?.toLowerCase();
+
+          if (!allChainLowercaseNames.includes(chainName)) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const chain = getChain(chainName);
+
+          if (!chain) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+          }
+
+          const schema = cosAddNFTsCW721ParamsSchema(cosmWasmChainLowercaseNames, chain);
+
+          try {
+            await schema.validateAsync({ ...params, chainName });
+          } catch (err) {
+            throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, `${err as string}`);
+          }
+
+          try {
+            // NOTE 여기서 소유 검증을 해야하나?
+            const cosmosNFTs = params.nfts.filter((item) => item.contractAddress !== null && item.tokenId !== null);
+
+            if (cosmosNFTs.length === 0) {
+              throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+            }
+
+            localQueues.push({
+              ...request,
+              message: {
+                ...request.message,
+                method: 'cos_addNFTsCW721',
+                params: { chainName: chain.chainName, nfts: cosmosNFTs } as CosAddNFTsCW721['params'],
               },
             });
             void setQueues();

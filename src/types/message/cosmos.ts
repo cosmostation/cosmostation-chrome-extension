@@ -223,6 +223,36 @@ export type CosAddTokensCW20Internal = {
   id?: number | string;
 };
 
+export type CosAddNFTsCW721NFT = {
+  contractAddress: string;
+  tokenId: string;
+};
+
+export type CosAddNFTsCW721Params = {
+  chainName: string;
+  nfts: CosAddNFTsCW721NFT[];
+};
+
+export type CosAddNFTsCW721 = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__ADD_NFTS_CW721;
+  params: CosAddNFTsCW721Params;
+  id?: number | string;
+};
+
+export type CosAddNFTsCW721Response = null;
+
+// export type CosAddNFTsCW721InternalParams = {
+//   chainName: string;
+//   // NOTE 타입 CosmosNFT로 변경돼야함
+//   nfts: CosAddNFTsCW721NFT[];
+// };
+
+// export type CosAddNFTsCW721Internal = {
+//   method: typeof COSMOS_POPUP_METHOD_TYPE.COS__ADD_NFTS_CW721_INTERNAL;
+//   params: CosAddNFTsCW721InternalParams;
+//   id?: number | string;
+// };
+
 export type CosSignMessageParams = {
   chainName: string;
   message: string;

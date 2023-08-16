@@ -12,6 +12,7 @@ export const COSMOS_POPUP_METHOD_TYPE = {
   COS__SIGN_MESSAGE: 'cos_signMessage',
   COS__ADD_TOKENS_CW20: 'cos_addTokensCW20',
   COS__ADD_TOKENS_CW20_INTERNAL: 'cos_addTokensCW20Internal',
+  COS__ADD_NFTS_CW721: 'cos_addNFTsCW721',
 } as const;
 
 export const COSMOS_NO_POPUP_METHOD_TYPE = {

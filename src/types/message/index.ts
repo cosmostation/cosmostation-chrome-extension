@@ -17,6 +17,7 @@ import type {
   CosActivatedChainIds,
   CosActivatedChainNames,
   CosAddChain,
+  CosAddNFTsCW721,
   CosAddTokensCW20,
   CosAddTokensCW20Internal,
   CosDisconnect,
@@ -104,6 +105,7 @@ export type CosmosRequestMessage =
   | CosGetTokenInfoCW20
   | CosAddTokensCW20
   | CosAddTokensCW20Internal
+  | CosAddNFTsCW721
   | CosSignMessage
   | CosVerifyMessage
   | CosDisconnect;
