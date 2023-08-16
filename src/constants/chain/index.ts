@@ -60,6 +60,7 @@ import { QUICK_SILVER } from './cosmos/quickSilver';
 import { REGEN } from './cosmos/regen';
 import { RIZON } from './cosmos/rizon';
 import { SECRET } from './cosmos/secret';
+import { SEI } from './cosmos/sei';
 import { SENTINEL } from './cosmos/sentinel';
 import { SHENTU } from './cosmos/shentu';
 import { SOMMELIER } from './cosmos/sommelier';
@@ -156,6 +157,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   REGEN,
   RIZON,
   SECRET,
+  SEI,
   SENTINEL,
   SHENTU,
   SOMMELIER,
