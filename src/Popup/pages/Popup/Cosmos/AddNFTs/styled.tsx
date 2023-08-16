@@ -42,7 +42,7 @@ export const DescriptionContainer = styled('div')(({ theme }) => ({
   flexShrink: 0,
 }));
 
-export const TokenInfoContainer = styled('div')({
+export const NFTInfoContainer = styled('div')({
   overflow: 'auto',
   display: 'grid',
   gridTemplateColumns: '1fr',
@@ -50,7 +50,7 @@ export const TokenInfoContainer = styled('div')({
 });
 
 export const StyledDivider = styled(Divider)({
-  margin: '2rem 0',
+  margin: '2rem 0 0',
 
   flexShrink: 0,
 });

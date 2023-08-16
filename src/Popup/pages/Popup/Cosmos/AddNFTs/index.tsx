@@ -11,6 +11,7 @@ import Layout from './layout';
 
 export default function AddNFTs() {
   const { currentQueue } = useCurrentQueue();
+
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
 
   if (currentQueue && isCosAddNFTs(currentQueue)) {

@@ -700,6 +700,37 @@
             "description4": ""
           }
         },
+        "AddNFTs": {
+          "components": {
+            "NFTItem": {
+              "components": {
+                "NFTInfoItem": {
+                  "attributes": "Attributes",
+                  "collection": "Collection",
+                  "contractAddress": "Contract address",
+                  "copied": "Copied",
+                  "description": "Description",
+                  "name": "Name",
+                  "numberOfNFT": "Number of NFT",
+                  "ownerAddress": "Owner",
+                  "source": "Source",
+                  "symbol": "Symbol",
+                  "tokenId": "Token ID",
+                  "tokenType": "Token Standard",
+                  "url": "URL"
+                }
+              }
+            }
+          },
+          "entry": {
+            "addButton": "Add NFTs",
+            "addNFTs": "Add Suggested NFTs",
+            "cancelButton": "Cancel",
+            "networkError": "Network Error",
+            "notOwned": "Can't import NFTs that are not owned by you.",
+            "question": "Would you like to import these nfts?"
+          }
+        },
         "AddTokens": {
           "entry": {
             "addButton": "Add tokens",
@@ -1100,7 +1131,8 @@
                   "source": "Source",
                   "symbol": "Symbol",
                   "tokenId": "Token ID",
-                  "tokenType": "Token Standard"
+                  "tokenType": "Token Standard",
+                  "url": "URL"
                 }
               }
             },

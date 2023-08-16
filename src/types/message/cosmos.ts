@@ -241,18 +241,6 @@ export type CosAddNFTsCW721 = {
 
 export type CosAddNFTsCW721Response = null;
 
-// export type CosAddNFTsCW721InternalParams = {
-//   chainName: string;
-//   // NOTE 타입 CosmosNFT로 변경돼야함
-//   nfts: CosAddNFTsCW721NFT[];
-// };
-
-// export type CosAddNFTsCW721Internal = {
-//   method: typeof COSMOS_POPUP_METHOD_TYPE.COS__ADD_NFTS_CW721_INTERNAL;
-//   params: CosAddNFTsCW721InternalParams;
-//   id?: number | string;
-// };
-
 export type CosSignMessageParams = {
   chainName: string;
   message: string;

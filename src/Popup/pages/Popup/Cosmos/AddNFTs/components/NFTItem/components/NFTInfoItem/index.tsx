@@ -11,10 +11,8 @@ import { useNFTURISWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTURISWR';
 import { useNumTokensSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNumTokensSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayCWTokenStandard } from '~/Popup/utils/cosmos';
-import { httpsRegex } from '~/Popup/utils/regex';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
-import type { CosmosNFT } from '~/types/cosmos/nft';
 
 import {
   AttributeContainer,
@@ -25,34 +23,34 @@ import {
   ItemTitleContainer,
   ItemValueContainer,
   StyledIconButton,
-  URLButton,
 } from './styled';
 
 import Copy16Icon from '~/images/icons/Copy16.svg';
 
 type NFTInfoItemProps = {
   chain: CosmosChain;
-  nft: CosmosNFT;
+  contractAddress: string;
+  tokenId: string;
+  ownerAddress: string;
+  tokenType: string;
 };
 
-export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
+export default function NFTInfoItem({ chain, contractAddress, tokenId, ownerAddress, tokenType }: NFTInfoItemProps) {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { tokenType, address, tokenId, ownerAddress } = nft;
+  const { data: nftMetaSourceURI } = useNFTURISWR({ contractAddress, tokenId, chain });
 
-  const { data: nftMetaSourceURI } = useNFTURISWR({ contractAddress: address, tokenId, chain });
+  const { data: nftMeta } = useNFTMetaSWR({ contractAddress, tokenId, chain });
 
-  const { data: nftMeta } = useNFTMetaSWR({ contractAddress: address, tokenId, chain });
+  const { data: nftCollectionInfo } = useCollectionInfoSWR(chain, contractAddress);
 
-  const { data: nftCollectionInfo } = useCollectionInfoSWR(chain, address);
+  const { data: nftContractInfo } = useContractInfoSWR(chain, contractAddress);
 
-  const { data: nftContractInfo } = useContractInfoSWR(chain, address);
-
-  const { data: mintedNFTsCount } = useNumTokensSWR(chain, address);
+  const { data: mintedNFTsCount } = useNumTokensSWR(chain, contractAddress);
 
   const shorterOwnerAddress = useMemo(() => shorterAddress(ownerAddress, 14), [ownerAddress]);
-  const shorterContractAddress = useMemo(() => shorterAddress(address, 14), [address]);
+  const shorterContractAddress = useMemo(() => shorterAddress(contractAddress, 14), [contractAddress]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 14), [tokenId]);
 
   const shorterSourceURL = useMemo(() => shorterAddress(nftMetaSourceURI?.token_uri || '', 20), [nftMetaSourceURI]);
@@ -63,7 +61,7 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
   const handleOnClickCopy = useCallback(
     (copyString?: string) => {
       if (copyString && copy(copyString)) {
-        enqueueSnackbar(t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.copied'));
+        enqueueSnackbar(t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.copied'));
       }
     },
     [enqueueSnackbar, t],
@@ -74,7 +72,7 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
       {shorterOwnerAddress && (
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.ownerAddress')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.ownerAddress')}</Typography>
           </ItemTitleContainer>
 
           <ItemRightContainer>
@@ -91,14 +89,14 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
 
       <ItemContainer>
         <ItemTitleContainer>
-          <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.contractAddress')}</Typography>
+          <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.contractAddress')}</Typography>
         </ItemTitleContainer>
         <ItemRightContainer>
-          <Tooltip title={address || ''} placement="top" arrow>
+          <Tooltip title={contractAddress} placement="top" arrow>
             <Typography variant="h5">{shorterContractAddress}</Typography>
           </Tooltip>
 
-          <StyledIconButton onClick={() => handleOnClickCopy(address)}>
+          <StyledIconButton onClick={() => handleOnClickCopy(contractAddress)}>
             <Copy16Icon />
           </StyledIconButton>
         </ItemRightContainer>
@@ -106,7 +104,7 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
 
       <ItemContainer>
         <ItemTitleContainer>
-          <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.tokenId')}</Typography>
+          <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.tokenId')}</Typography>
         </ItemTitleContainer>
         <ItemRightContainer>
           <Tooltip title={tokenId || ''} placement="top" arrow>
@@ -121,7 +119,7 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
 
       <ItemContainer>
         <ItemTitleContainer>
-          <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.tokenType')}</Typography>
+          <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.tokenType')}</Typography>
         </ItemTitleContainer>
         <ItemRightContainer>
           <Typography variant="h5">{displayTokenStandard}</Typography>
@@ -130,29 +128,23 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
 
       <ItemContainer>
         <ItemTitleContainer>
-          <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.source')}</Typography>
+          <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.source')}</Typography>
         </ItemTitleContainer>
         <ItemRightContainer>
-          {httpsRegex.test(nftMetaSourceURI?.token_uri || '') ? (
-            <URLButton type="button" onClick={() => window.open(nftMetaSourceURI?.token_uri || '')}>
-              <Typography variant="h5">{shorterSourceURL || '-'}</Typography>
-            </URLButton>
-          ) : (
-            <>
-              <Typography variant="h5">{shorterSourceURL || '-'}</Typography>
+          <>
+            <Typography variant="h5">{shorterSourceURL || '-'}</Typography>
 
-              <StyledIconButton onClick={() => handleOnClickCopy(shorterSourceURL)}>
-                <Copy16Icon />
-              </StyledIconButton>
-            </>
-          )}
+            <StyledIconButton onClick={() => handleOnClickCopy(shorterSourceURL)}>
+              <Copy16Icon />
+            </StyledIconButton>
+          </>
         </ItemRightContainer>
       </ItemContainer>
 
       {nftMeta?.metaData?.description && (
         <ItemColumnContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.description')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.description')}</Typography>
           </ItemTitleContainer>
           <ItemValueContainer>{nftMeta.metaData.description}</ItemValueContainer>
         </ItemColumnContainer>
@@ -161,7 +153,7 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
       {nftMeta?.metaData?.attributes && (
         <AttributeContainer>
           <AttributeHeaderContainer>
-            <Typography variant="h4">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.attributes')}</Typography>
+            <Typography variant="h4">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.attributes')}</Typography>
           </AttributeHeaderContainer>
           {nftMeta.metaData.attributes.map((item) => (
             <ItemContainer key={item.trait_type}>
@@ -179,13 +171,13 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
       {(nftCollectionInfo || nftContractInfo) && (
         <AttributeContainer>
           <AttributeHeaderContainer>
-            <Typography variant="h4">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.collection')}</Typography>
+            <Typography variant="h4">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.collection')}</Typography>
           </AttributeHeaderContainer>
           {nftContractInfo && (
             <>
               <ItemContainer>
                 <ItemTitleContainer>
-                  <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.name')}</Typography>
+                  <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.name')}</Typography>
                 </ItemTitleContainer>
                 <ItemRightContainer>
                   <Typography variant="h5">{nftContractInfo.name}</Typography>
@@ -194,7 +186,7 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
 
               <ItemContainer>
                 <ItemTitleContainer>
-                  <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.symbol')}</Typography>
+                  <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.symbol')}</Typography>
                 </ItemTitleContainer>
                 <ItemRightContainer>
                   <Typography variant="h5">{nftContractInfo.symbol}</Typography>
@@ -203,7 +195,7 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
               {mintedNFTsCount?.count && (
                 <ItemContainer>
                   <ItemTitleContainer>
-                    <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.numberOfNFT')}</Typography>
+                    <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.numberOfNFT')}</Typography>
                   </ItemTitleContainer>
                   <ItemRightContainer>
                     <Typography variant="h5">{mintedNFTsCount.count}</Typography>
@@ -216,19 +208,17 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
             <>
               <ItemColumnContainer>
                 <ItemTitleContainer>
-                  <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.description')}</Typography>
+                  <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.description')}</Typography>
                 </ItemTitleContainer>
                 <ItemValueContainer>{nftCollectionInfo.description}</ItemValueContainer>
               </ItemColumnContainer>
               {nftCollectionInfo.external_url && (
                 <ItemContainer>
                   <ItemTitleContainer>
-                    <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.url')}</Typography>
+                    <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.components.NFTItem.components.NFTInfoItem.url')}</Typography>
                   </ItemTitleContainer>
                   <ItemRightContainer>
-                    <URLButton type="button" onClick={() => window.open(nftCollectionInfo.external_url)}>
-                      <Typography variant="h5">{shorterCollectionExternalURL}</Typography>
-                    </URLButton>
+                    <Typography variant="h5">{shorterCollectionExternalURL}</Typography>
                   </ItemRightContainer>
                 </ItemContainer>
               )}

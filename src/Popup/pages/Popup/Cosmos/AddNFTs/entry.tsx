@@ -5,8 +5,11 @@ import { TOKEN_TYPE } from '~/constants/cosmos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import PopupHeader from '~/Popup/components/PopupHeader';
+import { useOwnedNFTsTokenIDsSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useOwnedNFTsTokenIDsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -16,16 +19,17 @@ import type { CosmosChain } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
 import type { CosAddNFTsCW721, CosAddNFTsCW721Response } from '~/types/message/cosmos';
 
+import NFTItem from './components/NFTItem';
 import {
   BottomButtonContainer,
   BottomContainer,
   Container,
   ContentContainer,
   DescriptionContainer,
+  NFTInfoContainer,
   StyledDivider,
   SwitchIconContainer,
   TitleContainer,
-  TokenInfoContainer,
 } from './styled';
 
 import Token60Icon from '~/images/icons/Token60.svg';
@@ -35,21 +39,10 @@ type EntryProps = {
   chain: CosmosChain;
 };
 
-// NOTE 브랜치 머지되면 그것의 코드를 사용할 것
-export type CosmosNFT = {
-  id: string;
-  tokenId: string;
-  baseChainUUID: string;
-  // NOTE 721
-  tokenType: typeof TOKEN_TYPE.CW20;
-  ownerAddress: string;
-  address: string;
-};
 export default function Entry({ queue, chain }: EntryProps) {
   const { deQueue } = useCurrentQueue();
 
-  // NOTE useCurrentCosmosNFTs()로 교체
-  // const { addCosmosTokens } = useCurrentCosmosTokens(chain);
+  const { addCosmosNFTs } = useCurrentCosmosNFTs();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
@@ -63,17 +56,28 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { params } = message;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const nfts = useMemo(
     () =>
       params.nfts.map((param) => ({
         tokenId: param.tokenId,
-        tokenType: TOKEN_TYPE.CW20,
+        tokenType: TOKEN_TYPE.CW721,
         ownerAddress: address,
         address: param.contractAddress,
       })),
     [address, params.nfts],
   );
+
+  const ownedTokenIds = useOwnedNFTsTokenIDsSWR({ chain, contractAddresses: nfts.map((item) => item.address), ownerAddress: address });
+
+  const errorMessage = useMemo(() => {
+    if (ownedTokenIds.error) {
+      return t('pages.Popup.Cosmos.AddNFTs.entry.networkError');
+    }
+    if (!ownedTokenIds.data.find((item) => item.tokens.includes(nfts.find((nft) => nft.address === item.contractAddress)?.tokenId || ''))) {
+      return t('pages.Popup.Cosmos.AddNFTs.entry.notOwned');
+    }
+    return '';
+  }, [nfts, ownedTokenIds.data, ownedTokenIds.error, t]);
 
   return (
     <Container>
@@ -83,18 +87,18 @@ export default function Entry({ queue, chain }: EntryProps) {
           <Token60Icon />
         </SwitchIconContainer>
         <TitleContainer>
-          <Typography variant="h2">{t('pages.Popup.Cosmos.AddNFTs.entry.addTokens')}</Typography>
+          <Typography variant="h2">{t('pages.Popup.Cosmos.AddNFTs.entry.addNFTs')}</Typography>
         </TitleContainer>
         <DescriptionContainer>
           <Typography variant="h5">{t('pages.Popup.Cosmos.AddNFTs.entry.question')}</Typography>
         </DescriptionContainer>
         <StyledDivider />
-        <TokenInfoContainer>
-          {/* {tokens.map((token, idx) => (
+        <NFTInfoContainer>
+          {nfts.map((token, idx) => (
             // eslint-disable-next-line react/no-array-index-key
-            <TokenItem token={token} chain={chain} address={address} key={`${token.address}${idx}`} />
-          ))} */}
-        </TokenInfoContainer>
+            <NFTItem key={`${token.address}${idx}`} chain={chain} contractAddress={token.address} tokenId={token.tokenId} />
+          ))}
+        </NFTInfoContainer>
       </ContentContainer>
       <BottomContainer>
         <BottomButtonContainer>
@@ -117,25 +121,30 @@ export default function Entry({ queue, chain }: EntryProps) {
           >
             {t('pages.Popup.Cosmos.AddNFTs.entry.cancelButton')}
           </OutlineButton>
-          <Button
-            onClick={async () => {
-              // await addCosmosTokens(nfts);
+          <Tooltip varient="error" title={errorMessage} placement="top" arrow>
+            <div>
+              <Button
+                disabled={!!errorMessage}
+                onClick={async () => {
+                  await addCosmosNFTs(nfts);
 
-              const result: CosAddNFTsCW721Response = null;
+                  const result: CosAddNFTsCW721Response = null;
 
-              responseToWeb({
-                response: {
-                  result,
-                },
-                message,
-                messageId,
-                origin,
-              });
-              await deQueue();
-            }}
-          >
-            {t('pages.Popup.Cosmos.AddNFTs.entry.addButton')}
-          </Button>
+                  responseToWeb({
+                    response: {
+                      result,
+                    },
+                    message,
+                    messageId,
+                    origin,
+                  });
+                  await deQueue();
+                }}
+              >
+                {t('pages.Popup.Cosmos.AddNFTs.entry.addButton')}
+              </Button>
+            </div>
+          </Tooltip>
         </BottomButtonContainer>
       </BottomContainer>
     </Container>
