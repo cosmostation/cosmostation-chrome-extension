@@ -19,6 +19,7 @@ import { KAVA } from '~/constants/chain/cosmos/kava';
 import { KI } from '~/constants/chain/cosmos/ki';
 import { MARS } from '~/constants/chain/cosmos/mars';
 import { PROVENANCE } from '~/constants/chain/cosmos/provenance';
+import { SEI } from '~/constants/chain/cosmos/sei';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { STARNAME } from '~/constants/chain/cosmos/starname';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
@@ -216,7 +217,7 @@ export function getMsgSignData(signer: string, message: string) {
 }
 
 export function getDefaultAV(chain?: CosmosChain) {
-  const exceptedChainIds = [PROVENANCE.id, TERITORI.id];
+  const exceptedChainIds = [PROVENANCE.id, TERITORI.id, SEI.id];
 
   if (chain?.id === IXO.id) {
     return '3.0';
