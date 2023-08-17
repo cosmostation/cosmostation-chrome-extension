@@ -2,9 +2,11 @@ import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { Typography } from '@mui/material';
 
+import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useTxInfoSWR } from '~/Popup/hooks/SWR/cosmos/useTxInfoSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import type { CosmosChain } from '~/types/chain';
@@ -23,6 +25,7 @@ import {
   TxHashContainer,
   TxResultTextContainer,
 } from './styled';
+import CopyButton from '../components/CopyButton';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 import ExplorerIcon from '~/images/icons/Explorer.svg';
@@ -38,9 +41,11 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const txHash = useMemo(() => params.id || '', [params.id]);
 
+  const txInfo = useTxInfoSWR(chain, txHash);
+
   const explorerURL = useMemo(() => chain.explorerURL, [chain.explorerURL]);
 
-  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/account/${txHash}` : ''), [explorerURL, txHash]);
+  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/transactions/${txHash}` : ''), [explorerURL, txHash]);
 
   const { currentAccount } = useCurrentAccount();
 
@@ -60,7 +65,7 @@ export default function Cosmos({ chain }: CosmosProps) {
 
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">Tx Result</Typography>
+            <Typography variant="h5">Broadcast Result</Typography>
           </ItemTitleContainer>
 
           <TxResultTextContainer>
@@ -86,9 +91,28 @@ export default function Cosmos({ chain }: CosmosProps) {
           )}
         </ItemContainer>
 
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">Gas used / wanted</Typography>
+          </ItemTitleContainer>
+
+          {txInfo.data?.gas_used && txInfo.data?.gas_wanted && (
+            <div>
+              <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                {txInfo.data.gas_used}
+              </Number>
+              &nbsp;/&nbsp;
+              <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                {txInfo.data.gas_wanted}
+              </Number>
+            </div>
+          )}
+        </ItemContainer>
+
         <ItemColumnContainer>
           <ItemTitleContainer>
             <Typography variant="h5">Tx Hash</Typography>
+            <CopyButton text={txHash} />
           </ItemTitleContainer>
           <TxHashContainer>
             <Typography variant="h5">{txHash}</Typography>

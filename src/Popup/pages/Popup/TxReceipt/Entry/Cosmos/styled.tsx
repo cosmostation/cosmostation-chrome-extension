@@ -47,8 +47,20 @@ export const ItemColumnContainer = styled('div')({
 });
 
 export const ItemTitleContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  columnGap: '0.8rem',
+
   color: theme.colors.text02,
 }));
+
+export const ItemLabelContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
 
 export const StyledIconButton = styled(IconButton)({
   marginRight: '-0.8rem',
