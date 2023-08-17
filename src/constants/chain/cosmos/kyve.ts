@@ -20,6 +20,7 @@ export const KYVE: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'kyve' },
+  coinGeckoId: 'kyve-network',
   explorerURL: `${MINTSCAN_URL}/kyve`,
   gasRate: {
     tiny: '0.02',
