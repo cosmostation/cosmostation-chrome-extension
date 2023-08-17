@@ -54,8 +54,8 @@
     "Header": {
       "Drawer": {
         "index": {
-          "addressBook": "Address book",
           "addCustomChain": "Add Custom Chain",
+          "addressBook": "Address book",
           "changePassword": "Change password",
           "connectedSites": "Connected sites",
           "currency": "Currency",
@@ -1469,6 +1469,7 @@
             "components": {
               "TokenItem": {
                 "index": {
+                  "invalidBalance": "No balance available.",
                   "networkError": "Network Error"
                 }
               }

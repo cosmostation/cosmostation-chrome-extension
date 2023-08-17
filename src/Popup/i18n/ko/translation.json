@@ -54,8 +54,8 @@
     "Header": {
       "Drawer": {
         "index": {
-          "addressBook": "주소록",
           "addCustomChain": "커스텀 체인 추가",
+          "addressBook": "주소록",
           "changePassword": "비밀번호 변경",
           "connectedSites": "연결 된 사이트",
           "currency": "통화",
@@ -1469,6 +1469,7 @@
             "components": {
               "TokenItem": {
                 "index": {
+                  "invalidBalance": "보유 수량이 없습니다",
                   "networkError": "네트워크 오류"
                 }
               }

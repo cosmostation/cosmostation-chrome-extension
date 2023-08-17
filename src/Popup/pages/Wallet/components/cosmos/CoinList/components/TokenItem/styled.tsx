@@ -11,10 +11,6 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   padding: '1.2rem',
 
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-
   borderRadius: '0.8rem',
 
   cursor: 'pointer',
@@ -35,6 +31,12 @@ export const StyledButton = styled('button')(({ theme }) => ({
     },
   },
 }));
+
+export const Container = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+});
 
 export const LeftContainer = styled('div')({
   display: 'flex',
