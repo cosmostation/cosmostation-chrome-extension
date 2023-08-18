@@ -5,7 +5,6 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS } from '~/constants/chain';
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
-import { TERRA } from '~/constants/chain/cosmos/terra';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import Button from '~/Popup/components/common/Button';
@@ -228,7 +227,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     ) {
       const assets = filteredCosmosChainAssets
         .filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, currentCoinOrToken.baseDenom))
-        .filter((asset) => (chain.id === TERRA.id ? asset.origin_chain === TERRA.chainName.toLowerCase() : true));
+        .filter((asset) => cosmosAssetNames.includes(asset.origin_chain));
       return assets.map((item) => ({ chain: convertAssetNameToCosmos(item.chain)!, channel: item.counter_party!.channel, port: item.counter_party!.port }));
     }
 
@@ -249,7 +248,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     }
 
     return [];
-  }, [currentCoinOrToken, filteredCosmosChainAssets, filteredCurrentChainAssets, chain.id]);
+  }, [currentCoinOrToken, filteredCosmosChainAssets, filteredCurrentChainAssets]);
 
   const [selectedReceiverIBC, setReceiverIBC] = useState(receiverIBCList.length ? receiverIBCList[0] : undefined);
 
