@@ -56,14 +56,10 @@ export const NFTInfoHeaderContainer = styled('div')(({ theme }) => ({
   width: '100%',
 
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'center',
   alignItems: 'center',
 
-  paddingBottom: '1.2rem',
-  marginBottom: '1.6rem',
-
   color: theme.colors.text01,
-  borderBottom: `0.1rem solid ${theme.colors.base04}`,
 }));
 
 export const NFTInfoLeftHeaderContainer = styled('div')({
@@ -83,14 +79,4 @@ export const NFTInfoHeaderTextContainer = styled('div')({
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
-});
-
-export const NFTInfoBodyContainer = styled('div')({
-  width: '100%',
-
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-
-  rowGap: '1rem',
 });

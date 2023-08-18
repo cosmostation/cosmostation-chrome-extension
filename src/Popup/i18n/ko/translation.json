@@ -701,27 +701,6 @@
           }
         },
         "AddNFTs": {
-          "components": {
-            "NFTItem": {
-              "components": {
-                "NFTInfoItem": {
-                  "attributes": "속성",
-                  "collection": "컬렉션",
-                  "contractAddress": "계약 주소",
-                  "copied": "복사 되었습니다.",
-                  "description": "NFT 설명",
-                  "name": "이름",
-                  "numberOfNFT": "민팅된 NFT 수량",
-                  "ownerAddress": "소유주",
-                  "source": "소스",
-                  "symbol": "심볼",
-                  "tokenId": "토큰 ID",
-                  "tokenType": "토큰 표준",
-                  "url": "URL"
-                }
-              }
-            }
-          },
           "entry": {
             "addButton": "NFT 가져오기",
             "addNFTs": "NFT 가져오기",
