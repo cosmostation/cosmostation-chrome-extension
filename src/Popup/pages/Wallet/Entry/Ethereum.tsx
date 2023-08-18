@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Empty from '~/Popup/components/common/Empty';
@@ -6,7 +6,7 @@ import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Header from '~/Popup/components/SelectSubHeader';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
-import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useCurrentTabIndex } from '~/Popup/hooks/useCurrent/useCurrentTabIndex';
 import { gte } from '~/Popup/utils/big';
 import type { EthereumChain } from '~/types/chain';
 
@@ -21,40 +21,30 @@ type EthereumProps = {
 };
 
 export default function Ethereum({ chain }: EthereumProps) {
-  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
-  const { homeTabIndex } = extensionStorage;
+  const { currentTabIndex, setCurrentTabIndex } = useCurrentTabIndex();
 
   const { currentAccount } = useCurrentAccount();
   const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
 
   const tabLabels = ['Coins', 'NFTs'];
 
-  const [tabValue, setTabValue] = useState(!gte(homeTabIndex.ethereum, tabLabels.length) ? homeTabIndex.ethereum : 0);
+  const currentHomeTabIndex = useMemo(() => (gte(currentTabIndex, tabLabels.length) ? 0 : currentTabIndex), [currentTabIndex, tabLabels.length]);
 
-  const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
-    setTabValue(newTabValue);
-  }, []);
+  const [tabValue, setTabValue] = useState(currentHomeTabIndex);
+
+  const handleChange = useCallback(
+    (_: React.SyntheticEvent, newTabValue: number) => {
+      setTabValue(newTabValue);
+
+      setCurrentTabIndex(newTabValue);
+    },
+    [setCurrentTabIndex],
+  );
 
   const isCustom = useMemo(
     () => !!additionalEthereumNetworks.find((item) => item.id === currentEthereumNetwork.id),
     [additionalEthereumNetworks, currentEthereumNetwork.id],
   );
-
-  useEffect(() => {
-    if (gte(homeTabIndex.ethereum, tabLabels.length)) {
-      void setExtensionStorage('homeTabIndex', {
-        ...homeTabIndex,
-        ethereum: 0,
-      });
-
-      setTabValue(0);
-    }
-
-    void setExtensionStorage('homeTabIndex', {
-      ...homeTabIndex,
-      ethereum: tabValue,
-    });
-  }, [homeTabIndex, setExtensionStorage, tabLabels.length, tabValue]);
 
   return (
     <Container key={`${currentAccount.id}-${currentEthereumNetwork.id}`}>

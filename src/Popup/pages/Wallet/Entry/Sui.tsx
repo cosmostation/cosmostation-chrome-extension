@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Empty from '~/Popup/components/common/Empty';
@@ -6,7 +6,7 @@ import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Header from '~/Popup/components/SelectSubHeader';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
-import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
+import { useCurrentTabIndex } from '~/Popup/hooks/useCurrent/useCurrentTabIndex';
 import { gte } from '~/Popup/utils/big';
 import type { SuiChain } from '~/types/chain';
 
@@ -21,37 +21,27 @@ type SuiProps = {
 };
 
 export default function Sui({ chain }: SuiProps) {
-  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
-  const { homeTabIndex } = extensionStorage;
+  const { currentTabIndex, setCurrentTabIndex } = useCurrentTabIndex();
 
   const { currentAccount } = useCurrentAccount();
   const { currentSuiNetwork, additionalSuiNetworks } = useCurrentSuiNetwork();
 
   const tabLabels = ['Coins', 'NFTs'];
 
-  const [tabValue, setTabValue] = useState(!gte(homeTabIndex.sui, tabLabels.length) ? homeTabIndex.sui : 0);
+  const currentHomeTabIndex = useMemo(() => (gte(currentTabIndex, tabLabels.length) ? 0 : currentTabIndex), [currentTabIndex, tabLabels.length]);
 
-  const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
-    setTabValue(newTabValue);
-  }, []);
+  const [tabValue, setTabValue] = useState(currentHomeTabIndex);
+
+  const handleChange = useCallback(
+    (_: React.SyntheticEvent, newTabValue: number) => {
+      setTabValue(newTabValue);
+
+      setCurrentTabIndex(newTabValue);
+    },
+    [setCurrentTabIndex],
+  );
 
   const isCustom = useMemo(() => !!additionalSuiNetworks.find((item) => item.id === currentSuiNetwork.id), [additionalSuiNetworks, currentSuiNetwork.id]);
-
-  useEffect(() => {
-    if (gte(homeTabIndex.sui, tabLabels.length)) {
-      void setExtensionStorage('homeTabIndex', {
-        ...homeTabIndex,
-        sui: 0,
-      });
-
-      setTabValue(0);
-    }
-
-    void setExtensionStorage('homeTabIndex', {
-      ...homeTabIndex,
-      sui: tabValue,
-    });
-  }, [homeTabIndex, setExtensionStorage, tabLabels.length, tabValue]);
 
   return (
     <Container key={`${currentAccount.id}-${currentSuiNetwork.id}`}>

@@ -27,6 +27,8 @@ export const PATH = {
   CHAIN__COSMOS__CHAIN__ADD: '/chain/cosmos/chain/add',
   CHAIN__COSMOS__TOKEN__ADD__CW20: '/chain/cosmos/token/add/cw20',
   CHAIN__COSMOS__TOKEN__ADD__CW20__SEARCH: '/chain/cosmos/token/add/cw20/search',
+  CHAIN__COSMOS__NFT__ADD__CW721: '/chain/cosmos/nft/add/cw721',
+  CHAIN__COSMOS__NFT__ADD__CW721__SEARCH: '/chain/cosmos/nft/add/cw721/search',
 
   CHAIN__ETHEREUM__TOKEN__ADD__ERC20: '/chain/ethereum/token/add/erc20',
   CHAIN__ETHEREUM__TOKEN__ADD__ERC20__SEARCH: '/chain/ethereum/token/add/erc20/search',

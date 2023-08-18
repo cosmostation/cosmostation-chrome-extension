@@ -13,4 +13,5 @@ export const MINTSCAN_URL = 'https://www.mintscan.io';
 
 export const TOKEN_TYPE = {
   CW20: 'CW20',
+  CW721: 'CW721',
 } as const;
