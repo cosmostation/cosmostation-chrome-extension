@@ -513,7 +513,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
 
           try {
-            // NOTE 여기서 소유 검증을 해야하나?
             const cosmosNFTs = params.nfts.filter((item) => item.contractAddress !== null && item.tokenId !== null);
 
             if (cosmosNFTs.length === 0) {
