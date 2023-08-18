@@ -69,6 +69,7 @@ import { STARGAZE } from './cosmos/stargaze';
 import { STARNAME } from './cosmos/starname';
 import { STRIDE } from './cosmos/stride';
 import { TERITORI } from './cosmos/teritori';
+import { TERRA } from './cosmos/terra';
 import { TGRADE } from './cosmos/tgrade';
 import { UMEE } from './cosmos/umee';
 import { XPLA } from './cosmos/xpla';
@@ -166,6 +167,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   STARNAME,
   STRIDE,
   TERITORI,
+  TERRA,
   TGRADE,
   UMEE,
   XPLA,
