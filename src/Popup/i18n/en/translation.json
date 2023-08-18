@@ -1207,6 +1207,12 @@
           },
           "Cosmos": {
             "components": {
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "Search",
+                  "title": "Select a coin"
+                }
+              },
               "CoinOrTokenPopover": {
                 "components": {
                   "TokenButton": {
@@ -1220,6 +1226,14 @@
                 }
               },
               "IBCSend": {
+                "components": {
+                  "RecipientIBCBottomSheet": {
+                    "index": {
+                      "searchPlaceholder": "Search",
+                      "title": "Select a chain"
+                    }
+                  }
+                },
                 "index": {
                   "amountPlaceholder": "Amount",
                   "available": "Available",

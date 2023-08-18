@@ -1207,6 +1207,12 @@
           },
           "Cosmos": {
             "components": {
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "검색",
+                  "title": "코인을 선택하세요"
+                }
+              },
               "CoinOrTokenPopover": {
                 "components": {
                   "TokenButton": {
@@ -1220,6 +1226,14 @@
                 }
               },
               "IBCSend": {
+                "components": {
+                  "RecipientIBCBottomSheet": {
+                    "index": {
+                      "searchPlaceholder": "검색",
+                      "title": "체인을 선택하세요"
+                    }
+                  }
+                },
                 "index": {
                   "amountPlaceholder": "수량",
                   "available": "사용 가능 수량",

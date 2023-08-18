@@ -7,8 +7,8 @@ import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
+import AssetBottomSheetButton from '~/Popup/components/common/AssetBottomSheetButton';
 import Button from '~/Popup/components/common/Button';
-import DropdownButton from '~/Popup/components/common/DropdownButton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
@@ -18,16 +18,18 @@ import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import { useArchIDSWR } from '~/Popup/hooks/SWR/cosmos/useArchIDSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useClientStateSWR } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
-import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
+import { useTokensBalanceSWR as useCosmosTokensBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokensBalanceSWR';
+import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
@@ -36,9 +38,9 @@ import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
-import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKey } from '~/types/chain';
+import type { CosmosChain, GasRateKey } from '~/types/chain';
 
-import ReceiverIBCPopover from './components/ReceiverIBCPopover';
+import RecipientIBCListBottomSheet from './components/RecipientIBCBottomSheet';
 import {
   Address,
   AddressContainer,
@@ -57,7 +59,8 @@ import {
   WarningContentsContainer,
   WarningTextContainer,
 } from './styled';
-import CoinOrTokenPopover from '../CoinOrTokenPopover';
+import type { CoinOrTokenInfo } from '../..';
+import CoinListBottomSheet from '../CoinListBottomSheet';
 
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
@@ -70,17 +73,13 @@ export const TYPE = {
   TOKEN: 'token',
 } as const;
 
-export type CoinInfo = BaseCoinInfo & { type: typeof TYPE.COIN };
-export type TokenInfo = BaseCosmosToken & { type: typeof TYPE.TOKEN };
-
-export type CoinOrTokenInfo = CoinInfo | TokenInfo;
-
 type IBCSendProps = {
   chain: CosmosChain;
 };
 
 const cosmosAssetNames = COSMOS_CHAINS.map((item) => convertCosmosToAssetName(item));
 
+// FIXME 토큰 리스트는 밸런스 없어도 나와야함
 export default function IBCSend({ chain }: IBCSendProps) {
   const { currentAccount } = useCurrentAccount();
   const account = useAccountSWR(chain, true);
@@ -91,6 +90,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const currentChainAssets = useAssetsSWR(chain);
   const nodeInfo = useNodeInfoSWR(chain);
   const { enQueue } = useCurrentQueue();
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
+  const { extensionStorage } = useExtensionStorage();
+  const { currency } = extensionStorage;
   const params = useParams();
 
   const [isDisabled, setIsDisabled] = useState(false);
@@ -98,10 +100,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const { t } = useTranslation();
   const { currentCosmosTokens } = useCurrentCosmosTokens(chain);
 
-  const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const [recipientPopoverAnchorEl, setReceiverIBCPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const isOpenPopover = Boolean(popoverAnchorEl);
-  const isRecipientOpenPopover = Boolean(recipientPopoverAnchorEl);
+  const [isOpenedRecipientIBCList, setIsOpenedRecipientIBCList] = useState(false);
+  const [isOpenedCoinList, setIsOpenedCoinList] = useState(false);
+
   const senderAddress = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
 
   const { decimals, gas, gasRate } = chain;
@@ -111,6 +112,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     () => currentChainAssets.data.filter((item) => convertAssetNameToCosmos(item.prevChain || '')),
     [currentChainAssets.data],
   );
+
   const coinAll = useMemo(
     () => [
       {
@@ -138,13 +140,34 @@ export default function IBCSend({ chain }: IBCSendProps) {
       vestingRelatedAvailable,
     ],
   );
-  const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(
-    () => [
-      ...coinAll.filter((item) => gt(item.availableAmount, '0')).map((item) => ({ ...item, type: TYPE.COIN })),
-      ...currentCosmosTokens.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item, type: TYPE.TOKEN })),
-    ],
-    [coinAll, currentCosmosTokens],
-  );
+
+  const cosmosTokensBalance = useCosmosTokensBalanceSWR({ chain, contractAddresses: currentCosmosTokens.map((item) => item.address), address: senderAddress });
+
+  // FIXME 토큰 리스트는 밸런스 없어도 나와야함
+
+  const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(() => {
+    const coinOrTokenList = [
+      ...coinAll.map((item) => ({ ...item, type: TYPE.COIN, name: convertAssetNameToCosmos(item.name || '')?.chainName || item.name })),
+      ...currentCosmosTokens
+        .map((item) => ({
+          ...item,
+          type: TYPE.TOKEN,
+          availableAmount: cosmosTokensBalance.data.find((tokenBalance) => tokenBalance.contractAddress === item.address)?.balance || '0',
+          name: chain.chainName,
+        }))
+        .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom))
+        .sort((a, b) => (gt(a.availableAmount, b.availableAmount) ? -1 : 1)),
+    ].map((item) => {
+      const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
+      const price = times(toDisplayDenomAmount(item.availableAmount, item.decimals), coinPrice);
+      return {
+        ...item,
+        price,
+      };
+    });
+
+    return coinOrTokenList.sort((a, b) => (gt(a.price, b.price) ? -1 : 1)).sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
+  }, [chain.chainName, chain.displayDenom, coinAll, coinGeckoPrice.data, cosmosTokensBalance.data, currency, currentCosmosTokens]);
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
@@ -527,12 +550,14 @@ export default function IBCSend({ chain }: IBCSendProps) {
         </ExchangeWarningContainer>
 
         <MarginTop8Div>
-          <DropdownButton
+          <AssetBottomSheetButton
             imgSrc={selectedReceiverIBC?.chain.imageURL}
             title={selectedReceiverIBC?.chain.chainName || ''}
             leftHeaderTitle={selectedReceiverIBC?.channel}
-            isOpenPopover={isRecipientOpenPopover}
-            onClickDropdown={(currentTarget) => setReceiverIBCPopoverAnchorEl(currentTarget)}
+            isOpenBottomSheet={isOpenedRecipientIBCList}
+            onClick={() => {
+              setIsOpenedRecipientIBCList(true);
+            }}
           />
         </MarginTop8Div>
         <MarginTop8Div>
@@ -569,14 +594,16 @@ export default function IBCSend({ chain }: IBCSendProps) {
           </MarginTop8Div>
         )}
         <MarginTop8Div>
-          <DropdownButton
+          <AssetBottomSheetButton
             imgSrc={currentCoinOrToken.imageURL}
             title={currentCoinOrTokenDisplayDenom}
             leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.available')}
             leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
-            isOpenPopover={isOpenPopover}
+            isOpenBottomSheet={isOpenedCoinList}
             decimals={currentDisplayMaxDecimals}
-            onClickDropdown={(currentTarget) => setPopoverAnchorEl(currentTarget)}
+            onClick={() => {
+              setIsOpenedCoinList(true);
+            }}
           />
         </MarginTop8Div>
         <MarginTop8Div>
@@ -688,52 +715,28 @@ export default function IBCSend({ chain }: IBCSendProps) {
         }}
       />
 
-      <CoinOrTokenPopover
-        chain={chain}
-        address={senderAddress}
-        marginThreshold={0}
+      <CoinListBottomSheet
         currentCoinOrTokenInfo={currentCoinOrToken}
-        coinOrTokenInfos={senderCoinAndTokenList}
+        coinOrTokenInfos={availableCoinOrTokenList}
+        open={isOpenedCoinList}
+        onClose={() => setIsOpenedCoinList(false)}
         onClickCoinOrToken={(clickedCoinOrToken) => {
           setCurrentCoinOrTokenId(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.baseDenom : clickedCoinOrToken.address);
           setCurrentDisplayAmount('');
-          setCurrentAddress('');
-          setCurrentMemo('');
-        }}
-        open={isOpenPopover}
-        onClose={() => setPopoverAnchorEl(null)}
-        anchorEl={popoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
         }}
       />
 
-      <ReceiverIBCPopover
+      <RecipientIBCListBottomSheet
         recipientList={receiverIBCList}
-        marginThreshold={0}
-        selectedReceiverIBC={selectedReceiverIBC}
+        selectedRecipientIBC={selectedReceiverIBC}
         onClickChain={(clickedChain) => {
           setReceiverIBC(clickedChain);
           setCurrentDisplayAmount('');
           setCurrentAddress('');
           setCurrentMemo('');
         }}
-        open={isRecipientOpenPopover}
-        onClose={() => setReceiverIBCPopoverAnchorEl(null)}
-        anchorEl={recipientPopoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
+        open={isOpenedRecipientIBCList}
+        onClose={() => setIsOpenedRecipientIBCList(false)}
       />
     </Container>
   );
