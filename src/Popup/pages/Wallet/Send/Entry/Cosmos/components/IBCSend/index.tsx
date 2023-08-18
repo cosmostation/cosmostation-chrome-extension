@@ -225,9 +225,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
       currentCoinOrToken.type === 'coin' &&
       (currentCoinOrToken.coinType === 'native' || currentCoinOrToken.coinType === 'staking' || currentCoinOrToken.coinType === 'bridge')
     ) {
-      const assets = filteredCosmosChainAssets
-        .filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, currentCoinOrToken.baseDenom))
-        .filter((asset) => cosmosAssetNames.includes(asset.origin_chain));
+      const assets = filteredCosmosChainAssets.filter(
+        (asset) => isEqualsIgnoringCase(asset.counter_party?.denom, currentCoinOrToken.baseDenom) && cosmosAssetNames.includes(asset.origin_chain),
+      );
       return assets.map((item) => ({ chain: convertAssetNameToCosmos(item.chain)!, channel: item.counter_party!.channel, port: item.counter_party!.port }));
     }
 
