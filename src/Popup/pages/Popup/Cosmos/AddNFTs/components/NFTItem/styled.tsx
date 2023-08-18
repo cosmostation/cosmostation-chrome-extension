@@ -62,13 +62,6 @@ export const NFTInfoHeaderContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const NFTInfoLeftHeaderContainer = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-
-  columnGap: '0.8rem',
-});
-
 export const NFTInfoHeaderTextContainer = styled('div')({
   maxWidth: '25rem',
 

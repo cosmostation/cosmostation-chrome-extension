@@ -8,16 +8,7 @@ import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
 import { toDisplayTokenId } from '~/Popup/utils/nft';
 import type { CosmosChain } from '~/types/chain';
 
-import {
-  Container,
-  ContentContainer,
-  NFTContainer,
-  NFTImageContainer,
-  NFTInfoContainer,
-  NFTInfoHeaderContainer,
-  NFTInfoHeaderTextContainer,
-  NFTInfoLeftHeaderContainer,
-} from './styled';
+import { Container, ContentContainer, NFTContainer, NFTImageContainer, NFTInfoContainer, NFTInfoHeaderContainer, NFTInfoHeaderTextContainer } from './styled';
 
 type NFTItemProps = {
   chain: CosmosChain;
@@ -37,13 +28,11 @@ export default function NFTItem({ chain, contractAddress, tokenId }: NFTItemProp
           </NFTImageContainer>
           <NFTInfoContainer>
             <NFTInfoHeaderContainer>
-              <NFTInfoLeftHeaderContainer>
-                <NFTInfoHeaderTextContainer>
-                  <Tooltip title={nftMeta?.metaData?.name || tokenId} placement="top" arrow>
-                    <Typography variant="h3">{nftMeta?.metaData?.name || toDisplayTokenId(tokenId)}</Typography>
-                  </Tooltip>
-                </NFTInfoHeaderTextContainer>
-              </NFTInfoLeftHeaderContainer>
+              <NFTInfoHeaderTextContainer>
+                <Tooltip title={nftMeta?.metaData?.name || tokenId} placement="top" arrow>
+                  <Typography variant="h3">{nftMeta?.metaData?.name || toDisplayTokenId(tokenId)}</Typography>
+                </Tooltip>
+              </NFTInfoHeaderTextContainer>
             </NFTInfoHeaderContainer>
           </NFTInfoContainer>
         </NFTContainer>
