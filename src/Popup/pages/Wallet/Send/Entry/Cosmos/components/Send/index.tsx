@@ -31,7 +31,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -105,7 +105,7 @@ export default function Send({ chain }: CosmosProps) {
         displayDenom: chain.displayDenom,
         baseDenom: chain.baseDenom,
         coinGeckoId: chain.coinGeckoId,
-        name: chain.chainName,
+        baseChainName: chain.chainName,
       },
       ...coinList.coins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
       ...coinList.ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
@@ -128,16 +128,17 @@ export default function Send({ chain }: CosmosProps) {
 
   const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(() => {
     const coinOrTokenList = [
-      ...coinAll.map((item) => ({ ...item, type: TYPE.COIN, name: convertAssetNameToCosmos(item.name || '')?.chainName || item.name })),
-      ...currentCosmosTokens
-        .map((item) => ({
-          ...item,
-          type: TYPE.TOKEN,
-          availableAmount: cosmosTokensBalance.data.find((tokenBalance) => tokenBalance.contractAddress === item.address)?.balance || '0',
-          name: chain.chainName,
-        }))
-        .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom))
-        .sort((a, b) => (gt(a.availableAmount, b.availableAmount) ? -1 : 1)),
+      ...coinAll.map((item) => ({
+        ...item,
+        type: TYPE.COIN,
+        name: convertAssetNameToCosmos(item.baseChainName || '')?.chainName || getCapitalize(item.baseChainName || ''),
+      })),
+      ...currentCosmosTokens.map((item) => ({
+        ...item,
+        type: TYPE.TOKEN,
+        availableAmount: cosmosTokensBalance.data.find((tokenBalance) => tokenBalance.contractAddress === item.address)?.balance || '0',
+        name: chain.chainName,
+      })),
     ].map((item) => {
       const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
       const price = times(toDisplayDenomAmount(item.availableAmount, item.decimals), coinPrice);
@@ -147,7 +148,10 @@ export default function Send({ chain }: CosmosProps) {
       };
     });
 
-    return coinOrTokenList.sort((a, b) => (gt(a.price, b.price) ? -1 : 1)).sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
+    return coinOrTokenList
+      .sort((a, b) => (gt(a.availableAmount, b.availableAmount) ? -1 : 1))
+      .sort((a, b) => (gt(a.price, b.price) ? -1 : 1))
+      .sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
   }, [chain.chainName, chain.displayDenom, coinAll, coinGeckoPrice.data, cosmosTokensBalance.data, currency, currentCosmosTokens]);
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);

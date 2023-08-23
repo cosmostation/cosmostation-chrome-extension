@@ -57,9 +57,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
             <Typography variant="h5">{coinInfo.displayDenom}</Typography>
           </LeftTitleContainer>
           <LeftSubTitleContainer>
-            {/* NOTE v.1 이전 체인, 속한 체인 이름 */}
             <Typography variant="h6">{coinInfo.name}</Typography>
-            {/* <Typography variant="h6">{coinInfo.type === 'coin' ? coinInfo.originBaseDenom : coinInfo.address}</Typography> */}
           </LeftSubTitleContainer>
         </LeftInfoContainer>
       </LeftContainer>
@@ -74,14 +72,13 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
               </div>
             </Tooltip>
           </RightTitleContainer>
-          {/* NOTE 옵셔널 결정 필요 */}
-          {/* {gt(coinInfo.price, '0') && ( */}
-          <RightSubTitleContainer>
-            <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
-              {coinInfo.price}
-            </Number>
-          </RightSubTitleContainer>
-          {/* )} */}
+          {coinInfo.coinGeckoId && (
+            <RightSubTitleContainer>
+              <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
+                {coinInfo.price}
+              </Number>
+            </RightSubTitleContainer>
+          )}
         </RightInfoContainer>
         <RightIconContainer>{isActive && <Check16Icon />}</RightIconContainer>
       </RightContainer>

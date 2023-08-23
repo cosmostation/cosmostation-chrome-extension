@@ -14,11 +14,10 @@ import Fee from '~/Popup/components/Fee';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
-import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import { useArchIDSWR } from '~/Popup/hooks/SWR/cosmos/useArchIDSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
+import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
 import { useClientStateSWR } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
-import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
@@ -32,7 +31,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, convertCosmosToAssetName, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -82,8 +81,6 @@ const cosmosAssetNames = COSMOS_CHAINS.map((item) => convertCosmosToAssetName(it
 export default function IBCSend({ chain }: IBCSendProps) {
   const { currentAccount } = useCurrentAccount();
   const account = useAccountSWR(chain, true);
-  const { vestingRelatedAvailable, totalAmount } = useAmountSWR(chain, true);
-  const coinList = useCoinListSWR(chain, true);
   const accounts = useAccounts(true);
   const cosmosChainsAssets = useAssetsSWR();
   const currentChainAssets = useAssetsSWR(chain);
@@ -113,61 +110,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [currentChainAssets.data],
   );
 
-  const coinAll = useMemo(
-    () => [
-      {
-        availableAmount: vestingRelatedAvailable,
-        totalAmount,
-        coinType: 'staking',
-        decimals: chain.decimals,
-        imageURL: chain.imageURL,
-        displayDenom: chain.displayDenom,
-        baseDenom: chain.baseDenom,
-        coinGeckoId: chain.coinGeckoId,
-      },
-      ...coinList.coins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
-      ...coinList.ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
-    ],
-    [
-      chain.baseDenom,
-      chain.coinGeckoId,
-      chain.decimals,
-      chain.displayDenom,
-      chain.imageURL,
-      coinList.coins,
-      coinList.ibcCoins,
-      totalAmount,
-      vestingRelatedAvailable,
-    ],
-  );
+  const { data: balance } = useBalanceSWR(chain);
 
   const cosmosTokensBalance = useCosmosTokensBalanceSWR({ chain, contractAddresses: currentCosmosTokens.map((item) => item.address), address: senderAddress });
-
-  // FIXME 토큰 리스트는 밸런스 없어도 나와야함
-  // NOTE 이거 날리고 senderlist에 로직 넣도록
-  const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(() => {
-    const coinOrTokenList = [
-      ...coinAll.map((item) => ({ ...item, type: TYPE.COIN, name: convertAssetNameToCosmos(item.name || '')?.chainName || item.name })),
-      ...currentCosmosTokens
-        .map((item) => ({
-          ...item,
-          type: TYPE.TOKEN,
-          availableAmount: cosmosTokensBalance.data.find((tokenBalance) => tokenBalance.contractAddress === item.address)?.balance || '0',
-          name: chain.chainName,
-        }))
-        .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom))
-        .sort((a, b) => (gt(a.availableAmount, b.availableAmount) ? -1 : 1)),
-    ].map((item) => {
-      const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
-      const price = times(toDisplayDenomAmount(item.availableAmount, item.decimals), coinPrice);
-      return {
-        ...item,
-        price,
-      };
-    });
-
-    return coinOrTokenList.sort((a, b) => (gt(a.price, b.price) ? -1 : 1)).sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
-  }, [chain.chainName, chain.displayDenom, coinAll, coinGeckoPrice.data, cosmosTokensBalance.data, currency, currentCosmosTokens]);
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
@@ -180,11 +125,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const [debouncedCurrentAddress] = useDebounce(currentAddress, 500);
 
-  // TODO 정렬필요, 정렬기준을 coingecko 개당 price로 할 지 고민 필요
-  // TODO 네임필드 사용할지말지 고민필요, 사용한다면 네이티브 코인에 name넣어주고 첫글자 대문자로
-  // NOTE 토큰은 추가된 것 만 보여주자
-  const senderCoinAndTokenList: CoinOrTokenInfo[] = useMemo(
-    () => [
+  const senderCoinAndTokenList: CoinOrTokenInfo[] = useMemo(() => {
+    const coinOrTokenList = [
       ...currentChainAssets.data
         .filter((item) => {
           if (item.type === 'native' || item.type === 'staking' || item.type === 'bridge') {
@@ -200,8 +142,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
           return false;
         })
         .map((item) => {
-          // NOTE availableCoinOrTokenList버리고 여기에 로직 넣기
-          const aa = availableCoinOrTokenList.find((a) => a.type === 'coin' && isEqualsIgnoringCase(a.baseDenom, item.denom));
+          const name = convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || '');
+
+          const availableAmount = balance?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
+          const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
+          const price = times(toDisplayDenomAmount(availableAmount, item.decimals), coinPrice);
+
           return {
             coinType: item.type,
             decimals: item.decimals,
@@ -210,12 +156,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
             displayDenom: item.symbol,
             imageURL: item.image,
             channelId: item.channel,
-            availableAmount: aa?.availableAmount || '0',
-            totalAmount: aa?.type === 'coin' ? aa.totalAmount : '0',
+            availableAmount,
             coinGeckoId: item.coinGeckoId,
-            name: aa?.name,
+            totalAmount: '',
+            name,
             type: TYPE.COIN,
-            price: aa?.price || '0',
+            price,
           };
         }),
       ...currentCosmosTokens
@@ -226,35 +172,36 @@ export default function IBCSend({ chain }: IBCSendProps) {
               filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, item.address)).length
             ),
         )
-        .map((item) => ({
-          ...item,
-          type: TYPE.TOKEN,
-          availableAmount: cosmosTokensBalance.data.find((tokenBalances) => tokenBalances.contractAddress === item.address)?.balance || '0',
-          name: chain.chainName,
-        }))
-        .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom))
-        .sort((a, b) => (gt(a.availableAmount, b.availableAmount) ? -1 : 1))
         .map((item) => {
           const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
-          const price = times(toDisplayDenomAmount(item.availableAmount, item.decimals), coinPrice);
+          const availableAmount = cosmosTokensBalance.data.find((tokenBalances) => tokenBalances.contractAddress === item.address)?.balance || '0';
+          const price = times(toDisplayDenomAmount(availableAmount, item.decimals), coinPrice);
           return {
             ...item,
+            type: TYPE.TOKEN,
+            availableAmount,
+            name: chain.chainName,
             price,
           };
         }),
-    ],
-    [
-      availableCoinOrTokenList,
-      chain.chainName,
-      coinGeckoPrice.data,
-      cosmosTokensBalance.data,
-      currency,
-      currentChainAssets.data,
-      currentCosmosTokens,
-      filteredCosmosChainAssets,
-      filteredCurrentChainAssets,
-    ],
-  );
+    ];
+
+    return coinOrTokenList
+      .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom))
+      .sort((a, b) => (gt(a.price, b.price) ? -1 : 1))
+      .sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
+  }, [
+    balance?.balance,
+    chain.chainName,
+    chain.displayDenom,
+    coinGeckoPrice.data,
+    cosmosTokensBalance.data,
+    currency,
+    currentChainAssets.data,
+    currentCosmosTokens,
+    filteredCosmosChainAssets,
+    filteredCurrentChainAssets,
+  ]);
 
   const currentCoinOrToken = useMemo(
     () =>
