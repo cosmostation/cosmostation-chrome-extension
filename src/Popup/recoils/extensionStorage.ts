@@ -49,6 +49,7 @@ export const extensionStorageDefault: ExtensionStorage = {
   cosmosTokens: [],
 
   ethereumNFTs: [],
+  cosmosNFTs: [],
 
   ledgerTransportType: 'HID',
 

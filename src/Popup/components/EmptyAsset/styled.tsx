@@ -22,8 +22,12 @@ export const HeaderTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const SubHeaderTextContainer = styled('div')(({ theme }) => ({
-  width: '22rem',
+type SubHeaderTextContainerProps = {
+  'data-width': string;
+};
+
+export const SubHeaderTextContainer = styled('div')<SubHeaderTextContainerProps>(({ theme, ...props }) => ({
+  width: `${props['data-width']}rem`,
 
   textAlign: 'center',
   wordBreak: 'keep-all',

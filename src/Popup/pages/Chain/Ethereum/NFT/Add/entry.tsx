@@ -115,6 +115,7 @@ export default function Entry() {
     }
     return '';
   }, [currentNFTStandard.error, debouncedContractAddress, debouncedTokenId, nftSourceURI.data, isOwnedNFT.data, isOwnedNFT.error]);
+
   const nftPreviewIcon = useMemo(() => {
     if (errorType && debouncedContractAddress && debouncedTokenId) {
       return NFTErrorIcon;

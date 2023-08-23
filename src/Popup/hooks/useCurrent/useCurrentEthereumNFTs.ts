@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
@@ -14,7 +15,10 @@ export function useCurrentEthereumNFTs() {
 
   const { ethereumNFTs } = extensionStorage;
 
-  const currentEthereumNFTs = ethereumNFTs.filter((item) => item.ethereumNetworkId === currentEthereumNetwork.id);
+  const currentEthereumNFTs = useMemo(
+    () => ethereumNFTs.filter((item) => item.ethereumNetworkId === currentEthereumNetwork.id),
+    [currentEthereumNetwork.id, ethereumNFTs],
+  );
 
   const addEthereumNFT = async (nft: AddEthereumNFTParams) => {
     const newEthereumNFTs = [
