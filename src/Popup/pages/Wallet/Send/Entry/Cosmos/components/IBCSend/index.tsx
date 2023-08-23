@@ -84,7 +84,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const accounts = useAccounts(true);
   const cosmosChainsAssets = useAssetsSWR();
   const currentChainAssets = useAssetsSWR(chain);
-
   const nodeInfo = useNodeInfoSWR(chain);
   const { enQueue } = useCurrentQueue();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
@@ -97,10 +96,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const { t } = useTranslation();
   const { currentCosmosTokens } = useCurrentCosmosTokens(chain);
 
-  const [isOpenedRecipientIBCList, setIsOpenedRecipientIBCList] = useState(false);
-  const [isOpenedCoinList, setIsOpenedCoinList] = useState(false);
-
-  const senderAddress = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
+  const senderAddress = useMemo(
+    () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '',
+    [accounts.data, chain.id, currentAccount.id],
+  );
 
   const { decimals, gas, gasRate } = chain;
 
@@ -110,7 +109,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [currentChainAssets.data],
   );
 
-  const { data: balance } = useBalanceSWR(chain);
+  const { data: coinsBalance } = useBalanceSWR(chain);
 
   const cosmosTokensBalance = useCosmosTokensBalanceSWR({ chain, contractAddresses: currentCosmosTokens.map((item) => item.address), address: senderAddress });
 
@@ -119,6 +118,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const [currentAddress, setCurrentAddress] = useState('');
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
   const [currentMemo, setCurrentMemo] = useState('');
+
+  const [isOpenedRecipientIBCList, setIsOpenedRecipientIBCList] = useState(false);
+  const [isOpenedCoinList, setIsOpenedCoinList] = useState(false);
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
@@ -144,7 +146,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         .map((item) => {
           const name = convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || '');
 
-          const availableAmount = balance?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
+          const availableAmount = coinsBalance?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
           const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
           const price = times(toDisplayDenomAmount(availableAmount, item.decimals), coinPrice);
 
@@ -165,17 +167,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
           };
         }),
       ...currentCosmosTokens
-        .filter(
-          (item) =>
-            !!(
-              filteredCurrentChainAssets.filter((asset) => asset.channel && asset.port && isEqualsIgnoringCase(asset.denom, item.address)).length +
-              filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, item.address)).length
-            ),
-        )
+        .filter((item) => !!filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, item.address)).length)
         .map((item) => {
           const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
           const availableAmount = cosmosTokensBalance.data.find((tokenBalances) => tokenBalances.contractAddress === item.address)?.balance || '0';
           const price = times(toDisplayDenomAmount(availableAmount, item.decimals), coinPrice);
+
           return {
             ...item,
             type: TYPE.TOKEN,
@@ -191,7 +188,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
       .sort((a, b) => (gt(a.price, b.price) ? -1 : 1))
       .sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
   }, [
-    balance?.balance,
+    coinsBalance?.balance,
     chain.chainName,
     chain.displayDenom,
     coinGeckoPrice.data,
@@ -242,30 +239,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
     () => toDisplayDenomAmount(currentCoinOrTokenAvailableAmount, currentCoinOrToken.decimals),
     [currentCoinOrToken.decimals, currentCoinOrTokenAvailableAmount],
   );
-
-  // NOTE legacy
-  // const senderCoinAndTokenList2 = useMemo(
-  //   () =>
-  //     availableCoinOrTokenList.filter((item) => {
-  //       if (item.type === 'coin' && (item.coinType === 'native' || item.coinType === 'staking' || item.coinType === 'bridge')) {
-  //         return !!filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, item.baseDenom)).length;
-  //       }
-
-  //       if (item.type === 'coin' && item.coinType === 'ibc') {
-  //         return !!(
-  //           filteredCurrentChainAssets.filter((asset) => asset.channel && asset.port && isEqualsIgnoringCase(asset.denom, item.baseDenom)).length +
-  //           filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, item.baseDenom)).length
-  //         );
-  //       }
-
-  //       if (item.type === 'token') {
-  //         return !!filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, item.address)).length;
-  //       }
-
-  //       return false;
-  //     }),
-  //   [availableCoinOrTokenList, filteredCosmosChainAssets, filteredCurrentChainAssets],
-  // );
 
   const receiverIBCList = useMemo(() => {
     if (

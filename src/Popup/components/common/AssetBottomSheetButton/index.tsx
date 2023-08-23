@@ -9,8 +9,8 @@ import { LeftContainer, LeftHeaderTitleContainer, LeftImageContainer, LeftInfoCo
 import BottomArrow24Icon from '~/images/icons/BottomArrow24.svg';
 
 type AssetBottomSheetButton = Omit<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>, 'children'> & {
-  imgSrc?: string;
   title: string;
+  imgSrc?: string;
   leftSubTitle?: string;
   leftHeaderTitle?: string;
   isOpenBottomSheet?: boolean;

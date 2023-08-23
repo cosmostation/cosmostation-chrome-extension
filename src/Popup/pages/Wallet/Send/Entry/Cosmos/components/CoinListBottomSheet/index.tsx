@@ -98,7 +98,7 @@ export default function CoinListBottomSheet({ coinOrTokenInfos, currentCoinOrTok
             return (
               <CoinItem
                 isActive={isActive}
-                key={item.displayDenom}
+                key={item.type === 'coin' ? item.baseDenom : item.address}
                 ref={isActive ? ref : undefined}
                 coinInfo={item}
                 onClickCoin={(clickedCoin) => {
