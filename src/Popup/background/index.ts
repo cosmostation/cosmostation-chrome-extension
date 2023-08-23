@@ -1,7 +1,7 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
-import { SEI } from '~/constants/chain/cosmos/sei';
+import { TERRA } from '~/constants/chain/cosmos/terra';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -94,9 +94,9 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.6.25') {
+        if (extensionManifest.version === '0.6.26') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), SEI.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), TERRA.id]);
           })();
         }
       }

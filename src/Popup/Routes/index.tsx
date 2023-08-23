@@ -25,6 +25,8 @@ import AccountInitializeWelcome from '~/Popup/pages/Account/Initialize/Welcome';
 import AccountManagement from '~/Popup/pages/Account/Management';
 import ChainAptosCoinAdd from '~/Popup/pages/Chain/Aptos/Coin/Add';
 import ChainCosmosChainAdd from '~/Popup/pages/Chain/Cosmos/Chain/Add';
+import ChainCosmosNFTAddCW721 from '~/Popup/pages/Chain/Cosmos/NFT/Add/CW721';
+import ChainCosmosNFTAddCW721Search from '~/Popup/pages/Chain/Cosmos/NFT/Add/CW721/Search';
 import ChainCosmosTokenAddCW20 from '~/Popup/pages/Chain/Cosmos/Token/Add/CW20';
 import ChainCosmosTokenAddCW20Search from '~/Popup/pages/Chain/Cosmos/Token/Add/CW20/Search';
 import ChainEthereumNetworkAdd from '~/Popup/pages/Chain/Ethereum/Network/Add';
@@ -135,6 +137,8 @@ export default function Routes() {
           <Route path={PATH.CHAIN__COSMOS__CHAIN__ADD} element={<ChainCosmosChainAdd />} />
           <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__CW20} element={<ChainCosmosTokenAddCW20 />} />
           <Route path={PATH.CHAIN__COSMOS__TOKEN__ADD__CW20__SEARCH} element={<ChainCosmosTokenAddCW20Search />} />
+          <Route path={PATH.CHAIN__COSMOS__NFT__ADD__CW721} element={<ChainCosmosNFTAddCW721 />} />
+          <Route path={PATH.CHAIN__COSMOS__NFT__ADD__CW721__SEARCH} element={<ChainCosmosNFTAddCW721Search />} />
 
           <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__ERC20__SEARCH} element={<ChainEthereumTokenAddERC20Search />} />
           <Route path={PATH.CHAIN__ETHEREUM__TOKEN__ADD__ERC20} element={<ChainEthereumTokenAddERC20 />} />

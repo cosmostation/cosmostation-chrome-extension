@@ -137,7 +137,13 @@ export default function NFTInfoItem({ nft }: NFTInfoItemProps) {
               <Typography variant="h5">{shorterSourceURL || '-'}</Typography>
             </URLButton>
           ) : (
-            <Typography variant="h5">{shorterSourceURL || '-'}</Typography>
+            <>
+              <Typography variant="h5">{shorterSourceURL || '-'}</Typography>
+
+              <StyledIconButton onClick={() => handleOnClickCopy(shorterSourceURL)}>
+                <Copy16Icon />
+              </StyledIconButton>
+            </>
           )}
         </ItemRightContainer>
       </ItemContainer>

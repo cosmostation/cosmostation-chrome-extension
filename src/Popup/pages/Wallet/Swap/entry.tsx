@@ -1253,7 +1253,7 @@ export default function Entry() {
     }
 
     if (currentSwapAPI === 'skip') {
-      if (currentFromChain.id === currentToChain?.id && currentFromToken?.address === currentToToken?.address) {
+      if (currentFromChain.id === currentToChain?.id && currentFromToken?.address === currentToToken?.address && filteredToTokenList.length > 1) {
         setCurrentToToken(filteredToTokenList.filter((item) => item.address !== currentToToken?.address)[0]);
       }
     }
