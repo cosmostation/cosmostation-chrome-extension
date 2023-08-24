@@ -26,7 +26,7 @@ export default function CopyButton({ text, className }: CopyButtonProps) {
       type="button"
       onClick={() => {
         if (text && copy(text)) {
-          enqueueSnackbar(t('pages.Popup.Ethereum.Transaction.components.TxMessage.components.CopyButton.index.copied'));
+          enqueueSnackbar(t('pages.Popup.TxReceipt.Entry.components.CopyButton.index.copied'));
         }
       }}
     >

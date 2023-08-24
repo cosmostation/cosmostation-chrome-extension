@@ -5,7 +5,18 @@ export type TxInfoPayload = {
   gas_used: string;
   height: string;
   logs: null;
-  tx: null;
+  tx: {
+    type: string;
+    value: {
+      fee: {
+        amount: {
+          amount: string;
+          denom: string;
+        }[];
+        gas: string;
+      };
+    };
+  };
   txhash: string;
   timestamp: string;
   raw_log: string;

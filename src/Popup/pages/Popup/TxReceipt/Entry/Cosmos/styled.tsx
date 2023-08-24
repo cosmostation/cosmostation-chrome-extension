@@ -11,18 +11,46 @@ export const Container = styled('div')({
   height: '100%',
 });
 
+export const HeaderContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  margin: '0.8rem 1.6rem 1.6rem',
+
+  color: theme.colors.text01,
+}));
+
+export const CategoryTitleContainer = styled('div')({});
+
 export const ContentContainer = styled('div')(({ theme }) => ({
+  height: 'calc(100% - 10rem)',
+
+  display: 'flex',
+  flexDirection: 'column',
+
+  overflow: 'auto',
+
   padding: '1.6rem',
-  margin: '5rem 1.6rem 0',
+  margin: '0.8rem 1.6rem 0',
 
   backgroundColor: theme.colors.base02,
   borderRadius: '0.8rem',
 
   color: theme.colors.text01,
+
+  rowGap: '1rem',
 }));
 
 export const StyledDivider = styled(Divider)({
-  margin: '1.6rem 0',
+  margin: '0.6rem 0',
+});
+
+export const NetworkImageContainer = styled('div')({
+  '& > img': {
+    width: '1.6rem',
+    height: '1.6rem',
+  },
 });
 
 export const ItemContainer = styled('div')(({ theme }) => ({
@@ -30,6 +58,16 @@ export const ItemContainer = styled('div')(({ theme }) => ({
 
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'space-between',
+
+  color: theme.colors.text01,
+}));
+
+export const FeeItemContainer = styled('div')(({ theme }) => ({
+  width: '100%',
+
+  display: 'flex',
+  alignItems: 'flex-start',
   justifyContent: 'space-between',
 
   color: theme.colors.text01,
@@ -51,8 +89,6 @@ export const ItemTitleContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
 
-  columnGap: '0.8rem',
-
   color: theme.colors.text02,
 }));
 
@@ -62,29 +98,33 @@ export const ItemLabelContainer = styled('div')({
   justifyContent: 'center',
 });
 
-export const StyledIconButton = styled(IconButton)({
-  marginRight: '-0.8rem',
-});
+export const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  padding: '0',
 
-export const TxResultTextContainer = styled('div')({
+  '& svg': {
+    width: '1.6rem',
+    height: '1.6rem',
+    '& > path': {
+      fill: theme.colors.base06,
+    },
+    '&:hover': {
+      '& > path': {
+        fill: theme.colors.base05,
+      },
+    },
+  },
+}));
+
+export const ImageTextContainer = styled('div')({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  columnGap: '0.8rem',
-
-  // marginBottom: '4rem',
+  columnGap: '0.4rem',
 });
 
 export const TxHashContainer = styled('div')({
-  maxWidth: '100%',
-
-  wordBreak: 'keep-all',
-  whiteSpace: 'nowrap',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-all',
 });
 
 export const CheckIconContainer = styled('div')(({ theme }) => ({
@@ -108,3 +148,44 @@ export const BottomContainer = styled('div')({
 
   width: 'calc(100% - 3.2rem)',
 });
+
+export const IconButtonContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  columnGap: '0.4rem',
+});
+
+export const RightColumnContainer = styled('div')({});
+
+export const Div = styled('div')({});
+
+export const RightAmountContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  alignItems: 'center',
+
+  color: theme.colors.text01,
+}));
+
+export const DenomContainer = styled('div')({
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '10rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+});
+
+export const RightValueContainer = styled('div')(({ theme }) => ({
+  marginTop: '0.2rem',
+
+  display: 'flex',
+  justifyContent: 'flex-end',
+
+  color: theme.colors.text02,
+}));
