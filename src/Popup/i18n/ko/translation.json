@@ -1015,9 +1015,9 @@
             "entry": {
               "blockHeight": "블록 높이",
               "broadcastResult": "전송 결과",
+              "confirm": "확인",
               "copied": "복사 되었습니다.",
               "date": "날짜",
-              "done": "확인",
               "explorer": "블록 탐색기에서 확인하기",
               "fees": "수수료",
               "gas": "가스 사용량 / 가스 설정값",
@@ -1027,6 +1027,25 @@
               "success": "성공",
               "transactionReceipt": "트랜잭션 결과",
               "tx": "트랜잭션 데이터",
+              "txHash": "트랜잭션 해시"
+            }
+          },
+          "Ethereum": {
+            "entry": {
+              "blockNumber": "블록 번호",
+              "broadcastResult": "전송 결과",
+              "confirm": "확인",
+              "copied": "복사 되었습니다.",
+              "date": "날짜",
+              "effectiveGasPrice": "실사용된 가스 가격",
+              "explorer": "블록 탐색기에서 확인하기",
+              "fees": "수수료",
+              "gas": "가스 사용량",
+              "information": "트랜잭션 정보",
+              "network": "네트워크",
+              "status": "상태",
+              "success": "성공",
+              "transactionReceipt": "트랜잭션 결과",
               "txHash": "트랜잭션 해시"
             }
           },

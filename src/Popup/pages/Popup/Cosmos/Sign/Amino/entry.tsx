@@ -271,8 +271,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                         const { code, txhash } = response.tx_response;
 
                         if (code === 0) {
-                          enqueueSnackbar('success');
-
                           testTxResponse = txhash;
                         } else {
                           throw new Error(response.tx_response.raw_log as string);

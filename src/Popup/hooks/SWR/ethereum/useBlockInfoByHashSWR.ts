@@ -4,7 +4,7 @@ import useSWR from 'swr';
 
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { post } from '~/Popup/utils/axios';
-import type { TxInfoPayload } from '~/types/ethereum/rpc';
+import type { BlockInfoByHashPayload } from '~/types/ethereum/rpc';
 
 type FetchParams = {
   url: string;
@@ -14,27 +14,26 @@ type FetchParams = {
   };
 };
 
-export function useTxInfoSWR(txHash: string, config?: SWRConfiguration) {
+export function useBlockInfoByHashSWR(blockHash?: string, config?: SWRConfiguration) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { rpcURL } = currentEthereumNetwork;
 
   const fetcher = async (params: FetchParams) => {
-    const returnData = await post<TxInfoPayload>(params.url, { ...params.body, id: 1, jsonrpc: '2.0' });
+    const returnData = await post<BlockInfoByHashPayload>(params.url, { ...params.body, id: 1, jsonrpc: '2.0' });
     if (!returnData.result) {
       throw new Error('No result');
     }
     return returnData;
   };
 
-  const { data, isValidating, error, mutate } = useSWR<TxInfoPayload, AxiosError>(
-    { url: rpcURL, body: { method: 'eth_getTransactionReceipt', params: [txHash] } },
+  const { data, isValidating, error, mutate } = useSWR<BlockInfoByHashPayload, AxiosError>(
+    { url: rpcURL, body: { method: 'eth_getBlockByHash', params: [blockHash, false] } },
     fetcher,
     {
       revalidateOnFocus: false,
-
       ...config,
-      isPaused: () => !txHash || !rpcURL,
+      isPaused: () => !rpcURL,
     },
   );
 

@@ -11,7 +11,7 @@ export default function Entry() {
   }
 
   if (currentChain.line === 'ETHEREUM') {
-    return <Ethereum chain={currentChain} />;
+    return <Ethereum />;
   }
 
   //   if (currentChain.line === 'ETHEREUM') {

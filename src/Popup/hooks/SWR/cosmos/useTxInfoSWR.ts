@@ -19,12 +19,8 @@ export function useTxInfoSWR(chain: CosmosChain, txHash: string, config?: SWRCon
     }
     return get<TxInfoPayload>(fetchUrl);
   };
-
   const { data, isValidating, error, mutate } = useSWR<TxInfoPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
-    revalidateIfStale: false,
-    errorRetryCount: 5,
-    errorRetryInterval: 3000,
     ...config,
     isPaused: () => !txHash || !chain,
   });

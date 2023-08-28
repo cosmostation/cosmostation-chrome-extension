@@ -39,6 +39,7 @@ export type TransactionReceipt = {
   from: string;
   to?: string;
   cumulativeGasUsed: string;
+  effectiveGasPrice: string;
   gasUsed: string;
   contractAddress?: string;
   logs: Log[];
@@ -46,6 +47,27 @@ export type TransactionReceipt = {
 };
 
 export type TxInfoPayload = ResponseRPC<TransactionReceipt>;
+
+type BlockInfo = {
+  number: string;
+  hash: string;
+  parentHash: string;
+  timestamp: string;
+  transactions: string[];
+  miner: string;
+  difficulty: string;
+  totalDifficulty: string;
+  size: string;
+  gasUsed: string;
+  gasLimit: string;
+  baseFeePerGas: string;
+  nonce?: string;
+  extraData: string;
+  transactionsRoot: string;
+  stateRoot: string;
+};
+
+export type BlockInfoByHashPayload = ResponseRPC<BlockInfo>;
 
 export type GetBlock = {
   baseFeePerGas?: string;

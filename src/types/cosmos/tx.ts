@@ -8,8 +8,8 @@ export type TxInfoPayload = {
   tx: {
     type: string;
     value: {
-      fee: {
-        amount: {
+      fee?: {
+        amount?: {
           amount: string;
           denom: string;
         }[];

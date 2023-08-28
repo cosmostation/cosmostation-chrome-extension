@@ -1015,9 +1015,9 @@
             "entry": {
               "blockHeight": "Block Height",
               "broadcastResult": "Broadcast Result",
+              "confirm": "Confirm",
               "copied": "Copied",
               "date": "Date",
-              "done": "Date",
               "explorer": "View on Explorer",
               "fees": "Fees",
               "gas": "Gas used / wanted",
@@ -1027,6 +1027,25 @@
               "success": "Success",
               "transactionReceipt": "Transaction Receipt",
               "tx": "Tx",
+              "txHash": "Tx Hash"
+            }
+          },
+          "Ethereum": {
+            "entry": {
+              "blockNumber": "Block Number",
+              "broadcastResult": "Broadcast Result",
+              "confirm": "Confirm",
+              "copied": "Copied",
+              "date": "Date",
+              "effectiveGasPrice": "Effective Gas Price",
+              "explorer": "View on Explorer",
+              "fees": "Fee",
+              "gas": "Gas used",
+              "information": "Information",
+              "network": "Network",
+              "status": "Status",
+              "success": "Success",
+              "transactionReceipt": "Transaction Receipt",
               "txHash": "Tx Hash"
             }
           },

@@ -6,9 +6,9 @@ import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import { COSMOS_CHAINS } from '~/constants/chain';
+import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
-import OutlineButton from '~/Popup/components/common/OutlineButton';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import { useTxInfoSWR } from '~/Popup/hooks/SWR/cosmos/useTxInfoSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -52,7 +52,6 @@ type CosmosProps = {
   chain: CosmosChain;
 };
 
-// FIXME 로딩 프로그래스 추가
 export default function Cosmos({ chain }: CosmosProps) {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
@@ -75,6 +74,7 @@ export default function Cosmos({ chain }: CosmosProps) {
   const parsedTxDate = useMemo(() => {
     if (txInfo.data?.timestamp) {
       const date = new Date(txInfo.data.timestamp);
+
       // NOTE 로케일 적용되는지 테스트 필요
       return date.toLocaleString();
     }
@@ -86,7 +86,8 @@ export default function Cosmos({ chain }: CosmosProps) {
     [txInfo.data?.tx],
   );
 
-  const isValidating = useMemo(() => txInfo.isValidating, [txInfo.isValidating]);
+  const isLoading = useMemo(() => txInfo.error || txInfo.isValidating, [txInfo.error, txInfo.isValidating]);
+
   return (
     <Container>
       <HeaderContainer>
@@ -172,8 +173,7 @@ export default function Cosmos({ chain }: CosmosProps) {
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.date')}</Typography>
           </ItemTitleContainer>
-
-          {!parsedTxDate ? (
+          {isLoading ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : parsedTxDate ? (
             <Typography variant="h5">{parsedTxDate}</Typography>
@@ -187,7 +187,7 @@ export default function Cosmos({ chain }: CosmosProps) {
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.gas')}</Typography>
           </ItemTitleContainer>
 
-          {isValidating ? (
+          {isLoading ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : txInfo.data?.gas_used && txInfo.data?.gas_wanted ? (
             <div>
@@ -210,9 +210,9 @@ export default function Cosmos({ chain }: CosmosProps) {
           </ItemTitleContainer>
 
           <RightColumnContainer>
-            {isValidating ? (
+            {isLoading ? (
               <Skeleton width="4rem" height="1.5rem" />
-            ) : txInfo.data?.tx.value.fee.amount ? (
+            ) : txInfo.data?.tx?.value?.fee?.amount ? (
               txInfo.data.tx.value.fee.amount.map((item) => {
                 const feeCoinInfo = COSMOS_CHAINS.find((chains) => chains.baseDenom === item.denom);
                 const itemDisplayAmount = toDisplayDenomAmount(item.amount, feeCoinInfo?.decimals || 0);
@@ -252,10 +252,10 @@ export default function Cosmos({ chain }: CosmosProps) {
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.blockHeight')}</Typography>
           </ItemTitleContainer>
 
-          {isValidating ? (
+          {isLoading ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : txInfo.data?.height ? (
-            <Number typoOfIntegers="h5n">{txInfo.data?.height}</Number>
+            <Number typoOfIntegers="h5n">{txInfo.data.height}</Number>
           ) : (
             <Typography variant="h5">-</Typography>
           )}
@@ -266,7 +266,7 @@ export default function Cosmos({ chain }: CosmosProps) {
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.tx')}</Typography>
           </ItemTitleContainer>
           <TxHashContainer>
-            {isValidating ? (
+            {isLoading ? (
               <Skeleton width="10rem" height="1.5rem" />
             ) : doc ? (
               <Typography variant="h5">{doc}</Typography>
@@ -278,13 +278,13 @@ export default function Cosmos({ chain }: CosmosProps) {
       </ContentContainer>
 
       <BottomContainer>
-        <OutlineButton
+        <Button
           onClick={() => {
             navigate('/');
           }}
         >
-          {t('pages.Popup.TxReceipt.Entry.Cosmos.entry.done')}
-        </OutlineButton>
+          {t('pages.Popup.TxReceipt.Entry.Cosmos.entry.confirm')}
+        </Button>
       </BottomContainer>
     </Container>
   );
