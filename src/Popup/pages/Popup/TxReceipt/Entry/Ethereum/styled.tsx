@@ -4,7 +4,7 @@ import Divider from '~/Popup/components/common/Divider';
 import IconButton from '~/Popup/components/common/IconButton';
 
 export const Container = styled('div')({
-  padding: '0 0 1.6rem 0',
+  padding: '0.6rem 1.2rem 1.2rem',
 
   position: 'relative',
 
@@ -16,15 +16,13 @@ export const HeaderContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
 
-  margin: '0.8rem 1.6rem 1.6rem',
-
   color: theme.colors.text01,
 }));
 
 export const CategoryTitleContainer = styled('div')({});
 
 export const ContentContainer = styled('div')(({ theme }) => ({
-  height: 'calc(100% - 10rem)',
+  height: 'calc(100% - 10.5rem)',
 
   display: 'flex',
   flexDirection: 'column',
@@ -32,7 +30,7 @@ export const ContentContainer = styled('div')(({ theme }) => ({
   overflow: 'auto',
 
   padding: '1.6rem',
-  margin: '0.8rem 1.6rem 0',
+  marginTop: '1.4rem',
 
   backgroundColor: theme.colors.base02,
   borderRadius: '0.8rem',
