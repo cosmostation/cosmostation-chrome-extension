@@ -4,6 +4,7 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import { TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import NumberText from '~/Popup/components/common/Number';
@@ -20,7 +21,6 @@ import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import {
   BottomContainer,
   CategoryTitleContainer,
-  CheckIconContainer,
   Container,
   ContentContainer,
   DenomContainer,
@@ -29,6 +29,7 @@ import {
   HeaderContainer,
   HeaderTitle,
   IconButtonContainer,
+  IconContainer,
   ImageTextContainer,
   ItemColumnContainer,
   ItemContainer,
@@ -44,6 +45,7 @@ import {
 import CopyButton from '../components/CopyButton';
 
 import Check16Icon from '~/images/icons/Check16.svg';
+import Close16Icon from '~/images/icons/Close16.svg';
 import Copy16Icon from '~/images/icons/Copy16.svg';
 import Explorer16Icon from '~/images/icons/Explorer16.svg';
 
@@ -70,6 +72,16 @@ export default function Ethereum() {
 
   const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/tx/${txHash}` : ''), [explorerURL, txHash]);
 
+  const txConfirmedStatus = useMemo(() => {
+    if (txInfo.data && !txInfo.data?.result) return TX_CONFIRMED_STATUS.PENDING;
+
+    if (txInfo.data?.result?.status && BigInt(txInfo.data?.result?.status || '0').toString(10) !== '1') return TX_CONFIRMED_STATUS.FAILED;
+
+    if (txInfo.data?.result?.status && BigInt(txInfo.data?.result?.status || '0').toString(10) === '1') return TX_CONFIRMED_STATUS.CONFIRMED;
+
+    return undefined;
+  }, [txInfo.data]);
+
   const parsedTxDate = useMemo(() => {
     if (blockInfo.data?.result?.timestamp) {
       const timeStamp = Number(times(BigInt(blockInfo.data.result.timestamp || '0').toString(10), '1000'));
@@ -81,7 +93,10 @@ export default function Ethereum() {
     return undefined;
   }, [blockInfo.data?.result?.timestamp]);
 
-  const blockNumber = useMemo(() => BigInt(txInfo.data?.result?.blockNumber || '0').toString(10), [txInfo.data?.result?.blockNumber]);
+  const blockNumber = useMemo(
+    () => (txInfo.data?.result?.blockNumber ? BigInt(txInfo.data.result.blockNumber).toString(10) : undefined),
+    [txInfo.data?.result?.blockNumber],
+  );
 
   const baseEffectiveGasPrice = useMemo(() => BigInt(txInfo.data?.result?.effectiveGasPrice || '0').toString(10), [txInfo.data?.result?.effectiveGasPrice]);
 
@@ -109,10 +124,9 @@ export default function Ethereum() {
     [coinGeckoId, coinGeckoPrice.data, currency, displayFeeAmount],
   );
 
-  // NOTE 특정 에러에서만 로딩하도록 특정지을것/ 지금 상태는 그냥 에러도 로딩중으로 표시됨
   const isLoading = useMemo(
-    () => txInfo.data?.error?.message === 'No result' || txInfo.isValidating || blockInfo.isValidating,
-    [blockInfo.isValidating, txInfo.data?.error, txInfo.isValidating],
+    () => !txInfo.data?.result && (txInfo.isValidating || blockInfo.isValidating),
+    [blockInfo.isValidating, txInfo.data?.result, txInfo.isValidating],
   );
 
   return (
@@ -145,11 +159,11 @@ export default function Ethereum() {
           </ItemTitleContainer>
 
           <ImageTextContainer>
-            <CheckIconContainer>
+            <IconContainer data-is-success>
               <Check16Icon />
-            </CheckIconContainer>
+            </IconContainer>
 
-            <HeaderTitle>
+            <HeaderTitle data-is-success>
               <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.success')}</Typography>
             </HeaderTitle>
           </ImageTextContainer>
@@ -198,9 +212,41 @@ export default function Ethereum() {
 
         <ItemContainer>
           <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.transactionConfirmed')}</Typography>
+          </ItemTitleContainer>
+
+          <ImageTextContainer>
+            {isLoading ? (
+              <Skeleton width="4rem" height="1.5rem" />
+            ) : txConfirmedStatus ? (
+              txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.pending')}</Typography>
+              ) : (
+                <>
+                  <IconContainer data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
+                    {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? <Check16Icon /> : <Close16Icon />}
+                  </IconContainer>
+
+                  <HeaderTitle data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
+                    {txConfirmedStatus ? (
+                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.success')}</Typography>
+                    ) : (
+                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.failure')}</Typography>
+                    )}
+                  </HeaderTitle>
+                </>
+              )
+            ) : (
+              <Typography variant="h5">-</Typography>
+            )}
+          </ImageTextContainer>
+        </ItemContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.date')}</Typography>
           </ItemTitleContainer>
-          {isLoading ? (
+          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : parsedTxDate ? (
             <Typography variant="h5">{parsedTxDate}</Typography>
@@ -215,9 +261,9 @@ export default function Ethereum() {
           </ItemTitleContainer>
 
           <RightColumnContainer>
-            {isLoading ? (
+            {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
               <Skeleton width="4rem" height="1.5rem" />
-            ) : displayEffectiveGasPrice ? (
+            ) : gt(displayEffectiveGasPrice, '0') ? (
               <Div>
                 <RightAmountContainer>
                   <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
@@ -249,7 +295,7 @@ export default function Ethereum() {
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.gas')}</Typography>{' '}
           </ItemTitleContainer>
 
-          {isLoading ? (
+          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : gt(baseGasUsed, '0') ? (
             <div>
@@ -268,9 +314,9 @@ export default function Ethereum() {
           </ItemTitleContainer>
 
           <RightColumnContainer>
-            {isLoading ? (
+            {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
               <Skeleton width="4rem" height="1.5rem" />
-            ) : displayFeeAmount ? (
+            ) : gt(displayFeeAmount, '0') ? (
               <Div>
                 <RightAmountContainer>
                   <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
@@ -300,7 +346,7 @@ export default function Ethereum() {
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.blockNumber')}</Typography>
           </ItemTitleContainer>
 
-          {isLoading ? (
+          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : blockNumber ? (
             <NumberText typoOfIntegers="h5n">{blockNumber}</NumberText>

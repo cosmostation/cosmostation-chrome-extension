@@ -153,22 +153,6 @@ export const IconContainer = styled('div')<IconContainerProps>(({ theme, ...prop
   },
 }));
 
-export const CrossIconContainer = styled('div')(({ theme }) => ({
-  width: '1.6rem',
-  height: '1.6rem',
-
-  borderRadius: '50%',
-
-  backgroundColor: theme.accentColors.red,
-
-  '& > svg': {
-    fill: theme.accentColors.white,
-    '& > path': {
-      fill: theme.accentColors.white,
-    },
-  },
-}));
-
 type HeaderTitleProps = {
   'data-is-success': boolean;
 };

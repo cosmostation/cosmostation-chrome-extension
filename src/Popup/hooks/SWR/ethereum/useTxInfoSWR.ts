@@ -19,20 +19,16 @@ export function useTxInfoSWR(txHash: string, config?: SWRConfiguration) {
 
   const { rpcURL } = currentEthereumNetwork;
 
-  const fetcher = async (params: FetchParams) => {
-    const returnData = await post<TxInfoPayload>(params.url, { ...params.body, id: 1, jsonrpc: '2.0' });
-    if (!returnData.result) {
-      throw new Error('No result');
-    }
-    return returnData;
-  };
+  const fetcher = (params: FetchParams) => post<TxInfoPayload>(params.url, { ...params.body, id: 1, jsonrpc: '2.0' });
 
   const { data, isValidating, error, mutate } = useSWR<TxInfoPayload, AxiosError>(
     { url: rpcURL, body: { method: 'eth_getTransactionReceipt', params: [txHash] } },
     fetcher,
     {
       revalidateOnFocus: false,
-
+      dedupingInterval: 10000,
+      refreshInterval: 11000,
+      errorRetryCount: 0,
       ...config,
       isPaused: () => !txHash || !rpcURL,
     },

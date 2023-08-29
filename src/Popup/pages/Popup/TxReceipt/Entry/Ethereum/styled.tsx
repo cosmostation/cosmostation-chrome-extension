@@ -62,16 +62,6 @@ export const ItemContainer = styled('div')(({ theme }) => ({
 }));
 
 export const FeeItemContainer = styled('div')(({ theme }) => ({
-  // maxWidth: '10rem',
-
-  wordBreak: 'keep-all',
-  whiteSpace: 'nowrap',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-
   display: 'flex',
   alignItems: 'flex-start',
   justifyContent: 'space-between',
@@ -133,17 +123,32 @@ export const TxHashContainer = styled('div')({
   wordBreak: 'break-all',
 });
 
-export const CheckIconContainer = styled('div')(({ theme }) => ({
+type IconContainerProps = {
+  'data-is-success': boolean;
+};
+
+export const IconContainer = styled('div')<IconContainerProps>(({ theme, ...props }) => ({
   width: '1.6rem',
   height: '1.6rem',
 
   borderRadius: '50%',
 
-  backgroundColor: theme.accentColors.green01,
+  backgroundColor: props['data-is-success'] ? theme.accentColors.green01 : theme.accentColors.red,
+
+  '& > svg': {
+    fill: theme.accentColors.white,
+    '& > path': {
+      fill: theme.accentColors.white,
+    },
+  },
 }));
 
-export const HeaderTitle = styled('div')(({ theme }) => ({
-  color: theme.accentColors.green01,
+type HeaderTitleProps = {
+  'data-is-success': boolean;
+};
+
+export const HeaderTitle = styled('div')<HeaderTitleProps>(({ theme, ...props }) => ({
+  color: props['data-is-success'] ? theme.accentColors.green01 : theme.accentColors.red,
 }));
 
 export const BottomContainer = styled('div')({

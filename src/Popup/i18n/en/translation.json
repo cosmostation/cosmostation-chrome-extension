@@ -1039,12 +1039,15 @@
               "date": "Date",
               "effectiveGasPrice": "Effective Gas Price",
               "explorer": "View on Explorer",
+              "failure": "Failure",
               "fees": "Fee",
               "gas": "Gas used",
               "information": "Information",
               "network": "Network",
+              "pending": "Pending",
               "status": "Status",
               "success": "Success",
+              "transactionConfirmed": "Trasaction Confirmed",
               "transactionReceipt": "Transaction Receipt",
               "txHash": "Tx Hash"
             }

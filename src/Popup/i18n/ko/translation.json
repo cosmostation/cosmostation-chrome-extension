@@ -1039,12 +1039,15 @@
               "date": "날짜",
               "effectiveGasPrice": "실사용된 가스 가격",
               "explorer": "블록 탐색기에서 확인하기",
+              "failure": "실패",
               "fees": "수수료",
               "gas": "가스 사용량",
               "information": "트랜잭션 정보",
               "network": "네트워크",
+              "pending": "보류중",
               "status": "상태",
               "success": "성공",
+              "transactionConfirmed": "트랜잭션 성공여부",
               "transactionReceipt": "트랜잭션 결과",
               "txHash": "트랜잭션 해시"
             }

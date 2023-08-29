@@ -226,7 +226,7 @@ export default function Sui() {
           <RightColumnContainer>
             {isLoading ? (
               <Skeleton width="4rem" height="1.5rem" />
-            ) : displayFeeAmount ? (
+            ) : gt(displayFeeAmount, '0') ? (
               <Div>
                 <RightAmountContainer>
                   <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
