@@ -109,9 +109,10 @@ export default function Ethereum() {
     [coinGeckoId, coinGeckoPrice.data, currency, displayFeeAmount],
   );
 
+  // NOTE 특정 에러에서만 로딩하도록 특정지을것/ 지금 상태는 그냥 에러도 로딩중으로 표시됨
   const isLoading = useMemo(
-    () => txInfo.error || txInfo.data?.error?.message === 'No result' || txInfo.isValidating || blockInfo.isValidating,
-    [blockInfo.isValidating, txInfo.data?.error, txInfo.error, txInfo.isValidating],
+    () => txInfo.data?.error?.message === 'No result' || txInfo.isValidating || blockInfo.isValidating,
+    [blockInfo.isValidating, txInfo.data?.error, txInfo.isValidating],
   );
 
   return (

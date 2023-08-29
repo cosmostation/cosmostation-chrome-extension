@@ -86,6 +86,7 @@ export default function Cosmos({ chain }: CosmosProps) {
     [txInfo.data?.tx],
   );
 
+  // NOTE 특정 error에서만 로딩으로 처리하도록
   const isLoading = useMemo(() => txInfo.error || txInfo.isValidating, [txInfo.error, txInfo.isValidating]);
 
   return (
@@ -277,6 +278,7 @@ export default function Cosmos({ chain }: CosmosProps) {
         </ItemColumnContainer>
       </ContentContainer>
 
+      {/* NOTE 바텀 버튼 위치 너무 낮음 */}
       <BottomContainer>
         <Button
           onClick={() => {

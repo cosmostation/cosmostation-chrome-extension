@@ -41,6 +41,7 @@ import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/extensionStorage';
 import type { SuiSignAndExecuteTransactionBlock } from '~/types/message/sui';
+import type { Path } from '~/types/route';
 
 import Tx from './components/Tx';
 import TxMessage from './components/TxMessage';
@@ -298,6 +299,7 @@ export default function Entry({ queue }: EntryProps) {
                   try {
                     setIsProgress(true);
 
+                    let digest = '';
                     if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
                       const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
@@ -305,6 +307,7 @@ export default function Entry({ queue }: EntryProps) {
 
                       const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
 
+                      digest = response.digest;
                       responseToWeb({
                         response: {
                           result: response,
@@ -362,10 +365,8 @@ export default function Entry({ queue }: EntryProps) {
                     }
 
                     if (queue.channel === 'inApp') {
-                      enqueueSnackbar('success');
+                      await deQueue(`/popup/tx-receipt/${digest}` as unknown as Path);
                     }
-
-                    await deQueue();
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                   } finally {

@@ -90,3 +90,7 @@ export const COSMOS_ADD_NFT_ERROR = {
   NETWORK_ERROR: 5,
   NO_NFTS_AVAILABLE: 6,
 } as const;
+
+export const TRASACTION_RECEIPT_ERROR = {
+  1: 'Invalid Response Type',
+} as const;

@@ -2,6 +2,7 @@ import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 
 import Cosmos from './Cosmos/entry';
 import Ethereum from './Ethereum/entry';
+import Sui from './Sui/entry';
 
 export default function Entry() {
   const { currentChain } = useCurrentChain();
@@ -18,9 +19,9 @@ export default function Entry() {
   //     return <Ethereum chain={currentChain} />;
   //   }
 
-  //   if (currentChain.line === 'SUI') {
-  //     return <Sui />;
-  //   }
+  if (currentChain.line === 'SUI') {
+    return <Sui />;
+  }
 
   return null;
 }

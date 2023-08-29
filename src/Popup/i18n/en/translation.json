@@ -1049,6 +1049,26 @@
               "txHash": "Tx Hash"
             }
           },
+          "Sui": {
+            "entry": {
+              "broadcastResult": "Broadcast Result",
+              "checkPoint": "Check Point",
+              "confirm": "Confirm",
+              "copied": "Copied",
+              "date": "Date",
+              "digest": "Digest",
+              "epoch": "Epoch",
+              "explorer": "View on Explorer",
+              "failure": "Failure",
+              "fees": "Fees",
+              "information": "Information",
+              "network": "Network",
+              "status": "Status",
+              "success": "Success",
+              "transactionConfirmed": "Trasaction Confirmed",
+              "transactionReceipt": "Transaction Receipt"
+            }
+          },
           "components": {
             "CopyButton": {
               "index": {

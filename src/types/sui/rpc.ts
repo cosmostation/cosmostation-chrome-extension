@@ -1,4 +1,4 @@
-import type { DryRunTransactionBlockResponse, SuiObjectResponse } from '@mysten/sui.js';
+import type { DryRunTransactionBlockResponse, SuiObjectResponse, SuiTransactionBlockResponse } from '@mysten/sui.js';
 
 export type Body = {
   method: string;
@@ -74,6 +74,8 @@ export type GetCoins = {
 };
 
 export type GetCoinsResponse = Result<GetCoins>;
+
+export type TxInfoResponse = Result<SuiTransactionBlockResponse>;
 
 export type ExistsDetails = {
   data: Data;

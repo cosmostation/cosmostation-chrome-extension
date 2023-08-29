@@ -259,7 +259,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     const publicKeyType = getPublicKeyType(chain);
 
                     const pubKey = { type: publicKeyType, value: base64PublicKey };
-                    let testTxResponse: string;
+                    let txHash: string;
                     if (channel) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
@@ -271,7 +271,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                         const { code, txhash } = response.tx_response;
 
                         if (code === 0) {
-                          testTxResponse = txhash;
+                          txHash = txhash;
                         } else {
                           throw new Error(response.tx_response.raw_log as string);
                         }
@@ -286,8 +286,8 @@ export default function Entry({ queue, chain }: EntryProps) {
                       } finally {
                         setTimeout(
                           () => {
-                            if (testTxResponse) {
-                              void deQueue(`/popup/tx-receipt/${testTxResponse}` as unknown as Path);
+                            if (txHash) {
+                              void deQueue(`/popup/tx-receipt/${txHash}` as unknown as Path);
                             } else {
                               void deQueue();
                             }
