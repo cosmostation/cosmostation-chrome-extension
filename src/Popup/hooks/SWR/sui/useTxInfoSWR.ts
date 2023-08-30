@@ -5,6 +5,7 @@ import type { SuiTransactionBlockResponseOptions } from '@mysten/sui.js';
 
 import { TRASACTION_RECEIPT_ERROR } from '~/constants/error';
 import { post } from '~/Popup/utils/axios';
+import { suiTxHashRegex } from '~/Popup/utils/regex';
 import type { SuiNetwork } from '~/types/chain';
 import type { TxInfoResponse } from '~/types/sui/rpc';
 
@@ -29,18 +30,20 @@ export function useTxInfoSWR({ digest, network, option }: UseTxInfoSWRProps, con
   const { rpcURL } = network || currentSuiNetwork;
 
   const fetcher = async (params: FetchParams) => {
+    if (!suiTxHashRegex.test(params.digest)) return null;
+
     const returnData = await post<TxInfoResponse>(params.url, {
       jsonrpc: '2.0',
       method: params.method,
       params: [
         params.digest,
         {
-          showInput: true,
-          showRawInput: true,
+          showInput: false,
+          showRawInput: false,
           showEffects: true,
           showEvents: true,
-          showObjectChanges: true,
-          showBalanceChanges: true,
+          showObjectChanges: false,
+          showBalanceChanges: false,
           ...params.options,
         },
       ],

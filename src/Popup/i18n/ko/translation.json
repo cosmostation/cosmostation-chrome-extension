@@ -1059,7 +1059,7 @@
               "confirm": "확인",
               "copied": "복사 되었습니다.",
               "date": "날짜",
-              "digest": "다이제스트",
+              "digest": "다이제스트 해시",
               "epoch": "에포치",
               "explorer": "블록 탐색기에서 확인하기",
               "failure": "실패",

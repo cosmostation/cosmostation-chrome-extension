@@ -364,8 +364,10 @@ export default function Entry({ queue }: EntryProps) {
                       });
                     }
 
-                    if (queue.channel === 'inApp') {
+                    if (queue.channel === 'inApp' && !!digest.length) {
                       await deQueue(`/popup/tx-receipt/${digest}` as unknown as Path);
+                    } else {
+                      await deQueue();
                     }
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
