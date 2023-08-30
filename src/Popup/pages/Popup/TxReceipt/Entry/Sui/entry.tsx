@@ -16,6 +16,7 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { convertToLocales } from '~/Popup/utils/common';
 
 import {
   BottomContainer,
@@ -57,7 +58,7 @@ export default function Sui() {
   const { networkName, imageURL, explorerURL, coinGeckoId, decimals, displayDenom } = currentSuiNetwork;
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const { currency } = extensionStorage;
+  const { currency, language } = extensionStorage;
 
   const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 
@@ -73,10 +74,10 @@ export default function Sui() {
     if (txInfo.data?.result?.timestampMs) {
       const date = new Date(Number(txInfo.data.result.timestampMs));
 
-      return date.toLocaleString();
+      return date.toLocaleString(convertToLocales(language));
     }
     return undefined;
-  }, [txInfo.data?.result?.timestampMs]);
+  }, [language, txInfo.data?.result?.timestampMs]);
 
   const baseFeeAmount = useMemo(() => {
     if (txInfo.data?.result?.effects?.gasUsed) {
@@ -92,7 +93,7 @@ export default function Sui() {
 
   const displayFeeAmount = useMemo(() => toDisplayDenomAmount(baseFeeAmount, decimals), [baseFeeAmount, decimals]);
 
-  const displayFeeValue = useMemo(() => times(displayFeeAmount, price, 2), [displayFeeAmount, price]);
+  const displayFeeValue = useMemo(() => times(displayFeeAmount, price, 3), [displayFeeAmount, price]);
 
   const isLoading = useMemo(() => txInfo.error?.message === TRASACTION_RECEIPT_ERROR[1] || txInfo.isValidating, [txInfo.error?.message, txInfo.isValidating]);
 
@@ -107,19 +108,6 @@ export default function Sui() {
           <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Sui.entry.status')}</Typography>
         </CategoryTitleContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.network')}</Typography>
-          </ItemTitleContainer>
-
-          <ImageTextContainer>
-            <NetworkImageContainer>
-              <Image src={imageURL} />
-            </NetworkImageContainer>
-
-            <Typography variant="h5">{networkName}</Typography>
-          </ImageTextContainer>
-        </ItemContainer>
         <ItemContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.broadcastResult')}</Typography>
@@ -207,6 +195,47 @@ export default function Sui() {
 
         <ItemContainer>
           <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.network')}</Typography>
+          </ItemTitleContainer>
+
+          <ImageTextContainer>
+            <NetworkImageContainer>
+              <Image src={imageURL} />
+            </NetworkImageContainer>
+
+            <Typography variant="h5">{networkName}</Typography>
+          </ImageTextContainer>
+        </ItemContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.epoch')}</Typography>
+          </ItemTitleContainer>
+
+          {isLoading ? (
+            <Skeleton width="4rem" height="1.5rem" />
+          ) : txInfo.data?.result?.effects?.executedEpoch ? (
+            <NumberText typoOfIntegers="h5n">{txInfo.data.result.effects.executedEpoch}</NumberText>
+          ) : (
+            <Typography variant="h5">-</Typography>
+          )}
+        </ItemContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.checkPoint')}</Typography>
+          </ItemTitleContainer>
+          {isLoading ? (
+            <Skeleton width="4rem" height="1.5rem" />
+          ) : txInfo.data?.result?.checkpoint ? (
+            <NumberText typoOfIntegers="h5n">{txInfo.data.result.checkpoint}</NumberText>
+          ) : (
+            <Typography variant="h5">-</Typography>
+          )}
+        </ItemContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.date')}</Typography>
           </ItemTitleContainer>
           {isLoading ? (
@@ -238,7 +267,7 @@ export default function Sui() {
                   </DenomContainer>
                 </RightAmountContainer>
                 <RightValueContainer>
-                  <Typography variant="h5">{gt(displayFeeValue, '0.0001') ? '' : '<'}</Typography>
+                  <Typography variant="h5">{gt(displayFeeValue, '0.001') ? '' : '<'}</Typography>
                   &nbsp;
                   <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
                     {displayFeeValue}
@@ -250,32 +279,6 @@ export default function Sui() {
             )}
           </RightColumnContainer>
         </FeeItemContainer>
-
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.epoch')}</Typography>
-          </ItemTitleContainer>
-
-          {isLoading ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : txInfo.data?.result?.effects?.executedEpoch ? (
-            <NumberText typoOfIntegers="h5n">{txInfo.data.result.effects.executedEpoch}</NumberText>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.checkPoint')}</Typography>
-          </ItemTitleContainer>
-          {isLoading ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : txInfo.data?.result?.checkpoint ? (
-            <NumberText typoOfIntegers="h5n">{txInfo.data.result.checkpoint}</NumberText>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
       </ContentContainer>
 
       <BottomContainer>

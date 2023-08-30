@@ -17,6 +17,7 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { convertToLocales } from '~/Popup/utils/common';
 
 import {
   BottomContainer,
@@ -58,7 +59,7 @@ export default function Ethereum() {
 
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const { currency } = extensionStorage;
+  const { currency, language } = extensionStorage;
 
   const params = useParams();
 
@@ -88,10 +89,10 @@ export default function Ethereum() {
 
       const date = new Date(timeStamp);
 
-      return date.toLocaleString();
+      return date.toLocaleString(convertToLocales(language));
     }
     return undefined;
-  }, [blockInfo.data?.result?.timestamp]);
+  }, [blockInfo.data?.result?.timestamp, language]);
 
   const blockNumber = useMemo(
     () => (txInfo.data?.result?.blockNumber ? BigInt(txInfo.data.result.blockNumber).toString(10) : undefined),
@@ -120,7 +121,7 @@ export default function Ethereum() {
   );
 
   const displayFeeValue = useMemo(
-    () => times(displayFeeAmount, coinGeckoId ? coinGeckoPrice.data?.[coinGeckoId]?.[currency] || 0 : 0, 2),
+    () => times(displayFeeAmount, coinGeckoId ? coinGeckoPrice.data?.[coinGeckoId]?.[currency] || 0 : 0, 3),
     [coinGeckoId, coinGeckoPrice.data, currency, displayFeeAmount],
   );
 
@@ -140,19 +141,6 @@ export default function Ethereum() {
           <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.status')}</Typography>
         </CategoryTitleContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.network')}</Typography>
-          </ItemTitleContainer>
-
-          <ImageTextContainer>
-            <NetworkImageContainer>
-              <Image src={imageURL} />
-            </NetworkImageContainer>
-
-            <Typography variant="h5">{networkName}</Typography>
-          </ImageTextContainer>
-        </ItemContainer>
         <ItemContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.broadcastResult')}</Typography>
@@ -244,6 +232,34 @@ export default function Ethereum() {
 
         <ItemContainer>
           <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.network')}</Typography>
+          </ItemTitleContainer>
+
+          <ImageTextContainer>
+            <NetworkImageContainer>
+              <Image src={imageURL} />
+            </NetworkImageContainer>
+
+            <Typography variant="h5">{networkName}</Typography>
+          </ImageTextContainer>
+        </ItemContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.blockNumber')}</Typography>
+          </ItemTitleContainer>
+
+          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+            <Skeleton width="4rem" height="1.5rem" />
+          ) : blockNumber ? (
+            <NumberText typoOfIntegers="h5n">{blockNumber}</NumberText>
+          ) : (
+            <Typography variant="h5">-</Typography>
+          )}
+        </ItemContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.date')}</Typography>
           </ItemTitleContainer>
           {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
@@ -276,7 +292,7 @@ export default function Ethereum() {
                 </RightAmountContainer>
                 <RightValueContainer>
                   <Typography variant="h5">
-                    {gt(times(displayEffectiveGasPrice, coinGeckoId ? coinGeckoPrice.data?.[coinGeckoId]?.[currency] || 0 : 0, 2), '0.0001') ? '' : '<'}
+                    {gt(times(displayEffectiveGasPrice, coinGeckoId ? coinGeckoPrice.data?.[coinGeckoId]?.[currency] || 0 : 0, 2), '0.001') ? '' : '<'}
                   </Typography>
                   &nbsp;
                   <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
@@ -328,7 +344,7 @@ export default function Ethereum() {
                   </DenomContainer>
                 </RightAmountContainer>
                 <RightValueContainer>
-                  <Typography variant="h5">{gt(displayFeeValue, '0.0001') ? '' : '<'}</Typography>
+                  <Typography variant="h5">{gt(displayFeeValue, '0.001') ? '' : '<'}</Typography>
                   &nbsp;
                   <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
                     {displayFeeValue}
@@ -340,20 +356,6 @@ export default function Ethereum() {
             )}
           </RightColumnContainer>
         </FeeItemContainer>
-
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.blockNumber')}</Typography>
-          </ItemTitleContainer>
-
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : blockNumber ? (
-            <NumberText typoOfIntegers="h5n">{blockNumber}</NumberText>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
       </ContentContainer>
 
       <BottomContainer>
