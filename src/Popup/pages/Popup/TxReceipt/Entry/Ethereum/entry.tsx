@@ -144,22 +144,6 @@ export default function Ethereum() {
           <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.status')}</Typography>
         </CategoryTitleContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.broadcastResult')}</Typography>
-          </ItemTitleContainer>
-
-          <ImageTextContainer>
-            <IconContainer data-is-success>
-              <Check16Icon />
-            </IconContainer>
-
-            <HeaderTitle data-is-success>
-              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.success')}</Typography>
-            </HeaderTitle>
-          </ImageTextContainer>
-        </ItemContainer>
-
         <ItemColumnContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.txHash')}</Typography>

@@ -10,6 +10,7 @@ import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
+import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useTxInfoSWR } from '~/Popup/hooks/SWR/cosmos/useTxInfoSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
@@ -49,6 +50,7 @@ import Check16Icon from '~/images/icons/Check16.svg';
 import Close16Icon from '~/images/icons/Close16.svg';
 import Copy16Icon from '~/images/icons/Copy16.svg';
 import Explorer16Icon from '~/images/icons/Explorer16.svg';
+import Warning50Icon from '~/images/icons/Warning50.svg';
 
 type CosmosProps = {
   chain: CosmosChain;
@@ -83,7 +85,8 @@ export default function Cosmos({ chain }: CosmosProps) {
   }, [txInfo.data?.tx_response.timestamp, language]);
 
   const txConfirmedStatus = useMemo(() => {
-    if (txInfo.error?.response?.status === 404) return TX_CONFIRMED_STATUS.PENDING;
+    // NOTE 400번대로 변경할 것
+    if (txInfo.error?.response?.status && txInfo.error.response.status >= 400 && txInfo.error.response.status < 500) return TX_CONFIRMED_STATUS.PENDING;
 
     if (txInfo.data?.tx_response.code !== undefined) {
       if (txInfo.data.tx_response.code !== 0) return TX_CONFIRMED_STATUS.FAILED;
@@ -96,7 +99,8 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const isLoading = useMemo(() => txInfo.isValidating, [txInfo.isValidating]);
 
-  return (
+  // TODO 네트워크 요청 실패 || 네트워크 지연(지정된 횟수 찔러도 값 안나올때) 보여줄 EmptyAsset컴포넌트 추가
+  return txInfo.error?.response?.status && txInfo.error.response.status < 400 && txInfo.error.response.status >= 500 ? (
     <Container>
       <HeaderContainer>
         <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.transactionReceipt')}</Typography>
@@ -106,22 +110,63 @@ export default function Cosmos({ chain }: CosmosProps) {
         <CategoryTitleContainer>
           <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.status')}</Typography>
         </CategoryTitleContainer>
-
+        <ItemColumnContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.txHash')}</Typography>
+            <CopyButton text={txHash} />
+          </ItemTitleContainer>
+          <TxHashContainer>
+            <Typography variant="h5">{txHash}</Typography>
+          </TxHashContainer>
+        </ItemColumnContainer>
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.broadcastResult')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.explorer')}</Typography>
           </ItemTitleContainer>
 
-          <ImageTextContainer>
-            <IconContainer data-is-success>
-              <Check16Icon />
-            </IconContainer>
-
-            <HeaderTitle data-is-success>
-              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.success')}</Typography>
-            </HeaderTitle>
-          </ImageTextContainer>
+          {txDetailExplorerURL && (
+            <IconButtonContainer>
+              <StyledIconButton onClick={() => window.open(txDetailExplorerURL)}>
+                <Explorer16Icon />
+              </StyledIconButton>
+              <StyledIconButton
+                onClick={() => {
+                  if (copy(txDetailExplorerURL)) {
+                    enqueueSnackbar(t('pages.Popup.TxReceipt.Entry.Cosmos.entry.copied'));
+                  }
+                }}
+              >
+                <Copy16Icon />
+              </StyledIconButton>
+            </IconButtonContainer>
+          )}
         </ItemContainer>
+        <Div sx={{ width: '100%' }}>
+          <StyledDivider />
+        </Div>
+        <EmptyAsset Icon={Warning50Icon} headerText="Network Issue" subHeaderText="Fail to get Tranasaction Data" />
+      </ContentContainer>
+
+      <BottomContainer>
+        <Button
+          onClick={() => {
+            navigate('/');
+          }}
+        >
+          {t('pages.Popup.TxReceipt.Entry.Cosmos.entry.confirm')}
+        </Button>
+      </BottomContainer>
+    </Container>
+  ) : (
+    <Container>
+      <HeaderContainer>
+        <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.transactionReceipt')}</Typography>
+      </HeaderContainer>
+
+      <ContentContainer>
+        <CategoryTitleContainer>
+          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.status')}</Typography>
+        </CategoryTitleContainer>
 
         <ItemColumnContainer>
           <ItemTitleContainer>

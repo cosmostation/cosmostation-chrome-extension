@@ -4,18 +4,22 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
-import { TRASACTION_RECEIPT_ERROR } from '~/constants/error';
+import { APTOS_COIN } from '~/constants/aptos';
 import { TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import NumberText from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
-import { useTxInfoSWR } from '~/Popup/hooks/SWR/sui/useTxInfoSWR';
+import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
+import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
+import { useBlockInfoByVersionSWR } from '~/Popup/hooks/SWR/aptos/useBlockInfoByVersionSWR';
+import { useTxInfoSWR } from '~/Popup/hooks/SWR/aptos/useTxInfoSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { convertToTransaction } from '~/Popup/utils/aptos';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { convertToLocales } from '~/Popup/utils/common';
 
@@ -50,13 +54,22 @@ import Close16Icon from '~/images/icons/Close16.svg';
 import Copy16Icon from '~/images/icons/Copy16.svg';
 import Explorer16Icon from '~/images/icons/Explorer16.svg';
 
-export default function Sui() {
+export default function Aptos() {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
   const { navigate } = useNavigate();
 
-  const { currentSuiNetwork } = useCurrentSuiNetwork();
-  const { networkName, imageURL, explorerURL, coinGeckoId, decimals, displayDenom } = currentSuiNetwork;
+  // NOTE 5초에 10번
+  // NOTE 네트워크 요청 실패시 컴포넌트 추가
+  const { currentAptosNetwork } = useCurrentAptosNetwork();
+  const { data: aptosInfo } = useAccountResourceSWR({ resourceType: '0x1::coin::CoinInfo', resourceTarget: APTOS_COIN, address: '0x1' });
+  const decimals = useMemo(() => aptosInfo?.data.decimals || 0, [aptosInfo?.data.decimals]);
+
+  const assets = useAssetsSWR();
+  const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
+  const displayDenom = useMemo(() => asset?.symbol || aptosInfo?.data.symbol || '', [aptosInfo?.data.symbol, asset?.symbol]);
+
+  const { networkName, imageURL, explorerURL, coinGeckoId } = currentAptosNetwork;
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { currency, language } = extensionStorage;
@@ -65,79 +78,104 @@ export default function Sui() {
 
   const params = useParams();
 
-  const txDigest = useMemo(() => params.id || '', [params.id]);
+  const txHash = useMemo(() => params.id || '', [params.id]);
 
-  const txInfo = useTxInfoSWR({ digest: txDigest, network: currentSuiNetwork });
+  const txInfo = useTxInfoSWR(txHash);
+  const convertedTx = useMemo(() => convertToTransaction(txInfo.data), [txInfo.data]);
 
-  console.log('🚀 ~ file: entry.tsx:72 ~ Sui ~ txInfo:', txInfo);
+  const txVersionId = useMemo(() => {
+    if (convertedTx?.type === 'user_transaction') {
+      return convertedTx.version;
+    }
+    return '';
+  }, [convertedTx]);
 
-  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/txblock/${txDigest}` : ''), [explorerURL, txDigest]);
+  const blockInfo = useBlockInfoByVersionSWR(txVersionId);
+
+  const blockHeight = useMemo(() => blockInfo.data?.block_height, [blockInfo.data?.block_height]);
+
+  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/version/${txHash}` : ''), [explorerURL, txHash]);
 
   const parsedTxDate = useMemo(() => {
-    if (txInfo.data?.result?.timestampMs) {
-      const date = new Date(Number(txInfo.data.result.timestampMs));
+    if (convertedTx?.type === 'user_transaction') {
+      const date = new Date(Number(convertedTx.timestamp));
 
       return date.toLocaleString(convertToLocales(language));
     }
     return undefined;
-  }, [language, txInfo.data?.result?.timestampMs]);
+  }, [convertedTx, language]);
 
   const baseFeeAmount = useMemo(() => {
-    if (txInfo.data?.result?.effects?.gasUsed) {
-      const storageCost = minus(txInfo.data.result.effects.gasUsed.storageCost, txInfo.data.result.effects.gasUsed.storageRebate);
-
-      const cost = plus(txInfo.data.result.effects.gasUsed.computationCost, gt(storageCost, 0) ? storageCost : 0);
-
-      return String(cost);
+    if (convertedTx?.type === 'user_transaction') {
+      return '1';
     }
+    // if (txInfo.data?.result?.effects?.gasUsed) {
+    //   const storageCost = minus(txInfo.data.result.effects.gasUsed.storageCost, txInfo.data.result.effects.gasUsed.storageRebate);
+
+    //   const cost = plus(txInfo.data.result.effects.gasUsed.computationCost, gt(storageCost, 0) ? storageCost : 0);
+
+    //   return String(cost);
+    // }
 
     return '0';
-  }, [txInfo.data?.result?.effects?.gasUsed]);
+  }, [convertedTx?.type]);
 
   const displayFeeAmount = useMemo(() => toDisplayDenomAmount(baseFeeAmount, decimals), [baseFeeAmount, decimals]);
 
   const displayFeeValue = useMemo(() => times(displayFeeAmount, price, 3), [displayFeeAmount, price]);
 
   const txConfirmedStatus = useMemo(() => {
-    if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR[1]) return TX_CONFIRMED_STATUS.PENDING;
+    if (convertedTx?.type === 'pending_transaction') return TX_CONFIRMED_STATUS.PENDING;
 
-    if (txInfo.data?.result?.effects?.status.status) {
-      if (txInfo.data.result.effects.status.status === 'failure') return TX_CONFIRMED_STATUS.FAILED;
-
-      if (txInfo.data.result.effects.status.status === 'success') return TX_CONFIRMED_STATUS.CONFIRMED;
+    if (convertedTx?.type === 'user_transaction') {
+      return convertedTx.success ? TX_CONFIRMED_STATUS.CONFIRMED : TX_CONFIRMED_STATUS.FAILED;
     }
 
     return undefined;
-  }, [txInfo.data, txInfo.error]);
-
-  console.log('🚀 ~ file: entry.tsx:113 ~ txConfirmedStatus ~ txConfirmedStatus:', txConfirmedStatus);
+  }, [convertedTx]);
 
   const isLoading = useMemo(() => txInfo.isValidating, [txInfo.isValidating]);
 
   return (
     <Container>
       <HeaderContainer>
-        <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Sui.entry.transactionReceipt')}</Typography>
+        <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.transactionReceipt')}</Typography>
       </HeaderContainer>
 
       <ContentContainer>
         <CategoryTitleContainer>
-          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Sui.entry.status')}</Typography>
+          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.status')}</Typography>
         </CategoryTitleContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.broadcastResult')}</Typography>
+          </ItemTitleContainer>
+
+          <ImageTextContainer>
+            <IconContainer data-is-success>
+              <Check16Icon />
+            </IconContainer>
+
+            <HeaderTitle data-is-success>
+              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.success')}</Typography>
+            </HeaderTitle>
+          </ImageTextContainer>
+        </ItemContainer>
 
         <ItemColumnContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.digest')}</Typography>
-            <CopyButton text={txDigest} />
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.txHash')}</Typography>
+            <CopyButton text={txHash} />
           </ItemTitleContainer>
           <TxHashContainer>
-            <Typography variant="h5">{txDigest}</Typography>
+            <Typography variant="h5">{txHash}</Typography>
           </TxHashContainer>
         </ItemColumnContainer>
 
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.explorer')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.explorer')}</Typography>
           </ItemTitleContainer>
 
           {txDetailExplorerURL && (
@@ -148,7 +186,7 @@ export default function Sui() {
               <StyledIconButton
                 onClick={() => {
                   if (copy(txDetailExplorerURL)) {
-                    enqueueSnackbar(t('pages.Popup.TxReceipt.Entry.Sui.entry.copied'));
+                    enqueueSnackbar(t('pages.Popup.TxReceipt.Entry.Aptos.entry.copied'));
                   }
                 }}
               >
@@ -163,20 +201,20 @@ export default function Sui() {
         </Div>
 
         <CategoryTitleContainer>
-          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Sui.entry.information')}</Typography>
+          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.information')}</Typography>
         </CategoryTitleContainer>
 
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.transactionConfirmed')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.transactionConfirmed')}</Typography>
           </ItemTitleContainer>
 
           <ImageTextContainer>
             {isLoading ? (
-              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.pending')}</Typography>
+              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.pending')}</Typography>
             ) : txConfirmedStatus ? (
               txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.pending')}</Typography>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.pending')}</Typography>
               ) : (
                 <>
                   <IconContainer data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
@@ -185,9 +223,9 @@ export default function Sui() {
 
                   <HeaderTitle data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
                     {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? (
-                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.success')}</Typography>
+                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.success')}</Typography>
                     ) : (
-                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.failure')}</Typography>
+                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.failure')}</Typography>
                     )}
                   </HeaderTitle>
                 </>
@@ -200,7 +238,7 @@ export default function Sui() {
 
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.network')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.network')}</Typography>
           </ItemTitleContainer>
 
           <ImageTextContainer>
@@ -211,16 +249,31 @@ export default function Sui() {
             <Typography variant="h5">{networkName}</Typography>
           </ImageTextContainer>
         </ItemContainer>
+        {convertedTx?.type === 'user_transaction' && convertedTx.vm_status && (
+          <ItemContainer>
+            <ItemTitleContainer>
+              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.vmStatus')}</Typography>
+            </ItemTitleContainer>
+
+            {isLoading ? (
+              <Skeleton width="4rem" height="1.5rem" />
+            ) : txVersionId ? (
+              <NumberText typoOfIntegers="h5n">{txVersionId}</NumberText>
+            ) : (
+              <Typography variant="h5">-</Typography>
+            )}
+          </ItemContainer>
+        )}
 
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.epoch')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.version')}</Typography>
           </ItemTitleContainer>
 
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+          {isLoading ? (
             <Skeleton width="4rem" height="1.5rem" />
-          ) : txInfo.data?.result?.effects?.executedEpoch ? (
-            <NumberText typoOfIntegers="h5n">{txInfo.data.result.effects.executedEpoch}</NumberText>
+          ) : txVersionId ? (
+            <NumberText typoOfIntegers="h5n">{txVersionId}</NumberText>
           ) : (
             <Typography variant="h5">-</Typography>
           )}
@@ -228,12 +281,12 @@ export default function Sui() {
 
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.checkPoint')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.blockHeight')}</Typography>
           </ItemTitleContainer>
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+          {isLoading ? (
             <Skeleton width="4rem" height="1.5rem" />
-          ) : txInfo.data?.result?.checkpoint ? (
-            <NumberText typoOfIntegers="h5n">{txInfo.data.result.checkpoint}</NumberText>
+          ) : blockHeight ? (
+            <NumberText typoOfIntegers="h5n">{blockHeight}</NumberText>
           ) : (
             <Typography variant="h5">-</Typography>
           )}
@@ -241,9 +294,9 @@ export default function Sui() {
 
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.date')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.date')}</Typography>
           </ItemTitleContainer>
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+          {isLoading ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : parsedTxDate ? (
             <Typography variant="h5">{parsedTxDate}</Typography>
@@ -254,11 +307,11 @@ export default function Sui() {
 
         <FeeItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.fees')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.fees')}</Typography>
           </ItemTitleContainer>
 
           <RightColumnContainer>
-            {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+            {isLoading ? (
               <Skeleton width="4rem" height="1.5rem" />
             ) : gt(displayFeeAmount, '0') ? (
               <Div>
@@ -292,7 +345,7 @@ export default function Sui() {
             navigate('/');
           }}
         >
-          {t('pages.Popup.TxReceipt.Entry.Sui.entry.confirm')}
+          {t('pages.Popup.TxReceipt.Entry.Aptos.entry.confirm')}
         </Button>
       </BottomContainer>
     </Container>

@@ -32,6 +32,8 @@ export function useTxInfoSWR(txHash: string, config?: SWRConfiguration) {
     return returnData;
   };
 
+  // NOTE 최대 요청 수 10으로 5초 간격으로 제한
+
   const { data, isValidating, error, mutate } = useSWR<TxInfoPayload | null, AxiosError>(
     { url: rpcURL, txHash, body: { method: 'eth_getTransactionReceipt', params: [txHash] } },
     fetcher,

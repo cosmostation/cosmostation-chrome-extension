@@ -55,6 +55,8 @@ export function useTxInfoSWR({ digest, network, option }: UseTxInfoSWRProps, con
     return returnData;
   };
 
+  // NOTE 최대 요청 수 10으로 5초 간격으로 제한
+
   const { data, isValidating, error, mutate } = useSWR<TxInfoResponse | null, AxiosError>(
     { url: rpcURL, digest, option, method: 'sui_getTransactionBlock' },
     fetcher,

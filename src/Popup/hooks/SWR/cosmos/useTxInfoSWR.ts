@@ -19,6 +19,8 @@ export function useTxInfoSWR(chain: CosmosChain, txHash: string, config?: SWRCon
     }
     return get<TxInfoPayload>(fetchUrl);
   };
+
+  // NOTE 최대 요청 수 10으로 5초 간격으로 제한
   const { data, isValidating, error, mutate } = useSWR<TxInfoPayload | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,

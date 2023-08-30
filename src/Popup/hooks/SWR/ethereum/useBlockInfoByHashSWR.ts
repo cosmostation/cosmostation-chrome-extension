@@ -27,6 +27,8 @@ export function useBlockInfoByHashSWR(blockHash?: string, config?: SWRConfigurat
     return returnData;
   };
 
+  // NOTE 최대 요청 수 10으로 5초 간격으로 제한
+
   const { data, isValidating, error, mutate } = useSWR<BlockInfoByHashPayload, AxiosError>(
     { url: rpcURL, body: { method: 'eth_getBlockByHash', params: [blockHash, false] } },
     fetcher,
