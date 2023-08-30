@@ -1066,6 +1066,7 @@
               "fees": "Fees",
               "information": "Information",
               "network": "Network",
+              "pending": "Pending",
               "status": "Status",
               "success": "Success",
               "transactionConfirmed": "Trasaction Confirmed",

@@ -172,7 +172,7 @@ export default function Sui() {
 
           <ImageTextContainer>
             {isLoading ? (
-              <Skeleton width="4rem" height="1.5rem" />
+              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.pending')}</Typography>
             ) : txInfo.data?.result?.effects?.status.status ? (
               <>
                 <IconContainer data-is-success={txInfo.data.result.effects.status.status === 'success'}>

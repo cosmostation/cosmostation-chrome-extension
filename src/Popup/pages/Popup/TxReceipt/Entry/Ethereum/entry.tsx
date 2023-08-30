@@ -74,14 +74,17 @@ export default function Ethereum() {
   const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/tx/${txHash}` : ''), [explorerURL, txHash]);
 
   const txConfirmedStatus = useMemo(() => {
-    if (txInfo.data && !txInfo.data?.result) return TX_CONFIRMED_STATUS.PENDING;
+    // NOTE 네트워크 에러시에 계속 펜딩으로 잡게됨 , && !txInfo.error이게 에러로 안잡힘
+    if (txInfo.data && !txInfo.data?.result && !txInfo.error) return TX_CONFIRMED_STATUS.PENDING;
 
-    if (txInfo.data?.result?.status && BigInt(txInfo.data?.result?.status || '0').toString(10) !== '1') return TX_CONFIRMED_STATUS.FAILED;
+    if (txInfo.data?.result?.status) {
+      if (BigInt(txInfo.data?.result?.status || '0').toString(10) !== '1') return TX_CONFIRMED_STATUS.FAILED;
 
-    if (txInfo.data?.result?.status && BigInt(txInfo.data?.result?.status || '0').toString(10) === '1') return TX_CONFIRMED_STATUS.CONFIRMED;
+      if (BigInt(txInfo.data?.result?.status || '0').toString(10) === '1') return TX_CONFIRMED_STATUS.CONFIRMED;
+    }
 
     return undefined;
-  }, [txInfo.data]);
+  }, [txInfo.data, txInfo.error]);
 
   const parsedTxDate = useMemo(() => {
     if (blockInfo.data?.result?.timestamp) {

@@ -13,7 +13,7 @@ export function useTxInfoSWR(chain: CosmosChain, txHash: string, config?: SWRCon
 
   const requestURL = getTxInfo(txHash);
 
-  const fetcher = async (fetchUrl: string) => {
+  const fetcher = (fetchUrl: string) => {
     if (!cosmosTxHashRegex.test(txHash)) {
       return null;
     }

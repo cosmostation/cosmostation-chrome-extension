@@ -1066,6 +1066,7 @@
               "fees": "수수료",
               "information": "트랜잭션 정보",
               "network": "네트워크",
+              "pending": "보류중",
               "status": "상태",
               "success": "성공",
               "transactionConfirmed": "트랜잭션 성공여부",
