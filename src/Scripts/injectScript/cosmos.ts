@@ -359,7 +359,7 @@ export const cosmosWallet: RegistCosmosWallet = {
         return {
           name: account.name,
           isLedger: !!account.isLedger,
-          publicKey: {
+          public_key: {
             type: account.isEthermint ? 'ethsecp256k1' : 'secp256k1',
             value: Buffer.from(account.publicKey).toString('base64'),
           },
@@ -376,49 +376,49 @@ export const cosmosWallet: RegistCosmosWallet = {
           params: {
             chainName: chainID,
             doc: document as unknown as SignAminoDoc,
-            isEditFee: options?.editMode?.fee,
-            isEditMemo: options?.editMode?.memo,
+            isEditFee: options?.edit_mode?.fee,
+            isEditMemo: options?.edit_mode?.memo,
           },
         })) as CosSignAminoResponse;
 
         return {
-          publicKey: {
-            type: response.pub_key.type === 'tendermint/PubKeySecp256k1' ? 'secp256k1' : 'ethsecp256k1',
-            value: response.pub_key.value,
-          },
           signature: response.signature,
-          signedDoc: response.signed_doc,
+          signed_doc: response.signed_doc,
         };
       } catch (e) {
         throw new Error((e as { message?: string }).message || 'Unknown Error');
       }
     },
     signDirect: async (chainID, document, options) => {
+      const body_bytes =
+        typeof document.body_bytes === 'string' ? new Uint8Array(Buffer.from(document.body_bytes, 'hex')) : new Uint8Array(document.body_bytes);
+      const auth_info_bytes =
+        typeof document.auth_info_bytes === 'string' ? new Uint8Array(Buffer.from(document.auth_info_bytes, 'hex')) : new Uint8Array(document.auth_info_bytes);
+
       try {
         const response = (await request({
           method: 'cos_signDirect',
           params: {
             chainName: chainID,
-            doc: document as unknown as SignDirectDoc,
-            isEditFee: options?.editMode?.fee,
-            isEditMemo: options?.editMode?.memo,
+            doc: { ...document, body_bytes, auth_info_bytes } as unknown as SignDirectDoc,
+            isEditFee: options?.edit_mode?.fee,
+            isEditMemo: options?.edit_mode?.memo,
           },
         })) as CosSignDirectResponse;
 
         return {
-          publicKey: {
-            type: response.pub_key.type === 'tendermint/PubKeySecp256k1' ? 'secp256k1' : 'ethsecp256k1',
-            value: response.pub_key.value,
-          },
           signature: response.signature,
-          signedDoc: response.signed_doc,
+          signed_doc: {
+            auth_info_bytes: new Uint8Array(response.signed_doc.auth_info_bytes),
+            body_bytes: new Uint8Array(response.signed_doc.body_bytes),
+          },
         };
       } catch (e) {
         throw new Error((e as { message?: string }).message || 'Unknown Error');
       }
     },
     sendTransaction: async (chainId, txBytes, mode) => {
-      const txMode = mode || 0;
+      const txMode = mode ?? 2;
       const response = (await request({
         method: 'cos_sendTransaction',
         params: {
@@ -431,7 +431,7 @@ export const cosmosWallet: RegistCosmosWallet = {
       return response;
     },
 
-    getSupportedChainIDs: async () => {
+    getSupportedChainIds: async () => {
       const response = (await request({ method: 'cos_supportedChainIds' })) as CosSupportedChainIdsResponse;
 
       return [...response.official, ...response.unofficial];
@@ -440,12 +440,12 @@ export const cosmosWallet: RegistCosmosWallet = {
   events: {
     on: (type, listener) => {
       if (type === 'AccountChanged') {
-        window.addEventListener('cosmostation_keystore', listener);
+        window.addEventListener('cosmostation_keystorechange', listener);
       }
     },
     off: (type, listener) => {
       if (type === 'AccountChanged') {
-        window.removeEventListener('cosmostation_keystore', listener);
+        window.removeEventListener('cosmostation_keystorechange', listener);
       }
     },
   },
