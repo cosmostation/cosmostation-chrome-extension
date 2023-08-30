@@ -85,7 +85,7 @@ export default function Cosmos({ chain }: CosmosProps) {
   const txConfirmedStatus = useMemo(() => {
     if (txInfo.error?.response?.status === 404) return TX_CONFIRMED_STATUS.PENDING;
 
-    if (txInfo.data?.tx_response.code) {
+    if (txInfo.data?.tx_response.code !== undefined) {
       if (txInfo.data.tx_response.code !== 0) return TX_CONFIRMED_STATUS.FAILED;
 
       if (txInfo.data.tx_response.code === 0) return TX_CONFIRMED_STATUS.CONFIRMED;

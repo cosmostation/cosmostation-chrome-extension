@@ -2,6 +2,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { TRASACTION_RECEIPT_ERROR } from '~/constants/error';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { post } from '~/Popup/utils/axios';
 import { ethereumTxHashRegex } from '~/Popup/utils/regex';
@@ -21,10 +22,14 @@ export function useTxInfoSWR(txHash: string, config?: SWRConfiguration) {
 
   const { rpcURL } = currentEthereumNetwork;
 
-  const fetcher = (params: FetchParams) => {
+  const fetcher = async (params: FetchParams) => {
     if (!ethereumTxHashRegex.test(params.txHash)) return null;
 
-    return post<TxInfoPayload>(params.url, { ...params.body, id: 1, jsonrpc: '2.0' });
+    const returnData = await post<TxInfoPayload>(params.url, { ...params.body, id: 1, jsonrpc: '2.0' });
+    if (!returnData.error && !returnData.result) {
+      throw new Error(TRASACTION_RECEIPT_ERROR[1]);
+    }
+    return returnData;
   };
 
   const { data, isValidating, error, mutate } = useSWR<TxInfoPayload | null, AxiosError>(
@@ -32,9 +37,8 @@ export function useTxInfoSWR(txHash: string, config?: SWRConfiguration) {
     fetcher,
     {
       revalidateOnFocus: false,
-      dedupingInterval: 10000,
-      refreshInterval: 11000,
-      errorRetryCount: 0,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
       ...config,
       isPaused: () => !txHash || !rpcURL,
     },

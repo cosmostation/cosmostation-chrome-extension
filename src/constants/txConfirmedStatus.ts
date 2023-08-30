@@ -1,5 +1,5 @@
 export const TX_CONFIRMED_STATUS = {
-  PENDING: 1,
+  CONFIRMED: 1,
   FAILED: 2,
-  CONFIRMED: 3,
+  PENDING: 3,
 } as const;

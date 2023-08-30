@@ -92,5 +92,5 @@ export const COSMOS_ADD_NFT_ERROR = {
 } as const;
 
 export const TRASACTION_RECEIPT_ERROR = {
-  1: 'Invalid Response Type',
+  1: 'Pending State',
 } as const;

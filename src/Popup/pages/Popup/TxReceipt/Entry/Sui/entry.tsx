@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import { TRASACTION_RECEIPT_ERROR } from '~/constants/error';
+import { TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import NumberText from '~/Popup/components/common/Number';
@@ -95,7 +96,19 @@ export default function Sui() {
 
   const displayFeeValue = useMemo(() => times(displayFeeAmount, price, 3), [displayFeeAmount, price]);
 
-  const isLoading = useMemo(() => txInfo.error?.message === TRASACTION_RECEIPT_ERROR[1] || txInfo.isValidating, [txInfo.error?.message, txInfo.isValidating]);
+  const txConfirmedStatus = useMemo(() => {
+    if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR[1]) return TX_CONFIRMED_STATUS.PENDING;
+
+    if (txInfo.data?.result?.effects?.status.status) {
+      if (txInfo.data.result.effects.status.status === 'failure') return TX_CONFIRMED_STATUS.FAILED;
+
+      if (txInfo.data.result.effects.status.status === 'success') return TX_CONFIRMED_STATUS.CONFIRMED;
+    }
+
+    return undefined;
+  }, [txInfo.data, txInfo.error]);
+
+  const isLoading = useMemo(() => txInfo.isValidating, [txInfo.isValidating]);
 
   return (
     <Container>
@@ -173,20 +186,24 @@ export default function Sui() {
           <ImageTextContainer>
             {isLoading ? (
               <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.pending')}</Typography>
-            ) : txInfo.data?.result?.effects?.status.status ? (
-              <>
-                <IconContainer data-is-success={txInfo.data.result.effects.status.status === 'success'}>
-                  {txInfo.data.result.effects.status.status === 'success' ? <Check16Icon /> : <Close16Icon />}
-                </IconContainer>
+            ) : txConfirmedStatus ? (
+              txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.pending')}</Typography>
+              ) : (
+                <>
+                  <IconContainer data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
+                    {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? <Check16Icon /> : <Close16Icon />}
+                  </IconContainer>
 
-                <HeaderTitle data-is-success={txInfo.data.result.effects.status.status === 'success'}>
-                  {txInfo.data.result.effects.status.status === 'success' ? (
-                    <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.success')}</Typography>
-                  ) : (
-                    <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.failure')}</Typography>
-                  )}
-                </HeaderTitle>
-              </>
+                  <HeaderTitle data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
+                    {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? (
+                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.success')}</Typography>
+                    ) : (
+                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.failure')}</Typography>
+                    )}
+                  </HeaderTitle>
+                </>
+              )
             ) : (
               <Typography variant="h5">-</Typography>
             )}
