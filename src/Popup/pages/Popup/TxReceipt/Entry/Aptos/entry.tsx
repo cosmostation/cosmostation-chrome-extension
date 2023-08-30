@@ -20,7 +20,7 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { convertToTransaction } from '~/Popup/utils/aptos';
-import { gt, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { convertToLocales } from '~/Popup/utils/common';
 
 import {

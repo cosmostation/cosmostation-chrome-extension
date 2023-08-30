@@ -69,8 +69,6 @@ export default function Sui() {
 
   const txInfo = useTxInfoSWR({ digest: txDigest, network: currentSuiNetwork });
 
-  console.log('🚀 ~ file: entry.tsx:72 ~ Sui ~ txInfo:', txInfo);
-
   const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/txblock/${txDigest}` : ''), [explorerURL, txDigest]);
 
   const parsedTxDate = useMemo(() => {
@@ -109,8 +107,6 @@ export default function Sui() {
 
     return undefined;
   }, [txInfo.data, txInfo.error]);
-
-  console.log('🚀 ~ file: entry.tsx:113 ~ txConfirmedStatus ~ txConfirmedStatus:', txConfirmedStatus);
 
   const isLoading = useMemo(() => txInfo.isValidating, [txInfo.isValidating]);
 
