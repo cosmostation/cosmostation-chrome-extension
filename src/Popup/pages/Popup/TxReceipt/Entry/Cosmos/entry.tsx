@@ -75,6 +75,10 @@ export default function Cosmos({ chain }: CosmosProps) {
   const explorerURL = useMemo(() => chain.explorerURL, [chain.explorerURL]);
 
   const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/transactions/${txHash}` : ''), [explorerURL, txHash]);
+  const blockDetailExplorerURL = useMemo(
+    () => (explorerURL && txInfo.data?.tx_response.height ? `${explorerURL}/blocks/${txInfo.data.tx_response.height}` : ''),
+    [explorerURL, txInfo.data?.tx_response.height],
+  );
 
   const parsedTxDate = useMemo(() => {
     if (txInfo.data?.tx_response.timestamp) {
@@ -283,7 +287,12 @@ export default function Cosmos({ chain }: CosmosProps) {
           {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : txInfo.data?.tx_response.height ? (
-            <Number typoOfIntegers="h5n">{txInfo.data.tx_response.height}</Number>
+            <IconButtonContainer>
+              <Number typoOfIntegers="h5n">{txInfo.data.tx_response.height}</Number>{' '}
+              <StyledIconButton onClick={() => window.open(blockDetailExplorerURL)}>
+                <Explorer16Icon />
+              </StyledIconButton>
+            </IconButtonContainer>
           ) : (
             <Typography variant="h5">-</Typography>
           )}

@@ -131,12 +131,7 @@ export default function Ethereum() {
     [coinGeckoId, coinGeckoPrice.data, currency, displayFeeAmount],
   );
 
-  const isLoading = useMemo(
-    // NOTE  !txInfo.data?.result 필요없어도 되지않나?
-
-    () => !txInfo.data?.result && (txInfo.isValidating || blockInfo.isValidating),
-    [blockInfo.isValidating, txInfo.data?.result, txInfo.isValidating],
-  );
+  const isLoading = useMemo(() => txInfo.isValidating || blockInfo.isValidating, [blockInfo.isValidating, txInfo.isValidating]);
 
   return txInfo.error && !txConfirmedStatus ? (
     <Container>
@@ -384,11 +379,9 @@ export default function Ethereum() {
           {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : gt(baseGasUsed, '0') ? (
-            <div>
-              <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
-                {baseGasUsed}
-              </NumberText>
-            </div>
+            <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
+              {baseGasUsed}
+            </NumberText>
           ) : (
             <Typography variant="h5">-</Typography>
           )}

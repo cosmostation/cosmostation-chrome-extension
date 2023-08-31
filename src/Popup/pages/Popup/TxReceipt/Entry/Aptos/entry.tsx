@@ -148,7 +148,7 @@ export default function Aptos() {
     return undefined;
   }, [tx, txInfo.error?.message]);
 
-  const isLoading = useMemo(() => txInfo.isValidating, [txInfo.isValidating]);
+  const isLoading = useMemo(() => txInfo.isValidating || blockInfo.isValidating, [blockInfo.isValidating, txInfo.isValidating]);
 
   return txInfo.error && !txConfirmedStatus ? (
     <Container>
