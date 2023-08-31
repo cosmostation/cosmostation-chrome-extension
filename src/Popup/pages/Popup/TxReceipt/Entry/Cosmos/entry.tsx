@@ -80,7 +80,7 @@ export default function Cosmos({ chain }: CosmosProps) {
     [explorerURL, txInfo.data?.tx_response.height],
   );
 
-  const parsedTxDate = useMemo(() => {
+  const formattedTimestamp = useMemo(() => {
     if (txInfo.data?.tx_response.timestamp) {
       const date = new Date(txInfo.data.tx_response.timestamp);
 
@@ -304,8 +304,8 @@ export default function Cosmos({ chain }: CosmosProps) {
           </ItemTitleContainer>
           {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
-          ) : parsedTxDate ? (
-            <Typography variant="h5">{parsedTxDate}</Typography>
+          ) : formattedTimestamp ? (
+            <Typography variant="h5">{formattedTimestamp}</Typography>
           ) : (
             <Typography variant="h5">-</Typography>
           )}

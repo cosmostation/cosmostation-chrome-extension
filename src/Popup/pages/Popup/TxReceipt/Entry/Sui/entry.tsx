@@ -74,7 +74,7 @@ export default function Sui() {
 
   const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/txblock/${txDigest}` : ''), [explorerURL, txDigest]);
 
-  const parsedTxDate = useMemo(() => {
+  const formattedTimestamp = useMemo(() => {
     if (txInfo.data?.result?.timestampMs) {
       const date = new Date(Number(txInfo.data.result.timestampMs));
 
@@ -323,8 +323,8 @@ export default function Sui() {
           </ItemTitleContainer>
           {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
-          ) : parsedTxDate ? (
-            <Typography variant="h5">{parsedTxDate}</Typography>
+          ) : formattedTimestamp ? (
+            <Typography variant="h5">{formattedTimestamp}</Typography>
           ) : (
             <Typography variant="h5">-</Typography>
           )}

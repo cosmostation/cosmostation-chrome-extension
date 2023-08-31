@@ -89,7 +89,7 @@ export default function Ethereum() {
     return undefined;
   }, [txInfo.data, txInfo.error]);
 
-  const parsedTxDate = useMemo(() => {
+  const formattedTimestamp = useMemo(() => {
     if (blockInfo.data?.result?.timestamp) {
       const timeStamp = Number(times(BigInt(blockInfo.data.result.timestamp).toString(10), '1000'));
 
@@ -329,8 +329,8 @@ export default function Ethereum() {
           </ItemTitleContainer>
           {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
-          ) : parsedTxDate ? (
-            <Typography variant="h5">{parsedTxDate}</Typography>
+          ) : formattedTimestamp ? (
+            <Typography variant="h5">{formattedTimestamp}</Typography>
           ) : (
             <Typography variant="h5">-</Typography>
           )}

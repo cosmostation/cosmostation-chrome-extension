@@ -102,7 +102,7 @@ export default function Aptos() {
 
   const blockHeight = useMemo(() => blockInfo.data?.block_height, [blockInfo.data?.block_height]);
 
-  const parsedTxDate = useMemo(() => {
+  const formattedTimestamp = useMemo(() => {
     if (tx && tx.type !== 'pending_transaction') {
       const date = new Date(Number(tx.timestamp.slice(0, -3)));
 
@@ -111,7 +111,7 @@ export default function Aptos() {
     return undefined;
   }, [tx, language]);
 
-  const parsedTxExpirationDate = useMemo(() => {
+  const formattedExpirationTimestamp = useMemo(() => {
     if (tx && tx.type !== 'pending_transaction') {
       const date = new Date(Number(times(tx.expiration_timestamp_secs, 1000)));
 
@@ -373,8 +373,8 @@ export default function Aptos() {
           </ItemTitleContainer>
           {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
-          ) : parsedTxExpirationDate ? (
-            <Typography variant="h5">{parsedTxExpirationDate}</Typography>
+          ) : formattedExpirationTimestamp ? (
+            <Typography variant="h5">{formattedExpirationTimestamp}</Typography>
           ) : (
             <Typography variant="h5">-</Typography>
           )}
@@ -386,8 +386,8 @@ export default function Aptos() {
           </ItemTitleContainer>
           {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
-          ) : parsedTxDate ? (
-            <Typography variant="h5">{parsedTxDate}</Typography>
+          ) : formattedTimestamp ? (
+            <Typography variant="h5">{formattedTimestamp}</Typography>
           ) : (
             <Typography variant="h5">-</Typography>
           )}
