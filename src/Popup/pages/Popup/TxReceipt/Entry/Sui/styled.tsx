@@ -22,8 +22,7 @@ export const HeaderContainer = styled('div')(({ theme }) => ({
 export const CategoryTitleContainer = styled('div')({});
 
 export const ContentContainer = styled('div')(({ theme }) => ({
-  // NOTE max로 변경하기
-  height: 'calc(100% - 10.5rem)',
+  maxHeight: 'calc(100% - 10.5rem)',
 
   display: 'flex',
   flexDirection: 'column',

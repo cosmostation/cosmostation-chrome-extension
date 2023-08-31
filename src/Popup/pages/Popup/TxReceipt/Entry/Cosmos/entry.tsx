@@ -85,7 +85,6 @@ export default function Cosmos({ chain }: CosmosProps) {
   }, [txInfo.data?.tx_response.timestamp, language]);
 
   const txConfirmedStatus = useMemo(() => {
-    // NOTE 400번대로 변경할 것
     if (txInfo.error?.response?.status && txInfo.error.response.status >= 400 && txInfo.error.response.status < 500) return TX_CONFIRMED_STATUS.PENDING;
 
     if (txInfo.data?.tx_response.code !== undefined) {
@@ -99,8 +98,7 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const isLoading = useMemo(() => txInfo.isValidating, [txInfo.isValidating]);
 
-  // TODO 네트워크 요청 실패 || 네트워크 지연(지정된 횟수 찔러도 값 안나올때) 보여줄 EmptyAsset컴포넌트 추가
-  return txInfo.error?.response?.status && txInfo.error.response.status < 400 && txInfo.error.response.status >= 500 ? (
+  return txInfo.error && !txConfirmedStatus ? (
     <Container>
       <HeaderContainer>
         <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.transactionReceipt')}</Typography>
@@ -110,6 +108,21 @@ export default function Cosmos({ chain }: CosmosProps) {
         <CategoryTitleContainer>
           <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.status')}</Typography>
         </CategoryTitleContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.network')}</Typography>
+          </ItemTitleContainer>
+
+          <ImageTextContainer>
+            <NetworkImageContainer>
+              <Image src={chain.imageURL} />
+            </NetworkImageContainer>
+
+            <Typography variant="h5">{chain.chainName}</Typography>
+          </ImageTextContainer>
+        </ItemContainer>
+
         <ItemColumnContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.txHash')}</Typography>
@@ -144,7 +157,11 @@ export default function Cosmos({ chain }: CosmosProps) {
         <Div sx={{ width: '100%' }}>
           <StyledDivider />
         </Div>
-        <EmptyAsset Icon={Warning50Icon} headerText="Network Issue" subHeaderText="Fail to get Tranasaction Data" />
+        <EmptyAsset
+          Icon={Warning50Icon}
+          headerText={t('pages.Popup.TxReceipt.Entry.Cosmos.entry.networkError')}
+          subHeaderText={t('pages.Popup.TxReceipt.Entry.Cosmos.entry.networkErrorDescription')}
+        />
       </ContentContainer>
 
       <BottomContainer>
@@ -167,6 +184,20 @@ export default function Cosmos({ chain }: CosmosProps) {
         <CategoryTitleContainer>
           <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.status')}</Typography>
         </CategoryTitleContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.network')}</Typography>
+          </ItemTitleContainer>
+
+          <ImageTextContainer>
+            <NetworkImageContainer>
+              <Image src={chain.imageURL} />
+            </NetworkImageContainer>
+
+            <Typography variant="h5">{chain.chainName}</Typography>
+          </ImageTextContainer>
+        </ItemContainer>
 
         <ItemColumnContainer>
           <ItemTitleContainer>
@@ -238,20 +269,6 @@ export default function Cosmos({ chain }: CosmosProps) {
             ) : (
               <Typography variant="h5">-</Typography>
             )}
-          </ImageTextContainer>
-        </ItemContainer>
-
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.network')}</Typography>
-          </ItemTitleContainer>
-
-          <ImageTextContainer>
-            <NetworkImageContainer>
-              <Image src={chain.imageURL} />
-            </NetworkImageContainer>
-
-            <Typography variant="h5">{chain.chainName}</Typography>
           </ImageTextContainer>
         </ItemContainer>
 

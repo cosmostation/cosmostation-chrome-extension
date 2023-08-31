@@ -10,6 +10,7 @@ import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import NumberText from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
+import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useBlockInfoByHashSWR } from '~/Popup/hooks/SWR/ethereum/useBlockInfoByHashSWR';
 import { useTxInfoSWR } from '~/Popup/hooks/SWR/ethereum/useTxInfoSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -50,6 +51,7 @@ import Check16Icon from '~/images/icons/Check16.svg';
 import Close16Icon from '~/images/icons/Close16.svg';
 import Copy16Icon from '~/images/icons/Copy16.svg';
 import Explorer16Icon from '~/images/icons/Explorer16.svg';
+import Warning50Icon from '~/images/icons/Warning50.svg';
 
 export default function Ethereum() {
   const { enqueueSnackbar } = useSnackbar();
@@ -78,9 +80,9 @@ export default function Ethereum() {
     if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR[1]) return TX_CONFIRMED_STATUS.PENDING;
 
     if (txInfo.data?.result?.status) {
-      if (BigInt(txInfo.data?.result?.status || '0').toString(10) !== '1') return TX_CONFIRMED_STATUS.FAILED;
+      if (BigInt(txInfo.data.result.status).toString(10) !== '1') return TX_CONFIRMED_STATUS.FAILED;
 
-      if (BigInt(txInfo.data?.result?.status || '0').toString(10) === '1') return TX_CONFIRMED_STATUS.CONFIRMED;
+      if (BigInt(txInfo.data.result.status).toString(10) === '1') return TX_CONFIRMED_STATUS.CONFIRMED;
     }
 
     return undefined;
@@ -88,7 +90,7 @@ export default function Ethereum() {
 
   const parsedTxDate = useMemo(() => {
     if (blockInfo.data?.result?.timestamp) {
-      const timeStamp = Number(times(BigInt(blockInfo.data.result.timestamp || '0').toString(10), '1000'));
+      const timeStamp = Number(times(BigInt(blockInfo.data.result.timestamp).toString(10), '1000'));
 
       const date = new Date(timeStamp);
 
@@ -133,7 +135,7 @@ export default function Ethereum() {
     [blockInfo.isValidating, txInfo.data?.result, txInfo.isValidating],
   );
 
-  return (
+  return txInfo.error && !txConfirmedStatus ? (
     <Container>
       <HeaderContainer>
         <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.transactionReceipt')}</Typography>
@@ -143,6 +145,96 @@ export default function Ethereum() {
         <CategoryTitleContainer>
           <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.status')}</Typography>
         </CategoryTitleContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.network')}</Typography>
+          </ItemTitleContainer>
+
+          <ImageTextContainer>
+            <NetworkImageContainer>
+              <Image src={imageURL} />
+            </NetworkImageContainer>
+
+            <Typography variant="h5">{networkName}</Typography>
+          </ImageTextContainer>
+        </ItemContainer>
+
+        <ItemColumnContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.txHash')}</Typography>
+            <CopyButton text={txHash} />
+          </ItemTitleContainer>
+          <TxHashContainer>
+            <Typography variant="h5">{txHash}</Typography>
+          </TxHashContainer>
+        </ItemColumnContainer>
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.explorer')}</Typography>
+          </ItemTitleContainer>
+
+          {txDetailExplorerURL && (
+            <IconButtonContainer>
+              <StyledIconButton onClick={() => window.open(txDetailExplorerURL)}>
+                <Explorer16Icon />
+              </StyledIconButton>
+              <StyledIconButton
+                onClick={() => {
+                  if (copy(txDetailExplorerURL)) {
+                    enqueueSnackbar(t('pages.Popup.TxReceipt.Entry.Ethereum.entry.copied'));
+                  }
+                }}
+              >
+                <Copy16Icon />
+              </StyledIconButton>
+            </IconButtonContainer>
+          )}
+        </ItemContainer>
+        <Div sx={{ width: '100%' }}>
+          <StyledDivider />
+        </Div>
+        <EmptyAsset
+          Icon={Warning50Icon}
+          headerText={t('pages.Popup.TxReceipt.Entry.Ethereum.entry.networkError')}
+          subHeaderText={t('pages.Popup.TxReceipt.Entry.Ethereum.entry.networkErrorDescription')}
+        />
+      </ContentContainer>
+
+      <BottomContainer>
+        <Button
+          onClick={() => {
+            navigate('/');
+          }}
+        >
+          {t('pages.Popup.TxReceipt.Entry.Ethereum.entry.confirm')}
+        </Button>
+      </BottomContainer>
+    </Container>
+  ) : (
+    <Container>
+      <HeaderContainer>
+        <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.transactionReceipt')}</Typography>
+      </HeaderContainer>
+
+      <ContentContainer>
+        <CategoryTitleContainer>
+          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.status')}</Typography>
+        </CategoryTitleContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.network')}</Typography>
+          </ItemTitleContainer>
+
+          <ImageTextContainer>
+            <NetworkImageContainer>
+              <Image src={imageURL} />
+            </NetworkImageContainer>
+
+            <Typography variant="h5">{networkName}</Typography>
+          </ImageTextContainer>
+        </ItemContainer>
 
         <ItemColumnContainer>
           <ItemTitleContainer>
@@ -214,20 +306,6 @@ export default function Ethereum() {
             ) : (
               <Typography variant="h5">-</Typography>
             )}
-          </ImageTextContainer>
-        </ItemContainer>
-
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.network')}</Typography>
-          </ItemTitleContainer>
-
-          <ImageTextContainer>
-            <NetworkImageContainer>
-              <Image src={imageURL} />
-            </NetworkImageContainer>
-
-            <Typography variant="h5">{networkName}</Typography>
           </ImageTextContainer>
         </ItemContainer>
 

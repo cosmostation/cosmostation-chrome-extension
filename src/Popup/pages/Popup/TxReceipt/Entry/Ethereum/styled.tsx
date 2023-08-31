@@ -22,7 +22,7 @@ export const HeaderContainer = styled('div')(({ theme }) => ({
 export const CategoryTitleContainer = styled('div')({});
 
 export const ContentContainer = styled('div')(({ theme }) => ({
-  height: 'calc(100% - 10.5rem)',
+  maxHeight: 'calc(100% - 10.5rem)',
 
   display: 'flex',
   flexDirection: 'column',

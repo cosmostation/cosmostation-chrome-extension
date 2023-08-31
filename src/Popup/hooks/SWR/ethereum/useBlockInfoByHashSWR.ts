@@ -19,23 +19,18 @@ export function useBlockInfoByHashSWR(blockHash?: string, config?: SWRConfigurat
 
   const { rpcURL } = currentEthereumNetwork;
 
-  const fetcher = async (params: FetchParams) => {
-    const returnData = await post<BlockInfoByHashPayload>(params.url, { ...params.body, id: 1, jsonrpc: '2.0' });
-    if (!returnData.result) {
-      throw new Error('No result');
-    }
-    return returnData;
-  };
-
-  // NOTE 최대 요청 수 10으로 5초 간격으로 제한
+  const fetcher = (params: FetchParams) => post<BlockInfoByHashPayload>(params.url, { ...params.body, id: 1, jsonrpc: '2.0' });
 
   const { data, isValidating, error, mutate } = useSWR<BlockInfoByHashPayload, AxiosError>(
     { url: rpcURL, body: { method: 'eth_getBlockByHash', params: [blockHash, false] } },
     fetcher,
     {
       revalidateOnFocus: false,
+      revalidateIfStale: false,
+      revalidateOnReconnect: false,
+      errorRetryCount: 10,
       ...config,
-      isPaused: () => !rpcURL,
+      isPaused: () => !blockHash || !rpcURL,
     },
   );
 

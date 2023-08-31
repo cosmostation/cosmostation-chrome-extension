@@ -1011,6 +1011,28 @@
       },
       "TxReceipt": {
         "Entry": {
+          "Aptos": {
+            "entry": {
+              "blockHeight": "__STRING_NOT_TRANSLATED__",
+              "broadcastResult": "__STRING_NOT_TRANSLATED__",
+              "confirm": "__STRING_NOT_TRANSLATED__",
+              "copied": "__STRING_NOT_TRANSLATED__",
+              "date": "__STRING_NOT_TRANSLATED__",
+              "explorer": "__STRING_NOT_TRANSLATED__",
+              "failure": "__STRING_NOT_TRANSLATED__",
+              "fees": "__STRING_NOT_TRANSLATED__",
+              "information": "__STRING_NOT_TRANSLATED__",
+              "network": "__STRING_NOT_TRANSLATED__",
+              "pending": "__STRING_NOT_TRANSLATED__",
+              "status": "__STRING_NOT_TRANSLATED__",
+              "success": "__STRING_NOT_TRANSLATED__",
+              "transactionConfirmed": "__STRING_NOT_TRANSLATED__",
+              "transactionReceipt": "__STRING_NOT_TRANSLATED__",
+              "txHash": "__STRING_NOT_TRANSLATED__",
+              "version": "__STRING_NOT_TRANSLATED__",
+              "vmStatus": "__STRING_NOT_TRANSLATED__"
+            }
+          },
           "Cosmos": {
             "entry": {
               "blockHeight": "Block Height",
@@ -1023,6 +1045,8 @@
               "gas": "Gas used / wanted",
               "information": "Information",
               "network": "Network",
+              "networkError": "Network Error",
+              "networkErrorDescription": "Fail to get Tranasaction Data",
               "status": "Status",
               "success": "Success",
               "transactionReceipt": "Transaction Receipt",
@@ -1044,6 +1068,8 @@
               "gas": "Gas used",
               "information": "Information",
               "network": "Network",
+              "networkError": "Network Error",
+              "networkErrorDescription": "Fail to get Tranasaction Data",
               "pending": "Pending",
               "status": "Status",
               "success": "Success",
@@ -1066,6 +1092,8 @@
               "fees": "Fees",
               "information": "Information",
               "network": "Network",
+              "networkError": "Network Error",
+              "networkErrorDescription": "Fail to get Tranasaction Data",
               "pending": "Pending",
               "status": "Status",
               "success": "Success",
