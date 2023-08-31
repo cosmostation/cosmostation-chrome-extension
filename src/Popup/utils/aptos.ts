@@ -23,7 +23,7 @@ export function getCoinAddress(type: string) {
   return '';
 }
 
-export function convertToTransaction(tx?: Types.Transaction) {
+export function castTransactionType(tx?: Types.Transaction) {
   if (!tx) {
     return undefined;
   }

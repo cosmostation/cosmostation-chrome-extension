@@ -5,11 +5,13 @@ import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import { APTOS_COIN } from '~/constants/aptos';
+import { TRASACTION_RECEIPT_ERROR } from '~/constants/error';
 import { TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import NumberText from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
+import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
 import { useBlockInfoByVersionSWR } from '~/Popup/hooks/SWR/aptos/useBlockInfoByVersionSWR';
@@ -19,8 +21,8 @@ import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptos
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { convertToTransaction } from '~/Popup/utils/aptos';
-import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { castTransactionType } from '~/Popup/utils/aptos';
+import { fix, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { convertToLocales } from '~/Popup/utils/common';
 
 import {
@@ -30,6 +32,7 @@ import {
   ContentContainer,
   DenomContainer,
   Div,
+  EmptyAssetContainer,
   FeeItemContainer,
   HeaderContainer,
   HeaderTitle,
@@ -53,14 +56,13 @@ import Check16Icon from '~/images/icons/Check16.svg';
 import Close16Icon from '~/images/icons/Close16.svg';
 import Copy16Icon from '~/images/icons/Copy16.svg';
 import Explorer16Icon from '~/images/icons/Explorer16.svg';
+import Warning50Icon from '~/images/icons/Warning50.svg';
 
 export default function Aptos() {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
   const { navigate } = useNavigate();
 
-  // NOTE 5초에 10번
-  // NOTE 네트워크 요청 실패시 컴포넌트 추가
   const { currentAptosNetwork } = useCurrentAptosNetwork();
   const { data: aptosInfo } = useAccountResourceSWR({ resourceType: '0x1::coin::CoinInfo', resourceTarget: APTOS_COIN, address: '0x1' });
   const decimals = useMemo(() => aptosInfo?.data.decimals || 0, [aptosInfo?.data.decimals]);
@@ -81,62 +83,74 @@ export default function Aptos() {
   const txHash = useMemo(() => params.id || '', [params.id]);
 
   const txInfo = useTxInfoSWR(txHash);
-  const convertedTx = useMemo(() => convertToTransaction(txInfo.data), [txInfo.data]);
+
+  const tx = useMemo(() => castTransactionType(txInfo.data ?? undefined), [txInfo.data]);
 
   const txVersionId = useMemo(() => {
-    if (convertedTx?.type === 'user_transaction') {
-      return convertedTx.version;
+    if (tx && tx.type !== 'pending_transaction') {
+      return tx.version;
     }
     return '';
-  }, [convertedTx]);
+  }, [tx]);
 
   const blockInfo = useBlockInfoByVersionSWR(txVersionId);
 
   const blockHeight = useMemo(() => blockInfo.data?.block_height, [blockInfo.data?.block_height]);
 
-  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/version/${txHash}` : ''), [explorerURL, txHash]);
+  const txDetailExplorerURL = useMemo(
+    () => (explorerURL ? `${explorerURL}/txn/${txHash}?=${networkName.toLowerCase()}` : ''),
+    [explorerURL, networkName, txHash],
+  );
 
   const parsedTxDate = useMemo(() => {
-    if (convertedTx?.type === 'user_transaction') {
-      const date = new Date(Number(convertedTx.timestamp));
+    if (tx && tx.type !== 'pending_transaction') {
+      const date = new Date(Number(tx.timestamp.slice(0, -3)));
 
       return date.toLocaleString(convertToLocales(language));
     }
     return undefined;
-  }, [convertedTx, language]);
+  }, [tx, language]);
+
+  const parsedTxExpirationDate = useMemo(() => {
+    if (tx && tx.type !== 'pending_transaction') {
+      const date = new Date(Number(times(tx.expiration_timestamp_secs, 1000)));
+
+      return date.toLocaleString(convertToLocales(language));
+    }
+    return undefined;
+  }, [tx, language]);
+
+  const vmStatus = useMemo(() => {
+    if (tx && tx.type !== 'pending_transaction') {
+      return tx.vm_status;
+    }
+    return undefined;
+  }, [tx]);
 
   const baseFeeAmount = useMemo(() => {
-    if (convertedTx?.type === 'user_transaction') {
-      return '1';
+    if (tx && tx.type !== 'pending_transaction') {
+      return times(tx.gas_unit_price, tx.gas_used);
     }
-    // if (txInfo.data?.result?.effects?.gasUsed) {
-    //   const storageCost = minus(txInfo.data.result.effects.gasUsed.storageCost, txInfo.data.result.effects.gasUsed.storageRebate);
-
-    //   const cost = plus(txInfo.data.result.effects.gasUsed.computationCost, gt(storageCost, 0) ? storageCost : 0);
-
-    //   return String(cost);
-    // }
 
     return '0';
-  }, [convertedTx?.type]);
-
-  const displayFeeAmount = useMemo(() => toDisplayDenomAmount(baseFeeAmount, decimals), [baseFeeAmount, decimals]);
+  }, [tx]);
+  const displayFeeAmount = useMemo(() => String(parseFloat(fix(toDisplayDenomAmount(baseFeeAmount, decimals)))), [baseFeeAmount, decimals]);
 
   const displayFeeValue = useMemo(() => times(displayFeeAmount, price, 3), [displayFeeAmount, price]);
 
   const txConfirmedStatus = useMemo(() => {
-    if (convertedTx?.type === 'pending_transaction') return TX_CONFIRMED_STATUS.PENDING;
+    if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR[1]) return TX_CONFIRMED_STATUS.PENDING;
 
-    if (convertedTx?.type === 'user_transaction') {
-      return convertedTx.success ? TX_CONFIRMED_STATUS.CONFIRMED : TX_CONFIRMED_STATUS.FAILED;
+    if (tx && tx.type !== 'pending_transaction') {
+      return tx.success ? TX_CONFIRMED_STATUS.CONFIRMED : TX_CONFIRMED_STATUS.FAILED;
     }
 
     return undefined;
-  }, [convertedTx]);
+  }, [tx, txInfo.error?.message]);
 
   const isLoading = useMemo(() => txInfo.isValidating, [txInfo.isValidating]);
 
-  return (
+  return txInfo.error && !txConfirmedStatus ? (
     <Container>
       <HeaderContainer>
         <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.transactionReceipt')}</Typography>
@@ -149,17 +163,93 @@ export default function Aptos() {
 
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.broadcastResult')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.network')}</Typography>
           </ItemTitleContainer>
 
           <ImageTextContainer>
-            <IconContainer data-is-success>
-              <Check16Icon />
-            </IconContainer>
+            <NetworkImageContainer>
+              <Image src={imageURL} />
+            </NetworkImageContainer>
 
-            <HeaderTitle data-is-success>
-              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.success')}</Typography>
-            </HeaderTitle>
+            <Typography variant="h5">{networkName}</Typography>
+          </ImageTextContainer>
+        </ItemContainer>
+
+        <ItemColumnContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.txHash')}</Typography>
+            <CopyButton text={txHash} />
+          </ItemTitleContainer>
+          <TxHashContainer>
+            <Typography variant="h5">{txHash}</Typography>
+          </TxHashContainer>
+        </ItemColumnContainer>
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.explorer')}</Typography>
+          </ItemTitleContainer>
+
+          {txDetailExplorerURL && (
+            <IconButtonContainer>
+              <StyledIconButton onClick={() => window.open(txDetailExplorerURL)}>
+                <Explorer16Icon />
+              </StyledIconButton>
+              <StyledIconButton
+                onClick={() => {
+                  if (copy(txDetailExplorerURL)) {
+                    enqueueSnackbar(t('pages.Popup.TxReceipt.Entry.Aptos.entry.copied'));
+                  }
+                }}
+              >
+                <Copy16Icon />
+              </StyledIconButton>
+            </IconButtonContainer>
+          )}
+        </ItemContainer>
+        <Div sx={{ width: '100%' }}>
+          <StyledDivider />
+        </Div>
+        <EmptyAssetContainer>
+          <EmptyAsset
+            Icon={Warning50Icon}
+            headerText={t('pages.Popup.TxReceipt.Entry.Aptos.entry.networkError')}
+            subHeaderText={t('pages.Popup.TxReceipt.Entry.Aptos.entry.networkErrorDescription')}
+          />
+        </EmptyAssetContainer>
+      </ContentContainer>
+
+      <BottomContainer>
+        <Button
+          onClick={() => {
+            navigate('/');
+          }}
+        >
+          {t('pages.Popup.TxReceipt.Entry.Aptos.entry.confirm')}
+        </Button>
+      </BottomContainer>
+    </Container>
+  ) : (
+    <Container>
+      <HeaderContainer>
+        <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.transactionReceipt')}</Typography>
+      </HeaderContainer>
+
+      <ContentContainer>
+        <CategoryTitleContainer>
+          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.status')}</Typography>
+        </CategoryTitleContainer>
+
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.network')}</Typography>
+          </ItemTitleContainer>
+
+          <ImageTextContainer>
+            <NetworkImageContainer>
+              <Image src={imageURL} />
+            </NetworkImageContainer>
+
+            <Typography variant="h5">{networkName}</Typography>
           </ImageTextContainer>
         </ItemContainer>
 
@@ -238,39 +328,24 @@ export default function Aptos() {
 
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.network')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.vmStatus')}</Typography>
           </ItemTitleContainer>
 
-          <ImageTextContainer>
-            <NetworkImageContainer>
-              <Image src={imageURL} />
-            </NetworkImageContainer>
-
-            <Typography variant="h5">{networkName}</Typography>
-          </ImageTextContainer>
+          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+            <Skeleton width="4rem" height="1.5rem" />
+          ) : vmStatus ? (
+            <NumberText typoOfIntegers="h5n">{vmStatus}</NumberText>
+          ) : (
+            <Typography variant="h5">-</Typography>
+          )}
         </ItemContainer>
-        {convertedTx?.type === 'user_transaction' && convertedTx.vm_status && (
-          <ItemContainer>
-            <ItemTitleContainer>
-              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.vmStatus')}</Typography>
-            </ItemTitleContainer>
-
-            {isLoading ? (
-              <Skeleton width="4rem" height="1.5rem" />
-            ) : txVersionId ? (
-              <NumberText typoOfIntegers="h5n">{txVersionId}</NumberText>
-            ) : (
-              <Typography variant="h5">-</Typography>
-            )}
-          </ItemContainer>
-        )}
 
         <ItemContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.version')}</Typography>
           </ItemTitleContainer>
 
-          {isLoading ? (
+          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : txVersionId ? (
             <NumberText typoOfIntegers="h5n">{txVersionId}</NumberText>
@@ -283,7 +358,7 @@ export default function Aptos() {
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.blockHeight')}</Typography>
           </ItemTitleContainer>
-          {isLoading ? (
+          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : blockHeight ? (
             <NumberText typoOfIntegers="h5n">{blockHeight}</NumberText>
@@ -296,7 +371,7 @@ export default function Aptos() {
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.date')}</Typography>
           </ItemTitleContainer>
-          {isLoading ? (
+          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
           ) : parsedTxDate ? (
             <Typography variant="h5">{parsedTxDate}</Typography>
@@ -305,13 +380,26 @@ export default function Aptos() {
           )}
         </ItemContainer>
 
+        <ItemContainer>
+          <ItemTitleContainer>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.expirationDate')}</Typography>
+          </ItemTitleContainer>
+          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+            <Skeleton width="4rem" height="1.5rem" />
+          ) : parsedTxExpirationDate ? (
+            <Typography variant="h5">{parsedTxExpirationDate}</Typography>
+          ) : (
+            <Typography variant="h5">-</Typography>
+          )}
+        </ItemContainer>
+
         <FeeItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.fees')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.fee')}</Typography>
           </ItemTitleContainer>
 
           <RightColumnContainer>
-            {isLoading ? (
+            {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
               <Skeleton width="4rem" height="1.5rem" />
             ) : gt(displayFeeAmount, '0') ? (
               <Div>

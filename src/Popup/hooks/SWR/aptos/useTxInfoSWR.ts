@@ -1,9 +1,12 @@
 import type { Types } from 'aptos';
 import { AptosClient } from 'aptos';
+import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { TRASACTION_RECEIPT_ERROR } from '~/constants/error';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
+import { aptosTxHashRegex } from '~/Popup/utils/regex';
 
 type FetchParams = {
   txHash: string;
@@ -16,14 +19,21 @@ export function useTxInfoSWR(txHash: string, config?: SWRConfiguration) {
 
   const aptosClient = new AptosClient(restURL);
 
-  const fetcher = (params: FetchParams) => aptosClient.getTransactionByHash(params.txHash);
+  const fetcher = async (params: FetchParams) => {
+    if (!aptosTxHashRegex.test(params.txHash)) return null;
+    const returnData = await aptosClient.getTransactionByHash(params.txHash);
 
-  // NOTE 최대 요청 수 10으로 5초 간격으로 제한
+    if (returnData.type === 'pending_transaction') {
+      throw new Error(TRASACTION_RECEIPT_ERROR[1]);
+    }
+    return returnData;
+  };
 
-  const { data, isValidating, error, mutate } = useSWR<Types.Transaction, unknown>({ txHash }, fetcher, {
+  const { data, isValidating, error, mutate } = useSWR<Types.Transaction | null, AxiosError>({ txHash }, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
+    errorRetryCount: 10,
     isPaused: () => !txHash,
     ...config,
   });

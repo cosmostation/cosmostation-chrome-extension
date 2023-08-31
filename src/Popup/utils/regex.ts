@@ -17,3 +17,5 @@ export const cosmosTxHashRegex = /^[0-9A-Fa-f]{64}/;
 export const ethereumTxHashRegex = /^0x([A-Fa-f0-9]{64})$/;
 
 export const suiTxHashRegex = /^[A-Za-z0-9]{44}/;
+
+export const aptosTxHashRegex = /^0x([A-Fa-f0-9]{64})$/;

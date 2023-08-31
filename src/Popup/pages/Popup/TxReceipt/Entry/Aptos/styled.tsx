@@ -51,6 +51,14 @@ export const NetworkImageContainer = styled('div')({
   },
 });
 
+export const EmptyAssetContainer = styled('div')({
+  height: '100%',
+
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
 export const ItemContainer = styled('div')(({ theme }) => ({
   width: '100%',
 

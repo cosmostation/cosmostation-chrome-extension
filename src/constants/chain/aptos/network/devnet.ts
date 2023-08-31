@@ -7,5 +7,5 @@ export const DEVNET: AptosNetwork = {
   networkName: 'Devnet',
   restURL: 'https://fullnode.devnet.aptoslabs.com',
   imageURL: aptosImg,
-  explorerURL: 'https://devnet.aptoscan.com',
+  explorerURL: 'https://explorer.aptoslabs.com',
 };

@@ -27,6 +27,7 @@ import {
   ContentContainer,
   DenomContainer,
   Div,
+  EmptyAssetContainer,
   FeeItemContainer,
   HeaderContainer,
   HeaderTitle,
@@ -157,11 +158,13 @@ export default function Cosmos({ chain }: CosmosProps) {
         <Div sx={{ width: '100%' }}>
           <StyledDivider />
         </Div>
-        <EmptyAsset
-          Icon={Warning50Icon}
-          headerText={t('pages.Popup.TxReceipt.Entry.Cosmos.entry.networkError')}
-          subHeaderText={t('pages.Popup.TxReceipt.Entry.Cosmos.entry.networkErrorDescription')}
-        />
+        <EmptyAssetContainer>
+          <EmptyAsset
+            Icon={Warning50Icon}
+            headerText={t('pages.Popup.TxReceipt.Entry.Cosmos.entry.networkError')}
+            subHeaderText={t('pages.Popup.TxReceipt.Entry.Cosmos.entry.networkErrorDescription')}
+          />
+        </EmptyAssetContainer>
       </ContentContainer>
 
       <BottomContainer>

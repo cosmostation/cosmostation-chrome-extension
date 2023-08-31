@@ -28,6 +28,7 @@ import {
   ContentContainer,
   DenomContainer,
   Div,
+  EmptyAssetContainer,
   FeeItemContainer,
   HeaderContainer,
   HeaderTitle,
@@ -131,6 +132,8 @@ export default function Ethereum() {
   );
 
   const isLoading = useMemo(
+    // NOTE  !txInfo.data?.result 필요없어도 되지않나?
+
     () => !txInfo.data?.result && (txInfo.isValidating || blockInfo.isValidating),
     [blockInfo.isValidating, txInfo.data?.result, txInfo.isValidating],
   );
@@ -194,11 +197,13 @@ export default function Ethereum() {
         <Div sx={{ width: '100%' }}>
           <StyledDivider />
         </Div>
-        <EmptyAsset
-          Icon={Warning50Icon}
-          headerText={t('pages.Popup.TxReceipt.Entry.Ethereum.entry.networkError')}
-          subHeaderText={t('pages.Popup.TxReceipt.Entry.Ethereum.entry.networkErrorDescription')}
-        />
+        <EmptyAssetContainer>
+          <EmptyAsset
+            Icon={Warning50Icon}
+            headerText={t('pages.Popup.TxReceipt.Entry.Ethereum.entry.networkError')}
+            subHeaderText={t('pages.Popup.TxReceipt.Entry.Ethereum.entry.networkErrorDescription')}
+          />
+        </EmptyAssetContainer>
       </ContentContainer>
 
       <BottomContainer>

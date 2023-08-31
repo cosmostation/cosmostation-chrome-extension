@@ -1,5 +1,6 @@
 import type { Types } from 'aptos';
 import { AptosClient } from 'aptos';
+import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
@@ -18,12 +19,11 @@ export function useBlockInfoByVersionSWR(versionId: string, config?: SWRConfigur
 
   const fetcher = (params: FetchParams) => aptosClient.getBlockByVersion(Number(params.versionId));
 
-  // NOTE 최대 요청 수 10으로 5초 간격으로 제한
-
-  const { data, isValidating, error, mutate } = useSWR<Types.Block, unknown>({ versionId }, fetcher, {
+  const { data, isValidating, error, mutate } = useSWR<Types.Block, AxiosError>({ versionId }, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
+    errorRetryCount: 10,
     isPaused: () => !versionId,
     ...config,
   });

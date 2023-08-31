@@ -78,7 +78,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const { navigate } = useNavigate();
 
-  const { explorerURL } = currentAptosNetwork;
+  const { explorerURL, networkName } = currentAptosNetwork;
 
   const decimals = useMemo(() => aptosInfo?.data.decimals || 0, [aptosInfo?.data.decimals]);
 
@@ -128,7 +128,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {explorerURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/address/${currentAddress}`);
+                window.open(`${explorerURL}/account/${currentAddress}?network=${networkName.toLowerCase()}`);
               }}
             >
               <ExplorerIcon />

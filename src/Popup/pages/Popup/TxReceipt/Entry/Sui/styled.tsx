@@ -22,7 +22,7 @@ export const HeaderContainer = styled('div')(({ theme }) => ({
 export const CategoryTitleContainer = styled('div')({});
 
 export const ContentContainer = styled('div')(({ theme }) => ({
-  maxHeight: 'calc(100% - 10.5rem)',
+  height: 'calc(100% - 10.5rem)',
 
   display: 'flex',
   flexDirection: 'column',
@@ -49,6 +49,14 @@ export const NetworkImageContainer = styled('div')({
     width: '1.6rem',
     height: '1.6rem',
   },
+});
+
+export const EmptyAssetContainer = styled('div')({
+  height: '100%',
+
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 });
 
 export const ItemContainer = styled('div')(({ theme }) => ({
