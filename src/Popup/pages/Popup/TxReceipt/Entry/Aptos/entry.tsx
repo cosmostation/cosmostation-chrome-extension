@@ -82,6 +82,11 @@ export default function Aptos() {
 
   const txHash = useMemo(() => params.id || '', [params.id]);
 
+  const txDetailExplorerURL = useMemo(
+    () => (explorerURL ? `${explorerURL}/txn/${txHash}?network=${networkName.toLowerCase()}` : ''),
+    [explorerURL, networkName, txHash],
+  );
+
   const txInfo = useTxInfoSWR(txHash);
 
   const tx = useMemo(() => castTransactionType(txInfo.data ?? undefined), [txInfo.data]);
@@ -96,11 +101,6 @@ export default function Aptos() {
   const blockInfo = useBlockInfoByVersionSWR(txVersionId);
 
   const blockHeight = useMemo(() => blockInfo.data?.block_height, [blockInfo.data?.block_height]);
-
-  const txDetailExplorerURL = useMemo(
-    () => (explorerURL ? `${explorerURL}/txn/${txHash}?=${networkName.toLowerCase()}` : ''),
-    [explorerURL, networkName, txHash],
-  );
 
   const parsedTxDate = useMemo(() => {
     if (tx && tx.type !== 'pending_transaction') {
@@ -369,12 +369,12 @@ export default function Aptos() {
 
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.date')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.expirationDate')}</Typography>
           </ItemTitleContainer>
           {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
-          ) : parsedTxDate ? (
-            <Typography variant="h5">{parsedTxDate}</Typography>
+          ) : parsedTxExpirationDate ? (
+            <Typography variant="h5">{parsedTxExpirationDate}</Typography>
           ) : (
             <Typography variant="h5">-</Typography>
           )}
@@ -382,12 +382,12 @@ export default function Aptos() {
 
         <ItemContainer>
           <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.expirationDate')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.date')}</Typography>
           </ItemTitleContainer>
           {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
             <Skeleton width="4rem" height="1.5rem" />
-          ) : parsedTxExpirationDate ? (
-            <Typography variant="h5">{parsedTxExpirationDate}</Typography>
+          ) : parsedTxDate ? (
+            <Typography variant="h5">{parsedTxDate}</Typography>
           ) : (
             <Typography variant="h5">-</Typography>
           )}

@@ -15,8 +15,6 @@ import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
-import { useBlockInfoByVersionSWR } from '~/Popup/hooks/SWR/aptos/useBlockInfoByVersionSWR';
-import { useTxInfoSWR } from '~/Popup/hooks/SWR/aptos/useTxInfoSWR';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -96,14 +94,6 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
   const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);
 
   const value = useMemo(() => times(price, displayAmount), [displayAmount, price]);
-
-  // NOTE for TEst
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const aa = useTxInfoSWR('0xeec2d2bbf53b25d2782e8e4b3479d1621768545157c88203bfca89f41412743b');
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const aa2 = useBlockInfoByVersionSWR('244439716');
 
   const currentAddress = useMemo(
     () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '',
