@@ -358,7 +358,7 @@ export const cosmosWallet: RegistCosmosWallet = {
 
         return {
           name: account.name,
-          isLedger: !!account.isLedger,
+          is_ledger: !!account.isLedger,
           public_key: {
             type: account.isEthermint ? 'ethsecp256k1' : 'secp256k1',
             value: Buffer.from(account.publicKey).toString('base64'),
