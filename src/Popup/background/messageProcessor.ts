@@ -513,7 +513,9 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
 
           try {
-            const cosmosNFTs = params.nfts.filter((item) => item.contractAddress !== null && item.tokenId !== null);
+            const cosmosNFTs = params.nfts
+              .filter((item) => item.contractAddress !== null && item.tokenId !== null)
+              .filter((nft, idx, arr) => arr.findIndex((item) => item.contractAddress === nft.contractAddress && item.tokenId === nft.tokenId) === idx);
 
             if (cosmosNFTs.length === 0) {
               throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
