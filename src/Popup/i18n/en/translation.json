@@ -1566,7 +1566,7 @@
             "components": {
               "TokenItem": {
                 "index": {
-                  "invalidBalance": "No balance available.",
+                  "invalidBalance": "No available balance.",
                   "networkError": "Network Error"
                 }
               }

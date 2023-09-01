@@ -3,7 +3,11 @@ import { styled } from '@mui/material/styles';
 import AbsoluteLoading from '~/Popup/components/AbsoluteLoading';
 import IconButton from '~/Popup/components/common/IconButton';
 
-export const StyledButton = styled('button')(({ theme }) => ({
+type StyledButtonProps = {
+  'data-is-disabled'?: boolean;
+};
+
+export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
   position: 'relative',
 
   backgroundColor: theme.colors.base02,
@@ -24,7 +28,8 @@ export const StyledButton = styled('button')(({ theme }) => ({
   },
 
   '&:hover': {
-    backgroundColor: theme.colors.base03,
+    backgroundColor: props['data-is-disabled'] ? theme.colors.base02 : theme.colors.base03,
+    cursor: props['data-is-disabled'] ? 'default' : 'pointer',
 
     '#deleteButton': {
       display: 'block',

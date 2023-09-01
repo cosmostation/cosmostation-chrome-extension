@@ -65,7 +65,7 @@ export default function TokenItem({ chain, token, address, onClick, onClickDelet
   const isAmountZero = useMemo(() => amount === '0', [amount]);
 
   return (
-    <StyledButton onClick={onClick} disabled={isAmountZero}>
+    <StyledButton onClick={isAmountZero ? undefined : onClick} data-is-disabled={isAmountZero}>
       <Tooltip
         title={isAmountZero ? t('pages.Wallet.components.cosmos.CoinList.components.TokenItem.index.invalidBalance') : ''}
         varient="error"
