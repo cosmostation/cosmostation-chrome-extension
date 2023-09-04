@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '~/constants/error';
+import { TRANSACTION_RESULT } from '~/constants/ethereum';
 import { TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
@@ -82,9 +83,9 @@ export default function Ethereum() {
     if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING) return TX_CONFIRMED_STATUS.PENDING;
 
     if (txInfo.data?.result?.status) {
-      if (BigInt(txInfo.data.result.status).toString(10) !== '1') return TX_CONFIRMED_STATUS.FAILED;
+      if (BigInt(txInfo.data.result.status).toString(10) !== TRANSACTION_RESULT.SUCCESS) return TX_CONFIRMED_STATUS.FAILED;
 
-      if (BigInt(txInfo.data.result.status).toString(10) === '1') return TX_CONFIRMED_STATUS.CONFIRMED;
+      if (BigInt(txInfo.data.result.status).toString(10) === TRANSACTION_RESULT.SUCCESS) return TX_CONFIRMED_STATUS.CONFIRMED;
     }
 
     return undefined;
