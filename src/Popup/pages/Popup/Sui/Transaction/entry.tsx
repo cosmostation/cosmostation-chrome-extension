@@ -299,7 +299,7 @@ export default function Entry({ queue }: EntryProps) {
                   try {
                     setIsProgress(true);
 
-                    let digest = '';
+                    let digest: string | undefined;
                     if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
                       const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
@@ -364,7 +364,7 @@ export default function Entry({ queue }: EntryProps) {
                       });
                     }
 
-                    if (queue.channel === 'inApp' && !!digest) {
+                    if (queue.channel === 'inApp' && digest) {
                       await deQueue(`/popup/tx-receipt/${digest}` as unknown as Path);
                     } else {
                       await deQueue();
