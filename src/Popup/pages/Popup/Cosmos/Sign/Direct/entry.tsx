@@ -23,6 +23,7 @@ import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
 import type { CosSignDirect, CosSignDirectResponse } from '~/types/message/cosmos';
+import type { Path } from '~/types/route';
 
 import TxMessage from './components/TxMessage';
 import { BottomButtonContainer, BottomContainer, Container, ContentsContainer, FeeContainer, MemoContainer, PaginationContainer, TabContainer } from './styled';
@@ -243,6 +244,8 @@ export default function Entry({ queue, chain }: EntryProps) {
                     const base64Signature = Buffer.from(signature).toString('base64');
 
                     if (channel) {
+                      let txHash: string | undefined;
+
                       try {
                         const url = cosmosURL(chain).postBroadcast();
                         const pTxBytes = protoTxBytes({
@@ -253,10 +256,10 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                         const response = await broadcast(url, pTxBytes);
 
-                        const { code } = response.tx_response;
+                        const { code, txhash } = response.tx_response;
 
                         if (code === 0) {
-                          enqueueSnackbar('success');
+                          txHash = txhash;
                         } else {
                           throw new Error(response.tx_response.raw_log as string);
                         }
@@ -269,7 +272,11 @@ export default function Entry({ queue, chain }: EntryProps) {
                           },
                         );
                       } finally {
-                        await deQueue();
+                        if (txHash) {
+                          void deQueue(`/popup/tx-receipt/${txHash}` as unknown as Path);
+                        } else {
+                          void deQueue();
+                        }
                       }
                     } else {
                       const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
