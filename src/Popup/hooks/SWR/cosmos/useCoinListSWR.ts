@@ -25,6 +25,7 @@ export type CoinInfo = {
   availableAmount: string;
   totalAmount: string;
   coinGeckoId?: string;
+  baseChainName?: string;
 };
 
 export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
@@ -102,6 +103,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
               .plus(vestingRelatedAvailable)
               .plus(incentiveAmount)
               .toString(),
+            baseChainName: chain.chainName,
           };
         }) || []
     );
@@ -125,6 +127,7 @@ export function useCoinListSWR(chain: CosmosChain, suspense?: boolean) {
             channelId: coinInfo?.channel,
             availableAmount: coin.amount,
             totalAmount: coin.amount,
+            baseChainName: coinInfo.path?.split('>').at(-2),
           };
         }) || [],
     [balance.data?.balance, ibcAssets],

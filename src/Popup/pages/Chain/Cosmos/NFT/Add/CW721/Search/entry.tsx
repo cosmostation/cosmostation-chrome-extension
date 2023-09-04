@@ -114,11 +114,11 @@ export default function Entry({ chain }: EntryProps) {
       return COSMOS_ADD_NFT_ERROR.NO_NFTS_AVAILABLE;
     }
 
-    if (ownedNFTTokenIDs.error || supportContracts.error) {
+    if (ownedNFTTokenIDs.error) {
       return COSMOS_ADD_NFT_ERROR.NETWORK_ERROR;
     }
     return undefined;
-  }, [addressRegex, debouncedContractAddress, isExistNFT, ownedNFTTokenIDs.error, supportContracts.error]);
+  }, [addressRegex, debouncedContractAddress, isExistNFT, ownedNFTTokenIDs.error]);
 
   const nftPreviewIcon = useMemo(() => (errorType ? NFTError40Icon : NFTPreview40Icon), [errorType]);
 

@@ -62,7 +62,7 @@ export default function NFTCardItem({ chain, nft, onClick, onClickDelete }: NFTC
   const isOwnedNFT = useNFTOwnerSWR({ chain, contractAddress: address, tokenId, ownerAddress: currentAddress }, { suspense: true });
 
   return (
-    <StyledButton disabled={!isOwnedNFT.isOwnedNFT} onClick={onClick}>
+    <StyledButton onClick={isOwnedNFT.isOwnedNFT ? onClick : undefined}>
       <BodyContainer>
         <NFTImageContainer>
           <>

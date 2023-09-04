@@ -8,6 +8,9 @@ export const Container = styled('div')({
 });
 
 export const ContentContainer = styled('div')({
+  margin: '0 -1.6rem',
+  padding: '0 1.6rem',
+
   height: 'calc(100% - 11rem)',
   overflow: 'auto',
 });

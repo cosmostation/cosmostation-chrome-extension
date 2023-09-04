@@ -18,8 +18,8 @@ export const TYPE = {
   TOKEN: 'token',
 } as const;
 
-export type CoinInfo = BaseCoinInfo & { type: typeof TYPE.COIN };
-export type TokenInfo = BaseCosmosToken & { type: typeof TYPE.TOKEN };
+export type CoinInfo = BaseCoinInfo & { type: typeof TYPE.COIN; price: string; name?: string };
+export type TokenInfo = BaseCosmosToken & { type: typeof TYPE.TOKEN; availableAmount: string; price: string; name?: string };
 
 export type CoinOrTokenInfo = CoinInfo | TokenInfo;
 

@@ -529,7 +529,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.depositButton')}
         </Button>
-        <Button Icon={SendIcon} typoVarient="h5" disabled={!gt(vestingRelatedAvailable, '0')} onClick={() => navigate('/wallet/send')}>
+        <Button Icon={SendIcon} typoVarient="h5" onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.cosmos.NativeChainCard.index.sendButton')}
         </Button>
         <Button

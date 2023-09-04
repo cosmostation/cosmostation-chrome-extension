@@ -223,7 +223,7 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
               {nftCollectionInfo.external_url && (
                 <ItemContainer>
                   <ItemTitleContainer>
-                    <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.description')}</Typography>
+                    <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.url')}</Typography>
                   </ItemTitleContainer>
                   <ItemRightContainer>
                     <URLButton type="button" onClick={() => window.open(nftCollectionInfo.external_url)}>

@@ -700,6 +700,16 @@
             "description4": "을 추가합니다."
           }
         },
+        "AddNFTs": {
+          "entry": {
+            "addButton": "NFT 가져오기",
+            "addNFTs": "NFT 가져오기",
+            "cancelButton": "취소",
+            "networkError": "네트워크 오류",
+            "notOwned": "본인 소유가 아닌 NFT는 가져올 수 없습니다",
+            "question": "NFT들을 가져오시겠습니까?"
+          }
+        },
         "AddTokens": {
           "entry": {
             "addButton": "토큰 가져오기",
@@ -1193,7 +1203,7 @@
               "NFTInfoItem": {
                 "index": {
                   "attributes": "속성",
-                  "collection": "Collection",
+                  "collection": "컬렉션",
                   "contractAddress": "계약 주소",
                   "copied": "복사 되었습니다.",
                   "description": "NFT 설명",
@@ -1203,7 +1213,8 @@
                   "source": "소스",
                   "symbol": "심볼",
                   "tokenId": "토큰 ID",
-                  "tokenType": "토큰 표준"
+                  "tokenType": "토큰 표준",
+                  "url": "URL"
                 }
               }
             },
@@ -1393,6 +1404,12 @@
           },
           "Cosmos": {
             "components": {
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "검색",
+                  "title": "코인을 선택하세요"
+                }
+              },
               "CoinOrTokenPopover": {
                 "components": {
                   "TokenButton": {
@@ -1406,6 +1423,14 @@
                 }
               },
               "IBCSend": {
+                "components": {
+                  "RecipientIBCBottomSheet": {
+                    "index": {
+                      "searchPlaceholder": "검색",
+                      "title": "체인을 선택하세요"
+                    }
+                  }
+                },
                 "index": {
                   "amountPlaceholder": "수량",
                   "available": "사용 가능 수량",
@@ -1655,6 +1680,7 @@
             "components": {
               "TokenItem": {
                 "index": {
+                  "invalidBalance": "보유 수량이 없습니다",
                   "networkError": "네트워크 오류"
                 }
               }

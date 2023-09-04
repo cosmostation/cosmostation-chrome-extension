@@ -60,6 +60,10 @@ export default function Routes({ children }: RoutesType) {
         navigate('/popup/cosmos/add-tokens');
       }
 
+      if (extensionStorage.queues[0].message.method === 'cos_addNFTsCW721') {
+        navigate('/popup/cosmos/add-nfts');
+      }
+
       if (extensionStorage.queues[0].message.method === 'ethc_addNetwork') {
         navigate('/popup/ethereum/add-network');
       }

@@ -42,10 +42,11 @@ export function useOwnedNFTsTokenIDsSWR({ chain, contractAddresses, ownerAddress
 
   const fetcher = async (fetchUrl: string, contractAddress: string) => {
     try {
-      const retrunData = await get<NFTIDPayload>(fetchUrl);
+      const returnData = await get<NFTIDPayload>(fetchUrl);
+
       return {
         contractAddress,
-        ...retrunData.data,
+        tokens: returnData.data.tokens || [],
       };
     } catch (e: unknown) {
       return null;

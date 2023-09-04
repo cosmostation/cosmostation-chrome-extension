@@ -62,7 +62,8 @@ export type NFTInfoPayload = {
 
 export type NFTIDPayload = {
   data: {
-    tokens: string[];
+    tokens?: string[];
+    ids?: string[];
   };
 };
 
@@ -76,6 +77,11 @@ export type CW20BalanceResponse = {
   data: {
     balance?: string;
   };
+};
+
+export type CW20TokensBalanceResponse = {
+  contractAddress: string;
+  balance: string;
 };
 
 export type CW20TokenInfoResponse = {

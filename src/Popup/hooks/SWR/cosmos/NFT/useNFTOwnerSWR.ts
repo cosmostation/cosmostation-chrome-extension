@@ -34,7 +34,12 @@ export function useNFTOwnerSWR({ chain, contractAddress, tokenId, ownerAddress }
 
   const error = useMemo(() => ownedTokenIds.error, [ownedTokenIds.error]);
 
-  const isOwnedNFT = useMemo(() => ownedTokenIds.data?.tokens.includes(tokenId), [ownedTokenIds.data?.tokens, tokenId]);
+  const isOwnedNFT = useMemo(() => {
+    if (ownedTokenIds.data?.tokens) {
+      return ownedTokenIds.data.tokens.includes(tokenId);
+    }
+    return false;
+  }, [ownedTokenIds.data?.tokens, tokenId]);
 
   return { isOwnedNFT, isValidating, error };
 }

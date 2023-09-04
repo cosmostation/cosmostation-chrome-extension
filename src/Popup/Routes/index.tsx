@@ -40,6 +40,7 @@ import Home from '~/Popup/pages/Home';
 import PopupAptosSignMessage from '~/Popup/pages/Popup/Aptos/SignMessage';
 import PopupAptosTransaction from '~/Popup/pages/Popup/Aptos/Transaction';
 import PopupCosmosAddChain from '~/Popup/pages/Popup/Cosmos/AddChain';
+import PopupCosmosAddNFTs from '~/Popup/pages/Popup/Cosmos/AddNFTs';
 import PopupCosmosAddTokens from '~/Popup/pages/Popup/Cosmos/AddTokens';
 import PopupCosmosSignAmino from '~/Popup/pages/Popup/Cosmos/Sign/Amino';
 import PopupCosmosSignDirect from '~/Popup/pages/Popup/Cosmos/Sign/Direct';
@@ -159,6 +160,7 @@ export default function Routes() {
 
           <Route path={PATH.POPUP__COSMOS__ADD_CHAIN} element={<PopupCosmosAddChain />} />
           <Route path={PATH.POPUP__COSMOS__ADD_TOKENS} element={<PopupCosmosAddTokens />} />
+          <Route path={PATH.POPUP__COSMOS__ADD_NFTS} element={<PopupCosmosAddNFTs />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__AMINO} element={<PopupCosmosSignAmino />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__DIRECT} element={<PopupCosmosSignDirect />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__MESSAGE} element={<PopupCosmosSignMessage />} />
