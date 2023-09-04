@@ -350,7 +350,7 @@ export default function Entry({ queue }: EntryProps) {
                       if (method === 'aptos_signAndSubmitTransaction') {
                         const result: AptosSignAndSubmitTransactionResponse = await aptosClient.submitTransaction(signedTx);
 
-                        hash = result.hash;
+                        hash = result?.hash;
                         responseToWeb({
                           response: {
                             result,
@@ -360,7 +360,7 @@ export default function Entry({ queue }: EntryProps) {
                           origin,
                         });
 
-                        if (channel === 'inApp' && !!hash.length) {
+                        if (channel === 'inApp' && !!hash) {
                           await deQueue(`/popup/tx-receipt/${hash}` as unknown as Path);
                         } else {
                           await deQueue();

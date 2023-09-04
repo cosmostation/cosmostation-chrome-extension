@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Types } from 'aptos';
 import { AptosClient } from 'aptos';
 import type { AxiosError } from 'axios';
@@ -13,6 +14,8 @@ type FetchParams = {
 };
 
 export function useTxInfoSWR(txHash: string, config?: SWRConfiguration) {
+  const [hasTimedOut, setHasTimedOut] = useState(false);
+
   const { currentAptosNetwork } = useCurrentAptosNetwork();
 
   const { restURL } = currentAptosNetwork;
@@ -33,10 +36,19 @@ export function useTxInfoSWR(txHash: string, config?: SWRConfiguration) {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    errorRetryCount: 10,
+    onErrorRetry: (_, __, ___, revalidate, { retryCount }) => {
+      if (retryCount >= 11) return;
+
+      if (retryCount === 10) {
+        setHasTimedOut(true);
+      }
+      setTimeout(() => {
+        void revalidate({ retryCount });
+      }, 5000);
+    },
     isPaused: () => !txHash,
     ...config,
   });
 
-  return { data, isValidating, error, mutate };
+  return { data, isValidating, error, hasTimedOut, mutate };
 }

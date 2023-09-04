@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -25,6 +26,8 @@ type UseTxInfoSWRProps = {
 };
 
 export function useTxInfoSWR({ digest, network, option }: UseTxInfoSWRProps, config?: SWRConfiguration) {
+  const [hasTimedOut, setHasTimedOut] = useState(false);
+
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
@@ -62,11 +65,20 @@ export function useTxInfoSWR({ digest, network, option }: UseTxInfoSWRProps, con
       revalidateOnFocus: false,
       revalidateIfStale: false,
       revalidateOnReconnect: false,
-      errorRetryCount: 10,
+      onErrorRetry: (_, __, ___, revalidate, { retryCount }) => {
+        if (retryCount >= 11) return;
+
+        if (retryCount === 10) {
+          setHasTimedOut(true);
+        }
+        setTimeout(() => {
+          void revalidate({ retryCount });
+        }, 5000);
+      },
       isPaused: () => !digest,
       ...config,
     },
   );
 
-  return { data, isValidating, error, mutate };
+  return { data, isValidating, error, hasTimedOut, mutate };
 }

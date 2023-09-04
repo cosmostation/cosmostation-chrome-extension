@@ -42,6 +42,7 @@ import {
   RightColumnContainer,
   RightValueContainer,
   StyledDivider,
+  StyledDividerContainer,
   StyledIconButton,
   TxHashContainer,
 } from './styled';
@@ -103,85 +104,7 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const isLoading = useMemo(() => txInfo.isValidating, [txInfo.isValidating]);
 
-  return txInfo.error && !txConfirmedStatus ? (
-    <Container>
-      <HeaderContainer>
-        <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.transactionReceipt')}</Typography>
-      </HeaderContainer>
-
-      <ContentContainer>
-        <CategoryTitleContainer>
-          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.status')}</Typography>
-        </CategoryTitleContainer>
-
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.network')}</Typography>
-          </ItemTitleContainer>
-
-          <ImageTextContainer>
-            <NetworkImageContainer>
-              <Image src={chain.imageURL} />
-            </NetworkImageContainer>
-
-            <Typography variant="h5">{chain.chainName}</Typography>
-          </ImageTextContainer>
-        </ItemContainer>
-
-        <ItemColumnContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.txHash')}</Typography>
-            <CopyButton text={txHash} />
-          </ItemTitleContainer>
-          <TxHashContainer>
-            <Typography variant="h5">{txHash}</Typography>
-          </TxHashContainer>
-        </ItemColumnContainer>
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.explorer')}</Typography>
-          </ItemTitleContainer>
-
-          {txDetailExplorerURL && (
-            <IconButtonContainer>
-              <StyledIconButton onClick={() => window.open(txDetailExplorerURL)}>
-                <Explorer16Icon />
-              </StyledIconButton>
-              <StyledIconButton
-                onClick={() => {
-                  if (copy(txDetailExplorerURL)) {
-                    enqueueSnackbar(t('pages.Popup.TxReceipt.Entry.Cosmos.entry.copied'));
-                  }
-                }}
-              >
-                <Copy16Icon />
-              </StyledIconButton>
-            </IconButtonContainer>
-          )}
-        </ItemContainer>
-        <Div sx={{ width: '100%' }}>
-          <StyledDivider />
-        </Div>
-        <EmptyAssetContainer>
-          <EmptyAsset
-            Icon={Warning50Icon}
-            headerText={t('pages.Popup.TxReceipt.Entry.Cosmos.entry.networkError')}
-            subHeaderText={t('pages.Popup.TxReceipt.Entry.Cosmos.entry.networkErrorDescription')}
-          />
-        </EmptyAssetContainer>
-      </ContentContainer>
-
-      <BottomContainer>
-        <Button
-          onClick={() => {
-            navigate('/');
-          }}
-        >
-          {t('pages.Popup.TxReceipt.Entry.Cosmos.entry.confirm')}
-        </Button>
-      </BottomContainer>
-    </Container>
-  ) : (
+  return (
     <Container>
       <HeaderContainer>
         <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.transactionReceipt')}</Typography>
@@ -216,12 +139,12 @@ export default function Cosmos({ chain }: CosmosProps) {
           </TxHashContainer>
         </ItemColumnContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.explorer')}</Typography>
-          </ItemTitleContainer>
+        {txDetailExplorerURL && (
+          <ItemContainer>
+            <ItemTitleContainer>
+              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.explorer')}</Typography>
+            </ItemTitleContainer>
 
-          {txDetailExplorerURL && (
             <IconButtonContainer>
               <StyledIconButton onClick={() => window.open(txDetailExplorerURL)}>
                 <Explorer16Icon />
@@ -236,145 +159,159 @@ export default function Cosmos({ chain }: CosmosProps) {
                 <Copy16Icon />
               </StyledIconButton>
             </IconButtonContainer>
-          )}
-        </ItemContainer>
+          </ItemContainer>
+        )}
 
-        <Div sx={{ width: '100%' }}>
+        <StyledDividerContainer>
           <StyledDivider />
-        </Div>
+        </StyledDividerContainer>
 
-        <CategoryTitleContainer>
-          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.information')}</Typography>
-        </CategoryTitleContainer>
+        {(txInfo.error && !txConfirmedStatus) || txInfo.hasTimedOut ? (
+          <EmptyAssetContainer>
+            <EmptyAsset
+              Icon={Warning50Icon}
+              headerText={t('pages.Popup.TxReceipt.Entry.Cosmos.entry.networkError')}
+              subHeaderText={t('pages.Popup.TxReceipt.Entry.Cosmos.entry.networkErrorDescription')}
+            />
+          </EmptyAssetContainer>
+        ) : (
+          <>
+            <CategoryTitleContainer>
+              <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.information')}</Typography>
+            </CategoryTitleContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.transactionConfirmed')}</Typography>
-          </ItemTitleContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.transactionConfirmed')}</Typography>
+              </ItemTitleContainer>
 
-          <ImageTextContainer>
-            {isLoading ? (
-              <Skeleton width="4rem" height="1.5rem" />
-            ) : txConfirmedStatus ? (
-              txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.pending')}</Typography>
+              <ImageTextContainer>
+                {isLoading ? (
+                  <Skeleton width="4rem" height="1.5rem" />
+                ) : txConfirmedStatus ? (
+                  txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                    <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.pending')}</Typography>
+                  ) : (
+                    <>
+                      <IconContainer data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
+                        {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? <Check16Icon /> : <Close16Icon />}
+                      </IconContainer>
+
+                      <HeaderTitle data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
+                        {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? (
+                          <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.success')}</Typography>
+                        ) : (
+                          <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.failure')}</Typography>
+                        )}
+                      </HeaderTitle>
+                    </>
+                  )
+                ) : (
+                  <Typography variant="h5">-</Typography>
+                )}
+              </ImageTextContainer>
+            </ItemContainer>
+
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.blockHeight')}</Typography>
+              </ItemTitleContainer>
+
+              {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Skeleton width="4rem" height="1.5rem" />
+              ) : txInfo.data?.tx_response.height ? (
+                <IconButtonContainer>
+                  <Number typoOfIntegers="h5n">{txInfo.data.tx_response.height}</Number>
+                  {blockDetailExplorerURL && (
+                    <StyledIconButton onClick={() => window.open(blockDetailExplorerURL)}>
+                      <Explorer16Icon />
+                    </StyledIconButton>
+                  )}
+                </IconButtonContainer>
               ) : (
-                <>
-                  <IconContainer data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
-                    {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? <Check16Icon /> : <Close16Icon />}
-                  </IconContainer>
+                <Typography variant="h5">-</Typography>
+              )}
+            </ItemContainer>
 
-                  <HeaderTitle data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
-                    {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? (
-                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.success')}</Typography>
-                    ) : (
-                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.failure')}</Typography>
-                    )}
-                  </HeaderTitle>
-                </>
-              )
-            ) : (
-              <Typography variant="h5">-</Typography>
-            )}
-          </ImageTextContainer>
-        </ItemContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.date')}</Typography>
+              </ItemTitleContainer>
+              {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Skeleton width="4rem" height="1.5rem" />
+              ) : formattedTimestamp ? (
+                <Typography variant="h5">{formattedTimestamp}</Typography>
+              ) : (
+                <Typography variant="h5">-</Typography>
+              )}
+            </ItemContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.blockHeight')}</Typography>
-          </ItemTitleContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.gas')}</Typography>
+              </ItemTitleContainer>
 
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : txInfo.data?.tx_response.height ? (
-            <IconButtonContainer>
-              <Number typoOfIntegers="h5n">{txInfo.data.tx_response.height}</Number>{' '}
-              <StyledIconButton onClick={() => window.open(blockDetailExplorerURL)}>
-                <Explorer16Icon />
-              </StyledIconButton>
-            </IconButtonContainer>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
+              {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Skeleton width="4rem" height="1.5rem" />
+              ) : txInfo.data?.tx_response.gas_used && txInfo.data.tx_response.gas_wanted ? (
+                <div>
+                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                    {txInfo.data.tx_response.gas_used}
+                  </Number>
+                  &nbsp;/&nbsp;
+                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                    {txInfo.data.tx_response.gas_wanted}
+                  </Number>
+                </div>
+              ) : (
+                <Typography variant="h5">-</Typography>
+              )}
+            </ItemContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.date')}</Typography>
-          </ItemTitleContainer>
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : formattedTimestamp ? (
-            <Typography variant="h5">{formattedTimestamp}</Typography>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
+            <FeeItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.fees')}</Typography>
+              </ItemTitleContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.gas')}</Typography>
-          </ItemTitleContainer>
+              <RightColumnContainer>
+                {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                  <Skeleton width="4rem" height="1.5rem" />
+                ) : txInfo.data?.tx.auth_info.fee.amount ? (
+                  txInfo.data.tx.auth_info.fee.amount.map((item) => {
+                    const feeCoinInfo = COSMOS_CHAINS.find((chains) => chains.baseDenom === item.denom);
+                    const itemDisplayAmount = toDisplayDenomAmount(item.amount, feeCoinInfo?.decimals || 0);
+                    const itemDisplayDenom = feeCoinInfo?.displayDenom || item.denom;
 
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : txInfo.data?.tx_response.gas_used && txInfo.data.tx_response.gas_wanted ? (
-            <div>
-              <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                {txInfo.data.tx_response.gas_used}
-              </Number>
-              &nbsp;/&nbsp;
-              <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                {txInfo.data.tx_response.gas_wanted}
-              </Number>
-            </div>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
-
-        <FeeItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.fees')}</Typography>
-          </ItemTitleContainer>
-
-          <RightColumnContainer>
-            {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-              <Skeleton width="4rem" height="1.5rem" />
-            ) : txInfo.data?.tx.auth_info.fee.amount ? (
-              txInfo.data.tx.auth_info.fee.amount.map((item) => {
-                const feeCoinInfo = COSMOS_CHAINS.find((chains) => chains.baseDenom === item.denom);
-                const itemDisplayAmount = toDisplayDenomAmount(item.amount, feeCoinInfo?.decimals || 0);
-                const itemDisplayDenom = feeCoinInfo?.displayDenom || item.denom;
-
-                const chainPrice = feeCoinInfo?.coinGeckoId ? coinGeckoPrice.data?.[feeCoinInfo?.coinGeckoId]?.[currency] || 0 : 0;
-                const itemDisplayValue = times(itemDisplayAmount, chainPrice, 3);
-                return (
-                  <Div key={item.amount + item.denom}>
-                    <RightAmountContainer>
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                        {itemDisplayAmount}
-                      </Number>
-                      &nbsp;
-                      <DenomContainer>
-                        <Typography variant="h5">{itemDisplayDenom}</Typography>
-                      </DenomContainer>
-                    </RightAmountContainer>
-                    <RightValueContainer>
-                      <Typography variant="h5">{gt(itemDisplayValue, '0.001') ? '' : '<'}</Typography>
-                      &nbsp;
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                        {itemDisplayValue}
-                      </Number>
-                    </RightValueContainer>
-                  </Div>
-                );
-              })
-            ) : (
-              <Typography variant="h5">-</Typography>
-            )}
-          </RightColumnContainer>
-        </FeeItemContainer>
+                    const chainPrice = feeCoinInfo?.coinGeckoId ? coinGeckoPrice.data?.[feeCoinInfo?.coinGeckoId]?.[currency] || 0 : 0;
+                    const itemDisplayValue = times(itemDisplayAmount, chainPrice, 3);
+                    return (
+                      <Div key={item.amount + item.denom}>
+                        <RightAmountContainer>
+                          <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                            {itemDisplayAmount}
+                          </Number>
+                          &nbsp;
+                          <DenomContainer>
+                            <Typography variant="h5">{itemDisplayDenom}</Typography>
+                          </DenomContainer>
+                        </RightAmountContainer>
+                        <RightValueContainer>
+                          <Typography variant="h5">{gt(itemDisplayValue, '0.001') ? '' : '<'}</Typography>
+                          &nbsp;
+                          <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                            {itemDisplayValue}
+                          </Number>
+                        </RightValueContainer>
+                      </Div>
+                    );
+                  })
+                ) : (
+                  <Typography variant="h5">-</Typography>
+                )}
+              </RightColumnContainer>
+            </FeeItemContainer>
+          </>
+        )}
       </ContentContainer>
 
       <BottomContainer>

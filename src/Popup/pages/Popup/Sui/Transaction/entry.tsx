@@ -307,7 +307,7 @@ export default function Entry({ queue }: EntryProps) {
 
                       const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
 
-                      digest = response.digest;
+                      digest = response?.digest;
                       responseToWeb({
                         response: {
                           result: response,
@@ -364,7 +364,7 @@ export default function Entry({ queue }: EntryProps) {
                       });
                     }
 
-                    if (queue.channel === 'inApp' && !!digest.length) {
+                    if (queue.channel === 'inApp' && !!digest) {
                       await deQueue(`/popup/tx-receipt/${digest}` as unknown as Path);
                     } else {
                       await deQueue();

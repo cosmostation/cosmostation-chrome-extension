@@ -43,6 +43,7 @@ import {
   RightColumnContainer,
   RightValueContainer,
   StyledDivider,
+  StyledDividerContainer,
   StyledIconButton,
   TxHashContainer,
 } from './styled';
@@ -133,7 +134,7 @@ export default function Ethereum() {
 
   const isLoading = useMemo(() => txInfo.isValidating || blockInfo.isValidating, [blockInfo.isValidating, txInfo.isValidating]);
 
-  return txInfo.error && !txConfirmedStatus ? (
+  return (
     <Container>
       <HeaderContainer>
         <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.transactionReceipt')}</Typography>
@@ -189,236 +190,169 @@ export default function Ethereum() {
             </IconButtonContainer>
           )}
         </ItemContainer>
-        <Div sx={{ width: '100%' }}>
+
+        <StyledDividerContainer>
           <StyledDivider />
-        </Div>
-        <EmptyAssetContainer>
-          <EmptyAsset
-            Icon={Warning50Icon}
-            headerText={t('pages.Popup.TxReceipt.Entry.Ethereum.entry.networkError')}
-            subHeaderText={t('pages.Popup.TxReceipt.Entry.Ethereum.entry.networkErrorDescription')}
-          />
-        </EmptyAssetContainer>
-      </ContentContainer>
+        </StyledDividerContainer>
 
-      <BottomContainer>
-        <Button
-          onClick={() => {
-            navigate('/');
-          }}
-        >
-          {t('pages.Popup.TxReceipt.Entry.Ethereum.entry.confirm')}
-        </Button>
-      </BottomContainer>
-    </Container>
-  ) : (
-    <Container>
-      <HeaderContainer>
-        <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.transactionReceipt')}</Typography>
-      </HeaderContainer>
+        {(txInfo.error && !txConfirmedStatus) || txInfo.hasTimedOut || blockInfo.hasTimedOut ? (
+          <EmptyAssetContainer>
+            <EmptyAsset
+              Icon={Warning50Icon}
+              headerText={t('pages.Popup.TxReceipt.Entry.Ethereum.entry.networkError')}
+              subHeaderText={t('pages.Popup.TxReceipt.Entry.Ethereum.entry.networkErrorDescription')}
+            />
+          </EmptyAssetContainer>
+        ) : (
+          <>
+            <CategoryTitleContainer>
+              <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.information')}</Typography>
+            </CategoryTitleContainer>
 
-      <ContentContainer>
-        <CategoryTitleContainer>
-          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.status')}</Typography>
-        </CategoryTitleContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.transactionConfirmed')}</Typography>
+              </ItemTitleContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.network')}</Typography>
-          </ItemTitleContainer>
+              <ImageTextContainer>
+                {isLoading ? (
+                  <Skeleton width="4rem" height="1.5rem" />
+                ) : txConfirmedStatus ? (
+                  txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                    <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.pending')}</Typography>
+                  ) : (
+                    <>
+                      <IconContainer data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
+                        {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? <Check16Icon /> : <Close16Icon />}
+                      </IconContainer>
 
-          <ImageTextContainer>
-            <NetworkImageContainer>
-              <Image src={imageURL} />
-            </NetworkImageContainer>
+                      <HeaderTitle data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
+                        {txConfirmedStatus ? (
+                          <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.success')}</Typography>
+                        ) : (
+                          <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.failure')}</Typography>
+                        )}
+                      </HeaderTitle>
+                    </>
+                  )
+                ) : (
+                  <Typography variant="h5">-</Typography>
+                )}
+              </ImageTextContainer>
+            </ItemContainer>
 
-            <Typography variant="h5">{networkName}</Typography>
-          </ImageTextContainer>
-        </ItemContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.blockNumber')}</Typography>
+              </ItemTitleContainer>
 
-        <ItemColumnContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.txHash')}</Typography>
-            <CopyButton text={txHash} />
-          </ItemTitleContainer>
-          <TxHashContainer>
-            <Typography variant="h5">{txHash}</Typography>
-          </TxHashContainer>
-        </ItemColumnContainer>
-
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.explorer')}</Typography>
-          </ItemTitleContainer>
-
-          {txDetailExplorerURL && (
-            <IconButtonContainer>
-              <StyledIconButton onClick={() => window.open(txDetailExplorerURL)}>
-                <Explorer16Icon />
-              </StyledIconButton>
-              <StyledIconButton
-                onClick={() => {
-                  if (copy(txDetailExplorerURL)) {
-                    enqueueSnackbar(t('pages.Popup.TxReceipt.Entry.Ethereum.entry.copied'));
-                  }
-                }}
-              >
-                <Copy16Icon />
-              </StyledIconButton>
-            </IconButtonContainer>
-          )}
-        </ItemContainer>
-
-        <Div sx={{ width: '100%' }}>
-          <StyledDivider />
-        </Div>
-
-        <CategoryTitleContainer>
-          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.information')}</Typography>
-        </CategoryTitleContainer>
-
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.transactionConfirmed')}</Typography>
-          </ItemTitleContainer>
-
-          <ImageTextContainer>
-            {isLoading ? (
-              <Skeleton width="4rem" height="1.5rem" />
-            ) : txConfirmedStatus ? (
-              txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.pending')}</Typography>
+              {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Skeleton width="4rem" height="1.5rem" />
+              ) : blockNumber ? (
+                <NumberText typoOfIntegers="h5n">{blockNumber}</NumberText>
               ) : (
-                <>
-                  <IconContainer data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
-                    {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? <Check16Icon /> : <Close16Icon />}
-                  </IconContainer>
+                <Typography variant="h5">-</Typography>
+              )}
+            </ItemContainer>
 
-                  <HeaderTitle data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
-                    {txConfirmedStatus ? (
-                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.success')}</Typography>
-                    ) : (
-                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.failure')}</Typography>
-                    )}
-                  </HeaderTitle>
-                </>
-              )
-            ) : (
-              <Typography variant="h5">-</Typography>
-            )}
-          </ImageTextContainer>
-        </ItemContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.date')}</Typography>
+              </ItemTitleContainer>
+              {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Skeleton width="4rem" height="1.5rem" />
+              ) : formattedTimestamp ? (
+                <Typography variant="h5">{formattedTimestamp}</Typography>
+              ) : (
+                <Typography variant="h5">-</Typography>
+              )}
+            </ItemContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.blockNumber')}</Typography>
-          </ItemTitleContainer>
+            <FeeItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.effectiveGasPrice')}</Typography>
+              </ItemTitleContainer>
 
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : blockNumber ? (
-            <NumberText typoOfIntegers="h5n">{blockNumber}</NumberText>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
+              <RightColumnContainer>
+                {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                  <Skeleton width="4rem" height="1.5rem" />
+                ) : gt(displayEffectiveGasPrice, '0') ? (
+                  <Div>
+                    <RightAmountContainer>
+                      <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
+                        {displayEffectiveGasPrice}
+                      </NumberText>
+                      &nbsp;
+                      <DenomContainer>
+                        <Typography variant="h5">{displayDenom}</Typography>
+                      </DenomContainer>
+                    </RightAmountContainer>
+                    <RightValueContainer>
+                      <Typography variant="h5">
+                        {gt(times(displayEffectiveGasPrice, coinGeckoId ? coinGeckoPrice.data?.[coinGeckoId]?.[currency] || 0 : 0, 2), '0.001') ? '' : '<'}
+                      </Typography>
+                      &nbsp;
+                      <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                        {effectiveGasPriceValue}
+                      </NumberText>
+                    </RightValueContainer>
+                  </Div>
+                ) : (
+                  <Typography variant="h5">-</Typography>
+                )}
+              </RightColumnContainer>
+            </FeeItemContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.date')}</Typography>
-          </ItemTitleContainer>
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : formattedTimestamp ? (
-            <Typography variant="h5">{formattedTimestamp}</Typography>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.gas')}</Typography>{' '}
+              </ItemTitleContainer>
 
-        <FeeItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.effectiveGasPrice')}</Typography>
-          </ItemTitleContainer>
+              {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Skeleton width="4rem" height="1.5rem" />
+              ) : gt(baseGasUsed, '0') ? (
+                <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
+                  {baseGasUsed}
+                </NumberText>
+              ) : (
+                <Typography variant="h5">-</Typography>
+              )}
+            </ItemContainer>
 
-          <RightColumnContainer>
-            {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-              <Skeleton width="4rem" height="1.5rem" />
-            ) : gt(displayEffectiveGasPrice, '0') ? (
-              <Div>
-                <RightAmountContainer>
-                  <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
-                    {displayEffectiveGasPrice}
-                  </NumberText>
-                  &nbsp;
-                  <DenomContainer>
-                    <Typography variant="h5">{displayDenom}</Typography>
-                  </DenomContainer>
-                </RightAmountContainer>
-                <RightValueContainer>
-                  <Typography variant="h5">
-                    {gt(times(displayEffectiveGasPrice, coinGeckoId ? coinGeckoPrice.data?.[coinGeckoId]?.[currency] || 0 : 0, 2), '0.001') ? '' : '<'}
-                  </Typography>
-                  &nbsp;
-                  <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                    {effectiveGasPriceValue}
-                  </NumberText>
-                </RightValueContainer>
-              </Div>
-            ) : (
-              <Typography variant="h5">-</Typography>
-            )}
-          </RightColumnContainer>
-        </FeeItemContainer>
+            <FeeItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.fees')}</Typography>
+              </ItemTitleContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.gas')}</Typography>{' '}
-          </ItemTitleContainer>
-
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : gt(baseGasUsed, '0') ? (
-            <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
-              {baseGasUsed}
-            </NumberText>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
-
-        <FeeItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.fees')}</Typography>
-          </ItemTitleContainer>
-
-          <RightColumnContainer>
-            {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-              <Skeleton width="4rem" height="1.5rem" />
-            ) : gt(displayFeeAmount, '0') ? (
-              <Div>
-                <RightAmountContainer>
-                  <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
-                    {displayFeeAmount}
-                  </NumberText>
-                  &nbsp;
-                  <DenomContainer>
-                    <Typography variant="h5">{displayDenom}</Typography>
-                  </DenomContainer>
-                </RightAmountContainer>
-                <RightValueContainer>
-                  <Typography variant="h5">{gt(displayFeeValue, '0.001') ? '' : '<'}</Typography>
-                  &nbsp;
-                  <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                    {displayFeeValue}
-                  </NumberText>
-                </RightValueContainer>
-              </Div>
-            ) : (
-              <Typography variant="h5">-</Typography>
-            )}
-          </RightColumnContainer>
-        </FeeItemContainer>
+              <RightColumnContainer>
+                {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                  <Skeleton width="4rem" height="1.5rem" />
+                ) : gt(displayFeeAmount, '0') ? (
+                  <Div>
+                    <RightAmountContainer>
+                      <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
+                        {displayFeeAmount}
+                      </NumberText>
+                      &nbsp;
+                      <DenomContainer>
+                        <Typography variant="h5">{displayDenom}</Typography>
+                      </DenomContainer>
+                    </RightAmountContainer>
+                    <RightValueContainer>
+                      <Typography variant="h5">{gt(displayFeeValue, '0.001') ? '' : '<'}</Typography>
+                      &nbsp;
+                      <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                        {displayFeeValue}
+                      </NumberText>
+                    </RightValueContainer>
+                  </Div>
+                ) : (
+                  <Typography variant="h5">-</Typography>
+                )}
+              </RightColumnContainer>
+            </FeeItemContainer>
+          </>
+        )}
       </ContentContainer>
 
       <BottomContainer>

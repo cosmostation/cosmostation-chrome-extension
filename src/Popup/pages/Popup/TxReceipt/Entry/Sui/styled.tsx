@@ -40,6 +40,10 @@ export const ContentContainer = styled('div')(({ theme }) => ({
   rowGap: '1rem',
 }));
 
+export const StyledDividerContainer = styled('div')({
+  width: '100%',
+});
+
 export const StyledDivider = styled(Divider)({
   margin: '0.6rem 0',
 });

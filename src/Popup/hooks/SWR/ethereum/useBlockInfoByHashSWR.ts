@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -15,6 +16,8 @@ type FetchParams = {
 };
 
 export function useBlockInfoByHashSWR(blockHash?: string, config?: SWRConfiguration) {
+  const [hasTimedOut, setHasTimedOut] = useState(false);
+
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { rpcURL } = currentEthereumNetwork;
@@ -28,11 +31,20 @@ export function useBlockInfoByHashSWR(blockHash?: string, config?: SWRConfigurat
       revalidateOnFocus: false,
       revalidateIfStale: false,
       revalidateOnReconnect: false,
-      errorRetryCount: 10,
-      ...config,
+      onErrorRetry: (_, __, ___, revalidate, { retryCount }) => {
+        if (retryCount >= 11) return;
+
+        if (retryCount === 10) {
+          setHasTimedOut(true);
+        }
+        setTimeout(() => {
+          void revalidate({ retryCount });
+        }, 5000);
+      },
       isPaused: () => !blockHash || !rpcURL,
+      ...config,
     },
   );
 
-  return { data, isValidating, error, mutate };
+  return { data, isValidating, error, hasTimedOut, mutate };
 }

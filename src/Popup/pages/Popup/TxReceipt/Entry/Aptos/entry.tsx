@@ -47,6 +47,7 @@ import {
   RightColumnContainer,
   RightValueContainer,
   StyledDivider,
+  StyledDividerContainer,
   StyledIconButton,
   TxHashContainer,
 } from './styled';
@@ -150,85 +151,7 @@ export default function Aptos() {
 
   const isLoading = useMemo(() => txInfo.isValidating || blockInfo.isValidating, [blockInfo.isValidating, txInfo.isValidating]);
 
-  return txInfo.error && !txConfirmedStatus ? (
-    <Container>
-      <HeaderContainer>
-        <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.transactionReceipt')}</Typography>
-      </HeaderContainer>
-
-      <ContentContainer>
-        <CategoryTitleContainer>
-          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.status')}</Typography>
-        </CategoryTitleContainer>
-
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.network')}</Typography>
-          </ItemTitleContainer>
-
-          <ImageTextContainer>
-            <NetworkImageContainer>
-              <Image src={imageURL} />
-            </NetworkImageContainer>
-
-            <Typography variant="h5">{networkName}</Typography>
-          </ImageTextContainer>
-        </ItemContainer>
-
-        <ItemColumnContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.txHash')}</Typography>
-            <CopyButton text={txHash} />
-          </ItemTitleContainer>
-          <TxHashContainer>
-            <Typography variant="h5">{txHash}</Typography>
-          </TxHashContainer>
-        </ItemColumnContainer>
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.explorer')}</Typography>
-          </ItemTitleContainer>
-
-          {txDetailExplorerURL && (
-            <IconButtonContainer>
-              <StyledIconButton onClick={() => window.open(txDetailExplorerURL)}>
-                <Explorer16Icon />
-              </StyledIconButton>
-              <StyledIconButton
-                onClick={() => {
-                  if (copy(txDetailExplorerURL)) {
-                    enqueueSnackbar(t('pages.Popup.TxReceipt.Entry.Aptos.entry.copied'));
-                  }
-                }}
-              >
-                <Copy16Icon />
-              </StyledIconButton>
-            </IconButtonContainer>
-          )}
-        </ItemContainer>
-        <Div sx={{ width: '100%' }}>
-          <StyledDivider />
-        </Div>
-        <EmptyAssetContainer>
-          <EmptyAsset
-            Icon={Warning50Icon}
-            headerText={t('pages.Popup.TxReceipt.Entry.Aptos.entry.networkError')}
-            subHeaderText={t('pages.Popup.TxReceipt.Entry.Aptos.entry.networkErrorDescription')}
-          />
-        </EmptyAssetContainer>
-      </ContentContainer>
-
-      <BottomContainer>
-        <Button
-          onClick={() => {
-            navigate('/');
-          }}
-        >
-          {t('pages.Popup.TxReceipt.Entry.Aptos.entry.confirm')}
-        </Button>
-      </BottomContainer>
-    </Container>
-  ) : (
+  return (
     <Container>
       <HeaderContainer>
         <Typography variant="h3">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.transactionReceipt')}</Typography>
@@ -263,12 +186,12 @@ export default function Aptos() {
           </TxHashContainer>
         </ItemColumnContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.explorer')}</Typography>
-          </ItemTitleContainer>
+        {txDetailExplorerURL && (
+          <ItemContainer>
+            <ItemTitleContainer>
+              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.explorer')}</Typography>
+            </ItemTitleContainer>
 
-          {txDetailExplorerURL && (
             <IconButtonContainer>
               <StyledIconButton onClick={() => window.open(txDetailExplorerURL)}>
                 <Explorer16Icon />
@@ -283,148 +206,160 @@ export default function Aptos() {
                 <Copy16Icon />
               </StyledIconButton>
             </IconButtonContainer>
-          )}
-        </ItemContainer>
+          </ItemContainer>
+        )}
 
-        <Div sx={{ width: '100%' }}>
+        <StyledDividerContainer>
           <StyledDivider />
-        </Div>
+        </StyledDividerContainer>
 
-        <CategoryTitleContainer>
-          <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.information')}</Typography>
-        </CategoryTitleContainer>
+        {(txInfo.error && !txConfirmedStatus) || txInfo.hasTimedOut || blockInfo.hasTimedOut ? (
+          <EmptyAssetContainer>
+            <EmptyAsset
+              Icon={Warning50Icon}
+              headerText={t('pages.Popup.TxReceipt.Entry.Aptos.entry.networkError')}
+              subHeaderText={t('pages.Popup.TxReceipt.Entry.Aptos.entry.networkErrorDescription')}
+            />
+          </EmptyAssetContainer>
+        ) : (
+          <>
+            <CategoryTitleContainer>
+              <Typography variant="h4">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.information')}</Typography>
+            </CategoryTitleContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.transactionConfirmed')}</Typography>
-          </ItemTitleContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.transactionConfirmed')}</Typography>
+              </ItemTitleContainer>
 
-          <ImageTextContainer>
-            {isLoading ? (
-              <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.pending')}</Typography>
-            ) : txConfirmedStatus ? (
-              txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.pending')}</Typography>
+              <ImageTextContainer>
+                {isLoading ? (
+                  <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.pending')}</Typography>
+                ) : txConfirmedStatus ? (
+                  txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                    <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.pending')}</Typography>
+                  ) : (
+                    <>
+                      <IconContainer data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
+                        {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? <Check16Icon /> : <Close16Icon />}
+                      </IconContainer>
+
+                      <HeaderTitle data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
+                        {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? (
+                          <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.success')}</Typography>
+                        ) : (
+                          <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.failure')}</Typography>
+                        )}
+                      </HeaderTitle>
+                    </>
+                  )
+                ) : (
+                  <Typography variant="h5">-</Typography>
+                )}
+              </ImageTextContainer>
+            </ItemContainer>
+
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.vmStatus')}</Typography>
+              </ItemTitleContainer>
+
+              {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Skeleton width="4rem" height="1.5rem" />
+              ) : vmStatus ? (
+                <NumberText typoOfIntegers="h5n">{vmStatus}</NumberText>
               ) : (
-                <>
-                  <IconContainer data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
-                    {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? <Check16Icon /> : <Close16Icon />}
-                  </IconContainer>
+                <Typography variant="h5">-</Typography>
+              )}
+            </ItemContainer>
 
-                  <HeaderTitle data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
-                    {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? (
-                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.success')}</Typography>
-                    ) : (
-                      <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.failure')}</Typography>
-                    )}
-                  </HeaderTitle>
-                </>
-              )
-            ) : (
-              <Typography variant="h5">-</Typography>
-            )}
-          </ImageTextContainer>
-        </ItemContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.version')}</Typography>
+              </ItemTitleContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.vmStatus')}</Typography>
-          </ItemTitleContainer>
+              {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Skeleton width="4rem" height="1.5rem" />
+              ) : txVersionId ? (
+                <NumberText typoOfIntegers="h5n">{txVersionId}</NumberText>
+              ) : (
+                <Typography variant="h5">-</Typography>
+              )}
+            </ItemContainer>
 
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : vmStatus ? (
-            <NumberText typoOfIntegers="h5n">{vmStatus}</NumberText>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.blockHeight')}</Typography>
+              </ItemTitleContainer>
+              {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Skeleton width="4rem" height="1.5rem" />
+              ) : blockHeight ? (
+                <NumberText typoOfIntegers="h5n">{blockHeight}</NumberText>
+              ) : (
+                <Typography variant="h5">-</Typography>
+              )}
+            </ItemContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.version')}</Typography>
-          </ItemTitleContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.expirationDate')}</Typography>
+              </ItemTitleContainer>
+              {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Skeleton width="4rem" height="1.5rem" />
+              ) : formattedExpirationTimestamp ? (
+                <Typography variant="h5">{formattedExpirationTimestamp}</Typography>
+              ) : (
+                <Typography variant="h5">-</Typography>
+              )}
+            </ItemContainer>
 
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : txVersionId ? (
-            <NumberText typoOfIntegers="h5n">{txVersionId}</NumberText>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
+            <ItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.date')}</Typography>
+              </ItemTitleContainer>
+              {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                <Skeleton width="4rem" height="1.5rem" />
+              ) : formattedTimestamp ? (
+                <Typography variant="h5">{formattedTimestamp}</Typography>
+              ) : (
+                <Typography variant="h5">-</Typography>
+              )}
+            </ItemContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.blockHeight')}</Typography>
-          </ItemTitleContainer>
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : blockHeight ? (
-            <NumberText typoOfIntegers="h5n">{blockHeight}</NumberText>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
+            <FeeItemContainer>
+              <ItemTitleContainer>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.fee')}</Typography>
+              </ItemTitleContainer>
 
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.expirationDate')}</Typography>
-          </ItemTitleContainer>
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : formattedExpirationTimestamp ? (
-            <Typography variant="h5">{formattedExpirationTimestamp}</Typography>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
-
-        <ItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.date')}</Typography>
-          </ItemTitleContainer>
-          {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-            <Skeleton width="4rem" height="1.5rem" />
-          ) : formattedTimestamp ? (
-            <Typography variant="h5">{formattedTimestamp}</Typography>
-          ) : (
-            <Typography variant="h5">-</Typography>
-          )}
-        </ItemContainer>
-
-        <FeeItemContainer>
-          <ItemTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Aptos.entry.fee')}</Typography>
-          </ItemTitleContainer>
-
-          <RightColumnContainer>
-            {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-              <Skeleton width="4rem" height="1.5rem" />
-            ) : gt(displayFeeAmount, '0') ? (
-              <Div>
-                <RightAmountContainer>
-                  <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
-                    {displayFeeAmount}
-                  </NumberText>
-                  &nbsp;
-                  <DenomContainer>
-                    <Typography variant="h5">{displayDenom}</Typography>
-                  </DenomContainer>
-                </RightAmountContainer>
-                <RightValueContainer>
-                  <Typography variant="h5">{gt(displayFeeValue, '0.001') ? '' : '<'}</Typography>
-                  &nbsp;
-                  <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                    {displayFeeValue}
-                  </NumberText>
-                </RightValueContainer>
-              </Div>
-            ) : (
-              <Typography variant="h5">-</Typography>
-            )}
-          </RightColumnContainer>
-        </FeeItemContainer>
+              <RightColumnContainer>
+                {isLoading || txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
+                  <Skeleton width="4rem" height="1.5rem" />
+                ) : gt(displayFeeAmount, '0') ? (
+                  <Div>
+                    <RightAmountContainer>
+                      <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
+                        {displayFeeAmount}
+                      </NumberText>
+                      &nbsp;
+                      <DenomContainer>
+                        <Typography variant="h5">{displayDenom}</Typography>
+                      </DenomContainer>
+                    </RightAmountContainer>
+                    <RightValueContainer>
+                      <Typography variant="h5">{gt(displayFeeValue, '0.001') ? '' : '<'}</Typography>
+                      &nbsp;
+                      <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                        {displayFeeValue}
+                      </NumberText>
+                    </RightValueContainer>
+                  </Div>
+                ) : (
+                  <Typography variant="h5">-</Typography>
+                )}
+              </RightColumnContainer>
+            </FeeItemContainer>
+          </>
+        )}
       </ContentContainer>
 
       <BottomContainer>

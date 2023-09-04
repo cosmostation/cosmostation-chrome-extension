@@ -612,12 +612,16 @@ export default function Entry({ queue }: EntryProps) {
                           origin,
                         });
 
-                        if (queue.channel === 'inApp' && txType.data?.contractKind === 'erc20' && txType.data?.type === 'approve') {
-                          await deQueue(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path);
-                        } else {
+                        if (queue.channel === 'inApp') {
+                          if (txType.data?.contractKind === 'erc20' && txType.data?.type === 'approve') {
+                            await deQueue(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path);
+                          }
                           if (result) {
                             await deQueue(`/popup/tx-receipt/${result}` as unknown as Path);
+                          } else {
+                            await deQueue();
                           }
+                        } else {
                           await deQueue();
                         }
                       }
