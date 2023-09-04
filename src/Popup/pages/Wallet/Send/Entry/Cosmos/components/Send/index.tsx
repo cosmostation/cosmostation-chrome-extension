@@ -8,8 +8,8 @@ import { ARCHWAY } from '~/constants/chain/cosmos/archway';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
+import AssetBottomSheetButton from '~/Popup/components/common/AssetBottomSheetButton';
 import Button from '~/Popup/components/common/Button';
-import DropdownButton from '~/Popup/components/common/DropdownButton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
@@ -17,24 +17,26 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import { useArchIDSWR } from '~/Popup/hooks/SWR/cosmos/useArchIDSWR';
-import type { CoinInfo as BaseCoinInfo } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
+import { useTokensBalanceSWR as useCosmosTokensBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokensBalanceSWR';
+import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
-import type { CosmosChain, CosmosToken as BaseCosmosToken, GasRateKey } from '~/types/chain';
+import type { CosmosChain, GasRateKey } from '~/types/chain';
 
 import {
   Address,
@@ -49,7 +51,8 @@ import {
   StyledInput,
   StyledTextarea,
 } from './styled';
-import CoinOrTokenPopover from '../CoinOrTokenPopover';
+import type { CoinOrTokenInfo } from '../..';
+import CoinListBottomSheet from '../CoinListBottomSheet';
 
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
@@ -59,11 +62,6 @@ export const TYPE = {
   COIN: 'coin',
   TOKEN: 'token',
 } as const;
-
-export type CoinInfo = BaseCoinInfo & { type: typeof TYPE.COIN };
-export type TokenInfo = BaseCosmosToken & { type: typeof TYPE.TOKEN };
-
-export type CoinOrTokenInfo = CoinInfo | TokenInfo;
 
 type CosmosProps = {
   chain: CosmosChain;
@@ -76,6 +74,9 @@ export default function Send({ chain }: CosmosProps) {
   const coinList = useCoinListSWR(chain, true);
   const accounts = useAccounts(true);
   const nodeInfo = useNodeInfoSWR(chain);
+  const { extensionStorage } = useExtensionStorage();
+  const { currency } = extensionStorage;
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { enQueue } = useCurrentQueue();
   const params = useParams();
 
@@ -85,8 +86,7 @@ export default function Send({ chain }: CosmosProps) {
 
   const { currentCosmosTokens } = useCurrentCosmosTokens(chain);
 
-  const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const isOpenPopover = Boolean(popoverAnchorEl);
+  const [isOpenedCoinList, setIsOpenedCoinList] = useState(false);
 
   const address = useMemo(
     () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '',
@@ -105,12 +105,14 @@ export default function Send({ chain }: CosmosProps) {
         displayDenom: chain.displayDenom,
         baseDenom: chain.baseDenom,
         coinGeckoId: chain.coinGeckoId,
+        baseChainName: chain.chainName,
       },
       ...coinList.coins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
       ...coinList.ibcCoins.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item })),
     ],
     [
       chain.baseDenom,
+      chain.chainName,
       chain.coinGeckoId,
       chain.decimals,
       chain.displayDenom,
@@ -122,13 +124,35 @@ export default function Send({ chain }: CosmosProps) {
     ],
   );
 
-  const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(
-    () => [
-      ...coinAll.filter((item) => gt(item.availableAmount, '0')).map((item) => ({ ...item, type: TYPE.COIN })),
-      ...currentCosmosTokens.sort((a, b) => a.displayDenom.localeCompare(b.displayDenom)).map((item) => ({ ...item, type: TYPE.TOKEN })),
-    ],
-    [coinAll, currentCosmosTokens],
-  );
+  const cosmosTokensBalance = useCosmosTokensBalanceSWR({ chain, contractAddresses: currentCosmosTokens.map((item) => item.address), address });
+
+  const availableCoinOrTokenList: CoinOrTokenInfo[] = useMemo(() => {
+    const coinOrTokenList = [
+      ...coinAll.map((item) => ({
+        ...item,
+        type: TYPE.COIN,
+        name: convertAssetNameToCosmos(item.baseChainName || '')?.chainName || getCapitalize(item.baseChainName || ''),
+      })),
+      ...currentCosmosTokens.map((item) => ({
+        ...item,
+        type: TYPE.TOKEN,
+        availableAmount: cosmosTokensBalance.data.find((tokenBalance) => tokenBalance.contractAddress === item.address)?.balance || '0',
+        name: chain.chainName,
+      })),
+    ].map((item) => {
+      const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
+      const price = times(toDisplayDenomAmount(item.availableAmount, item.decimals), coinPrice);
+      return {
+        ...item,
+        price,
+      };
+    });
+
+    return coinOrTokenList
+      .sort((a, b) => (gt(a.availableAmount, b.availableAmount) ? -1 : 1))
+      .sort((a, b) => (gt(a.price, b.price) ? -1 : 1))
+      .sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
+  }, [chain.chainName, chain.displayDenom, coinAll, coinGeckoPrice.data, cosmosTokensBalance.data, currency, currentCosmosTokens]);
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
@@ -418,14 +442,16 @@ export default function Send({ chain }: CosmosProps) {
         </AddressContainer>
       )}
       <MarginTop8Div>
-        <DropdownButton
+        <AssetBottomSheetButton
           imgSrc={currentCoinOrToken.imageURL}
           title={currentCoinOrTokenDisplayDenom}
           leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.available')}
           leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
-          isOpenPopover={isOpenPopover}
+          isOpenBottomSheet={isOpenedCoinList}
           decimals={currentDisplayMaxDecimals}
-          onClickDropdown={(currentTarget) => setPopoverAnchorEl(currentTarget)}
+          onClick={() => {
+            setIsOpenedCoinList(true);
+          }}
         />
       </MarginTop8Div>
       <MarginTop8Div>
@@ -532,26 +558,14 @@ export default function Send({ chain }: CosmosProps) {
         }}
       />
 
-      <CoinOrTokenPopover
-        chain={chain}
-        address={address}
-        marginThreshold={0}
+      <CoinListBottomSheet
         currentCoinOrTokenInfo={currentCoinOrToken}
         coinOrTokenInfos={availableCoinOrTokenList}
+        open={isOpenedCoinList}
+        onClose={() => setIsOpenedCoinList(false)}
         onClickCoinOrToken={(clickedCoinOrToken) => {
           setCurrentCoinOrTokenId(clickedCoinOrToken.type === 'coin' ? clickedCoinOrToken.baseDenom : clickedCoinOrToken.address);
           setCurrentDisplayAmount('');
-        }}
-        open={isOpenPopover}
-        onClose={() => setPopoverAnchorEl(null)}
-        anchorEl={popoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
         }}
       />
     </Container>

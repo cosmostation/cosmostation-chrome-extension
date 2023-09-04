@@ -112,7 +112,7 @@ export default function Contract({ msg, chain, isMultipleMsgs }: ContractProps) 
             </AmountInfoContainer>
           ))}
 
-        <AddressContainer>
+        <AddressContainer sx={{ marginTop: '0.4rem' }}>
           <LabelContainer>
             <Typography variant="h5">{t('pages.Popup.Cosmos.Sign.Amino.components.TxMessage.messages.Contract.index.msg')}</Typography>
           </LabelContainer>

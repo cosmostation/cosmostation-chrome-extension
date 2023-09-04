@@ -79,6 +79,11 @@ export type CW20BalanceResponse = {
   };
 };
 
+export type CW20TokensBalanceResponse = {
+  contractAddress: string;
+  balance: string;
+};
+
 export type CW20TokenInfoResponse = {
   data: {
     name: string;

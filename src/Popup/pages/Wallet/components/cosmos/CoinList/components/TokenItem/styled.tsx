@@ -3,17 +3,17 @@ import { styled } from '@mui/material/styles';
 import AbsoluteLoading from '~/Popup/components/AbsoluteLoading';
 import IconButton from '~/Popup/components/common/IconButton';
 
-export const StyledButton = styled('button')(({ theme }) => ({
+type StyledButtonProps = {
+  'data-is-disabled'?: boolean;
+};
+
+export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...props }) => ({
   position: 'relative',
 
   backgroundColor: theme.colors.base02,
   border: 0,
 
   padding: '1.2rem',
-
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
 
   borderRadius: '0.8rem',
 
@@ -28,13 +28,20 @@ export const StyledButton = styled('button')(({ theme }) => ({
   },
 
   '&:hover': {
-    backgroundColor: theme.colors.base03,
+    backgroundColor: props['data-is-disabled'] ? theme.colors.base02 : theme.colors.base03,
+    cursor: props['data-is-disabled'] ? 'default' : 'pointer',
 
     '#deleteButton': {
       display: 'block',
     },
   },
 }));
+
+export const Container = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+});
 
 export const LeftContainer = styled('div')({
   display: 'flex',
