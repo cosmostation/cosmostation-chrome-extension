@@ -3,7 +3,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { TRASACTION_RECEIPT_ERROR } from '~/constants/error';
+import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '~/constants/error';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { post } from '~/Popup/utils/axios';
 import { ethereumTxHashRegex } from '~/Popup/utils/regex';
@@ -30,7 +30,7 @@ export function useTxInfoSWR(txHash: string, config?: SWRConfiguration) {
 
     const returnData = await post<TxInfoPayload>(params.url, { ...params.body, id: 1, jsonrpc: '2.0' });
     if (!returnData.error && !returnData.result) {
-      throw new Error(TRASACTION_RECEIPT_ERROR[1]);
+      throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
     }
     return returnData;
   };

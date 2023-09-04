@@ -91,6 +91,6 @@ export const COSMOS_ADD_NFT_ERROR = {
   NO_NFTS_AVAILABLE: 6,
 } as const;
 
-export const TRASACTION_RECEIPT_ERROR = {
-  1: 'Pending State',
+export const TRASACTION_RECEIPT_ERROR_MESSAGE = {
+  PENDING: 'Pending State',
 } as const;

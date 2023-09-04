@@ -74,8 +74,6 @@ export const ItemContainer = styled('div')(({ theme }) => ({
 }));
 
 export const FeeItemContainer = styled('div')(({ theme }) => ({
-  width: '100%',
-
   display: 'flex',
   alignItems: 'flex-start',
   justifyContent: 'space-between',

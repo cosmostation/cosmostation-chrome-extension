@@ -4,7 +4,7 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 import type { SuiTransactionBlockResponseOptions } from '@mysten/sui.js';
 
-import { TRASACTION_RECEIPT_ERROR } from '~/constants/error';
+import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '~/constants/error';
 import { post } from '~/Popup/utils/axios';
 import { suiTxHashRegex } from '~/Popup/utils/regex';
 import type { SuiNetwork } from '~/types/chain';
@@ -53,7 +53,7 @@ export function useTxInfoSWR({ digest, network, option }: UseTxInfoSWRProps, con
       id: params.digest,
     });
     if (!returnData.result?.checkpoint) {
-      throw new Error(TRASACTION_RECEIPT_ERROR[1]);
+      throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
     }
     return returnData;
   };

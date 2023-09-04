@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import { APTOS_COIN } from '~/constants/aptos';
-import { TRASACTION_RECEIPT_ERROR } from '~/constants/error';
+import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '~/constants/error';
 import { TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
@@ -140,7 +140,7 @@ export default function Aptos() {
   const displayFeeValue = useMemo(() => times(displayFeeAmount, price, 3), [displayFeeAmount, price]);
 
   const txConfirmedStatus = useMemo(() => {
-    if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR[1]) return TX_CONFIRMED_STATUS.PENDING;
+    if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING) return TX_CONFIRMED_STATUS.PENDING;
 
     if (tx && tx.type !== 'pending_transaction') {
       return tx.success ? TX_CONFIRMED_STATUS.CONFIRMED : TX_CONFIRMED_STATUS.FAILED;

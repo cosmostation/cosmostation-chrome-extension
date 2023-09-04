@@ -5,7 +5,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { TRASACTION_RECEIPT_ERROR } from '~/constants/error';
+import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '~/constants/error';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { aptosTxHashRegex } from '~/Popup/utils/regex';
 
@@ -27,7 +27,7 @@ export function useTxInfoSWR(txHash: string, config?: SWRConfiguration) {
     const returnData = await aptosClient.getTransactionByHash(params.txHash);
 
     if (returnData.type === 'pending_transaction') {
-      throw new Error(TRASACTION_RECEIPT_ERROR[1]);
+      throw new Error(TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING);
     }
     return returnData;
   };

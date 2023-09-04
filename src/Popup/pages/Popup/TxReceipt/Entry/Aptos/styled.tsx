@@ -74,16 +74,6 @@ export const ItemContainer = styled('div')(({ theme }) => ({
 }));
 
 export const FeeItemContainer = styled('div')(({ theme }) => ({
-  // maxWidth: '10rem',
-
-  wordBreak: 'keep-all',
-  whiteSpace: 'nowrap',
-
-  '& > *': {
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-  },
-
   display: 'flex',
   alignItems: 'flex-start',
   justifyContent: 'space-between',

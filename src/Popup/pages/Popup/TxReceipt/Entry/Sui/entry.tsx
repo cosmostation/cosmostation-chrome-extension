@@ -4,7 +4,8 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
-import { TRASACTION_RECEIPT_ERROR } from '~/constants/error';
+import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '~/constants/error';
+import { TRANSACTION_RESULT } from '~/constants/sui';
 import { TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
@@ -101,12 +102,12 @@ export default function Sui() {
   const displayFeeValue = useMemo(() => times(displayFeeAmount, price, 3), [displayFeeAmount, price]);
 
   const txConfirmedStatus = useMemo(() => {
-    if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR[1]) return TX_CONFIRMED_STATUS.PENDING;
+    if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING) return TX_CONFIRMED_STATUS.PENDING;
 
     if (txInfo.data?.result?.effects?.status.status) {
-      if (txInfo.data.result.effects.status.status === 'failure') return TX_CONFIRMED_STATUS.FAILED;
+      if (txInfo.data.result.effects.status.status === TRANSACTION_RESULT.FAILURE) return TX_CONFIRMED_STATUS.FAILED;
 
-      if (txInfo.data.result.effects.status.status === 'success') return TX_CONFIRMED_STATUS.CONFIRMED;
+      if (txInfo.data.result.effects.status.status === TRANSACTION_RESULT.SUCCESS) return TX_CONFIRMED_STATUS.CONFIRMED;
     }
 
     return undefined;
