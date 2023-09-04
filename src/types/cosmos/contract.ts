@@ -62,7 +62,8 @@ export type NFTInfoPayload = {
 
 export type NFTIDPayload = {
   data: {
-    tokens: string[];
+    tokens?: string[];
+    ids?: string[];
   };
 };
 
