@@ -700,6 +700,16 @@
             "description4": ""
           }
         },
+        "AddNFTs": {
+          "entry": {
+            "addButton": "Add NFTs",
+            "addNFTs": "Add Suggested NFTs",
+            "cancelButton": "Cancel",
+            "networkError": "Network Error",
+            "notOwned": "Can't import NFTs that are not owned by you.",
+            "question": "Would you like to import these NFTs?"
+          }
+        },
         "AddTokens": {
           "entry": {
             "addButton": "Add tokens",
@@ -1100,7 +1110,8 @@
                   "source": "Source",
                   "symbol": "Symbol",
                   "tokenId": "Token ID",
-                  "tokenType": "Token Standard"
+                  "tokenType": "Token Standard",
+                  "url": "URL"
                 }
               }
             },
