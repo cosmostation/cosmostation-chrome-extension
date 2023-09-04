@@ -93,5 +93,4 @@ export const COSMOS_ADD_NFT_ERROR = {
 
 export const TRASACTION_RECEIPT_ERROR = {
   1: 'Pending State',
-  2: 'Timeout',
 } as const;

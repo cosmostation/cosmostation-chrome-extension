@@ -1034,7 +1034,7 @@
               "information": "Information",
               "network": "Network",
               "networkError": "Network Error",
-              "networkErrorDescription": "Fail to get Tranasaction Data",
+              "networkErrorDescription": "Fail to get Transaction Data",
               "pending": "Pending",
               "status": "Status",
               "success": "Success",
@@ -1048,7 +1048,6 @@
           "Cosmos": {
             "entry": {
               "blockHeight": "Block Height",
-              "broadcastResult": "Broadcast Result",
               "confirm": "Confirm",
               "copied": "Copied",
               "date": "Date",
@@ -1059,20 +1058,18 @@
               "information": "Information",
               "network": "Network",
               "networkError": "Network Error",
-              "networkErrorDescription": "Fail to get Tranasaction Data",
+              "networkErrorDescription": "Fail to get Transaction Data",
               "pending": "Pending",
               "status": "Status",
               "success": "Success",
               "transactionConfirmed": "Transaction Confirmed",
               "transactionReceipt": "Transaction Receipt",
-              "tx": "Tx",
               "txHash": "Tx Hash"
             }
           },
           "Ethereum": {
             "entry": {
               "blockNumber": "Block Number",
-              "broadcastResult": "Broadcast Result",
               "confirm": "Confirm",
               "copied": "Copied",
               "date": "Date",
@@ -1084,7 +1081,7 @@
               "information": "Information",
               "network": "Network",
               "networkError": "Network Error",
-              "networkErrorDescription": "Fail to get Tranasaction Data",
+              "networkErrorDescription": "Fail to get Transaction Data",
               "pending": "Pending",
               "status": "Status",
               "success": "Success",
@@ -1095,7 +1092,6 @@
           },
           "Sui": {
             "entry": {
-              "broadcastResult": "Broadcast Result",
               "checkPoint": "Check Point",
               "confirm": "Confirm",
               "copied": "Copied",
@@ -1108,7 +1104,7 @@
               "information": "Information",
               "network": "Network",
               "networkError": "Network Error",
-              "networkErrorDescription": "Fail to get Tranasaction Data",
+              "networkErrorDescription": "Fail to get Transaction Data",
               "pending": "Pending",
               "status": "Status",
               "success": "Success",

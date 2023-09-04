@@ -1048,7 +1048,6 @@
           "Cosmos": {
             "entry": {
               "blockHeight": "블록 높이",
-              "broadcastResult": "전송 결과",
               "confirm": "확인",
               "copied": "복사 되었습니다.",
               "date": "날짜",
@@ -1065,14 +1064,12 @@
               "success": "성공",
               "transactionConfirmed": "트랜잭션 성공여부",
               "transactionReceipt": "트랜잭션 결과",
-              "tx": "트랜잭션 데이터",
               "txHash": "트랜잭션 해시"
             }
           },
           "Ethereum": {
             "entry": {
               "blockNumber": "블록 번호",
-              "broadcastResult": "전송 결과",
               "confirm": "확인",
               "copied": "복사 되었습니다.",
               "date": "날짜",
@@ -1095,7 +1092,6 @@
           },
           "Sui": {
             "entry": {
-              "broadcastResult": "전송 결과",
               "checkPoint": "체크 포인트",
               "confirm": "확인",
               "copied": "복사 되었습니다.",
