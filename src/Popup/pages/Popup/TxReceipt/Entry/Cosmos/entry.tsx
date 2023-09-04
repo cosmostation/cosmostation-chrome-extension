@@ -182,7 +182,7 @@ export default function Cosmos({ chain }: CosmosProps) {
 
             <ItemContainer>
               <ItemTitleContainer>
-                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.transactionConfirmed')}</Typography>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.transactionConfirmed')}</Typography>
               </ItemTitleContainer>
 
               <ImageTextContainer>
@@ -190,7 +190,7 @@ export default function Cosmos({ chain }: CosmosProps) {
                   <Skeleton width="4rem" height="1.5rem" />
                 ) : txConfirmedStatus ? (
                   txConfirmedStatus === TX_CONFIRMED_STATUS.PENDING ? (
-                    <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.pending')}</Typography>
+                    <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.pending')}</Typography>
                   ) : (
                     <>
                       <IconContainer data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
@@ -199,9 +199,9 @@ export default function Cosmos({ chain }: CosmosProps) {
 
                       <HeaderTitle data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
                         {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? (
-                          <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.success')}</Typography>
+                          <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.success')}</Typography>
                         ) : (
-                          <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.failure')}</Typography>
+                          <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Cosmos.entry.failure')}</Typography>
                         )}
                       </HeaderTitle>
                     </>

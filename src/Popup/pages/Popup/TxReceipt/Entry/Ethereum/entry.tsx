@@ -321,7 +321,7 @@ export default function Ethereum() {
 
             <FeeItemContainer>
               <ItemTitleContainer>
-                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.fees')}</Typography>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.fee')}</Typography>
               </ItemTitleContainer>
 
               <RightColumnContainer>

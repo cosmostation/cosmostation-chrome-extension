@@ -264,7 +264,7 @@ export default function Sui() {
 
             <FeeItemContainer>
               <ItemTitleContainer>
-                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.fees')}</Typography>
+                <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Sui.entry.fee')}</Typography>
               </ItemTitleContainer>
 
               <RightColumnContainer>
