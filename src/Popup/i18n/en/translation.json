@@ -1573,6 +1573,12 @@
           }
         },
         "cosmos": {
+          "ActivityList": {
+            "index": {
+              "defaultHeader": "No recent activity",
+              "defaultSubHeader": "Recent activity will show up here"
+            }
+          },
           "CoinList": {
             "components": {
               "TokenItem": {

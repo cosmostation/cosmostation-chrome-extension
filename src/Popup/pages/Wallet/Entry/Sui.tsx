@@ -26,7 +26,7 @@ export default function Sui({ chain }: SuiProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentSuiNetwork, additionalSuiNetworks } = useCurrentSuiNetwork();
 
-  const tabLabels = ['Coins', 'NFTs'];
+  const tabLabels = ['Coins', 'NFTs', 'Activity'];
 
   const currentHomeTabIndex = useMemo(() => (gte(currentTabIndex, tabLabels.length) ? 0 : currentTabIndex), [currentTabIndex, tabLabels.length]);
 
@@ -66,7 +66,7 @@ export default function Sui({ chain }: SuiProps) {
             ))}
           </Tabs>
           <StyledTabPanel value={tabValue} index={0}>
-            <BottomContainer sx={{ marginTop: '0.9rem' }}>
+            <BottomContainer>
               <ErrorBoundary fallback={<Empty />}>
                 <Suspense fallback={null}>
                   <CoinList chain={chain} />
@@ -75,13 +75,16 @@ export default function Sui({ chain }: SuiProps) {
             </BottomContainer>
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>
-            <BottomContainer sx={{ marginTop: '0.9rem' }}>
+            <BottomContainer>
               <ErrorBoundary fallback={<Empty />}>
                 <Suspense fallback={null}>
                   <NFTList chain={chain} />
                 </Suspense>
               </ErrorBoundary>
             </BottomContainer>
+          </StyledTabPanel>
+          <StyledTabPanel value={tabValue} index={2}>
+            <BottomContainer>{/* <ActivityList chain={chain} /> */}</BottomContainer>
           </StyledTabPanel>
         </>
       </LedgerCheck>

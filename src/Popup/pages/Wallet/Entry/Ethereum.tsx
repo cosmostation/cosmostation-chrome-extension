@@ -26,7 +26,7 @@ export default function Ethereum({ chain }: EthereumProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
 
-  const tabLabels = ['Coins', 'NFTs'];
+  const tabLabels = ['Coins', 'NFTs', 'Activity'];
 
   const currentHomeTabIndex = useMemo(() => (gte(currentTabIndex, tabLabels.length) ? 0 : currentTabIndex), [currentTabIndex, tabLabels.length]);
 
@@ -69,18 +69,21 @@ export default function Ethereum({ chain }: EthereumProps) {
             ))}
           </Tabs>
           <StyledTabPanel value={tabValue} index={0}>
-            <BottomContainer sx={{ marginTop: '0.9rem' }}>
+            <BottomContainer>
               <TokenList />
             </BottomContainer>
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>
-            <BottomContainer sx={{ marginTop: '0.9rem' }}>
+            <BottomContainer>
               <ErrorBoundary fallback={<Empty />}>
                 <Suspense fallback={null}>
                   <NFTList chain={chain} />
                 </Suspense>
               </ErrorBoundary>
             </BottomContainer>
+          </StyledTabPanel>
+          <StyledTabPanel value={tabValue} index={2}>
+            <BottomContainer>{/* <ActivityList chain={chain} /> */}</BottomContainer>
           </StyledTabPanel>
         </>
       </LedgerCheck>

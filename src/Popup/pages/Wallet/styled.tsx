@@ -25,7 +25,7 @@ export const NativeChainCardContainer = styled('div')({
 });
 
 export const BottomContainer = styled('div')({
-  marginTop: '1.6rem',
+  marginTop: '0.9rem',
 
   display: 'flex',
   flexDirection: 'column',

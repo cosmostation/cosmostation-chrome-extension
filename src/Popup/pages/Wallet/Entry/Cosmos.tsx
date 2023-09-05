@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import Empty from '~/Popup/components/common/Empty';
@@ -8,9 +8,9 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useCurrentTabIndex } from '~/Popup/hooks/useCurrent/useCurrentTabIndex';
-import { gte } from '~/Popup/utils/big';
 import type { CosmosChain } from '~/types/chain';
 
+import ActivityList from '../components/cosmos/ActivityList';
 import CoinList from '../components/cosmos/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/cosmos/NativeChainCard';
 import NFTList from '../components/cosmos/NFTList';
@@ -29,11 +29,37 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const { currentAccount } = useCurrentAccount();
 
-  const tabLabels = ['Coins', 'NFTs'];
+  const tabLabels = useMemo(
+    () =>
+      chain.cosmWasm
+        ? [
+            {
+              label: 'Coins',
+              value: 0,
+            },
+            {
+              label: 'NFTs',
+              value: 1,
+            },
+            {
+              label: 'Activity',
+              value: 10,
+            },
+          ]
+        : [
+            {
+              label: 'Coins',
+              value: 0,
+            },
+            {
+              label: 'Activity',
+              value: 10,
+            },
+          ],
+    [chain.cosmWasm],
+  );
 
-  const currentHomeTabIndex = useMemo(() => (gte(currentTabIndex, tabLabels.length) ? 0 : currentTabIndex), [currentTabIndex, tabLabels.length]);
-
-  const [tabValue, setTabValue] = useState(currentHomeTabIndex);
+  const [tabValue, setTabValue] = useState(tabLabels.map((item) => item.value).includes(currentTabIndex) ? currentTabIndex : 0);
 
   const handleChange = useCallback(
     (_: React.SyntheticEvent, newTabValue: number) => {
@@ -46,6 +72,12 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const { currentCosmosAdditionalChains } = useCurrentAdditionalChains();
   const isCustom = useMemo(() => !!currentCosmosAdditionalChains.find((item) => item.id === chain.id), [chain.id, currentCosmosAdditionalChains]);
+
+  useEffect(() => {
+    if (!tabLabels.map((item) => item.value).includes(currentTabIndex)) {
+      setTabValue(0);
+    }
+  }, [currentTabIndex, tabLabels]);
 
   return (
     <Container key={`${chain.id}-${currentAccount.id}`}>
@@ -68,33 +100,12 @@ export default function Cosmos({ chain }: CosmosProps) {
               </ErrorBoundary>
             </NativeChainCardContainer>
 
-            {chain.cosmWasm ? (
-              <>
-                <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
-                  {tabLabels.map((item) => (
-                    <Tab key={item} label={item} />
-                  ))}
-                </Tabs>
-                <StyledTabPanel value={tabValue} index={0}>
-                  <BottomContainer sx={{ marginTop: '0.9rem' }}>
-                    <ErrorBoundary fallback={<Empty />}>
-                      <Suspense fallback={null}>
-                        <CoinList chain={chain} />
-                      </Suspense>
-                    </ErrorBoundary>
-                  </BottomContainer>
-                </StyledTabPanel>
-                <StyledTabPanel value={tabValue} index={1}>
-                  <BottomContainer sx={{ marginTop: '0.9rem' }}>
-                    <ErrorBoundary fallback={<Empty />}>
-                      <Suspense fallback={null}>
-                        <NFTList chain={chain} />
-                      </Suspense>
-                    </ErrorBoundary>
-                  </BottomContainer>
-                </StyledTabPanel>
-              </>
-            ) : (
+            <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
+              {tabLabels.map((item) => (
+                <Tab key={item.label} label={item.label} value={item.value} />
+              ))}
+            </Tabs>
+            <StyledTabPanel value={tabValue} index={0}>
               <BottomContainer>
                 <ErrorBoundary fallback={<Empty />}>
                   <Suspense fallback={null}>
@@ -102,7 +113,23 @@ export default function Cosmos({ chain }: CosmosProps) {
                   </Suspense>
                 </ErrorBoundary>
               </BottomContainer>
+            </StyledTabPanel>
+            {chain.cosmWasm && (
+              <StyledTabPanel value={tabValue} index={1}>
+                <BottomContainer>
+                  <ErrorBoundary fallback={<Empty />}>
+                    <Suspense fallback={null}>
+                      <NFTList chain={chain} />
+                    </Suspense>
+                  </ErrorBoundary>
+                </BottomContainer>
+              </StyledTabPanel>
             )}
+            <StyledTabPanel value={tabValue} index={10}>
+              <BottomContainer>
+                <ActivityList chain={chain} />
+              </BottomContainer>
+            </StyledTabPanel>
           </>
         )}
       </LedgerCheck>
