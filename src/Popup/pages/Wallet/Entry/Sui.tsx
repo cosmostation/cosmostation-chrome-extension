@@ -11,6 +11,7 @@ import { gte } from '~/Popup/utils/big';
 import type { SuiChain } from '~/types/chain';
 
 import LedgerCheck from '../components/LedgerCheck';
+import ActivityList from '../components/sui/ActivityList';
 import CoinList from '../components/sui/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/sui/NativeChainCard';
 import NFTList from '../components/sui/NFTList';
@@ -84,7 +85,9 @@ export default function Sui({ chain }: SuiProps) {
             </BottomContainer>
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={2}>
-            <BottomContainer>{/* <ActivityList chain={chain} /> */}</BottomContainer>
+            <BottomContainer>
+              <ActivityList />
+            </BottomContainer>
           </StyledTabPanel>
         </>
       </LedgerCheck>

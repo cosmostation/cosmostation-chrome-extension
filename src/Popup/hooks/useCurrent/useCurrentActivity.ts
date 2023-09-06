@@ -46,7 +46,7 @@ export function useCurrentActivity() {
     return '';
   }, [currentAptosNetwork.id, currentChain.id, currentChain.line, currentEthereumNetwork.id, currentSuiNetwork.id]);
 
-  const currentActivitiy = useMemo(() => activity?.[baseChainUUID]?.[currentAddress] || [], [activity, currentAddress, baseChainUUID]);
+  const currentActivitiy = useMemo(() => [...(activity?.[baseChainUUID]?.[currentAddress] || [])], [activity, currentAddress, baseChainUUID]);
 
   const setCurrentActivity = async (txHash: string, type?: ActivityType) => {
     const newActivity = {

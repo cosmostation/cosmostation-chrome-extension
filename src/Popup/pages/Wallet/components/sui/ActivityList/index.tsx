@@ -4,18 +4,13 @@ import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt } from '~/Popup/utils/big';
-import type { CosmosChain } from '~/types/chain';
 
 import ActivityItem from './components/ActivityItem';
 import { Container, EmptyAssetContainer, ListContainer } from './styled';
 
 import HistoryIcon from '~/images/icons/History.svg';
 
-type ActivityListProps = {
-  chain: CosmosChain;
-};
-
-export default function ActivityList({ chain }: ActivityListProps) {
+export default function ActivityList() {
   const { t } = useTranslation();
 
   const { currentActivitiy } = useCurrentActivity();
@@ -28,13 +23,13 @@ export default function ActivityList({ chain }: ActivityListProps) {
     <Container>
       <ListContainer>
         {isExistActivity ? (
-          sortedCurrentctivities.map((activity) => <ActivityItem key={activity.txHash} chain={chain} activity={activity} />)
+          sortedCurrentctivities.map((activity) => <ActivityItem key={activity.txHash} activity={activity} />)
         ) : (
           <EmptyAssetContainer>
             <EmptyAsset
               Icon={HistoryIcon}
-              headerText={t('pages.Wallet.components.cosmos.ActivityList.index.defaultHeader')}
-              subHeaderText={t('pages.Wallet.components.cosmos.ActivityList.index.defaultSubHeader')}
+              headerText={t('pages.Wallet.components.sui.ActivityList.index.defaultHeader')}
+              subHeaderText={t('pages.Wallet.components.sui.ActivityList.index.defaultSubHeader')}
             />
           </EmptyAssetContainer>
         )}

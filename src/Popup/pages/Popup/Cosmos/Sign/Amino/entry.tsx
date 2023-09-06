@@ -13,7 +13,7 @@ import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentCosmosActivity } from '~/Popup/hooks/useCurrent/useCurrentCosmosActivity';
+import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
@@ -49,7 +49,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { currentPassword } = useCurrentPassword();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { setCurrentCosmosActivity } = useCurrentCosmosActivity();
+  const { setCurrentActivity } = useCurrentActivity();
 
   const { closeTransport, createTransport } = useLedgerTransport();
 
@@ -282,7 +282,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                         if (code === 0) {
                           enqueueSnackbar('success');
-                          void setCurrentCosmosActivity(txhash, txType);
+                          void setCurrentActivity(txhash, txType);
                         } else {
                           throw new Error(response.tx_response.raw_log as string);
                         }
