@@ -47,6 +47,18 @@ export type Activity = {
   type?: ActivityType;
 };
 
+export type NetworkUUID = {
+  id: string;
+};
+
+export type AccountAddress = {
+  address: string;
+};
+
+export type NetworkActivityMap = Record<NetworkUUID['id'], ActivityByAddressMap> | undefined;
+
+export type ActivityByAddressMap = Record<AccountAddress['address'], Activity[]> | undefined;
+
 export type AllowedOrigin = { accountId: AccountCommon['id']; origin: string };
 
 export type AccountName = Record<AccountCommon['id'], string>;
@@ -123,7 +135,7 @@ export type ExtensionStorage = {
   language: LanguageType;
   addressBook: AddressInfo[];
 
-  activity: Activity[];
+  activity: NetworkActivityMap;
 
   rootPath: Path;
   homeTabIndex: HomeTabPath;

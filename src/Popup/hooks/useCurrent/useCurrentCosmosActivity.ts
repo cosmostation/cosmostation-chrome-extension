@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
+import { equal } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { ActivityType } from '~/types/extensionStorage';
 
@@ -13,6 +14,7 @@ export function useCurrentCosmosActivity() {
   const { currentChain } = useCurrentChain();
   const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { activity } = extensionStorage;
+
   const accounts = useAccounts();
 
   const currentAddress = useMemo(
@@ -20,10 +22,10 @@ export function useCurrentCosmosActivity() {
     [accounts?.data, currentChain.id, currentAccount.id],
   );
 
-  const currentCosmosActivity = useMemo(() => activity.filter((item) => item.baseChainUUID === currentChain.id), [activity, currentChain.id]);
+  const currentCosmosActivities = useMemo(() => [...(activity?.[currentChain.id]?.[currentAddress] || [])], [activity, currentAddress, currentChain.id]);
 
   const setCurrentCosmosActivity = async (txHash: string, type?: ActivityType) => {
-    const baseActivity = {
+    const newActivity = {
       baseChainUUID: currentChain.id,
       txHash,
       timestamp: String(Date.now()),
@@ -31,19 +33,32 @@ export function useCurrentCosmosActivity() {
       type,
     };
 
-    const newActivities = activity.find(
+    const newCurrentCosmosActivities = currentCosmosActivities.find(
       (item) =>
         isEqualsIgnoringCase(item.baseChainUUID, currentChain.id) &&
         isEqualsIgnoringCase(item.txHash, txHash) &&
         isEqualsIgnoringCase(item.address, currentAddress),
     )
-      ? activity
-      : [...activity, baseActivity];
+      ? currentCosmosActivities
+      : [...currentCosmosActivities, newActivity];
 
-    const trimmedActivities = newActivities.length > 10 ? newActivities.slice(1) : newActivities;
+    const trimmedCurrentCosmosActivities =
+      newCurrentCosmosActivities.length > 10
+        ? newCurrentCosmosActivities.filter(
+            (obj) => !equal(obj.timestamp, Math.min(...newCurrentCosmosActivities.map((activityItem) => Number(activityItem.timestamp)))),
+          )
+        : newCurrentCosmosActivities;
 
-    await setExtensionStorage('activity', trimmedActivities);
+    const updatedActivity = {
+      ...activity,
+      [currentChain.id]: {
+        ...activity?.[currentChain.id],
+        [currentAddress]: trimmedCurrentCosmosActivities,
+      },
+    };
+
+    await setExtensionStorage('activity', updatedActivity);
   };
 
-  return { currentCosmosActivity, setCurrentCosmosActivity };
+  return { currentCosmosActivities, setCurrentCosmosActivity };
 }

@@ -43,7 +43,12 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
   const formattedTimestamp = useMemo(() => {
     const date = new Date(Number(timestamp));
 
-    return date.toLocaleString('en-US');
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    });
   }, [timestamp]);
 
   const sampleToAddress = 'stars1aygdt8742gamxv8ca99wzh56ry4xw5s33vvxu2';
