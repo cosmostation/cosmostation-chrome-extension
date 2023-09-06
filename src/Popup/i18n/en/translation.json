@@ -1580,6 +1580,7 @@
                   "commission": "Commission",
                   "contract": "Execute contract",
                   "ibcSend": "IBC Send",
+                  "noExplorerURL": "No explorer URL",
                   "reward": "Claim Reward",
                   "send": "Send",
                   "transaction": "Transaction"

@@ -1580,6 +1580,7 @@
                   "commission": "커미션",
                   "contract": "컨트랙 실행",
                   "ibcSend": "IBC 전송",
+                  "noExplorerURL": "익스플로러 URL이 없습니다",
                   "reward": "리워드 요청",
                   "send": "전송",
                   "transaction": "트랜잭션"

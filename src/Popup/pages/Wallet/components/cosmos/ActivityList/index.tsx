@@ -1,9 +1,12 @@
 import { useMemo } from 'react';
 
 import EmptyAsset from '~/Popup/components/EmptyAsset';
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosActivity } from '~/Popup/hooks/useCurrent/useCurrentCosmosActivity';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt } from '~/Popup/utils/big';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 
 import ActivityItem from './components/ActivityItem';
@@ -18,9 +21,22 @@ type ActivityListProps = {
 export default function ActivityList({ chain }: ActivityListProps) {
   const { t } = useTranslation();
 
+  const { currentAccount } = useCurrentAccount();
+
+  const accounts = useAccounts();
+
+  const currentAddress = useMemo(
+    () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '',
+    [accounts?.data, chain.id, currentAccount.id],
+  );
   const { currentCosmosActivity } = useCurrentCosmosActivity();
 
-  const isExistActivity = useMemo(() => currentCosmosActivity.length, [currentCosmosActivity]);
+  const filteredCosmosActivity = useMemo(
+    () => currentCosmosActivity.filter((item) => isEqualsIgnoringCase(item.address, currentAddress)),
+    [currentAddress, currentCosmosActivity],
+  );
+
+  const isExistActivity = useMemo(() => filteredCosmosActivity.length, [filteredCosmosActivity.length]);
 
   return (
     <Container>

@@ -3,12 +3,14 @@ import { Typography } from '@mui/material';
 
 import { IN_APP_COSMOS_TRANSACTION_TYPE } from '~/constants/extensionStorage';
 import NumberText from '~/Popup/components/common/Number';
+import Tooltip from '~/Popup/components/common/Tooltip';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Activity } from '~/types/extensionStorage';
 
 import {
+  Container,
   LeftContainer,
   LeftIconContainer,
   LeftTextContainer,
@@ -91,37 +93,46 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
   const transactionAmount = useMemo(() => '1', []);
 
   return (
-    <StyledButton onClick={() => window.open(txDetailExplorerURL)}>
-      <LeftContainer>
-        <LeftIconContainer>{trasactionIcon}</LeftIconContainer>
-        <LeftTextContainer>
-          <LeftTextTitleContainer>
-            <Typography variant="h5">{title}</Typography>
-          </LeftTextTitleContainer>
-          <>
-            <LeftTextSubtitleContainer>
-              <Typography variant="h6">{shorterToAddress}</Typography>
-            </LeftTextSubtitleContainer>
-            <LeftTextSubtitleContainer>
-              <Typography variant="h6">{formattedTimestamp}</Typography>
-            </LeftTextSubtitleContainer>
-          </>
-        </LeftTextContainer>
-      </LeftContainer>
-      <RightContainer>
-        {transactionAmount ? (
-          <RightTextContainer>
-            <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
-              {transactionAmount}
-            </NumberText>
-            <Typography variant="h6">{chain.displayDenom}</Typography>
-          </RightTextContainer>
-        ) : (
-          <RightTextContainer>
-            <Typography variant="h6">-</Typography>
-          </RightTextContainer>
-        )}
-      </RightContainer>
+    <StyledButton onClick={() => window.open(txDetailExplorerURL)} disabled={!txDetailExplorerURL}>
+      <Tooltip
+        title={!txDetailExplorerURL ? t('pages.Wallet.components.cosmos.ActivityList.components.ActivityItem.index.noExplorerURL') : ''}
+        varient="error"
+        placement="top"
+        arrow
+      >
+        <Container>
+          <LeftContainer>
+            <LeftIconContainer>{trasactionIcon}</LeftIconContainer>
+            <LeftTextContainer>
+              <LeftTextTitleContainer>
+                <Typography variant="h5">{title}</Typography>
+              </LeftTextTitleContainer>
+              <>
+                <LeftTextSubtitleContainer>
+                  <Typography variant="h6">{shorterToAddress}</Typography>
+                </LeftTextSubtitleContainer>
+                <LeftTextSubtitleContainer>
+                  <Typography variant="h6">{formattedTimestamp}</Typography>
+                </LeftTextSubtitleContainer>
+              </>
+            </LeftTextContainer>
+          </LeftContainer>
+          <RightContainer>
+            {transactionAmount ? (
+              <RightTextContainer>
+                <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
+                  {transactionAmount}
+                </NumberText>
+                <Typography variant="h6">{chain.displayDenom}</Typography>
+              </RightTextContainer>
+            ) : (
+              <RightTextContainer>
+                <Typography variant="h6">-</Typography>
+              </RightTextContainer>
+            )}
+          </RightContainer>
+        </Container>
+      </Tooltip>
     </StyledButton>
   );
 }
