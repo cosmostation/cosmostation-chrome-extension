@@ -24,6 +24,7 @@ import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { STARNAME } from '~/constants/chain/cosmos/starname';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
+import { IN_APP_COSMOS_TRANSACTION_TYPE } from '~/constants/extensionStorage';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
 import type {
@@ -244,4 +245,27 @@ export function toDisplayCWTokenStandard(tokenStandard?: string) {
   }
 
   return 'CW-'.concat(standardNumber[0]);
+}
+
+export function determineAminoMsgType(msg: Msg) {
+  if (isAminoSend(msg)) {
+    return IN_APP_COSMOS_TRANSACTION_TYPE.SEND;
+  }
+  if (isAminoIBCSend(msg)) {
+    return IN_APP_COSMOS_TRANSACTION_TYPE.IBC_SEND;
+  }
+  if (isAminoExecuteContract(msg)) {
+    return IN_APP_COSMOS_TRANSACTION_TYPE.CONTRACT;
+  }
+  if (isAminoReward(msg)) {
+    return IN_APP_COSMOS_TRANSACTION_TYPE.CONTRACT;
+  }
+  if (isAminoCommission(msg)) {
+    return IN_APP_COSMOS_TRANSACTION_TYPE.COMMISSION;
+  }
+  if (isAminoSwapExactAmountIn(msg)) {
+    return IN_APP_COSMOS_TRANSACTION_TYPE.SWAP;
+  }
+
+  return IN_APP_COSMOS_TRANSACTION_TYPE.CUSTOM;
 }

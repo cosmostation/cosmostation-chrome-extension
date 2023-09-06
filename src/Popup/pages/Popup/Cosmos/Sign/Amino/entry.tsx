@@ -13,6 +13,7 @@ import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentCosmosActivity } from '~/Popup/hooks/useCurrent/useCurrentCosmosActivity';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
@@ -20,7 +21,7 @@ import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { cosmosURL, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
+import { cosmosURL, determineAminoMsgType, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -47,6 +48,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
   const { enqueueSnackbar } = useSnackbar();
+
+  const { setCurrentCosmosActivity } = useCurrentCosmosActivity();
 
   const { closeTransport, createTransport } = useLedgerTransport();
 
@@ -117,6 +120,14 @@ export default function Entry({ queue, chain }: EntryProps) {
   );
 
   const tx = useMemo(() => ({ ...doc, memo: signingMemo, fee: signingFee }), [doc, signingFee, signingMemo]);
+
+  const txType = useMemo(() => {
+    if (msgs?.length === 1) {
+      return determineAminoMsgType(msgs[txMsgPage - 1]);
+    }
+
+    return 'custom';
+  }, [msgs, txMsgPage]);
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -267,10 +278,11 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                         const response = await broadcast(url, pTxBytes);
 
-                        const { code } = response.tx_response;
+                        const { code, txhash } = response.tx_response;
 
                         if (code === 0) {
                           enqueueSnackbar('success');
+                          void setCurrentCosmosActivity(txhash, txType);
                         } else {
                           throw new Error(response.tx_response.raw_log as string);
                         }

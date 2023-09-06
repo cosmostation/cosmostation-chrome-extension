@@ -23,6 +23,8 @@ export const extensionStorageDefault: ExtensionStorage = {
   language: '' as LanguageType,
   currency: '' as CurrencyType,
 
+  activity: [],
+
   rootPath: PATH.DASHBOARD,
   homeTabIndex: {
     ethereum: 0,

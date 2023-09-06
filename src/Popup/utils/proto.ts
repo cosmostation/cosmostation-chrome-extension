@@ -297,3 +297,21 @@ export function convertAminoMsgTypeToDirectMsgType(typeUrl: string) {
 
   return '';
 }
+
+// NOTE 위치 cosmos util로 옮길 것
+export function determineDirectMsgType(msg: ProtoMsg) {
+  if (isDirectSend(msg)) {
+    return 'send';
+  }
+  if (isDirectIBCSend(msg)) {
+    return 'ibcSend';
+  }
+  if (isDirectCommission(msg)) {
+    return 'commission';
+  }
+  if (isDirectExecuteContract(msg)) {
+    return 'contract';
+  }
+
+  return 'custom';
+}

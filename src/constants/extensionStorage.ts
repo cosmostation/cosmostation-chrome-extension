@@ -25,3 +25,33 @@ export const HOME_TAB_INDEX_TYPE = {
   SUI: 'sui',
   APTOS: 'aptos',
 } as const;
+
+export const IN_APP_COSMOS_TRANSACTION_TYPE = {
+  SEND: 'send',
+  IBC_SEND: 'ibcSend',
+  SWAP: 'swap',
+  REWARD: 'reward',
+  COMMISSION: 'commission',
+  CONTRACT: 'contract',
+  CUSTOM: 'custom',
+} as const;
+
+export const IN_APP_ETHEREUM_TRANSACTION_TYPE = {
+  APPROVE: 'approve',
+  TRANSFER: 'transfer',
+  TRANSFER_FROM: 'transferFrom',
+  ERC721_TRANSFER_FROM: 'erc721TransferFrom',
+  ERC1155_SAFE_TRANSFER_FROM: 'erc1155SafeTransferFrom',
+  SEND: 'send',
+  DEPLOY: 'deployContract',
+  SWAP: 'swap',
+  CONTRACT_INTERACT: 'contractInteract',
+} as const;
+
+export const IN_APP_SUI_TRANSACTION_TYPE = {
+  TRANSACTION: 'transaction',
+} as const;
+
+export const IN_APP_APTOS_TRANSACTION_TYPE = {
+  TRANSACTION: 'transaction',
+} as const;

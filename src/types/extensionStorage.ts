@@ -1,4 +1,12 @@
-import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/extensionStorage';
+import type {
+  ACCOUNT_TYPE,
+  CURRENCY_TYPE,
+  IN_APP_APTOS_TRANSACTION_TYPE,
+  IN_APP_COSMOS_TRANSACTION_TYPE,
+  IN_APP_ETHEREUM_TRANSACTION_TYPE,
+  IN_APP_SUI_TRANSACTION_TYPE,
+  LANGUAGE_TYPE,
+} from '~/constants/extensionStorage';
 import type { PERMISSION } from '~/constants/sui';
 import type { AptosNetwork, BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken, SuiNetwork } from '~/types/chain';
 import type { TransportType } from '~/types/ledger';
@@ -14,6 +22,12 @@ export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 export type CurrencyType = ValueOf<typeof CURRENCY_TYPE>;
 export type SuiPermissionType = ValueOf<typeof PERMISSION>;
 
+export type ActivityType =
+  | ValueOf<typeof IN_APP_COSMOS_TRANSACTION_TYPE>
+  | ValueOf<typeof IN_APP_ETHEREUM_TRANSACTION_TYPE>
+  | ValueOf<typeof IN_APP_SUI_TRANSACTION_TYPE>
+  | ValueOf<typeof IN_APP_APTOS_TRANSACTION_TYPE>;
+
 export type HomeTabPath = {
   ethereum: number;
   cosmos: number;
@@ -23,6 +37,14 @@ export type HomeTabPath = {
 
 export type AccountCommon = {
   id: string;
+};
+
+export type Activity = {
+  address: string;
+  baseChainUUID: string;
+  timestamp: string;
+  txHash: string;
+  type?: ActivityType;
 };
 
 export type AllowedOrigin = { accountId: AccountCommon['id']; origin: string };
@@ -100,6 +122,8 @@ export type ExtensionStorage = {
   additionalChains: Chain[];
   language: LanguageType;
   addressBook: AddressInfo[];
+
+  activity: Activity[];
 
   rootPath: Path;
   homeTabIndex: HomeTabPath;

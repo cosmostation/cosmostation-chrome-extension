@@ -1574,6 +1574,18 @@
         },
         "cosmos": {
           "ActivityList": {
+            "components": {
+              "ActivityItem": {
+                "index": {
+                  "commission": "Commission",
+                  "contract": "Execute contract",
+                  "ibcSend": "IBC Send",
+                  "reward": "Claim Reward",
+                  "send": "Send",
+                  "transaction": "Transaction"
+                }
+              }
+            },
             "index": {
               "defaultHeader": "No recent activity",
               "defaultSubHeader": "Recent activity will show up here"
