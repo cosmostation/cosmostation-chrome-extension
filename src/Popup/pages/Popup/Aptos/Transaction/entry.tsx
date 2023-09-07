@@ -328,8 +328,9 @@ export default function Entry({ queue }: EntryProps) {
                   try {
                     setIsProgress(true);
 
-                    let txHash: string | undefined;
                     if (generateTransaction.data) {
+                      let txHash: string | undefined;
+
                       const signedTx = await aptosClient.signTransaction(aptosAccount, generateTransaction.data);
 
                       if (method === 'aptos_signTransaction') {
