@@ -11,6 +11,7 @@ import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
+import { IN_APP_ETHEREUM_TRANSACTION_TYPE } from '~/constants/extensionStorage';
 import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -27,6 +28,7 @@ import { useTransactionCountSWR } from '~/Popup/hooks/SWR/ethereum/useTransactio
 import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useOneInchTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -121,6 +123,8 @@ export default function Entry({ queue }: EntryProps) {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const { setCurrentActivity } = useCurrentActivity();
+
   const { currency } = extensionStorage;
   const { deQueue } = useCurrentQueue();
 
@@ -151,6 +155,40 @@ export default function Entry({ queue }: EntryProps) {
   const originEthereumTx = useMemo(() => params[0], [params]);
 
   const txType = useDetermineTxTypeSWR(originEthereumTx);
+
+  const activityTxType = useMemo(() => {
+    if (txType.data?.txDescription && txType.data?.contractKind === 'erc20' && txType.data?.type === 'approve') {
+      return IN_APP_ETHEREUM_TRANSACTION_TYPE.APPROVE;
+    }
+    if (txType.data?.txDescription && txType.data?.contractKind === 'erc20' && txType.data?.type === 'transfer') {
+      return IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER;
+    }
+    if (txType.data?.txDescription && txType.data?.contractKind === 'erc20' && txType.data?.type === 'transferfrom') {
+      return IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER_FROM;
+    }
+    if (txType.data?.txDescription && txType.data?.contractKind === 'erc721' && txType.data?.type === 'transferfrom') {
+      return IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC721_TRANSFER_FROM;
+    }
+    if (txType.data?.txDescription && txType.data?.contractKind === 'erc1155' && txType.data?.type === 'safetransferfrom') {
+      return IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC1155_SAFE_TRANSFER_FROM;
+    }
+    if (txType.data?.type === 'simpleSend') {
+      return IN_APP_ETHEREUM_TRANSACTION_TYPE.SIMPLE_SEND;
+    }
+    if (txType.data?.type === 'contractDeployment') {
+      return IN_APP_ETHEREUM_TRANSACTION_TYPE.DEPLOY;
+    }
+
+    if (txType.data?.txDescription && txType.data?.contractKind === 'oneInch' && (txType.data?.type === 'swap' || txType.data?.type === 'unoswap')) {
+      return IN_APP_ETHEREUM_TRANSACTION_TYPE.SWAP;
+    }
+
+    if (txType.data?.type === 'contractInteraction') {
+      return IN_APP_ETHEREUM_TRANSACTION_TYPE.CONTRACT_INTERACT;
+    }
+
+    return undefined;
+  }, [txType.data?.contractKind, txType.data?.txDescription, txType.data?.type]);
 
   const isCustomFee = useMemo(
     () => !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas)),
@@ -614,6 +652,7 @@ export default function Entry({ queue }: EntryProps) {
 
                         if (queue.channel === 'inApp') {
                           enqueueSnackbar('success');
+                          void setCurrentActivity(result, activityTxType);
                         }
                         if (queue.channel === 'inApp' && txType.data?.contractKind === 'erc20' && txType.data?.type === 'approve') {
                           await deQueue(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path);

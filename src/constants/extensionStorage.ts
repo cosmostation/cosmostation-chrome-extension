@@ -42,9 +42,10 @@ export const IN_APP_ETHEREUM_TRANSACTION_TYPE = {
   TRANSFER_FROM: 'transferFrom',
   ERC721_TRANSFER_FROM: 'erc721TransferFrom',
   ERC1155_SAFE_TRANSFER_FROM: 'erc1155SafeTransferFrom',
-  SEND: 'send',
-  DEPLOY: 'deployContract',
+  SIMPLE_SEND: 'simpleSend',
+  DEPLOY: 'contractDeployment',
   SWAP: 'swap',
+  UNO_SWAP: 'unoswap',
   CONTRACT_INTERACT: 'contractInteract',
 } as const;
 

@@ -59,39 +59,35 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
 
   // NOTE 필요한 아이콘(24픽셀) 1. 트랜잭션 디폴트 아이콘(우상향 하는 아이콘이었으면 함) 2. 컨트랙트 실행 아이콘
   const trasactionIcon = useMemo(() => {
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.SEND) {
+    if (
+      type === IN_APP_ETHEREUM_TRANSACTION_TYPE.SIMPLE_SEND ||
+      type === IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER ||
+      type === IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER_FROM
+    ) {
       return <Send24Icon />;
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER) {
-      return <Send24Icon />;
-    }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER_FROM) {
-      return <Send24Icon />;
-    }
+
     if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.SWAP) {
       return <Swap24Icon />;
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC721_TRANSFER_FROM) {
+
+    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC721_TRANSFER_FROM || type === IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC1155_SAFE_TRANSFER_FROM) {
       return <NFTSend24Icon />;
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC1155_SAFE_TRANSFER_FROM) {
-      return <NFTSend24Icon />;
-    }
+
     if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.APPROVE) {
       return <Check24Icon />;
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.CONTRACT_INTERACT) {
-      return <Contract24Icon />;
-    }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.DEPLOY) {
+    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.CONTRACT_INTERACT || type === IN_APP_ETHEREUM_TRANSACTION_TYPE.DEPLOY) {
       return <Contract24Icon />;
     }
 
+    // NOTE need default icon
     return <IBCSend24Icon />;
   }, [type]);
 
   const title = useMemo(() => {
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.SEND) {
+    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.SIMPLE_SEND) {
       return t('pages.Wallet.components.ethereum.ActivityList.components.ActivityItem.index.send');
     }
     if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER) {
