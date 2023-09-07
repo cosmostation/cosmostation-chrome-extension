@@ -1660,6 +1660,29 @@
           }
         },
         "ethereum": {
+          "ActivityList": {
+            "components": {
+              "ActivityItem": {
+                "index": {
+                  "approve": "승인",
+                  "contractInteract": "컨트랙트 실행",
+                  "deploy": "컨트랙트 배포",
+                  "erc1155SafeTransferFrom": "전송 (ERC1155)",
+                  "erc721TransferFrom": "전송 (ERC721)",
+                  "noExplorerURL": "익스플로러 URL이 없습니다",
+                  "send": "전송",
+                  "swap": "교환",
+                  "transaction": "트랜잭션",
+                  "transfer": "전송 (ERC20)",
+                  "transferFrom": "Transfer From"
+                }
+              }
+            },
+            "index": {
+              "defaultHeader": "최근 활동 없음",
+              "defaultSubHeader": "최근 활동은 여기에 표시됩니다"
+            }
+          },
           "NFTList": {
             "components": {
               "NFTCardItem": {

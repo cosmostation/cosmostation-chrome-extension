@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import { IN_APP_APTOS_TRANSACTION_TYPE, IN_APP_SUI_TRANSACTION_TYPE } from '~/constants/extensionStorage';
+import { IN_APP_APTOS_TRANSACTION_TYPE } from '~/constants/extensionStorage';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
@@ -65,7 +65,7 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
   }, [type]);
 
   const title = useMemo(() => {
-    if (type === IN_APP_SUI_TRANSACTION_TYPE.TRANSACTION) {
+    if (type === IN_APP_APTOS_TRANSACTION_TYPE.TRANSACTION) {
       return t('pages.Wallet.components.aptos.ActivityList.components.ActivityItem.index.transaction');
     }
 

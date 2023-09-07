@@ -10,6 +10,7 @@ import { useCurrentTabIndex } from '~/Popup/hooks/useCurrent/useCurrentTabIndex'
 import { gte } from '~/Popup/utils/big';
 import type { EthereumChain } from '~/types/chain';
 
+import ActivityList from '../components/ethereum/ActivityList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/ethereum/NativeChainCard';
 import NFTList from '../components/ethereum/NFTList';
 import TokenList from '../components/ethereum/TokenList';
@@ -83,7 +84,9 @@ export default function Ethereum({ chain }: EthereumProps) {
             </BottomContainer>
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={2}>
-            <BottomContainer>{/* <ActivityList chain={chain} /> */}</BottomContainer>
+            <BottomContainer>
+              <ActivityList />
+            </BottomContainer>
           </StyledTabPanel>
         </>
       </LedgerCheck>

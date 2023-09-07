@@ -1660,6 +1660,29 @@
           }
         },
         "ethereum": {
+          "ActivityList": {
+            "components": {
+              "ActivityItem": {
+                "index": {
+                  "approve": "Approve",
+                  "contractInteract": "Contract Interact",
+                  "deploy": "Deploy",
+                  "erc1155SafeTransferFrom": "ERC1155 Safe Transfer From",
+                  "erc721TransferFrom": "ERC721 Transfer From",
+                  "noExplorerURL": "No explorer URL",
+                  "send": "Send",
+                  "swap": "Swap",
+                  "transaction": "Transaction",
+                  "transfer": "Transfer",
+                  "transferFrom": "Transfer From"
+                }
+              }
+            },
+            "index": {
+              "defaultHeader": "No recent activity",
+              "defaultSubHeader": "Recent activity will show up here"
+            }
+          },
           "NFTList": {
             "components": {
               "NFTCardItem": {

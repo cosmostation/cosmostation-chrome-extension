@@ -56,6 +56,7 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
   const shorterToAddress = useMemo(() => shorterAddress(sampleToAddress, 11), []);
 
   // NOTE 필요한 아이콘(24픽셀) 1. 트랜잭션 디폴트 아이콘(우상향 하는 아이콘이었으면 함) 2. 컨트랙트 실행 아이콘
+  // NOTE 2. NFT send 아이콘, 3.
   const trasactionIcon = useMemo(() => {
     if (type === IN_APP_COSMOS_TRANSACTION_TYPE.SEND) {
       return <Send24Icon />;
