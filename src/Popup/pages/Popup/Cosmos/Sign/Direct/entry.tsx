@@ -11,6 +11,7 @@ import Fee from '~/Popup/components/Fee';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -18,7 +19,7 @@ import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
-import { broadcast, decodeProtobufMessage, protoTxBytes } from '~/Popup/utils/proto';
+import { broadcast, decodeProtobufMessage, determineDirectMsgType, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
@@ -42,6 +43,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
   const { enqueueSnackbar } = useSnackbar();
+
+  const { setCurrentActivity } = useCurrentActivity();
 
   const { t } = useTranslation();
 
@@ -138,6 +141,14 @@ export default function Entry({ queue, chain }: EntryProps) {
     }),
     [decodedChangedAuthInfoBytes, decodedChangedBodyBytes, doc, msgs],
   );
+
+  const txType = useMemo(() => {
+    if (msgs?.length === 1) {
+      return determineDirectMsgType(msgs[txMsgPage - 1]);
+    }
+
+    return 'custom';
+  }, [msgs, txMsgPage]);
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -253,10 +264,11 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                         const response = await broadcast(url, pTxBytes);
 
-                        const { code } = response.tx_response;
+                        const { code, txhash } = response.tx_response;
 
                         if (code === 0) {
                           enqueueSnackbar('success');
+                          void setCurrentActivity(txhash, txType);
                         } else {
                           throw new Error(response.tx_response.raw_log as string);
                         }

@@ -1557,6 +1557,20 @@
           }
         },
         "aptos": {
+          "ActivityList": {
+            "components": {
+              "ActivityItem": {
+                "index": {
+                  "noExplorerURL": "No explorer URL",
+                  "transaction": "Transaction"
+                }
+              }
+            },
+            "index": {
+              "defaultHeader": "No recent activity",
+              "defaultSubHeader": "Recent activity will show up here"
+            }
+          },
           "CoinList": {
             "index": {
               "addCoinButton": "Add coin",
@@ -1683,6 +1697,20 @@
           }
         },
         "sui": {
+          "ActivityList": {
+            "components": {
+              "ActivityItem": {
+                "index": {
+                  "noExplorerURL": "No explorer URL",
+                  "transaction": "Transaction"
+                }
+              }
+            },
+            "index": {
+              "defaultHeader": "No recent activity",
+              "defaultSubHeader": "Recent activity will show up here"
+            }
+          },
           "CoinList": {
             "index": {
               "coin": "Coin"

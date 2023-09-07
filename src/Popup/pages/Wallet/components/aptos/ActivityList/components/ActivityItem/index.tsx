@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import { IN_APP_SUI_TRANSACTION_TYPE } from '~/constants/extensionStorage';
+import { IN_APP_APTOS_TRANSACTION_TYPE, IN_APP_SUI_TRANSACTION_TYPE } from '~/constants/extensionStorage';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { Activity } from '~/types/extensionStorage';
@@ -31,13 +31,13 @@ type ActivityItemProps = {
 export default function ActivityItem({ activity }: ActivityItemProps) {
   const { t } = useTranslation();
 
-  const { currentSuiNetwork } = useCurrentSuiNetwork();
+  const { currentAptosNetwork } = useCurrentAptosNetwork();
 
-  const { explorerURL, networkName } = currentSuiNetwork;
+  const { explorerURL, networkName } = currentAptosNetwork;
   const { txHash, timestamp, type } = activity;
 
   const txDetailExplorerURL = useMemo(
-    () => (explorerURL ? `${explorerURL}/txblock/${txHash}?network=${networkName.toLowerCase()}` : ''),
+    () => (explorerURL ? `${explorerURL}/txn/${txHash}?network=${networkName.toLowerCase()}` : ''),
     [explorerURL, networkName, txHash],
   );
 
@@ -58,7 +58,7 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
 
   // NOTE 필요한 아이콘(24픽셀) 1. 트랜잭션 디폴트 아이콘(우상향 하는 아이콘이었으면 함) 2. 컨트랙트 실행 아이콘
   const trasactionIcon = useMemo(() => {
-    if (type === IN_APP_SUI_TRANSACTION_TYPE.TRANSACTION) {
+    if (type === IN_APP_APTOS_TRANSACTION_TYPE.TRANSACTION) {
       return <Send24Icon />;
     }
     return <IBCSend24Icon />;
@@ -66,10 +66,10 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
 
   const title = useMemo(() => {
     if (type === IN_APP_SUI_TRANSACTION_TYPE.TRANSACTION) {
-      return t('pages.Wallet.components.sui.ActivityList.components.ActivityItem.index.transaction');
+      return t('pages.Wallet.components.aptos.ActivityList.components.ActivityItem.index.transaction');
     }
 
-    return t('pages.Wallet.components.sui.ActivityList.components.ActivityItem.index.transaction');
+    return t('pages.Wallet.components.aptos.ActivityList.components.ActivityItem.index.transaction');
   }, [t, type]);
 
   const transactionAmount = useMemo(() => '1', []);
@@ -77,7 +77,7 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
   return (
     <StyledButton onClick={() => window.open(txDetailExplorerURL)} disabled={!txDetailExplorerURL}>
       <Tooltip
-        title={!txDetailExplorerURL ? t('pages.Wallet.components.sui.ActivityList.components.ActivityItem.index.noExplorerURL') : ''}
+        title={!txDetailExplorerURL ? t('pages.Wallet.components.aptos.ActivityList.components.ActivityItem.index.noExplorerURL') : ''}
         varient="error"
         placement="top"
         arrow

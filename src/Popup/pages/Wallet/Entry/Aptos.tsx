@@ -9,6 +9,7 @@ import { useCurrentTabIndex } from '~/Popup/hooks/useCurrent/useCurrentTabIndex'
 import { gte } from '~/Popup/utils/big';
 import type { AptosChain } from '~/types/chain';
 
+import ActivityList from '../components/aptos/ActivityList';
 import CoinList from '../components/aptos/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/aptos/NativeChainCard';
 import LedgerCheck from '../components/LedgerCheck';
@@ -72,7 +73,9 @@ export default function Aptos({ chain }: AptosProps) {
             </BottomContainer>
           </StyledTabPanel>
           <StyledTabPanel value={tabValue} index={1}>
-            <BottomContainer>{/* <ActivityList chain={chain} /> */}</BottomContainer>
+            <BottomContainer>
+              <ActivityList />
+            </BottomContainer>
           </StyledTabPanel>
         </>
       </LedgerCheck>

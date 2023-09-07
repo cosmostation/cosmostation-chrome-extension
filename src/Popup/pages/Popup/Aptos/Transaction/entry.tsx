@@ -20,6 +20,7 @@ import { useGenerateTransactionSWR } from '~/Popup/hooks/SWR/aptos/useGenerateTr
 import { useSimulateTransactionSWR } from '~/Popup/hooks/SWR/aptos/useSimulateTransactionSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -87,6 +88,8 @@ export default function Entry({ queue }: EntryProps) {
   );
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { setCurrentActivity } = useCurrentActivity();
 
   const [gasMode, setGasMode] = useState<'low' | 'average' | 'high'>('average');
   const [gas, setGas] = useState<string | undefined>();
@@ -359,6 +362,7 @@ export default function Entry({ queue }: EntryProps) {
 
                         if (channel === 'inApp') {
                           enqueueSnackbar('Success');
+                          void setCurrentActivity(result.hash);
                         }
 
                         await deQueue();

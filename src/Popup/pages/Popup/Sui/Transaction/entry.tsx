@@ -28,6 +28,7 @@ import { useDryRunTransactionBlockSWR } from '~/Popup/hooks/SWR/sui/useDryRunTra
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
@@ -77,6 +78,8 @@ export default function Entry({ queue }: EntryProps) {
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { enqueueSnackbar } = useSnackbar();
+
+  const { setCurrentActivity } = useCurrentActivity();
 
   const { currency } = extensionStorage;
   const { setLoadingLedgerSigning } = useLoading();
@@ -297,14 +300,14 @@ export default function Entry({ queue }: EntryProps) {
                 onClick={async () => {
                   try {
                     setIsProgress(true);
-
+                    let digetst: string | undefined;
                     if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
                       const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
                       const rawSigner = new RawSigner(keypair, provider);
 
                       const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
-
+                      digetst = response.digest;
                       responseToWeb({
                         response: {
                           result: response,
@@ -341,6 +344,8 @@ export default function Entry({ queue }: EntryProps) {
                         signature: serializedSignature,
                       });
 
+                      digetst = response.digest;
+
                       const txBlock = await provider.getTransactionBlock({
                         digest: response.digest,
                         options: {
@@ -363,6 +368,9 @@ export default function Entry({ queue }: EntryProps) {
 
                     if (queue.channel === 'inApp') {
                       enqueueSnackbar('success');
+                      if (digetst) {
+                        void setCurrentActivity(digetst);
+                      }
                     }
 
                     await deQueue();

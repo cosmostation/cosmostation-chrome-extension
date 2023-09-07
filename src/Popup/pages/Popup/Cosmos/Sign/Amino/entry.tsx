@@ -270,6 +270,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                     const pubKey = { type: publicKeyType, value: base64PublicKey };
 
+                    // NOTE 디앱에서 요청한 것도 기록해야하나?
                     if (channel) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
@@ -318,6 +319,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                         origin,
                       });
 
+                      // void setCurrentActivity(txhash, txType);
                       await deQueue();
                     }
                   } catch (e) {

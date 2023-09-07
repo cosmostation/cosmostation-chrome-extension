@@ -1557,6 +1557,20 @@
           }
         },
         "aptos": {
+          "ActivityList": {
+            "components": {
+              "ActivityItem": {
+                "index": {
+                  "noExplorerURL": "익스플로러 URL이 없습니다",
+                  "transaction": "트랜잭션"
+                }
+              }
+            },
+            "index": {
+              "defaultHeader": "최근 활동 없음",
+              "defaultSubHeader": "최근 활동은 여기에 표시됩니다"
+            }
+          },
           "CoinList": {
             "index": {
               "addCoinButton": "코인 추가하기",
@@ -1578,7 +1592,7 @@
               "ActivityItem": {
                 "index": {
                   "commission": "커미션",
-                  "contract": "컨트랙 실행",
+                  "contract": "컨트랙트 실행",
                   "ibcSend": "IBC 전송",
                   "noExplorerURL": "익스플로러 URL이 없습니다",
                   "reward": "리워드 요청",
@@ -1683,6 +1697,20 @@
           }
         },
         "sui": {
+          "ActivityList": {
+            "components": {
+              "ActivityItem": {
+                "index": {
+                  "noExplorerURL": "익스플로러 URL이 없습니다",
+                  "transaction": "트랜잭션"
+                }
+              }
+            },
+            "index": {
+              "defaultHeader": "최근 활동 없음",
+              "defaultSubHeader": "최근 활동은 여기에 표시됩니다"
+            }
+          },
           "CoinList": {
             "index": {
               "coin": "코인"
