@@ -329,8 +329,6 @@ export default function Entry({ queue }: EntryProps) {
                     setIsProgress(true);
 
                     if (generateTransaction.data) {
-                      let txHash: string | undefined;
-
                       const signedTx = await aptosClient.signTransaction(aptosAccount, generateTransaction.data);
 
                       if (method === 'aptos_signTransaction') {
@@ -351,7 +349,6 @@ export default function Entry({ queue }: EntryProps) {
                       if (method === 'aptos_signAndSubmitTransaction') {
                         const result: AptosSignAndSubmitTransactionResponse = await aptosClient.submitTransaction(signedTx);
 
-                        txHash = result?.hash;
                         responseToWeb({
                           response: {
                             result,
@@ -361,8 +358,8 @@ export default function Entry({ queue }: EntryProps) {
                           origin,
                         });
 
-                        if (channel === 'inApp' && txHash) {
-                          await deQueue(`/popup/tx-receipt/${txHash}` as unknown as Path);
+                        if (channel === 'inApp' && result.hash) {
+                          await deQueue(`/popup/tx-receipt/${result.hash}` as unknown as Path);
                         } else {
                           await deQueue();
                         }
