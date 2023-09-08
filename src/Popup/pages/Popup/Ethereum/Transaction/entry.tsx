@@ -11,7 +11,6 @@ import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
-import { IN_APP_ETHEREUM_TRANSACTION_TYPE } from '~/constants/extensionStorage';
 import Button from '~/Popup/components/common/Button';
 import Number from '~/Popup/components/common/Number';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
