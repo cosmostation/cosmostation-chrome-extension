@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import { IN_APP_ETHEREUM_TRANSACTION_TYPE } from '~/constants/extensionStorage';
+import { ETHEREUM_ACTIVITY_TYPE } from '~/constants/extensionStorage';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
@@ -59,26 +59,22 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
 
   // NOTE 필요한 아이콘(24픽셀) 1. 트랜잭션 디폴트 아이콘(우상향 하는 아이콘이었으면 함) 2. 컨트랙트 실행 아이콘
   const trasactionIcon = useMemo(() => {
-    if (
-      type === IN_APP_ETHEREUM_TRANSACTION_TYPE.SIMPLE_SEND ||
-      type === IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER ||
-      type === IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER_FROM
-    ) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.SIMPLE_SEND || type === ETHEREUM_ACTIVITY_TYPE.TRANSFER || type === ETHEREUM_ACTIVITY_TYPE.TRANSFER_FROM) {
       return <Send24Icon />;
     }
 
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.SWAP) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.SWAP) {
       return <Swap24Icon />;
     }
 
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC721_TRANSFER_FROM || type === IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC1155_SAFE_TRANSFER_FROM) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.ERC721_TRANSFER_FROM || type === ETHEREUM_ACTIVITY_TYPE.ERC1155_SAFE_TRANSFER_FROM) {
       return <NFTSend24Icon />;
     }
 
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.APPROVE) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.APPROVE) {
       return <Check24Icon />;
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.CONTRACT_INTERACT || type === IN_APP_ETHEREUM_TRANSACTION_TYPE.DEPLOY) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.CONTRACT_INTERACT || type === ETHEREUM_ACTIVITY_TYPE.DEPLOY) {
       return <Contract24Icon />;
     }
 
@@ -87,31 +83,31 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
   }, [type]);
 
   const title = useMemo(() => {
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.SIMPLE_SEND) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.SIMPLE_SEND) {
       return t('pages.Wallet.components.ethereum.ActivityList.components.ActivityItem.index.send');
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.TRANSFER) {
       return t('pages.Wallet.components.ethereum.ActivityList.components.ActivityItem.index.transfer');
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER_FROM) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.TRANSFER_FROM) {
       return t('pages.Wallet.components.ethereum.ActivityList.components.ActivityItem.index.transferFrom');
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.SWAP) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.SWAP) {
       return t('pages.Wallet.components.ethereum.ActivityList.components.ActivityItem.index.swap');
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC721_TRANSFER_FROM) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.ERC721_TRANSFER_FROM) {
       return t('pages.Wallet.components.ethereum.ActivityList.components.ActivityItem.index.erc721TransferFrom');
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC1155_SAFE_TRANSFER_FROM) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.ERC1155_SAFE_TRANSFER_FROM) {
       return t('pages.Wallet.components.ethereum.ActivityList.components.ActivityItem.index.erc1155SafeTransferFrom');
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.APPROVE) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.APPROVE) {
       return t('pages.Wallet.components.ethereum.ActivityList.components.ActivityItem.index.approve');
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.CONTRACT_INTERACT) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.CONTRACT_INTERACT) {
       return t('pages.Wallet.components.ethereum.ActivityList.components.ActivityItem.index.contractInteract');
     }
-    if (type === IN_APP_ETHEREUM_TRANSACTION_TYPE.DEPLOY) {
+    if (type === ETHEREUM_ACTIVITY_TYPE.DEPLOY) {
       return t('pages.Wallet.components.ethereum.ActivityList.components.ActivityItem.index.deploy');
     }
 
@@ -135,14 +131,12 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
               <LeftTextTitleContainer>
                 <Typography variant="h5">{title}</Typography>
               </LeftTextTitleContainer>
-              <>
-                <LeftTextSubtitleContainer>
-                  <Typography variant="h6">{shorterToAddress}</Typography>
-                </LeftTextSubtitleContainer>
-                <LeftTextSubtitleContainer>
-                  <Typography variant="h6">{formattedTimestamp}</Typography>
-                </LeftTextSubtitleContainer>
-              </>
+              <LeftTextSubtitleContainer>
+                <Typography variant="h6">{shorterToAddress}</Typography>
+              </LeftTextSubtitleContainer>
+              <LeftTextSubtitleContainer>
+                <Typography variant="h6">{formattedTimestamp}</Typography>
+              </LeftTextSubtitleContainer>
             </LeftTextContainer>
           </LeftContainer>
           <RightContainer>

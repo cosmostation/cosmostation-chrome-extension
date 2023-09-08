@@ -1,11 +1,11 @@
 import type {
   ACCOUNT_TYPE,
+  APTOS_ACTIVITY_TYPE,
+  COSMOS_ACTIVITY_TYPE,
   CURRENCY_TYPE,
-  IN_APP_APTOS_TRANSACTION_TYPE,
-  IN_APP_COSMOS_TRANSACTION_TYPE,
-  IN_APP_ETHEREUM_TRANSACTION_TYPE,
-  IN_APP_SUI_TRANSACTION_TYPE,
+  ETHEREUM_ACTIVITY_TYPE,
   LANGUAGE_TYPE,
+  SUI_ACTIVITY_TYPE,
 } from '~/constants/extensionStorage';
 import type { PERMISSION } from '~/constants/sui';
 import type { AptosNetwork, BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken, SuiNetwork } from '~/types/chain';
@@ -23,10 +23,10 @@ export type CurrencyType = ValueOf<typeof CURRENCY_TYPE>;
 export type SuiPermissionType = ValueOf<typeof PERMISSION>;
 
 export type ActivityType =
-  | ValueOf<typeof IN_APP_COSMOS_TRANSACTION_TYPE>
-  | ValueOf<typeof IN_APP_ETHEREUM_TRANSACTION_TYPE>
-  | ValueOf<typeof IN_APP_SUI_TRANSACTION_TYPE>
-  | ValueOf<typeof IN_APP_APTOS_TRANSACTION_TYPE>;
+  | ValueOf<typeof COSMOS_ACTIVITY_TYPE>
+  | ValueOf<typeof ETHEREUM_ACTIVITY_TYPE>
+  | ValueOf<typeof SUI_ACTIVITY_TYPE>
+  | ValueOf<typeof APTOS_ACTIVITY_TYPE>;
 
 export type HomeTabPath = {
   ethereum: number;

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import { IN_APP_APTOS_TRANSACTION_TYPE } from '~/constants/extensionStorage';
+import { APTOS_ACTIVITY_TYPE } from '~/constants/extensionStorage';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
@@ -58,14 +58,14 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
 
   // NOTE 필요한 아이콘(24픽셀) 1. 트랜잭션 디폴트 아이콘(우상향 하는 아이콘이었으면 함) 2. 컨트랙트 실행 아이콘
   const trasactionIcon = useMemo(() => {
-    if (type === IN_APP_APTOS_TRANSACTION_TYPE.TRANSACTION) {
+    if (type === APTOS_ACTIVITY_TYPE.TRANSACTION) {
       return <Send24Icon />;
     }
     return <IBCSend24Icon />;
   }, [type]);
 
   const title = useMemo(() => {
-    if (type === IN_APP_APTOS_TRANSACTION_TYPE.TRANSACTION) {
+    if (type === APTOS_ACTIVITY_TYPE.TRANSACTION) {
       return t('pages.Wallet.components.aptos.ActivityList.components.ActivityItem.index.transaction');
     }
 
@@ -89,14 +89,12 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
               <LeftTextTitleContainer>
                 <Typography variant="h5">{title}</Typography>
               </LeftTextTitleContainer>
-              <>
-                <LeftTextSubtitleContainer>
-                  <Typography variant="h6">{shorterToAddress}</Typography>
-                </LeftTextSubtitleContainer>
-                <LeftTextSubtitleContainer>
-                  <Typography variant="h6">{formattedTimestamp}</Typography>
-                </LeftTextSubtitleContainer>
-              </>
+              <LeftTextSubtitleContainer>
+                <Typography variant="h6">{shorterToAddress}</Typography>
+              </LeftTextSubtitleContainer>
+              <LeftTextSubtitleContainer>
+                <Typography variant="h6">{formattedTimestamp}</Typography>
+              </LeftTextSubtitleContainer>
             </LeftTextContainer>
           </LeftContainer>
           <RightContainer>

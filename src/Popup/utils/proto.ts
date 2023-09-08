@@ -1,4 +1,4 @@
-import { IN_APP_COSMOS_TRANSACTION_TYPE } from '~/constants/extensionStorage';
+import { COSMOS_ACTIVITY_TYPE } from '~/constants/extensionStorage';
 import { post } from '~/Popup/utils/axios';
 import { isAminoCommission, isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
@@ -301,17 +301,17 @@ export function convertAminoMsgTypeToDirectMsgType(typeUrl: string) {
 
 export function determineDirectActivityType(msg: ProtoMsg) {
   if (isDirectSend(msg)) {
-    return IN_APP_COSMOS_TRANSACTION_TYPE.SEND;
+    return COSMOS_ACTIVITY_TYPE.SEND;
   }
   if (isDirectIBCSend(msg)) {
-    return IN_APP_COSMOS_TRANSACTION_TYPE.IBC_SEND;
+    return COSMOS_ACTIVITY_TYPE.IBC_SEND;
   }
   if (isDirectCommission(msg)) {
-    return IN_APP_COSMOS_TRANSACTION_TYPE.COMMISSION;
+    return COSMOS_ACTIVITY_TYPE.COMMISSION;
   }
   if (isDirectExecuteContract(msg)) {
-    return IN_APP_COSMOS_TRANSACTION_TYPE.CONTRACT;
+    return COSMOS_ACTIVITY_TYPE.CONTRACT;
   }
 
-  return IN_APP_COSMOS_TRANSACTION_TYPE.CUSTOM;
+  return COSMOS_ACTIVITY_TYPE.CUSTOM;
 }

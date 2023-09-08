@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import { IN_APP_COSMOS_TRANSACTION_TYPE } from '~/constants/extensionStorage';
+import { COSMOS_ACTIVITY_TYPE } from '~/constants/extensionStorage';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -58,19 +58,19 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
   // NOTE 필요한 아이콘(24픽셀) 1. 트랜잭션 디폴트 아이콘(우상향 하는 아이콘이었으면 함) 2. 컨트랙트 실행 아이콘
   // NOTE 2. NFT send 아이콘, 3.
   const trasactionIcon = useMemo(() => {
-    if (type === IN_APP_COSMOS_TRANSACTION_TYPE.SEND) {
+    if (type === COSMOS_ACTIVITY_TYPE.SEND) {
       return <Send24Icon />;
     }
-    if (type === IN_APP_COSMOS_TRANSACTION_TYPE.IBC_SEND) {
+    if (type === COSMOS_ACTIVITY_TYPE.IBC_SEND) {
       return <IBCSend24Icon />;
     }
-    if (type === IN_APP_COSMOS_TRANSACTION_TYPE.CONTRACT) {
+    if (type === COSMOS_ACTIVITY_TYPE.CONTRACT) {
       return <Contract24Icon />;
     }
-    if (type === IN_APP_COSMOS_TRANSACTION_TYPE.REWARD) {
+    if (type === COSMOS_ACTIVITY_TYPE.REWARD) {
       return <Reward24Icon />;
     }
-    if (type === IN_APP_COSMOS_TRANSACTION_TYPE.COMMISSION) {
+    if (type === COSMOS_ACTIVITY_TYPE.COMMISSION) {
       return <Commission24Icon />;
     }
     // 디폴트 아이콘이 들어가야함
@@ -78,19 +78,19 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
   }, [type]);
 
   const title = useMemo(() => {
-    if (type === IN_APP_COSMOS_TRANSACTION_TYPE.SEND) {
+    if (type === COSMOS_ACTIVITY_TYPE.SEND) {
       return t('pages.Wallet.components.cosmos.ActivityList.components.ActivityItem.index.send');
     }
-    if (type === IN_APP_COSMOS_TRANSACTION_TYPE.IBC_SEND) {
+    if (type === COSMOS_ACTIVITY_TYPE.IBC_SEND) {
       return t('pages.Wallet.components.cosmos.ActivityList.components.ActivityItem.index.ibcSend');
     }
-    if (type === IN_APP_COSMOS_TRANSACTION_TYPE.CONTRACT) {
+    if (type === COSMOS_ACTIVITY_TYPE.CONTRACT) {
       return t('pages.Wallet.components.cosmos.ActivityList.components.ActivityItem.index.contract');
     }
-    if (type === IN_APP_COSMOS_TRANSACTION_TYPE.REWARD) {
+    if (type === COSMOS_ACTIVITY_TYPE.REWARD) {
       return t('pages.Wallet.components.cosmos.ActivityList.components.ActivityItem.index.reward');
     }
-    if (type === IN_APP_COSMOS_TRANSACTION_TYPE.COMMISSION) {
+    if (type === COSMOS_ACTIVITY_TYPE.COMMISSION) {
       return t('pages.Wallet.components.cosmos.ActivityList.components.ActivityItem.index.commission');
     }
     return t('pages.Wallet.components.cosmos.ActivityList.components.ActivityItem.index.transaction');
@@ -113,14 +113,12 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
               <LeftTextTitleContainer>
                 <Typography variant="h5">{title}</Typography>
               </LeftTextTitleContainer>
-              <>
-                <LeftTextSubtitleContainer>
-                  <Typography variant="h6">{shorterToAddress}</Typography>
-                </LeftTextSubtitleContainer>
-                <LeftTextSubtitleContainer>
-                  <Typography variant="h6">{formattedTimestamp}</Typography>
-                </LeftTextSubtitleContainer>
-              </>
+              <LeftTextSubtitleContainer>
+                <Typography variant="h6">{shorterToAddress}</Typography>
+              </LeftTextSubtitleContainer>
+              <LeftTextSubtitleContainer>
+                <Typography variant="h6">{formattedTimestamp}</Typography>
+              </LeftTextSubtitleContainer>
             </LeftTextContainer>
           </LeftContainer>
           <RightContainer>

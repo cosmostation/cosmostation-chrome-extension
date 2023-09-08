@@ -24,7 +24,7 @@ import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { STARNAME } from '~/constants/chain/cosmos/starname';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
-import { IN_APP_COSMOS_TRANSACTION_TYPE } from '~/constants/extensionStorage';
+import { COSMOS_ACTIVITY_TYPE } from '~/constants/extensionStorage';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
 import type {
@@ -249,23 +249,23 @@ export function toDisplayCWTokenStandard(tokenStandard?: string) {
 
 export function determineAminoActivityType(msg: Msg) {
   if (isAminoSend(msg)) {
-    return IN_APP_COSMOS_TRANSACTION_TYPE.SEND;
+    return COSMOS_ACTIVITY_TYPE.SEND;
   }
   if (isAminoIBCSend(msg)) {
-    return IN_APP_COSMOS_TRANSACTION_TYPE.IBC_SEND;
+    return COSMOS_ACTIVITY_TYPE.IBC_SEND;
   }
   if (isAminoExecuteContract(msg)) {
-    return IN_APP_COSMOS_TRANSACTION_TYPE.CONTRACT;
+    return COSMOS_ACTIVITY_TYPE.CONTRACT;
   }
   if (isAminoReward(msg)) {
-    return IN_APP_COSMOS_TRANSACTION_TYPE.REWARD;
+    return COSMOS_ACTIVITY_TYPE.REWARD;
   }
   if (isAminoCommission(msg)) {
-    return IN_APP_COSMOS_TRANSACTION_TYPE.COMMISSION;
+    return COSMOS_ACTIVITY_TYPE.COMMISSION;
   }
   if (isAminoSwapExactAmountIn(msg)) {
-    return IN_APP_COSMOS_TRANSACTION_TYPE.SWAP;
+    return COSMOS_ACTIVITY_TYPE.SWAP;
   }
 
-  return IN_APP_COSMOS_TRANSACTION_TYPE.CUSTOM;
+  return COSMOS_ACTIVITY_TYPE.CUSTOM;
 }

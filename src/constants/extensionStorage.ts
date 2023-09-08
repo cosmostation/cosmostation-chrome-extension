@@ -26,7 +26,7 @@ export const HOME_TAB_INDEX_TYPE = {
   APTOS: 'aptos',
 } as const;
 
-export const IN_APP_COSMOS_TRANSACTION_TYPE = {
+export const COSMOS_ACTIVITY_TYPE = {
   SEND: 'send',
   IBC_SEND: 'ibcSend',
   SWAP: 'swap',
@@ -36,7 +36,7 @@ export const IN_APP_COSMOS_TRANSACTION_TYPE = {
   CUSTOM: 'custom',
 } as const;
 
-export const IN_APP_ETHEREUM_TRANSACTION_TYPE = {
+export const ETHEREUM_ACTIVITY_TYPE = {
   APPROVE: 'approve',
   TRANSFER: 'transfer',
   TRANSFER_FROM: 'transferFrom',
@@ -49,10 +49,10 @@ export const IN_APP_ETHEREUM_TRANSACTION_TYPE = {
   CONTRACT_INTERACT: 'contractInteract',
 } as const;
 
-export const IN_APP_SUI_TRANSACTION_TYPE = {
+export const SUI_ACTIVITY_TYPE = {
   TRANSACTION: 'transaction',
 } as const;
 
-export const IN_APP_APTOS_TRANSACTION_TYPE = {
+export const APTOS_ACTIVITY_TYPE = {
   TRANSACTION: 'transaction',
 } as const;
