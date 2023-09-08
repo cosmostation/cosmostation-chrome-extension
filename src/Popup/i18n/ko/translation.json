@@ -1673,7 +1673,7 @@
                   "send": "전송",
                   "swap": "교환",
                   "transaction": "트랜잭션",
-                  "transfer": "전송 (ERC20)",
+                  "transfer": "전송 (ERC-20)",
                   "transferFrom": "Transfer From"
                 }
               }
