@@ -299,7 +299,7 @@ export function convertAminoMsgTypeToDirectMsgType(typeUrl: string) {
   return '';
 }
 
-export function determineDirectMsgType(msg: ProtoMsg) {
+export function determineDirectActivityType(msg: ProtoMsg) {
   if (isDirectSend(msg)) {
     return IN_APP_COSMOS_TRANSACTION_TYPE.SEND;
   }

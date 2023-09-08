@@ -21,7 +21,7 @@ import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { cosmosURL, determineAminoMsgType, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
+import { cosmosURL, determineAminoActivityType, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -123,7 +123,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const txType = useMemo(() => {
     if (msgs?.length === 1) {
-      return determineAminoMsgType(msgs[txMsgPage - 1]);
+      return determineAminoActivityType(msgs[txMsgPage - 1]);
     }
 
     return 'custom';

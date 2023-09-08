@@ -19,7 +19,7 @@ import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
-import { broadcast, decodeProtobufMessage, determineDirectMsgType, protoTxBytes } from '~/Popup/utils/proto';
+import { broadcast, decodeProtobufMessage, determineDirectActivityType, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
@@ -144,7 +144,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const txType = useMemo(() => {
     if (msgs?.length === 1) {
-      return determineDirectMsgType(msgs[txMsgPage - 1]);
+      return determineDirectActivityType(msgs[txMsgPage - 1]);
     }
 
     return 'custom';

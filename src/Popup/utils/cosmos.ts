@@ -247,7 +247,7 @@ export function toDisplayCWTokenStandard(tokenStandard?: string) {
   return 'CW-'.concat(standardNumber[0]);
 }
 
-export function determineAminoMsgType(msg: Msg) {
+export function determineAminoActivityType(msg: Msg) {
   if (isAminoSend(msg)) {
     return IN_APP_COSMOS_TRANSACTION_TYPE.SEND;
   }

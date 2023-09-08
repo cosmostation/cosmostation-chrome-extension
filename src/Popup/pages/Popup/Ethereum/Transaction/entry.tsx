@@ -41,7 +41,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { gt, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { requestRPC } from '~/Popup/utils/ethereum';
+import { determineEthereumActivityType, requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { OneInchSwapTxData } from '~/types/1inch/contract';
@@ -156,39 +156,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const txType = useDetermineTxTypeSWR(originEthereumTx);
 
-  const activityTxType = useMemo(() => {
-    if (txType.data?.txDescription && txType.data?.contractKind === 'erc20' && txType.data?.type === 'approve') {
-      return IN_APP_ETHEREUM_TRANSACTION_TYPE.APPROVE;
-    }
-    if (txType.data?.txDescription && txType.data?.contractKind === 'erc20' && txType.data?.type === 'transfer') {
-      return IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER;
-    }
-    if (txType.data?.txDescription && txType.data?.contractKind === 'erc20' && txType.data?.type === 'transferfrom') {
-      return IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER_FROM;
-    }
-    if (txType.data?.txDescription && txType.data?.contractKind === 'erc721' && txType.data?.type === 'transferfrom') {
-      return IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC721_TRANSFER_FROM;
-    }
-    if (txType.data?.txDescription && txType.data?.contractKind === 'erc1155' && txType.data?.type === 'safetransferfrom') {
-      return IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC1155_SAFE_TRANSFER_FROM;
-    }
-    if (txType.data?.type === 'simpleSend') {
-      return IN_APP_ETHEREUM_TRANSACTION_TYPE.SIMPLE_SEND;
-    }
-    if (txType.data?.type === 'contractDeployment') {
-      return IN_APP_ETHEREUM_TRANSACTION_TYPE.DEPLOY;
-    }
-
-    if (txType.data?.txDescription && txType.data?.contractKind === 'oneInch' && (txType.data?.type === 'swap' || txType.data?.type === 'unoswap')) {
-      return IN_APP_ETHEREUM_TRANSACTION_TYPE.SWAP;
-    }
-
-    if (txType.data?.type === 'contractInteraction') {
-      return IN_APP_ETHEREUM_TRANSACTION_TYPE.CONTRACT_INTERACT;
-    }
-
-    return undefined;
-  }, [txType.data?.contractKind, txType.data?.txDescription, txType.data?.type]);
+  const activityTxType = useMemo(() => determineEthereumActivityType(txType.data), [txType.data]);
 
   const isCustomFee = useMemo(
     () => !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas)),

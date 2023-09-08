@@ -10,6 +10,7 @@ import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
 import { ERC20_ABI, ERC721_ABI, ERC1155_ABI, ONE_INCH_ABI } from '~/constants/abi';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID, ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE, TOKEN_TYPE } from '~/constants/ethereum';
+import { IN_APP_ETHEREUM_TRANSACTION_TYPE } from '~/constants/extensionStorage';
 import { EthereumRPCError } from '~/Popup/utils/error';
 import { extensionStorage } from '~/Popup/utils/extensionStorage';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
@@ -316,4 +317,46 @@ export function toDisplayTokenStandard(tokenStandard?: string) {
   }
 
   return 'ERC-'.concat(standardNumber[0]);
+}
+
+export function determineEthereumActivityType(msg?: DetermineTxType) {
+  if (!msg) {
+    return undefined;
+  }
+
+  if (msg.txDescription && msg.contractKind === ETHEREUM_CONTRACT_KIND.ERC20 && msg.type === ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE) {
+    return IN_APP_ETHEREUM_TRANSACTION_TYPE.APPROVE;
+  }
+  if (msg.txDescription && msg.contractKind === ETHEREUM_CONTRACT_KIND.ERC20 && msg.type === ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER) {
+    return IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER;
+  }
+  if (msg.txDescription && msg.contractKind === ETHEREUM_CONTRACT_KIND.ERC20 && msg.type === ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM) {
+    return IN_APP_ETHEREUM_TRANSACTION_TYPE.TRANSFER_FROM;
+  }
+  if (msg.txDescription && msg.contractKind === ETHEREUM_CONTRACT_KIND.ERC721 && msg.type === ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM) {
+    return IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC721_TRANSFER_FROM;
+  }
+  if (msg.txDescription && msg.contractKind === ETHEREUM_CONTRACT_KIND.ERC1155 && msg.type === ETHEREUM_TX_TYPE.TOKEN_METHOD_SAFE_TRANSFER_FROM) {
+    return IN_APP_ETHEREUM_TRANSACTION_TYPE.ERC1155_SAFE_TRANSFER_FROM;
+  }
+  if (msg.type === ETHEREUM_TX_TYPE.SIMPLE_SEND) {
+    return IN_APP_ETHEREUM_TRANSACTION_TYPE.SIMPLE_SEND;
+  }
+  if (msg.type === ETHEREUM_TX_TYPE.DEPLOY_CONTRACT) {
+    return IN_APP_ETHEREUM_TRANSACTION_TYPE.DEPLOY;
+  }
+
+  if (
+    msg.txDescription &&
+    msg.contractKind === ETHEREUM_CONTRACT_KIND.ONEINCH &&
+    (msg.type === ETHEREUM_TX_TYPE.SWAP || msg.type === ETHEREUM_TX_TYPE.UNOSWAP)
+  ) {
+    return IN_APP_ETHEREUM_TRANSACTION_TYPE.SWAP;
+  }
+
+  if (msg.type === ETHEREUM_TX_TYPE.CONTRACT_INTERACTION) {
+    return IN_APP_ETHEREUM_TRANSACTION_TYPE.CONTRACT_INTERACT;
+  }
+
+  return undefined;
 }
