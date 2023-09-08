@@ -258,7 +258,7 @@ export function determineAminoMsgType(msg: Msg) {
     return IN_APP_COSMOS_TRANSACTION_TYPE.CONTRACT;
   }
   if (isAminoReward(msg)) {
-    return IN_APP_COSMOS_TRANSACTION_TYPE.CONTRACT;
+    return IN_APP_COSMOS_TRANSACTION_TYPE.REWARD;
   }
   if (isAminoCommission(msg)) {
     return IN_APP_COSMOS_TRANSACTION_TYPE.COMMISSION;

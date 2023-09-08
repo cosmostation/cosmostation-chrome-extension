@@ -1,3 +1,4 @@
+import { IN_APP_COSMOS_TRANSACTION_TYPE } from '~/constants/extensionStorage';
 import { post } from '~/Popup/utils/axios';
 import { isAminoCommission, isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
@@ -298,20 +299,19 @@ export function convertAminoMsgTypeToDirectMsgType(typeUrl: string) {
   return '';
 }
 
-// NOTE 위치 cosmos util로 옮길 것
 export function determineDirectMsgType(msg: ProtoMsg) {
   if (isDirectSend(msg)) {
-    return 'send';
+    return IN_APP_COSMOS_TRANSACTION_TYPE.SEND;
   }
   if (isDirectIBCSend(msg)) {
-    return 'ibcSend';
+    return IN_APP_COSMOS_TRANSACTION_TYPE.IBC_SEND;
   }
   if (isDirectCommission(msg)) {
-    return 'commission';
+    return IN_APP_COSMOS_TRANSACTION_TYPE.COMMISSION;
   }
   if (isDirectExecuteContract(msg)) {
-    return 'contract';
+    return IN_APP_COSMOS_TRANSACTION_TYPE.CONTRACT;
   }
 
-  return 'custom';
+  return IN_APP_COSMOS_TRANSACTION_TYPE.CUSTOM;
 }

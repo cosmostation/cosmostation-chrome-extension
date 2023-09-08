@@ -20,15 +20,15 @@ export default function ActivityList({ chain }: ActivityListProps) {
 
   const { currentActivitiy } = useCurrentActivity();
 
-  const sortedCurrentctivities = useMemo(() => currentActivitiy.sort((a, b) => (gt(a.timestamp, b.timestamp) ? -1 : 1)), [currentActivitiy]);
+  const sortedCurrentActivities = useMemo(() => currentActivitiy.sort((a, b) => (gt(a.timestamp, b.timestamp) ? -1 : 1)), [currentActivitiy]);
 
-  const isExistActivity = useMemo(() => currentActivitiy.length, [currentActivitiy.length]);
+  const isExistActivity = useMemo(() => !!currentActivitiy.length, [currentActivitiy.length]);
 
   return (
     <Container>
       <ListContainer>
         {isExistActivity ? (
-          sortedCurrentctivities.map((activity) => <ActivityItem key={activity.txHash} chain={chain} activity={activity} />)
+          sortedCurrentActivities.map((activity) => <ActivityItem key={activity.txHash} chain={chain} activity={activity} />)
         ) : (
           <EmptyAssetContainer>
             <EmptyAsset
