@@ -293,8 +293,6 @@ export default function Ethereum({ chain }: EthereumProps) {
                 if (
                   (gt(e.currentTarget.value || '0', currentNFTBalance || '0') || Number(e.currentTarget.value) !== parseInt(e.currentTarget.value, 10)) &&
                   e.currentTarget.value
-                  // gt(e.currentTarget.value || '0', currentNFTBalance || '0') &&
-                  // e.currentTarget.value
                 ) {
                   return;
                 }
