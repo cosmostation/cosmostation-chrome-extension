@@ -1018,6 +1018,108 @@
             "signButton": "Sign"
           }
         }
+      },
+      "TxReceipt": {
+        "Entry": {
+          "Aptos": {
+            "entry": {
+              "blockHeight": "Block Height",
+              "confirm": "Confirm",
+              "copied": "Copied",
+              "date": "Date",
+              "expirationDate": "Expiration Date",
+              "explorer": "View on Explorer",
+              "failure": "Failure",
+              "fee": "Fee",
+              "information": "Information",
+              "network": "Network",
+              "networkError": "Network Error",
+              "networkErrorDescription": "Fail to get Transaction Data",
+              "pending": "Pending",
+              "status": "Status",
+              "success": "Success",
+              "transactionConfirmed": "Transaction Confirmed",
+              "transactionReceipt": "Transaction Receipt",
+              "txHash": "Tx Hash",
+              "version": "Version ID",
+              "vmStatus": "VM Status"
+            }
+          },
+          "Cosmos": {
+            "entry": {
+              "blockHeight": "Block Height",
+              "confirm": "Confirm",
+              "copied": "Copied",
+              "date": "Date",
+              "explorer": "View on Explorer",
+              "failure": "Failure",
+              "fees": "Fees",
+              "gas": "Gas used / wanted",
+              "information": "Information",
+              "network": "Network",
+              "networkError": "Network Error",
+              "networkErrorDescription": "Fail to get Transaction Data",
+              "pending": "Pending",
+              "status": "Status",
+              "success": "Success",
+              "transactionConfirmed": "Transaction Confirmed",
+              "transactionReceipt": "Transaction Receipt",
+              "txHash": "Tx Hash"
+            }
+          },
+          "Ethereum": {
+            "entry": {
+              "blockNumber": "Block Number",
+              "confirm": "Confirm",
+              "copied": "Copied",
+              "date": "Date",
+              "effectiveGasPrice": "Effective Gas Price",
+              "explorer": "View on Explorer",
+              "failure": "Failure",
+              "fee": "Fee",
+              "gas": "Gas used",
+              "information": "Information",
+              "network": "Network",
+              "networkError": "Network Error",
+              "networkErrorDescription": "Fail to get Transaction Data",
+              "pending": "Pending",
+              "status": "Status",
+              "success": "Success",
+              "transactionConfirmed": "Transaction Confirmed",
+              "transactionReceipt": "Transaction Receipt",
+              "txHash": "Tx Hash"
+            }
+          },
+          "Sui": {
+            "entry": {
+              "checkPoint": "Check Point",
+              "confirm": "Confirm",
+              "copied": "Copied",
+              "date": "Date",
+              "digest": "Digest Hash",
+              "epoch": "Epoch",
+              "explorer": "View on Explorer",
+              "failure": "Failure",
+              "fee": "Fee",
+              "information": "Information",
+              "network": "Network",
+              "networkError": "Network Error",
+              "networkErrorDescription": "Fail to get Transaction Data",
+              "pending": "Pending",
+              "status": "Status",
+              "success": "Success",
+              "transactionConfirmed": "Transaction Confirmed",
+              "transactionReceipt": "Transaction Receipt"
+            }
+          },
+          "components": {
+            "CopyButton": {
+              "index": {
+                "copied": "Copied"
+              }
+            }
+          }
+        }
       }
     },
     "Restore": {

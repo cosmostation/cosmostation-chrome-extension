@@ -29,6 +29,7 @@ import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
 import type { CosSignAmino, CosSignAminoResponse } from '~/types/message/cosmos';
+import type { Path } from '~/types/route';
 
 import TxMessage from './components/TxMessage';
 import { BottomButtonContainer, BottomContainer, Container, ContentsContainer, FeeContainer, MemoContainer, PaginationContainer, TabContainer } from './styled';
@@ -269,9 +270,9 @@ export default function Entry({ queue, chain }: EntryProps) {
                     const publicKeyType = getPublicKeyType(chain);
 
                     const pubKey = { type: publicKeyType, value: base64PublicKey };
-
-                    // NOTE 디앱에서 요청한 것도 기록해야하나?
                     if (channel) {
+                      let txHash: string | undefined;
+
                       try {
                         const url = cosmosURL(chain).postBroadcast();
                         const pTx = protoTx(tx, base64Signature, pubKey);
@@ -282,8 +283,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                         const { code, txhash } = response.tx_response;
 
                         if (code === 0) {
-                          enqueueSnackbar('success');
-                          void setCurrentActivity(txhash, txType);
+                          txHash = txhash;
                         } else {
                           throw new Error(response.tx_response.raw_log as string);
                         }
@@ -298,7 +298,12 @@ export default function Entry({ queue, chain }: EntryProps) {
                       } finally {
                         setTimeout(
                           () => {
-                            void deQueue();
+                            if (txHash) {
+                              void deQueue(`/popup/tx-receipt/${txHash}` as unknown as Path);
+                              void setCurrentActivity(txHash, txType);
+                            } else {
+                              void deQueue();
+                            }
                           },
                           currentAccount.type === 'LEDGER' && channel ? 1000 : 0,
                         );
@@ -319,8 +324,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                         origin,
                       });
 
-                      // NOTE
-                      // void setCurrentActivity(txhash, txType);
                       await deQueue();
                     }
                   } catch (e) {

@@ -19,6 +19,56 @@ export type FeeHistoryPayload = ResponseRPC<FeeHistory>;
 
 export type GasPricePayload = ResponseRPC<string>;
 
+type Log = {
+  address: string;
+  topics: string[];
+  data: string;
+  blockNumber: string;
+  transactionHash: string;
+  transactionIndex: string;
+  blockHash: string;
+  logIndex: string;
+  removed: boolean;
+};
+
+export type TransactionReceipt = {
+  transactionHash: string;
+  transactionIndex: string;
+  blockHash: string;
+  blockNumber: string;
+  from: string;
+  to?: string;
+  cumulativeGasUsed: string;
+  effectiveGasPrice: string;
+  gasUsed: string;
+  contractAddress?: string;
+  logs: Log[];
+  status: string;
+};
+
+export type TxInfoPayload = ResponseRPC<TransactionReceipt>;
+
+type BlockInfo = {
+  number: string;
+  hash: string;
+  parentHash: string;
+  timestamp: string;
+  transactions: string[];
+  miner: string;
+  difficulty: string;
+  totalDifficulty: string;
+  size: string;
+  gasUsed: string;
+  gasLimit: string;
+  baseFeePerGas: string;
+  nonce?: string;
+  extraData: string;
+  transactionsRoot: string;
+  stateRoot: string;
+};
+
+export type BlockInfoByHashPayload = ResponseRPC<BlockInfo>;
+
 export type GetBlock = {
   baseFeePerGas?: string;
   number: string | null;

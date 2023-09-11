@@ -42,6 +42,7 @@ import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/extensionStorage';
 import type { SuiSignAndExecuteTransactionBlock } from '~/types/message/sui';
+import type { Path } from '~/types/route';
 
 import Tx from './components/Tx';
 import TxMessage from './components/TxMessage';
@@ -300,14 +301,16 @@ export default function Entry({ queue }: EntryProps) {
                 onClick={async () => {
                   try {
                     setIsProgress(true);
-                    let digetst: string | undefined;
+
+                    let digest: string | undefined;
                     if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
                       const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
                       const rawSigner = new RawSigner(keypair, provider);
 
                       const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
-                      digetst = response.digest;
+
+                      digest = response?.digest;
                       responseToWeb({
                         response: {
                           result: response,
@@ -344,7 +347,7 @@ export default function Entry({ queue }: EntryProps) {
                         signature: serializedSignature,
                       });
 
-                      digetst = response.digest;
+                      digest = response.digest;
 
                       const txBlock = await provider.getTransactionBlock({
                         digest: response.digest,
@@ -366,14 +369,12 @@ export default function Entry({ queue }: EntryProps) {
                       });
                     }
 
-                    if (queue.channel === 'inApp') {
-                      enqueueSnackbar('success');
-                      if (digetst) {
-                        void setCurrentActivity(digetst);
-                      }
+                    if (queue.channel === 'inApp' && digest) {
+                      await deQueue(`/popup/tx-receipt/${digest}` as unknown as Path);
+                      void setCurrentActivity(digest);
+                    } else {
+                      await deQueue();
                     }
-
-                    await deQueue();
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                   } finally {

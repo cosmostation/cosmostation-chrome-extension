@@ -54,6 +54,7 @@ import PopupEthereumSwitchNetwork from '~/Popup/pages/Popup/Ethereum/SwitchNetwo
 import PopupEthereumTransaction from '~/Popup/pages/Popup/Ethereum/Transaction';
 import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
 import PopupSuiTransaction from '~/Popup/pages/Popup/Sui/Transaction';
+import PopupTxReceipt from '~/Popup/pages/Popup/TxReceipt';
 import SettingAddressBook from '~/Popup/pages/Setting/AddressBook';
 import SettingAddressBookAdd from '~/Popup/pages/Setting/AddressBook/Add';
 import SettingChangeCurrency from '~/Popup/pages/Setting/ChangeCurrency';
@@ -168,6 +169,10 @@ export default function Routes() {
           <Route path={PATH.POPUP__APTOS__SIGN_MESSAGE} element={<PopupAptosSignMessage />} />
 
           <Route path={PATH.POPUP__SUI__TRANSACTION} element={<PopupSuiTransaction />} />
+
+          <Route path={PATH.POPUP__TX_RECEIPT} element={<PopupTxReceipt />}>
+            <Route path=":id" element={<PopupTxReceipt />} />
+          </Route>
         </>
       )}
       <Route path={PATH.HOME} element={<Home />} />

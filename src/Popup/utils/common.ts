@@ -3,6 +3,7 @@ import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
 import { MEDIBLOC } from '~/constants/chain/cosmos/medibloc';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
+import { LANGUAGE_TYPE } from '~/constants/extensionStorage';
 import { getAddress as getAptosAddress } from '~/Popup/utils/aptos';
 import { getAddress as getBech32Address, getAddressForEthermint } from '~/Popup/utils/cosmos';
 import {
@@ -136,4 +137,14 @@ export function isJsonString(str: string): boolean {
   } catch {
     return false;
   }
+}
+
+export function convertToLocales(str: string): string {
+  if (!str) return '';
+
+  if (str === LANGUAGE_TYPE.EN) return 'en-US';
+
+  if (str === LANGUAGE_TYPE.KO) return 'ko-KR';
+
+  return '';
 }
