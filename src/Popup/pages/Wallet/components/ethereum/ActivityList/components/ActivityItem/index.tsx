@@ -23,10 +23,10 @@ import {
 
 import Check24Icon from '~/images/icons/Check24.svg';
 import Contract24Icon from '~/images/icons/Contract24.svg';
-import IBCSend24Icon from '~/images/icons/IBCSend24.svg';
 import NFTSend24Icon from '~/images/icons/NFTSend24.svg';
 import Send24Icon from '~/images/icons/Send24.svg';
 import Swap24Icon from '~/images/icons/Swap24.svg';
+import Transaction24Icon from '~/images/icons/Transaction24.svg';
 
 type ActivityItemProps = {
   activity: Activity;
@@ -57,7 +57,6 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
 
   const shorterToAddress = useMemo(() => shorterAddress(sampleToAddress, 11), []);
 
-  // NOTE 필요한 아이콘(24픽셀) 1. 트랜잭션 디폴트 아이콘(우상향 하는 아이콘이었으면 함) 2. 컨트랙트 실행 아이콘
   const trasactionIcon = useMemo(() => {
     if (type === ETHEREUM_ACTIVITY_TYPE.SIMPLE_SEND || type === ETHEREUM_ACTIVITY_TYPE.TRANSFER || type === ETHEREUM_ACTIVITY_TYPE.TRANSFER_FROM) {
       return <Send24Icon />;
@@ -78,8 +77,7 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
       return <Contract24Icon />;
     }
 
-    // NOTE need default icon
-    return <IBCSend24Icon />;
+    return <Transaction24Icon />;
   }, [type]);
 
   const title = useMemo(() => {
@@ -126,7 +124,9 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
       >
         <Container>
           <LeftContainer>
-            <LeftIconContainer>{trasactionIcon}</LeftIconContainer>
+            <LeftIconContainer data-is-contract={type === ETHEREUM_ACTIVITY_TYPE.CONTRACT_INTERACT || type === ETHEREUM_ACTIVITY_TYPE.DEPLOY}>
+              {trasactionIcon}
+            </LeftIconContainer>
             <LeftTextContainer>
               <LeftTextTitleContainer>
                 <Typography variant="h5">{title}</Typography>

@@ -39,11 +39,19 @@ export const LeftContainer = styled('div')({
   textAlign: 'left',
 });
 
-export const LeftIconContainer = styled('div')({
+export const LeftIconContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-});
+
+  '& svg': {
+    fill: theme.accentColors.purple01,
+
+    '& > path': {
+      fill: theme.accentColors.purple01,
+    },
+  },
+}));
 
 export const LeftTextContainer = styled('div')({
   paddingLeft: '0.8rem',

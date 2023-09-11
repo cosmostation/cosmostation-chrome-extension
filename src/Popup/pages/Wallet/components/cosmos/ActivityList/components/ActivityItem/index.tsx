@@ -26,6 +26,7 @@ import Contract24Icon from '~/images/icons/Contract24.svg';
 import IBCSend24Icon from '~/images/icons/IBCSend24.svg';
 import Reward24Icon from '~/images/icons/Reward24.svg';
 import Send24Icon from '~/images/icons/Send24.svg';
+import Transaction24Icon from '~/images/icons/Transaction24.svg';
 
 type ActivityItemProps = {
   activity: Activity;
@@ -55,8 +56,6 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
 
   const shorterToAddress = useMemo(() => shorterAddress(sampleToAddress, 11), []);
 
-  // NOTE 필요한 아이콘(24픽셀) 1. 트랜잭션 디폴트 아이콘(우상향 하는 아이콘이었으면 함) 2. 컨트랙트 실행 아이콘
-  // NOTE 2. NFT send 아이콘, 3.
   const trasactionIcon = useMemo(() => {
     if (type === COSMOS_ACTIVITY_TYPE.SEND) {
       return <Send24Icon />;
@@ -73,8 +72,7 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
     if (type === COSMOS_ACTIVITY_TYPE.COMMISSION) {
       return <Commission24Icon />;
     }
-    // 디폴트 아이콘이 들어가야함
-    return <IBCSend24Icon />;
+    return <Transaction24Icon />;
   }, [type]);
 
   const title = useMemo(() => {
@@ -108,7 +106,7 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
       >
         <Container>
           <LeftContainer>
-            <LeftIconContainer>{trasactionIcon}</LeftIconContainer>
+            <LeftIconContainer data-is-contract={type === COSMOS_ACTIVITY_TYPE.CONTRACT}>{trasactionIcon}</LeftIconContainer>
             <LeftTextContainer>
               <LeftTextTitleContainer>
                 <Typography variant="h5">{title}</Typography>

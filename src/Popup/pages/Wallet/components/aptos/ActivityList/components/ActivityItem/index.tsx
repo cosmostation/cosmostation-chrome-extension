@@ -20,7 +20,7 @@ import {
   StyledButton,
 } from './styled';
 
-import IBCSend24Icon from '~/images/icons/IBCSend24.svg';
+import Transaction24Icon from '~/images/icons/Transaction24.svg';
 
 type ActivityItemProps = {
   activity: Activity;
@@ -67,7 +67,7 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
         <Container>
           <LeftContainer>
             <LeftIconContainer>
-              <IBCSend24Icon />
+              <Transaction24Icon />
             </LeftIconContainer>
             <LeftTextContainer>
               <LeftTextTitleContainer>
