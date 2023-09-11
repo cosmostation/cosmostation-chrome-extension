@@ -5,7 +5,9 @@ import { ETHEREUM_ACTIVITY_TYPE } from '~/constants/extensionStorage';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { convertToLocales } from '~/Popup/utils/common';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { Activity } from '~/types/extensionStorage';
 
@@ -37,6 +39,9 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
 
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
+  const { extensionStorage } = useExtensionStorage();
+  const { language } = extensionStorage;
+
   const { explorerURL } = currentEthereumNetwork;
   const { txHash, timestamp, type } = activity;
 
@@ -45,13 +50,13 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
   const formattedTimestamp = useMemo(() => {
     const date = new Date(Number(timestamp));
 
-    return date.toLocaleString('en-US', {
+    return date.toLocaleString(convertToLocales(language), {
       month: 'short',
       day: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
     });
-  }, [timestamp]);
+  }, [language, timestamp]);
 
   const sampleToAddress = 'stars1aygdt8742gamxv8ca99wzh56ry4xw5s33vvxu2';
 

@@ -4,7 +4,9 @@ import { Typography } from '@mui/material';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { convertToLocales } from '~/Popup/utils/common';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { Activity } from '~/types/extensionStorage';
 
@@ -31,6 +33,9 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
+  const { extensionStorage } = useExtensionStorage();
+  const { language } = extensionStorage;
+
   const { explorerURL, networkName } = currentSuiNetwork;
   const { txHash, timestamp } = activity;
 
@@ -42,13 +47,13 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
   const formattedTimestamp = useMemo(() => {
     const date = new Date(Number(timestamp));
 
-    return date.toLocaleString('en-US', {
+    return date.toLocaleString(convertToLocales(language), {
       month: 'short',
       day: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
     });
-  }, [timestamp]);
+  }, [language, timestamp]);
 
   const sampleToAddress = 'stars1aygdt8742gamxv8ca99wzh56ry4xw5s33vvxu2';
 
