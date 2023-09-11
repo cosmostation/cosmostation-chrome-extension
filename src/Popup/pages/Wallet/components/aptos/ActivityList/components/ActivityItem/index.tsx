@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import { APTOS_ACTIVITY_TYPE } from '~/constants/extensionStorage';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';

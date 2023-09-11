@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import { SUI_ACTIVITY_TYPE } from '~/constants/extensionStorage';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
