@@ -319,6 +319,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                         origin,
                       });
 
+                      // NOTE
                       // void setCurrentActivity(txhash, txType);
                       await deQueue();
                     }

@@ -21,7 +21,6 @@ import {
   StyledButton,
 } from './styled';
 
-import IBCSend24Icon from '~/images/icons/IBCSend24.svg';
 import Send24Icon from '~/images/icons/Send24.svg';
 
 type ActivityItemProps = {
@@ -34,7 +33,7 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { explorerURL, networkName } = currentSuiNetwork;
-  const { txHash, timestamp, type } = activity;
+  const { txHash, timestamp } = activity;
 
   const txDetailExplorerURL = useMemo(
     () => (explorerURL ? `${explorerURL}/txblock/${txHash}?network=${networkName.toLowerCase()}` : ''),
@@ -56,22 +55,6 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
 
   const shorterToAddress = useMemo(() => shorterAddress(sampleToAddress, 11), []);
 
-  // NOTE 필요한 아이콘(24픽셀) 1. 트랜잭션 디폴트 아이콘(우상향 하는 아이콘이었으면 함) 2. 컨트랙트 실행 아이콘
-  const trasactionIcon = useMemo(() => {
-    if (type === SUI_ACTIVITY_TYPE.TRANSACTION) {
-      return <Send24Icon />;
-    }
-    return <IBCSend24Icon />;
-  }, [type]);
-
-  const title = useMemo(() => {
-    if (type === SUI_ACTIVITY_TYPE.TRANSACTION) {
-      return t('pages.Wallet.components.sui.ActivityList.components.ActivityItem.index.transaction');
-    }
-
-    return t('pages.Wallet.components.sui.ActivityList.components.ActivityItem.index.transaction');
-  }, [t, type]);
-
   const transactionAmount = useMemo(() => '1', []);
 
   return (
@@ -84,10 +67,12 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
       >
         <Container>
           <LeftContainer>
-            <LeftIconContainer>{trasactionIcon}</LeftIconContainer>
+            <LeftIconContainer>
+              <Send24Icon />
+            </LeftIconContainer>
             <LeftTextContainer>
               <LeftTextTitleContainer>
-                <Typography variant="h5">{title}</Typography>
+                <Typography variant="h5">{t('pages.Wallet.components.sui.ActivityList.components.ActivityItem.index.transaction')}</Typography>
               </LeftTextTitleContainer>
               <LeftTextSubtitleContainer>
                 <Typography variant="h6">{shorterToAddress}</Typography>
