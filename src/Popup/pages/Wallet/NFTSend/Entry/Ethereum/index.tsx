@@ -25,7 +25,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { ethereumAddressRegex } from '~/Popup/utils/regex';
+import { ethereumAddressRegex, isNaturalNumberRegex } from '~/Popup/utils/regex';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumChain } from '~/types/chain';
 import type { EthereumNFT } from '~/types/ethereum/nft';
@@ -213,12 +213,7 @@ export default function Ethereum({ chain }: EthereumProps) {
         return t('pages.Wallet.NFTSend.Entry.Ethereum.index.networkError');
       }
 
-      if (
-        !currentSendQuantity ||
-        gt(currentSendQuantity, currentNFTBalance) ||
-        !gt(currentSendQuantity, '0') ||
-        Number(currentSendQuantity) !== parseInt(currentSendQuantity, 10)
-      ) {
+      if (!currentSendQuantity || gt(currentSendQuantity, currentNFTBalance) || !isNaturalNumberRegex.test(currentSendQuantity)) {
         return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidSendNFTQuantity');
       }
     }
@@ -290,10 +285,7 @@ export default function Ethereum({ chain }: EthereumProps) {
                 </InputAdornment>
               }
               onChange={(e) => {
-                if (
-                  (gt(e.currentTarget.value || '0', currentNFTBalance || '0') || Number(e.currentTarget.value) !== parseInt(e.currentTarget.value, 10)) &&
-                  e.currentTarget.value
-                ) {
+                if (e.currentTarget.value && !isNaturalNumberRegex.test(e.currentTarget.value)) {
                   return;
                 }
                 setCurrentSendQuantity(e.currentTarget.value);
