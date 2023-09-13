@@ -147,7 +147,7 @@ export default function Entry({ queue }: EntryProps) {
                   purpose: "44'",
                   account: "0'",
                   change: '0',
-                  coinType: coinType ? `${coinType}'` : "118'",
+                  coinType: coinType || "118'",
                 },
                 decimals: decimals ?? 6,
                 gasRate: gasRate ?? { average: '0.025', low: '0.0025', tiny: '0.00025' },

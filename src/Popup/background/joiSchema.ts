@@ -58,7 +58,7 @@ export const cosAddChainParamsSchema = (chainNames: string[], officialChainIds: 
     displayDenom: Joi.string().required(),
     decimals: Joi.number().optional(),
     coinType: Joi.string()
-      .regex(/^[0-9]+$/)
+      .regex(/^[0-9]+'?$/)
       .optional(),
     addressPrefix: Joi.string().required(),
     coinGeckoId: Joi.string().optional(),
