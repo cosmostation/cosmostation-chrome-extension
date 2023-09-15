@@ -380,6 +380,26 @@ export const cosmosWallet: CosmosRegistWallet = {
         throw new Error((e as { message?: string }).message || 'Unknown Error');
       }
     },
+    requestAccount: async (chainID) => {
+      try {
+        const account = (await request({
+          method: 'cos_requestAccount',
+          params: { chainName: chainID },
+        })) as CosRequestAccountResponse;
+
+        return {
+          name: account.name,
+          is_ledger: !!account.isLedger,
+          public_key: {
+            type: account.isEthermint ? 'ethsecp256k1' : 'secp256k1',
+            value: Buffer.from(account.publicKey).toString('base64'),
+          },
+          address: account.address,
+        };
+      } catch (e) {
+        throw new Error((e as { message?: string }).message || 'Unknown Error');
+      }
+    },
     signAmino: async (chainID, document, options) => {
       try {
         const response = (await request({
@@ -389,6 +409,7 @@ export const cosmosWallet: CosmosRegistWallet = {
             doc: document as unknown as SignAminoDoc,
             isEditFee: options?.edit_mode?.fee,
             isEditMemo: options?.edit_mode?.memo,
+            isCheckBalance: options?.is_check_balance,
           },
         })) as CosSignAminoResponse;
 
@@ -414,6 +435,7 @@ export const cosmosWallet: CosmosRegistWallet = {
             doc: { ...document, body_bytes, auth_info_bytes } as unknown as SignDirectDoc,
             isEditFee: options?.edit_mode?.fee,
             isEditMemo: options?.edit_mode?.memo,
+            isCheckBalance: options?.is_check_balance,
           },
         })) as CosSignDirectResponse;
 
@@ -439,19 +461,27 @@ export const cosmosWallet: CosmosRegistWallet = {
         },
       })) as CosSendTransactionResponse;
 
-      return response;
+      if (response.tx_response.code !== 0) {
+        if (typeof response.tx_response?.raw_log === 'string') {
+          throw new Error(response.tx_response.raw_log);
+        } else {
+          throw new Error('Unknown Error');
+        }
+      }
+
+      return response.tx_response.txhash;
     },
     getSupportedChainIds: async () => {
       const response = (await request({ method: 'cos_supportedChainIds' })) as CosSupportedChainIdsResponse;
 
       return [...response.official, ...response.unofficial];
     },
-    signMessage: async (chainId, signer, message) => {
+    signMessage: async (chainId, message, signer) => {
       const response = (await request({ method: 'cos_signMessage', params: { chainName: chainId, signer, message } })) as CosSignMessageResponse;
 
       return { signature: response.signature };
     },
-    verifyMessage: async (chainId, signer, message, signature, public_key) => {
+    verifyMessage: async (chainId, message, signer, signature, public_key) => {
       const response = (await request({
         method: 'cos_verifyMessage',
         params: { chainName: chainId, signer, message, publicKey: public_key, signature },

@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@0xsquid/sdk": "^1.3.9",
-    "@cosmostation/wallets": "^2.0.2-alpha.2",
+    "@cosmostation/wallets": "^2.0.2",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@ethereumjs/common": "^2.6.5",
