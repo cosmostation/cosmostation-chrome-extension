@@ -367,8 +367,6 @@ export default function Entry({ queue }: EntryProps) {
                     }
                   } catch {
                     enqueueSnackbar('Unknown Error', { variant: 'error' });
-
-                    await deQueue();
                   } finally {
                     setIsProgress(false);
                   }
