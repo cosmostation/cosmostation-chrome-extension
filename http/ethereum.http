@@ -22,17 +22,10 @@ content-type: application/json
 }
 
 ### 
-POST https://api.mycryptoapi.com/eth
+POST https://eth-sepolia.g.alchemy.com/v2/y8g-2-14cWbAO_xGFIBMa0y32jxKYAj8
 content-type: application/json
 
-{
-    "jsonrpc": "2.0",
-    "method": "eth_feeHistory",
-    "params": [
-        20, "pending", [10, 30, 50]
-    ],
-    "id": 0
-}
+{"jsonrpc":"2.0","id":124,"method":"eth_getLogs","params":[{"address":["0xcca9d5f0a3c58b6f02bd0985fc7f9420ea24c1f0"],"fromBlock":"0x3fc707","toBlock":"finalized","topics":[["0x498a04382650bc110983392ed12ab27595af8ece270a344fc70d773d2481043a"],["0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000000000000000000000","0x0000000000000000000000000000000000000000000000"]]}]}
 
 ### 
 POST http://222.106.187.14:50001
