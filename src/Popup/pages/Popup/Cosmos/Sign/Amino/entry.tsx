@@ -260,8 +260,6 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                     const pubKey = { type: publicKeyType, value: base64PublicKey };
                     if (channel) {
-                      let txHash: string | undefined;
-
                       try {
                         const url = cosmosURL(chain).postBroadcast();
                         const pTx = protoTx(tx, base64Signature, pubKey);
@@ -272,7 +270,11 @@ export default function Entry({ queue, chain }: EntryProps) {
                         const { code, txhash } = response.tx_response;
 
                         if (code === 0) {
-                          txHash = txhash;
+                          if (txhash) {
+                            void deQueue(`/popup/tx-receipt/${txhash}` as unknown as Path);
+                          } else {
+                            void deQueue();
+                          }
                         } else {
                           throw new Error(response.tx_response.raw_log as string);
                         }
@@ -284,17 +286,8 @@ export default function Entry({ queue, chain }: EntryProps) {
                             autoHideDuration: 3000,
                           },
                         );
-                      } finally {
-                        setTimeout(
-                          () => {
-                            if (txHash) {
-                              void deQueue(`/popup/tx-receipt/${txHash}` as unknown as Path);
-                            } else {
-                              void deQueue();
-                            }
-                          },
-                          currentAccount.type === 'LEDGER' && channel ? 1000 : 0,
-                        );
+
+                        void deQueue();
                       }
                     } else {
                       const result: CosSignAminoResponse = {

@@ -244,8 +244,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                     const base64Signature = Buffer.from(signature).toString('base64');
 
                     if (channel) {
-                      let txHash: string | undefined;
-
                       try {
                         const url = cosmosURL(chain).postBroadcast();
                         const pTxBytes = protoTxBytes({
@@ -259,7 +257,11 @@ export default function Entry({ queue, chain }: EntryProps) {
                         const { code, txhash } = response.tx_response;
 
                         if (code === 0) {
-                          txHash = txhash;
+                          if (txhash) {
+                            void deQueue(`/popup/tx-receipt/${txhash}` as unknown as Path);
+                          } else {
+                            void deQueue();
+                          }
                         } else {
                           throw new Error(response.tx_response.raw_log as string);
                         }
@@ -271,12 +273,8 @@ export default function Entry({ queue, chain }: EntryProps) {
                             autoHideDuration: 3000,
                           },
                         );
-                      } finally {
-                        if (txHash) {
-                          void deQueue(`/popup/tx-receipt/${txHash}` as unknown as Path);
-                        } else {
-                          void deQueue();
-                        }
+
+                        void deQueue();
                       }
                     } else {
                       const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
