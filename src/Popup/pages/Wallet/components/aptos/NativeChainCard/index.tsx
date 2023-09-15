@@ -76,7 +76,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const { navigate } = useNavigate();
 
-  const { explorerURL } = currentAptosNetwork;
+  const { explorerURL, networkName } = currentAptosNetwork;
 
   const decimals = useMemo(() => aptosInfo?.data.decimals || 0, [aptosInfo?.data.decimals]);
 
@@ -84,15 +84,21 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const { data } = useCoinGeckoPriceSWR();
 
-  const amount = aptosCoin?.data.coin.value || '0';
+  const amount = useMemo(() => aptosCoin?.data.coin.value || '0', [aptosCoin?.data.coin.value]);
 
-  const price = (asset?.coinGeckoId && data?.[asset.coinGeckoId]?.[extensionStorage.currency]) || 0;
+  const price = useMemo(
+    () => (asset?.coinGeckoId && data?.[asset.coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [asset?.coinGeckoId, data, extensionStorage.currency],
+  );
 
-  const displayAmount = toDisplayDenomAmount(amount, decimals);
+  const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);
 
-  const value = times(price, displayAmount);
+  const value = useMemo(() => times(price, displayAmount), [displayAmount, price]);
 
-  const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
+  const currentAddress = useMemo(
+    () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '',
+    [accounts?.data, chain.id, currentAccount.id],
+  );
 
   const displayDenom = useMemo(() => asset?.symbol || aptosInfo?.data.symbol || '', [aptosInfo?.data.symbol, asset?.symbol]);
 
@@ -112,7 +118,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {explorerURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/address/${currentAddress}`);
+                window.open(`${explorerURL}/account/${currentAddress}?network=${networkName.toLowerCase()}`);
               }}
             >
               <ExplorerIcon />

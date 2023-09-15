@@ -7,5 +7,5 @@ export const TESTNET: AptosNetwork = {
   networkName: 'Testnet',
   restURL: 'https://fullnode.testnet.aptoslabs.com',
   imageURL: aptosImg,
-  explorerURL: 'https://testnet.aptoscan.com',
+  explorerURL: 'https://explorer.aptoslabs.com',
 };

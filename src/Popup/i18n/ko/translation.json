@@ -1018,6 +1018,108 @@
             "signButton": "서명"
           }
         }
+      },
+      "TxReceipt": {
+        "Entry": {
+          "Aptos": {
+            "entry": {
+              "blockHeight": "블록 높이",
+              "confirm": "확인",
+              "copied": "복사 되었습니다.",
+              "date": "날짜",
+              "expirationDate": "만료일",
+              "explorer": "블록 탐색기에서 확인하기",
+              "failure": "실패",
+              "fee": "수수료",
+              "information": "트랜잭션 정보",
+              "network": "네트워크",
+              "networkError": "네트워크 오류",
+              "networkErrorDescription": "트랜잭션 데이터 가져오기 실패",
+              "pending": "보류중",
+              "status": "상태",
+              "success": "성공",
+              "transactionConfirmed": "트랜잭션 성공여부",
+              "transactionReceipt": "트랜잭션 결과",
+              "txHash": "트랜잭션 해시",
+              "version": "버전 ID",
+              "vmStatus": "VM 상태"
+            }
+          },
+          "Cosmos": {
+            "entry": {
+              "blockHeight": "블록 높이",
+              "confirm": "확인",
+              "copied": "복사 되었습니다.",
+              "date": "날짜",
+              "explorer": "블록 탐색기에서 확인하기",
+              "failure": "실패",
+              "fees": "수수료",
+              "gas": "가스 사용량 / 가스 설정값",
+              "information": "트랜잭션 정보",
+              "network": "네트워크",
+              "networkError": "네트워크 오류",
+              "networkErrorDescription": "트랜잭션 데이터 가져오기 실패",
+              "pending": "보류중",
+              "status": "상태",
+              "success": "성공",
+              "transactionConfirmed": "트랜잭션 성공여부",
+              "transactionReceipt": "트랜잭션 결과",
+              "txHash": "트랜잭션 해시"
+            }
+          },
+          "Ethereum": {
+            "entry": {
+              "blockNumber": "블록 번호",
+              "confirm": "확인",
+              "copied": "복사 되었습니다.",
+              "date": "날짜",
+              "effectiveGasPrice": "실사용된 가스 가격",
+              "explorer": "블록 탐색기에서 확인하기",
+              "failure": "실패",
+              "fee": "수수료",
+              "gas": "가스 사용량",
+              "information": "트랜잭션 정보",
+              "network": "네트워크",
+              "networkError": "네트워크 오류",
+              "networkErrorDescription": "트랜잭션 데이터 가져오기 실패",
+              "pending": "보류중",
+              "status": "상태",
+              "success": "성공",
+              "transactionConfirmed": "트랜잭션 성공여부",
+              "transactionReceipt": "트랜잭션 결과",
+              "txHash": "트랜잭션 해시"
+            }
+          },
+          "Sui": {
+            "entry": {
+              "checkPoint": "체크 포인트",
+              "confirm": "확인",
+              "copied": "복사 되었습니다.",
+              "date": "날짜",
+              "digest": "다이제스트 해시",
+              "epoch": "에포치",
+              "explorer": "블록 탐색기에서 확인하기",
+              "failure": "실패",
+              "fee": "수수료",
+              "information": "트랜잭션 정보",
+              "network": "네트워크",
+              "networkError": "네트워크 오류",
+              "networkErrorDescription": "트랜잭션 데이터 가져오기 실패",
+              "pending": "보류중",
+              "status": "상태",
+              "success": "성공",
+              "transactionConfirmed": "트랜잭션 성공여부",
+              "transactionReceipt": "트랜잭션 결과"
+            }
+          },
+          "components": {
+            "CopyButton": {
+              "index": {
+                "copied": "복사 되었습니다."
+              }
+            }
+          }
+        }
       }
     },
     "Restore": {

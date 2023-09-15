@@ -41,6 +41,7 @@ import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/extensionStorage';
 import type { SuiSignAndExecuteTransactionBlock } from '~/types/message/sui';
+import type { Path } from '~/types/route';
 
 import Tx from './components/Tx';
 import TxMessage from './components/TxMessage';
@@ -313,6 +314,12 @@ export default function Entry({ queue }: EntryProps) {
                         messageId,
                         origin,
                       });
+
+                      if (queue.channel === 'inApp' && response.digest) {
+                        await deQueue(`/popup/tx-receipt/${response.digest}` as unknown as Path);
+                      } else {
+                        await deQueue();
+                      }
                     }
 
                     if (currentAccount.type === 'LEDGER') {
@@ -359,13 +366,9 @@ export default function Entry({ queue }: EntryProps) {
                         messageId,
                         origin,
                       });
-                    }
 
-                    if (queue.channel === 'inApp') {
-                      enqueueSnackbar('success');
+                      await deQueue();
                     }
-
-                    await deQueue();
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                   } finally {

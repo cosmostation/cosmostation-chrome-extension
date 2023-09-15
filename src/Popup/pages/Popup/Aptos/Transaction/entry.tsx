@@ -36,6 +36,7 @@ import type {
   AptosSignTransaction,
   AptosSignTransactionResponse,
 } from '~/types/message/aptos';
+import type { Path } from '~/types/route';
 
 import Tx from './components/Tx';
 import TxMessage from './components/TxMessage';
@@ -357,11 +358,11 @@ export default function Entry({ queue }: EntryProps) {
                           origin,
                         });
 
-                        if (channel === 'inApp') {
-                          enqueueSnackbar('Success');
+                        if (channel === 'inApp' && result.hash) {
+                          await deQueue(`/popup/tx-receipt/${result.hash}` as unknown as Path);
+                        } else {
+                          await deQueue();
                         }
-
-                        await deQueue();
                       }
                     }
                   } catch {

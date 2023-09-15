@@ -13,3 +13,11 @@ export const hexOrDecRegex = /^(0[x][0-9a-f]+|[0-9]+)$/;
 export const httpsRegex = /^https:\/\/[\w-]+(\.[\w-]+)*(:\d+)?(\/\S*)?$/;
 
 export const isNaturalNumberRegex = /^\d+$/;
+
+export const cosmosTxHashRegex = /^[0-9A-Fa-f]{64}/;
+
+export const ethereumTxHashRegex = /^0x([A-Fa-f0-9]{64})$/;
+
+export const suiTxHashRegex = /^[A-Za-z0-9]{44}/;
+
+export const aptosTxHashRegex = /^0x([A-Fa-f0-9]{64})$/;

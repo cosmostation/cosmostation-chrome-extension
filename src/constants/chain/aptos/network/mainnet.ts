@@ -7,6 +7,6 @@ export const MAINNET: AptosNetwork = {
   networkName: 'Mainnet',
   restURL: 'https://rest-aptos.mainnet.cosmostation.io',
   imageURL: aptosImg,
-  explorerURL: 'https://aptoscan.com',
+  explorerURL: 'https://explorer.aptoslabs.com',
   coinGeckoId: 'aptos',
 };

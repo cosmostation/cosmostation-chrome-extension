@@ -28,6 +28,7 @@ import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
 import type { CosSignAmino, CosSignAminoResponse } from '~/types/message/cosmos';
+import type { Path } from '~/types/route';
 
 import TxMessage from './components/TxMessage';
 import { BottomButtonContainer, BottomContainer, Container, ContentsContainer, FeeContainer, MemoContainer, PaginationContainer, TabContainer } from './styled';
@@ -267,10 +268,14 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                         const response = await broadcast(url, pTxBytes);
 
-                        const { code } = response.tx_response;
+                        const { code, txhash } = response.tx_response;
 
                         if (code === 0) {
-                          enqueueSnackbar('success');
+                          if (txhash) {
+                            void deQueue(`/popup/tx-receipt/${txhash}` as unknown as Path);
+                          } else {
+                            void deQueue();
+                          }
                         } else {
                           throw new Error(response.tx_response.raw_log as string);
                         }
@@ -282,13 +287,8 @@ export default function Entry({ queue, chain }: EntryProps) {
                             autoHideDuration: 3000,
                           },
                         );
-                      } finally {
-                        setTimeout(
-                          () => {
-                            void deQueue();
-                          },
-                          currentAccount.type === 'LEDGER' && channel ? 1000 : 0,
-                        );
+
+                        void deQueue();
                       }
                     } else {
                       const result: CosSignAminoResponse = {

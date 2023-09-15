@@ -1,3 +1,4 @@
+import type { Types } from 'aptos';
 import { sha3_256 as sha3 } from '@noble/hashes/sha3';
 import { bytesToHex } from '@noble/hashes/utils';
 
@@ -20,4 +21,42 @@ export function getCoinAddress(type: string) {
   }
 
   return '';
+}
+
+export function castTransactionType(tx?: Types.Transaction) {
+  if (!tx) {
+    return undefined;
+  }
+
+  if (tx.type === 'pending_transaction') {
+    return tx as {
+      type: 'pending_transaction';
+    } & Types.PendingTransaction;
+  }
+
+  if (tx.type === 'user_transaction') {
+    return tx as {
+      type: 'user_transaction';
+    } & Types.UserTransaction;
+  }
+
+  if (tx.type === 'genesis_transaction') {
+    return tx as {
+      type: 'genesis_transaction';
+    } & Types.UserTransaction;
+  }
+
+  if (tx.type === 'block_metadata_transaction') {
+    return tx as {
+      type: 'block_metadata_transaction';
+    } & Types.UserTransaction;
+  }
+
+  if (tx.type === 'state_checkpoint_transaction') {
+    return tx as {
+      type: 'state_checkpoint_transaction';
+    } & Types.UserTransaction;
+  }
+
+  return undefined;
 }
