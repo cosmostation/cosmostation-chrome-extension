@@ -86,6 +86,7 @@ import { KAVA as ETHEREUM_NETWORK__KAVA } from './ethereum/network/kava';
 import { OKC as ETHEREUM_NETWORK__OKC } from './ethereum/network/okc';
 import { OPTIMISM as ETHEREUM_NETWORK__OPTIMISM } from './ethereum/network/optimism';
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
+import { SCROLL_SEPOLIA_TESTNET as ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET } from './ethereum/network/scrollSepoliaTestnet';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
 import { DEVNET as SUI_NETWORK__DEVNET } from './sui/network/devnet';
 import { MAINNET as SUI_NETWORK__MAINNET } from './sui/network/mainnet';
@@ -193,6 +194,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__OPTIMISM,
   ETHEREUM_NETWORK__POLYGON,
   ETHEREUM_NETWORK__SMART_CHAIN,
+  ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET,
 ];
 
 export const APTOS_CHAINS: AptosChain[] = [APTOS];
