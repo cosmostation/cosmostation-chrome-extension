@@ -371,6 +371,8 @@ export default function Entry({ queue }: EntryProps) {
                     }
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+
+                    await deQueue();
                   } finally {
                     await closeTransport();
                     setLoadingLedgerSigning(false);
