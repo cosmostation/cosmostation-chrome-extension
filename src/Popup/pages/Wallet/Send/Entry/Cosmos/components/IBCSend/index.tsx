@@ -241,17 +241,14 @@ export default function IBCSend({ chain }: IBCSendProps) {
   );
 
   const receiverIBCList = useMemo(() => {
-    if (
-      currentCoinOrToken.type === 'coin' &&
-      (currentCoinOrToken.coinType === 'native' || currentCoinOrToken.coinType === 'staking' || currentCoinOrToken.coinType === 'bridge')
-    ) {
+    if (currentCoinOrToken.type === 'coin' && (currentCoinOrToken.coinType === 'native' || currentCoinOrToken.coinType === 'staking')) {
       const assets = filteredCosmosChainAssets.filter(
         (asset) => isEqualsIgnoringCase(asset.counter_party?.denom, currentCoinOrToken.baseDenom) && cosmosAssetNames.includes(asset.origin_chain),
       );
       return assets.map((item) => ({ chain: convertAssetNameToCosmos(item.chain)!, channel: item.counter_party!.channel, port: item.counter_party!.port }));
     }
 
-    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.coinType === 'ibc') {
+    if (currentCoinOrToken.type === 'coin' && (currentCoinOrToken.coinType === 'ibc' || currentCoinOrToken.coinType === 'bridge')) {
       const assets = filteredCurrentChainAssets.filter(
         (asset) => isEqualsIgnoringCase(asset.denom, currentCoinOrToken.baseDenom) && asset.channel && asset.port,
       );
