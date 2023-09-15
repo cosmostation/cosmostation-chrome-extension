@@ -259,6 +259,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     const publicKeyType = getPublicKeyType(chain);
 
                     const pubKey = { type: publicKeyType, value: base64PublicKey };
+
                     if (channel) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
