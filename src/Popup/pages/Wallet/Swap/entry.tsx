@@ -33,6 +33,7 @@ import { useSquidSwap } from '~/Popup/hooks/SWR/integratedSwap/squid/useSquidSwa
 import { useSupportSwapChainsSWR } from '~/Popup/hooks/SWR/integratedSwap/useSupportSwapChainsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -116,6 +117,8 @@ export default function Entry() {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const { currentChain, setCurrentChain } = useCurrentChain();
+  const { addAllowedChainId, currentAllowedChains } = useCurrentAllowedChains();
+
   const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const [isOpenSlippageDialog, setIsOpenSlippageDialog] = useState(false);
@@ -1288,7 +1291,13 @@ export default function Entry() {
         void setCurrentChain(ETHEREUM);
       }
     }
-  }, [currentChain.line, currentFromChain, setCurrentChain, setCurrentEthereumNetwork]);
+    if (currentFromChain.line === COSMOS.line && !isEqualsIgnoringCase(currentChain.id, currentFromChain.id)) {
+      if (!currentAllowedChains.find((item) => isEqualsIgnoringCase(item.id, currentFromChain.id))) {
+        void addAllowedChainId(currentFromChain);
+      }
+      void setCurrentChain(currentFromChain);
+    }
+  }, [addAllowedChainId, currentAllowedChains, currentChain.id, currentChain.line, currentFromChain, setCurrentChain, setCurrentEthereumNetwork]);
 
   return (
     <>
