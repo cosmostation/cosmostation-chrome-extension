@@ -241,14 +241,20 @@ export default function IBCSend({ chain }: IBCSendProps) {
   );
 
   const receiverIBCList = useMemo(() => {
-    if (currentCoinOrToken.type === 'coin' && (currentCoinOrToken.coinType === 'native' || currentCoinOrToken.coinType === 'staking')) {
+    if (
+      currentCoinOrToken.type === 'coin' &&
+      (currentCoinOrToken.coinType === 'native' || currentCoinOrToken.coinType === 'staking' || currentCoinOrToken.coinType === 'bridge')
+    ) {
       const assets = filteredCosmosChainAssets.filter(
-        (asset) => isEqualsIgnoringCase(asset.counter_party?.denom, currentCoinOrToken.baseDenom) && cosmosAssetNames.includes(asset.origin_chain),
+        (asset) =>
+          isEqualsIgnoringCase(asset.counter_party?.denom, currentCoinOrToken.baseDenom) &&
+          isEqualsIgnoringCase(convertAssetNameToCosmos(asset.prevChain || '')?.baseDenom, chain.baseDenom) &&
+          cosmosAssetNames.includes(asset.prevChain || ''),
       );
       return assets.map((item) => ({ chain: convertAssetNameToCosmos(item.chain)!, channel: item.counter_party!.channel, port: item.counter_party!.port }));
     }
 
-    if (currentCoinOrToken.type === 'coin' && (currentCoinOrToken.coinType === 'ibc' || currentCoinOrToken.coinType === 'bridge')) {
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.coinType === 'ibc') {
       const assets = filteredCurrentChainAssets.filter(
         (asset) => isEqualsIgnoringCase(asset.denom, currentCoinOrToken.baseDenom) && asset.channel && asset.port,
       );
