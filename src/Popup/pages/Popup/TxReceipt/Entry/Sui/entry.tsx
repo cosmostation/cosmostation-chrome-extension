@@ -70,11 +70,14 @@ export default function Sui() {
 
   const params = useParams();
 
-  const txDigest = useMemo(() => params.id || '', [params.id]);
+  const txDigest = useMemo(() => params.txhash || '', [params.txhash]);
 
   const txInfo = useTxInfoSWR({ digest: txDigest, network: currentSuiNetwork });
 
-  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/txblock/${txDigest}?network=${currentSuiNetwork.networkName.toLowerCase()}` : ''), [explorerURL, txDigest]);
+  const txDetailExplorerURL = useMemo(
+    () => (explorerURL ? `${explorerURL}/txblock/${txDigest}?network=${currentSuiNetwork.networkName.toLowerCase()}` : ''),
+    [currentSuiNetwork.networkName, explorerURL, txDigest],
+  );
 
   const formattedTimestamp = useMemo(() => {
     if (txInfo.data?.result?.timestampMs) {

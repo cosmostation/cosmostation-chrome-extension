@@ -69,7 +69,7 @@ export default function Ethereum() {
 
   const params = useParams();
 
-  const txHash = useMemo(() => params.id || '', [params.id]);
+  const txHash = useMemo(() => params.txhash || '', [params.txhash]);
 
   const txInfo = useTxInfoSWR(txHash);
 

@@ -69,7 +69,7 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const params = useParams();
 
-  const txHash = useMemo(() => params.id || '', [params.id]);
+  const txHash = useMemo(() => params.txhash || '', [params.txhash]);
 
   const txInfo = useTxInfoSWR(chain, txHash);
 

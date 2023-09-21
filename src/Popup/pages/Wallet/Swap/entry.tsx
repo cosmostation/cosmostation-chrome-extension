@@ -117,7 +117,7 @@ export default function Entry() {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const { currentChain, setCurrentChain } = useCurrentChain();
-  const { addAllowedChainId, currentAllowedChains } = useCurrentAllowedChains();
+  const { currentAllowedChains, addAllowedChainId } = useCurrentAllowedChains();
 
   const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
 
@@ -395,7 +395,7 @@ export default function Entry() {
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
         ...filteredTokens.filter((item) => !gt(item.balance, '0')),
-      ].sort((a) => (currentFromChain?.displayDenom === a.displayDenom ? -1 : 1));
+      ].sort((a) => (currentFromChain?.displayDenom === a.displayDenom && a.origin_type === 'staking' ? -1 : 1));
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
@@ -515,7 +515,7 @@ export default function Entry() {
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
         ...filteredTokens.filter((item) => !gt(item.balance, '0')),
-      ].sort((a) => (currentToChain?.displayDenom === a.displayDenom ? -1 : 1));
+      ].sort((a) => (currentToChain?.displayDenom === a.displayDenom && a.origin_type === 'staking' ? -1 : 1));
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
@@ -1290,12 +1290,6 @@ export default function Entry() {
       if (currentChain.line !== ETHEREUM.line) {
         void setCurrentChain(ETHEREUM);
       }
-    }
-    if (currentFromChain.line === COSMOS.line && !isEqualsIgnoringCase(currentChain.id, currentFromChain.id)) {
-      if (!currentAllowedChains.find((item) => isEqualsIgnoringCase(item.id, currentFromChain.id))) {
-        void addAllowedChainId(currentFromChain);
-      }
-      void setCurrentChain(currentFromChain);
     }
   }, [addAllowedChainId, currentAllowedChains, currentChain.id, currentChain.line, currentFromChain, setCurrentChain, setCurrentEthereumNetwork]);
 

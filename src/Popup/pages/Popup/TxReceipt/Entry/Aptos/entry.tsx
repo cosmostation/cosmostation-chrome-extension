@@ -81,7 +81,7 @@ export default function Aptos() {
 
   const params = useParams();
 
-  const txHash = useMemo(() => params.id || '', [params.id]);
+  const txHash = useMemo(() => params.txhash || '', [params.txhash]);
 
   const txDetailExplorerURL = useMemo(
     () => (explorerURL ? `${explorerURL}/txn/${txHash}?network=${networkName.toLowerCase()}` : ''),
