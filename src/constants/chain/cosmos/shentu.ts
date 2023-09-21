@@ -3,7 +3,7 @@ import shentuImg from '~/images/symbols/shentu.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const SHENTU: CosmosChain = {
-  id: '29d61a8d-6bbe-4524-afa5-6f70931bcdee',
+  id: 'adb9dbc1-3f8d-459b-884d-7eff03111d94',
   line: 'COSMOS',
   type: '',
   chainId: 'shentu-2.2',
@@ -19,7 +19,7 @@ export const SHENTU: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  bech32Prefix: { address: 'certik' },
+  bech32Prefix: { address: 'shentu' },
   coinGeckoId: 'certik',
   explorerURL: `${MINTSCAN_URL}/shentu`,
   gasRate: {
