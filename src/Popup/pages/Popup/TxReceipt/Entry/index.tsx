@@ -19,20 +19,22 @@ export default function Entry() {
     [currentChain, params.chainId],
   );
 
+  const txHash = useMemo(() => params.txhash || '', [params.txhash]);
+
   if (chain.line === 'COSMOS') {
-    return <Cosmos chain={chain} />;
+    return <Cosmos chain={chain} txHash={txHash} />;
   }
 
   if (chain.line === 'ETHEREUM') {
-    return <Ethereum />;
+    return <Ethereum txHash={txHash} />;
   }
 
   if (chain.line === 'APTOS') {
-    return <Aptos />;
+    return <Aptos txHash={txHash} />;
   }
 
   if (chain.line === 'SUI') {
-    return <Sui />;
+    return <Sui txDigest={txHash} />;
   }
 
   return null;

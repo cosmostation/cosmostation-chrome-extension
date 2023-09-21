@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
@@ -56,7 +55,11 @@ import Copy16Icon from '~/images/icons/Copy16.svg';
 import Explorer16Icon from '~/images/icons/Explorer16.svg';
 import Warning50Icon from '~/images/icons/Warning50.svg';
 
-export default function Ethereum() {
+type EthereumProps = {
+  txHash: string;
+};
+
+export default function Ethereum({ txHash }: EthereumProps) {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
   const { navigate } = useNavigate();
@@ -66,10 +69,6 @@ export default function Ethereum() {
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { currency, language } = extensionStorage;
-
-  const params = useParams();
-
-  const txHash = useMemo(() => params.txhash || '', [params.txhash]);
 
   const txInfo = useTxInfoSWR(txHash);
 
