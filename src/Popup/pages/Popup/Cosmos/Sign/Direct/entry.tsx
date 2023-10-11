@@ -258,7 +258,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                         if (code === 0) {
                           if (txhash) {
-                            void deQueue(`/popup/tx-receipt/${txhash}` as unknown as Path);
+                            void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
                           } else {
                             void deQueue();
                           }

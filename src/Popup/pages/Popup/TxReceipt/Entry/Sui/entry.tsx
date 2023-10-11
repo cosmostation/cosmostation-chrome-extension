@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
@@ -55,7 +54,11 @@ import Copy16Icon from '~/images/icons/Copy16.svg';
 import Explorer16Icon from '~/images/icons/Explorer16.svg';
 import Warning50Icon from '~/images/icons/Warning50.svg';
 
-export default function Sui() {
+type SuiProps = {
+  txDigest: string;
+};
+
+export default function Sui({ txDigest }: SuiProps) {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
   const { navigate } = useNavigate();
@@ -68,13 +71,12 @@ export default function Sui() {
 
   const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 
-  const params = useParams();
-
-  const txDigest = useMemo(() => params.id || '', [params.id]);
-
   const txInfo = useTxInfoSWR({ digest: txDigest, network: currentSuiNetwork });
 
-  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/txblock/${txDigest}?network=${currentSuiNetwork.networkName.toLowerCase()}` : ''), [explorerURL, txDigest]);
+  const txDetailExplorerURL = useMemo(
+    () => (explorerURL ? `${explorerURL}/txblock/${txDigest}?network=${currentSuiNetwork.networkName.toLowerCase()}` : ''),
+    [currentSuiNetwork.networkName, explorerURL, txDigest],
+  );
 
   const formattedTimestamp = useMemo(() => {
     if (txInfo.data?.result?.timestampMs) {

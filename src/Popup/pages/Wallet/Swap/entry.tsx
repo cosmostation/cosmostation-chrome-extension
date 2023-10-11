@@ -392,7 +392,7 @@ export default function Entry() {
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
         ...filteredTokens.filter((item) => !gt(item.balance, '0')),
-      ].sort((a) => (currentFromChain?.displayDenom === a.displayDenom ? -1 : 1));
+      ].sort((a) => (currentFromChain?.displayDenom === a.displayDenom && a.origin_type === 'staking' ? -1 : 1));
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
@@ -512,7 +512,7 @@ export default function Entry() {
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
         ...filteredTokens.filter((item) => !gt(item.balance, '0')),
-      ].sort((a) => (currentToChain?.displayDenom === a.displayDenom ? -1 : 1));
+      ].sort((a) => (currentToChain?.displayDenom === a.displayDenom && a.origin_type === 'staking' ? -1 : 1));
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
