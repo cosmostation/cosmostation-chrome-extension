@@ -19,6 +19,7 @@ export const PASSAGE: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  coinGeckoId: 'passage',
   bech32Prefix: { address: 'pasg' },
   explorerURL: `${MINTSCAN_URL}/passage`,
   gasRate: {
