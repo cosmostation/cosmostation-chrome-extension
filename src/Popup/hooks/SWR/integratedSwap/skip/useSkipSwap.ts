@@ -17,6 +17,7 @@ import type { SkipSwapTxParam } from './SWR/useSkipSwapTxSWR';
 import { useSkipSwapTxSWR } from './SWR/useSkipSwapTxSWR';
 import { useAccounts } from '../../cache/useAccounts';
 import { useAccountSWR } from '../../cosmos/useAccountSWR';
+import { useBlockLatestSWR } from '../../cosmos/useBlockLatestSWR';
 import { useClientStateSWR } from '../../cosmos/useClientStateSWR';
 import { useNodeInfoSWR } from '../../cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '../../cosmos/useSimulateSWR';
@@ -64,6 +65,14 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
     () => COSMOS_CHAINS.find((item) => item.chainId === skipRoute.data?.swap_venue?.chain_id),
     [skipRoute.data?.swap_venue?.chain_id],
   );
+
+  const nextChain = useMemo(() => {
+    if (skipRoute.data?.chain_ids?.[1]) {
+      return COSMOS_CHAINS.find((item) => item.chainId === skipRoute.data?.chain_ids[1]);
+    }
+
+    return undefined;
+  }, [skipRoute.data?.chain_ids]);
 
   const currentAccountAddresses = useMemo(() => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address, [accounts?.data, currentAccount.id]);
 
@@ -148,17 +157,16 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
     port: skipSwapParsedTx.find((item) => item?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.msg.source_port || '',
   });
 
-  const latestHeight = useMemo(
-    () => clientState.data?.identified_client_state?.client_state?.latest_height,
-    [clientState.data?.identified_client_state?.client_state?.latest_height],
-  );
+  const toLatestBlock = useBlockLatestSWR(nextChain || toChain);
 
-  const revisionHeight = useMemo(
-    () => (latestHeight?.revision_height ? String(1000 + parseInt(latestHeight?.revision_height, 10)) : undefined),
-    [latestHeight?.revision_height],
-  );
+  const latestHeight = useMemo(() => toLatestBlock.data?.block?.header?.height, [toLatestBlock.data?.block?.header?.height]);
 
-  const revisionNumber = useMemo(() => latestHeight?.revision_number, [latestHeight?.revision_number]);
+  const revisionHeight = useMemo(() => (latestHeight ? String(100 + parseInt(latestHeight, 10)) : undefined), [latestHeight]);
+
+  const revisionNumber = useMemo(
+    () => clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number,
+    [clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number],
+  );
 
   const skipSwapAminoTxMsgs = useMemo(
     () =>

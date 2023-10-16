@@ -1009,6 +1009,9 @@ export default function Entry() {
       if (!skipSwapAminoTx) {
         return t('pages.Wallet.Swap.entry.invalidSwapTx');
       }
+      if (!skipSwapSimulatedGas) {
+        return t('pages.Wallet.Swap.entry.invalidSwapTx');
+      }
     }
 
     if (currentSwapAPI === '1inch') {
@@ -1057,6 +1060,7 @@ export default function Entry() {
     integratedSwapTx,
     estimatedToTokenDisplayAmountPrice,
     priceImpactPercent,
+    skipSwapSimulatedGas,
   ]);
 
   const swapInfoMessage = useMemo(() => {
