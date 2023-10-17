@@ -26,8 +26,8 @@ With Cosmostation, users can create personal crypto wallets, safely sign on-chai
 
 ## Guides
 
-- [User](https://docs.cosmostation.io/overview/extension/intro)
-- [Developer](https://docs.cosmostation.io/integration-extension/installation)
+- [User](https://docs.cosmostation.io/extension/guide/account/intro)
+- [Developer](https://docs.cosmostation.io/extension/integration/cosmos/typescript)
 
 ## Cosmostation's Services and Community
 
