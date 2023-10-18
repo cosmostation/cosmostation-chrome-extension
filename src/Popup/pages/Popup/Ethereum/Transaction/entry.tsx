@@ -612,11 +612,11 @@ export default function Entry({ queue }: EntryProps) {
                           origin,
                         });
 
+                        // FIXME approve tx전송 후 스왑 페이지가 아닌 receipt페이지로 이동하는 현상 발견
                         if (queue.channel === 'inApp') {
                           if (txType.data?.contractKind === 'erc20' && txType.data?.type === 'approve') {
                             await deQueue(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path);
-                          }
-                          if (result) {
+                          } else if (result) {
                             await deQueue(`/popup/tx-receipt/${result}` as unknown as Path);
                           } else {
                             await deQueue();

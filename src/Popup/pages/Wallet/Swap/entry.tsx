@@ -779,8 +779,8 @@ export default function Entry() {
       return skipRoute.data?.amount_out;
     }
 
-    if (currentSwapAPI === '1inch' && oneInchRoute.data?.toTokenAmount) {
-      return oneInchRoute.data.toTokenAmount;
+    if (currentSwapAPI === '1inch' && oneInchRoute.data?.toAmount) {
+      return oneInchRoute.data?.toAmount;
     }
 
     if (currentSwapAPI === 'squid' && squidRoute.data?.route.estimate.toAmount) {
@@ -788,7 +788,7 @@ export default function Entry() {
     }
 
     return '0';
-  }, [currentSwapAPI, oneInchRoute.data?.toTokenAmount, skipRoute.data?.amount_out, squidRoute.data?.route.estimate.toAmount]);
+  }, [currentSwapAPI, oneInchRoute.data?.toAmount, skipRoute.data?.amount_out, squidRoute.data?.route.estimate.toAmount]);
 
   const estimatedToTokenDisplayAmount = useMemo(
     () => toDisplayDenomAmount(estimatedToTokenBaseAmount, currentToToken?.decimals || 0),

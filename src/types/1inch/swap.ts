@@ -1,9 +1,9 @@
 export type OneInchSwapPayload = {
-  fromToken: Token;
-  toToken: Token;
-  toTokenAmount: string;
-  fromTokenAmount: string;
-  protocols: Array<Array<Protocol[]>>;
+  // fromToken: Token;
+  // toToken: Token;
+  toAmount: string;
+  // fromTokenAmount: string;
+  // protocols: Array<Array<Protocol[]>>;
   tx: Tx;
 };
 

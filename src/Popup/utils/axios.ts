@@ -1,11 +1,12 @@
-import type { AxiosError, AxiosRequestConfig } from 'axios';
+import type { AxiosError, AxiosRequestConfig, AxiosRequestHeaders } from 'axios';
 import axios from 'axios';
 
-export async function get<T>(path: string, config?: AxiosRequestConfig): Promise<T> {
+export async function get<T>(path: string, customHeaders?: AxiosRequestHeaders, config?: AxiosRequestConfig): Promise<T> {
   const { data } = await axios.get<T>(path, {
     ...config,
     headers: {
       Cosmostation: `extension/${String(process.env.VERSION)}`,
+      ...customHeaders,
       ...config?.headers,
     },
   });
