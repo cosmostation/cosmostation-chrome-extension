@@ -34,13 +34,8 @@ export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: 
     revalidateOnFocus: false,
     dedupingInterval: 11000,
     refreshInterval: 12000,
-    onErrorRetry: (_, __, ___, revalidate, { retryCount }) => {
-      if (retryCount >= 6) return;
-
-      setTimeout(() => {
-        void revalidate({ retryCount });
-      }, 3000);
-    },
+    errorRetryCount: 3,
+    errorRetryInterval: 2000,
     isPaused: () => currentChain.id !== ETHEREUM.id || !allowanceParam,
     ...config,
   });

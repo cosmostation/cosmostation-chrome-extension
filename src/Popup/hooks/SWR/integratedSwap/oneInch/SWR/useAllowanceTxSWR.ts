@@ -20,13 +20,8 @@ export function useAllowanceTxSWR(allowanceTxParam?: UseAllowanceTxSWRProps, con
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    onErrorRetry: (_, __, ___, revalidate, { retryCount }) => {
-      if (retryCount >= 6) return;
-
-      setTimeout(() => {
-        void revalidate({ retryCount });
-      }, 3000);
-    },
+    errorRetryCount: 3,
+    errorRetryInterval: 2000,
     isPaused: () => !allowanceTxParam,
     ...config,
   });

@@ -41,13 +41,8 @@ export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?:
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,
-    onErrorRetry: (_, __, ___, revalidate, { retryCount }) => {
-      if (retryCount >= 6) return;
-
-      setTimeout(() => {
-        void revalidate({ retryCount });
-      }, 3000);
-    },
+    errorRetryCount: 3,
+    errorRetryInterval: 2000,
     isPaused: () => !swapParam,
     ...config,
   });
