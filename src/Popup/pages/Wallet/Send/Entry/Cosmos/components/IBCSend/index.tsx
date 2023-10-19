@@ -251,7 +251,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
           isEqualsIgnoringCase(convertAssetNameToCosmos(asset.prevChain || '')?.id, chain.id) &&
           cosmosAssetNames.includes(asset.prevChain || ''),
       );
-      return assets.map((item) => ({ chain: convertAssetNameToCosmos(item.chain)!, channel: item.counter_party!.channel, port: item.counter_party!.port }));
+      return assets
+        .map((item) => ({ chain: convertAssetNameToCosmos(item.chain)!, channel: item.counter_party!.channel, port: item.counter_party!.port }))
+        .filter(
+          (receiverIBC, idx, arr) =>
+            arr.findIndex((item) => item.chain.id === receiverIBC.chain.id && item.channel === receiverIBC.channel && item.port === receiverIBC.port) === idx,
+        );
     }
 
     if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.coinType === 'ibc') {
@@ -268,12 +273,20 @@ export default function IBCSend({ chain }: IBCSendProps) {
       return [
         ...assets.map((item) => ({ chain: convertAssetNameToCosmos(item.prevChain || '')!, channel: item.channel!, port: item.port! })),
         ...counterPartyAssets.map((item) => ({ chain: convertAssetNameToCosmos(item.chain || '')!, channel: item.counter_party!.channel, port: item.port! })),
-      ];
+      ].filter(
+        (receiverIBC, idx, arr) =>
+          arr.findIndex((item) => item.chain.id === receiverIBC.chain.id && item.channel === receiverIBC.channel && item.port === receiverIBC.port) === idx,
+      );
     }
 
     if (currentCoinOrToken.type === 'token') {
       const assets = filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, currentCoinOrToken.address));
-      return assets.map((item) => ({ chain: convertAssetNameToCosmos(item.chain)!, channel: item.counter_party!.channel, port: item.counter_party!.port }));
+      return assets
+        .map((item) => ({ chain: convertAssetNameToCosmos(item.chain)!, channel: item.counter_party!.channel, port: item.counter_party!.port }))
+        .filter(
+          (receiverIBC, idx, arr) =>
+            arr.findIndex((item) => item.chain.id === receiverIBC.chain.id && item.channel === receiverIBC.channel && item.port === receiverIBC.port) === idx,
+        );
     }
 
     return [];
