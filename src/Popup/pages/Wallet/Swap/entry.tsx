@@ -1271,9 +1271,6 @@ export default function Entry() {
 
   useEffect(() => {
     if (currentFromToken) {
-      if (currentSwapAPI === '1inch') {
-        void oneInchAllowance.mutate();
-      }
       if (currentSwapAPI === 'squid') {
         void squidAllowance.mutate();
       }

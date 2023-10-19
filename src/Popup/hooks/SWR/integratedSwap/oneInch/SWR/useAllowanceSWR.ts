@@ -25,16 +25,22 @@ export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: 
     get<AllowancePayload>(
       fetchUrl,
       { Authorization: `Bearer ${String(process.env.ONEINCH_API_KEY)}` },
-      // {
-      //   headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache', Expires: '0' },
-      // },
+      {
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache', Expires: '0' },
+      },
     );
 
   const { data, error, mutate } = useSWR<AllowancePayload, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 11000,
     refreshInterval: 12000,
-    errorRetryCount: 0,
+    onErrorRetry: (_, __, ___, revalidate, { retryCount }) => {
+      if (retryCount >= 6) return;
+
+      setTimeout(() => {
+        void revalidate({ retryCount });
+      }, 3000);
+    },
     isPaused: () => currentChain.id !== ETHEREUM.id || !allowanceParam,
     ...config,
   });
