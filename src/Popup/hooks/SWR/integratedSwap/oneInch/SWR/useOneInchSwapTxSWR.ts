@@ -35,7 +35,7 @@ export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?:
     FEE_RATIO || ''
   }`;
 
-  const fetcher = (fetchUrl: string) => get<OneInchSwapPayload>(fetchUrl, { Authorization: `Bearer ${String(process.env.ONEINCH_API_KEY)}` });
+  const fetcher = (fetchUrl: string) => get<OneInchSwapPayload>(fetchUrl, { headers: { Authorization: `Bearer ${String(process.env.ONEINCH_API_KEY)}` } });
 
   const { data, isValidating, error, mutate } = useSWR<OneInchSwapPayload, AxiosError<OneInchSwapError>>(requestURL, fetcher, {
     revalidateOnFocus: false,

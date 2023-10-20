@@ -9,7 +9,7 @@ import type { Assets } from '~/types/1inch/swap';
 export function useOneInchTokensSWR(chainId?: string, config?: SWRConfiguration) {
   const requestURL = `${ONEINCH_SWAP_BASE_URL}/${chainId || ''}/tokens`;
 
-  const fetcher = (fetchUrl: string) => get<Assets>(fetchUrl, { Authorization: `Bearer ${String(process.env.ONEINCH_API_KEY)}` });
+  const fetcher = (fetchUrl: string) => get<Assets>(fetchUrl, { headers: { Authorization: `Bearer ${String(process.env.ONEINCH_API_KEY)}` } });
 
   const { data, error, mutate } = useSWR<Assets, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,

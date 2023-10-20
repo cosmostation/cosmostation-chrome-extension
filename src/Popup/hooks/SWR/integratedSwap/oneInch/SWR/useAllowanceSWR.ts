@@ -22,13 +22,9 @@ export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: 
   }&walletAddress=${allowanceParam?.walletAddress || ''}`;
 
   const fetcher = (fetchUrl: string) =>
-    get<AllowancePayload>(
-      fetchUrl,
-      { Authorization: `Bearer ${String(process.env.ONEINCH_API_KEY)}` },
-      {
-        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache', Expires: '0' },
-      },
-    );
+    get<AllowancePayload>(fetchUrl, {
+      headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache', Expires: '0', Authorization: `Bearer ${String(process.env.ONEINCH_API_KEY)}` },
+    });
 
   const { data, error, mutate } = useSWR<AllowancePayload, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
