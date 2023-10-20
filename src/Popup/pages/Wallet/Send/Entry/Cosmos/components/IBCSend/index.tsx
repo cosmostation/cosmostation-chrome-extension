@@ -17,6 +17,7 @@ import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useArchIDSWR } from '~/Popup/hooks/SWR/cosmos/useArchIDSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
+import { useBlockLatestSWR } from '~/Popup/hooks/SWR/cosmos/useBlockLatestSWR';
 import { useClientStateSWR } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
@@ -307,16 +308,15 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const clientState = useClientStateSWR({ chain, channelId: selectedReceiverIBC?.channel ?? '', port: selectedReceiverIBC?.port });
 
-  const latestHeight = useMemo(
-    () => clientState.data?.identified_client_state?.client_state?.latest_height,
-    [clientState.data?.identified_client_state?.client_state?.latest_height],
-  );
+  const receiverLatestBlock = useBlockLatestSWR(selectedReceiverIBC?.chain);
 
-  const revisionHeight = useMemo(
-    () => (latestHeight?.revision_height ? String(1000 + parseInt(latestHeight?.revision_height, 10)) : undefined),
-    [latestHeight?.revision_height],
+  const latestHeight = useMemo(() => receiverLatestBlock.data?.block?.header?.height, [receiverLatestBlock.data?.block?.header?.height]);
+
+  const revisionHeight = useMemo(() => (latestHeight ? String(100 + parseInt(latestHeight, 10)) : undefined), [latestHeight]);
+  const revisionNumber = useMemo(
+    () => clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number,
+    [clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number],
   );
-  const revisionNumber = useMemo(() => latestHeight?.revision_number, [latestHeight?.revision_number]);
 
   const { feeCoins } = useCurrentFeesSWR(chain);
 

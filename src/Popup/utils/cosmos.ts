@@ -70,6 +70,7 @@ export function cosmosURL(chain: CosmosChain) {
       `${restURL}/ibc/core/channel/${isV1BetaClientState ? 'v1beta1' : 'v1'}/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
     simulate: () => `${restURL}/cosmos/tx/v1beta1/simulate`,
     getTxInfo: (txHash: string) => `${restURL}/cosmos/tx/v1beta1/txs/${txHash}`,
+    getBlockLatest: () => `${restURL}/cosmos/base/tendermint/v1beta1/blocks/latest`,
   };
 }
 
