@@ -39,7 +39,7 @@ export function useOneInchSwap(oneInchSwapProps?: UseOneInchSwapProps) {
   );
 
   const allowanceTxData = useAllowanceTxSWR(
-    !gt(allowance.data?.allowance || '0', inputBaseAmount) && fromToken?.address && fromChain?.chainId
+    allowance.data && !gt(allowance.data.allowance, inputBaseAmount) && fromToken?.address && fromChain?.chainId
       ? {
           tokenAddress: fromToken.address,
           chainId: fromChain.chainId,

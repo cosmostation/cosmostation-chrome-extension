@@ -613,9 +613,6 @@ export default function Entry({ queue }: EntryProps) {
                         });
 
                         if (queue.channel === 'inApp') {
-                          if (txType.data?.contractKind === 'erc20' && txType.data?.type === 'approve') {
-                            await deQueue(`/wallet/swap/${currentEthereumNetwork.id}` as unknown as Path);
-                          }
                           if (result) {
                             await deQueue(`/popup/tx-receipt/${result}` as unknown as Path);
                           } else {
