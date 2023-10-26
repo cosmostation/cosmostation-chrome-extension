@@ -23,9 +23,9 @@ export const DYDX: CosmosChain = {
   coinGeckoId: 'dydx',
   explorerURL: `${MINTSCAN_URL}/dydx`,
   gasRate: {
-    tiny: '10',
-    low: '50',
-    average: '100',
+    tiny: '12500000000',
+    low: '12500000000',
+    average: '12500000000',
   },
   gas: { send: '100000' },
 };
