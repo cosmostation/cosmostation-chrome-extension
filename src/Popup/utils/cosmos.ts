@@ -43,7 +43,7 @@ import type { SignDirectDoc } from '~/types/cosmos/proto';
 import { toBase64 } from './string';
 
 export function cosmosURL(chain: CosmosChain) {
-  const { restURL, chainName } = chain;
+  const { restURL, id } = chain;
 
   const isV1BetaClientState = [IXO.id, STARNAME.id, EMONEY.id].includes(chain.id);
   // reward 중첩 typing!
@@ -54,7 +54,7 @@ export function cosmosURL(chain: CosmosChain) {
     getRewards: (address: string) => `${restURL}/cosmos/distribution/v1beta1/delegators/${address}/rewards`,
     getUndelegations: (address: string) => `${restURL}/cosmos/staking/v1beta1/delegators/${address}/unbonding_delegations`,
     getAccount: (address: string) => `${restURL}/cosmos/auth/v1beta1/accounts/${address}`,
-    getIncentive: (address: string) => (chainName === KAVA.chainName ? `${restURL}/kava/incentive/v1beta1/rewards?owner=${address}` : ''),
+    getIncentive: (address: string) => (id === KAVA.id ? `${restURL}/kava/incentive/v1beta1/rewards?owner=${address}` : ''),
     postBroadcast: () => `${restURL}/cosmos/tx/v1beta1/txs`,
     getCW20TokenInfo: (contractAddress: string) => `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"token_info":{}}')}`,
     getCW20Balance: (contractAddress: string, address: string) =>
@@ -70,7 +70,7 @@ export function cosmosURL(chain: CosmosChain) {
       `${restURL}/ibc/core/channel/${isV1BetaClientState ? 'v1beta1' : 'v1'}/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
     simulate: () => `${restURL}/cosmos/tx/v1beta1/simulate`,
     getTxInfo: (txHash: string) => `${restURL}/cosmos/tx/v1beta1/txs/${txHash}`,
-    getBlockLatest: () => `${restURL}/cosmos/base/tendermint/v1beta1/blocks/latest`,
+    getBlockLatest: () => (id === GRAVITY_BRIDGE.id ? `${restURL}/blocks/latest` : `${restURL}/cosmos/base/tendermint/v1beta1/blocks/latest`),
   };
 }
 
