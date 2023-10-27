@@ -26,6 +26,7 @@ import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SW
 import { useSupportTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useSupportTokensSWR';
 import { useOneInchSwap } from '~/Popup/hooks/SWR/integratedSwap/oneInch/useOneInchSwap';
 import { useSkipSupportChainsSWR } from '~/Popup/hooks/SWR/integratedSwap/skip/SWR/useSkipSupportChainsSWR';
+import { useSkipSupportTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/skip/SWR/useSkipSupportTokensSWR';
 import { useSkipSwap } from '~/Popup/hooks/SWR/integratedSwap/skip/useSkipSwap';
 import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/integratedSwap/squid/SWR/useSquidAssetsSWR';
 import { useSquidTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/squid/SWR/useSquidTokensSWR';
@@ -127,10 +128,8 @@ export default function Entry() {
   const [currentSwapAPI, setCurrentSwapAPI] = useState<IntegratedSwapAPI>();
 
   const filteredFromChains: IntegratedSwapChain[] = useMemo(() => {
-    const squidEVMChains = ETHEREUM_NETWORKS.filter(
-      (item) =>
-        supportedSwapChains.data?.squid.evm.send.find((sendChain) => sendChain.chainId === String(parseInt(item.chainId, 16))) &&
-        squidChains?.find((squidChain) => squidChain.chainType === 'evm' && String(parseInt(item.chainId, 16)) === squidChain.chainId),
+    const squidEVMChains = ETHEREUM_NETWORKS.filter((item) =>
+      squidChains?.find((squidChain) => squidChain.chainType === 'evm' && String(parseInt(item.chainId, 16)) === squidChain.chainId),
     ).map((item) => ({
       ...item,
       baseChainUUID: ETHEREUM.id,
@@ -147,15 +146,13 @@ export default function Entry() {
       line: ETHEREUM.line,
     }));
 
-    const squidCosmosChains = COSMOS_CHAINS.filter(
-      (item) =>
-        supportedSwapChains.data?.squid.cosmos.send.find((send) => send.chainId === item.chainId) &&
-        squidChains?.find(
-          (squidChain) =>
-            squidChain.chainType === 'cosmos' &&
-            item.chainId === squidChain.chainId &&
-            supportedCosmosChain.data?.chains.find((cosmosChain) => cosmosChain.chain_id === squidChain.chainId),
-        ),
+    const squidCosmosChains = COSMOS_CHAINS.filter((item) =>
+      squidChains?.find(
+        (squidChain) =>
+          squidChain.chainType === 'cosmos' &&
+          item.chainId === squidChain.chainId &&
+          supportedCosmosChain.data?.chains.find((cosmosChain) => cosmosChain.chain_id === squidChain.chainId),
+      ),
     ).map((item) => ({
       ...item,
       baseChainUUID: item.id,
@@ -177,14 +174,7 @@ export default function Entry() {
     );
 
     return [...integratedEVMChains, ...integratedCosmosChains];
-  }, [
-    skipSupportedChains.data?.chains,
-    squidChains,
-    supportedCosmosChain.data?.chains,
-    supportedSwapChains.data?.oneInch.evm.send,
-    supportedSwapChains.data?.squid.cosmos.send,
-    supportedSwapChains.data?.squid.evm.send,
-  ]);
+  }, [skipSupportedChains.data?.chains, squidChains, supportedCosmosChain.data?.chains, supportedSwapChains.data?.oneInch.evm.send]);
 
   const [currentFromChain, setCurrentFromChain] = useState<IntegratedSwapChain>(
     filteredFromChains.find((item) => item.id === params.id) ||
@@ -198,10 +188,8 @@ export default function Entry() {
   const [currentToChain, setCurrentToChain] = useState<IntegratedSwapChain>();
 
   const filteredToChainList: IntegratedSwapChain[] = useMemo(() => {
-    const squidEVMChains = ETHEREUM_NETWORKS.filter(
-      (item) =>
-        supportedSwapChains.data?.squid.evm.receive.find((receiveChain) => receiveChain.chainId === String(parseInt(item.chainId, 16))) &&
-        squidChains?.find((squidChain) => squidChain.chainType === 'evm' && String(parseInt(item.chainId, 16)) === squidChain.chainId),
+    const squidEVMChains = ETHEREUM_NETWORKS.filter((item) =>
+      squidChains?.find((squidChain) => squidChain.chainType === 'evm' && String(parseInt(item.chainId, 16)) === squidChain.chainId),
     ).map((item) => ({
       ...item,
       baseChainUUID: ETHEREUM.id,
@@ -224,15 +212,13 @@ export default function Entry() {
       networkName: item.chainName,
     }));
 
-    const squidCosmosChains = COSMOS_CHAINS.filter(
-      (item) =>
-        supportedSwapChains.data?.squid.cosmos.receive.find((receiveChain) => receiveChain.chainId === item.chainId) &&
-        squidChains?.find(
-          (squidChain) =>
-            squidChain.chainType === 'cosmos' &&
-            item.chainId === squidChain.chainId &&
-            supportedCosmosChain.data?.chains.find((cosmosChain) => cosmosChain.chain_id === squidChain.chainId),
-        ),
+    const squidCosmosChains = COSMOS_CHAINS.filter((item) =>
+      squidChains?.find(
+        (squidChain) =>
+          squidChain.chainType === 'cosmos' &&
+          item.chainId === squidChain.chainId &&
+          supportedCosmosChain.data?.chains.find((cosmosChain) => cosmosChain.chain_id === squidChain.chainId),
+      ),
     ).map((item) => ({
       ...item,
       baseChainUUID: item.id,
@@ -292,30 +278,50 @@ export default function Entry() {
       }
 
       if (currentFromChain.line === COSMOS.line) {
-        const availableChains = [...skipSwapChains];
+        if (squidCosmosChains.find((item) => item.id === currentFromChain.id) && skipSwapChains.find((item) => item.id === currentFromChain.id)) {
+          const availableChains = [...squidEVMChains, ...squidCosmosChains, ...skipSwapChains];
 
-        return [
-          ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
-          ...originChains
-            .filter((item) => !availableChains.find((chain) => chain.id === item.id))
-            .map((item) => ({
-              ...item,
-              isUnavailable: true,
-            })),
-        ];
+          return [
+            ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
+            ...originChains
+              .filter((item) => !availableChains.find((chain) => chain.id === item.id))
+              .map((item) => ({
+                ...item,
+                isUnavailable: true,
+              })),
+          ];
+        }
+        if (squidCosmosChains.find((item) => item.id === currentFromChain.id) && !skipSwapChains.find((item) => item.id === currentFromChain.id)) {
+          const availableChains = [...squidEVMChains, ...squidCosmosChains];
+
+          return [
+            ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
+            ...originChains
+              .filter((item) => !availableChains.find((chain) => chain.id === item.id))
+              .map((item) => ({
+                ...item,
+                isUnavailable: true,
+              })),
+          ];
+        }
+        if (!squidCosmosChains.find((item) => item.id === currentFromChain.id) && skipSwapChains.find((item) => item.id === currentFromChain.id)) {
+          const availableChains = [...skipSwapChains];
+
+          return [
+            ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
+            ...originChains
+              .filter((item) => !availableChains.find((chain) => chain.id === item.id))
+              .map((item) => ({
+                ...item,
+                isUnavailable: true,
+              })),
+          ];
+        }
       }
     }
 
     return [];
-  }, [
-    currentFromChain,
-    skipSupportedChains.data?.chains,
-    squidChains,
-    supportedCosmosChain.data?.chains,
-    supportedSwapChains.data?.oneInch.evm.receive,
-    supportedSwapChains.data?.squid.cosmos.receive,
-    supportedSwapChains.data?.squid.evm.receive,
-  ]);
+  }, [currentFromChain, skipSupportedChains.data?.chains, squidChains, supportedCosmosChain.data?.chains, supportedSwapChains.data?.oneInch.evm.receive]);
 
   const [currentFromToken, setCurrentFromToken] = useState<IntegratedSwapToken>();
   const [currentToToken, setCurrentToToken] = useState<IntegratedSwapToken>();
@@ -357,6 +363,10 @@ export default function Entry() {
 
   const supportedSquidTokens = useSquidTokensSWR();
 
+  const supportedSkipFromTokens = useSkipSupportTokensSWR(currentSwapAPI === 'skip' && currentFromChain.chainId ? currentFromChain.chainId : undefined);
+
+  const supportedSkipToTokens = useSkipSupportTokensSWR(currentSwapAPI === 'skip' && currentToChain?.chainId ? currentToChain.chainId : undefined);
+
   const selected30OneInchTokens = useSupportTokensSWR();
 
   const oneInchTokens = useOneInchTokensSWR(currentSwapAPI === '1inch' ? String(parseInt(currentEthereumNetwork.chainId, 16)) : undefined);
@@ -372,22 +382,28 @@ export default function Entry() {
   const filteredFromTokenList: IntegratedSwapToken[] = useMemo(() => {
     const currentFromEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentFromChain?.id);
 
-    if (currentSwapAPI === 'skip') {
-      const filteredTokens = cosmosFromTokenAssets.data.map((item) => {
-        const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
-        const balance = cosmosFromChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
-        const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
-        return {
-          ...item,
-          address: item.denom,
-          balance,
-          price,
-          imageURL: item.image,
-          name: getCapitalize(item.prevChain || item.origin_chain),
-          displayDenom: item.symbol,
-          symbol: undefined,
-        };
-      });
+    if (currentSwapAPI === 'skip' && supportedSkipFromTokens.data) {
+      const filteredTokens = cosmosFromTokenAssets.data
+        .filter((item) =>
+          supportedSkipFromTokens.data?.chain_to_assets_map[currentFromChain.chainId].assets.find((skipTokenAsset) =>
+            isEqualsIgnoringCase(skipTokenAsset.denom, item.denom),
+          ),
+        )
+        .map((item) => {
+          const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
+          const balance = cosmosFromChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
+          const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
+          return {
+            ...item,
+            address: item.denom,
+            balance,
+            price,
+            imageURL: item.image,
+            name: getCapitalize(item.prevChain || item.origin_chain),
+            displayDenom: item.symbol,
+            symbol: undefined,
+          };
+        });
 
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
@@ -454,9 +470,10 @@ export default function Entry() {
     currentSwapAPI,
     oneInchTokens.data,
     currentFromChain?.id,
+    currentFromChain.chainId,
     currentFromChain?.displayDenom,
-    currentFromChain?.chainId,
     cosmosFromTokenAssets.data,
+    supportedSkipFromTokens.data,
     coinGeckoPrice.data,
     extensionStorage.currency,
     cosmosFromChainBalance.data?.balance,
@@ -493,21 +510,27 @@ export default function Entry() {
     const currentToEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentToChain?.id);
 
     if (currentSwapAPI === 'skip') {
-      const filteredTokens = cosmosToTokenAssets.data.map((item) => {
-        const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
-        const balance = cosmosToChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
-        const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
-        return {
-          ...item,
-          address: item.denom,
-          balance,
-          price,
-          imageURL: item.image,
-          name: getCapitalize(item.prevChain || item.origin_chain),
-          displayDenom: item.symbol,
-          symbol: undefined,
-        };
-      });
+      const filteredTokens = cosmosToTokenAssets.data
+        .filter((item) =>
+          supportedSkipToTokens.data?.chain_to_assets_map[currentToChain?.chainId || ''].assets.find((skipTokenAsset) =>
+            isEqualsIgnoringCase(skipTokenAsset.denom, item.denom),
+          ),
+        )
+        .map((item) => {
+          const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
+          const balance = cosmosToChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
+          const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
+          return {
+            ...item,
+            address: item.denom,
+            balance,
+            price,
+            imageURL: item.image,
+            name: getCapitalize(item.prevChain || item.origin_chain),
+            displayDenom: item.symbol,
+            symbol: undefined,
+          };
+        });
 
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
@@ -603,9 +626,10 @@ export default function Entry() {
     oneInchTokens.data,
     currentToChain?.line,
     currentToChain?.id,
-    currentToChain?.displayDenom,
     currentToChain?.chainId,
+    currentToChain?.displayDenom,
     cosmosToTokenAssets.data,
+    supportedSkipToTokens.data?.chain_to_assets_map,
     coinGeckoPrice.data,
     extensionStorage.currency,
     cosmosToChainBalance.data?.balance,
@@ -1190,6 +1214,8 @@ export default function Entry() {
     }
   }, [filteredFromChains, filteredToChainList, currentSwapAPI, currentFromChain, currentToChain]);
 
+  // FIXME 스퀴드,스킵 겹치는 부분 고려해서 조건 수정필요
+  // NOTE 코스 -> 이더 케이스 추가 필요
   useEffect(() => {
     if (!currentFromChain || !currentToChain) {
       setCurrentSwapAPI(undefined);
