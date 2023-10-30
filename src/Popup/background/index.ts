@@ -1,8 +1,8 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { DYDX } from '~/constants/chain/cosmos/dydx';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { SCROLL_SEPOLIA_TESTNET } from '~/constants/chain/ethereum/network/scrollSepoliaTestnet';
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -94,9 +94,9 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.7.2') {
+        if (extensionManifest.version === '0.7.7') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), SCROLL_SEPOLIA_TESTNET.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), DYDX.id]);
           })();
         }
       }

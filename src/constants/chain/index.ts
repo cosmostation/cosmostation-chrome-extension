@@ -31,6 +31,7 @@ import { CRESCENT } from './cosmos/crescent';
 import { CRYPTO_ORG } from './cosmos/cryptoOrg';
 import { CUDOS } from './cosmos/cudos';
 import { DESMOS } from './cosmos/desmos';
+import { DYDX } from './cosmos/dydx';
 import { EMONEY } from './cosmos/emoney';
 import { EVMOS } from './cosmos/evmos';
 import { FETCH_AI } from './cosmos/fetchAi';
@@ -130,6 +131,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   CRYPTO_ORG,
   CUDOS,
   DESMOS,
+  DYDX,
   EMONEY,
   EVMOS,
   FETCH_AI,
