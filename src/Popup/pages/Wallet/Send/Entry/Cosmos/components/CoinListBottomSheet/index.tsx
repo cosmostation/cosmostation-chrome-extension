@@ -12,7 +12,7 @@ import type { CoinOrTokenInfo } from '../..';
 import Close24Icon from '~/images/icons/Close24.svg';
 
 type CoinListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  currentCoinOrTokenInfo: CoinOrTokenInfo;
+  currentCoinOrTokenInfo?: CoinOrTokenInfo;
   coinOrTokenInfos: CoinOrTokenInfo[];
   onClickCoinOrToken?: (coinOrTokenInfo: CoinOrTokenInfo) => void;
 };
@@ -90,9 +90,9 @@ export default function CoinListBottomSheet({ coinOrTokenInfos, currentCoinOrTok
           <div ref={topRef} />
           {filteredCoinOrTokenList?.map((item) => {
             const isActive =
-              currentCoinOrTokenInfo.type === 'coin' && item.type === 'coin'
+              currentCoinOrTokenInfo?.type === 'coin' && item.type === 'coin'
                 ? isEqualsIgnoringCase(item.baseDenom, currentCoinOrTokenInfo.baseDenom)
-                : currentCoinOrTokenInfo.type === 'token' && item.type === 'token'
+                : currentCoinOrTokenInfo?.type === 'token' && item.type === 'token'
                 ? isEqualsIgnoringCase(item.address, currentCoinOrTokenInfo.address)
                 : false;
             return (
