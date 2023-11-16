@@ -37,6 +37,7 @@ import { EMONEY } from './cosmos/emoney';
 import { EVMOS } from './cosmos/evmos';
 import { FETCH_AI } from './cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
+import { HUMANS_AI } from './cosmos/humansAi';
 import { INJECTIVE } from './cosmos/injective';
 import { IRIS } from './cosmos/iris';
 import { IXO } from './cosmos/ixo';
@@ -136,6 +137,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   DYDX,
   EMONEY,
   EVMOS,
+  HUMANS_AI,
   FETCH_AI,
   GRAVITY_BRIDGE,
   INJECTIVE,
