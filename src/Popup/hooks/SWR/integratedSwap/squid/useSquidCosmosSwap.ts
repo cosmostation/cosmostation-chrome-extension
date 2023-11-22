@@ -313,6 +313,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
     squidCosmosSourceChainFeeAmount,
     squidCosmosCrossChainFeeAmount,
     estimatedSquidCosmosFeePrice,
+    memoizedSquidSwapAminoTx,
     squidSwapSimulatedGas,
     squidSwapAminoTx,
   };
