@@ -207,98 +207,53 @@ export default function Entry() {
 
   const [currentToChain, setCurrentToChain] = useState<IntegratedSwapChain>();
 
-  const filteredToChainList: IntegratedSwapChain[] = useMemo(() => {
+  const availableToChains = useMemo(() => {
+    if (!squidEVMChains.find((item) => item.id === currentFromChain.id) && oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
+      return [currentFromChain];
+    }
+
+    if (squidEVMChains.find((item) => item.id === currentFromChain.id) && !oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
+      return [...squidEVMChains.filter((item) => item.id !== currentFromChain.id), ...squidCosmosChains];
+    }
+
+    if (squidEVMChains.find((item) => item.id === currentFromChain.id) && oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
+      return [...integratedEVMChains, ...squidCosmosChains];
+    }
+
+    if (currentFromChain.line === COSMOS.line) {
+      if (squidCosmosChains.find((item) => item.id === currentFromChain.id) && skipSwapChains.find((item) => item.id === currentFromChain.id)) {
+        return [...squidEVMChains, ...squidCosmosChains, ...skipSwapChains];
+      }
+
+      if (squidCosmosChains.find((item) => item.id === currentFromChain.id) && !skipSwapChains.find((item) => item.id === currentFromChain.id)) {
+        return [...squidEVMChains, ...squidCosmosChains];
+      }
+
+      if (!squidCosmosChains.find((item) => item.id === currentFromChain.id) && skipSwapChains.find((item) => item.id === currentFromChain.id)) {
+        return [...skipSwapChains];
+      }
+    }
+    return [];
+  }, [currentFromChain, integratedEVMChains, oneInchEVMChains, skipSwapChains, squidCosmosChains, squidEVMChains]);
+
+  const filteredToChains: IntegratedSwapChain[] = useMemo(() => {
     if (currentFromChain) {
       const originChains = [...integratedEVMChains, ...integratedCosmosChains];
-      if (!squidEVMChains.find((item) => item.id === currentFromChain.id) && oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
-        const availableChains = [currentFromChain];
 
-        return [
-          ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
-          ...originChains
-            .filter((item) => !availableChains.find((chain) => chain.id === item.id))
-            .map((item) => ({
+      return originChains.map((item) => {
+        const availableChain = availableToChains.find((chain) => chain.id === item.id);
+
+        return availableChain
+          ? item
+          : {
               ...item,
               isUnavailable: true,
-            })),
-        ];
-      }
-
-      if (squidEVMChains.find((item) => item.id === currentFromChain.id) && !oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
-        const availableChains = [...squidEVMChains.filter((item) => item.id !== currentFromChain.id), ...squidCosmosChains];
-
-        return [
-          ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
-          ...originChains
-            .filter((item) => !availableChains.find((chain) => chain.id === item.id))
-            .map((item) => ({
-              ...item,
-              isUnavailable: true,
-            })),
-        ];
-      }
-
-      if (squidEVMChains.find((item) => item.id === currentFromChain.id) && oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
-        const availableChains = [...integratedEVMChains, ...squidCosmosChains];
-
-        return [
-          ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
-          ...originChains
-            .filter((item) => !availableChains.find((chain) => chain.id === item.id))
-            .map((item) => ({
-              ...item,
-              isUnavailable: true,
-            })),
-        ];
-      }
-
-      if (currentFromChain.line === COSMOS.line) {
-        if (squidCosmosChains.find((item) => item.id === currentFromChain.id) && skipSwapChains.find((item) => item.id === currentFromChain.id)) {
-          const availableChains = [...squidEVMChains, ...squidCosmosChains, ...skipSwapChains];
-
-          return [
-            ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
-            ...originChains
-              .filter((item) => !availableChains.find((chain) => chain.id === item.id))
-              .map((item) => ({
-                ...item,
-                isUnavailable: true,
-              })),
-          ];
-        }
-
-        if (squidCosmosChains.find((item) => item.id === currentFromChain.id) && !skipSwapChains.find((item) => item.id === currentFromChain.id)) {
-          const availableChains = [...squidEVMChains, ...squidCosmosChains];
-
-          return [
-            ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
-            ...originChains
-              .filter((item) => !availableChains.find((chain) => chain.id === item.id))
-              .map((item) => ({
-                ...item,
-                isUnavailable: true,
-              })),
-          ];
-        }
-
-        if (!squidCosmosChains.find((item) => item.id === currentFromChain.id) && skipSwapChains.find((item) => item.id === currentFromChain.id)) {
-          const availableChains = [...skipSwapChains];
-
-          return [
-            ...originChains.filter((item) => availableChains.find((chain) => chain.id === item.id)),
-            ...originChains
-              .filter((item) => !availableChains.find((chain) => chain.id === item.id))
-              .map((item) => ({
-                ...item,
-                isUnavailable: true,
-              })),
-          ];
-        }
-      }
+            };
+      });
     }
 
     return [];
-  }, [currentFromChain, integratedCosmosChains, integratedEVMChains, oneInchEVMChains, skipSwapChains, squidCosmosChains, squidEVMChains]);
+  }, [availableToChains, currentFromChain, integratedCosmosChains, integratedEVMChains]);
 
   const [currentFromToken, setCurrentFromToken] = useState<IntegratedSwapToken>();
   const [currentToToken, setCurrentToToken] = useState<IntegratedSwapToken>();
@@ -1083,7 +1038,7 @@ export default function Entry() {
   }, 700);
 
   const errorMessage = useMemo(() => {
-    if (!filteredFromChains.length || !filteredToChainList.length || (currentSwapAPI && (!filteredFromTokenList.length || !filteredToTokenList.length))) {
+    if (!filteredFromChains.length || !filteredToChains.length || (currentSwapAPI && (!filteredFromTokenList.length || !filteredToTokenList.length))) {
       return t('pages.Wallet.Swap.entry.networkError');
     }
     if (!inputDisplayAmount || !gt(inputDisplayAmount, '0')) {
@@ -1157,7 +1112,7 @@ export default function Entry() {
     return '';
   }, [
     filteredFromChains.length,
-    filteredToChainList.length,
+    filteredToChains.length,
     currentSwapAPI,
     filteredFromTokenList.length,
     filteredToTokenList.length,
@@ -1310,17 +1265,17 @@ export default function Entry() {
 
   useEffect(() => {
     if (currentFromChain && !currentToChain) {
-      setCurrentToChain(filteredToChainList.find((item) => item.id === currentFromChain.id) || filteredToChainList[0]);
+      setCurrentToChain(filteredToChains.find((item) => item.id === currentFromChain.id) || filteredToChains[0]);
     }
 
-    if (currentToChain && filteredToChainList.filter((item) => item.isUnavailable).find((item) => item.id === currentToChain.id)) {
+    if (currentToChain && filteredToChains.filter((item) => item.isUnavailable).find((item) => item.id === currentToChain.id)) {
       if (currentFromChain.line === COSMOS.line) {
-        setCurrentToChain(filteredToChainList.find((item) => item.id === currentFromChain.id) || filteredToChainList[0]);
+        setCurrentToChain(filteredToChains.find((item) => item.id === currentFromChain.id) || filteredToChains[0]);
       } else {
-        setCurrentToChain(filteredToChainList[0]);
+        setCurrentToChain(filteredToChains[0]);
       }
     }
-  }, [filteredFromChains, filteredToChainList, currentSwapAPI, currentFromChain, currentToChain]);
+  }, [filteredFromChains, filteredToChains, currentSwapAPI, currentFromChain, currentToChain]);
 
   useEffect(() => {
     if (!currentFromChain || !currentToChain) {
@@ -1529,7 +1484,7 @@ export default function Entry() {
                   setCurrentToToken(clickedCoin);
                 }
               }}
-              availableChainList={filteredToChainList}
+              availableChainList={filteredToChains}
               availableTokenList={filteredToTokenList}
               address={currentToAddress}
               isTokenAvailable={!!currentFromChain && !!currentToChain}
