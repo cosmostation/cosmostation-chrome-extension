@@ -33,17 +33,17 @@ type UseSquidCosmosSwapProps = {
   slippage: string;
 };
 
-type CosmosSquidContractSwapProps = {
+type SquidContractSwapMsg = {
   msgTypeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract';
   msg: WasmPayload;
 };
 
-type CosmosSquidTransferSwapProps = {
+type SquidTransferSwapMsg = {
   msgTypeUrl: '/ibc.applications.transfer.v1.MsgTransfer';
   msg: TransferPayload;
 };
 
-type CosmosSquidSwapProps = CosmosSquidTransferSwapProps | CosmosSquidContractSwapProps;
+type SquidCosmosSwapMsg = SquidTransferSwapMsg | SquidContractSwapMsg;
 
 export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   const inputBaseAmount = useMemo(() => squidSwapProps?.inputBaseAmount || '0', [squidSwapProps?.inputBaseAmount]);
@@ -175,7 +175,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   const parsedSquidSwapTx = useMemo(
     () =>
       squidCosmosRoute.data?.route.transactionRequest.data
-        ? (JSON.parse(squidCosmosRoute.data.route.transactionRequest.data) as CosmosSquidSwapProps)
+        ? (JSON.parse(squidCosmosRoute.data.route.transactionRequest.data) as SquidCosmosSwapMsg)
         : undefined,
     [squidCosmosRoute.data?.route.transactionRequest.data],
   );
