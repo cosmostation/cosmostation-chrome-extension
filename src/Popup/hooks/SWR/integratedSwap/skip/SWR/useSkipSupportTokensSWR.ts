@@ -9,7 +9,7 @@ import type { SupportedSkipToken } from '~/types/swap/asset';
 export function useSkipSupportTokensSWR(chainId?: string, config?: SWRConfiguration) {
   const requestURL = `${SKIP_BASE_URL}/v1/fungible/assets?chain_id=${
     chainId || ''
-  }&native_only=false&include_no_metadata_assets=true&include_cw20_assets=true&include_evm_assets=true&client_id=cosmostation_wallet_extension`;
+  }&native_only=false&include_no_metadata_assets=true&include_cw20_assets=true&include_evm_assets=true&client_id=cosmostation_extension`;
 
   const fetcher = (fetchUrl: string) => get<SupportedSkipToken>(fetchUrl);
 
