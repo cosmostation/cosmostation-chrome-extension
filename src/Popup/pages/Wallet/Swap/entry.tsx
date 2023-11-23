@@ -222,7 +222,7 @@ export default function Entry() {
 
     if (currentFromChain.line === COSMOS.line) {
       if (squidCosmosChains.find((item) => item.id === currentFromChain.id) && skipSwapChains.find((item) => item.id === currentFromChain.id)) {
-        return [...squidEVMChains, ...squidCosmosChains, ...skipSwapChains];
+        return [...squidEVMChains, ...integratedCosmosChains];
       }
 
       if (squidCosmosChains.find((item) => item.id === currentFromChain.id) && !skipSwapChains.find((item) => item.id === currentFromChain.id)) {
@@ -234,7 +234,7 @@ export default function Entry() {
       }
     }
     return [];
-  }, [currentFromChain, integratedEVMChains, oneInchEVMChains, skipSwapChains, squidCosmosChains, squidEVMChains]);
+  }, [currentFromChain, integratedCosmosChains, integratedEVMChains, oneInchEVMChains, skipSwapChains, squidCosmosChains, squidEVMChains]);
 
   const filteredToChains: IntegratedSwapChain[] = useMemo(() => {
     if (currentFromChain) {
@@ -681,7 +681,14 @@ export default function Entry() {
     allowanceTxBaseFee: squidAllowanceTxBaseFee,
     allowanceBaseEstimatedGas: squidAllowanceBaseEstimatedGas,
   } = useSquidSwap(
-    currentSwapAPI === 'squid_evm' && currentFromChain && currentToChain && currentFromToken && currentToToken && supportedSquidTokens.data && currentToAddress
+    currentSwapAPI === 'squid_evm' &&
+      currentFromChain &&
+      gt(currentInputBaseAmount, '0') &&
+      currentToChain &&
+      currentFromToken &&
+      currentToToken &&
+      supportedSquidTokens.data &&
+      currentToAddress
       ? {
           inputBaseAmount: currentInputBaseAmount,
           fromChain: currentFromChain,
@@ -711,6 +718,7 @@ export default function Entry() {
     currentSwapAPI === 'squid_cosmos' &&
       currentFromChain &&
       currentToChain &&
+      gt(currentInputBaseAmount, '0') &&
       currentFromToken &&
       currentToToken &&
       currentToAddress &&
@@ -728,7 +736,7 @@ export default function Entry() {
       : undefined,
   );
 
-  const squidSwapProps = useMemo(() => {
+  const squidSwap = useMemo(() => {
     if (currentSwapAPI === 'squid_evm') {
       return {
         squidRoute: squidEthRoute,
@@ -781,7 +789,7 @@ export default function Entry() {
     allowanceTx: oneInchAllowanceTx,
     allowanceTxBaseFee: oneInchAllowanceTxBaseFee,
   } = useOneInchSwap(
-    currentSwapAPI === '1inch' && currentFromChain && currentFromToken && currentToToken && currentFromAddress
+    currentSwapAPI === '1inch' && currentFromChain && gt(currentInputBaseAmount, '0') && currentFromToken && currentToToken && currentFromAddress
       ? {
           inputBaseAmount: currentInputBaseAmount,
           fromChain: currentFromChain,
@@ -826,11 +834,11 @@ export default function Entry() {
   const isLoadingSwapData = useMemo(() => {
     if (currentSwapAPI === '1inch') return oneInchRoute.isValidating;
 
-    if (currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') return squidSwapProps.squidRoute?.isValidating;
+    if (currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') return squidSwap.squidRoute?.isValidating;
 
     if (currentSwapAPI === 'skip') return skipRoute.isValidating || skipSwapTx.isValidating;
     return false;
-  }, [currentSwapAPI, oneInchRoute.isValidating, skipRoute.isValidating, skipSwapTx.isValidating, squidSwapProps.squidRoute?.isValidating]);
+  }, [currentSwapAPI, oneInchRoute.isValidating, skipRoute.isValidating, skipSwapTx.isValidating, squidSwap.squidRoute?.isValidating]);
 
   const estimatedToTokenBaseAmount = useMemo(() => {
     if (currentSwapAPI === 'skip' && skipRoute.data?.amount_out) {
@@ -841,12 +849,12 @@ export default function Entry() {
       return oneInchRoute.data?.toAmount;
     }
 
-    if ((currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') && squidSwapProps.squidRoute?.data?.route.estimate.toAmount) {
-      return squidSwapProps.squidRoute.data.route.estimate.toAmount;
+    if ((currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') && squidSwap.squidRoute?.data?.route.estimate.toAmount) {
+      return squidSwap.squidRoute.data.route.estimate.toAmount;
     }
 
     return '0';
-  }, [currentSwapAPI, oneInchRoute.data?.toAmount, skipRoute.data?.amount_out, squidSwapProps.squidRoute?.data?.route.estimate.toAmount]);
+  }, [currentSwapAPI, oneInchRoute.data?.toAmount, skipRoute.data?.amount_out, squidSwap.squidRoute?.data?.route.estimate.toAmount]);
 
   const estimatedToTokenDisplayAmount = useMemo(
     () => toDisplayDenomAmount(estimatedToTokenBaseAmount, currentToToken?.decimals || 0),
@@ -872,19 +880,19 @@ export default function Entry() {
     if ((currentSwapAPI === 'skip' || currentSwapAPI === '1inch') && gt(inputDisplayAmount || '0', '0') && gt(estimatedToTokenDisplayAmount || '0', '0')) {
       return divide(estimatedToTokenDisplayAmount, inputDisplayAmount);
     }
-    if ((currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') && squidSwapProps.squidRoute?.data?.route.estimate.exchangeRate) {
-      return squidSwapProps.squidRoute.data.route.estimate.exchangeRate;
+    if ((currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') && squidSwap.squidRoute?.data?.route.estimate.exchangeRate) {
+      return squidSwap.squidRoute.data.route.estimate.exchangeRate;
     }
     return '0';
-  }, [currentSwapAPI, estimatedToTokenDisplayAmount, inputDisplayAmount, squidSwapProps.squidRoute?.data?.route.estimate.exchangeRate]);
+  }, [currentSwapAPI, estimatedToTokenDisplayAmount, inputDisplayAmount, squidSwap.squidRoute?.data?.route.estimate.exchangeRate]);
 
   const priceImpactPercent = useMemo(() => {
-    if ((currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') && squidSwapProps.squidRoute?.data) {
-      return squidSwapProps.squidRoute.data.route.estimate.aggregatePriceImpact;
+    if ((currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') && squidSwap.squidRoute?.data) {
+      return squidSwap.squidRoute.data.route.estimate.aggregatePriceImpact;
     }
 
     return '0';
-  }, [currentSwapAPI, squidSwapProps.squidRoute?.data]);
+  }, [currentSwapAPI, squidSwap.squidRoute?.data]);
 
   const integratedEVMSwapTx = useMemo(() => {
     if (gt(integratedAllowance?.allowance || '0', currentInputBaseAmount)) {
@@ -898,13 +906,13 @@ export default function Entry() {
         };
       }
 
-      if (currentSwapAPI === 'squid_evm' && squidSwapProps.squidRoute?.data && currentFromChain.line === ETHEREUM.line) {
+      if (currentSwapAPI === 'squid_evm' && squidSwap.squidRoute?.data && currentFromChain.line === ETHEREUM.line) {
         return {
           from: currentFromAddress,
-          to: squidSwapProps.squidRoute.data.route.transactionRequest.targetAddress,
-          data: squidSwapProps.squidRoute.data.route.transactionRequest.data,
-          value: toHex(squidSwapProps.squidRoute.data.route.transactionRequest.value, { addPrefix: true, isStringNumber: true }),
-          gas: toHex(squidSwapProps.squidRoute.data.route.transactionRequest.gasLimit, { addPrefix: true, isStringNumber: true }),
+          to: squidSwap.squidRoute.data.route.transactionRequest.targetAddress,
+          data: squidSwap.squidRoute.data.route.transactionRequest.data,
+          value: toHex(squidSwap.squidRoute.data.route.transactionRequest.value, { addPrefix: true, isStringNumber: true }),
+          gas: toHex(squidSwap.squidRoute.data.route.transactionRequest.gasLimit, { addPrefix: true, isStringNumber: true }),
         };
       }
     }
@@ -917,19 +925,19 @@ export default function Entry() {
     currentSwapAPI,
     integratedAllowance?.allowance,
     oneInchRoute.data,
-    squidSwapProps.squidRoute?.data,
+    squidSwap.squidRoute?.data,
   ]);
 
   const integratedCosmosSwapTx = useMemo(() => {
-    if (currentSwapAPI === 'squid_cosmos' && squidSwapProps.squidRoute?.data) {
-      return squidSwapProps.squidSwapAminoTx;
+    if (currentSwapAPI === 'squid_cosmos' && squidSwap.squidRoute?.data) {
+      return squidSwap.squidSwapAminoTx;
     }
 
     if (currentSwapAPI === 'skip') {
       return skipSwapAminoTx;
     }
     return undefined;
-  }, [currentSwapAPI, skipSwapAminoTx, squidSwapProps.squidRoute?.data, squidSwapProps.squidSwapAminoTx]);
+  }, [currentSwapAPI, skipSwapAminoTx, squidSwap.squidRoute?.data, squidSwap.squidSwapAminoTx]);
 
   const estimatedGas = useMemo(() => {
     if (currentSwapAPI === 'skip') {
@@ -944,12 +952,12 @@ export default function Entry() {
       return times(oneInchRoute.data.tx.gas, getDefaultAV(), 0);
     }
 
-    if (currentSwapAPI === 'squid_evm' && squidSwapProps.squidRoute?.data) {
-      return squidSwapProps.squidRoute.data.route.transactionRequest.gasLimit;
+    if (currentSwapAPI === 'squid_evm' && squidSwap.squidRoute?.data) {
+      return squidSwap.squidRoute.data.route.transactionRequest.gasLimit;
     }
 
     return '0';
-  }, [currentSwapAPI, oneInchRoute.data, skipSwapSimulatedGas, squidSwapProps.squidRoute?.data, squidSwapSimulatedGas]);
+  }, [currentSwapAPI, oneInchRoute.data, skipSwapSimulatedGas, squidSwap.squidRoute?.data, squidSwapSimulatedGas]);
 
   const cosmosGasRate = useGasRateSWR(selectedFromCosmosChain || COSMOS);
 
@@ -964,15 +972,15 @@ export default function Entry() {
 
     if (currentSwapAPI === 'squid_evm') {
       if (
-        squidSwapProps.squidSourceChainGasCosts?.every(
+        squidSwap.squidSourceChainGasCosts?.every(
           (item, idx) =>
-            isEqualsIgnoringCase(item.feeToken?.address, squidSwapProps.squidCrossChainFeeCosts?.[idx].feeToken?.address) &&
+            isEqualsIgnoringCase(item.feeToken?.address, squidSwap.squidCrossChainFeeCosts?.[idx].feeToken?.address) &&
             isEqualsIgnoringCase(item.feeToken?.address, EVM_NATIVE_TOKEN_ADDRESS),
         )
       ) {
-        return plus(squidSwapProps.squidSourceChainFeeAmount, squidSwapProps.squidCrossChainFeeAmount);
+        return plus(squidSwap.squidSourceChainFeeAmount, squidSwap.squidCrossChainFeeAmount);
       }
-      return squidSwapProps.squidSourceChainFeeAmount || '0';
+      return squidSwap.squidSourceChainFeeAmount || '0';
     }
 
     return '0';
@@ -982,10 +990,10 @@ export default function Entry() {
     estimatedGas,
     oneInchRoute.data,
     selectedFromCosmosChain,
-    squidSwapProps.squidCrossChainFeeAmount,
-    squidSwapProps.squidCrossChainFeeCosts,
-    squidSwapProps.squidSourceChainFeeAmount,
-    squidSwapProps.squidSourceChainGasCosts,
+    squidSwap.squidCrossChainFeeAmount,
+    squidSwap.squidCrossChainFeeCosts,
+    squidSwap.squidSourceChainFeeAmount,
+    squidSwap.squidSourceChainGasCosts,
   ]);
 
   const estimatedFeeDisplayAmount = useMemo(
@@ -999,11 +1007,11 @@ export default function Entry() {
     }
 
     if (currentSwapAPI === 'squid_evm') {
-      return squidSwapProps?.estimatedSquidFeePrice || '0';
+      return squidSwap?.estimatedSquidFeePrice || '0';
     }
 
     return '0';
-  }, [currentFeeTokenPrice, currentSwapAPI, estimatedFeeDisplayAmount, squidSwapProps?.estimatedSquidFeePrice]);
+  }, [currentFeeTokenPrice, currentSwapAPI, estimatedFeeDisplayAmount, squidSwap?.estimatedSquidFeePrice]);
 
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentFromTokenDisplayBalance, estimatedFeeDisplayAmount);
@@ -1168,8 +1176,8 @@ export default function Entry() {
         if (gt(priceImpactPercent, '3')) {
           return t('pages.Wallet.Swap.entry.liquidityWarning');
         }
-        if (squidSwapProps.squidRoute?.error) {
-          return squidSwapProps.squidRoute.error.errors?.map(({ message }) => message).join('\n');
+        if (squidSwap.squidRoute?.error) {
+          return squidSwap.squidRoute.error.errors?.map(({ message }) => message).join('\n');
         }
 
         if (!errorMessage && !isDisabled) {
@@ -1221,7 +1229,7 @@ export default function Entry() {
     oneInchRoute.error,
     estimatedToTokenDisplayAmountPrice,
     priceImpactPercent,
-    squidSwapProps.squidRoute?.error,
+    squidSwap.squidRoute?.error,
     errorMessage,
     isDisabled,
     skipRoute.data?.txs_required,
@@ -1618,7 +1626,7 @@ export default function Entry() {
                   <SwapInfoBodyRightContainer>
                     {isLoadingSwapData ? (
                       <Skeleton width="4rem" height="1.5rem" />
-                    ) : gt(estimatedFeePrice, '0') && debouncedInputDisplayAmount ? (
+                    ) : gt(estimatedFeeDisplayAmount, '0') && debouncedInputDisplayAmount ? (
                       <FeePriceButton type="button" onClick={() => setIsFeePriceCurrencyBase(!isFeePriceCurrencyBase)}>
                         <FeePriceButtonTextContainer>
                           {isFeePriceCurrencyBase ? (
@@ -1663,8 +1671,8 @@ export default function Entry() {
                           <StyledTooltipTitleContainer>
                             <Typography variant="h7">{t('pages.Wallet.Swap.entry.gasFeesInfo')}</Typography>
                             <StyledTooltipBodyContainer>
-                              <ChainFeeInfo title="Source Chain Gas" feeInfo={squidSwapProps.squidSourceChainGasCosts} isTildeAmount />
-                              <ChainFeeInfo title="Cross-Chain fees" feeInfo={squidSwapProps.squidCrossChainFeeCosts} />
+                              <ChainFeeInfo title="Source Chain Gas" feeInfo={squidSwap.squidSourceChainGasCosts} isTildeAmount />
+                              <ChainFeeInfo title="Cross-Chain fees" feeInfo={squidSwap.squidCrossChainFeeCosts} />
                             </StyledTooltipBodyContainer>
                           </StyledTooltipTitleContainer>
                         }
@@ -1699,9 +1707,9 @@ export default function Entry() {
                     <SwapInfoBodyRightContainer>
                       {isLoadingSwapData ? (
                         <Skeleton width="4rem" height="1.5rem" />
-                      ) : gt(squidSwapProps.squidProcessingTime || '0', '0') ? (
+                      ) : gt(squidSwap.squidProcessingTime || '0', '0') ? (
                         <SwapInfoBodyRightTextContainer>
-                          <Typography variant="h6n">{`~ ${String(parseFloat(fix(squidSwapProps.squidProcessingTime || '0', 2)))}`}</Typography>
+                          <Typography variant="h6n">{`~ ${String(parseFloat(fix(squidSwap.squidProcessingTime || '0', 2)))}`}</Typography>
                           &nbsp;
                           <Typography variant="h6n">{t('pages.Wallet.Swap.entry.minutes')}</Typography>
                         </SwapInfoBodyRightTextContainer>
