@@ -240,16 +240,21 @@ export default function Entry() {
     if (currentFromChain) {
       const originChains = [...integratedEVMChains, ...integratedCosmosChains];
 
-      return originChains.map((item) => {
-        const availableChain = availableToChains.find((chain) => chain.id === item.id);
+      return originChains
+        .map((item) => {
+          const availableChain = availableToChains.find((chain) => chain.id === item.id);
 
-        return availableChain
-          ? item
-          : {
-              ...item,
-              isUnavailable: true,
-            };
-      });
+          return availableChain
+            ? {
+                ...item,
+                isUnavailable: false,
+              }
+            : {
+                ...item,
+                isUnavailable: true,
+              };
+        })
+        .sort((a, b) => (a.isUnavailable === b.isUnavailable ? 0 : a.isUnavailable ? 1 : -1));
     }
 
     return [];
