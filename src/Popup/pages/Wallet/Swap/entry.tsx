@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { CHAINS, COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS, ETHEREUM_NETWORKS } from '~/constants/chain';
+import { CHAINS, COSMOS_CHAINS, COSMOS_DEFAULT_SQUID_CONTRACT_SWAP_GAS, COSMOS_DEFAULT_SWAP_GAS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM, EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
 import { CURRENCY_SYMBOL } from '~/constants/currency';
@@ -217,7 +217,7 @@ export default function Entry() {
     }
 
     if (squidEVMChains.find((item) => item.id === currentFromChain.id) && oneInchEVMChains.find((item) => item.id === currentFromChain.id)) {
-      return [...integratedEVMChains, ...squidCosmosChains];
+      return [...squidEVMChains, ...squidCosmosChains];
     }
 
     if (currentFromChain.line === COSMOS.line) {
@@ -234,7 +234,7 @@ export default function Entry() {
       }
     }
     return [];
-  }, [currentFromChain, integratedCosmosChains, integratedEVMChains, oneInchEVMChains, skipSwapChains, squidCosmosChains, squidEVMChains]);
+  }, [currentFromChain, integratedCosmosChains, oneInchEVMChains, skipSwapChains, squidCosmosChains, squidEVMChains]);
 
   const filteredToChains: IntegratedSwapChain[] = useMemo(() => {
     if (currentFromChain) {
@@ -950,7 +950,7 @@ export default function Entry() {
     }
 
     if (currentSwapAPI === 'squid_cosmos') {
-      return squidSwapSimulatedGas || COSMOS_DEFAULT_SWAP_GAS;
+      return squidSwapSimulatedGas || COSMOS_DEFAULT_SQUID_CONTRACT_SWAP_GAS;
     }
 
     if (currentSwapAPI === '1inch' && oneInchRoute.data) {
@@ -1311,10 +1311,8 @@ export default function Entry() {
         setCurrentSwapAPI('squid_cosmos');
       }
       if (
-        !squidCosmosChains.find((item) => item.id === currentToChain?.id) &&
-        skipSwapChains.find((item) => item.id === currentToChain?.id) &&
-        !squidCosmosChains.find((item) => item.id === currentFromChain?.id) &&
-        skipSwapChains.find((item) => item.id === currentFromChain?.id)
+        (!squidCosmosChains.find((item) => item.id === currentToChain?.id) && skipSwapChains.find((item) => item.id === currentToChain?.id)) ||
+        (!squidCosmosChains.find((item) => item.id === currentFromChain?.id) && skipSwapChains.find((item) => item.id === currentFromChain?.id))
       ) {
         setCurrentSwapAPI('skip');
       }

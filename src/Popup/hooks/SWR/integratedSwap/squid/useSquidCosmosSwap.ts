@@ -258,7 +258,12 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
               value: {
                 sender: senderAddress,
                 contract: parsedSquidSwapTx.msg.wasm.contract,
-                funds: [],
+                funds: [
+                  {
+                    amount: squidCosmosRoute.data?.route.estimate.fromAmount,
+                    denom: fromToken?.address,
+                  },
+                ],
                 msg: parsedSquidSwapTx.msg.wasm.msg,
               },
             },
@@ -273,6 +278,8 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
     account.data?.value.sequence,
     fromChain,
     inputBaseAmount,
+    fromToken?.address,
+    squidCosmosRoute.data?.route.estimate.fromAmount,
     nodeInfo.data?.default_node_info?.network,
     parsedSquidSwapTx,
     revisionHeight,
