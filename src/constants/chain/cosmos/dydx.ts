@@ -20,7 +20,6 @@ export const DYDX: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'dydx' },
-  coinGeckoId: 'dydx',
   explorerURL: `${MINTSCAN_URL}/dydx`,
   gasRate: {
     tiny: '12500000000',

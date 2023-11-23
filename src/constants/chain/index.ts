@@ -22,6 +22,7 @@ import { BAND } from './cosmos/band';
 import { BITCANNA } from './cosmos/bitcanna';
 import { BITSONG } from './cosmos/bitsong';
 import { CANTO } from './cosmos/canto';
+import { CELESTIA } from './cosmos/celestia';
 import { CERBERUS } from './cosmos/cerberus';
 import { CHIHUAHUA } from './cosmos/chihuahua';
 import { COMDEX } from './cosmos/comdex';
@@ -124,6 +125,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   BITSONG,
   CANTO,
   CERBERUS,
+  CELESTIA,
   CHIHUAHUA,
   COMDEX,
   COREUM,
