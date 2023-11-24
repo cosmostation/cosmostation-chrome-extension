@@ -1166,10 +1166,10 @@
   resolved "https://registry.yarnpkg.com/@cosmjs/utils/-/utils-0.24.1.tgz#0adfefe63b7f17222bc2bc12f71296f35e7ad378"
   integrity sha512-VA3WFx1lMFb7esp9BqHWkDgMvHoA3D9w+uDRvWhVRpUpDc7RYHxMbWExASjz+gNblTCg556WJGzF64tXnf9tdQ==
 
-"@cosmostation/wallets@^1.0.6-alpha.14":
-  version "1.0.6-alpha.14"
-  resolved "https://registry.yarnpkg.com/@cosmostation/wallets/-/wallets-1.0.6-alpha.14.tgz#7357391ffab4d88946a81854d2350e828a415899"
-  integrity sha512-PtIrAiJq6uWjrmQHiLQA/oICI5mN3K4e6W2FVs/0x4jC1WBgLEUeb0wObLpcmJ9IkuYXmIfk2H38SnE1ESn1Cg==
+"@cosmostation/wallets@^2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@cosmostation/wallets/-/wallets-2.0.5.tgz#dba4319a05f1abf109ef1e9630e5c804e1a9abff"
+  integrity sha512-Z0KbGhB3E1/vBlye1XUmz79YHywthNnm7Syb1TnGWbtZKl86CXtJHggz/dqCQ6i3gxmo4fr8UEckJ/Wkak8yAw==
 
 "@discoveryjs/json-ext@^0.5.0":
   version "0.5.6"

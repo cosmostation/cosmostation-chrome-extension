@@ -5,7 +5,7 @@ import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS } from '~/constants/chain';
 import { AFFILIATES, DEFAULT_BPF } from '~/constants/skip';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { gt, times } from '~/Popup/utils/big';
-import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { convertDirectMsgTypeToAminoMsgType, protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgExecuteContract, MsgTransfer } from '~/types/cosmos/amino';
@@ -17,6 +17,8 @@ import type { SkipSwapTxParam } from './SWR/useSkipSwapTxSWR';
 import { useSkipSwapTxSWR } from './SWR/useSkipSwapTxSWR';
 import { useAccounts } from '../../cache/useAccounts';
 import { useAccountSWR } from '../../cosmos/useAccountSWR';
+import { useAssetsSWR } from '../../cosmos/useAssetsSWR';
+import { useBlockLatestSWR } from '../../cosmos/useBlockLatestSWR';
 import { useClientStateSWR } from '../../cosmos/useClientStateSWR';
 import { useNodeInfoSWR } from '../../cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '../../cosmos/useSimulateSWR';
@@ -140,25 +142,40 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
     [skipSwapTx.data?.msgs],
   );
 
+  const chainInfo = useMemo(() => {
+    const info = skipSwapParsedTx.find((msg) => msg?.msg_type_url === 'cosmos-sdk/MsgTransfer');
+
+    const chain = COSMOS_CHAINS.find((item) => item.chainId === info?.chain_id);
+    const channelId = info?.msg.source_channel;
+    const port = info?.msg.source_port;
+
+    return { chain, channelId, port };
+  }, [skipSwapParsedTx]);
+
   const clientState = useClientStateSWR({
-    chain:
-      COSMOS_CHAINS.find((item) => item.chainId === skipSwapParsedTx.find((msg) => msg?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.chain_id) ||
-      COSMOS_CHAINS[0],
-    channelId: skipSwapParsedTx.find((item) => item?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.msg.source_channel || '',
-    port: skipSwapParsedTx.find((item) => item?.msg_type_url === 'cosmos-sdk/MsgTransfer')?.msg.source_port || '',
+    chain: chainInfo.chain || COSMOS_CHAINS[0],
+    channelId: chainInfo.channelId || '',
+    port: chainInfo.port || '',
   });
 
-  const latestHeight = useMemo(
-    () => clientState.data?.identified_client_state?.client_state?.latest_height,
-    [clientState.data?.identified_client_state?.client_state?.latest_height],
-  );
+  const assets = useAssetsSWR(chainInfo.chain || COSMOS_CHAINS[0]);
 
-  const revisionHeight = useMemo(
-    () => (latestHeight?.revision_height ? String(1000 + parseInt(latestHeight?.revision_height, 10)) : undefined),
-    [latestHeight?.revision_height],
-  );
+  const channelChain = useMemo(() => {
+    const asset = assets.data?.find((item) => item.channel === chainInfo.channelId && item.port === chainInfo.port);
 
-  const revisionNumber = useMemo(() => latestHeight?.revision_number, [latestHeight?.revision_number]);
+    return convertAssetNameToCosmos(asset?.origin_chain || '');
+  }, [assets.data, chainInfo.channelId, chainInfo.port]);
+
+  const channelChainLatestBlock = useBlockLatestSWR(channelChain);
+
+  const latestHeight = useMemo(() => channelChainLatestBlock.data?.block?.header?.height, [channelChainLatestBlock.data?.block?.header?.height]);
+
+  const revisionHeight = useMemo(() => (latestHeight ? String(100 + parseInt(latestHeight, 10)) : undefined), [latestHeight]);
+
+  const revisionNumber = useMemo(
+    () => clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number,
+    [clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number],
+  );
 
   const skipSwapAminoTxMsgs = useMemo(
     () =>

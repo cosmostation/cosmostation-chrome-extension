@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { CHAINS } from '~/constants/chain';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { Chain } from '~/types/chain';
@@ -10,15 +12,18 @@ export function useCurrentChain() {
   const { currentAllowedChains } = useCurrentAllowedChains();
 
   const { additionalChains, selectedChainId } = extensionStorage;
-  const additionalChainIds = additionalChains.map((item) => item.id);
+  const additionalChainIds = useMemo(() => additionalChains.map((item) => item.id), [additionalChains]);
 
-  const allowedChainIds = currentAllowedChains.map((item) => item.id);
+  const allowedChainIds = useMemo(() => currentAllowedChains.map((item) => item.id), [currentAllowedChains]);
 
-  const allChains = [...CHAINS, ...additionalChains];
+  const allChains = useMemo(() => [...CHAINS, ...additionalChains], [additionalChains]);
 
-  const currentAccountSelectedChainId = [...allowedChainIds, ...additionalChainIds].includes(selectedChainId) ? selectedChainId : allowedChainIds[0];
+  const currentAccountSelectedChainId = useMemo(
+    () => ([...allowedChainIds, ...additionalChainIds].includes(selectedChainId) ? selectedChainId : allowedChainIds[0]),
+    [additionalChainIds, allowedChainIds, selectedChainId],
+  );
 
-  const currentChain = allChains.find((chain) => chain.id === currentAccountSelectedChainId)!;
+  const currentChain = useMemo(() => allChains.find((chain) => chain.id === currentAccountSelectedChainId)!, [allChains, currentAccountSelectedChainId]);
 
   const setCurrentChain = async (chain: Chain) => {
     if (![...allowedChainIds, ...additionalChainIds].includes(chain.id)) {

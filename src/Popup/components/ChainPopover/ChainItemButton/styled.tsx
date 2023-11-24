@@ -77,6 +77,16 @@ export const ContentLeftAbsoluteImageContainer = styled('div')({
 
 export const ContentLeftTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+
+  maxWidth: '10rem',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const ContentRightContainer = styled('div')({

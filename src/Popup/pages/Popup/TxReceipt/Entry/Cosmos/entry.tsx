@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
@@ -56,9 +55,10 @@ import Warning50Icon from '~/images/icons/Warning50.svg';
 
 type CosmosProps = {
   chain: CosmosChain;
+  txHash: string;
 };
 
-export default function Cosmos({ chain }: CosmosProps) {
+export default function Cosmos({ chain, txHash }: CosmosProps) {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
   const { navigate } = useNavigate();
@@ -66,10 +66,6 @@ export default function Cosmos({ chain }: CosmosProps) {
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { currency, language } = extensionStorage;
-
-  const params = useParams();
-
-  const txHash = useMemo(() => params.id || '', [params.id]);
 
   const txInfo = useTxInfoSWR(chain, txHash);
 

@@ -1,4 +1,4 @@
-export const ONEINCH_BASE_URL = 'https://api-cosmostation.1inch.io/v5.0';
+export const ONEINCH_SWAP_BASE_URL = 'https://api.1inch.dev/swap/v5.2';
 
 export const REFERRER_ADDRESS = undefined;
 

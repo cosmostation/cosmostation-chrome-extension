@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { CHAINS } from '~/constants/chain';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import type { Chain } from '~/types/chain';
@@ -7,9 +9,11 @@ export function useCurrentAllowedChains() {
 
   const { allowedChainIds } = extensionStorage;
 
-  const allChains = [...CHAINS];
+  const currentAllowedChains = useMemo(() => {
+    const allChains = [...CHAINS];
 
-  const currentAllowedChains = allChains.filter((chain) => allowedChainIds.includes(chain.id));
+    return allChains.filter((chain) => allowedChainIds.includes(chain.id));
+  }, [allowedChainIds]);
 
   const addAllowedChainId = async (chain: Chain) => {
     if (allowedChainIds.find((allowedChainId) => allowedChainId === chain.id)) {

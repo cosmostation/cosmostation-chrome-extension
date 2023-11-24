@@ -270,7 +270,12 @@ export default function Entry({ queue, chain }: EntryProps) {
                         const { code, txhash } = response.tx_response;
 
                         if (code === 0) {
-                          txHash = txhash;
+                          if (txhash) {
+                            void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
+                            void setCurrentActivity(txhash, txType);
+                          } else {
+                            void deQueue();
+                          }
                         } else {
                           throw new Error(response.tx_response.raw_log as string);
                         }
@@ -282,13 +287,8 @@ export default function Entry({ queue, chain }: EntryProps) {
                             autoHideDuration: 3000,
                           },
                         );
-                      } finally {
-                        if (txHash) {
-                          void deQueue(`/popup/tx-receipt/${txHash}` as unknown as Path);
-                          void setCurrentActivity(txHash, txType);
-                        } else {
-                          void deQueue();
-                        }
+
+                        void deQueue();
                       }
                     } else {
                       const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');

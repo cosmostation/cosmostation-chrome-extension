@@ -25,7 +25,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { ethereumAddressRegex } from '~/Popup/utils/regex';
+import { ethereumAddressRegex, isNaturalNumberRegex } from '~/Popup/utils/regex';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumChain } from '~/types/chain';
 import type { EthereumNFT } from '~/types/ethereum/nft';
@@ -145,7 +145,7 @@ export default function Ethereum({ chain }: EthereumProps) {
         data,
       };
     }
-    if (currentNFT.tokenType === 'ERC1155' && nftSourceURI) {
+    if (currentNFT.tokenType === 'ERC1155' && nftSourceURI && currentSendQuantity) {
       const erc1155Contract = new ethers.Contract(currentNFT.address, ERC1155_ABI, provider);
 
       const data = ethereumAddressRegex.test(recipientAddress)
@@ -213,11 +213,7 @@ export default function Ethereum({ chain }: EthereumProps) {
         return t('pages.Wallet.NFTSend.Entry.Ethereum.index.networkError');
       }
 
-      if (!currentSendQuantity) {
-        return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidSendNFTQuantity');
-      }
-
-      if (gt(currentSendQuantity, currentNFTBalance)) {
+      if (!currentSendQuantity || gt(currentSendQuantity, currentNFTBalance) || !isNaturalNumberRegex.test(currentSendQuantity)) {
         return t('pages.Wallet.NFTSend.Entry.Ethereum.index.invalidSendNFTQuantity');
       }
     }
@@ -289,7 +285,7 @@ export default function Ethereum({ chain }: EthereumProps) {
                 </InputAdornment>
               }
               onChange={(e) => {
-                if (gt(e.currentTarget.value || '0', currentNFTBalance || '0') && e.currentTarget.value) {
+                if (e.currentTarget.value && !isNaturalNumberRegex.test(e.currentTarget.value)) {
                   return;
                 }
                 setCurrentSendQuantity(e.currentTarget.value);

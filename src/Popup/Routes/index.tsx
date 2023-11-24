@@ -171,7 +171,8 @@ export default function Routes() {
           <Route path={PATH.POPUP__SUI__TRANSACTION} element={<PopupSuiTransaction />} />
 
           <Route path={PATH.POPUP__TX_RECEIPT} element={<PopupTxReceipt />}>
-            <Route path=":id" element={<PopupTxReceipt />} />
+            <Route path=":txhash" element={<PopupTxReceipt />} />
+            <Route path=":txhash/:chainId" element={<PopupTxReceipt />} />
           </Route>
         </>
       )}

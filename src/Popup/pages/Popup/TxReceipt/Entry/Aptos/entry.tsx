@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
@@ -59,7 +58,11 @@ import Copy16Icon from '~/images/icons/Copy16.svg';
 import Explorer16Icon from '~/images/icons/Explorer16.svg';
 import Warning50Icon from '~/images/icons/Warning50.svg';
 
-export default function Aptos() {
+type AptosProps = {
+  txHash: string;
+};
+
+export default function Aptos({ txHash }: AptosProps) {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
   const { navigate } = useNavigate();
@@ -78,10 +81,6 @@ export default function Aptos() {
   const { currency, language } = extensionStorage;
 
   const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
-
-  const params = useParams();
-
-  const txHash = useMemo(() => params.id || '', [params.id]);
 
   const txDetailExplorerURL = useMemo(
     () => (explorerURL ? `${explorerURL}/txn/${txHash}?network=${networkName.toLowerCase()}` : ''),

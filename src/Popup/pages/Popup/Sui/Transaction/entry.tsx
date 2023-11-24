@@ -319,6 +319,13 @@ export default function Entry({ queue }: EntryProps) {
                         messageId,
                         origin,
                       });
+
+                      if (queue.channel === 'inApp' && response.digest) {
+                        await deQueue(`/popup/tx-receipt/${response.digest}` as unknown as Path);
+                        void setCurrentActivity(digest);
+                      } else {
+                        await deQueue();
+                      }
                     }
 
                     if (currentAccount.type === 'LEDGER') {
@@ -367,12 +374,7 @@ export default function Entry({ queue }: EntryProps) {
                         messageId,
                         origin,
                       });
-                    }
 
-                    if (queue.channel === 'inApp' && digest) {
-                      await deQueue(`/popup/tx-receipt/${digest}` as unknown as Path);
-                      void setCurrentActivity(digest);
-                    } else {
                       await deQueue();
                     }
                   } catch (e) {

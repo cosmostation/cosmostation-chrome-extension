@@ -1,4 +1,4 @@
-import { registCosmosWallet } from '@cosmostation/wallets';
+import { registerCosmosWallet } from '@cosmostation/wallets';
 import { registerWallet } from '@wallet-standard/core';
 
 import type { ListenerMessage } from '~/types/message';
@@ -26,7 +26,7 @@ void (() => {
   window.cosmostationWallet = sui;
 
   registerWallet(new SuiStandard());
-  registCosmosWallet(cosmosWallet);
+  registerCosmosWallet(cosmosWallet);
 
   void (async () => {
     const currentChainId = (await window.cosmostation.ethereum.request({ method: 'eth_chainId', params: [] })) as string;

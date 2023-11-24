@@ -392,7 +392,7 @@ export default function Entry() {
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
         ...filteredTokens.filter((item) => !gt(item.balance, '0')),
-      ].sort((a) => (currentFromChain?.displayDenom === a.displayDenom ? -1 : 1));
+      ].sort((a) => (currentFromChain?.displayDenom === a.displayDenom && a.origin_type === 'staking' ? -1 : 1));
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
@@ -512,7 +512,7 @@ export default function Entry() {
       return [
         ...filteredTokens.filter((item) => gt(item.balance, '0')).sort((a, b) => (gt(a.price, b.price) ? -1 : 1)),
         ...filteredTokens.filter((item) => !gt(item.balance, '0')),
-      ].sort((a) => (currentToChain?.displayDenom === a.displayDenom ? -1 : 1));
+      ].sort((a) => (currentToChain?.displayDenom === a.displayDenom && a.origin_type === 'staking' ? -1 : 1));
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
@@ -779,8 +779,8 @@ export default function Entry() {
       return skipRoute.data?.amount_out;
     }
 
-    if (currentSwapAPI === '1inch' && oneInchRoute.data?.toTokenAmount) {
-      return oneInchRoute.data.toTokenAmount;
+    if (currentSwapAPI === '1inch' && oneInchRoute.data?.toAmount) {
+      return oneInchRoute.data?.toAmount;
     }
 
     if (currentSwapAPI === 'squid' && squidRoute.data?.route.estimate.toAmount) {
@@ -788,7 +788,7 @@ export default function Entry() {
     }
 
     return '0';
-  }, [currentSwapAPI, oneInchRoute.data?.toTokenAmount, skipRoute.data?.amount_out, squidRoute.data?.route.estimate.toAmount]);
+  }, [currentSwapAPI, oneInchRoute.data?.toAmount, skipRoute.data?.amount_out, squidRoute.data?.route.estimate.toAmount]);
 
   const estimatedToTokenDisplayAmount = useMemo(
     () => toDisplayDenomAmount(estimatedToTokenBaseAmount, currentToToken?.decimals || 0),
@@ -1271,9 +1271,6 @@ export default function Entry() {
 
   useEffect(() => {
     if (currentFromToken) {
-      if (currentSwapAPI === '1inch') {
-        void oneInchAllowance.mutate();
-      }
       if (currentSwapAPI === 'squid') {
         void squidAllowance.mutate();
       }

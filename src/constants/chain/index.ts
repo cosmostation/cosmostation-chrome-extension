@@ -22,6 +22,7 @@ import { BAND } from './cosmos/band';
 import { BITCANNA } from './cosmos/bitcanna';
 import { BITSONG } from './cosmos/bitsong';
 import { CANTO } from './cosmos/canto';
+import { CELESTIA } from './cosmos/celestia';
 import { CERBERUS } from './cosmos/cerberus';
 import { CHIHUAHUA } from './cosmos/chihuahua';
 import { COMDEX } from './cosmos/comdex';
@@ -31,6 +32,7 @@ import { CRESCENT } from './cosmos/crescent';
 import { CRYPTO_ORG } from './cosmos/cryptoOrg';
 import { CUDOS } from './cosmos/cudos';
 import { DESMOS } from './cosmos/desmos';
+import { DYDX } from './cosmos/dydx';
 import { EMONEY } from './cosmos/emoney';
 import { EVMOS } from './cosmos/evmos';
 import { FETCH_AI } from './cosmos/fetchAi';
@@ -86,6 +88,7 @@ import { KAVA as ETHEREUM_NETWORK__KAVA } from './ethereum/network/kava';
 import { OKC as ETHEREUM_NETWORK__OKC } from './ethereum/network/okc';
 import { OPTIMISM as ETHEREUM_NETWORK__OPTIMISM } from './ethereum/network/optimism';
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
+import { SCROLL_SEPOLIA_TESTNET as ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET } from './ethereum/network/scrollSepoliaTestnet';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
 import { DEVNET as SUI_NETWORK__DEVNET } from './sui/network/devnet';
 import { MAINNET as SUI_NETWORK__MAINNET } from './sui/network/mainnet';
@@ -122,6 +125,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   BITSONG,
   CANTO,
   CERBERUS,
+  CELESTIA,
   CHIHUAHUA,
   COMDEX,
   COREUM,
@@ -129,6 +133,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   CRYPTO_ORG,
   CUDOS,
   DESMOS,
+  DYDX,
   EMONEY,
   EVMOS,
   FETCH_AI,
@@ -193,6 +198,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__OPTIMISM,
   ETHEREUM_NETWORK__POLYGON,
   ETHEREUM_NETWORK__SMART_CHAIN,
+  ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET,
 ];
 
 export const APTOS_CHAINS: AptosChain[] = [APTOS];
