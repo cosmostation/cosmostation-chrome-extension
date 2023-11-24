@@ -271,8 +271,6 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                     const pubKey = { type: publicKeyType, value: base64PublicKey };
                     if (channel) {
-                      let txHash: string | undefined;
-
                       try {
                         const url = cosmosURL(chain).postBroadcast();
                         const pTx = protoTx(tx, base64Signature, pubKey);

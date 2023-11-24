@@ -255,8 +255,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                     const base64Signature = Buffer.from(signature).toString('base64');
 
                     if (channel) {
-                      let txHash: string | undefined;
-
                       try {
                         const url = cosmosURL(chain).postBroadcast();
                         const pTxBytes = protoTxBytes({
