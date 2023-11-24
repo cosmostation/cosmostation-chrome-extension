@@ -22,6 +22,7 @@ import { useGasRateSWR } from '~/Popup/hooks/SWR/cosmos/useGasRateSWR';
 import { useSupportChainsSWR } from '~/Popup/hooks/SWR/cosmos/useSupportChainsSWR';
 import { useBalanceSWR as useNativeBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
+import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useOneInchTokensSWR';
 import { useSupportTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useSupportTokensSWR';
 import { useOneInchSwap } from '~/Popup/hooks/SWR/integratedSwap/oneInch/useOneInchSwap';
@@ -114,6 +115,7 @@ export default function Entry() {
 
   const { extensionStorage } = useExtensionStorage();
   const { ethereumTokens } = extensionStorage;
+
   const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
@@ -260,6 +262,62 @@ export default function Entry() {
     return [];
   }, [availableToChains, currentFromChain, integratedCosmosChains, integratedEVMChains]);
 
+  const { data: fromChainTokens } = useTokensSWR(currentFromChain?.line === ETHEREUM.line ? currentFromChain : undefined);
+  const { data: toChainTokens } = useTokensSWR(currentToChain?.line === ETHEREUM.line ? currentToChain : undefined);
+
+  const defaultFromTokens: EthereumToken[] = useMemo(
+    () =>
+      fromChainTokens
+        .filter((item) => item.default)
+        .map((item) => ({
+          id: `${currentFromChain?.id || ''}${item.address}`,
+          ethereumNetworkId: currentFromChain?.id || '',
+          address: item.address,
+          name: item.name,
+          displayDenom: item.displayDenom,
+          decimals: item.decimals,
+          imageURL: item.imageURL,
+          coinGeckoId: item.coinGeckoId,
+          tokenType: 'ERC20',
+          default: item.default,
+        })),
+    [currentFromChain?.id, fromChainTokens],
+  );
+  const defaultToTokens: EthereumToken[] = useMemo(
+    () =>
+      toChainTokens
+        .filter((item) => item.default)
+        .map((item) => ({
+          id: `${currentToChain?.id || ''}${item.address}`,
+          ethereumNetworkId: currentToChain?.id || '',
+          address: item.address,
+          name: item.name,
+          displayDenom: item.displayDenom,
+          decimals: item.decimals,
+          imageURL: item.imageURL,
+          coinGeckoId: item.coinGeckoId,
+          tokenType: 'ERC20',
+          default: item.default,
+        })),
+    [currentToChain?.id, toChainTokens],
+  );
+
+  const currentFromEthereumTokens = useMemo(
+    () =>
+      [...defaultFromTokens, ...ethereumTokens.filter((item) => item.ethereumNetworkId === currentFromChain?.id)].filter(
+        (token, idx, self) => self.findIndex((item) => item.address.toLowerCase() === token.address.toLowerCase()) === idx,
+      ),
+    [currentFromChain?.id, defaultFromTokens, ethereumTokens],
+  );
+
+  const currentToEthereumTokens = useMemo(
+    () =>
+      [...defaultToTokens, ...ethereumTokens.filter((item) => item.ethereumNetworkId === currentToChain?.id)].filter(
+        (token, idx, self) => self.findIndex((item) => item.address.toLowerCase() === token.address.toLowerCase()) === idx,
+      ),
+    [currentToChain?.id, defaultToTokens, ethereumTokens],
+  );
+
   const [currentFromToken, setCurrentFromToken] = useState<IntegratedSwapToken>();
   const [currentToToken, setCurrentToToken] = useState<IntegratedSwapToken>();
 
@@ -317,8 +375,6 @@ export default function Entry() {
   );
 
   const filteredFromTokenList: IntegratedSwapToken[] = useMemo(() => {
-    const currentFromEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentFromChain?.id);
-
     if (currentSwapAPI === 'skip' && supportedSkipFromTokens.data) {
       const filteredTokens = cosmosFromTokenAssets.data
         .filter((item) =>
@@ -359,7 +415,12 @@ export default function Entry() {
             balance: BigInt(currentFromEVMNativeBalance.data?.result || '0').toString(10),
             coinGeckoId: currentEthereumNetwork.coinGeckoId,
           })),
-        ...filteredTokens.filter((item) => currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))),
+        ...filteredTokens
+          .filter((item) => currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)))
+          .map((item) => ({
+            ...item,
+            coinGeckoId: currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))?.coinGeckoId,
+          })),
         ...filteredTokens.filter(
           (item) =>
             !item.tags.includes('native') &&
@@ -430,19 +491,18 @@ export default function Entry() {
 
     return [];
   }, [
-    ethereumTokens,
     currentSwapAPI,
     supportedSkipFromTokens.data,
     oneInchTokens.data,
-    currentFromChain?.id,
+    cosmosFromTokenAssets.data,
     currentFromChain.chainId,
     currentFromChain?.displayDenom,
-    cosmosFromTokenAssets.data,
     coinGeckoPrice.data,
     extensionStorage.currency,
     cosmosFromChainBalance.data?.balance,
     currentFromEVMNativeBalance.data?.result,
     currentEthereumNetwork.coinGeckoId,
+    currentFromEthereumTokens,
     supportedOneInchTokens,
     filterSquidTokens,
   ]);
@@ -471,8 +531,6 @@ export default function Entry() {
   );
 
   const filteredToTokenList: IntegratedSwapToken[] = useMemo(() => {
-    const currentToEthereumTokens = ethereumTokens.filter((item) => item.ethereumNetworkId === currentToChain?.id);
-
     if (currentSwapAPI === 'skip') {
       const filteredTokens = cosmosToTokenAssets.data
         .filter((item) =>
@@ -513,7 +571,12 @@ export default function Entry() {
             balance: BigInt(currentToEVMNativeBalance.data?.result || '0').toString(10),
             coinGeckoId: currentEthereumNetwork.coinGeckoId,
           })),
-        ...filteredTokenList.filter((item) => currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))),
+        ...filteredTokenList
+          .filter((item) => currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address)))
+          .map((item) => ({
+            ...item,
+            coinGeckoId: currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))?.coinGeckoId,
+          })),
         ...filteredTokenList.filter(
           (item) =>
             !item.tags.includes('native') &&
@@ -591,10 +654,9 @@ export default function Entry() {
     currentSwapAPI,
     currentToChain?.chainId,
     currentToChain?.displayDenom,
-    currentToChain?.id,
     currentToChain?.line,
     currentToEVMNativeBalance.data?.result,
-    ethereumTokens,
+    currentToEthereumTokens,
     extensionStorage.currency,
     filterSquidTokens,
     oneInchTokens.data,
