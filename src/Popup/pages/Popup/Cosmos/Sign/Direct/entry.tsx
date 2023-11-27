@@ -19,7 +19,17 @@ import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
-import { broadcast, decodeProtobufMessage, determineDirectActivityType, protoTxBytes } from '~/Popup/utils/proto';
+import {
+  broadcast,
+  decodeProtobufMessage,
+  determineDirectActivityType,
+  isDirectCommission,
+  isDirectCustom,
+  isDirectExecuteContract,
+  isDirectIBCSend,
+  isDirectSend,
+  protoTxBytes,
+} from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
@@ -151,6 +161,38 @@ export default function Entry({ queue, chain }: EntryProps) {
     return 'custom';
   }, [msgs, txMsgPage]);
 
+  const txAmountInfo = useMemo(() => {
+    if (isDirectSend(msgs[0])) {
+      return {
+        amount: msgs[0].value.amount,
+        toAddress: msgs[0].value.to_address,
+      };
+    }
+
+    if (isDirectIBCSend(msgs[0])) {
+      return {
+        amount: [msgs[0].value.token],
+        toAddress: msgs[0].value.receiver,
+      };
+    }
+
+    if (isDirectExecuteContract(msgs[0])) {
+      return {
+        amount: msgs[0].value.funds,
+        toAddress: msgs[0].value.contract,
+      };
+    }
+
+    if (isDirectCommission(msgs[0]) || isDirectCustom(msgs[0])) {
+      return {
+        amount: undefined,
+        toAddress: undefined,
+      };
+    }
+
+    return {};
+  }, [msgs]);
+
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   }, []);
@@ -270,7 +312,14 @@ export default function Entry({ queue, chain }: EntryProps) {
                         if (code === 0) {
                           if (txhash) {
                             void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
-                            void setCurrentActivity(txhash, txType);
+                            void setCurrentActivity({
+                              txHash: txhash,
+                              id: chain.id,
+                              type: txType,
+                              address,
+                              amount: txAmountInfo.amount,
+                              toAddress: txAmountInfo.toAddress,
+                            });
                           } else {
                             void deQueue();
                           }

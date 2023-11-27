@@ -18,6 +18,7 @@ import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
 import { useEstimateGasPriceSWR } from '~/Popup/hooks/SWR/aptos/useEstimateGasPriceSWR';
 import { useGenerateTransactionSWR } from '~/Popup/hooks/SWR/aptos/useGenerateTransactionSWR';
 import { useSimulateTransactionSWR } from '~/Popup/hooks/SWR/aptos/useSimulateTransactionSWR';
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
@@ -75,6 +76,7 @@ export default function Entry({ queue }: EntryProps) {
   const { extensionStorage } = useExtensionStorage();
 
   const { currency } = extensionStorage;
+  const accounts = useAccounts();
 
   const assets = useAssetsSWR();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
@@ -109,6 +111,11 @@ export default function Entry({ queue }: EntryProps) {
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
+
+  const currentAddress = useMemo(
+    () => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[chain.id] || '',
+    [accounts?.data, chain.id, currentAccount.id],
+  );
 
   const { t } = useTranslation();
 
@@ -363,7 +370,11 @@ export default function Entry({ queue }: EntryProps) {
 
                         if (channel === 'inApp' && result.hash) {
                           await deQueue(`/popup/tx-receipt/${result.hash}` as unknown as Path);
-                          void setCurrentActivity(result.hash);
+                          void setCurrentActivity({
+                            id: currentAptosNetwork.id,
+                            txHash: result.hash,
+                            address: currentAddress,
+                          });
                         } else {
                           await deQueue();
                         }

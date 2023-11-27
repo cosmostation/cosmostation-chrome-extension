@@ -21,7 +21,18 @@ import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { cosmosURL, determineAminoActivityType, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
+import {
+  cosmosURL,
+  determineAminoActivityType,
+  getPublicKeyType,
+  isAminoCommission,
+  isAminoExecuteContract,
+  isAminoIBCSend,
+  isAminoReward,
+  isAminoSend,
+  isAminoSwapExactAmountIn,
+  signAmino,
+} from '~/Popup/utils/cosmos';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -127,8 +138,54 @@ export default function Entry({ queue, chain }: EntryProps) {
       return determineAminoActivityType(msgs[txMsgPage - 1]);
     }
 
+    // NOTE 2개 이상일때 모두가 같은 타입이면 그 타입으로 처리
+    if (msgs?.length > 1) {
+      const msgsActivityTypes = msgs.map((msg) => determineAminoActivityType(msg));
+      return msgsActivityTypes.every((a) => a === msgsActivityTypes[0]) ? msgsActivityTypes[0] : 'custom';
+    }
+
     return 'custom';
   }, [msgs, txMsgPage]);
+
+  // NOTE 클레임 올 할때 && 사인할  메시지가 2개 이상일떄는?
+
+  const txAmountInfo = useMemo(() => {
+    if (isAminoSend(msgs[0])) {
+      return {
+        amount: msgs[0].value.amount,
+        toAddress: msgs[0].value.to_address,
+      };
+    }
+    if (isAminoIBCSend(msgs[0])) {
+      return {
+        amount: [msgs[0].value.token],
+        toAddress: msgs[0].value.receiver,
+      };
+    }
+
+    if (isAminoSwapExactAmountIn(msgs[0])) {
+      return {
+        amount: [msgs[0].value.token_in],
+        toAddress: '',
+      };
+    }
+
+    if (isAminoExecuteContract(msgs[0])) {
+      return {
+        amount: msgs[0].value.funds,
+        toAddress: msgs[0].value.contract,
+      };
+    }
+
+    if (isAminoReward(msgs[0]) || isAminoCommission(msgs[0])) {
+      return {
+        amount: undefined,
+        toAddress: undefined,
+      };
+    }
+
+    return {};
+  }, [msgs]);
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -283,7 +340,14 @@ export default function Entry({ queue, chain }: EntryProps) {
                         if (code === 0) {
                           if (txhash) {
                             void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
-                            void setCurrentActivity(txhash, txType);
+                            void setCurrentActivity({
+                              txHash: txhash,
+                              id: chain.id,
+                              address,
+                              type: txType,
+                              amount: txAmountInfo.amount,
+                              toAddress: txAmountInfo.toAddress,
+                            });
                           } else {
                             void deQueue();
                           }

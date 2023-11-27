@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { equal } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
+import type { Amount } from '~/types/cosmos/common';
 import type { ActivityType } from '~/types/extensionStorage';
 
 import { useCurrentAccount } from './useCurrentAccount';
@@ -46,40 +47,51 @@ export function useCurrentActivity() {
     return '';
   }, [currentAptosNetwork.id, currentChain.id, currentChain.line, currentEthereumNetwork.id, currentSuiNetwork.id]);
 
-  const currentActivitiy = useMemo(() => [...(activity?.[baseChainUUID]?.[currentAddress] || [])], [activity, currentAddress, baseChainUUID]);
+  const currentActivitiy = useMemo(() => [...(activity?.[baseChainUUID]?.[currentAddress] || [])], [activity, baseChainUUID, currentAddress]);
 
-  const setCurrentActivity = async (txHash: string, type?: ActivityType) => {
+  type SetCurrentActivityParams = {
+    id: string;
+    txHash: string;
+    address: string;
+    type?: ActivityType;
+    amount?: Amount[];
+    toAddress?: string;
+  };
+
+  const setCurrentActivity = async ({ id, txHash, address, type, amount, toAddress }: SetCurrentActivityParams) => {
+    const selectedAddressActivities = [...(activity?.[id]?.[address] || [])];
+
     const newActivity = {
-      baseChainUUID,
+      baseChainUUID: id,
       txHash,
       timestamp: String(Date.now()),
-      address: currentAddress,
+      address,
       type,
+      amount,
+      toAddress,
     };
 
-    const newCurrentActivities = currentActivitiy?.find(
-      (item) =>
-        isEqualsIgnoringCase(item.baseChainUUID, baseChainUUID) &&
-        isEqualsIgnoringCase(item.txHash, txHash) &&
-        isEqualsIgnoringCase(item.address, currentAddress),
+    const newCurrentActivities = selectedAddressActivities?.find(
+      (item) => isEqualsIgnoringCase(item.baseChainUUID, id) && isEqualsIgnoringCase(item.txHash, txHash) && isEqualsIgnoringCase(item.address, address),
+      3,
     )
-      ? currentActivitiy
-      : [...currentActivitiy, newActivity];
+      ? selectedAddressActivities
+      : [...selectedAddressActivities, newActivity];
 
     const trimmedCurrentActivities =
       newCurrentActivities.length > 10
         ? newCurrentActivities.filter((item) => !equal(item.timestamp, Math.min(...newCurrentActivities.map((activityItem) => Number(activityItem.timestamp)))))
         : newCurrentActivities;
 
-    const updatedActivity = {
+    const updatedActivities = {
       ...activity,
-      [baseChainUUID]: {
-        ...activity?.[baseChainUUID],
-        [currentAddress]: trimmedCurrentActivities,
+      [id]: {
+        ...activity?.[id],
+        [address]: trimmedCurrentActivities,
       },
     };
 
-    await setExtensionStorage('activity', updatedActivity);
+    await setExtensionStorage('activity', updatedActivities);
   };
 
   return { currentActivitiy, setCurrentActivity };

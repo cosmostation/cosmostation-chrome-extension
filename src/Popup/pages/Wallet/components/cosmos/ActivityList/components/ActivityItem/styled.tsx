@@ -71,6 +71,9 @@ export const LeftTextTitleContainer = styled('div')(({ theme }) => ({
 }));
 
 export const LeftTextSubtitleContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+
   color: theme.colors.text02,
 }));
 

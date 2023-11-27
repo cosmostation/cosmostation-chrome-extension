@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
-import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
@@ -10,17 +9,7 @@ import { convertToLocales } from '~/Popup/utils/common';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { Activity } from '~/types/extensionStorage';
 
-import {
-  Container,
-  LeftContainer,
-  LeftIconContainer,
-  LeftTextContainer,
-  LeftTextSubtitleContainer,
-  LeftTextTitleContainer,
-  RightContainer,
-  RightTextContainer,
-  StyledButton,
-} from './styled';
+import { Container, LeftContainer, LeftIconContainer, LeftTextContainer, LeftTextSubtitleContainer, LeftTextTitleContainer, StyledButton } from './styled';
 
 import Transaction24Icon from '~/images/icons/Transaction24.svg';
 
@@ -55,11 +44,7 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
     });
   }, [language, timestamp]);
 
-  const sampleToAddress = 'stars1aygdt8742gamxv8ca99wzh56ry4xw5s33vvxu2';
-
-  const shorterToAddress = useMemo(() => shorterAddress(sampleToAddress, 11), []);
-
-  const transactionAmount = useMemo(() => '1', []);
+  const shorterToAddress = useMemo(() => shorterAddress(activity.toAddress || txHash, 11), [activity.toAddress, txHash]);
 
   return (
     <StyledButton onClick={() => window.open(txDetailExplorerURL)} disabled={!txDetailExplorerURL}>
@@ -86,20 +71,6 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
               </LeftTextSubtitleContainer>
             </LeftTextContainer>
           </LeftContainer>
-          <RightContainer>
-            {transactionAmount ? (
-              <RightTextContainer>
-                <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
-                  {transactionAmount}
-                </NumberText>
-                <Typography variant="h6">Default</Typography>
-              </RightTextContainer>
-            ) : (
-              <RightTextContainer>
-                <Typography variant="h6">-</Typography>
-              </RightTextContainer>
-            )}
-          </RightContainer>
         </Container>
       </Tooltip>
     </StyledButton>

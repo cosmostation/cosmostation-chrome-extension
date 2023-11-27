@@ -4,10 +4,12 @@ import { Typography } from '@mui/material';
 import { COSMOS_ACTIVITY_TYPE } from '~/constants/extensionStorage';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
+import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { gt, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { convertToLocales } from '~/Popup/utils/common';
-import { shorterAddress } from '~/Popup/utils/string';
+import { isEqualsIgnoringCase, shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Activity } from '~/types/extensionStorage';
 
@@ -37,11 +39,12 @@ type ActivityItemProps = {
 
 export default function ActivityItem({ activity, chain }: ActivityItemProps) {
   const { t } = useTranslation();
+  const { coins, ibcCoins } = useCoinListSWR(chain);
 
+  const { displayDenom, baseDenom, decimals, explorerURL } = chain;
   const { extensionStorage } = useExtensionStorage();
   const { language } = extensionStorage;
 
-  const { explorerURL } = chain;
   const { txHash, timestamp, type } = activity;
 
   const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/transactions/${txHash}` : ''), [explorerURL, txHash]);
@@ -57,9 +60,45 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
     });
   }, [language, timestamp]);
 
-  const sampleToAddress = 'stars1aygdt8742gamxv8ca99wzh56ry4xw5s33vvxu2';
+  const itemBaseAmount = useMemo(() => activity.amount?.[0].amount || '0', [activity.amount]);
+  const itemBaseDenom = useMemo(() => activity.amount?.[0].denom || '', [activity.amount]);
 
-  const shorterToAddress = useMemo(() => shorterAddress(sampleToAddress, 11), []);
+  const assetCoinInfo = coins.find((coin) => isEqualsIgnoringCase(coin.baseDenom, activity.amount?.[0].denom));
+  const ibcCoinInfo = ibcCoins.find((coin) => coin.baseDenom === activity.amount?.[0].denom);
+
+  const itemDisplayAmount = (() => {
+    if (itemBaseDenom === baseDenom) {
+      return toDisplayDenomAmount(itemBaseAmount, decimals);
+    }
+
+    if (assetCoinInfo?.decimals) {
+      return toDisplayDenomAmount(itemBaseAmount, assetCoinInfo.decimals);
+    }
+
+    if (ibcCoinInfo?.decimals) {
+      return toDisplayDenomAmount(itemBaseAmount, ibcCoinInfo.decimals);
+    }
+
+    return itemBaseAmount || '0';
+  })();
+
+  const itemDisplayDenom = (() => {
+    if (itemBaseDenom === baseDenom) {
+      return displayDenom.toUpperCase();
+    }
+
+    if (assetCoinInfo?.displayDenom) {
+      return assetCoinInfo.displayDenom;
+    }
+
+    if (ibcCoinInfo?.displayDenom) {
+      return ibcCoinInfo.displayDenom;
+    }
+
+    return itemBaseDenom.length > 5 ? `${itemBaseDenom.substring(0, 5)}...` : itemBaseDenom;
+  })();
+
+  const shorterToAddress = useMemo(() => shorterAddress(activity.toAddress || txHash, 11), [activity.toAddress, txHash]);
 
   const trasactionIcon = useMemo(() => {
     if (type === COSMOS_ACTIVITY_TYPE.SEND) {
@@ -99,8 +138,6 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
     return t('pages.Wallet.components.cosmos.ActivityList.components.ActivityItem.index.transaction');
   }, [t, type]);
 
-  const transactionAmount = useMemo(() => '1', []);
-
   return (
     <StyledButton onClick={() => window.open(txDetailExplorerURL)} disabled={!txDetailExplorerURL}>
       <Tooltip
@@ -117,6 +154,8 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
                 <Typography variant="h5">{title}</Typography>
               </LeftTextTitleContainer>
               <LeftTextSubtitleContainer>
+                {activity.toAddress && <Typography variant="h6">To : </Typography>}
+                {activity.toAddress && <>&nbsp;</>}
                 <Typography variant="h6">{shorterToAddress}</Typography>
               </LeftTextSubtitleContainer>
               <LeftTextSubtitleContainer>
@@ -125,16 +164,12 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
             </LeftTextContainer>
           </LeftContainer>
           <RightContainer>
-            {transactionAmount ? (
+            {gt(itemDisplayAmount, '0') && (
               <RightTextContainer>
                 <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
-                  {transactionAmount}
+                  {itemDisplayAmount}
                 </NumberText>
-                <Typography variant="h6">{chain.displayDenom}</Typography>
-              </RightTextContainer>
-            ) : (
-              <RightTextContainer>
-                <Typography variant="h6">-</Typography>
+                <Typography variant="h6">{itemDisplayDenom}</Typography>
               </RightTextContainer>
             )}
           </RightContainer>

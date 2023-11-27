@@ -302,7 +302,6 @@ export default function Entry({ queue }: EntryProps) {
                   try {
                     setIsProgress(true);
 
-                    let digest: string | undefined;
                     if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
                       const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
@@ -310,7 +309,6 @@ export default function Entry({ queue }: EntryProps) {
 
                       const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
 
-                      digest = response?.digest;
                       responseToWeb({
                         response: {
                           result: response,
@@ -322,7 +320,11 @@ export default function Entry({ queue }: EntryProps) {
 
                       if (queue.channel === 'inApp' && response.digest) {
                         await deQueue(`/popup/tx-receipt/${response.digest}` as unknown as Path);
-                        void setCurrentActivity(digest);
+                        void setCurrentActivity({
+                          id: currentSuiNetwork.id,
+                          txHash: response.digest,
+                          address,
+                        });
                       } else {
                         await deQueue();
                       }
@@ -354,8 +356,6 @@ export default function Entry({ queue }: EntryProps) {
                         signature: serializedSignature,
                       });
 
-                      digest = response.digest;
-
                       const txBlock = await provider.getTransactionBlock({
                         digest: response.digest,
                         options: {
@@ -364,6 +364,12 @@ export default function Entry({ queue }: EntryProps) {
                           showEvents: true,
                           ...params[0]?.options,
                         },
+                      });
+
+                      void setCurrentActivity({
+                        id: currentSuiNetwork.id,
+                        txHash: response.digest,
+                        address,
                       });
 
                       responseToWeb({

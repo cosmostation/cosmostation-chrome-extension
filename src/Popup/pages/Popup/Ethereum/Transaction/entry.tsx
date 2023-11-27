@@ -8,7 +8,7 @@ import EthereumApp, { ledgerService } from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
 
 import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
-import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { ETHEREUM, EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import Button from '~/Popup/components/common/Button';
@@ -303,6 +303,32 @@ export default function Entry({ queue }: EntryProps) {
 
     return '0';
   }, [decimals, ethereumTx.value, token?.decimals, txType.data?.txDescription?.args, txType.data?.type]);
+
+  const txAmountInfo = useMemo(() => {
+    if (txType.data?.type === 'simpleSend') {
+      try {
+        return {
+          amount: toBaseDenomAmount(sendDisplayAmount, decimals),
+          denom: EVM_NATIVE_TOKEN_ADDRESS,
+        };
+      } catch {
+        return undefined;
+      }
+    }
+
+    if (txType.data?.type === 'transfer') {
+      try {
+        return {
+          amount: toBaseDenomAmount(sendDisplayAmount, token?.decimals || 0),
+          denom: token?.address || '',
+        };
+      } catch {
+        return undefined;
+      }
+    }
+
+    return undefined;
+  }, [decimals, sendDisplayAmount, token?.address, token?.decimals, txType.data?.type]);
 
   const sendDisplayDenom = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
@@ -620,7 +646,14 @@ export default function Entry({ queue }: EntryProps) {
                         if (queue.channel === 'inApp') {
                           if (result) {
                             await deQueue(`/popup/tx-receipt/${result}` as unknown as Path);
-                            void setCurrentActivity(result, activityTxType);
+                            void setCurrentActivity({
+                              id: currentEthereumNetwork.id,
+                              txHash: result,
+                              address,
+                              type: activityTxType,
+                              amount: txAmountInfo ? [txAmountInfo] : undefined,
+                              toAddress: ethereumTx.to,
+                            });
                           } else {
                             await deQueue();
                           }
