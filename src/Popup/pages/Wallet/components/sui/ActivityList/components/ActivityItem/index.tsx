@@ -44,7 +44,7 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
     });
   }, [language, timestamp]);
 
-  const shorterToAddress = useMemo(() => shorterAddress(activity.toAddress || txHash, 11), [activity.toAddress, txHash]);
+  const shortenedToAddress = useMemo(() => shorterAddress(activity.toAddress || txHash, 11), [activity.toAddress, txHash]);
 
   return (
     <StyledButton onClick={() => window.open(txDetailExplorerURL)} disabled={!txDetailExplorerURL}>
@@ -64,7 +64,7 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
                 <Typography variant="h5">{t('pages.Wallet.components.sui.ActivityList.components.ActivityItem.index.transaction')}</Typography>
               </LeftTextTitleContainer>
               <LeftTextSubtitleContainer>
-                <Typography variant="h6">{shorterToAddress}</Typography>
+                <Typography variant="h6">{shortenedToAddress}</Typography>
               </LeftTextSubtitleContainer>
               <LeftTextSubtitleContainer>
                 <Typography variant="h6">{formattedTimestamp}</Typography>

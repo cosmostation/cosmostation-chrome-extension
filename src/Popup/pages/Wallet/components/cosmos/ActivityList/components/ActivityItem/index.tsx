@@ -4,12 +4,11 @@ import { Typography } from '@mui/material';
 import { COSMOS_ACTIVITY_TYPE } from '~/constants/extensionStorage';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { gt, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { gt } from '~/Popup/utils/big';
 import { convertToLocales } from '~/Popup/utils/common';
-import { isEqualsIgnoringCase, shorterAddress } from '~/Popup/utils/string';
+import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Activity } from '~/types/extensionStorage';
 
@@ -35,13 +34,14 @@ import Transaction24Icon from '~/images/icons/Transaction24.svg';
 type ActivityItemProps = {
   activity: Activity;
   chain: CosmosChain;
+  displayAmount: string;
+  displayDenom: string;
 };
 
-export default function ActivityItem({ activity, chain }: ActivityItemProps) {
+export default function ActivityItem({ activity, chain, displayAmount, displayDenom }: ActivityItemProps) {
   const { t } = useTranslation();
-  const { coins, ibcCoins } = useCoinListSWR(chain);
 
-  const { displayDenom, baseDenom, decimals, explorerURL } = chain;
+  const { explorerURL } = chain;
   const { extensionStorage } = useExtensionStorage();
   const { language } = extensionStorage;
 
@@ -60,45 +60,7 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
     });
   }, [language, timestamp]);
 
-  const itemBaseAmount = useMemo(() => activity.amount?.[0].amount || '0', [activity.amount]);
-  const itemBaseDenom = useMemo(() => activity.amount?.[0].denom || '', [activity.amount]);
-
-  const assetCoinInfo = coins.find((coin) => isEqualsIgnoringCase(coin.baseDenom, activity.amount?.[0].denom));
-  const ibcCoinInfo = ibcCoins.find((coin) => coin.baseDenom === activity.amount?.[0].denom);
-
-  const itemDisplayAmount = (() => {
-    if (itemBaseDenom === baseDenom) {
-      return toDisplayDenomAmount(itemBaseAmount, decimals);
-    }
-
-    if (assetCoinInfo?.decimals) {
-      return toDisplayDenomAmount(itemBaseAmount, assetCoinInfo.decimals);
-    }
-
-    if (ibcCoinInfo?.decimals) {
-      return toDisplayDenomAmount(itemBaseAmount, ibcCoinInfo.decimals);
-    }
-
-    return itemBaseAmount || '0';
-  })();
-
-  const itemDisplayDenom = (() => {
-    if (itemBaseDenom === baseDenom) {
-      return displayDenom.toUpperCase();
-    }
-
-    if (assetCoinInfo?.displayDenom) {
-      return assetCoinInfo.displayDenom;
-    }
-
-    if (ibcCoinInfo?.displayDenom) {
-      return ibcCoinInfo.displayDenom;
-    }
-
-    return itemBaseDenom.length > 5 ? `${itemBaseDenom.substring(0, 5)}...` : itemBaseDenom;
-  })();
-
-  const shorterToAddress = useMemo(() => shorterAddress(activity.toAddress || txHash, 11), [activity.toAddress, txHash]);
+  const shortenedToAddress = useMemo(() => shorterAddress(activity.toAddress || txHash, 11), [activity.toAddress, txHash]);
 
   const trasactionIcon = useMemo(() => {
     if (type === COSMOS_ACTIVITY_TYPE.SEND) {
@@ -156,7 +118,7 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
               <LeftTextSubtitleContainer>
                 {activity.toAddress && <Typography variant="h6">To : </Typography>}
                 {activity.toAddress && <>&nbsp;</>}
-                <Typography variant="h6">{shorterToAddress}</Typography>
+                <Typography variant="h6">{shortenedToAddress}</Typography>
               </LeftTextSubtitleContainer>
               <LeftTextSubtitleContainer>
                 <Typography variant="h6">{formattedTimestamp}</Typography>
@@ -164,12 +126,12 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
             </LeftTextContainer>
           </LeftContainer>
           <RightContainer>
-            {gt(itemDisplayAmount, '0') && (
+            {gt(displayAmount, '0') && displayDenom && (
               <RightTextContainer>
                 <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
-                  {itemDisplayAmount}
+                  {displayAmount}
                 </NumberText>
-                <Typography variant="h6">{itemDisplayDenom}</Typography>
+                <Typography variant="h6">{displayDenom}</Typography>
               </RightTextContainer>
             )}
           </RightContainer>

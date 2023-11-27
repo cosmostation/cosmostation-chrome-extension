@@ -327,8 +327,23 @@ export default function Entry({ queue }: EntryProps) {
       }
     }
 
+    if (txType.data?.type === 'swap') {
+      try {
+        const args = txType?.data?.txDescription?.args as unknown as OneInchSwapTxData;
+
+        const srcToken = oneInchTokens.data && Object.values(oneInchTokens.data.tokens).find((item) => isEqualsIgnoringCase(item.address, args?.desc.srcToken));
+
+        return {
+          amount: BigInt(args?.desc?.amount || '0').toString(10),
+          denom: srcToken?.address || '',
+        };
+      } catch {
+        return undefined;
+      }
+    }
+
     return undefined;
-  }, [decimals, sendDisplayAmount, token?.address, token?.decimals, txType.data?.type]);
+  }, [decimals, oneInchTokens.data, sendDisplayAmount, token?.address, token?.decimals, txType.data?.txDescription?.args, txType.data?.type]);
 
   const sendDisplayDenom = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {

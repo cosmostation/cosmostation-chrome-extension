@@ -7,7 +7,8 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { convertToLocales } from '~/Popup/utils/common';
+import { gt } from '~/Popup/utils/big';
+import { convertToLocales, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { Activity } from '~/types/extensionStorage';
 
@@ -32,9 +33,12 @@ import Transaction24Icon from '~/images/icons/Transaction24.svg';
 
 type ActivityItemProps = {
   activity: Activity;
+  displayAmount: string;
+  displayDenom: string;
+  decimals?: number;
 };
 
-export default function ActivityItem({ activity }: ActivityItemProps) {
+export default function ActivityItem({ activity, displayAmount, displayDenom, decimals }: ActivityItemProps) {
   const { t } = useTranslation();
 
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
@@ -58,9 +62,7 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
     });
   }, [language, timestamp]);
 
-  const sampleToAddress = 'stars1aygdt8742gamxv8ca99wzh56ry4xw5s33vvxu2';
-
-  const shorterToAddress = useMemo(() => shorterAddress(sampleToAddress, 11), []);
+  const shortenedToAddress = useMemo(() => shorterAddress(activity.toAddress || txHash, 11), [activity.toAddress, txHash]);
 
   const trasactionIcon = useMemo(() => {
     if (type === ETHEREUM_ACTIVITY_TYPE.SIMPLE_SEND || type === ETHEREUM_ACTIVITY_TYPE.TRANSFER || type === ETHEREUM_ACTIVITY_TYPE.TRANSFER_FROM) {
@@ -117,8 +119,6 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
     return t('pages.Wallet.components.ethereum.ActivityList.components.ActivityItem.index.transaction');
   }, [t, type]);
 
-  const transactionAmount = useMemo(() => '1', []);
-
   return (
     <StyledButton onClick={() => window.open(txDetailExplorerURL)} disabled={!txDetailExplorerURL}>
       <Tooltip
@@ -137,7 +137,7 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
                 <Typography variant="h5">{title}</Typography>
               </LeftTextTitleContainer>
               <LeftTextSubtitleContainer>
-                <Typography variant="h6">{shorterToAddress}</Typography>
+                <Typography variant="h6">{shortenedToAddress}</Typography>
               </LeftTextSubtitleContainer>
               <LeftTextSubtitleContainer>
                 <Typography variant="h6">{formattedTimestamp}</Typography>
@@ -145,16 +145,12 @@ export default function ActivityItem({ activity }: ActivityItemProps) {
             </LeftTextContainer>
           </LeftContainer>
           <RightContainer>
-            {transactionAmount ? (
+            {gt(displayAmount, '0') && displayDenom && (
               <RightTextContainer>
-                <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
-                  {transactionAmount}
+                <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(decimals)}>
+                  {displayAmount}
                 </NumberText>
-                <Typography variant="h6">Default</Typography>
-              </RightTextContainer>
-            ) : (
-              <RightTextContainer>
-                <Typography variant="h6">-</Typography>
+                <Typography variant="h6">{displayDenom}</Typography>
               </RightTextContainer>
             )}
           </RightContainer>
