@@ -31,7 +31,7 @@ export function useCurrentActivity() {
     [accounts?.data, currentChain.id, currentAccount.id],
   );
 
-  const baseChainUUID = useMemo(() => {
+  const currentNetworkId = useMemo(() => {
     if (currentChain.line === 'COSMOS') {
       return currentChain.id;
     }
@@ -47,10 +47,10 @@ export function useCurrentActivity() {
     return '';
   }, [currentAptosNetwork.id, currentChain.id, currentChain.line, currentEthereumNetwork.id, currentSuiNetwork.id]);
 
-  const currentActivitiy = useMemo(() => [...(activity?.[baseChainUUID]?.[currentAddress] || [])], [activity, baseChainUUID, currentAddress]);
+  const currentActivitiy = useMemo(() => [...(activity?.[currentNetworkId]?.[currentAddress] || [])], [activity, currentNetworkId, currentAddress]);
 
   type SetCurrentActivityParams = {
-    id: string;
+    baseChainUUID: string;
     txHash: string;
     address: string;
     type?: ActivityType;
@@ -58,11 +58,11 @@ export function useCurrentActivity() {
     toAddress?: string;
   };
 
-  const setCurrentActivity = async ({ id, txHash, address, type, amount, toAddress }: SetCurrentActivityParams) => {
-    const selectedAddressActivities = [...(activity?.[id]?.[address] || [])];
+  const setCurrentActivity = async ({ baseChainUUID, txHash, address, type, amount, toAddress }: SetCurrentActivityParams) => {
+    const selectedAddressActivities = [...(activity?.[baseChainUUID]?.[address] || [])];
 
     const newActivity = {
-      baseChainUUID: id,
+      baseChainUUID,
       txHash,
       timestamp: String(Date.now()),
       address,
@@ -72,8 +72,10 @@ export function useCurrentActivity() {
     };
 
     const newCurrentActivities = selectedAddressActivities?.find(
-      (item) => isEqualsIgnoringCase(item.baseChainUUID, id) && isEqualsIgnoringCase(item.txHash, txHash) && isEqualsIgnoringCase(item.address, address),
-      3,
+      (item) =>
+        isEqualsIgnoringCase(item.baseChainUUID, newActivity.baseChainUUID) &&
+        isEqualsIgnoringCase(item.txHash, newActivity.txHash) &&
+        isEqualsIgnoringCase(item.address, newActivity.address),
     )
       ? selectedAddressActivities
       : [...selectedAddressActivities, newActivity];
@@ -85,8 +87,8 @@ export function useCurrentActivity() {
 
     const updatedActivities = {
       ...activity,
-      [id]: {
-        ...activity?.[id],
+      [baseChainUUID]: {
+        ...activity?.[baseChainUUID],
         [address]: trimmedCurrentActivities,
       },
     };
