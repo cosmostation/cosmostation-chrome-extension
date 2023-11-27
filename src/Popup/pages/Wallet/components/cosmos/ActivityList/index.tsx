@@ -51,7 +51,7 @@ export default function ActivityList({ chain }: ActivityListProps) {
                 return toDisplayDenomAmount(itemBaseAmount, ibcCoinInfo.decimals);
               }
 
-              return itemBaseAmount;
+              return '0';
             })();
 
             const itemDisplayDenom = (() => {
