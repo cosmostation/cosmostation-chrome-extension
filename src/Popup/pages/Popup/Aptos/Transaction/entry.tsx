@@ -371,7 +371,7 @@ export default function Entry({ queue }: EntryProps) {
                         if (channel === 'inApp' && result.hash) {
                           await deQueue(`/popup/tx-receipt/${result.hash}` as unknown as Path);
                           void setCurrentActivity({
-                            id: currentAptosNetwork.id,
+                            baseChainUUID: currentAptosNetwork.id,
                             txHash: result.hash,
                             address: currentAddress,
                           });

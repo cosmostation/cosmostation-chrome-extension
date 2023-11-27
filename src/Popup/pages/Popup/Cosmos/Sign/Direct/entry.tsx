@@ -158,36 +158,40 @@ export default function Entry({ queue, chain }: EntryProps) {
       return determineDirectActivityType(msgs[txMsgPage - 1]);
     }
 
+    if (msgs?.length > 1) {
+      const msgsActivityTypes = msgs.map((msg) => determineDirectActivityType(msg));
+      return msgsActivityTypes.every((a) => a === msgsActivityTypes[0]) ? msgsActivityTypes[0] : 'custom';
+    }
+
     return 'custom';
   }, [msgs, txMsgPage]);
 
   const txAmountInfo = useMemo(() => {
-    if (isDirectSend(msgs[0])) {
-      return {
-        amount: msgs[0].value.amount,
-        toAddress: msgs[0].value.to_address,
-      };
-    }
+    if (msgs?.length === 1) {
+      if (isDirectSend(msgs[0])) {
+        return {
+          amount: msgs[0].value.amount,
+          toAddress: msgs[0].value.to_address,
+        };
+      }
 
-    if (isDirectIBCSend(msgs[0])) {
-      return {
-        amount: [msgs[0].value.token],
-        toAddress: msgs[0].value.receiver,
-      };
-    }
+      if (isDirectIBCSend(msgs[0])) {
+        return {
+          amount: [msgs[0].value.token],
+          toAddress: msgs[0].value.receiver,
+        };
+      }
 
-    if (isDirectExecuteContract(msgs[0])) {
-      return {
-        amount: msgs[0].value.funds,
-        toAddress: msgs[0].value.contract,
-      };
-    }
+      if (isDirectExecuteContract(msgs[0])) {
+        return {
+          amount: msgs[0].value.funds,
+          toAddress: msgs[0].value.contract,
+        };
+      }
 
-    if (isDirectCommission(msgs[0]) || isDirectCustom(msgs[0])) {
-      return {
-        amount: undefined,
-        toAddress: undefined,
-      };
+      if (isDirectCommission(msgs[0]) || isDirectCustom(msgs[0])) {
+        return {};
+      }
     }
 
     return {};
@@ -314,7 +318,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                             void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
                             void setCurrentActivity({
                               txHash: txhash,
-                              id: chain.id,
+                              baseChainUUID: chain.id,
                               type: txType,
                               address,
                               amount: txAmountInfo.amount,

@@ -662,7 +662,7 @@ export default function Entry({ queue }: EntryProps) {
                           if (result) {
                             await deQueue(`/popup/tx-receipt/${result}` as unknown as Path);
                             void setCurrentActivity({
-                              id: currentEthereumNetwork.id,
+                              baseChainUUID: currentEthereumNetwork.id,
                               txHash: result,
                               address,
                               type: activityTxType,

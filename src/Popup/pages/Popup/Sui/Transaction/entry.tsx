@@ -321,7 +321,7 @@ export default function Entry({ queue }: EntryProps) {
                       if (queue.channel === 'inApp' && response.digest) {
                         await deQueue(`/popup/tx-receipt/${response.digest}` as unknown as Path);
                         void setCurrentActivity({
-                          id: currentSuiNetwork.id,
+                          baseChainUUID: currentSuiNetwork.id,
                           txHash: response.digest,
                           address,
                         });
@@ -367,7 +367,7 @@ export default function Entry({ queue }: EntryProps) {
                       });
 
                       void setCurrentActivity({
-                        id: currentSuiNetwork.id,
+                        baseChainUUID: currentSuiNetwork.id,
                         txHash: response.digest,
                         address,
                       });

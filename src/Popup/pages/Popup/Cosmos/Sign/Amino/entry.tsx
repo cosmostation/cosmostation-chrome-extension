@@ -138,7 +138,6 @@ export default function Entry({ queue, chain }: EntryProps) {
       return determineAminoActivityType(msgs[txMsgPage - 1]);
     }
 
-    // NOTE 2개 이상일때 모두가 같은 타입이면 그 타입으로 처리
     if (msgs?.length > 1) {
       const msgsActivityTypes = msgs.map((msg) => determineAminoActivityType(msg));
       return msgsActivityTypes.every((a) => a === msgsActivityTypes[0]) ? msgsActivityTypes[0] : 'custom';
@@ -147,41 +146,38 @@ export default function Entry({ queue, chain }: EntryProps) {
     return 'custom';
   }, [msgs, txMsgPage]);
 
-  // NOTE 클레임 올 할때 && 사인할  메시지가 2개 이상일떄는?
-
   const txAmountInfo = useMemo(() => {
-    if (isAminoSend(msgs[0])) {
-      return {
-        amount: msgs[0].value.amount,
-        toAddress: msgs[0].value.to_address,
-      };
-    }
-    if (isAminoIBCSend(msgs[0])) {
-      return {
-        amount: [msgs[0].value.token],
-        toAddress: msgs[0].value.receiver,
-      };
-    }
+    if (msgs?.length === 1) {
+      if (isAminoSend(msgs[0])) {
+        return {
+          amount: msgs[0].value.amount,
+          toAddress: msgs[0].value.to_address,
+        };
+      }
+      if (isAminoIBCSend(msgs[0])) {
+        return {
+          amount: [msgs[0].value.token],
+          toAddress: msgs[0].value.receiver,
+        };
+      }
 
-    if (isAminoSwapExactAmountIn(msgs[0])) {
-      return {
-        amount: [msgs[0].value.token_in],
-        toAddress: '',
-      };
-    }
+      if (isAminoSwapExactAmountIn(msgs[0])) {
+        return {
+          amount: [msgs[0].value.token_in],
+          toAddress: '',
+        };
+      }
 
-    if (isAminoExecuteContract(msgs[0])) {
-      return {
-        amount: msgs[0].value.funds,
-        toAddress: msgs[0].value.contract,
-      };
-    }
+      if (isAminoExecuteContract(msgs[0])) {
+        return {
+          amount: msgs[0].value.funds,
+          toAddress: msgs[0].value.contract,
+        };
+      }
 
-    if (isAminoReward(msgs[0]) || isAminoCommission(msgs[0])) {
-      return {
-        amount: undefined,
-        toAddress: undefined,
-      };
+      if (isAminoReward(msgs[0]) || isAminoCommission(msgs[0])) {
+        return {};
+      }
     }
 
     return {};
@@ -327,6 +323,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     const publicKeyType = getPublicKeyType(chain);
 
                     const pubKey = { type: publicKeyType, value: base64PublicKey };
+
                     if (channel) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
@@ -342,7 +339,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                             void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
                             void setCurrentActivity({
                               txHash: txhash,
-                              id: chain.id,
+                              baseChainUUID: chain.id,
                               address,
                               type: txType,
                               amount: txAmountInfo.amount,
