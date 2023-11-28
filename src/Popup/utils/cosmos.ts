@@ -18,6 +18,7 @@ import { IXO } from '~/constants/chain/cosmos/ixo';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { KI } from '~/constants/chain/cosmos/ki';
 import { MARS } from '~/constants/chain/cosmos/mars';
+import { ONOMY } from '~/constants/chain/cosmos/onomy';
 import { PROVENANCE } from '~/constants/chain/cosmos/provenance';
 import { SEI } from '~/constants/chain/cosmos/sei';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
@@ -185,6 +186,7 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [STAFIHUB.id]: 'stafi',
     [FETCH_AI.id]: 'fetchai',
     [MARS.id]: 'mars-protocol',
+    [ONOMY.id]: 'onomy-protocol',
   };
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
@@ -198,6 +200,7 @@ export function convertAssetNameToCosmos(assetName: string) {
     stafi: STAFIHUB,
     fetchai: FETCH_AI,
     'mars-protocol': MARS,
+    'onomy-protocol': ONOMY,
   } as Record<string, CosmosChain | undefined>;
 
   return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);
