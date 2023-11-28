@@ -10,7 +10,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt } from '~/Popup/utils/big';
 import { convertToLocales, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { shorterAddress } from '~/Popup/utils/string';
-import type { Activity } from '~/types/extensionStorage';
+import type { ActivityData } from '~/types/extensionStorage';
 
 import {
   Container,
@@ -32,7 +32,7 @@ import Swap24Icon from '~/images/icons/Swap24.svg';
 import Transaction24Icon from '~/images/icons/Transaction24.svg';
 
 type ActivityItemProps = {
-  activity: Activity;
+  activity: ActivityData;
   displayAmount: string;
   displayDenom: string;
   decimals?: number;

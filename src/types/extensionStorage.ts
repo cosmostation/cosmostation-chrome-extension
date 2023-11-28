@@ -40,7 +40,7 @@ export type AccountCommon = {
   id: string;
 };
 
-export type Activity = {
+export type ActivityData = {
   address: string;
   baseChainUUID: string;
   timestamp: string;
@@ -58,9 +58,12 @@ export type AccountAddress = {
   address: string;
 };
 
-export type NetworkActivityMap = Record<NetworkUUID['id'], ActivityByAddressMap> | undefined;
+export type NetworkActivityMap = Record<NetworkUUID['id'], ActivityData[]>;
 
-export type ActivityByAddressMap = Record<AccountAddress['address'], Activity[]> | undefined;
+export type Activity = {
+  accountId: string;
+  activity: NetworkActivityMap;
+};
 
 export type AllowedOrigin = { accountId: AccountCommon['id']; origin: string };
 
@@ -138,7 +141,7 @@ export type ExtensionStorage = {
   language: LanguageType;
   addressBook: AddressInfo[];
 
-  activity: NetworkActivityMap;
+  activity: Activity[];
 
   rootPath: Path;
   homeTabIndex: HomeTabPath;

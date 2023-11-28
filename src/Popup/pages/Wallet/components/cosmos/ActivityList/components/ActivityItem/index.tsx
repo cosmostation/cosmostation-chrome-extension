@@ -10,7 +10,7 @@ import { gt } from '~/Popup/utils/big';
 import { convertToLocales } from '~/Popup/utils/common';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
-import type { Activity } from '~/types/extensionStorage';
+import type { ActivityData } from '~/types/extensionStorage';
 
 import {
   Container,
@@ -32,7 +32,7 @@ import Send24Icon from '~/images/icons/Send24.svg';
 import Transaction24Icon from '~/images/icons/Transaction24.svg';
 
 type ActivityItemProps = {
-  activity: Activity;
+  activity: ActivityData;
   chain: CosmosChain;
   displayAmount: string;
   displayDenom: string;

@@ -47,7 +47,12 @@ export function useCurrentActivity() {
     return '';
   }, [currentAptosNetwork.id, currentChain.id, currentChain.line, currentEthereumNetwork.id, currentSuiNetwork.id]);
 
-  const currentActivitiy = useMemo(() => [...(activity?.[currentNetworkId]?.[currentAddress] || [])], [activity, currentNetworkId, currentAddress]);
+  const currentActivitiy = useMemo(
+    () => [
+      ...(activity.find((item) => item.accountId === currentAccount.id)?.activity[currentNetworkId]?.filter((item) => item.address === currentAddress) || []),
+    ],
+    [activity, currentAccount.id, currentAddress, currentNetworkId],
+  );
 
   type SetCurrentActivityParams = {
     baseChainUUID: string;
@@ -59,7 +64,7 @@ export function useCurrentActivity() {
   };
 
   const setCurrentActivity = async ({ baseChainUUID, txHash, address, type, amount, toAddress }: SetCurrentActivityParams) => {
-    const selectedAddressActivities = [...(activity?.[baseChainUUID]?.[address] || [])];
+    const selectedAddressActivities = [...(activity.find((item) => item?.accountId === currentAccount.id)?.activity?.[baseChainUUID] || [])];
 
     const newActivity = {
       baseChainUUID,
@@ -71,7 +76,7 @@ export function useCurrentActivity() {
       toAddress,
     };
 
-    const newCurrentActivities = selectedAddressActivities?.find(
+    const newCurrentActivities = selectedAddressActivities.find(
       (item) =>
         isEqualsIgnoringCase(item.baseChainUUID, newActivity.baseChainUUID) &&
         isEqualsIgnoringCase(item.txHash, newActivity.txHash) &&
@@ -85,14 +90,29 @@ export function useCurrentActivity() {
         ? newCurrentActivities.filter((item) => !equal(item.timestamp, Math.min(...newCurrentActivities.map((activityItem) => Number(activityItem.timestamp)))))
         : newCurrentActivities;
 
-    const updatedActivities = {
-      ...activity,
-      [baseChainUUID]: {
-        ...activity?.[baseChainUUID],
-        [address]: trimmedCurrentActivities,
-      },
-    };
-
+    const updatedActivities = activity.find((item) => item.accountId === currentAccount.id)
+      ? activity.map((item) => {
+          if (item?.accountId === currentAccount.id) {
+            return {
+              ...item,
+              activity: {
+                ...item.activity,
+                [baseChainUUID]: trimmedCurrentActivities,
+              },
+            };
+          }
+          return item;
+        })
+      : [
+          ...activity,
+          {
+            accountId: currentAccount.id,
+            activity: {
+              ...activity.find((item) => item?.accountId === currentAccount.id)?.activity,
+              [baseChainUUID]: trimmedCurrentActivities,
+            },
+          },
+        ];
     await setExtensionStorage('activity', updatedActivities);
   };
 

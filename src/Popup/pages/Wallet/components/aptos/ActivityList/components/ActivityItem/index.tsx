@@ -7,14 +7,14 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { convertToLocales } from '~/Popup/utils/common';
 import { shorterAddress } from '~/Popup/utils/string';
-import type { Activity } from '~/types/extensionStorage';
+import type { ActivityData } from '~/types/extensionStorage';
 
 import { Container, LeftContainer, LeftIconContainer, LeftTextContainer, LeftTextSubtitleContainer, LeftTextTitleContainer, StyledButton } from './styled';
 
 import Transaction24Icon from '~/images/icons/Transaction24.svg';
 
 type ActivityItemProps = {
-  activity: Activity;
+  activity: ActivityData;
 };
 
 export default function ActivityItem({ activity }: ActivityItemProps) {
