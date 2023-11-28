@@ -227,7 +227,7 @@ export default function Ethereum({ txHash }: EthereumProps) {
                       </IconContainer>
 
                       <HeaderTitle data-is-success={txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED}>
-                        {txConfirmedStatus ? (
+                        {txConfirmedStatus === TX_CONFIRMED_STATUS.CONFIRMED ? (
                           <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.success')}</Typography>
                         ) : (
                           <Typography variant="h5">{t('pages.Popup.TxReceipt.Entry.Ethereum.entry.failure')}</Typography>

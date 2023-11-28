@@ -7,6 +7,7 @@ import { KAVA } from '~/constants/chain/ethereum/network/kava';
 import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
 import { get } from '~/Popup/utils/axios';
 import { toHex } from '~/Popup/utils/string';
+import type { EthereumNetwork } from '~/types/chain';
 import type { AssetPayload, ModifiedAsset } from '~/types/ethereum/asset';
 
 import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNetwork';
@@ -17,10 +18,12 @@ const nameMap = {
   [KAVA.id]: 'kava',
 };
 
-export function useTokensSWR(config?: SWRConfiguration) {
+export function useTokensSWR(chain?: EthereumNetwork, config?: SWRConfiguration) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const mappingName = nameMap[currentEthereumNetwork.id] || currentEthereumNetwork.networkName.toLowerCase();
+  const currentChain = chain || currentEthereumNetwork;
+
+  const mappingName = nameMap[currentChain.id] || currentChain.networkName.toLowerCase();
 
   const requestURL = `https://front.api.mintscan.io/v3/assets/${mappingName}/erc20`;
 
