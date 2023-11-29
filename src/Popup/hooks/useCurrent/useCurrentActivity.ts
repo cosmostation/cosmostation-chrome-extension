@@ -27,7 +27,7 @@ export function useCurrentActivity() {
   const accounts = useAccounts();
 
   const currentAddress = useMemo(
-    () => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[currentChain.id] || '',
+    () => accounts?.data?.find((ac) => isEqualsIgnoringCase(ac.id, currentAccount.id))?.address?.[currentChain.id] || '',
     [accounts?.data, currentChain.id, currentAccount.id],
   );
 
@@ -49,7 +49,9 @@ export function useCurrentActivity() {
 
   const currentActivitiy = useMemo(
     () => [
-      ...(activity.find((item) => item.accountId === currentAccount.id)?.activity[currentNetworkId]?.filter((item) => item.address === currentAddress) || []),
+      ...(activity
+        .find((item) => isEqualsIgnoringCase(item.accountId, currentAccount.id))
+        ?.activity[currentNetworkId]?.filter((item) => isEqualsIgnoringCase(item.address, currentAddress)) || []),
     ],
     [activity, currentAccount.id, currentAddress, currentNetworkId],
   );
@@ -64,7 +66,7 @@ export function useCurrentActivity() {
   };
 
   const setCurrentActivity = async ({ baseChainUUID, txHash, address, type, amount, toAddress }: SetCurrentActivityParams) => {
-    const selectedAddressActivities = [...(activity.find((item) => item?.accountId === currentAccount.id)?.activity?.[baseChainUUID] || [])];
+    const selectedAddressActivities = [...(activity.find((item) => isEqualsIgnoringCase(item?.accountId, currentAccount.id))?.activity?.[baseChainUUID] || [])];
 
     const newActivity = {
       baseChainUUID,
@@ -92,7 +94,7 @@ export function useCurrentActivity() {
 
     const updatedActivities = activity.find((item) => item.accountId === currentAccount.id)
       ? activity.map((item) => {
-          if (item?.accountId === currentAccount.id) {
+          if (isEqualsIgnoringCase(item?.accountId, currentAccount.id)) {
             return {
               ...item,
               activity: {
@@ -108,7 +110,7 @@ export function useCurrentActivity() {
           {
             accountId: currentAccount.id,
             activity: {
-              ...activity.find((item) => item?.accountId === currentAccount.id)?.activity,
+              ...activity.find((item) => isEqualsIgnoringCase(item?.accountId, currentAccount.id))?.activity,
               [baseChainUUID]: trimmedCurrentActivities,
             },
           },
