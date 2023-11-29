@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import EmptyAsset from '~/Popup/components/EmptyAsset';
-import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
+import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -20,8 +20,9 @@ type ActivityListProps = {
 export default function ActivityList({ chain }: ActivityListProps) {
   const { t } = useTranslation();
 
-  const { coins, ibcCoins } = useCoinListSWR(chain);
   const { currentActivitiy } = useCurrentActivity();
+
+  const assets = useAssetsSWR(chain);
 
   const sortedCurrentActivities = useMemo(() => currentActivitiy.sort((a, b) => (gt(a.timestamp, b.timestamp) ? -1 : 1)), [currentActivitiy]);
 
@@ -32,39 +33,16 @@ export default function ActivityList({ chain }: ActivityListProps) {
       <ListContainer>
         {isExistActivity ? (
           sortedCurrentActivities.map((activity) => {
-            const itemBaseAmount = activity.amount?.[0].amount || '0';
-            const itemBaseDenom = activity.amount?.[0].denom || '';
+            const itemBaseAmount = activity.amount?.[0]?.amount || '0';
+            const itemBaseDenom = activity.amount?.[0]?.denom || '';
 
-            const assetCoinInfo = coins.find((coin) => isEqualsIgnoringCase(coin.baseDenom, activity.amount?.[0].denom));
-            const ibcCoinInfo = ibcCoins.find((coin) => coin.baseDenom === activity.amount?.[0].denom);
+            const assetCoinInfo = assets.data.find((coin) => isEqualsIgnoringCase(coin.denom, itemBaseDenom));
 
-            const itemDisplayAmount = (() => {
-              if (itemBaseDenom === chain.baseDenom) {
-                return toDisplayDenomAmount(itemBaseAmount, chain.decimals);
-              }
-
-              if (assetCoinInfo?.decimals) {
-                return toDisplayDenomAmount(itemBaseAmount, assetCoinInfo.decimals);
-              }
-
-              if (ibcCoinInfo?.decimals) {
-                return toDisplayDenomAmount(itemBaseAmount, ibcCoinInfo.decimals);
-              }
-
-              return '0';
-            })();
+            const itemDisplayAmount = assetCoinInfo?.decimals ? toDisplayDenomAmount(itemBaseAmount, assetCoinInfo.decimals) : '0';
 
             const itemDisplayDenom = (() => {
-              if (itemBaseDenom === chain.baseDenom) {
-                return chain.displayDenom;
-              }
-
-              if (assetCoinInfo?.displayDenom) {
-                return assetCoinInfo.displayDenom;
-              }
-
-              if (ibcCoinInfo?.displayDenom) {
-                return ibcCoinInfo.displayDenom;
+              if (assetCoinInfo?.symbol) {
+                return assetCoinInfo.symbol;
               }
 
               return itemBaseDenom.length > 5 ? `${itemBaseDenom.substring(0, 5)}...` : itemBaseDenom;

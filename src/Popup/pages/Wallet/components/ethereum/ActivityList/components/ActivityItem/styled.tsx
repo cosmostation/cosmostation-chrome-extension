@@ -84,7 +84,7 @@ export const RightContainer = styled('div')({
 
 export const RightTextContainer = styled('div')(({ theme }) => ({
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'baseline',
 
   columnGap: '0.3rem',
 

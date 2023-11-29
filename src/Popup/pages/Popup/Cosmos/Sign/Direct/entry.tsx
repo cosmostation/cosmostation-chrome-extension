@@ -155,7 +155,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const txType = useMemo(() => {
     if (msgs?.length === 1) {
-      return determineDirectActivityType(msgs[txMsgPage - 1]);
+      return determineDirectActivityType(msgs[0]);
     }
 
     if (msgs?.length > 1) {
@@ -164,7 +164,7 @@ export default function Entry({ queue, chain }: EntryProps) {
     }
 
     return 'custom';
-  }, [msgs, txMsgPage]);
+  }, [msgs]);
 
   const txAmountInfo = useMemo(() => {
     if (msgs?.length === 1) {

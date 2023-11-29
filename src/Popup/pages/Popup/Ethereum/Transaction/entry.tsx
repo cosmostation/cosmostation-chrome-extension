@@ -306,25 +306,17 @@ export default function Entry({ queue }: EntryProps) {
 
   const txAmountInfo = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
-      try {
-        return {
-          amount: toBaseDenomAmount(sendDisplayAmount, decimals),
-          denom: EVM_NATIVE_TOKEN_ADDRESS,
-        };
-      } catch {
-        return undefined;
-      }
+      return {
+        amount: toBaseDenomAmount(sendDisplayAmount, decimals),
+        denom: EVM_NATIVE_TOKEN_ADDRESS,
+      };
     }
 
-    if (txType.data?.type === 'transfer') {
-      try {
-        return {
-          amount: toBaseDenomAmount(sendDisplayAmount, token?.decimals || 0),
-          denom: token?.address || '',
-        };
-      } catch {
-        return undefined;
-      }
+    if (txType.data?.type === 'transfer' && token) {
+      return {
+        amount: toBaseDenomAmount(sendDisplayAmount, token.decimals),
+        denom: token.address,
+      };
     }
 
     if (txType.data?.type === 'swap') {
@@ -343,7 +335,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return undefined;
-  }, [decimals, oneInchTokens.data, sendDisplayAmount, token?.address, token?.decimals, txType.data?.txDescription?.args, txType.data?.type]);
+  }, [decimals, oneInchTokens.data, sendDisplayAmount, token, txType.data?.txDescription?.args, txType.data?.type]);
 
   const sendDisplayDenom = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {

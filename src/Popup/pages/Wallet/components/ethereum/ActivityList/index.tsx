@@ -8,6 +8,7 @@ import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEt
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 
 import ActivityItem from './components/ActivityItem';
 import { Container, EmptyAssetContainer, ListContainer } from './styled';
@@ -48,11 +49,11 @@ export default function ActivityList() {
       <ListContainer>
         {isExistActivity ? (
           sortedCurrentActivities.map((activity) => {
-            const itemBaseAmount = activity.amount?.[0].amount || '0';
+            const itemBaseAmount = activity.amount?.[0]?.amount || '0';
 
-            const itemBaseDenom = activity.amount?.[0].denom || '';
+            const itemBaseDenom = activity.amount?.[0]?.denom || '';
 
-            const assetCoinInfo = allTokens.find((token) => token.address === activity.amount?.[0].denom);
+            const assetCoinInfo = allTokens.find((token) => isEqualsIgnoringCase(token.address, itemBaseDenom));
 
             const decimals = (() => {
               if (itemBaseDenom === EVM_NATIVE_TOKEN_ADDRESS) {
