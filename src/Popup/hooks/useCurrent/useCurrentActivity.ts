@@ -92,7 +92,7 @@ export function useCurrentActivity() {
         ? newCurrentActivities.filter((item) => !equal(item.timestamp, Math.min(...newCurrentActivities.map((activityItem) => Number(activityItem.timestamp)))))
         : newCurrentActivities;
 
-    const updatedActivities = activity.find((item) => item.accountId === currentAccount.id)
+    const updatedActivities = activity.find((item) => isEqualsIgnoringCase(item.accountId, currentAccount.id))
       ? activity.map((item) => {
           if (isEqualsIgnoringCase(item?.accountId, currentAccount.id)) {
             return {
