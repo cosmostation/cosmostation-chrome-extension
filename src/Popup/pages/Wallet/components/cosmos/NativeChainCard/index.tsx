@@ -122,7 +122,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const operatorAddress = useMemo(() => validators.data?.find((item) => item.address === currentAddress)?.operatorAddress, [currentAddress, validators.data]);
 
-  const isProtobufSign = useMemo(
+  const isCommProtobufSign = useMemo(
     () => validators.data?.find((item) => item.address === currentAddress)?.signType === 'protobuf',
     [currentAddress, validators.data],
   );
@@ -205,7 +205,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const commissionDirectTx = useMemo(() => {
     if (
       operatorAddress &&
-      isProtobufSign &&
+      isCommProtobufSign &&
       account.data?.value.account_number &&
       account.data.value.sequence &&
       !!commissionSimulate.data?.gas_info?.gas_used
@@ -247,7 +247,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     return undefined;
   }, [
     operatorAddress,
-    isProtobufSign,
+    isCommProtobufSign,
     account.data?.value.account_number,
     account.data?.value.sequence,
     commissionSimulate.data?.gas_info?.gas_used,
@@ -289,7 +289,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const isPossibleClaimCommission = useMemo(
     () =>
-      isProtobufSign
+      isCommProtobufSign
         ? !!commissionDirectTx && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount) && currentAccount.type !== 'LEDGER'
         : !!commissionAminoTx && !!commissionSimulate.data?.gas_info?.gas_used && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount),
     [
@@ -299,7 +299,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
       currentAccount.type,
       displayAvailableAmount,
       estimatedCommissionDisplayFeeAmount,
-      isProtobufSign,
+      isCommProtobufSign,
     ],
   );
 
@@ -473,7 +473,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                   type="button"
                   disabled={!isPossibleClaimCommission}
                   onClick={async () => {
-                    if (isProtobufSign && commissionDirectTx && isPossibleClaimCommission) {
+                    if (isCommProtobufSign && commissionDirectTx && isPossibleClaimCommission) {
                       await enQueue({
                         messageId: '',
                         origin: '',
@@ -493,7 +493,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                       });
                     }
 
-                    if (!isProtobufSign && commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
+                    if (!isCommProtobufSign && commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
                       await enQueue({
                         messageId: '',
                         origin: '',
