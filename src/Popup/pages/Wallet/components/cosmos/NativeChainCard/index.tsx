@@ -5,7 +5,6 @@ import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
-import { EVMOS } from '~/constants/chain/cosmos/evmos';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { ACCENT_COLORS } from '~/constants/theme';
 import customBeltImg from '~/images/etc/customBelt.png';
@@ -123,6 +122,11 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const operatorAddress = useMemo(() => validators.data?.find((item) => item.address === currentAddress)?.operatorAddress, [currentAddress, validators.data]);
 
+  const isProtobufSign = useMemo(
+    () => validators.data?.find((item) => item.address === currentAddress)?.signType === 'protobuf',
+    [currentAddress, validators.data],
+  );
+
   const rewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
     if (reward.data?.rewards?.length && account.data?.value.account_number && account.data.value.sequence) {
       return {
@@ -201,7 +205,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const commissionDirectTx = useMemo(() => {
     if (
       operatorAddress &&
-      chain.id === EVMOS.id &&
+      isProtobufSign &&
       account.data?.value.account_number &&
       account.data.value.sequence &&
       !!commissionSimulate.data?.gas_info?.gas_used
@@ -243,10 +247,11 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     return undefined;
   }, [
     operatorAddress,
-    chain,
+    isProtobufSign,
     account.data?.value.account_number,
     account.data?.value.sequence,
     commissionSimulate.data?.gas_info?.gas_used,
+    chain,
     currentAccount,
     currentPassword,
   ]);
@@ -284,17 +289,17 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const isPossibleClaimCommission = useMemo(
     () =>
-      chain.id === EVMOS.id
+      isProtobufSign
         ? !!commissionDirectTx && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount) && currentAccount.type !== 'LEDGER'
         : !!commissionAminoTx && !!commissionSimulate.data?.gas_info?.gas_used && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount),
     [
-      chain.id,
       commissionAminoTx,
       commissionDirectTx,
       commissionSimulate.data?.gas_info?.gas_used,
       currentAccount.type,
       displayAvailableAmount,
       estimatedCommissionDisplayFeeAmount,
+      isProtobufSign,
     ],
   );
 
@@ -468,7 +473,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                   type="button"
                   disabled={!isPossibleClaimCommission}
                   onClick={async () => {
-                    if (chain.id === EVMOS.id && commissionDirectTx && isPossibleClaimCommission) {
+                    if (isProtobufSign && commissionDirectTx && isPossibleClaimCommission) {
                       await enQueue({
                         messageId: '',
                         origin: '',
@@ -488,7 +493,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                       });
                     }
 
-                    if (chain.id !== EVMOS.id && commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
+                    if (!isProtobufSign && commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
                       await enQueue({
                         messageId: '',
                         origin: '',
