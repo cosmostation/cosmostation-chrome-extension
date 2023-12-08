@@ -22,7 +22,6 @@ import { ONOMY } from '~/constants/chain/cosmos/onomy';
 import { PROVENANCE } from '~/constants/chain/cosmos/provenance';
 import { SEI } from '~/constants/chain/cosmos/sei';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
-import { STARNAME } from '~/constants/chain/cosmos/starname';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
@@ -46,7 +45,7 @@ import { toBase64 } from './string';
 export function cosmosURL(chain: CosmosChain) {
   const { restURL, id } = chain;
 
-  const isV1BetaClientState = [IXO.id, STARNAME.id, EMONEY.id].includes(chain.id);
+  const isV1BetaClientState = [IXO.id, EMONEY.id].includes(chain.id);
   // reward 중첩 typing!
   return {
     getNodeInfo: () => `${restURL}/cosmos/base/tendermint/v1beta1/node_info`,
