@@ -49,6 +49,7 @@ import { LUM } from './cosmos/lum';
 import { MARS } from './cosmos/mars';
 import { MEDIBLOC } from './cosmos/medibloc';
 import { NEUTRON } from './cosmos/neutron';
+import { NIBIRU } from './cosmos/nibiru';
 import { NOBLE } from './cosmos/noble';
 import { NYX, NYX_FEE_BASE_DENOMS, NYX_GAS_RATES } from './cosmos/nyx';
 import { OMNIFLIX } from './cosmos/omniflix';
@@ -177,6 +178,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   TGRADE,
   UMEE,
   XPLA,
+  NIBIRU,
 ];
 
 export const COSMOS_FEE_BASE_DENOMS: CosmosFeeBaseDenom[] = [...NYX_FEE_BASE_DENOMS];
