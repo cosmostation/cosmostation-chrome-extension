@@ -37,7 +37,7 @@
     "url": "https://github.com/cosmostation/cosmostation-chrome-extension.git"
   },
   "dependencies": {
-    "@0xsquid/sdk": "^1.14.12",
+    "@0xsquid/sdk": "1.8.0",
     "@cosmostation/wallets": "^2.0.5",
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
