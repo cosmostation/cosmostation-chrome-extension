@@ -976,10 +976,10 @@ export default function Entry() {
       if (currentSwapAPI === 'squid_evm' && squidSwap.squidRoute?.data && currentFromChain.line === ETHEREUM.line) {
         return {
           from: currentFromAddress,
-          to: squidSwap.squidRoute.data.route.transactionRequest.targetAddress,
-          data: squidSwap.squidRoute.data.route.transactionRequest.data,
-          value: toHex(squidSwap.squidRoute.data.route.transactionRequest.value, { addPrefix: true, isStringNumber: true }),
-          gas: toHex(squidSwap.squidRoute.data.route.transactionRequest.gasLimit, { addPrefix: true, isStringNumber: true }),
+          to: squidSwap.squidRoute.data.route.transactionRequest?.targetAddress,
+          data: squidSwap.squidRoute.data.route.transactionRequest?.data,
+          value: toHex(squidSwap.squidRoute.data.route.transactionRequest?.value, { addPrefix: true, isStringNumber: true }),
+          gas: toHex(squidSwap.squidRoute.data.route.transactionRequest?.gasLimit, { addPrefix: true, isStringNumber: true }),
         };
       }
     }
@@ -1019,7 +1019,7 @@ export default function Entry() {
       return times(oneInchRoute.data.tx.gas, getDefaultAV(), 0);
     }
 
-    if (currentSwapAPI === 'squid_evm' && squidSwap.squidRoute?.data) {
+    if (currentSwapAPI === 'squid_evm' && squidSwap.squidRoute?.data?.route.transactionRequest?.gasLimit) {
       return squidSwap.squidRoute.data.route.transactionRequest.gasLimit;
     }
 

@@ -2,12 +2,18 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 import { Squid } from '@0xsquid/sdk';
 
-import { SQUID_BASE_URL } from '~/constants/squid';
+import { SQUID_BASE_URL, SQUID_INTEGRATOR_ID } from '~/constants/squid';
+
+type SquidConfigParam = {
+  baseUrl: string;
+  integratorId: string;
+};
 
 export function useSquidSWR(config?: SWRConfiguration) {
-  const fetcher = async (baseUrl: string) => {
+  const fetcher = async ({ baseUrl, integratorId }: SquidConfigParam) => {
     const squid = new Squid({
       baseUrl,
+      integratorId,
       executionSettings: {
         infiniteApproval: true,
       },
@@ -21,7 +27,7 @@ export function useSquidSWR(config?: SWRConfiguration) {
     }
   };
 
-  const { data, error, mutate } = useSWR<Squid | null, unknown>(SQUID_BASE_URL, fetcher, {
+  const { data, error, mutate } = useSWR<Squid | null, unknown>({ baseUrl: SQUID_BASE_URL, integratorId: SQUID_INTEGRATOR_ID }, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,

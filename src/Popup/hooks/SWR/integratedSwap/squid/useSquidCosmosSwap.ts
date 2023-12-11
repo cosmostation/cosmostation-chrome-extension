@@ -4,6 +4,7 @@ import type { GetRoute, TokenData } from '@0xsquid/sdk';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS } from '~/constants/chain';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { SQUID_COLLECT_FEE_BPF, SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS } from '~/constants/squid';
 import { useAssetsSWR, useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -74,6 +75,10 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
         toToken: toToken.address,
         toAddress: receiverAddress,
         slippage: Number(slippage),
+        collectFees: {
+          integratorAddress: SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS,
+          fee: SQUID_COLLECT_FEE_BPF,
+        },
         enableForecall: true,
       };
     }
@@ -174,10 +179,10 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
 
   const parsedSquidSwapTx = useMemo(
     () =>
-      squidCosmosRoute.data?.route.transactionRequest.data
+      squidCosmosRoute.data?.route.transactionRequest?.data
         ? (JSON.parse(squidCosmosRoute.data.route.transactionRequest.data) as SquidCosmosSwapMsg)
         : undefined,
-    [squidCosmosRoute.data?.route.transactionRequest.data],
+    [squidCosmosRoute.data?.route.transactionRequest?.data],
   );
 
   const chainInfo = useMemo(() => {
