@@ -23,13 +23,12 @@ import { BITCANNA } from './cosmos/bitcanna';
 import { BITSONG } from './cosmos/bitsong';
 import { CANTO } from './cosmos/canto';
 import { CELESTIA } from './cosmos/celestia';
-import { CERBERUS } from './cosmos/cerberus';
 import { CHIHUAHUA } from './cosmos/chihuahua';
 import { COMDEX } from './cosmos/comdex';
 import { COREUM } from './cosmos/coreum';
 import { COSMOS } from './cosmos/cosmos';
 import { CRESCENT } from './cosmos/crescent';
-import { CRYPTO_ORG } from './cosmos/cryptoOrg';
+import { CRONOS_POS } from './cosmos/cronosPos';
 import { CUDOS } from './cosmos/cudos';
 import { DESMOS } from './cosmos/desmos';
 import { DYDX } from './cosmos/dydx';
@@ -69,11 +68,9 @@ import { SHENTU } from './cosmos/shentu';
 import { SOMMELIER } from './cosmos/sommelier';
 import { STAFIHUB } from './cosmos/stafihub';
 import { STARGAZE } from './cosmos/stargaze';
-import { STARNAME } from './cosmos/starname';
 import { STRIDE } from './cosmos/stride';
 import { TERITORI } from './cosmos/teritori';
 import { TERRA } from './cosmos/terra';
-import { TGRADE } from './cosmos/tgrade';
 import { UMEE } from './cosmos/umee';
 import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
@@ -111,6 +108,7 @@ export const COSMOS_DEFAULT_IBC_SEND_GAS = '150000';
 export const COSMOS_DEFAULT_TRANSFER_GAS = '200000';
 export const COSMOS_DEFAULT_IBC_TRANSFER_GAS = '250000';
 export const COSMOS_DEFAULT_REWARD_GAS = '300000';
+export const COSMOS_DEFAULT_SQUID_CONTRACT_SWAP_GAS = '350000';
 
 export const COSMOS_DEFAULT_ESTIMATE_AV = '1.2';
 export const COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV = '1.4';
@@ -125,13 +123,12 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   BITCANNA,
   BITSONG,
   CANTO,
-  CERBERUS,
   CELESTIA,
   CHIHUAHUA,
   COMDEX,
   COREUM,
   CRESCENT,
-  CRYPTO_ORG,
+  CRONOS_POS,
   CUDOS,
   DESMOS,
   DYDX,
@@ -171,11 +168,9 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   SOMMELIER,
   STAFIHUB,
   STARGAZE,
-  STARNAME,
   STRIDE,
   TERITORI,
   TERRA,
-  TGRADE,
   UMEE,
   XPLA,
 ];

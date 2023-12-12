@@ -29,7 +29,7 @@ type UseSkipSwapTxSWRProps = {
 };
 
 export function useSkipSwapTxSWR({ skipSwapTxParam: swapTxParam }: UseSkipSwapTxSWRProps, config?: SWRConfiguration) {
-  const requestURL = `${SKIP_BASE_URL}/v1/fungible/msgs`;
+  const requestURL = `${SKIP_BASE_URL}/v1/fungible/msgs?client_id=cosmostation_extension`;
 
   const fetcher = async ({ fetchUrl, skipSwapTxParam }: FetchProps) =>
     post<SkipSwapTxPayload>(fetchUrl, {
