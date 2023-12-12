@@ -44,7 +44,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { getDefaultAV } from '~/Popup/utils/cosmos';
+import { convertAssetNameToCosmos, getDefaultAV } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { CosmosChain, EthereumToken } from '~/types/chain';
@@ -392,7 +392,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: getCapitalize(item.prevChain || item.origin_chain),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -455,7 +455,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: getCapitalize(item.prevChain || item.origin_chain),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -548,7 +548,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: getCapitalize(item.prevChain || item.origin_chain),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -633,7 +633,8 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: getCapitalize(item.prevChain || item.origin_chain),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
+
             displayDenom: item.symbol,
             symbol: undefined,
           };
