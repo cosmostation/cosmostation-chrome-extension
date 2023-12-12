@@ -20,7 +20,7 @@ export const HUMANS_AI: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'human' },
-  //   coinGeckoId: 'humans-ai',
+  coinGeckoId: 'humans-ai',
   explorerURL: `${MINTSCAN_URL}/humans`,
   gasRate: {
     tiny: '20000000000',
