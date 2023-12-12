@@ -92,7 +92,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
   if (currentAccount.type === 'LEDGER' && chain && currentQueue) {
     if (
-      ![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG].includes(chain.bip44.coinType) &&
+      ![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS].includes(chain.bip44.coinType) &&
       chain.line === 'COSMOS'
     ) {
       return null;
@@ -101,7 +101,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
     if (
       (!currentAccount.cosmosPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS && chain.line === 'COSMOS') ||
       (!currentAccount.mediblocPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC && chain.line === 'COSMOS') ||
-      (!currentAccount.cryptoOrgPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG && chain.line === 'COSMOS') ||
+      (!currentAccount.cryptoOrgPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS && chain.line === 'COSMOS') ||
       (!currentAccount.ethereumPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM && chain.line === 'ETHEREUM') ||
       (!currentAccount.suiPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI && chain.line === 'SUI')
     ) {
@@ -109,7 +109,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) return Step2CosmosIcon;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) return Step2EthereumIcon;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) return Step2Medibloc;
-        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG) return Step2CryptoOrg;
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS) return Step2CryptoOrg;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI) return Step2Sui;
         return null;
       })();
@@ -118,7 +118,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) return 'Cosmos';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) return 'Ethereum';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) return 'Medibloc';
-        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG) return 'Crypto.org Chain';
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS) return 'Crypto.org Chain';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI) return 'Sui';
         return null;
       })();
@@ -222,7 +222,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                       }
                     }
 
-                    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRYPTO_ORG) {
+                    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS) {
                       const cosmosApp = new CosmosApp(transport);
 
                       const result = await cosmosApp.getPublicKey([44, 394, 0, 0, Number(currentAccount.bip44.addressIndex)]);
