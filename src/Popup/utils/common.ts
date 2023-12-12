@@ -1,5 +1,5 @@
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
-import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
+import { CRONOS_POS } from '~/constants/chain/cosmos/cronosPos';
 import { MEDIBLOC } from '~/constants/chain/cosmos/medibloc';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -89,7 +89,7 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
       return { privateKey: null, publicKey: Buffer.from(account.mediblocPublicKey, 'hex') };
     }
 
-    if (chain.bip44.coinType === CRYPTO_ORG.bip44.coinType && account.cryptoOrgPublicKey) {
+    if (chain.bip44.coinType === CRONOS_POS.bip44.coinType && account.cryptoOrgPublicKey) {
       return { privateKey: null, publicKey: Buffer.from(account.cryptoOrgPublicKey, 'hex') };
     }
 
