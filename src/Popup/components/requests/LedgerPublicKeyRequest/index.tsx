@@ -118,7 +118,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) return 'Cosmos';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) return 'Ethereum';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) return 'Medibloc';
-        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS) return 'Crypto.org Chain';
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS) return 'Cronos POS';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI) return 'Sui';
         return null;
       })();
