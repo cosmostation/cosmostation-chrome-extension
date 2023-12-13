@@ -104,12 +104,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const { decimals, gas, gasRate } = chain;
 
-  const filteredCosmosChainAssets = useMemo(
-    () => cosmosChainsAssets.data.filter((item) => cosmosAssetNames.includes(item.chain)) || [],
-    [cosmosChainsAssets.data],
-  );
+  const filteredCosmosChainAssets = useMemo(() => cosmosChainsAssets.data.filter((item) => cosmosAssetNames.includes(item.chain)), [cosmosChainsAssets.data]);
   const filteredCurrentChainAssets = useMemo(
-    () => currentChainAssets.data.filter((item) => convertAssetNameToCosmos(item.prevChain || '')) || [],
+    () => currentChainAssets.data.filter((item) => convertAssetNameToCosmos(item.prevChain || '')),
     [currentChainAssets.data],
   );
 
@@ -187,12 +184,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
         }),
     ];
 
-    return (
-      coinOrTokenList
-        .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom))
-        .sort((a, b) => (gt(a.price, b.price) ? -1 : 1))
-        .sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1)) || []
-    );
+    return coinOrTokenList
+      .sort((a, b) => a.displayDenom.localeCompare(b.displayDenom))
+      .sort((a, b) => (gt(a.price, b.price) ? -1 : 1))
+      .sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
   }, [
     coinsBalance?.balance,
     chain.chainName,
@@ -212,15 +207,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
         (item) =>
           (item.type === 'coin' && isEqualsIgnoringCase(item.baseDenom, currentCoinOrTokenId)) ||
           (item.type === 'token' && isEqualsIgnoringCase(item.address, currentCoinOrTokenId)),
-      ) ||
-      senderCoinAndTokenList[0] ||
-      undefined,
+      ) || senderCoinAndTokenList[0],
     [senderCoinAndTokenList, currentCoinOrTokenId],
   );
 
   const sendGas = useMemo(
-    () => (currentCoinOrToken?.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS : gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS),
-    [currentCoinOrToken?.type, gas.ibcSend, gas.ibcTransfer],
+    () => (currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS : gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS),
+    [currentCoinOrToken.type, gas.ibcSend, gas.ibcTransfer],
   );
 
   const [customGas, setCustomGas] = useState<string | undefined>();
@@ -236,7 +229,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const tokenBalance = useTokenBalanceSWR(chain, currentCoinOrTokenId, senderAddress);
 
   const currentCoinOrTokenAvailableAmount = useMemo(() => {
-    if (currentCoinOrToken?.type === 'coin') {
+    if (currentCoinOrToken.type === 'coin') {
       return currentCoinOrToken.availableAmount;
     }
 
@@ -244,13 +237,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
   }, [currentCoinOrToken, tokenBalance.data?.balance]);
 
   const currentCoinOrTokenDisplayAvailableAmount = useMemo(
-    () => toDisplayDenomAmount(currentCoinOrTokenAvailableAmount, currentCoinOrToken?.decimals || 0),
-    [currentCoinOrToken?.decimals, currentCoinOrTokenAvailableAmount],
+    () => toDisplayDenomAmount(currentCoinOrTokenAvailableAmount, currentCoinOrToken.decimals),
+    [currentCoinOrToken.decimals, currentCoinOrTokenAvailableAmount],
   );
 
   const receiverIBCList = useMemo(() => {
     if (
-      currentCoinOrToken?.type === 'coin' &&
+      currentCoinOrToken.type === 'coin' &&
       (currentCoinOrToken.coinType === 'native' || currentCoinOrToken.coinType === 'staking' || currentCoinOrToken.coinType === 'bridge')
     ) {
       const assets = filteredCosmosChainAssets.filter(
@@ -267,7 +260,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         );
     }
 
-    if (currentCoinOrToken?.type === 'coin' && currentCoinOrToken.coinType === 'ibc') {
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.coinType === 'ibc') {
       const assets = filteredCurrentChainAssets.filter(
         (asset) => isEqualsIgnoringCase(asset.denom, currentCoinOrToken.baseDenom) && asset.channel && asset.port,
       );
@@ -287,7 +280,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
       );
     }
 
-    if (currentCoinOrToken?.type === 'token') {
+    if (currentCoinOrToken.type === 'token') {
       const assets = filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, currentCoinOrToken.address));
       return assets
         .map((item) => ({ chain: convertAssetNameToCosmos(item.chain)!, channel: item.counter_party!.channel, port: item.counter_party!.port }))
@@ -353,15 +346,15 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
-    if (currentCoinOrToken?.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
       return gt(maxAmount, '0') ? maxAmount : '0';
     }
 
     return currentCoinOrTokenDisplayAvailableAmount;
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
-  const currentCoinOrTokenDecimals = useMemo(() => currentCoinOrToken?.decimals || 0, [currentCoinOrToken?.decimals]);
-  const currentCoinOrTokenDisplayDenom = useMemo(() => currentCoinOrToken?.displayDenom || '', [currentCoinOrToken?.displayDenom]);
+  const currentCoinOrTokenDecimals = useMemo(() => currentCoinOrToken.decimals || 0, [currentCoinOrToken.decimals]);
+  const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
   const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
   const errorMessage = useMemo(() => {
     if (!latestHeight) {
@@ -375,13 +368,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAmount');
     }
 
-    if (currentCoinOrToken?.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
       if (!gte(currentCoinOrTokenDisplayAvailableAmount, plus(currentDisplayAmount, currentDisplayFeeAmount))) {
         return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
       }
     }
 
-    if ((currentCoinOrToken?.type === 'coin' && currentCoinOrToken.baseDenom !== currentFeeCoin.baseDenom) || currentCoinOrToken?.type === 'token') {
+    if ((currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom !== currentFeeCoin.baseDenom) || currentCoinOrToken.type === 'token') {
       if (!gte(currentCoinOrTokenDisplayAvailableAmount, currentDisplayAmount)) {
         return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
       }
@@ -409,7 +402,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     if (account.data?.value.account_number && selectedReceiverIBC && currentDisplayAmount) {
       const sequence = String(account.data?.value.sequence || '0');
 
-      if (currentCoinOrToken?.type === 'coin' && revisionNumber && revisionHeight) {
+      if (currentCoinOrToken.type === 'coin' && revisionNumber && revisionHeight) {
         return {
           account_number: String(account.data.value.account_number),
           sequence,
@@ -446,7 +439,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         };
       }
 
-      if (currentCoinOrToken?.type === 'token') {
+      if (currentCoinOrToken.type === 'token') {
         return {
           account_number: String(account.data.value.account_number),
           sequence,
@@ -623,7 +616,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         )}
         <MarginTop8Div>
           <AssetBottomSheetButton
-            imgSrc={currentCoinOrToken?.imageURL}
+            imgSrc={currentCoinOrToken.imageURL}
             title={currentCoinOrTokenDisplayDenom}
             leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.available')}
             leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
@@ -649,7 +642,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
               </InputAdornment>
             }
             onChange={(e) => {
-              if (!isDecimal(e.currentTarget.value, currentCoinOrToken?.decimals || 0) && e.currentTarget.value) {
+              if (!isDecimal(e.currentTarget.value, currentCoinOrToken.decimals || 0) && e.currentTarget.value) {
                 return;
               }
 
