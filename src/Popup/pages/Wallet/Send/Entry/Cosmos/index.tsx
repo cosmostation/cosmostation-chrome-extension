@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import { CircularTab, CircularTabPanel, CircularTabs } from '~/Popup/components/common/CircularTab';
 import { BackButton } from '~/Popup/components/SubHeader/styled';
@@ -7,6 +8,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain, CosmosToken as BaseCosmosToken } from '~/types/chain';
 
+import IBCError from './components/IBCError';
 import IBCSend from './components/IBCSend';
 import Send from './components/Send';
 import { CircularTabContainer, Container, TopContainer } from './styled';
@@ -55,7 +57,9 @@ export default function Cosmos({ chain }: CosmosProps) {
         <Send chain={chain} />
       </CircularTabPanel>
       <CircularTabPanel value={value} index={1}>
-        <IBCSend chain={chain} />
+        <ErrorBoundary fallback={<IBCError />}>
+          <IBCSend chain={chain} />
+        </ErrorBoundary>
       </CircularTabPanel>
     </Container>
   );
