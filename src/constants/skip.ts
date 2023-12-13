@@ -1,23 +1,37 @@
+import { NEUTRON } from './chain/cosmos/neutron';
+import { OSMOSIS } from './chain/cosmos/osmosis';
+import { TERRA } from './chain/cosmos/terra';
+
 export const SKIP_BASE_URL = 'https://api.skip.money';
 
-export const DEFAULT_BPF = '0';
+export const DEFAULT_BPF = '100';
 
 export const AFFILIATES = {
   cosmos: [
     {
-      chainId: 'osmosis-1',
+      chainId: OSMOSIS.chainId,
       affiliate: [
         {
-          address: '',
+          address: 'osmo1clpqr4nrk4khgkxj78fcwwh6dl3uw4epasmvnj',
+          basis_points_fee: DEFAULT_BPF,
+        },
+      ],
+    },
+
+    {
+      chainId: NEUTRON.chainId,
+      affiliate: [
+        {
+          address: 'neutron1clpqr4nrk4khgkxj78fcwwh6dl3uw4ep35p7l8',
           basis_points_fee: DEFAULT_BPF,
         },
       ],
     },
     {
-      chainId: 'neutron-1',
+      chainId: TERRA.chainId,
       affiliate: [
         {
-          address: '',
+          address: 'terra1564j3fq8p8np4yhh4lytnftz33japc03wuejxm',
           basis_points_fee: DEFAULT_BPF,
         },
       ],

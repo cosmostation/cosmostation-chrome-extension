@@ -6,7 +6,7 @@ import Input from '~/Popup/components/common/Input';
 import Search20Icon from '~/images/icons/Search20.svg';
 
 export const Container = styled('div')({
-  padding: '1.6rem 1.6rem 0',
+  padding: '1.6rem',
   overflow: 'hidden',
 
   display: 'flex',
