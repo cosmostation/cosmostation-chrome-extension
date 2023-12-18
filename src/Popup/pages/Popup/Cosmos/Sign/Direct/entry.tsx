@@ -59,6 +59,14 @@ export default function Entry({ queue, chain }: EntryProps) {
   const auth_info_bytes = useMemo(() => new Uint8Array(doc.auth_info_bytes), [doc.auth_info_bytes]);
   const body_bytes = useMemo(() => new Uint8Array(doc.body_bytes), [doc.body_bytes]);
 
+  // const simulatedpTxBytes = protoTxBytes({
+  //   signature: Buffer.from(new Uint8Array(64)).toString('base64'),
+  //   txBodyBytes: body_bytes,
+  //   authInfoBytes: auth_info_bytes,
+  // });
+
+  // const simulate = useSimulateSWR({ chain, txBytes: simulatedpTxBytes.tx_bytes });
+
   const decodedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(body_bytes), [body_bytes]);
   const decodedAuthInfoBytes = useMemo(() => cosmos.tx.v1beta1.AuthInfo.decode(auth_info_bytes), [auth_info_bytes]);
 

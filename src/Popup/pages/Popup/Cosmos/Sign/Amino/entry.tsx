@@ -3,6 +3,7 @@ import { useSnackbar } from 'notistack';
 import secp256k1 from 'secp256k1';
 import sortKeys from 'sort-keys';
 
+import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -12,15 +13,16 @@ import Fee from '~/Popup/components/Fee';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
+import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, gte, lt, times } from '~/Popup/utils/big';
+import { ceil, gt, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { cosmosURL, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
+import { cosmosURL, getDefaultAV, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -72,6 +74,8 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputGas = useMemo(() => fee.gas, [fee.gas]);
 
+  const isInvalidGasRequest = useMemo(() => !isEditFee && inputGas === '0', [inputGas, isEditFee]);
+
   const inputFee = useMemo(
     () =>
       fee.amount?.find((item) => feeCoins.map((feeCoin) => feeCoin.baseDenom).includes(item.denom)) ||
@@ -90,20 +94,52 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) ?? feeCoins[0], [currentFeeBaseDenom, feeCoins]);
 
+  const sendProtoTx = useMemo(() => {
+    if (isEditFee || isInvalidGasRequest) {
+      const pTx = protoTx(
+        { ...doc, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: '1' }], gas: COSMOS_DEFAULT_GAS } },
+        Buffer.from(new Uint8Array(64)).toString('base64'),
+        { type: getPublicKeyType(chain), value: '' },
+      );
+
+      return pTx ? protoTxBytes({ ...pTx }) : null;
+    }
+    return null;
+  }, [chain, currentFeeCoin.baseDenom, doc, isEditFee, isInvalidGasRequest]);
+
+  const simulate = useSimulateSWR({ chain, txBytes: sendProtoTx?.tx_bytes });
+
+  const simulatedGas = useMemo(
+    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
+    [chain, simulate.data?.gas_info?.gas_used],
+  );
+
+  const [customGas, setCustomGas] = useState<string | undefined>();
+
+  const isNeedToReplaceGas = useMemo(() => gt(simulatedGas || '0', inputGas), [inputGas, simulatedGas]);
+
+  // FIXME send쪽 amount 0으로 해놓고 테스트 해보기
+  const currentGas = useMemo(
+    // FIXME inputGas 대신할 디폴트 값 고려 필요
+    () => customGas || (isNeedToReplaceGas ? simulatedGas || inputGas : inputGas),
+    [customGas, inputGas, isNeedToReplaceGas, simulatedGas],
+  );
+
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
 
-  const tinyFee = useMemo(() => times(inputGas, currentFeeGasRate.tiny), [currentFeeGasRate.tiny, inputGas]);
-  const lowFee = useMemo(() => times(inputGas, currentFeeGasRate.low), [currentFeeGasRate.low, inputGas]);
-  const averageFee = useMemo(() => times(inputGas, currentFeeGasRate.average), [currentFeeGasRate.average, inputGas]);
+  const tinyFee = useMemo(() => times(currentGas, currentFeeGasRate.tiny), [currentFeeGasRate.tiny, currentGas]);
+  const lowFee = useMemo(() => times(currentGas, currentFeeGasRate.low), [currentFeeGasRate.low, currentGas]);
+  const averageFee = useMemo(() => times(currentGas, currentFeeGasRate.average), [currentFeeGasRate.average, currentGas]);
 
   const isExistZeroFee = useMemo(() => tinyFee === '0' || lowFee === '0' || averageFee === '0', [averageFee, lowFee, tinyFee]);
 
-  const initBaseFee = useMemo(
-    () => (isEditFee && !isExistZeroFee && lt(inputFeeAmount, '1') ? lowFee : inputFeeAmount),
-    [inputFeeAmount, isEditFee, isExistZeroFee, lowFee],
+  const isNeedToReplaceFeeAmount = useMemo(
+    () => (isEditFee || isInvalidGasRequest) && !isExistZeroFee && lt(inputFeeAmount, '1'),
+    [inputFeeAmount, isEditFee, isExistZeroFee, isInvalidGasRequest],
   );
 
-  const [gas, setGas] = useState(inputGas);
+  const initBaseFee = useMemo(() => (isNeedToReplaceFeeAmount ? lowFee : inputFeeAmount), [inputFeeAmount, isNeedToReplaceFeeAmount, lowFee]);
+
   const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
   const [baseFee, setBaseFee] = useState(initBaseFee);
   const [memo, setMemo] = useState(doc.memo);
@@ -113,11 +149,13 @@ export default function Entry({ queue, chain }: EntryProps) {
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 
   const signingFee = useMemo(
-    () => (isEditFee ? { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas } : fee),
-    [ceilBaseFee, currentFeeBaseDenom, fee, gas, isEditFee],
+    () => (isEditFee || isInvalidGasRequest ? { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas: currentGas } : fee),
+    [ceilBaseFee, currentFeeBaseDenom, currentGas, fee, isEditFee, isInvalidGasRequest],
   );
 
   const tx = useMemo(() => ({ ...doc, memo: signingMemo, fee: signingFee }), [doc, signingFee, signingMemo]);
+
+  const isEditFeeMode = useMemo(() => isEditFee || isInvalidGasRequest, [isEditFee, isInvalidGasRequest]);
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -131,6 +169,9 @@ export default function Entry({ queue, chain }: EntryProps) {
     return '';
   }, [baseFee, currentFeeCoin.availableAmount, fee.granter, fee.payer, isCheckBalance, t]);
 
+  // useEffect(() => {
+  //   setBaseFee(times(currentGas, currentFeeGasRate[currentGasRateKey]));
+  // }, [currentGas, currentGasRateKey, currentFeeGasRate]);
   return (
     <Container>
       <PopupHeader account={{ ...currentAccount, address }} chain={{ name: chain.chainName, imageURL: chain.imageURL }} origin={origin} />
@@ -161,18 +202,19 @@ export default function Entry({ queue, chain }: EntryProps) {
               feeCoinList={feeCoins}
               gasRate={currentFeeGasRate}
               baseFee={baseFee}
-              gas={gas}
+              gas={currentGas}
               onChangeFeeCoin={(selectedFeeCoin) => {
                 setCurrentFeeBaseDenom(selectedFeeCoin.baseDenom);
-                setBaseFee(times(gas, feeCoins.find((item) => item.baseDenom === selectedFeeCoin.baseDenom)!.gasRate![currentGasRateKey]));
+                // NOTE useEffect살릴거면 이거 주석 처리
+                setBaseFee(times(currentGas, feeCoins.find((item) => item.baseDenom === selectedFeeCoin.baseDenom)!.gasRate![currentGasRateKey]));
               }}
               onChangeFee={(f) => setBaseFee(f)}
-              onChangeGas={(g) => setGas(g)}
+              onChangeGas={(g) => setCustomGas(g)}
               onChangeGasRateKey={(gasRateKey) => {
                 setCurrentGasRateKey(gasRateKey);
-                setBaseFee(times(gas, currentFeeGasRate[gasRateKey]));
+                setBaseFee(times(currentGas, currentFeeGasRate[gasRateKey]));
               }}
-              isEdit={isEditFee}
+              isEdit={isEditFeeMode}
             />
           </FeeContainer>
         </TabPanel>
