@@ -168,7 +168,10 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
 
   const channelChainLatestBlock = useBlockLatestSWR(channelChain);
 
-  const latestHeight = useMemo(() => channelChainLatestBlock.data?.block?.header?.height, [channelChainLatestBlock.data?.block?.header?.height]);
+  const latestHeight = useMemo(
+    () => channelChainLatestBlock.data?.block?.header?.height || clientState.data?.identified_client_state?.client_state?.latest_height?.revision_height,
+    [channelChainLatestBlock.data?.block?.header?.height, clientState.data?.identified_client_state?.client_state?.latest_height?.revision_height],
+  );
 
   const revisionHeight = useMemo(() => (latestHeight ? String(100 + parseInt(latestHeight, 10)) : undefined), [latestHeight]);
 
@@ -180,7 +183,7 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
   const skipSwapAminoTxMsgs = useMemo(
     () =>
       skipSwapParsedTx.map((item) => {
-        if (item?.msg_type_url === 'cosmos-sdk/MsgTransfer' && revisionHeight && revisionNumber) {
+        if (item?.msg_type_url === 'cosmos-sdk/MsgTransfer' && !!revisionHeight && !!revisionNumber) {
           return {
             ...item,
             msg: {
