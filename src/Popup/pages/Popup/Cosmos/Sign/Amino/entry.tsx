@@ -116,7 +116,10 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const [customGas, setCustomGas] = useState<string | undefined>();
 
-  const currentGas = useMemo(() => customGas || (gt(simulatedGas || '0', inputGas) ? simulatedGas || inputGas : inputGas), [customGas, inputGas, simulatedGas]);
+  const currentGas = useMemo(
+    () => customGas || (gt(simulatedGas || '0', inputGas) ? simulatedGas || COSMOS_DEFAULT_GAS : inputGas),
+    [customGas, inputGas, simulatedGas],
+  );
 
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
 
