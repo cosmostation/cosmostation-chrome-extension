@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import secp256k1 from 'secp256k1';
 import sortKeys from 'sort-keys';
@@ -74,8 +74,6 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputGas = useMemo(() => fee.gas, [fee.gas]);
 
-  const isInvalidGasRequest = useMemo(() => !isEditFee && inputGas === '0', [inputGas, isEditFee]);
-
   const inputFee = useMemo(
     () =>
       fee.amount?.find((item) => feeCoins.map((feeCoin) => feeCoin.baseDenom).includes(item.denom)) ||
@@ -88,14 +86,16 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputFeeAmount = useMemo(() => inputFee.amount, [inputFee.amount]);
 
+  const isInvalidFeeRequest = useMemo(() => !isEditFee && (lt(inputGas, '1') || lt(inputFeeAmount, '1')), [inputFeeAmount, inputGas, isEditFee]);
+
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
     feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
   );
 
   const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) ?? feeCoins[0], [currentFeeBaseDenom, feeCoins]);
 
-  const sendProtoTx = useMemo(() => {
-    if (isEditFee || isInvalidGasRequest) {
+  const memoizedProtoTx = useMemo(() => {
+    if (isEditFee || isInvalidFeeRequest) {
       const pTx = protoTx(
         { ...doc, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: '1' }], gas: COSMOS_DEFAULT_GAS } },
         Buffer.from(new Uint8Array(64)).toString('base64'),
@@ -105,9 +105,9 @@ export default function Entry({ queue, chain }: EntryProps) {
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
     return null;
-  }, [chain, currentFeeCoin.baseDenom, doc, isEditFee, isInvalidGasRequest]);
+  }, [chain, currentFeeCoin.baseDenom, doc, isEditFee, isInvalidFeeRequest]);
 
-  const simulate = useSimulateSWR({ chain, txBytes: sendProtoTx?.tx_bytes });
+  const simulate = useSimulateSWR({ chain, txBytes: memoizedProtoTx?.tx_bytes });
 
   const simulatedGas = useMemo(
     () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
@@ -116,14 +116,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const [customGas, setCustomGas] = useState<string | undefined>();
 
-  const isNeedToReplaceGas = useMemo(() => gt(simulatedGas || '0', inputGas), [inputGas, simulatedGas]);
-
-  // FIXME send쪽 amount 0으로 해놓고 테스트 해보기
-  const currentGas = useMemo(
-    // FIXME inputGas 대신할 디폴트 값 고려 필요
-    () => customGas || (isNeedToReplaceGas ? simulatedGas || inputGas : inputGas),
-    [customGas, inputGas, isNeedToReplaceGas, simulatedGas],
-  );
+  const currentGas = useMemo(() => customGas || (gt(simulatedGas || '0', inputGas) ? simulatedGas || inputGas : inputGas), [customGas, inputGas, simulatedGas]);
 
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
 
@@ -134,8 +127,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const isExistZeroFee = useMemo(() => tinyFee === '0' || lowFee === '0' || averageFee === '0', [averageFee, lowFee, tinyFee]);
 
   const isNeedToReplaceFeeAmount = useMemo(
-    () => (isEditFee || isInvalidGasRequest) && !isExistZeroFee && lt(inputFeeAmount, '1'),
-    [inputFeeAmount, isEditFee, isExistZeroFee, isInvalidGasRequest],
+    () => (isEditFee || isInvalidFeeRequest) && !isExistZeroFee && lt(inputFeeAmount, '1'),
+    [inputFeeAmount, isEditFee, isExistZeroFee, isInvalidFeeRequest],
   );
 
   const initBaseFee = useMemo(() => (isNeedToReplaceFeeAmount ? lowFee : inputFeeAmount), [inputFeeAmount, isNeedToReplaceFeeAmount, lowFee]);
@@ -149,13 +142,14 @@ export default function Entry({ queue, chain }: EntryProps) {
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 
   const signingFee = useMemo(
-    () => (isEditFee || isInvalidGasRequest ? { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas: currentGas } : fee),
-    [ceilBaseFee, currentFeeBaseDenom, currentGas, fee, isEditFee, isInvalidGasRequest],
+    // NOTE isNeedToReplaceFeeAmount로 조건 넣고 싶은데 넣으면 amount 10 gas 0일때 false떨어짐
+    () => (isEditFee || isInvalidFeeRequest ? { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas: currentGas } : fee),
+    [ceilBaseFee, currentFeeBaseDenom, currentGas, fee, isEditFee, isInvalidFeeRequest],
   );
 
   const tx = useMemo(() => ({ ...doc, memo: signingMemo, fee: signingFee }), [doc, signingFee, signingMemo]);
 
-  const isEditFeeMode = useMemo(() => isEditFee || isInvalidGasRequest, [isEditFee, isInvalidGasRequest]);
+  const isEditFeeMode = useMemo(() => isEditFee || isInvalidFeeRequest, [isEditFee, isInvalidFeeRequest]);
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -169,9 +163,10 @@ export default function Entry({ queue, chain }: EntryProps) {
     return '';
   }, [baseFee, currentFeeCoin.availableAmount, fee.granter, fee.payer, isCheckBalance, t]);
 
-  // useEffect(() => {
-  //   setBaseFee(times(currentGas, currentFeeGasRate[currentGasRateKey]));
-  // }, [currentGas, currentGasRateKey, currentFeeGasRate]);
+  useEffect(() => {
+    setBaseFee(times(currentGas, currentFeeGasRate[currentGasRateKey]));
+  }, [currentGas, currentGasRateKey, currentFeeGasRate]);
+
   return (
     <Container>
       <PopupHeader account={{ ...currentAccount, address }} chain={{ name: chain.chainName, imageURL: chain.imageURL }} origin={origin} />
@@ -205,14 +200,11 @@ export default function Entry({ queue, chain }: EntryProps) {
               gas={currentGas}
               onChangeFeeCoin={(selectedFeeCoin) => {
                 setCurrentFeeBaseDenom(selectedFeeCoin.baseDenom);
-                // NOTE useEffect살릴거면 이거 주석 처리
-                setBaseFee(times(currentGas, feeCoins.find((item) => item.baseDenom === selectedFeeCoin.baseDenom)!.gasRate![currentGasRateKey]));
               }}
               onChangeFee={(f) => setBaseFee(f)}
               onChangeGas={(g) => setCustomGas(g)}
               onChangeGasRateKey={(gasRateKey) => {
                 setCurrentGasRateKey(gasRateKey);
-                setBaseFee(times(currentGas, currentFeeGasRate[gasRateKey]));
               }}
               isEdit={isEditFeeMode}
             />
