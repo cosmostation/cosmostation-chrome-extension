@@ -145,7 +145,6 @@ export default function Entry({ queue, chain }: EntryProps) {
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 
   const signingFee = useMemo(
-    // NOTE isNeedToReplaceFeeAmount로 조건 넣고 싶은데 넣으면 amount 10 gas 0일때 false떨어짐
     () => (isEditFee || isInvalidFeeRequest ? { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas: currentGas } : fee),
     [ceilBaseFee, currentFeeBaseDenom, currentGas, fee, isEditFee, isInvalidFeeRequest],
   );
