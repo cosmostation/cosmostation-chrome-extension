@@ -5,7 +5,7 @@ import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS } from '~/constants/chain';
 import { AFFILIATES, DEFAULT_BPF } from '~/constants/skip';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { gt, times } from '~/Popup/utils/big';
-import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { convertAssetNameToCosmos, findCosmosChainByAddress, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { convertDirectMsgTypeToAminoMsgType, protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgExecuteContract, MsgTransfer } from '~/types/cosmos/amino';
@@ -162,16 +162,17 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
 
   const channelChain = useMemo(() => {
     const asset = assets.data?.find((item) => item.channel === chainInfo.channelId && item.port === chainInfo.port);
+    if (asset?.origin_chain) {
+      return convertAssetNameToCosmos(asset.origin_chain);
+    }
+    const transferMsg = skipSwapParsedTx.find((msg) => msg?.msg_type_url === 'cosmos-sdk/MsgTransfer');
 
-    return convertAssetNameToCosmos(asset?.origin_chain || '');
-  }, [assets.data, chainInfo.channelId, chainInfo.port]);
+    return findCosmosChainByAddress(transferMsg?.msg.receiver);
+  }, [assets.data, chainInfo.channelId, chainInfo.port, skipSwapParsedTx]);
 
   const channelChainLatestBlock = useBlockLatestSWR(channelChain);
 
-  const latestHeight = useMemo(
-    () => channelChainLatestBlock.data?.block?.header?.height || clientState.data?.identified_client_state?.client_state?.latest_height?.revision_height,
-    [channelChainLatestBlock.data?.block?.header?.height, clientState.data?.identified_client_state?.client_state?.latest_height?.revision_height],
-  );
+  const latestHeight = useMemo(() => channelChainLatestBlock.data?.block?.header?.height, [channelChainLatestBlock.data?.block?.header?.height]);
 
   const revisionHeight = useMemo(() => (latestHeight ? String(100 + parseInt(latestHeight, 10)) : undefined), [latestHeight]);
 
