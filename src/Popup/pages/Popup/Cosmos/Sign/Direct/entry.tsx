@@ -15,7 +15,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, gt, gte, lt, times } from '~/Popup/utils/big';
+import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getDefaultAV, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
@@ -114,7 +114,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [customGas, setCustomGas] = useState<string | undefined>();
 
   const currentGas = useMemo(
-    () => customGas || (gt(simulatedGas || '0', inputGas) ? simulatedGas || COSMOS_DEFAULT_GAS : inputGas),
+    () => customGas || (gte(simulatedGas || '0', inputGas) ? simulatedGas || COSMOS_DEFAULT_GAS : inputGas),
     [customGas, inputGas, simulatedGas],
   );
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);

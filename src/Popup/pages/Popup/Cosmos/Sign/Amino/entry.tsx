@@ -20,7 +20,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, gt, gte, lt, times } from '~/Popup/utils/big';
+import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getDefaultAV, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
@@ -117,7 +117,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [customGas, setCustomGas] = useState<string | undefined>();
 
   const currentGas = useMemo(
-    () => customGas || (gt(simulatedGas || '0', inputGas) ? simulatedGas || COSMOS_DEFAULT_GAS : inputGas),
+    () => customGas || (gte(simulatedGas || '0', inputGas) ? simulatedGas || COSMOS_DEFAULT_GAS : inputGas),
     [customGas, inputGas, simulatedGas],
   );
 
