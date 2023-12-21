@@ -104,6 +104,7 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
           fee: SQUID_COLLECT_FEE_BPF,
         },
         enableForecall: true,
+        enableExpress: false,
       };
     }
     return undefined;

@@ -80,6 +80,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
           fee: SQUID_COLLECT_FEE_BPF,
         },
         enableForecall: true,
+        enableExpress: false,
       };
     }
     return undefined;
