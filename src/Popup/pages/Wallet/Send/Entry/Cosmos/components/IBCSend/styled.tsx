@@ -56,29 +56,6 @@ export const MarginTop8Div = styled('div')({
   marginTop: '0.8rem',
 });
 
-export const WarningContainer = styled('div')(({ theme }) => ({
-  padding: '2.4rem',
-  backgroundColor: theme.colors.base02,
-  borderRadius: '0.8rem',
-}));
-
-export const WarningContentsContainer = styled('div')({
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  height: '100%',
-});
-
-export const WarningTextContainer = styled('div')(({ theme }) => ({
-  width: '20rem',
-  display: 'flex',
-  flexDirection: 'column',
-  rowGap: '0.8rem',
-  textAlign: 'center',
-  color: theme.colors.text01,
-}));
-
 export const ExchangeWarningContainer = styled('div')({
   padding: '1.2rem 1.6rem',
   display: 'flex',

@@ -55,9 +55,6 @@ import {
   MaxButton,
   StyledInput,
   StyledTextarea,
-  WarningContainer,
-  WarningContentsContainer,
-  WarningTextContainer,
 } from './styled';
 import type { CoinOrTokenInfo } from '../..';
 import CoinListBottomSheet from '../CoinListBottomSheet';
@@ -65,7 +62,6 @@ import CoinListBottomSheet from '../CoinListBottomSheet';
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
 import CheckAddress16Icon from '~/images/icons/CheckAddress16.svg';
-import IBCWarningIcon from '~/images/icons/IBCWarning.svg';
 import Info16Icon from '~/images/icons/Info16.svg';
 
 export const TYPE = {
@@ -543,20 +539,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
   useEffect(() => {
     setCurrentFeeAmount(times(currentGas, currentFeeGasRate[currentGasRateKey]));
   }, [currentGas, currentGasRateKey, currentFeeGasRate]);
-
-  if (senderCoinAndTokenList.length === 0) {
-    return (
-      <WarningContainer>
-        <WarningContentsContainer>
-          <IBCWarningIcon />
-          <WarningTextContainer>
-            <Typography variant="h4">{t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.ibcWarningHeadertitle')}</Typography>
-            <Typography variant="h6">{t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.ibcWarningSubtitle')}</Typography>
-          </WarningTextContainer>
-        </WarningContentsContainer>
-      </WarningContainer>
-    );
-  }
 
   return (
     <Container>
