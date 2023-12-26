@@ -129,12 +129,12 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const isExistZeroFee = useMemo(() => tinyFee === '0' || lowFee === '0' || averageFee === '0', [averageFee, lowFee, tinyFee]);
 
-  const isNeedToReplaceFeeAmount = useMemo(
-    () => (isEditFee || isInvalidFeeRequest) && !isExistZeroFee && lt(inputFeeAmount, '1'),
-    [inputFeeAmount, isEditFee, isExistZeroFee, isInvalidFeeRequest],
+  const initBaseFee = useMemo(
+    () => ((isEditFee || isInvalidFeeRequest) && !isExistZeroFee && lt(inputFeeAmount, '1') ? lowFee : inputFeeAmount),
+    [inputFeeAmount, isEditFee, isExistZeroFee, isInvalidFeeRequest, lowFee],
   );
 
-  const initBaseFee = useMemo(() => (isNeedToReplaceFeeAmount ? lowFee : inputFeeAmount), [inputFeeAmount, isNeedToReplaceFeeAmount, lowFee]);
+  const isNeedToReplaceFeeAmount = useMemo(() => isEditFee || isInvalidFeeRequest || !!customGas, [customGas, isEditFee, isInvalidFeeRequest]);
 
   const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
   const [baseFee, setBaseFee] = useState(initBaseFee);
@@ -145,8 +145,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
 
   const signingFee = useMemo(
-    () => (isEditFee || isInvalidFeeRequest || !!customGas ? { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas: currentGas } : fee),
-    [ceilBaseFee, currentFeeBaseDenom, currentGas, customGas, fee, isEditFee, isInvalidFeeRequest],
+    () => (isNeedToReplaceFeeAmount ? { ...fee, amount: [{ denom: currentFeeBaseDenom, amount: ceilBaseFee }], gas: currentGas } : fee),
+    [ceilBaseFee, currentFeeBaseDenom, currentGas, fee, isNeedToReplaceFeeAmount],
   );
 
   const tx = useMemo(() => ({ ...doc, memo: signingMemo, fee: signingFee }), [doc, signingFee, signingMemo]);
@@ -169,10 +169,10 @@ export default function Entry({ queue, chain }: EntryProps) {
   }, [baseFee, currentFeeCoin.availableAmount, fee.granter, fee.payer, isCheckBalance, t]);
 
   useEffect(() => {
-    if (simulatedGas || customGas) {
+    if (isNeedToReplaceFeeAmount) {
       setBaseFee(times(currentGas, currentFeeGasRate[currentGasRateKey]));
     }
-  }, [currentFeeGasRate, currentGas, currentGasRateKey, customGas, simulatedGas]);
+  }, [currentFeeGasRate, currentGas, currentGasRateKey, isNeedToReplaceFeeAmount]);
 
   return (
     <Container>
@@ -207,13 +207,11 @@ export default function Entry({ queue, chain }: EntryProps) {
               gas={currentGas}
               onChangeFeeCoin={(selectedFeeCoin) => {
                 setCurrentFeeBaseDenom(selectedFeeCoin.baseDenom);
-                setBaseFee(times(currentGas, feeCoins.find((item) => item.baseDenom === selectedFeeCoin.baseDenom)!.gasRate![currentGasRateKey]));
               }}
               onChangeFee={(f) => setBaseFee(f)}
               onChangeGas={(g) => setCustomGas(g)}
               onChangeGasRateKey={(gasRateKey) => {
                 setCurrentGasRateKey(gasRateKey);
-                setBaseFee(times(currentGas, currentFeeGasRate[gasRateKey]));
               }}
               isEdit={isEditFeeMode}
             />
