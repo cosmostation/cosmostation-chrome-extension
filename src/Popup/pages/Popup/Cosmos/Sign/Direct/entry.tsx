@@ -87,7 +87,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputFeeAmount = useMemo(() => inputFee.amount || '0', [inputFee.amount]);
 
-  const isInvalidFeeRequest = useMemo(() => !isEditFee && (lt(inputGas, '1') || lt(inputFeeAmount, '1')), [inputFeeAmount, inputGas, isEditFee]);
+  const isInvalidFeeRequest = useMemo(() => !isEditFee && lt(inputGas, '1'), [inputGas, isEditFee]);
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
     feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
@@ -150,8 +150,8 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const bodyBytes = useMemo(() => (isEditMemo ? encodedBodyBytes : body_bytes), [body_bytes, encodedBodyBytes, isEditMemo]);
   const authInfoBytes = useMemo(
-    () => (isEditFee || isInvalidFeeRequest ? encodedAuthInfoBytes : auth_info_bytes),
-    [auth_info_bytes, encodedAuthInfoBytes, isEditFee, isInvalidFeeRequest],
+    () => (isEditFee || isInvalidFeeRequest || !!customGas ? encodedAuthInfoBytes : auth_info_bytes),
+    [auth_info_bytes, customGas, encodedAuthInfoBytes, isEditFee, isInvalidFeeRequest],
   );
 
   const decodedChangedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(bodyBytes), [bodyBytes]);
@@ -169,7 +169,10 @@ export default function Entry({ queue, chain }: EntryProps) {
     [decodedChangedAuthInfoBytes, decodedChangedBodyBytes, doc, msgs],
   );
 
-  const isEditFeeMode = useMemo(() => isEditFee || isInvalidFeeRequest, [isEditFee, isInvalidFeeRequest]);
+  const isEditFeeMode = useMemo(
+    () => isEditFee || isInvalidFeeRequest || (!isEditFee && lt(inputFeeAmount, '1')),
+    [inputFeeAmount, isEditFee, isInvalidFeeRequest],
+  );
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -188,8 +191,10 @@ export default function Entry({ queue, chain }: EntryProps) {
   }, [baseFee, currentAccount.type, currentFeeCoin.availableAmount, fee?.granter, fee?.payer, isCheckBalance, t]);
 
   useEffect(() => {
-    setBaseFee(times(currentGas, currentFeeGasRate[currentGasRateKey]));
-  }, [currentGas, currentGasRateKey, currentFeeGasRate]);
+    if (simulatedGas || customGas) {
+      setBaseFee(times(currentGas, currentFeeGasRate[currentGasRateKey]));
+    }
+  }, [currentFeeGasRate, currentGas, currentGasRateKey, customGas, simulatedGas]);
 
   return (
     <Container>
@@ -222,11 +227,13 @@ export default function Entry({ queue, chain }: EntryProps) {
                 gas={currentGas}
                 onChangeFeeCoin={(selectedFeeCoin) => {
                   setCurrentFeeBaseDenom(selectedFeeCoin.baseDenom);
+                  setBaseFee(times(currentGas, feeCoins.find((item) => item.baseDenom === selectedFeeCoin.baseDenom)!.gasRate![currentGasRateKey]));
                 }}
                 onChangeFee={(f) => setBaseFee(f)}
                 onChangeGas={(g) => setCustomGas(g)}
                 onChangeGasRateKey={(gasRateKey) => {
                   setCurrentGasRateKey(gasRateKey);
+                  setBaseFee(times(currentGas, currentFeeGasRate[gasRateKey]));
                 }}
                 isEdit={isEditFeeMode}
               />
