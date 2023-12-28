@@ -121,7 +121,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   );
 
   const currentGas = useMemo(
-    () => customGas || (gte(simulatedGas || '0', inputGas) ? simulatedGas || COSMOS_DEFAULT_GAS : inputGas),
+    () => customGas || (gte(simulatedGas || '0', inputGas) ? simulatedGas || inputGas : inputGas),
     [customGas, inputGas, simulatedGas],
   );
 

@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
-import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -120,7 +119,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   );
 
   const currentGas = useMemo(
-    () => customGas || (gte(simulatedGas || '0', inputGas) ? simulatedGas || COSMOS_DEFAULT_GAS : inputGas),
+    () => customGas || (gte(simulatedGas || '0', inputGas) ? simulatedGas || inputGas : inputGas),
     [customGas, inputGas, simulatedGas],
   );
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
