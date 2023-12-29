@@ -7,7 +7,7 @@ import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { useAssetsSWR, useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { convertAssetNameToCosmos, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
@@ -18,6 +18,7 @@ import { useSquidRouteSWR } from './SWR/useSquidRouteSWR';
 import { useAccountSWR } from '../../cosmos/useAccountSWR';
 import { useBlockLatestSWR } from '../../cosmos/useBlockLatestSWR';
 import { useClientStateSWR } from '../../cosmos/useClientStateSWR';
+import { useGasMultiplySWR } from '../../cosmos/useGasMultiplySWR';
 import { useNodeInfoSWR } from '../../cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '../../cosmos/useSimulateSWR';
 import { useCoinGeckoPriceSWR } from '../../useCoinGeckoPriceSWR';
@@ -303,13 +304,13 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
 
   const squidSwapSimulate = useSimulateSWR({ chain: fromChain?.line === 'COSMOS' ? fromChain : COSMOS_CHAINS[0], txBytes: squidSwapProtoTx?.tx_bytes });
 
+  const { data: gasMultiply } = useGasMultiplySWR(fromChain);
+
   const squidSwapSimulatedGas = useMemo(
     () =>
-      squidSwapSimulate.data?.gas_info?.gas_used && fromChain?.line === 'COSMOS'
-        ? times(squidSwapSimulate.data.gas_info.gas_used, getDefaultAV(fromChain), 0)
-        : undefined,
+      squidSwapSimulate.data?.gas_info?.gas_used && fromChain?.line === 'COSMOS' ? times(squidSwapSimulate.data.gas_info.gas_used, gasMultiply, 0) : undefined,
 
-    [fromChain, squidSwapSimulate.data?.gas_info?.gas_used],
+    [fromChain?.line, gasMultiply, squidSwapSimulate.data?.gas_info?.gas_used],
   );
 
   return {
