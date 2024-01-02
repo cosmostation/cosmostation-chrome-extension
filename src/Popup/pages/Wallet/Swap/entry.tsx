@@ -47,7 +47,7 @@ import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, getDefaultAV } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
-import type { CosmosChain, EthereumToken } from '~/types/chain';
+import type { EthereumToken } from '~/types/chain';
 import type { AssetV3 as CosmosAssetV3 } from '~/types/cosmos/asset';
 import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
 import type { IntegratedSwapAPI } from '~/types/swap/integratedSwap';
@@ -723,11 +723,18 @@ export default function Entry() {
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
 
   const { skipRoute, skipSwapVenueChain, memoizedSkipSwapAminoTx, skipSwapTx, skipSwapAminoTx, skipSwapSimulatedGas } = useSkipSwap(
-    currentSwapAPI === 'skip' && gt(currentInputBaseAmount, '0') && currentFromChain && currentToChain && currentFromToken && currentToToken
+    currentSwapAPI === 'skip' &&
+      gt(currentInputBaseAmount, '0') &&
+      currentFromChain &&
+      currentToChain &&
+      currentFromChain.line === 'COSMOS' &&
+      currentToChain.line === 'COSMOS' &&
+      currentFromToken &&
+      currentToToken
       ? {
           inputBaseAmount: currentInputBaseAmount,
-          fromChain: currentFromChain as CosmosChain,
-          toChain: currentToChain as CosmosChain,
+          fromChain: currentFromChain,
+          toChain: currentToChain,
           fromToken: currentFromToken as CosmosAssetV3,
           toToken: currentToToken as CosmosAssetV3,
           slippage: currentSlippage,
