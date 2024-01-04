@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
@@ -34,11 +35,14 @@ export default function CoinItem({ disabled, imageURL, amount, decimals = 0, dis
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const chainPrice = coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0;
+  const chainPrice = useMemo(
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0,
+    [coinGeckoId, coinGeckoPrice.data],
+  );
 
-  const displayAmount = toDisplayDenomAmount(amount, decimals);
+  const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);
 
-  const value = times(displayAmount, chainPrice);
+  const value = useMemo(() => times(displayAmount, chainPrice), [chainPrice, displayAmount]);
 
   return (
     <StyledButton onClick={onClick} disabled={disabled}>
