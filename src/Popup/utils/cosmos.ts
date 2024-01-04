@@ -205,6 +205,22 @@ export function convertAssetNameToCosmos(assetName: string) {
   return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);
 }
 
+export function findCosmosChainByAddress(address?: string) {
+  if (!address || !isValidCosmosAddress(address)) {
+    return undefined;
+  }
+
+  return COSMOS_CHAINS.find((item) => bech32.decode(address).prefix === item.bech32Prefix.address);
+}
+
+export function isValidCosmosAddress(address: string): boolean {
+  try {
+    return COSMOS_CHAINS.some((chain) => chain.bech32Prefix.address === bech32.decode(address).prefix);
+  } catch (e) {
+    return false;
+  }
+}
+
 export function getMsgSignData(signer: string, message: string) {
   return {
     account_number: '0',
