@@ -105,18 +105,21 @@ export default function Send({ msg, chain, isMultipleMsgs }: SendProps) {
 
           const itemDisplayValue = (function getDisplayValue() {
             if (itemBaseDenom === baseDenom) {
-              const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
+              const chainPrice = coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === coinGeckoId)?.current_price || 0;
+
               return times(itemDisplayAmount, chainPrice);
             }
 
             if (assetCoinInfo?.coinGeckoId) {
-              const chainPrice = coinGeckoPrice.data?.[assetCoinInfo.coinGeckoId]?.[currency] || 0;
+              const chainPrice =
+                coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === assetCoinInfo.coinGeckoId)?.current_price || 0;
 
               return times(itemDisplayAmount, chainPrice, CURRENCY_DECIMALS[currency]);
             }
 
             if (ibcCoinInfo?.coinGeckoId) {
-              const chainPrice = coinGeckoPrice.data?.[ibcCoinInfo.coinGeckoId]?.[currency] || 0;
+              const chainPrice =
+                coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === ibcCoinInfo.coinGeckoId)?.current_price || 0;
 
               return times(itemDisplayAmount, chainPrice, CURRENCY_DECIMALS[currency]);
             }

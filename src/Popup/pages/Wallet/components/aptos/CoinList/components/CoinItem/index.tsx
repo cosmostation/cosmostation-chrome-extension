@@ -57,8 +57,8 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
   const displayName = asset?.description || coinInfo?.data.name || '';
 
   const price = useMemo(
-    () => (asset?.coinGeckoId && coinGeckoPrice.data?.[asset.coinGeckoId]?.[currency]) || 0,
-    [asset?.coinGeckoId, coinGeckoPrice.data, currency],
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === asset?.coinGeckoId)?.current_price || 0,
+    [asset?.coinGeckoId, coinGeckoPrice.data],
   );
 
   const displayValue = useMemo(() => times(displayAmount, price), [displayAmount, price]);

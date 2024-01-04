@@ -318,12 +318,12 @@ export default function Entry({ chain }: EntryProps) {
   const [isOpenedOutputCoinList, setIsOpenedOutputCoinList] = useState(false);
 
   const inputCoinPrice = useMemo(
-    () => (inputCoin?.coinGeckoId && coinGeckoPrice.data?.[inputCoin?.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, inputCoin?.coinGeckoId],
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === inputCoin?.coinGeckoId)?.current_price || 0,
+    [coinGeckoPrice.data, inputCoin?.coinGeckoId],
   );
   const outputCoinPrice = useMemo(
-    () => (outputCoin?.coinGeckoId && coinGeckoPrice.data?.[outputCoin?.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, outputCoin?.coinGeckoId],
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === outputCoin?.coinGeckoId)?.current_price || 0,
+    [coinGeckoPrice.data, outputCoin?.coinGeckoId],
   );
 
   const inputCoinAmountPrice = useMemo(() => times(inputDisplayAmount || '0', inputCoinPrice), [inputDisplayAmount, inputCoinPrice]);

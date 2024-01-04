@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
@@ -38,10 +38,16 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ coinInfo, onCli
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const coinPrice = (coinInfo.coinGeckoId && coinGeckoPrice.data?.[coinInfo.coinGeckoId]?.[extensionStorage.currency]) || 0;
+  const coinPrice = useMemo(
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinInfo.coinGeckoId)?.current_price || 0,
+    [coinGeckoPrice.data, coinInfo.coinGeckoId],
+  );
 
-  const coinDisplayDenomAmount = toDisplayDenomAmount(coinInfo?.availableAmount || '0', coinInfo.decimals);
-  const coinAmountPrice = times(coinDisplayDenomAmount, coinPrice);
+  const coinDisplayDenomAmount = useMemo(
+    () => toDisplayDenomAmount(coinInfo?.availableAmount || '0', coinInfo.decimals),
+    [coinInfo?.availableAmount, coinInfo.decimals],
+  );
+  const coinAmountPrice = useMemo(() => times(coinDisplayDenomAmount, coinPrice), [coinDisplayDenomAmount, coinPrice]);
 
   return (
     <CoinButton

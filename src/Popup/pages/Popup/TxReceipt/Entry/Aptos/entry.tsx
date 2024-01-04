@@ -80,7 +80,7 @@ export default function Aptos({ txHash }: AptosProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { currency, language } = extensionStorage;
 
-  const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
+  const price = useMemo(() => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0, [coinGeckoId, coinGeckoPrice.data]);
 
   const txDetailExplorerURL = useMemo(
     () => (explorerURL ? `${explorerURL}/txn/${txHash}?network=${networkName.toLowerCase()}` : ''),

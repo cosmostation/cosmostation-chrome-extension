@@ -99,7 +99,10 @@ export default function Sui({ chain }: SuiProps) {
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: currentFeeCoin?.coinType });
 
-  const feeCoinPrice = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
+  const feeCoinPrice = useMemo(
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0,
+    [coinGeckoId, coinGeckoPrice.data],
+  );
 
   const feeCoinDecimals = useMemo(
     () => coinMetadata?.result?.decimals || (currentFeeCoin?.coinType === SUI_COIN ? currentSuiNetwork.decimals : SUI_TOKEN_TEMPORARY_DECIMALS),

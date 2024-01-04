@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { FallbackProps } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
@@ -45,11 +45,14 @@ export default function TokenItem({ token, disabled, onClick, onClickDelete }: T
   const tokenBalance = useTokenBalanceSWR({ token }, { suspense: true });
 
   const { currency } = extensionStorage;
-  const amount = tokenBalance.data || '0';
-  const price = (token.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0;
-  const displayAmount = toDisplayDenomAmount(amount, token.decimals);
+  const amount = useMemo(() => tokenBalance.data || '0', [tokenBalance.data]);
+  const price = useMemo(
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === token.coinGeckoId)?.current_price || 0,
+    [coinGeckoPrice.data, token.coinGeckoId],
+  );
+  const displayAmount = useMemo(() => toDisplayDenomAmount(amount, token.decimals), [amount, token.decimals]);
 
-  const value = times(displayAmount, price);
+  const value = useMemo(() => times(displayAmount, price), [displayAmount, price]);
 
   return (
     <StyledButton onClick={onClick} disabled={disabled}>

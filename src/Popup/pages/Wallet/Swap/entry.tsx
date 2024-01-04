@@ -383,7 +383,7 @@ export default function Entry() {
           ),
         )
         .map((item) => {
-          const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
+          const coinPrice = coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === item.coinGeckoId)?.current_price || 0;
           const balance = cosmosFromChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
           const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
           return {
@@ -446,7 +446,7 @@ export default function Entry() {
       const filteredTokens = cosmosFromTokenAssets.data
         .filter((item) => squidTokens.find((aa) => aa.address === item.denom))
         .map((item) => {
-          const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
+          const coinPrice = coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === item.coinGeckoId)?.current_price || 0;
           const balance = cosmosFromChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
           const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
           return {
@@ -498,7 +498,6 @@ export default function Entry() {
     currentFromChain.chainId,
     currentFromChain?.displayDenom,
     coinGeckoPrice.data,
-    extensionStorage.currency,
     cosmosFromChainBalance.data?.balance,
     currentFromEVMNativeBalance.data?.result,
     currentEthereumNetwork.coinGeckoId,
@@ -526,8 +525,8 @@ export default function Entry() {
   );
 
   const currentFromTokenPrice = useMemo(
-    () => (currentFromToken?.coinGeckoId && coinGeckoPrice.data?.[currentFromToken?.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, currentFromToken?.coinGeckoId],
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === currentFromToken?.coinGeckoId)?.current_price || 0,
+    [coinGeckoPrice.data, currentFromToken?.coinGeckoId],
   );
 
   const filteredToTokenList: IntegratedSwapToken[] = useMemo(() => {
@@ -539,7 +538,7 @@ export default function Entry() {
           ),
         )
         .map((item) => {
-          const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
+          const coinPrice = coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === item.coinGeckoId)?.current_price || 0;
           const balance = cosmosToChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
           const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
           return {
@@ -624,7 +623,7 @@ export default function Entry() {
       const filteredTokens = cosmosToTokenAssets.data
         .filter((item) => filteredSquidTokenList.find((token) => isEqualsIgnoringCase(item.denom, token.address)))
         .map((item) => {
-          const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
+          const coinPrice = coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === item.coinGeckoId)?.current_price || 0;
           const balance = cosmosToChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
           const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
           return {
@@ -657,7 +656,6 @@ export default function Entry() {
     currentToChain?.line,
     currentToEVMNativeBalance.data?.result,
     currentToEthereumTokens,
-    extensionStorage.currency,
     filterSquidTokens,
     oneInchTokens.data,
     supportedOneInchTokens,
@@ -683,8 +681,8 @@ export default function Entry() {
   );
 
   const currentToTokenPrice = useMemo(
-    () => (currentToToken?.coinGeckoId && coinGeckoPrice.data?.[currentToToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, currentToToken?.coinGeckoId],
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === currentToToken?.coinGeckoId)?.current_price || 0,
+    [coinGeckoPrice.data, currentToToken?.coinGeckoId],
   );
 
   const currentFeeToken = useMemo(
@@ -716,8 +714,8 @@ export default function Entry() {
   }, [currentSwapAPI, cosmosFromChainBalance.data?.balance, selectedFromCosmosChain?.baseDenom, currentFromEVMNativeBalance?.data?.result]);
 
   const currentFeeTokenPrice = useMemo(
-    () => (currentFeeToken?.coinGeckoId && coinGeckoPrice.data?.[currentFeeToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, currentFeeToken?.coinGeckoId],
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === currentFeeToken?.coinGeckoId)?.current_price || 0,
+    [coinGeckoPrice.data, currentFeeToken?.coinGeckoId],
   );
 
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);

@@ -28,7 +28,6 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
@@ -74,8 +73,6 @@ export default function Send({ chain }: CosmosProps) {
   const coinList = useCoinListSWR(chain, true);
   const accounts = useAccounts(true);
   const nodeInfo = useNodeInfoSWR(chain);
-  const { extensionStorage } = useExtensionStorage();
-  const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { enQueue } = useCurrentQueue();
   const params = useParams();
@@ -140,7 +137,7 @@ export default function Send({ chain }: CosmosProps) {
         name: chain.chainName,
       })),
     ].map((item) => {
-      const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
+      const coinPrice = coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === item.coinGeckoId)?.current_price || 0;
       const price = times(toDisplayDenomAmount(item.availableAmount, item.decimals), coinPrice);
       return {
         ...item,
@@ -152,7 +149,7 @@ export default function Send({ chain }: CosmosProps) {
       .sort((a, b) => (gt(a.availableAmount, b.availableAmount) ? -1 : 1))
       .sort((a, b) => (gt(a.price, b.price) ? -1 : 1))
       .sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
-  }, [chain.chainName, chain.displayDenom, coinAll, coinGeckoPrice.data, cosmosTokensBalance.data, currency, currentCosmosTokens]);
+  }, [chain.chainName, chain.displayDenom, coinAll, coinGeckoPrice.data, cosmosTokensBalance.data, currentCosmosTokens]);
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 

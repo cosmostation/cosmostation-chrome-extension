@@ -62,8 +62,8 @@ export default function Approve({ tx, determineTxType }: ApproveProps) {
   const token = useMemo(() => allTokens.find((item) => isEqualsIgnoringCase(to, item.address)), [allTokens, to]);
 
   const price = useMemo(
-    () => (token?.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0,
-    [coinGeckoPrice.data, currency, token?.coinGeckoId],
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === token?.coinGeckoId)?.current_price || 0,
+    [coinGeckoPrice.data, token?.coinGeckoId],
   );
 
   const tokenAddress = useMemo(() => token?.displayDenom || shorterAddress(to, 32), [to, token?.displayDenom]);

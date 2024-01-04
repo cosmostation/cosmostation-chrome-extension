@@ -24,7 +24,7 @@ export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
   const { extensionStorage } = useExtensionStorage();
   const setDashboard = useSetRecoilState(dashboardState);
   const { currentAccount } = useCurrentAccount();
-  const { data } = useCoinGeckoPriceSWR();
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { totalAmount } = useAmountSWR(chain, true);
   const { chainName, decimals, displayDenom, coinGeckoId, imageURL } = chain;
 
@@ -35,10 +35,11 @@ export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
     setDashboard((prev) => ({
       [currentAccount.id]: {
         ...prev?.[currentAccount.id],
-        [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0) || '0',
+        [chain.id]:
+          times(toDisplayDenomAmount(totalAmount, decimals), coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0) || '0',
       },
     }));
-  }, [chain.id, extensionStorage.currency, coinGeckoId, data, decimals, setDashboard, totalAmount, currentAccount.id]);
+  }, [chain.id, extensionStorage.currency, coinGeckoId, decimals, setDashboard, totalAmount, currentAccount.id, coinGeckoPrice.data]);
 
   useEffect(
     () => () => {

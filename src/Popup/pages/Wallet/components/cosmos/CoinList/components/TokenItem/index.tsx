@@ -56,10 +56,7 @@ export default function TokenItem({ chain, token, address, onClick, onClickDelet
 
   const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);
 
-  const price = useMemo(
-    () => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [coinGeckoId, coinGeckoPrice.data, extensionStorage.currency],
-  );
+  const price = useMemo(() => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0, [coinGeckoId, coinGeckoPrice.data]);
   const value = useMemo(() => times(displayAmount, price), [displayAmount, price]);
 
   const isAmountZero = useMemo(() => amount === '0', [amount]);

@@ -261,7 +261,7 @@ export default function Entry({ queue }: EntryProps) {
     return '0';
   }, [ethereumTx.gas, ethereumTx.gasPrice, ethereumTx.maxFeePerGas]);
 
-  const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
+  const price = useMemo(() => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0, [coinGeckoId, coinGeckoPrice.data]);
 
   const displayFee = useMemo(() => toDisplayDenomAmount(baseFee, decimals), [baseFee, decimals]);
 

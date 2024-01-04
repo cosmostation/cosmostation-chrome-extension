@@ -69,7 +69,7 @@ export default function Sui({ txDigest }: SuiProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { currency, language } = extensionStorage;
 
-  const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
+  const price = useMemo(() => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0, [coinGeckoId, coinGeckoPrice.data]);
 
   const txInfo = useTxInfoSWR({ digest: txDigest, network: currentSuiNetwork });
 

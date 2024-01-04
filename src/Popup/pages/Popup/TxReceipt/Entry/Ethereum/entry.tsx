@@ -115,9 +115,9 @@ export default function Ethereum({ txHash }: EthereumProps) {
   );
 
   const effectiveGasPriceValue = useMemo(
-    () => times(displayEffectiveGasPrice, coinGeckoId ? coinGeckoPrice.data?.[coinGeckoId]?.[currency] || 0 : 0, 2),
+    () => times(displayEffectiveGasPrice, coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0, 2),
 
-    [coinGeckoId, coinGeckoPrice.data, currency, displayEffectiveGasPrice],
+    [coinGeckoId, coinGeckoPrice.data, displayEffectiveGasPrice],
   );
 
   const baseGasUsed = useMemo(() => BigInt(txInfo.data?.result?.gasUsed || '0').toString(10), [txInfo.data?.result?.gasUsed]);
@@ -128,8 +128,8 @@ export default function Ethereum({ txHash }: EthereumProps) {
   );
 
   const displayFeeValue = useMemo(
-    () => times(displayFeeAmount, coinGeckoId ? coinGeckoPrice.data?.[coinGeckoId]?.[currency] || 0 : 0, 3),
-    [coinGeckoId, coinGeckoPrice.data, currency, displayFeeAmount],
+    () => times(displayFeeAmount, coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0, 3),
+    [coinGeckoId, coinGeckoPrice.data, displayFeeAmount],
   );
 
   const isLoading = useMemo(() => txInfo.isValidating || blockInfo.isValidating, [blockInfo.isValidating, txInfo.isValidating]);
@@ -289,7 +289,12 @@ export default function Ethereum({ txHash }: EthereumProps) {
                     </RightAmountContainer>
                     <RightValueContainer>
                       <Typography variant="h5">
-                        {gt(times(displayEffectiveGasPrice, coinGeckoId ? coinGeckoPrice.data?.[coinGeckoId]?.[currency] || 0 : 0, 2), '0.001') ? '' : '<'}
+                        {gt(
+                          times(displayEffectiveGasPrice, coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0, 2),
+                          '0.001',
+                        )
+                          ? ''
+                          : '<'}
                       </Typography>
                       &nbsp;
                       <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>

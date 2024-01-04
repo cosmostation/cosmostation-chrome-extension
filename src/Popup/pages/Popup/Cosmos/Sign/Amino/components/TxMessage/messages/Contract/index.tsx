@@ -49,7 +49,7 @@ export default function Contract({ msg, chain, isMultipleMsgs }: ContractProps) 
     () =>
       funds.map((item) => {
         const token = cosmosAssets.data.find((asset) => asset.denom === item.denom);
-        const chainPrice = (token?.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0;
+        const chainPrice = coinGeckoPrice.data?.find((coinGeckoItem) => coinGeckoItem.coinGeckoId === token?.coinGeckoId)?.current_price || 0;
         const displayDenomAmount = toDisplayDenomAmount(item.amount, cosmosAssets.data.find((asset) => asset.denom === item.denom)?.decimals || 0);
         const displayValue = times(displayDenomAmount, chainPrice);
 
@@ -59,7 +59,7 @@ export default function Contract({ msg, chain, isMultipleMsgs }: ContractProps) 
           displayValue,
         };
       }),
-    [funds, cosmosAssets.data, coinGeckoPrice.data, currency],
+    [funds, cosmosAssets.data, coinGeckoPrice.data],
   );
 
   return (

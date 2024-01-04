@@ -11,7 +11,6 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
-import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
@@ -25,9 +24,8 @@ type SuiChainItemProps = {
 };
 
 export default function SuiChainItem({ chain, network }: SuiChainItemProps) {
-  const { extensionStorage } = useExtensionStorage();
   const { currentAccount } = useCurrentAccount();
-  const { data: coinGeckoData } = useCoinGeckoPriceSWR();
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { setCurrentSuiNetwork } = useCurrentSuiNetwork();
   const { networkName, decimals, displayDenom, coinGeckoId, imageURL } = network;
 
@@ -47,10 +45,7 @@ export default function SuiChainItem({ chain, network }: SuiChainItemProps) {
 
   const totalAmount = useMemo(() => tokenBalanceObjects.find((item) => item.coinType === SUI_COIN)?.balance || '0', [tokenBalanceObjects]);
 
-  const price = useMemo(
-    () => (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoData, coinGeckoId],
-  );
+  const price = useMemo(() => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0, [coinGeckoPrice.data, coinGeckoId]);
 
   useEffect(() => {
     setDashboard((prev) => ({

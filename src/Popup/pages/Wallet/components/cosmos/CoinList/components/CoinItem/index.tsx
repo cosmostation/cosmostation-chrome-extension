@@ -34,7 +34,7 @@ export default function CoinItem({ disabled, imageURL, amount, decimals = 0, dis
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[extensionStorage.currency]) || 0;
+  const chainPrice = coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0;
 
   const displayAmount = toDisplayDenomAmount(amount, decimals);
 

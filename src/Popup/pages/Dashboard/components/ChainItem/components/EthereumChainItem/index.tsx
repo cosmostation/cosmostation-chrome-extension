@@ -28,7 +28,7 @@ export default function EthereumChainItem({ chain, network }: EthereumChainItemP
   const { setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
   const { setCurrentChain } = useCurrentChain();
   const { navigate } = useNavigate();
-  const { data: coinGeckoData } = useCoinGeckoPriceSWR();
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const setDashboard = useSetRecoilState(dashboardState);
   const { data } = useBalanceSWR(network, { suspense: true });
@@ -42,10 +42,10 @@ export default function EthereumChainItem({ chain, network }: EthereumChainItemP
       [currentAccount.id]: {
         ...prev?.[currentAccount.id],
         [network.id]:
-          times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[extensionStorage.currency]) || 0) || '0',
+          times(toDisplayDenomAmount(totalAmount, decimals), coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0) || '0',
       },
     }));
-  }, [extensionStorage.currency, coinGeckoData, coinGeckoId, currentAccount.id, decimals, network.id, setDashboard, totalAmount]);
+  }, [extensionStorage.currency, coinGeckoId, currentAccount.id, decimals, network.id, setDashboard, totalAmount, coinGeckoPrice.data]);
 
   useEffect(
     () => () => {

@@ -34,7 +34,8 @@ export default function ChainFeeInfo({ title, feeInfo, isTildeAmount = false }: 
           feeInfo?.map((item) => {
             const displayFeeAmount = String(parseFloat(fix(toDisplayDenomAmount(item.amount || '0', item.feeToken?.decimals || 0), 5)));
 
-            const feeTokenPrice = (item.feeToken?.coingeckoId && coinGeckoPrice.data?.[item.feeToken?.coingeckoId]?.[extensionStorage.currency]) || 0;
+            const feeTokenPrice =
+              coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === item.feeToken?.coingeckoId)?.current_price || 0;
             const feeAmountPrice = times(displayFeeAmount, feeTokenPrice);
 
             const feeText = `${isTildeAmount ? '~' : ''} ${!gt(displayFeeAmount, '0') ? '<' : ''} ${displayFeeAmount} ${item.feeToken?.symbol || ''}`;

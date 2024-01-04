@@ -83,8 +83,8 @@ export default function Entry({ queue }: EntryProps) {
   const asset = useMemo(() => assets.data.find((item) => item.address === APTOS_COIN), [assets.data]);
 
   const price = useMemo(
-    () => (asset?.coinGeckoId && coinGeckoPrice.data?.[asset.coinGeckoId]?.[currency]) || 0,
-    [asset?.coinGeckoId, coinGeckoPrice.data, currency],
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === asset?.coinGeckoId)?.current_price || 0,
+    [asset?.coinGeckoId, coinGeckoPrice.data],
   );
 
   const { enqueueSnackbar } = useSnackbar();

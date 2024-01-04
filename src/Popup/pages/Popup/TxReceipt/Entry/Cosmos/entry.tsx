@@ -278,7 +278,8 @@ export default function Cosmos({ chain, txHash }: CosmosProps) {
                     const itemDisplayAmount = toDisplayDenomAmount(item.amount, feeCoinInfo?.decimals || 0);
                     const itemDisplayDenom = feeCoinInfo?.displayDenom || item.denom;
 
-                    const chainPrice = feeCoinInfo?.coinGeckoId ? coinGeckoPrice.data?.[feeCoinInfo?.coinGeckoId]?.[currency] || 0 : 0;
+                    const chainPrice =
+                      coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === feeCoinInfo?.coinGeckoId)?.current_price || 0;
                     const itemDisplayValue = times(itemDisplayAmount, chainPrice, 3);
                     return (
                       <Div key={item.amount + item.denom}>

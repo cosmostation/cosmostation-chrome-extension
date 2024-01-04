@@ -5,7 +5,6 @@ import type { GetRoute, TokenData } from '@0xsquid/sdk';
 import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS } from '~/constants/chain';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { useAssetsSWR, useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
-import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -58,8 +57,6 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   const account = useAccountSWR(fromChain || COSMOS_CHAINS[0]);
   const nodeInfo = useNodeInfoSWR(fromChain || COSMOS_CHAINS[0]);
   const cosmosFromTokenAssets = useCosmosAssetsSWR(fromChain?.line === COSMOS.line ? fromChain : undefined);
-
-  const { extensionStorage } = useExtensionStorage();
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
@@ -143,12 +140,12 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
             ac,
             times(
               toDisplayDenomAmount(cu.amount || '0', cu.feeToken?.decimals || 0),
-              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[extensionStorage.currency]) || '0',
+              coinGeckoPrice.data?.find((item) => item.coinGeckoId === cu.feeToken?.coingeckoId)?.current_price || 0,
             ),
           ),
         '0',
       ) || '0',
-    [extensionStorage.currency, coinGeckoPrice.data, squidCosmosSourceChainGasCosts],
+    [coinGeckoPrice.data, squidCosmosSourceChainGasCosts],
   );
 
   const squidCrossChainTotalFeePrice = useMemo(
@@ -159,12 +156,12 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
             ac,
             times(
               toDisplayDenomAmount(cu.amount || '0', cu.feeToken?.decimals || 0),
-              (cu.feeToken?.coingeckoId && coinGeckoPrice.data?.[cu.feeToken.coingeckoId]?.[extensionStorage.currency]) || '0',
+              coinGeckoPrice.data?.find((item) => item.coinGeckoId === cu.feeToken?.coingeckoId)?.current_price || 0,
             ),
           ),
         '0',
       ) || '0',
-    [extensionStorage.currency, coinGeckoPrice.data, squidCosmosCrossChainFeeCosts],
+    [coinGeckoPrice.data, squidCosmosCrossChainFeeCosts],
   );
 
   const estimatedSquidCosmosFeePrice = useMemo(

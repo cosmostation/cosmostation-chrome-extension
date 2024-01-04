@@ -1,63 +1,26 @@
 import type { AxiosError } from 'axios';
+import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
-import { CURRENCY_TYPE } from '~/constants/extensionStorage';
-import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { get } from '~/Popup/utils/axios';
-import type { CosmosChain } from '~/types/chain';
-import type { SimplePrice } from '~/types/coinGecko';
+import type { CoinGeckoPriceResponse } from '~/types/coinGecko';
 
-import { useAssetsSWR as useAptosAssetsSWR } from './aptos/useAssetsSWR';
-import { useAssetsSWR as useCosmosAssetsSWR } from './cosmos/useAssetsSWR';
 import { useExtensionStorage } from '../useExtensionStorage';
 
-export function useCoinGeckoPriceSWR(suspense?: boolean) {
-  const { currentAllowedChains } = useCurrentAllowedChains();
-
-  const cosmosAssets = useCosmosAssetsSWR();
-  const aptosAssets = useAptosAssetsSWR();
-
+export function useCoinGeckoPriceSWR(config?: SWRConfiguration) {
   const { extensionStorage } = useExtensionStorage();
 
-  const { additionalEthereumNetworks, ethereumTokens, cosmosTokens } = extensionStorage;
-  const networkCoinGeckoIds = [...ETHEREUM_NETWORKS, ...additionalEthereumNetworks].filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId);
-  const ethereumTokenCoinGeckoIds = ethereumTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!);
-  const cosmosTokenCoinGeckoIds = cosmosTokens.filter((item) => !!item.coinGeckoId).map((item) => item.coinGeckoId!);
-  const cosmosAssetsCoinGeckoIds = cosmosAssets.data.map((item) => item.coinGeckoId);
-  const aptosAssetsCoinGeckoIds = aptosAssets.data.map((item) => item.coinGeckoId);
-  const suiTokenCoinGeckoIds = SUI_NETWORKS.map((item) => item.coinGeckoId);
+  const requestURL = `https://front.api.mintscan.io/v10/utils/market/prices?currency=${extensionStorage.currency}`;
 
-  const allCoinGeckoIds = Array.from(
-    new Set([
-      ...networkCoinGeckoIds,
-      ...ethereumTokenCoinGeckoIds,
-      ...cosmosTokenCoinGeckoIds,
-      ...cosmosAssetsCoinGeckoIds,
-      ...aptosAssetsCoinGeckoIds,
-      ...suiTokenCoinGeckoIds,
-    ]),
-  ).filter((item) => item);
-  const joinedAllCoinGeckoIds = allCoinGeckoIds.length > 0 ? `,${allCoinGeckoIds.join(',')}` : '';
+  const fetcher = (fetchUrl: string) => get<CoinGeckoPriceResponse>(fetchUrl);
 
-  const coinGeckoIds = `${(currentAllowedChains.filter((chain) => chain.line === 'COSMOS' && chain.coinGeckoId) as CosmosChain[])
-    .map((chain) => chain.coinGeckoId)
-    .join(',')}${joinedAllCoinGeckoIds}`;
-
-  const currencySymbols = Object.values(CURRENCY_TYPE).join(',');
-
-  const requestURL = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=${currencySymbols}&ids=${coinGeckoIds}&include_market_cap=true&include_24hr_change=true`;
-
-  const fetcher = (fetchUrl: string) => get<SimplePrice>(fetchUrl);
-
-  const { data, error, mutate } = useSWR<SimplePrice, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<CoinGeckoPriceResponse, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,
     errorRetryCount: 3,
     errorRetryInterval: 5000,
-    suspense,
-    isPaused: () => cosmosAssets.isLoading || aptosAssets.isLoading,
+    ...config,
   });
 
   return { data, error, mutate };

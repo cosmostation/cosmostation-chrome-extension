@@ -9,7 +9,6 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
-import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
@@ -22,12 +21,11 @@ type AptosChainItemProps = {
 };
 
 export default function AptosChainItem({ chain, network }: AptosChainItemProps) {
-  const { extensionStorage } = useExtensionStorage();
   const { currentAccount } = useCurrentAccount();
   const { setCurrentAptosNetwork } = useCurrentAptosNetwork();
   const { setCurrentChain } = useCurrentChain();
   const { navigate } = useNavigate();
-  const { data: coinGeckoData } = useCoinGeckoPriceSWR();
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const setDashboard = useSetRecoilState(dashboardState);
 
@@ -52,8 +50,8 @@ export default function AptosChainItem({ chain, network }: AptosChainItemProps) 
   const { networkName } = network;
 
   const price = useMemo(
-    () => (asset?.coinGeckoId && coinGeckoData?.[asset.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [asset?.coinGeckoId, extensionStorage.currency, coinGeckoData],
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === asset?.coinGeckoId)?.current_price || 0,
+    [asset?.coinGeckoId, coinGeckoPrice.data],
   );
 
   useEffect(() => {

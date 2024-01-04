@@ -42,8 +42,8 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
   const coinDisplayDenomAmount = useMemo(() => toDisplayDenomAmount(amount, gt(amount, '0') ? tokenInfo.decimals : 0), [amount, tokenInfo.decimals]);
 
   const coinPrice = useMemo(
-    () => (tokenInfo.coinGeckoId && coinGeckoPrice.data?.[tokenInfo.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, tokenInfo.coinGeckoId],
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === tokenInfo.coinGeckoId)?.current_price || 0,
+    [coinGeckoPrice.data, tokenInfo.coinGeckoId],
   );
 
   const coinAmountPrice = useMemo(() => times(coinDisplayDenomAmount, coinPrice), [coinDisplayDenomAmount, coinPrice]);

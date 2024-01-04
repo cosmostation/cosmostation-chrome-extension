@@ -82,13 +82,13 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const imageURL = useMemo(() => currentAptosNetwork.imageURL || asset?.image, [asset?.image, currentAptosNetwork.imageURL]);
 
-  const { data } = useCoinGeckoPriceSWR();
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const amount = useMemo(() => aptosCoin?.data.coin.value || '0', [aptosCoin?.data.coin.value]);
 
   const price = useMemo(
-    () => (asset?.coinGeckoId && data?.[asset.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [asset?.coinGeckoId, data, extensionStorage.currency],
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === asset?.coinGeckoId)?.current_price || 0,
+    [asset?.coinGeckoId, coinGeckoPrice.data],
   );
 
   const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);

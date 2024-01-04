@@ -90,25 +90,27 @@ export default function IBCSend({ msg, chain, isMultipleMsgs }: IBCSendProps) {
     return itemBaseDenom.length > 5 ? `${itemBaseDenom.substring(0, 5)}...` : itemBaseDenom;
   }, [assetCoinInfo?.displayDenom, baseDenom, displayDenom, ibcCoinInfo?.displayDenom, itemBaseDenom]);
 
-  const itemDisplayValue = useMemo(() => {
+  const currentCoinGeckoId = useMemo(() => {
     if (itemBaseDenom === baseDenom) {
-      const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0;
-      return times(itemDisplayAmount, chainPrice);
+      return coinGeckoId;
     }
 
     if (assetCoinInfo?.coinGeckoId) {
-      const chainPrice = coinGeckoPrice.data?.[assetCoinInfo.coinGeckoId]?.[currency] || 0;
-
-      return times(itemDisplayAmount, chainPrice, CURRENCY_DECIMALS[currency]);
+      return assetCoinInfo.coinGeckoId;
     }
 
     if (ibcCoinInfo?.coinGeckoId) {
-      const chainPrice = coinGeckoPrice.data?.[ibcCoinInfo.coinGeckoId]?.[currency] || 0;
-      return times(itemDisplayAmount, chainPrice, CURRENCY_DECIMALS[currency]);
+      return ibcCoinInfo.coinGeckoId;
     }
 
-    return '0';
-  }, [assetCoinInfo?.coinGeckoId, baseDenom, coinGeckoId, coinGeckoPrice.data, currency, ibcCoinInfo?.coinGeckoId, itemBaseDenom, itemDisplayAmount]);
+    return '';
+  }, [assetCoinInfo?.coinGeckoId, baseDenom, coinGeckoId, ibcCoinInfo?.coinGeckoId, itemBaseDenom]);
+
+  const itemDisplayValue = useMemo(
+    () =>
+      times(itemDisplayAmount, coinGeckoPrice.data?.find((item) => item.coinGeckoId === currentCoinGeckoId)?.current_price || 0, CURRENCY_DECIMALS[currency]),
+    [coinGeckoPrice.data, currency, currentCoinGeckoId, itemDisplayAmount],
+  );
 
   return (
     <Container title="IBC Send" isMultipleMsgs={isMultipleMsgs}>

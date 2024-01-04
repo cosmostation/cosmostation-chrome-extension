@@ -29,7 +29,6 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
@@ -84,8 +83,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const nodeInfo = useNodeInfoSWR(chain);
   const { enQueue } = useCurrentQueue();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const { extensionStorage } = useExtensionStorage();
-  const { currency } = extensionStorage;
   const params = useParams();
 
   const [isDisabled, setIsDisabled] = useState(false);
@@ -144,7 +141,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           const name = convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || '');
 
           const availableAmount = coinsBalance?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
-          const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
+          const coinPrice = coinGeckoPrice.data?.find((coinGeckoItem) => coinGeckoItem.coinGeckoId === item.coinGeckoId)?.current_price || 0;
           const price = times(toDisplayDenomAmount(availableAmount, item.decimals), coinPrice);
 
           return {
@@ -166,7 +163,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
       ...currentCosmosTokens
         .filter((item) => !!filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, item.address)).length)
         .map((item) => {
-          const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
+          const coinPrice = coinGeckoPrice.data?.find((coinGeckoItem) => coinGeckoItem.coinGeckoId === item.coinGeckoId)?.current_price || 0;
           const availableAmount = cosmosTokensBalance.data.find((tokenBalances) => tokenBalances.contractAddress === item.address)?.balance || '0';
           const price = times(toDisplayDenomAmount(availableAmount, item.decimals), coinPrice);
 
@@ -190,7 +187,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
     chain.displayDenom,
     coinGeckoPrice.data,
     cosmosTokensBalance.data,
-    currency,
     currentChainAssets.data,
     currentCosmosTokens,
     filteredCosmosChainAssets,

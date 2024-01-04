@@ -103,7 +103,10 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const feeCoinBaseBalance = useMemo(() => BigInt(balance.data?.result || '0').toString(10), [balance.data?.result]);
 
-  const feeCoinPrice = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
+  const feeCoinPrice = useMemo(
+    () => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0,
+    [coinGeckoId, coinGeckoPrice.data],
+  );
 
   const feeCoinDecimals = useMemo(() => decimals, [decimals]);
 

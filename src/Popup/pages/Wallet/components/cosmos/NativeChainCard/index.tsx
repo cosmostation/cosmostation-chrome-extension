@@ -95,7 +95,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     chain,
     true,
   );
-  const { data } = useCoinGeckoPriceSWR();
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
 
@@ -109,7 +109,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const { decimals, coinGeckoId, explorerURL } = chain;
 
-  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [extensionStorage.currency, coinGeckoId, data]);
+  const price = useMemo(() => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0, [coinGeckoId, coinGeckoPrice.data]);
 
   const displayAmount = useMemo(() => toDisplayDenomAmount(totalAmount, decimals), [decimals, totalAmount]);
 

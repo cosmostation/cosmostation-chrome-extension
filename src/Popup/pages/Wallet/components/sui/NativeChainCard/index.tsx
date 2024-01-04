@@ -68,7 +68,7 @@ type NativeChainCardProps = {
 export default function NativeChainCard({ chain, isCustom }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { extensionStorage } = useExtensionStorage();
-  const { data } = useCoinGeckoPriceSWR();
+  const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { currentSuiNetwork } = useCurrentSuiNetwork();
   const { enqueueSnackbar } = useSnackbar();
   const accounts = useAccounts(true);
@@ -106,7 +106,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     [coinMetadata?.result?.iconUrl, currentSuiNetwork.imageURL],
   );
 
-  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [extensionStorage.currency, coinGeckoId, data]);
+  const price = useMemo(() => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0, [coinGeckoPrice.data, coinGeckoId]);
 
   const value = times(price, displayAmount);
 
