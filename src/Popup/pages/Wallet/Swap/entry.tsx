@@ -440,7 +440,7 @@ export default function Entry() {
       }));
     }
 
-    if (currentSwapAPI === 'squid_cosmos') {
+    if (currentSwapAPI === 'squid_cosmos' && currentFromChain.line === COSMOS.line) {
       const squidTokens = filterSquidTokens(currentFromChain?.chainId);
 
       const filteredTokens = cosmosFromTokenAssets.data
@@ -467,7 +467,7 @@ export default function Entry() {
       ].sort((a) => (currentFromChain?.displayDenom === a.displayDenom && a.origin_type === 'staking' ? -1 : 1));
     }
 
-    if (currentSwapAPI === 'squid_evm') {
+    if (currentSwapAPI === 'squid_evm' && currentFromChain.line === ETHEREUM.line) {
       const filteredTokens = filterSquidTokens(currentFromChain?.chainId);
 
       return [
@@ -500,6 +500,7 @@ export default function Entry() {
     coinGeckoPrice.data,
     extensionStorage.currency,
     cosmosFromChainBalance.data?.balance,
+    currentFromChain.line,
     currentFromEVMNativeBalance.data?.result,
     currentEthereumNetwork.coinGeckoId,
     currentFromEthereumTokens,
