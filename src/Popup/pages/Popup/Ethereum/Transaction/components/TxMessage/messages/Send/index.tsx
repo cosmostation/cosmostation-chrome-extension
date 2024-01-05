@@ -36,7 +36,7 @@ export default function Send({ tx }: SendProps) {
 
   const { currency } = extensionStorage;
   const { displayDenom, coinGeckoId } = currentEthereumNetwork;
-  const price = useMemo(() => coinGeckoPrice.data?.find((item) => item.coinGeckoId === coinGeckoId)?.current_price || 0, [coinGeckoId, coinGeckoPrice.data]);
+  const price = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 
   const { from, to } = tx;
 

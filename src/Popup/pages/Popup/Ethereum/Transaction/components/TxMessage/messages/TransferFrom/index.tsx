@@ -41,8 +41,8 @@ export default function TransferFrom({ tx, determineTxType }: TransferFromProps)
   const token = useMemo(() => tokens.data.find((item) => isEqualsIgnoringCase(to, item.address)), [to, tokens.data]);
 
   const price = useMemo(
-    () => coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === token?.coinGeckoId)?.current_price || 0,
-    [coinGeckoPrice.data, token?.coinGeckoId],
+    () => (token?.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0,
+    [coinGeckoPrice.data, currency, token?.coinGeckoId],
   );
 
   const tokenAddress = useMemo(() => token?.displayDenom || shorterAddress(to, 32), [to, token?.displayDenom]);
