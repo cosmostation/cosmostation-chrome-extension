@@ -14,6 +14,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTOwnerSWR';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
+import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
@@ -22,7 +23,7 @@ import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosN
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
@@ -175,9 +176,11 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const simulate = useSimulateSWR({ chain, txBytes: sendProtoTx?.tx_bytes });
 
+  const { data: gasMultiply } = useGasMultiplySWR(chain);
+
   const simulatedGas = useMemo(
-    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
-    [chain, simulate.data?.gas_info?.gas_used],
+    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, gasMultiply, 0) : undefined),
+    [gasMultiply, simulate.data?.gas_info?.gas_used],
   );
 
   const currentGas = useMemo(() => customGas || simulatedGas || sendGas, [customGas, sendGas, simulatedGas]);
