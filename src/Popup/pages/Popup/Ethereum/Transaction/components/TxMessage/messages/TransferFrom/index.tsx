@@ -38,14 +38,20 @@ export default function TransferFrom({ tx, determineTxType }: TransferFromProps)
 
   const { to } = tx;
 
-  const token = tokens.data.find((item) => isEqualsIgnoringCase(to, item.address));
+  const token = useMemo(() => tokens.data.find((item) => isEqualsIgnoringCase(to, item.address)), [to, tokens.data]);
 
-  const price = (token?.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0;
+  const price = useMemo(
+    () => coinGeckoPrice.data?.find((coinGeckoPriceItem) => coinGeckoPriceItem.coinGeckoId === token?.coinGeckoId)?.current_price || 0,
+    [coinGeckoPrice.data, token?.coinGeckoId],
+  );
 
-  const tokenAddress = token?.displayDenom || shorterAddress(to, 32);
-  const fromAddress = (determineTxType?.txDescription?.args?.[0] as undefined | string) || '';
-  const toAddress = (determineTxType?.txDescription?.args?.[1] as undefined | string) || '';
-  const amount = (determineTxType?.txDescription?.args?.[2] as BigNumber | undefined)?.toString(10) || '';
+  const tokenAddress = useMemo(() => token?.displayDenom || shorterAddress(to, 32), [to, token?.displayDenom]);
+  const fromAddress = useMemo(() => (determineTxType?.txDescription?.args?.[0] as undefined | string) || '', [determineTxType?.txDescription?.args]);
+  const toAddress = useMemo(() => (determineTxType?.txDescription?.args?.[1] as undefined | string) || '', [determineTxType?.txDescription?.args]);
+  const amount = useMemo(
+    () => (determineTxType?.txDescription?.args?.[2] as BigNumber | undefined)?.toString(10) || '',
+    [determineTxType?.txDescription?.args],
+  );
 
   const displayAmount = useMemo(() => {
     try {
@@ -55,7 +61,7 @@ export default function TransferFrom({ tx, determineTxType }: TransferFromProps)
     }
   }, [amount, token?.decimals]);
 
-  const value = times(displayAmount, price);
+  const value = useMemo(() => times(displayAmount, price), [displayAmount, price]);
 
   return (
     <Container title="TransferFrom (ERC20)">
