@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
@@ -47,9 +47,12 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
   const { extensionStorage } = useExtensionStorage();
   const { data } = useCoinGeckoPriceSWR();
 
-  const price = (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0;
+  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [coinGeckoId, data, extensionStorage.currency]);
 
-  const cap = (coinGeckoId && data?.[coinGeckoId]?.[`${extensionStorage.currency}_24h_change`]) || 0;
+  const cap = useMemo(
+    () => (coinGeckoId && data?.[coinGeckoId]?.[`${extensionStorage.currency}_24h_change`]) || 0,
+    [coinGeckoId, data, extensionStorage.currency],
+  );
 
   const upperDisplayDenom = displayDenom.toUpperCase();
 
