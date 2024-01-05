@@ -73,15 +73,18 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const { data } = useCoinGeckoPriceSWR();
 
-  const amount = BigInt(balance?.data?.result || '0').toString();
+  const amount = useMemo(() => BigInt(balance?.data?.result || '0').toString(), [balance?.data?.result]);
 
-  const price = (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0;
+  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [coinGeckoId, data, extensionStorage.currency]);
 
-  const displayAmount = toDisplayDenomAmount(amount, decimals);
+  const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);
 
-  const value = times(price, displayAmount);
+  const value = useMemo(() => times(price, displayAmount), [displayAmount, price]);
 
-  const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
+  const currentAddress = useMemo(
+    () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '',
+    [accounts?.data, chain.id, currentAccount.id],
+  );
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {

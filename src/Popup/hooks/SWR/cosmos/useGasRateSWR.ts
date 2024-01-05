@@ -1,35 +1,15 @@
 import { useMemo } from 'react';
-import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
-import useSWR from 'swr';
 
 import { NYX, NYX_GAS_RATES } from '~/constants/chain/cosmos/nyx';
-import { get } from '~/Popup/utils/axios';
-import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain, GasRate } from '~/types/chain';
-import type { GasRateResponse } from '~/types/cosmos/gasRate';
+
+import { useParamsSWR } from './useParamsSWR';
 
 export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
-  const fetcher = async () => {
-    try {
-      return await get<GasRateResponse>('https://front.api.mintscan.io/v2/utils/gas_prices');
-    } catch {
-      return null;
-    }
-  };
+  const { data, error, mutate } = useParamsSWR(chain, config);
 
-  const { data, error, mutate } = useSWR<GasRateResponse | null, AxiosError>({}, fetcher, {
-    revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 0,
-    errorRetryCount: 0,
-    isPaused: () => !chain,
-    ...config,
-  });
-
-  const mappedName = convertCosmosToAssetName(chain);
-
-  const gasRate = useMemo(() => (data ? data.find((item) => item.chain === mappedName)?.rate ?? [] : []), [data, mappedName]);
+  const gasRate = useMemo(() => (data ? data.params.chainlist_params.fee.rate ?? [] : []), [data]);
 
   const returnData: Record<string, GasRate> = useMemo(() => {
     const result: Record<string, GasRate> =

@@ -17,6 +17,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useRewardSWR } from '~/Popup/hooks/SWR/cosmos/useRewardSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -29,7 +30,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
-import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
@@ -202,6 +203,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const commissionSimulate = useSimulateSWR({ chain, txBytes: commissionProtoTx?.tx_bytes });
 
+  const { data: gasMultiply } = useGasMultiplySWR(chain);
+
   const commissionDirectTx = useMemo(() => {
     if (
       operatorAddress &&
@@ -216,7 +219,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         chain_id: chain.chainId,
         fee: {
           amount: [{ amount: '0', denom: chain.baseDenom }],
-          gas: times(commissionSimulate.data.gas_info.gas_used, getDefaultAV(chain), 0),
+          gas: times(commissionSimulate.data.gas_info.gas_used, gasMultiply, 0),
         },
         msgs: [
           {
@@ -252,6 +255,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     account.data?.value.sequence,
     commissionSimulate.data?.gas_info?.gas_used,
     chain,
+    gasMultiply,
     currentAccount,
     currentPassword,
   ]);
@@ -449,7 +453,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                             ...rewardAminoTx,
                             fee: {
                               amount: [{ amount: '0', denom: chain.baseDenom }],
-                              gas: times(rewardSimulate.data.gas_info.gas_used, getDefaultAV(chain), 0),
+                              gas: times(rewardSimulate.data.gas_info.gas_used, gasMultiply, 0),
                             },
                           },
                           isEditFee: true,
@@ -506,7 +510,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                               ...commissionAminoTx,
                               fee: {
                                 amount: [{ amount: '0', denom: chain.baseDenom }],
-                                gas: times(commissionSimulate.data.gas_info.gas_used, getDefaultAV(chain), 0),
+                                gas: times(commissionSimulate.data.gas_info.gas_used, gasMultiply, 0),
                               },
                             },
                             isEditFee: true,
