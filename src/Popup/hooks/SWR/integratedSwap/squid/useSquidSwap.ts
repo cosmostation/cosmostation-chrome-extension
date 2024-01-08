@@ -4,7 +4,7 @@ import { Interface } from '@ethersproject/abi';
 
 import { ERC20_ABI } from '~/constants/abi';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
-import { SQUID_CONTRACT_ADDRESS, SQUID_MAX_APPROVE_AMOUNT } from '~/constants/squid';
+import { SQUID_COLLECT_FEE_BPF, SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS, SQUID_CONTRACT_ADDRESS, SQUID_MAX_APPROVE_AMOUNT } from '~/constants/squid';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -99,7 +99,12 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
         toToken: toToken.address,
         toAddress: receiverAddress,
         slippage: Number(slippage),
+        collectFees: {
+          integratorAddress: SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS,
+          fee: SQUID_COLLECT_FEE_BPF,
+        },
         enableForecall: true,
+        enableExpress: false,
       };
     }
     return undefined;

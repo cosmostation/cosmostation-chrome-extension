@@ -981,7 +981,7 @@ export default function Entry() {
         };
       }
 
-      if (currentSwapAPI === 'squid_evm' && squidSwap.squidRoute?.data && currentFromChain.line === ETHEREUM.line) {
+      if (currentSwapAPI === 'squid_evm' && squidSwap.squidRoute?.data?.route.transactionRequest && currentFromChain.line === ETHEREUM.line) {
         return {
           from: currentFromAddress,
           to: squidSwap.squidRoute.data.route.transactionRequest.targetAddress,
@@ -1027,7 +1027,7 @@ export default function Entry() {
       return times(oneInchRoute.data.tx.gas, getDefaultAV(), 0);
     }
 
-    if (currentSwapAPI === 'squid_evm' && squidSwap.squidRoute?.data) {
+    if (currentSwapAPI === 'squid_evm' && squidSwap.squidRoute?.data?.route.transactionRequest?.gasLimit) {
       return squidSwap.squidRoute.data.route.transactionRequest.gasLimit;
     }
 
