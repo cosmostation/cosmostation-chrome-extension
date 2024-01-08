@@ -1585,7 +1585,6 @@
           "insufficientFeeAmount": "수수료가 부족합니다.",
           "invalidAmount": "수량을 입력하세요.",
           "invalidOutputAmount": "예상 교환치가 없습니다.",
-          "invalidPriceImpact": "가격 변동치가 지나치게 높습니다.",
           "invalidSwapTx": "Invalid tx data",
           "lessThanFeeWarningDescription1": "예상 가스비를 위한 잔액이 부족합니다. 잔액이",
           "lessThanFeeWarningDescription2": "이상인지 확인하세요.",

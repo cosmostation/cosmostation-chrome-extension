@@ -1585,7 +1585,6 @@
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",
           "invalidOutputAmount": "Invalid output amount",
-          "invalidPriceImpact": "Too high Price Impact",
           "invalidSwapTx": "Invalid tx data",
           "lessThanFeeWarningDescription1": "You do not have enough balance to cover the estimated gas costs for this transaction. Make sure you have more than",
           "lessThanFeeWarningDescription2": "before trying again.",

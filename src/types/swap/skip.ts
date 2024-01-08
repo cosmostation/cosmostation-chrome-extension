@@ -51,6 +51,7 @@ export type SkipRoutePayload = {
   chain_ids: string[];
   does_swap: boolean;
   amount_out: string;
+  swap_price_impact_percent?: string;
   swap_venue?: SwapVenue;
   txs_required: number;
 };
