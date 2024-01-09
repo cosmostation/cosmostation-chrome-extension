@@ -54,6 +54,12 @@ export type SkipRoutePayload = {
   swap_price_impact_percent?: string;
   swap_venue?: SwapVenue;
   txs_required: number;
+  usd_amount_in: string;
+  usd_amount_out: string;
+  warning?: {
+    type: 'BAD_PRICE_WARNING' | 'LOW_INFO_WARNING';
+    message: string;
+  };
 };
 
 export type Msg = {

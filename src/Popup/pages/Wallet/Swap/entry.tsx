@@ -43,6 +43,7 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { calcPriceImpact } from '~/Popup/utils/calculate';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, getDefaultAV } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
@@ -962,8 +963,14 @@ export default function Entry() {
   }, [currentSwapAPI, estimatedToTokenDisplayAmount, inputDisplayAmount, squidSwap.squidRoute?.data?.route.estimate.exchangeRate]);
 
   const priceImpactPercent = useMemo(() => {
-    if (currentSwapAPI === 'skip' && skipRoute.data?.swap_price_impact_percent) {
-      return skipRoute.data.swap_price_impact_percent;
+    if (currentSwapAPI === 'skip') {
+      if (skipRoute.data?.swap_price_impact_percent) {
+        return skipRoute.data.swap_price_impact_percent;
+      }
+
+      if (skipRoute.data?.usd_amount_in && skipRoute.data?.usd_amount_out) {
+        return calcPriceImpact(skipRoute.data.usd_amount_in, skipRoute.data.usd_amount_out);
+      }
     }
 
     if ((currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') && squidSwap.squidRoute?.data) {
@@ -971,7 +978,7 @@ export default function Entry() {
     }
 
     return '0';
-  }, [currentSwapAPI, skipRoute.data?.swap_price_impact_percent, squidSwap.squidRoute?.data]);
+  }, [currentSwapAPI, skipRoute.data?.swap_price_impact_percent, skipRoute.data?.usd_amount_in, skipRoute.data?.usd_amount_out, squidSwap.squidRoute?.data]);
 
   const integratedEVMSwapTx = useMemo(() => {
     if (gt(integratedAllowance?.allowance || '0', currentInputBaseAmount)) {
@@ -1268,6 +1275,9 @@ export default function Entry() {
         if (skipRoute.data?.txs_required && skipRoute.data?.txs_required > 1) {
           return t('pages.Wallet.Swap.entry.multiTxSwap');
         }
+        if (skipRoute.data?.warning) {
+          return skipRoute.data.warning.message;
+        }
         if (skipRoute.error?.response?.data.message) {
           return skipRoute.error.response.data.message;
         }
@@ -1305,13 +1315,13 @@ export default function Entry() {
     currentFeeToken,
     currentFromToken?.address,
     t,
+    skipRoute.data,
     oneInchRoute.error,
     estimatedToTokenDisplayAmountPrice,
     priceImpactPercent,
     squidSwap.squidRoute?.error,
     errorMessage,
     isDisabled,
-    skipRoute.data?.txs_required,
     skipRoute.error?.response?.data.message,
     skipSwapTx.error?.response?.data.message,
     estimatedFeeDisplayAmount,
