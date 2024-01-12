@@ -41,6 +41,16 @@ export type Affiliates = {
   address: string;
 };
 
+export const WARNING_TYPE = {
+  BAD_PRICE_WARNING: 'BAD_PRICE_WARNING',
+  LOW_INFO_WARNING: 'LOW_INFO_WARNING',
+} as const;
+
+export type Warning = {
+  type: ValueOf<typeof WARNING_TYPE>;
+  message: string;
+};
+
 export type SkipRoutePayload = {
   source_asset_denom: string;
   source_asset_chain_id: string;
@@ -51,8 +61,12 @@ export type SkipRoutePayload = {
   chain_ids: string[];
   does_swap: boolean;
   amount_out: string;
+  swap_price_impact_percent?: string;
   swap_venue?: SwapVenue;
   txs_required: number;
+  usd_amount_in: string;
+  usd_amount_out: string;
+  warning?: Warning;
 };
 
 export type Msg = {

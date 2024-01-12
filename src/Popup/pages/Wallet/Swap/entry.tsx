@@ -43,6 +43,7 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { calcPriceImpact } from '~/Popup/utils/calculate';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, getDefaultAV } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
@@ -962,12 +963,22 @@ export default function Entry() {
   }, [currentSwapAPI, estimatedToTokenDisplayAmount, inputDisplayAmount, squidSwap.squidRoute?.data?.route.estimate.exchangeRate]);
 
   const priceImpactPercent = useMemo(() => {
+    if (currentSwapAPI === 'skip') {
+      if (skipRoute.data?.swap_price_impact_percent) {
+        return skipRoute.data.swap_price_impact_percent;
+      }
+
+      if (skipRoute.data?.usd_amount_in && skipRoute.data?.usd_amount_out) {
+        return calcPriceImpact(skipRoute.data.usd_amount_in, skipRoute.data.usd_amount_out);
+      }
+    }
+
     if ((currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') && squidSwap.squidRoute?.data) {
       return squidSwap.squidRoute.data.route.estimate.aggregatePriceImpact;
     }
 
     return '0';
-  }, [currentSwapAPI, squidSwap.squidRoute?.data]);
+  }, [currentSwapAPI, skipRoute.data?.swap_price_impact_percent, skipRoute.data?.usd_amount_in, skipRoute.data?.usd_amount_out, squidSwap.squidRoute?.data]);
 
   const integratedEVMSwapTx = useMemo(() => {
     if (gt(integratedAllowance?.allowance || '0', currentInputBaseAmount)) {
@@ -1173,9 +1184,7 @@ export default function Entry() {
       if (gt(estimatedToTokenDisplayAmountPrice, '100000')) {
         return t('pages.Wallet.Swap.entry.oversizedSwap');
       }
-      if (gt(priceImpactPercent, '3')) {
-        return t('pages.Wallet.Swap.entry.invalidPriceImpact');
-      }
+
       if (currentSwapAPI === 'squid_evm') {
         if (!integratedEVMSwapTx) {
           return t('pages.Wallet.Swap.entry.invalidSwapTx');
@@ -1217,7 +1226,6 @@ export default function Entry() {
     skipSwapAminoTx,
     integratedEVMSwapTx,
     estimatedToTokenDisplayAmountPrice,
-    priceImpactPercent,
   ]);
 
   const swapInfoMessage = useMemo(() => {
@@ -1261,8 +1269,14 @@ export default function Entry() {
       }
 
       if (currentSwapAPI === 'skip') {
+        if (gt(priceImpactPercent, '3')) {
+          return t('pages.Wallet.Swap.entry.liquidityWarning');
+        }
         if (skipRoute.data?.txs_required && skipRoute.data?.txs_required > 1) {
           return t('pages.Wallet.Swap.entry.multiTxSwap');
+        }
+        if (skipRoute.data?.warning) {
+          return skipRoute.data.warning.message;
         }
         if (skipRoute.error?.response?.data.message) {
           return skipRoute.error.response.data.message;
@@ -1301,13 +1315,13 @@ export default function Entry() {
     currentFeeToken,
     currentFromToken?.address,
     t,
+    skipRoute.data,
     oneInchRoute.error,
     estimatedToTokenDisplayAmountPrice,
     priceImpactPercent,
     squidSwap.squidRoute?.error,
     errorMessage,
     isDisabled,
-    skipRoute.data?.txs_required,
     skipRoute.error?.response?.data.message,
     skipSwapTx.error?.response?.data.message,
     estimatedFeeDisplayAmount,
@@ -1665,7 +1679,7 @@ export default function Entry() {
                 </SwapInfoBodyRightContainer>
               </SwapInfoBodyTextContainer>
 
-              {(currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') && (
+              {currentSwapAPI !== '1inch' && (
                 <SwapInfoBodyTextContainer>
                   <SwapInfoBodyLeftContainer>
                     <Typography variant="h6">{t('pages.Wallet.Swap.entry.priceImpact')}</Typography>
@@ -1674,13 +1688,9 @@ export default function Entry() {
                     {isLoadingSwapData ? (
                       <Skeleton width="4rem" height="1.5rem" />
                     ) : priceImpactPercent !== '0' ? (
-                      <SwapInfoBodyRightTextContainer data-is-invalid={gt(priceImpactPercent, '5')}>
-                        <Typography variant="h6n">{` ${gt(priceImpactPercent, '0') ? `-` : ``} ${
-                          lt(priceImpactPercent.replace('-', ''), 0.01) ? `<` : ``
-                        }`}</Typography>
-                        &nbsp;
+                      <SwapInfoBodyRightTextContainer data-is-invalid={gt(priceImpactPercent, '3')}>
                         <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2}>
-                          {priceImpactPercent.replace('-', '')}
+                          {priceImpactPercent}
                         </NumberText>
                         <Typography variant="h6n">%</Typography>
                       </SwapInfoBodyRightTextContainer>
