@@ -191,7 +191,7 @@ const experimentalSuggestChain: Keplr['experimentalSuggestChain'] = async (chain
           displayDenom: chainInfo.currencies[0].coinDenom,
           decimals: chainInfo.currencies[0].coinDecimals,
           restURL: chainInfo.rest,
-          coinType: String(chainInfo.bip44.coinType),
+          coinType: `${String(chainInfo.bip44.coinType)}'`,
           gasRate: chainInfo.gasPriceStep
             ? {
                 tiny: String(chainInfo.gasPriceStep.low),
