@@ -63,6 +63,19 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
 
   const displayTokenStandard = useMemo(() => toDisplayCWTokenStandard(tokenType), [tokenType]);
 
+  const nftExtensionDatas = useMemo(() => {
+    if (nftMeta?.extensionData) {
+      const keys = Object.keys(nftMeta.extensionData);
+
+      const extensionDatas = keys.map((key) => ({
+        key,
+        value: nftMeta.extensionData?.[key],
+      }));
+      return extensionDatas;
+    }
+    return [];
+  }, [nftMeta]);
+
   const handleOnClickCopy = useCallback(
     (copyString?: string) => {
       if (copyString && copy(copyString)) {
@@ -161,18 +174,31 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
         </ItemColumnContainer>
       )}
 
-      {nftMeta?.metaData?.attributes && (
+      {(nftMeta?.metaData?.attributes || nftExtensionDatas) && (
         <AttributeContainer>
           <AttributeHeaderContainer>
             <Typography variant="h4">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.attributes')}</Typography>
           </AttributeHeaderContainer>
-          {nftMeta.metaData.attributes.map((item) => (
+          {nftMeta?.metaData?.attributes?.map((item) => (
             <ItemContainer key={item.trait_type}>
               <ItemTitleContainer>
                 <Typography variant="h5">{item.trait_type || ''}</Typography>
               </ItemTitleContainer>
               <ItemRightContainer>
                 <Typography variant="h5">{item.value || ''}</Typography>
+              </ItemRightContainer>
+            </ItemContainer>
+          ))}
+
+          {nftExtensionDatas.map((item) => (
+            <ItemContainer key={item.key}>
+              <ItemTitleContainer>
+                <Typography variant="h5">{item.key || ''}</Typography>
+              </ItemTitleContainer>
+              <ItemRightContainer>
+                <Tooltip title={JSON.stringify(item?.value || '')} placement="top" arrow>
+                  <Typography variant="h5">{JSON.stringify(item?.value || '')}</Typography>
+                </Tooltip>
               </ItemRightContainer>
             </ItemContainer>
           ))}
