@@ -462,7 +462,7 @@
               "chainIdPlaceholder": "체인 ID (예: cosmoshub-1)",
               "chainNamePlaceholder": "커스텀 체인 이름",
               "coinGeckoIdPlaceholder": "Coingecko API id (선택)",
-              "coinTypePlaceholder": "coin type (선택) (default: 118)",
+              "coinTypePlaceholder": "coin type (선택) (default: 118')",
               "cosmWasmPlaceholder": "cosmwasm 여부 (선택) (default: false)",
               "decimalsPlaceholder": "decimals (선택) (default: 6)",
               "displayDenomPlaceholder": "통화 기호",
@@ -475,7 +475,7 @@
               "restURLPlaceholder": "Rest URL",
               "sendGasPlaceholder": "'보내기' 가스량 (선택)",
               "submitButton": "새 체인 추가",
-              "typePlaceholder": "체인 타입 (선택)",
+              "typePlaceholder": "체인 타입 (선택) (예시:ETHERMINT)",
               "warning": "악의적인 체인 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 체인만 추가하세요."
             },
             "layout": {
@@ -1792,6 +1792,11 @@
       "chainName": {
         "any": {
           "invalid": "이미 등록된 체인입니다."
+        }
+      },
+      "coinType": {
+        "any": {
+          "invalid": "입력값의 형식이 올바르지 않습니다."
         }
       },
       "decimal": {
