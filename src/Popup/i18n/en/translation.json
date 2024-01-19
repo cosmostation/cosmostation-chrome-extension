@@ -475,7 +475,7 @@
               "restURLPlaceholder": "Rest URL",
               "sendGasPlaceholder": "Send Gas value (option)",
               "submitButton": "Add a custom chain",
-              "typePlaceholder": "Chain type (option)",
+              "typePlaceholder": "Chain type (option) (e.g. ETHERMINT)",
               "warning": "A malicious chain provider can lie about the state of the blockchain and record your chain activity. Only add custom chain you trust."
             },
             "layout": {
