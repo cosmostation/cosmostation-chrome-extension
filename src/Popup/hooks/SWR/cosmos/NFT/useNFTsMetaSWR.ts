@@ -3,9 +3,11 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { ARCHWAY } from '~/constants/chain/cosmos/archway';
 import { isAxiosError } from '~/Popup/utils/axios';
-import { getIpfsData } from '~/Popup/utils/nft';
+import { getIpfsData, getNFTExtensionData } from '~/Popup/utils/nft';
 import type { CosmosChain } from '~/types/chain';
+import type { NFTExtensionPayload } from '~/types/cosmos/contract';
 import type { NFTMetaResponse } from '~/types/cosmos/nft';
 
 import { useNFTsURISWR } from './useNFTsURISWR';
@@ -17,6 +19,7 @@ type NFTInfo = {
 
 type FetcherParams = {
   tokenURI: string;
+  extensionData?: NFTExtensionPayload;
   nftInfo: NFTInfo;
 };
 
@@ -36,6 +39,7 @@ export function useNFTsMetaSWR({ chain, nftInfos }: UseNFTsMetaSWR, config?: SWR
     () =>
       ownedNFTSourceURI.data.map((item) => ({
         tokenURI: item.tokenURI,
+        extensionData: item.extension,
         nftInfo: {
           contractAddress: item?.contractAddress,
           tokenId: item?.tokenId,
@@ -44,10 +48,14 @@ export function useNFTsMetaSWR({ chain, nftInfos }: UseNFTsMetaSWR, config?: SWR
     [ownedNFTSourceURI.data],
   );
 
-  const fetcher = async (fetchUrl: string, nftInfo: NFTInfo) => {
+  const fetcher = async (fetchUrl: string, nftInfo: NFTInfo, extensionData?: NFTExtensionPayload) => {
     try {
       if (ownedNFTSourceURI.error) {
         throw ownedNFTSourceURI.error;
+      }
+
+      if (chain.id === ARCHWAY.id && !fetchUrl) {
+        return getNFTExtensionData(extensionData, nftInfo.contractAddress, nftInfo.tokenId);
       }
 
       return await getIpfsData(fetchUrl, nftInfo.contractAddress, nftInfo.tokenId);
@@ -61,7 +69,8 @@ export function useNFTsMetaSWR({ chain, nftInfos }: UseNFTsMetaSWR, config?: SWR
     }
   };
 
-  const multiFetcher = (params: MultiFetcherParams) => Promise.allSettled(params.fetcherParam.map((item) => fetcher(item.tokenURI, item.nftInfo)));
+  const multiFetcher = (params: MultiFetcherParams) =>
+    Promise.allSettled(params.fetcherParam.map((item) => fetcher(item.tokenURI, item.nftInfo, item.extensionData)));
 
   const { data, isValidating, error, mutate } = useSWR<PromiseSettledResult<NFTMetaResponse | null>[], AxiosError>(
     { fetcherParam: fetcherParams },

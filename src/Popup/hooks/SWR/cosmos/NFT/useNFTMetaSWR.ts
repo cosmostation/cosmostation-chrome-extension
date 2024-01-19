@@ -3,9 +3,11 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { ARCHWAY } from '~/constants/chain/cosmos/archway';
 import { isAxiosError } from '~/Popup/utils/axios';
-import { getIpfsData } from '~/Popup/utils/nft';
+import { getIpfsData, getNFTExtensionData } from '~/Popup/utils/nft';
 import type { CosmosChain } from '~/types/chain';
+import type { NFTExtensionPayload } from '~/types/cosmos/contract';
 import type { NFTMetaResponse } from '~/types/cosmos/nft';
 
 import { useNFTURISWR } from './useNFTURISWR';
@@ -14,6 +16,7 @@ type FetcherParams = {
   fetchUrl: string;
   contractAddress: string;
   tokenId: string;
+  extensionData?: NFTExtensionPayload;
 };
 
 type UseNFTMetaSWR = {
@@ -33,6 +36,10 @@ export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR
         throw nftSourceURI.error;
       }
 
+      if (chain.id === ARCHWAY.id && !fetchParam.fetchUrl) {
+        return getNFTExtensionData(fetchParam.extensionData, fetchParam.contractAddress, fetchParam.tokenId);
+      }
+
       return await getIpfsData(fetchParam.fetchUrl, fetchParam.contractAddress, fetchParam.tokenId);
     } catch (e) {
       if (isAxiosError(e)) {
@@ -49,6 +56,7 @@ export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR
       fetchUrl,
       contractAddress,
       tokenId,
+      extensionData: nftSourceURI.data?.extension,
     },
     fetcher,
     {

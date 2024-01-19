@@ -36,6 +36,7 @@ export function useNFTsURISWR({ chain, nftInfos }: UseNFTsURISWRProps, config?: 
         contractAddress,
         tokenId,
         tokenURI: returnData.data.token_uri,
+        extension: returnData.data.extension,
       };
     } catch (e: unknown) {
       return null;

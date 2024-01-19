@@ -1,5 +1,7 @@
 import type { TOKEN_TYPE } from '~/constants/cosmos';
 
+import type { NFTExtensionPayload } from './contract';
+
 export type CosmosNFT = {
   id: string;
   tokenId: string;
@@ -29,4 +31,5 @@ export type NFTMetaResponse = {
   metaData?: NFTMetaPayload;
   contractAddress: string;
   tokenId: string;
+  extensionData?: NFTExtensionPayload;
 };

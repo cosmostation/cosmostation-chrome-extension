@@ -1,5 +1,6 @@
 import Axios from 'axios';
 
+import type { NFTExtensionPayload } from '~/types/cosmos/contract';
 import type { NFTMetaPayload, NFTMetaResponse } from '~/types/cosmos/nft';
 
 export function toDisplayTokenId(tokenId?: string) {
@@ -71,4 +72,16 @@ export async function getIpfsData(ipfsURL: string, contractAddress?: string, tok
   } catch {
     return null;
   }
+}
+
+export function getNFTExtensionData(extensionData?: NFTExtensionPayload, contractAddress?: string, tokenId?: string): NFTMetaResponse {
+  const imageURL = extensionData?.image as string;
+
+  return {
+    imageURL: isIpfsUrl(imageURL) ? `${baseIpfsURL}${getIpfsCID(imageURL)}` : imageURL,
+    metaData: undefined,
+    contractAddress: contractAddress ?? '',
+    tokenId: tokenId ?? '',
+    extensionData,
+  };
 }

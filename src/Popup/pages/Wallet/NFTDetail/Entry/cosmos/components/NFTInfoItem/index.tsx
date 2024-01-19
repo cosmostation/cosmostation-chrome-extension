@@ -55,7 +55,10 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
   const shorterContractAddress = useMemo(() => shorterAddress(address, 14), [address]);
   const shorterTokenId = useMemo(() => shorterAddress(tokenId, 14), [tokenId]);
 
-  const shorterSourceURL = useMemo(() => shorterAddress(nftMetaSourceURI?.token_uri || '', 20), [nftMetaSourceURI]);
+  const shorterSourceURL = useMemo(
+    () => shorterAddress(nftMetaSourceURI?.token_uri || nftMeta?.imageURL || '', 20),
+    [nftMeta?.imageURL, nftMetaSourceURI?.token_uri],
+  );
   const shorterCollectionExternalURL = useMemo(() => shorterAddress(nftCollectionInfo?.external_url, 20), [nftCollectionInfo]);
 
   const displayTokenStandard = useMemo(() => toDisplayCWTokenStandard(tokenType), [tokenType]);
@@ -141,7 +144,7 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
             <>
               <Typography variant="h5">{shorterSourceURL || '-'}</Typography>
 
-              <StyledIconButton onClick={() => handleOnClickCopy(shorterSourceURL)}>
+              <StyledIconButton onClick={() => handleOnClickCopy(nftMetaSourceURI?.token_uri || nftMeta?.imageURL || '')}>
                 <Copy16Icon />
               </StyledIconButton>
             </>
