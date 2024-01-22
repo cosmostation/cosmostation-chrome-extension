@@ -38,6 +38,7 @@ import type {
   MsgTransfer,
   SignAminoDoc,
 } from '~/types/cosmos/amino';
+import type { ChainNameMapsResponse as ChainNameMaps } from '~/types/cosmos/asset';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 import { toBase64 } from './string';
@@ -176,7 +177,7 @@ export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {
   return true;
 }
 
-export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
+export function convertCosmosToAssetName(cosmosChain: CosmosChain, maps?: ChainNameMaps) {
   const nameMap = {
     [CRONOS_POS.id]: 'crypto-org',
     [ASSET_MANTLE.id]: 'asset-mantle',
@@ -187,10 +188,11 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [MARS.id]: 'mars-protocol',
     [ONOMY.id]: 'onomy-protocol',
   };
-  return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
+
+  return maps?.[cosmosChain.chainId] || nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
 
-export function convertAssetNameToCosmos(assetName: string) {
+export function convertAssetNameToCosmos(assetName: string, maps?: ChainNameMaps) {
   const nameMap = {
     'crypto-org': CRONOS_POS,
     'asset-mantle': ASSET_MANTLE,
@@ -202,7 +204,13 @@ export function convertAssetNameToCosmos(assetName: string) {
     'onomy-protocol': ONOMY,
   } as Record<string, CosmosChain | undefined>;
 
-  return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);
+  const assetNameToChainIdMaps = maps ? Object.fromEntries(Object.entries(maps).map(([key, value]) => [value, key])) : {};
+
+  return (
+    COSMOS_CHAINS.find((item) => item.chainId === assetNameToChainIdMaps[assetName]) ||
+    nameMap[assetName] ||
+    COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName)
+  );
 }
 
 export function findCosmosChainByAddress(address?: string) {

@@ -18,6 +18,7 @@ import SubSideHeader from '~/Popup/components/SubSideHeader';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
+import { useChainNameMapsSWR } from '~/Popup/hooks/SWR/cosmos/useChainNameMapsSWR';
 import { useGasRateSWR } from '~/Popup/hooks/SWR/cosmos/useGasRateSWR';
 import { useSupportChainsSWR } from '~/Popup/hooks/SWR/cosmos/useSupportChainsSWR';
 import { useBalanceSWR as useNativeBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
@@ -119,6 +120,8 @@ export default function Entry() {
 
   const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
+
+  const { data: chainNameMaps } = useChainNameMapsSWR();
 
   const { currentChain, setCurrentChain } = useCurrentChain();
   const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();
@@ -393,7 +396,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainNameMaps)?.chainName || getCapitalize(item.prevChain || ''),
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -456,7 +459,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainNameMaps)?.chainName || getCapitalize(item.prevChain || ''),
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -500,6 +503,7 @@ export default function Entry() {
     currentFromChain?.displayDenom,
     coinGeckoPrice.data,
     extensionStorage.currency,
+    chainNameMaps,
     cosmosFromChainBalance.data?.balance,
     currentFromChain.line,
     currentFromEVMNativeBalance.data?.result,
@@ -550,7 +554,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainNameMaps)?.chainName || getCapitalize(item.prevChain || ''),
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -635,7 +639,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainNameMaps)?.chainName || getCapitalize(item.prevChain || ''),
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -657,6 +661,7 @@ export default function Entry() {
     currentToChain?.chainId,
     currentToChain?.displayDenom,
     currentToChain?.line,
+    chainNameMaps,
     currentToEVMNativeBalance.data?.result,
     currentToEthereumTokens,
     extensionStorage.currency,

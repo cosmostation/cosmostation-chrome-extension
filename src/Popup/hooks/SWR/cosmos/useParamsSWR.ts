@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -7,10 +8,14 @@ import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { ParamsResponse } from '~/types/cosmos/params';
 
-export function useParamsSWR(chain: CosmosChain, config?: SWRConfiguration) {
-  const mappingName = convertCosmosToAssetName(chain);
+import { useChainNameMapsSWR } from './useChainNameMapsSWR';
 
-  const requestURL = `https://front.api.mintscan.io/v10/utils/params/${mappingName}`;
+export function useParamsSWR(chain: CosmosChain, config?: SWRConfiguration) {
+  const { data: chainNameMaps } = useChainNameMapsSWR();
+
+  const mappingName = useMemo(() => convertCosmosToAssetName(chain, chainNameMaps), [chain, chainNameMaps]);
+
+  const requestURL = useMemo(() => `https://front.api.mintscan.io/v10/utils/params/${mappingName}`, [mappingName]);
 
   const fetcher = async (fetchUrl: string) => {
     try {

@@ -8,8 +8,12 @@ import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { SupportedContract } from '~/types/cosmos/supportContracts';
 
+import { useChainNameMapsSWR } from '../useChainNameMapsSWR';
+
 export function useSupportContractsSWR(chain: CosmosChain, config?: SWRConfiguration) {
-  const mappingName = useMemo(() => convertCosmosToAssetName(chain), [chain]);
+  const { data: chainNameMaps } = useChainNameMapsSWR();
+
+  const mappingName = useMemo(() => convertCosmosToAssetName(chain, chainNameMaps), [chain, chainNameMaps]);
 
   const requestURL = useMemo(() => `https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/${mappingName}/cw721.json`, [mappingName]);
 

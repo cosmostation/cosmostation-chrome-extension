@@ -8,10 +8,14 @@ import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { CW20AssetResponse } from '~/types/cosmos/asset';
 
-export function useTokensSWR(chain: CosmosChain, config?: SWRConfiguration) {
-  const mappingName = convertCosmosToAssetName(chain);
+import { useChainNameMapsSWR } from './useChainNameMapsSWR';
 
-  const requestURL = `https://front.api.mintscan.io/v3/assets/${mappingName}/cw20`;
+export function useTokensSWR(chain: CosmosChain, config?: SWRConfiguration) {
+  const { data: chainNameMaps } = useChainNameMapsSWR();
+
+  const mappingName = useMemo(() => convertCosmosToAssetName(chain, chainNameMaps), [chain, chainNameMaps]);
+
+  const requestURL = useMemo(() => `https://front.api.mintscan.io/v3/assets/${mappingName}/cw20`, [mappingName]);
 
   const fetcher = async (fetchUrl: string) => {
     try {

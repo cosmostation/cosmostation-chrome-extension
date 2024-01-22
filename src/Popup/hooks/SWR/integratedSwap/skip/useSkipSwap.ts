@@ -19,6 +19,7 @@ import { useAccounts } from '../../cache/useAccounts';
 import { useAccountSWR } from '../../cosmos/useAccountSWR';
 import { useAssetsSWR } from '../../cosmos/useAssetsSWR';
 import { useBlockLatestSWR } from '../../cosmos/useBlockLatestSWR';
+import { useChainNameMapsSWR } from '../../cosmos/useChainNameMapsSWR';
 import { useClientStateSWR } from '../../cosmos/useClientStateSWR';
 import { useGasMultiplySWR } from '../../cosmos/useGasMultiplySWR';
 import { useNodeInfoSWR } from '../../cosmos/useNodeinfoSWR';
@@ -159,17 +160,19 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
     port: chainInfo.port || '',
   });
 
+  const { data: chainNameMaps } = useChainNameMapsSWR();
+
   const assets = useAssetsSWR(chainInfo.chain || COSMOS_CHAINS[0]);
 
   const channelChain = useMemo(() => {
     const asset = assets.data?.find((item) => item.channel === chainInfo.channelId && item.port === chainInfo.port);
     if (asset?.origin_chain) {
-      return convertAssetNameToCosmos(asset.origin_chain);
+      return convertAssetNameToCosmos(asset.origin_chain, chainNameMaps);
     }
     const transferMsg = skipSwapParsedTx.find((msg) => msg?.msg_type_url === 'cosmos-sdk/MsgTransfer');
 
     return findCosmosChainByAddress(transferMsg?.msg.receiver);
-  }, [assets.data, chainInfo.channelId, chainInfo.port, skipSwapParsedTx]);
+  }, [assets.data, chainInfo.channelId, chainInfo.port, chainNameMaps, skipSwapParsedTx]);
 
   const channelChainLatestBlock = useBlockLatestSWR(channelChain);
 

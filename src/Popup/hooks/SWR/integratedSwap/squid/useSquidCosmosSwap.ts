@@ -18,6 +18,7 @@ import type { TransferPayload, WasmPayload } from '~/types/swap/squid';
 import { useSquidRouteSWR } from './SWR/useSquidRouteSWR';
 import { useAccountSWR } from '../../cosmos/useAccountSWR';
 import { useBlockLatestSWR } from '../../cosmos/useBlockLatestSWR';
+import { useChainNameMapsSWR } from '../../cosmos/useChainNameMapsSWR';
 import { useClientStateSWR } from '../../cosmos/useClientStateSWR';
 import { useGasMultiplySWR } from '../../cosmos/useGasMultiplySWR';
 import { useNodeInfoSWR } from '../../cosmos/useNodeinfoSWR';
@@ -201,13 +202,15 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
     port: chainInfo.port || '',
   });
 
+  const { data: chainNameMaps } = useChainNameMapsSWR();
+
   const assets = useAssetsSWR(chainInfo.chain || COSMOS_CHAINS[0]);
 
   const channelChain = useMemo(() => {
     const asset = assets.data?.find((item) => item.channel === chainInfo.channelId && item.port === chainInfo.port);
 
-    return convertAssetNameToCosmos(asset?.origin_chain || '');
-  }, [assets.data, chainInfo.channelId, chainInfo.port]);
+    return convertAssetNameToCosmos(asset?.origin_chain || '', chainNameMaps);
+  }, [assets.data, chainInfo.channelId, chainInfo.port, chainNameMaps]);
 
   const channelChainLatestBlock = useBlockLatestSWR(channelChain);
 

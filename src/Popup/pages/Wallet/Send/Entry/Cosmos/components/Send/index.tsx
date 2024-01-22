@@ -17,6 +17,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import { useArchIDSWR } from '~/Popup/hooks/SWR/cosmos/useArchIDSWR';
+import { useChainNameMapsSWR } from '~/Popup/hooks/SWR/cosmos/useChainNameMapsSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
@@ -78,6 +79,8 @@ export default function Send({ chain }: CosmosProps) {
   const { extensionStorage } = useExtensionStorage();
   const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
+  const { data: chainNameMaps } = useChainNameMapsSWR();
+
   const { enQueue } = useCurrentQueue();
   const params = useParams();
 
@@ -132,7 +135,7 @@ export default function Send({ chain }: CosmosProps) {
       ...coinAll.map((item) => ({
         ...item,
         type: TYPE.COIN,
-        name: convertAssetNameToCosmos(item.baseChainName || '')?.chainName || getCapitalize(item.baseChainName || ''),
+        name: convertAssetNameToCosmos(item.baseChainName || '', chainNameMaps)?.chainName || getCapitalize(item.baseChainName || ''),
       })),
       ...currentCosmosTokens.map((item) => ({
         ...item,
@@ -153,7 +156,7 @@ export default function Send({ chain }: CosmosProps) {
       .sort((a, b) => (gt(a.availableAmount, b.availableAmount) ? -1 : 1))
       .sort((a, b) => (gt(a.price, b.price) ? -1 : 1))
       .sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
-  }, [chain.chainName, chain.displayDenom, coinAll, coinGeckoPrice.data, cosmosTokensBalance.data, currency, currentCosmosTokens]);
+  }, [chain.chainName, chain.displayDenom, coinAll, coinGeckoPrice.data, chainNameMaps, cosmosTokensBalance.data, currency, currentCosmosTokens]);
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 
