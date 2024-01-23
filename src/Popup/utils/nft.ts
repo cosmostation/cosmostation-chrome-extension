@@ -75,7 +75,7 @@ export async function getIpfsData(ipfsURL: string, contractAddress?: string, tok
 }
 
 export function getNFTExtensionData(extensionData?: NFTExtensionPayload, contractAddress?: string, tokenId?: string): NFTMetaResponse {
-  const imageURL = extensionData?.image as string;
+  const imageURL = (extensionData?.image as string) || '';
 
   return {
     imageURL: isIpfsUrl(imageURL) ? `${baseIpfsURL}${getIpfsCID(imageURL)}` : imageURL,
