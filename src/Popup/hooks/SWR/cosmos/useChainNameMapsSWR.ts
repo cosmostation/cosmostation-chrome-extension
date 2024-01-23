@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -17,5 +18,7 @@ export function useChainNameMapsSWR(config?: SWRConfiguration) {
     ...config,
   });
 
-  return { data, error, mutate };
+  const returnData = useMemo(() => data || {}, [data]);
+
+  return { data: returnData, error, mutate };
 }

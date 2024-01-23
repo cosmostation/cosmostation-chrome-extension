@@ -177,7 +177,7 @@ export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {
   return true;
 }
 
-export function convertCosmosToAssetName(cosmosChain: CosmosChain, maps?: ChainNameMaps) {
+export function convertCosmosToAssetName(cosmosChain: CosmosChain, maps: ChainNameMaps) {
   const nameMap = {
     [CRONOS_POS.id]: 'crypto-org',
     [ASSET_MANTLE.id]: 'asset-mantle',
@@ -189,10 +189,10 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain, maps?: ChainN
     [ONOMY.id]: 'onomy-protocol',
   };
 
-  return maps?.[cosmosChain.chainId] || nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
+  return maps[cosmosChain.chainId] || nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
 
-export function convertAssetNameToCosmos(assetName: string, maps?: ChainNameMaps) {
+export function convertAssetNameToCosmos(assetName: string, maps: ChainNameMaps) {
   const nameMap = {
     'crypto-org': CRONOS_POS,
     'asset-mantle': ASSET_MANTLE,
@@ -204,7 +204,7 @@ export function convertAssetNameToCosmos(assetName: string, maps?: ChainNameMaps
     'onomy-protocol': ONOMY,
   } as Record<string, CosmosChain | undefined>;
 
-  const assetNameToChainIdMaps = maps ? Object.fromEntries(Object.entries(maps).map(([key, value]) => [value, key])) : {};
+  const assetNameToChainIdMaps = Object.fromEntries(Object.entries(maps).map(([key, value]) => [value, key]));
 
   return (
     COSMOS_CHAINS.find((item) => item.chainId === assetNameToChainIdMaps[assetName]) ||
