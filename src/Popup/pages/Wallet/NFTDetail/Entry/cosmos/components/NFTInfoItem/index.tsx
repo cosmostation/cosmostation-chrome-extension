@@ -71,7 +71,8 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
         key,
         value: nftMeta.extensionData?.[key],
       }));
-      return extensionDatas;
+
+      return extensionDatas.filter((item) => !!item.value && !(Array.isArray(item.value) && item.value.length === 0));
     }
     return [];
   }, [nftMeta]);
