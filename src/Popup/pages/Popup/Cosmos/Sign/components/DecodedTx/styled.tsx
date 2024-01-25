@@ -10,7 +10,7 @@ export const Container = styled('div')(({ theme }) => ({
 
   marginTop: '1rem',
 
-  height: '30.6rem',
+  height: '32.1rem',
   overflow: 'auto',
 
   whiteSpace: 'pre-wrap',
