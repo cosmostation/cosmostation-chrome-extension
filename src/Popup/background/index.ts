@@ -94,7 +94,7 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.7.12') {
+        if (extensionManifest.version === '0.7.18') {
           void (async () => {
             await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), FINSCHIA.id]);
           })();
