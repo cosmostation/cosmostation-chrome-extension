@@ -4,7 +4,7 @@ import { Ed25519PublicKey, getObjectDisplay, getObjectOwner } from '@mysten/sui.
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { extensionStorage } from '~/Popup/utils/extensionStorage';
 import type { SuiNFTMeta } from '~/types/nft/nftMeta';
-import type { GetObject, GetObjectExists, GetObjectsOwnedByAddressResponse, Result } from '~/types/sui/rpc';
+import type { GetDynamicFieldsResponse, GetObject, GetObjectExists, GetObjectsOwnedByAddressResponse, Result } from '~/types/sui/rpc';
 
 import { SuiRPCError } from './error';
 
@@ -104,6 +104,21 @@ export function getSplittedObjectIds(data?: GetObjectsOwnedByAddressResponse[], 
 
   const objectIdList = data.reduce((acc: string[], item) => {
     const objectIds = item.result?.data.map((dataItem) => dataItem.data?.objectId || '') || [];
+    return [...acc, ...objectIds];
+  }, []);
+
+  const chunk = chunkSize || 50;
+
+  return Array.from({ length: Math.ceil(objectIdList.length / chunk) }, (_, i) => objectIdList.slice(i * chunk, i * chunk + chunk));
+}
+
+export function getSplittedKioskObjectIds(data?: GetDynamicFieldsResponse[], chunkSize?: number) {
+  if (!data) {
+    return [];
+  }
+
+  const objectIdList = data.reduce((acc: string[], item) => {
+    const objectIds = item.result?.data.map((dataItem) => dataItem.objectId || '') || [];
     return [...acc, ...objectIds];
   }, []);
 

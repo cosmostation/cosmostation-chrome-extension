@@ -29,20 +29,36 @@ export function useGetDynamicFieldsSWR({ parentObjectId, network }: UseGetDynami
       if (!parentObjectId) {
         return null;
       }
+      const returnData: GetDynamicFieldsResponse[] = [];
 
-      return await post<GetDynamicFieldsResponse>(params.url, {
+      const response = await post<GetDynamicFieldsResponse>(params.url, {
         jsonrpc: '2.0',
         method: params.method,
         params: [params.parentObjectId, null, null],
         id: params.parentObjectId,
       });
+
+      returnData.push(response);
+
+      while (returnData?.[returnData.length - 1]?.result?.hasNextPage) {
+        // eslint-disable-next-line no-await-in-loop
+        const nextPageResponse = await post<GetDynamicFieldsResponse>(params.url, {
+          jsonrpc: '2.0',
+          method: params.method,
+          params: [params.parentObjectId, returnData?.[returnData.length - 1]?.result?.nextCursor, null],
+          id: params.parentObjectId,
+        });
+
+        returnData.push(nextPageResponse);
+      }
+
+      return returnData;
     } catch (e) {
       return null;
     }
   };
 
-  // FIXME 페이지 네이션 추가 https://docs.sui.io/sui-api-ref#suix_getdynamicfields
-  const { data, error, mutate } = useSWR<GetDynamicFieldsResponse | null, AxiosError>(
+  const { data, error, mutate } = useSWR<GetDynamicFieldsResponse[] | null, AxiosError>(
     { url: rpcURL, parentObjectId, method: 'suix_getDynamicFields' },
     fetcher,
     {
