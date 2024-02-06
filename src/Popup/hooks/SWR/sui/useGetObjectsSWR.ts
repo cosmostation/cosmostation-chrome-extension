@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -26,7 +25,12 @@ type FetchParams = {
   options: Options;
 };
 
-type MultiFetcherParams = FetchParams[];
+type MultiFetcherParams = {
+  url: string;
+  objectIds: string[][];
+  options: Options;
+  method: string;
+};
 
 type UseGetObjectsSWRProps = {
   objectIds: string[][];
@@ -62,27 +66,37 @@ export function useGetObjectsSWR({ network, objectIds, options }: UseGetObjectsS
     }
   };
 
-  const muliFetcherParams = useMemo(
-    () =>
-      objectIds.map((item) => ({
-        url: rpcURL,
-        objectIds: item,
-        options,
-        method: 'sui_multiGetObjects',
-      })),
-    [objectIds, options, rpcURL],
+  const multiFetcher = (param: MultiFetcherParams) =>
+    Promise.all(
+      param.objectIds.map((item) => {
+        const fetcherParam = {
+          url: param.url,
+          objectIds: item,
+          options: param.options,
+          method: param.method,
+        };
+
+        return fetcher(fetcherParam);
+      }),
+    );
+
+  const { data, error, mutate } = useSWR<(GetObjectsResponse | null)[], AxiosError>(
+    {
+      url: rpcURL,
+      objectIds,
+      options,
+      method: 'sui_multiGetObjects',
+    },
+    multiFetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 14000,
+      refreshInterval: 15000,
+      errorRetryCount: 0,
+      isPaused: () => !objectIds.length,
+      ...config,
+    },
   );
-
-  const multiFetcher = (params: MultiFetcherParams) => Promise.all(params.map((item) => fetcher(item)));
-
-  const { data, error, mutate } = useSWR<(GetObjectsResponse | null)[], AxiosError>(muliFetcherParams, multiFetcher, {
-    revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
-    errorRetryCount: 0,
-    isPaused: () => !objectIds,
-    ...config,
-  });
 
   return { data, error, mutate };
 }
