@@ -41,6 +41,7 @@ export function useGetDynamicFieldsSWR({ parentObjectId, network }: UseGetDynami
     }
   };
 
+  // FIXME 페이지 네이션 추가 https://docs.sui.io/sui-api-ref#suix_getdynamicfields
   const { data, error, mutate } = useSWR<GetDynamicFieldsResponse | null, AxiosError>(
     { url: rpcURL, parentObjectId, method: 'suix_getDynamicFields' },
     fetcher,

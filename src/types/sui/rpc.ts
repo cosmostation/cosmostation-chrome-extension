@@ -51,6 +51,8 @@ export type GetObjectsOwnedByAddress = {
       type: string;
     };
   }[];
+  nextCursor?: string;
+  hasNextPage: boolean;
 };
 
 export type GetObjectsOwnedByAddressResponse = Result<GetObjectsOwnedByAddress>;

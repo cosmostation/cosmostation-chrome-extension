@@ -1,10 +1,12 @@
 import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
+import type { SuiObjectResponse } from '@mysten/sui.js';
 
 import { SUI_COIN } from '~/constants/sui';
 import { plus } from '~/Popup/utils/big';
-import { getCoinType } from '~/Popup/utils/sui';
+import { getCoinType, getSplittedObjectIds } from '~/Popup/utils/sui';
 import type { SuiNetwork } from '~/types/chain';
+import type { TokenBalanceObject } from '~/types/sui/rpc';
 
 import { useGetObjectsOwnedByAddressSWR } from './useGetObjectsOwnedByAddressSWR';
 import { useGetObjectsSWR } from './useGetObjectsSWR';
@@ -43,15 +45,12 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
 
   const { data: objectsOwnedByAddress, mutate: mutateGetObjectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: addr, network }, config);
 
-  const objectIdList = useMemo(
-    () => (objectsOwnedByAddress?.result && objectsOwnedByAddress?.result.data.map((item) => item.data?.objectId || '')) || [],
-    [objectsOwnedByAddress?.result],
-  );
+  const spliitedObjectIdList = useMemo(() => getSplittedObjectIds(objectsOwnedByAddress || []), [objectsOwnedByAddress]);
 
   const { data: objects, mutate: mutateGetObjects } = useGetObjectsSWR(
     {
       network,
-      objectIds: objectIdList,
+      objectIds: spliitedObjectIdList,
       options: {
         showType: true,
         showContent: true,
@@ -63,19 +62,21 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
     config,
   );
 
-  const tokenBalanceObjects = useMemo(() => {
+  const tokenBalanceObjects = useMemo<TokenBalanceObject[]>(() => {
+    const suiObjectsResponses = objects ? (objects.flatMap((item) => item?.result).filter((item) => item) as SuiObjectResponse[]) : [];
+
     const coinObjectsTypeList = Array.from(
       new Set([
-        ...(objects?.result
-          ?.filter((item) => getCoinType(item.data?.type) && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
+        ...(suiObjectsResponses
+          .filter((item) => getCoinType(item.data?.type) && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
           .map((item) => item.data?.type) || []),
       ]),
     );
 
     return coinObjectsTypeList
       .map((type) => ({
-        balance: objects?.result
-          ? objects.result
+        balance: suiObjectsResponses
+          ? suiObjectsResponses
               .filter((item) => type === item.data?.type && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
               .reduce((ac, cu) => {
                 if (cu.data?.content?.dataType === 'moveObject' && typeof cu.data?.content.fields.balance === 'string')
@@ -86,14 +87,14 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
           : '0',
         coinType: getCoinType(type),
         objects: [
-          ...(objects?.result?.filter(
+          ...(suiObjectsResponses.filter(
             (item) =>
               type === item.data?.type && type === item.data?.type && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer,
           ) || []),
         ],
       }))
       .sort((coin) => (coin.coinType === SUI_COIN ? -1 : 1));
-  }, [objects?.result]);
+  }, [objects]);
 
   const mutateTokenBalanceObjects = useCallback(() => {
     void mutateGetObjectsOwnedByAddress();

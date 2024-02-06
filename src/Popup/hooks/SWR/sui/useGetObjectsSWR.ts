@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -25,11 +26,14 @@ type FetchParams = {
   options: Options;
 };
 
+type MultiFetcherParams = FetchParams[];
+
 type UseGetObjectsSWRProps = {
-  objectIds: string[];
+  objectIds: string[][];
   network?: SuiNetwork;
   options?: Options;
 };
+
 export function useGetObjectsSWR({ network, objectIds, options }: UseGetObjectsSWRProps, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
@@ -58,7 +62,20 @@ export function useGetObjectsSWR({ network, objectIds, options }: UseGetObjectsS
     }
   };
 
-  const { data, error, mutate } = useSWR<GetObjectsResponse | null, AxiosError>({ url: rpcURL, objectIds, options, method: 'sui_multiGetObjects' }, fetcher, {
+  const muliFetcherParams = useMemo(
+    () =>
+      objectIds.map((item) => ({
+        url: rpcURL,
+        objectIds: item,
+        options,
+        method: 'sui_multiGetObjects',
+      })),
+    [objectIds, options, rpcURL],
+  );
+
+  const multiFetcher = (params: MultiFetcherParams) => Promise.all(params.map((item) => fetcher(item)));
+
+  const { data, error, mutate } = useSWR<(GetObjectsResponse | null)[], AxiosError>(muliFetcherParams, multiFetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 14000,
     refreshInterval: 15000,

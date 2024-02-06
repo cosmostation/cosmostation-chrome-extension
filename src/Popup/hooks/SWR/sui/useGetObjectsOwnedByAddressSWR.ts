@@ -17,6 +17,7 @@ type FetchParams = {
   address: string;
   query: SuiObjectResponseQuery;
   method: string;
+  cursor?: string;
 };
 
 type UseGetObjectsOwnedByAddressSWRProps = {
@@ -36,7 +37,9 @@ export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseG
 
   const fetcher = async (params: FetchParams) => {
     try {
-      return await post<GetObjectsOwnedByAddressResponse>(params.url, {
+      const returnData: GetObjectsOwnedByAddressResponse[] = [];
+
+      const respose = await post<GetObjectsOwnedByAddressResponse>(params.url, {
         jsonrpc: '2.0',
         method: params.method,
         params: [
@@ -47,6 +50,28 @@ export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseG
         ],
         id: params.address,
       });
+
+      returnData.push(respose);
+
+      while (returnData?.[returnData.length - 1]?.result?.hasNextPage) {
+        // eslint-disable-next-line no-await-in-loop
+        const nextPageResponse = await post<GetObjectsOwnedByAddressResponse>(params.url, {
+          jsonrpc: '2.0',
+          method: params.method,
+          params: [
+            params.address,
+            {
+              ...params.query,
+            },
+            returnData?.[returnData.length - 1]?.result?.nextCursor,
+          ],
+          id: params.address,
+        });
+
+        returnData.push(nextPageResponse);
+      }
+
+      return returnData;
     } catch (e) {
       if (isAxiosError(e)) {
         if (e.response?.status === 404) {
@@ -57,7 +82,7 @@ export function useGetObjectsOwnedByAddressSWR({ network, address, query }: UseG
     }
   };
 
-  const { data, error, mutate } = useSWR<GetObjectsOwnedByAddressResponse | null, AxiosError>(
+  const { data, error, mutate } = useSWR<GetObjectsOwnedByAddressResponse[] | null, AxiosError>(
     { url: rpcURL, address: addr, query, method: 'suix_getOwnedObjects' },
     fetcher,
     {
