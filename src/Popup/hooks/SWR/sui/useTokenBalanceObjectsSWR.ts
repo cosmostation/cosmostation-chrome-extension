@@ -63,11 +63,13 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
   );
 
   const tokenBalanceObjects = useMemo<TokenBalanceObject[]>(() => {
-    const suiObjectsResponses = objects ? (objects.flatMap((item) => item?.result).filter((item) => item) as SuiObjectResponse[]) : [];
+    const suiObjectResponses = objects
+      ? objects.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), []).filter((item) => item)
+      : [];
 
     const coinObjectsTypeList = Array.from(
       new Set([
-        ...(suiObjectsResponses
+        ...(suiObjectResponses
           .filter((item) => getCoinType(item.data?.type) && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
           .map((item) => item.data?.type) || []),
       ]),
@@ -75,8 +77,8 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
 
     return coinObjectsTypeList
       .map((type) => ({
-        balance: suiObjectsResponses
-          ? suiObjectsResponses
+        balance: suiObjectResponses
+          ? suiObjectResponses
               .filter((item) => type === item.data?.type && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
               .reduce((ac, cu) => {
                 if (cu.data?.content?.dataType === 'moveObject' && typeof cu.data?.content.fields.balance === 'string')
@@ -87,7 +89,7 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
           : '0',
         coinType: getCoinType(type),
         objects: [
-          ...(suiObjectsResponses.filter(
+          ...(suiObjectResponses.filter(
             (item) =>
               type === item.data?.type && type === item.data?.type && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer,
           ) || []),

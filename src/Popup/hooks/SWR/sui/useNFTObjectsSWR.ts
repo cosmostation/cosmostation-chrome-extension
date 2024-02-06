@@ -62,7 +62,9 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
   );
 
   const nftObjects = useMemo(() => {
-    const suiObjectResponses = objects ? (objects.flatMap((item) => item?.result).filter((item) => item) as SuiObjectResponse[]) : [];
+    const suiObjectResponses = objects
+      ? objects.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), []).filter((item) => item)
+      : [];
 
     return suiObjectResponses.filter((item) => getObjectDisplay(item).data) || [];
   }, [objects]);
@@ -97,7 +99,9 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
   );
 
   const kioskNFTObjects = useMemo(() => {
-    const suiKioskObjectResponses = kioskObjects ? (kioskObjects.flatMap((item) => item?.result).filter((item) => item) as SuiObjectResponse[]) : [];
+    const suiKioskObjectResponses = kioskObjects
+      ? kioskObjects.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), []).filter((item) => item)
+      : [];
 
     return suiKioskObjectResponses.filter((item) => getObjectDisplay(item).data) || [];
   }, [kioskObjects]);
