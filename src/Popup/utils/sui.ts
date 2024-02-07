@@ -96,33 +96,3 @@ export async function requestRPC<T>(method: string, params: unknown, id?: string
     throw new SuiRPCError(RPC_ERROR.INTERNAL, RPC_ERROR_MESSAGE[RPC_ERROR.INTERNAL], rpcId);
   }
 }
-
-export function getSplittedObjectIds(data?: GetObjectsOwnedByAddressResponse[], chunkSize?: number) {
-  if (!data) {
-    return [];
-  }
-
-  const objectIdList = data.reduce((acc: string[], item) => {
-    const objectIds = item.result?.data.map((dataItem) => dataItem.data?.objectId || '') || [];
-    return [...acc, ...objectIds];
-  }, []);
-
-  const chunk = chunkSize || 50;
-
-  return Array.from({ length: Math.ceil(objectIdList.length / chunk) }, (_, i) => objectIdList.slice(i * chunk, i * chunk + chunk));
-}
-
-export function getSplittedKioskObjectIds(data?: GetDynamicFieldsResponse[], chunkSize?: number) {
-  if (!data) {
-    return [];
-  }
-
-  const objectIdList = data.reduce((acc: string[], item) => {
-    const objectIds = item.result?.data.map((dataItem) => dataItem.objectId || '') || [];
-    return [...acc, ...objectIds];
-  }, []);
-
-  const chunk = chunkSize || 50;
-
-  return Array.from({ length: Math.ceil(objectIdList.length / chunk) }, (_, i) => objectIdList.slice(i * chunk, i * chunk + chunk));
-}

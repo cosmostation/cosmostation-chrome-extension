@@ -148,3 +148,13 @@ export function convertToLocales(str: string): string {
 
   return '';
 }
+
+export function chunkArray<T>(data?: T[], chunkSize?: number) {
+  if (!data) {
+    return [];
+  }
+
+  const chunk = chunkSize || 50;
+
+  return Array.from({ length: Math.ceil(data.length / chunk) }, (_, i) => data.slice(i * chunk, i * chunk + chunk));
+}

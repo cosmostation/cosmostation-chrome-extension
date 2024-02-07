@@ -4,7 +4,7 @@ import type { SuiObjectResponse } from '@mysten/sui.js';
 
 import { SUI_COIN } from '~/constants/sui';
 import { plus } from '~/Popup/utils/big';
-import { getCoinType, getSplittedObjectIds } from '~/Popup/utils/sui';
+import { getCoinType } from '~/Popup/utils/sui';
 import type { SuiNetwork } from '~/types/chain';
 import type { TokenBalanceObject } from '~/types/sui/rpc';
 
@@ -45,12 +45,19 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
 
   const { data: objectsOwnedByAddress, mutate: mutateGetObjectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: addr, network }, config);
 
-  const spliitedObjectIdList = useMemo(() => getSplittedObjectIds(objectsOwnedByAddress || []), [objectsOwnedByAddress]);
+  const objectIdList = useMemo(
+    () =>
+      objectsOwnedByAddress?.reduce((acc: string[], item) => {
+        const objectIds = item.result?.data.map((dataItem) => dataItem.data?.objectId || '') || [];
+        return [...acc, ...objectIds];
+      }, []) || [],
+    [objectsOwnedByAddress],
+  );
 
   const { data: objects, mutate: mutateGetObjects } = useGetObjectsSWR(
     {
       network,
-      objectIds: spliitedObjectIdList,
+      objectIds: objectIdList,
       options: {
         showType: true,
         showContent: true,

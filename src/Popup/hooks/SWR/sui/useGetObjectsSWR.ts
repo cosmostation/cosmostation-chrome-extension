@@ -3,6 +3,7 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { isAxiosError, post } from '~/Popup/utils/axios';
+import { chunkArray } from '~/Popup/utils/common';
 import type { SuiNetwork } from '~/types/chain';
 import type { GetObjectsResponse } from '~/types/sui/rpc';
 
@@ -27,13 +28,13 @@ type FetchParams = {
 
 type MultiFetcherParams = {
   url: string;
-  objectIds: string[][];
+  objectIds: string[];
   options: Options;
   method: string;
 };
 
 type UseGetObjectsSWRProps = {
-  objectIds: string[][];
+  objectIds: string[];
   network?: SuiNetwork;
   options?: Options;
 };
@@ -66,9 +67,10 @@ export function useGetObjectsSWR({ network, objectIds, options }: UseGetObjectsS
     }
   };
 
-  const multiFetcher = (param: MultiFetcherParams) =>
-    Promise.all(
-      param.objectIds.map((item) => {
+  const multiFetcher = (param: MultiFetcherParams) => {
+    const chunkedArray = chunkArray(param.objectIds);
+    return Promise.all(
+      chunkedArray.map((item) => {
         const fetcherParam = {
           url: param.url,
           objectIds: item,
@@ -79,6 +81,7 @@ export function useGetObjectsSWR({ network, objectIds, options }: UseGetObjectsS
         return fetcher(fetcherParam);
       }),
     );
+  };
 
   const { data, error, mutate } = useSWR<(GetObjectsResponse | null)[], AxiosError>(
     {

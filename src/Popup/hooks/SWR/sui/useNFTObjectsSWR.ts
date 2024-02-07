@@ -3,7 +3,7 @@ import type { SWRConfiguration } from 'swr';
 import type { SuiObjectResponse } from '@mysten/sui.js';
 import { getObjectDisplay } from '@mysten/sui.js';
 
-import { getSplittedKioskObjectIds, getSplittedObjectIds, isKiosk } from '~/Popup/utils/sui';
+import { isKiosk } from '~/Popup/utils/sui';
 import type { SuiNetwork } from '~/types/chain';
 
 import { useGetDynamicFieldsSWR } from './useGetDynamicFieldsSWR';
@@ -44,12 +44,19 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
 
   const { data: objectsOwnedByAddress, mutate: mutateGetObjectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: addr, network }, config);
 
-  const splitedObjectIdList = useMemo(() => getSplittedObjectIds(objectsOwnedByAddress || []), [objectsOwnedByAddress]);
+  const objectIdList = useMemo(
+    () =>
+      objectsOwnedByAddress?.reduce((acc: string[], item) => {
+        const objectIds = item.result?.data.map((dataItem) => dataItem.data?.objectId || '') || [];
+        return [...acc, ...objectIds];
+      }, []) || [],
+    [objectsOwnedByAddress],
+  );
 
   const { data: objects, mutate: mutateGetObjects } = useGetObjectsSWR(
     {
       network,
-      objectIds: splitedObjectIdList,
+      objectIds: objectIdList,
       options: {
         showType: true,
         showContent: true,
@@ -81,12 +88,19 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
     config,
   );
 
-  const splittedKioskDynamicFieldsObjectIds = useMemo(() => getSplittedKioskObjectIds(kioskObjectDynamicFields || []), [kioskObjectDynamicFields]);
+  const kioskDynamicFieldsObjectIds = useMemo(
+    () =>
+      kioskObjectDynamicFields?.reduce((acc: string[], item) => {
+        const objectIds = item.result?.data.map((dataItem) => dataItem.objectId || '') || [];
+        return [...acc, ...objectIds];
+      }, []) || [],
+    [kioskObjectDynamicFields],
+  );
 
   const { data: kioskObjects, mutate: mutateGetKioskObjects } = useGetObjectsSWR(
     {
       network,
-      objectIds: splittedKioskDynamicFieldsObjectIds,
+      objectIds: kioskDynamicFieldsObjectIds,
       options: {
         showType: true,
         showContent: true,
