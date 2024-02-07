@@ -4,7 +4,7 @@ import { Ed25519PublicKey, getObjectDisplay, getObjectOwner } from '@mysten/sui.
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { extensionStorage } from '~/Popup/utils/extensionStorage';
 import type { SuiNFTMeta } from '~/types/nft/nftMeta';
-import type { GetDynamicFieldsResponse, GetObject, GetObjectExists, GetObjectsOwnedByAddressResponse, Result } from '~/types/sui/rpc';
+import type { GetObject, GetObjectExists, Result } from '~/types/sui/rpc';
 
 import { SuiRPCError } from './error';
 
