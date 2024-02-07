@@ -68,7 +68,7 @@ export function useGetObjectsSWR({ network, objectIds, options }: UseGetObjectsS
   };
 
   const multiFetcher = (param: MultiFetcherParams) => {
-    const chunkedArray = chunkArray(param.objectIds);
+    const chunkedArray = chunkArray(param.objectIds, 50);
 
     return Promise.all(
       chunkedArray.map((item) => {
