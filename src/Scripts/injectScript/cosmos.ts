@@ -171,6 +171,7 @@ const getKey: Keplr['getKey'] = async (chainId) => {
       bech32Address: account.address,
       name: account.name,
       address: new Uint8Array(),
+      isKeystone: false,
     };
   } catch (e) {
     throw new Error((e as { message?: string }).message || 'Unknown Error');
@@ -192,11 +193,11 @@ const experimentalSuggestChain: Keplr['experimentalSuggestChain'] = async (chain
           decimals: chainInfo.currencies[0].coinDecimals,
           restURL: chainInfo.rest,
           coinType: `${String(chainInfo.bip44.coinType)}'`,
-          gasRate: chainInfo.gasPriceStep
+          gasRate: chainInfo.feeCurrencies[0].gasPriceStep
             ? {
-                tiny: String(chainInfo.gasPriceStep.low),
-                low: String(chainInfo.gasPriceStep.average),
-                average: String(chainInfo.gasPriceStep.high),
+                tiny: String(chainInfo.feeCurrencies[0].gasPriceStep.low),
+                low: String(chainInfo.feeCurrencies[0].gasPriceStep.average),
+                average: String(chainInfo.feeCurrencies[0].gasPriceStep.high),
               }
             : undefined,
         },
