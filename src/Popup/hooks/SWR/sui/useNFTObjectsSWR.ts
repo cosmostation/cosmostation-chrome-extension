@@ -70,10 +70,10 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
 
   const nftObjects = useMemo(() => {
     const suiObjectResponses = objects
-      ? objects.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), []).filter((item) => item)
-      : [];
+      ?.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), [])
+      .filter((item) => item);
 
-    return suiObjectResponses.filter((item) => getObjectDisplay(item).data) || [];
+    return suiObjectResponses?.filter((item) => getObjectDisplay(item).data) || [];
   }, [objects]);
 
   const kioskObject = useMemo(() => nftObjects.find((item) => item.data && isKiosk(item.data)), [nftObjects]);
