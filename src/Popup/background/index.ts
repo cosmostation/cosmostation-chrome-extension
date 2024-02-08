@@ -95,7 +95,7 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.7.19') {
+        if (extensionManifest.version === '0.7.20') {
           void (async () => {
             await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), DYMENSION.id, ETHEREUM_NETWORK_DYMENSION.id]);
           })();
