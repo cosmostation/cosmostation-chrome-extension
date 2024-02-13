@@ -815,6 +815,7 @@
               "cancelButton": "Cancel",
               "confirmButton": "Confirm",
               "dataTab": "Data",
+              "decodedDataTab": "Decoded",
               "detailTab": "Details",
               "failedTransfer": "Failed to transfer",
               "insufficientFeeAmount": "Insufficient fee",
@@ -831,6 +832,11 @@
             }
           },
           "components": {
+            "DecodedTx": {
+              "index": {
+                "warning": "Some transactions may not show data because of decryption failures, but this doesn't affect the transaction execution."
+              }
+            },
             "Memo": {
               "index": {
                 "memo": "Memo",
