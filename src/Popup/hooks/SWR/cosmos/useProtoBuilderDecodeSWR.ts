@@ -23,6 +23,10 @@ export function useProtoBuilderDecodeSWR({ authInfoBytes, txBodyBytes }: UseProt
 
   const fetcher = async (params: FetchParams) => {
     try {
+      if (!params.body.auth_info_bytes || !params.body.body_bytes) {
+        return null;
+      }
+
       return await post<ProtoBuilderDecodeResponse>(params.url, {
         auth_info_bytes: params.body.auth_info_bytes,
         body_bytes: params.body.body_bytes,
@@ -39,7 +43,6 @@ export function useProtoBuilderDecodeSWR({ authInfoBytes, txBodyBytes }: UseProt
       revalidateOnFocus: false,
       revalidateIfStale: false,
       revalidateOnReconnect: false,
-      isPaused: () => !authInfoBytes || !txBodyBytes,
       ...config,
     },
   );
