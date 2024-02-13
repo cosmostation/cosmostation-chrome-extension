@@ -2260,16 +2260,12 @@
     long "^4.0.0"
     secretjs "^0.17.0"
 
-"@keplr-wallet/types@^0.10.20":
-  version "0.10.20"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.10.20.tgz#034d6fc38c9b7d017a24eff113e60a527c5e7d3e"
-  integrity sha512-nE5YgfF8+xikm8o3KlXOWLWhYXra+/Zvy16ew7VFiQdGq3gGl9cRcIxwWqVoiwUmbE9bFQSP/itfMCQlM3jwQw==
+"@keplr-wallet/types@^0.12.67":
+  version "0.12.67"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.12.67.tgz#4ca57ad467078a28fbcdd05b052898e46be37562"
+  integrity sha512-HDEYOezWq//ug/R0lkOQWsaOYh3b9ECA8LN+tAA+baWMo81X9m9L63ux7NYw0QmoLxWqWrRO/T9F28+q2dw6+A==
   dependencies:
-    "@cosmjs/launchpad" "^0.24.0-alpha.25"
-    "@cosmjs/proto-signing" "^0.24.0-alpha.25"
-    axios "^0.21.4"
     long "^4.0.0"
-    secretjs "^0.17.0"
 
 "@keplr-wallet/unit@^0.10.24":
   version "0.10.24"
@@ -3879,7 +3875,7 @@ axios@0.27.2, axios@^0.27.2:
     follow-redirects "^1.14.9"
     form-data "^4.0.0"
 
-axios@^0.21.1, axios@^0.21.4:
+axios@^0.21.1:
   version "0.21.4"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.4.tgz#c67b90dc0568e5c1cf2b0b858c43ba28e2eda575"
   integrity sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==

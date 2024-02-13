@@ -10,6 +10,11 @@ import type { Block } from '~/types/cosmos/block';
 
 import { useCurrentChain } from '../../useCurrent/useCurrentChain';
 
+type FetcherParams = {
+  cosmosChain: CosmosChain;
+  fetchUrl: string;
+};
+
 export function useBlockLatestSWR(chain?: CosmosChain, suspense?: boolean) {
   const { currentChain } = useCurrentChain();
 
@@ -19,9 +24,9 @@ export function useBlockLatestSWR(chain?: CosmosChain, suspense?: boolean) {
 
   const requestURL = getBlockLatest();
 
-  const fetcher = async (fetchUrl: string) => {
+  const fetcher = async ({ cosmosChain, fetchUrl }: FetcherParams) => {
     try {
-      if (!chain) {
+      if (!cosmosChain) {
         return null;
       }
 
@@ -31,13 +36,20 @@ export function useBlockLatestSWR(chain?: CosmosChain, suspense?: boolean) {
     }
   };
 
-  const { data, error, mutate } = useSWR<Block | null, AxiosError>(requestURL, fetcher, {
-    revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
-    errorRetryCount: 0,
-    suspense,
-  });
+  const { data, error, mutate } = useSWR<Block | null, AxiosError>(
+    {
+      cosmosChain: currentCosmosChain,
+      fetchUrl: requestURL,
+    },
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 14000,
+      refreshInterval: 15000,
+      errorRetryCount: 0,
+      suspense,
+    },
+  );
 
   return { data, error, mutate };
 }

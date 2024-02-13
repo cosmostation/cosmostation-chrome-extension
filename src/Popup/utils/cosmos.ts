@@ -46,7 +46,7 @@ import { toBase64 } from './string';
 export function cosmosURL(chain: CosmosChain) {
   const { restURL, id } = chain;
 
-  const isV1BetaClientState = [IXO.id, EMONEY.id].includes(chain.id);
+  const isV1BetaClientState = [EMONEY.id].includes(chain.id);
   // reward 중첩 typing!
   return {
     getNodeInfo: () => `${restURL}/cosmos/base/tendermint/v1beta1/node_info`,
