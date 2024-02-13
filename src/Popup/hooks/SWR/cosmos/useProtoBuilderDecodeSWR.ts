@@ -21,13 +21,18 @@ type UseProtoBuilderDecodeSWRPRops = {
 export function useProtoBuilderDecodeSWR({ authInfoBytes, txBodyBytes }: UseProtoBuilderDecodeSWRPRops, config?: SWRConfiguration) {
   const requestURL = 'https://proto.mintscan.io/proto/decode';
 
-  const fetcher = (params: FetchParams) =>
-    post<ProtoBuilderDecodeResponse>(params.url, {
-      auth_info_bytes: params.body.auth_info_bytes,
-      body_bytes: params.body.body_bytes,
-    });
+  const fetcher = async (params: FetchParams) => {
+    try {
+      return await post<ProtoBuilderDecodeResponse>(params.url, {
+        auth_info_bytes: params.body.auth_info_bytes,
+        body_bytes: params.body.body_bytes,
+      });
+    } catch {
+      return null;
+    }
+  };
 
-  const { data, error, mutate } = useSWR<ProtoBuilderDecodeResponse, AxiosError>(
+  const { data, error, mutate } = useSWR<ProtoBuilderDecodeResponse | null, AxiosError>(
     { url: requestURL, body: { auth_info_bytes: authInfoBytes, body_bytes: txBodyBytes } },
     fetcher,
     {
