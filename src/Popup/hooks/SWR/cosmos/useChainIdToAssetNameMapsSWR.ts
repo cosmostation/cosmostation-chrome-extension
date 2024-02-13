@@ -4,14 +4,14 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { get } from '~/Popup/utils/axios';
-import type { ChainNameMapsResponse } from '~/types/cosmos/asset';
+import type { ChainIdToAssetNameMapsResponse } from '~/types/cosmos/asset';
 
-export function useChainNameMapsSWR(config?: SWRConfiguration) {
+export function useChainIdToAssetNameMapsSWR(config?: SWRConfiguration) {
   const requestURL = `https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/maps.json`;
 
-  const fetcher = (fetchUrl: string) => get<ChainNameMapsResponse>(fetchUrl);
+  const fetcher = (fetchUrl: string) => get<ChainIdToAssetNameMapsResponse>(fetchUrl);
 
-  const { data, error, mutate } = useSWR<ChainNameMapsResponse, AxiosError>(requestURL, fetcher, {
+  const { data, error, mutate } = useSWR<ChainIdToAssetNameMapsResponse, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,

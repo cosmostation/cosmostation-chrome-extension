@@ -18,7 +18,7 @@ import { useArchIDSWR } from '~/Popup/hooks/SWR/cosmos/useArchIDSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
 import { useBlockLatestSWR } from '~/Popup/hooks/SWR/cosmos/useBlockLatestSWR';
-import { useChainNameMapsSWR } from '~/Popup/hooks/SWR/cosmos/useChainNameMapsSWR';
+import { useChainIdToAssetNameMapsSWR } from '~/Popup/hooks/SWR/cosmos/useChainIdToAssetNameMapsSWR';
 import { useClientStateSWR } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
@@ -84,7 +84,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const nodeInfo = useNodeInfoSWR(chain);
   const { enQueue } = useCurrentQueue();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const { data: chainNameMaps } = useChainNameMapsSWR();
+  const { data: chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
   const { extensionStorage } = useExtensionStorage();
   const { currency } = extensionStorage;
   const params = useParams();
@@ -101,15 +101,15 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const { decimals, gas, gasRate } = chain;
 
-  const cosmosAssetNames = useMemo(() => COSMOS_CHAINS.map((item) => convertCosmosToAssetName(item, chainNameMaps)), [chainNameMaps]);
+  const cosmosAssetNames = useMemo(() => COSMOS_CHAINS.map((item) => convertCosmosToAssetName(item, chainIdToAssetNameMaps)), [chainIdToAssetNameMaps]);
 
   const filteredCosmosChainAssets = useMemo(
     () => cosmosChainsAssets.data.filter((item) => cosmosAssetNames.includes(item.chain)),
     [cosmosAssetNames, cosmosChainsAssets.data],
   );
   const filteredCurrentChainAssets = useMemo(
-    () => currentChainAssets.data.filter((item) => convertAssetNameToCosmos(item.prevChain || '', chainNameMaps)),
-    [chainNameMaps, currentChainAssets.data],
+    () => currentChainAssets.data.filter((item) => convertAssetNameToCosmos(item.prevChain || '', chainIdToAssetNameMaps)),
+    [chainIdToAssetNameMaps, currentChainAssets.data],
   );
 
   const { data: coinsBalance } = useBalanceSWR(chain);
@@ -147,7 +147,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           return false;
         })
         .map((item) => {
-          const name = convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainNameMaps)?.chainName || getCapitalize(item.prevChain || '');
+          const name = convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainIdToAssetNameMaps)?.chainName || getCapitalize(item.prevChain || '');
 
           const availableAmount = coinsBalance?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
           const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
@@ -197,7 +197,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     coinGeckoPrice.data,
     cosmosTokensBalance.data,
     currency,
-    chainNameMaps,
+    chainIdToAssetNameMaps,
     currentChainAssets.data,
     currentCosmosTokens,
     filteredCosmosChainAssets,
@@ -252,11 +252,15 @@ export default function IBCSend({ chain }: IBCSendProps) {
       const assets = filteredCosmosChainAssets.filter(
         (asset) =>
           isEqualsIgnoringCase(asset.counter_party?.denom, currentCoinOrToken.baseDenom) &&
-          isEqualsIgnoringCase(convertAssetNameToCosmos(asset.prevChain || '', chainNameMaps)?.id, chain.id) &&
+          isEqualsIgnoringCase(convertAssetNameToCosmos(asset.prevChain || '', chainIdToAssetNameMaps)?.id, chain.id) &&
           cosmosAssetNames.includes(asset.prevChain || ''),
       );
       return assets
-        .map((item) => ({ chain: convertAssetNameToCosmos(item.chain, chainNameMaps)!, channel: item.counter_party!.channel, port: item.counter_party!.port }))
+        .map((item) => ({
+          chain: convertAssetNameToCosmos(item.chain, chainIdToAssetNameMaps)!,
+          channel: item.counter_party!.channel,
+          port: item.counter_party!.port,
+        }))
         .filter(
           (receiverIBC, idx, arr) =>
             arr.findIndex((item) => item.chain.id === receiverIBC.chain.id && item.channel === receiverIBC.channel && item.port === receiverIBC.port) === idx,
@@ -271,13 +275,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
       const counterPartyAssets = filteredCosmosChainAssets.filter(
         (asset) =>
           isEqualsIgnoringCase(asset.counter_party?.denom, currentCoinOrToken.baseDenom) &&
-          isEqualsIgnoringCase(convertAssetNameToCosmos(asset.prevChain || '', chainNameMaps)?.id, chain.id),
+          isEqualsIgnoringCase(convertAssetNameToCosmos(asset.prevChain || '', chainIdToAssetNameMaps)?.id, chain.id),
       );
 
       return [
-        ...assets.map((item) => ({ chain: convertAssetNameToCosmos(item.prevChain || '', chainNameMaps)!, channel: item.channel!, port: item.port! })),
+        ...assets.map((item) => ({ chain: convertAssetNameToCosmos(item.prevChain || '', chainIdToAssetNameMaps)!, channel: item.channel!, port: item.port! })),
         ...counterPartyAssets.map((item) => ({
-          chain: convertAssetNameToCosmos(item.chain || '', chainNameMaps)!,
+          chain: convertAssetNameToCosmos(item.chain || '', chainIdToAssetNameMaps)!,
           channel: item.counter_party!.channel,
           port: item.port!,
         })),
@@ -290,7 +294,11 @@ export default function IBCSend({ chain }: IBCSendProps) {
     if (currentCoinOrToken.type === 'token') {
       const assets = filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, currentCoinOrToken.address));
       return assets
-        .map((item) => ({ chain: convertAssetNameToCosmos(item.chain, chainNameMaps)!, channel: item.counter_party!.channel, port: item.counter_party!.port }))
+        .map((item) => ({
+          chain: convertAssetNameToCosmos(item.chain, chainIdToAssetNameMaps)!,
+          channel: item.counter_party!.channel,
+          port: item.counter_party!.port,
+        }))
         .filter(
           (receiverIBC, idx, arr) =>
             arr.findIndex((item) => item.chain.id === receiverIBC.chain.id && item.channel === receiverIBC.channel && item.port === receiverIBC.port) === idx,
@@ -298,7 +306,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     }
 
     return [];
-  }, [currentCoinOrToken, cosmosAssetNames, chainNameMaps, filteredCosmosChainAssets, chain.id, filteredCurrentChainAssets]);
+  }, [currentCoinOrToken, cosmosAssetNames, chainIdToAssetNameMaps, filteredCosmosChainAssets, chain.id, filteredCurrentChainAssets]);
 
   const [selectedReceiverIBC, setReceiverIBC] = useState(receiverIBCList.length ? receiverIBCList[0] : undefined);
 

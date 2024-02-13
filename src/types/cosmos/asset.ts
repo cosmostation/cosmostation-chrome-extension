@@ -44,8 +44,8 @@ export type CW20AssetResponse = {
   assets: CW20Asset[];
 };
 
-export type ChainNameMapsKey = {
+export type ChainIdToAssetNameMapsKey = {
   chainId: string;
 };
 
-export type ChainNameMapsResponse = Record<ChainNameMapsKey['chainId'], string>;
+export type ChainIdToAssetNameMapsResponse = Record<ChainIdToAssetNameMapsKey['chainId'], string>;

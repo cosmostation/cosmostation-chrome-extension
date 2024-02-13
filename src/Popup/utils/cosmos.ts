@@ -38,7 +38,7 @@ import type {
   MsgTransfer,
   SignAminoDoc,
 } from '~/types/cosmos/amino';
-import type { ChainNameMapsResponse as ChainNameMaps } from '~/types/cosmos/asset';
+import type { ChainIdToAssetNameMapsResponse as ChainIdToAssetNameMaps } from '~/types/cosmos/asset';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 import { toBase64 } from './string';
@@ -177,7 +177,7 @@ export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {
   return true;
 }
 
-export function convertCosmosToAssetName(cosmosChain: CosmosChain, maps: ChainNameMaps) {
+export function convertCosmosToAssetName(cosmosChain: CosmosChain, maps: ChainIdToAssetNameMaps) {
   const nameMap = {
     [CRONOS_POS.id]: 'crypto-org',
     [ASSET_MANTLE.id]: 'asset-mantle',
@@ -192,7 +192,7 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain, maps: ChainNa
   return maps[cosmosChain.chainId] || nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
 
-export function convertAssetNameToCosmos(assetName: string, maps: ChainNameMaps) {
+export function convertAssetNameToCosmos(assetName: string, maps: ChainIdToAssetNameMaps) {
   const nameMap = {
     'crypto-org': CRONOS_POS,
     'asset-mantle': ASSET_MANTLE,
