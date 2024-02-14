@@ -226,7 +226,6 @@ export default function Entry({ queue }: EntryProps) {
 
     return mixedEthereumTx;
   }, [
-    currentEthereumNetwork.chainId,
     currentFee.currentFee,
     currentFee.currentGasPrice,
     currentFee.type,
@@ -237,6 +236,7 @@ export default function Entry({ queue }: EntryProps) {
     maxPriorityFeePerGas,
     originEthereumTx,
     transactionCount.data?.result,
+    currentEthereumNetwork.chainId,
   ]);
 
   const oneInchTokens = useOneInchTokensSWR(queue.channel === 'inApp' ? String(parseInt(currentEthereumNetwork.chainId, 16)) : '');
