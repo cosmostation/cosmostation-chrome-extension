@@ -9,7 +9,6 @@ import { Typography } from '@mui/material';
 
 import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import Button from '~/Popup/components/common/Button';
@@ -40,7 +39,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { gt, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { getDefaultAV, requestRPC } from '~/Popup/utils/ethereum';
+import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { OneInchSwapTxData } from '~/types/1inch/contract';
@@ -202,18 +201,8 @@ export default function Entry({ queue }: EntryProps) {
       return {
         ...mixedEthereumTx,
         gasPrice: undefined,
-        maxPriorityFeePerGas: toHex(
-          times(
-            currentFee.currentFee[feeMode].maxPriorityFeePerGas,
-            currentEthereumNetwork.id === SMART_CHAIN.id ? getDefaultAV(currentEthereumNetwork) : '1',
-            0,
-          ),
-          { addPrefix: true, isStringNumber: true },
-        ),
-        maxFeePerGas: toHex(times(currentFee.currentFee[feeMode].maxBaseFeePerGas, getDefaultAV(currentEthereumNetwork), 0), {
-          addPrefix: true,
-          isStringNumber: true,
-        }),
+        maxPriorityFeePerGas: toHex(currentFee.currentFee[feeMode].maxPriorityFeePerGas, { addPrefix: true, isStringNumber: true }),
+        maxFeePerGas: toHex(times(currentFee.currentFee[feeMode].maxBaseFeePerGas, '1.2', 0), { addPrefix: true, isStringNumber: true }),
       };
     }
 
@@ -237,17 +226,17 @@ export default function Entry({ queue }: EntryProps) {
 
     return mixedEthereumTx;
   }, [
+    currentEthereumNetwork.chainId,
+    currentFee.currentFee,
+    currentFee.currentGasPrice,
+    currentFee.type,
+    feeMode,
+    gas,
+    gasPrice,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
     originEthereumTx,
     transactionCount.data?.result,
-    gas,
-    currentEthereumNetwork,
-    feeMode,
-    currentFee.type,
-    currentFee.currentGasPrice,
-    currentFee.currentFee,
-    gasPrice,
-    maxPriorityFeePerGas,
-    maxFeePerGas,
   ]);
 
   const oneInchTokens = useOneInchTokensSWR(queue.channel === 'inApp' ? String(parseInt(currentEthereumNetwork.chainId, 16)) : '');
