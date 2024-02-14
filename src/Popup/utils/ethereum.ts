@@ -8,11 +8,14 @@ import { signTypedData as baseSignTypedData } from '@metamask/eth-sig-util';
 
 import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
 import { ERC20_ABI, ERC721_ABI, ERC1155_ABI, ONE_INCH_ABI } from '~/constants/abi';
+import { ETHEREUM_DEFAULT_ESTIMATE_AV, ETHEREUM_DEFAULT_ESTIMATE_EXCEPTED_AV } from '~/constants/chain';
+import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID, ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE, TOKEN_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
 import { extensionStorage } from '~/Popup/utils/extensionStorage';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
+import type { EthereumNetwork } from '~/types/chain';
 import type { EthereumContractKind, EthereumTxType } from '~/types/ethereum/common';
 import type { ERC721SupportInterfacePayload, ERC1155SupportInterfacePayload } from '~/types/ethereum/contract';
 import type { CustomTypedMessage, EthereumTx } from '~/types/message/ethereum';
@@ -316,4 +319,13 @@ export function toDisplayTokenStandard(tokenStandard?: string) {
   }
 
   return 'ERC-'.concat(standardNumber[0]);
+}
+
+export function getDefaultAV(network?: EthereumNetwork) {
+  const exceptedNetworkIds = [SMART_CHAIN.id];
+
+  if (exceptedNetworkIds.includes(network?.id || '')) {
+    return ETHEREUM_DEFAULT_ESTIMATE_EXCEPTED_AV;
+  }
+  return ETHEREUM_DEFAULT_ESTIMATE_AV;
 }
