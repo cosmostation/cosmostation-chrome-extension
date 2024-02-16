@@ -207,7 +207,9 @@ export default function Entry({ chain }: EntryProps) {
                 <Image src={nftMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} />
               </PreviewNFTImageContainer>
               <PreviewNFTSubtitleContainer>
-                <Typography variant="h3">{nftMeta.data?.metaData?.name || nftSourceURI.data?.token_uri}</Typography>
+                <Typography variant="h3">
+                  {nftMeta.data?.metaData?.name && typeof nftMeta.data.metaData.name === 'string' ? nftMeta.data.metaData.name : nftSourceURI.data?.token_uri}
+                </Typography>
               </PreviewNFTSubtitleContainer>
             </PreviewBodyContainer>
           </>

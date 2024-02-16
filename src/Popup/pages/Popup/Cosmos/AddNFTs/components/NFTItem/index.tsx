@@ -29,8 +29,10 @@ export default function NFTItem({ chain, contractAddress, tokenId }: NFTItemProp
           <NFTInfoContainer>
             <NFTInfoHeaderContainer>
               <NFTInfoHeaderTextContainer>
-                <Tooltip title={nftMeta?.metaData?.name || tokenId} placement="top" arrow>
-                  <Typography variant="h3">{nftMeta?.metaData?.name || toDisplayTokenId(tokenId)}</Typography>
+                <Tooltip title={nftMeta?.metaData?.name && typeof nftMeta.metaData.name === 'string' ? nftMeta.metaData.name : tokenId} placement="top" arrow>
+                  <Typography variant="h3">
+                    {nftMeta?.metaData?.name && typeof nftMeta.metaData.name === 'string' ? nftMeta.metaData.name : toDisplayTokenId(tokenId)}
+                  </Typography>
                 </Tooltip>
               </NFTInfoHeaderTextContainer>
             </NFTInfoHeaderContainer>

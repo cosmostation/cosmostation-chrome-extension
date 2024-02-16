@@ -63,18 +63,30 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
 
   const displayTokenStandard = useMemo(() => toDisplayCWTokenStandard(tokenType), [tokenType]);
 
-  const nftExtensionDatas = useMemo(() => {
-    if (nftMeta?.extensionData) {
-      const keys = Object.keys(nftMeta.extensionData);
+  const nftAttributes = useMemo(() => {
+    const attributesData = (() => {
+      if (nftMeta?.metaData?.attributes && Array.isArray(nftMeta?.metaData?.attributes)) {
+        return nftMeta?.metaData?.attributes.map((item) => ({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          key: item?.trait_type && typeof item.trait_type === 'string' ? (item.trait_type as string) : '',
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          value: item.value ? (item.value as unknown) : undefined,
+        }));
+      }
 
-      const extensionDatas = keys.map((key) => ({
-        key,
-        value: nftMeta.extensionData?.[key],
-      }));
+      if (nftMeta?.metaData) {
+        const keys = Object.keys(nftMeta.metaData);
 
-      return extensionDatas.filter((item) => !!item.value && !(Array.isArray(item.value) && item.value.length === 0));
-    }
-    return [];
+        return keys.map((key) => ({
+          key,
+          value: nftMeta.metaData?.[key],
+        }));
+      }
+
+      return [];
+    })();
+
+    return attributesData.filter((item) => !!item.value && !(Array.isArray(item.value) && item.value.length === 0));
   }, [nftMeta]);
 
   const handleOnClickCopy = useCallback(
@@ -166,7 +178,7 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
         </ItemRightContainer>
       </ItemContainer>
 
-      {nftMeta?.metaData?.description && (
+      {nftMeta?.metaData?.description && typeof nftMeta.metaData.description === 'string' && (
         <ItemColumnContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.description')}</Typography>
@@ -175,23 +187,12 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
         </ItemColumnContainer>
       )}
 
-      {(nftMeta?.metaData?.attributes || nftExtensionDatas) && (
+      {nftAttributes.length > 1 && (
         <AttributeContainer>
           <AttributeHeaderContainer>
             <Typography variant="h4">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.attributes')}</Typography>
           </AttributeHeaderContainer>
-          {nftMeta?.metaData?.attributes?.map((item) => (
-            <ItemContainer key={item.trait_type}>
-              <ItemTitleContainer>
-                <Typography variant="h5">{item.trait_type || ''}</Typography>
-              </ItemTitleContainer>
-              <ItemRightContainer>
-                <Typography variant="h5">{item.value || ''}</Typography>
-              </ItemRightContainer>
-            </ItemContainer>
-          ))}
-
-          {nftExtensionDatas.map((item) => (
+          {nftAttributes.map((item) => (
             <ItemContainer key={item.key}>
               <ItemTitleContainer>
                 <Typography variant="h5">{item.key || ''}</Typography>

@@ -1,22 +1,20 @@
-import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
 import { isAxiosError } from '~/Popup/utils/axios';
-import { getIpfsData, getNFTExtensionData } from '~/Popup/utils/nft';
+import { convertToBaseIpfsUrl, getIpfsData } from '~/Popup/utils/nft';
 import type { CosmosChain } from '~/types/chain';
-import type { NFTExtensionPayload } from '~/types/cosmos/contract';
+import type { NFTInfoPayload } from '~/types/cosmos/contract';
 import type { NFTMetaResponse } from '~/types/cosmos/nft';
 
 import { useNFTURISWR } from './useNFTURISWR';
 
 type FetcherParams = {
-  fetchUrl: string;
+  fetchData: NFTInfoPayload['data'];
   contractAddress: string;
   tokenId: string;
-  extensionData?: NFTExtensionPayload;
 };
 
 type UseNFTMetaSWR = {
@@ -28,19 +26,35 @@ type UseNFTMetaSWR = {
 export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR, config?: SWRConfiguration) {
   const nftSourceURI = useNFTURISWR({ chain, contractAddress, tokenId }, config);
 
-  const fetchUrl = useMemo(() => nftSourceURI.data?.token_uri || '', [nftSourceURI.data]);
-
-  const fetcher = async (fetchParam: FetcherParams) => {
+  const fetcher = async (fetcherParam: FetcherParams) => {
     try {
       if (nftSourceURI.error) {
         throw nftSourceURI.error;
       }
 
-      if (chain.id === ARCHWAY.id && !fetchParam.fetchUrl) {
-        return getNFTExtensionData(fetchParam.extensionData, fetchParam.contractAddress, fetchParam.tokenId);
+      if (chain.id === ARCHWAY.id && !fetcherParam.fetchData.token_uri) {
+        const convertedIpfsImageURL = convertToBaseIpfsUrl(
+          fetcherParam.fetchData.extension?.image && typeof fetcherParam.fetchData.extension?.image === 'string'
+            ? fetcherParam.fetchData.extension.image
+            : undefined,
+        );
+
+        return {
+          imageURL: convertedIpfsImageURL,
+          contractAddress: contractAddress ?? '',
+          tokenId: tokenId ?? '',
+          metaData: fetcherParam.fetchData.extension,
+        };
       }
 
-      return await getIpfsData(fetchParam.fetchUrl, fetchParam.contractAddress, fetchParam.tokenId);
+      const nftMetaData = await getIpfsData(fetcherParam.fetchData.token_uri);
+
+      return {
+        imageURL: nftMetaData?.imageURL || '',
+        contractAddress: contractAddress ?? '',
+        tokenId: tokenId ?? '',
+        metaData: nftMetaData?.metaData,
+      };
     } catch (e) {
       if (isAxiosError(e)) {
         if (e.response?.status === 404) {
@@ -53,10 +67,9 @@ export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR
 
   const { data, isValidating, error, mutate } = useSWR<NFTMetaResponse | null, AxiosError>(
     {
-      fetchUrl,
+      fetchData: nftSourceURI.data,
       contractAddress,
       tokenId,
-      extensionData: nftSourceURI.data?.extension,
     },
     fetcher,
     {

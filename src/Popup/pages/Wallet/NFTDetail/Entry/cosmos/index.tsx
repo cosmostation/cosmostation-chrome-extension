@@ -87,8 +87,14 @@ export default function Cosmos({ chain }: CosmosProps) {
             <NFTInfoHeaderContainer>
               <NFTInfoLeftHeaderContainer>
                 <NFTInfoHeaderTextContainer>
-                  <Tooltip title={nftMeta?.metaData?.name || currentNFT?.tokenId || ''} placement="top" arrow>
-                    <Typography variant="h3">{nftMeta?.metaData?.name || toDisplayTokenId(currentNFT?.tokenId)}</Typography>
+                  <Tooltip
+                    title={nftMeta?.metaData?.name && typeof nftMeta?.metaData?.name === 'string' ? nftMeta.metaData.name : currentNFT?.tokenId || ''}
+                    placement="top"
+                    arrow
+                  >
+                    <Typography variant="h3">
+                      {nftMeta?.metaData?.name && typeof nftMeta?.metaData?.name === 'string' ? nftMeta.metaData.name : toDisplayTokenId(currentNFT?.tokenId)}
+                    </Typography>
                   </Tooltip>
                 </NFTInfoHeaderTextContainer>
               </NFTInfoLeftHeaderContainer>

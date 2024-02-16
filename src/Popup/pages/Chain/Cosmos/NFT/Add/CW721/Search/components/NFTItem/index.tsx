@@ -44,8 +44,10 @@ export default function NFTItem({ onClick, isActive, chain, contractAddress, tok
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Tooltip title={nftMeta?.metaData?.name || tokenId} placement="top" arrow>
-              <Typography variant="h5">{nftMeta?.metaData?.name || toDisplayTokenId(tokenId)}</Typography>
+            <Tooltip title={nftMeta?.metaData?.name && typeof nftMeta.metaData.name === 'string' ? nftMeta.metaData.name : tokenId} placement="top" arrow>
+              <Typography variant="h5">
+                {nftMeta?.metaData?.name && typeof nftMeta.metaData.name === 'string' ? nftMeta.metaData.name : toDisplayTokenId(tokenId)}
+              </Typography>
             </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>
