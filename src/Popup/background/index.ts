@@ -1,8 +1,9 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
-import { CELESTIA } from '~/constants/chain/cosmos/celestia';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { DYMENSION } from '~/constants/chain/cosmos/dymension';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { DYMENSION as ETHEREUM_NETWORK_DYMENSION } from '~/constants/chain/ethereum/network/dymension';
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -94,9 +95,9 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.7.8') {
+        if (extensionManifest.version === '0.7.21') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), CELESTIA.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), DYMENSION.id, ETHEREUM_NETWORK_DYMENSION.id]);
           })();
         }
       }

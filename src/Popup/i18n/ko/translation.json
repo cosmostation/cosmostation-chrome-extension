@@ -815,6 +815,7 @@
               "cancelButton": "취소",
               "confirmButton": "승인",
               "dataTab": "데이터",
+              "decodedDataTab": "디코딩",
               "detailTab": "상세 내역",
               "failedTransfer": "보내기를 실패했습니다.",
               "insufficientFeeAmount": "수수료가 부족합니다.",
@@ -831,6 +832,11 @@
             }
           },
           "components": {
+            "DecodedTx": {
+              "index": {
+                "warning": "일부 트랜잭션의 디코딩 이슈로 인하여 데이터가 보이지 않을 수 있으나, 트랜잭션의 수행에는 영향을 미치지 않습니다."
+              }
+            },
             "Memo": {
               "index": {
                 "memo": "메모",

@@ -9,6 +9,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
+import { useProtoBuilderDecodeSWR } from '~/Popup/hooks/SWR/cosmos/useProtoBuilderDecodeSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -27,6 +28,7 @@ import type { Path } from '~/types/route';
 
 import TxMessage from './components/TxMessage';
 import { BottomButtonContainer, BottomContainer, Container, ContentsContainer, FeeContainer, MemoContainer, PaginationContainer, TabContainer } from './styled';
+import DecodedTx from '../components/DecodedTx';
 import Memo from '../components/Memo';
 import Pagination from '../components/Pagination';
 import Tx from '../components/Tx';
@@ -150,6 +152,11 @@ export default function Entry({ queue, chain }: EntryProps) {
   const decodedChangedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(bodyBytes), [bodyBytes]);
   const decodedChangedAuthInfoBytes = useMemo(() => cosmos.tx.v1beta1.AuthInfo.decode(authInfoBytes), [authInfoBytes]);
 
+  const decodedTxData = useProtoBuilderDecodeSWR({
+    authInfoBytes: Buffer.from(authInfoBytes).toString('hex'),
+    txBodyBytes: Buffer.from(bodyBytes).toString('hex'),
+  });
+
   const { messages } = decodedChangedBodyBytes;
   const msgs = useMemo(() => messages.map((item) => decodeProtobufMessage(item)), [messages]);
 
@@ -160,6 +167,16 @@ export default function Entry({ queue, chain }: EntryProps) {
       auth_info_bytes: decodedChangedAuthInfoBytes,
     }),
     [decodedChangedAuthInfoBytes, decodedChangedBodyBytes, doc, msgs],
+  );
+
+  const decodedByProtoBuilderTx = useMemo(
+    () =>
+      decodedTxData.data && {
+        ...doc,
+        body_bytes: decodedTxData.data?.body,
+        auth_info_bytes: decodedTxData.data?.auth_info,
+      },
+    [decodedTxData.data, doc],
   );
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
@@ -186,6 +203,7 @@ export default function Entry({ queue, chain }: EntryProps) {
           <Tabs value={value} onChange={handleChange} variant="fullWidth">
             <Tab label={t('pages.Popup.Cosmos.Sign.Direct.entry.detailTab')} />
             <Tab label={t('pages.Popup.Cosmos.Sign.Direct.entry.dataTab')} />
+            {decodedByProtoBuilderTx && <Tab label={t('pages.Popup.Cosmos.Sign.Direct.entry.decodedDataTab')} />}
           </Tabs>
         </TabContainer>
         <TabPanel value={value} index={0}>
@@ -222,6 +240,11 @@ export default function Entry({ queue, chain }: EntryProps) {
         <TabPanel value={value} index={1}>
           <Tx tx={tx} />
         </TabPanel>
+        {decodedByProtoBuilderTx && (
+          <TabPanel value={value} index={2}>
+            <DecodedTx tx={decodedByProtoBuilderTx} />
+          </TabPanel>
+        )}
       </ContentsContainer>
       <BottomContainer>
         <BottomButtonContainer>

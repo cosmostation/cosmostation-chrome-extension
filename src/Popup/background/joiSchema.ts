@@ -109,6 +109,7 @@ export const cosSignAminoParamsSchema = (chainNames: string[], chainId: string) 
           value: Joi.any(),
         }),
       ),
+      timeout_height: Joi.string().optional(),
     }).required(),
     isEditFee: Joi.boolean().default(true),
     isEditMemo: Joi.boolean().default(false),

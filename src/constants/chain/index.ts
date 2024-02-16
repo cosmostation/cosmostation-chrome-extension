@@ -32,9 +32,11 @@ import { CRONOS_POS } from './cosmos/cronosPos';
 import { CUDOS } from './cosmos/cudos';
 import { DESMOS } from './cosmos/desmos';
 import { DYDX } from './cosmos/dydx';
+import { DYMENSION } from './cosmos/dymension';
 import { EMONEY } from './cosmos/emoney';
 import { EVMOS } from './cosmos/evmos';
 import { FETCH_AI } from './cosmos/fetchAi';
+import { FINSCHIA } from './cosmos/finschia';
 import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
 import { INJECTIVE } from './cosmos/injective';
 import { IRIS } from './cosmos/iris';
@@ -77,6 +79,7 @@ import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbit
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
 import { CANTO as ETHEREUM_NETWORK__CANTO } from './ethereum/network/canto';
 import { CRONOS as ETHEREUM_NETWORK__CRONOS } from './ethereum/network/cronos';
+import { DYMENSION as ETHEREUM_NETWORK_DYMENSION } from './ethereum/network/dymension';
 import { ETHEREUM as ETHEREUM_NETWORK__ETHEREUM } from './ethereum/network/ethereum';
 import { EVMOS as ETHEREUM_NETWORK__EVMOS } from './ethereum/network/evmos';
 import { FANTOM as ETHEREUM_NETWORK__FANTOM } from './ethereum/network/fantom';
@@ -131,6 +134,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   CUDOS,
   DESMOS,
   DYDX,
+  DYMENSION,
   EMONEY,
   EVMOS,
   FETCH_AI,
@@ -171,6 +175,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   TERRA,
   UMEE,
   XPLA,
+  FINSCHIA,
 ];
 
 export const COSMOS_FEE_BASE_DENOMS: CosmosFeeBaseDenom[] = [...NYX_FEE_BASE_DENOMS];
@@ -188,6 +193,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__EVMOS,
   ETHEREUM_NETWORK__FANTOM,
   ETHEREUM_NETWORK__HARMONY,
+  ETHEREUM_NETWORK_DYMENSION,
   ETHEREUM_NETWORK__KAVA,
   ETHEREUM_NETWORK__OKC,
   ETHEREUM_NETWORK__OPTIMISM,
