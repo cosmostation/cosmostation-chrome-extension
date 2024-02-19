@@ -1478,13 +1478,10 @@
                   "available": "Available"
                 }
               },
-              "CoinPopover": {
-                "components": {
-                  "CoinItem": {
-                    "index": {
-                      "available": "Available"
-                    }
-                  }
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "Search",
+                  "title": "Select a coin"
                 }
               }
             },

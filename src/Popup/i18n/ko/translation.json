@@ -1478,13 +1478,10 @@
                   "available": "사용 가능 수량"
                 }
               },
-              "CoinPopover": {
-                "components": {
-                  "CoinItem": {
-                    "index": {
-                      "available": "사용 가능 수량"
-                    }
-                  }
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "검색",
+                  "title": "코인을 선택하세요"
                 }
               }
             },
