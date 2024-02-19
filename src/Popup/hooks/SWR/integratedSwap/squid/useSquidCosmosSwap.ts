@@ -8,7 +8,7 @@ import { SQUID_COLLECT_FEE_BPF, SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS } from '~/c
 import { useAssetsSWR, useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { convertAssetNameToCosmos, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { convertAssetNameToCosmos, findCosmosChainByAddress, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
@@ -206,8 +206,14 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   const channelChain = useMemo(() => {
     const asset = assets.data?.find((item) => item.channel === chainInfo.channelId && item.port === chainInfo.port);
 
-    return convertAssetNameToCosmos(asset?.origin_chain || '');
-  }, [assets.data, chainInfo.channelId, chainInfo.port]);
+    if (asset?.origin_chain) {
+      return convertAssetNameToCosmos(asset.origin_chain);
+    }
+
+    const transferMsg = parsedSquidSwapTx?.msgTypeUrl === '/ibc.applications.transfer.v1.MsgTransfer' ? parsedSquidSwapTx : undefined;
+
+    return findCosmosChainByAddress(transferMsg?.msg.receiver);
+  }, [assets.data, parsedSquidSwapTx, chainInfo.channelId, chainInfo.port]);
 
   const channelChainLatestBlock = useBlockLatestSWR(channelChain);
 
