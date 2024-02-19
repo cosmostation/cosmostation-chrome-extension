@@ -216,7 +216,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
     const transferMsg = parsedSquidSwapTx?.msgTypeUrl === '/ibc.applications.transfer.v1.MsgTransfer' ? parsedSquidSwapTx : undefined;
 
     return findCosmosChainByAddress(transferMsg?.msg.receiver);
-  }, [assets.data, parsedSquidSwapTx, chainInfo.channelId, chainInfo.port]);
+  }, [assets.data, parsedSquidSwapTx, chainInfo.channelId, chainInfo.port, chainIdToAssetNameMaps]);
 
   const channelChainLatestBlock = useBlockLatestSWR(channelChain);
 
