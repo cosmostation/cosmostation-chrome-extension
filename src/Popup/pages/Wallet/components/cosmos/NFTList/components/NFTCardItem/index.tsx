@@ -12,7 +12,7 @@ import { useNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTOwnerSWR';
 import { useNFTURISWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTURISWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { toDisplayTokenId } from '~/Popup/utils/nft';
+import { getNFTMetadataValue, toDisplayTokenId } from '~/Popup/utils/nft';
 import type { CosmosChain } from '~/types/chain';
 import type { CosmosNFT } from '~/types/cosmos/nft';
 
@@ -88,14 +88,10 @@ export default function NFTCardItem({ chain, nft, onClick, onClickDelete }: NFTC
 
       <BottomContainer>
         <NFTDescriptionTextContainer>
-          <Typography variant="h6">
-            {nftMeta.data?.metaData?.description && typeof nftMeta.data.metaData.description === 'string' ? nftMeta.data.metaData.description : address}
-          </Typography>
+          <Typography variant="h6">{getNFTMetadataValue('description', nftMeta.data?.metaData) || address}</Typography>
         </NFTDescriptionTextContainer>
         <NFTNameTextContainer>
-          <Typography variant="h5">
-            {nftMeta.data?.metaData?.name && typeof nftMeta.data.metaData.name === 'string' ? nftMeta.data.metaData.name : toDisplayTokenId(tokenId)}
-          </Typography>
+          <Typography variant="h5">{getNFTMetadataValue('name', nftMeta.data?.metaData) || toDisplayTokenId(tokenId)}</Typography>
         </NFTNameTextContainer>
       </BottomContainer>
     </StyledButton>

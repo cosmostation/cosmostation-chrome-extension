@@ -67,3 +67,7 @@ export async function getIpfsData(ipfsURL: string): Promise<Pick<NFTMetaResponse
 export function convertToBaseIpfsUrl(imageURL?: string) {
   return isIpfsUrl(imageURL) ? `${baseIpfsURL}${getIpfsCID(imageURL)}` : imageURL || '';
 }
+
+export function getNFTMetadataValue(key: string, metaData?: NFTMetaPayload) {
+  return metaData?.[key] && (typeof metaData[key] === 'string' || typeof metaData[key] === 'number') ? String(metaData[key]) : '';
+}

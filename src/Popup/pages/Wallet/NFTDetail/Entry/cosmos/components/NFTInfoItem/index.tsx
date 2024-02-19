@@ -11,6 +11,7 @@ import { useNFTURISWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTURISWR';
 import { useNumTokensSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNumTokensSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { toDisplayCWTokenStandard } from '~/Popup/utils/cosmos';
+import { getNFTMetadataValue } from '~/Popup/utils/nft';
 import { httpsRegex } from '~/Popup/utils/regex';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
@@ -66,11 +67,9 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
   const nftAttributes = useMemo(() => {
     const attributesData = (() => {
       if (nftMeta?.metaData?.attributes && Array.isArray(nftMeta?.metaData?.attributes)) {
-        return nftMeta?.metaData?.attributes.map((item) => ({
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          key: item?.trait_type && typeof item.trait_type === 'string' ? (item.trait_type as string) : '',
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-          value: item.value ? (item.value as unknown) : undefined,
+        return nftMeta?.metaData?.attributes.map((item: Record<string, unknown>) => ({
+          key: item?.trait_type && typeof item.trait_type === 'string' ? item.trait_type : '',
+          value: item?.value,
         }));
       }
 
@@ -178,12 +177,12 @@ export default function NFTInfoItem({ chain, nft }: NFTInfoItemProps) {
         </ItemRightContainer>
       </ItemContainer>
 
-      {nftMeta?.metaData?.description && typeof nftMeta.metaData.description === 'string' && (
+      {getNFTMetadataValue('description', nftMeta?.metaData) && (
         <ItemColumnContainer>
           <ItemTitleContainer>
             <Typography variant="h5">{t('pages.Wallet.NFTDetail.Entry.cosmos.components.NFTInfoItem.index.description')}</Typography>
           </ItemTitleContainer>
-          <ItemValueContainer>{nftMeta.metaData.description}</ItemValueContainer>
+          <ItemValueContainer>{getNFTMetadataValue('description', nftMeta?.metaData)}</ItemValueContainer>
         </ItemColumnContainer>
       )}
 
