@@ -49,6 +49,7 @@ export const CoinLeftDisplayDenomContainer = styled('div')(({ theme }) => ({
 }));
 
 export const CoinLefNameContainer = styled('div')(({ theme }) => ({
+  textAlign: 'left',
   color: theme.colors.text02,
 
   whiteSpace: 'nowrap',

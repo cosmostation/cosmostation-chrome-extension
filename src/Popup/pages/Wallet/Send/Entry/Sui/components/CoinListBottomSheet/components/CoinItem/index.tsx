@@ -45,7 +45,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin,
 
   const displayName = useMemo(() => coin.name || splitedCoinType[2] || '', [coin.name, splitedCoinType]);
 
-  const displayAmount = toDisplayDenomAmount(baseAmount, coin.decimals || 0);
+  const displayAmount = useMemo(() => toDisplayDenomAmount(baseAmount, coin.decimals || 0), [baseAmount, coin.decimals]);
 
   const coinPrice = useMemo(
     () => (coin.coinGeckoId && coinGeckoPrice.data?.[coin.coinGeckoId]?.[currency]) || 0,
@@ -64,9 +64,11 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin,
           <CoinLeftDisplayDenomContainer>
             <Typography variant="h5">{displayDenom}</Typography>
           </CoinLeftDisplayDenomContainer>
-          <CoinLefNameContainer>
-            <Typography variant="h6">{displayName}</Typography>
-          </CoinLefNameContainer>
+          <Tooltip title={coin.coinType}>
+            <CoinLefNameContainer>
+              <Typography variant="h6">{displayName}</Typography>
+            </CoinLefNameContainer>
+          </Tooltip>
         </CoinLeftInfoContainer>
       </CoinLeftContainer>
       <CoinRightContainer>

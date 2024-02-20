@@ -1398,6 +1398,14 @@
       "Send": {
         "Entry": {
           "Aptos": {
+            "components": {
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "검색",
+                  "title": "코인을 선택하세요"
+                }
+              }
+            },
             "index": {
               "amountPlaceholder": "수량",
               "insufficientAmount": "수량이 부족합니다.",

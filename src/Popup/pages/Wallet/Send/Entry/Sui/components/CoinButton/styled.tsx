@@ -38,9 +38,20 @@ export const LeftInfoContainer = styled('div')({
 export const LeftDisplayDenomContainer = styled('div')(({ theme }) => ({
   textAlign: 'left',
   color: theme.colors.text01,
+
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '15rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const LeftAvailableContainer = styled('div')(({ theme }) => ({
+  textAlign: 'left',
   color: theme.colors.text02,
 }));
 

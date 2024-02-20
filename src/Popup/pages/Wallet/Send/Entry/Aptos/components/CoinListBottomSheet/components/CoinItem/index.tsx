@@ -2,17 +2,19 @@ import type { ComponentProps } from 'react';
 import { forwardRef, useMemo } from 'react';
 import { Typography } from '@mui/material';
 
+import { APTOS_COIN } from '~/constants/aptos';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
-import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
+import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
+import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
+import { getCoinAddress } from '~/Popup/utils/aptos';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
-import type { Token } from '~/types/ethereum/common';
+import type { X1CoinCoinstore } from '~/types/aptos/accounts';
 
 import {
   CoinButton,
@@ -32,44 +34,49 @@ import Check16Icon from '~/images/icons/Check16.svg';
 
 type CoinItemProps = ComponentProps<typeof CoinButton> & {
   isActive?: boolean;
-  token: Token;
+  coin: X1CoinCoinstore;
 };
 
-const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, token, ...remainder }, ref) => {
+const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin, ...remainder }, ref) => {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
+  const { currentAptosNetwork } = useCurrentAptosNetwork();
   const { extensionStorage } = useExtensionStorage();
   const { currency } = extensionStorage;
 
-  const balance = useBalanceSWR();
-  const tokenBalace = useTokenBalanceSWR({ token });
+  const coinAddress = useMemo(() => getCoinAddress(coin.type), [coin.type]);
+  const accountAddress = useMemo(() => coinAddress.split('::')[0], [coinAddress]);
 
-  const isNative = token === null;
+  const assets = useAssetsSWR();
 
-  const decimals = useMemo(() => (isNative ? currentEthereumNetwork.decimals : token.decimals), [currentEthereumNetwork.decimals, isNative, token?.decimals]);
+  const asset = useMemo(() => assets.data.find((item) => item.address === coinAddress), [assets.data, coinAddress]);
 
-  const baseAmount = useMemo(
-    () => (isNative ? BigInt(balance.data?.result || '1').toString(10) : BigInt(tokenBalace.data || '0').toString(10)),
-    [balance.data?.result, isNative, tokenBalace.data],
-  );
+  const { data: coinInfo } = useAccountResourceSWR({
+    resourceType: '0x1::coin::CoinInfo',
+    resourceTarget: coinAddress,
+    address: accountAddress,
+  });
 
-  const imageURL = useMemo(() => (isNative ? currentEthereumNetwork.imageURL : token.imageURL), [currentEthereumNetwork.imageURL, isNative, token?.imageURL]);
-  const displayDenom = useMemo(
-    () => (isNative ? currentEthereumNetwork.displayDenom : token.displayDenom),
-    [currentEthereumNetwork.displayDenom, isNative, token?.displayDenom],
-  );
-  const displayAmount = useMemo(() => toDisplayDenomAmount(baseAmount, decimals), [baseAmount, decimals]);
+  const isNative = useMemo(() => coinAddress === APTOS_COIN, [coinAddress]);
 
-  const coinGeckoId = useMemo(
-    () => (isNative ? currentEthereumNetwork.coinGeckoId : token.coinGeckoId),
-    [currentEthereumNetwork.coinGeckoId, isNative, token?.coinGeckoId],
-  );
+  const decimals = useMemo(() => coinInfo?.data.decimals || 0, [coinInfo?.data.decimals]);
+
+  const baseAmount = useMemo(() => coin.data.coin.value || '0', [coin.data.coin.value]);
+
+  const imageURL = useMemo(() => (isNative ? currentAptosNetwork.imageURL : asset?.image), [asset?.image, currentAptosNetwork.imageURL, isNative]);
+
+  const displayDenom = useMemo(() => asset?.symbol || coinInfo?.data.symbol || '', [asset?.symbol, coinInfo?.data.symbol]);
+  const displayAmount = toDisplayDenomAmount(baseAmount, decimals);
+
+  const coinGeckoId = useMemo(() => (isNative ? currentAptosNetwork.coinGeckoId : ''), [currentAptosNetwork.coinGeckoId, isNative]);
 
   const coinPrice = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 
   const coinAmountPrice = useMemo(() => times(displayAmount, coinPrice), [displayAmount, coinPrice]);
 
-  const displayName = useMemo(() => (isNative ? currentEthereumNetwork.networkName : token.name), [currentEthereumNetwork.networkName, isNative, token?.name]);
+  const displayName = useMemo(
+    () => (isNative ? currentAptosNetwork.networkName : asset?.description || coinInfo?.data.name || ''),
+    [isNative, currentAptosNetwork.networkName, asset?.description, coinInfo?.data.name],
+  );
 
   return (
     <CoinButton type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
@@ -81,9 +88,11 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, token
           <CoinLeftDisplayDenomContainer>
             <Typography variant="h5">{displayDenom}</Typography>
           </CoinLeftDisplayDenomContainer>
-          <CoinLefNameContainer>
-            <Typography variant="h6">{displayName}</Typography>
-          </CoinLefNameContainer>
+          <Tooltip title={coinAddress}>
+            <CoinLefNameContainer>
+              <Typography variant="h6">{displayName}</Typography>
+            </CoinLefNameContainer>
+          </Tooltip>
         </CoinLeftInfoContainer>
       </CoinLeftContainer>
       <CoinRightContainer>

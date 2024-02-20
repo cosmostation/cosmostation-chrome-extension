@@ -1398,6 +1398,14 @@
       "Send": {
         "Entry": {
           "Aptos": {
+            "components": {
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "Search",
+                  "title": "Select a coin"
+                }
+              }
+            },
             "index": {
               "amountPlaceholder": "Amount",
               "insufficientAmount": "Insufficient amount",

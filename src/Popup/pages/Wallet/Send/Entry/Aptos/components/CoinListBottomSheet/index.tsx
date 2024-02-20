@@ -2,9 +2,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
 
 import IntersectionObserver from '~/Popup/components/IntersectionObserver';
-import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
+import { useCurrentAptosCoins } from '~/Popup/hooks/useCurrent/useCurrentAptosCoins';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { Token } from '~/types/ethereum/common';
+import type { X1CoinCoinstore } from '~/types/aptos/accounts';
 
 import CoinItem from './components/CoinItem';
 import { AssetList, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
@@ -12,17 +12,17 @@ import { AssetList, Container, Header, HeaderTitle, StyledBottomSheet, StyledBut
 import Close24Icon from '~/images/icons/Close24.svg';
 
 type CoinListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
-  currentToken: Token;
-  onClickCoin?: (token: Token) => void;
+  currentCoin?: X1CoinCoinstore;
+  onClickCoin?: (coin: X1CoinCoinstore) => void;
 };
 
-export default function CoinListBottomSheet({ currentToken, onClickCoin, onClose, ...remainder }: CoinListBottomSheetProps) {
+export default function CoinListBottomSheet({ currentCoin, onClickCoin, onClose, ...remainder }: CoinListBottomSheetProps) {
   const { t } = useTranslation();
 
   const ref = useRef<HTMLButtonElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
-  const { currentEthereumTokens } = useCurrentEthereumTokens();
+  const { currentAptosCoins } = useCurrentAptosCoins();
 
   const [viewLimit, setViewLimit] = useState(30);
   const [search, setSearch] = useState('');
@@ -33,14 +33,12 @@ export default function CoinListBottomSheet({ currentToken, onClickCoin, onClose
     }
   }, [remainder.open]);
 
-  const tokens = useMemo(() => [null, ...currentEthereumTokens], [currentEthereumTokens]);
-
-  const filteredTokenList = useMemo(
+  const filteredCoinList = useMemo(
     () =>
       search.length > 1
-        ? tokens.filter((item) => (item?.displayDenom ? item?.displayDenom.toLowerCase().indexOf(search.toLowerCase()) > -1 : false)).slice(0, viewLimit) || []
-        : tokens.slice(0, viewLimit) || [],
-    [search, tokens, viewLimit],
+        ? currentAptosCoins.filter((item) => (item.type ? item.type.toLowerCase().indexOf(search.toLowerCase()) > -1 : false)).slice(0, viewLimit) || []
+        : currentAptosCoins.slice(0, viewLimit) || [],
+    [search, currentAptosCoins, viewLimit],
   );
 
   useEffect(() => {
@@ -64,7 +62,7 @@ export default function CoinListBottomSheet({ currentToken, onClickCoin, onClose
       <Container>
         <Header>
           <HeaderTitle>
-            <Typography variant="h4">{t('pages.Wallet.Send.Entry.Ethereum.components.CoinListBottomSheet.index.title')}</Typography>
+            <Typography variant="h4">{t('pages.Wallet.Send.Entry.Aptos.components.CoinListBottomSheet.index.title')}</Typography>
           </HeaderTitle>
           <StyledButton
             onClick={() => {
@@ -83,7 +81,7 @@ export default function CoinListBottomSheet({ currentToken, onClickCoin, onClose
               <StyledSearch20Icon />
             </InputAdornment>
           }
-          placeholder={t('pages.Wallet.Send.Entry.Ethereum.components.CoinListBottomSheet.index.searchPlaceholder')}
+          placeholder={t('pages.Wallet.Send.Entry.Aptos.components.CoinListBottomSheet.index.searchPlaceholder')}
           value={search}
           onChange={(event) => {
             setSearch(event.currentTarget.value);
@@ -91,13 +89,13 @@ export default function CoinListBottomSheet({ currentToken, onClickCoin, onClose
         />
         <AssetList>
           <div ref={topRef} />
-          {filteredTokenList?.map((item) => {
-            const isActive = currentToken?.id === item?.id;
+          {filteredCoinList?.map((item) => {
+            const isActive = currentCoin?.type === item.type;
 
             return (
               <CoinItem
-                key={item?.id || 'native'}
-                token={item}
+                key={item.type || 'native'}
+                coin={item}
                 isActive={isActive}
                 ref={isActive ? ref : undefined}
                 onClick={() => {
@@ -108,7 +106,7 @@ export default function CoinListBottomSheet({ currentToken, onClickCoin, onClose
               />
             );
           })}
-          {filteredTokenList?.length > viewLimit - 1 && (
+          {filteredCoinList?.length > viewLimit - 1 && (
             <IntersectionObserver
               onIntersect={() => {
                 setViewLimit((limit) => limit + 30);
