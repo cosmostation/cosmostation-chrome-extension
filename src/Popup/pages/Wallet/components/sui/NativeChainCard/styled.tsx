@@ -59,46 +59,69 @@ export const SecondLineLeftImageContainer = styled('div')({
   alignItems: 'center',
 
   position: 'relative',
-  width: '2.4rem',
-  height: '2.4rem',
+  width: '3.8rem',
+  height: '3.8rem',
 });
 
 export const SecondLineLeftAbsoluteImageContainer = styled('div')({
   position: 'absolute',
 
-  width: '2.4rem',
-  height: '2.4rem',
+  width: '3.8rem',
+  height: '3.8rem',
 
   '& > img': {
-    width: '2.4rem',
-    height: '2.4rem',
+    width: '3.8rem',
+    height: '3.8rem',
   },
 });
 
 export const SecondLineLeftTextContainer = styled('div')(({ theme }) => ({
   display: 'flex',
+  flexDirection: 'column',
+
   justifyContent: 'center',
-  alignItems: 'center',
+  alignItems: 'flex-start',
 
-  marginLeft: '0.8rem',
+  marginLeft: '1rem',
 
-  color: theme.colors.text01,
-}));
-
-export const SecondLineRightContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
+  rowGap: '0.2rem',
 
   color: theme.colors.text01,
 }));
 
-export const ThirdLineContainer = styled('div')(({ theme }) => ({
+export const SecondLineLeftSubTextContainer = styled('div')(({ theme }) => ({
   display: 'flex',
-  justifyContent: 'flex-end',
+  justifyContent: 'flex-start',
   alignItems: 'center',
+
+  columnGap: '0.6rem',
 
   color: theme.colors.text02,
+}));
+
+export const SecondLineRightContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+
+  justifyContent: 'center',
+  alignItems: 'flex-end',
+
+  rowGap: '0.3rem',
+});
+export const SecondLineRightTextContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+}));
+
+export const SecondLineRightSubTextContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text02,
+}));
+
+type TextChangeRateContainerProps = {
+  'data-color'?: 'red' | 'green' | 'grey';
+};
+
+export const TextChangeRateContainer = styled('div')<TextChangeRateContainerProps>(({ theme, ...props }) => ({
+  color: props['data-color'] === 'red' ? theme.accentColors.red : props['data-color'] === 'green' ? theme.accentColors.green01 : theme.colors.text02,
 }));
 
 export const FourthLineContainer = styled('div')({
@@ -106,7 +129,7 @@ export const FourthLineContainer = styled('div')({
   justifyContent: 'space-between',
   alignItems: 'center',
 
-  marginTop: '0.8rem',
+  marginTop: '1.6rem',
 });
 
 export const FourthLineCenterContainer = styled('div')({
@@ -115,7 +138,7 @@ export const FourthLineCenterContainer = styled('div')({
 });
 
 export const StyledRetryIconButton = styled(IconButton)(({ theme }) => ({
-  marginRight: '-0.8rem',
+  padding: '0',
 
   '& svg': {
     fill: theme.colors.base05,
@@ -130,6 +153,8 @@ export const FaucetButtonContainer = styled('div')({
 });
 
 export const ErrorDescriptionContainer = styled('div')(({ theme }) => ({
+  marginTop: '0.2rem',
+
   color: theme.accentColors.red,
 }));
 
