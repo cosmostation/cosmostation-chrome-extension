@@ -824,7 +824,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
         <SecondLineLeftContainer>
           <SecondLineLeftImage imageURL={chain.imageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{chain.displayDenom}</Typography>
+            <Typography variant="h4">{chain.displayDenom}</Typography>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>

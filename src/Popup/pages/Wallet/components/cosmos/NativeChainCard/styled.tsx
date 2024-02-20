@@ -242,7 +242,7 @@ export const ExpandedButton = styled('button')<ExpandedButtonProps>(({ theme, ..
 }));
 
 export const StyledRetryIconButton = styled(IconButton)(({ theme }) => ({
-  padding: 0,
+  padding: '0',
 
   '& svg': {
     fill: theme.colors.base05,
@@ -253,6 +253,8 @@ export const StyledRetryIconButton = styled(IconButton)(({ theme }) => ({
 }));
 
 export const ErrorDescriptionContainer = styled('div')(({ theme }) => ({
+  marginTop: '0.2rem',
+
   color: theme.accentColors.red,
 }));
 
