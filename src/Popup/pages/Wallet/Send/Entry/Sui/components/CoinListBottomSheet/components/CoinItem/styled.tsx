@@ -45,11 +45,34 @@ export const CoinLeftInfoContainer = styled('div')({
 
 export const CoinLeftDisplayDenomContainer = styled('div')(({ theme }) => ({
   textAlign: 'left',
+
   color: theme.colors.text01,
+
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '15rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
-export const CoinLeftAvailableContainer = styled('div')(({ theme }) => ({
+export const CoinLefNameContainer = styled('div')(({ theme }) => ({
+  textAlign: 'left',
+
   color: theme.colors.text02,
+
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '23rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const CoinRightContainer = styled('div')(({ theme }) => ({
@@ -60,6 +83,31 @@ export const CoinRightContainer = styled('div')(({ theme }) => ({
   '& > svg': {
     '& > path': {
       stroke: theme.colors.base06,
+      fill: theme.colors.base06,
+    },
+  },
+}));
+
+export const CoinRightInfoContainer = styled('div')({
+  marginRight: '0.8rem',
+
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-end',
+});
+
+export const CoinRightAmountContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+}));
+
+export const CoinRightValueContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text02,
+}));
+
+export const CoinRightIconContainer = styled('div')(({ theme }) => ({
+  width: '1.6rem',
+  '& > svg': {
+    '& > path': {
       fill: theme.colors.base06,
     },
   },

@@ -93,7 +93,7 @@ export default function CoinListBottomSheet({ currentToken, onClickCoin, onClose
         <AssetList>
           <div ref={topRef} />
           {filteredTokenList?.map((item) => {
-            const isActive = currentToken?.address === item?.address;
+            const isActive = currentToken?.id === item?.id;
 
             return (
               <CoinItem

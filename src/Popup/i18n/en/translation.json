@@ -1502,6 +1502,12 @@
                   "available": "Available"
                 }
               },
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "Search",
+                  "title": "Select a coin"
+                }
+              },
               "CoinPopover": {
                 "components": {
                   "CoinItem": {

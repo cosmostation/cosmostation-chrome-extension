@@ -141,6 +141,11 @@ export type TokenBalanceObject = {
   coinType: string;
   balance: string;
   objects: SuiObjectResponse[];
+  decimals?: number;
+  displayDenom?: string;
+  name?: string;
+  imageURL?: string;
+  coinGeckoId?: string;
 } & SuiObjectResponse;
 
 export type GetCoinBalanceResponse = Result<GetCoinBalance>;

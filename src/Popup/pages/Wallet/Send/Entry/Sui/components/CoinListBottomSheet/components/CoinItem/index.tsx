@@ -5,14 +5,11 @@ import { Typography } from '@mui/material';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
-import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
-import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
-import type { Token } from '~/types/ethereum/common';
+import type { TokenBalanceObject } from '~/types/sui/rpc';
 
 import {
   CoinButton,
@@ -32,57 +29,43 @@ import Check16Icon from '~/images/icons/Check16.svg';
 
 type CoinItemProps = ComponentProps<typeof CoinButton> & {
   isActive?: boolean;
-  token: Token;
+  coin: TokenBalanceObject;
 };
 
-const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, token, ...remainder }, ref) => {
+const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin, ...remainder }, ref) => {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { extensionStorage } = useExtensionStorage();
   const { currency } = extensionStorage;
 
-  const balance = useBalanceSWR();
-  const tokenBalace = useTokenBalanceSWR({ token });
+  const splitedCoinType = useMemo(() => coin.coinType.split('::'), [coin.coinType]);
 
-  const isNative = token === null;
+  const baseAmount = useMemo(() => coin.balance || '0', [coin.balance]);
 
-  const decimals = useMemo(() => (isNative ? currentEthereumNetwork.decimals : token.decimals), [currentEthereumNetwork.decimals, isNative, token?.decimals]);
+  const displayDenom = useMemo(() => coin.displayDenom || splitedCoinType[2] || '', [coin.displayDenom, splitedCoinType]);
 
-  const baseAmount = useMemo(
-    () => (isNative ? BigInt(balance.data?.result || '1').toString(10) : BigInt(tokenBalace.data || '0').toString(10)),
-    [balance.data?.result, isNative, tokenBalace.data],
+  const displayName = useMemo(() => coin.name || splitedCoinType[2] || '', [coin.name, splitedCoinType]);
+
+  const displayAmount = toDisplayDenomAmount(baseAmount, coin.decimals || 0);
+
+  const coinPrice = useMemo(
+    () => (coin.coinGeckoId && coinGeckoPrice.data?.[coin.coinGeckoId]?.[currency]) || 0,
+    [coin.coinGeckoId, coinGeckoPrice.data, currency],
   );
-
-  const imageURL = useMemo(() => (isNative ? currentEthereumNetwork.imageURL : token.imageURL), [currentEthereumNetwork.imageURL, isNative, token?.imageURL]);
-  const displayDenom = useMemo(
-    () => (isNative ? currentEthereumNetwork.displayDenom : token.displayDenom),
-    [currentEthereumNetwork.displayDenom, isNative, token?.displayDenom],
-  );
-  const displayAmount = useMemo(() => toDisplayDenomAmount(baseAmount, decimals), [baseAmount, decimals]);
-
-  const coinGeckoId = useMemo(
-    () => (isNative ? currentEthereumNetwork.coinGeckoId : token.coinGeckoId),
-    [currentEthereumNetwork.coinGeckoId, isNative, token?.coinGeckoId],
-  );
-
-  const coinPrice = useMemo(() => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[currency]) || 0, [coinGeckoId, coinGeckoPrice.data, currency]);
 
   const coinAmountPrice = useMemo(() => times(displayAmount, coinPrice), [displayAmount, coinPrice]);
-
-  const chainName = useMemo(() => (isNative ? currentEthereumNetwork.networkName : token.name), [currentEthereumNetwork.networkName, isNative, token?.name]);
 
   return (
     <CoinButton type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>
       <CoinLeftContainer>
         <CoinLeftImageContainer>
-          <Image src={imageURL} />
+          <Image src={coin.imageURL} />
         </CoinLeftImageContainer>
         <CoinLeftInfoContainer>
           <CoinLeftDisplayDenomContainer>
             <Typography variant="h5">{displayDenom}</Typography>
           </CoinLeftDisplayDenomContainer>
           <CoinLefNameContainer>
-            <Typography variant="h6">{chainName}</Typography>
+            <Typography variant="h6">{displayName}</Typography>
           </CoinLefNameContainer>
         </CoinLeftInfoContainer>
       </CoinLeftContainer>
@@ -91,7 +74,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, token
           <CoinRightAmountContainer>
             <Tooltip title={displayAmount} placement="top" arrow>
               <div>
-                <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={gt(displayAmount, '0') ? getDisplayMaxDecimals(decimals) : 0}>
+                <Number typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={gt(displayAmount, '0') ? getDisplayMaxDecimals(coin.decimals) : 0}>
                   {displayAmount}
                 </Number>
               </div>

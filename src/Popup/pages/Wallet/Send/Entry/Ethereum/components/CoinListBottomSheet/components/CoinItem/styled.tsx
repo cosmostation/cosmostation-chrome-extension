@@ -48,7 +48,7 @@ export const CoinLeftDisplayDenomContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const TokenLefNameContainer = styled('div')(({ theme }) => ({
+export const CoinLefNameContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 
   whiteSpace: 'nowrap',
