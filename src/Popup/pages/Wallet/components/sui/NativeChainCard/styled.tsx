@@ -108,6 +108,7 @@ export const SecondLineRightContainer = styled('div')({
 
   rowGap: '0.3rem',
 });
+
 export const SecondLineRightTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));

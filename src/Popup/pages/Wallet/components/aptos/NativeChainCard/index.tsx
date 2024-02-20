@@ -40,12 +40,15 @@ import {
   SecondLineLeftAbsoluteImageContainer,
   SecondLineLeftContainer,
   SecondLineLeftImageContainer,
+  SecondLineLeftSubTextContainer,
   SecondLineLeftTextContainer,
   SecondLineRightContainer,
+  SecondLineRightSubTextContainer,
+  SecondLineRightTextContainer,
   StyledAbsoluteLoading,
   StyledIconButton,
   StyledRetryIconButton,
-  ThirdLineContainer,
+  TextChangeRateContainer,
 } from './styled';
 
 import ExplorerIcon from '~/images/icons/Explorer.svg';
@@ -91,6 +94,11 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     [asset?.coinGeckoId, data, extensionStorage.currency],
   );
 
+  const cap = useMemo(
+    () => (asset?.coinGeckoId && data?.[asset?.coinGeckoId]?.[`${extensionStorage.currency}_24h_change`]) || 0,
+    [asset?.coinGeckoId, data, extensionStorage.currency],
+  );
+
   const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);
 
   const value = useMemo(() => times(price, displayAmount), [displayAmount, price]);
@@ -130,22 +138,41 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
         <SecondLineLeftContainer>
           <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{displayDenom}</Typography>
+            <Typography variant="h4">{displayDenom}</Typography>
+
+            <SecondLineLeftSubTextContainer>
+              <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
+                {String(price)}
+              </Number>
+
+              <TextChangeRateContainer data-color={cap > 0 ? 'green' : cap < 0 ? 'red' : 'grey'}>
+                <Typography variant="h5n">{cap > 0 ? '+' : ''}</Typography>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={2}>
+                  {String(cap)}
+                </Number>
+                <Typography variant="h7n">%</Typography>
+              </TextChangeRateContainer>
+            </SecondLineLeftSubTextContainer>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <Tooltip title={displayAmount} arrow placement="bottom-end">
-            <span>
-              <Number fixed={getDisplayMaxDecimals(decimals)}>{displayAmount}</Number>
-            </span>
-          </Tooltip>
+          <SecondLineRightTextContainer>
+            <Tooltip title={displayAmount} arrow placement="bottom-end">
+              <span>
+                <Number typoOfIntegers="h4n" typoOfDecimals="h5n" fixed={getDisplayMaxDecimals(decimals)}>
+                  {displayAmount}
+                </Number>
+              </span>
+            </Tooltip>
+          </SecondLineRightTextContainer>
+          <SecondLineRightSubTextContainer>
+            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
+              {value}
+            </Number>
+          </SecondLineRightSubTextContainer>
         </SecondLineRightContainer>
       </SecondLineContainer>
-      <ThirdLineContainer>
-        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
-          {value}
-        </Number>
-      </ThirdLineContainer>
+
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
           {t('pages.Wallet.components.aptos.NativeChainCard.index.depositButton')}
@@ -222,16 +249,22 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         <SecondLineLeftContainer>
           <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Skeleton width="8rem" height="2.2rem" />
+            <Typography variant="h4">APT</Typography>
+            <SecondLineLeftSubTextContainer>
+              <Skeleton width="7rem" height="1.9rem" />
+            </SecondLineLeftSubTextContainer>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <Skeleton width="12rem" height="2.6rem" />
+          <SecondLineRightTextContainer>
+            <Skeleton width="12rem" height="2.2rem" />
+          </SecondLineRightTextContainer>
+          <SecondLineRightSubTextContainer>
+            <Skeleton width="8rem" height="1.9rem" />
+          </SecondLineRightSubTextContainer>
         </SecondLineRightContainer>
       </SecondLineContainer>
-      <ThirdLineContainer>
-        <Skeleton width="8rem" height="1.9rem" />
-      </ThirdLineContainer>
+
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.aptos.NativeChainCard.index.depositButton')}
@@ -304,7 +337,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
         <SecondLineLeftContainer>
           <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h3" />
+            <Typography variant="h4">APT</Typography>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
@@ -320,13 +353,12 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           >
             <RetryIcon />
           </StyledRetryIconButton>
+          <ErrorDescriptionContainer>
+            <Typography variant="h6">{t('pages.Wallet.components.aptos.NativeChainCard.index.networkError')}</Typography>
+          </ErrorDescriptionContainer>
         </SecondLineRightContainer>
       </SecondLineContainer>
-      <ThirdLineContainer>
-        <ErrorDescriptionContainer>
-          <Typography variant="h6">{t('pages.Wallet.components.aptos.NativeChainCard.index.networkError')}</Typography>
-        </ErrorDescriptionContainer>
-      </ThirdLineContainer>
+
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.aptos.NativeChainCard.index.depositButton')}
