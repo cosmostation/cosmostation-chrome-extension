@@ -6,6 +6,7 @@ import { InputAdornment, Typography } from '@mui/material';
 import { CHAINS, COSMOS_CHAINS, COSMOS_DEFAULT_SQUID_CONTRACT_SWAP_GAS, COSMOS_DEFAULT_SWAP_GAS, ETHEREUM_NETWORKS } from '~/constants/chain';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM, EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
+import { ETHEREUM as ETHEREUM_NETWORK } from '~/constants/chain/ethereum/network/ethereum';
 import { CURRENCY_SYMBOL } from '~/constants/currency';
 import AmountInput from '~/Popup/components/common/AmountInput';
 import Button from '~/Popup/components/common/Button';
@@ -185,12 +186,20 @@ export default function Entry() {
   );
 
   const integratedEVMChains = useMemo(
-    () => [...squidEVMChains, ...oneInchEVMChains].filter((chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx),
+    () =>
+      [...squidEVMChains, ...oneInchEVMChains]
+        .filter((chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx)
+        .sort((a, b) => a.networkName.localeCompare(b.networkName))
+        .sort((a) => (a.networkName === ETHEREUM_NETWORK.networkName ? -1 : 1)),
     [oneInchEVMChains, squidEVMChains],
   );
 
   const integratedCosmosChains = useMemo(
-    () => [...squidCosmosChains, ...skipSwapChains].filter((chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx),
+    () =>
+      [...squidCosmosChains, ...skipSwapChains]
+        .filter((chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx)
+        .sort((a, b) => a.networkName.localeCompare(b.networkName))
+        .sort((a) => (a.networkName === COSMOS.chainName ? -1 : 1)),
     [skipSwapChains, squidCosmosChains],
   );
 
