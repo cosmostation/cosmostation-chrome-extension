@@ -83,7 +83,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const decimals = useMemo(() => aptosInfo?.data.decimals || 0, [aptosInfo?.data.decimals]);
 
-  const imageURL = useMemo(() => currentAptosNetwork.imageURL || asset?.image, [asset?.image, currentAptosNetwork.imageURL]);
+  const imageURL = useMemo(() => currentAptosNetwork.tokenImageURL || asset?.image, [asset?.image, currentAptosNetwork.tokenImageURL]);
 
   const { data } = useCoinGeckoPriceSWR();
 
@@ -205,7 +205,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 
   const { t } = useTranslation();
 
-  const { explorerURL, imageURL } = currentAptosNetwork;
+  const { explorerURL, tokenImageURL } = currentAptosNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -247,7 +247,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h4">APT</Typography>
             <SecondLineLeftSubTextContainer>
@@ -283,6 +283,9 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 }
 
 export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: NativeChainCardProps & FallbackProps) {
+  useAccountResourceSWR({ resourceType: '0x1::coin::CoinStore', resourceTarget: APTOS_COIN });
+  useAccountResourceSWR({ resourceType: '0x1::coin::CoinInfo', resourceTarget: APTOS_COIN, address: '0x1' });
+
   const [isLoading, setIsloading] = useState(false);
 
   const { currentAptosNetwork } = useCurrentAptosNetwork();
@@ -293,7 +296,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const { t } = useTranslation();
 
-  const { explorerURL, imageURL } = currentAptosNetwork;
+  const { explorerURL, tokenImageURL } = currentAptosNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -335,7 +338,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h4">APT</Typography>
           </SecondLineLeftTextContainer>

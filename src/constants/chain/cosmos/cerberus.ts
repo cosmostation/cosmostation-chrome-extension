@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import cerberusImg from '~/images/symbols/cerberus.png';
+import unknownChainImg from '~/images/chainImgs/unknown.png';
+import unknownTokenImg from '~/images/symbols/unknown.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const CERBERUS: CosmosChain = {
@@ -10,7 +11,8 @@ export const CERBERUS: CosmosChain = {
   chainId: 'cerberus-chain-1',
   chainName: 'Cerberus',
   restURL: 'https://lcd-cerberus.cosmostation.io',
-  imageURL: cerberusImg,
+  tokenImageURL: unknownTokenImg,
+  imageURL: unknownChainImg,
   baseDenom: 'ucrbrus',
   displayDenom: 'CRBRUS',
   decimals: 6,

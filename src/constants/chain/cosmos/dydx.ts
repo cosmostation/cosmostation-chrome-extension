@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import dydxImg from '~/images/symbols/dydx.png';
+import dydxChainImg from '~/images/chainImgs/dydx.png';
+import dydxTokenImg from '~/images/symbols/dydx.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const DYDX: CosmosChain = {
@@ -9,7 +10,8 @@ export const DYDX: CosmosChain = {
   chainId: 'dydx-mainnet-1',
   chainName: 'dYdX',
   restURL: 'https://lcd-dydx.cosmostation.io',
-  imageURL: dydxImg,
+  tokenImageURL: dydxTokenImg,
+  imageURL: dydxChainImg,
   baseDenom: 'adydx',
   displayDenom: 'DYDX',
   decimals: 18,

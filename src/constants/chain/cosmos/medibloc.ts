@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import mediblocImg from '~/images/symbols/medibloc.png';
+import mediblocChainImg from '~/images/chainImgs/medibloc.png';
+import mediblocTokenImg from '~/images/symbols/med.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const MEDIBLOC: CosmosChain = {
@@ -9,7 +10,8 @@ export const MEDIBLOC: CosmosChain = {
   chainId: 'panacea-3',
   chainName: 'Medibloc',
   restURL: 'https://lcd-medibloc.cosmostation.io',
-  imageURL: mediblocImg,
+  tokenImageURL: mediblocTokenImg,
+  imageURL: mediblocChainImg,
   baseDenom: 'umed',
   displayDenom: 'MED',
   decimals: 6,

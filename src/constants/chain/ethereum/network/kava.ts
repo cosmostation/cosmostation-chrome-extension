@@ -6,6 +6,7 @@ export const KAVA: EthereumNetwork = {
   chainId: '0x8ae',
   networkName: 'Kava EVM',
   rpcURL: 'https://evm.kava.io',
+  tokenImageURL: COSMOS_KAVA.tokenImageURL,
   imageURL: COSMOS_KAVA.imageURL,
   displayDenom: COSMOS_KAVA.displayDenom,
   decimals: 18,

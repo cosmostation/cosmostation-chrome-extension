@@ -1,4 +1,5 @@
-import arbitrumImg from '~/images/symbols/arbitrum.png';
+import arbitrumChainImg from '~/images/chainImgs/arbitrum.png';
+import arbitrumTokenImg from '~/images/symbols/arb.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const ARBITRUM: EthereumNetwork = {
@@ -6,7 +7,8 @@ export const ARBITRUM: EthereumNetwork = {
   chainId: '0xa4b1',
   networkName: 'Arbitrum',
   rpcURL: 'https://arb1.arbitrum.io/rpc',
-  imageURL: arbitrumImg,
+  tokenImageURL: arbitrumTokenImg,
+  imageURL: arbitrumChainImg,
   displayDenom: 'ETH',
   decimals: 18,
   explorerURL: 'https://arbiscan.io',

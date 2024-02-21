@@ -1,4 +1,5 @@
-import polygonImg from '~/images/symbols/polygon.png';
+import polygonChainImg from '~/images/chainImgs/polygon.png';
+import polygonTokenImg from '~/images/symbols/matic.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const POLYGON: EthereumNetwork = {
@@ -6,7 +7,8 @@ export const POLYGON: EthereumNetwork = {
   chainId: '0x89',
   networkName: 'Polygon',
   rpcURL: 'https://polygon-rpc.com',
-  imageURL: polygonImg,
+  tokenImageURL: polygonTokenImg,
+  imageURL: polygonChainImg,
   displayDenom: 'MATIC',
   decimals: 18,
   explorerURL: 'https://polygonscan.com',

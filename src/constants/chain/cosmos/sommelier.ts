@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import sommelierImg from '~/images/symbols/sommelier.png';
+import sommelierChainImg from '~/images/chainImgs/sommelier.png';
+import sommelierTokenImg from '~/images/symbols/somm.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const SOMMELIER: CosmosChain = {
@@ -9,7 +10,8 @@ export const SOMMELIER: CosmosChain = {
   chainId: 'sommelier-3',
   chainName: 'Sommelier',
   restURL: 'https://lcd-sommelier.cosmostation.io',
-  imageURL: sommelierImg,
+  tokenImageURL: sommelierTokenImg,
+  imageURL: sommelierChainImg,
   baseDenom: 'usomm',
   displayDenom: 'SOMM',
   decimals: 6,

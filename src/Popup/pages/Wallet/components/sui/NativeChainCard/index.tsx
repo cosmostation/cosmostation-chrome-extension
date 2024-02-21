@@ -105,8 +105,8 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
   const { explorerURL, coinGeckoId } = currentSuiNetwork;
 
   const imageURL = useMemo(
-    () => currentSuiNetwork.imageURL || coinMetadata?.result?.iconUrl || undefined,
-    [coinMetadata?.result?.iconUrl, currentSuiNetwork.imageURL],
+    () => currentSuiNetwork.tokenImageURL || coinMetadata?.result?.iconUrl || undefined,
+    [coinMetadata?.result?.iconUrl, currentSuiNetwork.tokenImageURL],
   );
 
   const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [extensionStorage.currency, coinGeckoId, data]);
@@ -254,7 +254,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 
   const { t } = useTranslation();
 
-  const { explorerURL, imageURL } = currentSuiNetwork;
+  const { explorerURL, tokenImageURL } = currentSuiNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -296,7 +296,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h4">SUI</Typography>
 
@@ -357,7 +357,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const { t } = useTranslation();
 
-  const { explorerURL, imageURL } = currentSuiNetwork;
+  const { explorerURL, tokenImageURL } = currentSuiNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -399,7 +399,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h4">SUI</Typography>
           </SecondLineLeftTextContainer>

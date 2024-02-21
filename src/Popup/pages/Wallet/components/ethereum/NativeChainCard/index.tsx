@@ -72,7 +72,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const { navigate } = useNavigate();
 
-  const { coinGeckoId, decimals, explorerURL, imageURL } = currentEthereumNetwork;
+  const { coinGeckoId, decimals, explorerURL, tokenImageURL } = currentEthereumNetwork;
 
   const { data } = useCoinGeckoPriceSWR();
 
@@ -126,7 +126,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h4">{currentEthereumNetwork.displayDenom}</Typography>
             <SecondLineLeftSubTextContainer>
@@ -194,7 +194,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 
   const { t } = useTranslation();
 
-  const { explorerURL, displayDenom, imageURL } = currentEthereumNetwork;
+  const { explorerURL, displayDenom, tokenImageURL } = currentEthereumNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -236,7 +236,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h4">{displayDenom}</Typography>
             <SecondLineLeftSubTextContainer>
@@ -284,7 +284,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const { t } = useTranslation();
 
-  const { explorerURL, displayDenom, imageURL } = currentEthereumNetwork;
+  const { explorerURL, displayDenom, tokenImageURL } = currentEthereumNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -326,7 +326,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h4">{displayDenom}</Typography>
           </SecondLineLeftTextContainer>

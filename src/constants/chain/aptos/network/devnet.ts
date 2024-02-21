@@ -1,4 +1,5 @@
-import aptosImg from '~/images/symbols/aptos.png';
+import aptosChainImg from '~/images/chainImgs/aptos.png';
+import aptosTokenImg from '~/images/symbols/apt.png';
 import type { AptosNetwork } from '~/types/chain';
 
 export const DEVNET: AptosNetwork = {
@@ -6,6 +7,7 @@ export const DEVNET: AptosNetwork = {
   chainId: 34,
   networkName: 'Devnet',
   restURL: 'https://fullnode.devnet.aptoslabs.com',
-  imageURL: aptosImg,
+  tokenImageURL: aptosTokenImg,
+  imageURL: aptosChainImg,
   explorerURL: 'https://explorer.aptoslabs.com',
 };

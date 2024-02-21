@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import regenImg from '~/images/symbols/regen.png';
+import regenChainImg from '~/images/chainImgs/regen.png';
+import regenTokenImg from '~/images/symbols/regen.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const REGEN: CosmosChain = {
@@ -9,7 +10,8 @@ export const REGEN: CosmosChain = {
   chainId: 'regen-1',
   chainName: 'Regen',
   restURL: 'https://lcd-regen.cosmostation.io',
-  imageURL: regenImg,
+  tokenImageURL: regenTokenImg,
+  imageURL: regenChainImg,
   baseDenom: 'uregen',
   displayDenom: 'REGEN',
   decimals: 6,

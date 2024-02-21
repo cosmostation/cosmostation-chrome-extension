@@ -1,4 +1,6 @@
-import harmonyImg from '~/images/symbols/harmony.png';
+// FIXME 토큰 요청 필요
+import harmonyChainImg from '~/images/chainImgs/unknown.png';
+import harmonyTokenImg from '~/images/symbols/unknown.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const HARMONY: EthereumNetwork = {
@@ -6,7 +8,8 @@ export const HARMONY: EthereumNetwork = {
   chainId: '0x63564c40',
   networkName: 'Harmony',
   rpcURL: 'https://api.harmony.one',
-  imageURL: harmonyImg,
+  tokenImageURL: harmonyTokenImg,
+  imageURL: harmonyChainImg,
   displayDenom: 'ONE',
   decimals: 18,
   explorerURL: 'https://explorer.harmony.one',

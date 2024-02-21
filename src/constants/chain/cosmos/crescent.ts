@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import crescentImg from '~/images/symbols/crescent.png';
+import crescentChainImg from '~/images/chainImgs/cresent.png';
+import crescentTokenImg from '~/images/symbols/cre.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const CRESCENT: CosmosChain = {
@@ -9,7 +10,8 @@ export const CRESCENT: CosmosChain = {
   chainId: 'crescent-1',
   chainName: 'Crescent',
   restURL: 'https://lcd-crescent.cosmostation.io',
-  imageURL: crescentImg,
+  tokenImageURL: crescentTokenImg,
+  imageURL: crescentChainImg,
   baseDenom: 'ucre',
   displayDenom: 'CRE',
   decimals: 6,

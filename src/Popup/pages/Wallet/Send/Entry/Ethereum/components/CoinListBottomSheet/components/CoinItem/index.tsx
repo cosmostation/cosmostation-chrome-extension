@@ -53,7 +53,11 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, token
     [balance.data?.result, isNative, tokenBalace.data],
   );
 
-  const imageURL = useMemo(() => (isNative ? currentEthereumNetwork.imageURL : token.imageURL), [currentEthereumNetwork.imageURL, isNative, token?.imageURL]);
+  const imageURL = useMemo(
+    () => (isNative ? currentEthereumNetwork.tokenImageURL : token.imageURL),
+    [currentEthereumNetwork.tokenImageURL, isNative, token?.imageURL],
+  );
+
   const displayDenom = useMemo(
     () => (isNative ? currentEthereumNetwork.displayDenom : token.displayDenom),
     [currentEthereumNetwork.displayDenom, isNative, token?.displayDenom],

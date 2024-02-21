@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import evmosImg from '~/images/symbols/evmos.png';
+import evmosChainImg from '~/images/chainImgs/evmos.png';
+import evmosTokenImg from '~/images/symbols/evmos.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const EVMOS: CosmosChain = {
@@ -9,7 +10,8 @@ export const EVMOS: CosmosChain = {
   chainId: 'evmos_9001-2',
   chainName: 'Evmos',
   restURL: 'https://lcd-evmos.cosmostation.io',
-  imageURL: evmosImg,
+  tokenImageURL: evmosTokenImg,
+  imageURL: evmosChainImg,
   baseDenom: 'aevmos',
   displayDenom: 'EVMOS',
   decimals: 18,

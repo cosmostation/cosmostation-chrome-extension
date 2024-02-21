@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import archwayImg from '~/images/symbols/archway.png';
+import archwayChainImg from '~/images/chainImgs/archway.png';
+import archwayTokenImg from '~/images/symbols/arch.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const ARCHWAY: CosmosChain = {
@@ -9,7 +10,8 @@ export const ARCHWAY: CosmosChain = {
   chainId: 'archway-1',
   chainName: 'Archway',
   restURL: 'https://lcd-archway.cosmostation.io',
-  imageURL: archwayImg,
+  tokenImageURL: archwayTokenImg,
+  imageURL: archwayChainImg,
   baseDenom: 'aarch',
   displayDenom: 'ARCH',
   decimals: 18,

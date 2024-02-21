@@ -1,7 +1,6 @@
 import { Typography } from '@mui/material';
 
 import customBeltImg from '~/images/etc/customBelt.png';
-import Image from '~/Popup/components/common/Image';
 
 import {
   BackgroundActive,
@@ -15,6 +14,7 @@ import {
   DeleteContainer,
   StyledButton,
 } from './styled';
+import ChainImage from '../../common/ChainImage';
 
 import Check16Icon from '~/images/icons/Check16.svg';
 import Close16Icon from '~/images/icons/Close16.svg';
@@ -44,11 +44,11 @@ export default function ChainItemButton({
         <ContentLeftContainer>
           <ContentLeftImageContainer>
             <ContentLeftAbsoluteImageContainer>
-              <Image src={imgSrc} />
+              <ChainImage src={imgSrc} />
             </ContentLeftAbsoluteImageContainer>
             {isCustom && (
               <ContentLeftAbsoluteImageContainer>
-                <Image src={customBeltImg} />
+                <ChainImage src={customBeltImg} />
               </ContentLeftAbsoluteImageContainer>
             )}
           </ContentLeftImageContainer>

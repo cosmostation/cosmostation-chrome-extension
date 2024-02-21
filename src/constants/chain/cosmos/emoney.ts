@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import emoneyImg from '~/images/symbols/emoney.png';
+import emoneyChainImg from '~/images/chainImgs/emoney.png';
+import emoneyTokenImg from '~/images/symbols/ngm.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const EMONEY: CosmosChain = {
@@ -9,7 +10,8 @@ export const EMONEY: CosmosChain = {
   chainId: 'emoney-3',
   chainName: 'Emoney',
   restURL: 'https://lcd-emoney.cosmostation.io',
-  imageURL: emoneyImg,
+  tokenImageURL: emoneyTokenImg,
+  imageURL: emoneyChainImg,
   baseDenom: 'ungm',
   displayDenom: 'NGM',
   decimals: 6,

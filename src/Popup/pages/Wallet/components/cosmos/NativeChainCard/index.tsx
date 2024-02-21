@@ -332,7 +332,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={chain.imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={chain.tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h4">{chain.displayDenom}</Typography>
             <SecondLineLeftSubTextContainer>
@@ -652,7 +652,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={chain.imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={chain.tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h4">{chain.displayDenom}</Typography>
             <SecondLineLeftSubTextContainer>
@@ -822,7 +822,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={chain.imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={chain.tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h4">{chain.displayDenom}</Typography>
           </SecondLineLeftTextContainer>

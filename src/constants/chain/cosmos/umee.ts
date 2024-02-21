@@ -1,7 +1,9 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import umeeImg from '~/images/symbols/umee.png';
+import umeeChainImg from '~/images/chainImgs/ux.png';
+import umeeTokenImg from '~/images/symbols/ux.png';
 import type { CosmosChain } from '~/types/chain';
 
+// NOTE 체인 이름 ux로 바꾸면 ibc랑 네임 맵핑 필요할 수 있음
 export const UMEE: CosmosChain = {
   id: '760481cc-5a53-42dd-a805-c7f38c363114',
   line: 'COSMOS',
@@ -9,7 +11,8 @@ export const UMEE: CosmosChain = {
   chainId: 'umee-1',
   chainName: 'Umee',
   restURL: 'https://lcd-umee.cosmostation.io',
-  imageURL: umeeImg,
+  tokenImageURL:umeeTokenImg ,
+  imageURL:  umeeChainImg,
   baseDenom: 'uumee',
   displayDenom: 'UMEE',
   decimals: 6,

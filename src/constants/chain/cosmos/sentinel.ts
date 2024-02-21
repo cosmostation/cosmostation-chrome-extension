@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import sentinelImg from '~/images/symbols/sentinel.png';
+import sentinelChainImg from '~/images/chainImgs/sentinel.png';
+import sentinelTokenImg from '~/images/symbols/dvpn.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const SENTINEL: CosmosChain = {
@@ -9,7 +10,8 @@ export const SENTINEL: CosmosChain = {
   chainId: 'sentinelhub-2',
   chainName: 'Sentinel',
   restURL: 'https://lcd-sentinel.cosmostation.io',
-  imageURL: sentinelImg,
+  tokenImageURL: sentinelTokenImg,
+  imageURL: sentinelChainImg,
   baseDenom: 'udvpn',
   displayDenom: 'DVPN',
   decimals: 6,

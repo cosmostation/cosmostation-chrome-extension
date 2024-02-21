@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import seiImg from '~/images/symbols/sei.png';
+import seiChainImg from '~/images/chainImgs/sei.png';
+import seiTokenImg from '~/images/symbols/sei.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const SEI: CosmosChain = {
@@ -9,7 +10,8 @@ export const SEI: CosmosChain = {
   chainId: 'pacific-1',
   chainName: 'Sei',
   restURL: 'https://lcd-sei.cosmostation.io',
-  imageURL: seiImg,
+  tokenImageURL: seiTokenImg,
+  imageURL: seiChainImg,
   baseDenom: 'usei',
   displayDenom: 'SEI',
   decimals: 6,

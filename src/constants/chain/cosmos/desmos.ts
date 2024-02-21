@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import desmosImg from '~/images/symbols/desmos.png';
+import desmosChainImg from '~/images/chainImgs/desmos.png';
+import desmosTokenImg from '~/images/symbols/dsm.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const DESMOS: CosmosChain = {
@@ -9,7 +10,8 @@ export const DESMOS: CosmosChain = {
   chainId: 'desmos-mainnet',
   chainName: 'Desmos',
   restURL: 'https://lcd-desmos.cosmostation.io',
-  imageURL: desmosImg,
+  tokenImageURL:  desmosTokenImg,
+  imageURL:  desmosChainImg,
   baseDenom: 'udsm',
   displayDenom: 'DSM',
   decimals: 6,

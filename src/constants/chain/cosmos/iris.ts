@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import irisImg from '~/images/symbols/iris.png';
+import irisChainImg from '~/images/chainImgs/iris.png';
+import irisTokenImg from '~/images/symbols/iris.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const IRIS: CosmosChain = {
@@ -9,7 +10,8 @@ export const IRIS: CosmosChain = {
   chainId: 'irishub-1',
   chainName: 'Iris',
   restURL: 'https://lcd-iris.cosmostation.io',
-  imageURL: irisImg,
+  tokenImageURL: irisTokenImg,
+  imageURL: irisChainImg,
   baseDenom: 'uiris',
   displayDenom: 'IRIS',
   decimals: 6,

@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import teritoriImg from '~/images/symbols/teritori.png';
+import teritoriChainImg from '~/images/chainImgs/teritori.png';
+import teritoriTokenImg from '~/images/symbols/tori.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const TERITORI: CosmosChain = {
@@ -9,7 +10,8 @@ export const TERITORI: CosmosChain = {
   chainId: 'teritori-1',
   chainName: 'Teritori',
   restURL: 'https://lcd-teritori.cosmostation.io',
-  imageURL: teritoriImg,
+  tokenImageURL:  teritoriTokenImg,
+  imageURL: teritoriChainImg,
   baseDenom: 'utori',
   displayDenom: 'TORI',
   decimals: 6,

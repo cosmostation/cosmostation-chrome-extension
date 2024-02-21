@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import provenanceImg from '~/images/symbols/provenance.png';
+import provenanceChainImg from '~/images/chainImgs/provenance.png';
+import provenanceTokenImg from '~/images/symbols/hash.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const PROVENANCE: CosmosChain = {
@@ -9,7 +10,8 @@ export const PROVENANCE: CosmosChain = {
   chainId: 'pio-mainnet-1',
   chainName: 'Provenance',
   restURL: 'https://lcd-provenance.cosmostation.io',
-  imageURL: provenanceImg,
+  tokenImageURL: provenanceTokenImg,
+  imageURL: provenanceChainImg,
   baseDenom: 'nhash',
   displayDenom: 'HASH',
   decimals: 9,

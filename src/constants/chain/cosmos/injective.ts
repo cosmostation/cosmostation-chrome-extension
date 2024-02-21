@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import injectiveImg from '~/images/symbols/injective.png';
+import injectiveChainImg from '~/images/chainImgs/injective.png';
+import injectiveTokenImg from '~/images/symbols/inj.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const INJECTIVE: CosmosChain = {
@@ -9,7 +10,8 @@ export const INJECTIVE: CosmosChain = {
   chainId: 'injective-1',
   chainName: 'Injective',
   restURL: 'https://lcd-injective.cosmostation.io',
-  imageURL: injectiveImg,
+  tokenImageURL: injectiveTokenImg,
+  imageURL: injectiveChainImg,
   baseDenom: 'inj',
   displayDenom: 'INJ',
   decimals: 18,

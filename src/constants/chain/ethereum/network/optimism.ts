@@ -1,4 +1,5 @@
-import optimismImg from '~/images/symbols/optimism.png';
+import optimismChainImg from '~/images/chainImgs/optimism.png';
+import optimismTokenImg from '~/images/symbols/op.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const OPTIMISM: EthereumNetwork = {
@@ -6,7 +7,8 @@ export const OPTIMISM: EthereumNetwork = {
   chainId: '0xa',
   networkName: 'Optimism',
   rpcURL: 'https://mainnet.optimism.io',
-  imageURL: optimismImg,
+  tokenImageURL: optimismTokenImg,
+  imageURL: optimismChainImg,
   displayDenom: 'OP',
   decimals: 18,
   explorerURL: 'https://optimistic.etherscan.io',

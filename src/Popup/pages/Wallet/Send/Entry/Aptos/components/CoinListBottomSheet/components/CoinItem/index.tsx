@@ -62,7 +62,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin,
 
   const baseAmount = useMemo(() => coin.data.coin.value || '0', [coin.data.coin.value]);
 
-  const imageURL = useMemo(() => (isNative ? currentAptosNetwork.imageURL : asset?.image), [asset?.image, currentAptosNetwork.imageURL, isNative]);
+  const imageURL = useMemo(() => (isNative ? currentAptosNetwork.tokenImageURL : asset?.image), [asset?.image, currentAptosNetwork.tokenImageURL, isNative]);
 
   const displayDenom = useMemo(() => asset?.symbol || coinInfo?.data.symbol || '', [asset?.symbol, coinInfo?.data.symbol]);
   const displayAmount = toDisplayDenomAmount(baseAmount, decimals);

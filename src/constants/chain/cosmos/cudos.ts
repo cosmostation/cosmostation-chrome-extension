@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import cudosImg from '~/images/symbols/cudos.png';
+import cudosChainImg from '~/images/chainImgs/cudos.png';
+import cudosTokenImg from '~/images/symbols/cudos.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const CUDOS: CosmosChain = {
@@ -10,7 +11,8 @@ export const CUDOS: CosmosChain = {
   chainId: 'cudos-1',
   chainName: 'Cudos',
   restURL: 'https://lcd-cudos.cosmostation.io',
-  imageURL: cudosImg,
+  tokenImageURL: cudosTokenImg,
+  imageURL: cudosChainImg,
   baseDenom: 'acudos',
   displayDenom: 'CUDOS',
   decimals: 18,

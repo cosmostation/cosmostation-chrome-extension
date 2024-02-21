@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import dymensionImg from '~/images/symbols/dymension.png';
+import dymensionChainImg from '~/images/chainImgs/dymension.png';
+import dymensionTokenImg from '~/images/symbols/dym.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const DYMENSION: CosmosChain = {
@@ -9,7 +10,8 @@ export const DYMENSION: CosmosChain = {
   chainId: 'dymension_1100-1',
   chainName: 'Dymension',
   restURL: 'https://lcd-dymension.cosmostation.io',
-  imageURL: dymensionImg,
+  tokenImageURL:  dymensionTokenImg,
+  imageURL: dymensionChainImg,
   baseDenom: 'adym',
   displayDenom: 'DYM',
   decimals: 18,

@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import strideImg from '~/images/symbols/stride.png';
+import strideChainImg from '~/images/chainImgs/stride.png';
+import strideTokenImg from '~/images/symbols/strd.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const STRIDE: CosmosChain = {
@@ -9,7 +10,8 @@ export const STRIDE: CosmosChain = {
   chainId: 'stride-1',
   chainName: 'Stride',
   restURL: 'https://lcd-stride.cosmostation.io',
-  imageURL: strideImg,
+  tokenImageURL: strideTokenImg,
+  imageURL: strideChainImg,
   baseDenom: 'ustrd',
   displayDenom: 'STRD',
   decimals: 6,

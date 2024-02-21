@@ -56,11 +56,11 @@ export default function CoinListBottomSheet({ currentCoinType, onClickCoin, onCl
           decimals: coinMetadata?.result?.decimals || (item.coinType === SUI_COIN ? currentSuiNetwork.decimals : 0),
           displayDenom: coinMetadata?.result?.symbol || item.coinType,
           name: coinMetadata?.result?.name,
-          imageURL: coinMetadata?.result?.iconUrl || (item.coinType === SUI_COIN ? chain.imageURL : undefined),
+          imageURL: coinMetadata?.result?.iconUrl || (item.coinType === SUI_COIN ? chain.tokenImageURL : undefined),
           coinGeckoId: item.coinType === SUI_COIN ? currentSuiNetwork.coinGeckoId : '',
         };
       }),
-    [chain.imageURL, coinsMetadata.data, currentSuiNetwork.coinGeckoId, currentSuiNetwork.decimals, tokenBalanceObjects.tokenBalanceObjects],
+    [chain.tokenImageURL, coinsMetadata.data, currentSuiNetwork.coinGeckoId, currentSuiNetwork.decimals, tokenBalanceObjects.tokenBalanceObjects],
   );
 
   useEffect(() => {

@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import neutronImg from '~/images/symbols/neutron.png';
+import neutronChainImg from '~/images/chainImgs/neutron.png';
+import neutronTokenImg from '~/images/symbols/ntrn.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const NEUTRON: CosmosChain = {
@@ -9,7 +10,8 @@ export const NEUTRON: CosmosChain = {
   chainId: 'neutron-1',
   chainName: 'Neutron',
   restURL: 'https://lcd-neutron.cosmostation.io',
-  imageURL: neutronImg,
+  tokenImageURL: neutronTokenImg,
+  imageURL: neutronChainImg,
   baseDenom: 'untrn',
   displayDenom: 'NTRN',
   decimals: 6,

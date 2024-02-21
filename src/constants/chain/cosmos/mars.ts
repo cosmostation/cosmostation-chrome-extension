@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import marsImg from '~/images/symbols/mars.png';
+import marsChainImg from '~/images/chainImgs/mars.png';
+import marsTokenImg from '~/images/symbols/mars.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const MARS: CosmosChain = {
@@ -9,7 +10,8 @@ export const MARS: CosmosChain = {
   chainId: 'mars-1',
   chainName: 'Mars',
   restURL: 'https://lcd-mars-protocol.cosmostation.io',
-  imageURL: marsImg,
+  tokenImageURL:  marsTokenImg,
+  imageURL: marsChainImg,
   baseDenom: 'umars',
   displayDenom: 'MARS',
   decimals: 6,

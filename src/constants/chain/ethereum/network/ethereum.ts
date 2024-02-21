@@ -1,4 +1,5 @@
-import ethereumImg from '~/images/symbols/ethereum.png';
+import ethereumChainImg from '~/images/chainImgs/ethereum.png';
+import ethereumTokenImg from '~/images/symbols/eth.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const ETHEREUM: EthereumNetwork = {
@@ -6,7 +7,8 @@ export const ETHEREUM: EthereumNetwork = {
   chainId: '0x1',
   networkName: 'Ethereum',
   rpcURL: 'http://eth4.cosmostation.io/rpc',
-  imageURL: ethereumImg,
+  tokenImageURL: ethereumTokenImg,
+  imageURL: ethereumChainImg,
   displayDenom: 'ETH',
   decimals: 18,
   explorerURL: 'https://etherscan.io',

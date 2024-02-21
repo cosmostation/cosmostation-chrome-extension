@@ -18,6 +18,7 @@ export type CommonChain = {
   id: string;
   chainName: string;
   bip44: Omit<BIP44, 'addressIndex'>;
+  tokenImageURL?: string;
   imageURL?: string;
 };
 
@@ -119,6 +120,7 @@ export type EthereumNetwork = {
   displayDenom: string;
   decimals: number;
   rpcURL: string;
+  tokenImageURL?: string;
   imageURL?: string;
   explorerURL?: string;
   coinGeckoId?: string;
@@ -138,6 +140,7 @@ export type AptosNetwork = {
   chainId: number;
   networkName: string;
   restURL: string;
+  tokenImageURL?: string;
   imageURL?: string;
   explorerURL?: string;
   coinGeckoId?: string;
@@ -148,6 +151,7 @@ export type SuiNetwork = {
   networkName: string;
   rpcURL: string;
   displayDenom: string;
+  tokenImageURL?: string;
   imageURL?: string;
   explorerURL?: string;
   coinGeckoId?: string;

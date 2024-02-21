@@ -1,4 +1,5 @@
-import cronosPosImg from '~/images/symbols/cronosPos.png';
+import cronosPosChainImg from '~/images/chainImgs/cronos.png';
+import cronosPosTokenImg from '~/images/symbols/cro.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const CRONOS: EthereumNetwork = {
@@ -6,7 +7,8 @@ export const CRONOS: EthereumNetwork = {
   chainId: '0x19',
   networkName: 'Cronos',
   rpcURL: 'https://evm-cronos.crypto.org',
-  imageURL: cronosPosImg,
+  tokenImageURL: cronosPosTokenImg,
+  imageURL: cronosPosChainImg,
   displayDenom: 'CRO',
   decimals: 18,
   explorerURL: 'https://cronos.org/explorer',

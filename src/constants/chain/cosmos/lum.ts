@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import lumImg from '~/images/symbols/lum.png';
+import lumChainImg from '~/images/chainImgs/lum.png';
+import lumTokenImg from '~/images/symbols/lum.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const LUM: CosmosChain = {
@@ -9,7 +10,8 @@ export const LUM: CosmosChain = {
   chainId: 'lum-network-1',
   chainName: 'Lum',
   restURL: 'https://lcd-lum.cosmostation.io',
-  imageURL: lumImg,
+  tokenImageURL: lumTokenImg,
+  imageURL: lumChainImg,
   baseDenom: 'ulum',
   displayDenom: 'LUM',
   decimals: 6,

@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import terraImg from '~/images/symbols/terra.png';
+import terraChainImg from '~/images/chainImgs/terra.png';
+import terraTokenImg from '~/images/symbols/luna.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const TERRA: CosmosChain = {
@@ -9,7 +10,8 @@ export const TERRA: CosmosChain = {
   chainId: 'phoenix-1',
   chainName: 'Terra',
   restURL: 'https://lcd-terra.cosmostation.io',
-  imageURL: terraImg,
+  tokenImageURL: terraTokenImg,
+  imageURL: terraChainImg,
   baseDenom: 'uluna',
   displayDenom: 'LUNA',
   decimals: 6,

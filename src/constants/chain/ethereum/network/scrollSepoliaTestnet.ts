@@ -1,4 +1,5 @@
-import scrollImg from '~/images/symbols/scroll.png';
+import scrollChainImg from '~/images/chainImgs/unknown.png';
+import scrollTokenImg from '~/images/symbols/unknown.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const SCROLL_SEPOLIA_TESTNET: EthereumNetwork = {
@@ -6,7 +7,8 @@ export const SCROLL_SEPOLIA_TESTNET: EthereumNetwork = {
   chainId: '0x8274f',
   networkName: 'Scroll Sepolia Testnet',
   rpcURL: 'https://sepolia-rpc.scroll.io',
-  imageURL: scrollImg,
+  tokenImageURL: scrollTokenImg,
+  imageURL: scrollChainImg,
   displayDenom: 'ETH',
   decimals: 18,
   explorerURL: 'https://sepolia-blockscout.scroll.io',

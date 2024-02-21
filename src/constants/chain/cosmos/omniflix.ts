@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import omniflixImg from '~/images/symbols/omniflix.png';
+import omniflixChainImg from '~/images/chainImgs/omniflix.png';
+import omniflixTokenImg from '~/images/symbols/flix.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const OMNIFLIX: CosmosChain = {
@@ -9,7 +10,8 @@ export const OMNIFLIX: CosmosChain = {
   chainId: 'omniflixhub-1',
   chainName: 'Omniflix',
   restURL: 'https://lcd-omniflix.cosmostation.io',
-  imageURL: omniflixImg,
+  tokenImageURL: omniflixTokenImg,
+  imageURL: omniflixChainImg,
   baseDenom: 'uflix',
   displayDenom: 'FLIX',
   decimals: 6,

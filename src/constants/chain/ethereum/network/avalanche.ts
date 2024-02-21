@@ -1,4 +1,5 @@
-import avalancheImg from '~/images/symbols/avalanche.png';
+import avalancheChainImg from '~/images/chainImgs/avalanche.png';
+import avalancheTokenImg from '~/images/symbols/avax.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const AVALANCHE: EthereumNetwork = {
@@ -6,7 +7,8 @@ export const AVALANCHE: EthereumNetwork = {
   chainId: '0xa86a',
   networkName: 'Avalanche',
   rpcURL: 'https://api.avax.network/ext/bc/C/rpc',
-  imageURL: avalancheImg,
+  tokenImageURL: avalancheTokenImg,
+  imageURL: avalancheChainImg,
   displayDenom: 'AVAX',
   decimals: 18,
   explorerURL: 'https://snowtrace.io',
