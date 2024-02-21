@@ -99,6 +99,10 @@ export const SecondLineLeftSubTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 }));
 
+export const SecondLineLeftSubTextEmptyContainer = styled('div')({
+  height: '1.9rem',
+});
+
 export const SecondLineRightContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',

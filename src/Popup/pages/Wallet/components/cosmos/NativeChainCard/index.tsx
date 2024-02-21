@@ -57,6 +57,7 @@ import {
   SecondLineLeftContainer,
   SecondLineLeftImageContainer,
   SecondLineLeftSubTextContainer,
+  SecondLineLeftSubTextEmptyContainer,
   SecondLineLeftTextContainer,
   SecondLineRightContainer,
   SecondLineRightSubTextContainer,
@@ -825,6 +826,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           <SecondLineLeftImage imageURL={chain.tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h4">{chain.displayDenom}</Typography>
+            <SecondLineLeftSubTextEmptyContainer />
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
