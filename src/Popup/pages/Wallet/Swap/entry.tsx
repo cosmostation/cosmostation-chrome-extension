@@ -190,7 +190,7 @@ export default function Entry() {
       [...squidEVMChains, ...oneInchEVMChains]
         .filter((chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx)
         .sort((a, b) => a.networkName.localeCompare(b.networkName))
-        .sort((a) => (a.networkName === ETHEREUM_NETWORK.networkName ? -1 : 1)),
+        .sort((a) => (a.id === ETHEREUM_NETWORK.id ? -1 : 1)),
     [oneInchEVMChains, squidEVMChains],
   );
 
@@ -199,7 +199,7 @@ export default function Entry() {
       [...squidCosmosChains, ...skipSwapChains]
         .filter((chainItem, idx, arr) => arr.findIndex((item) => item.id === chainItem.id) === idx)
         .sort((a, b) => a.networkName.localeCompare(b.networkName))
-        .sort((a) => (a.networkName === COSMOS.chainName ? -1 : 1)),
+        .sort((a) => (a.id === COSMOS.id ? -1 : 1)),
     [skipSwapChains, squidCosmosChains],
   );
 
