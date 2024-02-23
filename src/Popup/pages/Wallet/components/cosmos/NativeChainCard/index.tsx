@@ -123,11 +123,6 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const operatorAddress = useMemo(() => validators.data?.find((item) => item.address === currentAddress)?.operatorAddress, [currentAddress, validators.data]);
 
-  const isCommProtobufSign = useMemo(
-    () => validators.data?.find((item) => item.address === currentAddress)?.signType === 'protobuf',
-    [currentAddress, validators.data],
-  );
-
   const rewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
     if (reward.data?.rewards?.length && account.data?.value.account_number && account.data.value.sequence) {
       return {
@@ -193,7 +188,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const commissionProtoTx = useMemo(() => {
     if (commissionAminoTx) {
-      const pTx = protoTx(commissionAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(commissionAminoTx, '', { type: getPublicKeyType(chain), value: '' }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
 
       return pTx ? protoTxBytes({ ...pTx }) : undefined;
     }
@@ -206,13 +201,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const { data: gasMultiply } = useGasMultiplySWR(chain);
 
   const commissionDirectTx = useMemo(() => {
-    if (
-      operatorAddress &&
-      isCommProtobufSign &&
-      account.data?.value.account_number &&
-      account.data.value.sequence &&
-      !!commissionSimulate.data?.gas_info?.gas_used
-    ) {
+    if (operatorAddress && account.data?.value.account_number && account.data.value.sequence && !!commissionSimulate.data?.gas_info?.gas_used) {
       const commissionSimulatedAminoTx = {
         account_number: account.data.value.account_number,
         sequence: account.data.value.sequence,
@@ -250,7 +239,6 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     return undefined;
   }, [
     operatorAddress,
-    isCommProtobufSign,
     account.data?.value.account_number,
     account.data?.value.sequence,
     commissionSimulate.data?.gas_info?.gas_used,
@@ -292,19 +280,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   );
 
   const isPossibleClaimCommission = useMemo(
-    () =>
-      isCommProtobufSign
-        ? !!commissionDirectTx && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount) && currentAccount.type !== 'LEDGER'
-        : !!commissionAminoTx && !!commissionSimulate.data?.gas_info?.gas_used && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount),
-    [
-      commissionAminoTx,
-      commissionDirectTx,
-      commissionSimulate.data?.gas_info?.gas_used,
-      currentAccount.type,
-      displayAvailableAmount,
-      estimatedCommissionDisplayFeeAmount,
-      isCommProtobufSign,
-    ],
+    () => !!commissionDirectTx && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount) && currentAccount.type !== 'LEDGER',
+    [commissionDirectTx, currentAccount.type, displayAvailableAmount, estimatedCommissionDisplayFeeAmount],
   );
 
   return (
@@ -477,7 +454,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                   type="button"
                   disabled={!isPossibleClaimCommission}
                   onClick={async () => {
-                    if (isCommProtobufSign && commissionDirectTx && isPossibleClaimCommission) {
+                    if (commissionDirectTx && isPossibleClaimCommission) {
                       await enQueue({
                         messageId: '',
                         origin: '',
@@ -495,34 +472,6 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                           },
                         },
                       });
-                    }
-
-                    if (!isCommProtobufSign && commissionAminoTx && commissionSimulate.data?.gas_info?.gas_used && isPossibleClaimCommission) {
-                      await enQueue({
-                        messageId: '',
-                        origin: '',
-                        channel: 'inApp',
-                        message: {
-                          method: 'cos_signAmino',
-                          params: {
-                            chainName: chain.chainName,
-                            doc: {
-                              ...commissionAminoTx,
-                              fee: {
-                                amount: [{ amount: '0', denom: chain.baseDenom }],
-                                gas: times(commissionSimulate.data.gas_info.gas_used, gasMultiply, 0),
-                              },
-                            },
-                            isEditFee: true,
-                            isEditMemo: true,
-                            isCheckBalance: true,
-                          },
-                        },
-                      });
-
-                      if (currentAccount.type === 'LEDGER') {
-                        await debouncedOpenTab();
-                      }
                     }
                   }}
                 >
