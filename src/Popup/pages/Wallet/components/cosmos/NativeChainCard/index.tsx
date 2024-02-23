@@ -5,6 +5,7 @@ import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_REWARD_GAS } from '~/constants/chain';
+import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { KAVA } from '~/constants/chain/cosmos/kava';
 import { ACCENT_COLORS } from '~/constants/theme';
 import customBeltImg from '~/images/etc/customBelt.png';
@@ -201,14 +202,19 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const { data: gasMultiply } = useGasMultiplySWR(chain);
 
   const commissionDirectTx = useMemo(() => {
-    if (operatorAddress && account.data?.value.account_number && account.data.value.sequence && !!commissionSimulate.data?.gas_info?.gas_used) {
+    if (
+      operatorAddress &&
+      account.data?.value.account_number &&
+      account.data.value.sequence &&
+      (chain.id === EMONEY.id || !!commissionSimulate.data?.gas_info?.gas_used)
+    ) {
       const commissionSimulatedAminoTx = {
         account_number: account.data.value.account_number,
         sequence: account.data.value.sequence,
         chain_id: chain.chainId,
         fee: {
           amount: [{ amount: '0', denom: chain.baseDenom }],
-          gas: times(commissionSimulate.data.gas_info.gas_used, gasMultiply, 0),
+          gas: times(commissionSimulate.data?.gas_info?.gas_used || COSMOS_DEFAULT_REWARD_GAS, gasMultiply, 0),
         },
         msgs: [
           {
@@ -275,13 +281,27 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const isPossibleClaimReward = useMemo(
     () =>
-      !!rewardAminoTx && rewardSimulate.data?.gas_info?.gas_used && gt(displayRewardAmount, '0') && gt(displayAvailableAmount, estimatedRewardDisplayFeeAmount),
-    [displayAvailableAmount, displayRewardAmount, estimatedRewardDisplayFeeAmount, rewardAminoTx, rewardSimulate.data?.gas_info?.gas_used],
+      !!rewardAminoTx &&
+      (chain.id === EMONEY.id || !!rewardSimulate.data?.gas_info?.gas_used) &&
+      gt(displayRewardAmount, '0') &&
+      gt(displayAvailableAmount, estimatedRewardDisplayFeeAmount),
+    [chain.id, displayAvailableAmount, displayRewardAmount, estimatedRewardDisplayFeeAmount, rewardAminoTx, rewardSimulate.data?.gas_info?.gas_used],
   );
 
   const isPossibleClaimCommission = useMemo(
-    () => !!commissionDirectTx && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount) && currentAccount.type !== 'LEDGER',
-    [commissionDirectTx, currentAccount.type, displayAvailableAmount, estimatedCommissionDisplayFeeAmount],
+    () =>
+      !!commissionDirectTx &&
+      (chain.id === EMONEY.id || !!commissionSimulate.data?.gas_info?.gas_used) &&
+      gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount) &&
+      currentAccount.type !== 'LEDGER',
+    [
+      chain.id,
+      commissionDirectTx,
+      commissionSimulate.data?.gas_info?.gas_used,
+      currentAccount.type,
+      displayAvailableAmount,
+      estimatedCommissionDisplayFeeAmount,
+    ],
   );
 
   return (
