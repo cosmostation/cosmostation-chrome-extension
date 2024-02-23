@@ -262,13 +262,13 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const displayMaxDecimals = getDisplayMaxDecimals(decimals);
 
   const estimatedRewardDisplayFeeAmount = useMemo(
-    () => toDisplayDenomAmount(times(chain.gasRate.low, rewardSimulate.data?.gas_info?.gas_used || '0'), decimals),
-    [chain.gasRate.low, decimals, rewardSimulate.data?.gas_info?.gas_used],
+    () => toDisplayDenomAmount(times(chain.gasRate.low, rewardTxGas), decimals),
+    [chain.gasRate.low, decimals, rewardTxGas],
   );
 
   const estimatedCommissionDisplayFeeAmount = useMemo(
-    () => toDisplayDenomAmount(times(chain.gasRate.low, commissionSimulate.data?.gas_info?.gas_used || '0'), decimals),
-    [chain.gasRate.low, commissionSimulate.data?.gas_info?.gas_used, decimals],
+    () => toDisplayDenomAmount(times(chain.gasRate.low, commissionTxGas), decimals),
+    [chain.gasRate.low, commissionTxGas, decimals],
   );
 
   const isPossibleClaimReward = useMemo(
