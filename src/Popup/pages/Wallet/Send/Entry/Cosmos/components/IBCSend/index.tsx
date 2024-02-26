@@ -5,10 +5,13 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS } from '~/constants/chain';
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
+import unknownChainImg from '~/images/chainImgs/unknown.png';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import AssetBottomSheetButton from '~/Popup/components/common/AssetBottomSheetButton';
 import Button from '~/Popup/components/common/Button';
+import Image from '~/Popup/components/common/Image';
+import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
@@ -52,10 +55,17 @@ import {
   ExchangeWarningContainer,
   ExchangeWarningIconContainer,
   ExchangeWarningTextContainer,
+  LeftChainImageContainer,
+  LeftChainInfoContainer,
+  LeftContainer,
+  LeftHeaderTitleContainer,
+  LeftImageContainer,
+  LeftInfoContainer,
   MarginTop8Div,
   MaxButton,
   StyledInput,
   StyledTextarea,
+  TitleContainer,
 } from './styled';
 import type { CoinOrTokenInfo } from '../..';
 import CoinListBottomSheet from '../CoinListBottomSheet';
@@ -557,9 +567,21 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
         <MarginTop8Div>
           <AssetBottomSheetButton
-            imgSrc={selectedReceiverIBC?.chain.imageURL}
-            title={selectedReceiverIBC?.chain.chainName || ''}
-            leftHeaderTitle={selectedReceiverIBC?.channel}
+            leftProps={
+              <LeftContainer>
+                <LeftChainImageContainer>
+                  <Image src={selectedReceiverIBC?.chain.imageURL} defaultImgSrc={unknownChainImg} />
+                </LeftChainImageContainer>
+                <LeftChainInfoContainer>
+                  <TitleContainer>
+                    <Typography variant="h5">{selectedReceiverIBC?.chain.chainName || ''}</Typography>
+                  </TitleContainer>
+                  <LeftHeaderTitleContainer>
+                    <Typography variant="h6n">{selectedReceiverIBC?.channel || ''}</Typography>
+                  </LeftHeaderTitleContainer>
+                </LeftChainInfoContainer>
+              </LeftContainer>
+            }
             isOpenBottomSheet={isOpenedRecipientIBCList}
             onClick={() => {
               setIsOpenedRecipientIBCList(true);
@@ -601,12 +623,34 @@ export default function IBCSend({ chain }: IBCSendProps) {
         )}
         <MarginTop8Div>
           <AssetBottomSheetButton
-            imgSrc={currentCoinOrToken.imageURL}
-            title={currentCoinOrTokenDisplayDenom}
-            leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.available')}
-            leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
+            leftProps={
+              <LeftContainer>
+                <LeftImageContainer>
+                  <Image src={currentCoinOrToken.imageURL} />
+                </LeftImageContainer>
+                <LeftInfoContainer>
+                  <TitleContainer>
+                    <Typography variant="h5">{currentCoinOrTokenDisplayDenom}</Typography>
+                  </TitleContainer>
+                  <LeftHeaderTitleContainer>
+                    <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.available')}</Typography>
+                    {currentDisplayMaxDecimals && currentCoinOrTokenDisplayAvailableAmount && (
+                      <>
+                        <Typography variant="h6n"> :</Typography>{' '}
+                        <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
+                          <span>
+                            <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
+                              {currentCoinOrTokenDisplayAvailableAmount}
+                            </Number>
+                          </span>
+                        </Tooltip>
+                      </>
+                    )}
+                  </LeftHeaderTitleContainer>
+                </LeftInfoContainer>
+              </LeftContainer>
+            }
             isOpenBottomSheet={isOpenedCoinList}
-            decimals={currentDisplayMaxDecimals}
             onClick={() => {
               setIsOpenedCoinList(true);
             }}

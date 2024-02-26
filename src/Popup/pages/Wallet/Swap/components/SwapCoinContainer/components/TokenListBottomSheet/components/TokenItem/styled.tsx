@@ -33,13 +33,13 @@ export const TokenLeftContainer = styled('div')({
 
 export const TokenLeftImageContainer = styled('div')({
   '& > img': {
-    width: '2.4rem',
-    height: '2.4rem',
+    width: '2.8rem',
+    height: '2.8rem',
   },
 });
 
 export const TokenLeftInfoContainer = styled('div')({
-  marginLeft: '0.8rem',
+  marginLeft: '0.6rem',
 
   display: 'flex',
   flexDirection: 'column',

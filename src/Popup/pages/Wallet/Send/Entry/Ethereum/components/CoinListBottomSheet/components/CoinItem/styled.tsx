@@ -33,14 +33,17 @@ export const CoinLeftContainer = styled('div')({
 });
 
 export const CoinLeftImageContainer = styled('div')({
+  width: '2.8rem',
+  height: '2.8rem',
+
   '& > img': {
-    width: '2.4rem',
-    height: '2.4rem',
+    width: '2.8rem',
+    height: '2.8rem',
   },
 });
 
 export const CoinLeftInfoContainer = styled('div')({
-  marginLeft: '0.8rem',
+  marginLeft: '0.6rem',
 });
 
 export const CoinLeftDisplayDenomContainer = styled('div')(({ theme }) => ({

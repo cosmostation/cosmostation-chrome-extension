@@ -10,6 +10,8 @@ import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBook
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import AssetBottomSheetButton from '~/Popup/components/common/AssetBottomSheetButton';
 import Button from '~/Popup/components/common/Button';
+import Image from '~/Popup/components/common/Image';
+import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
@@ -45,12 +47,17 @@ import {
   BottomContainer,
   CheckAddressIconContainer,
   Container,
+  LeftContainer,
+  LeftHeaderTitleContainer,
+  LeftImageContainer,
+  LeftInfoContainer,
   MarginTop8Div,
   MarginTop12Div,
   MarginTop16Div,
   MaxButton,
   StyledInput,
   StyledTextarea,
+  TitleContainer,
 } from './styled';
 import type { CoinOrTokenInfo } from '../..';
 import CoinListBottomSheet from '../CoinListBottomSheet';
@@ -446,12 +453,34 @@ export default function Send({ chain }: CosmosProps) {
       )}
       <MarginTop8Div>
         <AssetBottomSheetButton
-          imgSrc={currentCoinOrToken.imageURL}
-          title={currentCoinOrTokenDisplayDenom}
-          leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.available')}
-          leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
+          leftProps={
+            <LeftContainer>
+              <LeftImageContainer>
+                <Image src={currentCoinOrToken.imageURL} />
+              </LeftImageContainer>
+              <LeftInfoContainer>
+                <TitleContainer>
+                  <Typography variant="h5">{currentCoinOrTokenDisplayDenom}</Typography>
+                </TitleContainer>
+                <LeftHeaderTitleContainer>
+                  <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.available')}</Typography>
+                  {currentDisplayMaxDecimals && currentCoinOrTokenDisplayAvailableAmount && (
+                    <>
+                      <Typography variant="h6n"> :</Typography>{' '}
+                      <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
+                        <span>
+                          <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
+                            {currentCoinOrTokenDisplayAvailableAmount}
+                          </Number>
+                        </span>
+                      </Tooltip>
+                    </>
+                  )}
+                </LeftHeaderTitleContainer>
+              </LeftInfoContainer>
+            </LeftContainer>
+          }
           isOpenBottomSheet={isOpenedCoinList}
-          decimals={currentDisplayMaxDecimals}
           onClick={() => {
             setIsOpenedCoinList(true);
           }}

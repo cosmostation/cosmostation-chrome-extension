@@ -97,16 +97,6 @@ export const StyledDivider = styled(Divider)({
   width: '100%',
 });
 
-export const ChainImageContainer = styled('div')({
-  width: '1.8rem',
-  height: '1.8rem',
-
-  '& > img': {
-    width: '1.8rem',
-    height: '1.8rem',
-  },
-});
-
 export const LedgerIconContainer = styled('div')(({ theme }) => ({
   marginLeft: '0.4rem',
   display: 'flex',

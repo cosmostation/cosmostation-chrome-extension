@@ -39,9 +39,12 @@ export const ChainButtonLeftContainer = styled('div')({
 });
 
 export const ChainButtonLeftImageContainer = styled('div')({
+  width: '2.8rem',
+  height: '2.8rem',
+
   '& > img': {
-    width: '2.4rem',
-    height: '2.4rem',
+    width: '2.8rem',
+    height: '2.8rem',
   },
 });
 
@@ -55,7 +58,7 @@ export const ChainButtonLeftColumnContainer = styled('div')(({ theme }) => ({
 
   alignItems: 'flex-start',
 
-  marginLeft: '0.8rem',
+  marginLeft: '0.4rem',
 
   color: theme.colors.text02,
 }));

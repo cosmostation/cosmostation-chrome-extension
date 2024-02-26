@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 
+import unknownImg from '~/images/chainImgs/unknown.png';
 import customBeltImg from '~/images/etc/customBelt.png';
 import Image from '~/Popup/components/common/Image';
 
@@ -27,11 +28,11 @@ export default function ChainButton({ children, imgSrc, type = 'button', isCusto
     <StyledButton {...remainder} type={type}>
       <ContentContainer>
         <ContentLeftImageContainer>
-          <ContentLeftAbsoluteImageContainer>
-            <Image src={imgSrc} />
+          <ContentLeftAbsoluteImageContainer data-is-custom={isCustom}>
+            <Image src={imgSrc} defaultImgSrc={unknownImg} />
           </ContentLeftAbsoluteImageContainer>
           {isCustom && (
-            <ContentLeftAbsoluteImageContainer>
+            <ContentLeftAbsoluteImageContainer data-is-custom={isCustom}>
               <Image src={customBeltImg} />
             </ContentLeftAbsoluteImageContainer>
           )}
