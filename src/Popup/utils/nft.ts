@@ -1,6 +1,6 @@
 import Axios from 'axios';
 
-import type { NFTMetaPayload, NFTMetaResponse } from '~/types/cosmos/nft';
+import type { NFTMetaPayload } from '~/types/cosmos/nft';
 
 export function toDisplayTokenId(tokenId?: string) {
   if (!tokenId) return '';
@@ -32,7 +32,10 @@ export function isIpfsUrl(url?: string) {
   return url.startsWith('ipfs://') || url.startsWith('ipfs:/');
 }
 
-export async function getIpfsData(ipfsURL: string): Promise<Pick<NFTMetaResponse, 'imageURL' | 'metaData'> | null> {
+export async function getIpfsData(ipfsURL: string): Promise<{
+  imageURL: string;
+  metaData?: NFTMetaPayload;
+} | null> {
   try {
     const CID = getIpfsCID(ipfsURL);
 
@@ -66,8 +69,4 @@ export async function getIpfsData(ipfsURL: string): Promise<Pick<NFTMetaResponse
 
 export function convertToBaseIpfsUrl(imageURL?: string) {
   return isIpfsUrl(imageURL) ? `${baseIpfsURL}${getIpfsCID(imageURL)}` : imageURL || '';
-}
-
-export function getNFTMetadataValue(key: string, metaData?: NFTMetaPayload) {
-  return metaData?.[key] && (typeof metaData[key] === 'string' || typeof metaData[key] === 'number') ? String(metaData[key]) : '';
 }

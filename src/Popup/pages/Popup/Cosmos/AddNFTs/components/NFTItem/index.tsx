@@ -5,7 +5,7 @@ import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
-import { getNFTMetadataValue, toDisplayTokenId } from '~/Popup/utils/nft';
+import { toDisplayTokenId } from '~/Popup/utils/nft';
 import type { CosmosChain } from '~/types/chain';
 
 import { Container, ContentContainer, NFTContainer, NFTImageContainer, NFTInfoContainer, NFTInfoHeaderContainer, NFTInfoHeaderTextContainer } from './styled';
@@ -29,8 +29,8 @@ export default function NFTItem({ chain, contractAddress, tokenId }: NFTItemProp
           <NFTInfoContainer>
             <NFTInfoHeaderContainer>
               <NFTInfoHeaderTextContainer>
-                <Tooltip title={getNFTMetadataValue('name', nftMeta?.metaData) || tokenId} placement="top" arrow>
-                  <Typography variant="h3">{getNFTMetadataValue('name', nftMeta?.metaData) || toDisplayTokenId(tokenId)}</Typography>
+                <Tooltip title={nftMeta?.name || tokenId} placement="top" arrow>
+                  <Typography variant="h3">{nftMeta?.name || toDisplayTokenId(tokenId)}</Typography>
                 </Tooltip>
               </NFTInfoHeaderTextContainer>
             </NFTInfoHeaderContainer>

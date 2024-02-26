@@ -15,7 +15,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { getNFTMetadataValue, toDisplayTokenId } from '~/Popup/utils/nft';
+import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Path } from '~/types/route';
@@ -87,8 +87,8 @@ export default function Cosmos({ chain }: CosmosProps) {
             <NFTInfoHeaderContainer>
               <NFTInfoLeftHeaderContainer>
                 <NFTInfoHeaderTextContainer>
-                  <Tooltip title={getNFTMetadataValue('name', nftMeta?.metaData) || currentNFT?.tokenId || ''} placement="top" arrow>
-                    <Typography variant="h3">{getNFTMetadataValue('name', nftMeta?.metaData) || toDisplayTokenId(currentNFT?.tokenId)}</Typography>
+                  <Tooltip title={nftMeta?.name || currentNFT?.tokenId || ''} placement="top" arrow>
+                    <Typography variant="h3">{nftMeta?.name || toDisplayTokenId(currentNFT?.tokenId)}</Typography>
                   </Tooltip>
                 </NFTInfoHeaderTextContainer>
               </NFTInfoLeftHeaderContainer>

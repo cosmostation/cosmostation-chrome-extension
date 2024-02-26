@@ -18,7 +18,6 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { getNFTMetadataValue } from '~/Popup/utils/nft';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain } from '~/types/chain';
 
@@ -208,7 +207,7 @@ export default function Entry({ chain }: EntryProps) {
                 <Image src={nftMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} />
               </PreviewNFTImageContainer>
               <PreviewNFTSubtitleContainer>
-                <Typography variant="h3">{getNFTMetadataValue('name', nftMeta.data?.metaData) || nftSourceURI.data?.token_uri}</Typography>
+                <Typography variant="h3">{nftMeta.data?.name || nftSourceURI.data?.token_uri}</Typography>
               </PreviewNFTSubtitleContainer>
             </PreviewBodyContainer>
           </>

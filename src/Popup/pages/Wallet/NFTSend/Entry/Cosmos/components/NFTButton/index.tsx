@@ -8,7 +8,7 @@ import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
 import { toDisplayCWTokenStandard } from '~/Popup/utils/cosmos';
-import { getNFTMetadataValue, toDisplayTokenId } from '~/Popup/utils/nft';
+import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { CosmosNFT } from '~/types/cosmos/nft';
@@ -50,8 +50,8 @@ export default function NFTButton({ currentNFT, chain, isActive, ...remainder }:
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Tooltip title={getNFTMetadataValue('name', nftMeta?.metaData) || tokenId} placement="top" arrow>
-              <Typography variant="h5">{getNFTMetadataValue('name', nftMeta?.metaData) || toDisplayTokenId(tokenId)}</Typography>
+            <Tooltip title={nftMeta?.name || tokenId} placement="top" arrow>
+              <Typography variant="h5">{nftMeta?.name || toDisplayTokenId(tokenId)}</Typography>
             </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>
