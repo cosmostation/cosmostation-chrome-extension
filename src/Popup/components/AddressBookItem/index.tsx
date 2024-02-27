@@ -47,11 +47,11 @@ export default function AddressBookItem({ addressInfo, onClick }: AddressBookIte
       <LabelContainer>
         <LabelLeftContainer>
           <LabelLeftImageContainer>
-            <LabelLeftAbsoluteImageContainer data-is-custom={isCustom}>
+            <LabelLeftAbsoluteImageContainer data-is-custom={isCustom && !!chain?.imageURL}>
               <Image src={chain?.imageURL} defaultImgSrc={unknownImg} />
             </LabelLeftAbsoluteImageContainer>
             {isCustom && (
-              <LabelLeftAbsoluteImageContainer data-is-custom={isCustom}>
+              <LabelLeftAbsoluteImageContainer data-is-custom={isCustom && !!chain?.imageURL}>
                 <Image src={customBeltImg} />
               </LabelLeftAbsoluteImageContainer>
             )}

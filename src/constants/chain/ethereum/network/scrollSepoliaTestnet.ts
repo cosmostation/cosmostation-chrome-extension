@@ -12,5 +12,4 @@ export const SCROLL_SEPOLIA_TESTNET: EthereumNetwork = {
   displayDenom: 'ETH',
   decimals: 18,
   explorerURL: 'https://sepolia-blockscout.scroll.io',
-  coinGeckoId: 'ethereum',
 };

@@ -44,11 +44,11 @@ export default function ChainItemButton({
       <ContentContainer>
         <ContentLeftContainer>
           <ContentLeftImageContainer>
-            <ContentLeftAbsoluteImageContainer data-is-custom={isCustom}>
+            <ContentLeftAbsoluteImageContainer data-is-custom={isCustom && !!imgSrc}>
               <Image src={imgSrc} defaultImgSrc={unknownImg} />
             </ContentLeftAbsoluteImageContainer>
             {isCustom && (
-              <ContentLeftAbsoluteImageContainer data-is-custom={isCustom}>
+              <ContentLeftAbsoluteImageContainer data-is-custom={isCustom && !!imgSrc}>
                 <Image src={customBeltImg} />
               </ContentLeftAbsoluteImageContainer>
             )}
