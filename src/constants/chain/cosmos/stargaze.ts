@@ -8,7 +8,7 @@ export const STARGAZE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'stargaze-1',
-  chainName: 'Stargaze',
+  chainName: 'STARGAZE',
   restURL: 'https://lcd-stargaze.cosmostation.io',
   tokenImageURL: stargazeTokenImg,
   imageURL: stargazeChainImg,

@@ -8,7 +8,7 @@ export const REGEN: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'regen-1',
-  chainName: 'Regen',
+  chainName: 'REGEN',
   restURL: 'https://lcd-regen.cosmostation.io',
   tokenImageURL: regenTokenImg,
   imageURL: regenChainImg,

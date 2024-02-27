@@ -8,7 +8,7 @@ export const SHENTU: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'shentu-2.2',
-  chainName: 'Shentu',
+  chainName: 'SHENTU',
   restURL: 'https://lcd-shentu.cosmostation.io',
   tokenImageURL: shentuTokenImg,
   imageURL: shentuChainImg,

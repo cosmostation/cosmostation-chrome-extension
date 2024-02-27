@@ -8,7 +8,7 @@ export const KAVA: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'kava_2222-10',
-  chainName: 'Kava',
+  chainName: 'KAVA',
   restURL: 'https://lcd-kava.cosmostation.io',
   tokenImageURL: kavaTokenImg,
   imageURL: kavaChainImg,

@@ -8,7 +8,7 @@ export const CANTO: CosmosChain = {
   line: 'COSMOS',
   type: 'ETHERMINT',
   chainId: 'canto_7700-1',
-  chainName: 'Canto',
+  chainName: 'CANTO',
   restURL: 'https://lcd-canto.cosmostation.io',
   tokenImageURL: cantoTokenImg,
   imageURL: cantoChainImg,

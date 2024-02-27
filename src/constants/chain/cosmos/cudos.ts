@@ -9,7 +9,7 @@ export const CUDOS: CosmosChain = {
   type: '',
   cosmWasm: true,
   chainId: 'cudos-1',
-  chainName: 'Cudos',
+  chainName: 'CUDOS',
   restURL: 'https://lcd-cudos.cosmostation.io',
   tokenImageURL: cudosTokenImg,
   imageURL: cudosChainImg,

@@ -8,7 +8,7 @@ export const COMDEX: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'comdex-1',
-  chainName: 'Comdex',
+  chainName: 'COMDEX',
   restURL: 'https://lcd-comdex.cosmostation.io',
   tokenImageURL: comdexTokenImg,
   imageURL: comdexChainImg,

@@ -8,7 +8,7 @@ export const CHIHUAHUA: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'chihuahua-1',
-  chainName: 'Chihuahua',
+  chainName: 'CHIHUAHUA',
   restURL: 'https://lcd-chihuahua.cosmostation.io',
   tokenImageURL: chihuahuaTokenImg,
   imageURL: chihuahuaChainImg,

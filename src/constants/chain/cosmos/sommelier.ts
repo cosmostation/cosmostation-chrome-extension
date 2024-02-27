@@ -8,7 +8,7 @@ export const SOMMELIER: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'sommelier-3',
-  chainName: 'Sommelier',
+  chainName: 'SOMMELIER',
   restURL: 'https://lcd-sommelier.cosmostation.io',
   tokenImageURL: sommelierTokenImg,
   imageURL: sommelierChainImg,

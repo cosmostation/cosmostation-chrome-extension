@@ -8,7 +8,7 @@ export const LIKE_COIN: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'likecoin-mainnet-2',
-  chainName: 'LikeCoin',
+  chainName: 'LIKECOIN',
   restURL: 'https://lcd-likecoin.cosmostation.io',
   tokenImageURL: likeCoinTokenImg,
   imageURL: likeCoinChainImg,

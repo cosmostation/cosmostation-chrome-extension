@@ -8,7 +8,7 @@ export const PROVENANCE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'pio-mainnet-1',
-  chainName: 'Provenance',
+  chainName: 'PROVENANCE',
   restURL: 'https://lcd-provenance.cosmostation.io',
   tokenImageURL: provenanceTokenImg,
   imageURL: provenanceChainImg,

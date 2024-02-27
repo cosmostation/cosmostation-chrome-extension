@@ -8,7 +8,7 @@ export const MEDIBLOC: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'panacea-3',
-  chainName: 'Medibloc',
+  chainName: 'MEDIBLOC',
   restURL: 'https://lcd-medibloc.cosmostation.io',
   tokenImageURL: mediblocTokenImg,
   imageURL: mediblocChainImg,

@@ -8,7 +8,7 @@ export const FINSCHIA: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'finschia-2',
-  chainName: 'Finschia',
+  chainName: 'FINSCHIA',
   restURL: 'https://lcd-finschia.cosmostation.io',
   tokenImageURL: finschiaTokenImg,
   imageURL: finschiaChainImg,

@@ -8,7 +8,7 @@ export const SECRET: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'secret-4',
-  chainName: 'Secret',
+  chainName: 'SECRET',
   restURL: 'https://lcd-secret.cosmostation.io',
   tokenImageURL: secretTokenImg,
   imageURL: secretChainImg,

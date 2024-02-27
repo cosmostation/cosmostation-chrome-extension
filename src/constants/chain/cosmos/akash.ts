@@ -8,7 +8,7 @@ export const AKASH: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'akashnet-2',
-  chainName: 'Akash',
+  chainName: 'AKASH',
   restURL: 'https://lcd-akash.cosmostation.io',
   tokenImageURL: akashTokenImg,
   imageURL: akashChainImg,

@@ -8,7 +8,7 @@ export const NEUTRON: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'neutron-1',
-  chainName: 'Neutron',
+  chainName: 'NEUTRON',
   restURL: 'https://lcd-neutron.cosmostation.io',
   tokenImageURL: neutronTokenImg,
   imageURL: neutronChainImg,

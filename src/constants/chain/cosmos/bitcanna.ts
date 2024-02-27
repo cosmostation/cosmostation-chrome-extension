@@ -8,7 +8,7 @@ export const BITCANNA: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'bitcanna-1',
-  chainName: 'Bitcanna',
+  chainName: 'BITCANNA',
   restURL: 'https://lcd-bitcanna.cosmostation.io',
   tokenImageURL: bitcannaTokenImg,
   imageURL: bitcannaChainImg,

@@ -8,7 +8,7 @@ export const OMNIFLIX: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'omniflixhub-1',
-  chainName: 'Omniflix',
+  chainName: 'OMNIFLIX',
   restURL: 'https://lcd-omniflix.cosmostation.io',
   tokenImageURL: omniflixTokenImg,
   imageURL: omniflixChainImg,

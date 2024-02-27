@@ -8,7 +8,7 @@ export const SEI: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'pacific-1',
-  chainName: 'Sei',
+  chainName: 'SEI',
   restURL: 'https://lcd-sei.cosmostation.io',
   tokenImageURL: seiTokenImg,
   imageURL: seiChainImg,

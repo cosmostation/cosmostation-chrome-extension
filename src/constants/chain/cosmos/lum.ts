@@ -8,7 +8,7 @@ export const LUM: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'lum-network-1',
-  chainName: 'Lum',
+  chainName: 'LUM',
   restURL: 'https://lcd-lum.cosmostation.io',
   tokenImageURL: lumTokenImg,
   imageURL: lumChainImg,

@@ -8,7 +8,7 @@ export const ASSET_MANTLE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'mantle-1',
-  chainName: 'AssetMantle',
+  chainName: 'ASSETMANTLE',
   restURL: 'https://lcd-asset-mantle.cosmostation.io',
   tokenImageURL: assetmantleTokenImg,
   imageURL: assetmantleChainImg,

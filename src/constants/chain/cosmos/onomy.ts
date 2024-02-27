@@ -8,7 +8,7 @@ export const ONOMY: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'onomy-mainnet-1',
-  chainName: 'Onomy',
+  chainName: 'ONOMY',
   restURL: 'https://lcd-onomy-protocol.cosmostation.io',
   tokenImageURL: onomyTokenImg,
   imageURL: onomyChainImg,

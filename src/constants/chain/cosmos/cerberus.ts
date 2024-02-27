@@ -9,7 +9,7 @@ export const CERBERUS: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'cerberus-chain-1',
-  chainName: 'Cerberus',
+  chainName: 'CERBERUS',
   restURL: 'https://lcd-cerberus.cosmostation.io',
   tokenImageURL: unknownTokenImg,
   imageURL: unknownChainImg,

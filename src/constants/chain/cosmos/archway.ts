@@ -8,7 +8,7 @@ export const ARCHWAY: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'archway-1',
-  chainName: 'Archway',
+  chainName: 'ARCHWAY',
   restURL: 'https://lcd-archway.cosmostation.io',
   tokenImageURL: archwayTokenImg,
   imageURL: archwayChainImg,

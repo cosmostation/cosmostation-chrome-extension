@@ -8,7 +8,7 @@ export const RIZON: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'titan-1',
-  chainName: 'Rizon',
+  chainName: 'RIZON',
   restURL: 'https://lcd-rizon.cosmostation.io',
   tokenImageURL: rizonTokenImg,
   imageURL: rizonChainImg,

@@ -8,7 +8,7 @@ export const PASSAGE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'passage-2',
-  chainName: 'Passage',
+  chainName: 'PASSAGE',
   restURL: 'https://lcd-passage.cosmostation.io',
   tokenImageURL: passageTokenImg,
   imageURL: passageChainImg,

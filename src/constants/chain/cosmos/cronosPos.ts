@@ -8,7 +8,7 @@ export const CRONOS_POS: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'crypto-org-chain-mainnet-1',
-  chainName: 'Cronos POS',
+  chainName: 'CRONOS POS',
   restURL: 'https://lcd-crypto-org.cosmostation.io',
   tokenImageURL: cronosPosTokenImg,
   imageURL: cronosPosChainImg,

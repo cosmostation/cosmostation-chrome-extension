@@ -61,7 +61,7 @@ export const ContentLeftAbsoluteImageContainer = styled('div')<ContentLeftAbsolu
 
 export const ContentCenterTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
-  maxWidth: '20rem',
+  maxWidth: '10rem',
 
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',

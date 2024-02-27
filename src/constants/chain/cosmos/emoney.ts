@@ -8,7 +8,7 @@ export const EMONEY: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'emoney-3',
-  chainName: 'Emoney',
+  chainName: 'EMONEY',
   restURL: 'https://lcd-emoney.cosmostation.io',
   tokenImageURL: emoneyTokenImg,
   imageURL: emoneyChainImg,

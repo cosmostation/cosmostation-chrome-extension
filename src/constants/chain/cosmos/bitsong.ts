@@ -8,7 +8,7 @@ export const BITSONG: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'bitsong-2b',
-  chainName: 'Bitsong',
+  chainName: 'BITSONG',
   restURL: 'https://lcd-bitsong.cosmostation.io',
   tokenImageURL: bitsongTokenImg,
   imageURL: bitsongChainImg,

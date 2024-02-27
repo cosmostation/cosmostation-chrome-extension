@@ -8,7 +8,7 @@ export const NOBLE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'noble-1',
-  chainName: 'Noble',
+  chainName: 'NOBLE',
   restURL: 'https://lcd-noble.cosmostation.io',
   tokenImageURL: nobleTokenImg,
   imageURL: nobleChainImg,

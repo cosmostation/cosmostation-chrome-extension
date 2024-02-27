@@ -8,7 +8,7 @@ export const OSMOSIS: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'osmosis-1',
-  chainName: 'Osmosis',
+  chainName: 'OSMOSIS',
   restURL: 'https://lcd-osmosis.cosmostation.io',
   tokenImageURL: osmosisTokenImg,
   imageURL: osmosisChainImg,

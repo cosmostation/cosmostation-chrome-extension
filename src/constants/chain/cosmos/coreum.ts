@@ -8,7 +8,7 @@ export const COREUM: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'coreum-mainnet-1',
-  chainName: 'Coreum',
+  chainName: 'COREUM',
   restURL: 'https://lcd-coreum.cosmostation.io',
   tokenImageURL: coreumTokenImg,
   imageURL: coreumChainImg,

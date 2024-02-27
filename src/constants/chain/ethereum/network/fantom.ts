@@ -5,7 +5,7 @@ import type { EthereumNetwork } from '~/types/chain';
 export const FANTOM: EthereumNetwork = {
   id: 'fea7321b-e9eb-4eb5-b3ce-072c64beb412',
   chainId: '0xfa',
-  networkName: 'Fantom',
+  networkName: 'FANTOM',
   rpcURL: 'https://rpc.ftm.tools',
   tokenImageURL: fantomTokenImg,
   imageURL: fantomChainImg,

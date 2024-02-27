@@ -8,7 +8,7 @@ export const STRIDE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'stride-1',
-  chainName: 'Stride',
+  chainName: 'STRIDE',
   restURL: 'https://lcd-stride.cosmostation.io',
   tokenImageURL: strideTokenImg,
   imageURL: strideChainImg,

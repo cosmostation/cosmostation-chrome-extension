@@ -8,7 +8,7 @@ export const BAND: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'laozi-mainnet',
-  chainName: 'Band',
+  chainName: 'BAND',
   restURL: 'https://lcd-band.cosmostation.io',
   tokenImageURL: bandTokenImg,
   imageURL: bandChainImg,

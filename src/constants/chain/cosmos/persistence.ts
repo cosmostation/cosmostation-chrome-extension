@@ -8,7 +8,7 @@ export const PERSISTENCE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'core-1',
-  chainName: 'Persistence',
+  chainName: 'PERSISTENCE',
   restURL: 'https://lcd-persistence.cosmostation.io',
   tokenImageURL: persistenceTokenImg,
   imageURL: persistenceChainImg,

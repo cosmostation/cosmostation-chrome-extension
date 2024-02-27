@@ -8,7 +8,7 @@ export const AXELAR: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'axelar-dojo-1',
-  chainName: 'Axelar',
+  chainName: 'AXELAR',
   restURL: 'https://lcd-axelar.cosmostation.io',
   tokenImageURL: axelarTokenImg,
   imageURL: axelarChainImg,

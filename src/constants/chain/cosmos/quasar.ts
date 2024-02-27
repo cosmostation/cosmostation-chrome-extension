@@ -8,7 +8,7 @@ export const QUASAR: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'quasar-1',
-  chainName: 'Quasar',
+  chainName: 'QUASAR',
   restURL: 'https://lcd-quasar.cosmostation.io',
   tokenImageURL: quasarTokenImg,
   imageURL: quasarChainImg,

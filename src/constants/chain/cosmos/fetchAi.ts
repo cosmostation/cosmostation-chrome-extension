@@ -8,7 +8,7 @@ export const FETCH_AI: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'fetchhub-4',
-  chainName: 'Fetch.ai',
+  chainName: 'FETCH.AI',
   restURL: 'https://lcd-fetchai.cosmostation.io',
   tokenImageURL: fetchaiTokenImg,
   imageURL: fetchaiChainImg,
