@@ -5,6 +5,8 @@ import { Typography } from '@mui/material';
 
 import { COSMOS_CHAINS } from '~/constants/chain';
 import { TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
+import unknownChainImg from '~/images/chainImgs/unknown.png';
+import customBeltImg from '~/images/etc/customBelt.png';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
@@ -12,6 +14,7 @@ import Skeleton from '~/Popup/components/common/Skeleton';
 import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useTxInfoSWR } from '~/Popup/hooks/SWR/cosmos/useTxInfoSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
+import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -20,6 +23,7 @@ import { convertToLocales } from '~/Popup/utils/common';
 import type { CosmosChain } from '~/types/chain';
 
 import {
+  AbsoluteImageContainer,
   BottomContainer,
   CategoryTitleContainer,
   Container,
@@ -63,9 +67,12 @@ export default function Cosmos({ chain, txHash }: CosmosProps) {
   const { t } = useTranslation();
   const { navigate } = useNavigate();
 
+  const { currentAdditionalChains } = useCurrentAdditionalChains();
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { currency, language } = extensionStorage;
+
+  const isCustom = useMemo(() => currentAdditionalChains.some((item) => item.id === chain?.id), [chain?.id, currentAdditionalChains]);
 
   const txInfo = useTxInfoSWR(chain, txHash);
 
@@ -118,7 +125,14 @@ export default function Cosmos({ chain, txHash }: CosmosProps) {
 
           <ImageTextContainer>
             <NetworkImageContainer>
-              <Image src={chain.imageURL} />
+              <AbsoluteImageContainer data-is-custom={isCustom && !!chain.imageURL}>
+                <Image src={chain.imageURL} defaultImgSrc={unknownChainImg} />
+              </AbsoluteImageContainer>
+              {isCustom && (
+                <AbsoluteImageContainer data-is-custom={isCustom && !!chain?.imageURL}>
+                  <Image src={customBeltImg} />
+                </AbsoluteImageContainer>
+              )}
             </NetworkImageContainer>
 
             <Typography variant="h5">{chain.chainName}</Typography>
