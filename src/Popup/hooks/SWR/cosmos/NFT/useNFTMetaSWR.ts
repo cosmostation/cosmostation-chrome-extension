@@ -15,10 +15,10 @@ import { useNFTURISWR } from './useNFTURISWR';
 import { useNumTokensSWR } from './useNumTokensSWR';
 
 type FetcherParams = {
-  fetchData: NFTInfoPayload['data'];
+  sourceURIData: NFTInfoPayload['data'];
   collectionData?: CollectionInfoPayload['data'];
   contractData?: ContractInfoPayload['data'];
-  mintedCount?: NumTokensInfoPayload['data'];
+  mintedNFTsCount?: NumTokensInfoPayload['data'];
   contractAddress: string;
   tokenId: string;
 };
@@ -44,19 +44,20 @@ export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR
         throw nftSourceURI.error;
       }
 
-      if (chain.id === ARCHWAY.id && !fetcherParam.fetchData.token_uri) {
-        const convertedIpfsImageURL = convertToBaseIpfsUrl(
-          fetcherParam.fetchData.extension?.image && typeof fetcherParam.fetchData.extension?.image === 'string'
-            ? fetcherParam.fetchData.extension.image
-            : undefined,
-        );
+      if (chain.id === ARCHWAY.id && !fetcherParam.sourceURIData.token_uri) {
+        const imageURL =
+          fetcherParam.sourceURIData.extension?.image && typeof fetcherParam.sourceURIData.extension?.image === 'string'
+            ? fetcherParam.sourceURIData.extension.image
+            : undefined;
 
-        const attributeKeys = fetcherParam.fetchData.extension ? Object.keys(fetcherParam.fetchData.extension) : [];
+        const convertedIpfsImageURL = convertToBaseIpfsUrl(imageURL);
+
+        const attributeKeys = fetcherParam.sourceURIData.extension ? Object.keys(fetcherParam.sourceURIData.extension) : [];
 
         const attributes = attributeKeys
           .map((key) => ({
             key,
-            value: fetcherParam.fetchData.extension?.[key],
+            value: fetcherParam.sourceURIData.extension?.[key],
           }))
           .filter((item) => !!item.value && !(Array.isArray(item.value) && item.value.length === 0));
 
@@ -64,24 +65,21 @@ export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR
           imageURL: convertedIpfsImageURL,
           contractAddress: contractAddress ?? '',
           tokenId: tokenId ?? '',
-          name: fetcherParam.fetchData.extension?.name ? String(fetcherParam.fetchData.extension.name) : undefined,
-          description: fetcherParam.fetchData.extension?.description ? String(fetcherParam.fetchData.extension?.description) : undefined,
-          sourceURL:
-            fetcherParam.fetchData.extension?.image && typeof fetcherParam.fetchData.extension?.image === 'string'
-              ? fetcherParam.fetchData.extension.image
-              : '',
+          name: fetcherParam.sourceURIData.extension?.name ? String(fetcherParam.sourceURIData.extension.name) : undefined,
+          description: fetcherParam.sourceURIData.extension?.description ? String(fetcherParam.sourceURIData.extension?.description) : undefined,
+          sourceURL: imageURL,
           attributes,
           contractInfo: fetcherParam.contractData,
           collectionInfo: fetcherParam.collectionData,
-          mintedNFTsCount: fetcherParam.mintedCount,
+          mintedNFTsCount: fetcherParam.mintedNFTsCount,
         };
       }
 
-      const nftMetaData = await getIpfsData(fetcherParam.fetchData.token_uri);
+      const nftMetaData = await getIpfsData(fetcherParam.sourceURIData.token_uri);
 
       const attributes =
-        nftMetaData?.metaData?.attributes && Array.isArray(nftMetaData?.metaData?.attributes)
-          ? nftMetaData?.metaData?.attributes
+        nftMetaData?.metaData?.attributes && Array.isArray(nftMetaData.metaData.attributes)
+          ? nftMetaData.metaData.attributes
               .map((item: { trait_type: string; value: string | number }) => ({
                 key: item.trait_type,
                 value: item.value,
@@ -95,11 +93,11 @@ export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR
         tokenId: tokenId ?? '',
         name: nftMetaData?.metaData?.name ? String(nftMetaData.metaData.name) : undefined,
         description: nftMetaData?.metaData?.description ? String(nftMetaData.metaData.description) : undefined,
-        sourceURL: fetcherParam.fetchData.token_uri,
+        sourceURL: fetcherParam.sourceURIData.token_uri,
         attributes,
         contractInfo: fetcherParam.contractData,
         collectionInfo: fetcherParam.collectionData,
-        mintedNFTsCount: fetcherParam.mintedCount,
+        mintedNFTsCount: fetcherParam.mintedNFTsCount,
       };
     } catch (e) {
       if (isAxiosError(e)) {
@@ -113,10 +111,10 @@ export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR
 
   const { data, isValidating, error, mutate } = useSWR<NFTMetaResponse | null, AxiosError>(
     {
-      fetchData: nftSourceURI.data,
+      sourceURIData: nftSourceURI.data,
       collectionData: nftCollectionInfo.data,
       contractData: nftContractInfo.data,
-      mintedCount: mintedNFTsCount.data,
+      mintedNFTsCount: mintedNFTsCount.data,
       contractAddress,
       tokenId,
     },
