@@ -1,5 +1,5 @@
-import scrollChainImg from '~/images/chainImgs/unknown.png';
-import scrollTokenImg from '~/images/symbols/unknown.png';
+import scrollChainImg from '~/images/chainImgs/scroll.png';
+import scrollTokenImg from '~/images/symbols/eth-scroll.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const SCROLL_SEPOLIA_TESTNET: EthereumNetwork = {

@@ -1,6 +1,5 @@
-// FIXME 토큰 요청 필요
-import harmonyChainImg from '~/images/chainImgs/unknown.png';
-import harmonyTokenImg from '~/images/symbols/unknown.png';
+import harmonyChainImg from '~/images/chainImgs/harmony.png';
+import harmonyTokenImg from '~/images/symbols/one.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const HARMONY: EthereumNetwork = {

@@ -1,5 +1,5 @@
 import arbitrumChainImg from '~/images/chainImgs/arbitrum.png';
-import arbitrumTokenImg from '~/images/symbols/arb.png';
+import arbitrumTokenImg from '~/images/symbols/eth-arb.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const ARBITRUM: EthereumNetwork = {

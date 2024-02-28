@@ -1,5 +1,5 @@
 import optimismChainImg from '~/images/chainImgs/optimism.png';
-import optimismTokenImg from '~/images/symbols/op.png';
+import optimismTokenImg from '~/images/symbols/eth-op.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const OPTIMISM: EthereumNetwork = {
