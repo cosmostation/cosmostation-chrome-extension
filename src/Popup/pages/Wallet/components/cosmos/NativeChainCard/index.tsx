@@ -289,7 +289,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
           {explorerURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerURL}/account/${currentAddress}`)}>
+            <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${currentAddress}`)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
