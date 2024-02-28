@@ -10,9 +10,7 @@ export type Asset = {
   default?: boolean;
 };
 
-export type AssetPayload = {
-  assets: Asset[];
-};
+export type AssetPayload = Asset[];
 
 export type ModifiedAsset = {
   chainId: string;
