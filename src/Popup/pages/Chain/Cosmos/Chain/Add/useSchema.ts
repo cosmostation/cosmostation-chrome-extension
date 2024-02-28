@@ -61,14 +61,8 @@ export function useSchema() {
       }),
     chainName: Joi.string()
       .required()
-      .custom((value: string, helpers) => {
-        const lowercaseValue = value.toLowerCase();
-
-        if (invalidChainNames.includes(lowercaseValue)) {
-          return helpers.error('any.invalid');
-        }
-        return value;
-      })
+      .invalid(...invalidChainNames)
+      .insensitive()
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
