@@ -4,7 +4,7 @@ import useSWR from 'swr';
 
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
 import { isAxiosError } from '~/Popup/utils/axios';
-import { convertToBaseIpfsUrl, getIpfsData } from '~/Popup/utils/nft';
+import { convertToBaseIpfsUrl, getIpfsData, toDisplayTokenId } from '~/Popup/utils/nft';
 import type { CosmosChain } from '~/types/chain';
 import type { CollectionInfoPayload, ContractInfoPayload, NFTInfoPayload, NumTokensInfoPayload } from '~/types/cosmos/contract';
 import type { NFTMetaResponse } from '~/types/cosmos/nft';
@@ -63,10 +63,10 @@ export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR
 
         return {
           imageURL: convertedIpfsImageURL,
-          contractAddress: contractAddress ?? '',
-          tokenId: tokenId ?? '',
-          name: fetcherParam.sourceURIData.extension?.name ? String(fetcherParam.sourceURIData.extension.name) : undefined,
-          description: fetcherParam.sourceURIData.extension?.description ? String(fetcherParam.sourceURIData.extension?.description) : undefined,
+          contractAddress,
+          tokenId,
+          name: fetcherParam.sourceURIData.extension?.name ? String(fetcherParam.sourceURIData.extension.name) : toDisplayTokenId(tokenId),
+          description: fetcherParam.sourceURIData.extension?.description ? String(fetcherParam.sourceURIData.extension?.description) : contractAddress,
           sourceURL: imageURL,
           attributes,
           contractInfo: fetcherParam.contractData,
@@ -89,10 +89,10 @@ export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR
 
       return {
         imageURL: nftMetaData?.imageURL || '',
-        contractAddress: contractAddress ?? '',
-        tokenId: tokenId ?? '',
-        name: nftMetaData?.metaData?.name ? String(nftMetaData.metaData.name) : undefined,
-        description: nftMetaData?.metaData?.description ? String(nftMetaData.metaData.description) : undefined,
+        contractAddress,
+        tokenId,
+        name: nftMetaData?.metaData?.name ? String(nftMetaData.metaData.name) : toDisplayTokenId(tokenId),
+        description: nftMetaData?.metaData?.description ? String(nftMetaData.metaData.description) : contractAddress,
         sourceURL: fetcherParam.sourceURIData.token_uri,
         attributes,
         contractInfo: fetcherParam.contractData,

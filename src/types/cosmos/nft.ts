@@ -17,8 +17,8 @@ export type NFTMetaResponse = {
   imageURL: string;
   contractAddress: string;
   tokenId: string;
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
   sourceURL?: string;
   attributes?: { key: string; value: unknown }[];
   contractInfo?: ContractInfoPayload['data'];
