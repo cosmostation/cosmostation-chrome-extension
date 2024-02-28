@@ -72,7 +72,7 @@ import { STARGAZE } from './cosmos/stargaze';
 import { STRIDE } from './cosmos/stride';
 import { TERITORI } from './cosmos/teritori';
 import { TERRA } from './cosmos/terra';
-import { UMEE } from './cosmos/umee';
+import { UX } from './cosmos/ux';
 import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
@@ -174,7 +174,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   STRIDE,
   TERITORI,
   TERRA,
-  UMEE,
+  UX,
   XPLA,
   FINSCHIA,
 ];
