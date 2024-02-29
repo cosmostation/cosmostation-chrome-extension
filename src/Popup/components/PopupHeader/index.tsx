@@ -1,10 +1,22 @@
 import stc from 'string-to-color';
 import { Typography } from '@mui/material';
 
+import Image from '~/Popup/components/common/Image';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { AccountType } from '~/types/extensionStorage';
 
-import { AccountContainer, AccountIcon, AccountText, ChainNameContainer, Container, Div, LedgerIconContainer, OriginContainer, StyledDivider } from './styled';
+import {
+  AccountContainer,
+  AccountIcon,
+  AccountText,
+  ChainImageContainer,
+  ChainNameContainer,
+  Container,
+  Div,
+  LedgerIconContainer,
+  OriginContainer,
+  StyledDivider,
+} from './styled';
 
 import Account from '~/images/icons/Account10.svg';
 import Ledger14Icon from '~/images/icons/Ledger14.svg';
@@ -47,6 +59,9 @@ export default function Header({ account, chain, origin, className }: HeaderProp
       {account && (chain || origin) && <StyledDivider />}
       {chain && (
         <ChainNameContainer>
+          <ChainImageContainer>
+            <Image src={chain.imageURL} />
+          </ChainImageContainer>
           <Div sx={{ marginLeft: '0.4rem' }}>
             <Typography variant="h3">{chain.name}</Typography>
           </Div>
