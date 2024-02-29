@@ -78,9 +78,9 @@ export default function Cosmos({ chain, txHash }: CosmosProps) {
 
   const explorerURL = useMemo(() => chain.explorerURL, [chain.explorerURL]);
 
-  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/transactions/${txHash}` : ''), [explorerURL, txHash]);
+  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/tx/${txHash}` : ''), [explorerURL, txHash]);
   const blockDetailExplorerURL = useMemo(
-    () => (explorerURL && txInfo.data?.tx_response.height ? `${explorerURL}/blocks/${txInfo.data.tx_response.height}` : ''),
+    () => (explorerURL && txInfo.data?.tx_response.height ? `${explorerURL}/block/${txInfo.data.tx_response.height}` : ''),
     [explorerURL, txInfo.data?.tx_response.height],
   );
 
