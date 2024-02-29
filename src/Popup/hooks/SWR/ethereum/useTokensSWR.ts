@@ -43,7 +43,7 @@ export function useTokensSWR(chain?: EthereumNetwork, config?: SWRConfiguration)
   });
 
   const returnData: ModifiedAsset[] =
-    data?.map((item) => ({
+    data?.map?.((item) => ({
       chainId: toHex(item.chainId, { addPrefix: true }),
       address: item.address,
       decimals: item.decimals,
