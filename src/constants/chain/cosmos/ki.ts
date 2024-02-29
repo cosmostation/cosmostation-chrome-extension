@@ -8,7 +8,7 @@ export const KI: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'kichain-2',
-  chainName: 'KICHAIN',
+  chainName: 'KI',
   restURL: 'https://lcd-ki-chain.cosmostation.io',
   tokenImageURL: kiTokenImg,
   imageURL: kiChainImg,

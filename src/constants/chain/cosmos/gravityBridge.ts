@@ -8,7 +8,7 @@ export const GRAVITY_BRIDGE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'gravity-bridge-3',
-  chainName: 'GRAVITYBRIDGE',
+  chainName: 'GRAVITY BRIDGE',
   restURL: 'https://lcd-gravity-bridge.cosmostation.io',
   tokenImageURL: gravitybridgeTokenImg,
   imageURL: gravitybridgeChainImg,
