@@ -9,7 +9,7 @@ import { useParamsSWR } from './useParamsSWR';
 export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const { data, error, mutate } = useParamsSWR(chain, config);
 
-  const gasRate = useMemo(() => (data ? data.params.chainlist_params.fee.rate ?? [] : []), [data]);
+  const gasRate = useMemo(() => (data ? data.params?.chainlist_params?.fee?.rate ?? [] : []), [data]);
 
   const returnData: Record<string, GasRate> = useMemo(() => {
     const result: Record<string, GasRate> =

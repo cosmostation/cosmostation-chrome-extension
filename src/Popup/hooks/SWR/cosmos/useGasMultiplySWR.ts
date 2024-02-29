@@ -17,8 +17,8 @@ export function useGasMultiplySWR(chain?: CosmosChain, config?: SWRConfiguration
 
   const returnData = useMemo(
     () =>
-      data?.params.chainlist_params.fee.simul_gas_multiply ? String(data.params.chainlist_params.fee.simul_gas_multiply) : getDefaultAV(currentCosmosChain),
-    [currentCosmosChain, data?.params.chainlist_params.fee.simul_gas_multiply],
+      data?.params?.chainlist_params?.fee?.simul_gas_multiply ? String(data.params.chainlist_params.fee.simul_gas_multiply) : getDefaultAV(currentCosmosChain),
+    [currentCosmosChain, data?.params?.chainlist_params?.fee?.simul_gas_multiply],
   );
 
   return { data: returnData, error, mutate };
