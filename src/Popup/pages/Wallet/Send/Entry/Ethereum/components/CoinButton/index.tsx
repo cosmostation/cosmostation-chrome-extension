@@ -1,6 +1,12 @@
-import type { ComponentProps } from 'react';
+import { type ComponentProps, useMemo } from 'react';
 import { Typography } from '@mui/material';
 
+import { ARBITRUM } from '~/constants/chain/ethereum/network/arbitrum';
+import { OPTIMISM } from '~/constants/chain/ethereum/network/optimism';
+import { SCROLL_SEPOLIA_TESTNET } from '~/constants/chain/ethereum/network/scrollSepoliaTestnet';
+import ethArbTokenImg from '~/images/symbols/eth-arb.png';
+import ethOpTokenImg from '~/images/symbols/eth-op.png';
+import ethScrollTokenImg from '~/images/symbols/eth-scroll.png';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
@@ -34,7 +40,20 @@ export default function CoinButton({ currentToken, isActive, ...remainder }: Coi
 
   const baseAmount = isNative ? BigInt(balance.data?.result || '0').toString(10) : BigInt(tokenBalace.data || '0').toString(10);
 
-  const imageURL = isNative ? currentEthereumNetwork.imageURL : currentToken.imageURL;
+  const imageURL = useMemo(() => {
+    if (isNative) {
+      if (currentEthereumNetwork.id === ARBITRUM.id) return ethArbTokenImg;
+
+      if (currentEthereumNetwork.id === OPTIMISM.id) return ethOpTokenImg;
+
+      if (currentEthereumNetwork.id === SCROLL_SEPOLIA_TESTNET.id) return ethScrollTokenImg;
+
+      return currentEthereumNetwork.imageURL;
+    }
+
+    return currentToken.imageURL;
+  }, [currentEthereumNetwork.id, currentEthereumNetwork.imageURL, isNative, currentToken?.imageURL]);
+
   const displayDenom = isNative ? currentEthereumNetwork.displayDenom : currentToken.displayDenom;
   const displayAmount = toDisplayDenomAmount(baseAmount, decimals);
 

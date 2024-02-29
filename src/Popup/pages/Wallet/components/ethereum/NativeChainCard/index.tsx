@@ -4,8 +4,14 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import { ARBITRUM } from '~/constants/chain/ethereum/network/arbitrum';
+import { OPTIMISM } from '~/constants/chain/ethereum/network/optimism';
+import { SCROLL_SEPOLIA_TESTNET } from '~/constants/chain/ethereum/network/scrollSepoliaTestnet';
 import { ACCENT_COLORS } from '~/constants/theme';
 import customBeltImg from '~/images/etc/customBelt.png';
+import ethArbTokenImg from '~/images/symbols/eth-arb.png';
+import ethOpTokenImg from '~/images/symbols/eth-op.png';
+import ethScrollTokenImg from '~/images/symbols/eth-scroll.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
@@ -81,6 +87,16 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const value = useMemo(() => times(price, displayAmount), [displayAmount, price]);
 
+  const tokenImageURL = useMemo(() => {
+    if (currentEthereumNetwork.id === ARBITRUM.id) return ethArbTokenImg;
+
+    if (currentEthereumNetwork.id === OPTIMISM.id) return ethOpTokenImg;
+
+    if (currentEthereumNetwork.id === SCROLL_SEPOLIA_TESTNET.id) return ethScrollTokenImg;
+
+    return imageURL;
+  }, [currentEthereumNetwork.id, imageURL]);
+
   const currentAddress = useMemo(
     () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '',
     [accounts?.data, chain.id, currentAccount.id],
@@ -114,7 +130,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{currentEthereumNetwork.displayDenom}</Typography>
           </SecondLineLeftTextContainer>
@@ -166,6 +182,16 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 
   const { explorerURL, displayDenom, imageURL } = currentEthereumNetwork;
 
+  const tokenImageURL = useMemo(() => {
+    if (currentEthereumNetwork.id === ARBITRUM.id) return ethArbTokenImg;
+
+    if (currentEthereumNetwork.id === OPTIMISM.id) return ethOpTokenImg;
+
+    if (currentEthereumNetwork.id === SCROLL_SEPOLIA_TESTNET.id) return ethScrollTokenImg;
+
+    return imageURL;
+  }, [currentEthereumNetwork.id, imageURL]);
+
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
 
@@ -206,7 +232,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{displayDenom}</Typography>
           </SecondLineLeftTextContainer>
@@ -250,6 +276,16 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const { explorerURL, displayDenom, imageURL } = currentEthereumNetwork;
 
+  const tokenImageURL = useMemo(() => {
+    if (currentEthereumNetwork.id === ARBITRUM.id) return ethArbTokenImg;
+
+    if (currentEthereumNetwork.id === OPTIMISM.id) return ethOpTokenImg;
+
+    if (currentEthereumNetwork.id === SCROLL_SEPOLIA_TESTNET.id) return ethScrollTokenImg;
+
+    return imageURL;
+  }, [currentEthereumNetwork.id, imageURL]);
+
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
 
@@ -290,7 +326,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
             <Typography variant="h3">{displayDenom}</Typography>
           </SecondLineLeftTextContainer>
