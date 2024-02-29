@@ -37,6 +37,7 @@ import { EMONEY } from './cosmos/emoney';
 import { EVMOS } from './cosmos/evmos';
 import { FETCH_AI } from './cosmos/fetchAi';
 import { FINSCHIA } from './cosmos/finschia';
+import { GOVGEN } from './cosmos/govgen';
 import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
 import { INJECTIVE } from './cosmos/injective';
 import { IRIS } from './cosmos/iris';
@@ -72,7 +73,7 @@ import { STARGAZE } from './cosmos/stargaze';
 import { STRIDE } from './cosmos/stride';
 import { TERITORI } from './cosmos/teritori';
 import { TERRA } from './cosmos/terra';
-import { UMEE } from './cosmos/umee';
+import { UX } from './cosmos/ux';
 import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
@@ -110,6 +111,7 @@ export const COSMOS_DEFAULT_IBC_SEND_GAS = '150000';
 export const COSMOS_DEFAULT_TRANSFER_GAS = '200000';
 export const COSMOS_DEFAULT_IBC_TRANSFER_GAS = '250000';
 export const COSMOS_DEFAULT_REWARD_GAS = '300000';
+export const COSMOS_DEFAULT_COMMISSION_GAS = '300000';
 export const COSMOS_DEFAULT_SQUID_CONTRACT_SWAP_GAS = '350000';
 
 export const COSMOS_DEFAULT_ESTIMATE_AV = '1.2';
@@ -173,9 +175,10 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   STRIDE,
   TERITORI,
   TERRA,
-  UMEE,
+  UX,
   XPLA,
   FINSCHIA,
+  GOVGEN,
 ];
 
 export const COSMOS_FEE_BASE_DENOMS: CosmosFeeBaseDenom[] = [...NYX_FEE_BASE_DENOMS];

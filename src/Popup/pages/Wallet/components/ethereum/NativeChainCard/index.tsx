@@ -101,11 +101,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     }
   };
 
-  const explorerAccountURL = useMemo(
-    () =>
-      explorerURL ? (explorerURL.includes('mintscan') ? `${explorerURL}/accounts/${currentAddress}` : `${explorerURL}/address/${currentAddress}`) : undefined,
-    [currentAddress, explorerURL],
-  );
+  const explorerAccountURL = useMemo(() => explorerURL && `${explorerURL}/address/${currentAddress}`, [currentAddress, explorerURL]);
 
   return (
     <Container>

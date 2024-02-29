@@ -2,7 +2,7 @@ export type ParamsResponse = {
   chain_id: string;
   block_time: number;
   gas_price?: GasPrice;
-  params: Params;
+  params?: Params;
 };
 
 export type GasPrice = {
@@ -12,14 +12,14 @@ export type GasPrice = {
 };
 
 export type Params = {
-  chainlist_params: ChainlistParams;
+  chainlist_params?: ChainlistParams;
 };
 
 export type ChainlistParams = {
-  fee: Fee;
-  grpc_endpoint: GrpcEndpoint[];
-  about: About;
-  description: Description;
+  fee?: Fee;
+  grpc_endpoint?: GrpcEndpoint[];
+  about?: About;
+  description?: Description;
 };
 
 export type About = {

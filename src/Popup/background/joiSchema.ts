@@ -49,8 +49,8 @@ export const cosAddChainParamsSchema = (chainNames: string[], officialChainIds: 
       .invalid(...officialChainIds)
       .required(),
     chainName: Joi.string()
-      .lowercase()
       .invalid(...invalidChainNames)
+      .insensitive()
       .required(),
     restURL: Joi.string().required(),
     tokenImageURL: Joi.string().optional(),

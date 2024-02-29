@@ -9,8 +9,8 @@ export const OPTIMISM: EthereumNetwork = {
   rpcURL: 'https://mainnet.optimism.io',
   tokenImageURL: optimismTokenImg,
   imageURL: optimismChainImg,
-  displayDenom: 'OP',
+  displayDenom: 'ETH',
   decimals: 18,
   explorerURL: 'https://optimistic.etherscan.io',
-  coinGeckoId: 'optimism',
+  coinGeckoId: 'ethereum',
 };

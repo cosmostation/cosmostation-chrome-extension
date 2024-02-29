@@ -62,8 +62,8 @@ export function useSchema() {
       }),
     chainName: Joi.string()
       .required()
-      .lowercase()
       .invalid(...invalidChainNames)
+      .insensitive()
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),

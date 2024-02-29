@@ -23,6 +23,7 @@ import { PROVENANCE } from '~/constants/chain/cosmos/provenance';
 import { SEI } from '~/constants/chain/cosmos/sei';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
+import { UX } from '~/constants/chain/cosmos/ux';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
@@ -186,6 +187,7 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [FETCH_AI.id]: 'fetchai',
     [MARS.id]: 'mars-protocol',
     [ONOMY.id]: 'onomy-protocol',
+    [UX.id]: 'umee',
   };
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
@@ -200,6 +202,7 @@ export function convertAssetNameToCosmos(assetName: string) {
     fetchai: FETCH_AI,
     'mars-protocol': MARS,
     'onomy-protocol': ONOMY,
+    umee: UX,
   } as Record<string, CosmosChain | undefined>;
 
   return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);
