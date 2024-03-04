@@ -130,13 +130,22 @@ export default function IBCSend({ chain }: IBCSendProps) {
       ...currentChainAssets.data
         .filter((item) => {
           if (item.type === 'native' || item.type === 'staking' || item.type === 'bridge') {
-            return !!filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, item.denom)).length;
+            return !!filteredCosmosChainAssets.filter(
+              (asset) =>
+                isEqualsIgnoringCase(asset.counter_party?.denom, item.denom) &&
+                isEqualsIgnoringCase(convertAssetNameToCosmos(asset.prevChain || '')?.id, chain.id) &&
+                cosmosAssetNames.includes(asset.prevChain || ''),
+            ).length;
           }
 
           if (item.type === 'ibc') {
             return !!(
               filteredCurrentChainAssets.filter((asset) => asset.channel && asset.port && isEqualsIgnoringCase(asset.denom, item.denom)).length +
-              filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, item.denom)).length
+              filteredCosmosChainAssets.filter(
+                (asset) =>
+                  isEqualsIgnoringCase(asset.counter_party?.denom, item.denom) &&
+                  isEqualsIgnoringCase(convertAssetNameToCosmos(asset.prevChain || '')?.id, chain.id),
+              ).length
             );
           }
           return false;
@@ -189,6 +198,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     coinsBalance?.balance,
     chain.chainName,
     chain.displayDenom,
+    chain.id,
     coinGeckoPrice.data,
     cosmosTokensBalance.data,
     currency,
@@ -518,14 +528,30 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const currentGas = useMemo(() => customGas || simulatedGas || sendGas, [customGas, sendGas, simulatedGas]);
 
   useEffect(() => {
-    if (receiverIBCList.length === 0 && senderCoinAndTokenList.length > 0) {
-      setCurrentCoinOrTokenId(senderCoinAndTokenList[0].type === 'coin' ? senderCoinAndTokenList[0].baseDenom : senderCoinAndTokenList[0].address);
-    } else {
+    if (
+      !receiverIBCList.some(
+        (item) =>
+          isEqualsIgnoringCase(item.chain.id, selectedReceiverIBC?.chain.id) &&
+          item.channel === selectedReceiverIBC?.channel &&
+          item.port === selectedReceiverIBC?.port,
+      )
+    ) {
       setReceiverIBC(receiverIBCList[0]);
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentCoinOrTokenId]);
+    if (!senderCoinAndTokenList.some((item) => (item.type === 'coin' ? item.baseDenom === currentCoinOrTokenId : item.address === currentCoinOrTokenId))) {
+      setCurrentCoinOrTokenId(senderCoinAndTokenList[0].type === 'coin' ? senderCoinAndTokenList[0].baseDenom : senderCoinAndTokenList[0].address);
+    }
+  }, [
+    currentCoinOrToken,
+    currentCoinOrTokenId,
+    currentFeeCoin.baseDenom,
+    receiverIBCList,
+    selectedReceiverIBC?.chain.id,
+    selectedReceiverIBC?.channel,
+    selectedReceiverIBC?.port,
+    senderCoinAndTokenList,
+  ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
     setTimeout(() => {
