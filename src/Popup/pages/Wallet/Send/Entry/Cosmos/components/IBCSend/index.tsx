@@ -152,7 +152,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           return false;
         })
         .map((item) => {
-          const name = convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase();
+          const name = convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase() || '';
 
           const availableAmount = coinsBalance?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
           const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
