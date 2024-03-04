@@ -66,7 +66,7 @@ export const TokenLeftSubTitleContainer = styled('div')(({ theme }) => ({
   whiteSpace: 'nowrap',
   wordBreak: 'keep-all',
 
-  maxWidth: '23rem',
+  maxWidth: '15rem',
 
   '& > *': {
     overflow: 'hidden',

@@ -445,6 +445,7 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        name: item.name.toUpperCase(),
         displayDenom: item.symbol,
         imageURL: item.logoURI,
       }));
@@ -492,6 +493,7 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        name: item.name.toUpperCase(),
         displayDenom: item.symbol,
         imageURL: isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address)
           ? currentFromChain.tokenImageURL
@@ -605,6 +607,7 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        name: item.name.toUpperCase(),
         displayDenom: item.symbol,
         imageURL: item.logoURI,
       }));
@@ -625,6 +628,7 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        name: item.name.toUpperCase(),
         displayDenom: item.symbol,
         imageURL: isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address)
           ? currentToChain.tokenImageURL

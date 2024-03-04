@@ -74,7 +74,7 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, coin,
   const coinAmountPrice = useMemo(() => times(displayAmount, coinPrice), [displayAmount, coinPrice]);
 
   const displayName = useMemo(
-    () => (isNative ? currentAptosNetwork.networkName : asset?.description || coinInfo?.data.name || ''),
+    () => (isNative ? currentAptosNetwork.networkName.toUpperCase() : asset?.description?.toUpperCase() || coinInfo?.data.name.toUpperCase() || ''),
     [isNative, currentAptosNetwork.networkName, asset?.description, coinInfo?.data.name],
   );
 

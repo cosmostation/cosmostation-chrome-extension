@@ -33,7 +33,7 @@ type CoinItemProps = {
 export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
   const { extensionStorage } = useExtensionStorage();
 
-  const splitedCoinType = coin.coinType.split('::');
+  const splitedCoinType = useMemo(() => coin.coinType.split('::'), [coin.coinType]);
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: coin.coinType });
 
@@ -43,15 +43,18 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
     () => toDisplayDenomAmount(coin.balance, coinMetadata?.result?.decimals || SUI_TOKEN_TEMPORARY_DECIMALS),
     [coin.balance, coinMetadata?.result?.decimals],
   );
-  const displayDenom = coinMetadata?.result?.symbol || splitedCoinType[2] || '';
+  const displayDenom = useMemo(() => coinMetadata?.result?.symbol || splitedCoinType[2] || '', [coinMetadata?.result?.symbol, splitedCoinType]);
 
-  const displayName = coinMetadata?.result?.name || splitedCoinType[2] || '';
+  const displayName = useMemo(
+    () => coinMetadata?.result?.name.toUpperCase() || splitedCoinType[2].toUpperCase() || '',
+    [coinMetadata?.result?.name, splitedCoinType],
+  );
 
   const price = 0;
 
   const displayValue = useMemo(() => times(displayAmount, price), [displayAmount, price]);
 
-  const imageURL = coinMetadata?.result?.iconUrl || undefined;
+  const imageURL = useMemo(() => coinMetadata?.result?.iconUrl || undefined, [coinMetadata?.result?.iconUrl]);
 
   if (!coinMetadata) {
     return null;

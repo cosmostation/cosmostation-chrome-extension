@@ -73,7 +73,10 @@ const CoinItem = forwardRef<HTMLButtonElement, CoinItemProps>(({ isActive, token
 
   const coinAmountPrice = useMemo(() => times(displayAmount, coinPrice), [displayAmount, coinPrice]);
 
-  const displayName = useMemo(() => (isNative ? currentEthereumNetwork.networkName : token.name), [currentEthereumNetwork.networkName, isNative, token?.name]);
+  const displayName = useMemo(
+    () => (isNative ? currentEthereumNetwork.networkName : token.name?.toUpperCase()),
+    [currentEthereumNetwork.networkName, isNative, token?.name],
+  );
 
   return (
     <CoinButton type="button" data-is-active={isActive ? 1 : 0} ref={ref} {...remainder}>

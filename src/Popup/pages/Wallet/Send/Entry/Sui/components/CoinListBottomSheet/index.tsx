@@ -55,7 +55,7 @@ export default function CoinListBottomSheet({ currentCoinType, onClickCoin, onCl
           ...item,
           decimals: coinMetadata?.result?.decimals || (item.coinType === SUI_COIN ? currentSuiNetwork.decimals : 0),
           displayDenom: coinMetadata?.result?.symbol || item.coinType,
-          name: coinMetadata?.result?.name,
+          name: coinMetadata?.result?.name.toUpperCase(),
           imageURL: coinMetadata?.result?.iconUrl || (item.coinType === SUI_COIN ? chain.tokenImageURL : undefined),
           coinGeckoId: item.coinType === SUI_COIN ? currentSuiNetwork.coinGeckoId : '',
         };
