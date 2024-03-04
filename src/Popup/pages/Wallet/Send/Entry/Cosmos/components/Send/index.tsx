@@ -34,7 +34,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -139,7 +139,7 @@ export default function Send({ chain }: CosmosProps) {
       ...coinAll.map((item) => ({
         ...item,
         type: TYPE.COIN,
-        name: convertAssetNameToCosmos(item.baseChainName || '')?.chainName || getCapitalize(item.baseChainName || ''),
+        name: convertAssetNameToCosmos(item.baseChainName || '')?.chainName || item.baseChainName?.toUpperCase() || '',
       })),
       ...currentCosmosTokens.map((item) => ({
         ...item,

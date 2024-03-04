@@ -36,7 +36,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, convertCosmosToAssetName, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -152,7 +152,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
           return false;
         })
         .map((item) => {
-          const name = convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || '');
+          const name = convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase();
 
           const availableAmount = coinsBalance?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
           const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
