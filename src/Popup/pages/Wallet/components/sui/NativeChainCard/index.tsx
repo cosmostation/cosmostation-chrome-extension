@@ -226,7 +226,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
             </FourthLineContainerItem>
             <FourthLineContainerItem>
               <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.delegated')}</Typography>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.staked')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
                 <Tooltip title={displayDelegationAmount} arrow placement="bottom-end">
@@ -241,7 +241,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
             <FourthLineContainerItem>
               <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.reward')}</Typography>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.earned')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
                 <Tooltip title={displayTotalReward} arrow placement="bottom-end">
@@ -380,7 +380,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
             </FourthLineContainerItem>
             <FourthLineContainerItem>
               <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.delegated')}</Typography>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.staked')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
                 <Skeleton width="8rem" height="1.9rem" />
@@ -388,7 +388,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
             </FourthLineContainerItem>
             <FourthLineContainerItem>
               <FourthLineContainerItemLeft>
-                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.reward')}</Typography>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.earned')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
                 <Skeleton width="8rem" height="1.9rem" />

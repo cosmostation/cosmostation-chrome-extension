@@ -1785,11 +1785,11 @@
             "index": {
               "available": "Available",
               "copied": "Copied",
-              "delegated": "Delegated",
               "depositButton": "Deposit",
+              "earned": "Earned",
               "networkError": "Network error",
-              "reward": "Reward",
               "sendButton": "Send",
+              "staked": "Your Stake",
               "swapButton": "Swap"
             }
           }
