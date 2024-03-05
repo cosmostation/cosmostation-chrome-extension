@@ -11,7 +11,6 @@ import { gte } from '~/Popup/utils/big';
 import type { SuiChain } from '~/types/chain';
 
 import LedgerCheck from '../components/LedgerCheck';
-import ActivityList from '../components/sui/ActivityList';
 import CoinList from '../components/sui/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/sui/NativeChainCard';
 import NFTList from '../components/sui/NFTList';
@@ -27,7 +26,7 @@ export default function Sui({ chain }: SuiProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentSuiNetwork, additionalSuiNetworks } = useCurrentSuiNetwork();
 
-  const tabLabels = ['Coins', 'NFTs', 'Activity'];
+  const tabLabels = ['Coins', 'NFTs'];
 
   const currentHomeTabIndex = useMemo(() => (gte(currentTabIndex, tabLabels.length) ? 0 : currentTabIndex), [currentTabIndex, tabLabels.length]);
 
@@ -82,11 +81,6 @@ export default function Sui({ chain }: SuiProps) {
                   <NFTList chain={chain} />
                 </Suspense>
               </ErrorBoundary>
-            </BottomContainer>
-          </StyledTabPanel>
-          <StyledTabPanel value={tabValue} index={2}>
-            <BottomContainer>
-              <ActivityList />
             </BottomContainer>
           </StyledTabPanel>
         </>

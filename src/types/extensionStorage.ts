@@ -1,19 +1,10 @@
-import type {
-  ACCOUNT_TYPE,
-  APTOS_ACTIVITY_TYPE,
-  COSMOS_ACTIVITY_TYPE,
-  CURRENCY_TYPE,
-  ETHEREUM_ACTIVITY_TYPE,
-  LANGUAGE_TYPE,
-  SUI_ACTIVITY_TYPE,
-} from '~/constants/extensionStorage';
+import type { ACCOUNT_TYPE, COSMOS_ACTIVITY_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/extensionStorage';
 import type { PERMISSION } from '~/constants/sui';
 import type { AptosNetwork, BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken, SuiNetwork } from '~/types/chain';
 import type { TransportType } from '~/types/ledger';
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
 
-import type { Amount } from './cosmos/common';
 import type { CosmosNFT } from './cosmos/nft';
 import type { EthereumNFT } from './ethereum/nft';
 import type { RequestMessage } from './message';
@@ -23,11 +14,8 @@ export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 export type CurrencyType = ValueOf<typeof CURRENCY_TYPE>;
 export type SuiPermissionType = ValueOf<typeof PERMISSION>;
 
-export type ActivityType =
-  | ValueOf<typeof COSMOS_ACTIVITY_TYPE>
-  | ValueOf<typeof ETHEREUM_ACTIVITY_TYPE>
-  | ValueOf<typeof SUI_ACTIVITY_TYPE>
-  | ValueOf<typeof APTOS_ACTIVITY_TYPE>;
+// NOTE 삭제 고려필요
+export type ActivityType = ValueOf<typeof COSMOS_ACTIVITY_TYPE>;
 
 export type HomeTabPath = {
   ethereum: number;
@@ -40,29 +28,12 @@ export type AccountCommon = {
   id: string;
 };
 
-export type ActivityData = {
-  address: string;
-  baseChainUUID: string;
-  timestamp: string;
-  txHash: string;
-  toAddress?: string;
-  amount?: Amount[];
-  type?: ActivityType;
-};
-
 export type NetworkUUID = {
   id: string;
 };
 
 export type AccountAddress = {
   address: string;
-};
-
-export type NetworkActivityMap = Record<NetworkUUID['id'], ActivityData[]>;
-
-export type Activity = {
-  accountId: string;
-  activity: NetworkActivityMap;
 };
 
 export type AllowedOrigin = { accountId: AccountCommon['id']; origin: string };
@@ -140,8 +111,6 @@ export type ExtensionStorage = {
   additionalChains: Chain[];
   language: LanguageType;
   addressBook: AddressInfo[];
-
-  activity: Activity[];
 
   rootPath: Path;
   homeTabIndex: HomeTabPath;

@@ -8,7 +8,7 @@ import EthereumApp, { ledgerService } from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
 
 import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
-import { ETHEREUM, EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ETHEREUM_TX_TYPE } from '~/constants/ethereum';
 import Button from '~/Popup/components/common/Button';
@@ -27,7 +27,6 @@ import { useTransactionCountSWR } from '~/Popup/hooks/SWR/ethereum/useTransactio
 import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useOneInchTokensSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -40,7 +39,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import Header from '~/Popup/pages/Popup/Ethereum/components/Header';
 import { gt, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { determineEthereumActivityType, requestRPC } from '~/Popup/utils/ethereum';
+import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { OneInchSwapTxData } from '~/types/1inch/contract';
@@ -122,8 +121,6 @@ export default function Entry({ queue }: EntryProps) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { setCurrentActivity } = useCurrentActivity();
-
   const { currency } = extensionStorage;
   const { deQueue } = useCurrentQueue();
 
@@ -154,8 +151,6 @@ export default function Entry({ queue }: EntryProps) {
   const originEthereumTx = useMemo(() => params[0], [params]);
 
   const txType = useDetermineTxTypeSWR(originEthereumTx);
-
-  const activityTxType = useMemo(() => determineEthereumActivityType(txType.data), [txType.data]);
 
   const isCustomFee = useMemo(
     () => !!(originEthereumTx.gasPrice || (originEthereumTx.maxFeePerGas && originEthereumTx.maxPriorityFeePerGas)),
@@ -303,39 +298,6 @@ export default function Entry({ queue }: EntryProps) {
 
     return '0';
   }, [decimals, ethereumTx.value, token?.decimals, txType.data?.txDescription?.args, txType.data?.type]);
-
-  const txAmountInfo = useMemo(() => {
-    if (txType.data?.type === 'simpleSend') {
-      return {
-        amount: toBaseDenomAmount(sendDisplayAmount, decimals),
-        denom: EVM_NATIVE_TOKEN_ADDRESS,
-      };
-    }
-
-    if (txType.data?.type === 'transfer' && token) {
-      return {
-        amount: toBaseDenomAmount(sendDisplayAmount, token.decimals),
-        denom: token.address,
-      };
-    }
-
-    if (txType.data?.type === 'swap') {
-      try {
-        const args = txType?.data?.txDescription?.args as unknown as OneInchSwapTxData;
-
-        const srcToken = oneInchTokens.data && Object.values(oneInchTokens.data.tokens).find((item) => isEqualsIgnoringCase(item.address, args?.desc.srcToken));
-
-        return {
-          amount: BigInt(args?.desc?.amount || '0').toString(10),
-          denom: srcToken?.address || '',
-        };
-      } catch {
-        return undefined;
-      }
-    }
-
-    return undefined;
-  }, [decimals, oneInchTokens.data, sendDisplayAmount, token, txType.data?.txDescription?.args, txType.data?.type]);
 
   const sendDisplayDenom = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
@@ -653,14 +615,6 @@ export default function Entry({ queue }: EntryProps) {
                         if (queue.channel === 'inApp') {
                           if (result) {
                             await deQueue(`/popup/tx-receipt/${result}` as unknown as Path);
-                            void setCurrentActivity({
-                              baseChainUUID: currentEthereumNetwork.id,
-                              txHash: result,
-                              address,
-                              type: activityTxType,
-                              amount: txAmountInfo ? [txAmountInfo] : undefined,
-                              toAddress: ethereumTx.to,
-                            });
                           } else {
                             await deQueue();
                           }

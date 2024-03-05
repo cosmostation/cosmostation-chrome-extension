@@ -15,7 +15,6 @@ import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
@@ -51,8 +50,6 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
   const { enqueueSnackbar } = useSnackbar();
-
-  const { setCurrentActivity } = useCurrentActivity();
 
   const { closeTransport, createTransport } = useLedgerTransport();
 
@@ -145,56 +142,6 @@ export default function Entry({ queue, chain }: EntryProps) {
   );
 
   const tx = useMemo(() => ({ ...doc, memo: signingMemo, fee: signingFee }), [doc, signingFee, signingMemo]);
-
-  const txType = useMemo(() => {
-    if (msgs?.length === 1) {
-      return determineAminoActivityType(msgs[0]);
-    }
-
-    if (msgs?.length > 1) {
-      const msgsActivityTypes = msgs.map((msg) => determineAminoActivityType(msg));
-      return msgsActivityTypes.every((a) => a === msgsActivityTypes[0]) ? msgsActivityTypes[0] : 'custom';
-    }
-
-    return 'custom';
-  }, [msgs]);
-
-  const txAmountInfo = useMemo(() => {
-    if (msgs?.length === 1) {
-      if (isAminoSend(msgs[0])) {
-        return {
-          amount: msgs[0].value.amount,
-          toAddress: msgs[0].value.to_address,
-        };
-      }
-      if (isAminoIBCSend(msgs[0])) {
-        return {
-          amount: [msgs[0].value.token],
-          toAddress: msgs[0].value.receiver,
-        };
-      }
-
-      if (isAminoSwapExactAmountIn(msgs[0])) {
-        return {
-          amount: [msgs[0].value.token_in],
-          toAddress: '',
-        };
-      }
-
-      if (isAminoExecuteContract(msgs[0])) {
-        return {
-          amount: msgs[0].value.funds,
-          toAddress: msgs[0].value.contract,
-        };
-      }
-
-      if (isAminoReward(msgs[0]) || isAminoCommission(msgs[0])) {
-        return {};
-      }
-    }
-
-    return {};
-  }, [msgs]);
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -347,14 +294,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                         if (code === 0) {
                           if (txhash) {
                             void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
-                            void setCurrentActivity({
-                              txHash: txhash,
-                              baseChainUUID: chain.id,
-                              address,
-                              type: txType,
-                              amount: txAmountInfo.amount,
-                              toAddress: txAmountInfo.toAddress,
-                            });
                           } else {
                             void deQueue();
                           }

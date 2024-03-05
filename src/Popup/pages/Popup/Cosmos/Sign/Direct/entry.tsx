@@ -12,7 +12,6 @@ import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useProtoBuilderDecodeSWR } from '~/Popup/hooks/SWR/cosmos/useProtoBuilderDecodeSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -20,17 +19,7 @@ import { ceil, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getDefaultAV, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
-import {
-  broadcast,
-  decodeProtobufMessage,
-  determineDirectActivityType,
-  isDirectCommission,
-  isDirectCustom,
-  isDirectExecuteContract,
-  isDirectIBCSend,
-  isDirectSend,
-  protoTxBytes,
-} from '~/Popup/utils/proto';
+import { broadcast, decodeProtobufMessage, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
@@ -56,8 +45,6 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
   const { enqueueSnackbar } = useSnackbar();
-
-  const { setCurrentActivity } = useCurrentActivity();
 
   const { t } = useTranslation();
 
@@ -314,14 +301,6 @@ export default function Entry({ queue, chain }: EntryProps) {
                         if (code === 0) {
                           if (txhash) {
                             void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
-                            void setCurrentActivity({
-                              txHash: txhash,
-                              baseChainUUID: chain.id,
-                              type: txType,
-                              address,
-                              amount: txAmountInfo.amount,
-                              toAddress: txAmountInfo.toAddress,
-                            });
                           } else {
                             void deQueue();
                           }

@@ -10,7 +10,6 @@ import { useCurrentTabIndex } from '~/Popup/hooks/useCurrent/useCurrentTabIndex'
 import { gte } from '~/Popup/utils/big';
 import type { EthereumChain } from '~/types/chain';
 
-import ActivityList from '../components/ethereum/ActivityList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/ethereum/NativeChainCard';
 import NFTList from '../components/ethereum/NFTList';
 import TokenList from '../components/ethereum/TokenList';
@@ -27,7 +26,7 @@ export default function Ethereum({ chain }: EthereumProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
 
-  const tabLabels = ['Coins', 'NFTs', 'Activity'];
+  const tabLabels = ['Coins', 'NFTs'];
 
   const currentHomeTabIndex = useMemo(() => (gte(currentTabIndex, tabLabels.length) ? 0 : currentTabIndex), [currentTabIndex, tabLabels.length]);
 
@@ -81,11 +80,6 @@ export default function Ethereum({ chain }: EthereumProps) {
                   <NFTList chain={chain} />
                 </Suspense>
               </ErrorBoundary>
-            </BottomContainer>
-          </StyledTabPanel>
-          <StyledTabPanel value={tabValue} index={2}>
-            <BottomContainer>
-              <ActivityList />
             </BottomContainer>
           </StyledTabPanel>
         </>

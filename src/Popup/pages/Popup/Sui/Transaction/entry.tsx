@@ -28,7 +28,6 @@ import { useDryRunTransactionBlockSWR } from '~/Popup/hooks/SWR/sui/useDryRunTra
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentActivity } from '~/Popup/hooks/useCurrent/useCurrentActivity';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
@@ -79,8 +78,6 @@ export default function Entry({ queue }: EntryProps) {
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { enqueueSnackbar } = useSnackbar();
-
-  const { setCurrentActivity } = useCurrentActivity();
 
   const { currency } = extensionStorage;
   const { setLoadingLedgerSigning } = useLoading();
@@ -320,11 +317,6 @@ export default function Entry({ queue }: EntryProps) {
 
                       if (queue.channel === 'inApp' && response.digest) {
                         await deQueue(`/popup/tx-receipt/${response.digest}` as unknown as Path);
-                        void setCurrentActivity({
-                          baseChainUUID: currentSuiNetwork.id,
-                          txHash: response.digest,
-                          address,
-                        });
                       } else {
                         await deQueue();
                       }
@@ -364,12 +356,6 @@ export default function Entry({ queue }: EntryProps) {
                           showEvents: true,
                           ...params[0]?.options,
                         },
-                      });
-
-                      void setCurrentActivity({
-                        baseChainUUID: currentSuiNetwork.id,
-                        txHash: response.digest,
-                        address,
                       });
 
                       responseToWeb({
