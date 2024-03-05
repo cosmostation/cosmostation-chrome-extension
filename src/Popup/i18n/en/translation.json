@@ -1783,10 +1783,14 @@
           },
           "NativeChainCard": {
             "index": {
+              "available": "Available",
               "copied": "Copied",
+              "delegated": "Delegated",
               "depositButton": "Deposit",
               "networkError": "Network error",
-              "sendButton": "Send"
+              "reward": "Reward",
+              "sendButton": "Send",
+              "swapButton": "Swap"
             }
           }
         }
