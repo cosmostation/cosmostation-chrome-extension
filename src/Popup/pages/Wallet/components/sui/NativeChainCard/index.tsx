@@ -365,6 +365,39 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       <ThirdLineContainer>
         <Skeleton width="8rem" height="1.9rem" />
       </ThirdLineContainer>
+
+      <StyledAccordion expanded={expanded}>
+        <StyledAccordionSummary />
+        <StyledAccordionDetails>
+          <FourthLineContainer>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.available')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.delegated')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.reward')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+          </FourthLineContainer>
+        </StyledAccordionDetails>
+      </StyledAccordion>
+
       {[TESTNET.id, DEVNET.id].includes(currentSuiNetwork.id) && (
         <FaucetButtonContainer>
           <FaucetButton Icon={Reward16Icon} disabled>
@@ -372,6 +405,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
           </FaucetButton>
         </FaucetButtonContainer>
       )}
+
       <ButtonContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.sui.NativeChainCard.index.depositButton')}
