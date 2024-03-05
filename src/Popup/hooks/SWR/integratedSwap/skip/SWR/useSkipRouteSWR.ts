@@ -30,7 +30,7 @@ type UseSkipRouteSWRProps = {
 };
 
 export function useSkipRouteSWR({ routeParam }: UseSkipRouteSWRProps, config?: SWRConfiguration) {
-  const requestURL = `${SKIP_BASE_URL}/v1/fungible/route`;
+  const requestURL = `${SKIP_BASE_URL}/v1/fungible/route?client_id=cosmostation_extension`;
 
   const fetcher = async ({ fetchUrl, skipRouteParam }: FetchProps) =>
     post<SkipRoutePayload>(fetchUrl, {

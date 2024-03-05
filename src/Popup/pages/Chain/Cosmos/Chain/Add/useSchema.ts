@@ -61,8 +61,8 @@ export function useSchema() {
       }),
     chainName: Joi.string()
       .required()
-      .lowercase()
       .invalid(...invalidChainNames)
+      .insensitive()
       .messages({
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
@@ -109,10 +109,10 @@ export function useSchema() {
     coinType: Joi.string()
       .optional()
       .empty('')
-      .pattern(/^[0-9]+$/)
+      .pattern(/^[0-9]+'?$/)
       .messages({
         'string.base': t('schema.common.string.base'),
-        'string.pattern.base': t('schema.common.number.base'),
+        'string.pattern.base': t('schema.addChainForm.coinType.any.invalid'),
       }),
     addressPrefix: Joi.string()
       .required()

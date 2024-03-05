@@ -101,7 +101,7 @@ export default function Entry() {
           </InputContainer>
           <BottomContainer>
             <BottomGuideButtonContainer>
-              <BottomGuideButton type="button" onClick={() => window.open('https://docs.cosmostation.io/overview/extension/account/add-ledger-account')}>
+              <BottomGuideButton type="button" onClick={() => window.open('https://docs.cosmostation.io/extension/guide/account/add-ledger-account')}>
                 <Typography variant="h5">{t('pages.Account.Create.New.Ledger.entry.guideButton')}</Typography>
               </BottomGuideButton>
             </BottomGuideButtonContainer>

@@ -5,7 +5,7 @@ import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS } from '~/constants/chain';
 import { AFFILIATES, DEFAULT_BPF } from '~/constants/skip';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { gt, times } from '~/Popup/utils/big';
-import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { convertAssetNameToCosmos, findCosmosChainByAddress, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { convertDirectMsgTypeToAminoMsgType, protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgExecuteContract, MsgTransfer } from '~/types/cosmos/amino';
@@ -20,6 +20,7 @@ import { useAccountSWR } from '../../cosmos/useAccountSWR';
 import { useAssetsSWR } from '../../cosmos/useAssetsSWR';
 import { useBlockLatestSWR } from '../../cosmos/useBlockLatestSWR';
 import { useClientStateSWR } from '../../cosmos/useClientStateSWR';
+import { useGasMultiplySWR } from '../../cosmos/useGasMultiplySWR';
 import { useNodeInfoSWR } from '../../cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '../../cosmos/useSimulateSWR';
 
@@ -162,9 +163,13 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
 
   const channelChain = useMemo(() => {
     const asset = assets.data?.find((item) => item.channel === chainInfo.channelId && item.port === chainInfo.port);
+    if (asset?.origin_chain) {
+      return convertAssetNameToCosmos(asset.origin_chain);
+    }
+    const transferMsg = skipSwapParsedTx.find((msg) => msg?.msg_type_url === 'cosmos-sdk/MsgTransfer');
 
-    return convertAssetNameToCosmos(asset?.origin_chain || '');
-  }, [assets.data, chainInfo.channelId, chainInfo.port]);
+    return findCosmosChainByAddress(transferMsg?.msg.receiver);
+  }, [assets.data, chainInfo.channelId, chainInfo.port, skipSwapParsedTx]);
 
   const channelChainLatestBlock = useBlockLatestSWR(channelChain);
 
@@ -180,7 +185,7 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
   const skipSwapAminoTxMsgs = useMemo(
     () =>
       skipSwapParsedTx.map((item) => {
-        if (item?.msg_type_url === 'cosmos-sdk/MsgTransfer' && revisionHeight && revisionNumber) {
+        if (item?.msg_type_url === 'cosmos-sdk/MsgTransfer' && !!revisionHeight && !!revisionNumber) {
           return {
             ...item,
             msg: {
@@ -242,10 +247,12 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
 
   const skipSwapSimulate = useSimulateSWR({ chain: fromChain || COSMOS_CHAINS[0], txBytes: skipSwapProtoTx?.tx_bytes });
 
-  const skipSwapSimulatedGas = useMemo(
-    () => (skipSwapSimulate.data?.gas_info?.gas_used ? times(skipSwapSimulate.data.gas_info.gas_used, getDefaultAV(fromChain), 0) : undefined),
+  const { data: gasMultiply } = useGasMultiplySWR(fromChain);
 
-    [fromChain, skipSwapSimulate.data?.gas_info?.gas_used],
+  const skipSwapSimulatedGas = useMemo(
+    () => (skipSwapSimulate.data?.gas_info?.gas_used ? times(skipSwapSimulate.data.gas_info.gas_used, gasMultiply, 0) : undefined),
+
+    [gasMultiply, skipSwapSimulate.data?.gas_info?.gas_used],
   );
 
   return { skipRoute, skipSwapVenueChain, skipSwapTx, memoizedSkipSwapAminoTx, skipSwapAminoTx, skipSwapSimulatedGas };

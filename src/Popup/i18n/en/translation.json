@@ -462,7 +462,7 @@
               "chainIdPlaceholder": "Chain id (e.g., cosmoshub-1)",
               "chainNamePlaceholder": "Custom Chain name",
               "coinGeckoIdPlaceholder": "Coingecko API id (option)",
-              "coinTypePlaceholder": "Coin type (option) (default: 118)",
+              "coinTypePlaceholder": "Coin type (option) (default: 118')",
               "cosmWasmPlaceholder": "Cosmwasm (option)",
               "decimalsPlaceholder": "Decimals (option) (default: 6)",
               "displayDenomPlaceholder": "Currency symbol",
@@ -475,7 +475,7 @@
               "restURLPlaceholder": "Rest URL",
               "sendGasPlaceholder": "Send Gas value (option)",
               "submitButton": "Add a custom chain",
-              "typePlaceholder": "Chain type (option)",
+              "typePlaceholder": "Chain type (option) (e.g. ETHERMINT)",
               "warning": "A malicious chain provider can lie about the state of the blockchain and record your chain activity. Only add custom chain you trust."
             },
             "layout": {
@@ -815,6 +815,7 @@
               "cancelButton": "Cancel",
               "confirmButton": "Confirm",
               "dataTab": "Data",
+              "decodedDataTab": "Decoded",
               "detailTab": "Details",
               "failedTransfer": "Failed to transfer",
               "insufficientFeeAmount": "Insufficient fee",
@@ -831,6 +832,11 @@
             }
           },
           "components": {
+            "DecodedTx": {
+              "index": {
+                "warning": "Some transactions may not show data because of decryption failures, but this doesn't affect the transaction execution."
+              }
+            },
             "Memo": {
               "index": {
                 "memo": "Memo",
@@ -1585,7 +1591,6 @@
           "insufficientFeeAmount": "Insufficient fee",
           "invalidAmount": "Invalid amount",
           "invalidOutputAmount": "Invalid output amount",
-          "invalidPriceImpact": "Too high Price Impact",
           "invalidSwapTx": "Invalid tx data",
           "lessThanFeeWarningDescription1": "You do not have enough balance to cover the estimated gas costs for this transaction. Make sure you have more than",
           "lessThanFeeWarningDescription2": "before trying again.",
@@ -1863,6 +1868,11 @@
       "chainName": {
         "any": {
           "invalid": "Already registered"
+        }
+      },
+      "coinType": {
+        "any": {
+          "invalid": "The input format is not valid"
         }
       },
       "decimal": {

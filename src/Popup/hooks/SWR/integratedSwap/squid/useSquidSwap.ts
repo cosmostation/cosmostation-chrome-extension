@@ -4,7 +4,7 @@ import { Interface } from '@ethersproject/abi';
 
 import { ERC20_ABI } from '~/constants/abi';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
-import { SQUID_CONTRACT_ADDRESS, SQUID_MAX_APPROVE_AMOUNT } from '~/constants/squid';
+import { SQUID_COLLECT_FEE_BPF, SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS, SQUID_CONTRACT_ADDRESS, SQUID_MAX_APPROVE_AMOUNT } from '~/constants/squid';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -89,8 +89,9 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
   const allowanceTxBaseFee = useMemo(() => times(allowanceBaseFeePerGas, allowanceBaseEstimatedGas), [allowanceBaseEstimatedGas, allowanceBaseFeePerGas]);
 
   const squidRouteParam = useMemo<GetRoute | undefined>(() => {
-    if (fromChain?.chainId && fromToken?.address && gt(inputBaseAmount, '0') && toChain?.chainId && toToken?.address && receiverAddress) {
+    if (fromChain?.chainId && fromToken?.address && gt(inputBaseAmount, '0') && toChain?.chainId && toToken?.address && receiverAddress && senderAddress) {
       return {
+        fromAddress: senderAddress,
         fromChain: fromChain.chainId,
         fromToken: fromToken.address,
         fromAmount: inputBaseAmount,
@@ -98,49 +99,54 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
         toToken: toToken.address,
         toAddress: receiverAddress,
         slippage: Number(slippage),
+        collectFees: {
+          integratorAddress: SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS,
+          fee: SQUID_COLLECT_FEE_BPF,
+        },
         enableForecall: true,
+        enableExpress: false,
       };
     }
     return undefined;
-  }, [toToken?.address, fromChain?.chainId, inputBaseAmount, receiverAddress, slippage, fromToken?.address, toChain?.chainId]);
+  }, [toToken?.address, fromChain?.chainId, inputBaseAmount, receiverAddress, slippage, fromToken?.address, toChain?.chainId, senderAddress]);
 
-  const squidRoute = useSquidRouteSWR(squidRouteParam);
+  const squidEthRoute = useSquidRouteSWR(squidRouteParam);
 
-  const squidProcessingTime = useMemo(() => divide(squidRoute.data?.route.estimate.estimatedRouteDuration || '0', '60'), [squidRoute.data]);
+  const squidEthProcessingTime = useMemo(() => divide(squidEthRoute.data?.route.estimate.estimatedRouteDuration || '0', '60'), [squidEthRoute.data]);
 
-  const squidSourceChainGasCosts = useMemo(() => {
-    const feeTokenAddressList = Array.from(new Set([...(squidRoute.data?.route.estimate.gasCosts.map((item) => item.token.address) || [])]));
+  const squidEthSourceChainGasCosts = useMemo(() => {
+    const feeTokenAddressList = Array.from(new Set([...(squidEthRoute.data?.route.estimate.gasCosts.map((item) => item.token.address) || [])]));
 
     return feeTokenAddressList.map((item) => ({
       amount:
-        squidRoute.data?.route.estimate.gasCosts
+        squidEthRoute.data?.route.estimate.gasCosts
           .filter((gasCost) => isEqualsIgnoringCase(gasCost.token.address, item))
           .reduce((ac, cu) => (isEqualsIgnoringCase(item, cu.token.address) ? plus(ac, cu.amount) : ac), '0') || '0',
-      feeToken: squidRoute.data?.route.estimate.gasCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token,
-      feeItems: [...(squidRoute.data?.route.estimate.gasCosts.filter((fee) => isEqualsIgnoringCase(fee.token.address, item)) || [])],
+      feeToken: squidEthRoute.data?.route.estimate.gasCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token,
+      feeItems: [...(squidEthRoute.data?.route.estimate.gasCosts.filter((fee) => isEqualsIgnoringCase(fee.token.address, item)) || [])],
     }));
-  }, [squidRoute.data?.route.estimate.gasCosts]);
+  }, [squidEthRoute.data?.route.estimate.gasCosts]);
 
-  const squidCrossChainFeeCosts = useMemo(() => {
-    const feeTokenAddressList = Array.from(new Set([...(squidRoute.data?.route.estimate.feeCosts.map((item) => item.token.address) || [])]));
+  const squidEthCrossChainFeeCosts = useMemo(() => {
+    const feeTokenAddressList = Array.from(new Set([...(squidEthRoute.data?.route.estimate.feeCosts.map((item) => item.token.address) || [])]));
 
     return feeTokenAddressList.map((item) => ({
       amount:
-        squidRoute.data?.route.estimate.feeCosts
+        squidEthRoute.data?.route.estimate.feeCosts
           .filter((feeCost) => isEqualsIgnoringCase(feeCost.token.address, item) && feeCost.name !== 'Express Fee')
           .reduce((ac, cu) => (isEqualsIgnoringCase(item, cu.token.address) ? plus(ac, cu.amount) : ac), '0') || '0',
       feeToken: {
-        ...squidRoute.data?.route.estimate.feeCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token,
+        ...squidEthRoute.data?.route.estimate.feeCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token,
         coingeckoId:
           cosmosToTokenAssets.data.find(
             (asset) =>
               asset.counter_party?.denom &&
               asset.counter_party.denom ===
                 supportedSquidTokens?.mainnet.find((token) => token.contracts.find((contractToken) => isEqualsIgnoringCase(contractToken.address, item)))?.id,
-          )?.coinGeckoId || squidRoute.data?.route.estimate.feeCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token.coingeckoId,
+          )?.coinGeckoId || squidEthRoute.data?.route.estimate.feeCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token.coingeckoId,
       } as TokenData | undefined,
       feeItems: [
-        ...(squidRoute.data?.route.estimate.feeCosts
+        ...(squidEthRoute.data?.route.estimate.feeCosts
           .filter((fee) => isEqualsIgnoringCase(fee.token.address, item))
           .map((fee) => ({
             ...fee,
@@ -159,15 +165,21 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
           })) || []),
       ],
     }));
-  }, [cosmosToTokenAssets.data, squidRoute.data?.route.estimate.feeCosts, supportedSquidTokens?.mainnet]);
+  }, [cosmosToTokenAssets.data, squidEthRoute.data?.route.estimate.feeCosts, supportedSquidTokens?.mainnet]);
 
-  const squidSourceChainFeeAmount = useMemo(() => squidSourceChainGasCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0', [squidSourceChainGasCosts]);
+  const squidEthSourceChainFeeAmount = useMemo(
+    () => squidEthSourceChainGasCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0',
+    [squidEthSourceChainGasCosts],
+  );
 
-  const squidCrossChainFeeAmount = useMemo(() => squidCrossChainFeeCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0', [squidCrossChainFeeCosts]);
+  const squidEthCrossChainFeeAmount = useMemo(
+    () => squidEthCrossChainFeeCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0',
+    [squidEthCrossChainFeeCosts],
+  );
 
-  const squidSourceChainTotalFeePrice = useMemo(
+  const squidEthSourceChainTotalFeePrice = useMemo(
     () =>
-      squidSourceChainGasCosts.reduce(
+      squidEthSourceChainGasCosts.reduce(
         (ac, cu) =>
           plus(
             ac,
@@ -178,12 +190,12 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
           ),
         '0',
       ) || '0',
-    [extensionStorage.currency, coinGeckoPrice.data, squidSourceChainGasCosts],
+    [extensionStorage.currency, coinGeckoPrice.data, squidEthSourceChainGasCosts],
   );
 
   const squidCrossChainTotalFeePrice = useMemo(
     () =>
-      squidCrossChainFeeCosts?.reduce(
+      squidEthCrossChainFeeCosts?.reduce(
         (ac, cu) =>
           plus(
             ac,
@@ -194,22 +206,22 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
           ),
         '0',
       ) || '0',
-    [extensionStorage.currency, coinGeckoPrice.data, squidCrossChainFeeCosts],
+    [extensionStorage.currency, coinGeckoPrice.data, squidEthCrossChainFeeCosts],
   );
 
-  const estimatedSquidFeePrice = useMemo(
-    () => plus(squidSourceChainTotalFeePrice, squidCrossChainTotalFeePrice),
-    [squidCrossChainTotalFeePrice, squidSourceChainTotalFeePrice],
+  const estimatedSquidEthFeePrice = useMemo(
+    () => plus(squidEthSourceChainTotalFeePrice, squidCrossChainTotalFeePrice),
+    [squidCrossChainTotalFeePrice, squidEthSourceChainTotalFeePrice],
   );
 
   return {
-    squidRoute,
-    squidProcessingTime,
-    squidSourceChainGasCosts,
-    squidCrossChainFeeCosts,
-    squidSourceChainFeeAmount,
-    squidCrossChainFeeAmount,
-    estimatedSquidFeePrice,
+    squidEthRoute,
+    squidEthProcessingTime,
+    squidEthSourceChainGasCosts,
+    squidEthCrossChainFeeCosts,
+    squidEthSourceChainFeeAmount,
+    squidEthCrossChainFeeAmount,
+    estimatedSquidEthFeePrice,
     allowance,
     allowanceTx,
     allowanceTxBaseFee,

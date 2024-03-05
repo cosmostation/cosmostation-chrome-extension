@@ -3,6 +3,7 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { isAxiosError, post } from '~/Popup/utils/axios';
+import { chunkArray } from '~/Popup/utils/common';
 import type { SuiNetwork } from '~/types/chain';
 import type { GetObjectsResponse } from '~/types/sui/rpc';
 
@@ -25,11 +26,19 @@ type FetchParams = {
   options: Options;
 };
 
+type MultiFetcherParams = {
+  url: string;
+  objectIds: string[];
+  options: Options;
+  method: string;
+};
+
 type UseGetObjectsSWRProps = {
   objectIds: string[];
   network?: SuiNetwork;
   options?: Options;
 };
+
 export function useGetObjectsSWR({ network, objectIds, options }: UseGetObjectsSWRProps, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
@@ -58,14 +67,40 @@ export function useGetObjectsSWR({ network, objectIds, options }: UseGetObjectsS
     }
   };
 
-  const { data, error, mutate } = useSWR<GetObjectsResponse | null, AxiosError>({ url: rpcURL, objectIds, options, method: 'sui_multiGetObjects' }, fetcher, {
-    revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
-    errorRetryCount: 0,
-    isPaused: () => !objectIds,
-    ...config,
-  });
+  const multiFetcher = (param: MultiFetcherParams) => {
+    const chunkedArray = chunkArray(param.objectIds, 50);
+
+    return Promise.all(
+      chunkedArray.map((item) => {
+        const fetcherParam = {
+          url: param.url,
+          objectIds: item,
+          options: param.options,
+          method: param.method,
+        };
+
+        return fetcher(fetcherParam);
+      }),
+    );
+  };
+
+  const { data, error, mutate } = useSWR<(GetObjectsResponse | null)[], AxiosError>(
+    {
+      url: rpcURL,
+      objectIds,
+      options,
+      method: 'sui_multiGetObjects',
+    },
+    multiFetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 14000,
+      refreshInterval: 15000,
+      errorRetryCount: 0,
+      isPaused: () => !objectIds.length,
+      ...config,
+    },
+  );
 
   return { data, error, mutate };
 }

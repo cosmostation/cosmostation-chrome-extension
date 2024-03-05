@@ -1,14 +1,18 @@
 import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
+import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
 import { divide, plus } from '~/Popup/utils/big';
 import type { FeeType } from '~/types/ethereum/common';
 
 import { useFeeHistorySWR } from './useFeeHistorySWR';
 import { useGasPriceSWR } from './useGasPriceSWR';
 import { useGetBlockByNumberSWR } from './useGetBlockByNumberSWR';
+import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNetwork';
 
 export function useFeeSWR(config?: SWRConfiguration) {
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
+
   const block = useGetBlockByNumberSWR(['pending', false], config);
   const feeHistory = useFeeHistorySWR([20, 'pending', [10, 30, 50, 70, 90]], config);
   const gasPrice = useGasPriceSWR(config);
@@ -51,6 +55,10 @@ export function useFeeSWR(config?: SWRConfiguration) {
   const type: FeeType | null = (() => {
     if (!currentFee && !currentGasPrice) {
       return null;
+    }
+
+    if (currentEthereumNetwork.id === SMART_CHAIN.id) {
+      return 'BASIC';
     }
 
     return currentFee ? 'EIP-1559' : 'BASIC';

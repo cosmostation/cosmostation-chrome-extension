@@ -10,7 +10,7 @@ export const NOBLE: CosmosChain = {
   chainName: 'Noble',
   restURL: 'https://lcd-noble.cosmostation.io',
   imageURL: nobleImg,
-  baseDenom: 'uusdc',
+  baseDenom: 'ustake',
   displayDenom: 'NOBLE',
   decimals: 6,
   bip44: {
