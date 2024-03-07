@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
+import { STARGAZE } from '~/constants/chain/cosmos/stargaze';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -94,7 +95,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const isInvalidFeeRequest = useMemo(() => !isEditFee && lt(inputGas, '1') && lt(inputFeeAmount, '1'), [inputFeeAmount, inputGas, isEditFee]);
 
-  const isNeedToReplaceFeeAmount = useMemo(() => isEditFee || isInvalidFeeRequest, [isEditFee, isInvalidFeeRequest]);
+  const isNeedToReplaceFeeAmount = useMemo(() => (isEditFee || isInvalidFeeRequest) && chain.id !== STARGAZE.id, [chain.id, isEditFee, isInvalidFeeRequest]);
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
     feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
