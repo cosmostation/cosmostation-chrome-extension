@@ -25,14 +25,3 @@ export const HOME_TAB_INDEX_TYPE = {
   SUI: 'sui',
   APTOS: 'aptos',
 } as const;
-
-// NOTE 삭제 고려
-export const COSMOS_ACTIVITY_TYPE = {
-  SEND: 'send',
-  IBC_SEND: 'ibcSend',
-  SWAP: 'swap',
-  REWARD: 'reward',
-  COMMISSION: 'commission',
-  CONTRACT: 'contract',
-  CUSTOM: 'custom',
-} as const;

@@ -1,4 +1,3 @@
-import { COSMOS_ACTIVITY_TYPE } from '~/constants/extensionStorage';
 import { post } from '~/Popup/utils/axios';
 import { isAminoCommission, isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
@@ -297,21 +296,4 @@ export function convertAminoMsgTypeToDirectMsgType(typeUrl: string) {
   }
 
   return '';
-}
-
-export function determineDirectActivityType(msg: ProtoMsg) {
-  if (isDirectSend(msg)) {
-    return COSMOS_ACTIVITY_TYPE.SEND;
-  }
-  if (isDirectIBCSend(msg)) {
-    return COSMOS_ACTIVITY_TYPE.IBC_SEND;
-  }
-  if (isDirectCommission(msg)) {
-    return COSMOS_ACTIVITY_TYPE.COMMISSION;
-  }
-  if (isDirectExecuteContract(msg)) {
-    return COSMOS_ACTIVITY_TYPE.CONTRACT;
-  }
-
-  return COSMOS_ACTIVITY_TYPE.CUSTOM;
 }

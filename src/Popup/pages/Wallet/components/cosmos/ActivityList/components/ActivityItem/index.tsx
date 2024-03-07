@@ -2,9 +2,11 @@ import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import Tooltip from '~/Popup/components/common/Tooltip';
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { convertToLocales } from '~/Popup/utils/common';
+import { getMsgType } from '~/Popup/utils/cosmos';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Activity } from '~/types/cosmos/activity';
@@ -42,6 +44,13 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
 
   const { data } = activity;
 
+  const accounts = useAccounts();
+
+  const address = useMemo(
+    () => accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '',
+    [accounts.data, chain.id, extensionStorage.selectedAccountId],
+  );
+
   const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/transactions/${data?.txhash || ''}` : ''), [data?.txhash, explorerURL]);
 
   const formattedTimestamp = useMemo(() => {
@@ -58,10 +67,10 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
     });
   }, [data?.timestamp, language]);
 
+  // const aa = getDpCoin(activity, chain);
+
   // const shortenedToAddress = useMemo(() => shorterAddress(activity.toAddress || txHash, 11), [activity.toAddress, txHash]);
   const shortenedToAddress = useMemo(() => shorterAddress('fsdf', 11), []);
-
-  // NOTE data.tx['/cosmos-tx-v1beta1-Tx'].body.messages[0]['@type]
 
   // const trasactionIcon = useMemo(() => {
   //   if (type === COSMOS_ACTIVITY_TYPE.SEND) {
@@ -102,7 +111,7 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
   //   return t('pages.Wallet.components.cosmos.ActivityList.components.ActivityItem.index.transaction');
   // }, [t, type]);
 
-  const title = useMemo(() => data?.height, [data?.height]);
+  const title = useMemo(() => getMsgType(activity, address), [activity, address]);
 
   return (
     <StyledButton onClick={() => window.open(txDetailExplorerURL)} disabled={!txDetailExplorerURL}>

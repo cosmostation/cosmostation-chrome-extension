@@ -1,4 +1,4 @@
-import type { ACCOUNT_TYPE, COSMOS_ACTIVITY_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/extensionStorage';
+import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/extensionStorage';
 import type { PERMISSION } from '~/constants/sui';
 import type { AptosNetwork, BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken, SuiNetwork } from '~/types/chain';
 import type { TransportType } from '~/types/ledger';
@@ -13,9 +13,6 @@ export type AccountType = ValueOf<typeof ACCOUNT_TYPE>;
 export type LanguageType = ValueOf<typeof LANGUAGE_TYPE>;
 export type CurrencyType = ValueOf<typeof CURRENCY_TYPE>;
 export type SuiPermissionType = ValueOf<typeof PERMISSION>;
-
-// NOTE 삭제 고려필요
-export type ActivityType = ValueOf<typeof COSMOS_ACTIVITY_TYPE>;
 
 export type HomeTabPath = {
   ethereum: number;
