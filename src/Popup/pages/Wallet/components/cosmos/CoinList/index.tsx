@@ -3,6 +3,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { Typography } from '@mui/material';
 
 import AddButton from '~/Popup/components/AddButton';
+import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
@@ -18,8 +19,18 @@ import TokenItem, { TokenItemError, TokenItemSkeleton } from './components/Token
 import TypeButton from './components/TypeButton';
 import type { TypeInfo } from './components/TypePopover';
 import TypePopover from './components/TypePopover';
-import { AddTokenButton, AddTokenTextContainer, Container, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
+import {
+  AddTokenButton,
+  AddTokenTextContainer,
+  Container,
+  EmptyAssetContainer,
+  ListContainer,
+  ListTitleContainer,
+  ListTitleLeftContainer,
+  ListTitleRightContainer,
+} from './styled';
 
+import NoCoinIcon from '~/images/icons/NoCoin.svg';
 import Plus16Icon from '~/images/icons/Plus16.svg';
 
 type CoinListProps = {
@@ -94,126 +105,134 @@ export default function CoinList({ chain }: CoinListProps) {
 
   const { navigate } = useNavigate();
 
-  if (nativeCoinCnt + bridgedCoinCnt + ibcCointCnt + tokenCnt < 1 && !chain.cosmWasm) {
-    return null;
-  }
-
-  const isExistCoinOrToken = nativeCoinCnt + ibcCointCnt + tokenCnt > 0;
+  const isExistCoinOrToken = useMemo(() => nativeCoinCnt + ibcCointCnt + tokenCnt > 0, [ibcCointCnt, nativeCoinCnt, tokenCnt]);
 
   return (
     <Container>
-      <ListTitleContainer>
-        <ListTitleLeftContainer>
-          <TypeButton
-            text={currentTypeInfo.name}
-            number={currentTypeInfo.count}
-            onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
-            isActive={isOpenPopover}
+      {nativeCoinCnt + bridgedCoinCnt + ibcCointCnt + tokenCnt < 1 && !chain.cosmWasm ? (
+        <EmptyAssetContainer>
+          <EmptyAsset
+            Icon={NoCoinIcon}
+            headerText={t('pages.Wallet.components.cosmos.CoinList.index.defaultHeader')}
+            subHeaderText={t('pages.Wallet.components.cosmos.CoinList.index.defaultSubHeader')}
           />
-        </ListTitleLeftContainer>
-        <ListTitleRightContainer>
-          {isExistCoinOrToken && chain.cosmWasm && (
-            <AddButton type="button" onClick={() => navigate('/chain/cosmos/token/add/cw20/search')}>
-              {t('pages.Wallet.components.cosmos.CoinList.index.importTokenButton')}
-            </AddButton>
-          )}
-        </ListTitleRightContainer>
-      </ListTitleContainer>
-      <ListContainer>
-        {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'native') &&
-          sortedNativeCoins.map((item) => (
-            <CoinItem
-              disabled={!gt(item.availableAmount, '0')}
-              key={item.baseDenom}
-              onClick={() => navigate(`/wallet/send/${item.baseDenom ? `${encodeURIComponent(item.baseDenom)}` : ''}` as unknown as Path)}
-              amount={item.totalAmount}
-              channel={item.channelId}
-              decimals={item.decimals}
-              displayDenom={item.displayDenom}
-              imageURL={item.imageURL}
-              coinGeckoId={item.coinGeckoId}
-            />
-          ))}
-
-        {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'bridge') &&
-          sortedBridgedCoins.map((item) => (
-            <CoinItem
-              disabled={!gt(item.availableAmount, '0')}
-              key={item.baseDenom}
-              onClick={() => navigate(`/wallet/send/${item.baseDenom ? `${encodeURIComponent(item.baseDenom)}` : ''}` as unknown as Path)}
-              amount={item.totalAmount}
-              channel={item.channelId}
-              decimals={item.decimals}
-              displayDenom={item.displayDenom}
-              imageURL={item.imageURL}
-              coinGeckoId={item.coinGeckoId}
-            />
-          ))}
-
-        {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'ibc') &&
-          sortedIbcCoins.map((item) => (
-            <CoinItem
-              disabled={!gt(item.availableAmount, '0')}
-              key={item.baseDenom}
-              onClick={() => navigate(`/wallet/send/${item.baseDenom ? `${encodeURIComponent(item.baseDenom)}` : ''}` as unknown as Path)}
-              amount={item.totalAmount}
-              channel={item.channelId}
-              decimals={item.decimals}
-              displayDenom={item.displayDenom}
-              imageURL={item.imageURL}
-              coinGeckoId={item.coinGeckoId}
-            />
-          ))}
-
-        {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'cw20') &&
-          sortedTokens.map((item) => (
-            <ErrorBoundary
-              key={item.id}
-              FallbackComponent={
-                // eslint-disable-next-line react/no-unstable-nested-components
-                (props) => <TokenItemError {...props} address={address} chain={chain} token={item} onClickDelete={() => removeCosmosToken(item)} />
-              }
-            >
-              <Suspense fallback={<TokenItemSkeleton token={item} />}>
-                <TokenItem
-                  address={address}
-                  chain={chain}
-                  token={item}
-                  onClick={() => navigate(`/wallet/send/${item.address ? `${encodeURIComponent(item.address)}` : ''}` as unknown as Path)}
-                  onClickDelete={() => removeCosmosToken(item)}
+        </EmptyAssetContainer>
+      ) : (
+        <>
+          <ListTitleContainer>
+            <ListTitleLeftContainer>
+              <TypeButton
+                text={currentTypeInfo.name}
+                number={currentTypeInfo.count}
+                onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
+                isActive={isOpenPopover}
+              />
+            </ListTitleLeftContainer>
+            <ListTitleRightContainer>
+              {isExistCoinOrToken && chain.cosmWasm && (
+                <AddButton type="button" onClick={() => navigate('/chain/cosmos/token/add/cw20/search')}>
+                  {t('pages.Wallet.components.cosmos.CoinList.index.importTokenButton')}
+                </AddButton>
+              )}
+            </ListTitleRightContainer>
+          </ListTitleContainer>
+          <ListContainer>
+            {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'native') &&
+              sortedNativeCoins.map((item) => (
+                <CoinItem
+                  disabled={!gt(item.availableAmount, '0')}
+                  key={item.baseDenom}
+                  onClick={() => navigate(`/wallet/send/${item.baseDenom ? `${encodeURIComponent(item.baseDenom)}` : ''}` as unknown as Path)}
+                  amount={item.totalAmount}
+                  channel={item.channelId}
+                  decimals={item.decimals}
+                  displayDenom={item.displayDenom}
+                  imageURL={item.imageURL}
+                  coinGeckoId={item.coinGeckoId}
                 />
-              </Suspense>
-            </ErrorBoundary>
-          ))}
+              ))}
 
-        {!isExistCoinOrToken && chain.cosmWasm && (
-          <AddTokenButton type="button" onClick={() => navigate('/chain/cosmos/token/add/cw20/search')}>
-            <Plus16Icon />
-            <AddTokenTextContainer>
-              <Typography variant="h6">{t('pages.Wallet.components.cosmos.CoinList.index.importTokenButton')}</Typography>
-            </AddTokenTextContainer>
-          </AddTokenButton>
-        )}
-      </ListContainer>
-      <TypePopover
-        marginThreshold={0}
-        currentTypeInfo={currentTypeInfo}
-        typeInfos={typeInfos}
-        onClickType={(selectedTypeInfo) => {
-          setCurrentType(selectedTypeInfo.type);
-        }}
-        open={isOpenPopover}
-        onClose={() => setPopoverAnchorEl(null)}
-        anchorEl={popoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-      />
+            {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'bridge') &&
+              sortedBridgedCoins.map((item) => (
+                <CoinItem
+                  disabled={!gt(item.availableAmount, '0')}
+                  key={item.baseDenom}
+                  onClick={() => navigate(`/wallet/send/${item.baseDenom ? `${encodeURIComponent(item.baseDenom)}` : ''}` as unknown as Path)}
+                  amount={item.totalAmount}
+                  channel={item.channelId}
+                  decimals={item.decimals}
+                  displayDenom={item.displayDenom}
+                  imageURL={item.imageURL}
+                  coinGeckoId={item.coinGeckoId}
+                />
+              ))}
+
+            {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'ibc') &&
+              sortedIbcCoins.map((item) => (
+                <CoinItem
+                  disabled={!gt(item.availableAmount, '0')}
+                  key={item.baseDenom}
+                  onClick={() => navigate(`/wallet/send/${item.baseDenom ? `${encodeURIComponent(item.baseDenom)}` : ''}` as unknown as Path)}
+                  amount={item.totalAmount}
+                  channel={item.channelId}
+                  decimals={item.decimals}
+                  displayDenom={item.displayDenom}
+                  imageURL={item.imageURL}
+                  coinGeckoId={item.coinGeckoId}
+                />
+              ))}
+
+            {(currentTypeInfo.type === 'all' || currentTypeInfo.type === 'cw20') &&
+              sortedTokens.map((item) => (
+                <ErrorBoundary
+                  key={item.id}
+                  FallbackComponent={
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    (props) => <TokenItemError {...props} address={address} chain={chain} token={item} onClickDelete={() => removeCosmosToken(item)} />
+                  }
+                >
+                  <Suspense fallback={<TokenItemSkeleton token={item} />}>
+                    <TokenItem
+                      address={address}
+                      chain={chain}
+                      token={item}
+                      onClick={() => navigate(`/wallet/send/${item.address ? `${encodeURIComponent(item.address)}` : ''}` as unknown as Path)}
+                      onClickDelete={() => removeCosmosToken(item)}
+                    />
+                  </Suspense>
+                </ErrorBoundary>
+              ))}
+
+            {!isExistCoinOrToken && chain.cosmWasm && (
+              <AddTokenButton type="button" onClick={() => navigate('/chain/cosmos/token/add/cw20/search')}>
+                <Plus16Icon />
+                <AddTokenTextContainer>
+                  <Typography variant="h6">{t('pages.Wallet.components.cosmos.CoinList.index.importTokenButton')}</Typography>
+                </AddTokenTextContainer>
+              </AddTokenButton>
+            )}
+          </ListContainer>
+          <TypePopover
+            marginThreshold={0}
+            currentTypeInfo={currentTypeInfo}
+            typeInfos={typeInfos}
+            onClickType={(selectedTypeInfo) => {
+              setCurrentType(selectedTypeInfo.type);
+            }}
+            open={isOpenPopover}
+            onClose={() => setPopoverAnchorEl(null)}
+            anchorEl={popoverAnchorEl}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+          />
+        </>
+      )}
     </Container>
   );
 }

@@ -1723,6 +1723,8 @@
               }
             },
             "index": {
+              "defaultHeader": "No coins",
+              "defaultSubHeader": "No coins to display",
               "importTokenButton": "Import token"
             }
           },
@@ -1843,7 +1845,9 @@
           },
           "CoinList": {
             "index": {
-              "coin": "Coin"
+              "coin": "Coin",
+              "defaultHeader": "No coins",
+              "defaultSubHeader": "No coins to display"
             }
           },
           "NFTList": {

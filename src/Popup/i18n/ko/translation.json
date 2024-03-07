@@ -1723,6 +1723,8 @@
               }
             },
             "index": {
+              "defaultHeader": "자산이 없습니다",
+              "defaultSubHeader": "표시 가능한 코인이 없습니다",
               "importTokenButton": "토큰 가져오기"
             }
           },
@@ -1843,7 +1845,9 @@
           },
           "CoinList": {
             "index": {
-              "coin": "코인"
+              "coin": "코인",
+              "defaultHeader": "자산이 없습니다",
+              "defaultSubHeader": "표시 가능한 코인이 없습니다"
             }
           },
           "NFTList": {

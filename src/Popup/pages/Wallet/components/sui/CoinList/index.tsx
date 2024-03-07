@@ -50,7 +50,14 @@ export default function CoinList({ chain }: CoinListProps) {
   const isExistToken = !!tokenList.length;
 
   if (!isExistToken) {
-    return <EmptyAsset style={{ marginTop: '8.5rem' }} Icon={NoCoinIcon} headerText="No Coins" subHeaderText="Recent Coins will show up here" />;
+    return (
+      <EmptyAsset
+        style={{ marginTop: '8.5rem' }}
+        Icon={NoCoinIcon}
+        headerText={t('pages.Wallet.components.sui.CoinList.index.defaultHeader')}
+        subHeaderText={t('pages.Wallet.components.sui.CoinList.index.defaultSubHeader')}
+      />
+    );
   }
 
   return (
