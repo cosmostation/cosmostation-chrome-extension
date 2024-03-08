@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
+import { DYMENSION } from '~/constants/chain/ethereum/network/dymension';
 import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
 import { divide, plus } from '~/Popup/utils/big';
 import type { FeeType } from '~/types/ethereum/common';
@@ -57,7 +58,9 @@ export function useFeeSWR(config?: SWRConfiguration) {
       return null;
     }
 
-    if (currentEthereumNetwork.id === SMART_CHAIN.id) {
+    const basicFeeOnlyChainIds = [SMART_CHAIN.id, DYMENSION.id];
+
+    if (basicFeeOnlyChainIds.includes(currentEthereumNetwork.id)) {
       return 'BASIC';
     }
 
