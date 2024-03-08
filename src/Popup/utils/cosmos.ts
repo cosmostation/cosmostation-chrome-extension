@@ -40,8 +40,10 @@ import type {
   MsgTransfer,
   SignAminoDoc,
 } from '~/types/cosmos/amino';
+import type { Amount } from '~/types/cosmos/common';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
+import { plus } from './big';
 import { toBase64 } from './string';
 
 export function cosmosURL(chain: CosmosChain) {
@@ -793,4 +795,178 @@ export function getMsgType(activity: Activity, address: string) {
   }
 
   return result;
+}
+
+export function getDpCoin(activity: Activity, chain: CosmosChain, address: string) {
+  const msgs = getTxMsgs(activity);
+
+  // display staking reward amount
+  const result: Amount[] = [];
+
+  if (msgs.length > 0) {
+    const allReward = msgs.every((msg) => typeof msg?.['@type'] !== 'string' || msg['@type'].includes('MsgWithdrawDelegatorReward'));
+
+    if (allReward) {
+      activity.data?.logs?.forEach((log) => {
+        const transferEvent = log.events?.find((e) => e.type === 'transfer');
+
+        if (transferEvent) {
+          const attribute = transferEvent.attributes.find((a) => a.key === 'amount');
+
+          if (attribute) {
+            const rawAmounts = attribute.value.split(',');
+
+            rawAmounts.forEach((rawAmount) => {
+              const match = rawAmount.match(/[0-9]*/);
+
+              if (match) {
+                const amount = match[0];
+                const denom = rawAmount.slice(amount.length);
+                const value = {
+                  denom,
+                  amount,
+                };
+
+                result.push(value);
+              }
+            });
+          }
+        }
+      });
+      return sortedCoins(chain, result);
+    }
+
+    const ibcReceived = msgs.some((msg) => typeof msg?.['@type'] === 'string' && msg['@type'].includes('ibc') && msg['@type'].includes('MsgRecvPacket'));
+
+    if (ibcReceived) {
+      activity.data?.logs?.forEach((log) => {
+        const transferEvent = log.events?.find((event) => event.type === 'transfer');
+
+        if (transferEvent) {
+          transferEvent.attributes?.forEach((attribute) => {
+            if (isValidCosmosAddress(attribute.value) && attribute.value === address) {
+              const amountAttribute = transferEvent.attributes?.find((a) => a.key === 'amount');
+
+              if (amountAttribute) {
+                amountAttribute.value.split(',').forEach((rawAmount) => {
+                  const match = rawAmount.match(/[0-9]*/);
+
+                  if (match) {
+                    const amount = match[0];
+                    const denom = rawAmount.substring(match[0].length);
+                    const value = {
+                      denom,
+                      amount,
+                    };
+                    result.push(value);
+                  }
+                });
+              }
+            }
+          });
+        }
+      });
+
+      return sortedCoins(chain, result);
+    }
+  }
+
+  // display re-invest amount
+  if (msgs.length === 2) {
+    const msgType0 = typeof msgs[0]?.['@type'] === 'string' ? msgs[0]?.['@type'] : '';
+    const msgType1 = typeof msgs[1]?.['@type'] === 'string' ? msgs[1]?.['@type'] : '';
+
+    if (msgType0.includes('MsgWithdrawDelegatorReward') && msgType1.includes('MsgDelegate')) {
+      const msgValue1 = msgs[1][msgType1.replace(/\./g, '-')] as Record<string, unknown>;
+
+      const rawAmount = msgValue1?.amount as { denom: string; amount: string };
+
+      if (rawAmount) {
+        const value = {
+          denom: rawAmount.denom,
+          amount: rawAmount.amount,
+        };
+
+        result.push(value);
+      }
+      return sortedCoins(chain, result);
+    }
+  }
+
+  if (msgs.length === 0 || msgs.length > 1) {
+    return null;
+  }
+
+  const firstMsg = msgs[0];
+  const msgType = typeof firstMsg['@type'] === 'string' ? firstMsg['@type'] : '';
+  const msgValue = firstMsg[msgType.replace(/\./g, '-')] as {
+    amount?: Amount[] | Amount;
+    value?: { amount: Amount[] };
+    token?: Amount;
+  };
+
+  if (msgType.includes('MsgSend')) {
+    const rawAmounts = msgValue.amount;
+
+    if (rawAmounts && Array.isArray(rawAmounts) && rawAmounts.length > 0) {
+      const value = {
+        denom: rawAmounts[0].denom,
+        amount: rawAmounts[0].amount,
+      };
+      result.push(value);
+    }
+
+    const rawVaueAmounts = msgValue.value?.amount;
+    if (rawVaueAmounts) {
+      const value = {
+        denom: rawVaueAmounts[0].denom,
+        amount: rawVaueAmounts[0].amount,
+      };
+      result.push(value);
+    }
+  } else if (
+    msgType.includes('MsgDelegate') ||
+    msgType.includes('MsgUndelegate') ||
+    msgType.includes('MsgBeginRedelegate') ||
+    msgType.includes('MsgCancelUnbondingDelegation')
+  ) {
+    const rawAmount = msgValue.amount;
+
+    if (rawAmount && !Array.isArray(rawAmount)) {
+      const value = {
+        denom: rawAmount.denom,
+        amount: rawAmount.amount,
+      };
+
+      result.push(value);
+    }
+  } else if (msgType.includes('ibc') && msgType.includes('MsgTransfer')) {
+    const rawAmount = msgValue.token;
+
+    if (rawAmount) {
+      const value = {
+        denom: rawAmount.denom,
+        amount: rawAmount.amount,
+      };
+
+      result.push(value);
+    }
+  }
+  return sortedCoins(chain, result);
+}
+
+function sortedCoins(chain: CosmosChain, input: Amount[]): Amount[] {
+  const accumulatedAmounts = input?.reduce((acc: Amount[], amountItem: Amount) => {
+    const duplicateAmountItem = acc.find((c) => c.denom === amountItem.denom);
+
+    if (duplicateAmountItem) {
+      duplicateAmountItem.amount = plus(duplicateAmountItem.amount, amountItem.amount);
+    } else {
+      acc.push(amountItem);
+    }
+
+    return acc;
+  }, []);
+
+  return accumulatedAmounts?.sort((a, b) => (a.denom === chain.baseDenom && b.denom !== chain.baseDenom ? -1 : 0)) || [];
 }

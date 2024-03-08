@@ -39,23 +39,6 @@ export const LeftContainer = styled('div')({
   textAlign: 'left',
 });
 
-type LeftIconContainerProps = {
-  'data-is-contract': boolean;
-};
-
-export const LeftIconContainer = styled('div')<LeftIconContainerProps>(({ theme, ...props }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-
-  '& svg': {
-    '& > path': {
-      fill: props['data-is-contract'] || theme.accentColors.purple01,
-      stroke: !props['data-is-contract'] || theme.accentColors.purple01,
-    },
-  },
-}));
-
 export const LeftTextContainer = styled('div')({
   paddingLeft: '0.8rem',
 

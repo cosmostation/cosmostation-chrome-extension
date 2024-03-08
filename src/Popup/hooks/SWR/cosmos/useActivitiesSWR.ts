@@ -44,7 +44,7 @@ export function useActivitiesSWR(chain: CosmosChain, config?: SWRConfiguration) 
     {
       revalidateOnFocus: false,
       dedupingInterval: 14000,
-      refreshInterval: 0,
+      refreshInterval: 15000,
       errorRetryCount: 0,
       persistSize: true,
       isPaused: () => !chain || !address,
