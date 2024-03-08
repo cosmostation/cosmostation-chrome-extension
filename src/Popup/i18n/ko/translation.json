@@ -1783,10 +1783,16 @@
           },
           "NativeChainCard": {
             "index": {
+              "available": "전송 가능 수량",
               "copied": "복사 되었습니다.",
+              "delegated": "위임 수량",
               "depositButton": "입금",
+              "earned": "전체 스테이킹 리워드",
               "networkError": "네트워크 오류",
-              "sendButton": "보내기"
+              "reward": "이자 수량",
+              "sendButton": "보내기",
+              "staked": "전체 스테이킹 수량",
+              "swapButton": "교환"
             }
           }
         }

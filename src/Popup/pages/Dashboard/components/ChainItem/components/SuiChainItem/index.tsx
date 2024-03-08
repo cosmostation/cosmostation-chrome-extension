@@ -3,8 +3,8 @@ import type { FallbackProps } from 'react-error-boundary';
 import { useSetRecoilState } from 'recoil';
 
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
-import { SUI_COIN } from '~/constants/sui';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useAmountSWR } from '~/Popup/hooks/SWR/sui/useAmountSWR';
 import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -43,9 +43,7 @@ export default function SuiChainItem({ chain, network }: SuiChainItemProps) {
 
   const setDashboard = useSetRecoilState(dashboardState);
 
-  const { tokenBalanceObjects } = useTokenBalanceObjectsSWR({ address: currentAddress, network });
-
-  const totalAmount = useMemo(() => tokenBalanceObjects.find((item) => item.coinType === SUI_COIN)?.balance || '0', [tokenBalanceObjects]);
+  const { totalAmount } = useAmountSWR({ address: currentAddress, network });
 
   const price = useMemo(
     () => (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[extensionStorage.currency]) || 0,
