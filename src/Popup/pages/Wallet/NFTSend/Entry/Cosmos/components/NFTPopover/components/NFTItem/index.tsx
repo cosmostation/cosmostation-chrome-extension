@@ -9,7 +9,6 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
 import { useNFTOwnerSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTOwnerSWR';
 import { toDisplayCWTokenStandard } from '~/Popup/utils/cosmos';
-import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { CosmosNFT } from '~/types/cosmos/nft';
@@ -53,8 +52,8 @@ const NFTItem = forwardRef<HTMLButtonElement, NFTItemProps>(({ chain, nft, isAct
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Tooltip title={nftMeta?.metaData?.name || tokenId} placement="top" arrow>
-              <Typography variant="h5">{nftMeta?.metaData?.name || toDisplayTokenId(tokenId)}</Typography>
+            <Tooltip title={nftMeta?.name || ''} placement="top" arrow>
+              <Typography variant="h5">{nftMeta?.name}</Typography>
             </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>

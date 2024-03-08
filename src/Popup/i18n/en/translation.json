@@ -1796,10 +1796,14 @@
           },
           "NativeChainCard": {
             "index": {
+              "available": "Available",
               "copied": "Copied",
               "depositButton": "Deposit",
+              "earned": "Earned",
               "networkError": "Network error",
-              "sendButton": "Send"
+              "sendButton": "Send",
+              "staked": "Your Stake",
+              "swapButton": "Swap"
             }
           }
         }
