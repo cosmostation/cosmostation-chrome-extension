@@ -94,7 +94,7 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.7.11') {
+        if (extensionManifest.version === '0.7.26') {
           void (async () => {
             await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), NIBIRU.id]);
           })();
