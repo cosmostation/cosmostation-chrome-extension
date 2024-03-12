@@ -136,7 +136,7 @@ export default function Drawer({ onClose, ...remainder }: DrawerProps) {
               {t('components.Header.Drawer.index.provider')}
             </ItemButton>
 
-            <ItemButton Icon={Guide24Icon} onClick={() => window.open('https://docs.cosmostation.io/integration-extension/installation')}>
+            <ItemButton Icon={Guide24Icon} onClick={() => window.open('https://docs.cosmostation.io/extension')}>
               {t('components.Header.Drawer.index.guide')}
             </ItemButton>
 

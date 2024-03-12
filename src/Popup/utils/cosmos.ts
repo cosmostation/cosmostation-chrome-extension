@@ -9,7 +9,7 @@ import { keccak256 } from '@ethersproject/keccak256';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV } from '~/constants/chain';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
-import { CRYPTO_ORG } from '~/constants/chain/cosmos/cryptoOrg';
+import { CRONOS_POS } from '~/constants/chain/cosmos/cronosPos';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
@@ -22,8 +22,8 @@ import { ONOMY } from '~/constants/chain/cosmos/onomy';
 import { PROVENANCE } from '~/constants/chain/cosmos/provenance';
 import { SEI } from '~/constants/chain/cosmos/sei';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
-import { STARNAME } from '~/constants/chain/cosmos/starname';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
+import { UX } from '~/constants/chain/cosmos/ux';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
@@ -46,7 +46,7 @@ import { toBase64 } from './string';
 export function cosmosURL(chain: CosmosChain) {
   const { restURL, id } = chain;
 
-  const isV1BetaClientState = [IXO.id, STARNAME.id, EMONEY.id].includes(chain.id);
+  const isV1BetaClientState = [EMONEY.id].includes(chain.id);
   // reward 중첩 typing!
   return {
     getNodeInfo: () => `${restURL}/cosmos/base/tendermint/v1beta1/node_info`,
@@ -179,7 +179,7 @@ export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {
 
 export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
   const nameMap = {
-    [CRYPTO_ORG.id]: 'crypto-org',
+    [CRONOS_POS.id]: 'crypto-org',
     [ASSET_MANTLE.id]: 'asset-mantle',
     [GRAVITY_BRIDGE.id]: 'gravity-bridge',
     [KI.id]: 'ki-chain',
@@ -187,13 +187,14 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [FETCH_AI.id]: 'fetchai',
     [MARS.id]: 'mars-protocol',
     [ONOMY.id]: 'onomy-protocol',
+    [UX.id]: 'umee',
   };
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
 
 export function convertAssetNameToCosmos(assetName: string) {
   const nameMap = {
-    'crypto-org': CRYPTO_ORG,
+    'crypto-org': CRONOS_POS,
     'asset-mantle': ASSET_MANTLE,
     'gravity-bridge': GRAVITY_BRIDGE,
     'ki-chain': KI,
@@ -201,9 +202,26 @@ export function convertAssetNameToCosmos(assetName: string) {
     fetchai: FETCH_AI,
     'mars-protocol': MARS,
     'onomy-protocol': ONOMY,
+    umee: UX,
   } as Record<string, CosmosChain | undefined>;
 
   return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);
+}
+
+export function findCosmosChainByAddress(address?: string) {
+  if (!address || !isValidCosmosAddress(address)) {
+    return undefined;
+  }
+
+  return COSMOS_CHAINS.find((item) => bech32.decode(address).prefix === item.bech32Prefix.address);
+}
+
+export function isValidCosmosAddress(address: string): boolean {
+  try {
+    return COSMOS_CHAINS.some((chain) => chain.bech32Prefix.address === bech32.decode(address).prefix);
+  } catch (e) {
+    return false;
+  }
 }
 
 export function getMsgSignData(signer: string, message: string) {

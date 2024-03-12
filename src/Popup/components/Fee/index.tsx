@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Typography } from '@mui/material';
 
 import Number from '~/Popup/components/common/Number';
@@ -68,12 +68,15 @@ export default function Fee({
 
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const chainPrice = (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[extensionStorage.currency]) || 0;
+  const chainPrice = useMemo(
+    () => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [coinGeckoId, coinGeckoPrice.data, extensionStorage.currency],
+  );
 
-  const displayFee = toDisplayDenomAmount(ceil(baseFee), decimals);
-  const value = times(displayFee, chainPrice);
+  const displayFee = useMemo(() => toDisplayDenomAmount(ceil(baseFee), decimals), [baseFee, decimals]);
+  const value = useMemo(() => times(displayFee, chainPrice), [chainPrice, displayFee]);
 
-  const currentGasRate = gt(gas, '0') ? divide(baseFee, gas) : '0';
+  const currentGasRate = useMemo(() => (gt(gas, '0') ? divide(baseFee, gas) : '0'), [baseFee, gas]);
 
   if (isEdit) {
     return (

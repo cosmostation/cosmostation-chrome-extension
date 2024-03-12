@@ -23,19 +23,21 @@ import { BITCANNA } from './cosmos/bitcanna';
 import { BITSONG } from './cosmos/bitsong';
 import { CANTO } from './cosmos/canto';
 import { CELESTIA } from './cosmos/celestia';
-import { CERBERUS } from './cosmos/cerberus';
 import { CHIHUAHUA } from './cosmos/chihuahua';
 import { COMDEX } from './cosmos/comdex';
 import { COREUM } from './cosmos/coreum';
 import { COSMOS } from './cosmos/cosmos';
 import { CRESCENT } from './cosmos/crescent';
-import { CRYPTO_ORG } from './cosmos/cryptoOrg';
+import { CRONOS_POS } from './cosmos/cronosPos';
 import { CUDOS } from './cosmos/cudos';
 import { DESMOS } from './cosmos/desmos';
 import { DYDX } from './cosmos/dydx';
+import { DYMENSION } from './cosmos/dymension';
 import { EMONEY } from './cosmos/emoney';
 import { EVMOS } from './cosmos/evmos';
 import { FETCH_AI } from './cosmos/fetchAi';
+import { FINSCHIA } from './cosmos/finschia';
+import { GOVGEN } from './cosmos/govgen';
 import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
 import { INJECTIVE } from './cosmos/injective';
 import { IRIS } from './cosmos/iris';
@@ -69,18 +71,17 @@ import { SHENTU } from './cosmos/shentu';
 import { SOMMELIER } from './cosmos/sommelier';
 import { STAFIHUB } from './cosmos/stafihub';
 import { STARGAZE } from './cosmos/stargaze';
-import { STARNAME } from './cosmos/starname';
 import { STRIDE } from './cosmos/stride';
 import { TERITORI } from './cosmos/teritori';
 import { TERRA } from './cosmos/terra';
-import { TGRADE } from './cosmos/tgrade';
-import { UMEE } from './cosmos/umee';
+import { UX } from './cosmos/ux';
 import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
 import { CANTO as ETHEREUM_NETWORK__CANTO } from './ethereum/network/canto';
 import { CRONOS as ETHEREUM_NETWORK__CRONOS } from './ethereum/network/cronos';
+import { DYMENSION as ETHEREUM_NETWORK_DYMENSION } from './ethereum/network/dymension';
 import { ETHEREUM as ETHEREUM_NETWORK__ETHEREUM } from './ethereum/network/ethereum';
 import { EVMOS as ETHEREUM_NETWORK__EVMOS } from './ethereum/network/evmos';
 import { FANTOM as ETHEREUM_NETWORK__FANTOM } from './ethereum/network/fantom';
@@ -111,6 +112,7 @@ export const COSMOS_DEFAULT_IBC_SEND_GAS = '150000';
 export const COSMOS_DEFAULT_TRANSFER_GAS = '200000';
 export const COSMOS_DEFAULT_IBC_TRANSFER_GAS = '250000';
 export const COSMOS_DEFAULT_REWARD_GAS = '300000';
+export const COSMOS_DEFAULT_COMMISSION_GAS = '300000';
 export const COSMOS_DEFAULT_SQUID_CONTRACT_SWAP_GAS = '350000';
 
 export const COSMOS_DEFAULT_ESTIMATE_AV = '1.2';
@@ -126,19 +128,21 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   BITCANNA,
   BITSONG,
   CANTO,
-  CERBERUS,
   CELESTIA,
   CHIHUAHUA,
   COMDEX,
   COREUM,
   CRESCENT,
-  CRYPTO_ORG,
+  CRONOS_POS,
   CUDOS,
   DESMOS,
   DYDX,
+  DYMENSION,
   EMONEY,
   EVMOS,
   FETCH_AI,
+  FINSCHIA,
+  GOVGEN,
   GRAVITY_BRIDGE,
   INJECTIVE,
   IRIS,
@@ -152,6 +156,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   MARS,
   MEDIBLOC,
   NEUTRON,
+  NIBIRU,
   NOBLE,
   NYX,
   OMNIFLIX,
@@ -171,14 +176,11 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   SOMMELIER,
   STAFIHUB,
   STARGAZE,
-  STARNAME,
   STRIDE,
   TERITORI,
   TERRA,
-  TGRADE,
-  UMEE,
+  UX,
   XPLA,
-  NIBIRU,
 ];
 
 export const COSMOS_FEE_BASE_DENOMS: CosmosFeeBaseDenom[] = [...NYX_FEE_BASE_DENOMS];
@@ -196,6 +198,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__EVMOS,
   ETHEREUM_NETWORK__FANTOM,
   ETHEREUM_NETWORK__HARMONY,
+  ETHEREUM_NETWORK_DYMENSION,
   ETHEREUM_NETWORK__KAVA,
   ETHEREUM_NETWORK__OKC,
   ETHEREUM_NETWORK__OPTIMISM,

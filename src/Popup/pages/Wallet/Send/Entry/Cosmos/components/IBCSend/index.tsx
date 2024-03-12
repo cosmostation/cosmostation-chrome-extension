@@ -20,6 +20,7 @@ import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
 import { useBlockLatestSWR } from '~/Popup/hooks/SWR/cosmos/useBlockLatestSWR';
 import { useClientStateSWR } from '~/Popup/hooks/SWR/cosmos/useClientStateSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
+import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
@@ -33,7 +34,7 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
-import { convertAssetNameToCosmos, convertCosmosToAssetName, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { convertAssetNameToCosmos, convertCosmosToAssetName, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
@@ -55,9 +56,6 @@ import {
   MaxButton,
   StyledInput,
   StyledTextarea,
-  WarningContainer,
-  WarningContentsContainer,
-  WarningTextContainer,
 } from './styled';
 import type { CoinOrTokenInfo } from '../..';
 import CoinListBottomSheet from '../CoinListBottomSheet';
@@ -65,7 +63,6 @@ import CoinListBottomSheet from '../CoinListBottomSheet';
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
 import CheckAddress16Icon from '~/images/icons/CheckAddress16.svg';
-import IBCWarningIcon from '~/images/icons/IBCWarning.svg';
 import Info16Icon from '~/images/icons/Info16.svg';
 
 export const TYPE = {
@@ -511,9 +508,11 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const simulate = useSimulateSWR({ chain, txBytes: ibcSendProtoTx?.tx_bytes });
 
+  const { data: gasMultiply } = useGasMultiplySWR(chain);
+
   const simulatedGas = useMemo(
-    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
-    [chain, simulate.data?.gas_info?.gas_used],
+    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, gasMultiply, 0) : undefined),
+    [simulate.data?.gas_info?.gas_used, gasMultiply],
   );
 
   const currentGas = useMemo(() => customGas || simulatedGas || sendGas, [customGas, sendGas, simulatedGas]);
@@ -543,20 +542,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
   useEffect(() => {
     setCurrentFeeAmount(times(currentGas, currentFeeGasRate[currentGasRateKey]));
   }, [currentGas, currentGasRateKey, currentFeeGasRate]);
-
-  if (senderCoinAndTokenList.length === 0) {
-    return (
-      <WarningContainer>
-        <WarningContentsContainer>
-          <IBCWarningIcon />
-          <WarningTextContainer>
-            <Typography variant="h4">{t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.ibcWarningHeadertitle')}</Typography>
-            <Typography variant="h6">{t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.ibcWarningSubtitle')}</Typography>
-          </WarningTextContainer>
-        </WarningContentsContainer>
-      </WarningContainer>
-    );
-  }
 
   return (
     <Container>

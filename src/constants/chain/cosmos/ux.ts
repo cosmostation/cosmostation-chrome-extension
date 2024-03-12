@@ -2,12 +2,12 @@ import { MINTSCAN_URL } from '~/constants/common';
 import umeeImg from '~/images/symbols/umee.png';
 import type { CosmosChain } from '~/types/chain';
 
-export const UMEE: CosmosChain = {
+export const UX: CosmosChain = {
   id: '760481cc-5a53-42dd-a805-c7f38c363114',
   line: 'COSMOS',
   type: '',
   chainId: 'umee-1',
-  chainName: 'Umee',
+  chainName: 'UX',
   restURL: 'https://lcd-umee.cosmostation.io',
   imageURL: umeeImg,
   baseDenom: 'uumee',

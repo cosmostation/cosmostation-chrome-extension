@@ -72,4 +72,5 @@ export type SignAminoDoc<T = unknown> = {
   fee: Fee;
   memo: string;
   msgs: Msg<T>[];
+  timeout_height?: string;
 };

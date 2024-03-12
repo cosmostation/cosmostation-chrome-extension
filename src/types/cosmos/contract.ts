@@ -43,10 +43,13 @@ export type ContractsInfoPayload = {
   symbol: string;
 };
 
+export type NFTExtensionPayload = Record<string, unknown>;
+
 export type NFTsURIPayload = {
   contractAddress: string;
   tokenId: string;
   tokenURI: string;
+  extension?: NFTExtensionPayload;
 };
 
 export type OwnedNFTTokenIDsPayload = {
@@ -57,6 +60,7 @@ export type OwnedNFTTokenIDsPayload = {
 export type NFTInfoPayload = {
   data: {
     token_uri: string;
+    extension?: NFTExtensionPayload;
   };
 };
 
