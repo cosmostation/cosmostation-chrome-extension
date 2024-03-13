@@ -51,6 +51,7 @@ import { LUM } from './cosmos/lum';
 import { MARS } from './cosmos/mars';
 import { MEDIBLOC } from './cosmos/medibloc';
 import { NEUTRON } from './cosmos/neutron';
+import { NIBIRU } from './cosmos/nibiru';
 import { NOBLE } from './cosmos/noble';
 import { NYX, NYX_FEE_BASE_DENOMS, NYX_GAS_RATES } from './cosmos/nyx';
 import { OMNIFLIX } from './cosmos/omniflix';
@@ -140,6 +141,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   EMONEY,
   EVMOS,
   FETCH_AI,
+  FINSCHIA,
+  GOVGEN,
   GRAVITY_BRIDGE,
   INJECTIVE,
   IRIS,
@@ -153,6 +156,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   MARS,
   MEDIBLOC,
   NEUTRON,
+  NIBIRU,
   NOBLE,
   NYX,
   OMNIFLIX,
@@ -177,8 +181,6 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   TERRA,
   UX,
   XPLA,
-  FINSCHIA,
-  GOVGEN,
 ];
 
 export const COSMOS_FEE_BASE_DENOMS: CosmosFeeBaseDenom[] = [...NYX_FEE_BASE_DENOMS];
