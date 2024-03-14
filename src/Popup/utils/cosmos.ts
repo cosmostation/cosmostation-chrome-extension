@@ -24,7 +24,7 @@ import { SEI } from '~/constants/chain/cosmos/sei';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
 import { UX } from '~/constants/chain/cosmos/ux';
-import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
+import { PUBLIC_KEY_TYPE, TX_MESSAGE_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
 import type { Activity } from '~/types/cosmos/activity';
@@ -284,7 +284,7 @@ export function getMsgType(activity: Activity, address: string) {
   const msgs = getTxMsgs(activity);
 
   if (msgs.length === 0) {
-    return 'tx_known';
+    return TX_MESSAGE_TYPE.TX_KNOWN;
   }
 
   if (msgs.length === 2) {
@@ -292,32 +292,33 @@ export function getMsgType(activity: Activity, address: string) {
     const msgType1 = typeof msgs[1]['@type'] === 'string' ? msgs[1]['@type'] : '';
 
     if ((msgType0.includes('MsgWithdrawDelegatorReward') || msgType0.includes('MsgWithdrawDelegationReward')) && msgType1.includes('MsgDelegate')) {
-      return 'tx_reinvest';
+      return TX_MESSAGE_TYPE.TX_REINVEST;
     }
   }
 
-  let result = 'tx_known';
+  let result: string = TX_MESSAGE_TYPE.TX_KNOWN;
+
   const firstMsg = msgs[0];
   const msgType = typeof firstMsg['@type'] === 'string' ? firstMsg['@type'] : '';
 
   if (msgType) {
-    result = msgType.split('.').pop()?.replace('Msg', '') || 'tx_known';
+    result = msgType.split('.').pop()?.replace('Msg', '') || TX_MESSAGE_TYPE.TX_KNOWN;
 
     const msgValue = firstMsg[msgType.replace(/\./g, '-')] as Record<string, unknown>;
 
     if (msgType.includes('cosmos.') && msgType.includes('staking')) {
       if (msgType.includes('MsgCreateValidator')) {
-        result = 'tx_create_validator';
+        result = TX_MESSAGE_TYPE.TX_CREATE_VALIDATOR;
       } else if (msgType.includes('MsgEditValidator')) {
-        result = 'tx_edit_validator';
+        result = TX_MESSAGE_TYPE.TX_EDIT_VALIDATOR;
       } else if (msgType.includes('MsgDelegate')) {
-        result = 'tx_delegate';
+        result = TX_MESSAGE_TYPE.TX_DELEGATE;
       } else if (msgType.includes('MsgUndelegate')) {
-        result = 'tx_undelegate';
+        result = TX_MESSAGE_TYPE.TX_UNDELEGATE;
       } else if (msgType.includes('MsgBeginRedelegate')) {
-        result = 'tx_redelegate';
+        result = TX_MESSAGE_TYPE.TX_REDELEGATE;
       } else if (msgType.includes('MsgCancelUnbondingDelegation')) {
-        result = 'tx_cancel_undelegate';
+        result = TX_MESSAGE_TYPE.TX_CANCEL_UNDELEGATE;
       }
     } else if (msgType.includes('cosmos.') && msgType.includes('bank')) {
       if (msgType.includes('MsgSend')) {
@@ -325,225 +326,225 @@ export function getMsgType(activity: Activity, address: string) {
         const receiverAddr = msgValue?.to_address;
 
         if (senderAddr === address) {
-          result = 'tx_send';
+          result = TX_MESSAGE_TYPE.TX_SEND;
         } else if (receiverAddr === address) {
-          result = 'tx_receive';
+          result = TX_MESSAGE_TYPE.TX_RECEIVE;
         } else {
-          result = 'tx_transfer';
+          result = TX_MESSAGE_TYPE.TX_TRANSFER;
         }
       } else if (msgType.includes('MsgMultiSend')) {
-        result = 'tx_multi_send';
+        result = TX_MESSAGE_TYPE.TX_MULTI_SEND;
       }
     } else if (msgType.includes('cosmos.') && msgType.includes('distribution')) {
       if (msgType.includes('MsgSetWithdrawAddress') || msgType.includes('MsgModifyWithdrawAddress')) {
-        result = 'tx_change_reward_address';
+        result = TX_MESSAGE_TYPE.TX_CHANGE_REWARD_ADDRESS;
       } else if (msgType.includes('MsgWithdrawDelegatorReward') || msgType.includes('MsgWithdrawDelegationReward')) {
-        result = 'tx_get_reward';
+        result = TX_MESSAGE_TYPE.TX_GET_REWARD;
       } else if (msgType.includes('MsgWithdrawValidatorCommission')) {
-        result = 'tx_get_commission';
+        result = TX_MESSAGE_TYPE.TX_GET_COMMISSION;
       } else if (msgType.includes('MsgFundCommunityPool')) {
-        result = 'tx_fund_pool';
+        result = TX_MESSAGE_TYPE.TX_FUND_POOL;
       }
     } else if (msgType.includes('cosmos.') && msgType.includes('gov')) {
       if (msgType.includes('MsgSubmitProposal')) {
-        result = 'tx_submit_proposal';
+        result = TX_MESSAGE_TYPE.TX_SUBMIT_PROPOSAL;
       } else if (msgType.includes('MsgDeposit')) {
-        result = 'tx_proposal_deposit';
+        result = TX_MESSAGE_TYPE.TX_PROPOSAL_DEPOSIT;
       } else if (msgType.includes('MsgVote')) {
-        result = 'tx_vote';
+        result = TX_MESSAGE_TYPE.TX_VOTE;
       } else if (msgType.includes('MsgVoteWeighted')) {
-        result = 'tx_vote_weighted';
+        result = TX_MESSAGE_TYPE.TX_VOTE_WEIGHTED;
       }
     } else if (msgType.includes('cosmos.') && msgType.includes('authz')) {
       if (msgType.includes('MsgGrant')) {
-        result = 'tx_authz_grant';
+        result = TX_MESSAGE_TYPE.TX_AUTHZ_GRANT;
       } else if (msgType.includes('MsgRevoke')) {
-        result = 'tx_authz_revoke';
+        result = TX_MESSAGE_TYPE.TX_AUTHZ_REVOKE;
       } else if (msgType.includes('MsgExec')) {
-        result = 'tx_authz_exe';
+        result = TX_MESSAGE_TYPE.TX_AUTHZ_EXE;
       }
     } else if (msgType.includes('cosmos.') && msgType.includes('slashing')) {
       if (msgType.includes('MsgUnjail')) {
-        result = 'tx_unjail_validator';
+        result = TX_MESSAGE_TYPE.TX_UNJAIL_VALIDATOR;
       }
     } else if (msgType.includes('cosmos.') && msgType.includes('feegrant')) {
       if (msgType.includes('MsgGrantAllowance')) {
-        result = 'tx_feegrant_allowance';
+        result = TX_MESSAGE_TYPE.TX_FEEGRANT_ALLOWANCE;
       } else if (msgType.includes('MsgRevokeAllowance')) {
-        result = 'tx_feegrant_revoke';
+        result = TX_MESSAGE_TYPE.TX_FEEGRANT_REVOKE;
       }
     }
 
     // stride msg type
     else if (msgType.includes('stride.') && msgType.includes('stakeibc')) {
       if (msgType.includes('MsgLiquidStake')) {
-        result = 'tx_stride_liquid_stake';
+        result = TX_MESSAGE_TYPE.TX_STRIDE_LIQUID_STAKE;
       } else if (msgType.includes('MsgRedeemStake')) {
-        result = 'tx_stride_liquid_unstake';
+        result = TX_MESSAGE_TYPE.TX_STRIDE_LIQUID_UNSTAKE;
       }
     }
 
     // crescent msg type
     else if (msgType.includes('crescent.') && msgType.includes('liquidstaking')) {
       if (msgType.includes('MsgLiquidStake')) {
-        result = 'tx_crescent_liquid_stake';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_LIQUID_STAKE;
       } else if (msgType.includes('MsgLiquidUnstake')) {
-        result = 'tx_crescent_liquid_unstake';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_LIQUID_UNSTAKE;
       }
     } else if (msgType.includes('crescent.') && msgType.includes('liquidity')) {
       if (msgType.includes('MsgCreatePair')) {
-        result = 'tx_crescent_create_pair';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_CREATE_PAIR;
       } else if (msgType.includes('MsgCreatePool')) {
-        result = 'tx_crescent_create_pool';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_CREATE_POOL;
       } else if (msgType.includes('MsgDeposit')) {
-        result = 'tx_crescent_deposit';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_DEPOSIT;
       } else if (msgType.includes('MsgWithdraw')) {
-        result = 'tx_crescent_withdraw';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_WITHDRAW;
       } else if (msgType.includes('MsgLimitOrder')) {
-        result = 'tx_crescent_limit_order';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_LIMIT_ORDER;
       } else if (msgType.includes('MsgMarketOrder')) {
-        result = 'tx_crescent_market_order';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_MARKET_ORDER;
       } else if (msgType.includes('MsgCancelOrder')) {
-        result = 'tx_crescent_cancel_order';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_CANCEL_ORDER;
       } else if (msgType.includes('MsgCancelAllOrders')) {
-        result = 'tx_crescent_cancel_all_orders';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_CANCEL_ALL_ORDERS;
       }
     } else if (msgType.includes('crescent.') && msgType.includes('farming')) {
       if (msgType.includes('MsgStake')) {
-        result = 'tx_crescent_stake';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_STAKE;
       } else if (msgType.includes('MsgUnstake')) {
-        result = 'tx_crescent_unstake';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_UNSTAKE;
       } else if (msgType.includes('MsgHarvest')) {
-        result = 'tx_crescent_harvest';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_HARVEST;
       } else if (msgType.includes('MsgCreateFixedAmountPlan')) {
-        result = 'tx_crescent_create_fixed_amount_plan';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_CREATE_FIXED_AMOUNT_PLAN;
       } else if (msgType.includes('MsgCreateRatioPlan')) {
-        result = 'tx_crescent_create_ratio_plan';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_CREATE_RATIO_PLAN;
       } else if (msgType.includes('MsgRemovePlan')) {
-        result = 'tx_crescent_remove_plan';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_REMOVE_PLAN;
       } else if (msgType.includes('MsgAdvanceEpoch')) {
-        result = 'tx_crescent_advance_epoch';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_ADVANCE_EPOCH;
       }
     } else if (msgType.includes('crescent.') && msgType.includes('claim')) {
       if (msgType.includes('MsgClaim')) {
-        result = 'tx_crescent_claim';
+        result = TX_MESSAGE_TYPE.TX_CRESCENT_CLAIM;
       }
     }
 
     // irismod msg type
     else if (msgType.includes('irismod.') && msgType.includes('nft')) {
       if (msgType.includes('MsgMintNFT')) {
-        result = 'tx_nft_mint';
+        result = TX_MESSAGE_TYPE.TX_NFT_MINT;
       } else if (msgType.includes('MsgTransferNFT')) {
         if (msgValue?.sender === address) {
-          result = 'tx_nft_send';
+          result = TX_MESSAGE_TYPE.TX_NFT_SEND;
         } else if (msgValue?.recipient === address) {
-          result = 'tx_nft_receive';
+          result = TX_MESSAGE_TYPE.TX_NFT_RECEIVE;
         } else {
-          result = 'tx_nft_transfer';
+          result = TX_MESSAGE_TYPE.TX_NFT_TRANSFER;
         }
       } else if (msgType.includes('MsgEditNFT')) {
-        result = 'tx_nft_edit';
+        result = TX_MESSAGE_TYPE.TX_NFT_EDIT;
       } else if (msgType.includes('MsgIssueDenom')) {
-        result = 'tx_nft_issueDenom';
+        result = TX_MESSAGE_TYPE.TX_NFT_ISSUE_DENOM;
       }
     } else if (msgType.includes('irismod.') && msgType.includes('coinswap')) {
       if (msgType.includes('MsgSwapOrder')) {
-        result = 'tx_coin_swap';
+        result = TX_MESSAGE_TYPE.TX_COIN_SWAP;
       } else if (msgType.includes('MsgAddLiquidity')) {
-        result = 'tx_add_liquidity';
+        result = TX_MESSAGE_TYPE.TX_ADD_LIQUIDITY;
       } else if (msgType.includes('MsgRemoveLiquidity')) {
-        result = 'tx_remove_liquidity';
+        result = TX_MESSAGE_TYPE.TX_REMOVE_LIQUIDITY;
       }
     } else if (msgType.includes('irismod.') && msgType.includes('farm')) {
       if (msgType.includes('MsgStake')) {
-        result = 'tx_farm_stake';
+        result = TX_MESSAGE_TYPE.TX_FARM_STAKE;
       } else if (msgType.includes('MsgHarvest')) {
-        result = 'tx_farm_harvest';
+        result = TX_MESSAGE_TYPE.TX_FARM_HARVEST;
       }
     }
 
     // crypto msg type
     else if (msgType.includes('chainmain.') && msgType.includes('nft')) {
       if (msgType.includes('MsgMintNFT')) {
-        result = 'tx_nft_mint';
+        result = TX_MESSAGE_TYPE.TX_NFT_MINT;
       } else if (msgType.includes('MsgTransferNFT')) {
         if (msgValue?.sender === address) {
-          result = 'tx_nft_send';
+          result = TX_MESSAGE_TYPE.TX_NFT_SEND;
         } else if (msgValue?.recipient === address) {
-          result = 'tx_nft_receive';
+          result = TX_MESSAGE_TYPE.TX_NFT_RECEIVE;
         } else {
-          result = 'tx_nft_transfer';
+          result = TX_MESSAGE_TYPE.TX_NFT_TRANSFER;
         }
       } else if (msgType.includes('MsgEditNFT')) {
-        result = 'tx_nft_edit';
+        result = TX_MESSAGE_TYPE.TX_NFT_EDIT;
       } else if (msgType.includes('MsgIssueDenom')) {
-        result = 'tx_nft_issueDenom';
+        result = TX_MESSAGE_TYPE.TX_NFT_ISSUE_DENOM;
       }
     }
 
     // starname msg type
     else if (msgType.includes('starnamed.') && msgType.includes('starname')) {
       if (msgType.includes('MsgRegisterDomain')) {
-        result = 'tx_starname_registe_domain';
+        result = TX_MESSAGE_TYPE.TX_STARNAME_REGISTE_DOMAIN;
       } else if (msgType.includes('MsgRegisterAccount')) {
-        result = 'tx_starname_registe_account';
+        result = TX_MESSAGE_TYPE.TX_STARNAME_REGISTE_ACCOUNT;
       } else if (msgType.includes('MsgDeleteDomain')) {
-        result = 'tx_starname_delete_domain';
+        result = TX_MESSAGE_TYPE.TX_STARNAME_DELETE_DOMAIN;
       } else if (msgType.includes('MsgDeleteAccount')) {
-        result = 'tx_starname_delete_account';
+        result = TX_MESSAGE_TYPE.TX_STARNAME_DELETE_ACCOUNT;
       } else if (msgType.includes('MsgRenewDomain')) {
-        result = 'tx_starname_renew_domain';
+        result = TX_MESSAGE_TYPE.TX_STARNAME_RENEW_DOMAIN;
       } else if (msgType.includes('MsgRenewAccount')) {
-        result = 'tx_starname_renew_account';
+        result = TX_MESSAGE_TYPE.TX_STARNAME_RENEW_ACCOUNT;
       } else if (msgType.includes('MsgReplaceAccountResources')) {
-        result = 'tx_starname_update_resource';
+        result = TX_MESSAGE_TYPE.TX_STARNAME_UPDATE_RESOURCE;
       }
     }
 
     // osmosis msg type
     else if (msgType.includes('osmosis.')) {
       if (msgType.includes('MsgSwapExactAmountIn')) {
-        result = 'tx_coin_swap';
+        result = TX_MESSAGE_TYPE.TX_COIN_SWAP;
       } else if (msgType.includes('MsgSwapExactAmountOut')) {
-        result = 'tx_coin_swap';
+        result = TX_MESSAGE_TYPE.TX_COIN_SWAP;
       } else if (msgType.includes('MsgJoinPool')) {
-        result = 'tx_join_pool';
+        result = TX_MESSAGE_TYPE.TX_JOIN_POOL;
       } else if (msgType.includes('MsgExitPool')) {
-        result = 'tx_exit_pool';
+        result = TX_MESSAGE_TYPE.TX_EXIT_POOL;
       } else if (msgType.includes('MsgJoinSwapExternAmountIn')) {
-        result = 'tx_coin_swap';
+        result = TX_MESSAGE_TYPE.TX_COIN_SWAP;
       } else if (msgType.includes('MsgJoinSwapShareAmountOut')) {
-        result = 'tx_coin_swap';
+        result = TX_MESSAGE_TYPE.TX_COIN_SWAP;
       } else if (msgType.includes('MsgExitSwapExternAmountOut')) {
-        result = 'tx_coin_swap';
+        result = TX_MESSAGE_TYPE.TX_COIN_SWAP;
       } else if (msgType.includes('MsgExitSwapShareAmountIn')) {
-        result = 'tx_coin_swap';
+        result = TX_MESSAGE_TYPE.TX_COIN_SWAP;
       } else if (msgType.includes('MsgCreatePool')) {
-        result = 'tx_create_pool';
+        result = TX_MESSAGE_TYPE.TX_CREATE_POOL;
       } else if (msgType.includes('MsgCreateBalancerPool')) {
-        result = 'tx_create_pool';
+        result = TX_MESSAGE_TYPE.TX_CREATE_POOL;
       }
 
       if (msgType.includes('lockup')) {
         if (msgType.includes('MsgLockTokens')) {
-          result = 'tx_osmosis_token_lockup';
+          result = TX_MESSAGE_TYPE.TX_OSMOSIS_TOKEN_LOCKUP;
         } else if (msgType.includes('MsgBeginUnlockingAll')) {
-          result = 'tx_osmosis_begin_unlucking_all';
+          result = TX_MESSAGE_TYPE.TX_OSMOSIS_BEGIN_UNLUCKING_ALL;
         } else if (msgType.includes('MsgBeginUnlocking')) {
-          result = 'tx_osmosis_begin_unlucking';
+          result = TX_MESSAGE_TYPE.TX_OSMOSIS_BEGIN_UNLUCKING;
         }
       }
 
       if (msgType.includes('superfluid')) {
         if (msgType.includes('MsgSuperfluidDelegate')) {
-          result = 'tx_osmosis_super_fluid_delegate';
+          result = TX_MESSAGE_TYPE.TX_OSMOSIS_SUPER_FLUID_DELEGATE;
         } else if (msgType.includes('MsgSuperfluidUndelegate')) {
-          result = 'tx_osmosis_super_fluid_undelegate';
+          result = TX_MESSAGE_TYPE.TX_OSMOSIS_SUPER_FLUID_UNDELEGATE;
         } else if (msgType.includes('MsgSuperfluidUnbondLock')) {
-          result = 'tx_osmosis_super_fluid_unbondinglock';
+          result = TX_MESSAGE_TYPE.TX_OSMOSIS_SUPER_FLUID_UNBONDINGLOCK;
         } else if (msgType.includes('MsgLockAndSuperfluidDelegate')) {
-          result = 'tx_osmosis_super_fluid_lockanddelegate';
+          result = TX_MESSAGE_TYPE.TX_OSMOSIS_SUPER_FLUID_LOCKANDDELEGATE;
         }
       }
     }
@@ -551,205 +552,205 @@ export function getMsgType(activity: Activity, address: string) {
     // medi msg type
     else if (msgType.includes('panacea.') && msgType.includes('aol')) {
       if (msgType.includes('MsgAddRecord')) {
-        result = 'tx_med_add_record';
+        result = TX_MESSAGE_TYPE.TX_MED_ADD_RECORD;
       } else if (msgType.includes('MsgCreateTopic')) {
-        result = 'tx_med_create_topic';
+        result = TX_MESSAGE_TYPE.TX_MED_CREATE_TOPIC;
       } else if (msgType.includes('MsgAddWriter')) {
-        result = 'tx_med_add_writer';
+        result = TX_MESSAGE_TYPE.TX_MED_ADD_WRITER;
       }
     } else if (msgType.includes('panacea.') && msgType.includes('did')) {
       if (msgType.includes('MsgCreateDID')) {
-        result = 'tx_med_create_did';
+        result = TX_MESSAGE_TYPE.TX_MED_CREATE_DID;
       }
     }
 
     // rizon msg type
     else if (msgType.includes('rizonworld.') && msgType.includes('tokenswap')) {
       if (msgType.includes('MsgCreateTokenswapRequest')) {
-        result = 'tx_rizon_event_horizon';
+        result = TX_MESSAGE_TYPE.TX_RIZON_EVENT_HORIZON;
       }
     }
 
     // gravity dex msg type
     else if (msgType.includes('tendermint.') && msgType.includes('liquidity')) {
       if (msgType.includes('MsgDepositWithinBatch')) {
-        result = 'tx_join_pool';
+        result = TX_MESSAGE_TYPE.TX_JOIN_POOL;
       } else if (msgType.includes('MsgSwapWithinBatch')) {
-        result = 'tx_coin_swap';
+        result = TX_MESSAGE_TYPE.TX_COIN_SWAP;
       } else if (msgType.includes('MsgWithdrawWithinBatch')) {
-        result = 'tx_exit_pool';
+        result = TX_MESSAGE_TYPE.TX_EXIT_POOL;
       }
     }
 
     // desmos msg type
     else if (msgType.includes('desmos.') && msgType.includes('profiles')) {
       if (msgType.includes('MsgSaveProfile')) {
-        result = 'tx_desmos_save_profile';
+        result = TX_MESSAGE_TYPE.TX_DESMOS_SAVE_PROFILE;
       } else if (msgType.includes('MsgDeleteProfile')) {
-        result = 'tx_desmos_delete_profile';
+        result = TX_MESSAGE_TYPE.TX_DESMOS_DELETE_PROFILE;
       } else if (msgType.includes('MsgCreateRelationship')) {
-        result = 'tx_desmos_create_relation';
+        result = TX_MESSAGE_TYPE.TX_DESMOS_CREATE_RELATION;
       } else if (msgType.includes('MsgDeleteRelationship')) {
-        result = 'tx_desmos_delete_relation';
+        result = TX_MESSAGE_TYPE.TX_DESMOS_DELETE_RELATION;
       } else if (msgType.includes('MsgBlockUser')) {
-        result = 'tx_desmos_delete_block_user';
+        result = TX_MESSAGE_TYPE.TX_DESMOS_DELETE_BLOCK_USER;
       } else if (msgType.includes('MsgUnblockUser')) {
-        result = 'tx_desmos_delete_unblock_user';
+        result = TX_MESSAGE_TYPE.TX_DESMOS_DELETE_UNBLOCK_USER;
       } else if (msgType.includes('MsgLinkChainAccount')) {
-        result = 'tx_desmos_link_chain_account';
+        result = TX_MESSAGE_TYPE.TX_DESMOS_LINK_CHAIN_ACCOUNT;
       }
     }
 
     // kava msg type
     else if (msgType.includes('kava.') && msgType.includes('auction')) {
       if (msgType.includes('MsgPlaceBid')) {
-        result = 'tx_kava_auction_bid';
+        result = TX_MESSAGE_TYPE.TX_KAVA_AUCTION_BID;
       }
     } else if (msgType.includes('kava.') && msgType.includes('cdp')) {
       if (msgType.includes('MsgCreateCDP')) {
-        result = 'tx_kava_create_cdp';
+        result = TX_MESSAGE_TYPE.TX_KAVA_CREATE_CDP;
       } else if (msgType.includes('MsgDeposit')) {
-        result = 'tx_kava_deposit_cdp';
+        result = TX_MESSAGE_TYPE.TX_KAVA_DEPOSIT_CDP;
       } else if (msgType.includes('MsgWithdraw')) {
-        result = 'tx_kava_withdraw_cdp';
+        result = TX_MESSAGE_TYPE.TX_KAVA_WITHDRAW_CDP;
       } else if (msgType.includes('MsgDrawDebt')) {
-        result = 'tx_kava_drawdebt_cdp';
+        result = TX_MESSAGE_TYPE.TX_KAVA_DRAWDEBT_CDP;
       } else if (msgType.includes('MsgRepayDebt')) {
-        result = 'tx_kava_repaydebt_cdp';
+        result = TX_MESSAGE_TYPE.TX_KAVA_REPAYDEBT_CDP;
       } else if (msgType.includes('MsgLiquidate')) {
-        result = 'tx_kava_liquidate_cdp';
+        result = TX_MESSAGE_TYPE.TX_KAVA_LIQUIDATE_CDP;
       }
     } else if (msgType.includes('kava.') && msgType.includes('swap')) {
       if (msgType.includes('MsgDeposit')) {
-        result = 'tx_kava_swap_deposit';
+        result = TX_MESSAGE_TYPE.TX_KAVA_SWAP_DEPOSIT;
       } else if (msgType.includes('MsgWithdraw')) {
-        result = 'tx_kava_swap_withdraw';
+        result = TX_MESSAGE_TYPE.TX_KAVA_SWAP_WITHDRAW;
       } else if (msgType.includes('MsgSwapExactForTokens')) {
-        result = 'tx_kava_swap_token';
+        result = TX_MESSAGE_TYPE.TX_KAVA_SWAP_TOKEN;
       } else if (msgType.includes('MsgSwapForExactTokens')) {
-        result = 'tx_kava_swap_token';
+        result = TX_MESSAGE_TYPE.TX_KAVA_SWAP_TOKEN;
       }
     } else if (msgType.includes('kava.') && msgType.includes('hard')) {
       if (msgType.includes('MsgDeposit')) {
-        result = 'tx_kava_hard_deposit';
+        result = TX_MESSAGE_TYPE.TX_KAVA_HARD_DEPOSIT;
       } else if (msgType.includes('MsgWithdraw')) {
-        result = 'tx_kava_hard_withdraw';
+        result = TX_MESSAGE_TYPE.TX_KAVA_HARD_WITHDRAW;
       } else if (msgType.includes('MsgBorrow')) {
-        result = 'tx_kava_hard_borrow';
+        result = TX_MESSAGE_TYPE.TX_KAVA_HARD_BORROW;
       } else if (msgType.includes('MsgRepay')) {
-        result = 'tx_kava_hard_repay';
+        result = TX_MESSAGE_TYPE.TX_KAVA_HARD_REPAY;
       } else if (msgType.includes('MsgLiquidate')) {
-        result = 'tx_kava_hard_liquidate';
+        result = TX_MESSAGE_TYPE.TX_KAVA_HARD_LIQUIDATE;
       }
     } else if (msgType.includes('kava.') && msgType.includes('savings')) {
       if (msgType.includes('MsgDeposit')) {
-        result = 'tx_kava_save_deposit';
+        result = TX_MESSAGE_TYPE.TX_KAVA_SAVE_DEPOSIT;
       } else if (msgType.includes('MsgWithdraw')) {
-        result = 'tx_kava_save_withdraw';
+        result = TX_MESSAGE_TYPE.TX_KAVA_SAVE_WITHDRAW;
       }
     } else if (msgType.includes('kava.') && msgType.includes('incentive')) {
       if (msgType.includes('MsgClaimUSDXMintingReward')) {
-        result = 'tx_kava_mint_incentive';
+        result = TX_MESSAGE_TYPE.TX_KAVA_MINT_INCENTIVE;
       } else if (msgType.includes('MsgClaimHardReward')) {
-        result = 'tx_kava_hard_incentive';
+        result = TX_MESSAGE_TYPE.TX_KAVA_HARD_INCENTIVE;
       } else if (msgType.includes('MsgClaimDelegatorReward')) {
-        result = 'tx_kava_delegator_incentive';
+        result = TX_MESSAGE_TYPE.TX_KAVA_DELEGATOR_INCENTIVE;
       } else if (msgType.includes('MsgClaimSwapReward')) {
-        result = 'tx_kava_swap_incentive';
+        result = TX_MESSAGE_TYPE.TX_KAVA_SWAP_INCENTIVE;
       } else if (msgType.includes('MsgClaimSavingsReward')) {
-        result = 'tx_kava_save_incentive';
+        result = TX_MESSAGE_TYPE.TX_KAVA_SAVE_INCENTIVE;
       } else if (msgType.includes('MsgClaimEarnReward')) {
-        result = 'tx_kava_earn_incentive';
+        result = TX_MESSAGE_TYPE.TX_KAVA_EARN_INCENTIVE;
       }
     } else if (msgType.includes('kava.') && msgType.includes('bep3')) {
       if (msgType.includes('MsgCreateAtomicSwap')) {
-        result = 'tx_kava_bep3_create';
+        result = TX_MESSAGE_TYPE.TX_KAVA_BEP3_CREATE;
       } else if (msgType.includes('MsgClaimAtomicSwap')) {
-        result = 'tx_kava_bep3_claim';
+        result = TX_MESSAGE_TYPE.TX_KAVA_BEP3_CLAIM;
       } else if (msgType.includes('MsgRefundAtomicSwap')) {
-        result = 'tx_kava_bep3_refund';
+        result = TX_MESSAGE_TYPE.TX_KAVA_BEP3_REFUND;
       }
     } else if (msgType.includes('kava.') && msgType.includes('pricefeed')) {
       if (msgType.includes('MsgPostPrice')) {
-        result = 'tx_kava_post_price';
+        result = TX_MESSAGE_TYPE.TX_KAVA_POST_PRICE;
       }
     } else if (msgType.includes('kava.') && msgType.includes('router')) {
       if (msgType.includes('MsgDelegateMintDeposit')) {
-        result = 'tx_kava_earn_delegateDeposit';
+        result = TX_MESSAGE_TYPE.TX_KAVA_EARN_DELEGATE_DEPOSIT;
       } else if (msgType.includes('MsgMintDeposit')) {
-        result = 'tx_kava_earn_Deposit';
+        result = TX_MESSAGE_TYPE.TX_KAVA_EARN_DEPOSIT;
       } else if (msgType.includes('MsgWithdrawBurn')) {
-        result = 'tx_kava_earn_withdraw';
+        result = TX_MESSAGE_TYPE.TX_KAVA_EARN_WITHDRAW;
       }
     }
 
     // axelar msg type
     else if (msgType.includes('axelar.') && msgType.includes('reward')) {
       if (msgType.includes('RefundMsgRequest')) {
-        result = 'tx_axelar_refund_msg_request';
+        result = TX_MESSAGE_TYPE.TX_AXELAR_REFUND_MSG_REQUEST;
       }
     } else if (msgType.includes('axelar.') && msgType.includes('axelarnet')) {
       if (msgType.includes('LinkRequest')) {
-        result = 'tx_axelar_link_request';
+        result = TX_MESSAGE_TYPE.TX_AXELAR_LINK_REQUEST;
       } else if (msgType.includes('ConfirmDepositRequest')) {
-        result = 'tx_axelar_confirm_deposit_request';
+        result = TX_MESSAGE_TYPE.TX_AXELAR_CONFIRM_DEPOSIT_REQUEST;
       } else if (msgType.includes('RouteIBCTransfersRequest')) {
-        result = 'tx_axelar_route_ibc_request';
+        result = TX_MESSAGE_TYPE.TX_AXELAR_ROUTE_IBC_REQUEST;
       }
     }
 
     // injective msg type
     else if (msgType.includes('injective.') && msgType.includes('exchange')) {
       if (msgType.includes('MsgBatchUpdateOrders')) {
-        result = 'tx_injective_batch_update_order';
+        result = TX_MESSAGE_TYPE.TX_INJECTIVE_BATCH_UPDATE_ORDER;
       } else if (msgType.includes('MsgBatchCreateDerivativeLimitOrders') || msgType.includes('MsgCreateDerivativeLimitOrder')) {
-        result = 'tx_injective_create_limit_order';
+        result = TX_MESSAGE_TYPE.TX_INJECTIVE_CREATE_LIMIT_ORDER;
       } else if (msgType.includes('MsgBatchCreateSpotLimitOrders') || msgType.includes('MsgCreateSpotLimitOrder')) {
-        result = 'tx_injective_create_spot_order';
+        result = TX_MESSAGE_TYPE.TX_INJECTIVE_CREATE_SPOT_ORDER;
       } else if (msgType.includes('MsgBatchCancelDerivativeOrders') || msgType.includes('MsgCancelDerivativeOrder')) {
-        result = 'tx_injective_cancel_limit_order';
+        result = TX_MESSAGE_TYPE.TX_INJECTIVE_CANCEL_LIMIT_ORDER;
       } else if (msgType.includes('MsgBatchCancelSpotOrder') || msgType.includes('MsgCancelSpotOrder')) {
-        result = 'tx_injective_cancel_spot_order';
+        result = TX_MESSAGE_TYPE.TX_INJECTIVE_CANCEL_SPOT_ORDER;
       }
     }
 
     // persistence msg type
     else if (msgType.includes('pstake.') && msgType.includes('lscosmos')) {
       if (msgType.includes('MsgLiquidStake')) {
-        result = 'tx_stride_liquid_stake';
+        result = TX_MESSAGE_TYPE.TX_STRIDE_LIQUID_STAKE;
       } else if (msgType.includes('MsgLiquidUnstake')) {
-        result = 'tx_stride_liquid_unstake';
+        result = TX_MESSAGE_TYPE.TX_STRIDE_LIQUID_UNSTAKE;
       } else if (msgType.includes('MsgRedeem')) {
-        result = 'tx_persis_liquid_redeem';
+        result = TX_MESSAGE_TYPE.TX_PERSIS_LIQUID_REDEEM;
       } else if (msgType.includes('MsgClaim')) {
-        result = 'tx_persis_liquid_claim';
+        result = TX_MESSAGE_TYPE.TX_PERSIS_LIQUID_CLAIM;
       }
     }
 
     // ibc msg type
     else if (msgType.includes('ibc.')) {
       if (msgType.includes('MsgTransfer')) {
-        result = 'tx_ibc_send';
+        result = TX_MESSAGE_TYPE.TX_IBC_SEND;
       } else if (msgType.includes('MsgUpdateClient')) {
-        result = 'tx_ibc_client_update';
+        result = TX_MESSAGE_TYPE.TX_IBC_CLIENT_UPDATE;
       } else if (msgType.includes('MsgRecvPacket')) {
-        result = 'tx_ibc_receive';
+        result = TX_MESSAGE_TYPE.TX_IBC_RECEIVE;
       } else if (msgType.includes('MsgAcknowledgement')) {
-        result = 'tx_ibc_acknowledgement';
+        result = TX_MESSAGE_TYPE.TX_IBC_ACKNOWLEDGEMENT;
       }
 
       if (msgs.length >= 2) {
         msgs.forEach((msg) => {
           const typeValue = msg['@type'] as string;
           if (typeValue.includes('MsgAcknowledgement')) {
-            result = 'tx_ibc_acknowledgement';
+            result = TX_MESSAGE_TYPE.TX_IBC_ACKNOWLEDGEMENT;
           }
         });
         msgs.forEach((msg) => {
           const typeValue = msg['@type'] as string;
 
           if (typeValue.includes('MsgRecvPacket')) {
-            result = 'tx_ibc_receive';
+            result = TX_MESSAGE_TYPE.TX_IBC_RECEIVE;
           }
         });
       }
@@ -758,9 +759,9 @@ export function getMsgType(activity: Activity, address: string) {
     // wasm msg type
     else if (msgType.includes('cosmwasm.')) {
       if (msgType.includes('MsgStoreCode')) {
-        result = 'tx_cosmwasm_store_code';
+        result = TX_MESSAGE_TYPE.TX_COSMWASM_STORE_CODE;
       } else if (msgType.includes('MsgInstantiateContract')) {
-        result = 'tx_cosmwasm_instantiate';
+        result = TX_MESSAGE_TYPE.TX_COSMWASM_INSTANTIATE;
       } else if (msgType.includes('MsgExecuteContract')) {
         const wasmMsg = msgValue['msg__@stringify'] as string;
 
@@ -772,12 +773,12 @@ export function getMsgType(activity: Activity, address: string) {
                 .replace(/_/g, ' ')
                 .replace(/\b\w/g, (match) => match.toUpperCase()) || '';
 
-            result = `tx_cosmwasm ${description}`;
+            result = `${TX_MESSAGE_TYPE.TX_COSMWASM}.${description}`;
           } catch (_) {
-            result = 'tx_cosmwasm_execontract';
+            result = TX_MESSAGE_TYPE.TX_COSMWASM_EXECONTRACT;
           }
         } else {
-          result = 'tx_cosmwasm_execontract';
+          result = TX_MESSAGE_TYPE.TX_COSMWASM_EXECONTRACT;
         }
       }
     }
@@ -785,12 +786,8 @@ export function getMsgType(activity: Activity, address: string) {
     // evm msg type
     else if (msgType.includes('ethermint.evm')) {
       if (msgType.includes('MsgEthereumTx')) {
-        result = 'tx_ethereum_evm';
+        result = TX_MESSAGE_TYPE.TX_ETHEREUM_EVM;
       }
-    }
-
-    if (msgs.length > 1) {
-      result = `${result} + ${msgs.length - 1}`;
     }
   }
 

@@ -9,7 +9,7 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { convertToLocales } from '~/Popup/utils/common';
-import { getDpCoin, getMsgType } from '~/Popup/utils/cosmos';
+import { getDpCoin, getMsgType, getTxMsgs } from '~/Popup/utils/cosmos';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Activity } from '~/types/cosmos/activity';
@@ -64,7 +64,16 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
     });
   }, [data?.timestamp, language]);
 
-  const title = useMemo(() => getMsgType(activity, address), [activity, address]);
+  const title = useMemo(() => {
+    const activityMsgType = getMsgType(activity, address);
+
+    const [baseMsgType, subMsgtype] = activityMsgType.split('.');
+
+    const localizedKey = `pages.Wallet.components.cosmos.ActivityList.components.ActivityItem.index.${baseMsgType}`;
+    const additionalMessagesCount = String(getTxMsgs(activity).length - 1);
+
+    return `${t(localizedKey)} ${subMsgtype || ''}${gt(additionalMessagesCount, '0') ? ` + ${additionalMessagesCount}` : ''}`;
+  }, [activity, address, t]);
 
   const shortenedTxHash = useMemo(() => shorterAddress(activity.data?.txhash), [activity]);
 

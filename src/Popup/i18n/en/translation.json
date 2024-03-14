@@ -1664,20 +1664,6 @@
           }
         },
         "aptos": {
-          "ActivityList": {
-            "components": {
-              "ActivityItem": {
-                "index": {
-                  "noExplorerURL": "No explorer URL",
-                  "transaction": "Transaction"
-                }
-              }
-            },
-            "index": {
-              "defaultHeader": "No recent activity",
-              "defaultSubHeader": "Recent activity will show up here"
-            }
-          },
           "CoinList": {
             "index": {
               "addCoinButton": "Add coin",
@@ -1698,13 +1684,161 @@
             "components": {
               "ActivityItem": {
                 "index": {
-                  "commission": "Commission",
-                  "contract": "Execute contract",
-                  "ibcSend": "IBC Send",
-                  "noExplorerURL": "No explorer URL",
-                  "reward": "Claim Reward",
-                  "send": "Send",
-                  "transaction": "Transaction"
+                  "txSend": "Send",
+                  "txReceive": "Received",
+                  "txTransfer": "Transfer",
+                  "txMultiSend": "Multi Send",
+                  "txDelegate": "Delegate",
+                  "txUndelegate": "Undelegate",
+                  "txCancelUndelegate": "Cancel Undelegate",
+                  "txRedelegate": "Redelegate",
+                  "txGetReward": "Get Rewards",
+                  "txGetCommission": "Get Commission",
+                  "txFundPool": "Funding Community Pool",
+                  "txChangeRewardAddress": "Edit Address",
+                  "txVote": "Vote",
+                  "txSubmitProposal": "Proposal",
+                  "txProposalDeposit": "Proposal Deposit",
+                  "txVoteWeighted": "Vote Weighted",
+                  "txDeposit": "Deposit",
+                  "txAuthzGrant": "Authz Grant",
+                  "txAuthzRevoke": "Authz Revoke",
+                  "txAuthzExe": "Authz Execute",
+                  "txFeegrantAllowance": "Fee Grant Allowance",
+                  "txFeegrantRevoke": "Fee Grant Revoke",
+                  "txCreateValidator": "Create Val",
+                  "txEditValidator": "Edit Val",
+                  "txUnjailValidator": "Unjail Val",
+                  "txReinvest": "Compounding",
+                  "txGetRewardAll": "Get All Rewards",
+                  "txNewOrder": "New Order",
+                  "txCancelOrder": "Cancel Order",
+                  "txIssueToken": "Issue Token",
+                  "txKavaPostPrice": "Post Price",
+                  "txKavaCreateCdp": "CDP Open",
+                  "txKavaDepositCdp": "CDP Deposit",
+                  "txKavaWithdrawCdp": "CDP Withdraw",
+                  "txKavaDrawdebtCdp": "CDP Borrow",
+                  "txKavaRepaydebtCdp": "CDP Repay",
+                  "txKavaLiquidateCdp": "CDP Liquidate",
+                  "txCreateHtlc": "BEP3 Create",
+                  "txSendHtlc": "BEP3 Send",
+                  "txReceiveHtlc": "BEP3 Receive",
+                  "txClaimHtlc": "BEP3 Claim",
+                  "txRefundHtlc": "BEP3 Refund",
+                  "txKavaBep3Create": "BEP3 Send",
+                  "txKavaBep3Claim": "BEP3 Claim",
+                  "txKavaBep3Refund": "BEP3 Refund",
+                  "txKavaIncentiveReward": "Incentive Minting",
+                  "txKavaHavestDeposit": "Hard Lend Deposit",
+                  "txKavaHavestWithdraw": "Hard Lend Withdraw",
+                  "txKavaHavestClaim": "Hard Lend Get Rewards",
+                  "txStarnameRegisteDomain": "Register Domain",
+                  "txStarnameRegisteAccount": "Register Account",
+                  "txStarnameDeleteDomain": "Delete Domain",
+                  "txStarnameDeleteAccount": "Delete Account",
+                  "txStarnameRenewDomain": "Renew Domain",
+                  "txStarnameRenewAccount": "Renew Account",
+                  "txStarnameUpdateResource": "Replace Address",
+                  "txKavaHardDeposit": "Hard Lend Deposit",
+                  "txKavaHardWithdraw": "Hard Lend Withdraw",
+                  "txKavaHardBorrow": "Hard Lend Borrow",
+                  "txKavaHardRepay": "Hard Lend Repay",
+                  "txKavaHardLiquidate": "Hard Lend Liquidate",
+                  "txKavaHardIncentive": "Hard Lend Incentive",
+                  "txKavaMintIncentive": "USDX Minting Incentive",
+                  "txKavaDelegatorIncentive": "Delegator Incentive",
+                  "txKavaSwapIncentive": "Swap Incentive",
+                  "txKavaSaveIncentive": "Save Incentive",
+                  "txKavaEarnIncentive": "Earn Incentive",
+                  "txKavaIncentiveClaimAll": "Claim Incentive",
+                  "txKavaSwapToken": "Swap Coin",
+                  "txKavaSwapDeposit": "Swap Pool Deposit",
+                  "txKavaSwapWithdraw": "Swap Pool Withdraw",
+                  "txKavaAuctionBid": "Auction Bid",
+                  "txKavaSaveDeposit": "Saving Deposit",
+                  "txKavaSaveWithdraw": "Saving Withdraw",
+                  "txKavaEarnDeposit": "Earn Liquidate Deposit",
+                  "txKavaEarnDelegateDeposit": "Earn Liquidate Delegate Deposit",
+                  "txKavaEarnWithdraw": "Earn Liquidate Withdraw",
+                  "txIbcSend": "IBC Send",
+                  "txIbcReceive": "IBC Received",
+                  "txIbcClientUpdate": "IBC Client Update",
+                  "txIbcAcknowledgement": "IBC Ack",
+                  "txCreatePool": "Create Pool",
+                  "txJoinPool": "Join Pool",
+                  "txExitPool": "Exit Pool",
+                  "txCoinSwap": "Swap Coin",
+                  "txOsmosisTokenLockup": "Lockup Token",
+                  "txOsmosisBeginUnlucking": "Begin Unlocking",
+                  "txOsmosisBeginUnluckingAll": "Begin Unlocking All",
+                  "txOsmosisPreriodlockUnlock": "Claim Unlocked Token",
+                  "txOsmosisTokenUnlock": "Unlock Tokens",
+                  "txOsmosisSuperFluidDelegate": "SuperFluid\nStaking",
+                  "txOsmosisSuperFluidUndelegate": "SuperFluid\nUnstaking",
+                  "txOsmosisSuperFluidUnbondinglock": "SuperFluid\nUnbonding Lock",
+                  "txOsmosisSuperFluidLockanddelegate": "SuperFluid\nLock & Staking",
+                  "txRizonEventHorizon": "Receive Swap Token",
+                  "txMedAddRecord": "Add Record",
+                  "txMedCreateTopic": "Create Topic",
+                  "txMedAddWriter": "Add Writer",
+                  "txMedCreateDid": "Create DID",
+                  "txAddLiquidity": "Add Liquidity",
+                  "txRemoveLiquidity": "Remove Liquidity",
+                  "txDespensationClaim": "Claim Incentive",
+                  "txDistributionRun": "Distribution Run",
+                  "txNftMint": "Issue NFT",
+                  "txNftSend": "NFT Send",
+                  "txNftReceive": "NFT Receive",
+                  "txNftTransfer": "NFT Transfer",
+                  "txNftEdit": "NFT Edit",
+                  "txNftIssueDenom": "Issue NFT Denom",
+                  "txFarmStake": "Stake",
+                  "txFarmHarvest": "Harvest",
+                  "txDesmosSaveProfile": "Save Profile",
+                  "txDesmosDeleteProfile": "Delete Profile",
+                  "txDesmosCreateRelation": "Create Relationship",
+                  "txDesmosDeleteRelation": "Delete Relationship",
+                  "txDesmosDeleteBlockUser": "Block User",
+                  "txDesmosDeleteUnblockUser": "Unblock User",
+                  "txDesmosLinkChainAccount": "Link Account",
+                  "txCosmwasmStoreCode": "Store Contract Code",
+                  "txCosmwasmInstantiate": "Instantiate Contract",
+                  "txCosmwasmExecontract": "Execute Contract",
+                  "txCosmwasm": "Wasm",
+                  "txEthereumEvm": "Evm Tx",
+                  "txCrescentLiquidStake": "Liquid Stake",
+                  "txCrescentLiquidUnstake": "Liquid Unstake",
+                  "txCrescentCreatePair": "Liquidity\nCreate Pair",
+                  "txCrescentCreatePool": "Liquidity\nCreate Pool",
+                  "txCrescentDeposit": "Liquidity\nDeposit",
+                  "txCrescentWithdraw": "Liquidity\nWithdraw",
+                  "txCrescentLimitOrder": "Limit Order",
+                  "txCrescentMarketOrder": "Market Order",
+                  "txCrescentCancelOrder": "Cancel Order",
+                  "txCrescentCancelAllOrders": "Cancel All Orders",
+                  "txCrescentStake": "Farming Stake",
+                  "txCrescentUnstake": "Farming Unstake",
+                  "txCrescentHarvest": "Farming Harvest",
+                  "txCrescentCreateFixedAmountPlan": "Farming\nCreate Plain(Amount)",
+                  "txCrescentCreateRatioPlan": "Farming\nCreate Plain(Ratio)",
+                  "txCrescentRemovePlan": "Farming\nRemove Plain",
+                  "txCrescentAdvanceEpoch": "Farming\nEpoch",
+                  "txCrescentClaim": "Airdrop",
+                  "txAxelarRefundMsgRequest": "Refund Msg\nRequest",
+                  "txAxelarLinkRequest": "Link Request",
+                  "txAxelarConfirmDepositRequest": "Confirm Deposit\nRequest",
+                  "txAxelarRouteIbcRequest": "Route IBC request",
+                  "txInjectiveBatchUpdateOrder": "Update Order",
+                  "txInjectiveCreateLimitOrder": "Create Derivative Order",
+                  "txInjectiveCreateSpotOrder": "Create Spot Order",
+                  "txInjectiveCancelLimitOrder": "Cancel Derivative Order",
+                  "txInjectiveCancelSpotOrder": "Cancel Spot Order",
+                  "txStrideLiquidStake": "Liquid Stake",
+                  "txStrideLiquidUnstake": "Liquid Unstake",
+                  "txPersisLiquidRedeem": "Liquid Redeem",
+                  "txPersisLiquidClaim": "Liquid Unstaked Claim",
+                  "txKnown": "Unknown"
                 }
               }
             },
@@ -1769,29 +1903,6 @@
           }
         },
         "ethereum": {
-          "ActivityList": {
-            "components": {
-              "ActivityItem": {
-                "index": {
-                  "approve": "Approve",
-                  "contractInteract": "Contract Interact",
-                  "deploy": "Deploy",
-                  "erc1155SafeTransferFrom": "Safe Transfer From (ERC-1155)",
-                  "erc721TransferFrom": "Transfer From (ERC-721)",
-                  "noExplorerURL": "No explorer URL",
-                  "send": "Send",
-                  "swap": "Swap",
-                  "transaction": "Transaction",
-                  "transfer": "Transfer (ERC-20)",
-                  "transferFrom": "Transfer From"
-                }
-              }
-            },
-            "index": {
-              "defaultHeader": "No recent activity",
-              "defaultSubHeader": "Recent activity will show up here"
-            }
-          },
           "NFTList": {
             "components": {
               "NFTCardItem": {
@@ -1829,20 +1940,6 @@
           }
         },
         "sui": {
-          "ActivityList": {
-            "components": {
-              "ActivityItem": {
-                "index": {
-                  "noExplorerURL": "No explorer URL",
-                  "transaction": "Transaction"
-                }
-              }
-            },
-            "index": {
-              "defaultHeader": "No recent activity",
-              "defaultSubHeader": "Recent activity will show up here"
-            }
-          },
           "CoinList": {
             "index": {
               "coin": "Coin",
