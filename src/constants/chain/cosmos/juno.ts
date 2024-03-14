@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import junoImg from '~/images/symbols/juno.png';
+import junoChainImg from '~/images/chainImgs/juno.png';
+import junoTokenImg from '~/images/symbols/juno.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const JUNO: CosmosChain = {
@@ -7,9 +8,10 @@ export const JUNO: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'juno-1',
-  chainName: 'Juno',
+  chainName: 'JUNO',
   restURL: 'https://lcd-juno.cosmostation.io',
-  imageURL: junoImg,
+  tokenImageURL: junoTokenImg,
+  imageURL: junoChainImg,
   baseDenom: 'ujuno',
   displayDenom: 'JUNO',
   decimals: 6,

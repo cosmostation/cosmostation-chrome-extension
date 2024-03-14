@@ -1,4 +1,5 @@
-import okcImg from '~/images/symbols/okc.png';
+import okcChainImg from '~/images/chainImgs/okc.png';
+import okcTokenImg from '~/images/symbols/okt.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const OKC: EthereumNetwork = {
@@ -6,7 +7,8 @@ export const OKC: EthereumNetwork = {
   chainId: '0x42',
   networkName: 'OKC',
   rpcURL: 'https://exchainrpc.okex.org',
-  imageURL: okcImg,
+  tokenImageURL: okcTokenImg,
+  imageURL: okcChainImg,
   displayDenom: 'OKT',
   decimals: 18,
   explorerURL: 'https://www.oklink.com/okexchain',

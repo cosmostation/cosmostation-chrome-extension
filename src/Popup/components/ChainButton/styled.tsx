@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 export const StyledButton = styled('button')(({ theme }) => ({
   border: 'none',
 
-  height: '2.8rem',
+  height: '3rem',
 
   borderRadius: '0.8rem',
 
@@ -36,26 +36,32 @@ export const ContentLeftImageContainer = styled('div')({
 
   marginRight: '0.4rem',
 
-  width: '1.6rem',
-  height: '1.6rem',
+  width: '2.4rem',
+  height: '2.4rem',
   position: 'relative',
 });
 
-export const ContentLeftAbsoluteImageContainer = styled('div')({
+type ContentLeftAbsoluteImageContainerProps = {
+  'data-is-custom'?: boolean;
+};
+
+export const ContentLeftAbsoluteImageContainer = styled('div')<ContentLeftAbsoluteImageContainerProps>(({ ...props }) => ({
   position: 'absolute',
 
-  width: '1.6rem',
-  height: '1.6rem',
+  width: '2.4rem',
+  height: '2.4rem',
 
   '& > img': {
-    width: '1.6rem',
-    height: '1.6rem',
+    width: props['data-is-custom'] ? '2rem' : '2.4rem',
+    height: props['data-is-custom'] ? '2rem' : '2.4rem',
+
+    margin: props['data-is-custom'] ? '0.2rem' : '0',
   },
-});
+}));
 
 export const ContentCenterTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
-  maxWidth: '20rem',
+  maxWidth: '10rem',
 
   wordBreak: 'keep-all',
   whiteSpace: 'nowrap',

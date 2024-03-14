@@ -25,15 +25,15 @@ export const ItemLeftImageContainer = styled('div')({
   alignItems: 'center',
 
   '& > img': {
-    width: '2rem',
-    height: '2rem',
+    width: '2.4rem',
+    height: '2.4rem',
   },
 });
 
 export const ItemLeftTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 
-  marginLeft: '0.8rem',
+  marginLeft: '0.4rem',
 }));
 
 export const ItemRightContainer = styled('div')({});

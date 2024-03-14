@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import tgradeImg from '~/images/symbols/tgrade.png';
+import tgradeChainImg from '~/images/chainImgs/tgrade.png';
+import tgradeTokenImg from '~/images/symbols/tgd.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const TGRADE: CosmosChain = {
@@ -7,9 +8,10 @@ export const TGRADE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'tgrade-mainnet-1',
-  chainName: 'Tgrade',
+  chainName: 'TGRADE',
   restURL: 'https://lcd-tgrade.cosmostation.io',
-  imageURL: tgradeImg,
+  tokenImageURL: tgradeTokenImg,
+  imageURL: tgradeChainImg,
   baseDenom: 'utgd',
   displayDenom: 'TGD',
   decimals: 6,

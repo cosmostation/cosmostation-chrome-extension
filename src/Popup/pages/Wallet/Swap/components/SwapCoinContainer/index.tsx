@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Typography } from '@mui/material';
 
+import unknownChainImg from '~/images/chainImgs/unknown.png';
+import Image from '~/Popup/components/common/Image';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
@@ -15,6 +17,13 @@ import TokenListBottomSheet from './components/TokenListBottomSheet';
 import {
   BodyContainer,
   Container,
+  ContentCenterTextContainer,
+  ContentLeftAbsoluteChainImageContainer,
+  ContentLeftAbsoluteImageContainer,
+  ContentLeftChainImageContainer,
+  ContentLeftContainer,
+  ContentLeftImageContainer,
+  ContentPlaceholderContainer,
   FooterContainer,
   FooterLeftContainer,
   FooterRightContainer,
@@ -45,8 +54,8 @@ export default function SwapCoinContainer({ isChainAvailable = true, ...remainde
   const { currency } = extensionStorage;
   const { t } = useTranslation();
 
-  const [isOpenedChainList, setisOpenedChainList] = useState(false);
-  const [isOpenedCoinList, setisOpenedCoinList] = useState(false);
+  const [isOpenedChainList, setIsOpenedChainList] = useState(false);
+  const [isOpenedCoinList, setIsOpenedCoinList] = useState(false);
 
   const shortAddress = useMemo(() => shorterAddress(remainder.address, 17), [remainder.address]);
   return (
@@ -66,23 +75,57 @@ export default function SwapCoinContainer({ isChainAvailable = true, ...remainde
           <SwapAssetContainer>
             <SwapAssetButton
               onClick={() => {
-                setisOpenedChainList(true);
+                setIsOpenedChainList(true);
               }}
               isActive={isOpenedChainList}
+              leftProps={
+                <ContentLeftContainer>
+                  {remainder.currentSelectedChain?.imageURL && remainder.currentSelectedChain?.networkName ? (
+                    <>
+                      <ContentLeftChainImageContainer>
+                        <ContentLeftAbsoluteChainImageContainer>
+                          <Image src={remainder.currentSelectedChain.imageURL} defaultImgSrc={unknownChainImg} />
+                        </ContentLeftAbsoluteChainImageContainer>
+                      </ContentLeftChainImageContainer>
+                      <ContentCenterTextContainer>
+                        <Typography variant="h6">{remainder.currentSelectedChain.networkName}</Typography>
+                      </ContentCenterTextContainer>
+                    </>
+                  ) : (
+                    <ContentPlaceholderContainer data-is-disabled={!isChainAvailable}>
+                      <Typography variant="h6">{t('pages.Wallet.Swap.components.SwapCoinContainer.index.selectChain')}</Typography>
+                    </ContentPlaceholderContainer>
+                  )}
+                </ContentLeftContainer>
+              }
               isAvailable={isChainAvailable}
-              imgUrl={remainder.currentSelectedChain?.imageURL}
-              title={remainder.currentSelectedChain?.networkName}
-              placeholder={t('pages.Wallet.Swap.components.SwapCoinContainer.index.selectChain')}
             />
             <SwapAssetButton
               onClick={() => {
-                setisOpenedCoinList(true);
+                setIsOpenedCoinList(true);
               }}
               isActive={isOpenedCoinList}
+              leftProps={
+                <ContentLeftContainer>
+                  {remainder.currentSelectedCoin?.imageURL && remainder.currentSelectedCoin?.displayDenom ? (
+                    <>
+                      <ContentLeftImageContainer>
+                        <ContentLeftAbsoluteImageContainer>
+                          <Image src={remainder.currentSelectedCoin.imageURL} defaultImgSrc={unknownChainImg} />
+                        </ContentLeftAbsoluteImageContainer>
+                      </ContentLeftImageContainer>
+                      <ContentCenterTextContainer>
+                        <Typography variant="h6">{remainder.currentSelectedCoin.displayDenom}</Typography>
+                      </ContentCenterTextContainer>
+                    </>
+                  ) : (
+                    <ContentPlaceholderContainer data-is-disabled={!remainder.isTokenAvailable}>
+                      <Typography variant="h6">{t('pages.Wallet.Swap.components.SwapCoinContainer.index.selectCoin')}</Typography>
+                    </ContentPlaceholderContainer>
+                  )}
+                </ContentLeftContainer>
+              }
               isAvailable={remainder.isTokenAvailable}
-              imgUrl={remainder.currentSelectedCoin?.imageURL}
-              title={remainder.currentSelectedCoin?.displayDenom}
-              placeholder={t('pages.Wallet.Swap.components.SwapCoinContainer.index.selectCoin')}
             />
           </SwapAssetContainer>
 
@@ -113,7 +156,7 @@ export default function SwapCoinContainer({ isChainAvailable = true, ...remainde
         currentSelectedChain={remainder.currentSelectedChain}
         availableChainList={remainder.availableChainList}
         open={isOpenedChainList}
-        onClose={() => setisOpenedChainList(false)}
+        onClose={() => setIsOpenedChainList(false)}
         onClickChain={(clickedChain) => {
           remainder.onClickChain?.(clickedChain);
         }}
@@ -123,7 +166,7 @@ export default function SwapCoinContainer({ isChainAvailable = true, ...remainde
         currentSelectedToken={remainder.currentSelectedCoin}
         availableTokenList={remainder.availableTokenList}
         open={isOpenedCoinList}
-        onClose={() => setisOpenedCoinList(false)}
+        onClose={() => setIsOpenedCoinList(false)}
         onClickToken={(clickedCoin) => {
           remainder.onClickCoin?.(clickedCoin);
         }}

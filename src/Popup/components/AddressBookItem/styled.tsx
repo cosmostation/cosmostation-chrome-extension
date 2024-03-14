@@ -1,7 +1,5 @@
 import { styled } from '@mui/material/styles';
 
-import Image from '~/Popup/components/common/Image';
-
 type ContainerProps = {
   'data-is-onclick': number;
 };
@@ -30,17 +28,40 @@ export const LabelLeftContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
+export const LabelLeftImageContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  marginRight: '0.4rem',
+
+  width: '2.8rem',
+  height: '2.8rem',
+  position: 'relative',
+});
+
+type LabelLeftAbsoluteImageContainerProps = {
+  'data-is-custom'?: boolean;
+};
+
+export const LabelLeftAbsoluteImageContainer = styled('div')<LabelLeftAbsoluteImageContainerProps>(({ ...props }) => ({
+  position: 'absolute',
+
+  width: '2.8rem',
+  height: '2.8rem',
+
+  '& > img': {
+    width: props['data-is-custom'] ? '2.4rem' : '2.8rem',
+    height: props['data-is-custom'] ? '2.4rem' : '2.8rem',
+
+    margin: props['data-is-custom'] ? '0.2rem' : '0',
+  },
+}));
+
 export const LabelRightContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-end',
   alignItems: 'center',
-});
-
-export const StyledImage = styled(Image)({
-  width: '2rem',
-  height: '2rem',
-
-  marginRight: '0.8rem',
 });
 
 type StyledButtonProps = {

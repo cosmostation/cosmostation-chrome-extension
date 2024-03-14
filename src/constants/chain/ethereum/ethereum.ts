@@ -1,11 +1,13 @@
-import ethereumImg from '~/images/symbols/ethereum.png';
+import ethereumChainImg from '~/images/chainImgs/ethereum.png';
+import ethereumTokenImg from '~/images/symbols/eth.png';
 import type { EthereumChain } from '~/types/chain';
 
 export const ETHEREUM: EthereumChain = {
   id: '33c328b1-2d5f-43f1-ac88-25be1a5abf6c',
   line: 'ETHEREUM',
   chainName: 'EVM Networks',
-  imageURL: ethereumImg,
+  tokenImageURL: ethereumTokenImg,
+  imageURL: ethereumChainImg,
   bip44: {
     purpose: "44'",
     coinType: "60'",

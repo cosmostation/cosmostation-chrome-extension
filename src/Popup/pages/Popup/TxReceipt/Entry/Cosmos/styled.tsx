@@ -49,11 +49,32 @@ export const StyledDivider = styled(Divider)({
 });
 
 export const NetworkImageContainer = styled('div')({
-  '& > img': {
-    width: '1.6rem',
-    height: '1.6rem',
-  },
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  width: '2rem',
+  height: '2rem',
+  position: 'relative',
 });
+
+type AbsoluteNetworkImageContainerProps = {
+  'data-is-custom'?: boolean;
+};
+
+export const AbsoluteImageContainer = styled('div')<AbsoluteNetworkImageContainerProps>(({ ...props }) => ({
+  position: 'absolute',
+
+  width: '2rem',
+  height: '2rem',
+
+  '& > img': {
+    width: props['data-is-custom'] ? '1.6rem' : '2rem',
+    height: props['data-is-custom'] ? '1.6rem' : '2rem',
+
+    margin: props['data-is-custom'] ? '0.2rem' : '0',
+  },
+}));
 
 export const EmptyAssetContainer = styled('div')({
   height: '100%',

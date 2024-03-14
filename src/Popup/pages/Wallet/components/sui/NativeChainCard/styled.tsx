@@ -3,6 +3,7 @@ import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import AbsoluteLoading from '~/Popup/components/AbsoluteLoading';
+import Divider from '~/Popup/components/common/Divider';
 import IconButton from '~/Popup/components/common/IconButton';
 
 export const Container = styled('div')(({ theme }) => ({
@@ -46,7 +47,7 @@ export const SecondLineContainer = styled('div')({
   justifyContent: 'space-between',
   alignItems: 'center',
 
-  marginTop: '1.6rem',
+  margin: '1.6rem 0 1.2rem',
 });
 
 export const SecondLineLeftContainer = styled('div')({
@@ -61,53 +62,85 @@ export const SecondLineLeftImageContainer = styled('div')({
   alignItems: 'center',
 
   position: 'relative',
-  width: '2.4rem',
-  height: '2.4rem',
+  width: '3.8rem',
+  height: '3.8rem',
 });
 
 export const SecondLineLeftAbsoluteImageContainer = styled('div')({
   position: 'absolute',
 
-  width: '2.4rem',
-  height: '2.4rem',
+  width: '3.8rem',
+  height: '3.8rem',
 
   '& > img': {
-    width: '2.4rem',
-    height: '2.4rem',
+    width: '3.8rem',
+    height: '3.8rem',
   },
 });
 
 export const SecondLineLeftTextContainer = styled('div')(({ theme }) => ({
   display: 'flex',
+  flexDirection: 'column',
+
   justifyContent: 'center',
-  alignItems: 'center',
+  alignItems: 'flex-start',
 
-  marginLeft: '0.8rem',
+  marginLeft: '1rem',
 
-  color: theme.colors.text01,
-}));
-
-export const SecondLineRightContainer = styled('div')(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'flex-end',
-  alignItems: 'center',
+  rowGap: '0.2rem',
 
   color: theme.colors.text01,
 }));
 
-export const ThirdLineContainer = styled('div')(({ theme }) => ({
+export const SecondLineLeftSubTextContainer = styled('div')(({ theme }) => ({
   display: 'flex',
-  justifyContent: 'flex-end',
+  justifyContent: 'flex-start',
   alignItems: 'center',
+
+  columnGap: '0.6rem',
 
   color: theme.colors.text02,
 }));
+
+export const SecondLineLeftSubTextEmptyContainer = styled('div')({
+  height: '1.9rem',
+});
+
+export const SecondLineRightContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+
+  justifyContent: 'center',
+  alignItems: 'flex-end',
+
+  rowGap: '0.3rem',
+});
+
+export const SecondLineRightTextContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+}));
+
+export const SecondLineRightSubTextContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text02,
+}));
+
+type TextChangeRateContainerProps = {
+  'data-color'?: 'red' | 'green' | 'grey';
+};
+
+export const TextChangeRateContainer = styled('div')<TextChangeRateContainerProps>(({ theme, ...props }) => ({
+  color: props['data-color'] === 'red' ? theme.accentColors.red : props['data-color'] === 'green' ? theme.accentColors.green01 : theme.colors.text02,
+}));
+
+export const StyledDivider = styled(Divider)({
+  margin: '0 0 1.2rem',
+});
 
 export const FourthLineContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: '1fr',
 
-  paddingTop: '1rem',
+  paddingBottom: '1.2rem',
 
   rowGap: '0.4rem',
 });
@@ -195,13 +228,13 @@ export const ButtonContainer = styled('div')({
   justifyContent: 'space-between',
   alignItems: 'center',
 
-  padding: '1rem 0',
+  paddingBottom: '1rem',
 
   columnGap: '0.8rem',
 });
 
 export const StyledRetryIconButton = styled(IconButton)(({ theme }) => ({
-  marginRight: '-0.8rem',
+  padding: '0',
 
   '& svg': {
     fill: theme.colors.base05,
@@ -212,10 +245,12 @@ export const StyledRetryIconButton = styled(IconButton)(({ theme }) => ({
 }));
 
 export const FaucetButtonContainer = styled('div')({
-  marginTop: '1.6rem',
+  marginBottom: '1rem',
 });
 
 export const ErrorDescriptionContainer = styled('div')(({ theme }) => ({
+  marginTop: '0.2rem',
+
   color: theme.accentColors.red,
 }));
 

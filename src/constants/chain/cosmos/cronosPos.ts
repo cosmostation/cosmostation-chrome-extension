@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import cronosPosImg from '~/images/symbols/cronosPos.png';
+import cronosPosChainImg from '~/images/chainImgs/cronos.png';
+import cronosPosTokenImg from '~/images/symbols/cro.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const CRONOS_POS: CosmosChain = {
@@ -7,9 +8,10 @@ export const CRONOS_POS: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'crypto-org-chain-mainnet-1',
-  chainName: 'Cronos POS',
+  chainName: 'CRONOS POS',
   restURL: 'https://lcd-crypto-org.cosmostation.io',
-  imageURL: cronosPosImg,
+  tokenImageURL: cronosPosTokenImg,
+  imageURL: cronosPosChainImg,
   baseDenom: 'basecro',
   displayDenom: 'CRO',
   decimals: 8,

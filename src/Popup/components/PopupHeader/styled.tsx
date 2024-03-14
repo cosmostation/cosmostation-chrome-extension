@@ -98,12 +98,12 @@ export const StyledDivider = styled(Divider)({
 });
 
 export const ChainImageContainer = styled('div')({
-  width: '1.8rem',
-  height: '1.8rem',
+  width: '2.4rem',
+  height: '2.4rem',
 
   '& > img': {
-    width: '1.8rem',
-    height: '1.8rem',
+    width: '2.4rem',
+    height: '2.4rem',
   },
 });
 

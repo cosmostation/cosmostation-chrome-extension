@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import cosmosImg from '~/images/symbols/cosmos.png';
+import cosmosChainImg from '~/images/chainImgs/cosmos.png';
+import cosmosTokenImg from '~/images/symbols/atom.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const COSMOS: CosmosChain = {
@@ -7,9 +8,10 @@ export const COSMOS: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'cosmoshub-4',
-  chainName: 'Cosmos',
+  chainName: 'COSMOS',
   restURL: 'https://lcd-cosmos.cosmostation.io',
-  imageURL: cosmosImg,
+  tokenImageURL: cosmosTokenImg,
+  imageURL: cosmosChainImg,
   baseDenom: 'uatom',
   displayDenom: 'ATOM',
   decimals: 6,

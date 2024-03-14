@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import passageImg from '~/images/symbols/passage.png';
+import passageChainImg from '~/images/chainImgs/passage.png';
+import passageTokenImg from '~/images/symbols/pasg.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const PASSAGE: CosmosChain = {
@@ -7,9 +8,10 @@ export const PASSAGE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'passage-2',
-  chainName: 'Passage',
+  chainName: 'PASSAGE',
   restURL: 'https://lcd-passage.cosmostation.io',
-  imageURL: passageImg,
+  tokenImageURL: passageTokenImg,
+  imageURL: passageChainImg,
   baseDenom: 'upasg',
   displayDenom: 'PASG',
   decimals: 6,

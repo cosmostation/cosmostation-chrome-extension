@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import akashImg from '~/images/symbols/akash.png';
+import akashChainImg from '~/images/chainImgs/akash.png';
+import akashTokenImg from '~/images/symbols/akt.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const AKASH: CosmosChain = {
@@ -7,9 +8,10 @@ export const AKASH: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'akashnet-2',
-  chainName: 'Akash',
+  chainName: 'AKASH',
   restURL: 'https://lcd-akash.cosmostation.io',
-  imageURL: akashImg,
+  tokenImageURL: akashTokenImg,
+  imageURL: akashChainImg,
   baseDenom: 'uakt',
   displayDenom: 'AKT',
   decimals: 6,

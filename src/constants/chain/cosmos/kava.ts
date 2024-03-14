@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import kavaImg from '~/images/symbols/kava.png';
+import kavaChainImg from '~/images/chainImgs/kava.png';
+import kavaTokenImg from '~/images/symbols/kava.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const KAVA: CosmosChain = {
@@ -7,9 +8,10 @@ export const KAVA: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'kava_2222-10',
-  chainName: 'Kava',
+  chainName: 'KAVA',
   restURL: 'https://lcd-kava.cosmostation.io',
-  imageURL: kavaImg,
+  tokenImageURL: kavaTokenImg,
+  imageURL: kavaChainImg,
   baseDenom: 'ukava',
   displayDenom: 'KAVA',
   decimals: 6,

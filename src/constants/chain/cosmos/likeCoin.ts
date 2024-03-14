@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import likeCoinImg from '~/images/symbols/likecoin.png';
+import likeCoinChainImg from '~/images/chainImgs/likecoin.png';
+import likeCoinTokenImg from '~/images/symbols/like.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const LIKE_COIN: CosmosChain = {
@@ -7,9 +8,10 @@ export const LIKE_COIN: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'likecoin-mainnet-2',
-  chainName: 'LikeCoin',
+  chainName: 'LIKECOIN',
   restURL: 'https://lcd-likecoin.cosmostation.io',
-  imageURL: likeCoinImg,
+  tokenImageURL: likeCoinTokenImg,
+  imageURL: likeCoinChainImg,
   baseDenom: 'nanolike',
   displayDenom: 'LIKE',
   decimals: 9,

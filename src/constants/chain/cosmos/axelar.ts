@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import axelarImg from '~/images/symbols/axelar.png';
+import axelarChainImg from '~/images/chainImgs/axelar.png';
+import axelarTokenImg from '~/images/symbols/axl.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const AXELAR: CosmosChain = {
@@ -7,9 +8,10 @@ export const AXELAR: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'axelar-dojo-1',
-  chainName: 'Axelar',
+  chainName: 'AXELAR',
   restURL: 'https://lcd-axelar.cosmostation.io',
-  imageURL: axelarImg,
+  tokenImageURL: axelarTokenImg,
+  imageURL: axelarChainImg,
   baseDenom: 'uaxl',
   displayDenom: 'AXL',
   decimals: 6,

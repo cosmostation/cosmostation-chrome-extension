@@ -470,11 +470,12 @@
               "gasRateAveragePlaceholder": "Gas rate Average (선택)",
               "gasRateLowPlaceholder": "Gas rate Low (선택)",
               "gasRateTinyPlaceholder": "Gas rate Tiny (선택)",
-              "imageURLPlaceholder": "통화 기호 이미지 URL (선택)",
+              "imageURLPlaceholder": "체인 이미지 URL (선택)",
               "restURLError": "유효하지 않은 'restURL' 입니다.",
               "restURLPlaceholder": "Rest URL",
               "sendGasPlaceholder": "'보내기' 가스량 (선택)",
               "submitButton": "새 체인 추가",
+              "tokenImageURLPlaceholder": "통화 기호 이미지 URL (선택)",
               "typePlaceholder": "체인 타입 (선택) (예시:ETHERMINT)",
               "warning": "악의적인 체인 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 체인만 추가하세요."
             },
@@ -596,10 +597,11 @@
               "coinGeckoIdPlaceholder": "Coingecko API id (선택)",
               "displayDenomPlaceholder": "통화 기호 (선택)",
               "explorerURLPlaceholder": "블록 탐색기 URL (선택)",
-              "imageURLPlaceholder": "통화 기호 이미지 URL (선택)",
+              "imageURLPlaceholder": "체인 이미지 URL (선택)",
               "networkNamePlaceholder": "네트워크 이름",
               "rpcURLPlaceholder": "RPC URL",
               "submitButton": "네트워크 추가",
+              "tokenImageURLPlaceholder": "통화 기호 이미지 URL (선택)",
               "warning": "악의적인 네트워크 제공자는 블록체인 상태를 위조하여 개인 활동을 기록할 수도 있습니다. 신뢰 가능한 네트워크만 추가하세요."
             },
             "layout": {
@@ -1398,6 +1400,14 @@
       "Send": {
         "Entry": {
           "Aptos": {
+            "components": {
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "검색",
+                  "title": "코인을 선택하세요"
+                }
+              }
+            },
             "index": {
               "amountPlaceholder": "수량",
               "insufficientAmount": "수량이 부족합니다.",
@@ -1478,13 +1488,10 @@
                   "available": "사용 가능 수량"
                 }
               },
-              "CoinPopover": {
-                "components": {
-                  "CoinItem": {
-                    "index": {
-                      "available": "사용 가능 수량"
-                    }
-                  }
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "검색",
+                  "title": "코인을 선택하세요"
                 }
               }
             },
@@ -1503,6 +1510,12 @@
               "CoinButton": {
                 "index": {
                   "available": "사용 가능 수량"
+                }
+              },
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "검색",
+                  "title": "코인을 선택하세요"
                 }
               },
               "CoinPopover": {

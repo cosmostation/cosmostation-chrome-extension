@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import secretImg from '~/images/symbols/secret.png';
+import secretChainImg from '~/images/chainImgs/secret.png';
+import secretTokenImg from '~/images/symbols/scrt.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const SECRET: CosmosChain = {
@@ -7,9 +8,10 @@ export const SECRET: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'secret-4',
-  chainName: 'Secret',
+  chainName: 'SECRET',
   restURL: 'https://lcd-secret.cosmostation.io',
-  imageURL: secretImg,
+  tokenImageURL: secretTokenImg,
+  imageURL: secretChainImg,
   baseDenom: 'uscrt',
   displayDenom: 'SCRT',
   decimals: 6,

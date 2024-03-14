@@ -53,6 +53,7 @@ export const cosAddChainParamsSchema = (chainNames: string[], officialChainIds: 
       .insensitive()
       .required(),
     restURL: Joi.string().required(),
+    tokenImageURL: Joi.string().optional(),
     imageURL: Joi.string().optional(),
     baseDenom: Joi.string().required(),
     displayDenom: Joi.string().required(),
@@ -272,6 +273,7 @@ export const ethcAddNetworkParamsSchema = () =>
         decimals: Joi.number().required(),
         networkName: Joi.string().trim().required(),
         rpcURL: Joi.string().trim().required(),
+        tokenImageURL: Joi.string().trim().optional(),
         imageURL: Joi.string().trim().optional(),
         explorerURL: Joi.string().trim().optional(),
         coinGeckoId: Joi.string().trim().optional(),

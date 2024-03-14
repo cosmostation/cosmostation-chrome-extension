@@ -12,7 +12,7 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
   border: `0.1rem solid ${theme.colors.base04}`,
 
-  padding: '1rem 1.2rem',
+  padding: '0.6rem 1.2rem 0.6rem 0.8rem',
 
   textAlign: 'left',
 
@@ -42,24 +42,30 @@ export const ContentLeftImageContainer = styled('div')({
 
   position: 'relative',
 
-  width: '2rem',
-  height: '2rem',
+  width: '2.8rem',
+  height: '2.8rem',
 });
 
-export const ContentLeftAbsoluteImageContainer = styled('div')({
+type ContentLeftAbsoluteImageContainerProps = {
+  'data-is-custom'?: boolean;
+};
+
+export const ContentLeftAbsoluteImageContainer = styled('div')<ContentLeftAbsoluteImageContainerProps>(({ ...props }) => ({
   position: 'absolute',
 
-  width: '2rem',
-  height: '2rem',
+  width: '2.8rem',
+  height: '2.8rem',
 
   '& > img': {
-    width: '2rem',
-    height: '2rem',
+    width: props['data-is-custom'] ? '2rem' : '2.8rem',
+    height: props['data-is-custom'] ? '2rem' : '2.8rem',
+
+    margin: props['data-is-custom'] ? '0.4rem' : '0',
   },
-});
+}));
 
 export const ContentLeftTextContainer = styled('div')(({ theme }) => ({
-  marginLeft: '0.6rem',
+  marginLeft: '0.4rem',
   color: theme.colors.text01,
 }));
 

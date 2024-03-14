@@ -16,6 +16,7 @@ import {
   DeleteButton,
   LeftContainer,
   LeftImageContainer,
+  LeftTextChainAmountContainer,
   LeftTextChainContainer,
   LeftTextContainer,
   LeftTextErrorContainer,
@@ -27,6 +28,7 @@ import {
   StyledAbsoluteLoading,
   StyledButton,
   StyledIconButton,
+  TextChangeRateContainer,
 } from './styled';
 
 import Close16Icon from '~/images/icons/Close16.svg';
@@ -50,6 +52,12 @@ export default function TokenItem({ token, disabled, onClick, onClickDelete }: T
     () => (token.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0,
     [coinGeckoPrice.data, currency, token.coinGeckoId],
   );
+
+  const cap = useMemo(
+    () => (token.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[`${extensionStorage.currency}_24h_change`]) || 0,
+    [coinGeckoPrice.data, extensionStorage.currency, token.coinGeckoId],
+  );
+
   const displayAmount = useMemo(() => toDisplayDenomAmount(amount, token.decimals), [amount, token.decimals]);
 
   const value = useMemo(() => times(displayAmount, price), [displayAmount, price]);
@@ -64,6 +72,19 @@ export default function TokenItem({ token, disabled, onClick, onClickDelete }: T
           <LeftTextChainContainer>
             <Typography variant="h5">{token.displayDenom}</Typography>
           </LeftTextChainContainer>
+          <LeftTextChainAmountContainer>
+            <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={extensionStorage.currency}>
+              {String(price)}
+            </Number>
+
+            <TextChangeRateContainer data-color={cap > 0 ? 'green' : cap < 0 ? 'red' : 'grey'}>
+              <Typography variant="h6n">{cap > 0 ? '+' : ''}</Typography>
+              <Number typoOfIntegers="h6n" typoOfDecimals="h8n" fixed={2}>
+                {String(cap)}
+              </Number>
+              <Typography variant="h8n">%</Typography>
+            </TextChangeRateContainer>
+          </LeftTextChainAmountContainer>
         </LeftTextContainer>
       </LeftContainer>
       <RightContainer>

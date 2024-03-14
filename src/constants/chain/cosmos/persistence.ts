@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import persistenceImg from '~/images/symbols/persistence.png';
+import persistenceChainImg from '~/images/chainImgs/persistence.png';
+import persistenceTokenImg from '~/images/symbols/xprt.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const PERSISTENCE: CosmosChain = {
@@ -7,9 +8,10 @@ export const PERSISTENCE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'core-1',
-  chainName: 'Persistence',
+  chainName: 'PERSISTENCE',
   restURL: 'https://lcd-persistence.cosmostation.io',
-  imageURL: persistenceImg,
+  tokenImageURL: persistenceTokenImg,
+  imageURL: persistenceChainImg,
   baseDenom: 'uxprt',
   displayDenom: 'XPRT',
   decimals: 6,

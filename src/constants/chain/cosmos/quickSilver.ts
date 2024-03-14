@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import quickSilverImg from '~/images/symbols/quickSilver.png';
+import quickSilverChainImg from '~/images/chainImgs/quicksilver.png';
+import quickSilverTokenImg from '~/images/symbols/qck.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const QUICK_SILVER: CosmosChain = {
@@ -7,9 +8,10 @@ export const QUICK_SILVER: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'quicksilver-2',
-  chainName: 'QuickSilver',
+  chainName: 'QUICKSILVER',
   restURL: 'https://lcd-quicksilver.cosmostation.io',
-  imageURL: quickSilverImg,
+  tokenImageURL: quickSilverTokenImg,
+  imageURL: quickSilverChainImg,
   baseDenom: 'uqck',
   displayDenom: 'QCK',
   decimals: 6,

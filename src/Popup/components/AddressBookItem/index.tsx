@@ -1,13 +1,27 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Typography } from '@mui/material';
 
 import { CHAINS } from '~/constants/chain';
+import unknownImg from '~/images/chainImgs/unknown.png';
+import customBeltImg from '~/images/etc/customBelt.png';
+import Image from '~/Popup/components/common/Image';
 import Tooltip from '~/Popup/components/common/Tooltip';
+import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { AddressInfo } from '~/types/extensionStorage';
 
 import ManagePopover from './ManagePopover';
-import { AddressContainer, Container, LabelContainer, LabelLeftContainer, LabelRightContainer, MemoContainer, StyledButton, StyledImage } from './styled';
+import {
+  AddressContainer,
+  Container,
+  LabelContainer,
+  LabelLeftAbsoluteImageContainer,
+  LabelLeftContainer,
+  LabelLeftImageContainer,
+  LabelRightContainer,
+  MemoContainer,
+  StyledButton,
+} from './styled';
 
 import Add24Icon from '~/images/icons/Add24.svg';
 
@@ -17,9 +31,13 @@ type AddressBookItemProps = {
 };
 
 export default function AddressBookItem({ addressInfo, onClick }: AddressBookItemProps) {
+  const { currentAdditionalChains } = useCurrentAdditionalChains();
+
   const { address, memo, label, chainId } = addressInfo;
 
-  const chain = CHAINS.find((item) => item.id === chainId);
+  const chain = useMemo(() => [...CHAINS, ...currentAdditionalChains].find((item) => item.id === chainId), [chainId, currentAdditionalChains]);
+
+  const isCustom = useMemo(() => currentAdditionalChains.some((item) => item.id === chain?.id), [chain?.id, currentAdditionalChains]);
 
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
@@ -28,7 +46,16 @@ export default function AddressBookItem({ addressInfo, onClick }: AddressBookIte
     <Container onClick={() => onClick?.(addressInfo)} data-is-onclick={onClick ? 1 : 0}>
       <LabelContainer>
         <LabelLeftContainer>
-          <StyledImage src={chain?.imageURL} />
+          <LabelLeftImageContainer>
+            <LabelLeftAbsoluteImageContainer data-is-custom={isCustom && !!chain?.imageURL}>
+              <Image src={chain?.imageURL} defaultImgSrc={unknownImg} />
+            </LabelLeftAbsoluteImageContainer>
+            {isCustom && (
+              <LabelLeftAbsoluteImageContainer data-is-custom={isCustom && !!chain?.imageURL}>
+                <Image src={customBeltImg} />
+              </LabelLeftAbsoluteImageContainer>
+            )}
+          </LabelLeftImageContainer>
           <Typography variant="h6">{label}</Typography>
         </LabelLeftContainer>
         <LabelRightContainer>

@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import gravitybridgeImg from '~/images/symbols/gravitybridge.png';
+import gravitybridgeChainImg from '~/images/chainImgs/gravitybridge.png';
+import gravitybridgeTokenImg from '~/images/symbols/graviton.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const GRAVITY_BRIDGE: CosmosChain = {
@@ -7,9 +8,10 @@ export const GRAVITY_BRIDGE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'gravity-bridge-3',
-  chainName: 'Gravity Bridge',
+  chainName: 'GRAVITY BRIDGE',
   restURL: 'https://lcd-gravity-bridge.cosmostation.io',
-  imageURL: gravitybridgeImg,
+  tokenImageURL: gravitybridgeTokenImg,
+  imageURL: gravitybridgeChainImg,
   baseDenom: 'ugraviton',
   displayDenom: 'GRAVITON',
   decimals: 6,

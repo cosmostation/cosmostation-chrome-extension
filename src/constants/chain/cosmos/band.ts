@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import bandImg from '~/images/symbols/band.png';
+import bandChainImg from '~/images/chainImgs/band.png';
+import bandTokenImg from '~/images/symbols/band.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const BAND: CosmosChain = {
@@ -7,9 +8,10 @@ export const BAND: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'laozi-mainnet',
-  chainName: 'Band',
+  chainName: 'BAND',
   restURL: 'https://lcd-band.cosmostation.io',
-  imageURL: bandImg,
+  tokenImageURL: bandTokenImg,
+  imageURL: bandChainImg,
   baseDenom: 'uband',
   displayDenom: 'BAND',
   decimals: 6,

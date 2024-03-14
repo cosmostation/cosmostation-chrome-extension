@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import coreumImg from '~/images/symbols/coreum.png';
+import coreumChainImg from '~/images/chainImgs/coreum.png';
+import coreumTokenImg from '~/images/symbols/core.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const COREUM: CosmosChain = {
@@ -7,9 +8,10 @@ export const COREUM: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'coreum-mainnet-1',
-  chainName: 'Coreum',
+  chainName: 'COREUM',
   restURL: 'https://lcd-coreum.cosmostation.io',
-  imageURL: coreumImg,
+  tokenImageURL: coreumTokenImg,
+  imageURL: coreumChainImg,
   baseDenom: 'ucore',
   displayDenom: 'CORE',
   decimals: 6,

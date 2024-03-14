@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import kyveImg from '~/images/symbols/kyve.png';
+import kyveChainImg from '~/images/chainImgs/kyve.png';
+import kyveTokenImg from '~/images/symbols/kyve.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const KYVE: CosmosChain = {
@@ -9,7 +10,8 @@ export const KYVE: CosmosChain = {
   chainId: 'kyve-1',
   chainName: 'KYVE',
   restURL: 'https://lcd-kyve.cosmostation.io',
-  imageURL: kyveImg,
+  tokenImageURL: kyveTokenImg,
+  imageURL: kyveChainImg,
   baseDenom: 'ukyve',
   displayDenom: 'KYVE',
   decimals: 6,

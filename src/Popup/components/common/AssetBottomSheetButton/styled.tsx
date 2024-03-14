@@ -49,29 +49,6 @@ export const LeftContainer = styled('div')({
   alignItems: 'center',
 });
 
-export const LeftImageContainer = styled('div')({
-  '& > img': {
-    width: '2.4rem',
-    height: '2.4rem',
-  },
-});
-
-export const LeftInfoContainer = styled('div')({
-  marginLeft: '0.8rem',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-});
-
-export const TitleContainer = styled('div')(({ theme }) => ({
-  textAlign: 'left',
-  color: theme.colors.text01,
-}));
-
-export const LeftHeaderTitleContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text02,
-}));
-
 type RightContainerProps = {
   'data-is-active'?: number;
 };

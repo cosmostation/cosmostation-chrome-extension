@@ -63,10 +63,24 @@ export const LeftTextContainer = styled('div')({
 });
 
 export const LeftTextChainContainer = styled('div')(({ theme }) => ({
+  textAlign: 'left',
+
   color: theme.colors.text01,
+
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  maxWidth: '15rem',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
 export const LeftTextChainNameContainer = styled('div')(({ theme }) => ({
+  textAlign: 'left',
+
   color: theme.colors.text02,
 }));
 

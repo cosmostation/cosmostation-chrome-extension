@@ -80,7 +80,8 @@ export default function Entry() {
         },
         decimals: data.decimals ?? 6,
         gasRate: { average: data.gasRateAverage ?? '0.025', low: data.gasRateLow ?? '0.0025', tiny: data.gasRateTiny ?? '0.00025' },
-        imageURL: data.imageURL,
+        tokenImageURL: data.tokenImageURL || data.imageURL,
+        imageURL: data.imageURL || data.tokenImageURL,
         gas: { send: data.sendGas ?? COSMOS_DEFAULT_SEND_GAS },
         cosmWasm: data.cosmWasm,
       };
@@ -171,6 +172,16 @@ export default function Entry() {
                 error={!!errors.imageURL}
                 helperText={errors.imageURL?.message}
                 placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.imageURLPlaceholder')}
+              />
+            </Div>
+
+            <Div sx={{ marginBottom: '0.8rem' }}>
+              <Input
+                type="text"
+                inputProps={register('tokenImageURL')}
+                error={!!errors.tokenImageURL}
+                helperText={errors.tokenImageURL?.message}
+                placeholder={t('pages.Chain.Cosmos.Chain.Add.entry.tokenImageURLPlaceholder')}
               />
             </Div>
 

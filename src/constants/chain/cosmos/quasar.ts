@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import quasarImg from '~/images/symbols/quasar.png';
+import quasarChainImg from '~/images/chainImgs/quasar.png';
+import quasarTokenImg from '~/images/symbols/qsr.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const QUASAR: CosmosChain = {
@@ -7,9 +8,10 @@ export const QUASAR: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'quasar-1',
-  chainName: 'Quasar',
+  chainName: 'QUASAR',
   restURL: 'https://lcd-quasar.cosmostation.io',
-  imageURL: quasarImg,
+  tokenImageURL: quasarTokenImg,
+  imageURL: quasarChainImg,
   baseDenom: 'uqsr',
   displayDenom: 'QSR',
   decimals: 6,

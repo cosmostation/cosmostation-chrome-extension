@@ -244,7 +244,7 @@ export default function Entry({ queue }: EntryProps) {
   const oneInchSwapDstToken = useMemo(() => {
     if (txType.data?.type === 'swap' && oneInchTokens.data && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
       const oneInchSwapTxData = txType.data.txDescription?.args as unknown as OneInchSwapTxData;
-      return Object.values(oneInchTokens.data.tokens).find((item) => isEqualsIgnoringCase(item.address, oneInchSwapTxData.desc.dstToken));
+      return oneInchTokens.data.find((item) => isEqualsIgnoringCase(item.address, oneInchSwapTxData.desc.dstToken));
     }
     return undefined;
   }, [oneInchTokens.data, originEthereumTx.to, txType.data?.txDescription?.args, txType.data?.type]);

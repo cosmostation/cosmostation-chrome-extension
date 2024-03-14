@@ -49,9 +49,12 @@ export const StyledDivider = styled(Divider)({
 });
 
 export const NetworkImageContainer = styled('div')({
+  width: '2rem',
+  height: '2rem',
+
   '& > img': {
-    width: '1.6rem',
-    height: '1.6rem',
+    width: '2rem',
+    height: '2rem',
   },
 });
 

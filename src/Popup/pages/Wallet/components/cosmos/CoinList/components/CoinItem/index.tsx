@@ -18,25 +18,30 @@ import {
   RightTextContainer,
   RightTextValueContainer,
   StyledButton,
+  TextChangeRateContainer,
 } from './styled';
 
 type CoinItemProps = {
   amount: string;
   decimals?: number;
   displayDenom?: string;
-  channel?: string;
   imageURL?: string;
   onClick?: () => void;
   disabled?: boolean;
   coinGeckoId?: string;
 };
 
-export default function CoinItem({ disabled, imageURL, amount, decimals = 0, displayDenom, channel, onClick, coinGeckoId }: CoinItemProps) {
+export default function CoinItem({ disabled, imageURL, amount, decimals = 0, displayDenom, onClick, coinGeckoId }: CoinItemProps) {
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const chainPrice = useMemo(
     () => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[extensionStorage.currency]) || 0,
+    [coinGeckoId, coinGeckoPrice.data, extensionStorage.currency],
+  );
+
+  const cap = useMemo(
+    () => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[`${extensionStorage.currency}_24h_change`]) || 0,
     [coinGeckoId, coinGeckoPrice.data, extensionStorage.currency],
   );
 
@@ -55,7 +60,17 @@ export default function CoinItem({ disabled, imageURL, amount, decimals = 0, dis
             <Typography variant="h5">{displayDenom || 'UNKNOWN'}</Typography>
           </LeftTextChainContainer>
           <LeftTextChainAmountContainer>
-            <Typography variant="h6">{channel}</Typography>
+            <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={extensionStorage.currency}>
+              {String(chainPrice)}
+            </Number>
+
+            <TextChangeRateContainer data-color={cap > 0 ? 'green' : cap < 0 ? 'red' : 'grey'}>
+              <Typography variant="h6n">{cap > 0 ? '+' : ''}</Typography>
+              <Number typoOfIntegers="h6n" typoOfDecimals="h8n" fixed={2}>
+                {String(cap)}
+              </Number>
+              <Typography variant="h8n">%</Typography>
+            </TextChangeRateContainer>
           </LeftTextChainAmountContainer>
         </LeftTextContainer>
       </LeftContainer>

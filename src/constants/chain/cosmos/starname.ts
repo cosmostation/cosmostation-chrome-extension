@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import starnameImg from '~/images/symbols/starname.png';
+import starnameChainImg from '~/images/chainImgs/starname.png';
+import starnameTokenImg from '~/images/symbols/iov.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const STARNAME: CosmosChain = {
@@ -7,9 +8,10 @@ export const STARNAME: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'iov-mainnet-ibc',
-  chainName: 'Starname',
+  chainName: 'STARNAME',
   restURL: 'https://lcd-starname.cosmostation.io',
-  imageURL: starnameImg,
+  tokenImageURL: starnameTokenImg,
+  imageURL: starnameChainImg,
   baseDenom: 'uiov',
   displayDenom: 'IOV',
   decimals: 6,

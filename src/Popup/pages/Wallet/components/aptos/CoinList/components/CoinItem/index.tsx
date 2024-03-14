@@ -35,8 +35,8 @@ type CoinItemProps = {
 export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
   const { extensionStorage } = useExtensionStorage();
 
-  const coinAddress = getCoinAddress(coin.type);
-  const accountAddress = coinAddress.split('::')[0];
+  const coinAddress = useMemo(() => getCoinAddress(coin.type), [coin.type]);
+  const accountAddress = useMemo(() => coinAddress.split('::')[0], [coinAddress]);
 
   const { currency } = extensionStorage;
 
@@ -46,15 +46,15 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
 
   const { data: assets } = useAssetsSWR();
 
-  const asset = assets.find((item) => item.address === coinAddress);
+  const asset = useMemo(() => assets.find((item) => item.address === coinAddress), [assets, coinAddress]);
 
   const displayAmount = useMemo(
     () => toDisplayDenomAmount(coin.data.coin.value, coinInfo?.data.decimals || 0),
     [coin.data.coin.value, coinInfo?.data.decimals],
   );
-  const displayDenom = asset?.symbol || coinInfo?.data.symbol || '';
+  const displayDenom = useMemo(() => asset?.symbol || coinInfo?.data.symbol || '', [asset?.symbol, coinInfo?.data.symbol]);
 
-  const displayName = asset?.description || coinInfo?.data.name || '';
+  const displayName = useMemo(() => asset?.description?.toUpperCase() || coinInfo?.data.name?.toUpperCase() || '', [asset?.description, coinInfo?.data.name]);
 
   const price = useMemo(
     () => (asset?.coinGeckoId && coinGeckoPrice.data?.[asset.coinGeckoId]?.[currency]) || 0,

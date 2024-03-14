@@ -18,6 +18,7 @@ import {
   DeleteButton,
   LeftContainer,
   LeftImageContainer,
+  LeftTextChainAmountContainer,
   LeftTextChainContainer,
   LeftTextContainer,
   LeftTextErrorContainer,
@@ -28,6 +29,7 @@ import {
   StyledAbsoluteLoading,
   StyledButton,
   StyledIconButton,
+  TextChangeRateContainer,
 } from './styled';
 
 import Close16Icon from '~/images/icons/Close16.svg';
@@ -60,6 +62,12 @@ export default function TokenItem({ chain, token, address, onClick, onClickDelet
     () => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[extensionStorage.currency]) || 0,
     [coinGeckoId, coinGeckoPrice.data, extensionStorage.currency],
   );
+
+  const cap = useMemo(
+    () => (coinGeckoId && coinGeckoPrice.data?.[coinGeckoId]?.[`${extensionStorage.currency}_24h_change`]) || 0,
+    [coinGeckoId, coinGeckoPrice.data, extensionStorage.currency],
+  );
+
   const value = useMemo(() => times(displayAmount, price), [displayAmount, price]);
 
   const isAmountZero = useMemo(() => amount === '0', [amount]);
@@ -81,6 +89,19 @@ export default function TokenItem({ chain, token, address, onClick, onClickDelet
               <LeftTextChainContainer>
                 <Typography variant="h5">{displayDenom}</Typography>
               </LeftTextChainContainer>
+              <LeftTextChainAmountContainer>
+                <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={extensionStorage.currency}>
+                  {String(price)}
+                </Number>
+
+                <TextChangeRateContainer data-color={cap > 0 ? 'green' : cap < 0 ? 'red' : 'grey'}>
+                  <Typography variant="h6n">{cap > 0 ? '+' : ''}</Typography>
+                  <Number typoOfIntegers="h6n" typoOfDecimals="h8n" fixed={2}>
+                    {String(cap)}
+                  </Number>
+                  <Typography variant="h8n">%</Typography>
+                </TextChangeRateContainer>
+              </LeftTextChainAmountContainer>
             </LeftTextContainer>
           </LeftContainer>
           <RightContainer>

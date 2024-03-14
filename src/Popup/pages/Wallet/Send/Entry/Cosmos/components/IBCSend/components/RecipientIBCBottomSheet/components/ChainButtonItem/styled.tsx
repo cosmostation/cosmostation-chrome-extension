@@ -10,7 +10,7 @@ export const ChainButton = styled('button')<ChainButtonProps>(({ theme, ...props
 
   borderRadius: '0.8rem',
 
-  padding: '0.8rem 1.2rem 0.6rem 1.2rem',
+  padding: '0 1.2rem 0 0.8rem',
 
   height: '4.8rem',
   width: '100%',
@@ -33,14 +33,17 @@ export const ChainLeftContainer = styled('div')({
 });
 
 export const ChainLeftImageContainer = styled('div')({
+  width: '3.2rem',
+  height: '3.2rem',
+
   '& > img': {
-    width: '2.4rem',
-    height: '2.4rem',
+    width: '3.2rem',
+    height: '3.2rem',
   },
 });
 
 export const ChainLeftInfoContainer = styled('div')({
-  marginLeft: '0.8rem',
+  marginLeft: '0.4rem',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',

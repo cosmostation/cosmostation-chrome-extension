@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import shentuImg from '~/images/symbols/shentu.png';
+import shentuChainImg from '~/images/chainImgs/shentu.png';
+import shentuTokenImg from '~/images/symbols/ctk.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const SHENTU: CosmosChain = {
@@ -7,9 +8,10 @@ export const SHENTU: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'shentu-2.2',
-  chainName: 'Shentu',
+  chainName: 'SHENTU',
   restURL: 'https://lcd-shentu.cosmostation.io',
-  imageURL: shentuImg,
+  tokenImageURL: shentuTokenImg,
+  imageURL: shentuChainImg,
   baseDenom: 'uctk',
   displayDenom: 'CTK',
   decimals: 6,
