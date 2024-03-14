@@ -15,10 +15,10 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
     const result: Record<string, GasRate> = {};
 
     if (gasRate.length === 0) {
-      const exceptGasRate = COSMOS_NON_NATIVE_GAS_RATES.filter((item) => item.chainId === chain.id);
+      const nonNativeGasRates = COSMOS_NON_NATIVE_GAS_RATES.filter((item) => item.chainId === chain.id);
 
-      return exceptGasRate
-        ? exceptGasRate.reduce((acc: Record<string, GasRate>, item) => {
+      return nonNativeGasRates
+        ? nonNativeGasRates.reduce((acc: Record<string, GasRate>, item) => {
             acc[item.baseDenom] = item.gasRate;
             return acc;
           }, {})
