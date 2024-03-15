@@ -68,6 +68,17 @@ export function ceil(num: string | number) {
   return new Big(num).toFixed(0, 0);
 }
 
+export function medianOf(numbers: string[] | number[]): string {
+  const sortedNumbers = numbers
+    .slice()
+    .sort((a, b) => Number(minus(a, b)))
+    .map((num) => String(num));
+  const len = sortedNumbers.length;
+  const index = Math.floor(len / 2);
+
+  return len % 2 === 0 ? ceil(divide(plus(sortedNumbers[index - 1], sortedNumbers[index]), '2')) : sortedNumbers[index];
+}
+
 export function fix(number: string, decimal?: number, optional: RoundingMode = 0) {
   return Big(number).toFixed(decimal, optional);
 }

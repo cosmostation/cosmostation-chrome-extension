@@ -168,6 +168,7 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const handleOnClickMax = () => {
     if (currentToken === null) {
+      // TODO 유지 고려 필요
       const fee15 = times(baseFee, '1.5');
       const maxAmount = minus(baseBalance, fee15);
 
