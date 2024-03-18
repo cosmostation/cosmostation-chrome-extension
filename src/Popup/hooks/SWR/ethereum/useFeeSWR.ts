@@ -25,7 +25,7 @@ export function useFeeSWR(config?: SWRConfiguration) {
       return null;
     }
 
-    const baseFeePerGas = parseInt(block.data.result.baseFeePerGas, 16);
+    const baseFeePerGas = plus(parseInt(block.data.result.baseFeePerGas, 16), '1000');
 
     const originReward = feeHistory.data.result.reward || [];
 
