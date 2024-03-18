@@ -2,8 +2,9 @@ import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
 import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
-import { divide, plus } from '~/Popup/utils/big';
-import type { FeeType } from '~/types/ethereum/common';
+import { GAS_SETTINGS_BY_PRIORITY_LEVEL, PRIORITY_LEVEL } from '~/constants/ethereum';
+import { gt, medianOf, plus, times } from '~/Popup/utils/big';
+import type { FeeType, GasEstimates } from '~/types/ethereum/common';
 
 import { useFeeHistorySWR } from './useFeeHistorySWR';
 import { useGasPriceSWR } from './useGasPriceSWR';
@@ -13,8 +14,8 @@ import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNe
 export function useFeeSWR(config?: SWRConfiguration) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const block = useGetBlockByNumberSWR(['pending', false], config);
-  const feeHistory = useFeeHistorySWR([20, 'pending', [10, 30, 50, 70, 90]], config);
+  const block = useGetBlockByNumberSWR(['latest', false], config);
+  const feeHistory = useFeeHistorySWR([5, 'latest', [10, 20, 30]], config);
   const gasPrice = useGasPriceSWR(config);
 
   const currentGasPrice = gasPrice.data?.result ? plus(parseInt(gasPrice.data.result, 16), '1000') : null;
@@ -28,28 +29,30 @@ export function useFeeSWR(config?: SWRConfiguration) {
 
     const originReward = feeHistory.data.result.reward || [];
 
-    const rewardCount = originReward.length;
+    const transposedRewards = originReward.reduce<string[][]>((result, row) => row.map((_, i) => [...(result[i] || []), row[i].toString()]), []);
 
-    const averageReward = originReward
-      .reduce(
-        (prev, cur) => [
-          plus(prev[0], parseInt(cur[0], 16)),
-          plus(prev[1], parseInt(cur[1], 16)),
-          plus(prev[2], parseInt(cur[2], 16)),
-          plus(prev[3], parseInt(cur[3], 16)),
-          plus(prev[4], parseInt(cur[4], 16)),
-        ],
-        ['0', '0', '0', '0', '0'],
-      )
-      .map((item) => divide(item, rewardCount, 0));
+    const medianRewards = transposedRewards.map((item) => medianOf(item.map((reward) => parseInt(reward, 16))));
 
-    return {
-      tiny: { maxBaseFeePerGas: plus(baseFeePerGas, averageReward[0]), maxPriorityFeePerGas: averageReward[0] },
-      low: { maxBaseFeePerGas: plus(baseFeePerGas, averageReward[1]), maxPriorityFeePerGas: averageReward[1] },
-      average: { maxBaseFeePerGas: plus(baseFeePerGas, averageReward[2]), maxPriorityFeePerGas: averageReward[2] },
-      high: { maxBaseFeePerGas: plus(baseFeePerGas, averageReward[3]), maxPriorityFeePerGas: averageReward[3] },
-      highest: { maxBaseFeePerGas: plus(baseFeePerGas, averageReward[4]), maxPriorityFeePerGas: averageReward[4] },
-    };
+    const priorityLevels = Object.values(PRIORITY_LEVEL);
+
+    const rewardsWithLevels = medianRewards.map((reward, i) => ({ reward, level: priorityLevels[i] }));
+
+    return rewardsWithLevels.reduce((acc: GasEstimates, { reward, level }) => {
+      const { minMaxPriorityFeePerGas, priorityFeePercentageMultiplier, baseFeePercentageMultiplier } = GAS_SETTINGS_BY_PRIORITY_LEVEL[level];
+
+      const multipliedPriorityFee = times(reward, priorityFeePercentageMultiplier, 0);
+      const maxPriorityFeePerGas = gt(multipliedPriorityFee, minMaxPriorityFeePerGas) ? multipliedPriorityFee : minMaxPriorityFeePerGas;
+
+      const maxBaseFeePerGas = plus(times(baseFeePerGas, baseFeePercentageMultiplier, 0), maxPriorityFeePerGas);
+
+      return {
+        ...acc,
+        [level]: {
+          maxBaseFeePerGas,
+          maxPriorityFeePerGas,
+        },
+      };
+    }, {} as GasEstimates);
   }, [feeHistory, block]);
 
   const type: FeeType | null = (() => {
@@ -57,7 +60,9 @@ export function useFeeSWR(config?: SWRConfiguration) {
       return null;
     }
 
-    if (currentEthereumNetwork.id === SMART_CHAIN.id) {
+    const basicFeeOnlyChainIds = [SMART_CHAIN.id];
+
+    if (basicFeeOnlyChainIds.includes(currentEthereumNetwork.id)) {
       return 'BASIC';
     }
 

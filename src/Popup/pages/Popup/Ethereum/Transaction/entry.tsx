@@ -202,7 +202,7 @@ export default function Entry({ queue }: EntryProps) {
         ...mixedEthereumTx,
         gasPrice: undefined,
         maxPriorityFeePerGas: toHex(currentFee.currentFee[feeMode].maxPriorityFeePerGas, { addPrefix: true, isStringNumber: true }),
-        maxFeePerGas: toHex(times(currentFee.currentFee[feeMode].maxBaseFeePerGas, '1.2', 0), { addPrefix: true, isStringNumber: true }),
+        maxFeePerGas: toHex(currentFee.currentFee[feeMode].maxBaseFeePerGas, { addPrefix: true, isStringNumber: true }),
       };
     }
 
