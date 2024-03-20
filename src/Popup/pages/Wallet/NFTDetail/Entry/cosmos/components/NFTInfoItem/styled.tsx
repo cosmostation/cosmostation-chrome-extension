@@ -25,6 +25,9 @@ export const ItemTitleContainer = styled('div')(({ theme }) => ({
 }));
 
 export const ItemValueContainer = styled('div')(({ theme }) => ({
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-all',
+
   color: theme.colors.text01,
 
   fontFamily: theme.typography.h5.fontFamily,

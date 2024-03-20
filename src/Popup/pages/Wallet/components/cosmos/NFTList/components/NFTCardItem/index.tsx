@@ -88,10 +88,10 @@ export default function NFTCardItem({ chain, nft, onClick, onClickDelete }: NFTC
 
       <BottomContainer>
         <NFTDescriptionTextContainer>
-          <Typography variant="h6">{nftMeta.data?.description}</Typography>
+          <Typography variant="h6">{nftMeta.data?.description || address}</Typography>
         </NFTDescriptionTextContainer>
         <NFTNameTextContainer>
-          <Typography variant="h5">{nftMeta.data?.name}</Typography>
+          <Typography variant="h5">{nftMeta.data?.name || toDisplayTokenId(tokenId)}</Typography>
         </NFTNameTextContainer>
       </BottomContainer>
     </StyledButton>
