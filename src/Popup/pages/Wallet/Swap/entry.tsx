@@ -123,7 +123,7 @@ export default function Entry() {
   const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
-  const { data: chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
 
   const { currentChain, setCurrentChain } = useCurrentChain();
   const { currentEthereumNetwork, setCurrentEthereumNetwork } = useCurrentEthereumNetwork();

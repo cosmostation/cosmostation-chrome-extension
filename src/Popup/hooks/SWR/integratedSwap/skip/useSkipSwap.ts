@@ -163,7 +163,7 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
     port: chainInfo.port || '',
   });
 
-  const { data: chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
 
   const assets = useAssetsSWR(chainInfo.chain || COSMOS_CHAINS[0]);
 

@@ -84,7 +84,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const nodeInfo = useNodeInfoSWR(chain);
   const { enQueue } = useCurrentQueue();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const { data: chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
   const { extensionStorage } = useExtensionStorage();
   const { currency } = extensionStorage;
   const params = useParams();

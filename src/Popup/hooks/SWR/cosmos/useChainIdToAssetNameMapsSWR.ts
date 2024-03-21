@@ -1,24 +1,17 @@
 import { useMemo } from 'react';
-import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
-import useSWR from 'swr';
 
-import { get } from '~/Popup/utils/axios';
 import type { ChainIdToAssetNameMapsResponse } from '~/types/cosmos/asset';
 
+import { useAllParamsSWR } from './useAllParamsSWR';
+
 export function useChainIdToAssetNameMapsSWR(config?: SWRConfiguration) {
-  const requestURL = `https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/maps.json`;
+  const allParams = useAllParamsSWR(config);
 
-  const fetcher = (fetchUrl: string) => get<ChainIdToAssetNameMapsResponse>(fetchUrl);
+  const chainIdToAssetNameMaps = useMemo<ChainIdToAssetNameMapsResponse>(
+    () => Object.fromEntries(Object.entries(allParams.data).map(([key, value]) => [value.params?.chainlist_params?.chain_id_cosmos || value.chain_id, key])),
+    [allParams],
+  );
 
-  const { data, error, mutate } = useSWR<ChainIdToAssetNameMapsResponse, AxiosError>(requestURL, fetcher, {
-    revalidateOnFocus: false,
-    revalidateIfStale: false,
-    revalidateOnReconnect: false,
-    ...config,
-  });
-
-  const returnData = useMemo(() => data || {}, [data]);
-
-  return { data: returnData, error, mutate };
+  return { chainIdToAssetNameMaps };
 }

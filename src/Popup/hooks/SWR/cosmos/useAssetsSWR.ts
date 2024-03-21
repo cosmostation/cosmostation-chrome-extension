@@ -11,7 +11,7 @@ import type { AssetV3Response } from '~/types/cosmos/asset';
 import { useChainIdToAssetNameMapsSWR } from './useChainIdToAssetNameMapsSWR';
 
 export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
-  const { data: chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
 
   const mappingName = useMemo(() => (chain ? convertCosmosToAssetName(chain, chainIdToAssetNameMaps) : ''), [chain, chainIdToAssetNameMaps]);
 

@@ -79,7 +79,7 @@ export default function Send({ chain }: CosmosProps) {
   const { extensionStorage } = useExtensionStorage();
   const { currency } = extensionStorage;
   const coinGeckoPrice = useCoinGeckoPriceSWR();
-  const { data: chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
 
   const { enQueue } = useCurrentQueue();
   const params = useParams();
