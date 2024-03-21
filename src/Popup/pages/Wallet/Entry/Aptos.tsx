@@ -1,43 +1,23 @@
-import { Suspense, useCallback, useMemo, useState } from 'react';
+import { Suspense, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { Tab, Tabs } from '~/Popup/components/common/Tab';
 import Header from '~/Popup/components/SelectSubHeader';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
-import { useCurrentTabIndex } from '~/Popup/hooks/useCurrent/useCurrentTabIndex';
-import { gte } from '~/Popup/utils/big';
 import type { AptosChain } from '~/types/chain';
 
 import CoinList from '../components/aptos/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/aptos/NativeChainCard';
 import LedgerCheck from '../components/LedgerCheck';
-import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer, StyledTabPanel } from '../styled';
+import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
 
 type AptosProps = {
   chain: AptosChain;
 };
 
 export default function Aptos({ chain }: AptosProps) {
-  const { currentTabIndex, setCurrentTabIndex } = useCurrentTabIndex();
-
   const { currentAccount } = useCurrentAccount();
   const { currentAptosNetwork, additionalAptosNetworks } = useCurrentAptosNetwork();
-
-  const tabLabels = ['Coins', 'Activity'];
-
-  const currentHomeTabIndex = useMemo(() => (gte(currentTabIndex, tabLabels.length) ? 0 : currentTabIndex), [currentTabIndex, tabLabels.length]);
-
-  const [tabValue, setTabValue] = useState(currentHomeTabIndex);
-
-  const handleChange = useCallback(
-    (_: React.SyntheticEvent, newTabValue: number) => {
-      setTabValue(newTabValue);
-
-      setCurrentTabIndex(newTabValue);
-    },
-    [setCurrentTabIndex],
-  );
 
   const isCustom = useMemo(
     () => !!additionalAptosNetworks.find((item) => item.id === currentAptosNetwork.id),
@@ -61,16 +41,9 @@ export default function Aptos({ chain }: AptosProps) {
               </Suspense>
             </ErrorBoundary>
           </NativeChainCardContainer>
-          <Tabs value={tabValue} onChange={handleChange} variant="fullWidth">
-            {tabLabels.map((item) => (
-              <Tab key={item} label={item} />
-            ))}
-          </Tabs>
-          <StyledTabPanel value={tabValue} index={0}>
-            <BottomContainer>
-              <CoinList />
-            </BottomContainer>
-          </StyledTabPanel>
+          <BottomContainer>
+            <CoinList />
+          </BottomContainer>
         </>
       </LedgerCheck>
     </Container>

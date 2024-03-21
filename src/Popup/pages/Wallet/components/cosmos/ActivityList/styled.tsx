@@ -9,13 +9,32 @@ export const Container = styled('div')({
   overflow: 'hidden',
 });
 
-export const ListContainer = styled('div')({
+export const ContentsContainer = styled('div')({
   height: '100%',
 
+  overflow: 'auto',
+});
+
+export const ActivityContainer = styled('div')({});
+
+export const ActivityWrapperContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+
+  rowGap: '1.2rem',
+});
+
+export const ActivityDateContainer = styled('div')(({ theme }) => ({
+  margin: '0 0 0.8rem 0.8rem',
+
+  color: theme.colors.text01,
+}));
+
+export const ActivityListContainer = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'flex-start',
+  justifyContent: 'center',
 
   rowGap: '0.8rem',
 

@@ -3,3 +3,7 @@ export const TX_CONFIRMED_STATUS = {
   FAILED: 2,
   PENDING: 3,
 } as const;
+
+export const COSMOS_TX_CONFIRMED_STATUS = {
+  CONFIRMED: 0,
+} as const;

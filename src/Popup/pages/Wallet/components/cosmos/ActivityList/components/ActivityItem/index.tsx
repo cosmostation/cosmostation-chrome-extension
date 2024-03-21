@@ -1,29 +1,35 @@
 import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
+import { COSMOS_TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
 import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { gt, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { convertToLocales } from '~/Popup/utils/common';
+import { equal, gt, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { convertToLocales, getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { getDpCoin, getMsgType, getTxMsgs } from '~/Popup/utils/cosmos';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Activity } from '~/types/cosmos/activity';
 
 import {
+  BottomContainer,
+  BottomLeftContainer,
+  BottomRightContainer,
   Container,
-  LeftContainer,
-  LeftTextContainer,
-  LeftTextSubtitleContainer,
-  LeftTextTitleContainer,
-  RightContainer,
-  RightTextContainer,
+  IndicatorIconContainer,
   StyledButton,
+  TopContainer,
+  TopLeftContainer,
+  TopRightContainer,
+  TopRightTextContainer,
 } from './styled';
+
+import Success16Icon from '~/images/icons/Check16.svg';
+import Fail16Icon from '~/images/icons/Close16.svg';
 
 type ActivityItemProps = {
   activity: Activity;
@@ -57,12 +63,12 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
     const date = new Date(data?.timestamp);
 
     return date.toLocaleString(convertToLocales(language), {
-      month: 'short',
-      day: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
     });
   }, [data?.timestamp, language]);
+
+  const isTxSuccess = useMemo(() => (data?.code !== undefined ? equal(data.code, COSMOS_TX_CONFIRMED_STATUS.CONFIRMED) : undefined), [data?.code]);
 
   const title = useMemo(() => {
     const activityMsgType = getMsgType(activity, address);
@@ -75,7 +81,7 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
     return `${t(localizedKey)} ${subMsgtype || ''}${gt(additionalMessagesCount, '0') ? ` + ${additionalMessagesCount}` : ''}`;
   }, [activity, address, t]);
 
-  const shortenedTxHash = useMemo(() => shorterAddress(activity.data?.txhash), [activity]);
+  const shortenedTxHash = useMemo(() => shorterAddress(activity.data?.txhash, 15), [activity]);
 
   const amountData = getDpCoin(activity, chain, address);
 
@@ -100,30 +106,33 @@ export default function ActivityItem({ activity, chain }: ActivityItemProps) {
         arrow
       >
         <Container>
-          <LeftContainer>
-            <LeftTextContainer>
-              <LeftTextTitleContainer>
-                <Typography variant="h5">{title}</Typography>
-              </LeftTextTitleContainer>
-              <LeftTextSubtitleContainer>
+          <TopContainer>
+            <TopLeftContainer>
+              <Typography variant="h5">{title}</Typography>
+            </TopLeftContainer>
+            <TopRightContainer>
+              {isTxSuccess !== undefined && (
+                <IndicatorIconContainer data-is-success={isTxSuccess}>{isTxSuccess ? <Success16Icon /> : <Fail16Icon />}</IndicatorIconContainer>
+              )}
+              <TopRightTextContainer>
                 <Typography variant="h6">{shortenedTxHash}</Typography>
-              </LeftTextSubtitleContainer>
-              <LeftTextSubtitleContainer>
-                <Typography variant="h6">{formattedTimestamp}</Typography>
-              </LeftTextSubtitleContainer>
-            </LeftTextContainer>
-          </LeftContainer>
-          <RightContainer>
+              </TopRightTextContainer>
+            </TopRightContainer>
+          </TopContainer>
+          <BottomContainer>
+            <BottomLeftContainer>
+              <Typography variant="h6">{`${formattedTimestamp} (${activity.data?.height || ''})`}</Typography>
+            </BottomLeftContainer>
             {gt(displayAmount, '0') && displayDenom && (
-              <RightTextContainer>
-                <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n">
+              <BottomRightContainer>
+                <NumberText typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={getDisplayMaxDecimals(firstAmountData?.decimals || 0)}>
                   {displayAmount}
                 </NumberText>
                 <Typography variant="h6">{displayDenom}</Typography>
                 <Typography variant="h6">{` ${amountData && amountData.length > 1 ? `+ ${amountData.length - 1}` : ''}`}</Typography>
-              </RightTextContainer>
+              </BottomRightContainer>
             )}
-          </RightContainer>
+          </BottomContainer>
         </Container>
       </Tooltip>
     </StyledButton>

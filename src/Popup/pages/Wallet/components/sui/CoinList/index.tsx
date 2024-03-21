@@ -16,6 +16,7 @@ import type { Path } from '~/types/route';
 import CoinItem, { CoinItemSkeleton } from './components/CoinItem';
 import {
   Container,
+  EmptyAssetContainer,
   ListContainer,
   ListTitleContainer,
   ListTitleLeftContainer,
@@ -47,41 +48,42 @@ export default function CoinList({ chain }: CoinListProps) {
 
   const tokenList = useMemo(() => tokenBalanceObjects.filter((item) => item.coinType !== SUI_COIN), [tokenBalanceObjects]);
 
-  const isExistToken = !!tokenList.length;
-
-  if (!isExistToken) {
-    return (
-      <EmptyAsset
-        style={{ marginTop: '8.5rem' }}
-        Icon={NoCoinIcon}
-        headerText={t('pages.Wallet.components.sui.CoinList.index.defaultHeader')}
-        subHeaderText={t('pages.Wallet.components.sui.CoinList.index.defaultSubHeader')}
-      />
-    );
-  }
+  const isExistToken = useMemo(() => !!tokenList.length, [tokenList.length]);
 
   return (
     <Container>
-      <ListTitleContainer>
-        <ListTitleLeftContainer>
-          <ListTitleLeftTextContainer>
-            <Typography variant="h6">{t('pages.Wallet.components.sui.CoinList.index.coin')}</Typography>
-          </ListTitleLeftTextContainer>
-          <ListTitleLeftCountContainer>
-            <Typography variant="h6">{isExistToken ? `${tokenList.length}` : ''}</Typography>
-          </ListTitleLeftCountContainer>
-        </ListTitleLeftContainer>
-        <ListTitleRightContainer />
-      </ListTitleContainer>
-      <ListContainer>
-        {tokenList.map((coin) => (
-          <ErrorBoundary key={coin.coinType} FallbackComponent={Empty}>
-            <Suspense fallback={<CoinItemSkeleton coin={coin} />}>
-              <CoinItem coin={coin} onClick={() => navigate(`/wallet/send/${coin.coinType}` as unknown as Path)} />
-            </Suspense>
-          </ErrorBoundary>
-        ))}
-      </ListContainer>
+      {isExistToken ? (
+        <>
+          <ListTitleContainer>
+            <ListTitleLeftContainer>
+              <ListTitleLeftTextContainer>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.CoinList.index.coin')}</Typography>
+              </ListTitleLeftTextContainer>
+              <ListTitleLeftCountContainer>
+                <Typography variant="h6">{isExistToken ? `${tokenList.length}` : ''}</Typography>
+              </ListTitleLeftCountContainer>
+            </ListTitleLeftContainer>
+            <ListTitleRightContainer />
+          </ListTitleContainer>
+          <ListContainer>
+            {tokenList.map((coin) => (
+              <ErrorBoundary key={coin.coinType} FallbackComponent={Empty}>
+                <Suspense fallback={<CoinItemSkeleton coin={coin} />}>
+                  <CoinItem coin={coin} onClick={() => navigate(`/wallet/send/${coin.coinType}` as unknown as Path)} />
+                </Suspense>
+              </ErrorBoundary>
+            ))}
+          </ListContainer>
+        </>
+      ) : (
+        <EmptyAssetContainer>
+          <EmptyAsset
+            Icon={NoCoinIcon}
+            headerText={t('pages.Wallet.components.sui.CoinList.index.defaultHeader')}
+            subHeaderText={t('pages.Wallet.components.sui.CoinList.index.defaultSubHeader')}
+          />
+        </EmptyAssetContainer>
+      )}
     </Container>
   );
 }

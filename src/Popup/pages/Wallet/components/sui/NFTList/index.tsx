@@ -15,7 +15,7 @@ import NFTCardItem, { NFTCardItemSkeleton } from './components/NFTCardItem';
 import TypeButton from './components/TypeButton';
 import type { TypeInfo } from './components/TypePopover';
 import TypePopover from './components/TypePopover';
-import { Container, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
+import { Container, EmptyAssetContainer, ListContainer, ListTitleContainer, ListTitleLeftContainer, ListTitleRightContainer } from './styled';
 
 import NoNFTIcon from '~/images/icons/NoNFT.svg';
 
@@ -75,51 +75,55 @@ export default function NFTList({ chain }: NFTListProps) {
     return nftObjects.filter((item) => currentTypeInfo?.name === getNFTType(item.data?.type)) || [];
   }, [currentType, currentTypeInfo?.name, nftObjects]);
 
-  if (!isExistNFT) {
-    return <EmptyAsset style={{ marginTop: '8.5rem' }} Icon={NoNFTIcon} headerText="No NFTs" subHeaderText="Recent NFTs will show up here" />;
-  }
-
   return (
     <Container>
-      <ListTitleContainer>
-        <ListTitleLeftContainer>
-          <TypeButton
-            text={currentTypeInfo?.name}
-            number={currentTypeInfo?.count}
-            onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
-            isActive={isOpenPopover}
+      {isExistNFT ? (
+        <>
+          <ListTitleContainer>
+            <ListTitleLeftContainer>
+              <TypeButton
+                text={currentTypeInfo?.name}
+                number={currentTypeInfo?.count}
+                onClick={(event) => setPopoverAnchorEl(event.currentTarget)}
+                isActive={isOpenPopover}
+              />
+            </ListTitleLeftContainer>
+            <ListTitleRightContainer />
+          </ListTitleContainer>
+          <ListContainer>
+            {filteredNFTObjects.map((nft) => (
+              <ErrorBoundary key={nft.data?.objectId} FallbackComponent={Empty}>
+                <Suspense fallback={<NFTCardItemSkeleton />}>
+                  <NFTCardItem nftObject={nft} onClick={() => navigate(`/wallet/nft-detail/${nft.data?.objectId || ''}` as unknown as Path)} />
+                </Suspense>
+              </ErrorBoundary>
+            ))}
+          </ListContainer>
+          <TypePopover
+            marginThreshold={0}
+            currentTypeInfo={currentTypeInfo}
+            typeInfos={typeInfos}
+            onClickType={(selectedTypeInfo) => {
+              setCurrentType(selectedTypeInfo.type);
+            }}
+            open={isOpenPopover}
+            onClose={() => setPopoverAnchorEl(null)}
+            anchorEl={popoverAnchorEl}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
           />
-        </ListTitleLeftContainer>
-        <ListTitleRightContainer />
-      </ListTitleContainer>
-      <ListContainer>
-        {filteredNFTObjects.map((nft) => (
-          <ErrorBoundary key={nft.data?.objectId} FallbackComponent={Empty}>
-            <Suspense fallback={<NFTCardItemSkeleton />}>
-              <NFTCardItem nftObject={nft} onClick={() => navigate(`/wallet/nft-detail/${nft.data?.objectId || ''}` as unknown as Path)} />
-            </Suspense>
-          </ErrorBoundary>
-        ))}
-      </ListContainer>
-      <TypePopover
-        marginThreshold={0}
-        currentTypeInfo={currentTypeInfo}
-        typeInfos={typeInfos}
-        onClickType={(selectedTypeInfo) => {
-          setCurrentType(selectedTypeInfo.type);
-        }}
-        open={isOpenPopover}
-        onClose={() => setPopoverAnchorEl(null)}
-        anchorEl={popoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
-      />
+        </>
+      ) : (
+        <EmptyAssetContainer>
+          <EmptyAsset Icon={NoNFTIcon} headerText="No NFTs" subHeaderText="Recent NFTs will show up here" />;
+        </EmptyAssetContainer>
+      )}
     </Container>
   );
 }

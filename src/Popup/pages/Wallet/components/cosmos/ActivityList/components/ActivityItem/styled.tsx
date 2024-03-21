@@ -6,7 +6,7 @@ export const StyledButton = styled('button')(({ theme }) => ({
   backgroundColor: theme.colors.base02,
   border: `0.1rem solid ${theme.colors.base02}`,
 
-  padding: '1rem 1.2rem',
+  padding: '1rem 2.2rem',
 
   borderRadius: '0.8rem',
 
@@ -27,48 +27,80 @@ export const StyledButton = styled('button')(({ theme }) => ({
 
 export const Container = styled('div')({
   display: 'flex',
+  flexDirection: 'column',
   justifyContent: 'space-between',
   alignItems: 'center',
+
+  rowGap: '1rem',
 });
 
-export const LeftContainer = styled('div')({
+export const TopContainer = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-start',
+  justifyContent: 'space-between',
   alignItems: 'center',
 
-  textAlign: 'left',
+  width: '100%',
 });
 
-export const LeftTextContainer = styled('div')({
-  paddingLeft: '0.8rem',
-
-  display: 'grid',
-
-  gridTemplateColumns: '1fr',
-
-  rowGap: '0.2rem',
-});
-
-export const LeftTextTitleContainer = styled('div')(({ theme }) => ({
+export const TopLeftContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+
+  maxWidth: '16rem',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
 }));
 
-export const LeftTextSubtitleContainer = styled('div')(({ theme }) => ({
+export const TopRightContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start',
+
+  columnGap: '0.3rem',
+});
+
+export const TopRightTextContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
 
   color: theme.colors.text02,
 }));
 
-export const RightContainer = styled('div')({
+type IndicatorIconProps = {
+  'data-is-success': boolean;
+};
+
+export const IndicatorIconContainer = styled('div')<IndicatorIconProps>(({ theme, ...props }) => ({
+  width: '1.6rem',
+  height: '1.6rem',
+
+  '& > svg': {
+    '& > path': {
+      fill: props['data-is-success'] ? theme.accentColors.green01 : theme.accentColors.red,
+    },
+  },
+}));
+
+export const BottomContainer = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-end',
+  justifyContent: 'space-between',
   alignItems: 'center',
 
-  textAlign: 'right',
+  width: '100%',
 });
 
-export const RightTextContainer = styled('div')(({ theme }) => ({
+export const BottomLeftContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+
+  color: theme.colors.text02,
+}));
+
+export const BottomRightContainer = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'baseline',
 
