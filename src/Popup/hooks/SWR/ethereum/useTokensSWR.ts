@@ -25,7 +25,7 @@ export function useTokensSWR(chain?: EthereumNetwork, config?: SWRConfiguration)
 
   const mappingName = nameMap[currentChain.id] || currentChain.networkName.toLowerCase();
 
-  const requestURL = `https://front.api.mintscan.io/v3/assets/${mappingName}/erc20`;
+  const requestURL = `https://front.api.mintscan.io/v10/assets/${mappingName}/erc20/info`;
 
   const fetcher = async (fetchUrl: string) => {
     try {
@@ -43,7 +43,7 @@ export function useTokensSWR(chain?: EthereumNetwork, config?: SWRConfiguration)
   });
 
   const returnData: ModifiedAsset[] =
-    data?.assets.map((item) => ({
+    data?.map?.((item) => ({
       chainId: toHex(item.chainId, { addPrefix: true }),
       address: item.address,
       decimals: item.decimals,

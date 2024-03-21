@@ -1,14 +1,4 @@
-import type {
-  AptosChain,
-  AptosNetwork,
-  CosmosChain,
-  CosmosFeeBaseDenom,
-  CosmosGasRate,
-  EthereumChain,
-  EthereumNetwork,
-  SuiChain,
-  SuiNetwork,
-} from '~/types/chain';
+import type { AptosChain, AptosNetwork, CosmosChain, CosmosGasRate, EthereumChain, EthereumNetwork, SuiChain, SuiNetwork } from '~/types/chain';
 
 import { APTOS } from './aptos/aptos';
 import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
@@ -37,6 +27,7 @@ import { EMONEY } from './cosmos/emoney';
 import { EVMOS } from './cosmos/evmos';
 import { FETCH_AI } from './cosmos/fetchAi';
 import { FINSCHIA } from './cosmos/finschia';
+import { GOVGEN } from './cosmos/govgen';
 import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
 import { INJECTIVE } from './cosmos/injective';
 import { IRIS } from './cosmos/iris';
@@ -50,8 +41,9 @@ import { LUM } from './cosmos/lum';
 import { MARS } from './cosmos/mars';
 import { MEDIBLOC } from './cosmos/medibloc';
 import { NEUTRON } from './cosmos/neutron';
-import { NOBLE } from './cosmos/noble';
-import { NYX, NYX_FEE_BASE_DENOMS, NYX_GAS_RATES } from './cosmos/nyx';
+import { NIBIRU } from './cosmos/nibiru';
+import { NOBLE, NOBLE_GAS_RATES } from './cosmos/noble';
+import { NYX, NYX_GAS_RATES } from './cosmos/nyx';
 import { OMNIFLIX } from './cosmos/omniflix';
 import { ONOMY } from './cosmos/onomy';
 import { OSMOSIS } from './cosmos/osmosis';
@@ -72,7 +64,7 @@ import { STARGAZE } from './cosmos/stargaze';
 import { STRIDE } from './cosmos/stride';
 import { TERITORI } from './cosmos/teritori';
 import { TERRA } from './cosmos/terra';
-import { UMEE } from './cosmos/umee';
+import { UX } from './cosmos/ux';
 import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
@@ -110,6 +102,7 @@ export const COSMOS_DEFAULT_IBC_SEND_GAS = '150000';
 export const COSMOS_DEFAULT_TRANSFER_GAS = '200000';
 export const COSMOS_DEFAULT_IBC_TRANSFER_GAS = '250000';
 export const COSMOS_DEFAULT_REWARD_GAS = '300000';
+export const COSMOS_DEFAULT_COMMISSION_GAS = '300000';
 export const COSMOS_DEFAULT_SQUID_CONTRACT_SWAP_GAS = '350000';
 
 export const COSMOS_DEFAULT_ESTIMATE_AV = '1.2';
@@ -138,6 +131,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   EMONEY,
   EVMOS,
   FETCH_AI,
+  FINSCHIA,
+  GOVGEN,
   GRAVITY_BRIDGE,
   INJECTIVE,
   IRIS,
@@ -151,6 +146,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   MARS,
   MEDIBLOC,
   NEUTRON,
+  NIBIRU,
   NOBLE,
   NYX,
   OMNIFLIX,
@@ -173,14 +169,11 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   STRIDE,
   TERITORI,
   TERRA,
-  UMEE,
+  UX,
   XPLA,
-  FINSCHIA,
 ];
 
-export const COSMOS_FEE_BASE_DENOMS: CosmosFeeBaseDenom[] = [...NYX_FEE_BASE_DENOMS];
-
-export const COSMOS_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES];
+export const COSMOS_NON_NATIVE_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES, ...NOBLE_GAS_RATES];
 
 export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 

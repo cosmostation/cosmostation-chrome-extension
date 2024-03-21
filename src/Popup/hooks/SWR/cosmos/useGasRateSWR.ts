@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
-import { NYX, NYX_GAS_RATES } from '~/constants/chain/cosmos/nyx';
+import { COSMOS_NON_NATIVE_GAS_RATES } from '~/constants/chain';
 import type { CosmosChain, GasRate } from '~/types/chain';
 
 import { useParamsSWR } from './useParamsSWR';
@@ -9,13 +9,21 @@ import { useParamsSWR } from './useParamsSWR';
 export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const { data, error, mutate } = useParamsSWR(chain, config);
 
-  const gasRate = useMemo(() => (data ? data.params.chainlist_params.fee.rate ?? [] : []), [data]);
+  const gasRate = useMemo(() => (data ? data.params?.chainlist_params?.fee?.rate ?? [] : []), [data]);
 
   const returnData: Record<string, GasRate> = useMemo(() => {
-    const result: Record<string, GasRate> =
-      chain.baseDenom === NYX.baseDenom
-        ? { [NYX.baseDenom]: NYX_GAS_RATES.find((item) => item.chainId === NYX.id)!.gasRate }
+    const result: Record<string, GasRate> = {};
+
+    if (gasRate.length === 0) {
+      const nonNativeGasRates = COSMOS_NON_NATIVE_GAS_RATES.filter((item) => item.chainId === chain.id);
+
+      return nonNativeGasRates
+        ? nonNativeGasRates.reduce((acc: Record<string, GasRate>, item) => {
+            acc[item.baseDenom] = item.gasRate;
+            return acc;
+          }, {})
         : { [chain.baseDenom]: chain.gasRate };
+    }
 
     gasRate.forEach((gr, idx) => {
       const splitedItems = gr.split(',');
@@ -61,7 +69,7 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
     });
 
     return result;
-  }, [chain.baseDenom, chain.gasRate, gasRate]);
+  }, [chain.baseDenom, chain.gasRate, chain.id, gasRate]);
 
   return { data: returnData, error, mutate };
 }
