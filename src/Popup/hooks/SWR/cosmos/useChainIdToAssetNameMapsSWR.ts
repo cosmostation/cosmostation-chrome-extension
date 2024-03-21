@@ -11,9 +11,10 @@ export function useChainIdToAssetNameMapsSWR(config?: SWRConfiguration) {
   const chainIdToAssetNameMaps = useMemo<ChainIdToAssetNameMapsResponse>(() => {
     const keyValueSwappedMaps = Object.fromEntries(
       Object.entries(allParams.data).map(([key, value]) => {
-        const chainIdKey = value.params?.chainlist_params?.chain_id_cosmos || value.chain_id || '';
+        const newKey = value.params?.chainlist_params?.chain_id_cosmos || value.chain_id || '';
+        const newValue = key;
 
-        return [chainIdKey, key];
+        return [newKey, newValue];
       }),
     );
     return keyValueSwappedMaps;
