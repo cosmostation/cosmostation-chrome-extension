@@ -9,7 +9,6 @@ type Keplr = Omit<
   | 'getEnigmaUtils'
   | 'getSecret20ViewingKey'
   | 'signEthereum'
-  | 'suggestToken'
   | 'disable'
   | 'getKeysSettled'
   | 'signICNSAdr36'

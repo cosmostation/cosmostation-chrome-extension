@@ -325,6 +325,24 @@ const getOfflineSignerAuto: Keplr['getOfflineSignerAuto'] = async (chainId) => {
   return getOfflineSigner(chainId);
 };
 
+const suggestToken: Keplr['suggestToken'] = async (chainId, contractAddress) => {
+  try {
+    await request({
+      method: 'cos_addTokensCW20',
+      params: {
+        chainName: chainId,
+        tokens: [
+          {
+            contractAddress,
+          },
+        ],
+      },
+    });
+  } catch (e) {
+    throw new Error((e as { message?: string }).message || 'Unknown Error');
+  }
+};
+
 export const keplr: Keplr = {
   version: '0.0.0',
   mode: 'extension',
@@ -342,6 +360,7 @@ export const keplr: Keplr = {
   signDirect,
   signArbitrary,
   verifyArbitrary,
+  suggestToken,
 };
 
 // keplr provider end
