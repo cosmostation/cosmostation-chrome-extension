@@ -1,7 +1,7 @@
-import { divide, minus, times } from './big';
+import { divide, equal, minus, times } from './big';
 
 export function calcPriceImpact(amountIn: string, amountOut: string): string {
-  if (amountIn === '0' || amountOut === '0') return '0';
+  if (equal(amountIn, '0') || equal(amountOut, '0')) return '0';
 
   return times(divide(minus(amountIn, amountOut), amountIn), '100');
 }
