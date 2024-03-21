@@ -8,8 +8,12 @@ import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { AssetV3Response } from '~/types/cosmos/asset';
 
+import { useChainIdToAssetNameMapsSWR } from './useChainIdToAssetNameMapsSWR';
+
 export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
-  const mappingName = chain ? convertCosmosToAssetName(chain) : '';
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
+
+  const mappingName = useMemo(() => (chain ? convertCosmosToAssetName(chain, chainIdToAssetNameMaps) : ''), [chain, chainIdToAssetNameMaps]);
 
   const requestURL = 'https://front.api.mintscan.io/v3/assets';
 
