@@ -1,9 +1,8 @@
 import { useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
-import { COSMOS_FEE_BASE_DENOMS } from '~/constants/chain';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
-import { gt } from '~/Popup/utils/big';
+import { minus } from '~/Popup/utils/big';
 import type { CosmosChain, FeeCoin } from '~/types/chain';
 
 import { useAmountSWR } from './useAmountSWR';
@@ -46,10 +45,10 @@ export function useCurrentFeesSWR(chain: CosmosChain, config?: SWRConfiguration)
   );
 
   const feeCoins: FeeCoin[] = useMemo(() => {
-    const feeBaseDenoms = COSMOS_FEE_BASE_DENOMS.find((item) => item.chainId === chain.id)?.feeBaseDenoms;
+    const feeCoinBaseDenoms = [...Object.keys(assetGasRate.data)];
 
     const filteredFeeCoins = currentChainAssets.data
-      .filter((item) => [...Object.keys(assetGasRate.data)].includes(item.denom) || feeBaseDenoms?.includes(item.denom))
+      .filter((item) => feeCoinBaseDenoms.includes(item.denom))
       .map((item) => ({
         ...item,
         originBaseDenom: item.origin_denom,
@@ -60,14 +59,17 @@ export function useCurrentFeesSWR(chain: CosmosChain, config?: SWRConfiguration)
         gasRate: assetGasRate.data[item.denom],
       }));
 
-    const sortedFeeCoinList = [
-      ...filteredFeeCoins.filter((item) => item.baseDenom === chain.baseDenom),
-      ...filteredFeeCoins.filter((item) => item.baseDenom !== chain.baseDenom && gt(item.availableAmount, '0')),
-      ...filteredFeeCoins.filter((item) => item.baseDenom !== chain.baseDenom && !gt(item.availableAmount, '0')),
-    ];
+    const sortedFeeCoinList = filteredFeeCoins.sort((a, b) =>
+      Number(
+        minus(
+          feeCoinBaseDenoms.findIndex((item) => item === a.baseDenom),
+          feeCoinBaseDenoms.findIndex((item) => item === b.baseDenom),
+        ),
+      ),
+    );
 
     return sortedFeeCoinList.length > 0 ? sortedFeeCoinList : [coinAll[0]];
-  }, [assetGasRate.data, chain.baseDenom, chain.id, coinAll, currentChainAssets.data]);
+  }, [assetGasRate.data, coinAll, currentChainAssets.data]);
 
   return { feeCoins };
 }

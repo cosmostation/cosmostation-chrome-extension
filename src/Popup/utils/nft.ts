@@ -1,6 +1,6 @@
 import Axios from 'axios';
 
-import type { NFTMetaPayload, NFTMetaResponse } from '~/types/cosmos/nft';
+import type { NFTMetaPayload } from '~/types/cosmos/nft';
 
 export function toDisplayTokenId(tokenId?: string) {
   if (!tokenId) return '';
@@ -32,7 +32,10 @@ export function isIpfsUrl(url?: string) {
   return url.startsWith('ipfs://') || url.startsWith('ipfs:/');
 }
 
-export async function getIpfsData(ipfsURL: string, contractAddress?: string, tokenId?: string): Promise<NFTMetaResponse | null> {
+export async function getIpfsData(ipfsURL: string): Promise<{
+  imageURL: string;
+  metaData?: NFTMetaPayload;
+} | null> {
   try {
     const CID = getIpfsCID(ipfsURL);
 
@@ -52,23 +55,18 @@ export async function getIpfsData(ipfsURL: string, contractAddress?: string, tok
       return {
         imageURL: `${baseIpfsURL}${CID}`,
         metaData: undefined,
-        contractAddress: contractAddress ?? '',
-        tokenId: tokenId ?? '',
       };
     }
 
     return {
-      imageURL:
-        typeof response.data.image === 'string'
-          ? isIpfsUrl(response.data.image)
-            ? `${baseIpfsURL}${getIpfsCID(response.data.image)}`
-            : response.data.image
-          : '',
+      imageURL: typeof response.data.image === 'string' ? convertToBaseIpfsUrl(response.data.image) : '',
       metaData: response.data ?? undefined,
-      contractAddress: contractAddress ?? '',
-      tokenId: tokenId ?? '',
     };
   } catch {
     return null;
   }
+}
+
+export function convertToBaseIpfsUrl(imageURL?: string) {
+  return isIpfsUrl(imageURL) ? `${baseIpfsURL}${getIpfsCID(imageURL)}` : imageURL || '';
 }

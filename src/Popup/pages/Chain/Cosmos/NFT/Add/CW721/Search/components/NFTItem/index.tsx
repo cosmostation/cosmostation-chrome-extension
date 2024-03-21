@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { Tooltip, Typography } from '@mui/material';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
+import unreadableNFTImg from '~/images/etc/unreadableNFT.png';
 import Image from '~/Popup/components/common/Image';
 import { useNFTMetaSWR } from '~/Popup/hooks/SWR/cosmos/NFT/useNFTMetaSWR';
-import { toDisplayTokenId } from '~/Popup/utils/nft';
 import { shorterAddress } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 
@@ -39,12 +39,12 @@ export default function NFTItem({ onClick, isActive, chain, contractAddress, tok
     <NFTButton type="button" onClick={onClick}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image src={nftMeta?.imageURL} defaultImgSrc={unknownNFTImg} />
+          {nftMeta?.imageURL ? <Image src={nftMeta.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftInfoHeaderContainer>
-            <Tooltip title={nftMeta?.metaData?.name || tokenId} placement="top" arrow>
-              <Typography variant="h5">{nftMeta?.metaData?.name || toDisplayTokenId(tokenId)}</Typography>
+            <Tooltip title={nftMeta?.name || ''} placement="top" arrow>
+              <Typography variant="h5">{nftMeta?.name}</Typography>
             </Tooltip>
           </LeftInfoHeaderContainer>
           <LeftInfoBodyContainer>

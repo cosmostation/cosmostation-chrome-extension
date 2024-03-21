@@ -19,6 +19,7 @@ import SubSideHeader from '~/Popup/components/SubSideHeader';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
+import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasRateSWR } from '~/Popup/hooks/SWR/cosmos/useGasRateSWR';
 import { useSupportChainsSWR } from '~/Popup/hooks/SWR/cosmos/useSupportChainsSWR';
 import { useBalanceSWR as useNativeBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
@@ -51,7 +52,7 @@ import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumToken } from '~/types/chain';
 import type { AssetV3 as CosmosAssetV3 } from '~/types/cosmos/asset';
-import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
+import type { IntegratedSwapChain, IntegratedSwapFeeToken, IntegratedSwapToken } from '~/types/swap/asset';
 import type { IntegratedSwapAPI } from '~/types/swap/integratedSwap';
 
 import ChainFeeInfo from './components/ChainFeeInfo';
@@ -698,25 +699,36 @@ export default function Entry() {
     [extensionStorage.currency, coinGeckoPrice.data, currentToToken?.coinGeckoId],
   );
 
-  const currentFeeToken = useMemo(
-    () =>
-      filteredFromTokenList.find((item) => {
-        if (currentFromChain?.line === COSMOS.line) {
-          return isEqualsIgnoringCase(item.address, selectedFromCosmosChain?.baseDenom);
-        }
+  const { feeCoins } = useCurrentFeesSWR(selectedFromCosmosChain || COSMOS);
 
-        if (currentFromChain?.line === ETHEREUM.line) {
-          return isEqualsIgnoringCase(item.address, EVM_NATIVE_TOKEN_ADDRESS);
-        }
+  const currentFeeToken = useMemo<IntegratedSwapFeeToken | undefined>(() => {
+    if (currentFromChain?.line === COSMOS.line) {
+      const baseFeeCoin = feeCoins[0];
 
-        return undefined;
-      }),
-    [currentFromChain?.line, filteredFromTokenList, selectedFromCosmosChain?.baseDenom],
-  );
+      return {
+        address: baseFeeCoin.baseDenom,
+        decimals: baseFeeCoin.decimals,
+        displayDenom: baseFeeCoin.displayDenom,
+        coinGeckoId: baseFeeCoin.coinGeckoId,
+        imageURL: baseFeeCoin.imageURL,
+      };
+    }
+
+    if (currentFromChain?.line === ETHEREUM.line) {
+      return {
+        address: EVM_NATIVE_TOKEN_ADDRESS,
+        decimals: currentFromChain.decimals,
+        displayDenom: currentFromChain.displayDenom,
+        coinGeckoId: currentFromChain.coinGeckoId,
+        imageURL: currentFromChain.imageURL,
+      };
+    }
+    return undefined;
+  }, [currentFromChain.coinGeckoId, currentFromChain.decimals, currentFromChain.displayDenom, currentFromChain.imageURL, currentFromChain?.line, feeCoins]);
 
   const currentFeeTokenBalance = useMemo(() => {
     if (currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') {
-      return cosmosFromChainBalance.data?.balance?.find((item) => isEqualsIgnoringCase(item.denom, selectedFromCosmosChain?.baseDenom))?.amount || '0';
+      return cosmosFromChainBalance.data?.balance?.find((item) => isEqualsIgnoringCase(item.denom, currentFeeToken?.address))?.amount || '0';
     }
 
     if (currentSwapAPI === '1inch' || currentSwapAPI === 'squid_evm') {
@@ -724,7 +736,7 @@ export default function Entry() {
     }
 
     return '0';
-  }, [currentSwapAPI, cosmosFromChainBalance.data?.balance, selectedFromCosmosChain?.baseDenom, currentFromEVMNativeBalance?.data?.result]);
+  }, [currentSwapAPI, cosmosFromChainBalance.data?.balance, currentFeeToken?.address, currentFromEVMNativeBalance?.data?.result]);
 
   const currentFeeTokenPrice = useMemo(
     () => (currentFeeToken?.coinGeckoId && coinGeckoPrice.data?.[currentFeeToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
@@ -741,13 +753,15 @@ export default function Entry() {
       currentFromChain.line === 'COSMOS' &&
       currentToChain.line === 'COSMOS' &&
       currentFromToken &&
-      currentToToken
+      currentToToken &&
+      currentFeeToken
       ? {
           inputBaseAmount: currentInputBaseAmount,
           fromChain: currentFromChain,
           toChain: currentToChain,
           fromToken: currentFromToken as CosmosAssetV3,
           toToken: currentToToken as CosmosAssetV3,
+          feeToken: currentFeeToken,
           slippage: currentSlippage,
         }
       : undefined,
@@ -807,6 +821,7 @@ export default function Entry() {
       currentFromToken &&
       currentToToken &&
       currentToAddress &&
+      currentFeeToken &&
       currentFromChain.line === COSMOS.line
       ? {
           inputBaseAmount: currentInputBaseAmount,
@@ -817,6 +832,7 @@ export default function Entry() {
           senderAddress: currentFromAddress,
           receiverAddress: currentToAddress,
           slippage: currentSlippage,
+          feeToken: currentFeeToken,
         }
       : undefined,
   );
@@ -1058,7 +1074,9 @@ export default function Entry() {
 
   const estimatedFeeBaseAmount = useMemo(() => {
     if ((currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') && selectedFromCosmosChain) {
-      return ceil(times(estimatedGas, cosmosGasRate.data[selectedFromCosmosChain.baseDenom].low || selectedFromCosmosChain.gasRate.low));
+      return ceil(
+        times(estimatedGas, cosmosGasRate.data[currentFeeToken?.address || selectedFromCosmosChain.baseDenom]?.low || selectedFromCosmosChain.gasRate.low),
+      );
     }
 
     if (currentSwapAPI === '1inch' && oneInchRoute.data) {
@@ -1081,6 +1099,7 @@ export default function Entry() {
     return '0';
   }, [
     cosmosGasRate.data,
+    currentFeeToken?.address,
     currentSwapAPI,
     estimatedGas,
     oneInchRoute.data,

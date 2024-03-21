@@ -232,7 +232,7 @@ export default function Entry() {
               </PreviewHeaderContainer>
               <PreviewBodyContainer>
                 <PreviewNFTImageContainer>
-                  <Image src={nftMeta?.data?.imageURL} defaultImgSrc={unknownNFTImg} />
+                  {nftMeta?.data?.imageURL ? <Image src={nftMeta.data.imageURL} defaultImgSrc={unknownNFTImg} /> : <Image src={unreadableNFTImg} />}
                 </PreviewNFTImageContainer>
                 <PreviewNFTSubtitleContainer>
                   <Typography variant="h3">{nftMeta?.data?.name || nftSourceURI.data}</Typography>

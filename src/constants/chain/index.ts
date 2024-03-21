@@ -1,14 +1,4 @@
-import type {
-  AptosChain,
-  AptosNetwork,
-  CosmosChain,
-  CosmosFeeBaseDenom,
-  CosmosGasRate,
-  EthereumChain,
-  EthereumNetwork,
-  SuiChain,
-  SuiNetwork,
-} from '~/types/chain';
+import type { AptosChain, AptosNetwork, CosmosChain, CosmosGasRate, EthereumChain, EthereumNetwork, SuiChain, SuiNetwork } from '~/types/chain';
 
 import { APTOS } from './aptos/aptos';
 import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
@@ -51,8 +41,9 @@ import { LUM } from './cosmos/lum';
 import { MARS } from './cosmos/mars';
 import { MEDIBLOC } from './cosmos/medibloc';
 import { NEUTRON } from './cosmos/neutron';
-import { NOBLE } from './cosmos/noble';
-import { NYX, NYX_FEE_BASE_DENOMS, NYX_GAS_RATES } from './cosmos/nyx';
+import { NIBIRU } from './cosmos/nibiru';
+import { NOBLE, NOBLE_GAS_RATES } from './cosmos/noble';
+import { NYX, NYX_GAS_RATES } from './cosmos/nyx';
 import { OMNIFLIX } from './cosmos/omniflix';
 import { ONOMY } from './cosmos/onomy';
 import { OSMOSIS } from './cosmos/osmosis';
@@ -140,6 +131,8 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   EMONEY,
   EVMOS,
   FETCH_AI,
+  FINSCHIA,
+  GOVGEN,
   GRAVITY_BRIDGE,
   INJECTIVE,
   IRIS,
@@ -153,6 +146,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   MARS,
   MEDIBLOC,
   NEUTRON,
+  NIBIRU,
   NOBLE,
   NYX,
   OMNIFLIX,
@@ -177,13 +171,9 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   TERRA,
   UX,
   XPLA,
-  FINSCHIA,
-  GOVGEN,
 ];
 
-export const COSMOS_FEE_BASE_DENOMS: CosmosFeeBaseDenom[] = [...NYX_FEE_BASE_DENOMS];
-
-export const COSMOS_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES];
+export const COSMOS_NON_NATIVE_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES, ...NOBLE_GAS_RATES];
 
 export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 

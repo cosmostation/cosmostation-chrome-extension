@@ -17,6 +17,7 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useAmountSWR } from '~/Popup/hooks/SWR/sui/useAmountSWR';
 import { useGetCoinMetadataSWR } from '~/Popup/hooks/SWR/sui/useGetCoinMetadataSWR';
 import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -33,14 +34,18 @@ import type { Path } from '~/types/route';
 
 import FaucetButton from './components/FaucetButton';
 import {
+  ButtonContainer,
   Container,
   ErrorDescriptionContainer,
+  ExpandedButton,
   FaucetButtonContainer,
   FirstLineContainer,
   FirstLineLeftContainer,
   FirstLineRightContainer,
-  FourthLineCenterContainer,
   FourthLineContainer,
+  FourthLineContainerItem,
+  FourthLineContainerItemLeft,
+  FourthLineContainerItemRight,
   SecondLineContainer,
   SecondLineLeftAbsoluteImageContainer,
   SecondLineLeftContainer,
@@ -48,11 +53,15 @@ import {
   SecondLineLeftTextContainer,
   SecondLineRightContainer,
   StyledAbsoluteLoading,
+  StyledAccordion,
+  StyledAccordionDetails,
+  StyledAccordionSummary,
   StyledIconButton,
   StyledRetryIconButton,
   ThirdLineContainer,
 } from './styled';
 
+import BottomArrow20Icon from '~/images/icons/BottomArrow20.svg';
 import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
@@ -65,6 +74,8 @@ type NativeChainCardProps = {
   isCustom?: boolean;
 };
 
+const EXPANDED_KEY = 'wallet-sui-expanded';
+
 export default function NativeChainCard({ chain, isCustom }: NativeChainCardProps) {
   const { currentAccount } = useCurrentAccount();
   const { extensionStorage } = useExtensionStorage();
@@ -75,25 +86,30 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const [isDiabledFaucet, setIsDiabledFaucet] = useState(false);
 
+  const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
+
+  const [expanded, setExpanded] = useState(storageExpanded);
+
   const currentAddress = useMemo(
     () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '',
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const { tokenBalanceObjects, mutateTokenBalanceObjects } = useTokenBalanceObjectsSWR({ address: currentAddress });
-
-  const suiCoin = useMemo(() => tokenBalanceObjects.find((item) => item.coinType === SUI_COIN), [tokenBalanceObjects]);
+  const { mutateTokenBalanceObjects } = useTokenBalanceObjectsSWR({ address: currentAddress });
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
-  const amount = useMemo(() => BigInt(suiCoin?.balance || '0').toString(), [suiCoin?.balance]);
+  const { availableAmount, delegationAmount, rewardAmount, totalAmount } = useAmountSWR({ address: currentAddress });
 
   const decimals = useMemo(
     () => coinMetadata?.result?.decimals || currentSuiNetwork.decimals || 0,
     [coinMetadata?.result?.decimals, currentSuiNetwork.decimals],
   );
 
-  const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);
+  const displayTotalAmount = useMemo(() => toDisplayDenomAmount(totalAmount, decimals), [decimals, totalAmount]);
+  const displayAvailableAmount = useMemo(() => toDisplayDenomAmount(availableAmount, decimals), [availableAmount, decimals]);
+  const displayDelegationAmount = useMemo(() => toDisplayDenomAmount(delegationAmount, decimals), [decimals, delegationAmount]);
+  const displayTotalReward = useMemo(() => toDisplayDenomAmount(rewardAmount, decimals), [decimals, rewardAmount]);
 
   const { t } = useTranslation();
 
@@ -108,7 +124,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [extensionStorage.currency, coinGeckoId, data]);
 
-  const value = times(price, displayAmount);
+  const value = times(price, displayTotalAmount);
 
   const displayDenom = useMemo(() => coinMetadata?.result?.symbol || 'SUI', [coinMetadata?.result?.symbol]);
 
@@ -177,9 +193,9 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <Tooltip title={displayAmount} arrow placement="bottom-end">
+          <Tooltip title={displayTotalAmount} arrow placement="bottom-end">
             <span>
-              <Number fixed={getDisplayMaxDecimals(decimals)}>{displayAmount}</Number>
+              <Number fixed={getDisplayMaxDecimals(decimals)}>{displayTotalAmount}</Number>
             </span>
           </Tooltip>
         </SecondLineRightContainer>
@@ -189,6 +205,58 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {value}
         </Number>
       </ThirdLineContainer>
+
+      <StyledAccordion expanded={expanded}>
+        <StyledAccordionSummary />
+        <StyledAccordionDetails>
+          <FourthLineContainer>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.available')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Tooltip title={displayAvailableAmount} arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={decimals}>
+                      {displayAvailableAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.staked')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Tooltip title={displayDelegationAmount} arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={decimals}>
+                      {displayDelegationAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.earned')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Tooltip title={displayTotalReward} arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={decimals}>
+                      {displayTotalReward}
+                    </Number>
+                  </span>
+                </Tooltip>
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+          </FourthLineContainer>
+        </StyledAccordionDetails>
+      </StyledAccordion>
+
       {[TESTNET.id, DEVNET.id].includes(currentSuiNetwork.id) && (
         <FaucetButtonContainer>
           <FaucetButton Icon={Reward16Icon} onClick={handleOnFaucet} disabled={isDiabledFaucet}>
@@ -196,15 +264,13 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           </FaucetButton>
         </FaucetButtonContainer>
       )}
-      <FourthLineContainer>
+      <ButtonContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
           {t('pages.Wallet.components.sui.NativeChainCard.index.depositButton')}
         </Button>
-        <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" onClick={() => navigate('/wallet/send')}>
           {t('pages.Wallet.components.sui.NativeChainCard.index.sendButton')}
         </Button>
-        <FourthLineCenterContainer />
         <Button
           Icon={SwapIcon16}
           accentColor={ACCENT_COLORS.GREEN01}
@@ -212,9 +278,22 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           typoVarient="h5"
           onClick={() => navigate(`/wallet/swap/${chain.id}` as unknown as Path)}
         >
-          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
+          {t('pages.Wallet.components.sui.NativeChainCard.index.swapButton')}
         </Button>
-      </FourthLineContainer>
+      </ButtonContainer>
+
+      <ExpandedButton
+        data-is-expanded={expanded ? 1 : 0}
+        type="button"
+        onClick={() => {
+          setExpanded((prev) => {
+            localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
+            return !prev;
+          });
+        }}
+      >
+        <BottomArrow20Icon />
+      </ExpandedButton>
     </Container>
   );
 }
@@ -229,6 +308,10 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   const { t } = useTranslation();
 
   const { explorerURL, imageURL } = currentSuiNetwork;
+
+  const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
+
+  const [expanded, setExpanded] = useState(storageExpanded);
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -282,6 +365,39 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       <ThirdLineContainer>
         <Skeleton width="8rem" height="1.9rem" />
       </ThirdLineContainer>
+
+      <StyledAccordion expanded={expanded}>
+        <StyledAccordionSummary />
+        <StyledAccordionDetails>
+          <FourthLineContainer>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.available')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.staked')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.earned')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+          </FourthLineContainer>
+        </StyledAccordionDetails>
+      </StyledAccordion>
+
       {[TESTNET.id, DEVNET.id].includes(currentSuiNetwork.id) && (
         <FaucetButtonContainer>
           <FaucetButton Icon={Reward16Icon} disabled>
@@ -289,19 +405,31 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
           </FaucetButton>
         </FaucetButtonContainer>
       )}
-      <FourthLineContainer>
+
+      <ButtonContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.sui.NativeChainCard.index.depositButton')}
         </Button>
-        <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.sui.NativeChainCard.index.sendButton')}
         </Button>
-        <FourthLineCenterContainer />
         <Button Icon={SwapIcon16} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
+          {t('pages.Wallet.components.sui.NativeChainCard.index.swapButton')}
         </Button>
-      </FourthLineContainer>
+      </ButtonContainer>
+
+      <ExpandedButton
+        data-is-expanded={expanded ? 1 : 0}
+        type="button"
+        onClick={() => {
+          setExpanded((prev) => {
+            localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
+            return !prev;
+          });
+        }}
+      >
+        <BottomArrow20Icon />
+      </ExpandedButton>
     </Container>
   );
 }
@@ -325,6 +453,10 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
   const { t } = useTranslation();
 
   const { explorerURL, imageURL } = currentSuiNetwork;
+
+  const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
+
+  const [expanded, setExpanded] = useState(storageExpanded);
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -398,19 +530,31 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           </FaucetButton>
         </FaucetButtonContainer>
       )}
-      <FourthLineContainer>
+      <ButtonContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.sui.NativeChainCard.index.depositButton')}
         </Button>
-        <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.sui.NativeChainCard.index.sendButton')}
         </Button>
-        <FourthLineCenterContainer />
         <Button Icon={SwapIcon16} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
+          {t('pages.Wallet.components.sui.NativeChainCard.index.swapButton')}
         </Button>
-      </FourthLineContainer>
+      </ButtonContainer>
+
+      <ExpandedButton
+        data-is-expanded={expanded ? 1 : 0}
+        type="button"
+        onClick={() => {
+          setExpanded((prev) => {
+            localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
+            return !prev;
+          });
+        }}
+      >
+        <BottomArrow20Icon />
+      </ExpandedButton>
+
       {isLoading && <StyledAbsoluteLoading size="2.5rem" />}
     </Container>
   );

@@ -1,5 +1,7 @@
 import type { TOKEN_TYPE } from '~/constants/cosmos';
 
+import type { CollectionInfoPayload, ContractInfoPayload, NumTokensInfoPayload } from './contract';
+
 export type CosmosNFT = {
   id: string;
   tokenId: string;
@@ -9,24 +11,17 @@ export type CosmosNFT = {
   address: string;
 };
 
-export type NFTMetaPayload = {
-  dna?: string;
-  name?: string;
-  description?: string;
-  image?: string;
-  imageHash?: string;
-  edition?: string | number;
-  date?: string | number;
-  attributes?: {
-    trait_type: string;
-    value: string | number;
-  }[];
-  compiler?: string;
-};
+export type NFTMetaPayload = Record<string, unknown>;
 
 export type NFTMetaResponse = {
   imageURL: string;
-  metaData?: NFTMetaPayload;
   contractAddress: string;
   tokenId: string;
+  name: string;
+  description: string;
+  sourceURL?: string;
+  attributes?: { key: string; value: unknown }[];
+  contractInfo?: ContractInfoPayload['data'];
+  collectionInfo?: CollectionInfoPayload['data'];
+  mintedNFTsCount?: NumTokensInfoPayload['data'];
 };
