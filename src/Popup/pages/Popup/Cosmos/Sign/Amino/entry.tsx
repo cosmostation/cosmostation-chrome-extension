@@ -21,7 +21,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, gte, lt, times } from '~/Popup/utils/big';
+import { ceil, gt, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getDefaultAV, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
@@ -93,7 +93,18 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const isInvalidFeeRequest = useMemo(() => !isEditFee && lt(inputGas, '1') && lt(inputFeeAmount, '1'), [inputFeeAmount, inputGas, isEditFee]);
 
-  const isNeedToReplaceFeeAmount = useMemo(() => (isEditFee || isInvalidFeeRequest) && chain.id !== STARGAZE.id, [chain.id, isEditFee, isInvalidFeeRequest]);
+  const isGasOverrideRestrictedChain = useMemo(() => {
+    const restrictedChainList = [STARGAZE];
+
+    return restrictedChainList.some((item) => isEqualsIgnoringCase(item.id, chain.id));
+  }, [chain.id]);
+
+  const isEditFeeModeActivatable = useMemo(
+    () => (isGasOverrideRestrictedChain ? isEditFee && gt(inputGas, '1') && gt(inputFeeAmount, '1') : isEditFee),
+    [inputFeeAmount, inputGas, isEditFee, isGasOverrideRestrictedChain],
+  );
+
+  const isNeedToReplaceFeeAmount = useMemo(() => isEditFeeModeActivatable || isInvalidFeeRequest, [isEditFeeModeActivatable, isInvalidFeeRequest]);
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
     feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
