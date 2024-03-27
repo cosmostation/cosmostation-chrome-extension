@@ -72,20 +72,11 @@ export type CosmosCW20Token = {
 
 export type CosmosToken = CosmosCW20Token;
 
-export type CosmosFeeBaseDenom = {
-  chainId: string;
-  baseDenom: string;
-  feeBaseDenoms: string[];
-};
-
 export type CosmosGasRate = {
   chainId: string;
   baseDenom: string;
-  gasRate: {
-    tiny: string;
-    low: string;
-    average: string;
-  };
+  originDenom: string;
+  gasRate: GasRate;
 };
 
 export type Coin = {
