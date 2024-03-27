@@ -34,7 +34,7 @@ export function useActivitiesSWR(chain: CosmosChain, config?: SWRConfiguration) 
     (pageIndex, previousPageData: ActivitiesResponse) => {
       if (previousPageData && previousPageData.length < 1) return null;
 
-      if (pageIndex === 0) return `https://front.api.mintscan.io/v10/${mappingName}/account/${address}/txs?limit=10`;
+      if (pageIndex === 0) return `https://front.api.mintscan.io/v10/${mappingName}/account/${address}/txs?limit=20`;
 
       const cursor = previousPageData[previousPageData.length - 1].search_after || '';
 

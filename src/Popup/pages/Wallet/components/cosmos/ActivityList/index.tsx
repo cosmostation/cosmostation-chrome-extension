@@ -42,7 +42,6 @@ export default function ActivityList({ chain }: ActivityListProps) {
         if (!item) {
           return '';
         }
-
         // TODO 데이트 변환 로직 간소화
         const date = new Date(item);
 
@@ -88,24 +87,22 @@ export default function ActivityList({ chain }: ActivityListProps) {
     <Container>
       <ContentsContainer>
         {isExistActivity ? (
-          <>
-            <ActivityWrapperContainer>
-              {activitiesGroupedByDate.map((item) => {
-                const date = Object.keys(item)[0];
-                const activitiesByDate = item[date];
+          <ActivityWrapperContainer>
+            {activitiesGroupedByDate.map((item) => {
+              const date = Object.keys(item)[0];
+              const activitiesByDate = item[date];
 
-                return (
-                  <ActivityContainer key={date}>
-                    <ActivityDateContainer>
-                      <Typography variant="h5">{date}</Typography>
-                    </ActivityDateContainer>
-                    <ActivityListContainer>
-                      {activitiesByDate.map((activity) => activity && <ActivityItem key={activity.data?.txhash} chain={chain} activity={activity} />)}
-                    </ActivityListContainer>
-                  </ActivityContainer>
-                );
-              })}
-            </ActivityWrapperContainer>
+              return (
+                <ActivityContainer key={date}>
+                  <ActivityDateContainer>
+                    <Typography variant="h5">{date}</Typography>
+                  </ActivityDateContainer>
+                  <ActivityListContainer>
+                    {activitiesByDate.map((activity) => activity && <ActivityItem key={activity.data?.txhash} chain={chain} activity={activity} />)}
+                  </ActivityListContainer>
+                </ActivityContainer>
+              );
+            })}
             <IntersectionObserver
               onIntersect={async () => {
                 if (activities.size === activities.data?.length) {
@@ -113,7 +110,7 @@ export default function ActivityList({ chain }: ActivityListProps) {
                 }
               }}
             />
-          </>
+          </ActivityWrapperContainer>
         ) : (
           <EmptyAssetContainer>
             <EmptyAsset
