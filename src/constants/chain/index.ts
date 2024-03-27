@@ -29,6 +29,7 @@ import { FETCH_AI } from './cosmos/fetchAi';
 import { FINSCHIA } from './cosmos/finschia';
 import { GOVGEN } from './cosmos/govgen';
 import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
+import { HUMANS_AI } from './cosmos/humansAi';
 import { INJECTIVE } from './cosmos/injective';
 import { IRIS } from './cosmos/iris';
 import { IXO } from './cosmos/ixo';
@@ -134,6 +135,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   FINSCHIA,
   GOVGEN,
   GRAVITY_BRIDGE,
+  HUMANS_AI,
   INJECTIVE,
   IRIS,
   IXO,
