@@ -11,6 +11,7 @@ export const Container = styled('div')<ContainerProps>(({ ...props }) => ({
   display: 'flex',
   backgroundColor: props['data-varient'] === 'info' ? 'rgba(39, 189, 105, 0.15)' : 'rgba(205, 26, 26, 0.15)',
   borderRadius: '0.8rem',
+  wordBreak: 'break-word',
 }));
 
 type TextContainerProps = {

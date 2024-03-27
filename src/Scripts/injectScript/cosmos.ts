@@ -171,6 +171,7 @@ const getKey: Keplr['getKey'] = async (chainId) => {
       bech32Address: account.address,
       name: account.name,
       address: new Uint8Array(),
+      isKeystone: false,
     };
   } catch (e) {
     throw new Error((e as { message?: string }).message || 'Unknown Error');
@@ -191,12 +192,12 @@ const experimentalSuggestChain: Keplr['experimentalSuggestChain'] = async (chain
           displayDenom: chainInfo.currencies[0].coinDenom,
           decimals: chainInfo.currencies[0].coinDecimals,
           restURL: chainInfo.rest,
-          coinType: String(chainInfo.bip44.coinType),
-          gasRate: chainInfo.gasPriceStep
+          coinType: `${String(chainInfo.bip44.coinType)}'`,
+          gasRate: chainInfo.feeCurrencies[0].gasPriceStep
             ? {
-                tiny: String(chainInfo.gasPriceStep.low),
-                low: String(chainInfo.gasPriceStep.average),
-                average: String(chainInfo.gasPriceStep.high),
+                tiny: String(chainInfo.feeCurrencies[0].gasPriceStep.low),
+                low: String(chainInfo.feeCurrencies[0].gasPriceStep.average),
+                average: String(chainInfo.feeCurrencies[0].gasPriceStep.high),
               }
             : undefined,
         },
@@ -324,6 +325,24 @@ const getOfflineSignerAuto: Keplr['getOfflineSignerAuto'] = async (chainId) => {
   return getOfflineSigner(chainId);
 };
 
+const suggestToken: Keplr['suggestToken'] = async (chainId, contractAddress) => {
+  try {
+    await request({
+      method: 'cos_addTokensCW20',
+      params: {
+        chainName: chainId,
+        tokens: [
+          {
+            contractAddress,
+          },
+        ],
+      },
+    });
+  } catch (e) {
+    throw new Error((e as { message?: string }).message || 'Unknown Error');
+  }
+};
+
 export const keplr: Keplr = {
   version: '0.0.0',
   mode: 'extension',
@@ -341,6 +360,7 @@ export const keplr: Keplr = {
   signDirect,
   signArbitrary,
   verifyArbitrary,
+  suggestToken,
 };
 
 // keplr provider end

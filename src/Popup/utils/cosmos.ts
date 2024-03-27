@@ -24,6 +24,7 @@ import { PROVENANCE } from '~/constants/chain/cosmos/provenance';
 import { SEI } from '~/constants/chain/cosmos/sei';
 import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
+import { UX } from '~/constants/chain/cosmos/ux';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain } from '~/types/chain';
@@ -46,7 +47,7 @@ import { toBase64 } from './string';
 export function cosmosURL(chain: CosmosChain) {
   const { restURL, id } = chain;
 
-  const isV1BetaClientState = [IXO.id, EMONEY.id].includes(chain.id);
+  const isV1BetaClientState = [EMONEY.id].includes(chain.id);
   // reward 중첩 typing!
   return {
     getNodeInfo: () => `${restURL}/cosmos/base/tendermint/v1beta1/node_info`,
@@ -188,6 +189,7 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [MARS.id]: 'mars-protocol',
     [HUMANS_AI.id]: 'humans',
     [ONOMY.id]: 'onomy-protocol',
+    [UX.id]: 'umee',
   };
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
@@ -203,9 +205,26 @@ export function convertAssetNameToCosmos(assetName: string) {
     'mars-protocol': MARS,
     humans: HUMANS_AI,
     'onomy-protocol': ONOMY,
+    umee: UX,
   } as Record<string, CosmosChain | undefined>;
 
   return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);
+}
+
+export function findCosmosChainByAddress(address?: string) {
+  if (!address || !isValidCosmosAddress(address)) {
+    return undefined;
+  }
+
+  return COSMOS_CHAINS.find((item) => bech32.decode(address).prefix === item.bech32Prefix.address);
+}
+
+export function isValidCosmosAddress(address: string): boolean {
+  try {
+    return COSMOS_CHAINS.some((chain) => chain.bech32Prefix.address === bech32.decode(address).prefix);
+  } catch (e) {
+    return false;
+  }
 }
 
 export function getMsgSignData(signer: string, message: string) {

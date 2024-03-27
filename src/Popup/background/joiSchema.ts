@@ -49,8 +49,8 @@ export const cosAddChainParamsSchema = (chainNames: string[], officialChainIds: 
       .invalid(...officialChainIds)
       .required(),
     chainName: Joi.string()
-      .lowercase()
       .invalid(...invalidChainNames)
+      .insensitive()
       .required(),
     restURL: Joi.string().required(),
     imageURL: Joi.string().optional(),
@@ -109,6 +109,7 @@ export const cosSignAminoParamsSchema = (chainNames: string[], chainId: string) 
           value: Joi.any(),
         }),
       ),
+      timeout_height: Joi.string().optional(),
     }).required(),
     isEditFee: Joi.boolean().default(true),
     isEditMemo: Joi.boolean().default(false),

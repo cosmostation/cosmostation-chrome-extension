@@ -1,4 +1,4 @@
-import type { DryRunTransactionBlockResponse, SuiObjectResponse, SuiTransactionBlockResponse } from '@mysten/sui.js';
+import type { DelegatedStake, DryRunTransactionBlockResponse, SuiObjectResponse, SuiSystemStateSummary, SuiTransactionBlockResponse } from '@mysten/sui.js';
 
 export type Body = {
   method: string;
@@ -51,6 +51,8 @@ export type GetObjectsOwnedByAddress = {
       type: string;
     };
   }[];
+  nextCursor?: string;
+  hasNextPage: boolean;
 };
 
 export type GetObjectsOwnedByAddressResponse = Result<GetObjectsOwnedByAddress>;
@@ -165,3 +167,7 @@ export type DynamicFieldPage = {
   hasNextPage: boolean;
 };
 export type GetDynamicFieldsResponse = Result<DynamicFieldPage>;
+
+export type GetStakesResponse = Result<DelegatedStake[]>;
+
+export type GetLatestSuiSystemStateResponse = Result<SuiSystemStateSummary>;

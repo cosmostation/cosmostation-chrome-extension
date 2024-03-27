@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
+import type { SuiObjectResponse } from '@mysten/sui.js';
 import { getObjectDisplay } from '@mysten/sui.js';
 
 import { isKiosk } from '~/Popup/utils/sui';
@@ -44,8 +45,12 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
   const { data: objectsOwnedByAddress, mutate: mutateGetObjectsOwnedByAddress } = useGetObjectsOwnedByAddressSWR({ address: addr, network }, config);
 
   const objectIdList = useMemo(
-    () => (objectsOwnedByAddress?.result && objectsOwnedByAddress?.result.data.map((item) => item.data?.objectId || '')) || [],
-    [objectsOwnedByAddress?.result],
+    () =>
+      objectsOwnedByAddress?.reduce((acc: string[], item) => {
+        const objectIds = item.result?.data.map((dataItem) => dataItem.data?.objectId || '') || [];
+        return [...acc, ...objectIds];
+      }, []) || [],
+    [objectsOwnedByAddress],
   );
 
   const { data: objects, mutate: mutateGetObjects } = useGetObjectsSWR(
@@ -63,7 +68,13 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
     config,
   );
 
-  const nftObjects = useMemo(() => objects?.result?.filter((item) => getObjectDisplay(item).data) || [], [objects?.result]);
+  const nftObjects = useMemo(() => {
+    const suiObjectResponses = objects
+      ?.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), [])
+      .filter((item) => item);
+
+    return suiObjectResponses?.filter((item) => getObjectDisplay(item).data) || [];
+  }, [objects]);
 
   const kioskObject = useMemo(() => nftObjects.find((item) => item.data && isKiosk(item.data)), [nftObjects]);
 
@@ -78,8 +89,12 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
   );
 
   const kioskDynamicFieldsObjectIds = useMemo(
-    () => kioskObjectDynamicFields?.result?.data.map((item) => item.objectId) || [],
-    [kioskObjectDynamicFields?.result?.data],
+    () =>
+      kioskObjectDynamicFields?.reduce((acc: string[], item) => {
+        const objectIds = item.result?.data.map((dataItem) => dataItem.objectId || '') || [];
+        return [...acc, ...objectIds];
+      }, []) || [],
+    [kioskObjectDynamicFields],
   );
 
   const { data: kioskObjects, mutate: mutateGetKioskObjects } = useGetObjectsSWR(
@@ -97,7 +112,13 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
     config,
   );
 
-  const kioskNFTObjects = useMemo(() => kioskObjects?.result?.filter((item) => getObjectDisplay(item).data) || [], [kioskObjects?.result]);
+  const kioskNFTObjects = useMemo(() => {
+    const suiKioskObjectResponses = kioskObjects
+      ? kioskObjects.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), []).filter((item) => item)
+      : [];
+
+    return suiKioskObjectResponses.filter((item) => getObjectDisplay(item).data) || [];
+  }, [kioskObjects]);
 
   const ownedNFTObjects = useMemo(() => [...kioskNFTObjects, ...nftObjects], [kioskNFTObjects, nftObjects]);
 

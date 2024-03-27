@@ -1,14 +1,4 @@
-import type {
-  AptosChain,
-  AptosNetwork,
-  CosmosChain,
-  CosmosFeeBaseDenom,
-  CosmosGasRate,
-  EthereumChain,
-  EthereumNetwork,
-  SuiChain,
-  SuiNetwork,
-} from '~/types/chain';
+import type { AptosChain, AptosNetwork, CosmosChain, CosmosGasRate, EthereumChain, EthereumNetwork, SuiChain, SuiNetwork } from '~/types/chain';
 
 import { APTOS } from './aptos/aptos';
 import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
@@ -32,9 +22,12 @@ import { CRONOS_POS } from './cosmos/cronosPos';
 import { CUDOS } from './cosmos/cudos';
 import { DESMOS } from './cosmos/desmos';
 import { DYDX } from './cosmos/dydx';
+import { DYMENSION } from './cosmos/dymension';
 import { EMONEY } from './cosmos/emoney';
 import { EVMOS } from './cosmos/evmos';
 import { FETCH_AI } from './cosmos/fetchAi';
+import { FINSCHIA } from './cosmos/finschia';
+import { GOVGEN } from './cosmos/govgen';
 import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
 import { HUMANS_AI } from './cosmos/humansAi';
 import { INJECTIVE } from './cosmos/injective';
@@ -49,8 +42,9 @@ import { LUM } from './cosmos/lum';
 import { MARS } from './cosmos/mars';
 import { MEDIBLOC } from './cosmos/medibloc';
 import { NEUTRON } from './cosmos/neutron';
-import { NOBLE } from './cosmos/noble';
-import { NYX, NYX_FEE_BASE_DENOMS, NYX_GAS_RATES } from './cosmos/nyx';
+import { NIBIRU } from './cosmos/nibiru';
+import { NOBLE, NOBLE_GAS_RATES } from './cosmos/noble';
+import { NYX, NYX_GAS_RATES } from './cosmos/nyx';
 import { OMNIFLIX } from './cosmos/omniflix';
 import { ONOMY } from './cosmos/onomy';
 import { OSMOSIS } from './cosmos/osmosis';
@@ -71,13 +65,14 @@ import { STARGAZE } from './cosmos/stargaze';
 import { STRIDE } from './cosmos/stride';
 import { TERITORI } from './cosmos/teritori';
 import { TERRA } from './cosmos/terra';
-import { UMEE } from './cosmos/umee';
+import { UX } from './cosmos/ux';
 import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
 import { CANTO as ETHEREUM_NETWORK__CANTO } from './ethereum/network/canto';
 import { CRONOS as ETHEREUM_NETWORK__CRONOS } from './ethereum/network/cronos';
+import { DYMENSION as ETHEREUM_NETWORK_DYMENSION } from './ethereum/network/dymension';
 import { ETHEREUM as ETHEREUM_NETWORK__ETHEREUM } from './ethereum/network/ethereum';
 import { EVMOS as ETHEREUM_NETWORK__EVMOS } from './ethereum/network/evmos';
 import { FANTOM as ETHEREUM_NETWORK__FANTOM } from './ethereum/network/fantom';
@@ -108,6 +103,7 @@ export const COSMOS_DEFAULT_IBC_SEND_GAS = '150000';
 export const COSMOS_DEFAULT_TRANSFER_GAS = '200000';
 export const COSMOS_DEFAULT_IBC_TRANSFER_GAS = '250000';
 export const COSMOS_DEFAULT_REWARD_GAS = '300000';
+export const COSMOS_DEFAULT_COMMISSION_GAS = '300000';
 export const COSMOS_DEFAULT_SQUID_CONTRACT_SWAP_GAS = '350000';
 
 export const COSMOS_DEFAULT_ESTIMATE_AV = '1.2';
@@ -132,10 +128,13 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   CUDOS,
   DESMOS,
   DYDX,
+  DYMENSION,
   EMONEY,
   EVMOS,
   HUMANS_AI,
   FETCH_AI,
+  FINSCHIA,
+  GOVGEN,
   GRAVITY_BRIDGE,
   INJECTIVE,
   IRIS,
@@ -149,6 +148,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   MARS,
   MEDIBLOC,
   NEUTRON,
+  NIBIRU,
   NOBLE,
   NYX,
   OMNIFLIX,
@@ -171,13 +171,11 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   STRIDE,
   TERITORI,
   TERRA,
-  UMEE,
+  UX,
   XPLA,
 ];
 
-export const COSMOS_FEE_BASE_DENOMS: CosmosFeeBaseDenom[] = [...NYX_FEE_BASE_DENOMS];
-
-export const COSMOS_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES];
+export const COSMOS_NON_NATIVE_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES, ...NOBLE_GAS_RATES];
 
 export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 
@@ -190,6 +188,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__EVMOS,
   ETHEREUM_NETWORK__FANTOM,
   ETHEREUM_NETWORK__HARMONY,
+  ETHEREUM_NETWORK_DYMENSION,
   ETHEREUM_NETWORK__KAVA,
   ETHEREUM_NETWORK__OKC,
   ETHEREUM_NETWORK__OPTIMISM,

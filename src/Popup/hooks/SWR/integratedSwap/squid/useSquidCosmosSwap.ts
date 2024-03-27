@@ -4,20 +4,22 @@ import type { GetRoute, TokenData } from '@0xsquid/sdk';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_SWAP_GAS } from '~/constants/chain';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { SQUID_COLLECT_FEE_BPF, SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS } from '~/constants/squid';
 import { useAssetsSWR, useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { convertAssetNameToCosmos, getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { convertAssetNameToCosmos, findCosmosChainByAddress, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
-import type { IntegratedSwapChain, IntegratedSwapToken } from '~/types/swap/asset';
+import type { IntegratedSwapChain, IntegratedSwapFeeToken, IntegratedSwapToken } from '~/types/swap/asset';
 import type { TransferPayload, WasmPayload } from '~/types/swap/squid';
 
 import { useSquidRouteSWR } from './SWR/useSquidRouteSWR';
 import { useAccountSWR } from '../../cosmos/useAccountSWR';
 import { useBlockLatestSWR } from '../../cosmos/useBlockLatestSWR';
 import { useClientStateSWR } from '../../cosmos/useClientStateSWR';
+import { useGasMultiplySWR } from '../../cosmos/useGasMultiplySWR';
 import { useNodeInfoSWR } from '../../cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '../../cosmos/useSimulateSWR';
 import { useCoinGeckoPriceSWR } from '../../useCoinGeckoPriceSWR';
@@ -31,6 +33,7 @@ type UseSquidCosmosSwapProps = {
   senderAddress: string;
   receiverAddress: string;
   slippage: string;
+  feeToken: IntegratedSwapFeeToken;
 };
 
 type SquidContractSwapMsg = {
@@ -54,6 +57,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   const senderAddress = useMemo(() => squidSwapProps?.senderAddress, [squidSwapProps?.senderAddress]);
   const receiverAddress = useMemo(() => squidSwapProps?.receiverAddress, [squidSwapProps?.receiverAddress]);
   const slippage = useMemo(() => squidSwapProps?.slippage || '1', [squidSwapProps?.slippage]);
+  const feeToken = useMemo(() => squidSwapProps?.feeToken, [squidSwapProps?.feeToken]);
 
   const account = useAccountSWR(fromChain || COSMOS_CHAINS[0]);
   const nodeInfo = useNodeInfoSWR(fromChain || COSMOS_CHAINS[0]);
@@ -74,7 +78,12 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
         toToken: toToken.address,
         toAddress: receiverAddress,
         slippage: Number(slippage),
+        collectFees: {
+          integratorAddress: SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS,
+          fee: SQUID_COLLECT_FEE_BPF,
+        },
         enableForecall: true,
+        enableExpress: false,
       };
     }
     return undefined;
@@ -174,10 +183,10 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
 
   const parsedSquidSwapTx = useMemo(
     () =>
-      squidCosmosRoute.data?.route.transactionRequest.data
+      squidCosmosRoute.data?.route.transactionRequest?.data
         ? (JSON.parse(squidCosmosRoute.data.route.transactionRequest.data) as SquidCosmosSwapMsg)
         : undefined,
-    [squidCosmosRoute.data?.route.transactionRequest.data],
+    [squidCosmosRoute.data?.route.transactionRequest?.data],
   );
 
   const chainInfo = useMemo(() => {
@@ -199,8 +208,14 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   const channelChain = useMemo(() => {
     const asset = assets.data?.find((item) => item.channel === chainInfo.channelId && item.port === chainInfo.port);
 
-    return convertAssetNameToCosmos(asset?.origin_chain || '');
-  }, [assets.data, chainInfo.channelId, chainInfo.port]);
+    if (asset?.origin_chain) {
+      return convertAssetNameToCosmos(asset.origin_chain);
+    }
+
+    const transferMsg = parsedSquidSwapTx?.msgTypeUrl === '/ibc.applications.transfer.v1.MsgTransfer' ? parsedSquidSwapTx : undefined;
+
+    return findCosmosChainByAddress(transferMsg?.msg.receiver);
+  }, [assets.data, parsedSquidSwapTx, chainInfo.channelId, chainInfo.port]);
 
   const channelChainLatestBlock = useBlockLatestSWR(channelChain);
 
@@ -214,7 +229,14 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   );
 
   const memoizedSquidSwapAminoTx = useMemo(() => {
-    if (gt(inputBaseAmount, '0') && account.data?.value.account_number && fromChain?.chainId && fromChain.line === 'COSMOS' && parsedSquidSwapTx) {
+    if (
+      gt(inputBaseAmount, '0') &&
+      account.data?.value.account_number &&
+      fromChain?.chainId &&
+      fromChain.line === 'COSMOS' &&
+      parsedSquidSwapTx &&
+      feeToken?.address
+    ) {
       const sequence = String(account.data?.value.sequence || '0');
 
       if (parsedSquidSwapTx.msgTypeUrl === '/ibc.applications.transfer.v1.MsgTransfer') {
@@ -250,7 +272,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
           account_number: String(account.data.value.account_number),
           sequence,
           chain_id: nodeInfo.data?.default_node_info?.network ?? fromChain.chainId,
-          fee: { amount: [{ amount: '1', denom: fromChain.baseDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
+          fee: { amount: [{ amount: '1', denom: feeToken.address }], gas: COSMOS_DEFAULT_SWAP_GAS },
           memo: '',
           msgs: [
             {
@@ -285,6 +307,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
     revisionHeight,
     revisionNumber,
     senderAddress,
+    feeToken?.address,
   ]);
 
   const [squidSwapAminoTx] = useDebounce(memoizedSquidSwapAminoTx, 700);
@@ -303,13 +326,13 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
 
   const squidSwapSimulate = useSimulateSWR({ chain: fromChain?.line === 'COSMOS' ? fromChain : COSMOS_CHAINS[0], txBytes: squidSwapProtoTx?.tx_bytes });
 
+  const { data: gasMultiply } = useGasMultiplySWR(fromChain);
+
   const squidSwapSimulatedGas = useMemo(
     () =>
-      squidSwapSimulate.data?.gas_info?.gas_used && fromChain?.line === 'COSMOS'
-        ? times(squidSwapSimulate.data.gas_info.gas_used, getDefaultAV(fromChain), 0)
-        : undefined,
+      squidSwapSimulate.data?.gas_info?.gas_used && fromChain?.line === 'COSMOS' ? times(squidSwapSimulate.data.gas_info.gas_used, gasMultiply, 0) : undefined,
 
-    [fromChain, squidSwapSimulate.data?.gas_info?.gas_used],
+    [fromChain?.line, gasMultiply, squidSwapSimulate.data?.gas_info?.gas_used],
   );
 
   return {

@@ -9,7 +9,12 @@ type Keplr = Omit<
   | 'getEnigmaUtils'
   | 'getSecret20ViewingKey'
   | 'signEthereum'
-  | 'suggestToken'
+  | 'disable'
+  | 'getKeysSettled'
+  | 'signICNSAdr36'
+  | 'experimentalSignEIP712CosmosTx_v0'
+  | 'getChainInfosWithoutEndpoints'
+  | 'changeKeyRingName'
 >;
 
 interface Window {
