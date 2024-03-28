@@ -208,15 +208,20 @@ export default function IBCSend({ chain }: IBCSendProps) {
     filteredCurrentChainAssets,
   ]);
 
-  const currentCoinOrToken = useMemo(
-    () =>
+  const currentCoinOrToken = useMemo(() => {
+    if (!senderCoinAndTokenList.some((item) => (item.type === 'coin' ? item.baseDenom === currentCoinOrTokenId : item.address === currentCoinOrTokenId))) {
+      setCurrentCoinOrTokenId(senderCoinAndTokenList[0].type === 'coin' ? senderCoinAndTokenList[0].baseDenom : senderCoinAndTokenList[0].address);
+    }
+
+    const selectedCoinOrToken =
       senderCoinAndTokenList.find(
         (item) =>
           (item.type === 'coin' && isEqualsIgnoringCase(item.baseDenom, currentCoinOrTokenId)) ||
           (item.type === 'token' && isEqualsIgnoringCase(item.address, currentCoinOrTokenId)),
-      ) || senderCoinAndTokenList[0],
-    [senderCoinAndTokenList, currentCoinOrTokenId],
-  );
+      ) || senderCoinAndTokenList[0];
+
+    return selectedCoinOrToken;
+  }, [senderCoinAndTokenList, currentCoinOrTokenId]);
 
   const sendGas = useMemo(
     () => (currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS : gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS),
@@ -226,12 +231,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const [customGas, setCustomGas] = useState<string | undefined>();
 
   const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
-
-  const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate[currentGasRateKey]));
-
-  const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
-
-  const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
 
   const tokenBalance = useTokenBalanceSWR(chain, currentCoinOrTokenId, senderAddress);
 
@@ -300,7 +299,24 @@ export default function IBCSend({ chain }: IBCSendProps) {
     return [];
   }, [currentCoinOrToken, filteredCosmosChainAssets, chain.id, filteredCurrentChainAssets]);
 
-  const [selectedReceiverIBC, setReceiverIBC] = useState(receiverIBCList.length ? receiverIBCList[0] : undefined);
+  const [selectedReceiverChainId, setSelectedReceiverChainId] = useState(receiverIBCList.length ? receiverIBCList[0].chain.id : undefined);
+
+  const selectedReceiverIBC = useMemo(() => {
+    const selectedReceiveChain = receiverIBCList.find((item) => isEqualsIgnoringCase(item.chain.id, selectedReceiverChainId));
+
+    if (
+      !receiverIBCList.some(
+        (item) =>
+          isEqualsIgnoringCase(item.chain.id, selectedReceiveChain?.chain.id) &&
+          item.channel === selectedReceiveChain?.channel &&
+          item.port === selectedReceiveChain?.port,
+      )
+    ) {
+      setSelectedReceiverChainId(receiverIBCList[0].chain.id);
+    }
+
+    return selectedReceiveChain;
+  }, [selectedReceiverChainId, receiverIBCList]);
 
   const addressRegex = useMemo(
     () => getCosmosAddressRegex(selectedReceiverIBC?.chain?.bech32Prefix.address || '', [39]),
@@ -349,61 +365,11 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [currentFeeCoin.availableAmount, currentFeeCoin.decimals],
   );
 
-  const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate ?? chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate]);
-
-  const maxDisplayAmount = useMemo(() => {
-    const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
-    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
-      return gt(maxAmount, '0') ? maxAmount : '0';
-    }
-
-    return currentCoinOrTokenDisplayAvailableAmount;
-  }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
+  const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate ?? gasRate, [currentFeeCoin.gasRate, gasRate]);
 
   const currentCoinOrTokenDecimals = useMemo(() => currentCoinOrToken.decimals || 0, [currentCoinOrToken.decimals]);
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
   const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
-  const errorMessage = useMemo(() => {
-    if (!latestHeight) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.timeoutHeightError');
-    }
-    if (!addressRegex.test(currentDepositAddress)) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAddress');
-    }
-
-    if (!currentDisplayAmount || !gt(currentDisplayAmount, '0')) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAmount');
-    }
-
-    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
-      if (!gte(currentCoinOrTokenDisplayAvailableAmount, plus(currentDisplayAmount, currentDisplayFeeAmount))) {
-        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
-      }
-    }
-
-    if ((currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom !== currentFeeCoin.baseDenom) || currentCoinOrToken.type === 'token') {
-      if (!gte(currentCoinOrTokenDisplayAvailableAmount, currentDisplayAmount)) {
-        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
-      }
-
-      if (!gte(currentFeeCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
-        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientFeeAmount');
-      }
-    }
-
-    return '';
-  }, [
-    addressRegex,
-    currentDepositAddress,
-    currentCoinOrToken,
-    currentCoinOrTokenDisplayAvailableAmount,
-    currentDisplayAmount,
-    currentDisplayFeeAmount,
-    currentFeeCoin.baseDenom,
-    currentFeeCoinDisplayAvailableAmount,
-    t,
-    latestHeight,
-  ]);
 
   const memoizedIBCSendAminoTx = useMemo(() => {
     if (account.data?.value.account_number && selectedReceiverIBC && currentDisplayAmount) {
@@ -527,30 +493,61 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const currentGas = useMemo(() => customGas || simulatedGas || sendGas, [customGas, sendGas, simulatedGas]);
 
-  useEffect(() => {
-    if (
-      !receiverIBCList.some(
-        (item) =>
-          isEqualsIgnoringCase(item.chain.id, selectedReceiverIBC?.chain.id) &&
-          item.channel === selectedReceiverIBC?.channel &&
-          item.port === selectedReceiverIBC?.port,
-      )
-    ) {
-      setReceiverIBC(receiverIBCList[0]);
+  const currentFeeAmount = useMemo(() => times(currentGas, currentFeeGasRate[currentGasRateKey]), [currentFeeGasRate, currentGas, currentGasRateKey]);
+
+  const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
+
+  const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
+
+  const maxDisplayAmount = useMemo(() => {
+    const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
+      return gt(maxAmount, '0') ? maxAmount : '0';
     }
 
-    if (!senderCoinAndTokenList.some((item) => (item.type === 'coin' ? item.baseDenom === currentCoinOrTokenId : item.address === currentCoinOrTokenId))) {
-      setCurrentCoinOrTokenId(senderCoinAndTokenList[0].type === 'coin' ? senderCoinAndTokenList[0].baseDenom : senderCoinAndTokenList[0].address);
+    return currentCoinOrTokenDisplayAvailableAmount;
+  }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
+
+  const errorMessage = useMemo(() => {
+    if (!latestHeight) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.timeoutHeightError');
     }
+    if (!addressRegex.test(currentDepositAddress)) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAddress');
+    }
+
+    if (!currentDisplayAmount || !gt(currentDisplayAmount, '0')) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAmount');
+    }
+
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
+      if (!gte(currentCoinOrTokenDisplayAvailableAmount, plus(currentDisplayAmount, currentDisplayFeeAmount))) {
+        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
+      }
+    }
+
+    if ((currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom !== currentFeeCoin.baseDenom) || currentCoinOrToken.type === 'token') {
+      if (!gte(currentCoinOrTokenDisplayAvailableAmount, currentDisplayAmount)) {
+        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
+      }
+
+      if (!gte(currentFeeCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
+        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientFeeAmount');
+      }
+    }
+
+    return '';
   }, [
+    addressRegex,
+    currentDepositAddress,
     currentCoinOrToken,
-    currentCoinOrTokenId,
+    currentCoinOrTokenDisplayAvailableAmount,
+    currentDisplayAmount,
+    currentDisplayFeeAmount,
     currentFeeCoin.baseDenom,
-    receiverIBCList,
-    selectedReceiverIBC?.chain.id,
-    selectedReceiverIBC?.channel,
-    selectedReceiverIBC?.port,
-    senderCoinAndTokenList,
+    currentFeeCoinDisplayAvailableAmount,
+    t,
+    latestHeight,
   ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
@@ -564,10 +561,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
     debouncedEnabled();
   }, [debouncedEnabled, memoizedIBCSendAminoTx]);
-
-  useEffect(() => {
-    setCurrentFeeAmount(times(currentGas, currentFeeGasRate[currentGasRateKey]));
-  }, [currentGas, currentGasRateKey, currentFeeGasRate]);
 
   return (
     <Container>
@@ -762,7 +755,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         recipientList={receiverIBCList}
         selectedRecipientIBC={selectedReceiverIBC}
         onClickChain={(clickedChain) => {
-          setReceiverIBC(clickedChain);
+          setSelectedReceiverChainId(clickedChain.chain.id);
           setCurrentDisplayAmount('');
           setCurrentAddress('');
           setCurrentMemo('');

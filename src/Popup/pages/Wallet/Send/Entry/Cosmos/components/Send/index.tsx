@@ -199,12 +199,6 @@ export default function Send({ chain }: CosmosProps) {
 
   const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
 
-  const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate[currentGasRateKey]));
-
-  const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
-
-  const currentDisplayFeeAmount = toDisplayDenomAmount(currentCeilFeeAmount, decimals);
-
   const tokenBalance = useTokenBalanceSWR(chain, currentCoinOrTokenId, address);
 
   const currentCoinOrTokenAvailableAmount = useMemo(() => {
@@ -231,61 +225,13 @@ export default function Send({ chain }: CosmosProps) {
     [currentFeeCoin.availableAmount, currentFeeCoin.decimals],
   );
 
-  const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate ?? chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate]);
-
-  const maxDisplayAmount = useMemo(() => {
-    const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
-    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
-      return gt(maxAmount, '0') ? maxAmount : '0';
-    }
-
-    return currentCoinOrTokenDisplayAvailableAmount;
-  }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
+  const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate ?? gasRate, [currentFeeCoin.gasRate, gasRate]);
 
   const currentCoinOrTokenDecimals = useMemo(() => currentCoinOrToken.decimals || 0, [currentCoinOrToken.decimals]);
 
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
 
   const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
-
-  const errorMessage = useMemo(() => {
-    if (!addressRegex.test(currentDepositAddress) || address === currentDepositAddress) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.invalidAddress');
-    }
-
-    if (!currentDisplayAmount || !gt(currentDisplayAmount, '0')) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.invalidAmount');
-    }
-
-    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
-      if (!gte(currentCoinOrTokenDisplayAvailableAmount, plus(currentDisplayAmount, currentDisplayFeeAmount))) {
-        return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.insufficientAmount');
-      }
-    }
-
-    if ((currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom !== currentFeeCoin.baseDenom) || currentCoinOrToken.type === 'token') {
-      if (!gte(currentCoinOrTokenDisplayAvailableAmount, currentDisplayAmount)) {
-        return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.insufficientAmount');
-      }
-
-      if (!gte(currentFeeCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
-        return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.insufficientFeeAmount');
-      }
-    }
-
-    return '';
-  }, [
-    address,
-    addressRegex,
-    currentDepositAddress,
-    currentCoinOrToken,
-    currentCoinOrTokenDisplayAvailableAmount,
-    currentDisplayAmount,
-    currentDisplayFeeAmount,
-    currentFeeCoin.baseDenom,
-    currentFeeCoinDisplayAvailableAmount,
-    t,
-  ]);
 
   const memoizedSendAminoTx = useMemo(() => {
     if (account.data?.value.account_number && addressRegex.test(currentDepositAddress) && currentDisplayAmount) {
@@ -395,6 +341,60 @@ export default function Send({ chain }: CosmosProps) {
 
   const currentGas = useMemo(() => customGas || simulatedGas || sendGas, [customGas, sendGas, simulatedGas]);
 
+  const currentFeeAmount = useMemo(() => times(currentGas, currentFeeGasRate[currentGasRateKey]), [currentFeeGasRate, currentGas, currentGasRateKey]);
+
+  const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
+
+  const currentDisplayFeeAmount = toDisplayDenomAmount(currentCeilFeeAmount, decimals);
+
+  const maxDisplayAmount = useMemo(() => {
+    const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
+      return gt(maxAmount, '0') ? maxAmount : '0';
+    }
+
+    return currentCoinOrTokenDisplayAvailableAmount;
+  }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
+
+  const errorMessage = useMemo(() => {
+    if (!addressRegex.test(currentDepositAddress) || address === currentDepositAddress) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.invalidAddress');
+    }
+
+    if (!currentDisplayAmount || !gt(currentDisplayAmount, '0')) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.invalidAmount');
+    }
+
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
+      if (!gte(currentCoinOrTokenDisplayAvailableAmount, plus(currentDisplayAmount, currentDisplayFeeAmount))) {
+        return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.insufficientAmount');
+      }
+    }
+
+    if ((currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom !== currentFeeCoin.baseDenom) || currentCoinOrToken.type === 'token') {
+      if (!gte(currentCoinOrTokenDisplayAvailableAmount, currentDisplayAmount)) {
+        return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.insufficientAmount');
+      }
+
+      if (!gte(currentFeeCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
+        return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.insufficientFeeAmount');
+      }
+    }
+
+    return '';
+  }, [
+    address,
+    addressRegex,
+    currentDepositAddress,
+    currentCoinOrToken,
+    currentCoinOrTokenDisplayAvailableAmount,
+    currentDisplayAmount,
+    currentDisplayFeeAmount,
+    currentFeeCoin.baseDenom,
+    currentFeeCoinDisplayAvailableAmount,
+    t,
+  ]);
+
   const debouncedEnabled = useDebouncedCallback(() => {
     setTimeout(() => {
       setIsDisabled(false);
@@ -406,11 +406,6 @@ export default function Send({ chain }: CosmosProps) {
 
     debouncedEnabled();
   }, [debouncedEnabled, memoizedSendAminoTx]);
-
-  useEffect(() => {
-    setCurrentFeeAmount(times(currentGas, currentFeeGasRate[currentGasRateKey]));
-  }, [currentGas, currentGasRateKey, currentFeeGasRate]);
-
   return (
     <Container>
       <div>
