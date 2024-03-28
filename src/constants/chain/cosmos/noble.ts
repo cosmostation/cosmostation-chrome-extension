@@ -1,6 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
 import nobleImg from '~/images/symbols/noble.png';
-import type { CosmosChain } from '~/types/chain';
+import type { CosmosChain, CosmosGasRate } from '~/types/chain';
 
 export const NOBLE: CosmosChain = {
   id: 'd0c01aa8-dfc3-4c30-80c1-4faa8b0279a6',
@@ -26,6 +26,19 @@ export const NOBLE: CosmosChain = {
     low: '0.0025',
     average: '0.025',
   },
-  gas: {},
+  gas: { send: '100000' },
   custom: 'no-stake',
 };
+
+export const NOBLE_GAS_RATES: CosmosGasRate[] = [
+  {
+    chainId: NOBLE.id,
+    baseDenom: 'uusdc',
+    originDenom: 'uusdc',
+    gasRate: {
+      tiny: '0.1',
+      low: '0.1',
+      average: '0.1',
+    },
+  },
+];
