@@ -59,6 +59,7 @@ export const TopLeftContainer = styled('div')(({ theme }) => ({
 export const TopRightContainer = styled('div')({
   display: 'flex',
   justifyContent: 'flex-start',
+  alignItems: 'flex-end',
 
   columnGap: '0.3rem',
 });

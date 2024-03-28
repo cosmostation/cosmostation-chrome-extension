@@ -11,6 +11,10 @@ import type { ActivitiesResponse } from '~/types/cosmos/activity';
 import { useExtensionStorage } from '../../useExtensionStorage';
 import { useAccounts } from '../cache/useAccounts';
 
+const FIRST_TXS_LIMIT = 10;
+
+const TXS_LIMIT = 30;
+
 export function useActivitiesSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const mappingName = convertCosmosToAssetName(chain);
 
@@ -34,11 +38,11 @@ export function useActivitiesSWR(chain: CosmosChain, config?: SWRConfiguration) 
     (pageIndex, previousPageData: ActivitiesResponse) => {
       if (previousPageData && previousPageData.length < 1) return null;
 
-      if (pageIndex === 0) return `https://front.api.mintscan.io/v10/${mappingName}/account/${address}/txs?limit=20`;
+      if (pageIndex === 0) return `https://front.api.mintscan.io/v10/${mappingName}/account/${address}/txs?limit=${FIRST_TXS_LIMIT}`;
 
       const cursor = previousPageData[previousPageData.length - 1].search_after || '';
 
-      return `https://front.api.mintscan.io/v10/${mappingName}/account/${address}/txs?limit=10&search_after=${cursor}`;
+      return `https://front.api.mintscan.io/v10/${mappingName}/account/${address}/txs?limit=${TXS_LIMIT}&search_after=${cursor}`;
     },
     fetcher,
     {

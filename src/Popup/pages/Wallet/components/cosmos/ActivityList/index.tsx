@@ -5,6 +5,7 @@ import EmptyAsset from '~/Popup/components/EmptyAsset';
 import IntersectionObserver from '~/Popup/components/IntersectionObserver';
 import { useActivitiesSWR } from '~/Popup/hooks/SWR/cosmos/useActivitiesSWR';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { formatDate } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 import type { Activity } from '~/types/cosmos/activity';
 
@@ -36,49 +37,23 @@ export default function ActivityList({ chain }: ActivityListProps) {
   );
 
   const activitiesGroupedByDate = useMemo(() => {
-    const activityDates = flattenedActivities
-      .map((item) => item?.data?.timestamp)
-      .map((item) => {
-        if (!item) {
-          return '';
-        }
-        // TODO 데이트 변환 로직 간소화
-        const date = new Date(item);
+    const formattedDates = flattenedActivities.map((item) => formatDate(item?.data?.timestamp)).filter((item) => !!item);
 
-        const year = date.getFullYear();
-        const month = `0${date.getMonth() + 1}`.slice(-2);
-        const day = `0${date.getDate()}`.slice(-2);
+    const uniqueFormattedDates = formattedDates.filter((v, i, a) => a.indexOf(v) === i);
 
-        const formattedDate = `${year}-${month}-${day}`;
-
-        return formattedDate;
-      });
-
-    const uniqueActivityDates = activityDates.filter((v, i, a) => a.indexOf(v) === i);
-
-    const activitiesByDate = uniqueActivityDates.map((item) => {
-      const filtered = flattenedActivities.filter((item2) => {
-        if (!item2?.data?.timestamp) {
+    return uniqueFormattedDates.map((uniqueFormattedDate) => {
+      const filteredActivites = flattenedActivities.filter((activity) => {
+        if (!activity?.data?.timestamp) {
           return false;
         }
 
-        const date = new Date(item2.data.timestamp);
-
-        const year = date.getFullYear();
-        const month = `0${date.getMonth() + 1}`.slice(-2);
-        const day = `0${date.getDate()}`.slice(-2);
-
-        const formattedDate = `${year}-${month}-${day}`;
-
-        return formattedDate === item;
+        return formatDate(activity.data.timestamp) === uniqueFormattedDate;
       });
 
       return {
-        [item]: filtered,
+        [uniqueFormattedDate]: filteredActivites,
       };
     });
-
-    return activitiesByDate;
   }, [flattenedActivities]);
 
   const isExistActivity = useMemo(() => !!activitiesGroupedByDate.length, [activitiesGroupedByDate.length]);
