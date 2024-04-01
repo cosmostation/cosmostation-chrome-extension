@@ -16,11 +16,12 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, gte, lt, times } from '~/Popup/utils/big';
+import { ceil, gt, gte, lt, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getDefaultAV, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, decodeProtobufMessage, protoTxBytes } from '~/Popup/utils/proto';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
@@ -95,7 +96,18 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const isInvalidFeeRequest = useMemo(() => !isEditFee && lt(inputGas, '1') && lt(inputFeeAmount, '1'), [inputFeeAmount, inputGas, isEditFee]);
 
-  const isNeedToReplaceFeeAmount = useMemo(() => (isEditFee || isInvalidFeeRequest) && chain.id !== STARGAZE.id, [chain.id, isEditFee, isInvalidFeeRequest]);
+  const isGasOverrideRestrictedChain = useMemo(() => {
+    const restrictedChainList = [STARGAZE];
+
+    return restrictedChainList.some((item) => isEqualsIgnoringCase(item.id, chain.id));
+  }, [chain.id]);
+
+  const isEditFeeModeActivatable = useMemo(
+    () => (isGasOverrideRestrictedChain ? isEditFee && gt(inputGas, '1') && gt(inputFeeAmount, '1') : isEditFee),
+    [inputFeeAmount, inputGas, isEditFee, isGasOverrideRestrictedChain],
+  );
+
+  const isNeedToReplaceFeeAmount = useMemo(() => isEditFeeModeActivatable || isInvalidFeeRequest, [isEditFeeModeActivatable, isInvalidFeeRequest]);
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
     feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
