@@ -223,15 +223,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
     return selectedCoinOrToken;
   }, [senderCoinAndTokenList, currentCoinOrTokenId]);
 
-  const sendGas = useMemo(
-    () => (currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS : gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS),
-    [currentCoinOrToken.type, gas.ibcSend, gas.ibcTransfer],
-  );
-
-  const [customGas, setCustomGas] = useState<string | undefined>();
-
-  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
-
   const tokenBalance = useTokenBalanceSWR(chain, currentCoinOrTokenId, senderAddress);
 
   const currentCoinOrTokenAvailableAmount = useMemo(() => {
@@ -354,7 +345,18 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number],
   );
 
-  const { feeCoins } = useCurrentFeesSWR(chain);
+  const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain);
+
+  const sendGas = useMemo(
+    () => (currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS : gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS),
+    [currentCoinOrToken.type, gas.ibcSend, gas.ibcTransfer],
+  );
+
+  const [customGas, setCustomGas] = useState<string | undefined>();
+
+  const [customGasRateKey, setCustomGasRateKey] = useState<GasRateKey | undefined>();
+
+  const currentGasRateKey = useMemo(() => customGasRateKey || defaultGasRateKey, [defaultGasRateKey, customGasRateKey]);
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
 
@@ -679,7 +681,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
               setCurrentFeeBaseDenom(selectedFeeCoin.baseDenom);
             }}
             onChangeGas={(g) => setCustomGas(g)}
-            onChangeGasRateKey={(gasRateKey) => setCurrentGasRateKey(gasRateKey)}
+            onChangeGasRateKey={(gasRateKey) => setCustomGasRateKey(gasRateKey)}
             isEdit
           />
         </MarginTop8Div>

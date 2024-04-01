@@ -190,6 +190,8 @@ export default function Send({ chain }: CosmosProps) {
     [availableCoinOrTokenList, currentCoinOrTokenId],
   );
 
+  const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain);
+
   const sendGas = useMemo(
     () => (currentCoinOrToken.type === 'coin' ? gas.send || COSMOS_DEFAULT_SEND_GAS : gas.transfer || COSMOS_DEFAULT_TRANSFER_GAS),
     [currentCoinOrToken.type, gas.send, gas.transfer],
@@ -197,7 +199,9 @@ export default function Send({ chain }: CosmosProps) {
 
   const [customGas, setCustomGas] = useState<string | undefined>();
 
-  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
+  const [customGasRateKey, setCustomGasRateKey] = useState<GasRateKey | undefined>();
+
+  const currentGasRateKey = useMemo(() => customGasRateKey || defaultGasRateKey, [defaultGasRateKey, customGasRateKey]);
 
   const tokenBalance = useTokenBalanceSWR(chain, currentCoinOrTokenId, address);
 
@@ -213,8 +217,6 @@ export default function Send({ chain }: CosmosProps) {
     () => toDisplayDenomAmount(currentCoinOrTokenAvailableAmount, currentCoinOrToken.decimals),
     [currentCoinOrToken.decimals, currentCoinOrTokenAvailableAmount],
   );
-
-  const { feeCoins } = useCurrentFeesSWR(chain);
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
 
@@ -500,7 +502,7 @@ export default function Send({ chain }: CosmosProps) {
             setCurrentFeeBaseDenom(selectedFeeCoin.baseDenom);
           }}
           onChangeGas={(g) => setCustomGas(g)}
-          onChangeGasRateKey={(gasRateKey) => setCurrentGasRateKey(gasRateKey)}
+          onChangeGasRateKey={(gasRateKey) => setCustomGasRateKey(gasRateKey)}
           isEdit
         />
       </MarginTop12Div>
