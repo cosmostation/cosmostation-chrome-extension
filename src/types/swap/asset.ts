@@ -23,7 +23,7 @@ export type IntegratedSwapEVMToken = Omit<EthereumToken, 'id' | 'ethereumNetwork
 export type IntegratedSwapToken = IntegratedSwapEVMToken | IntegratedSwapCosmosToken;
 
 export type IntegratedSwapFeeToken = {
-  address: string;
+  tokenAddressOrDenom: string;
   decimals: number;
   displayDenom: string;
   coinGeckoId?: string;

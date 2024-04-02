@@ -706,7 +706,7 @@ export default function Entry() {
       const baseFeeCoin = feeCoins[0];
 
       return {
-        address: baseFeeCoin.baseDenom,
+        tokenAddressOrDenom: baseFeeCoin.baseDenom,
         decimals: baseFeeCoin.decimals,
         displayDenom: baseFeeCoin.displayDenom,
         coinGeckoId: baseFeeCoin.coinGeckoId,
@@ -716,7 +716,7 @@ export default function Entry() {
 
     if (currentFromChain?.line === ETHEREUM.line) {
       return {
-        address: EVM_NATIVE_TOKEN_ADDRESS,
+        tokenAddressOrDenom: EVM_NATIVE_TOKEN_ADDRESS,
         decimals: currentFromChain.decimals,
         displayDenom: currentFromChain.displayDenom,
         coinGeckoId: currentFromChain.coinGeckoId,
@@ -728,7 +728,7 @@ export default function Entry() {
 
   const currentFeeTokenBalance = useMemo(() => {
     if (currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') {
-      return cosmosFromChainBalance.data?.balance?.find((item) => isEqualsIgnoringCase(item.denom, currentFeeToken?.address))?.amount || '0';
+      return cosmosFromChainBalance.data?.balance?.find((item) => isEqualsIgnoringCase(item.denom, currentFeeToken?.tokenAddressOrDenom))?.amount || '0';
     }
 
     if (currentSwapAPI === '1inch' || currentSwapAPI === 'squid_evm') {
@@ -736,7 +736,7 @@ export default function Entry() {
     }
 
     return '0';
-  }, [currentSwapAPI, cosmosFromChainBalance.data?.balance, currentFeeToken?.address, currentFromEVMNativeBalance?.data?.result]);
+  }, [currentSwapAPI, cosmosFromChainBalance.data?.balance, currentFeeToken?.tokenAddressOrDenom, currentFromEVMNativeBalance?.data?.result]);
 
   const currentFeeTokenPrice = useMemo(
     () => (currentFeeToken?.coinGeckoId && coinGeckoPrice.data?.[currentFeeToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
@@ -1075,7 +1075,10 @@ export default function Entry() {
   const estimatedFeeBaseAmount = useMemo(() => {
     if ((currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') && selectedFromCosmosChain) {
       return ceil(
-        times(estimatedGas, cosmosGasRate.data[currentFeeToken?.address || selectedFromCosmosChain.baseDenom]?.low || selectedFromCosmosChain.gasRate.low),
+        times(
+          estimatedGas,
+          cosmosGasRate.data[currentFeeToken?.tokenAddressOrDenom || selectedFromCosmosChain.baseDenom]?.low || selectedFromCosmosChain.gasRate.low,
+        ),
       );
     }
 
@@ -1099,7 +1102,7 @@ export default function Entry() {
     return '0';
   }, [
     cosmosGasRate.data,
-    currentFeeToken?.address,
+    currentFeeToken?.tokenAddressOrDenom,
     currentSwapAPI,
     estimatedGas,
     oneInchRoute.data,
@@ -1130,11 +1133,11 @@ export default function Entry() {
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentFromTokenDisplayBalance, estimatedFeeDisplayAmount);
 
-    if (isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken?.address)) {
+    if (isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken?.tokenAddressOrDenom)) {
       return gt(maxAmount, '0') ? maxAmount : '0';
     }
     return currentFromTokenDisplayBalance;
-  }, [currentFromTokenDisplayBalance, estimatedFeeDisplayAmount, currentFromToken?.address, currentFeeToken?.address]);
+  }, [currentFromTokenDisplayBalance, estimatedFeeDisplayAmount, currentFromToken?.address, currentFeeToken?.tokenAddressOrDenom]);
 
   const swapAssetInfo = useCallback(() => {
     const tmpFromToken = currentFromToken;
@@ -1170,7 +1173,7 @@ export default function Entry() {
       return t('pages.Wallet.Swap.entry.insufficientAmount');
     }
 
-    if (isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken?.address)) {
+    if (isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken?.tokenAddressOrDenom)) {
       if (gt(estimatedFeeBaseAmount, currentFromTokenBalance)) {
         return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
       }
@@ -1239,7 +1242,7 @@ export default function Entry() {
     inputDisplayAmount,
     currentFromTokenDisplayBalance,
     currentFromToken?.address,
-    currentFeeToken?.address,
+    currentFeeToken?.tokenAddressOrDenom,
     estimatedFeeBaseAmount,
     currentFeeTokenBalance,
     estimatedToTokenDisplayAmount,
@@ -1321,7 +1324,7 @@ export default function Entry() {
         )} ${currentFeeToken?.displayDenom || ''} ${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription2')}`;
       }
 
-      if (currentFeeToken && isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken.address)) {
+      if (currentFeeToken && isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken.tokenAddressOrDenom)) {
         if (gt(plus(currentInputBaseAmount, estimatedFeeBaseAmount), currentFromTokenBalance)) {
           return `${t('pages.Wallet.Swap.entry.balanceWarningDescription1')} ${currentFeeToken?.displayDenom}${t(
             'pages.Wallet.Swap.entry.balanceWarningDescription2',
@@ -1969,7 +1972,7 @@ export default function Entry() {
                             chainName: selectedFromCosmosChain.chainName,
                             doc: {
                               ...integratedCosmosSwapTx,
-                              fee: { amount: [{ denom: currentFeeToken.address, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
+                              fee: { amount: [{ denom: currentFeeToken.tokenAddressOrDenom, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
                             },
                             isEditFee: true,
                             isEditMemo: true,

@@ -207,14 +207,20 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
   );
 
   const memoizedSkipSwapAminoTx = useMemo(() => {
-    if (gt(inputBaseAmount, '0') && account.data?.value.account_number && fromChain?.chainId && skipSwapAminoTxMsgs.length > 0 && feeToken?.address) {
+    if (
+      gt(inputBaseAmount, '0') &&
+      account.data?.value.account_number &&
+      fromChain?.chainId &&
+      skipSwapAminoTxMsgs.length > 0 &&
+      feeToken?.tokenAddressOrDenom
+    ) {
       const sequence = String(account.data?.value.sequence || '0');
 
       return {
         account_number: String(account.data.value.account_number),
         sequence,
         chain_id: nodeInfo.data?.default_node_info?.network ?? fromChain.chainId,
-        fee: { amount: [{ amount: '1', denom: feeToken.address }], gas: COSMOS_DEFAULT_SWAP_GAS },
+        fee: { amount: [{ amount: '1', denom: feeToken.tokenAddressOrDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
         memo: '',
         msgs: skipSwapAminoTxMsgs.map((item) => ({
           type: item?.msg_type_url || '',
@@ -227,7 +233,7 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
   }, [
     account.data?.value.account_number,
     account.data?.value.sequence,
-    feeToken?.address,
+    feeToken?.tokenAddressOrDenom,
     fromChain?.chainId,
     inputBaseAmount,
     nodeInfo.data?.default_node_info?.network,

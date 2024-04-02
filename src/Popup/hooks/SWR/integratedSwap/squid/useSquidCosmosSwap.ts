@@ -235,7 +235,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
       fromChain?.chainId &&
       fromChain.line === 'COSMOS' &&
       parsedSquidSwapTx &&
-      feeToken?.address
+      feeToken?.tokenAddressOrDenom
     ) {
       const sequence = String(account.data?.value.sequence || '0');
 
@@ -244,7 +244,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
           account_number: String(account.data.value.account_number),
           sequence,
           chain_id: nodeInfo.data?.default_node_info?.network ?? fromChain.chainId,
-          fee: { amount: [{ amount: '1', denom: fromChain.baseDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
+          fee: { amount: [{ amount: '1', denom: feeToken.tokenAddressOrDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
           memo: '',
           msgs: [
             {
@@ -272,7 +272,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
           account_number: String(account.data.value.account_number),
           sequence,
           chain_id: nodeInfo.data?.default_node_info?.network ?? fromChain.chainId,
-          fee: { amount: [{ amount: '1', denom: feeToken.address }], gas: COSMOS_DEFAULT_SWAP_GAS },
+          fee: { amount: [{ amount: '1', denom: feeToken.tokenAddressOrDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
           memo: '',
           msgs: [
             {
@@ -298,16 +298,17 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   }, [
     account.data?.value.account_number,
     account.data?.value.sequence,
-    fromChain,
-    inputBaseAmount,
+    feeToken?.tokenAddressOrDenom,
+    fromChain?.chainId,
+    fromChain?.line,
     fromToken?.address,
-    squidCosmosRoute.data?.route.estimate.fromAmount,
+    inputBaseAmount,
     nodeInfo.data?.default_node_info?.network,
     parsedSquidSwapTx,
     revisionHeight,
     revisionNumber,
     senderAddress,
-    feeToken?.address,
+    squidCosmosRoute.data?.route.estimate.fromAmount,
   ]);
 
   const [squidSwapAminoTx] = useDebounce(memoizedSquidSwapAminoTx, 700);
