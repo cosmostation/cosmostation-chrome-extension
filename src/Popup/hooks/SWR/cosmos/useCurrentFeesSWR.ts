@@ -45,7 +45,7 @@ export function useCurrentFeesSWR(chain: CosmosChain, config?: SWRConfiguration)
   );
 
   const feeCoins: FeeCoin[] = useMemo(() => {
-    const feeCoinBaseDenoms = [...Object.keys(assetGasRate.data)];
+    const feeCoinBaseDenoms = [...Object.keys(assetGasRate.data.gasRate)];
 
     const filteredFeeCoins = currentChainAssets.data
       .filter((item) => feeCoinBaseDenoms.includes(item.denom))
