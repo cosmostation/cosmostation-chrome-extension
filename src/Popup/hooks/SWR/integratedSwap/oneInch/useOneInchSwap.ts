@@ -29,9 +29,9 @@ export function useOneInchSwap(oneInchSwapProps?: UseOneInchSwapProps) {
   const slippage = useMemo(() => oneInchSwapProps?.slippage || '1', [oneInchSwapProps?.slippage]);
 
   const allowance = useAllowanceSWR(
-    fromToken?.address && senderAddress && fromChain?.chainId
+    fromToken?.tokenAddressOrDenom && senderAddress && fromChain?.chainId
       ? {
-          tokenAddress: fromToken.address,
+          tokenAddress: fromToken.tokenAddressOrDenom,
           walletAddress: senderAddress,
           chainId: fromChain.chainId,
         }
@@ -39,9 +39,9 @@ export function useOneInchSwap(oneInchSwapProps?: UseOneInchSwapProps) {
   );
 
   const allowanceTxData = useAllowanceTxSWR(
-    allowance.data && !gt(allowance.data.allowance, inputBaseAmount) && fromToken?.address && fromChain?.chainId
+    allowance.data && !gt(allowance.data.allowance, inputBaseAmount) && fromToken?.tokenAddressOrDenom && fromChain?.chainId
       ? {
-          tokenAddress: fromToken.address,
+          tokenAddress: fromToken.tokenAddressOrDenom,
           chainId: fromChain.chainId,
         }
       : undefined,
@@ -80,16 +80,16 @@ export function useOneInchSwap(oneInchSwapProps?: UseOneInchSwapProps) {
 
   const oneInchRouteParam = useMemo<UseOneInchSwapSWRProps | undefined>(() => {
     if (
-      fromToken?.address &&
-      toToken?.address &&
+      fromToken?.tokenAddressOrDenom &&
+      toToken?.tokenAddressOrDenom &&
       senderAddress &&
       gt(inputBaseAmount, '0') &&
       gt(allowance.data?.allowance || '0', inputBaseAmount) &&
       fromChain?.chainId
     ) {
       return {
-        fromTokenAddress: fromToken.address,
-        toTokenAddress: toToken.address,
+        fromTokenAddress: fromToken.tokenAddressOrDenom,
+        toTokenAddress: toToken.tokenAddressOrDenom,
         fromAddress: senderAddress,
         slippage,
         amount: inputBaseAmount,
@@ -97,7 +97,7 @@ export function useOneInchSwap(oneInchSwapProps?: UseOneInchSwapProps) {
       };
     }
     return undefined;
-  }, [fromToken?.address, toToken?.address, fromChain?.chainId, inputBaseAmount, allowance.data?.allowance, slippage, senderAddress]);
+  }, [fromToken?.tokenAddressOrDenom, toToken?.tokenAddressOrDenom, fromChain?.chainId, inputBaseAmount, allowance.data?.allowance, slippage, senderAddress]);
 
   const oneInchRoute = useOneInchSwapTxSWR(oneInchRouteParam);
 

@@ -7,8 +7,8 @@ export type IntegratedSwapCosmosChain = CosmosChain & { baseChainUUID: string; n
 
 export type IntegratedSwapChain = (IntegratedSwapEVMChain | IntegratedSwapCosmosChain) & { isUnavailable?: boolean };
 
-export type IntegratedSwapCosmosToken = AssetV3 & {
-  address: string;
+export type IntegratedSwapCosmosToken = Omit<AssetV3, 'symbol'> & {
+  tokenAddressOrDenom: string;
   balance?: string;
   displayDenom: string;
   imageURL?: string;
@@ -16,6 +16,7 @@ export type IntegratedSwapCosmosToken = AssetV3 & {
 };
 
 export type IntegratedSwapEVMToken = Omit<EthereumToken, 'id' | 'ethereumNetworkId' | 'tokenType'> & {
+  tokenAddressOrDenom: string;
   balance?: string;
   name: string;
 };

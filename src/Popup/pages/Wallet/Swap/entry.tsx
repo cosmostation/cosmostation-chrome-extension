@@ -51,7 +51,6 @@ import { convertAssetNameToCosmos, getDefaultAV } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { EthereumToken } from '~/types/chain';
-import type { AssetV3 as CosmosAssetV3 } from '~/types/cosmos/asset';
 import type { IntegratedSwapChain, IntegratedSwapFeeToken, IntegratedSwapToken } from '~/types/swap/asset';
 import type { IntegratedSwapAPI } from '~/types/swap/integratedSwap';
 
@@ -358,13 +357,13 @@ export default function Entry() {
   const currentFromEVMNativeBalance = useNativeBalanceSWR(currentFromChain?.line === ETHEREUM.line ? currentFromChain : undefined);
   const currentFromEVMTokenBalance = useTokenBalanceSWR({
     network: currentFromChain?.line === ETHEREUM.line ? currentFromChain : undefined,
-    token: currentFromChain?.line === ETHEREUM.line ? (currentFromToken as EthereumToken) : undefined,
+    token: currentFromChain?.line === ETHEREUM.line ? (currentFromToken as Omit<EthereumToken, 'id' | 'ethereumNetworkId' | 'tokenType'>) : undefined,
   });
 
   const currentToEVMNativeBalance = useNativeBalanceSWR(currentToChain?.line === ETHEREUM.line ? currentToChain : undefined);
   const currentToEVMTokenBalance = useTokenBalanceSWR({
     network: currentToChain?.line === ETHEREUM.line ? currentToChain : undefined,
-    token: currentToChain?.line === ETHEREUM.line ? (currentToToken as EthereumToken) : undefined,
+    token: currentToChain?.line === ETHEREUM.line ? (currentToToken as Omit<EthereumToken, 'id' | 'ethereumNetworkId' | 'tokenType'>) : undefined,
   });
 
   const supportedSquidTokens = useSquidTokensSWR();
@@ -399,7 +398,7 @@ export default function Entry() {
           const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
           return {
             ...item,
-            address: item.denom,
+            tokenAddressOrDenom: item.denom,
             balance,
             price,
             imageURL: item.image,
@@ -446,6 +445,7 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        tokenAddressOrDenom: item.address,
         displayDenom: item.symbol,
         imageURL: item.logoURI,
       }));
@@ -462,7 +462,7 @@ export default function Entry() {
           const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
           return {
             ...item,
-            address: item.denom,
+            tokenAddressOrDenom: item.denom,
             balance,
             price,
             imageURL: item.image,
@@ -493,6 +493,7 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        tokenAddressOrDenom: item.address,
         displayDenom: item.symbol,
         imageURL: item.logoURI,
         coinGeckoId: item.coingeckoId,
@@ -521,16 +522,22 @@ export default function Entry() {
 
   const currentFromTokenBalance = useMemo(() => {
     if (currentFromChain?.line === COSMOS.line) {
-      return filteredFromTokenList.find((item) => item.address === currentFromToken?.address)?.balance || '0';
+      return filteredFromTokenList.find((item) => item.tokenAddressOrDenom === currentFromToken?.tokenAddressOrDenom)?.balance || '0';
     }
     if (currentFromChain?.line === ETHEREUM.line) {
-      if (isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, currentFromToken?.address)) {
+      if (isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, currentFromToken?.tokenAddressOrDenom)) {
         return BigInt(currentFromEVMNativeBalance.data?.result || '0').toString(10);
       }
       return BigInt(currentFromEVMTokenBalance.data || '0').toString(10);
     }
     return '0';
-  }, [currentFromChain?.line, filteredFromTokenList, currentFromToken?.address, currentFromEVMTokenBalance.data, currentFromEVMNativeBalance.data?.result]);
+  }, [
+    currentFromChain?.line,
+    filteredFromTokenList,
+    currentFromToken?.tokenAddressOrDenom,
+    currentFromEVMTokenBalance.data,
+    currentFromEVMNativeBalance.data?.result,
+  ]);
 
   const currentFromTokenDisplayBalance = useMemo(
     () => toDisplayDenomAmount(currentFromTokenBalance, currentFromToken?.decimals || 0),
@@ -556,7 +563,7 @@ export default function Entry() {
           const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
           return {
             ...item,
-            address: item.denom,
+            tokenAddressOrDenom: item.denom,
             balance,
             price,
             imageURL: item.image,
@@ -603,6 +610,7 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        tokenAddressOrDenom: item.address,
         displayDenom: item.symbol,
         imageURL: item.logoURI,
       }));
@@ -623,6 +631,7 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        tokenAddressOrDenom: item.address,
         displayDenom: item.symbol,
         imageURL: item.logoURI,
         coinGeckoId: item.coingeckoId,
@@ -641,7 +650,7 @@ export default function Entry() {
           const price = times(toDisplayDenomAmount(balance, item.decimals), coinPrice);
           return {
             ...item,
-            address: item.denom,
+            tokenAddressOrDenom: item.denom,
             balance,
             price,
             imageURL: item.image,
@@ -678,16 +687,16 @@ export default function Entry() {
 
   const currentToTokenBalance = useMemo(() => {
     if (currentToChain?.line === COSMOS.line) {
-      return filteredToTokenList.find((item) => item.address === currentToToken?.address)?.balance || '0';
+      return filteredToTokenList.find((item) => item.tokenAddressOrDenom === currentToToken?.tokenAddressOrDenom)?.balance || '0';
     }
     if (currentToChain?.line === ETHEREUM.line) {
-      if (isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, currentToToken?.address)) {
+      if (isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, currentToToken?.tokenAddressOrDenom)) {
         return BigInt(currentToEVMNativeBalance.data?.result || '0').toString(10);
       }
       return BigInt(currentToEVMTokenBalance.data || '0').toString(10);
     }
     return '0';
-  }, [currentToChain?.line, filteredToTokenList, currentToToken?.address, currentToEVMTokenBalance.data, currentToEVMNativeBalance.data?.result]);
+  }, [currentToChain?.line, filteredToTokenList, currentToToken?.tokenAddressOrDenom, currentToEVMTokenBalance.data, currentToEVMNativeBalance.data?.result]);
 
   const currentToTokenDisplayBalance = useMemo(
     () => toDisplayDenomAmount(currentToTokenBalance, currentToToken?.decimals || 0),
@@ -759,8 +768,8 @@ export default function Entry() {
           inputBaseAmount: currentInputBaseAmount,
           fromChain: currentFromChain,
           toChain: currentToChain,
-          fromToken: currentFromToken as CosmosAssetV3,
-          toToken: currentToToken as CosmosAssetV3,
+          fromToken: currentFromToken,
+          toToken: currentToToken,
           feeToken: currentFeeToken,
           slippage: currentSlippage,
         }
@@ -1133,11 +1142,11 @@ export default function Entry() {
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentFromTokenDisplayBalance, estimatedFeeDisplayAmount);
 
-    if (isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken?.tokenAddressOrDenom)) {
+    if (isEqualsIgnoringCase(currentFromToken?.tokenAddressOrDenom, currentFeeToken?.tokenAddressOrDenom)) {
       return gt(maxAmount, '0') ? maxAmount : '0';
     }
     return currentFromTokenDisplayBalance;
-  }, [currentFromTokenDisplayBalance, estimatedFeeDisplayAmount, currentFromToken?.address, currentFeeToken?.tokenAddressOrDenom]);
+  }, [currentFromTokenDisplayBalance, estimatedFeeDisplayAmount, currentFromToken?.tokenAddressOrDenom, currentFeeToken?.tokenAddressOrDenom]);
 
   const swapAssetInfo = useCallback(() => {
     const tmpFromToken = currentFromToken;
@@ -1173,7 +1182,7 @@ export default function Entry() {
       return t('pages.Wallet.Swap.entry.insufficientAmount');
     }
 
-    if (isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken?.tokenAddressOrDenom)) {
+    if (isEqualsIgnoringCase(currentFromToken?.tokenAddressOrDenom, currentFeeToken?.tokenAddressOrDenom)) {
       if (gt(estimatedFeeBaseAmount, currentFromTokenBalance)) {
         return t('pages.Wallet.Swap.entry.insufficientFeeAmount');
       }
@@ -1241,7 +1250,7 @@ export default function Entry() {
     filteredToTokenList.length,
     inputDisplayAmount,
     currentFromTokenDisplayBalance,
-    currentFromToken?.address,
+    currentFromToken?.tokenAddressOrDenom,
     currentFeeToken?.tokenAddressOrDenom,
     estimatedFeeBaseAmount,
     currentFeeTokenBalance,
@@ -1324,7 +1333,7 @@ export default function Entry() {
         )} ${currentFeeToken?.displayDenom || ''} ${t('pages.Wallet.Swap.entry.lessThanFeeWarningDescription2')}`;
       }
 
-      if (currentFeeToken && isEqualsIgnoringCase(currentFromToken?.address, currentFeeToken.tokenAddressOrDenom)) {
+      if (currentFeeToken && isEqualsIgnoringCase(currentFromToken?.tokenAddressOrDenom, currentFeeToken.tokenAddressOrDenom)) {
         if (gt(plus(currentInputBaseAmount, estimatedFeeBaseAmount), currentFromTokenBalance)) {
           return `${t('pages.Wallet.Swap.entry.balanceWarningDescription1')} ${currentFeeToken?.displayDenom}${t(
             'pages.Wallet.Swap.entry.balanceWarningDescription2',
@@ -1344,7 +1353,7 @@ export default function Entry() {
     estimatedFeeBaseAmount,
     currentFeeTokenBalance,
     currentFeeToken,
-    currentFromToken?.address,
+    currentFromToken?.tokenAddressOrDenom,
     t,
     skipRoute.data,
     oneInchRoute.error,
@@ -1469,7 +1478,7 @@ export default function Entry() {
   ]);
 
   useEffect(() => {
-    if (!filteredFromTokenList.find((item) => item.address === currentFromToken?.address && item.name === currentFromToken.name)) {
+    if (!filteredFromTokenList.find((item) => item.tokenAddressOrDenom === currentFromToken?.tokenAddressOrDenom && item.name === currentFromToken.name)) {
       if (currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') {
         setCurrentFromToken(filteredFromTokenList.find((item) => item.displayDenom === currentFromChain.displayDenom) || filteredFromTokenList[0]);
       }
@@ -1478,7 +1487,7 @@ export default function Entry() {
       }
     }
 
-    if (!filteredToTokenList.find((item) => item.address === currentToToken?.address && item.name === currentToToken.name)) {
+    if (!filteredToTokenList.find((item) => item.tokenAddressOrDenom === currentToToken?.tokenAddressOrDenom && item.name === currentToToken.name)) {
       if (currentSwapAPI === '1inch') {
         setCurrentToToken(filteredToTokenList.find((item) => item.displayDenom.includes('USDT')));
       }
@@ -1495,8 +1504,12 @@ export default function Entry() {
     }
 
     if (currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') {
-      if (currentFromChain.id === currentToChain?.id && currentFromToken?.address === currentToToken?.address && filteredToTokenList.length > 1) {
-        setCurrentToToken(filteredToTokenList.filter((item) => item.address !== currentToToken?.address)[0]);
+      if (
+        currentFromChain.id === currentToChain?.id &&
+        currentFromToken?.tokenAddressOrDenom === currentToToken?.tokenAddressOrDenom &&
+        filteredToTokenList.length > 1
+      ) {
+        setCurrentToToken(filteredToTokenList.filter((item) => item.tokenAddressOrDenom !== currentToToken?.tokenAddressOrDenom)[0]);
       }
     }
   }, [
@@ -1551,7 +1564,7 @@ export default function Entry() {
                 setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => {
-                if (currentFromChain.id === currentToChain?.id && isEqualsIgnoringCase(clickedCoin.address, currentToToken?.address)) {
+                if (currentFromChain.id === currentToChain?.id && isEqualsIgnoringCase(clickedCoin.tokenAddressOrDenom, currentToToken?.tokenAddressOrDenom)) {
                   void swapAssetInfo();
                 } else {
                   setCurrentFromToken(clickedCoin);
@@ -1604,7 +1617,10 @@ export default function Entry() {
                 setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => {
-                if (currentFromChain.id === currentToChain?.id && isEqualsIgnoringCase(clickedCoin.address, currentFromToken?.address)) {
+                if (
+                  currentFromChain.id === currentToChain?.id &&
+                  isEqualsIgnoringCase(clickedCoin.tokenAddressOrDenom, currentFromToken?.tokenAddressOrDenom)
+                ) {
                   void swapAssetInfo();
                 } else {
                   setCurrentToToken(clickedCoin);

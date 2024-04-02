@@ -9,8 +9,7 @@ import { convertAssetNameToCosmos, findCosmosChainByAddress, getPublicKeyType } 
 import { convertDirectMsgTypeToAminoMsgType, protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgExecuteContract, MsgTransfer } from '~/types/cosmos/amino';
-import type { AssetV3 as CosmosAssetV3 } from '~/types/cosmos/asset';
-import type { IntegratedSwapFeeToken } from '~/types/swap/asset';
+import type { IntegratedSwapFeeToken, IntegratedSwapToken } from '~/types/swap/asset';
 import type { Affiliates } from '~/types/swap/skip';
 
 import { type SkipRouteProps, useSkipRouteSWR } from './SWR/useSkipRouteSWR';
@@ -29,8 +28,8 @@ type UseSkipSwapProps = {
   inputBaseAmount: string;
   fromChain: CosmosChain;
   toChain: CosmosChain;
-  fromToken: CosmosAssetV3;
-  toToken: CosmosAssetV3;
+  fromToken: IntegratedSwapToken;
+  toToken: IntegratedSwapToken;
   slippage: string;
   feeToken: IntegratedSwapFeeToken;
 };
@@ -51,18 +50,18 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
   const { currentAccount } = useCurrentAccount();
 
   const skipRouteParam = useMemo<SkipRouteProps | undefined>(() => {
-    if (gt(inputBaseAmount, '0') && fromToken?.denom && fromChain?.chainId && toToken?.denom && toChain?.chainId) {
+    if (gt(inputBaseAmount, '0') && fromToken?.tokenAddressOrDenom && fromChain?.chainId && toToken?.tokenAddressOrDenom && toChain?.chainId) {
       return {
         amountIn: inputBaseAmount,
-        sourceAssetDenom: fromToken.denom,
+        sourceAssetDenom: fromToken.tokenAddressOrDenom,
         sourceAssetChainId: fromChain.chainId,
-        destAssetDenom: toToken.denom,
+        destAssetDenom: toToken.tokenAddressOrDenom,
         destAssetChainId: toChain.chainId,
         cumulativeAffiliateFeeBps: DEFAULT_BPF,
       };
     }
     return undefined;
-  }, [toToken?.denom, fromChain?.chainId, inputBaseAmount, fromToken?.denom, toChain?.chainId]);
+  }, [toToken?.tokenAddressOrDenom, fromChain?.chainId, inputBaseAmount, fromToken?.tokenAddressOrDenom, toChain?.chainId]);
 
   const skipRoute = useSkipRouteSWR({ routeParam: skipRouteParam });
 

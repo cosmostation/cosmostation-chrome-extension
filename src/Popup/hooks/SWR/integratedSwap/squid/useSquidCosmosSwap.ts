@@ -68,14 +68,22 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const squidRouteParam = useMemo<GetRoute | undefined>(() => {
-    if (fromChain?.chainId && fromToken?.address && gt(inputBaseAmount, '0') && toChain?.chainId && toToken?.address && receiverAddress && senderAddress) {
+    if (
+      fromChain?.chainId &&
+      fromToken?.tokenAddressOrDenom &&
+      gt(inputBaseAmount, '0') &&
+      toChain?.chainId &&
+      toToken?.tokenAddressOrDenom &&
+      receiverAddress &&
+      senderAddress
+    ) {
       return {
         fromAddress: senderAddress,
         fromChain: fromChain.chainId,
-        fromToken: fromToken.address,
+        fromToken: fromToken.tokenAddressOrDenom,
         fromAmount: inputBaseAmount,
         toChain: toChain.chainId,
-        toToken: toToken.address,
+        toToken: toToken.tokenAddressOrDenom,
         toAddress: receiverAddress,
         slippage: Number(slippage),
         collectFees: {
@@ -87,7 +95,16 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
       };
     }
     return undefined;
-  }, [toToken?.address, fromChain?.chainId, inputBaseAmount, receiverAddress, slippage, fromToken?.address, toChain?.chainId, senderAddress]);
+  }, [
+    toToken?.tokenAddressOrDenom,
+    fromChain?.chainId,
+    inputBaseAmount,
+    receiverAddress,
+    slippage,
+    fromToken?.tokenAddressOrDenom,
+    toChain?.chainId,
+    senderAddress,
+  ]);
 
   const squidCosmosRoute = useSquidRouteSWR(squidRouteParam);
 
@@ -283,7 +300,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
                 funds: [
                   {
                     amount: squidCosmosRoute.data?.route.estimate.fromAmount,
-                    denom: fromToken?.address,
+                    denom: fromToken?.tokenAddressOrDenom,
                   },
                 ],
                 msg: parsedSquidSwapTx.msg.wasm.msg,
@@ -301,7 +318,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
     feeToken?.tokenAddressOrDenom,
     fromChain?.chainId,
     fromChain?.line,
-    fromToken?.address,
+    fromToken?.tokenAddressOrDenom,
     inputBaseAmount,
     nodeInfo.data?.default_node_info?.network,
     parsedSquidSwapTx,
