@@ -8,7 +8,7 @@ export const NIBIRU: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'cataclysm-1',
-  chainName: 'Nibiru',
+  chainName: 'NIBIRU',
   restURL: 'https://lcd-nibiru.cosmostation.io',
   imageURL: nibiruChainImg,
   tokenImageURL: nibiruTokenImg,

@@ -8,7 +8,7 @@ export const GOVGEN: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'govgen-1',
-  chainName: 'GovGen',
+  chainName: 'GOVGEN',
   restURL: 'https://lcd-govgen.cosmostation.io',
   tokenImageURL: govgenTokenImg,
   imageURL: govgenChainImg,

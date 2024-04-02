@@ -8,7 +8,7 @@ export const HUMANS_AI: CosmosChain = {
   line: 'COSMOS',
   type: 'ETHERMINT',
   chainId: 'humans_1089-1',
-  chainName: 'Humans.ai',
+  chainName: 'HUMANS.AI',
   restURL: 'https://lcd-humans.cosmostation.io',
   imageURL: humansAiChainImg,
   tokenImageURL: humansAiTokenImg,
