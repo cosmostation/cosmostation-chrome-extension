@@ -17,6 +17,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useRewardSWR } from '~/Popup/hooks/SWR/cosmos/useRewardSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
@@ -28,7 +29,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { ceil, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import { getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
@@ -133,6 +134,12 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const operatorAddress = useMemo(() => validators.data?.find((item) => item.address === currentAddress)?.operatorAddress, [currentAddress, validators.data]);
 
+  const { data: gasMultiply } = useGasMultiplySWR(chain);
+
+  const { feeCoins } = useCurrentFeesSWR(chain);
+
+  const currentFeeCoin = useMemo(() => feeCoins[0], [feeCoins]);
+
   const rewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
     if (reward.data?.rewards?.length && account.data?.value.account_number && account.data.value.sequence) {
       return {
@@ -140,7 +147,12 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         sequence: account.data.value.sequence,
         chain_id: chain.chainId,
         fee: {
-          amount: [{ amount: chain.type === 'ETHERMINT' ? times(chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1', denom: chain.baseDenom }],
+          amount: [
+            {
+              amount: chain.type === 'ETHERMINT' ? times(currentFeeCoin.gasRate?.low || chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1',
+              denom: currentFeeCoin.baseDenom,
+            },
+          ],
           gas: COSMOS_DEFAULT_REWARD_GAS,
         },
         msgs: reward.data.rewards.map((item) => ({
@@ -154,11 +166,11 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   }, [
     account.data?.value.account_number,
     account.data?.value.sequence,
-    chain.baseDenom,
     chain.chainId,
     chain.gasRate.low,
     chain.type,
     currentAddress,
+    currentFeeCoin,
     reward.data?.rewards,
   ]);
 
@@ -174,7 +186,17 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const rewardSimulate = useSimulateSWR({ chain, txBytes: rewardProtoTx?.tx_bytes });
 
-  const rewardTxGas = useMemo(() => rewardSimulate.data?.gas_info?.gas_used || COSMOS_DEFAULT_REWARD_GAS, [rewardSimulate.data?.gas_info?.gas_used]);
+  const rewardTxGas = useMemo(
+    () => times(rewardSimulate.data?.gas_info?.gas_used || COSMOS_DEFAULT_REWARD_GAS, gasMultiply, 0),
+    [gasMultiply, rewardSimulate.data?.gas_info?.gas_used],
+  );
+
+  const currentRewardFeeAmount = useMemo(
+    () => times(rewardTxGas, currentFeeCoin.gasRate?.low || chain.gasRate.low),
+    [chain.gasRate.low, currentFeeCoin.gasRate?.low, rewardTxGas],
+  );
+
+  const currentCeilRewardFeeAmount = useMemo(() => ceil(currentRewardFeeAmount), [currentRewardFeeAmount]);
 
   const commissionAminoTx = useMemo<SignAminoDoc<MsgCommission> | undefined>(() => {
     if (operatorAddress && account.data?.value.account_number && account.data.value.sequence) {
@@ -183,7 +205,12 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         sequence: account.data.value.sequence,
         chain_id: chain.chainId,
         fee: {
-          amount: [{ amount: chain.type === 'ETHERMINT' ? times(chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1', denom: chain.baseDenom }],
+          amount: [
+            {
+              amount: chain.type === 'ETHERMINT' ? times(currentFeeCoin.gasRate?.low || chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1',
+              denom: currentFeeCoin.baseDenom,
+            },
+          ],
           gas: COSMOS_DEFAULT_REWARD_GAS,
         },
         msgs: [
@@ -196,7 +223,16 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
       };
     }
     return undefined;
-  }, [account.data?.value.account_number, account.data?.value.sequence, chain.baseDenom, chain.chainId, chain.gasRate.low, chain.type, operatorAddress]);
+  }, [
+    account.data?.value.account_number,
+    account.data?.value.sequence,
+    chain.chainId,
+    chain.gasRate.low,
+    chain.type,
+    currentFeeCoin.baseDenom,
+    currentFeeCoin.gasRate?.low,
+    operatorAddress,
+  ]);
 
   const commissionProtoTx = useMemo(() => {
     if (commissionAminoTx) {
@@ -211,11 +247,16 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const commissionSimulate = useSimulateSWR({ chain, txBytes: commissionProtoTx?.tx_bytes });
 
   const commissionTxGas = useMemo(
-    () => commissionSimulate.data?.gas_info?.gas_used || COSMOS_DEFAULT_COMMISSION_GAS,
-    [commissionSimulate.data?.gas_info?.gas_used],
+    () => times(commissionSimulate.data?.gas_info?.gas_used || COSMOS_DEFAULT_COMMISSION_GAS, gasMultiply, 0),
+    [commissionSimulate.data?.gas_info?.gas_used, gasMultiply],
   );
 
-  const { data: gasMultiply } = useGasMultiplySWR(chain);
+  const currentCommissionFeeAmount = useMemo(
+    () => times(commissionTxGas, currentFeeCoin.gasRate?.low || chain.gasRate.low),
+    [chain.gasRate.low, commissionTxGas, currentFeeCoin.gasRate?.low],
+  );
+
+  const currentCeilCommissionFeeAmount = useMemo(() => ceil(currentCommissionFeeAmount), [currentCommissionFeeAmount]);
 
   const commissionDirectTx = useMemo(() => {
     if (operatorAddress && account.data?.value.account_number && account.data.value.sequence) {
@@ -224,8 +265,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         sequence: account.data.value.sequence,
         chain_id: chain.chainId,
         fee: {
-          amount: [{ amount: '0', denom: chain.baseDenom }],
-          gas: times(commissionTxGas, gasMultiply, 0),
+          amount: [{ amount: currentCeilCommissionFeeAmount, denom: currentFeeCoin.baseDenom }],
+          gas: commissionTxGas,
         },
         msgs: [
           {
@@ -254,7 +295,17 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         : undefined;
     }
     return undefined;
-  }, [operatorAddress, account.data?.value.account_number, account.data?.value.sequence, chain, commissionTxGas, gasMultiply, currentAccount, currentPassword]);
+  }, [
+    operatorAddress,
+    account.data?.value.account_number,
+    account.data?.value.sequence,
+    chain,
+    currentCeilCommissionFeeAmount,
+    currentFeeCoin.baseDenom,
+    commissionTxGas,
+    currentAccount,
+    currentPassword,
+  ]);
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
@@ -271,14 +322,11 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const displayMaxDecimals = getDisplayMaxDecimals(decimals);
 
-  const estimatedRewardDisplayFeeAmount = useMemo(
-    () => toDisplayDenomAmount(times(chain.gasRate.low, rewardTxGas), decimals),
-    [chain.gasRate.low, decimals, rewardTxGas],
-  );
+  const estimatedRewardDisplayFeeAmount = useMemo(() => toDisplayDenomAmount(currentCeilRewardFeeAmount, decimals), [currentCeilRewardFeeAmount, decimals]);
 
   const estimatedCommissionDisplayFeeAmount = useMemo(
-    () => toDisplayDenomAmount(times(chain.gasRate.low, commissionTxGas), decimals),
-    [chain.gasRate.low, commissionTxGas, decimals],
+    () => toDisplayDenomAmount(currentCeilCommissionFeeAmount, decimals),
+    [currentCeilCommissionFeeAmount, decimals],
   );
 
   const isPossibleClaimReward = useMemo(
@@ -454,8 +502,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                           doc: {
                             ...rewardAminoTx,
                             fee: {
-                              amount: [{ amount: '0', denom: chain.baseDenom }],
-                              gas: times(rewardTxGas, gasMultiply, 0),
+                              amount: [{ amount: currentCeilRewardFeeAmount, denom: currentFeeCoin.baseDenom }],
+                              gas: rewardTxGas,
                             },
                           },
                           isEditFee: true,
