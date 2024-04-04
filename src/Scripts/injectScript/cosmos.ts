@@ -2,11 +2,14 @@ import { v4 as uuidv4 } from 'uuid';
 import type { CosmosRegisterWallet } from '@cosmostation/wallets';
 
 import { LINE_TYPE } from '~/constants/chain';
+import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
+import { CosmosRPCError } from '~/Popup/utils/error';
 import type { SignAminoDoc } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type { ContentScriptToWebEventMessage, CosmosListenerType, CosmosRequestMessage, ListenerMessage, ResponseMessage } from '~/types/message';
 import type {
+  CosRequestAccount,
   CosRequestAccountResponse,
   CosSendTransactionResponse,
   CosSignAminoResponse,
@@ -17,7 +20,7 @@ import type {
   CosVerifyMessageResponse,
 } from '~/types/message/cosmos';
 
-export const request = (message: CosmosRequestMessage) =>
+export const executeRequest = (message: CosmosRequestMessage) =>
   new Promise((res, rej) => {
     const messageId = uuidv4();
 
@@ -29,31 +32,6 @@ export const request = (message: CosmosRequestMessage) =>
 
         if (data.response?.error) {
           rej(data.response.error);
-        } else if (
-          data.message.method === 'cos_requestAccount' ||
-          data.message.method === 'cos_account' ||
-          data.message.method === 'ten_requestAccount' ||
-          data.message.method === 'ten_account'
-        ) {
-          const { publicKey } = data.response.result as CosRequestAccountResponse;
-
-          res({
-            ...(data.response.result as { publicKey: string; address: string }),
-            publicKey: new Uint8Array(Buffer.from(publicKey, 'hex')),
-          });
-        } else if (data.message.method === 'cos_signDirect' || data.message.method === 'ten_signDirect') {
-          const result = data.response.result as CosSignDirectResponse;
-
-          const response: CosSignDirectResponse = {
-            ...result,
-            signed_doc: {
-              ...result.signed_doc,
-              auth_info_bytes: new Uint8Array(result.signed_doc.auth_info_bytes),
-              body_bytes: new Uint8Array(result.signed_doc.body_bytes),
-            },
-          };
-
-          res(response);
         } else {
           res(data.response.result);
         }
@@ -62,54 +40,116 @@ export const request = (message: CosmosRequestMessage) =>
 
     window.addEventListener('message', handler);
 
-    if (message.method === 'cos_signDirect' || message.method === 'ten_signDirect') {
-      const { params } = message;
-
-      const doc = params?.doc;
-
-      const newDoc: SignDirectDoc = doc
-        ? {
-            ...doc,
-            auth_info_bytes: doc.auth_info_bytes ? [...Array.from(new Uint8Array(doc.auth_info_bytes))] : doc.auth_info_bytes,
-            body_bytes: doc.body_bytes ? [...Array.from(new Uint8Array(doc.body_bytes))] : doc.body_bytes,
-          }
-        : doc;
-
-      const newParams: CosSignDirectParams = params ? { ...params, doc: newDoc } : params;
-      const newMessage = { ...message, params: newParams };
-
-      window.postMessage({
-        isCosmostation: true,
-        line: LINE_TYPE.COSMOS,
-        type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
-        messageId,
-        message: newMessage,
-      });
-    } else if (message.method === 'cos_sendTransaction') {
-      const { params } = message;
-
-      const txBytes = params?.txBytes && typeof params.txBytes === 'object' ? Buffer.from(params.txBytes).toString('base64') : params.txBytes;
-
-      const newParams = { ...params, txBytes };
-      const newMessage = { ...message, params: newParams };
-
-      window.postMessage({
-        isCosmostation: true,
-        line: LINE_TYPE.COSMOS,
-        type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
-        messageId,
-        message: newMessage,
-      });
-    } else {
-      window.postMessage({
-        isCosmostation: true,
-        line: LINE_TYPE.COSMOS,
-        type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
-        messageId,
-        message,
-      });
-    }
+    window.postMessage({
+      isCosmostation: true,
+      line: LINE_TYPE.COSMOS,
+      type: MESSAGE_TYPE.REQUEST__WEB_TO_CONTENT_SCRIPT,
+      messageId,
+      message,
+    });
   });
+
+export const request = async (message: CosmosRequestMessage) => {
+  if (
+    message.method === 'cos_requestAccount' ||
+    message.method === 'cos_account' ||
+    message.method === 'ten_requestAccount' ||
+    message.method === 'ten_account'
+  ) {
+    const result = (await executeRequest(message)) as CosRequestAccountResponse;
+
+    const { publicKey } = result;
+
+    const response = {
+      ...(result as { publicKey: string; address: string }),
+      publicKey: new Uint8Array(Buffer.from(publicKey, 'hex')),
+    };
+
+    return response;
+  }
+
+  if (message.method === 'cos_requestAccounts') {
+    const supportedChainIds = (await executeRequest({ method: 'cos_supportedChainIds' })) as CosSupportedChainIdsResponse;
+
+    const isValidChainIds = message.params?.chainIds?.every(
+      (chainId) => supportedChainIds?.official?.includes(chainId) || supportedChainIds?.unofficial?.includes(chainId),
+    );
+
+    if (!isValidChainIds) {
+      throw new CosmosRPCError(RPC_ERROR.INVALID_PARAMS, RPC_ERROR_MESSAGE[RPC_ERROR.INVALID_PARAMS]);
+    }
+
+    const initialAccountRequestMessage = {
+      ...message,
+      method: 'cos_requestAccount',
+      params: {
+        chainName: message.params?.chainIds?.[0],
+      },
+    } as CosRequestAccount;
+
+    await executeRequest(initialAccountRequestMessage);
+
+    const result = await Promise.all(
+      message.params.chainIds.map(
+        async (chainId) => (await executeRequest({ method: 'cos_requestAccount', params: { chainName: chainId } })) as CosRequestAccountResponse,
+      ),
+    );
+
+    const response = result.map((item) => {
+      const { publicKey } = item;
+
+      return {
+        ...(item as { publicKey: string; address: string }),
+        publicKey: new Uint8Array(Buffer.from(publicKey, 'hex')),
+      };
+    });
+
+    return response;
+  }
+
+  if (message.method === 'cos_signDirect' || message.method === 'ten_signDirect') {
+    const { params } = message;
+
+    const doc = params?.doc;
+
+    const newDoc: SignDirectDoc = doc
+      ? {
+          ...doc,
+          auth_info_bytes: doc.auth_info_bytes ? [...Array.from(new Uint8Array(doc.auth_info_bytes))] : doc.auth_info_bytes,
+          body_bytes: doc.body_bytes ? [...Array.from(new Uint8Array(doc.body_bytes))] : doc.body_bytes,
+        }
+      : doc;
+
+    const newParams: CosSignDirectParams = params ? { ...params, doc: newDoc } : params;
+    const newMessage = { ...message, params: newParams };
+
+    const result = (await executeRequest(newMessage)) as CosSignDirectResponse;
+
+    const response: CosSignDirectResponse = {
+      ...result,
+      signed_doc: {
+        ...result.signed_doc,
+        auth_info_bytes: new Uint8Array(result.signed_doc.auth_info_bytes),
+        body_bytes: new Uint8Array(result.signed_doc.body_bytes),
+      },
+    };
+
+    return response;
+  }
+
+  if (message.method === 'cos_sendTransaction') {
+    const { params } = message;
+
+    const txBytes = params?.txBytes && typeof params.txBytes === 'object' ? Buffer.from(params.txBytes).toString('base64') : params.txBytes;
+
+    const newParams = { ...params, txBytes };
+    const newMessage = { ...message, params: newParams };
+
+    return executeRequest(newMessage);
+  }
+
+  return executeRequest(message);
+};
 
 export const on = (eventName: CosmosListenerType, eventHandler: (data: unknown) => void) => {
   const handler = (event: MessageEvent<ListenerMessage>) => {
