@@ -20,6 +20,7 @@ export const COMDEX: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'comdex' },
+  coinGeckoId: 'comdex',
   explorerURL: `${MINTSCAN_URL}/comdex`,
   gasRate: {
     tiny: '0.03',

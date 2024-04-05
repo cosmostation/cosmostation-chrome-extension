@@ -20,7 +20,7 @@ export const SENTINEL: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'sent' },
-  coinGeckoId: 'sentinel-group',
+  coinGeckoId: 'sentinel',
   explorerURL: `${MINTSCAN_URL}/sentinel`,
   gasRate: {
     tiny: '0.01',
