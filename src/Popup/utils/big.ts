@@ -68,15 +68,17 @@ export function ceil(num: string | number) {
   return new Big(num).toFixed(0, 0);
 }
 
-export function medianOf(numbers: string[] | number[]): string {
-  const sortedNumbers = numbers
-    .slice()
-    .sort((a, b) => Number(minus(a, b)))
-    .map((num) => String(num));
-  const len = sortedNumbers.length;
-  const index = Math.floor(len / 2);
+export function calculatePercentiles(numbers: number[], percentiles: number[]) {
+  if (numbers.length === 0) {
+    return [];
+  }
 
-  return len % 2 === 0 ? ceil(divide(plus(sortedNumbers[index - 1], sortedNumbers[index]), '2')) : sortedNumbers[index];
+  const sortedNumbers = numbers.slice().sort((a, b) => Number(minus(a, b)));
+
+  return percentiles.map((percentile) => {
+    const index = Math.ceil((percentile / 100) * sortedNumbers.length) - 1;
+    return sortedNumbers[index];
+  });
 }
 
 export function fix(number: string, decimal?: number, optional: RoundingMode = 0) {

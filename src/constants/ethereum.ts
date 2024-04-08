@@ -47,27 +47,3 @@ export const ERC1155_INTERFACE_ID = '0xd9b67a26';
 export const TRANSACTION_RESULT = {
   SUCCESS: '1',
 } as const;
-
-export const PRIORITY_LEVEL = {
-  TINY: 'tiny',
-  LOW: 'low',
-  AVERAGE: 'average',
-} as const;
-
-export const GAS_SETTINGS_BY_PRIORITY_LEVEL = {
-  tiny: {
-    baseFeePercentageMultiplier: '1.1',
-    priorityFeePercentageMultiplier: '0.94',
-    minMaxPriorityFeePerGas: '1000000000',
-  },
-  low: {
-    baseFeePercentageMultiplier: '1.2',
-    priorityFeePercentageMultiplier: '0.97',
-    minMaxPriorityFeePerGas: '1500000000',
-  },
-  average: {
-    baseFeePercentageMultiplier: '1.25',
-    priorityFeePercentageMultiplier: '0.98',
-    minMaxPriorityFeePerGas: '2000000000',
-  },
-};
