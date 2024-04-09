@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
 import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
-import { GAS_SETTINGS_BY_PRIORITY_LEVEL } from '~/constants/ethereum';
+import { GAS_SETTINGS_BY_GAS_RATE_KEY } from '~/constants/ethereum';
 import { calculatePercentiles, divide, gt, plus } from '~/Popup/utils/big';
 import type { GasRateKey } from '~/types/chain';
 import type { FeeType, GasEstimates } from '~/types/ethereum/common';
@@ -43,8 +43,8 @@ export function useFeeSWR(config?: SWRConfiguration) {
       .reduce((prev, cur) => [plus(prev[0], parseInt(cur[0], 16)), plus(prev[1], parseInt(cur[1], 16)), plus(prev[2], parseInt(cur[2], 16))], ['0', '0', '0'])
       .map((item) => divide(item, rewardCount, 0));
 
-    return (['tiny', 'low', 'average'] as GasRateKey[]).reduce((acc: GasEstimates, level, index) => {
-      const { minBaseFeePerGas, minMaxPriorityFeePerGas } = GAS_SETTINGS_BY_PRIORITY_LEVEL[level];
+    return (['tiny', 'low', 'average'] as GasRateKey[]).reduce((acc, gasRateKey, index) => {
+      const { minBaseFeePerGas, minMaxPriorityFeePerGas } = GAS_SETTINGS_BY_GAS_RATE_KEY[gasRateKey];
 
       const maxPriorityFeePerGas = averageReward[index] && gt(averageReward[index], minMaxPriorityFeePerGas) ? averageReward[index] : minMaxPriorityFeePerGas;
 
@@ -55,7 +55,7 @@ export function useFeeSWR(config?: SWRConfiguration) {
 
       return {
         ...acc,
-        [level]: {
+        [gasRateKey]: {
           maxBaseFeePerGas,
           maxPriorityFeePerGas,
         },

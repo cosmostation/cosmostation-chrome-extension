@@ -48,7 +48,7 @@ export const TRANSACTION_RESULT = {
   SUCCESS: '1',
 } as const;
 
-export const GAS_SETTINGS_BY_PRIORITY_LEVEL = {
+export const GAS_SETTINGS_BY_GAS_RATE_KEY = {
   tiny: {
     minBaseFeePerGas: '500000000',
     minMaxPriorityFeePerGas: '1000000000',
