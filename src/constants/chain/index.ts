@@ -29,6 +29,7 @@ import { FETCH_AI } from './cosmos/fetchAi';
 import { FINSCHIA } from './cosmos/finschia';
 import { GOVGEN } from './cosmos/govgen';
 import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
+import { HUMANS_AI } from './cosmos/humansAi';
 import { INJECTIVE } from './cosmos/injective';
 import { IRIS } from './cosmos/iris';
 import { IXO } from './cosmos/ixo';
@@ -54,6 +55,7 @@ import { QUASAR } from './cosmos/quasar';
 import { QUICK_SILVER } from './cosmos/quickSilver';
 import { REGEN } from './cosmos/regen';
 import { RIZON } from './cosmos/rizon';
+import { SAGA } from './cosmos/saga';
 import { SECRET } from './cosmos/secret';
 import { SEI } from './cosmos/sei';
 import { SENTINEL } from './cosmos/sentinel';
@@ -134,6 +136,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   FINSCHIA,
   GOVGEN,
   GRAVITY_BRIDGE,
+  HUMANS_AI,
   INJECTIVE,
   IRIS,
   IXO,
@@ -159,6 +162,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   QUICK_SILVER,
   REGEN,
   RIZON,
+  SAGA,
   SECRET,
   SEI,
   SENTINEL,

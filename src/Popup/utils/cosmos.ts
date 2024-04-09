@@ -13,6 +13,7 @@ import { CRONOS_POS } from '~/constants/chain/cosmos/cronosPos';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
+import { HUMANS_AI } from '~/constants/chain/cosmos/humansAi';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { IXO } from '~/constants/chain/cosmos/ixo';
 import { KAVA } from '~/constants/chain/cosmos/kava';
@@ -187,6 +188,7 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain, maps: ChainId
     [STAFIHUB.id]: 'stafi',
     [FETCH_AI.id]: 'fetchai',
     [MARS.id]: 'mars-protocol',
+    [HUMANS_AI.id]: 'humans',
     [ONOMY.id]: 'onomy-protocol',
     [UX.id]: 'umee',
   };
@@ -203,6 +205,7 @@ export function convertAssetNameToCosmos(assetName: string, maps: ChainIdToAsset
     stafi: STAFIHUB,
     fetchai: FETCH_AI,
     'mars-protocol': MARS,
+    humans: HUMANS_AI,
     'onomy-protocol': ONOMY,
     umee: UX,
   } as Record<string, CosmosChain | undefined>;
