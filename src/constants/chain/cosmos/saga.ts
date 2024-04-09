@@ -7,7 +7,7 @@ export const SAGA: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'ssc-1',
-  chainName: 'SAGA',
+  chainName: 'Saga',
   restURL: 'https://lcd-saga.cosmostation.io',
   imageURL: sagaImg,
   baseDenom: 'usaga',
