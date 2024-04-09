@@ -96,7 +96,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const { enQueue } = useCurrentQueue();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { extensionStorage } = useExtensionStorage();
-  const { currency } = extensionStorage;
+  const { currency, additionalChains } = extensionStorage;
   const params = useParams();
 
   const [isDisabled, setIsDisabled] = useState(false);
@@ -135,7 +135,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const [debouncedCurrentAddress] = useDebounce(currentAddress, 500);
 
+  const cosmosAdditionalChains = additionalChains.filter((item) => item.line === 'COSMOS') as CosmosChain[];
+
   const senderCoinAndTokenList: CoinOrTokenInfo[] = useMemo(() => {
+    if (cosmosAdditionalChains.some((item) => item.id === chain.id)) {
+      return [];
+    }
+
     const coinOrTokenList = [
       ...currentChainAssets.data
         .filter((item) => {
@@ -196,16 +202,18 @@ export default function IBCSend({ chain }: IBCSendProps) {
       .sort((a, b) => (gt(a.price, b.price) ? -1 : 1))
       .sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
   }, [
-    coinsBalance?.balance,
-    chain.chainName,
-    chain.displayDenom,
-    coinGeckoPrice.data,
-    cosmosTokensBalance.data,
-    currency,
+    cosmosAdditionalChains,
     currentChainAssets.data,
     currentCosmosTokens,
+    chain.id,
+    chain.chainName,
+    chain.displayDenom,
     filteredCosmosChainAssets,
     filteredCurrentChainAssets,
+    coinsBalance?.balance,
+    coinGeckoPrice.data,
+    currency,
+    cosmosTokensBalance.data,
   ]);
 
   const currentCoinOrToken = useMemo(

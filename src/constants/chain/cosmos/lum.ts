@@ -22,6 +22,7 @@ export const LUM: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'lum' },
+  coinGeckoId: 'lum-network',
   explorerURL: `${MINTSCAN_URL}/lum`,
   gasRate: {
     tiny: '0.001',

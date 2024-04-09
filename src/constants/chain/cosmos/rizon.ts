@@ -22,7 +22,7 @@ export const RIZON: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'rizon' },
-  coinGeckoId: 'hdac',
+  coinGeckoId: 'rizon',
   explorerURL: `${MINTSCAN_URL}/rizon`,
   gasRate: {
     tiny: '0.00025',
