@@ -1477,10 +1477,10 @@ export default function Entry() {
 
   useEffect(() => {
     if (!filteredFromTokenList.find((item) => item.address === currentFromToken?.address && item.name === currentFromToken.name)) {
-      if (currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') {
+      if ((currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') && currentFromChain.line === COSMOS.line) {
         setCurrentFromToken(filteredFromTokenList.find((item) => item.displayDenom === currentFromChain.displayDenom) || filteredFromTokenList[0]);
       }
-      if (currentSwapAPI === '1inch' || currentSwapAPI === 'squid_evm') {
+      if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid_evm') && currentFromChain.line === ETHEREUM.line) {
         setCurrentFromToken(filteredFromTokenList[0]);
       }
     }
