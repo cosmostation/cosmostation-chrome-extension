@@ -5,7 +5,7 @@ import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
 import { GAS_SETTINGS_BY_GAS_RATE_KEY } from '~/constants/ethereum';
 import { calculatePercentiles, divide, gt, plus } from '~/Popup/utils/big';
 import type { GasRateKey } from '~/types/chain';
-import type { FeeType, GasEstimates } from '~/types/ethereum/common';
+import type { FeeType, GasRateKeyConfigurations } from '~/types/ethereum/common';
 
 import { useFeeHistorySWR } from './useFeeHistorySWR';
 import { useGasPriceSWR } from './useGasPriceSWR';
@@ -60,7 +60,7 @@ export function useFeeSWR(config?: SWRConfiguration) {
           maxPriorityFeePerGas,
         },
       };
-    }, {} as GasEstimates);
+    }, {} as GasRateKeyConfigurations);
   }, [feeHistory]);
 
   const type: FeeType | null = (() => {

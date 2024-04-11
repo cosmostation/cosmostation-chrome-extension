@@ -14,7 +14,7 @@ export type Token = EthereumToken | null;
 
 export type EthereumNFTStandard = ValueOf<typeof ETHEREUM_NFT_STANDARD>;
 
-export type GasEstimates = {
+export type GasRateKeyConfigurations = {
   tiny: EIP1559Configuration;
   low: EIP1559Configuration;
   average: EIP1559Configuration;
