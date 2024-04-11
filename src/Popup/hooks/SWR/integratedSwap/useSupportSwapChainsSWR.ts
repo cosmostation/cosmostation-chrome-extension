@@ -2,11 +2,12 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { CHAINLIST_RESOURCE_URL } from '~/constants/common';
 import { get } from '~/Popup/utils/axios';
 import type { SupportSwapChainPayload } from '~/types/swap/asset';
 
 export function useSupportSwapChainsSWR(config?: SWRConfiguration) {
-  const requestURL = `https://raw.githubusercontent.com/cosmostation/chainlist/master/chain/swap.json`;
+  const requestURL = `${CHAINLIST_RESOURCE_URL}/swap.json`;
 
   const fetcher = (fetchUrl: string) => get<SupportSwapChainPayload>(fetchUrl);
 

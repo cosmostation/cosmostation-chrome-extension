@@ -130,7 +130,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const [debouncedCurrentAddress] = useDebounce(currentAddress, 500);
 
-  const cosmosAdditionalChains = additionalChains.filter((item) => item.line === 'COSMOS') as CosmosChain[];
+  const cosmosAdditionalChains = useMemo(() => additionalChains.filter((item) => item.line === 'COSMOS') as CosmosChain[], [additionalChains]);
 
   const senderCoinAndTokenList: CoinOrTokenInfo[] = useMemo(() => {
     if (cosmosAdditionalChains.some((item) => item.id === chain.id)) {
