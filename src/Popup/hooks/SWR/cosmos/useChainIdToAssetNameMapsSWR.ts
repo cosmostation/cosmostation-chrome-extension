@@ -18,7 +18,7 @@ export function useChainIdToAssetNameMapsSWR(config?: SWRConfiguration) {
       }),
     );
     return keyValueSwappedMaps;
-  }, [allParams]);
+  }, [allParams.data]);
 
   return { chainIdToAssetNameMaps };
 }
