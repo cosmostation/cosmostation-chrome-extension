@@ -73,10 +73,10 @@ export function calculatePercentiles(numbers: number[], percentiles: number[]) {
     return [];
   }
 
-  const sortedNumbers = numbers.slice().sort((a, b) => Number(minus(a, b)));
+  const sortedNumbers = numbers.slice().sort((a, b) => a - b);
 
   return percentiles.map((percentile) => {
-    const index = Math.ceil((percentile / 100) * sortedNumbers.length) - 1;
+    const index = Number(minus(ceil(times(divide(percentile, '100'), sortedNumbers.length)), '1'));
     return sortedNumbers[index];
   });
 }
