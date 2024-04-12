@@ -2,6 +2,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { MINTSCAN_FRONT_API_URL } from '~/constants/common';
 import { get } from '~/Popup/utils/axios';
 import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
@@ -10,7 +11,7 @@ import type { ParamsResponse } from '~/types/cosmos/params';
 export function useParamsSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const mappingName = convertCosmosToAssetName(chain);
 
-  const requestURL = `https://front.api.mintscan.io/v10/utils/params/${mappingName}`;
+  const requestURL = `${MINTSCAN_FRONT_API_URL}/utils/params/${mappingName}`;
 
   const fetcher = async (fetchUrl: string) => {
     try {
