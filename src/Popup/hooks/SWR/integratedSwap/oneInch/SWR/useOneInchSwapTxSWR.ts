@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
+import { isHexString } from 'ethereumjs-util';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
@@ -29,11 +31,18 @@ export type UseOneInchSwapSWRProps = {
 };
 
 export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?: SWRConfiguration) {
-  const requestURL = `${ONEINCH_SWAP_BASE_URL}/${swapParam?.chainId || ''}/swap?src=${swapParam?.fromTokenAddress || ''}&dst=${
-    swapParam?.toTokenAddress || ''
-  }&amount=${swapParam?.amount || ''}&from=${swapParam?.fromAddress || ''}&slippage=${swapParam?.slippage || ''}&referrer=${REFERRER_ADDRESS || ''}&fee=${
-    FEE_RATIO || ''
-  }`;
+  const parsedChainId = useMemo(
+    () => swapParam?.chainId && (isHexString(swapParam.chainId) ? String(parseInt(swapParam.chainId, 16)) : swapParam.chainId),
+    [swapParam?.chainId],
+  );
+
+  const requestURL = useMemo(
+    () =>
+      `${ONEINCH_SWAP_BASE_URL}/${parsedChainId || ''}/swap?src=${swapParam?.fromTokenAddress || ''}&dst=${swapParam?.toTokenAddress || ''}&amount=${
+        swapParam?.amount || ''
+      }&from=${swapParam?.fromAddress || ''}&slippage=${swapParam?.slippage || ''}&referrer=${REFERRER_ADDRESS || ''}&fee=${FEE_RATIO || ''}`,
+    [parsedChainId, swapParam?.amount, swapParam?.fromAddress, swapParam?.fromTokenAddress, swapParam?.slippage, swapParam?.toTokenAddress],
+  );
 
   const fetcher = (fetchUrl: string) => get<OneInchSwapPayload>(fetchUrl, { headers: { Authorization: `Bearer ${String(process.env.ONEINCH_API_KEY)}` } });
 

@@ -22,6 +22,10 @@ export type Assets = {
   tokens: Record<string, Token>;
 };
 
+export type SpotPrice = Record<string, string>;
+
+export type SpotPricesResponse = Record<string, number>;
+
 export type Protocol = {
   name: string;
   part: number;

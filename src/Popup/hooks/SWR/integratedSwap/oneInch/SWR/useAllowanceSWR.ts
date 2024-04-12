@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
+import { isHexString } from 'ethereumjs-util';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
@@ -17,9 +19,14 @@ type UseAllowanceSWRProps = {
 export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
 
-  const requestURL = `${ONEINCH_SWAP_BASE_URL}/${allowanceParam?.chainId || ''}/approve/allowance?tokenAddress=${
-    allowanceParam?.tokenAddress || ''
-  }&walletAddress=${allowanceParam?.walletAddress || ''}`;
+  const parsedChainId = useMemo(
+    () => allowanceParam?.chainId && (isHexString(allowanceParam.chainId) ? String(parseInt(allowanceParam.chainId, 16)) : allowanceParam.chainId),
+    [allowanceParam?.chainId],
+  );
+
+  const requestURL = `${ONEINCH_SWAP_BASE_URL}/${parsedChainId || ''}/approve/allowance?tokenAddress=${allowanceParam?.tokenAddress || ''}&walletAddress=${
+    allowanceParam?.walletAddress || ''
+  }`;
 
   const fetcher = (fetchUrl: string) =>
     get<AllowancePayload>(fetchUrl, {

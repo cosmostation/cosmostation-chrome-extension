@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
+import { isHexString } from 'ethereumjs-util';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
@@ -7,7 +9,9 @@ import { get } from '~/Popup/utils/axios';
 import type { Assets } from '~/types/1inch/swap';
 
 export function useOneInchTokensSWR(chainId?: string, config?: SWRConfiguration) {
-  const requestURL = `${ONEINCH_SWAP_BASE_URL}/${chainId || ''}/tokens`;
+  const parsedChainId = useMemo(() => chainId && (isHexString(chainId) ? String(parseInt(chainId, 16)) : chainId), [chainId]);
+
+  const requestURL = useMemo(() => `${ONEINCH_SWAP_BASE_URL}/${parsedChainId || ''}/tokens`, [parsedChainId]);
 
   const fetcher = (fetchUrl: string) => get<Assets>(fetchUrl, { headers: { Authorization: `Bearer ${String(process.env.ONEINCH_API_KEY)}` } });
 
@@ -15,7 +19,7 @@ export function useOneInchTokensSWR(chainId?: string, config?: SWRConfiguration)
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    isPaused: () => !chainId,
+    isPaused: () => !parsedChainId,
     ...config,
   });
 

@@ -26,6 +26,7 @@ import { useBalanceSWR as useNativeBalanceSWR } from '~/Popup/hooks/SWR/ethereum
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
 import { useOneInchTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useOneInchTokensSWR';
+import { useSpotPriceSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useSporPriceSWR';
 import { useSupportTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useSupportTokensSWR';
 import { useOneInchSwap } from '~/Popup/hooks/SWR/integratedSwap/oneInch/useOneInchSwap';
 import { useSkipSupportChainsSWR } from '~/Popup/hooks/SWR/integratedSwap/skip/SWR/useSkipSupportChainsSWR';
@@ -132,6 +133,8 @@ export default function Entry() {
   const [currentSlippage, setCurrentSlippage] = useState('1');
 
   const [currentSwapAPI, setCurrentSwapAPI] = useState<IntegratedSwapAPI>();
+
+  const spotPriceData = useSpotPriceSWR(currentSwapAPI === '1inch' ? { chainId: currentEthereumNetwork.chainId, currency } : undefined);
 
   const squidEVMChains = useMemo(
     () =>
@@ -538,8 +541,11 @@ export default function Entry() {
   );
 
   const currentFromTokenPrice = useMemo(
-    () => (currentFromToken?.coinGeckoId && coinGeckoPrice.data?.[currentFromToken?.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, currentFromToken?.coinGeckoId],
+    () =>
+      (currentFromToken?.coinGeckoId && coinGeckoPrice.data?.[currentFromToken?.coinGeckoId]?.[extensionStorage.currency]) ||
+      spotPriceData.data?.[currentFromToken?.address || ''] ||
+      0,
+    [coinGeckoPrice.data, currentFromToken?.address, currentFromToken?.coinGeckoId, extensionStorage.currency, spotPriceData.data],
   );
 
   const filteredToTokenList: IntegratedSwapToken[] = useMemo(() => {
@@ -695,8 +701,11 @@ export default function Entry() {
   );
 
   const currentToTokenPrice = useMemo(
-    () => (currentToToken?.coinGeckoId && coinGeckoPrice.data?.[currentToToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, currentToToken?.coinGeckoId],
+    () =>
+      (currentToToken?.coinGeckoId && coinGeckoPrice.data?.[currentToToken.coinGeckoId]?.[extensionStorage.currency]) ||
+      spotPriceData.data?.[currentToToken?.address || ''] ||
+      0,
+    [coinGeckoPrice.data, currentToToken?.address, currentToToken?.coinGeckoId, extensionStorage.currency, spotPriceData.data],
   );
 
   const { feeCoins } = useCurrentFeesSWR(selectedFromCosmosChain || COSMOS);
@@ -739,8 +748,11 @@ export default function Entry() {
   }, [currentSwapAPI, cosmosFromChainBalance.data?.balance, currentFeeToken?.address, currentFromEVMNativeBalance?.data?.result]);
 
   const currentFeeTokenPrice = useMemo(
-    () => (currentFeeToken?.coinGeckoId && coinGeckoPrice.data?.[currentFeeToken.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, currentFeeToken?.coinGeckoId],
+    () =>
+      (currentFeeToken?.coinGeckoId && coinGeckoPrice.data?.[currentFeeToken.coinGeckoId]?.[extensionStorage.currency]) ||
+      spotPriceData.data?.[currentFeeToken?.address || ''] ||
+      0,
+    [coinGeckoPrice.data, currentFeeToken?.address, currentFeeToken?.coinGeckoId, extensionStorage.currency, spotPriceData.data],
   );
 
   const inputTokenAmountPrice = useMemo(() => times(inputDisplayAmount || '0', currentFromTokenPrice), [inputDisplayAmount, currentFromTokenPrice]);
