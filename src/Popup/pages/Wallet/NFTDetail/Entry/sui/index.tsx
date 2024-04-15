@@ -38,7 +38,7 @@ export default function Sui() {
 
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
-  const { explorerURL, networkName } = currentSuiNetwork;
+  const { explorerURL } = currentSuiNetwork;
 
   const params = useParams();
 
@@ -83,7 +83,7 @@ export default function Sui() {
                 )}
               </NFTInfoLeftHeaderContainer>
 
-              <StyledIconButton onClick={() => window.open(`${explorerURL || ''}/object/${objectId || ''}?network=${networkName.toLowerCase()}`)}>
+              <StyledIconButton onClick={() => window.open(`${explorerURL || ''}/object/${objectId || ''}`)}>
                 <ExplorerIcon />
               </StyledIconButton>
             </NFTInfoHeaderContainer>
