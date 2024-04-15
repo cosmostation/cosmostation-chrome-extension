@@ -101,7 +101,7 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
 
   const squidRouteParam = useMemo<GetRoute | undefined>(() => {
     if (fromChain?.chainId && fromToken?.address && gt(inputBaseAmount, '0') && toChain?.chainId && toToken?.address && receiverAddress && senderAddress) {
-      const squidSwapParams = {
+      return {
         fromAddress: senderAddress,
         fromChain: fromChain.chainId,
         fromToken: fromToken.address,
@@ -115,20 +115,16 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
           fee: SQUID_COLLECT_FEE_BPF,
         },
         enableExpress: false,
+        fallbackAddresses:
+          toChain.line === COSMOS.line && toChain?.bip44?.coinType !== `118'`
+            ? [
+                {
+                  address: fallbackAddress,
+                  coinType: '118',
+                },
+              ]
+            : undefined,
       };
-
-      if (toChain.line === COSMOS.line && toChain?.bip44?.coinType !== `118'`) {
-        return {
-          ...squidSwapParams,
-          fallbackAddresses: [
-            {
-              address: fallbackAddress,
-              coinType: '118',
-            },
-          ],
-        };
-      }
-      return squidSwapParams;
     }
     return undefined;
   }, [fromChain?.chainId, fromToken?.address, inputBaseAmount, receiverAddress, senderAddress, slippage, toChain, toToken?.address, fallbackAddress]);
