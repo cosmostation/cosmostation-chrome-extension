@@ -455,7 +455,7 @@ export default function Entry() {
       const squidTokens = filterSquidTokens(currentFromChain?.chainId);
 
       const filteredTokens = cosmosFromTokenAssets.data
-        .filter((item) => squidTokens.find((aa) => aa.address === item.denom))
+        .filter((item) => squidTokens.find((squidToken) => squidToken.address === item.denom))
         .map((item) => {
           const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[extensionStorage.currency] || '0' : '0';
           const balance = cosmosFromChainBalance.data?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';

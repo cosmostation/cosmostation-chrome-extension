@@ -4,8 +4,10 @@ import { Interface } from '@ethersproject/abi';
 
 import { ERC20_ABI } from '~/constants/abi';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import { SQUID_COLLECT_FEE_BPF, SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS, SQUID_CONTRACT_ADDRESS, SQUID_MAX_APPROVE_AMOUNT } from '~/constants/squid';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
+import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
@@ -13,6 +15,7 @@ import type { IntegratedSwapChain, IntegratedSwapToken, SquidTokensPayload } fro
 
 import { useAllowanceSWR } from './SWR/useAllowanceSWR';
 import { useSquidRouteSWR } from './SWR/useSquidRouteSWR';
+import { useAccounts } from '../../cache/useAccounts';
 import { useEstimateGasSWR } from '../../ethereum/useEstimateGasSWR';
 import { useFeeSWR } from '../../ethereum/useFeeSWR';
 import { useCoinGeckoPriceSWR } from '../../useCoinGeckoPriceSWR';
@@ -30,6 +33,9 @@ type UseSquidSwapProps = {
 };
 
 export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
+  const accounts = useAccounts();
+  const { currentAccount } = useCurrentAccount();
+
   const inputBaseAmount = useMemo(() => squidSwapProps?.inputBaseAmount || '0', [squidSwapProps?.inputBaseAmount]);
   const fromChain = useMemo(() => squidSwapProps?.fromChain, [squidSwapProps?.fromChain]);
   const toChain = useMemo(() => squidSwapProps?.toChain, [squidSwapProps?.toChain]);
@@ -88,9 +94,14 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
 
   const allowanceTxBaseFee = useMemo(() => times(allowanceBaseFeePerGas, allowanceBaseEstimatedGas), [allowanceBaseEstimatedGas, allowanceBaseFeePerGas]);
 
+  const fallbackAddress = useMemo(
+    () => accounts?.data?.find((item) => item.id === currentAccount.id)?.address?.[OSMOSIS.id] || '',
+    [accounts?.data, currentAccount.id],
+  );
+
   const squidRouteParam = useMemo<GetRoute | undefined>(() => {
     if (fromChain?.chainId && fromToken?.address && gt(inputBaseAmount, '0') && toChain?.chainId && toToken?.address && receiverAddress && senderAddress) {
-      return {
+      const squidSwapParams = {
         fromAddress: senderAddress,
         fromChain: fromChain.chainId,
         fromToken: fromToken.address,
@@ -103,12 +114,24 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
           integratorAddress: SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS,
           fee: SQUID_COLLECT_FEE_BPF,
         },
-        enableForecall: true,
         enableExpress: false,
       };
+
+      if (toChain.line === COSMOS.line && toChain?.bip44?.coinType !== `118'`) {
+        return {
+          ...squidSwapParams,
+          fallbackAddresses: [
+            {
+              address: fallbackAddress,
+              coinType: '118',
+            },
+          ],
+        };
+      }
+      return squidSwapParams;
     }
     return undefined;
-  }, [toToken?.address, fromChain?.chainId, inputBaseAmount, receiverAddress, slippage, fromToken?.address, toChain?.chainId, senderAddress]);
+  }, [fromChain?.chainId, fromToken?.address, inputBaseAmount, receiverAddress, senderAddress, slippage, toChain, toToken?.address, fallbackAddress]);
 
   const squidEthRoute = useSquidRouteSWR(squidRouteParam);
 
