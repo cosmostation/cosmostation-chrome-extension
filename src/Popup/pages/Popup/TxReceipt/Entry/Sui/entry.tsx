@@ -73,10 +73,7 @@ export default function Sui({ txDigest }: SuiProps) {
 
   const txInfo = useTxInfoSWR({ digest: txDigest, network: currentSuiNetwork });
 
-  const txDetailExplorerURL = useMemo(
-    () => (explorerURL ? `${explorerURL}/txblock/${txDigest}?network=${currentSuiNetwork.networkName.toLowerCase()}` : ''),
-    [currentSuiNetwork.networkName, explorerURL, txDigest],
-  );
+  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/tx/${txDigest}` : ''), [explorerURL, txDigest]);
 
   const formattedTimestamp = useMemo(() => {
     if (txInfo.data?.result?.timestampMs) {

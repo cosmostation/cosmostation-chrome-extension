@@ -6,7 +6,7 @@ export const DEVNET: SuiNetwork = {
   networkName: 'Devnet',
   rpcURL: 'https://fullnode.devnet.sui.io',
   imageURL: suiImg,
-  explorerURL: 'https://explorer.sui.io',
+  explorerURL: 'https://suiscan.xyz/devnet',
   displayDenom: 'SUI',
   decimals: 9,
 };
