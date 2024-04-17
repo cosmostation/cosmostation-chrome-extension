@@ -1116,11 +1116,11 @@ export default function Entry() {
   );
 
   const estimatedFeePrice = useMemo(() => {
-    if (currentSwapAPI === 'skip' || currentSwapAPI === '1inch' || currentSwapAPI === 'squid_cosmos') {
+    if (currentSwapAPI === 'skip' || currentSwapAPI === '1inch') {
       return times(estimatedFeeDisplayAmount, currentFeeTokenPrice);
     }
 
-    if (currentSwapAPI === 'squid_evm') {
+    if (currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') {
       return squidSwap?.estimatedSquidFeePrice || '0';
     }
 
