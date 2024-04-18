@@ -208,15 +208,15 @@ const experimentalSuggestChain: Keplr['experimentalSuggestChain'] = async (chain
   }
 };
 
-const signAmino: Keplr['signAmino'] = async (chainId, _, signDoc) => {
+const signAmino: Keplr['signAmino'] = async (chainId, _, signDoc, signOptions) => {
   try {
     const response = (await request({
       method: 'cos_signAmino',
       params: {
         chainName: chainId,
-        isEditFee: !window.cosmostation.providers.keplr.defaultOptions.sign?.preferNoSetFee,
-        isEditMemo: !window.cosmostation.providers.keplr.defaultOptions.sign?.preferNoSetMemo,
-        isCheckBalance: !window.cosmostation.providers.keplr.defaultOptions.sign?.disableBalanceCheck,
+        isEditFee: !(signOptions?.preferNoSetFee ?? window.cosmostation.providers.keplr.defaultOptions.sign?.preferNoSetFee),
+        isEditMemo: !(signOptions?.preferNoSetMemo ?? window.cosmostation.providers.keplr.defaultOptions.sign?.preferNoSetMemo),
+        isCheckBalance: !(signOptions?.disableBalanceCheck ?? window.cosmostation.providers.keplr.defaultOptions.sign?.disableBalanceCheck),
         doc: signDoc as unknown as SignAminoDoc,
       },
     })) as CosSignAminoResponse;
@@ -227,7 +227,7 @@ const signAmino: Keplr['signAmino'] = async (chainId, _, signDoc) => {
   }
 };
 
-const signDirect: Keplr['signDirect'] = async (chainId, _, signDoc) => {
+const signDirect: Keplr['signDirect'] = async (chainId, _, signDoc, signOptions) => {
   const response = (await request({
     method: 'cos_signDirect',
     params: {
@@ -238,6 +238,9 @@ const signDirect: Keplr['signDirect'] = async (chainId, _, signDoc) => {
         body_bytes: signDoc.bodyBytes!,
         chain_id: signDoc.chainId!,
       },
+      isEditFee: !(signOptions?.preferNoSetFee ?? window.cosmostation.providers.keplr.defaultOptions.sign?.preferNoSetFee),
+      isEditMemo: !(signOptions?.preferNoSetMemo ?? window.cosmostation.providers.keplr.defaultOptions.sign?.preferNoSetMemo),
+      isCheckBalance: !(signOptions?.disableBalanceCheck ?? window.cosmostation.providers.keplr.defaultOptions.sign?.disableBalanceCheck),
     },
   })) as CosSignDirectResponse;
   return {
@@ -292,9 +295,9 @@ const sendTx: Keplr['sendTx'] = async (chainId, tx, mode) => {
   }
 };
 
-const getOfflineSigner: Keplr['getOfflineSigner'] = (chainId) => ({
-  signAmino: async (signerAddress, signDoc) => signAmino(chainId, signerAddress, signDoc),
-  signDirect: async (signerAddress, signDoc) => signDirect(chainId, signerAddress, signDoc),
+const getOfflineSigner: Keplr['getOfflineSigner'] = (chainId, signOptions) => ({
+  signAmino: async (signerAddress, signDoc) => signAmino(chainId, signerAddress, signDoc, signOptions),
+  signDirect: async (signerAddress, signDoc) => signDirect(chainId, signerAddress, signDoc, signOptions),
   getAccounts: async () => {
     const response = await getKey(chainId);
 
