@@ -88,6 +88,10 @@ export const FeeGasButton = styled('button')(({ theme }) => ({
   color: theme.accentColors.purple01,
 
   cursor: 'pointer',
+
+  '&:hover': {
+    opacity: 0.8,
+  },
 }));
 
 type FeeButtonProps = {
@@ -113,6 +117,10 @@ export const FeeButton = styled('button')<FeeButtonProps>(({ theme, ...props }) 
   },
 
   cursor: 'pointer',
+
+  '&:hover': {
+    opacity: 0.8,
+  },
 }));
 
 export const FeeEditButton = styled(FeeButton)({
