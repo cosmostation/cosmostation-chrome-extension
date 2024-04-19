@@ -694,6 +694,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
                           ...ibcSendAminoTx,
                           fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }], gas: currentGas },
                         },
+                        isEditFee: false,
+                        isEditMemo: false,
+                        isCheckBalance: false,
                       },
                     },
                   });
