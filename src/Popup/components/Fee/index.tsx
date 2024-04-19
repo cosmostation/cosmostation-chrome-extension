@@ -73,10 +73,35 @@ export default function Fee({
     [coinGeckoId, coinGeckoPrice.data, extensionStorage.currency],
   );
 
-  const displayFee = useMemo(() => toDisplayDenomAmount(ceil(baseFee), decimals), [baseFee, decimals]);
+  const ceiledBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
+
+  const displayFee = useMemo(() => toDisplayDenomAmount(ceiledBaseFee, decimals), [ceiledBaseFee, decimals]);
   const value = useMemo(() => times(displayFee, chainPrice), [chainPrice, displayFee]);
 
-  const currentGasRate = useMemo(() => (gt(gas, '0') ? divide(baseFee, gas) : '0'), [baseFee, gas]);
+  const baseFeeValues = useMemo(
+    () => ({
+      tinyBaseFee: ceil(times(tiny, gas)),
+      lowBaseFee: ceil(times(low, gas)),
+      averageBaseFee: ceil(times(average, gas)),
+    }),
+    [tiny, low, average, gas],
+  );
+
+  const currentGasRate = useMemo(() => {
+    if (equal(baseFeeValues.tinyBaseFee, ceiledBaseFee)) {
+      return tiny;
+    }
+
+    if (equal(baseFeeValues.lowBaseFee, ceiledBaseFee)) {
+      return low;
+    }
+
+    if (equal(baseFeeValues.averageBaseFee, ceiledBaseFee)) {
+      return average;
+    }
+
+    return gt(gas, '0') ? divide(baseFee, gas) : '0';
+  }, [average, baseFee, baseFeeValues.averageBaseFee, baseFeeValues.lowBaseFee, baseFeeValues.tinyBaseFee, ceiledBaseFee, gas, low, tiny]);
 
   if (isEdit) {
     return (
