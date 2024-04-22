@@ -53,7 +53,7 @@ export const cosAddChainParamsSchema = (chainNames: string[], officialChainIds: 
       .insensitive()
       .required(),
     restURL: Joi.string().required(),
-    imageURL: Joi.string().optional(),
+    imageURL: Joi.string().empty('').optional(),
     baseDenom: Joi.string().required(),
     displayDenom: Joi.string().required(),
     decimals: Joi.number().optional(),
