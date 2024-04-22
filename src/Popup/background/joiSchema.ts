@@ -286,8 +286,8 @@ export const walletAddEthereumChainParamsSchema = () =>
         chainId: Joi.string().label('chainId').trim().required(),
         chainName: Joi.string().label('chainName').trim().required(),
         rpcUrls: Joi.array().label('rpcUrls').items(Joi.string().required()).required(),
-        blockExplorerUrls: Joi.array().label('blockExplorerUrls').items(Joi.string().required()).optional(),
-        iconUrls: Joi.array().label('iconUrls').items(Joi.string().required()).optional(),
+        blockExplorerUrls: Joi.array().label('blockExplorerUrls').items(Joi.string().allow('').optional()).optional(),
+        iconUrls: Joi.array().label('iconUrls').items(Joi.string().allow('').optional()).optional(),
         nativeCurrency: Joi.object<WalletAddEthereumChain['params'][0]['nativeCurrency']>({
           name: Joi.string().required(),
           symbol: Joi.string().required(),
