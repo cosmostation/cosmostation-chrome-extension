@@ -321,3 +321,12 @@ export const SwapVenueImageContainer = styled('div')({
     height: '1.6rem',
   },
 });
+
+export const NoticeContainer = styled('div')(({ theme }) => ({
+  padding: '1.6rem',
+
+  color: theme.colors.text01,
+
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-all',
+}));

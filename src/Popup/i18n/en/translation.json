@@ -1537,6 +1537,12 @@
               "title": "Select a coin"
             }
           },
+          "NoticeBottomSheet": {
+            "index": {
+              "confirm": "I have access to fallback address",
+              "title": "Notice"
+            }
+          },
           "SlippageSettingDialog": {
             "confirm": "Confirm",
             "slippageTolerance": "Slippage tolerance",
@@ -1580,6 +1586,7 @@
           "balanceWarningDescription1": "You do not have enough",
           "balanceWarningDescription2": " to cover the swap amount and the estimated gas costs for this transfer. Set your input amount to",
           "balanceWarningDescription3": "or below to cover gas costs.",
+          "emptyOsmoAddress": "osmo1...",
           "excessiveSwap": "Can't swap Token more than Token amounts in the pool",
           "exchangeRate": "Exchange Rate",
           "expectedOutput": "Expected Output",
@@ -1600,11 +1607,14 @@
           "multiTxSwap": "Swap with multiple transactions is unavailable",
           "multiTxSwapError": "This swap requires multiple transactions",
           "networkError": "Network Error",
+          "noticeButton": "Check Notice",
           "oversizedSwap": "Oversized Swap",
           "permissionButton": "Give permission to use tokens",
           "priceImpact": "Price Impact",
           "processingTime": "Estimated processing time",
           "receiveWarningMessage": "Tx may revert and return axlUSDC on the destination chain if market volatility is high. You can swap axlUSDC to desired token when this happens.",
+          "squidSwapNoticeDescription1": "When a user selects a Source Chain that is not in coinType 118 address, users need to have a fallback address. In case of encountering an issue during the swap, users are able to recover the funds from the fallback address or another coinType 188 address \n\nCosmostation uses the Osmosis wallet address as  a fallback address, and the current fallback address of the user is ",
+          "squidSwapNoticeDescription2": "",
           "swapButton": "Swap",
           "swapButtonOn": "Swap on",
           "swapFee": "Swap Fee",
