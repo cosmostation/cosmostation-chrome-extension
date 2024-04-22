@@ -230,8 +230,8 @@ export const cosAddTokensCW20ParamsSchema = (chainNames: string[], chain: Cosmos
       .items(
         Joi.object<CosAddTokensCW20['params']['tokens'][0]>({
           contractAddress: Joi.string().pattern(contractAddressRegex).required(),
-          coinGeckoId: Joi.string().optional(),
-          imageURL: Joi.string().optional(),
+          coinGeckoId: Joi.string().empty('').optional(),
+          imageURL: Joi.string().empty('').optional(),
         }),
       )
       .required(),
@@ -383,8 +383,8 @@ export const WalletWatchAssetParamsSchema = () =>
       address: Joi.string().pattern(ethereumAddressRegex).required(),
       decimals: Joi.number().required(),
       symbol: Joi.string().required(),
-      image: Joi.optional(),
-      coinGeckoId: Joi.string().optional(),
+      image: Joi.string().empty('').optional(),
+      coinGeckoId: Joi.string().empty('').optional(),
     }),
   }).required();
 
