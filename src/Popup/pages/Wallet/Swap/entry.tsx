@@ -1544,6 +1544,13 @@ export default function Entry() {
   ]);
 
   useEffect(() => {
+    if (isConfirmedNotice) {
+      setIsConfirmedNotice(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentFromChain.id, currentToChain?.id, currentFromToken?.address, currentToToken?.address]);
+
+  useEffect(() => {
     if (currentFromToken) {
       if (currentSwapAPI === 'squid_evm') {
         void squidAllowance.mutate();
