@@ -7,7 +7,7 @@ import type { ComProvidersResponse } from '~/types/message/common';
 import { aptos } from './aptos';
 import { common } from './common';
 import { cosmos, cosmosWallet, keplr, tendermint } from './cosmos';
-import { ethereum } from './ethereum';
+import { announceEthereumProvider, ethereum } from './ethereum';
 import { sui, SuiStandard } from './sui';
 
 void (() => {
@@ -27,6 +27,8 @@ void (() => {
 
   registerWallet(new SuiStandard());
   registerCosmosWallet(cosmosWallet);
+
+  announceEthereumProvider();
 
   void (async () => {
     const currentChainId = (await window.cosmostation.ethereum.request({ method: 'eth_chainId', params: [] })) as string;
