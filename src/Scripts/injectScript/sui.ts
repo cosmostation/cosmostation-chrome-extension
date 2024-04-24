@@ -5,7 +5,7 @@ import { TransactionBlock } from '@mysten/sui.js';
 import type { IdentifierArray, SuiSignAndExecuteTransactionBlockInput, SuiSignTransactionBlockOutput, Wallet, WalletAccount } from '@mysten/wallet-standard';
 
 import { LINE_TYPE } from '~/constants/chain';
-import { WALLET_NAME } from '~/constants/common';
+import { COSMOSTATION_WALLET_NAME } from '~/constants/common';
 import { MESSAGE_TYPE } from '~/constants/message';
 import type { SuiPermissionType } from '~/types/extensionStorage';
 import type { ContentScriptToWebEventMessage, ListenerMessage, ResponseMessage, SuiListenerType, SuiRequestMessage } from '~/types/message';
@@ -135,7 +135,7 @@ const on = (eventName: SuiListenerType, eventHandler: (data: any) => void) => {
 class SuiStandard implements Wallet {
   version: '1.0.0';
 
-  readonly name: string = WALLET_NAME;
+  readonly name: string = COSMOSTATION_WALLET_NAME;
 
   icon: `data:image/svg+xml;base64,${string}` | `data:image/webp;base64,${string}` | `data:image/png;base64,${string}` | `data:image/gif;base64,${string}`;
 

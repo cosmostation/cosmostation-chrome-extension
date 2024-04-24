@@ -47,3 +47,8 @@ export const ERC1155_INTERFACE_ID = '0xd9b67a26';
 export const TRANSACTION_RESULT = {
   SUCCESS: '1',
 } as const;
+
+export const EIP_6963_EVENTS = {
+  request: 'eip6963:requestProvider',
+  announce: 'eip6963:announceProvider',
+} as const;

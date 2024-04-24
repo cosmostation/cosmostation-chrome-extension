@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { CosmosRegisterWallet } from '@cosmostation/wallets';
 
 import { LINE_TYPE } from '~/constants/chain';
-import { ENCODED_COSMOSTATION_LOGO_IMAGE, WALLET_NAME } from '~/constants/common';
+import { COSMOSTATION_ENCODED_LOGO_IMAGE, COSMOSTATION_WALLET_NAME } from '~/constants/common';
 import { MESSAGE_TYPE } from '~/constants/message';
 import type { SignAminoDoc } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
@@ -367,8 +367,8 @@ export const keplr: Keplr = {
 // keplr provider end
 
 export const cosmosWallet: CosmosRegisterWallet = {
-  name: WALLET_NAME,
-  logo: ENCODED_COSMOSTATION_LOGO_IMAGE,
+  name: COSMOSTATION_WALLET_NAME,
+  logo: COSMOSTATION_ENCODED_LOGO_IMAGE,
   methods: {
     connect: async (chainIds) => {
       const cIds = typeof chainIds === 'string' ? [chainIds] : chainIds;
