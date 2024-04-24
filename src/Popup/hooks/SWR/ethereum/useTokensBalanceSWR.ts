@@ -27,7 +27,7 @@ type MultiFetcherParams = {
 
 type UseTokensBalanceSWR = {
   network?: EthereumNetwork;
-  tokens?: Omit<EthereumToken, 'id' | 'ethereumNetworkId'>[] | null;
+  tokens?: Omit<EthereumToken, 'id' | 'ethereumNetworkId' | 'tokenType'>[] | null;
 };
 
 export function useTokensBalanceSWR({ network, tokens }: UseTokensBalanceSWR, config?: SWRConfiguration) {

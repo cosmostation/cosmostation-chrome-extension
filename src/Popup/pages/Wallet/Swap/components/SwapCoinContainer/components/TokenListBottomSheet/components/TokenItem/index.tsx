@@ -50,7 +50,7 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
 
   return (
     <TokenButton
-      key={tokenInfo.address}
+      key={tokenInfo.tokenAddressOrDenom}
       data-is-active={isActive}
       ref={isActive ? ref : undefined}
       onClick={() => {
