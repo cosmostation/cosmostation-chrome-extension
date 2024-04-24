@@ -68,6 +68,19 @@ export function ceil(num: string | number) {
   return new Big(num).toFixed(0, 0);
 }
 
+export function calculatePercentiles(numbers: number[], percentiles: number[]) {
+  if (numbers.length === 0) {
+    return [];
+  }
+
+  const sortedNumbers = numbers.slice().sort((a, b) => a - b);
+
+  return percentiles.map((percentile) => {
+    const index = Number(minus(ceil(times(divide(percentile, '100'), sortedNumbers.length)), '1'));
+    return sortedNumbers[index];
+  });
+}
+
 export function fix(number: string, decimal?: number, optional: RoundingMode = 0) {
   return Big(number).toFixed(decimal, optional);
 }

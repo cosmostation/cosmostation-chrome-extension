@@ -136,7 +136,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const { data: gasMultiply } = useGasMultiplySWR(chain);
 
-  const { feeCoins } = useCurrentFeesSWR(chain);
+  const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain);
 
   const currentFeeCoin = useMemo(() => feeCoins[0], [feeCoins]);
 
@@ -149,7 +149,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         fee: {
           amount: [
             {
-              amount: chain.type === 'ETHERMINT' ? times(currentFeeCoin.gasRate?.low || chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1',
+              amount: chain.type === 'ETHERMINT' ? times(currentFeeCoin.gasRate?.[defaultGasRateKey] || chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1',
               denom: currentFeeCoin.baseDenom,
             },
           ],
@@ -170,7 +170,9 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     chain.gasRate.low,
     chain.type,
     currentAddress,
-    currentFeeCoin,
+    currentFeeCoin.baseDenom,
+    currentFeeCoin.gasRate,
+    defaultGasRateKey,
     reward.data?.rewards,
   ]);
 
@@ -207,7 +209,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         fee: {
           amount: [
             {
-              amount: chain.type === 'ETHERMINT' ? times(currentFeeCoin.gasRate?.low || chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1',
+              amount: chain.type === 'ETHERMINT' ? times(currentFeeCoin.gasRate?.[defaultGasRateKey] || chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1',
               denom: currentFeeCoin.baseDenom,
             },
           ],
@@ -230,7 +232,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     chain.gasRate.low,
     chain.type,
     currentFeeCoin.baseDenom,
-    currentFeeCoin.gasRate?.low,
+    currentFeeCoin.gasRate,
+    defaultGasRateKey,
     operatorAddress,
   ]);
 
@@ -252,8 +255,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   );
 
   const currentCommissionFeeAmount = useMemo(
-    () => times(commissionTxGas, currentFeeCoin.gasRate?.low || chain.gasRate.low),
-    [chain.gasRate.low, commissionTxGas, currentFeeCoin.gasRate?.low],
+    () => times(commissionTxGas, currentFeeCoin.gasRate?.[defaultGasRateKey] || chain.gasRate.low),
+    [chain.gasRate.low, commissionTxGas, currentFeeCoin.gasRate, defaultGasRateKey],
   );
 
   const currentCeilCommissionFeeAmount = useMemo(() => ceil(currentCommissionFeeAmount), [currentCommissionFeeAmount]);

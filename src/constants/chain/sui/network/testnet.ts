@@ -8,7 +8,7 @@ export const TESTNET: SuiNetwork = {
   rpcURL: 'https://sui-testnet-kr-1.cosmostation.io',
   tokenImageURL: suiTokenImg,
   imageURL: suiChainImg,
-  explorerURL: 'https://explorer.sui.io',
+  explorerURL: 'https://suiscan.xyz/testnet',
   displayDenom: 'SUI',
   decimals: 9,
 };

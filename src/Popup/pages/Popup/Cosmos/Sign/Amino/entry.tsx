@@ -60,7 +60,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const [isProgress, setIsProgress] = useState(false);
 
-  const { feeCoins } = useCurrentFeesSWR(chain, { suspense: true });
+  const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain, { suspense: true });
 
   const { message, messageId, origin, channel } = queue;
 
@@ -71,7 +71,10 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { fee, msgs } = doc;
 
   const [customGas, setCustomGas] = useState<string | undefined>();
-  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
+
+  const [customGasRateKey, setCustomGasRateKey] = useState<GasRateKey | undefined>();
+  const currentGasRateKey = useMemo(() => customGasRateKey || defaultGasRateKey, [defaultGasRateKey, customGasRateKey]);
+
   const [memo, setMemo] = useState(doc.memo);
 
   const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
@@ -203,7 +206,7 @@ export default function Entry({ queue, chain }: EntryProps) {
               }}
               onChangeGas={(g) => setCustomGas(g)}
               onChangeGasRateKey={(gasRateKey) => {
-                setCurrentGasRateKey(gasRateKey);
+                setCustomGasRateKey(gasRateKey);
               }}
               isEdit={isNeedToReplaceFeeAmount}
             />

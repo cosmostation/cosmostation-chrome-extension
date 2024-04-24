@@ -187,7 +187,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {explorerURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/address/${currentAddress}?network=${currentSuiNetwork.networkName.toLowerCase()}`);
+                window.open(`${explorerURL}/account/${currentAddress}}`);
               }}
             >
               <ExplorerIcon />
@@ -371,7 +371,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
           {explorerURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/address/${address}`);
+                window.open(`${explorerURL}/account/${address}`);
               }}
             >
               <ExplorerIcon />
@@ -523,7 +523,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           {explorerURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/address/${address}`);
+                window.open(`${explorerURL}/account/${address}`);
               }}
             >
               <ExplorerIcon />

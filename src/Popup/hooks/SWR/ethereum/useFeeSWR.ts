@@ -2,62 +2,75 @@ import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
 import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
-import { divide, plus } from '~/Popup/utils/big';
-import type { FeeType } from '~/types/ethereum/common';
+import { GAS_SETTINGS_BY_GAS_RATE_KEY } from '~/constants/ethereum';
+import { calculatePercentiles, divide, gt, plus } from '~/Popup/utils/big';
+import type { GasRateKey } from '~/types/chain';
+import type { FeeType, GasRateKeyConfigurations } from '~/types/ethereum/common';
 
 import { useFeeHistorySWR } from './useFeeHistorySWR';
 import { useGasPriceSWR } from './useGasPriceSWR';
-import { useGetBlockByNumberSWR } from './useGetBlockByNumberSWR';
 import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNetwork';
+
+const REWARD_PERCENTILES = [25, 50, 75];
+
+const BLOCK_COUNT = 20;
 
 export function useFeeSWR(config?: SWRConfiguration) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
-  const block = useGetBlockByNumberSWR(['pending', false], config);
-  const feeHistory = useFeeHistorySWR([20, 'pending', [10, 30, 50, 70, 90]], config);
+  const feeHistory = useFeeHistorySWR([BLOCK_COUNT, 'latest', REWARD_PERCENTILES], config);
+
   const gasPrice = useGasPriceSWR(config);
 
   const currentGasPrice = gasPrice.data?.result ? plus(parseInt(gasPrice.data.result, 16), '1000') : null;
 
   const currentFee = useMemo(() => {
-    if (!feeHistory.data?.result || !block.data?.result?.baseFeePerGas) {
+    if (!feeHistory.data?.result || feeHistory.data.result.baseFeePerGas.some((item) => item === null)) {
       return null;
     }
 
-    const baseFeePerGas = plus(parseInt(block.data.result.baseFeePerGas, 16), '1000');
+    const { baseFeePerGas } = feeHistory.data.result;
+
+    const baseFeePercentiles = calculatePercentiles(
+      baseFeePerGas.map((item) => parseInt(item || '0', 16)),
+      REWARD_PERCENTILES,
+    );
 
     const originReward = feeHistory.data.result.reward || [];
 
     const rewardCount = originReward.length;
-
     const averageReward = originReward
-      .reduce(
-        (prev, cur) => [
-          plus(prev[0], parseInt(cur[0], 16)),
-          plus(prev[1], parseInt(cur[1], 16)),
-          plus(prev[2], parseInt(cur[2], 16)),
-          plus(prev[3], parseInt(cur[3], 16)),
-          plus(prev[4], parseInt(cur[4], 16)),
-        ],
-        ['0', '0', '0', '0', '0'],
-      )
+      .reduce((prev, cur) => [plus(prev[0], parseInt(cur[0], 16)), plus(prev[1], parseInt(cur[1], 16)), plus(prev[2], parseInt(cur[2], 16))], ['0', '0', '0'])
       .map((item) => divide(item, rewardCount, 0));
 
-    return {
-      tiny: { maxBaseFeePerGas: plus(baseFeePerGas, averageReward[0]), maxPriorityFeePerGas: averageReward[0] },
-      low: { maxBaseFeePerGas: plus(baseFeePerGas, averageReward[1]), maxPriorityFeePerGas: averageReward[1] },
-      average: { maxBaseFeePerGas: plus(baseFeePerGas, averageReward[2]), maxPriorityFeePerGas: averageReward[2] },
-      high: { maxBaseFeePerGas: plus(baseFeePerGas, averageReward[3]), maxPriorityFeePerGas: averageReward[3] },
-      highest: { maxBaseFeePerGas: plus(baseFeePerGas, averageReward[4]), maxPriorityFeePerGas: averageReward[4] },
-    };
-  }, [feeHistory, block]);
+    return (['tiny', 'low', 'average'] as GasRateKey[]).reduce((acc, gasRateKey, index) => {
+      const { minBaseFeePerGas, minMaxPriorityFeePerGas } = GAS_SETTINGS_BY_GAS_RATE_KEY[gasRateKey];
+
+      const maxPriorityFeePerGas = averageReward[index] && gt(averageReward[index], minMaxPriorityFeePerGas) ? averageReward[index] : minMaxPriorityFeePerGas;
+
+      const maxBaseFeePerGas = plus(
+        baseFeePercentiles[index] && gt(baseFeePercentiles[index], minBaseFeePerGas) ? baseFeePercentiles[index] : minBaseFeePerGas,
+        maxPriorityFeePerGas,
+      );
+
+      return {
+        ...acc,
+        [gasRateKey]: {
+          maxBaseFeePerGas,
+          maxPriorityFeePerGas,
+        },
+      };
+    }, {} as GasRateKeyConfigurations);
+  }, [feeHistory]);
 
   const type: FeeType | null = (() => {
     if (!currentFee && !currentGasPrice) {
       return null;
     }
 
-    if (currentEthereumNetwork.id === SMART_CHAIN.id) {
+    const basicFeeOnlyChainIds = [SMART_CHAIN.id];
+
+    if (basicFeeOnlyChainIds.includes(currentEthereumNetwork.id)) {
       return 'BASIC';
     }
 
@@ -65,10 +78,9 @@ export function useFeeSWR(config?: SWRConfiguration) {
   })();
 
   const mutate = useCallback(async () => {
-    await block.mutate();
     await feeHistory.mutate();
     await gasPrice.mutate();
-  }, [block, feeHistory, gasPrice]);
+  }, [feeHistory, gasPrice]);
 
   const returnData = useMemo(
     () => ({

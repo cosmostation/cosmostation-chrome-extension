@@ -54,7 +54,7 @@ export default function Sui({ chain }: SuiProps) {
           </TitleContainer>
           <ButtonContainer>
             {explorerURL && (
-              <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${currentAddress}`)}>
+              <StyledIconButton onClick={() => window.open(`${explorerURL}/account/${currentAddress}`)}>
                 <ExplorerIcon />
               </StyledIconButton>
             )}

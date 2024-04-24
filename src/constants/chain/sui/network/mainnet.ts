@@ -8,7 +8,7 @@ export const MAINNET: SuiNetwork = {
   rpcURL: 'https://sui-mainnet-us-1.cosmostation.io',
   tokenImageURL: suiTokenImg,
   imageURL: suiChainImg,
-  explorerURL: 'https://explorer.sui.io',
+  explorerURL: 'https://suiscan.xyz/mainnet',
   displayDenom: 'SUI',
   decimals: 9,
   coinGeckoId: 'sui',
