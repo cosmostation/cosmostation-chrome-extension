@@ -699,7 +699,7 @@ export default function Entry() {
     [extensionStorage.currency, coinGeckoPrice.data, currentToToken?.coinGeckoId],
   );
 
-  const { feeCoins } = useCurrentFeesSWR(selectedFromCosmosChain || COSMOS);
+  const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(selectedFromCosmosChain || COSMOS);
 
   const currentFeeToken = useMemo<IntegratedSwapFeeToken | undefined>(() => {
     if (currentFromChain?.line === COSMOS.line) {
@@ -1075,7 +1075,10 @@ export default function Entry() {
   const estimatedFeeBaseAmount = useMemo(() => {
     if ((currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') && selectedFromCosmosChain) {
       return ceil(
-        times(estimatedGas, cosmosGasRate.data[currentFeeToken?.address || selectedFromCosmosChain.baseDenom]?.low || selectedFromCosmosChain.gasRate.low),
+        times(
+          estimatedGas,
+          cosmosGasRate.data.gasRate[currentFeeToken?.address || selectedFromCosmosChain.baseDenom]?.[defaultGasRateKey] || selectedFromCosmosChain.gasRate.low,
+        ),
       );
     }
 
@@ -1098,9 +1101,10 @@ export default function Entry() {
 
     return '0';
   }, [
-    cosmosGasRate.data,
+    cosmosGasRate.data.gasRate,
     currentFeeToken?.address,
     currentSwapAPI,
+    defaultGasRateKey,
     estimatedGas,
     oneInchRoute.data,
     selectedFromCosmosChain,
