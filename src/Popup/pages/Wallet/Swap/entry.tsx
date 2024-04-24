@@ -46,7 +46,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, fix, gt, gte, isDecimal, lt, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { calcPriceImpact } from '~/Popup/utils/calculate';
-import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, getDefaultAV } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
@@ -402,7 +402,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -415,7 +415,7 @@ export default function Entry() {
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
-      const filteredTokens = Object.values(oneInchTokens.data.tokens);
+      const filteredTokens = oneInchTokens.data;
 
       return [
         ...filteredTokens
@@ -445,6 +445,7 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        name: item.name.toUpperCase(),
         tokenAddressOrDenom: item.address,
         displayDenom: item.symbol,
         imageURL: item.logoURI,
@@ -466,7 +467,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -493,9 +494,12 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        name: item.name.toUpperCase(),
         tokenAddressOrDenom: item.address,
         displayDenom: item.symbol,
-        imageURL: item.logoURI,
+        imageURL: isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address)
+          ? currentFromChain.tokenImageURL
+          : currentFromEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))?.imageURL || item.logoURI,
         coinGeckoId: item.coingeckoId,
         coingeckoId: undefined,
       }));
@@ -506,13 +510,14 @@ export default function Entry() {
     currentSwapAPI,
     supportedSkipFromTokens.data,
     oneInchTokens.data,
-    cosmosFromTokenAssets.data,
+    currentFromChain.line,
     currentFromChain.chainId,
     currentFromChain?.displayDenom,
+    currentFromChain.tokenImageURL,
+    cosmosFromTokenAssets.data,
     coinGeckoPrice.data,
     extensionStorage.currency,
     cosmosFromChainBalance.data?.balance,
-    currentFromChain.line,
     currentFromEVMNativeBalance.data?.result,
     currentEthereumNetwork.coinGeckoId,
     currentFromEthereumTokens,
@@ -567,7 +572,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -580,7 +585,7 @@ export default function Entry() {
     }
 
     if (currentSwapAPI === '1inch' && oneInchTokens.data) {
-      const filteredTokenList = Object.values(oneInchTokens.data.tokens);
+      const filteredTokenList = oneInchTokens.data;
 
       return [
         ...filteredTokenList
@@ -610,6 +615,7 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        name: item.name.toUpperCase(),
         tokenAddressOrDenom: item.address,
         displayDenom: item.symbol,
         imageURL: item.logoURI,
@@ -631,9 +637,12 @@ export default function Entry() {
         ),
       ].map((item) => ({
         ...item,
+        name: item.name.toUpperCase(),
         tokenAddressOrDenom: item.address,
         displayDenom: item.symbol,
-        imageURL: item.logoURI,
+        imageURL: isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, item.address)
+          ? currentToChain.tokenImageURL
+          : currentToEthereumTokens.find((token) => isEqualsIgnoringCase(token.address, item.address))?.imageURL || item.logoURI,
         coinGeckoId: item.coingeckoId,
         coingeckoId: undefined,
       }));
@@ -654,7 +663,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || ''),
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -668,21 +677,22 @@ export default function Entry() {
 
     return [];
   }, [
-    coinGeckoPrice.data,
-    cosmosToChainBalance.data?.balance,
-    cosmosToTokenAssets.data,
-    currentEthereumNetwork.coinGeckoId,
     currentSwapAPI,
+    oneInchTokens.data,
+    currentToChain?.line,
     currentToChain?.chainId,
     currentToChain?.displayDenom,
-    currentToChain?.line,
-    currentToEVMNativeBalance.data?.result,
-    currentToEthereumTokens,
-    extensionStorage.currency,
-    filterSquidTokens,
-    oneInchTokens.data,
-    supportedOneInchTokens,
+    currentToChain?.tokenImageURL,
+    cosmosToTokenAssets.data,
     supportedSkipToTokens.data?.chain_to_assets_map,
+    coinGeckoPrice.data,
+    extensionStorage.currency,
+    cosmosToChainBalance.data?.balance,
+    currentToEVMNativeBalance.data?.result,
+    currentEthereumNetwork.coinGeckoId,
+    currentToEthereumTokens,
+    supportedOneInchTokens,
+    filterSquidTokens,
   ]);
 
   const currentToTokenBalance = useMemo(() => {
@@ -1481,10 +1491,10 @@ export default function Entry() {
 
   useEffect(() => {
     if (!filteredFromTokenList.find((item) => item.tokenAddressOrDenom === currentFromToken?.tokenAddressOrDenom && item.name === currentFromToken.name)) {
-      if (currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') {
+      if ((currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') && currentFromChain.line === COSMOS.line) {
         setCurrentFromToken(filteredFromTokenList.find((item) => item.displayDenom === currentFromChain.displayDenom) || filteredFromTokenList[0]);
       }
-      if (currentSwapAPI === '1inch' || currentSwapAPI === 'squid_evm') {
+      if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid_evm') && currentFromChain.line === ETHEREUM.line) {
         setCurrentFromToken(filteredFromTokenList[0]);
       }
     }

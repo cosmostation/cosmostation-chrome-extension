@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import assetmantleImg from '~/images/symbols/assetmantle.png';
+import assetmantleChainImg from '~/images/chainImgs/assetmantle.png';
+import assetmantleTokenImg from '~/images/symbols/mntl.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const ASSET_MANTLE: CosmosChain = {
@@ -7,9 +8,10 @@ export const ASSET_MANTLE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'mantle-1',
-  chainName: 'AssetMantle',
+  chainName: 'ASSETMANTLE',
   restURL: 'https://lcd-asset-mantle.cosmostation.io',
-  imageURL: assetmantleImg,
+  tokenImageURL: assetmantleTokenImg,
+  imageURL: assetmantleChainImg,
   baseDenom: 'umntl',
   displayDenom: 'MNTL',
   decimals: 6,

@@ -69,6 +69,24 @@ export const LeftTextChainContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
+export const LeftTextChainAmountContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+
+  columnGap: '0.6rem',
+
+  color: theme.colors.text02,
+}));
+
+type TextChangeRateContainerProps = {
+  'data-color'?: 'red' | 'green' | 'grey';
+};
+
+export const TextChangeRateContainer = styled('div')<TextChangeRateContainerProps>(({ theme, ...props }) => ({
+  color: props['data-color'] === 'red' ? theme.accentColors.red : props['data-color'] === 'green' ? theme.accentColors.green01 : theme.colors.text02,
+}));
+
 export const LeftTextErrorContainer = styled('div')(({ theme }) => ({
   color: theme.accentColors.red,
 }));

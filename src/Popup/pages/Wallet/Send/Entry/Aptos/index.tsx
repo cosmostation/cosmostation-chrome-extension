@@ -20,7 +20,7 @@ import type { X1CoinCoinstore } from '~/types/aptos/accounts';
 import type { AptosChain } from '~/types/chain';
 
 import CoinButton from './components/CoinButton';
-import CoinPopover from './components/CoinPopover';
+import CoinListBottomSheet from './components/CoinListBottomSheet';
 import { BottomContainer, Container, Div, MaxButton, StyledInput } from './styled';
 
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
@@ -56,9 +56,7 @@ export default function Aptos({ chain }: AptosProps) {
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
-
-  const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const isOpenPopover = Boolean(popoverAnchorEl);
+  const [isOpenedCoinList, setIsOpenedCoinList] = useState(false);
 
   const decimals = useMemo(() => coinInfo?.data.decimals || 0, [coinInfo?.data.decimals]);
 
@@ -95,156 +93,145 @@ export default function Aptos({ chain }: AptosProps) {
   };
 
   return (
-    <>
-      <Container>
-        <Div>
-          <StyledInput
-            endAdornment={
-              <>
-                <InputAdornment position="end">
-                  <InputAdornmentIconButton onClick={() => setIsOpenedMyAddressBook(true)}>
-                    <AccountAddressIcon />
-                  </InputAdornmentIconButton>
-                </InputAdornment>
-                <InputAdornment position="start">
-                  <InputAdornmentIconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
-                    <AddressBook24Icon />
-                  </InputAdornmentIconButton>
-                </InputAdornment>
-              </>
-            }
-            placeholder={t('pages.Wallet.Send.Entry.Aptos.index.recipientAddressPlaceholder')}
-            onChange={(e) => setCurrentAddress(e.currentTarget.value)}
-            value={currentAddress}
-          />
-        </Div>
-        <Div sx={{ marginTop: '0.8rem' }}>
-          {currentCoin && (
-            <CoinButton
-              currentCoin={currentCoin}
-              isActive={isOpenPopover}
-              onClick={(event) => {
-                setPopoverAnchorEl(event.currentTarget);
-              }}
-            />
-          )}
-        </Div>
-        <Div sx={{ marginTop: '0.8rem' }}>
-          <StyledInput
-            endAdornment={
+    <Container>
+      <Div>
+        <StyledInput
+          endAdornment={
+            <>
               <InputAdornment position="end">
-                <MaxButton type="button" onClick={handleOnClickMax}>
-                  <Typography variant="h7">MAX</Typography>
-                </MaxButton>
+                <InputAdornmentIconButton onClick={() => setIsOpenedMyAddressBook(true)}>
+                  <AccountAddressIcon />
+                </InputAdornmentIconButton>
               </InputAdornment>
-            }
-            placeholder={t('pages.Wallet.Send.Entry.Aptos.index.amountPlaceholder')}
-            onChange={(e) => {
-              if (!isDecimal(e.currentTarget.value, decimals || 0) && e.currentTarget.value) {
-                return;
-              }
-
-              setCurrentDisplayAmount(e.currentTarget.value);
+              <InputAdornment position="start">
+                <InputAdornmentIconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
+                  <AddressBook24Icon />
+                </InputAdornmentIconButton>
+              </InputAdornment>
+            </>
+          }
+          placeholder={t('pages.Wallet.Send.Entry.Aptos.index.recipientAddressPlaceholder')}
+          onChange={(e) => setCurrentAddress(e.currentTarget.value)}
+          value={currentAddress}
+        />
+      </Div>
+      <Div sx={{ marginTop: '0.8rem' }}>
+        {currentCoin && (
+          <CoinButton
+            currentCoin={currentCoin}
+            isActive={isOpenedCoinList}
+            onClick={() => {
+              setIsOpenedCoinList(true);
             }}
-            value={currentDisplayAmount}
           />
-        </Div>
+        )}
+      </Div>
+      <Div sx={{ marginTop: '0.8rem' }}>
+        <StyledInput
+          endAdornment={
+            <InputAdornment position="end">
+              <MaxButton type="button" onClick={handleOnClickMax}>
+                <Typography variant="h7">MAX</Typography>
+              </MaxButton>
+            </InputAdornment>
+          }
+          placeholder={t('pages.Wallet.Send.Entry.Aptos.index.amountPlaceholder')}
+          onChange={(e) => {
+            if (!isDecimal(e.currentTarget.value, decimals || 0) && e.currentTarget.value) {
+              return;
+            }
 
-        <BottomContainer>
-          <Tooltip varient="error" title={errorMessage} placement="top" arrow>
-            <div>
-              <Button
-                type="button"
-                disabled={!!errorMessage}
-                onClick={async () => {
-                  if (!currentCoin) {
-                    return;
-                  }
-
-                  const baseAmount = toBaseDenomAmount(currentDisplayAmount, decimals);
-
-                  if (coinAddress === '0x1::aptos_coin::AptosCoin') {
-                    await enQueue({
-                      messageId: '',
-                      origin: '',
-                      channel: 'inApp',
-                      message: {
-                        method: 'aptos_signAndSubmitTransaction',
-                        params: [
-                          {
-                            type: 'entry_function_payload',
-                            arguments: [currentAddress, baseAmount],
-                            function: '0x1::aptos_account::transfer',
-                            type_arguments: [],
-                          },
-                        ],
-                      },
-                    });
-                  } else {
-                    await enQueue({
-                      messageId: '',
-                      origin: '',
-                      channel: 'inApp',
-                      message: {
-                        method: 'aptos_signAndSubmitTransaction',
-                        params: [
-                          {
-                            type: 'entry_function_payload',
-                            arguments: [currentAddress, baseAmount],
-                            function: '0x1::coin::transfer',
-                            type_arguments: [coinAddress],
-                          },
-                        ],
-                      },
-                    });
-                  }
-                }}
-              >
-                {t('pages.Wallet.Send.Entry.Aptos.index.sendButton')}
-              </Button>
-            </div>
-          </Tooltip>
-        </BottomContainer>
-
-        <AddressBookBottomSheet
-          open={isOpenedAddressBook}
-          onClose={() => setIsOpenedAddressBook(false)}
-          onClickAddress={(a) => {
-            setCurrentAddress(a.address);
+            setCurrentDisplayAmount(e.currentTarget.value);
           }}
+          value={currentDisplayAmount}
         />
+      </Div>
 
-        <AccountAddressBookBottomSheet
-          open={isOpenedMyAddressBook}
-          hasCurrentAccount={false}
-          chain={chain}
-          onClose={() => setIsOpenedMyAddressBook(false)}
-          onClickAddress={(a) => {
-            setCurrentAddress(a);
-          }}
-        />
-      </Container>
-      <CoinPopover
-        marginThreshold={0}
+      <BottomContainer>
+        <Tooltip varient="error" title={errorMessage} placement="top" arrow>
+          <div>
+            <Button
+              type="button"
+              disabled={!!errorMessage}
+              onClick={async () => {
+                if (!currentCoin) {
+                  return;
+                }
+
+                const baseAmount = toBaseDenomAmount(currentDisplayAmount, decimals);
+
+                if (coinAddress === '0x1::aptos_coin::AptosCoin') {
+                  await enQueue({
+                    messageId: '',
+                    origin: '',
+                    channel: 'inApp',
+                    message: {
+                      method: 'aptos_signAndSubmitTransaction',
+                      params: [
+                        {
+                          type: 'entry_function_payload',
+                          arguments: [currentAddress, baseAmount],
+                          function: '0x1::aptos_account::transfer',
+                          type_arguments: [],
+                        },
+                      ],
+                    },
+                  });
+                } else {
+                  await enQueue({
+                    messageId: '',
+                    origin: '',
+                    channel: 'inApp',
+                    message: {
+                      method: 'aptos_signAndSubmitTransaction',
+                      params: [
+                        {
+                          type: 'entry_function_payload',
+                          arguments: [currentAddress, baseAmount],
+                          function: '0x1::coin::transfer',
+                          type_arguments: [coinAddress],
+                        },
+                      ],
+                    },
+                  });
+                }
+              }}
+            >
+              {t('pages.Wallet.Send.Entry.Aptos.index.sendButton')}
+            </Button>
+          </div>
+        </Tooltip>
+      </BottomContainer>
+
+      <AddressBookBottomSheet
+        open={isOpenedAddressBook}
+        onClose={() => setIsOpenedAddressBook(false)}
+        onClickAddress={(a) => {
+          setCurrentAddress(a.address);
+        }}
+      />
+
+      <AccountAddressBookBottomSheet
+        open={isOpenedMyAddressBook}
+        hasCurrentAccount={false}
+        chain={chain}
+        onClose={() => setIsOpenedMyAddressBook(false)}
+        onClickAddress={(a) => {
+          setCurrentAddress(a);
+        }}
+      />
+
+      <CoinListBottomSheet
         currentCoin={currentCoin}
-        open={isOpenPopover}
-        onClose={() => setPopoverAnchorEl(null)}
+        open={isOpenedCoinList}
+        onClose={() => setIsOpenedCoinList(false)}
         onClickCoin={(coin) => {
           if (currentCoin?.type !== coin.type) {
             setCurrentCoin(coin);
             setCurrentDisplayAmount('');
           }
         }}
-        anchorEl={popoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
       />
-    </>
+    </Container>
   );
 }

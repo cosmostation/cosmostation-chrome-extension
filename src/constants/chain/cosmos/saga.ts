@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import sagaImg from '~/images/symbols/saga.png';
+import sagaChainImg from '~/images/chainImgs/saga.png';
+import sagaTokenImg from '~/images/symbols/saga.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const SAGA: CosmosChain = {
@@ -7,9 +8,10 @@ export const SAGA: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'ssc-1',
-  chainName: 'Saga',
+  chainName: 'SAGA',
   restURL: 'https://lcd-saga.cosmostation.io',
-  imageURL: sagaImg,
+  tokenImageURL: sagaTokenImg,
+  imageURL: sagaChainImg,
   baseDenom: 'usaga',
   displayDenom: 'SAGA',
   decimals: 6,

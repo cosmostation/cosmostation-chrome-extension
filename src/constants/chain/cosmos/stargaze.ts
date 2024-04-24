@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import stargazeImg from '~/images/symbols/stargaze.png';
+import stargazeChainImg from '~/images/chainImgs/stargaze.png';
+import stargazeTokenImg from '~/images/symbols/stars.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const STARGAZE: CosmosChain = {
@@ -7,9 +8,10 @@ export const STARGAZE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'stargaze-1',
-  chainName: 'Stargaze',
+  chainName: 'STARGAZE',
   restURL: 'https://lcd-stargaze.cosmostation.io',
-  imageURL: stargazeImg,
+  tokenImageURL: stargazeTokenImg,
+  imageURL: stargazeChainImg,
   coinGeckoId: 'stargaze',
   baseDenom: 'ustars',
   displayDenom: 'STARS',

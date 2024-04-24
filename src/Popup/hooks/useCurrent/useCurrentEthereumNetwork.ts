@@ -44,7 +44,12 @@ export function useCurrentEthereumNetwork() {
 
     const newAdditionalEthereumNetworks: EthereumNetwork[] = [
       ...additionalEthereumNetworks.filter((item) => item.chainId !== network.chainId),
-      { ...network, id: beforeNetwork?.id || uuidv4() },
+      {
+        ...network,
+        tokenImageURL: network.tokenImageURL || network.imageURL,
+        imageURL: network.imageURL || network.tokenImageURL,
+        id: beforeNetwork?.id || uuidv4(),
+      },
     ];
 
     await setExtensionStorage('additionalEthereumNetworks', newAdditionalEthereumNetworks);
