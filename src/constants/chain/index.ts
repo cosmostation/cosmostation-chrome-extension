@@ -17,13 +17,11 @@ import { CHIHUAHUA } from './cosmos/chihuahua';
 import { COMDEX } from './cosmos/comdex';
 import { COREUM } from './cosmos/coreum';
 import { COSMOS } from './cosmos/cosmos';
-import { CRESCENT } from './cosmos/crescent';
 import { CRONOS_POS } from './cosmos/cronosPos';
 import { CUDOS } from './cosmos/cudos';
 import { DESMOS } from './cosmos/desmos';
 import { DYDX } from './cosmos/dydx';
 import { DYMENSION } from './cosmos/dymension';
-import { EMONEY } from './cosmos/emoney';
 import { EVMOS } from './cosmos/evmos';
 import { FETCH_AI } from './cosmos/fetchAi';
 import { FINSCHIA } from './cosmos/finschia';
@@ -124,13 +122,11 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   CHIHUAHUA,
   COMDEX,
   COREUM,
-  CRESCENT,
   CRONOS_POS,
   CUDOS,
   DESMOS,
   DYDX,
   DYMENSION,
-  EMONEY,
   EVMOS,
   FETCH_AI,
   FINSCHIA,
