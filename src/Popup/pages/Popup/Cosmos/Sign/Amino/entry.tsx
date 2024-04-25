@@ -72,7 +72,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [customGas, setCustomGas] = useState<string | undefined>();
 
   const [customGasRateKey, setCustomGasRateKey] = useState<GasRateKey | undefined>();
-  const currentGasRateKey = useMemo(() => customGasRateKey || defaultGasRateKey, [defaultGasRateKey, customGasRateKey]);
+  const currentGasRateKey = useMemo(() => customGasRateKey || (isEditFee ? defaultGasRateKey : undefined), [customGasRateKey, defaultGasRateKey, isEditFee]);
 
   const [memo, setMemo] = useState(doc.memo);
 
