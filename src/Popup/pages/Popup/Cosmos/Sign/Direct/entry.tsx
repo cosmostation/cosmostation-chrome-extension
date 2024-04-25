@@ -125,7 +125,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   );
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
 
-  const isFeeCustomed = useMemo(() => !!customGas || !!currentGasRateKey, [currentGasRateKey, customGas]);
+  const isFeeCustomed = useMemo(() => !!customGas || !!customGasRateKey, [customGasRateKey, customGas]);
 
   const isFeeUpdateAllowed = useMemo(() => isEditFee || isFeeCustomed, [isFeeCustomed, isEditFee]);
 

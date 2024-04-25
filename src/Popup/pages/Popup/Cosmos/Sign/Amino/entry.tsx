@@ -128,7 +128,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const signingMemo = useMemo(() => (isEditMemo ? memo : doc.memo), [doc.memo, isEditMemo, memo]);
 
-  const isFeeCustomed = useMemo(() => !!customGas || !!currentGasRateKey, [currentGasRateKey, customGas]);
+  const isFeeCustomed = useMemo(() => !!customGas || !!customGasRateKey, [customGasRateKey, customGas]);
 
   const isFeeUpdateAllowed = useMemo(() => isEditFee || isFeeCustomed, [isFeeCustomed, isEditFee]);
 
