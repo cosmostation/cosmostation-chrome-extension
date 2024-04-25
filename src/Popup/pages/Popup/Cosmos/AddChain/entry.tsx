@@ -124,6 +124,7 @@ export default function Entry({ queue }: EntryProps) {
                 coinType,
                 decimals,
                 gasRate,
+                tokenImageURL,
                 imageURL,
                 sendGas,
                 type,
@@ -151,7 +152,8 @@ export default function Entry({ queue }: EntryProps) {
                 },
                 decimals: decimals ?? 6,
                 gasRate: gasRate ?? { average: '0.025', low: '0.0025', tiny: '0.00025' },
-                imageURL,
+                tokenImageURL: tokenImageURL || imageURL,
+                imageURL: imageURL || tokenImageURL,
                 gas: { send: sendGas ?? COSMOS_DEFAULT_SEND_GAS },
                 cosmWasm,
               };

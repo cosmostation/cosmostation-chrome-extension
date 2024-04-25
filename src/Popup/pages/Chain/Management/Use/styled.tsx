@@ -36,15 +36,15 @@ export const ItemLeftImageContainer = styled('div')({
   alignItems: 'center',
 
   '& > img': {
-    width: '2.4rem',
-    height: '2.4rem',
+    width: '2.8rem',
+    height: '2.8rem',
   },
 });
 
 export const ItemLeftTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 
-  marginLeft: '0.8rem',
+  marginLeft: '0.4rem',
 }));
 
 export const ChainAccordionContainer = styled('div')({

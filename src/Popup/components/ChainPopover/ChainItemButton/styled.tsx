@@ -8,7 +8,7 @@ export const StyledButton = styled('button')<StyledButtonProps>(({ theme, ...pro
   border: 'none',
 
   width: '100%',
-  height: '2.8rem',
+  height: '3rem',
 
   borderRadius: '0.8rem',
 
@@ -59,21 +59,27 @@ export const ContentLeftImageContainer = styled('div')({
 
   position: 'relative',
 
-  width: '1.6rem',
-  height: '1.6rem',
+  width: '2rem',
+  height: '2rem',
 });
 
-export const ContentLeftAbsoluteImageContainer = styled('div')({
+type ContentLeftAbsoluteCustomImageContainerProps = {
+  'data-is-custom'?: boolean;
+};
+
+export const ContentLeftAbsoluteImageContainer = styled('div')<ContentLeftAbsoluteCustomImageContainerProps>(({ ...props }) => ({
   position: 'absolute',
 
-  width: '1.6rem',
-  height: '1.6rem',
+  width: '2rem',
+  height: '2rem',
 
   '& > img': {
-    width: '1.6rem',
-    height: '1.6rem',
+    width: props['data-is-custom'] ? '1.6rem' : '2rem',
+    height: props['data-is-custom'] ? '1.6rem' : '2rem',
+
+    margin: props['data-is-custom'] ? '0.2rem' : '0',
   },
-});
+}));
 
 export const ContentLeftTextContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,

@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import fetchaiImg from '~/images/symbols/fetchai.png';
+import fetchaiChainImg from '~/images/chainImgs/fetchai.png';
+import fetchaiTokenImg from '~/images/symbols/fet.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const FETCH_AI: CosmosChain = {
@@ -7,9 +8,10 @@ export const FETCH_AI: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'fetchhub-4',
-  chainName: 'Fetch.ai',
+  chainName: 'FETCH.AI',
   restURL: 'https://lcd-fetchai.cosmostation.io',
-  imageURL: fetchaiImg,
+  tokenImageURL: fetchaiTokenImg,
+  imageURL: fetchaiChainImg,
   baseDenom: 'afet',
   displayDenom: 'FET',
   decimals: 18,

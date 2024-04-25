@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import cantoImg from '~/images/symbols/canto.png';
+import cantoChainImg from '~/images/chainImgs/canto.png';
+import cantoTokenImg from '~/images/symbols/canto.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const CANTO: CosmosChain = {
@@ -7,9 +8,10 @@ export const CANTO: CosmosChain = {
   line: 'COSMOS',
   type: 'ETHERMINT',
   chainId: 'canto_7700-1',
-  chainName: 'Canto',
+  chainName: 'CANTO',
   restURL: 'https://lcd-canto.cosmostation.io',
-  imageURL: cantoImg,
+  tokenImageURL: cantoTokenImg,
+  imageURL: cantoChainImg,
   baseDenom: 'acanto',
   displayDenom: 'CANTO',
   decimals: 18,

@@ -3,6 +3,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
+import { MINTSCAN_FRONT_API_URL } from '~/constants/common';
 import { get } from '~/Popup/utils/axios';
 import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
@@ -11,7 +12,7 @@ import type { AssetV3Response } from '~/types/cosmos/asset';
 export function useAssetsSWR(chain?: CosmosChain, config?: SWRConfiguration) {
   const mappingName = chain ? convertCosmosToAssetName(chain) : '';
 
-  const requestURL = 'https://front.api.mintscan.io/v3/assets';
+  const requestURL = `${MINTSCAN_FRONT_API_URL}/assets`;
 
   const fetcher = async (fetchUrl: string) => {
     try {

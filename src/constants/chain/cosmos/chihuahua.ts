@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import chihuahuaImg from '~/images/symbols/chihuahua.png';
+import chihuahuaChainImg from '~/images/chainImgs/chihuahua.png';
+import chihuahuaTokenImg from '~/images/symbols/huahua.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const CHIHUAHUA: CosmosChain = {
@@ -7,9 +8,10 @@ export const CHIHUAHUA: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'chihuahua-1',
-  chainName: 'Chihuahua',
+  chainName: 'CHIHUAHUA',
   restURL: 'https://lcd-chihuahua.cosmostation.io',
-  imageURL: chihuahuaImg,
+  tokenImageURL: chihuahuaTokenImg,
+  imageURL: chihuahuaChainImg,
   baseDenom: 'uhuahua',
   displayDenom: 'HUAHUA',
   decimals: 6,
