@@ -38,12 +38,16 @@ import {
   SecondLineLeftAbsoluteImageContainer,
   SecondLineLeftContainer,
   SecondLineLeftImageContainer,
+  SecondLineLeftSubTextContainer,
+  SecondLineLeftSubTextEmptyContainer,
   SecondLineLeftTextContainer,
   SecondLineRightContainer,
+  SecondLineRightSubTextContainer,
+  SecondLineRightTextContainer,
   StyledAbsoluteLoading,
   StyledIconButton,
   StyledRetryIconButton,
-  ThirdLineContainer,
+  TextChangeRateContainer,
 } from './styled';
 
 import ExplorerIcon from '~/images/icons/Explorer.svg';
@@ -69,13 +73,18 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
 
   const { navigate } = useNavigate();
 
-  const { coinGeckoId, decimals, explorerURL, imageURL } = currentEthereumNetwork;
+  const { coinGeckoId, decimals, explorerURL, tokenImageURL } = currentEthereumNetwork;
 
   const { data } = useCoinGeckoPriceSWR();
 
   const amount = useMemo(() => BigInt(balance?.data?.result || '0').toString(), [balance?.data?.result]);
 
   const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [coinGeckoId, data, extensionStorage.currency]);
+
+  const cap = useMemo(
+    () => (coinGeckoId && data?.[coinGeckoId]?.[`${extensionStorage.currency}_24h_change`]) || 0,
+    [coinGeckoId, data, extensionStorage.currency],
+  );
 
   const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);
 
@@ -114,24 +123,42 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{currentEthereumNetwork.displayDenom}</Typography>
+            <Typography variant="h4">{currentEthereumNetwork.displayDenom}</Typography>
+            <SecondLineLeftSubTextContainer>
+              <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
+                {String(price)}
+              </Number>
+
+              <TextChangeRateContainer data-color={cap > 0 ? 'green' : cap < 0 ? 'red' : 'grey'}>
+                <Typography variant="h5n">{cap > 0 ? '+' : ''}</Typography>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={2}>
+                  {String(cap)}
+                </Number>
+                <Typography variant="h7n">%</Typography>
+              </TextChangeRateContainer>
+            </SecondLineLeftSubTextContainer>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <Tooltip title={displayAmount} arrow placement="bottom-end">
-            <span>
-              <Number fixed={getDisplayMaxDecimals(decimals)}>{displayAmount}</Number>
-            </span>
-          </Tooltip>
+          <SecondLineRightTextContainer>
+            <Tooltip title={displayAmount} arrow placement="bottom-end">
+              <span>
+                <Number typoOfIntegers="h4n" typoOfDecimals="h5n" fixed={getDisplayMaxDecimals(decimals)}>
+                  {displayAmount}
+                </Number>
+              </span>
+            </Tooltip>
+          </SecondLineRightTextContainer>
+          <SecondLineRightSubTextContainer>
+            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
+              {value}
+            </Number>
+          </SecondLineRightSubTextContainer>
         </SecondLineRightContainer>
       </SecondLineContainer>
-      <ThirdLineContainer>
-        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
-          {value}
-        </Number>
-      </ThirdLineContainer>
+
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
           {t('pages.Wallet.components.ethereum.NativeChainCard.index.depositButton')}
@@ -164,7 +191,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 
   const { t } = useTranslation();
 
-  const { explorerURL, displayDenom, imageURL } = currentEthereumNetwork;
+  const { explorerURL, displayDenom, tokenImageURL } = currentEthereumNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -206,18 +233,24 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{displayDenom}</Typography>
+            <Typography variant="h4">{displayDenom}</Typography>
+            <SecondLineLeftSubTextContainer>
+              <Skeleton width="7rem" height="1.9rem" />
+            </SecondLineLeftSubTextContainer>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <Skeleton width="12rem" height="2.6rem" />
+          <SecondLineRightTextContainer>
+            <Skeleton width="12rem" height="2.2rem" />
+          </SecondLineRightTextContainer>
+          <SecondLineRightSubTextContainer>
+            <Skeleton width="8rem" height="1.9rem" />
+          </SecondLineRightSubTextContainer>
         </SecondLineRightContainer>
       </SecondLineContainer>
-      <ThirdLineContainer>
-        <Skeleton width="8rem" height="1.9rem" />
-      </ThirdLineContainer>
+
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.ethereum.NativeChainCard.index.depositButton')}
@@ -248,7 +281,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const { t } = useTranslation();
 
-  const { explorerURL, displayDenom, imageURL } = currentEthereumNetwork;
+  const { explorerURL, displayDenom, tokenImageURL } = currentEthereumNetwork;
 
   const address = useMemo(() => {
     const key = `${currentAccount.id}${chain.id}`;
@@ -290,9 +323,10 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{displayDenom}</Typography>
+            <Typography variant="h4">{displayDenom}</Typography>
+            <SecondLineLeftSubTextEmptyContainer />
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
@@ -308,13 +342,12 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           >
             <RetryIcon />
           </StyledRetryIconButton>
+          <ErrorDescriptionContainer>
+            <Typography variant="h6">{t('pages.Wallet.components.ethereum.NativeChainCard.index.networkError')}</Typography>
+          </ErrorDescriptionContainer>
         </SecondLineRightContainer>
       </SecondLineContainer>
-      <ThirdLineContainer>
-        <ErrorDescriptionContainer>
-          <Typography variant="h6">{t('pages.Wallet.components.ethereum.NativeChainCard.index.networkError')}</Typography>
-        </ErrorDescriptionContainer>
-      </ThirdLineContainer>
+
       <FourthLineContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
           {t('pages.Wallet.components.ethereum.NativeChainCard.index.depositButton')}

@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import celestiaImg from '~/images/symbols/celestia.png';
+import celestiaChainImg from '~/images/chainImgs/celestia.png';
+import celestiaTokenImg from '~/images/symbols/tia.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const CELESTIA: CosmosChain = {
@@ -7,9 +8,10 @@ export const CELESTIA: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'celestia',
-  chainName: 'Celestia',
+  chainName: 'CELESTIA',
   restURL: 'https://lcd-celestia.cosmostation.io',
-  imageURL: celestiaImg,
+  tokenImageURL: celestiaTokenImg,
+  imageURL: celestiaChainImg,
   baseDenom: 'utia',
   displayDenom: 'TIA',
   decimals: 6,

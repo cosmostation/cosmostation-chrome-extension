@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import osmosisImg from '~/images/symbols/osmosis.png';
+import osmosisChainImg from '~/images/chainImgs/osmosis.png';
+import osmosisTokenImg from '~/images/symbols/osmo.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const OSMOSIS: CosmosChain = {
@@ -7,9 +8,10 @@ export const OSMOSIS: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'osmosis-1',
-  chainName: 'Osmosis',
+  chainName: 'OSMOSIS',
   restURL: 'https://lcd-osmosis.cosmostation.io',
-  imageURL: osmosisImg,
+  tokenImageURL: osmosisTokenImg,
+  imageURL: osmosisChainImg,
   baseDenom: 'uosmo',
   displayDenom: 'OSMO',
   decimals: 6,

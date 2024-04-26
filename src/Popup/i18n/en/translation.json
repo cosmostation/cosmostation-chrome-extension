@@ -470,11 +470,12 @@
               "gasRateAveragePlaceholder": "Gas rate Average (option)",
               "gasRateLowPlaceholder": "Gas rate Low (option)",
               "gasRateTinyPlaceholder": "Gas rate Tiny (option)",
-              "imageURLPlaceholder": "Symbol image URL (option)",
+              "imageURLPlaceholder": "Chain image URL (option)",
               "restURLError": "Invalid Rest URL",
               "restURLPlaceholder": "Rest URL",
               "sendGasPlaceholder": "Send Gas value (option)",
               "submitButton": "Add a custom chain",
+              "tokenImageURLPlaceholder": "Symbol image URL (option)",
               "typePlaceholder": "Chain type (option) (e.g. ETHERMINT)",
               "warning": "A malicious chain provider can lie about the state of the blockchain and record your chain activity. Only add custom chain you trust."
             },
@@ -596,10 +597,11 @@
               "coinGeckoIdPlaceholder": "Coingecko API id (option)",
               "displayDenomPlaceholder": "Currency symbol (option)",
               "explorerURLPlaceholder": "Explorer URL (option)",
-              "imageURLPlaceholder": "Symbol image URL (option)",
+              "imageURLPlaceholder": "Chain image URL (option)",
               "networkNamePlaceholder": "Network name",
               "rpcURLPlaceholder": "RPC URL",
               "submitButton": "Add a network",
+              "tokenImageURLPlaceholder": "Symbol image URL (option)",
               "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust."
             },
             "layout": {
@@ -1398,6 +1400,14 @@
       "Send": {
         "Entry": {
           "Aptos": {
+            "components": {
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "Search",
+                  "title": "Select a coin"
+                }
+              }
+            },
             "index": {
               "amountPlaceholder": "Amount",
               "insufficientAmount": "Insufficient amount",
@@ -1478,13 +1488,10 @@
                   "available": "Available"
                 }
               },
-              "CoinPopover": {
-                "components": {
-                  "CoinItem": {
-                    "index": {
-                      "available": "Available"
-                    }
-                  }
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "Search",
+                  "title": "Select a coin"
                 }
               }
             },
@@ -1503,6 +1510,12 @@
               "CoinButton": {
                 "index": {
                   "available": "Available"
+                }
+              },
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "Search",
+                  "title": "Select a coin"
                 }
               },
               "CoinPopover": {

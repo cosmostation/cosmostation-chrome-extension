@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import stafihubImg from '~/images/symbols/stafihub.png';
+import stafihubChainImg from '~/images/chainImgs/stafi.png';
+import stafihubTokenImg from '~/images/symbols/fis.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const STAFIHUB: CosmosChain = {
@@ -7,9 +8,10 @@ export const STAFIHUB: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'stafihub-1',
-  chainName: 'StaFiHub',
+  chainName: 'STAFIHUB',
   restURL: 'https://lcd-stafi.cosmostation.io',
-  imageURL: stafihubImg,
+  tokenImageURL: stafihubTokenImg,
+  imageURL: stafihubChainImg,
   coinGeckoId: 'stafi',
   baseDenom: 'ufis',
   displayDenom: 'FIS',

@@ -64,11 +64,11 @@ export const SlippageButton = styled(Button)<SlippageButtonProps>(({ theme, ...p
   width: '6.6rem',
 
   backgroundColor: props['data-is-active'] ? theme.accentColors.purple01 : theme.colors.base03,
-  color: props['data-is-active'] ? theme.colors.text01 : theme.colors.text02,
+  color: props['data-is-active'] ? theme.accentColors.white : theme.colors.text02,
 
   '&:hover': {
     backgroundColor: theme.accentColors.purple01,
-    color: theme.colors.text01,
+    color: theme.accentColors.white,
   },
 }));
 
@@ -89,7 +89,7 @@ export const SlippageCustomInputConatiner = styled('div')<SlippageCustomInputCon
   border: 'none',
   borderRadius: '0.8rem',
 
-  color: props['data-is-active'] ? theme.colors.text01 : theme.colors.text02,
+  color: props['data-is-active'] ? theme.accentColors.white : theme.colors.text02,
   backgroundColor: props['data-is-active'] ? theme.accentColors.purple01 : theme.colors.base03,
 
   '&:hover': {
@@ -103,6 +103,7 @@ type SlippageCustomInputProps = {
 
 export const SlippageCustomInput = styled(Input)<SlippageCustomInputProps>(({ theme, ...props }) => ({
   '&.MuiOutlinedInput-root': {
+    color: theme.accentColors.white,
     backgroundColor: 'transparent',
     width: props['data-width'] > 0 ? `${props['data-width']}rem` : '100%',
 

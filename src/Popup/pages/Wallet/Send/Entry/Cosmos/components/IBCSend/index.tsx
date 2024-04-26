@@ -5,10 +5,13 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS } from '~/constants/chain';
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
+import unknownChainImg from '~/images/chainImgs/unknown.png';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import AssetBottomSheetButton from '~/Popup/components/common/AssetBottomSheetButton';
 import Button from '~/Popup/components/common/Button';
+import Image from '~/Popup/components/common/Image';
+import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
@@ -33,7 +36,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getCapitalize, getDisplayMaxDecimals } from '~/Popup/utils/common';
+import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, convertCosmosToAssetName, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -52,10 +55,17 @@ import {
   ExchangeWarningContainer,
   ExchangeWarningIconContainer,
   ExchangeWarningTextContainer,
+  LeftChainImageContainer,
+  LeftChainInfoContainer,
+  LeftContainer,
+  LeftHeaderTitleContainer,
+  LeftImageContainer,
+  LeftInfoContainer,
   MarginTop8Div,
   MaxButton,
   StyledInput,
   StyledTextarea,
+  TitleContainer,
 } from './styled';
 import type { CoinOrTokenInfo } from '../..';
 import CoinListBottomSheet from '../CoinListBottomSheet';
@@ -136,19 +146,28 @@ export default function IBCSend({ chain }: IBCSendProps) {
       ...currentChainAssets.data
         .filter((item) => {
           if (item.type === 'native' || item.type === 'staking' || item.type === 'bridge') {
-            return !!filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, item.denom)).length;
+            return !!filteredCosmosChainAssets.filter(
+              (asset) =>
+                isEqualsIgnoringCase(asset.counter_party?.denom, item.denom) &&
+                isEqualsIgnoringCase(convertAssetNameToCosmos(asset.prevChain || '')?.id, chain.id) &&
+                cosmosAssetNames.includes(asset.prevChain || ''),
+            ).length;
           }
 
           if (item.type === 'ibc') {
             return !!(
               filteredCurrentChainAssets.filter((asset) => asset.channel && asset.port && isEqualsIgnoringCase(asset.denom, item.denom)).length +
-              filteredCosmosChainAssets.filter((asset) => isEqualsIgnoringCase(asset.counter_party?.denom, item.denom)).length
+              filteredCosmosChainAssets.filter(
+                (asset) =>
+                  isEqualsIgnoringCase(asset.counter_party?.denom, item.denom) &&
+                  isEqualsIgnoringCase(convertAssetNameToCosmos(asset.prevChain || '')?.id, chain.id),
+              ).length
             );
           }
           return false;
         })
         .map((item) => {
-          const name = convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || getCapitalize(item.prevChain || '');
+          const name = convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase() || '';
 
           const availableAmount = coinsBalance?.balance?.find((coin) => coin.denom === item.denom)?.amount || '0';
           const coinPrice = item.coinGeckoId ? coinGeckoPrice.data?.[item.coinGeckoId]?.[currency] || '0' : '0';
@@ -192,44 +211,34 @@ export default function IBCSend({ chain }: IBCSendProps) {
       .sort((a, b) => (gt(a.price, b.price) ? -1 : 1))
       .sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
   }, [
-    cosmosAdditionalChains,
-    currentChainAssets.data,
-    currentCosmosTokens,
-    chain.id,
     chain.chainName,
     chain.displayDenom,
+    chain.id,
+    coinGeckoPrice.data,
+    coinsBalance?.balance,
+    cosmosAdditionalChains,
+    cosmosTokensBalance.data,
+    currency,
+    currentChainAssets.data,
+    currentCosmosTokens,
     filteredCosmosChainAssets,
     filteredCurrentChainAssets,
-    coinsBalance?.balance,
-    coinGeckoPrice.data,
-    currency,
-    cosmosTokensBalance.data,
   ]);
 
-  const currentCoinOrToken = useMemo(
-    () =>
+  const currentCoinOrToken = useMemo(() => {
+    if (!senderCoinAndTokenList.some((item) => (item.type === 'coin' ? item.baseDenom === currentCoinOrTokenId : item.address === currentCoinOrTokenId))) {
+      setCurrentCoinOrTokenId(senderCoinAndTokenList[0].type === 'coin' ? senderCoinAndTokenList[0].baseDenom : senderCoinAndTokenList[0].address);
+    }
+
+    const selectedCoinOrToken =
       senderCoinAndTokenList.find(
         (item) =>
           (item.type === 'coin' && isEqualsIgnoringCase(item.baseDenom, currentCoinOrTokenId)) ||
           (item.type === 'token' && isEqualsIgnoringCase(item.address, currentCoinOrTokenId)),
-      ) || senderCoinAndTokenList[0],
-    [senderCoinAndTokenList, currentCoinOrTokenId],
-  );
+      ) || senderCoinAndTokenList[0];
 
-  const sendGas = useMemo(
-    () => (currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS : gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS),
-    [currentCoinOrToken.type, gas.ibcSend, gas.ibcTransfer],
-  );
-
-  const [customGas, setCustomGas] = useState<string | undefined>();
-
-  const [currentGasRateKey, setCurrentGasRateKey] = useState<GasRateKey>('low');
-
-  const [currentFeeAmount, setCurrentFeeAmount] = useState(times(sendGas, gasRate[currentGasRateKey]));
-
-  const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
-
-  const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
+    return selectedCoinOrToken;
+  }, [senderCoinAndTokenList, currentCoinOrTokenId]);
 
   const tokenBalance = useTokenBalanceSWR(chain, currentCoinOrTokenId, senderAddress);
 
@@ -298,7 +307,24 @@ export default function IBCSend({ chain }: IBCSendProps) {
     return [];
   }, [currentCoinOrToken, filteredCosmosChainAssets, chain.id, filteredCurrentChainAssets]);
 
-  const [selectedReceiverIBC, setReceiverIBC] = useState(receiverIBCList.length ? receiverIBCList[0] : undefined);
+  const [selectedReceiverChainId, setSelectedReceiverChainId] = useState(receiverIBCList.length ? receiverIBCList[0].chain.id : undefined);
+
+  const selectedReceiverIBC = useMemo(() => {
+    const selectedReceiveChain = receiverIBCList.find((item) => isEqualsIgnoringCase(item.chain.id, selectedReceiverChainId));
+
+    if (
+      !receiverIBCList.some(
+        (item) =>
+          isEqualsIgnoringCase(item.chain.id, selectedReceiveChain?.chain.id) &&
+          item.channel === selectedReceiveChain?.channel &&
+          item.port === selectedReceiveChain?.port,
+      )
+    ) {
+      setSelectedReceiverChainId(receiverIBCList[0].chain.id);
+    }
+
+    return selectedReceiveChain;
+  }, [selectedReceiverChainId, receiverIBCList]);
 
   const addressRegex = useMemo(
     () => getCosmosAddressRegex(selectedReceiverIBC?.chain?.bech32Prefix.address || '', [39]),
@@ -336,7 +362,18 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number],
   );
 
-  const { feeCoins } = useCurrentFeesSWR(chain);
+  const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain);
+
+  const sendGas = useMemo(
+    () => (currentCoinOrToken.type === 'coin' ? gas.ibcSend || COSMOS_DEFAULT_IBC_SEND_GAS : gas.ibcTransfer || COSMOS_DEFAULT_IBC_TRANSFER_GAS),
+    [currentCoinOrToken.type, gas.ibcSend, gas.ibcTransfer],
+  );
+
+  const [customGas, setCustomGas] = useState<string | undefined>();
+
+  const [customGasRateKey, setCustomGasRateKey] = useState<GasRateKey | undefined>();
+
+  const currentGasRateKey = useMemo(() => customGasRateKey || defaultGasRateKey, [defaultGasRateKey, customGasRateKey]);
 
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(feeCoins[0].baseDenom);
 
@@ -347,61 +384,11 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [currentFeeCoin.availableAmount, currentFeeCoin.decimals],
   );
 
-  const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate ?? chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate]);
-
-  const maxDisplayAmount = useMemo(() => {
-    const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
-    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
-      return gt(maxAmount, '0') ? maxAmount : '0';
-    }
-
-    return currentCoinOrTokenDisplayAvailableAmount;
-  }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
+  const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate ?? gasRate, [currentFeeCoin.gasRate, gasRate]);
 
   const currentCoinOrTokenDecimals = useMemo(() => currentCoinOrToken.decimals || 0, [currentCoinOrToken.decimals]);
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
   const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
-  const errorMessage = useMemo(() => {
-    if (!latestHeight) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.timeoutHeightError');
-    }
-    if (!addressRegex.test(currentDepositAddress)) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAddress');
-    }
-
-    if (!currentDisplayAmount || !gt(currentDisplayAmount, '0')) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAmount');
-    }
-
-    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
-      if (!gte(currentCoinOrTokenDisplayAvailableAmount, plus(currentDisplayAmount, currentDisplayFeeAmount))) {
-        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
-      }
-    }
-
-    if ((currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom !== currentFeeCoin.baseDenom) || currentCoinOrToken.type === 'token') {
-      if (!gte(currentCoinOrTokenDisplayAvailableAmount, currentDisplayAmount)) {
-        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
-      }
-
-      if (!gte(currentFeeCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
-        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientFeeAmount');
-      }
-    }
-
-    return '';
-  }, [
-    addressRegex,
-    currentDepositAddress,
-    currentCoinOrToken,
-    currentCoinOrTokenDisplayAvailableAmount,
-    currentDisplayAmount,
-    currentDisplayFeeAmount,
-    currentFeeCoin.baseDenom,
-    currentFeeCoinDisplayAvailableAmount,
-    t,
-    latestHeight,
-  ]);
 
   const memoizedIBCSendAminoTx = useMemo(() => {
     if (account.data?.value.account_number && selectedReceiverIBC && currentDisplayAmount) {
@@ -525,15 +512,62 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const currentGas = useMemo(() => customGas || simulatedGas || sendGas, [customGas, sendGas, simulatedGas]);
 
-  useEffect(() => {
-    if (receiverIBCList.length === 0 && senderCoinAndTokenList.length > 0) {
-      setCurrentCoinOrTokenId(senderCoinAndTokenList[0].type === 'coin' ? senderCoinAndTokenList[0].baseDenom : senderCoinAndTokenList[0].address);
-    } else {
-      setReceiverIBC(receiverIBCList[0]);
+  const currentFeeAmount = useMemo(() => times(currentGas, currentFeeGasRate[currentGasRateKey]), [currentFeeGasRate, currentGas, currentGasRateKey]);
+
+  const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
+
+  const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
+
+  const maxDisplayAmount = useMemo(() => {
+    const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
+      return gt(maxAmount, '0') ? maxAmount : '0';
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentCoinOrTokenId]);
+    return currentCoinOrTokenDisplayAvailableAmount;
+  }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
+
+  const errorMessage = useMemo(() => {
+    if (!latestHeight) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.timeoutHeightError');
+    }
+    if (!addressRegex.test(currentDepositAddress)) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAddress');
+    }
+
+    if (!currentDisplayAmount || !gt(currentDisplayAmount, '0')) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.invalidAmount');
+    }
+
+    if (currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom === currentFeeCoin.baseDenom) {
+      if (!gte(currentCoinOrTokenDisplayAvailableAmount, plus(currentDisplayAmount, currentDisplayFeeAmount))) {
+        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
+      }
+    }
+
+    if ((currentCoinOrToken.type === 'coin' && currentCoinOrToken.baseDenom !== currentFeeCoin.baseDenom) || currentCoinOrToken.type === 'token') {
+      if (!gte(currentCoinOrTokenDisplayAvailableAmount, currentDisplayAmount)) {
+        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientAmount');
+      }
+
+      if (!gte(currentFeeCoinDisplayAvailableAmount, currentDisplayFeeAmount)) {
+        return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.insufficientFeeAmount');
+      }
+    }
+
+    return '';
+  }, [
+    addressRegex,
+    currentDepositAddress,
+    currentCoinOrToken,
+    currentCoinOrTokenDisplayAvailableAmount,
+    currentDisplayAmount,
+    currentDisplayFeeAmount,
+    currentFeeCoin.baseDenom,
+    currentFeeCoinDisplayAvailableAmount,
+    t,
+    latestHeight,
+  ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
     setTimeout(() => {
@@ -546,10 +580,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
     debouncedEnabled();
   }, [debouncedEnabled, memoizedIBCSendAminoTx]);
-
-  useEffect(() => {
-    setCurrentFeeAmount(times(currentGas, currentFeeGasRate[currentGasRateKey]));
-  }, [currentGas, currentGasRateKey, currentFeeGasRate]);
 
   return (
     <Container>
@@ -565,9 +595,21 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
         <MarginTop8Div>
           <AssetBottomSheetButton
-            imgSrc={selectedReceiverIBC?.chain.imageURL}
-            title={selectedReceiverIBC?.chain.chainName || ''}
-            leftHeaderTitle={selectedReceiverIBC?.channel}
+            leftProps={
+              <LeftContainer>
+                <LeftChainImageContainer>
+                  <Image src={selectedReceiverIBC?.chain.imageURL} defaultImgSrc={unknownChainImg} />
+                </LeftChainImageContainer>
+                <LeftChainInfoContainer>
+                  <TitleContainer>
+                    <Typography variant="h5">{selectedReceiverIBC?.chain.chainName || ''}</Typography>
+                  </TitleContainer>
+                  <LeftHeaderTitleContainer>
+                    <Typography variant="h6n">{selectedReceiverIBC?.channel || ''}</Typography>
+                  </LeftHeaderTitleContainer>
+                </LeftChainInfoContainer>
+              </LeftContainer>
+            }
             isOpenBottomSheet={isOpenedRecipientIBCList}
             onClick={() => {
               setIsOpenedRecipientIBCList(true);
@@ -609,12 +651,34 @@ export default function IBCSend({ chain }: IBCSendProps) {
         )}
         <MarginTop8Div>
           <AssetBottomSheetButton
-            imgSrc={currentCoinOrToken.imageURL}
-            title={currentCoinOrTokenDisplayDenom}
-            leftHeaderTitle={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.available')}
-            leftSubTitle={currentCoinOrTokenDisplayAvailableAmount}
+            leftProps={
+              <LeftContainer>
+                <LeftImageContainer>
+                  <Image src={currentCoinOrToken.imageURL} />
+                </LeftImageContainer>
+                <LeftInfoContainer>
+                  <TitleContainer>
+                    <Typography variant="h5">{currentCoinOrTokenDisplayDenom}</Typography>
+                  </TitleContainer>
+                  <LeftHeaderTitleContainer>
+                    <Typography variant="h6n">{t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.available')}</Typography>
+                    {currentDisplayMaxDecimals && currentCoinOrTokenDisplayAvailableAmount && (
+                      <>
+                        <Typography variant="h6n"> :</Typography>{' '}
+                        <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
+                          <span>
+                            <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
+                              {currentCoinOrTokenDisplayAvailableAmount}
+                            </Number>
+                          </span>
+                        </Tooltip>
+                      </>
+                    )}
+                  </LeftHeaderTitleContainer>
+                </LeftInfoContainer>
+              </LeftContainer>
+            }
             isOpenBottomSheet={isOpenedCoinList}
-            decimals={currentDisplayMaxDecimals}
             onClick={() => {
               setIsOpenedCoinList(true);
             }}
@@ -668,7 +732,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
               setCurrentFeeBaseDenom(selectedFeeCoin.baseDenom);
             }}
             onChangeGas={(g) => setCustomGas(g)}
-            onChangeGasRateKey={(gasRateKey) => setCurrentGasRateKey(gasRateKey)}
+            onChangeGasRateKey={(gasRateKey) => setCustomGasRateKey(gasRateKey)}
             isEdit
           />
         </MarginTop8Div>
@@ -744,7 +808,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
         recipientList={receiverIBCList}
         selectedRecipientIBC={selectedReceiverIBC}
         onClickChain={(clickedChain) => {
-          setReceiverIBC(clickedChain);
+          setSelectedReceiverChainId(clickedChain.chain.id);
           setCurrentDisplayAmount('');
           setCurrentAddress('');
           setCurrentMemo('');

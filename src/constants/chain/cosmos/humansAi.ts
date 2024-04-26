@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import humansAiImg from '~/images/symbols/humansAi.png';
+import humansAiChainImg from '~/images/chainImgs/humans.png';
+import humansAiTokenImg from '~/images/symbols/heart.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const HUMANS_AI: CosmosChain = {
@@ -7,9 +8,10 @@ export const HUMANS_AI: CosmosChain = {
   line: 'COSMOS',
   type: 'ETHERMINT',
   chainId: 'humans_1089-1',
-  chainName: 'Humans.ai',
+  chainName: 'HUMANS.AI',
   restURL: 'https://lcd-humans.cosmostation.io',
-  imageURL: humansAiImg,
+  imageURL: humansAiChainImg,
+  tokenImageURL: humansAiTokenImg,
   baseDenom: 'aheart',
   displayDenom: 'HEART',
   decimals: 18,

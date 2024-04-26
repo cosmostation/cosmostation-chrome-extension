@@ -49,15 +49,9 @@ export default function OneInchSwap({ tx, determineTxType }: OneInchSwapProps) {
 
   const receiverAddress = useMemo(() => args?.desc.dstReceiver, [args?.desc.dstReceiver]);
 
-  const srcToken = useMemo(
-    () => oneInchTokens && Object.values(oneInchTokens.tokens).find((item) => isEqualsIgnoringCase(item.address, args?.desc.srcToken)),
-    [args?.desc.srcToken, oneInchTokens],
-  );
+  const srcToken = useMemo(() => oneInchTokens.find((item) => isEqualsIgnoringCase(item.address, args?.desc.srcToken)), [args?.desc.srcToken, oneInchTokens]);
 
-  const dstToken = useMemo(
-    () => oneInchTokens && Object.values(oneInchTokens.tokens).find((item) => isEqualsIgnoringCase(item.address, args?.desc.dstToken)),
-    [args?.desc.dstToken, oneInchTokens],
-  );
+  const dstToken = useMemo(() => oneInchTokens.find((item) => isEqualsIgnoringCase(item.address, args?.desc.dstToken)), [args?.desc.dstToken, oneInchTokens]);
 
   const inputDisplayAmount = useMemo(
     () => String(parseFloat(toDisplayDenomAmount(BigInt(args?.desc?.amount || '0').toString(10), srcToken?.decimals || 0))),

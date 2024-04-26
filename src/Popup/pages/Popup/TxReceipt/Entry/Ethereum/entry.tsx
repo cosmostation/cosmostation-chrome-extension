@@ -6,6 +6,8 @@ import { Typography } from '@mui/material';
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '~/constants/error';
 import { TRANSACTION_RESULT } from '~/constants/ethereum';
 import { TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
+import unknownChainImg from '~/images/chainImgs/unknown.png';
+import customBeltImg from '~/images/etc/customBelt.png';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import NumberText from '~/Popup/components/common/Number';
@@ -22,6 +24,7 @@ import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { convertToLocales } from '~/Popup/utils/common';
 
 import {
+  AbsoluteImageContainer,
   BottomContainer,
   CategoryTitleContainer,
   Container,
@@ -63,12 +66,14 @@ export default function Ethereum({ txHash }: EthereumProps) {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
   const { navigate } = useNavigate();
-  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
-  const { imageURL, explorerURL, networkName, decimals, coinGeckoId, displayDenom } = currentEthereumNetwork;
+  const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
+  const { imageURL, explorerURL, networkName, decimals, coinGeckoId, displayDenom, id } = currentEthereumNetwork;
 
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { currency, language } = extensionStorage;
+
+  const isCustom = useMemo(() => additionalEthereumNetworks.some((item) => item.id === id), [additionalEthereumNetworks, id]);
 
   const txInfo = useTxInfoSWR(txHash);
 
@@ -152,7 +157,14 @@ export default function Ethereum({ txHash }: EthereumProps) {
 
           <ImageTextContainer>
             <NetworkImageContainer>
-              <Image src={imageURL} />
+              <AbsoluteImageContainer data-is-custom={isCustom && !!imageURL}>
+                <Image src={imageURL} defaultImgSrc={unknownChainImg} />
+              </AbsoluteImageContainer>
+              {isCustom && (
+                <AbsoluteImageContainer data-is-custom={isCustom && !!imageURL}>
+                  <Image src={customBeltImg} />
+                </AbsoluteImageContainer>
+              )}
             </NetworkImageContainer>
 
             <Typography variant="h5">{networkName}</Typography>

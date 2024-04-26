@@ -53,23 +53,23 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const allowance = useAllowanceSWR(
-    senderAddress && fromToken?.address && fromChain?.chainId
+    senderAddress && fromToken?.tokenAddressOrDenom && fromChain?.chainId
       ? {
           owner: senderAddress,
           spender: SQUID_CONTRACT_ADDRESS,
-          tokenAddress: fromToken.address,
+          tokenAddress: fromToken.tokenAddressOrDenom,
           chainId: fromChain.chainId,
         }
       : undefined,
   );
 
   const allowanceTx = useMemo(() => {
-    if (senderAddress && fromToken?.address) {
+    if (senderAddress && fromToken?.tokenAddressOrDenom) {
       const erc20ABI = new Interface(ERC20_ABI);
 
       return {
         from: senderAddress,
-        to: fromToken.address,
+        to: fromToken.tokenAddressOrDenom,
         data: erc20ABI.encodeFunctionData('approve', [SQUID_CONTRACT_ADDRESS, SQUID_MAX_APPROVE_AMOUNT]),
       };
     }
@@ -77,7 +77,7 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
       from: '',
       to: '',
     };
-  }, [fromToken?.address, senderAddress]);
+  }, [fromToken?.tokenAddressOrDenom, senderAddress]);
 
   const allowanceFee = useFeeSWR();
 
@@ -100,14 +100,22 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
   );
 
   const squidRouteParam = useMemo<GetRoute | undefined>(() => {
-    if (fromChain?.chainId && fromToken?.address && gt(inputBaseAmount, '0') && toChain?.chainId && toToken?.address && receiverAddress && senderAddress) {
+    if (
+      fromChain?.chainId &&
+      fromToken?.tokenAddressOrDenom &&
+      gt(inputBaseAmount, '0') &&
+      toChain?.chainId &&
+      toToken?.tokenAddressOrDenom &&
+      receiverAddress &&
+      senderAddress
+    ) {
       return {
         fromAddress: senderAddress,
         fromChain: fromChain.chainId,
-        fromToken: fromToken.address,
+        fromToken: fromToken.tokenAddressOrDenom,
         fromAmount: inputBaseAmount,
         toChain: toChain.chainId,
-        toToken: toToken.address,
+        toToken: toToken.tokenAddressOrDenom,
         toAddress: receiverAddress,
         slippage: Number(slippage),
         collectFees: {
@@ -127,7 +135,17 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
       };
     }
     return undefined;
-  }, [fromChain?.chainId, fromToken?.address, inputBaseAmount, receiverAddress, senderAddress, slippage, toChain, toToken?.address, fallbackAddress]);
+  }, [
+    fallbackAddress,
+    fromChain?.chainId,
+    fromToken?.tokenAddressOrDenom,
+    inputBaseAmount,
+    receiverAddress,
+    senderAddress,
+    slippage,
+    toChain,
+    toToken?.tokenAddressOrDenom,
+  ]);
 
   const squidEthRoute = useSquidRouteSWR(squidRouteParam);
 

@@ -37,8 +37,8 @@ export type Description = {
 };
 
 export type Fee = {
-  base: string;
-  rate: string[];
+  base?: string;
+  rate?: string[];
   isSimulable: boolean;
   simul_gas_multiply: number;
   fee_threshold: string;

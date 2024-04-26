@@ -25,10 +25,10 @@ export function useCurrentFeesSWR(chain: CosmosChain, config?: SWRConfiguration)
         displayDenom: chain.displayDenom,
         baseDenom: chain.baseDenom,
         coinGeckoId: chain.coinGeckoId,
-        gasRate: assetGasRate.data[chain.baseDenom] ?? chain.gasRate,
+        gasRate: assetGasRate.data.gasRate[chain.baseDenom] ?? chain.gasRate,
       },
-      ...coinList.coins.map((item) => ({ ...item, gasRate: assetGasRate.data[item.baseDenom] })),
-      ...coinList.ibcCoins.map((item) => ({ ...item, gasRate: assetGasRate.data[item.baseDenom] })),
+      ...coinList.coins.map((item) => ({ ...item, gasRate: assetGasRate.data.gasRate[item.baseDenom] })),
+      ...coinList.ibcCoins.map((item) => ({ ...item, gasRate: assetGasRate.data.gasRate[item.baseDenom] })),
     ],
     [
       assetGasRate.data,
@@ -45,7 +45,7 @@ export function useCurrentFeesSWR(chain: CosmosChain, config?: SWRConfiguration)
   );
 
   const feeCoins: FeeCoin[] = useMemo(() => {
-    const feeCoinBaseDenoms = [...Object.keys(assetGasRate.data)];
+    const feeCoinBaseDenoms = [...Object.keys(assetGasRate.data.gasRate)];
 
     const filteredFeeCoins = currentChainAssets.data
       .filter((item) => feeCoinBaseDenoms.includes(item.denom))
@@ -56,7 +56,7 @@ export function useCurrentFeesSWR(chain: CosmosChain, config?: SWRConfiguration)
         displayDenom: item.symbol,
         imageURL: item.image,
         availableAmount: coinAll.find((coin) => coin.baseDenom === item.denom)?.availableAmount ?? '0',
-        gasRate: assetGasRate.data[item.denom],
+        gasRate: assetGasRate.data.gasRate[item.denom],
       }));
 
     const sortedFeeCoinList = filteredFeeCoins.sort((a, b) =>
@@ -71,5 +71,5 @@ export function useCurrentFeesSWR(chain: CosmosChain, config?: SWRConfiguration)
     return sortedFeeCoinList.length > 0 ? sortedFeeCoinList : [coinAll[0]];
   }, [assetGasRate.data, coinAll, currentChainAssets.data]);
 
-  return { feeCoins };
+  return { feeCoins, defaultGasRateKey: assetGasRate.data.defaultGasRateKey };
 }

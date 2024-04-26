@@ -127,7 +127,6 @@ export default function CoinList({ chain }: CoinListProps) {
               key={item.baseDenom}
               onClick={() => navigate(`/wallet/send/${item.baseDenom ? `${encodeURIComponent(item.baseDenom)}` : ''}` as unknown as Path)}
               amount={item.totalAmount}
-              channel={item.channelId}
               decimals={item.decimals}
               displayDenom={item.displayDenom}
               imageURL={item.imageURL}
@@ -142,7 +141,6 @@ export default function CoinList({ chain }: CoinListProps) {
               key={item.baseDenom}
               onClick={() => navigate(`/wallet/send/${item.baseDenom ? `${encodeURIComponent(item.baseDenom)}` : ''}` as unknown as Path)}
               amount={item.totalAmount}
-              channel={item.channelId}
               decimals={item.decimals}
               displayDenom={item.displayDenom}
               imageURL={item.imageURL}
@@ -157,7 +155,6 @@ export default function CoinList({ chain }: CoinListProps) {
               key={item.baseDenom}
               onClick={() => navigate(`/wallet/send/${item.baseDenom ? `${encodeURIComponent(item.baseDenom)}` : ''}` as unknown as Path)}
               amount={item.totalAmount}
-              channel={item.channelId}
               decimals={item.decimals}
               displayDenom={item.displayDenom}
               imageURL={item.imageURL}

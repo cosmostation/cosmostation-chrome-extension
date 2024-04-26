@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import comdexImg from '~/images/symbols/comdex.png';
+import comdexChainImg from '~/images/chainImgs/comdex.png';
+import comdexTokenImg from '~/images/symbols/cmdx.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const COMDEX: CosmosChain = {
@@ -7,9 +8,10 @@ export const COMDEX: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'comdex-1',
-  chainName: 'Comdex',
+  chainName: 'COMDEX',
   restURL: 'https://lcd-comdex.cosmostation.io',
-  imageURL: comdexImg,
+  tokenImageURL: comdexTokenImg,
+  imageURL: comdexChainImg,
   baseDenom: 'ucmdx',
   displayDenom: 'CMDX',
   decimals: 6,
