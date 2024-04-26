@@ -1576,7 +1576,7 @@ export default function Entry() {
       setIsConfirmedNotice(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentFromChain.id, currentToChain?.id, currentFromToken?.address, currentToToken?.address]);
+  }, [currentFromChain.id, currentToChain?.id, currentFromToken?.tokenAddressOrDenom, currentToToken?.tokenAddressOrDenom]);
 
   useEffect(() => {
     if (currentFromToken) {
