@@ -15,7 +15,7 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, gte, times } from '~/Popup/utils/big';
+import { ceil, divide, equal, gte, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getDefaultAV, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
@@ -129,9 +129,11 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const isFeeUpdateAllowed = useMemo(() => isEditFee || isFeeCustomed, [isFeeCustomed, isEditFee]);
 
+  const initialGasRate = useMemo(() => (equal(inputGas, '0') ? '0' : divide(inputFeeAmount, inputGas)), [inputFeeAmount, inputGas]);
+
   const baseFee = useMemo(
-    () => (isFeeUpdateAllowed ? times(currentGas, currentGasRateKey ? currentFeeGasRate[currentGasRateKey] : '0') : inputFeeAmount),
-    [currentFeeGasRate, currentGas, currentGasRateKey, inputFeeAmount, isFeeUpdateAllowed],
+    () => (isFeeUpdateAllowed ? times(currentGas, currentGasRateKey ? currentFeeGasRate[currentGasRateKey] : initialGasRate) : inputFeeAmount),
+    [currentFeeGasRate, currentGas, currentGasRateKey, initialGasRate, inputFeeAmount, isFeeUpdateAllowed],
   );
 
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
