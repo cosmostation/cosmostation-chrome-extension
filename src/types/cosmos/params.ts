@@ -1,4 +1,6 @@
-export type ParamsResponse = {
+export type ParamsResponse = Record<string, ChainParams>;
+
+export type ChainParams = {
   chain_id: string;
   block_time: number;
   gas_price?: GasPrice;
@@ -20,6 +22,7 @@ export type ChainlistParams = {
   grpc_endpoint?: GrpcEndpoint[];
   about?: About;
   description?: Description;
+  isBankLocked?: boolean;
 };
 
 export type About = {

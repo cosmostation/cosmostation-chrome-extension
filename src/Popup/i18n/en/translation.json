@@ -1449,6 +1449,7 @@
                 "index": {
                   "amountPlaceholder": "Amount",
                   "available": "Available",
+                  "bankLocked": "IBC Send functionality is currently disabled. It can be activated later through on-chain governance.",
                   "exchangeWarning": "IBC transactions are NOT supported on centralized exchanges.",
                   "ibcWarningHeadertitle": "IBC Send is not supported",
                   "ibcWarningSubtitle": "No coin or token available for IBC Send.",
@@ -1466,6 +1467,7 @@
                 "index": {
                   "amountPlaceholder": "Amount",
                   "available": "Available",
+                  "bankLocked": "Send functionality is currently disabled. It can be activated later through on-chain governance.",
                   "insufficientAmount": "Insufficient amount",
                   "insufficientFeeAmount": "Insufficient fee",
                   "invalidAddress": "Invalid address",
@@ -1497,6 +1499,7 @@
             },
             "index": {
               "amountPlaceholder": "Amount",
+              "bankLocked": "Send functionality is currently disabled. It can be activated later through on-chain governance.",
               "insufficientAmount": "Insufficient amount",
               "insufficientFee": "Insufficient fee",
               "invalidAddress": "Invalid address",

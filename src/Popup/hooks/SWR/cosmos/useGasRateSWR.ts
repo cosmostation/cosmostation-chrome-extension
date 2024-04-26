@@ -4,7 +4,7 @@ import type { SWRConfiguration } from 'swr';
 import { COSMOS_NON_NATIVE_GAS_RATES } from '~/constants/chain';
 import type { CosmosChain, GasRate, GasRateKey } from '~/types/chain';
 
-import { useParamsSWR } from './useParamsSWR';
+import { useParamsSWR } from '../useParamsSWR';
 
 const PARAM_BASE_GAS_RATE_OPTIONS = {
   TINY: '0',

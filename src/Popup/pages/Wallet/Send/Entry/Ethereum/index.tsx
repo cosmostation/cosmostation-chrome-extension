@@ -16,6 +16,7 @@ import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
+import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
@@ -45,6 +46,8 @@ export default function Ethereum({ chain }: EthereumProps) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { currentEthereumTokens } = useCurrentEthereumTokens();
   const params = useParams();
+
+  const chainParams = useParamsSWR(currentEthereumNetwork);
 
   const { enQueue } = useCurrentQueue();
 
@@ -133,6 +136,10 @@ export default function Ethereum({ chain }: EthereumProps) {
   const baseTokenBalance = useMemo(() => BigInt(tokenBalance.data || '0').toString(10), [tokenBalance.data]);
 
   const errorMessage = useMemo(() => {
+    if (chainParams.data?.params?.chainlist_params?.isBankLocked) {
+      return t('pages.Wallet.Send.Entry.Ethereum.index.bankLocked');
+    }
+
     if (!ethereumAddressRegex.test(currentAddress)) {
       return t('pages.Wallet.Send.Entry.Ethereum.index.invalidAddress');
     }
@@ -162,7 +169,7 @@ export default function Ethereum({ chain }: EthereumProps) {
     }
 
     return '';
-  }, [address, baseAmount, baseBalance, baseFee, baseTokenBalance, currentAddress, currentToken, t]);
+  }, [address, baseAmount, baseBalance, baseFee, baseTokenBalance, chainParams.data?.params?.chainlist_params?.isBankLocked, currentAddress, currentToken, t]);
 
   const handleOnClickMax = () => {
     if (currentToken === null) {
