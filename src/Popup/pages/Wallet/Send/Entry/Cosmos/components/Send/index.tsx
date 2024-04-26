@@ -28,6 +28,7 @@ import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
 import { useTokensBalanceSWR as useCosmosTokensBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokensBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
+import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -87,6 +88,8 @@ export default function Send({ chain }: CosmosProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { enQueue } = useCurrentQueue();
   const params = useParams();
+
+  const chainParams = useParamsSWR(chain);
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -366,6 +369,10 @@ export default function Send({ chain }: CosmosProps) {
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
   const errorMessage = useMemo(() => {
+    if (chainParams.data?.params?.chainlist_params?.isBankLocked) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.bankLocked');
+    }
+
     if (!addressRegex.test(currentDepositAddress) || address === currentDepositAddress) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.invalidAddress');
     }
@@ -395,6 +402,7 @@ export default function Send({ chain }: CosmosProps) {
     address,
     addressRegex,
     currentDepositAddress,
+    chainParams.data?.params?.chainlist_params?.isBankLocked,
     currentCoinOrToken,
     currentCoinOrTokenDisplayAvailableAmount,
     currentDisplayAmount,

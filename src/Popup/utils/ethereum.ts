@@ -8,11 +8,29 @@ import { signTypedData as baseSignTypedData } from '@metamask/eth-sig-util';
 
 import { ONEINCH_CONTRACT_ADDRESS } from '~/constants/1inch';
 import { ERC20_ABI, ERC721_ABI, ERC1155_ABI, ONE_INCH_ABI } from '~/constants/abi';
+import { ETHEREUM_NETWORKS } from '~/constants/chain';
+import { ALTHEA } from '~/constants/chain/ethereum/network/althea';
+import { ARBITRUM } from '~/constants/chain/ethereum/network/arbitrum';
+import { AVALANCHE } from '~/constants/chain/ethereum/network/avalanche';
+import { CANTO } from '~/constants/chain/ethereum/network/canto';
+import { CRONOS } from '~/constants/chain/ethereum/network/cronos';
+import { DYMENSION } from '~/constants/chain/ethereum/network/dymension';
+import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
+import { EVMOS } from '~/constants/chain/ethereum/network/evmos';
+import { FANTOM } from '~/constants/chain/ethereum/network/fantom';
+import { HARMONY } from '~/constants/chain/ethereum/network/harmony';
+import { KAVA } from '~/constants/chain/ethereum/network/kava';
+import { OKC } from '~/constants/chain/ethereum/network/okc';
+import { OPTIMISM } from '~/constants/chain/ethereum/network/optimism';
+import { POLYGON } from '~/constants/chain/ethereum/network/polygon';
+import { SCROLL_SEPOLIA_TESTNET } from '~/constants/chain/ethereum/network/scrollSepoliaTestnet';
+import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID, ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE, TOKEN_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
 import { extensionStorage } from '~/Popup/utils/extensionStorage';
 import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
+import type { EthereumNetwork } from '~/types/chain';
 import type { EthereumContractKind, EthereumTxType } from '~/types/ethereum/common';
 import type { ERC721SupportInterfacePayload, ERC1155SupportInterfacePayload } from '~/types/ethereum/contract';
 import type { CustomTypedMessage, EthereumTx } from '~/types/message/ethereum';
@@ -316,4 +334,49 @@ export function toDisplayTokenStandard(tokenStandard?: string) {
   }
 
   return 'ERC-'.concat(standardNumber[0]);
+}
+
+export function convertEVMToAssetName(evmNetwork: EthereumNetwork) {
+  const nameMap = {
+    [ETHEREUM.id]: 'ethereum',
+    [ALTHEA.id]: 'althea',
+    [ARBITRUM.id]: 'arbitrum',
+    [AVALANCHE.id]: 'avalanche',
+    [CANTO.id]: 'canto',
+    [CRONOS.id]: 'cronos',
+    [EVMOS.id]: 'evmos',
+    [FANTOM.id]: 'fantom',
+    [HARMONY.id]: 'harmony',
+    [DYMENSION.id]: 'dymension',
+    [KAVA.id]: 'kava',
+    [OKC.id]: 'okc',
+    [OPTIMISM.id]: 'optimism',
+    [POLYGON.id]: 'polygon',
+    [SMART_CHAIN.id]: 'bnb-smart-chain',
+    [SCROLL_SEPOLIA_TESTNET.id]: 'scroll-sepolia-testnet',
+  };
+  return nameMap[evmNetwork.id] || evmNetwork.networkName.toLowerCase();
+}
+
+export function convertAssetNameToEVM(assetName: string) {
+  const nameMap = {
+    ethereum: ETHEREUM,
+    althea: ALTHEA,
+    arbitrum: ARBITRUM,
+    avalanche: AVALANCHE,
+    canto: CANTO,
+    cronos: CRONOS,
+    evmos: EVMOS,
+    fantom: FANTOM,
+    harmony: HARMONY,
+    dymension: DYMENSION,
+    kava: KAVA,
+    okc: OKC,
+    optimism: OPTIMISM,
+    polygon: POLYGON,
+    'bnb-smart-chain': SMART_CHAIN,
+    'scroll-sepolia-testnet': SCROLL_SEPOLIA_TESTNET,
+  } as Record<string, EthereumNetwork | undefined>;
+
+  return nameMap[assetName] || ETHEREUM_NETWORKS.find((item) => item.networkName.toLowerCase() === assetName);
 }
