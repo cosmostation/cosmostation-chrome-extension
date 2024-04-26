@@ -5,8 +5,8 @@ import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { getDefaultAV } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 
-import { useParamsSWR } from './useParamsSWR';
 import { useCurrentChain } from '../../useCurrent/useCurrentChain';
+import { useParamsSWR } from '../useParamsSWR';
 
 export function useGasMultiplySWR(chain?: CosmosChain, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();

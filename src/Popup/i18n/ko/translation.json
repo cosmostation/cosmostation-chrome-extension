@@ -1449,6 +1449,7 @@
                 "index": {
                   "amountPlaceholder": "수량",
                   "available": "사용 가능 수량",
+                  "bankLocked": "현재 선택하신 체인은 IBC 전송기능이 비 활성화된 상태입니다. 차후 거버넌스 등을 통해서 활성화될 수 있습니다",
                   "exchangeWarning": "중앙 거래소는 IBC 입금을 지원하지 않습니다.",
                   "ibcWarningHeadertitle": "IBC Send를 지원하지 않습니다",
                   "ibcWarningSubtitle": "IBC Send 로 보낼 수 있는 코인 또는 토큰이 존재하지 않습니다.",
@@ -1466,6 +1467,7 @@
                 "index": {
                   "amountPlaceholder": "수량",
                   "available": "사용 가능 수량",
+                  "bankLocked": "현재 선택하신 체인은 전송기능이 비 활성화된 상태입니다. 차후 거버넌스 등을 통해서 활성화될 수 있습니다",
                   "insufficientAmount": "수량이 부족합니다.",
                   "insufficientFeeAmount": "수수료가 부족합니다.",
                   "invalidAddress": "유효하지 않은 주소입니다.",
@@ -1497,6 +1499,7 @@
             },
             "index": {
               "amountPlaceholder": "수량",
+              "bankLocked": "현재 선택하신 체인은 전송기능이 비 활성화된 상태입니다. 차후 거버넌스 등을 통해서 활성화될 수 있습니다",
               "insufficientAmount": "수량이 부족합니다.",
               "insufficientFee": "수수료가 부족합니다.",
               "invalidAddress": "유효하지 않은 주소입니다.",
