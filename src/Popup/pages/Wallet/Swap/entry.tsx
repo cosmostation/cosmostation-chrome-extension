@@ -796,9 +796,16 @@ export default function Entry() {
       : undefined,
   );
 
+  const isNeedSquidFallbackAddress = useMemo(
+    () =>
+      (currentSwapAPI === 'squid_evm' && currentToChain?.line === 'COSMOS' && currentToChain.bip44.coinType !== `118'`) ||
+      (currentSwapAPI === 'squid_cosmos' && currentFromChain.line === 'COSMOS' && currentFromChain.bip44.coinType !== `118'`),
+    [currentFromChain, currentSwapAPI, currentToChain],
+  );
+
   const squidSwapFallbackAddress = useMemo(
-    () => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[OSMOSIS.id],
-    [accounts?.data, currentAccount.id],
+    () => (isNeedSquidFallbackAddress ? accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[OSMOSIS.id] : undefined),
+    [accounts?.data, currentAccount.id, isNeedSquidFallbackAddress],
   );
 
   const {
@@ -832,6 +839,7 @@ export default function Entry() {
           senderAddress: currentFromAddress,
           receiverAddress: currentToAddress,
           slippage: currentSlippage,
+          fallbackAddress: squidSwapFallbackAddress,
         }
       : undefined,
   );
@@ -867,6 +875,7 @@ export default function Entry() {
           receiverAddress: currentToAddress,
           slippage: currentSlippage,
           feeToken: currentFeeToken,
+          fallbackAddress: squidSwapFallbackAddress,
         }
       : undefined,
   );
@@ -1308,15 +1317,12 @@ export default function Entry() {
   }, [currency, currentSlippage, currentToToken, estimatedToTokenDisplayAmountPrice, estimatedToTokenDisplayMinAmount, t]);
 
   const noticeMessage = useMemo(() => {
-    if (
-      (currentSwapAPI === 'squid_evm' && currentToChain?.line === 'COSMOS' && currentToChain.bip44.coinType !== `118'`) ||
-      (currentSwapAPI === 'squid_cosmos' && currentFromChain.line === 'COSMOS' && currentFromChain.bip44.coinType !== `118'`)
-    ) {
+    if (isNeedSquidFallbackAddress) {
       return t('pages.Wallet.Swap.entry.squidSwapNoticeDescription');
     }
 
     return '';
-  }, [currentFromChain, currentSwapAPI, currentToChain, t]);
+  }, [isNeedSquidFallbackAddress, t]);
 
   const warningMessage = useMemo(() => {
     if (gt(currentInputBaseAmount, '0') && !isLoadingSwapData) {

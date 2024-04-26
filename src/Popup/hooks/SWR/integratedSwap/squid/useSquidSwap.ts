@@ -4,10 +4,8 @@ import { Interface } from '@ethersproject/abi';
 
 import { ERC20_ABI } from '~/constants/abi';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
-import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import { SQUID_COLLECT_FEE_BPF, SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS, SQUID_CONTRACT_ADDRESS, SQUID_MAX_APPROVE_AMOUNT } from '~/constants/squid';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
-import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { divide, gt, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
@@ -15,7 +13,6 @@ import type { IntegratedSwapChain, IntegratedSwapToken, SquidTokensPayload } fro
 
 import { useAllowanceSWR } from './SWR/useAllowanceSWR';
 import { useSquidRouteSWR } from './SWR/useSquidRouteSWR';
-import { useAccounts } from '../../cache/useAccounts';
 import { useEstimateGasSWR } from '../../ethereum/useEstimateGasSWR';
 import { useFeeSWR } from '../../ethereum/useFeeSWR';
 import { useCoinGeckoPriceSWR } from '../../useCoinGeckoPriceSWR';
@@ -30,12 +27,10 @@ type UseSquidSwapProps = {
   senderAddress: string;
   receiverAddress: string;
   slippage: string;
+  fallbackAddress?: string;
 };
 
 export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
-  const accounts = useAccounts();
-  const { currentAccount } = useCurrentAccount();
-
   const inputBaseAmount = useMemo(() => squidSwapProps?.inputBaseAmount || '0', [squidSwapProps?.inputBaseAmount]);
   const fromChain = useMemo(() => squidSwapProps?.fromChain, [squidSwapProps?.fromChain]);
   const toChain = useMemo(() => squidSwapProps?.toChain, [squidSwapProps?.toChain]);
@@ -45,6 +40,7 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
   const senderAddress = useMemo(() => squidSwapProps?.senderAddress, [squidSwapProps?.senderAddress]);
   const receiverAddress = useMemo(() => squidSwapProps?.receiverAddress, [squidSwapProps?.receiverAddress]);
   const slippage = useMemo(() => squidSwapProps?.slippage || '1', [squidSwapProps?.slippage]);
+  const fallbackAddress = useMemo(() => squidSwapProps?.fallbackAddress, [squidSwapProps?.fallbackAddress]);
 
   const cosmosToTokenAssets = useCosmosAssetsSWR(toChain?.line === COSMOS.line ? toChain : undefined);
 
@@ -94,11 +90,6 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
 
   const allowanceTxBaseFee = useMemo(() => times(allowanceBaseFeePerGas, allowanceBaseEstimatedGas), [allowanceBaseEstimatedGas, allowanceBaseFeePerGas]);
 
-  const fallbackAddress = useMemo(
-    () => accounts?.data?.find((item) => item.id === currentAccount.id)?.address?.[OSMOSIS.id] || '',
-    [accounts?.data, currentAccount.id],
-  );
-
   const squidRouteParam = useMemo<GetRoute | undefined>(() => {
     if (
       fromChain?.chainId &&
@@ -123,15 +114,14 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
           fee: SQUID_COLLECT_FEE_BPF,
         },
         enableExpress: false,
-        fallbackAddresses:
-          toChain.line === COSMOS.line && toChain?.bip44?.coinType !== `118'`
-            ? [
-                {
-                  address: fallbackAddress,
-                  coinType: '118',
-                },
-              ]
-            : undefined,
+        fallbackAddresses: fallbackAddress
+          ? [
+              {
+                address: fallbackAddress,
+                coinType: '118',
+              },
+            ]
+          : undefined,
       };
     }
     return undefined;
@@ -143,7 +133,7 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
     receiverAddress,
     senderAddress,
     slippage,
-    toChain,
+    toChain?.chainId,
     toToken?.tokenAddressOrDenom,
   ]);
 
