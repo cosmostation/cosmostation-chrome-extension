@@ -322,11 +322,53 @@ export const SwapVenueImageContainer = styled('div')({
   },
 });
 
-export const NoticeContainer = styled('div')(({ theme }) => ({
-  padding: '1.6rem',
+export const NoticeTextContainer = styled('div')(({ theme }) => ({
+  width: '91%',
 
-  color: theme.colors.text01,
+  margin: '1.6rem 0 0',
+
+  color: theme.colors.text02,
 
   whiteSpace: 'pre-wrap',
-  wordBreak: 'break-all',
+}));
+
+export const NoticeAddressContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+
+  rowGap: '0.6rem',
+
+  margin: '4rem 0 6rem',
+});
+
+export const NoticeAddressHeaderContainer = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+
+  marginLeft: '0.8rem',
+
+  color: theme.colors.text01,
+}));
+
+export const NoticeAddressHeaderImageContainer = styled('div')({
+  marginRight: '0.4rem',
+
+  width: '2rem',
+  height: '2rem',
+
+  '& > img': {
+    width: '2rem',
+    height: '2rem',
+  },
+});
+
+export const NoticeAddressBottomContainer = styled('div')(({ theme }) => ({
+  width: '100%',
+
+  padding: '2rem 1.2rem',
+
+  color: theme.colors.text01,
+  backgroundColor: theme.colors.base02,
+
+  borderRadius: '0.8rem',
 }));

@@ -69,7 +69,11 @@ import {
   GasInfoStyledTooltip,
   MaxButton,
   MinimumReceivedCircularProgressContainer,
-  NoticeContainer,
+  NoticeAddressBottomContainer,
+  NoticeAddressContainer,
+  NoticeAddressHeaderContainer,
+  NoticeAddressHeaderImageContainer,
+  NoticeTextContainer,
   OutputAmountCircularProgressContainer,
   ProcessingTimeStyledTooltip,
   SideButton,
@@ -792,6 +796,11 @@ export default function Entry() {
       : undefined,
   );
 
+  const squidSwapFallbackAddress = useMemo(
+    () => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[OSMOSIS.id],
+    [accounts?.data, currentAccount.id],
+  );
+
   const {
     squidEthRoute,
     squidEthProcessingTime,
@@ -1303,15 +1312,11 @@ export default function Entry() {
       (currentSwapAPI === 'squid_evm' && currentToChain?.line === 'COSMOS' && currentToChain.bip44.coinType !== `118'`) ||
       (currentSwapAPI === 'squid_cosmos' && currentFromChain.line === 'COSMOS' && currentFromChain.bip44.coinType !== `118'`)
     ) {
-      return `${t('pages.Wallet.Swap.entry.squidSwapNoticeDescription1')}
-      ${accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[OSMOSIS.id] || t('pages.Wallet.Swap.entry.emptyOsmoAddress')}${t(
-        'pages.Wallet.Swap.entry.squidSwapNoticeDescription2',
-      )}
-      `;
+      return t('pages.Wallet.Swap.entry.squidSwapNoticeDescription');
     }
 
     return '';
-  }, [accounts?.data, currentAccount.id, currentFromChain, currentSwapAPI, currentToChain, t]);
+  }, [currentFromChain, currentSwapAPI, currentToChain, t]);
 
   const warningMessage = useMemo(() => {
     if (gt(currentInputBaseAmount, '0') && !isLoadingSwapData) {
@@ -2097,9 +2102,22 @@ export default function Entry() {
           setIsConfirmedNotice(isConfirmed);
         }}
       >
-        <NoticeContainer>
-          <Typography variant="h6">{noticeMessage}</Typography>
-        </NoticeContainer>
+        <NoticeTextContainer>
+          <Typography variant="h5" sx={{ lineHeight: '2rem' }}>
+            {noticeMessage}
+          </Typography>
+        </NoticeTextContainer>
+        <NoticeAddressContainer>
+          <NoticeAddressHeaderContainer>
+            <NoticeAddressHeaderImageContainer>
+              <Image src={OSMOSIS.imageURL} />
+            </NoticeAddressHeaderImageContainer>
+            <Typography variant="h6">Osmosis Fallback Address</Typography>
+          </NoticeAddressHeaderContainer>
+          <NoticeAddressBottomContainer>
+            <Typography variant="h6">{squidSwapFallbackAddress}</Typography>
+          </NoticeAddressBottomContainer>
+        </NoticeAddressContainer>
       </NoticeBottomSheet>
       );
     </>

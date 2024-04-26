@@ -54,6 +54,7 @@ export type AccentColors = {
   red: string;
   blue01: string;
   blue02: string;
+  yellow01: string;
 };
 
 export type AccentColorsType = ValueOf<typeof ACCENT_COLORS>;
