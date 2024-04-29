@@ -1555,7 +1555,8 @@
           },
           "NoticeBottomSheet": {
             "index": {
-              "confirm": "내용을 확인했습니다",
+              "cancel": "취소",
+              "confirm": "확인",
               "title": "안내"
             }
           },
@@ -1622,7 +1623,6 @@
           "multiTxSwap": "2개 이상의 트랜잭션이 포함된 스왑은 현재 이용할 수 없습니다.",
           "multiTxSwapError": "이 스왑은 2개 이상의 트랜잭션이 필요합니다.",
           "networkError": "네트워크 오류",
-          "noticeButton": "주의사항 확인하기",
           "osmosisFallbackAddress": "Osmosis Fallback Address",
           "oversizedSwap": "1회 스왑 가능 한도를 초과했습니다.",
           "permissionButton": "토큰 사용을 승인합니다.",

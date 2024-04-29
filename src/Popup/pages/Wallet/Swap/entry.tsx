@@ -134,8 +134,6 @@ export default function Entry() {
   const [isOpenSlippageDialog, setIsOpenSlippageDialog] = useState(false);
   const [isOpenNoticeBottomSheet, setIsOpenNoticeBottomSheet] = useState(false);
 
-  const [isConfirmedNotice, setIsConfirmedNotice] = useState(false);
-
   const [isFeePriceCurrencyBase, setIsFeePriceCurrencyBase] = useState(false);
 
   const [currentSlippage, setCurrentSlippage] = useState('1');
@@ -1184,14 +1182,6 @@ export default function Entry() {
     return currentFromTokenDisplayBalance;
   }, [currentFromTokenDisplayBalance, estimatedFeeDisplayAmount, currentFromToken?.tokenAddressOrDenom, currentFeeToken?.tokenAddressOrDenom]);
 
-  const resetSwapState = useCallback(() => {
-    if (isConfirmedNotice) {
-      setIsConfirmedNotice(false);
-    }
-
-    setInputDisplayAmount('');
-  }, [isConfirmedNotice]);
-
   const swapAssetInfo = useCallback(() => {
     const tmpFromToken = currentFromToken;
     const tmpFromChain = currentFromChain;
@@ -1204,8 +1194,8 @@ export default function Entry() {
     setCurrentFromToken(currentToToken);
     setCurrentToToken(tmpFromToken);
 
-    resetSwapState();
-  }, [currentFromChain, currentFromToken, currentToChain, currentToToken, resetSwapState]);
+    setInputDisplayAmount('');
+  }, [currentFromChain, currentFromToken, currentToChain, currentToToken]);
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -1214,6 +1204,59 @@ export default function Entry() {
       setIsDisabled(false);
     }, 700);
   }, 700);
+
+  const sendSwapTx = useCallback(async () => {
+    if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid_evm') && integratedEVMSwapTx) {
+      await enQueue({
+        messageId: '',
+        origin: '',
+        channel: 'inApp',
+        message: {
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              ...integratedEVMSwapTx,
+            },
+          ],
+        },
+      });
+
+      if (currentAccount.type === 'LEDGER') {
+        await debouncedOpenTab();
+      }
+    }
+
+    if ((currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') && integratedCosmosSwapTx && selectedFromCosmosChain && currentFeeToken) {
+      await enQueue({
+        messageId: '',
+        origin: '',
+        channel: 'inApp',
+        message: {
+          method: 'cos_signAmino',
+          params: {
+            chainName: selectedFromCosmosChain.chainName,
+            doc: {
+              ...integratedCosmosSwapTx,
+              fee: { amount: [{ denom: currentFeeToken.tokenAddressOrDenom, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
+            },
+            isEditFee: true,
+            isEditMemo: true,
+            isCheckBalance: true,
+          },
+        },
+      });
+    }
+  }, [
+    currentAccount.type,
+    currentFeeToken,
+    currentSwapAPI,
+    enQueue,
+    estimatedFeeBaseAmount,
+    estimatedGas,
+    integratedCosmosSwapTx,
+    integratedEVMSwapTx,
+    selectedFromCosmosChain,
+  ]);
 
   const errorMessage = useMemo(() => {
     if (!filteredFromChains.length || !filteredToChains.length || (currentSwapAPI && (!filteredFromTokenList.length || !filteredToTokenList.length))) {
@@ -1446,10 +1489,7 @@ export default function Entry() {
     [currentSwapAPI, errorMessage, integratedCosmosSwapTx, integratedEVMSwapTx, isDisabled, isLoadingSwapData],
   );
 
-  const isNoticeButtonEnabled = useMemo(
-    () => !isConfirmedNotice && noticeMessage && !isSwapButtonDisabled,
-    [noticeMessage, isConfirmedNotice, isSwapButtonDisabled],
-  );
+  const isNoticeButtonEnabled = useMemo(() => !!noticeMessage && !isSwapButtonDisabled, [noticeMessage, isSwapButtonDisabled]);
 
   const isAllowanceButtonEnabled = useMemo(
     () =>
@@ -1625,13 +1665,11 @@ export default function Entry() {
               currentSelectedChain={currentFromChain}
               currentSelectedCoin={currentFromToken}
               onClickChain={(clickedChain) => {
-                resetSwapState();
-
                 setCurrentFromChain(clickedChain);
+
+                setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => {
-                resetSwapState();
-
                 if (currentFromChain.id === currentToChain?.id && isEqualsIgnoringCase(clickedCoin.tokenAddressOrDenom, currentToToken?.tokenAddressOrDenom)) {
                   void swapAssetInfo();
                 } else {
@@ -1680,13 +1718,11 @@ export default function Entry() {
               currentSelectedChain={currentToChain}
               currentSelectedCoin={currentToToken}
               onClickChain={(clickedChain) => {
-                resetSwapState();
-
                 setCurrentToChain(clickedChain);
+
+                setInputDisplayAmount('');
               }}
               onClickCoin={(clickedCoin) => {
-                resetSwapState();
-
                 if (
                   currentFromChain.id === currentToChain?.id &&
                   isEqualsIgnoringCase(clickedCoin.tokenAddressOrDenom, currentFromToken?.tokenAddressOrDenom)
@@ -1977,16 +2013,7 @@ export default function Entry() {
           </SwapInfoContainer>
         </BodyContainer>
         <BottomContainer>
-          {isNoticeButtonEnabled ? (
-            <StyledButton
-              type="button"
-              onClick={() => {
-                setIsOpenNoticeBottomSheet(true);
-              }}
-            >
-              <ButtonTextIconContaier>{t('pages.Wallet.Swap.entry.noticeButton')}</ButtonTextIconContaier>
-            </StyledButton>
-          ) : isAllowanceButtonEnabled ? (
+          {isAllowanceButtonEnabled ? (
             <Tooltip varient="error" title={allowanceErrorMessage} placement="top" arrow>
               <div>
                 <Button
@@ -2028,51 +2055,12 @@ export default function Entry() {
                   data-is-skip={currentSwapAPI === 'skip'}
                   disabled={isSwapButtonDisabled}
                   onClick={async () => {
-                    if ((currentSwapAPI === '1inch' || currentSwapAPI === 'squid_evm') && integratedEVMSwapTx) {
-                      await enQueue({
-                        messageId: '',
-                        origin: '',
-                        channel: 'inApp',
-                        message: {
-                          method: 'eth_sendTransaction',
-                          params: [
-                            {
-                              ...integratedEVMSwapTx,
-                            },
-                          ],
-                        },
-                      });
-
-                      if (currentAccount.type === 'LEDGER') {
-                        await debouncedOpenTab();
-                      }
+                    if (isNoticeButtonEnabled) {
+                      setIsOpenNoticeBottomSheet(true);
+                      return;
                     }
 
-                    if (
-                      (currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') &&
-                      integratedCosmosSwapTx &&
-                      selectedFromCosmosChain &&
-                      currentFeeToken
-                    ) {
-                      await enQueue({
-                        messageId: '',
-                        origin: '',
-                        channel: 'inApp',
-                        message: {
-                          method: 'cos_signAmino',
-                          params: {
-                            chainName: selectedFromCosmosChain.chainName,
-                            doc: {
-                              ...integratedCosmosSwapTx,
-                              fee: { amount: [{ denom: currentFeeToken.tokenAddressOrDenom, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
-                            },
-                            isEditFee: true,
-                            isEditMemo: true,
-                            isCheckBalance: true,
-                          },
-                        },
-                      });
-                    }
+                    await sendSwapTx();
                   }}
                 >
                   <ButtonTextIconContaier>
@@ -2109,8 +2097,8 @@ export default function Entry() {
       <NoticeBottomSheet
         open={isOpenNoticeBottomSheet}
         onClose={() => setIsOpenNoticeBottomSheet(false)}
-        onClickConfirm={(isConfirmed) => {
-          setIsConfirmedNotice(isConfirmed);
+        onClickConfirm={async () => {
+          await sendSwapTx();
         }}
       >
         <NoticeTextContainer>

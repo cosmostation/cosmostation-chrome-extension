@@ -1555,7 +1555,8 @@
           },
           "NoticeBottomSheet": {
             "index": {
-              "confirm": "I have access to fallback address",
+              "cancel": "Cancel",
+              "confirm": "Confirm",
               "title": "Notice"
             }
           },
@@ -1622,7 +1623,6 @@
           "multiTxSwap": "Swap with multiple transactions is unavailable",
           "multiTxSwapError": "This swap requires multiple transactions",
           "networkError": "Network Error",
-          "noticeButton": "Check Notice",
           "osmosisFallbackAddress": "Osmosis Fallback Address",
           "oversizedSwap": "Oversized Swap",
           "permissionButton": "Give permission to use tokens",

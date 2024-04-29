@@ -42,4 +42,8 @@ export const StyledBottomSheet = styled(BottomSheet)({
 
 export const ContentContainer = styled('div')({});
 
-export const Footer = styled('div')({});
+export const Footer = styled('div')({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  columnGap: '0.8rem',
+});
