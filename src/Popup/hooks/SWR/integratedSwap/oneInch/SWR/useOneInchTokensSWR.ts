@@ -5,8 +5,12 @@ import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { ONEINCH_SWAP_BASE_URL } from '~/constants/1inch';
+import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import { get } from '~/Popup/utils/axios';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { Assets } from '~/types/1inch/swap';
+
+import { useTokensSWR } from '../../../ethereum/useTokensSWR';
 
 export function useOneInchTokensSWR(chainId?: string, config?: SWRConfiguration) {
   const parsedChainId = useMemo(() => chainId && (isHexString(chainId) ? String(parseInt(chainId, 16)) : chainId), [chainId]);
@@ -23,5 +27,24 @@ export function useOneInchTokensSWR(chainId?: string, config?: SWRConfiguration)
     ...config,
   });
 
-  return { data, error, mutate };
+  const chain = useMemo(() => ETHEREUM_NETWORKS.find((item) => String(parseInt(item.chainId, 16)) === chainId), [chainId]);
+  const tokens = useTokensSWR(chain);
+
+  const returnData = useMemo(() => {
+    if (!data) return [];
+
+    const tokenValues = Object.values(data.tokens);
+
+    return tokenValues.map((item) => {
+      const registeredToken = tokens.data?.find((token) => isEqualsIgnoringCase(token.address, item.address));
+
+      return {
+        ...item,
+        logoURI: item.tags.includes('native') ? chain?.tokenImageURL : registeredToken?.imageURL || item.logoURI,
+        coinGeckoId: registeredToken?.coinGeckoId,
+      };
+    });
+  }, [chain?.tokenImageURL, data, tokens.data]);
+
+  return { data: returnData, error, mutate };
 }

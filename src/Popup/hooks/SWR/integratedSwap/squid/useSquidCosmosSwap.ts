@@ -68,14 +68,22 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
 
   const squidRouteParam = useMemo<GetRoute | undefined>(() => {
-    if (fromChain?.chainId && fromToken?.address && gt(inputBaseAmount, '0') && toChain?.chainId && toToken?.address && receiverAddress && senderAddress) {
+    if (
+      fromChain?.chainId &&
+      fromToken?.tokenAddressOrDenom &&
+      gt(inputBaseAmount, '0') &&
+      toChain?.chainId &&
+      toToken?.tokenAddressOrDenom &&
+      receiverAddress &&
+      senderAddress
+    ) {
       return {
         fromAddress: senderAddress,
         fromChain: fromChain.chainId,
-        fromToken: fromToken.address,
+        fromToken: fromToken.tokenAddressOrDenom,
         fromAmount: inputBaseAmount,
         toChain: toChain.chainId,
-        toToken: toToken.address,
+        toToken: toToken.tokenAddressOrDenom,
         toAddress: receiverAddress,
         slippage: Number(slippage),
         collectFees: {
@@ -87,7 +95,16 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
       };
     }
     return undefined;
-  }, [toToken?.address, fromChain?.chainId, inputBaseAmount, receiverAddress, slippage, fromToken?.address, toChain?.chainId, senderAddress]);
+  }, [
+    toToken?.tokenAddressOrDenom,
+    fromChain?.chainId,
+    inputBaseAmount,
+    receiverAddress,
+    slippage,
+    fromToken?.tokenAddressOrDenom,
+    toChain?.chainId,
+    senderAddress,
+  ]);
 
   const squidCosmosRoute = useSquidRouteSWR(squidRouteParam);
 
@@ -235,7 +252,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
       fromChain?.chainId &&
       fromChain.line === 'COSMOS' &&
       parsedSquidSwapTx &&
-      feeToken?.address
+      feeToken?.tokenAddressOrDenom
     ) {
       const sequence = String(account.data?.value.sequence || '0');
 
@@ -244,7 +261,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
           account_number: String(account.data.value.account_number),
           sequence,
           chain_id: nodeInfo.data?.default_node_info?.network ?? fromChain.chainId,
-          fee: { amount: [{ amount: '1', denom: fromChain.baseDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
+          fee: { amount: [{ amount: '1', denom: feeToken.tokenAddressOrDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
           memo: '',
           msgs: [
             {
@@ -272,7 +289,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
           account_number: String(account.data.value.account_number),
           sequence,
           chain_id: nodeInfo.data?.default_node_info?.network ?? fromChain.chainId,
-          fee: { amount: [{ amount: '1', denom: feeToken.address }], gas: COSMOS_DEFAULT_SWAP_GAS },
+          fee: { amount: [{ amount: '1', denom: feeToken.tokenAddressOrDenom }], gas: COSMOS_DEFAULT_SWAP_GAS },
           memo: '',
           msgs: [
             {
@@ -283,7 +300,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
                 funds: [
                   {
                     amount: squidCosmosRoute.data?.route.estimate.fromAmount,
-                    denom: fromToken?.address,
+                    denom: fromToken?.tokenAddressOrDenom,
                   },
                 ],
                 msg: parsedSquidSwapTx.msg.wasm.msg,
@@ -298,16 +315,17 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   }, [
     account.data?.value.account_number,
     account.data?.value.sequence,
-    fromChain,
+    feeToken?.tokenAddressOrDenom,
+    fromChain?.chainId,
+    fromChain?.line,
+    fromToken?.tokenAddressOrDenom,
     inputBaseAmount,
-    fromToken?.address,
-    squidCosmosRoute.data?.route.estimate.fromAmount,
     nodeInfo.data?.default_node_info?.network,
     parsedSquidSwapTx,
     revisionHeight,
     revisionNumber,
     senderAddress,
-    feeToken?.address,
+    squidCosmosRoute.data?.route.estimate.fromAmount,
   ]);
 
   const [squidSwapAminoTx] = useDebounce(memoizedSquidSwapAminoTx, 700);

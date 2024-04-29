@@ -1,6 +1,7 @@
 import { forwardRef, useMemo } from 'react';
 import { Typography } from '@mui/material';
 
+import unknownImg from '~/images/chainImgs/unknown.png';
 import Image from '~/Popup/components/common/Image';
 
 import {
@@ -38,7 +39,7 @@ const ChainButtonItem = forwardRef<HTMLButtonElement, ChainButtonItemProps>(({ i
     >
       <ChainLeftContainer>
         <ChainLeftImageContainer>
-          <Image src={imageURL} />
+          <Image src={imageURL} defaultImgSrc={unknownImg} />
         </ChainLeftImageContainer>
         <ChainLeftInfoContainer>
           <ChainLeftChainNameContainer>

@@ -105,3 +105,52 @@ export const Address = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
   wordBreak: 'break-all',
 }));
+
+export const LeftContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+});
+
+export const LeftImageContainer = styled('div')({
+  width: '2.8rem',
+  height: '2.8rem',
+
+  '& > img': {
+    width: '2.8rem',
+    height: '2.8rem',
+  },
+});
+
+export const LeftChainImageContainer = styled('div')({
+  width: '3.2rem',
+  height: '3.2rem',
+
+  '& > img': {
+    width: '3.2rem',
+    height: '3.2rem',
+  },
+});
+
+export const LeftInfoContainer = styled('div')({
+  marginLeft: '0.6rem',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+});
+
+export const LeftChainInfoContainer = styled('div')({
+  marginLeft: '0.4rem',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+});
+
+export const TitleContainer = styled('div')(({ theme }) => ({
+  textAlign: 'left',
+  color: theme.colors.text01,
+}));
+
+export const LeftHeaderTitleContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text02,
+}));

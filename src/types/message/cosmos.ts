@@ -133,6 +133,7 @@ export type CosAddChainParams = {
   chainName: string;
   restURL: string;
   imageURL?: string;
+  tokenImageURL?: string;
   baseDenom: string;
   displayDenom: string;
   decimals?: number;

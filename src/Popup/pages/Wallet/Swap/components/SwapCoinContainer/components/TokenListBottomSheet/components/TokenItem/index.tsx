@@ -42,22 +42,25 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
   const { extensionStorage } = useExtensionStorage();
   const { currency } = extensionStorage;
 
-  const spotPriceData = useSpotPriceSWR(isHexString(tokenInfo.address) ? { chainId: currentEthereumNetwork.chainId, currency } : undefined);
+  const spotPriceData = useSpotPriceSWR(isHexString(tokenInfo.tokenAddressOrDenom) ? { chainId: currentEthereumNetwork.chainId, currency } : undefined);
 
   const amount = useMemo(() => tokenInfo.balance || '0', [tokenInfo.balance]);
 
   const coinDisplayDenomAmount = useMemo(() => toDisplayDenomAmount(amount, gt(amount, '0') ? tokenInfo.decimals : 0), [amount, tokenInfo.decimals]);
 
   const coinPrice = useMemo(
-    () => (tokenInfo.coinGeckoId && coinGeckoPrice.data?.[tokenInfo.coinGeckoId]?.[extensionStorage.currency]) || spotPriceData.data?.[tokenInfo.address] || 0,
-    [coinGeckoPrice.data, extensionStorage.currency, spotPriceData.data, tokenInfo.address, tokenInfo.coinGeckoId],
+    () =>
+      (tokenInfo.coinGeckoId && coinGeckoPrice.data?.[tokenInfo.coinGeckoId]?.[extensionStorage.currency]) ||
+      spotPriceData.data?.[tokenInfo.tokenAddressOrDenom] ||
+      0,
+    [coinGeckoPrice.data, extensionStorage.currency, spotPriceData.data, tokenInfo.tokenAddressOrDenom, tokenInfo.coinGeckoId],
   );
 
   const coinAmountPrice = useMemo(() => times(coinDisplayDenomAmount, coinPrice), [coinDisplayDenomAmount, coinPrice]);
 
   return (
     <TokenButton
-      key={tokenInfo.address}
+      key={tokenInfo.tokenAddressOrDenom}
       data-is-active={isActive}
       ref={isActive ? ref : undefined}
       onClick={() => {

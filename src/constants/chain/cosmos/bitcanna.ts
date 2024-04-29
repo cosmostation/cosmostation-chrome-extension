@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import bitcannaImg from '~/images/symbols/bitcanna.png';
+import bitcannaChainImg from '~/images/chainImgs/bitcanna.png';
+import bitcannaTokenImg from '~/images/symbols/bcna.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const BITCANNA: CosmosChain = {
@@ -7,9 +8,10 @@ export const BITCANNA: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'bitcanna-1',
-  chainName: 'Bitcanna',
+  chainName: 'BITCANNA',
   restURL: 'https://lcd-bitcanna.cosmostation.io',
-  imageURL: bitcannaImg,
+  tokenImageURL: bitcannaTokenImg,
+  imageURL: bitcannaChainImg,
   baseDenom: 'ubcna',
   displayDenom: 'BCNA',
   decimals: 6,

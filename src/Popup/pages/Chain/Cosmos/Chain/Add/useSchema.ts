@@ -12,6 +12,7 @@ export type AddChainForm = {
   chainId: string;
   chainName: string;
   restURL: string;
+  tokenImageURL?: string;
   imageURL?: string;
   explorerURL?: string;
   baseDenom: string;
@@ -75,6 +76,12 @@ export function useSchema() {
         'string.base': t('schema.common.string.base'),
         'string.empty': t('schema.common.string.empty'),
         'any.invalid': t('schema.addChainForm.restUrl.any.invalid'),
+      }),
+    tokenImageURL: Joi.string()
+      .optional()
+      .empty('')
+      .messages({
+        'string.base': t('schema.common.string.base'),
       }),
     imageURL: Joi.string()
       .optional()

@@ -5,6 +5,7 @@ import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
 import { MAINNET as APTOS_NETWORK__MAINNET } from './aptos/network/mainnet';
 import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
 import { AKASH } from './cosmos/akash';
+import { ALTHEA } from './cosmos/althea';
 import { ARCHWAY } from './cosmos/archway';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { AXELAR } from './cosmos/axelar';
@@ -17,13 +18,11 @@ import { CHIHUAHUA } from './cosmos/chihuahua';
 import { COMDEX } from './cosmos/comdex';
 import { COREUM } from './cosmos/coreum';
 import { COSMOS } from './cosmos/cosmos';
-import { CRESCENT } from './cosmos/crescent';
 import { CRONOS_POS } from './cosmos/cronosPos';
 import { CUDOS } from './cosmos/cudos';
 import { DESMOS } from './cosmos/desmos';
 import { DYDX } from './cosmos/dydx';
 import { DYMENSION } from './cosmos/dymension';
-import { EMONEY } from './cosmos/emoney';
 import { EVMOS } from './cosmos/evmos';
 import { FETCH_AI } from './cosmos/fetchAi';
 import { FINSCHIA } from './cosmos/finschia';
@@ -69,6 +68,7 @@ import { TERRA } from './cosmos/terra';
 import { UX } from './cosmos/ux';
 import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
+import { ALTHEA as ETHEREUM_NETWORK__ALTHEA } from './ethereum/network/althea';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
 import { CANTO as ETHEREUM_NETWORK__CANTO } from './ethereum/network/canto';
@@ -113,6 +113,7 @@ export const COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV = '1.4';
 export const COSMOS_CHAINS: CosmosChain[] = [
   COSMOS,
   AKASH,
+  ALTHEA,
   ARCHWAY,
   ASSET_MANTLE,
   AXELAR,
@@ -124,13 +125,11 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   CHIHUAHUA,
   COMDEX,
   COREUM,
-  CRESCENT,
   CRONOS_POS,
   CUDOS,
   DESMOS,
   DYDX,
   DYMENSION,
-  EMONEY,
   EVMOS,
   FETCH_AI,
   FINSCHIA,
@@ -183,6 +182,7 @@ export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 
 export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__ETHEREUM,
+  ETHEREUM_NETWORK__ALTHEA,
   ETHEREUM_NETWORK__ARBITRUM,
   ETHEREUM_NETWORK__AVALANCHE,
   ETHEREUM_NETWORK__CANTO,
