@@ -14,7 +14,7 @@ export const StyledButton = styled('button')(({ theme }) => ({
   backgroundColor: theme.colors.base02,
   border: `0.1rem solid ${theme.colors.base02}`,
 
-  padding: '1.2rem',
+  padding: '1rem',
 
   display: 'flex',
   justifyContent: 'space-between',
@@ -69,13 +69,13 @@ export const LeftImageContainer = styled('div')({
   alignItems: 'center',
 
   '& > img': {
-    width: '2.4rem',
-    height: '2.4rem',
+    width: '3.8rem',
+    height: '3.8rem',
   },
 });
 
 export const LeftTextContainer = styled('div')({
-  paddingLeft: '0.8rem',
+  paddingLeft: '0.6rem',
 
   display: 'grid',
 

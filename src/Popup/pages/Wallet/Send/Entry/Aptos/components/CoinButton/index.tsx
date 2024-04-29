@@ -42,15 +42,15 @@ export default function CoinButton({ currentCoin, isActive, ...remainder }: Coin
     address: accountAddress,
   });
 
-  const isNative = coinAddress === APTOS_COIN;
+  const isNative = useMemo(() => coinAddress === APTOS_COIN, [coinAddress]);
 
   const decimals = useMemo(() => coinInfo?.data.decimals || 0, [coinInfo?.data.decimals]);
 
-  const baseAmount = currentCoin.data.coin.value || '0';
+  const baseAmount = useMemo(() => currentCoin.data.coin.value || '0', [currentCoin.data.coin.value]);
 
-  const imageURL = isNative ? currentAptosNetwork.imageURL : asset?.image;
-  const displayDenom = asset?.symbol || coinInfo?.data.symbol || '';
-  const displayAmount = toDisplayDenomAmount(baseAmount, decimals);
+  const imageURL = useMemo(() => (isNative ? currentAptosNetwork.tokenImageURL : asset?.image), [asset?.image, currentAptosNetwork.tokenImageURL, isNative]);
+  const displayDenom = useMemo(() => asset?.symbol || coinInfo?.data.symbol || '', [asset?.symbol, coinInfo?.data.symbol]);
+  const displayAmount = useMemo(() => toDisplayDenomAmount(baseAmount, decimals), [baseAmount, decimals]);
 
   return (
     <Button type="button" {...remainder}>

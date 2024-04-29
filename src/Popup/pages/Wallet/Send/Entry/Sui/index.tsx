@@ -25,7 +25,7 @@ import { suiAddressRegex } from '~/Popup/utils/regex';
 import type { SuiChain } from '~/types/chain';
 
 import CoinButton from './components/CoinButton';
-import CoinPopover from './components/CoinPopover';
+import CoinListBottomSheet from './components/CoinListBottomSheet';
 import { BottomContainer, Container, Div, MaxButton, StyledInput } from './styled';
 
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
@@ -74,9 +74,7 @@ export default function Sui({ chain }: SuiProps) {
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
-
-  const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const isOpenPopover = Boolean(popoverAnchorEl);
+  const [isOpenedCoinList, setIsOpenedCoinList] = useState(false);
 
   const currentCoin = useMemo(() => suiAvailableCoins.find((object) => object.coinType === currentCoinType), [currentCoinType, suiAvailableCoins]);
 
@@ -195,132 +193,120 @@ export default function Sui({ chain }: SuiProps) {
   };
 
   return (
-    <>
-      <Container>
-        <Div>
-          <StyledInput
-            endAdornment={
-              <>
-                <InputAdornment position="end">
-                  <InputAdornmentIconButton onClick={() => setIsOpenedMyAddressBook(true)}>
-                    <AccountAddressIcon />
-                  </InputAdornmentIconButton>
-                </InputAdornment>
-                <InputAdornment position="start">
-                  <InputAdornmentIconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
-                    <AddressBook24Icon />
-                  </InputAdornmentIconButton>
-                </InputAdornment>
-              </>
-            }
-            placeholder={t('pages.Wallet.Send.Entry.Sui.index.recipientAddressPlaceholder')}
-            onChange={(e) => setCurrentAddress(e.currentTarget.value)}
-            value={currentAddress}
-          />
-        </Div>
-        <Div sx={{ marginTop: '0.8rem' }}>
-          {currentCoinType && (
-            <CoinButton
-              coinType={currentCoinType}
-              isActive={isOpenPopover}
-              chain={chain}
-              onClick={(event) => {
-                setPopoverAnchorEl(event.currentTarget);
-              }}
-            />
-          )}
-        </Div>
-        <Div sx={{ marginTop: '0.8rem' }}>
-          <StyledInput
-            endAdornment={
+    <Container>
+      <Div>
+        <StyledInput
+          endAdornment={
+            <>
               <InputAdornment position="end">
-                <MaxButton type="button" onClick={handleOnClickMax}>
-                  <Typography variant="h7">MAX</Typography>
-                </MaxButton>
+                <InputAdornmentIconButton onClick={() => setIsOpenedMyAddressBook(true)}>
+                  <AccountAddressIcon />
+                </InputAdornmentIconButton>
               </InputAdornment>
-            }
-            placeholder={t('pages.Wallet.Send.Entry.Sui.index.amountPlaceholder')}
-            onChange={(e) => {
-              if (!isDecimal(e.currentTarget.value, decimals || 0) && e.currentTarget.value) {
-                return;
-              }
-
-              setCurrentDisplayAmount(e.currentTarget.value);
+              <InputAdornment position="start">
+                <InputAdornmentIconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
+                  <AddressBook24Icon />
+                </InputAdornmentIconButton>
+              </InputAdornment>
+            </>
+          }
+          placeholder={t('pages.Wallet.Send.Entry.Sui.index.recipientAddressPlaceholder')}
+          onChange={(e) => setCurrentAddress(e.currentTarget.value)}
+          value={currentAddress}
+        />
+      </Div>
+      <Div sx={{ marginTop: '0.8rem' }}>
+        {currentCoinType && (
+          <CoinButton
+            coinType={currentCoinType}
+            isActive={isOpenedCoinList}
+            chain={chain}
+            onClick={() => {
+              setIsOpenedCoinList(true);
             }}
-            value={currentDisplayAmount}
           />
-        </Div>
+        )}
+      </Div>
+      <Div sx={{ marginTop: '0.8rem' }}>
+        <StyledInput
+          endAdornment={
+            <InputAdornment position="end">
+              <MaxButton type="button" onClick={handleOnClickMax}>
+                <Typography variant="h7">MAX</Typography>
+              </MaxButton>
+            </InputAdornment>
+          }
+          placeholder={t('pages.Wallet.Send.Entry.Sui.index.amountPlaceholder')}
+          onChange={(e) => {
+            if (!isDecimal(e.currentTarget.value, decimals || 0) && e.currentTarget.value) {
+              return;
+            }
 
-        <BottomContainer>
-          <Tooltip varient="error" title={errorMessage} placement="top" arrow>
-            <div>
-              <Button
-                type="button"
-                disabled={!!errorMessage}
-                onClick={async () => {
-                  if (!currentCoinType) {
-                    return;
-                  }
-
-                  if (sendTxBlock) {
-                    await enQueue({
-                      messageId: '',
-                      origin: '',
-                      channel: 'inApp',
-                      message: {
-                        method: 'sui_signAndExecuteTransactionBlock',
-                        params: [{ transactionBlockSerialized: sendTxBlock.serialize() }],
-                      },
-                    });
-                  }
-                }}
-              >
-                {t('pages.Wallet.Send.Entry.Sui.index.sendButton')}
-              </Button>
-            </div>
-          </Tooltip>
-        </BottomContainer>
-
-        <AddressBookBottomSheet
-          open={isOpenedAddressBook}
-          onClose={() => setIsOpenedAddressBook(false)}
-          onClickAddress={(a) => {
-            setCurrentAddress(a.address);
+            setCurrentDisplayAmount(e.currentTarget.value);
           }}
+          value={currentDisplayAmount}
         />
+      </Div>
 
-        <AccountAddressBookBottomSheet
-          open={isOpenedMyAddressBook}
-          hasCurrentAccount={false}
-          chain={chain}
-          onClose={() => setIsOpenedMyAddressBook(false)}
-          onClickAddress={(a) => {
-            setCurrentAddress(a);
-          }}
-        />
-      </Container>
-      <CoinPopover
-        marginThreshold={0}
-        currentCoinType={currentCoinType}
-        open={isOpenPopover}
+      <BottomContainer>
+        <Tooltip varient="error" title={errorMessage} placement="top" arrow>
+          <div>
+            <Button
+              type="button"
+              disabled={!!errorMessage}
+              onClick={async () => {
+                if (!currentCoinType) {
+                  return;
+                }
+
+                if (sendTxBlock) {
+                  await enQueue({
+                    messageId: '',
+                    origin: '',
+                    channel: 'inApp',
+                    message: {
+                      method: 'sui_signAndExecuteTransactionBlock',
+                      params: [{ transactionBlockSerialized: sendTxBlock.serialize() }],
+                    },
+                  });
+                }
+              }}
+            >
+              {t('pages.Wallet.Send.Entry.Sui.index.sendButton')}
+            </Button>
+          </div>
+        </Tooltip>
+      </BottomContainer>
+
+      <AddressBookBottomSheet
+        open={isOpenedAddressBook}
+        onClose={() => setIsOpenedAddressBook(false)}
+        onClickAddress={(a) => {
+          setCurrentAddress(a.address);
+        }}
+      />
+
+      <AccountAddressBookBottomSheet
+        open={isOpenedMyAddressBook}
+        hasCurrentAccount={false}
         chain={chain}
-        onClose={() => setPopoverAnchorEl(null)}
+        onClose={() => setIsOpenedMyAddressBook(false)}
+        onClickAddress={(a) => {
+          setCurrentAddress(a);
+        }}
+      />
+      <CoinListBottomSheet
+        currentCoinType={currentCoinType}
+        open={isOpenedCoinList}
+        chain={chain}
+        onClose={() => setIsOpenedCoinList(false)}
         onClickCoin={(coinType) => {
           if (currentCoinType !== coinType) {
             setCurrentCoinType(coinType);
             setCurrentDisplayAmount('');
           }
         }}
-        anchorEl={popoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
       />
-    </>
+    </Container>
   );
 }

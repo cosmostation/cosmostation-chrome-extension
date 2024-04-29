@@ -13,3 +13,14 @@ export type EthereumContractKind = ValueOf<typeof ETHEREUM_CONTRACT_KIND>;
 export type Token = EthereumToken | null;
 
 export type EthereumNFTStandard = ValueOf<typeof ETHEREUM_NFT_STANDARD>;
+
+export type GasRateKeyConfigurations = {
+  tiny: EIP1559Configuration;
+  low: EIP1559Configuration;
+  average: EIP1559Configuration;
+};
+
+export type EIP1559Configuration = {
+  maxBaseFeePerGas: string;
+  maxPriorityFeePerGas: string;
+};

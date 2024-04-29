@@ -37,6 +37,81 @@ export const SwapAssetContainer = styled('div')({
   marginBottom: '1.2rem',
 });
 
+export const ContentLeftContainer = styled('div')({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});
+
+export const ContentLeftChainImageContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  marginRight: '0.4rem',
+
+  width: '2.4rem',
+  height: '2.4rem',
+  position: 'relative',
+});
+
+export const ContentLeftImageContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+
+  marginRight: '0.6rem',
+
+  width: '2rem',
+  height: '2rem',
+  position: 'relative',
+});
+
+export const ContentLeftAbsoluteChainImageContainer = styled('div')({
+  position: 'absolute',
+
+  width: '2.4rem',
+  height: '2.4rem',
+
+  '& > img': {
+    width: '2.4rem',
+    height: '2.4rem',
+  },
+});
+
+export const ContentLeftAbsoluteImageContainer = styled('div')({
+  position: 'absolute',
+
+  width: '2rem',
+  height: '2rem',
+
+  '& > img': {
+    width: '2rem',
+    height: '2rem',
+  },
+});
+
+export const ContentCenterTextContainer = styled('div')(({ theme }) => ({
+  color: theme.colors.text01,
+  maxWidth: '8rem',
+
+  wordBreak: 'keep-all',
+  whiteSpace: 'nowrap',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+}));
+
+type ContentPlaceholderContainerProps = {
+  'data-is-disabled': boolean;
+};
+
+export const ContentPlaceholderContainer = styled('div')<ContentPlaceholderContainerProps>(({ theme, ...props }) => ({
+  color: props['data-is-disabled'] ? theme.colors.text02 : theme.colors.text01,
+}));
+
 export const FooterContainer = styled('div')({
   height: '1.8rem',
 

@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import rizonImg from '~/images/symbols/rizon.png';
+import rizonChainImg from '~/images/chainImgs/rizon.png';
+import rizonTokenImg from '~/images/symbols/atolo.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const RIZON: CosmosChain = {
@@ -7,9 +8,10 @@ export const RIZON: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'titan-1',
-  chainName: 'Rizon',
+  chainName: 'RIZON',
   restURL: 'https://lcd-rizon.cosmostation.io',
-  imageURL: rizonImg,
+  tokenImageURL: rizonTokenImg,
+  imageURL: rizonChainImg,
   baseDenom: 'uatolo',
   displayDenom: 'ATOLO',
   decimals: 6,

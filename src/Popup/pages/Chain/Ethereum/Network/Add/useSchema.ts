@@ -3,7 +3,10 @@ import Joi from '~/Popup/utils/joi';
 import { hexOrDecRegex } from '~/Popup/utils/regex';
 import type { EthereumNetwork } from '~/types/chain';
 
-export type AddNetworkForm = Pick<EthereumNetwork, 'chainId' | 'networkName' | 'rpcURL' | 'displayDenom' | 'explorerURL' | 'imageURL' | 'coinGeckoId'>;
+export type AddNetworkForm = Pick<
+  EthereumNetwork,
+  'chainId' | 'networkName' | 'rpcURL' | 'displayDenom' | 'explorerURL' | 'tokenImageURL' | 'imageURL' | 'coinGeckoId'
+>;
 
 export function useSchema() {
   const { t } = useTranslation();
@@ -45,6 +48,13 @@ export function useSchema() {
         'string.empty': t('schema.common.string.empty'),
       }),
     explorerURL: Joi.string()
+      .optional()
+      .allow('')
+      .messages({
+        'string.base': t('schema.common.string.base'),
+        'string.empty': t('schema.common.string.empty'),
+      }),
+    tokenImageURL: Joi.string()
       .optional()
       .allow('')
       .messages({
