@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import xplaImg from '~/images/symbols/xpla.png';
+import xplaChainImg from '~/images/chainImgs/xpla.png';
+import xplaTokenImg from '~/images/symbols/xpla.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const XPLA: CosmosChain = {
@@ -9,7 +10,8 @@ export const XPLA: CosmosChain = {
   chainId: 'dimension_37-1',
   chainName: 'XPLA',
   restURL: 'https://lcd-xpla.cosmostation.io',
-  imageURL: xplaImg,
+  tokenImageURL: xplaTokenImg,
+  imageURL: xplaChainImg,
   baseDenom: 'axpla',
   displayDenom: 'XPLA',
   decimals: 18,

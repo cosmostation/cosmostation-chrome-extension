@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { KAVA } from '~/constants/chain/ethereum/network/kava';
 import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
+import { MINTSCAN_FRONT_API_URL } from '~/constants/common';
 import { get } from '~/Popup/utils/axios';
 import { toHex } from '~/Popup/utils/string';
 import type { EthereumNetwork } from '~/types/chain';
@@ -25,7 +26,7 @@ export function useTokensSWR(chain?: EthereumNetwork, config?: SWRConfiguration)
 
   const mappingName = nameMap[currentChain.id] || currentChain.networkName.toLowerCase();
 
-  const requestURL = `https://front.api.mintscan.io/v10/assets/${mappingName}/erc20/info`;
+  const requestURL = `${MINTSCAN_FRONT_API_URL}/assets/${mappingName}/erc20/info`;
 
   const fetcher = async (fetchUrl: string) => {
     try {

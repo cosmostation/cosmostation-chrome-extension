@@ -25,14 +25,17 @@ export const LeftContainer = styled('div')({
 });
 
 export const LeftImageContainer = styled('div')({
+  width: '2.8rem',
+  height: '2.8rem',
+
   '& > img': {
-    width: '2.4rem',
-    height: '2.4rem',
+    width: '2.8rem',
+    height: '2.8rem',
   },
 });
 
 export const LeftInfoContainer = styled('div')({
-  marginLeft: '0.8rem',
+  marginLeft: '0.6rem',
 });
 
 export const LeftDisplayDenomContainer = styled('div')(({ theme }) => ({

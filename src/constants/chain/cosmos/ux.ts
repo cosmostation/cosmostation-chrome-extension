@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import umeeImg from '~/images/symbols/umee.png';
+import uxChainImg from '~/images/chainImgs/ux.png';
+import uxTokenImg from '~/images/symbols/ux.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const UX: CosmosChain = {
@@ -9,7 +10,8 @@ export const UX: CosmosChain = {
   chainId: 'umee-1',
   chainName: 'UX',
   restURL: 'https://lcd-umee.cosmostation.io',
-  imageURL: umeeImg,
+  tokenImageURL: uxTokenImg,
+  imageURL: uxChainImg,
   baseDenom: 'uumee',
   displayDenom: 'UMEE',
   decimals: 6,

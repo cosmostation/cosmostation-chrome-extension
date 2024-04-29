@@ -7,6 +7,7 @@ export const DYMENSION: EthereumNetwork = {
   chainId: '0x44c',
   networkName: COSMOS_DYMENSION.chainName,
   rpcURL: 'https://rpc-dymension-evm.cosmostation.io',
+  tokenImageURL: COSMOS_DYMENSION.tokenImageURL,
   imageURL: COSMOS_DYMENSION.imageURL,
   displayDenom: COSMOS_DYMENSION.displayDenom,
   decimals: COSMOS_DYMENSION.decimals,

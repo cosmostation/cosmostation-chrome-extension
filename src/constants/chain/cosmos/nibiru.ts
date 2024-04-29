@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import nibiruImg from '~/images/symbols/nibiru.png';
+import nibiruChainImg from '~/images/chainImgs/nibiru.png';
+import nibiruTokenImg from '~/images/symbols/nibi.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const NIBIRU: CosmosChain = {
@@ -7,9 +8,10 @@ export const NIBIRU: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'cataclysm-1',
-  chainName: 'Nibiru',
+  chainName: 'NIBIRU',
   restURL: 'https://lcd-nibiru.cosmostation.io',
-  imageURL: nibiruImg,
+  imageURL: nibiruChainImg,
+  tokenImageURL: nibiruTokenImg,
   baseDenom: 'unibi',
   displayDenom: 'NIBI',
   decimals: 6,

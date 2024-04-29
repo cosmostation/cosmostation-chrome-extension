@@ -47,3 +47,18 @@ export const ERC1155_INTERFACE_ID = '0xd9b67a26';
 export const TRANSACTION_RESULT = {
   SUCCESS: '1',
 } as const;
+
+export const GAS_SETTINGS_BY_GAS_RATE_KEY = {
+  tiny: {
+    minBaseFeePerGas: '500000000',
+    minMaxPriorityFeePerGas: '1000000000',
+  },
+  low: {
+    minBaseFeePerGas: '500000000',
+    minMaxPriorityFeePerGas: '1000000000',
+  },
+  average: {
+    minBaseFeePerGas: '500000000',
+    minMaxPriorityFeePerGas: '1000000000',
+  },
+};

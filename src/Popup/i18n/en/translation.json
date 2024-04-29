@@ -470,11 +470,12 @@
               "gasRateAveragePlaceholder": "Gas rate Average (option)",
               "gasRateLowPlaceholder": "Gas rate Low (option)",
               "gasRateTinyPlaceholder": "Gas rate Tiny (option)",
-              "imageURLPlaceholder": "Symbol image URL (option)",
+              "imageURLPlaceholder": "Chain image URL (option)",
               "restURLError": "Invalid Rest URL",
               "restURLPlaceholder": "Rest URL",
               "sendGasPlaceholder": "Send Gas value (option)",
               "submitButton": "Add a custom chain",
+              "tokenImageURLPlaceholder": "Symbol image URL (option)",
               "typePlaceholder": "Chain type (option) (e.g. ETHERMINT)",
               "warning": "A malicious chain provider can lie about the state of the blockchain and record your chain activity. Only add custom chain you trust."
             },
@@ -596,10 +597,11 @@
               "coinGeckoIdPlaceholder": "Coingecko API id (option)",
               "displayDenomPlaceholder": "Currency symbol (option)",
               "explorerURLPlaceholder": "Explorer URL (option)",
-              "imageURLPlaceholder": "Symbol image URL (option)",
+              "imageURLPlaceholder": "Chain image URL (option)",
               "networkNamePlaceholder": "Network name",
               "rpcURLPlaceholder": "RPC URL",
               "submitButton": "Add a network",
+              "tokenImageURLPlaceholder": "Symbol image URL (option)",
               "warning": "A malicious network provider can lie about the state of the blockchain and record your network activity. Only add custom networks you trust."
             },
             "layout": {
@@ -1398,6 +1400,14 @@
       "Send": {
         "Entry": {
           "Aptos": {
+            "components": {
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "Search",
+                  "title": "Select a coin"
+                }
+              }
+            },
             "index": {
               "amountPlaceholder": "Amount",
               "insufficientAmount": "Insufficient amount",
@@ -1439,6 +1449,7 @@
                 "index": {
                   "amountPlaceholder": "Amount",
                   "available": "Available",
+                  "bankLocked": "IBC Send functionality is currently disabled. It can be activated later through on-chain governance.",
                   "exchangeWarning": "IBC transactions are NOT supported on centralized exchanges.",
                   "ibcWarningHeadertitle": "IBC Send is not supported",
                   "ibcWarningSubtitle": "No coin or token available for IBC Send.",
@@ -1456,6 +1467,7 @@
                 "index": {
                   "amountPlaceholder": "Amount",
                   "available": "Available",
+                  "bankLocked": "Send functionality is currently disabled. It can be activated later through on-chain governance.",
                   "insufficientAmount": "Insufficient amount",
                   "insufficientFeeAmount": "Insufficient fee",
                   "invalidAddress": "Invalid address",
@@ -1478,18 +1490,16 @@
                   "available": "Available"
                 }
               },
-              "CoinPopover": {
-                "components": {
-                  "CoinItem": {
-                    "index": {
-                      "available": "Available"
-                    }
-                  }
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "Search",
+                  "title": "Select a coin"
                 }
               }
             },
             "index": {
               "amountPlaceholder": "Amount",
+              "bankLocked": "Send functionality is currently disabled. It can be activated later through on-chain governance.",
               "insufficientAmount": "Insufficient amount",
               "insufficientFee": "Insufficient fee",
               "invalidAddress": "Invalid address",
@@ -1503,6 +1513,12 @@
               "CoinButton": {
                 "index": {
                   "available": "Available"
+                }
+              },
+              "CoinListBottomSheet": {
+                "index": {
+                  "searchPlaceholder": "Search",
+                  "title": "Select a coin"
                 }
               },
               "CoinPopover": {
