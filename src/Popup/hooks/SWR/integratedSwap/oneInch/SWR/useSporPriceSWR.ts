@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
-import { isHexString } from 'ethereumjs-util';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { ONEINCH_SPOT_PRICE_BASE_URL } from '~/constants/1inch';
 import { get } from '~/Popup/utils/axios';
+import { fromHex } from '~/Popup/utils/string';
 import type { SpotPrice, SpotPricesResponse } from '~/types/1inch/swap';
 import type { CurrencyType } from '~/types/extensionStorage';
 
@@ -15,12 +15,7 @@ type UseSpotPriceSWRProps = {
 };
 
 export function useSpotPriceSWR(useSpotPriceSWRProps?: UseSpotPriceSWRProps, config?: SWRConfiguration) {
-  const parsedChainId = useMemo(
-    () =>
-      useSpotPriceSWRProps?.chainId &&
-      (isHexString(useSpotPriceSWRProps.chainId) ? String(parseInt(useSpotPriceSWRProps.chainId, 16)) : useSpotPriceSWRProps.chainId),
-    [useSpotPriceSWRProps?.chainId],
-  );
+  const parsedChainId = useMemo(() => fromHex(useSpotPriceSWRProps?.chainId), [useSpotPriceSWRProps?.chainId]);
 
   const requestURL = useMemo(
     () => `${ONEINCH_SPOT_PRICE_BASE_URL}/${parsedChainId || ''}?currency=${useSpotPriceSWRProps?.currency || ''}`,

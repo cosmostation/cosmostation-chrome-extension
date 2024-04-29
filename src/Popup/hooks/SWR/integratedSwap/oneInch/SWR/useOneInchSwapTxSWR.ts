@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
-import { isHexString } from 'ethereumjs-util';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { FEE_RATIO, ONEINCH_SWAP_BASE_URL, REFERRER_ADDRESS } from '~/constants/1inch';
 import { get } from '~/Popup/utils/axios';
+import { fromHex } from '~/Popup/utils/string';
 import type { OneInchSwapPayload } from '~/types/1inch/swap';
 
 type OneInchSwapError = {
@@ -31,10 +31,7 @@ export type UseOneInchSwapSWRProps = {
 };
 
 export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?: SWRConfiguration) {
-  const parsedChainId = useMemo(
-    () => swapParam?.chainId && (isHexString(swapParam.chainId) ? String(parseInt(swapParam.chainId, 16)) : swapParam.chainId),
-    [swapParam?.chainId],
-  );
+  const parsedChainId = useMemo(() => fromHex(swapParam?.chainId), [swapParam?.chainId]);
 
   const requestURL = useMemo(
     () =>

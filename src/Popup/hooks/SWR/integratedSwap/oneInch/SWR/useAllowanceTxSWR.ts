@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
-import { isHexString } from 'ethereumjs-util';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { ONEINCH_SWAP_BASE_URL } from '~/constants/1inch';
 import { get } from '~/Popup/utils/axios';
+import { fromHex } from '~/Popup/utils/string';
 import type { AllowanceTxPayload } from '~/types/1inch/allowance';
 
 type UseAllowanceTxSWRProps = {
@@ -14,10 +14,7 @@ type UseAllowanceTxSWRProps = {
 };
 
 export function useAllowanceTxSWR(allowanceTxParam?: UseAllowanceTxSWRProps, config?: SWRConfiguration) {
-  const parsedChainId = useMemo(
-    () => allowanceTxParam?.chainId && (isHexString(allowanceTxParam.chainId) ? String(parseInt(allowanceTxParam.chainId, 16)) : allowanceTxParam.chainId),
-    [allowanceTxParam?.chainId],
-  );
+  const parsedChainId = useMemo(() => fromHex(allowanceTxParam?.chainId), [allowanceTxParam?.chainId]);
 
   const requestURL = useMemo(
     () => `${ONEINCH_SWAP_BASE_URL}/${parsedChainId || ''}/approve/transaction?tokenAddress=${allowanceTxParam?.tokenAddress || ''}`,

@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
-import { isHexString } from 'ethereumjs-util';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
@@ -8,6 +7,7 @@ import { ONEINCH_SWAP_BASE_URL } from '~/constants/1inch';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { get } from '~/Popup/utils/axios';
+import { fromHex } from '~/Popup/utils/string';
 import type { AllowancePayload } from '~/types/1inch/allowance';
 
 type UseAllowanceSWRProps = {
@@ -19,10 +19,7 @@ type UseAllowanceSWRProps = {
 export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
 
-  const parsedChainId = useMemo(
-    () => allowanceParam?.chainId && (isHexString(allowanceParam.chainId) ? String(parseInt(allowanceParam.chainId, 16)) : allowanceParam.chainId),
-    [allowanceParam?.chainId],
-  );
+  const parsedChainId = useMemo(() => fromHex(allowanceParam?.chainId), [allowanceParam?.chainId]);
 
   const requestURL = useMemo(
     () =>
