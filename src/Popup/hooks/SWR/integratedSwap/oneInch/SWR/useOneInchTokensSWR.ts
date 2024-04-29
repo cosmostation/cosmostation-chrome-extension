@@ -27,7 +27,7 @@ export function useOneInchTokensSWR(chainId?: string, config?: SWRConfiguration)
     ...config,
   });
 
-  const chain = useMemo(() => ETHEREUM_NETWORKS.find((item) => String(parseInt(item.chainId, 16)) === chainId), [chainId]);
+  const chain = useMemo(() => ETHEREUM_NETWORKS.find((item) => String(parseInt(item.chainId, 16)) === parsedChainId), [parsedChainId]);
   const tokens = useTokensSWR(chain);
 
   const returnData = useMemo(() => {

@@ -24,9 +24,13 @@ export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: 
     [allowanceParam?.chainId],
   );
 
-  const requestURL = `${ONEINCH_SWAP_BASE_URL}/${parsedChainId || ''}/approve/allowance?tokenAddress=${allowanceParam?.tokenAddress || ''}&walletAddress=${
-    allowanceParam?.walletAddress || ''
-  }`;
+  const requestURL = useMemo(
+    () =>
+      `${ONEINCH_SWAP_BASE_URL}/${parsedChainId || ''}/approve/allowance?tokenAddress=${allowanceParam?.tokenAddress || ''}&walletAddress=${
+        allowanceParam?.walletAddress || ''
+      }`,
+    [allowanceParam?.tokenAddress, allowanceParam?.walletAddress, parsedChainId],
+  );
 
   const fetcher = (fetchUrl: string) =>
     get<AllowancePayload>(fetchUrl, {

@@ -111,7 +111,7 @@ export default function SwapCoinContainer({ isChainAvailable = true, ...remainde
                     <>
                       <ContentLeftImageContainer>
                         <ContentLeftAbsoluteImageContainer>
-                          <Image src={remainder.currentSelectedCoin.imageURL} defaultImgSrc={unknownChainImg} />
+                          <Image src={remainder.currentSelectedCoin.imageURL} />
                         </ContentLeftAbsoluteImageContainer>
                       </ContentLeftImageContainer>
                       <ContentCenterTextContainer>

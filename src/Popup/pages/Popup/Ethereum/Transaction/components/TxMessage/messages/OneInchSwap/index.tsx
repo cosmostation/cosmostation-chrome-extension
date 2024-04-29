@@ -41,7 +41,7 @@ export default function OneInchSwap({ tx, determineTxType }: OneInchSwapProps) {
   const { t } = useTranslation();
 
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
-  const { data: oneInchTokens } = useOneInchTokensSWR(currentEthereumNetwork.chainId);
+  const { data: oneInchTokens } = useOneInchTokensSWR(String(parseInt(currentEthereumNetwork.chainId, 16)));
 
   const { to, data } = tx;
 
