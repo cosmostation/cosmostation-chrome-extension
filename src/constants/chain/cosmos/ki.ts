@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import kiImg from '~/images/symbols/ki.png';
+import kiChainImg from '~/images/chainImgs/ki.png';
+import kiTokenImg from '~/images/symbols/xki.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const KI: CosmosChain = {
@@ -7,9 +8,10 @@ export const KI: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'kichain-2',
-  chainName: 'Ki',
+  chainName: 'KI',
   restURL: 'https://lcd-ki-chain.cosmostation.io',
-  imageURL: kiImg,
+  tokenImageURL: kiTokenImg,
+  imageURL: kiChainImg,
   baseDenom: 'uxki',
   displayDenom: 'XKI',
   decimals: 6,

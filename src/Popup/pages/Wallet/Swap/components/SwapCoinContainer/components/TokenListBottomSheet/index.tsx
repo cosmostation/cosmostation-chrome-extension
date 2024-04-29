@@ -56,13 +56,13 @@ export default function TokenListBottomSheet({
 
   const { data: tokensBalance } = useTokensBalanceSWR({
     network: currentSelectedChain?.line === ETHEREUM.line ? currentSelectedChain : undefined,
-    tokens: filteredTokenList as Omit<EthereumToken, 'id' | 'ethereumNetworkId'>[],
+    tokens: filteredTokenList as Omit<EthereumToken, 'id' | 'ethereumNetworkId' | 'tokenType'>[],
   });
 
   const sortedTokenList = useMemo(() => {
     const relocatedTokenList = filteredTokenList.map((item) => {
       const tokenBalanceData = tokensBalance?.find(
-        (tokenBalance) => tokenBalance.status === 'fulfilled' && isEqualsIgnoringCase(tokenBalance.value.id, item.address),
+        (tokenBalance) => tokenBalance.status === 'fulfilled' && isEqualsIgnoringCase(tokenBalance.value.id, item.tokenAddressOrDenom),
       );
 
       return {
@@ -75,7 +75,7 @@ export default function TokenListBottomSheet({
       currentSelectedChain?.line === 'COSMOS'
         ? relocatedTokenList
         : [...relocatedTokenList.filter((item) => gt(item.balance, '0')), ...relocatedTokenList.filter((item) => !gt(item.balance, '0'))].sort((a) =>
-            isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, a.address) ? -1 : 1,
+            isEqualsIgnoringCase(EVM_NATIVE_TOKEN_ADDRESS, a.tokenAddressOrDenom) ? -1 : 1,
           );
 
     return sortedListByChainLine;
@@ -132,11 +132,11 @@ export default function TokenListBottomSheet({
         <AssetList>
           <div ref={topRef} />
           {sortedTokenList?.map((item) => {
-            const isActive = isEqualsIgnoringCase(item.address, currentSelectedToken?.address);
+            const isActive = isEqualsIgnoringCase(item.tokenAddressOrDenom, currentSelectedToken?.tokenAddressOrDenom);
             return (
               <TokenItem
                 isActive={isActive}
-                key={item.address}
+                key={item.tokenAddressOrDenom}
                 ref={isActive ? ref : undefined}
                 tokenInfo={item}
                 onClickToken={(clickedToken) => {

@@ -16,6 +16,7 @@ import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
+import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
@@ -30,7 +31,7 @@ import type { Token } from '~/types/ethereum/common';
 import type { ERC20ContractMethods } from '~/types/ethereum/contract';
 
 import CoinButton from './components/CoinButton';
-import CoinPopover from './components/CoinPopover';
+import CoinListBottomSheet from './components/CoinListBottomSheet';
 import { BottomContainer, Container, Div, MaxButton, StyledInput } from './styled';
 
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
@@ -45,6 +46,8 @@ export default function Ethereum({ chain }: EthereumProps) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { currentEthereumTokens } = useCurrentEthereumTokens();
   const params = useParams();
+
+  const chainParams = useParamsSWR(currentEthereumNetwork);
 
   const { enQueue } = useCurrentQueue();
 
@@ -65,9 +68,7 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
-
-  const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const isOpenPopover = Boolean(popoverAnchorEl);
+  const [isOpenedCoinList, setIsOpenedCoinList] = useState(false);
 
   const decimals = useMemo(() => {
     if (currentToken === null) {
@@ -135,6 +136,10 @@ export default function Ethereum({ chain }: EthereumProps) {
   const baseTokenBalance = useMemo(() => BigInt(tokenBalance.data || '0').toString(10), [tokenBalance.data]);
 
   const errorMessage = useMemo(() => {
+    if (chainParams.data?.params?.chainlist_params?.isBankLocked) {
+      return t('pages.Wallet.Send.Entry.Ethereum.index.bankLocked');
+    }
+
     if (!ethereumAddressRegex.test(currentAddress)) {
       return t('pages.Wallet.Send.Entry.Ethereum.index.invalidAddress');
     }
@@ -164,7 +169,7 @@ export default function Ethereum({ chain }: EthereumProps) {
     }
 
     return '';
-  }, [address, baseAmount, baseBalance, baseFee, baseTokenBalance, currentAddress, currentToken, t]);
+  }, [address, baseAmount, baseBalance, baseFee, baseTokenBalance, chainParams.data?.params?.chainlist_params?.isBankLocked, currentAddress, currentToken, t]);
 
   const handleOnClickMax = () => {
     if (currentToken === null) {
@@ -178,135 +183,124 @@ export default function Ethereum({ chain }: EthereumProps) {
   };
 
   return (
-    <>
-      <Container>
-        <Div>
-          <StyledInput
-            endAdornment={
-              <>
-                <InputAdornment position="end">
-                  <InputAdornmentIconButton onClick={() => setIsOpenedMyAddressBook(true)}>
-                    <AccountAddressIcon />
-                  </InputAdornmentIconButton>
-                </InputAdornment>
-                <InputAdornment position="start">
-                  <InputAdornmentIconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
-                    <AddressBook24Icon />
-                  </InputAdornmentIconButton>
-                </InputAdornment>
-              </>
-            }
-            placeholder={t('pages.Wallet.Send.Entry.Ethereum.index.recipientAddressPlaceholder')}
-            onChange={(e) => setCurrentAddress(e.currentTarget.value)}
-            value={currentAddress}
-          />
-        </Div>
-        <Div sx={{ marginTop: '0.8rem' }}>
-          <CoinButton
-            currentToken={currentToken}
-            isActive={isOpenPopover}
-            onClick={(event) => {
-              setPopoverAnchorEl(event.currentTarget);
-            }}
-          />
-        </Div>
-        <Div sx={{ marginTop: '0.8rem' }}>
-          <StyledInput
-            endAdornment={
+    <Container>
+      <Div>
+        <StyledInput
+          endAdornment={
+            <>
               <InputAdornment position="end">
-                <MaxButton type="button" onClick={handleOnClickMax}>
-                  <Typography variant="h7">MAX</Typography>
-                </MaxButton>
+                <InputAdornmentIconButton onClick={() => setIsOpenedMyAddressBook(true)}>
+                  <AccountAddressIcon />
+                </InputAdornmentIconButton>
               </InputAdornment>
+              <InputAdornment position="start">
+                <InputAdornmentIconButton onClick={() => setIsOpenedAddressBook(true)} edge="end">
+                  <AddressBook24Icon />
+                </InputAdornmentIconButton>
+              </InputAdornment>
+            </>
+          }
+          placeholder={t('pages.Wallet.Send.Entry.Ethereum.index.recipientAddressPlaceholder')}
+          onChange={(e) => setCurrentAddress(e.currentTarget.value)}
+          value={currentAddress}
+        />
+      </Div>
+      <Div sx={{ marginTop: '0.8rem' }}>
+        <CoinButton
+          currentToken={currentToken}
+          isActive={isOpenedCoinList}
+          onClick={() => {
+            setIsOpenedCoinList(true);
+          }}
+        />
+      </Div>
+      <Div sx={{ marginTop: '0.8rem' }}>
+        <StyledInput
+          endAdornment={
+            <InputAdornment position="end">
+              <MaxButton type="button" onClick={handleOnClickMax}>
+                <Typography variant="h7">MAX</Typography>
+              </MaxButton>
+            </InputAdornment>
+          }
+          placeholder={t('pages.Wallet.Send.Entry.Ethereum.index.amountPlaceholder')}
+          onChange={(e) => {
+            if (!isDecimal(e.currentTarget.value, decimals || 0) && e.currentTarget.value) {
+              return;
             }
-            placeholder={t('pages.Wallet.Send.Entry.Ethereum.index.amountPlaceholder')}
-            onChange={(e) => {
-              if (!isDecimal(e.currentTarget.value, decimals || 0) && e.currentTarget.value) {
-                return;
-              }
 
-              setIsDisabled(true);
+            setIsDisabled(true);
 
-              setCurrentDisplayAmount(e.currentTarget.value);
+            setCurrentDisplayAmount(e.currentTarget.value);
 
-              estimateGasMutate();
-            }}
-            value={currentDisplayAmount}
-          />
-        </Div>
-
-        <BottomContainer>
-          <Tooltip varient="error" title={errorMessage} placement="top" arrow>
-            <div>
-              <Button
-                type="button"
-                disabled={isDisabled || !!errorMessage}
-                onClick={async () => {
-                  await enQueue({
-                    messageId: '',
-                    origin: '',
-                    channel: 'inApp',
-                    message: {
-                      method: 'eth_sendTransaction',
-                      params: [
-                        {
-                          ...sendTx,
-                          gas: toHex(baseEstimateGas, { addPrefix: true, isStringNumber: true }),
-                        },
-                      ],
-                    },
-                  });
-
-                  if (currentAccount.type === 'LEDGER') {
-                    await debouncedOpenTab();
-                  }
-                }}
-              >
-                {t('pages.Wallet.Send.Entry.Ethereum.index.sendButton')}
-              </Button>
-            </div>
-          </Tooltip>
-        </BottomContainer>
-
-        <AddressBookBottomSheet
-          open={isOpenedAddressBook}
-          onClose={() => setIsOpenedAddressBook(false)}
-          onClickAddress={(a) => {
-            setCurrentAddress(a.address);
+            estimateGasMutate();
           }}
+          value={currentDisplayAmount}
         />
+      </Div>
 
-        <AccountAddressBookBottomSheet
-          open={isOpenedMyAddressBook}
-          hasCurrentAccount={false}
-          chain={chain}
-          onClose={() => setIsOpenedMyAddressBook(false)}
-          onClickAddress={(a) => {
-            setCurrentAddress(a);
-          }}
-        />
-      </Container>
-      <CoinPopover
-        marginThreshold={0}
+      <BottomContainer>
+        <Tooltip varient="error" title={errorMessage} placement="top" arrow>
+          <div>
+            <Button
+              type="button"
+              disabled={isDisabled || !!errorMessage}
+              onClick={async () => {
+                await enQueue({
+                  messageId: '',
+                  origin: '',
+                  channel: 'inApp',
+                  message: {
+                    method: 'eth_sendTransaction',
+                    params: [
+                      {
+                        ...sendTx,
+                        gas: toHex(baseEstimateGas, { addPrefix: true, isStringNumber: true }),
+                      },
+                    ],
+                  },
+                });
+
+                if (currentAccount.type === 'LEDGER') {
+                  await debouncedOpenTab();
+                }
+              }}
+            >
+              {t('pages.Wallet.Send.Entry.Ethereum.index.sendButton')}
+            </Button>
+          </div>
+        </Tooltip>
+      </BottomContainer>
+
+      <AddressBookBottomSheet
+        open={isOpenedAddressBook}
+        onClose={() => setIsOpenedAddressBook(false)}
+        onClickAddress={(a) => {
+          setCurrentAddress(a.address);
+        }}
+      />
+
+      <AccountAddressBookBottomSheet
+        open={isOpenedMyAddressBook}
+        hasCurrentAccount={false}
+        chain={chain}
+        onClose={() => setIsOpenedMyAddressBook(false)}
+        onClickAddress={(a) => {
+          setCurrentAddress(a);
+        }}
+      />
+
+      <CoinListBottomSheet
         currentToken={currentToken}
-        open={isOpenPopover}
-        onClose={() => setPopoverAnchorEl(null)}
+        open={isOpenedCoinList}
+        onClose={() => setIsOpenedCoinList(false)}
         onClickCoin={(token) => {
           if (currentToken?.id !== token?.id) {
             setCurrentToken(token);
             setCurrentDisplayAmount('');
           }
         }}
-        anchorEl={popoverAnchorEl}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'left',
-        }}
       />
-    </>
+    </Container>
   );
 }

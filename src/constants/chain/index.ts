@@ -5,6 +5,7 @@ import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
 import { MAINNET as APTOS_NETWORK__MAINNET } from './aptos/network/mainnet';
 import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
 import { AKASH } from './cosmos/akash';
+import { ALTHEA } from './cosmos/althea';
 import { ARCHWAY } from './cosmos/archway';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { AXELAR } from './cosmos/axelar';
@@ -67,6 +68,7 @@ import { TERRA } from './cosmos/terra';
 import { UX } from './cosmos/ux';
 import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
+import { ALTHEA as ETHEREUM_NETWORK__ALTHEA } from './ethereum/network/althea';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
 import { CANTO as ETHEREUM_NETWORK__CANTO } from './ethereum/network/canto';
@@ -111,6 +113,7 @@ export const COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV = '1.4';
 export const COSMOS_CHAINS: CosmosChain[] = [
   COSMOS,
   AKASH,
+  ALTHEA,
   ARCHWAY,
   ASSET_MANTLE,
   AXELAR,
@@ -179,6 +182,7 @@ export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 
 export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__ETHEREUM,
+  ETHEREUM_NETWORK__ALTHEA,
   ETHEREUM_NETWORK__ARBITRUM,
   ETHEREUM_NETWORK__AVALANCHE,
   ETHEREUM_NETWORK__CANTO,

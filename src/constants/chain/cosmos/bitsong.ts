@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import bitsongImg from '~/images/symbols/bitsong.png';
+import bitsongChainImg from '~/images/chainImgs/bitsong.png';
+import bitsongTokenImg from '~/images/symbols/btsg.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const BITSONG: CosmosChain = {
@@ -7,9 +8,10 @@ export const BITSONG: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'bitsong-2b',
-  chainName: 'Bitsong',
+  chainName: 'BITSONG',
   restURL: 'https://lcd-bitsong.cosmostation.io',
-  imageURL: bitsongImg,
+  tokenImageURL: bitsongTokenImg,
+  imageURL: bitsongChainImg,
   baseDenom: 'ubtsg',
   displayDenom: 'BTSG',
   decimals: 6,

@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import ixoImg from '~/images/symbols/ixo.png';
+import ixoChainImg from '~/images/chainImgs/ixo.png';
+import ixoTokenImg from '~/images/symbols/ixo.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const IXO: CosmosChain = {
@@ -7,9 +8,10 @@ export const IXO: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'ixo-5',
-  chainName: 'Ixo',
+  chainName: 'IXO',
   restURL: 'https://lcd-ixo.cosmostation.io',
-  imageURL: ixoImg,
+  tokenImageURL: ixoTokenImg,
+  imageURL: ixoChainImg,
   baseDenom: 'uixo',
   displayDenom: 'IXO',
   decimals: 6,

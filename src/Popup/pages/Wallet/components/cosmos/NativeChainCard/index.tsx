@@ -57,15 +57,20 @@ import {
   SecondLineLeftAbsoluteImageContainer,
   SecondLineLeftContainer,
   SecondLineLeftImageContainer,
+  SecondLineLeftSubTextContainer,
+  SecondLineLeftSubTextEmptyContainer,
   SecondLineLeftTextContainer,
   SecondLineRightContainer,
+  SecondLineRightSubTextContainer,
+  SecondLineRightTextContainer,
   StyledAbsoluteLoading,
   StyledAccordion,
   StyledAccordionDetails,
   StyledAccordionSummary,
+  StyledDivider,
   StyledIconButton,
   StyledRetryIconButton,
-  ThirdLineContainer,
+  TextChangeRateContainer,
 } from './styled';
 
 import BottomArrow20Icon from '~/images/icons/BottomArrow20.svg';
@@ -113,6 +118,11 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [extensionStorage.currency, coinGeckoId, data]);
 
+  const cap = useMemo(
+    () => (coinGeckoId && data?.[coinGeckoId]?.[`${extensionStorage.currency}_24h_change`]) || 0,
+    [coinGeckoId, data, extensionStorage.currency],
+  );
+
   const displayAmount = useMemo(() => toDisplayDenomAmount(totalAmount, decimals), [decimals, totalAmount]);
 
   const value = useMemo(() => times(displayAmount, price), [displayAmount, price]);
@@ -126,7 +136,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const { data: gasMultiply } = useGasMultiplySWR(chain);
 
-  const { feeCoins } = useCurrentFeesSWR(chain);
+  const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain);
 
   const currentFeeCoin = useMemo(() => feeCoins[0], [feeCoins]);
 
@@ -139,7 +149,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         fee: {
           amount: [
             {
-              amount: chain.type === 'ETHERMINT' ? times(currentFeeCoin.gasRate?.low || chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1',
+              amount: chain.type === 'ETHERMINT' ? times(currentFeeCoin.gasRate?.[defaultGasRateKey] || chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1',
               denom: currentFeeCoin.baseDenom,
             },
           ],
@@ -160,7 +170,9 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     chain.gasRate.low,
     chain.type,
     currentAddress,
-    currentFeeCoin,
+    currentFeeCoin.baseDenom,
+    currentFeeCoin.gasRate,
+    defaultGasRateKey,
     reward.data?.rewards,
   ]);
 
@@ -197,7 +209,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         fee: {
           amount: [
             {
-              amount: chain.type === 'ETHERMINT' ? times(currentFeeCoin.gasRate?.low || chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1',
+              amount: chain.type === 'ETHERMINT' ? times(currentFeeCoin.gasRate?.[defaultGasRateKey] || chain.gasRate.low, COSMOS_DEFAULT_REWARD_GAS, 0) : '1',
               denom: currentFeeCoin.baseDenom,
             },
           ],
@@ -220,7 +232,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     chain.gasRate.low,
     chain.type,
     currentFeeCoin.baseDenom,
-    currentFeeCoin.gasRate?.low,
+    currentFeeCoin.gasRate,
+    defaultGasRateKey,
     operatorAddress,
   ]);
 
@@ -242,8 +255,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   );
 
   const currentCommissionFeeAmount = useMemo(
-    () => times(commissionTxGas, currentFeeCoin.gasRate?.low || chain.gasRate.low),
-    [chain.gasRate.low, commissionTxGas, currentFeeCoin.gasRate?.low],
+    () => times(commissionTxGas, currentFeeCoin.gasRate?.[defaultGasRateKey] || chain.gasRate.low),
+    [chain.gasRate.low, commissionTxGas, currentFeeCoin.gasRate, defaultGasRateKey],
   );
 
   const currentCeilCommissionFeeAmount = useMemo(() => ceil(currentCommissionFeeAmount), [currentCommissionFeeAmount]);
@@ -345,29 +358,47 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={chain.imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={chain.tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{chain.displayDenom}</Typography>
+            <Typography variant="h4">{chain.displayDenom}</Typography>
+            <SecondLineLeftSubTextContainer>
+              <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
+                {String(price)}
+              </Number>
+
+              <TextChangeRateContainer data-color={cap > 0 ? 'green' : cap < 0 ? 'red' : 'grey'}>
+                <Typography variant="h5n">{cap > 0 ? '+' : ''}</Typography>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={2}>
+                  {String(cap)}
+                </Number>
+                <Typography variant="h7n">%</Typography>
+              </TextChangeRateContainer>
+            </SecondLineLeftSubTextContainer>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <Tooltip title={displayAmount} arrow placement="bottom-end">
-            <span>
-              <Number fixed={displayMaxDecimals}>{displayAmount}</Number>
-            </span>
-          </Tooltip>
+          <SecondLineRightTextContainer>
+            <Tooltip title={displayAmount} arrow placement="bottom-end">
+              <span>
+                <Number typoOfIntegers="h4n" typoOfDecimals="h5n" fixed={displayMaxDecimals}>
+                  {displayAmount}
+                </Number>
+              </span>
+            </Tooltip>
+          </SecondLineRightTextContainer>
+          <SecondLineRightSubTextContainer>
+            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
+              {value}
+            </Number>
+          </SecondLineRightSubTextContainer>
         </SecondLineRightContainer>
       </SecondLineContainer>
-      <ThirdLineContainer>
-        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
-          {value}
-        </Number>
-      </ThirdLineContainer>
 
       {chain.custom !== 'no-stake' && (
         <StyledAccordion expanded={expanded}>
           <StyledAccordionSummary />
           <StyledAccordionDetails>
+            <StyledDivider />
             <FourthLineContainer>
               <FourthLineContainerItem>
                 <FourthLineContainerItemLeft>
@@ -611,7 +642,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
           {explorerURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerURL}/account/${address}`)}>
+            <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${address}`)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
@@ -619,23 +650,29 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={chain.imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={chain.tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{chain.displayDenom}</Typography>
+            <Typography variant="h4">{chain.displayDenom}</Typography>
+            <SecondLineLeftSubTextContainer>
+              <Skeleton width="7rem" height="1.9rem" />
+            </SecondLineLeftSubTextContainer>
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <Skeleton width="12rem" height="2.6rem" />
+          <SecondLineRightTextContainer>
+            <Skeleton width="12rem" height="2.2rem" />
+          </SecondLineRightTextContainer>
+          <SecondLineRightSubTextContainer>
+            <Skeleton width="8rem" height="1.9rem" />
+          </SecondLineRightSubTextContainer>
         </SecondLineRightContainer>
       </SecondLineContainer>
-      <ThirdLineContainer>
-        <Skeleton width="8rem" height="1.9rem" />
-      </ThirdLineContainer>
 
       {chain.custom !== 'no-stake' && (
         <StyledAccordion expanded={expanded}>
           <StyledAccordionSummary />
           <StyledAccordionDetails>
+            <StyledDivider />
             <FourthLineContainer>
               <FourthLineContainerItem>
                 <FourthLineContainerItemLeft>
@@ -775,7 +812,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
           {explorerURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerURL}/account/${address}`)}>
+            <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${address}`)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
@@ -783,9 +820,10 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={chain.imageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={chain.tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h3">{chain.displayDenom}</Typography>
+            <Typography variant="h4">{chain.displayDenom}</Typography>
+            <SecondLineLeftSubTextEmptyContainer />
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
@@ -801,13 +839,11 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           >
             <RetryIcon />
           </StyledRetryIconButton>
+          <ErrorDescriptionContainer>
+            <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.networkError')}</Typography>
+          </ErrorDescriptionContainer>
         </SecondLineRightContainer>
       </SecondLineContainer>
-      <ThirdLineContainer>
-        <ErrorDescriptionContainer>
-          <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.networkError')}</Typography>
-        </ErrorDescriptionContainer>
-      </ThirdLineContainer>
 
       <ButtonContainer sx={{ paddingBottom: '1.6rem' }}>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>

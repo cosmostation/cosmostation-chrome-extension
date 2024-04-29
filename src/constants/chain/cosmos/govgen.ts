@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import govgenImg from '~/images/symbols/govgen.png';
+import govgenChainImg from '~/images/chainImgs/govgen.png';
+import govgenTokenImg from '~/images/symbols/govgen.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const GOVGEN: CosmosChain = {
@@ -7,9 +8,10 @@ export const GOVGEN: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'govgen-1',
-  chainName: 'GovGen',
+  chainName: 'GOVGEN',
   restURL: 'https://lcd-govgen.cosmostation.io',
-  imageURL: govgenImg,
+  tokenImageURL: govgenTokenImg,
+  imageURL: govgenChainImg,
   baseDenom: 'ugovgen',
   displayDenom: 'GOVGEN',
   decimals: 6,

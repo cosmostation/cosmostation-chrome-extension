@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import finschiaImg from '~/images/symbols/finschia.png';
+import finschiaChainImg from '~/images/chainImgs/finschia.png';
+import finschiaTokenImg from '~/images/symbols/fnsa.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const FINSCHIA: CosmosChain = {
@@ -7,9 +8,10 @@ export const FINSCHIA: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'finschia-2',
-  chainName: 'Finschia',
+  chainName: 'FINSCHIA',
   restURL: 'https://lcd-finschia.cosmostation.io',
-  imageURL: finschiaImg,
+  tokenImageURL: finschiaTokenImg,
+  imageURL: finschiaChainImg,
   baseDenom: 'cony',
   displayDenom: 'FNSA',
   decimals: 6,
