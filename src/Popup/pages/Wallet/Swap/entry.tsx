@@ -1184,6 +1184,14 @@ export default function Entry() {
     return currentFromTokenDisplayBalance;
   }, [currentFromTokenDisplayBalance, estimatedFeeDisplayAmount, currentFromToken?.tokenAddressOrDenom, currentFeeToken?.tokenAddressOrDenom]);
 
+  const resetSwapState = useCallback(() => {
+    if (isConfirmedNotice) {
+      setIsConfirmedNotice(false);
+    }
+
+    setInputDisplayAmount('');
+  }, [isConfirmedNotice]);
+
   const swapAssetInfo = useCallback(() => {
     const tmpFromToken = currentFromToken;
     const tmpFromChain = currentFromChain;
@@ -1196,8 +1204,8 @@ export default function Entry() {
     setCurrentFromToken(currentToToken);
     setCurrentToToken(tmpFromToken);
 
-    setInputDisplayAmount('');
-  }, [currentFromChain, currentFromToken, currentToChain, currentToToken]);
+    resetSwapState();
+  }, [currentFromChain, currentFromToken, currentToChain, currentToToken, resetSwapState]);
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -1583,13 +1591,6 @@ export default function Entry() {
   ]);
 
   useEffect(() => {
-    if (isConfirmedNotice) {
-      setIsConfirmedNotice(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentFromChain.id, currentToChain?.id, currentFromToken?.tokenAddressOrDenom, currentToToken?.tokenAddressOrDenom]);
-
-  useEffect(() => {
     if (currentFromToken) {
       if (currentSwapAPI === 'squid_evm') {
         void squidAllowance.mutate();
@@ -1624,11 +1625,13 @@ export default function Entry() {
               currentSelectedChain={currentFromChain}
               currentSelectedCoin={currentFromToken}
               onClickChain={(clickedChain) => {
-                setCurrentFromChain(clickedChain);
+                resetSwapState();
 
-                setInputDisplayAmount('');
+                setCurrentFromChain(clickedChain);
               }}
               onClickCoin={(clickedCoin) => {
+                resetSwapState();
+
                 if (currentFromChain.id === currentToChain?.id && isEqualsIgnoringCase(clickedCoin.tokenAddressOrDenom, currentToToken?.tokenAddressOrDenom)) {
                   void swapAssetInfo();
                 } else {
@@ -1677,11 +1680,13 @@ export default function Entry() {
               currentSelectedChain={currentToChain}
               currentSelectedCoin={currentToToken}
               onClickChain={(clickedChain) => {
-                setCurrentToChain(clickedChain);
+                resetSwapState();
 
-                setInputDisplayAmount('');
+                setCurrentToChain(clickedChain);
               }}
               onClickCoin={(clickedCoin) => {
+                resetSwapState();
+
                 if (
                   currentFromChain.id === currentToChain?.id &&
                   isEqualsIgnoringCase(clickedCoin.tokenAddressOrDenom, currentFromToken?.tokenAddressOrDenom)
@@ -2118,7 +2123,7 @@ export default function Entry() {
             <NoticeAddressHeaderImageContainer>
               <Image src={OSMOSIS.imageURL} />
             </NoticeAddressHeaderImageContainer>
-            <Typography variant="h6">Osmosis Fallback Address</Typography>
+            <Typography variant="h6">{t('pages.Wallet.Swap.entry.osmosisFallbackAddress')}</Typography>
           </NoticeAddressHeaderContainer>
           <NoticeAddressBottomContainer>
             <Typography variant="h6">{squidSwapFallbackAddress}</Typography>
