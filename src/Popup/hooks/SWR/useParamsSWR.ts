@@ -38,7 +38,7 @@ export function useParamsSWR(chain: CosmosChain | EthereumNetwork, config?: SWRC
     try {
       const data = await get<ParamsResponse>(params.fetchUrl);
 
-      return data?.[params.mappingName];
+      return data?.[params.mappingName] || {};
     } catch {
       return null;
     }
