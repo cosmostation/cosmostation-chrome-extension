@@ -52,7 +52,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const [isProgress, setIsProgress] = useState(false);
 
-  const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain);
+  const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain, { suspense: true });
 
   const { message, messageId, origin, channel } = queue;
 

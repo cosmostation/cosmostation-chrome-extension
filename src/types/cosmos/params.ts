@@ -1,8 +1,8 @@
 export type ParamsResponse = Record<string, ChainParams>;
 
 export type ChainParams = {
-  chain_id: string;
-  block_time: number;
+  chain_id?: string;
+  block_time?: number;
   gas_price?: GasPrice;
   params?: Params;
 };
