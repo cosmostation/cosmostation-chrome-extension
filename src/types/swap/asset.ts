@@ -31,11 +31,6 @@ export type IntegratedSwapFeeToken = {
   imageURL?: string;
 };
 
-export type SquidTokensPayload = {
-  mainnet: SupportNetwork[];
-  testnet: SupportNetwork[];
-};
-
 export type SupportNetwork = {
   id: string;
   name: string;
