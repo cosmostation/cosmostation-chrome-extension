@@ -133,8 +133,8 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
         squidEthRoute.data?.route.estimate.gasCosts
           .filter((gasCost) => isEqualsIgnoringCase(gasCost.token.address, item))
           .reduce((ac, cu) => (isEqualsIgnoringCase(item, cu.token.address) ? plus(ac, cu.amount) : ac), '0') || '0',
-      feeToken: squidEthRoute.data?.route.estimate.gasCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token,
-      feeItems: [...(squidEthRoute.data?.route.estimate.gasCosts.filter((fee) => isEqualsIgnoringCase(fee.token.address, item)) || [])],
+      feeToken: { ...squidEthRoute.data?.route.estimate.gasCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token } as TokenData | undefined,
+      feeItems: squidEthRoute.data?.route.estimate.gasCosts.filter((fee) => isEqualsIgnoringCase(fee.token.address, item)) || [],
     }));
   }, [squidEthRoute.data?.route.estimate.gasCosts]);
 
@@ -146,10 +146,8 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
         squidEthRoute.data?.route.estimate.feeCosts
           .filter((feeCost) => isEqualsIgnoringCase(feeCost.token.address, item) && feeCost.name !== 'Express Fee')
           .reduce((ac, cu) => (isEqualsIgnoringCase(item, cu.token.address) ? plus(ac, cu.amount) : ac), '0') || '0',
-      feeToken: {
-        ...squidEthRoute.data?.route.estimate.feeCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token,
-      } as TokenData | undefined,
-      feeItems: [...(squidEthRoute.data?.route.estimate.feeCosts.filter((fee) => isEqualsIgnoringCase(fee.token.address, item)) || [])],
+      feeToken: { ...squidEthRoute.data?.route.estimate.feeCosts.find((fee) => isEqualsIgnoringCase(fee.token.address, item))?.token } as TokenData | undefined,
+      feeItems: squidEthRoute.data?.route.estimate.feeCosts.filter((fee) => isEqualsIgnoringCase(fee.token.address, item)) || [],
     }));
   }, [squidEthRoute.data?.route.estimate.feeCosts]);
 
