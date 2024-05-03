@@ -50,7 +50,13 @@ export default function Entry() {
         throw Error(`Can't add ${data.chainId}`);
       }
 
-      await addEthereumNetwork({ ...data, chainId: convertChainId, decimals: 18 });
+      await addEthereumNetwork({
+        ...data,
+        tokenImageURL: data.tokenImageURL || data.imageURL,
+        imageURL: data.imageURL || data.tokenImageURL,
+        chainId: convertChainId,
+        decimals: 18,
+      });
 
       enqueueSnackbar(t('pages.Chain.Ethereum.Network.Add.entry.addNetworkSnackbar'));
       reset();
@@ -130,6 +136,16 @@ export default function Entry() {
                 error={!!errors.imageURL}
                 helperText={errors.imageURL?.message}
                 placeholder={t('pages.Chain.Ethereum.Network.Add.entry.imageURLPlaceholder')}
+              />
+            </Div>
+
+            <Div sx={{ marginBottom: '0.8rem' }}>
+              <Input
+                type="text"
+                inputProps={register('tokenImageURL')}
+                error={!!errors.tokenImageURL}
+                helperText={errors.tokenImageURL?.message}
+                placeholder={t('pages.Chain.Ethereum.Network.Add.entry.tokenImageURLPlaceholder')}
               />
             </Div>
 

@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import nobleImg from '~/images/symbols/noble.png';
+import nobleChainImg from '~/images/chainImgs/noble.png';
+import nobleTokenImg from '~/images/symbols/stake.png';
 import type { CosmosChain, CosmosGasRate } from '~/types/chain';
 
 export const NOBLE: CosmosChain = {
@@ -7,9 +8,10 @@ export const NOBLE: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'noble-1',
-  chainName: 'Noble',
+  chainName: 'NOBLE',
   restURL: 'https://lcd-noble.cosmostation.io',
-  imageURL: nobleImg,
+  tokenImageURL: nobleTokenImg,
+  imageURL: nobleChainImg,
   baseDenom: 'ustake',
   displayDenom: 'NOBLE',
   decimals: 6,

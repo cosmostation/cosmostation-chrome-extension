@@ -19,18 +19,18 @@ type CoinListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomShe
 
 export default function CoinListBottomSheet({ coinOrTokenInfos, currentCoinOrTokenInfo, onClickCoinOrToken, onClose, ...remainder }: CoinListBottomSheetProps) {
   const { t } = useTranslation();
+
   const ref = useRef<HTMLButtonElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
   const [viewLimit, setViewLimit] = useState(30);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     if (remainder.open) {
       setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0);
     }
   }, [remainder.open]);
-
-  const [search, setSearch] = useState('');
 
   const filteredCoinOrTokenList = useMemo(
     () =>

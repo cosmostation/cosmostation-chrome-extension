@@ -1,5 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import nyxImg from '~/images/symbols/nyx.png';
+import nyxChainImg from '~/images/chainImgs/nyx.png';
+import nyxTokenImg from '~/images/symbols/nyx.png';
 import type { CosmosChain, CosmosGasRate } from '~/types/chain';
 
 export const NYX: CosmosChain = {
@@ -7,9 +8,10 @@ export const NYX: CosmosChain = {
   line: 'COSMOS',
   type: '',
   chainId: 'nyx',
-  chainName: 'Nyx',
+  chainName: 'NYX',
   restURL: 'https://lcd-nyx.cosmostation.io',
-  imageURL: nyxImg,
+  tokenImageURL: nyxTokenImg,
+  imageURL: nyxChainImg,
   baseDenom: 'unyx',
   displayDenom: 'NYX',
   decimals: 6,

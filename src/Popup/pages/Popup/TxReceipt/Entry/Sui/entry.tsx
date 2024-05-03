@@ -6,6 +6,7 @@ import { Typography } from '@mui/material';
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '~/constants/error';
 import { TRANSACTION_RESULT } from '~/constants/sui';
 import { TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
+import unknownChainImg from '~/images/chainImgs/unknown.png';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
 import NumberText from '~/Popup/components/common/Number';
@@ -132,7 +133,7 @@ export default function Sui({ txDigest }: SuiProps) {
 
           <ImageTextContainer>
             <NetworkImageContainer>
-              <Image src={imageURL} />
+              <Image src={imageURL} defaultImgSrc={unknownChainImg} />
             </NetworkImageContainer>
 
             <Typography variant="h5">{networkName}</Typography>

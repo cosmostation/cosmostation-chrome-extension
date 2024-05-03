@@ -1,4 +1,4 @@
-import type { ComponentProps } from 'react';
+import { type ComponentProps, useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
@@ -30,13 +30,25 @@ export default function CoinButton({ currentToken, isActive, ...remainder }: Coi
 
   const isNative = currentToken === null;
 
-  const decimals = isNative ? currentEthereumNetwork.decimals : currentToken.decimals;
+  const decimals = useMemo(
+    () => (isNative ? currentEthereumNetwork.decimals : currentToken.decimals),
+    [currentEthereumNetwork.decimals, currentToken?.decimals, isNative],
+  );
 
-  const baseAmount = isNative ? BigInt(balance.data?.result || '0').toString(10) : BigInt(tokenBalace.data || '0').toString(10);
+  const baseAmount = useMemo(
+    () => (isNative ? BigInt(balance.data?.result || '0').toString(10) : BigInt(tokenBalace.data || '0').toString(10)),
+    [balance.data?.result, isNative, tokenBalace.data],
+  );
 
-  const imageURL = isNative ? currentEthereumNetwork.imageURL : currentToken.imageURL;
-  const displayDenom = isNative ? currentEthereumNetwork.displayDenom : currentToken.displayDenom;
-  const displayAmount = toDisplayDenomAmount(baseAmount, decimals);
+  const imageURL = useMemo(
+    () => (isNative ? currentEthereumNetwork.tokenImageURL : currentToken.imageURL),
+    [currentEthereumNetwork.tokenImageURL, currentToken?.imageURL, isNative],
+  );
+  const displayDenom = useMemo(
+    () => (isNative ? currentEthereumNetwork.displayDenom : currentToken.displayDenom),
+    [currentEthereumNetwork.displayDenom, currentToken?.displayDenom, isNative],
+  );
+  const displayAmount = useMemo(() => toDisplayDenomAmount(baseAmount, decimals), [baseAmount, decimals]);
 
   return (
     <Button type="button" {...remainder}>
