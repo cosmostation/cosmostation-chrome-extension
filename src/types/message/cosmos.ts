@@ -56,7 +56,7 @@ export type CosAccount = {
 
 export type CosAccountResponse = { publicKey: string; address: string; name: string; isLedger: boolean; isEthermint: boolean };
 
-export type CosAccountResponses = CosAccountResponse[];
+export type CosAccountsResponse = CosAccountResponse[];
 
 export type CosSendTransactionParams = {
   chainName: string;
@@ -135,7 +135,7 @@ export type CosRequestAccounts = {
 
 export type CosRequestAccountResponse = CosAccountResponse;
 
-export type CosRequestAccountsResponse = CosAccountResponses;
+export type CosRequestAccountsResponse = CosAccountsResponse;
 
 export type CosAddChainParams = {
   type?: CosmosType;
