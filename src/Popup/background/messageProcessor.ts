@@ -1039,7 +1039,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
               const chainId = param2?.domain?.chainId;
 
-              if (chainId && toHex(chainId, { addPrefix: true }) !== currentNetwork.chainId) {
+              if (chainId && toHex(chainId, { addPrefix: true, isStringNumber: true }) !== currentNetwork.chainId) {
                 throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid chainId', message.id);
               }
 
