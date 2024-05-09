@@ -24,6 +24,7 @@ import type {
   CosGetBalanceCW20,
   CosGetTokenInfoCW20,
   CosRequestAccount,
+  CosRequestAccounts,
   CosSendTransaction,
   CosSignAmino,
   CosSignDirect,
@@ -92,6 +93,7 @@ export type EthereumRequestMessage =
 
 export type CosmosRequestMessage =
   | CosRequestAccount
+  | CosRequestAccounts
   | CosAddChain
   | CosSignAmino
   | CosSignDirect
