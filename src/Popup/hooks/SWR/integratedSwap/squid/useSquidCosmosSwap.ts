@@ -34,6 +34,7 @@ type UseSquidCosmosSwapProps = {
   receiverAddress: string;
   slippage: string;
   feeToken: IntegratedSwapFeeToken;
+  fallbackAddress?: string;
 };
 
 type SquidContractSwapMsg = {
@@ -58,6 +59,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   const receiverAddress = useMemo(() => squidSwapProps?.receiverAddress, [squidSwapProps?.receiverAddress]);
   const slippage = useMemo(() => squidSwapProps?.slippage || '1', [squidSwapProps?.slippage]);
   const feeToken = useMemo(() => squidSwapProps?.feeToken, [squidSwapProps?.feeToken]);
+  const fallbackAddress = useMemo(() => squidSwapProps?.fallbackAddress, [squidSwapProps?.fallbackAddress]);
 
   const account = useAccountSWR(fromChain || COSMOS_CHAINS[0]);
   const nodeInfo = useNodeInfoSWR(fromChain || COSMOS_CHAINS[0]);
@@ -90,20 +92,28 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
           integratorAddress: SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS,
           fee: SQUID_COLLECT_FEE_BPF,
         },
-        enableForecall: true,
         enableExpress: false,
+        fallbackAddresses: fallbackAddress
+          ? [
+              {
+                address: fallbackAddress,
+                coinType: '118',
+              },
+            ]
+          : undefined,
       };
     }
     return undefined;
   }, [
-    toToken?.tokenAddressOrDenom,
+    fallbackAddress,
     fromChain?.chainId,
+    fromToken?.tokenAddressOrDenom,
     inputBaseAmount,
     receiverAddress,
-    slippage,
-    fromToken?.tokenAddressOrDenom,
-    toChain?.chainId,
     senderAddress,
+    slippage,
+    toChain?.chainId,
+    toToken?.tokenAddressOrDenom,
   ]);
 
   const squidCosmosRoute = useSquidRouteSWR(squidRouteParam);
