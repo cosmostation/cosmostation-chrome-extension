@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 
-import { STARGAZE } from '~/constants/chain/cosmos/stargaze';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
@@ -16,12 +15,11 @@ import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, gt, gte, lt, times } from '~/Popup/utils/big';
+import { ceil, divide, equal, gte, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getDefaultAV, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, decodeProtobufMessage, protoTxBytes } from '~/Popup/utils/proto';
-import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
@@ -57,7 +55,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { message, messageId, origin, channel } = queue;
 
   const {
-    params: { doc, isEditFee, isEditMemo, isCheckBalance, gasRate },
+    params: { doc, isEditFee = true, isEditMemo = true, isCheckBalance = true, gasRate },
   } = message;
 
   const auth_info_bytes = useMemo(() => new Uint8Array(doc.auth_info_bytes), [doc.auth_info_bytes]);
@@ -69,7 +67,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [customGas, setCustomGas] = useState<string | undefined>();
 
   const [customGasRateKey, setCustomGasRateKey] = useState<GasRateKey | undefined>();
-  const currentGasRateKey = useMemo(() => customGasRateKey || defaultGasRateKey, [defaultGasRateKey, customGasRateKey]);
+  const currentGasRateKey = useMemo(() => customGasRateKey || (isEditFee ? defaultGasRateKey : undefined), [customGasRateKey, defaultGasRateKey, isEditFee]);
 
   const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
 
@@ -97,21 +95,6 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputFeeAmount = useMemo(() => inputFee.amount || '0', [inputFee.amount]);
 
-  const isInvalidFeeRequest = useMemo(() => !isEditFee && lt(inputGas, '1') && lt(inputFeeAmount, '1'), [inputFeeAmount, inputGas, isEditFee]);
-
-  const isGasOverrideRestrictedChain = useMemo(() => {
-    const restrictedChainList = [STARGAZE];
-
-    return restrictedChainList.some((item) => isEqualsIgnoringCase(item.id, chain.id));
-  }, [chain.id]);
-
-  const isEditFeeModeActivatable = useMemo(
-    () => (isGasOverrideRestrictedChain ? isEditFee && gt(inputGas, '1') && gt(inputFeeAmount, '1') : isEditFee),
-    [inputFeeAmount, inputGas, isEditFee, isGasOverrideRestrictedChain],
-  );
-
-  const isNeedToReplaceFeeAmount = useMemo(() => isEditFeeModeActivatable || isInvalidFeeRequest, [isEditFeeModeActivatable, isInvalidFeeRequest]);
-
   const [currentFeeBaseDenom, setCurrentFeeBaseDenom] = useState(
     feeCoins.find((item) => item.baseDenom === inputFee.denom)?.baseDenom ?? feeCoins[0].baseDenom,
   );
@@ -119,7 +102,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const currentFeeCoin = useMemo(() => feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) ?? feeCoins[0], [currentFeeBaseDenom, feeCoins]);
 
   const memoizedProtoTx = useMemo(() => {
-    if (isNeedToReplaceFeeAmount) {
+    if (isEditFee) {
       return protoTxBytes({
         signature: Buffer.from(new Uint8Array(64)).toString('base64'),
         txBodyBytes: body_bytes,
@@ -127,7 +110,7 @@ export default function Entry({ queue, chain }: EntryProps) {
       });
     }
     return null;
-  }, [auth_info_bytes, body_bytes, isNeedToReplaceFeeAmount]);
+  }, [auth_info_bytes, body_bytes, isEditFee]);
 
   const simulate = useSimulateSWR({ chain, txBytes: memoizedProtoTx?.tx_bytes });
 
@@ -142,9 +125,15 @@ export default function Entry({ queue, chain }: EntryProps) {
   );
   const currentFeeGasRate = useMemo(() => currentFeeCoin.gasRate || gasRate || chain.gasRate, [chain.gasRate, currentFeeCoin.gasRate, gasRate]);
 
+  const isFeeCustomed = useMemo(() => !!customGas || !!customGasRateKey, [customGasRateKey, customGas]);
+
+  const isFeeUpdateAllowed = useMemo(() => isEditFee || isFeeCustomed, [isFeeCustomed, isEditFee]);
+
+  const initialGasRate = useMemo(() => (equal(inputGas, '0') ? '0' : divide(inputFeeAmount, inputGas)), [inputFeeAmount, inputGas]);
+
   const baseFee = useMemo(
-    () => (isNeedToReplaceFeeAmount ? times(currentGas, currentFeeGasRate[currentGasRateKey]) : inputFeeAmount),
-    [currentFeeGasRate, currentGas, currentGasRateKey, inputFeeAmount, isNeedToReplaceFeeAmount],
+    () => (isFeeUpdateAllowed ? times(currentGas, currentGasRateKey ? currentFeeGasRate[currentGasRateKey] : initialGasRate) : inputFeeAmount),
+    [currentFeeGasRate, currentGas, currentGasRateKey, initialGasRate, inputFeeAmount, isFeeUpdateAllowed],
   );
 
   const ceilBaseFee = useMemo(() => ceil(baseFee), [baseFee]);
@@ -161,8 +150,8 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const bodyBytes = useMemo(() => (isEditMemo ? encodedBodyBytes : body_bytes), [body_bytes, encodedBodyBytes, isEditMemo]);
   const authInfoBytes = useMemo(
-    () => (isNeedToReplaceFeeAmount ? encodedAuthInfoBytes : auth_info_bytes),
-    [auth_info_bytes, encodedAuthInfoBytes, isNeedToReplaceFeeAmount],
+    () => (isFeeUpdateAllowed ? encodedAuthInfoBytes : auth_info_bytes),
+    [auth_info_bytes, encodedAuthInfoBytes, isFeeUpdateAllowed],
   );
 
   const decodedChangedBodyBytes = useMemo(() => cosmos.tx.v1beta1.TxBody.decode(bodyBytes), [bodyBytes]);
@@ -248,7 +237,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                 onChangeGasRateKey={(gasRateKey) => {
                   setCustomGasRateKey(gasRateKey);
                 }}
-                isEdit={isNeedToReplaceFeeAmount}
+                isEdit
               />
             </FeeContainer>
           )}

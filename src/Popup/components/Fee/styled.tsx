@@ -59,6 +59,10 @@ export const GasButton = styled('button')(({ theme }) => ({
   color: theme.accentColors.purple01,
 
   cursor: 'pointer',
+
+  '&:hover': {
+    opacity: 0.8,
+  },
 }));
 export const FeeSettingButton = styled('button')(({ theme }) => ({
   border: 0,
@@ -73,6 +77,10 @@ export const FeeSettingButton = styled('button')(({ theme }) => ({
 
   '& > svg': {
     fill: theme.colors.base06,
+  },
+
+  '&:hover': {
+    opacity: 0.8,
   },
 }));
 
@@ -98,4 +106,8 @@ export const FeeButton = styled('button')<FeeButtonProps>(({ theme, ...props }) 
   color: props['data-is-active'] ? theme.accentColors.white : theme.colors.text02,
 
   cursor: 'pointer',
+
+  '&:hover': {
+    opacity: 0.8,
+  },
 }));

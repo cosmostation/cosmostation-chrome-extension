@@ -560,6 +560,9 @@ export default function Send({ chain }: CosmosProps) {
                       params: {
                         chainName: chain.chainName,
                         doc: { ...sendAminoTx, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }], gas: currentGas } },
+                        isEditFee: false,
+                        isEditMemo: false,
+                        isCheckBalance: false,
                       },
                     },
                   });
