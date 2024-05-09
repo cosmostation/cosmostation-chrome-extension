@@ -63,7 +63,7 @@ export function toHex(datum?: number | string, options?: toHexOptions) {
   return result;
 }
 
-export function fromHex(hex?: string) {
+export function hexToDecimal(hex?: string) {
   if (!hex || !/^(0x)?[0-9A-Fa-f]+$/.test(hex)) return '';
 
   return BigInt(hex).toString(10);

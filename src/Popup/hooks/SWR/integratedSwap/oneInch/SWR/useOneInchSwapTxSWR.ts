@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { FEE_RATIO, ONEINCH_SWAP_BASE_URL, REFERRER_ADDRESS } from '~/constants/1inch';
 import { get } from '~/Popup/utils/axios';
-import { fromHex } from '~/Popup/utils/string';
+import { hexToDecimal } from '~/Popup/utils/string';
 import type { OneInchSwapPayload } from '~/types/1inch/swap';
 
 type OneInchSwapError = {
@@ -31,7 +31,7 @@ export type UseOneInchSwapSWRProps = {
 };
 
 export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?: SWRConfiguration) {
-  const parsedChainId = useMemo(() => fromHex(swapParam?.chainId), [swapParam?.chainId]);
+  const parsedChainId = useMemo(() => hexToDecimal(swapParam?.chainId), [swapParam?.chainId]);
 
   const requestURL = useMemo(
     () =>

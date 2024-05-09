@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { ONEINCH_SWAP_BASE_URL } from '~/constants/1inch';
 import { get } from '~/Popup/utils/axios';
-import { fromHex } from '~/Popup/utils/string';
+import { hexToDecimal } from '~/Popup/utils/string';
 import type { AllowanceTxPayload } from '~/types/1inch/allowance';
 
 type UseAllowanceTxSWRProps = {
@@ -14,7 +14,7 @@ type UseAllowanceTxSWRProps = {
 };
 
 export function useAllowanceTxSWR(allowanceTxParam?: UseAllowanceTxSWRProps, config?: SWRConfiguration) {
-  const parsedChainId = useMemo(() => fromHex(allowanceTxParam?.chainId), [allowanceTxParam?.chainId]);
+  const parsedChainId = useMemo(() => hexToDecimal(allowanceTxParam?.chainId), [allowanceTxParam?.chainId]);
 
   const requestURL = useMemo(
     () => `${ONEINCH_SWAP_BASE_URL}/${parsedChainId || ''}/approve/transaction?tokenAddress=${allowanceTxParam?.tokenAddress || ''}`,
