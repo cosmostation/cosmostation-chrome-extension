@@ -4,6 +4,7 @@ import { Interface } from '@ethersproject/abi';
 
 import { ERC20_ABI } from '~/constants/abi';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
 import { SQUID_COLLECT_FEE_BPF, SQUID_COLLECT_FEE_INTEGRATOR_ADDRESS, SQUID_CONTRACT_ADDRESS, SQUID_MAX_APPROVE_AMOUNT } from '~/constants/squid';
 import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
@@ -195,12 +196,18 @@ export function useSquidSwap(squidSwapProps?: UseSquidSwapProps) {
   }, [cosmosToTokenAssets.data, squidEthRoute.data?.route.estimate.feeCosts, supportedSquidTokens?.mainnet]);
 
   const squidEthSourceChainFeeAmount = useMemo(
-    () => squidEthSourceChainGasCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0',
+    () =>
+      squidEthSourceChainGasCosts
+        ?.filter((item) => isEqualsIgnoringCase(item.feeToken?.address, EVM_NATIVE_TOKEN_ADDRESS))
+        .reduce((ac, cu) => plus(ac, cu.amount), '0') || '0',
     [squidEthSourceChainGasCosts],
   );
 
   const squidEthCrossChainFeeAmount = useMemo(
-    () => squidEthCrossChainFeeCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0',
+    () =>
+      squidEthCrossChainFeeCosts
+        ?.filter((item) => isEqualsIgnoringCase(item.feeToken?.address, EVM_NATIVE_TOKEN_ADDRESS))
+        .reduce((ac, cu) => plus(ac, cu.amount), '0') || '0',
     [squidEthCrossChainFeeCosts],
   );
 

@@ -1114,7 +1114,7 @@ export default function Entry() {
   const cosmosGasRate = useGasRateSWR(selectedFromCosmosChain || COSMOS);
 
   const estimatedFeeBaseAmount = useMemo(() => {
-    if ((currentSwapAPI === 'skip' || currentSwapAPI === 'squid_cosmos') && selectedFromCosmosChain) {
+    if (currentSwapAPI === 'skip' && selectedFromCosmosChain) {
       return ceil(
         times(
           estimatedGas,
@@ -1128,17 +1128,8 @@ export default function Entry() {
       return times(estimatedGas, oneInchRoute.data.tx.gasPrice);
     }
 
-    if (currentSwapAPI === 'squid_evm') {
-      if (
-        squidSwap.squidSourceChainGasCosts?.every(
-          (item, idx) =>
-            isEqualsIgnoringCase(item.feeToken?.address, squidSwap.squidCrossChainFeeCosts?.[idx].feeToken?.address) &&
-            isEqualsIgnoringCase(item.feeToken?.address, EVM_NATIVE_TOKEN_ADDRESS),
-        )
-      ) {
-        return plus(squidSwap.squidSourceChainFeeAmount, squidSwap.squidCrossChainFeeAmount);
-      }
-      return squidSwap.squidSourceChainFeeAmount || '0';
+    if (currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') {
+      return plus(squidSwap.squidSourceChainFeeAmount || '0', squidSwap.squidCrossChainFeeAmount || '0');
     }
 
     return '0';
@@ -1151,9 +1142,7 @@ export default function Entry() {
     oneInchRoute.data,
     selectedFromCosmosChain,
     squidSwap.squidCrossChainFeeAmount,
-    squidSwap.squidCrossChainFeeCosts,
     squidSwap.squidSourceChainFeeAmount,
-    squidSwap.squidSourceChainGasCosts,
   ]);
 
   const estimatedFeeDisplayAmount = useMemo(
@@ -1162,11 +1151,11 @@ export default function Entry() {
   );
 
   const estimatedFeePrice = useMemo(() => {
-    if (currentSwapAPI === 'skip' || currentSwapAPI === '1inch' || currentSwapAPI === 'squid_cosmos') {
+    if (currentSwapAPI === 'skip' || currentSwapAPI === '1inch') {
       return times(estimatedFeeDisplayAmount, currentFeeTokenPrice);
     }
 
-    if (currentSwapAPI === 'squid_evm') {
+    if (currentSwapAPI === 'squid_evm' || currentSwapAPI === 'squid_cosmos') {
       return squidSwap?.estimatedSquidFeePrice || '0';
     }
 

@@ -162,13 +162,19 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   }, [cosmosFromTokenAssets.data, squidCosmosRoute.data?.route.estimate.feeCosts]);
 
   const squidCosmosSourceChainFeeAmount = useMemo(
-    () => squidCosmosSourceChainGasCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0',
-    [squidCosmosSourceChainGasCosts],
+    () =>
+      squidCosmosSourceChainGasCosts
+        ?.filter((item) => isEqualsIgnoringCase(item.feeToken?.address, feeToken?.tokenAddressOrDenom))
+        .reduce((ac, cu) => plus(ac, cu.amount), '0') || '0',
+    [feeToken?.tokenAddressOrDenom, squidCosmosSourceChainGasCosts],
   );
 
   const squidCosmosCrossChainFeeAmount = useMemo(
-    () => squidCosmosCrossChainFeeCosts?.reduce((ac, cu) => plus(ac, cu.amount), '0') || '0',
-    [squidCosmosCrossChainFeeCosts],
+    () =>
+      squidCosmosCrossChainFeeCosts
+        ?.filter((item) => isEqualsIgnoringCase(item.feeToken?.address, feeToken?.tokenAddressOrDenom))
+        .reduce((ac, cu) => plus(ac, cu.amount), '0') || '0',
+    [feeToken?.tokenAddressOrDenom, squidCosmosCrossChainFeeCosts],
   );
 
   const squidSourceChainTotalFeePrice = useMemo(
