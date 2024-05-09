@@ -17,12 +17,13 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+import { useCommissionSWR } from '~/Popup/hooks/SWR/cosmos/useCommissionSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useRewardSWR } from '~/Popup/hooks/SWR/cosmos/useRewardSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useValidatorsSWR } from '~/Popup/hooks/SWR/useValidatorsSWR';
+import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -31,7 +32,7 @@ import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
-import { getPublicKeyType } from '~/Popup/utils/cosmos';
+import { convertToValidatorAddress, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-v0.44.2.js';
@@ -93,7 +94,6 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const { currentPassword } = useCurrentPassword();
   const { extensionStorage } = useExtensionStorage();
   const reward = useRewardSWR(chain);
-  const validators = useValidatorsSWR();
 
   const account = useAccountSWR(chain);
   const accounts = useAccounts(true);
@@ -131,8 +131,6 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     () => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[chain.id] || '',
     [accounts?.data, chain.id, currentAccount.id],
   );
-
-  const operatorAddress = useMemo(() => validators.data?.find((item) => item.address === currentAddress)?.operatorAddress, [currentAddress, validators.data]);
 
   const { data: gasMultiply } = useGasMultiplySWR(chain);
 
@@ -188,6 +186,19 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const rewardSimulate = useSimulateSWR({ chain, txBytes: rewardProtoTx?.tx_bytes });
 
+  const params = useParamsSWR(chain);
+
+  const validatorAddressPrefix = useMemo(
+    () => params.data?.params?.chainlist_params?.bechValidatorPrefix || '',
+    [params.data?.params?.chainlist_params?.bechValidatorPrefix],
+  );
+
+  const validatorAddress = useMemo(() => convertToValidatorAddress(currentAddress, validatorAddressPrefix), [currentAddress, validatorAddressPrefix]);
+
+  const commission = useCommissionSWR(chain, validatorAddress);
+
+  const isValidatorAccount = useMemo(() => gt(commission.data?.commission?.commission?.length || 0, '0'), [commission.data?.commission?.commission?.length]);
+
   const rewardTxGas = useMemo(
     () => times(rewardSimulate.data?.gas_info?.gas_used || COSMOS_DEFAULT_REWARD_GAS, gasMultiply, 0),
     [gasMultiply, rewardSimulate.data?.gas_info?.gas_used],
@@ -201,7 +212,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const currentCeilRewardFeeAmount = useMemo(() => ceil(currentRewardFeeAmount), [currentRewardFeeAmount]);
 
   const commissionAminoTx = useMemo<SignAminoDoc<MsgCommission> | undefined>(() => {
-    if (operatorAddress && account.data?.value.account_number && account.data.value.sequence) {
+    if (isValidatorAccount && validatorAddress && account.data?.value.account_number && account.data.value.sequence) {
       return {
         account_number: account.data.value.account_number,
         sequence: account.data.value.sequence,
@@ -218,7 +229,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         msgs: [
           {
             type: 'cosmos-sdk/MsgWithdrawValidatorCommission',
-            value: { validator_address: operatorAddress },
+            value: { validator_address: validatorAddress },
           },
         ],
         memo: '',
@@ -234,7 +245,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     currentFeeCoin.baseDenom,
     currentFeeCoin.gasRate,
     defaultGasRateKey,
-    operatorAddress,
+    isValidatorAccount,
+    validatorAddress,
   ]);
 
   const commissionProtoTx = useMemo(() => {
@@ -262,7 +274,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const currentCeilCommissionFeeAmount = useMemo(() => ceil(currentCommissionFeeAmount), [currentCommissionFeeAmount]);
 
   const commissionDirectTx = useMemo(() => {
-    if (operatorAddress && account.data?.value.account_number && account.data.value.sequence) {
+    if (isValidatorAccount && validatorAddress && account.data?.value.account_number && account.data.value.sequence) {
       const commissionSimulatedAminoTx = {
         account_number: account.data.value.account_number,
         sequence: account.data.value.sequence,
@@ -274,7 +286,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         msgs: [
           {
             type: 'cosmos-sdk/MsgWithdrawValidatorCommission',
-            value: { validator_address: operatorAddress },
+            value: { validator_address: validatorAddress },
           },
         ],
         memo: '',
@@ -299,15 +311,16 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     }
     return undefined;
   }, [
-    operatorAddress,
     account.data?.value.account_number,
     account.data?.value.sequence,
     chain,
-    currentCeilCommissionFeeAmount,
-    currentFeeCoin.baseDenom,
     commissionTxGas,
     currentAccount,
+    currentCeilCommissionFeeAmount,
+    currentFeeCoin.baseDenom,
     currentPassword,
+    isValidatorAccount,
+    validatorAddress,
   ]);
 
   const handleOnClickCopy = () => {
@@ -524,7 +537,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
               >
                 {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
               </ClaimButton>
-              {operatorAddress && (
+              {isValidatorAccount && (
                 <ClaimButton
                   Icon={Reward16Icon}
                   type="button"
@@ -600,8 +613,6 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 
   const { currentAccount } = useCurrentAccount();
 
-  const validators = useValidatorsSWR();
-
   const { currentPassword } = useCurrentPassword();
 
   const { explorerURL } = chain;
@@ -624,7 +635,18 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
     return getAddress(chain, keyPair?.publicKey);
   }, [chain, currentAccount, currentPassword]);
 
-  const operatorAddress = useMemo(() => validators.data?.find((item) => item.address === address)?.operatorAddress, [address, validators.data]);
+  const params = useParamsSWR(chain);
+
+  const validatorAddressPrefix = useMemo(
+    () => params.data?.params?.chainlist_params?.bechValidatorPrefix || '',
+    [params.data?.params?.chainlist_params?.bechValidatorPrefix],
+  );
+
+  const operatorAddress = useMemo(() => convertToValidatorAddress(address, validatorAddressPrefix), [address, validatorAddressPrefix]);
+
+  const commission = useCommissionSWR(chain, operatorAddress);
+
+  const isValidatorAccount = useMemo(() => gt(commission.data?.commission?.commission?.length || 0, '0'), [commission.data?.commission?.commission?.length]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -729,7 +751,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
               <ClaimButton Icon={Reward16Icon} type="button" disabled>
                 {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
               </ClaimButton>
-              {operatorAddress && (
+              {isValidatorAccount && (
                 <ClaimButton Icon={Reward16Icon} type="button" disabled>
                   {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
                 </ClaimButton>

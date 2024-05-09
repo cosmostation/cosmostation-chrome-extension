@@ -1,8 +1,8 @@
 export type ParamsResponse = Record<string, ChainParams>;
 
 export type ChainParams = {
-  chain_id: string;
-  block_time: number;
+  chain_id?: string;
+  block_time?: number;
   gas_price?: GasPrice;
   params?: Params;
 };
@@ -18,6 +18,19 @@ export type Params = {
 };
 
 export type ChainlistParams = {
+  chain_id_cosmos?: string;
+  chain_id_evm?: string;
+  chain_name?: string;
+  chain_image?: string;
+  symbol?: string;
+  symbol_image?: string;
+  bechAccountPrefix?: string;
+  bechValidatorPrefix?: string;
+  accountType?: {
+    hd_path?: string;
+    pubkey_style?: string;
+    pubkey_type?: string;
+  };
   fee?: Fee;
   grpc_endpoint?: GrpcEndpoint[];
   about?: About;
