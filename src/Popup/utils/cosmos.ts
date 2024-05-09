@@ -73,6 +73,7 @@ export function cosmosURL(chain: CosmosChain) {
     simulate: () => `${restURL}/cosmos/tx/v1beta1/simulate`,
     getTxInfo: (txHash: string) => `${restURL}/cosmos/tx/v1beta1/txs/${txHash}`,
     getBlockLatest: () => (id === GRAVITY_BRIDGE.id ? `${restURL}/blocks/latest` : `${restURL}/cosmos/base/tendermint/v1beta1/blocks/latest`),
+    getCommission: (validatorAddress: string) => `${restURL}/cosmos/distribution/v1beta1/validators/${validatorAddress}/commission`,
   };
 }
 
@@ -85,6 +86,15 @@ export function getAddress(publicKey: Buffer, prefix: string) {
   const result = bech32.encode(prefix, words);
 
   return result;
+}
+
+export function convertToValidatorAddress(address?: string, validatorPrefix?: string) {
+  if (!address || !validatorPrefix) {
+    return undefined;
+  }
+
+  const { words } = bech32.decode(address);
+  return bech32.encode(validatorPrefix, words);
 }
 
 export function getAddressForEthermint(publicKey: Buffer, prefix: string) {
