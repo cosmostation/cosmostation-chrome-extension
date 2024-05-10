@@ -34,7 +34,6 @@ import { useSkipSupportChainsSWR } from '~/Popup/hooks/SWR/integratedSwap/skip/S
 import { useSkipSupportTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/skip/SWR/useSkipSupportTokensSWR';
 import { useSkipSwap } from '~/Popup/hooks/SWR/integratedSwap/skip/useSkipSwap';
 import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/integratedSwap/squid/SWR/useSquidAssetsSWR';
-import { useSquidTokensSWR } from '~/Popup/hooks/SWR/integratedSwap/squid/SWR/useSquidTokensSWR';
 import { useSquidCosmosSwap } from '~/Popup/hooks/SWR/integratedSwap/squid/useSquidCosmosSwap';
 import { useSquidSwap } from '~/Popup/hooks/SWR/integratedSwap/squid/useSquidSwap';
 import { useSupportSwapChainsSWR } from '~/Popup/hooks/SWR/integratedSwap/useSupportSwapChainsSWR';
@@ -376,8 +375,6 @@ export default function Entry() {
     network: currentToChain?.line === ETHEREUM.line ? currentToChain : undefined,
     token: currentToChain?.line === ETHEREUM.line ? (currentToToken as Omit<EthereumToken, 'id' | 'ethereumNetworkId' | 'tokenType'>) : undefined,
   });
-
-  const supportedSquidTokens = useSquidTokensSWR();
 
   const supportedSkipFromTokens = useSkipSupportTokensSWR(currentSwapAPI === 'skip' && currentFromChain.chainId ? currentFromChain.chainId : undefined);
 
@@ -837,7 +834,6 @@ export default function Entry() {
       currentToChain &&
       currentFromToken &&
       currentToToken &&
-      supportedSquidTokens.data &&
       currentToAddress
       ? {
           inputBaseAmount: currentInputBaseAmount,
@@ -845,7 +841,6 @@ export default function Entry() {
           toChain: currentToChain,
           fromToken: currentFromToken,
           toToken: currentToToken,
-          supportedSquidTokens: supportedSquidTokens.data,
           senderAddress: currentFromAddress,
           receiverAddress: currentToAddress,
           slippage: currentSlippage,
