@@ -1,7 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { LINE_TYPE } from '~/constants/chain';
+import { COSMOSTATION_ENCODED_LOGO_IMAGE, COSMOSTATION_RDNS, COSMOSTATION_WALLET_NAME } from '~/constants/common';
+import { EIP_6963_EVENTS } from '~/constants/ethereum';
 import { MESSAGE_TYPE } from '~/constants/message';
+import type { EIP6963ProviderDetail, EIP6963ProviderInfo } from '~/types/ethereum/eip6963';
 import type { ContentScriptToWebEventMessage, EthereumListenerType, EthereumRequestMessage, ListenerMessage, ResponseMessage } from '~/types/message';
 import type { EthRequestAccountsResponse } from '~/types/message/ethereum';
 
@@ -179,4 +182,31 @@ export const ethereum: Ethereum = {
     });
   },
   enable: () => request({ method: 'eth_requestAccounts', params: [] }) as Promise<EthRequestAccountsResponse>,
+};
+
+const providerUUID = uuidv4();
+
+const dispatchProviderAnnouncement = () => {
+  const info: EIP6963ProviderInfo = {
+    uuid: providerUUID,
+    name: COSMOSTATION_WALLET_NAME,
+    icon: COSMOSTATION_ENCODED_LOGO_IMAGE,
+    rdns: COSMOSTATION_RDNS,
+  };
+
+  const detail: EIP6963ProviderDetail = Object.freeze({ info, provider: ethereum });
+
+  window.dispatchEvent(
+    new CustomEvent(EIP_6963_EVENTS.announce, {
+      detail,
+    }),
+  );
+};
+
+export const announceEip6963Provider = () => {
+  window.addEventListener(EIP_6963_EVENTS.request, () => {
+    dispatchProviderAnnouncement();
+  });
+
+  dispatchProviderAnnouncement();
 };

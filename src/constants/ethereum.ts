@@ -62,3 +62,8 @@ export const GAS_SETTINGS_BY_GAS_RATE_KEY = {
     minMaxPriorityFeePerGas: '1000000000',
   },
 };
+
+export const EIP_6963_EVENTS = {
+  request: 'eip6963:requestProvider',
+  announce: 'eip6963:announceProvider',
+} as const;
