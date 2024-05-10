@@ -1,10 +1,13 @@
 import { forwardRef, useMemo } from 'react';
+import { isHexString } from 'ethereumjs-util';
 import { Typography } from '@mui/material';
 
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
+import { useSpotPriceSWR } from '~/Popup/hooks/SWR/integratedSwap/oneInch/SWR/useSporPriceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
@@ -33,17 +36,24 @@ type TokenItemProps = {
 };
 
 const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, onClickToken, isActive }, ref) => {
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
+
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { extensionStorage } = useExtensionStorage();
   const { currency } = extensionStorage;
+
+  const spotPriceData = useSpotPriceSWR(isHexString(tokenInfo.tokenAddressOrDenom) ? { chainId: currentEthereumNetwork.chainId, currency } : undefined);
 
   const amount = useMemo(() => tokenInfo.balance || '0', [tokenInfo.balance]);
 
   const coinDisplayDenomAmount = useMemo(() => toDisplayDenomAmount(amount, gt(amount, '0') ? tokenInfo.decimals : 0), [amount, tokenInfo.decimals]);
 
   const coinPrice = useMemo(
-    () => (tokenInfo.coinGeckoId && coinGeckoPrice.data?.[tokenInfo.coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoPrice.data, tokenInfo.coinGeckoId],
+    () =>
+      (tokenInfo.coinGeckoId && coinGeckoPrice.data?.[tokenInfo.coinGeckoId]?.[extensionStorage.currency]) ||
+      spotPriceData.data?.[tokenInfo.tokenAddressOrDenom] ||
+      0,
+    [coinGeckoPrice.data, extensionStorage.currency, spotPriceData.data, tokenInfo.tokenAddressOrDenom, tokenInfo.coinGeckoId],
   );
 
   const coinAmountPrice = useMemo(() => times(coinDisplayDenomAmount, coinPrice), [coinDisplayDenomAmount, coinPrice]);
@@ -81,7 +91,7 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
               </div>
             </Tooltip>
           </TokenRightTitleContainer>
-          {tokenInfo.coinGeckoId && (
+          {coinPrice && (
             <TokenRightSubTitleContainer>
               <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
                 {coinAmountPrice}

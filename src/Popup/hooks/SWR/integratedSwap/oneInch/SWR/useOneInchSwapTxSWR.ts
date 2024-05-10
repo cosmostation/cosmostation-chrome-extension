@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
 import { FEE_RATIO, ONEINCH_SWAP_BASE_URL, REFERRER_ADDRESS } from '~/constants/1inch';
 import { get } from '~/Popup/utils/axios';
+import { hexToDecimal } from '~/Popup/utils/string';
 import type { OneInchSwapPayload } from '~/types/1inch/swap';
 
 type OneInchSwapError = {
@@ -29,11 +31,15 @@ export type UseOneInchSwapSWRProps = {
 };
 
 export function useOneInchSwapTxSWR(swapParam?: UseOneInchSwapSWRProps, config?: SWRConfiguration) {
-  const requestURL = `${ONEINCH_SWAP_BASE_URL}/${swapParam?.chainId || ''}/swap?src=${swapParam?.fromTokenAddress || ''}&dst=${
-    swapParam?.toTokenAddress || ''
-  }&amount=${swapParam?.amount || ''}&from=${swapParam?.fromAddress || ''}&slippage=${swapParam?.slippage || ''}&referrer=${REFERRER_ADDRESS || ''}&fee=${
-    FEE_RATIO || ''
-  }`;
+  const parsedChainId = useMemo(() => hexToDecimal(swapParam?.chainId), [swapParam?.chainId]);
+
+  const requestURL = useMemo(
+    () =>
+      `${ONEINCH_SWAP_BASE_URL}/${parsedChainId || ''}/swap?src=${swapParam?.fromTokenAddress || ''}&dst=${swapParam?.toTokenAddress || ''}&amount=${
+        swapParam?.amount || ''
+      }&from=${swapParam?.fromAddress || ''}&slippage=${swapParam?.slippage || ''}&referrer=${REFERRER_ADDRESS || ''}&fee=${FEE_RATIO || ''}`,
+    [parsedChainId, swapParam?.amount, swapParam?.fromAddress, swapParam?.fromTokenAddress, swapParam?.slippage, swapParam?.toTokenAddress],
+  );
 
   const fetcher = (fetchUrl: string) => get<OneInchSwapPayload>(fetchUrl, { headers: { Authorization: `Bearer ${String(process.env.ONEINCH_API_KEY)}` } });
 

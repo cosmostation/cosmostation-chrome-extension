@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -6,6 +7,7 @@ import { ONEINCH_SWAP_BASE_URL } from '~/constants/1inch';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { get } from '~/Popup/utils/axios';
+import { hexToDecimal } from '~/Popup/utils/string';
 import type { AllowancePayload } from '~/types/1inch/allowance';
 
 type UseAllowanceSWRProps = {
@@ -17,9 +19,15 @@ type UseAllowanceSWRProps = {
 export function useAllowanceSWR(allowanceParam?: UseAllowanceSWRProps, config?: SWRConfiguration) {
   const { currentChain } = useCurrentChain();
 
-  const requestURL = `${ONEINCH_SWAP_BASE_URL}/${allowanceParam?.chainId || ''}/approve/allowance?tokenAddress=${
-    allowanceParam?.tokenAddress || ''
-  }&walletAddress=${allowanceParam?.walletAddress || ''}`;
+  const parsedChainId = useMemo(() => hexToDecimal(allowanceParam?.chainId), [allowanceParam?.chainId]);
+
+  const requestURL = useMemo(
+    () =>
+      `${ONEINCH_SWAP_BASE_URL}/${parsedChainId || ''}/approve/allowance?tokenAddress=${allowanceParam?.tokenAddress || ''}&walletAddress=${
+        allowanceParam?.walletAddress || ''
+      }`,
+    [allowanceParam?.tokenAddress, allowanceParam?.walletAddress, parsedChainId],
+  );
 
   const fetcher = (fetchUrl: string) =>
     get<AllowancePayload>(fetchUrl, {

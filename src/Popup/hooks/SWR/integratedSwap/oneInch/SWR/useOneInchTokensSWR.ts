@@ -6,13 +6,15 @@ import useSWR from 'swr';
 import { ONEINCH_SWAP_BASE_URL } from '~/constants/1inch';
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import { get } from '~/Popup/utils/axios';
-import { isEqualsIgnoringCase } from '~/Popup/utils/string';
+import { hexToDecimal, isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { Assets } from '~/types/1inch/swap';
 
 import { useTokensSWR } from '../../../ethereum/useTokensSWR';
 
 export function useOneInchTokensSWR(chainId?: string, config?: SWRConfiguration) {
-  const requestURL = `${ONEINCH_SWAP_BASE_URL}/${chainId || ''}/tokens`;
+  const parsedChainId = useMemo(() => hexToDecimal(chainId), [chainId]);
+
+  const requestURL = useMemo(() => `${ONEINCH_SWAP_BASE_URL}/${parsedChainId || ''}/tokens`, [parsedChainId]);
 
   const fetcher = (fetchUrl: string) => get<Assets>(fetchUrl, { headers: { Authorization: `Bearer ${String(process.env.ONEINCH_API_KEY)}` } });
 
@@ -20,11 +22,11 @@ export function useOneInchTokensSWR(chainId?: string, config?: SWRConfiguration)
     revalidateOnFocus: false,
     revalidateIfStale: false,
     revalidateOnReconnect: false,
-    isPaused: () => !chainId,
+    isPaused: () => !parsedChainId,
     ...config,
   });
 
-  const chain = useMemo(() => ETHEREUM_NETWORKS.find((item) => String(parseInt(item.chainId, 16)) === chainId), [chainId]);
+  const chain = useMemo(() => ETHEREUM_NETWORKS.find((item) => String(parseInt(item.chainId, 16)) === parsedChainId), [parsedChainId]);
   const tokens = useTokensSWR(chain);
 
   const returnData = useMemo(() => {
