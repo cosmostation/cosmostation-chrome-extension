@@ -53,8 +53,8 @@ export const cosAddChainParamsSchema = (chainNames: string[], officialChainIds: 
       .insensitive()
       .required(),
     restURL: Joi.string().required(),
-    tokenImageURL: Joi.string().optional(),
-    imageURL: Joi.string().optional(),
+    tokenImageURL: Joi.string().empty('').optional(),
+    imageURL: Joi.string().empty('').optional(),
     baseDenom: Joi.string().required(),
     displayDenom: Joi.string().required(),
     decimals: Joi.number().optional(),
@@ -231,8 +231,8 @@ export const cosAddTokensCW20ParamsSchema = (chainNames: string[], chain: Cosmos
       .items(
         Joi.object<CosAddTokensCW20['params']['tokens'][0]>({
           contractAddress: Joi.string().pattern(contractAddressRegex).required(),
-          coinGeckoId: Joi.string().optional(),
-          imageURL: Joi.string().optional(),
+          coinGeckoId: Joi.string().empty('').optional(),
+          imageURL: Joi.string().empty('').optional(),
         }),
       )
       .required(),
@@ -288,8 +288,8 @@ export const walletAddEthereumChainParamsSchema = () =>
         chainId: Joi.string().label('chainId').trim().required(),
         chainName: Joi.string().label('chainName').trim().required(),
         rpcUrls: Joi.array().label('rpcUrls').items(Joi.string().required()).required(),
-        blockExplorerUrls: Joi.array().label('blockExplorerUrls').items(Joi.string().required()).optional(),
-        iconUrls: Joi.array().label('iconUrls').items(Joi.string().required()).optional(),
+        blockExplorerUrls: Joi.array().label('blockExplorerUrls').items(Joi.string().allow('').optional()).optional(),
+        iconUrls: Joi.array().label('iconUrls').items(Joi.string().allow('').optional()).optional(),
         nativeCurrency: Joi.object<WalletAddEthereumChain['params'][0]['nativeCurrency']>({
           name: Joi.string().required(),
           symbol: Joi.string().required(),
@@ -385,8 +385,8 @@ export const WalletWatchAssetParamsSchema = () =>
       address: Joi.string().pattern(ethereumAddressRegex).required(),
       decimals: Joi.number().required(),
       symbol: Joi.string().required(),
-      image: Joi.optional(),
-      coinGeckoId: Joi.string().optional(),
+      image: Joi.string().empty('').optional(),
+      coinGeckoId: Joi.string().empty('').optional(),
     }),
   }).required();
 
