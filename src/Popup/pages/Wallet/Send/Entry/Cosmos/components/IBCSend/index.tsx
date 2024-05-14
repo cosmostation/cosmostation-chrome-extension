@@ -768,7 +768,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                         },
                         isEditFee: false,
                         isEditMemo: false,
-                        isCheckBalance: false,
+                        isCheckBalance: true,
                       },
                     },
                   });
