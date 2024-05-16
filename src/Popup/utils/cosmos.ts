@@ -66,7 +66,7 @@ export function cosmosURL(chain: CosmosChain) {
     getCW721ContractInfo: (contractAddress: string) => `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"contract_info":{}}')}`,
     getCW721NumTokens: (contractAddress: string) => `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"num_tokens":{}}')}`,
     getCW721CollectionInfo: (contractAddress: string) => `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"collection_info":{}}')}`,
-    getClientState: (channelId: string, port?: string) => `${restURL}/ibc/core/channel/${'v1'}/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
+    getClientState: (channelId: string, port?: string) => `${restURL}/ibc/core/channel/v1/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
     simulate: () => `${restURL}/cosmos/tx/v1beta1/simulate`,
     getTxInfo: (txHash: string) => `${restURL}/cosmos/tx/v1beta1/txs/${txHash}`,
     getBlockLatest: () => (id === GRAVITY_BRIDGE.id ? `${restURL}/blocks/latest` : `${restURL}/cosmos/base/tendermint/v1beta1/blocks/latest`),
