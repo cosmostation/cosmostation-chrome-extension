@@ -128,7 +128,7 @@ export const FooterLeftContainer = styled('div')(({ theme }) => ({
   wordBreak: 'keep-all',
 
   '& > *': {
-    overflow: 'hidden !important',
+    overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
   color: theme.colors.text02,
