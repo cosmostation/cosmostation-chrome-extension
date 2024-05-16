@@ -12,7 +12,6 @@ import { AXELAR } from './cosmos/axelar';
 import { BAND } from './cosmos/band';
 import { BITCANNA } from './cosmos/bitcanna';
 import { BITSONG } from './cosmos/bitsong';
-import { CANTO } from './cosmos/canto';
 import { CELESTIA } from './cosmos/celestia';
 import { CHIHUAHUA } from './cosmos/chihuahua';
 import { COMDEX } from './cosmos/comdex';
@@ -52,7 +51,6 @@ import { PERSISTENCE } from './cosmos/persistence';
 import { PROVENANCE } from './cosmos/provenance';
 import { QUASAR } from './cosmos/quasar';
 import { QUICK_SILVER } from './cosmos/quickSilver';
-import { REGEN } from './cosmos/regen';
 import { RIZON } from './cosmos/rizon';
 import { SAGA } from './cosmos/saga';
 import { SECRET } from './cosmos/secret';
@@ -71,7 +69,6 @@ import { ETHEREUM } from './ethereum/ethereum';
 import { ALTHEA as ETHEREUM_NETWORK__ALTHEA } from './ethereum/network/althea';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
-import { CANTO as ETHEREUM_NETWORK__CANTO } from './ethereum/network/canto';
 import { CRONOS as ETHEREUM_NETWORK__CRONOS } from './ethereum/network/cronos';
 import { DYMENSION as ETHEREUM_NETWORK_DYMENSION } from './ethereum/network/dymension';
 import { ETHEREUM as ETHEREUM_NETWORK__ETHEREUM } from './ethereum/network/ethereum';
@@ -120,7 +117,6 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   BAND,
   BITCANNA,
   BITSONG,
-  CANTO,
   CELESTIA,
   CHIHUAHUA,
   COMDEX,
@@ -159,7 +155,6 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   PROVENANCE,
   QUASAR,
   QUICK_SILVER,
-  REGEN,
   RIZON,
   SAGA,
   SECRET,
@@ -185,7 +180,6 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__ALTHEA,
   ETHEREUM_NETWORK__ARBITRUM,
   ETHEREUM_NETWORK__AVALANCHE,
-  ETHEREUM_NETWORK__CANTO,
   ETHEREUM_NETWORK__CRONOS,
   ETHEREUM_NETWORK__EVMOS,
   ETHEREUM_NETWORK__FANTOM,
