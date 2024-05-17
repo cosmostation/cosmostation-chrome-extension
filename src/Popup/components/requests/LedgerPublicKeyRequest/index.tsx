@@ -92,7 +92,9 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
   if (currentAccount.type === 'LEDGER' && chain && currentQueue) {
     if (
-      ![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS].includes(chain.bip44.coinType) &&
+      ![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.ETHERMINT, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS].includes(
+        chain.bip44.coinType,
+      ) &&
       chain.line === 'COSMOS'
     ) {
       return null;
@@ -100,6 +102,10 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
     if (
       (!currentAccount.cosmosPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS && chain.line === 'COSMOS') ||
+      (!currentAccount.ethermintPublicKey &&
+        chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT &&
+        chain.line === 'COSMOS' &&
+        chain.type === 'ETHERMINT') ||
       (!currentAccount.mediblocPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC && chain.line === 'COSMOS') ||
       (!currentAccount.cryptoOrgPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS && chain.line === 'COSMOS') ||
       (!currentAccount.ethereumPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM && chain.line === 'ETHEREUM') ||
@@ -107,6 +113,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
     ) {
       const Step2 = (() => {
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) return Step2CosmosIcon;
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT && chain.line === 'COSMOS' && chain.type === 'ETHERMINT') return Step2CosmosIcon;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) return Step2EthereumIcon;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) return Step2Medibloc;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS) return Step2CryptoOrg;
@@ -116,6 +123,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
       const appName = (() => {
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) return 'Cosmos';
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT && chain.line === 'COSMOS' && chain.type === 'ETHERMINT') return 'Ethermint';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) return 'Ethereum';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) return 'Medibloc';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS) return 'Cronos POS';
@@ -236,6 +244,21 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                       }
                     }
 
+                    // NOTE 이더리움과 코드 중복. 추후 리팩토링 필요
+                    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT && chain.line === 'COSMOS' && chain.type === 'ETHERMINT') {
+                      const ethereumApp = new EthereumApp(transport);
+
+                      const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}`;
+                      const result = await ethereumApp.getAddress(path);
+
+                      const { publicKey } = result;
+
+                      if (accountIndex > -1) {
+                        newAccounts.splice(accountIndex, 1, { ...currentAccount, ethermintPublicKey: publicKey });
+                        await setExtensionStorage('accounts', newAccounts);
+                      }
+                    }
+
                     if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
                       const ethereumApp = new EthereumApp(transport);
 
@@ -246,7 +269,6 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
                       if (accountIndex > -1) {
                         newAccounts.splice(accountIndex, 1, { ...currentAccount, ethereumPublicKey: publicKey });
-
                         await setExtensionStorage('accounts', newAccounts);
                       }
                     }

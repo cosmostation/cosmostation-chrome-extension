@@ -238,7 +238,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chain = getChain(chainName)!;
 
-          if (currentAccount.type === 'LEDGER' && chain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+          // NOTE 이러면 메디블록, 크로노스도 지원 안될듯
+          if (
+            currentAccount.type === 'LEDGER' &&
+            (chain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS || chain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.ETHERMINT)
+          ) {
             throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
           }
 
@@ -614,7 +618,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chain = getChain(chainName);
 
-          if (currentAccount.type === 'LEDGER' && chain?.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS) {
+          // NOTE 이러면 메디블록, 크로노스도 지원 안될듯
+          if (
+            currentAccount.type === 'LEDGER' &&
+            (chain?.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.COSMOS || chain.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.ETHERMINT)
+          ) {
             throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
           }
 
