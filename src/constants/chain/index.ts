@@ -70,6 +70,7 @@ import { XPLA } from './cosmos/xpla';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ALTHEA as ETHEREUM_NETWORK__ALTHEA } from './ethereum/network/althea';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
+import { ARTELA_TESTNET as ETHEREUM_NETWORK__ARTELA_TESTNET } from './ethereum/network/artelaTestnet';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
 import { CANTO as ETHEREUM_NETWORK__CANTO } from './ethereum/network/canto';
 import { CRONOS as ETHEREUM_NETWORK__CRONOS } from './ethereum/network/cronos';
@@ -184,6 +185,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__ETHEREUM,
   ETHEREUM_NETWORK__ALTHEA,
   ETHEREUM_NETWORK__ARBITRUM,
+  ETHEREUM_NETWORK__ARTELA_TESTNET,
   ETHEREUM_NETWORK__AVALANCHE,
   ETHEREUM_NETWORK__CANTO,
   ETHEREUM_NETWORK__CRONOS,

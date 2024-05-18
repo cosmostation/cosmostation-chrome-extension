@@ -1,9 +1,8 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
-import { ALTHEA } from '~/constants/chain/cosmos/althea';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { ALTHEA as ETHEREUM_NETWORK__ALTHEA } from '~/constants/chain/ethereum/network/althea';
+import { ARTELA_TESTNET as ETHEREUM_NETWORK__ARTELA_TESTNET } from '~/constants/chain/ethereum/network/artelaTestnet';
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -95,9 +94,9 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.8.1') {
+        if (extensionManifest.version === '0.8.5') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), ALTHEA.id, ETHEREUM_NETWORK__ALTHEA.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), ETHEREUM_NETWORK__ARTELA_TESTNET.id]);
           })();
         }
       }
