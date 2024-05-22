@@ -211,7 +211,6 @@ export const cosSignEIP712ParamsSchema = (chainId: string) => {
           .items(Joi.object<Amount>({ amount: Joi.string().required(), denom: Joi.string().required() }))
           .optional(),
         gas: Joi.string().required(),
-        // NOTE evmos디앱에서는 feePayer로 들어올 수 있음 확인 필요
         payer: Joi.string().optional(),
         granter: Joi.string().optional(),
       }),

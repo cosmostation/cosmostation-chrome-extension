@@ -1466,6 +1466,7 @@
                   "insufficientFeeAmount": "Insufficient fee",
                   "invalidAddress": "Invalid address",
                   "invalidAmount": "Invalid amount",
+                  "ledgerNotSupported": "Not support signing with Ledger on Ethermint-like chains",
                   "memoPlaceholder": "Memo (option)",
                   "recipientAddressPlaceholder": "Recipient address",
                   "sendButton": "Send",
@@ -1481,6 +1482,7 @@
                   "insufficientFeeAmount": "Insufficient fee",
                   "invalidAddress": "Invalid address",
                   "invalidAmount": "Invalid amount",
+                  "ledgerNotSupported": "Not support signing with Ledger on Ethermint-like chains",
                   "memoPlaceholder": "Memo (option)",
                   "recipientAddressPlaceholder": "Recipient address",
                   "sendButton": "Send"
@@ -1624,6 +1626,7 @@
           "invalidAmount": "Invalid amount",
           "invalidOutputAmount": "Invalid output amount",
           "invalidSwapTx": "Invalid tx data",
+          "ledgerNotSupported": "Not support signing with Ledger on Ethermint-like chains",
           "lessThanFeeWarningDescription1": "You do not have enough balance to cover the estimated gas costs for this transaction. Make sure you have more than",
           "lessThanFeeWarningDescription2": "before trying again.",
           "liquidityWarning": "The size of this trade is large compared to the available liquidity. Reduce the swap amount to get a better price.",

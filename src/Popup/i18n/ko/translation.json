@@ -1466,6 +1466,7 @@
                   "insufficientFeeAmount": "수수료가 부족합니다.",
                   "invalidAddress": "유효하지 않은 주소입니다.",
                   "invalidAmount": "수량을 입력하세요.",
+                  "ledgerNotSupported": "Ethermint 계열 체인에서는 Ledger 서명이 지원되지 않습니다.",
                   "memoPlaceholder": "메모 (선택)",
                   "recipientAddressPlaceholder": "입금 주소",
                   "sendButton": "보내기",
@@ -1481,6 +1482,7 @@
                   "insufficientFeeAmount": "수수료가 부족합니다.",
                   "invalidAddress": "유효하지 않은 주소입니다.",
                   "invalidAmount": "수량을 입력하세요.",
+                  "ledgerNotSupported": "Ethermint 계열 체인에서는 Ledger 서명이 지원되지 않습니다.",
                   "memoPlaceholder": "메모 (선택)",
                   "recipientAddressPlaceholder": "입금 주소",
                   "sendButton": "보내기"
@@ -1624,6 +1626,7 @@
           "invalidAmount": "수량을 입력하세요.",
           "invalidOutputAmount": "예상 교환치가 없습니다.",
           "invalidSwapTx": "Invalid tx data",
+          "ledgerNotSupported": "Ethermint 계열 체인에서는 Ledger 서명이 지원되지 않습니다.",
           "lessThanFeeWarningDescription1": "예상 가스비를 위한 잔액이 부족합니다. 잔액이",
           "lessThanFeeWarningDescription2": "이상인지 확인하세요.",
           "liquidityWarning": "해당 스왑을 진행하기에 풀 유동성이 부족합니다. 스왑 금액을 낮추고 다시 시도하세요.",

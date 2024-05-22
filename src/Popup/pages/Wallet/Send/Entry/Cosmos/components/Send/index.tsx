@@ -6,6 +6,7 @@ import { InputAdornment, Typography } from '@mui/material';
 import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS } from '~/constants/chain';
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
+import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import AssetBottomSheetButton from '~/Popup/components/common/AssetBottomSheetButton';
@@ -369,6 +370,10 @@ export default function Send({ chain }: CosmosProps) {
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
   const errorMessage = useMemo(() => {
+    if (currentAccount.type === 'LEDGER' && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.ledgerNotSupported');
+    }
+
     if (chainParams.data?.params?.chainlist_params?.isBankLocked) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.bankLocked');
     }
@@ -401,10 +406,12 @@ export default function Send({ chain }: CosmosProps) {
   }, [
     address,
     addressRegex,
-    currentDepositAddress,
+    chain.bip44.coinType,
     chainParams.data?.params?.chainlist_params?.isBankLocked,
+    currentAccount.type,
     currentCoinOrToken,
     currentCoinOrTokenDisplayAvailableAmount,
+    currentDepositAddress,
     currentDisplayAmount,
     currentDisplayFeeAmount,
     currentFeeCoin.baseDenom,

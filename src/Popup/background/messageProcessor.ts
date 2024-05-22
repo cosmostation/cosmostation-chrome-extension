@@ -343,13 +343,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           if (
             currentAccount.type === 'LEDGER' &&
-            ![
-              LEDGER_SUPPORT_COIN_TYPE.COSMOS,
-              // NOTE 구현 후에 주석 해제
-              // LEDGER_SUPPORT_COIN_TYPE.ETHEREUM,
-              LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC,
-              LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS,
-            ].includes(chain?.bip44.coinType || '')
+            ![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS].includes(chain?.bip44.coinType || '')
           ) {
             throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
           }
@@ -439,13 +433,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           if (
             currentAccount.type === 'LEDGER' &&
-            ![
-              LEDGER_SUPPORT_COIN_TYPE.COSMOS,
-              // NOTE 구현 후에 주석 해제
-              // LEDGER_SUPPORT_COIN_TYPE.ETHEREUM,
-              LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC,
-              LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS,
-            ].includes(chain.bip44.coinType)
+            ![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS].includes(chain.bip44.coinType)
           ) {
             throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
           }
@@ -669,7 +657,6 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const chain = getChain(chainName);
 
-          // NOTE need componentize
           if (
             currentAccount.type === 'LEDGER' &&
             ![

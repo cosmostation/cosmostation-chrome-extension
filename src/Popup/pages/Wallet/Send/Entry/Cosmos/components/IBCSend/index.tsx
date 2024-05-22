@@ -5,6 +5,7 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS } from '~/constants/chain';
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
+import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import unknownChainImg from '~/images/chainImgs/unknown.png';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
@@ -531,6 +532,10 @@ export default function IBCSend({ chain }: IBCSendProps) {
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
   const errorMessage = useMemo(() => {
+    if (currentAccount.type === 'LEDGER' && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
+      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.ledgerNotSupported');
+    }
+
     if (chainParams.data?.params?.chainlist_params?.isBankLocked) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.bankLocked');
     }
@@ -565,16 +570,18 @@ export default function IBCSend({ chain }: IBCSendProps) {
     return '';
   }, [
     addressRegex,
-    currentDepositAddress,
+    chain.bip44.coinType,
     chainParams.data?.params?.chainlist_params?.isBankLocked,
+    currentAccount.type,
     currentCoinOrToken,
     currentCoinOrTokenDisplayAvailableAmount,
+    currentDepositAddress,
     currentDisplayAmount,
     currentDisplayFeeAmount,
     currentFeeCoin.baseDenom,
     currentFeeCoinDisplayAvailableAmount,
-    t,
     latestHeight,
+    t,
   ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {

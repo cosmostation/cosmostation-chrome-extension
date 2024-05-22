@@ -9,6 +9,7 @@ import { OSMOSIS } from '~/constants/chain/cosmos/osmosis';
 import { ETHEREUM, EVM_NATIVE_TOKEN_ADDRESS } from '~/constants/chain/ethereum/ethereum';
 import { ETHEREUM as ETHEREUM_NETWORK } from '~/constants/chain/ethereum/network/ethereum';
 import { CURRENCY_SYMBOL } from '~/constants/currency';
+import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import AmountInput from '~/Popup/components/common/AmountInput';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
@@ -1255,6 +1256,12 @@ export default function Entry() {
   ]);
 
   const errorMessage = useMemo(() => {
+    if (
+      currentAccount.type === 'LEDGER' &&
+      CHAINS.find((item) => item.id === currentFromChain.baseChainUUID)?.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM
+    ) {
+      return t('pages.Wallet.Swap.entry.ledgerNotSupported');
+    }
     if (!filteredFromChains.length || !filteredToChains.length || (currentSwapAPI && (!filteredFromTokenList.length || !filteredToTokenList.length))) {
       return t('pages.Wallet.Swap.entry.networkError');
     }
@@ -1326,29 +1333,31 @@ export default function Entry() {
     }
     return '';
   }, [
-    filteredFromChains.length,
-    filteredToChains.length,
+    currentAccount.type,
+    currentFeeToken?.tokenAddressOrDenom,
+    currentFeeTokenBalance,
+    currentFromChain.baseChainUUID,
+    currentFromToken?.tokenAddressOrDenom,
+    currentFromTokenBalance,
+    currentFromTokenDisplayBalance,
+    currentInputBaseAmount,
     currentSwapAPI,
+    estimatedFeeBaseAmount,
+    estimatedToTokenDisplayAmount,
+    estimatedToTokenDisplayAmountPrice,
+    filteredFromChains.length,
     filteredFromTokenList.length,
+    filteredToChains.length,
     filteredToTokenList.length,
     inputDisplayAmount,
-    currentFromTokenDisplayBalance,
-    currentFromToken?.tokenAddressOrDenom,
-    currentFeeToken?.tokenAddressOrDenom,
-    estimatedFeeBaseAmount,
-    currentFeeTokenBalance,
-    estimatedToTokenDisplayAmount,
-    t,
     integratedCosmosSwapTx,
-    currentFromTokenBalance,
-    currentInputBaseAmount,
-    skipSupportedChains,
+    integratedEVMSwapTx,
     skipRoute.data?.txs_required,
     skipRoute.error?.response?.data.message,
-    skipSwapTx.error?.response?.data.message,
+    skipSupportedChains,
     skipSwapAminoTx,
-    integratedEVMSwapTx,
-    estimatedToTokenDisplayAmountPrice,
+    skipSwapTx.error?.response?.data.message,
+    t,
   ]);
 
   const swapInfoMessage = useMemo(() => {

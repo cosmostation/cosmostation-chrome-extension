@@ -60,7 +60,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain, { suspense: true });
 
-  const { message, messageId, origin, channel } = queue;
+  const { message, messageId, origin } = queue;
 
   const {
     params: { doc, eip712, isEditFee = true, isEditMemo = true, isCheckBalance = true, gasRate },
@@ -305,52 +305,22 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                     const pubKey = { type: publicKeyType, value: base64PublicKey };
 
-                    if (channel) {
-                      try {
-                        // const url = cosmosURL(chain).postBroadcast();
-                        // const pTx = protoTx(tx, base64Signature, pubKey);
-                        // const pTxBytes = pTx ? protoTxBytes({ ...pTx }) : undefined;
-                        // const response = await broadcast(url, pTxBytes);
-                        // const { code, txhash } = response.tx_response;
-                        // if (code === 0) {
-                        //   if (txhash) {
-                        //     void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
-                        //   } else {
-                        //     void deQueue();
-                        //   }
-                        // } else {
-                        //   throw new Error(response.tx_response.raw_log as string);
-                        // }
-                        // void deQueue();
-                      } catch (e) {
-                        enqueueSnackbar(
-                          (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.EIP712.entry.failedTransfer'),
-                          {
-                            variant: 'error',
-                            autoHideDuration: 3000,
-                          },
-                        );
+                    const result: CosSignEIP712Response = {
+                      signature: base64Signature,
+                      pub_key: pubKey,
+                      signed_doc: tx,
+                    };
 
-                        void deQueue();
-                      }
-                    } else {
-                      const result: CosSignEIP712Response = {
-                        signature: base64Signature,
-                        pub_key: pubKey,
-                        signed_doc: tx,
-                      };
+                    responseToWeb({
+                      response: {
+                        result,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
 
-                      responseToWeb({
-                        response: {
-                          result,
-                        },
-                        message,
-                        messageId,
-                        origin,
-                      });
-
-                      await deQueue();
-                    }
+                    await deQueue();
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
                   } finally {
