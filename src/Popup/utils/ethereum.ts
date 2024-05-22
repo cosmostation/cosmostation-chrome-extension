@@ -11,6 +11,7 @@ import { ERC20_ABI, ERC721_ABI, ERC1155_ABI, ONE_INCH_ABI } from '~/constants/ab
 import { ETHEREUM_NETWORKS } from '~/constants/chain';
 import { ALTHEA } from '~/constants/chain/ethereum/network/althea';
 import { ARBITRUM } from '~/constants/chain/ethereum/network/arbitrum';
+import { ARTELA_TESTNET } from '~/constants/chain/ethereum/network/artelaTestnet';
 import { AVALANCHE } from '~/constants/chain/ethereum/network/avalanche';
 import { CANTO } from '~/constants/chain/ethereum/network/canto';
 import { CRONOS } from '~/constants/chain/ethereum/network/cronos';
@@ -341,6 +342,7 @@ export function convertEVMToAssetName(evmNetwork: EthereumNetwork) {
     [ETHEREUM.id]: 'ethereum',
     [ALTHEA.id]: 'althea',
     [ARBITRUM.id]: 'arbitrum',
+    [ARTELA_TESTNET.id]: 'artela-testnet',
     [AVALANCHE.id]: 'avalanche',
     [CANTO.id]: 'canto',
     [CRONOS.id]: 'cronos',
@@ -363,6 +365,7 @@ export function convertAssetNameToEVM(assetName: string) {
     ethereum: ETHEREUM,
     althea: ALTHEA,
     arbitrum: ARBITRUM,
+    'artela-testnet': ARTELA_TESTNET,
     avalanche: AVALANCHE,
     canto: CANTO,
     cronos: CRONOS,
