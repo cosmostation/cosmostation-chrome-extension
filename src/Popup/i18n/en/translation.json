@@ -829,7 +829,7 @@
               "cancelButton": "Cancel",
               "dataTab": "Data",
               "detailTab": "Details",
-              "insufficientFeeAmount": "Insufficient",
+              "insufficientFeeAmount": "Insufficient fee",
               "signButton": "Sign"
             }
           },
