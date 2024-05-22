@@ -12,7 +12,6 @@ type Keplr = Omit<
   | 'disable'
   | 'getKeysSettled'
   | 'signICNSAdr36'
-  | 'experimentalSignEIP712CosmosTx_v0'
   | 'getChainInfosWithoutEndpoints'
   | 'changeKeyRingName'
 >;

@@ -1,5 +1,3 @@
-import { TypedDataEncoder } from 'ethers';
-
 import type { EIP712StructuredData, RLPTypes } from '~/types/cosmos/ethermint';
 
 export const getEip712TypedDataBasedOnChainId = (chainId: string, txType: string): EIP712StructuredData => {
@@ -63,36 +61,6 @@ export const getEip712TypedDataBasedOnChainId = (chainId: string, txType: string
 
   return types;
 };
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const domainHash = (message: { types: Record<string, { name: string; type: string }[]>; domain: Record<string, any> }): string =>
-  TypedDataEncoder.hashStruct('EIP712Domain', { EIP712Domain: message.types.EIP712Domain }, message.domain);
-
-export const messageHash = (message: {
-  types: Record<string, { name: string; type: string }[]>;
-  primaryType: string;
-  message: Record<string, unknown>;
-}): string =>
-  TypedDataEncoder.from(
-    (() => {
-      const types = { ...message.types };
-
-      delete types.EIP712Domain;
-
-      const primary = types[message.primaryType];
-
-      if (!primary) {
-        throw new Error(`No matched primary type: ${message.primaryType}`);
-      }
-
-      delete types[message.primaryType];
-
-      return {
-        [message.primaryType]: primary,
-        ...types,
-      };
-    })(),
-  ).hash(message.message);
 
 // NOTE need rename
 export function getEthChainId(chainId: string) {

@@ -225,7 +225,7 @@ export type CosSignEIP712Response = {
     type: PublicKeyType;
     value: string;
   };
-  signed_doc: SignDirectDoc;
+  signed_doc: SignAminoDoc;
 };
 
 export type CosAddTokensCW20Token = {

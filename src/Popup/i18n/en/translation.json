@@ -824,6 +824,15 @@
               "invalidAccountType": "Invalid account type (Ledger)"
             }
           },
+          "EIP712": {
+            "entry": {
+              "cancelButton": "Cancel",
+              "dataTab": "Data",
+              "detailTab": "Details",
+              "insufficientFeeAmount": "Insufficient",
+              "signButton": "Sign"
+            }
+          },
           "Message": {
             "entry": {
               "cancelButton": "Cancel",

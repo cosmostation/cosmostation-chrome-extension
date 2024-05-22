@@ -399,12 +399,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const selectedChain = allChains.find((item) => item.chainId === params.chainId);
 
-          const officialCosmosLowercaseChainIds = COSMOS_CHAINS.map((item) => item.chainId.toLowerCase());
-          const unofficialCosmosLowercaseChainIds = cosmosAdditionalChains.map((item) => item.chainId.toLowerCase());
-
-          const allChainIds = [...officialCosmosLowercaseChainIds, ...unofficialCosmosLowercaseChainIds];
-
-          const schema = cosSignEIP712ParamsSchema(selectedChain ? selectedChain.chainId : '', allChainIds);
+          const schema = cosSignEIP712ParamsSchema(selectedChain ? selectedChain.chainId : '');
 
           // NOTE need componentize
           if (

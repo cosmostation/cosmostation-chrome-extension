@@ -824,6 +824,15 @@
               "invalidAccountType": "Ledger계정은 Direct사인을 사용할 수 없습니다."
             }
           },
+          "EIP712": {
+            "entry": {
+              "cancelButton": "취소",
+              "dataTab": "데이터",
+              "detailTab": "상세 내역",
+              "insufficientFeeAmount": "수수료가 부족합니다.",
+              "signButton": "서명"
+            }
+          },
           "Message": {
             "entry": {
               "cancelButton": "취소",

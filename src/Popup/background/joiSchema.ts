@@ -139,62 +139,11 @@ export const cosSignMessageParamsSchema = (chainNames: string[]) =>
     .label('params')
     .required();
 
-// NOTE
-// export const EIP712DomainTypeValidator = Joi.array()
-//   .items(
-//     Joi.object<{
-//       name: string;
-//       type: string;
-//     }>({
-//       name: Joi.string().valid('name').required(),
-//       type: Joi.string().valid('string').required(),
-//     }),
-//     Joi.object<{
-//       name: string;
-//       type: string;
-//     }>({
-//       name: Joi.string().valid('version').required(),
-//       type: Joi.string().valid('string').required(),
-//     }),
-//     Joi.object<{
-//       name: string;
-//       type: string;
-//     }>({
-//       name: Joi.string().valid('chainId').required(),
-//       type: Joi.string().valid('uint256').required(),
-//     }),
-//     Joi.object<{
-//       name: string;
-//       type: string;
-//     }>({
-//       name: Joi.string().valid('verifyingContract').required(),
-//       type: Joi.string().valid('address', 'string').required(),
-//     }),
-//     Joi.object<{
-//       name: string;
-//       type: string;
-//     }>({
-//       name: Joi.string().valid('salt').required(),
-//       type: Joi.string().valid('bytes32', 'string').required(),
-//     }),
-//   )
-//   .unique()
-//   .min(1)
-//   .custom((value) => {
-//     const domainFieldNames: Array<string> = ['name', 'version', 'chainId', 'verifyingContract', 'salt'];
-
-//     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-//     return value.sort((a: { name: string }, b: { name: string }) => domainFieldNames.indexOf(a.name) - domainFieldNames.indexOf(b.name));
-//   });
-
-export const cosSignEIP712ParamsSchema = (chainId: string, officialChainIds: string[]) => {
+export const cosSignEIP712ParamsSchema = (chainId: string) => {
   const chainIdRegex = getChainIdRegex(chainId);
 
   return Joi.object<CosSignEIP712['params']>({
-    chainId: Joi.string()
-      .lowercase()
-      .invalid(...officialChainIds)
-      .required(),
+    chainId: Joi.string().trim().pattern(chainIdRegex).required(),
     signer: Joi.string().required(),
     eip712: Joi.object<EIP712StructuredData>({
       types: Joi.object({
@@ -250,7 +199,9 @@ export const cosSignEIP712ParamsSchema = (chainId: string, officialChainIds: str
         .required(),
       domain: Joi.object().required(),
       primaryType: Joi.string().required(),
-    }).required(),
+    })
+      .unknown(true)
+      .required(),
     doc: Joi.object<SignAminoDoc>({
       chain_id: Joi.string().trim().pattern(chainIdRegex).required(),
       sequence: Joi.string().required(),
@@ -260,6 +211,7 @@ export const cosSignEIP712ParamsSchema = (chainId: string, officialChainIds: str
           .items(Joi.object<Amount>({ amount: Joi.string().required(), denom: Joi.string().required() }))
           .optional(),
         gas: Joi.string().required(),
+        // NOTE evmos디앱에서는 feePayer로 들어올 수 있음 확인 필요
         payer: Joi.string().optional(),
         granter: Joi.string().optional(),
       }),
