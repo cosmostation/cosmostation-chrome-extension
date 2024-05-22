@@ -19,6 +19,7 @@ export const RPC_ERROR = {
 
   LEDGER_UNSUPPORTED_METHOD: 5000,
   LEDGER_UNSUPPORTED_CHAIN: 5001,
+  LEDGER_SUPPORTED_METHOD: 5002,
 } as const;
 
 export const RPC_ERROR_MESSAGE = {
@@ -52,6 +53,7 @@ export const COSMOS_RPC_ERROR_MESSAGE = {
 
   [RPC_ERROR.LEDGER_UNSUPPORTED_METHOD]: 'The method is not supported by the ledger account.',
   [RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]: 'The chain is not supported by the ledger account.',
+  [RPC_ERROR.LEDGER_SUPPORTED_METHOD]: 'The method is supported by the ledger account.',
 } as const;
 
 export const APTOS_RPC_ERROR_MESSAGE = {

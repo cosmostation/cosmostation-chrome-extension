@@ -1,6 +1,5 @@
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { CRONOS_POS } from '~/constants/chain/cosmos/cronosPos';
-import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { MEDIBLOC } from '~/constants/chain/cosmos/medibloc';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -92,10 +91,6 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
 
     if (chain.bip44.coinType === CRONOS_POS.bip44.coinType && account.cryptoOrgPublicKey) {
       return { privateKey: null, publicKey: Buffer.from(account.cryptoOrgPublicKey, 'hex') };
-    }
-
-    if (chain.bip44.coinType === INJECTIVE.bip44.coinType && account.ethermintPublicKey) {
-      return { privateKey: null, publicKey: Buffer.from(account.ethermintPublicKey, 'hex') };
     }
 
     if (chain.bip44.coinType === ETHEREUM.bip44.coinType && account.ethereumPublicKey) {

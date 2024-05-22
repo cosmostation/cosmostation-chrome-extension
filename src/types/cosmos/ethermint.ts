@@ -1,4 +1,6 @@
-export type EIP712TypeDescriptors = Record<string, { name: string; type: string }[] | undefined>;
+import type { MessageTypeProperty } from '@metamask/eth-sig-util';
+
+export type EIP712TypeDescriptors = Record<string, MessageTypeProperty[] | undefined>;
 
 export type EIP712StructuredData = {
   types: EIP712TypeDescriptors;

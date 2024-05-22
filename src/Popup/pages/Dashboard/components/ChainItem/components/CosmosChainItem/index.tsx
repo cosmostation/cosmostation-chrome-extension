@@ -140,7 +140,7 @@ export function CosmosChainLedgerCheck({ chain, children }: CosmosChainItemProps
   if (currentAccount.type === 'LEDGER') {
     if (
       (!currentAccount.cosmosPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) ||
-      (!currentAccount.ethermintPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT) ||
+      (!currentAccount.ethereumPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) ||
       (!currentAccount.mediblocPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) ||
       (!currentAccount.cryptoOrgPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS)
     ) {
@@ -148,7 +148,7 @@ export function CosmosChainLedgerCheck({ chain, children }: CosmosChainItemProps
     }
 
     if (
-      ![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.ETHERMINT, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS].includes(
+      ![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.ETHEREUM, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS].includes(
         chain.bip44.coinType,
       )
     ) {

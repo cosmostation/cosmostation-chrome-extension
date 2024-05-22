@@ -1,6 +1,5 @@
 import { COSMOS } from './chain/cosmos/cosmos';
 import { CRONOS_POS } from './chain/cosmos/cronosPos';
-import { INJECTIVE } from './chain/cosmos/injective';
 import { MEDIBLOC } from './chain/cosmos/medibloc';
 import { ETHEREUM } from './chain/ethereum/ethereum';
 import { SUI } from './chain/sui/sui';
@@ -13,7 +12,6 @@ export const TRANSPORT_TYPE = {
 
 export const LEDGER_SUPPORT_COIN_TYPE = {
   ETHEREUM: ETHEREUM.bip44.coinType,
-  ETHERMINT: INJECTIVE.bip44.coinType,
   COSMOS: COSMOS.bip44.coinType,
   MEDIBLOC: MEDIBLOC.bip44.coinType,
   CRONOS_POS: CRONOS_POS.bip44.coinType,

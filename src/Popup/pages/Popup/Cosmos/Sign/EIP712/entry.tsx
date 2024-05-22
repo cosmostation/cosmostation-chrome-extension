@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import EthereumApp from '@ledgerhq/hw-app-eth';
-import type { MessageTypes } from '@metamask/eth-sig-util';
+import type { MessageTypeProperty } from '@metamask/eth-sig-util';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
@@ -30,7 +30,6 @@ import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
 import type { CosSignEIP712, CosSignEIP712Response } from '~/types/message/cosmos';
-import type { CustomTypedMessage } from '~/types/message/ethereum';
 
 import { BottomButtonContainer, BottomContainer, Container, ContentsContainer, FeeContainer, MemoContainer, PaginationContainer, TabContainer } from './styled';
 import TxMessage from '../Amino/components/TxMessage';
@@ -64,10 +63,11 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { message, messageId, origin, channel } = queue;
 
   const {
-    params: { doc, isEditFee = true, isEditMemo = true, isCheckBalance = true, gasRate },
+    params: { doc, eip712, isEditFee = true, isEditMemo = true, isCheckBalance = true, gasRate },
   } = message;
 
   const { fee, msgs } = doc;
+  const { types, domain, primaryType } = eip712;
 
   const [customGas, setCustomGas] = useState<string | undefined>();
 
@@ -147,6 +147,16 @@ export default function Entry({ queue, chain }: EntryProps) {
   );
 
   const tx = useMemo(() => ({ ...doc, memo: signingMemo, fee: signingFee }), [doc, signingFee, signingMemo]);
+
+  const typedMessageObject = useMemo(
+    () => ({
+      types: types as Record<string, MessageTypeProperty[]>,
+      domain,
+      primaryType,
+      message: tx,
+    }),
+    [domain, primaryType, tx, types],
+  );
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -255,24 +265,13 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                         const { publicKey } = await ethereumApp.getAddress(path);
 
-                        const accountAddress = currentAccount.ethermintPublicKey
-                          ? getAddress(chain, Buffer.from(currentAccount.ethermintPublicKey, 'hex'))
-                          : '';
+                        const accountAddress = currentAccount.ethereumPublicKey ? getAddress(chain, Buffer.from(currentAccount.ethereumPublicKey, 'hex')) : '';
 
                         const ledgerAddress = getAddress(chain, Buffer.from(publicKey, 'hex'));
 
                         if (!isEqualsIgnoringCase(accountAddress, ledgerAddress)) {
                           throw new Error('Account address and Ledger address are not the same.');
                         }
-
-                        const typedMessageObject = {
-                          types: message.params.eip712.types,
-                          domain: message.params.eip712.domain,
-                          primaryType: message.params.eip712.primaryType,
-                          // FIXME 지갑 첫 연결하면 뜬급없이 수이 렛져 연결하라고 나옴. 수정 필요
-                          // NOTE message.params.eip712.primaryType에서 tx로 바꿨음.
-                          message: tx,
-                        } as unknown as CustomTypedMessage<MessageTypes>;
 
                         const domainSeparatorHex = TypedDataUtils.hashStruct(
                           'EIP712Domain',
