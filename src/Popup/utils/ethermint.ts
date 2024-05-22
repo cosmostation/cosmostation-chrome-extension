@@ -1,9 +1,16 @@
+import type { MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { EIP712StructuredData, RLPTypes } from '~/types/cosmos/ethermint';
 
-export const getEip712TypedDataBasedOnChainId = (chainId: string, txType: string): EIP712StructuredData => {
+import { isEthermintStyleChainId } from './regex';
+
+export const constructEip712TypedData = (chainId: string, tx: SignAminoDoc): EIP712StructuredData | undefined => {
   const chainIsInjective = chainId.startsWith('injective');
 
-  const ethChainId = getEthChainId(chainId);
+  const ethChainId = getEVMChainId(chainId);
+
+  if (!ethChainId) {
+    return undefined;
+  }
 
   const types = {
     types: {
@@ -35,7 +42,7 @@ export const getEip712TypedDataBasedOnChainId = (chainId: string, txType: string
         { name: 'type', type: 'string' },
         { name: 'value', type: 'MsgValue' },
       ],
-      ...getRLPType(txType),
+      ...getRLPType(tx),
     },
     domain: {
       name: 'Cosmos Web3',
@@ -62,8 +69,7 @@ export const getEip712TypedDataBasedOnChainId = (chainId: string, txType: string
   return types;
 };
 
-// NOTE need rename
-export function getEthChainId(chainId: string) {
+export function getEVMChainId(chainId: string) {
   if (chainId.startsWith('injective')) {
     const injectiveTestnetChainIds = ['injective-777', 'injective-888'];
 
@@ -73,13 +79,25 @@ export function getEthChainId(chainId: string) {
 
     return 1;
   }
-  const chainIdMatches = chainId.match('^([a-z]{1,})_{1}([1-9][0-9]*)-{1}([1-9][0-9]*)$') || [];
+
+  const chainIdMatches = isEthermintStyleChainId.exec(chainId) || [];
+
+  if (
+    !chainIdMatches ||
+    chainIdMatches.length !== 4 ||
+    chainIdMatches[1] === '' ||
+    Number.isNaN(parseFloat(chainIdMatches[2])) ||
+    !Number.isInteger(parseFloat(chainIdMatches[2]))
+  ) {
+    return undefined;
+  }
 
   return parseInt(chainIdMatches[2], 10);
 }
 
-// NOTE swap tx에서 msgs안에 memo필드가 있는 ibc 전송일 때만 isMemo활용
-export function getRLPType(type: string, isMemo?: boolean): RLPTypes {
+export function getRLPType(tx: SignAminoDoc): RLPTypes {
+  const { type } = tx.msgs[0];
+
   if (type === 'cosmos-sdk/MsgSend') {
     return {
       MsgValue: [
@@ -104,7 +122,9 @@ export function getRLPType(type: string, isMemo?: boolean): RLPTypes {
         { name: 'timeout_height', type: 'TypeTimeoutHeight' },
         { name: 'timeout_timestamp', type: 'uint64' },
         ...(() => {
-          if (isMemo) {
+          const transferMessage = type === 'cosmos-sdk/MsgTransfer' ? (tx as SignAminoDoc<MsgTransfer>) : undefined;
+
+          if (transferMessage?.msgs.some((msg) => msg.value.memo)) {
             return [
               {
                 name: 'memo',
@@ -182,36 +202,3 @@ export function getRLPType(type: string, isMemo?: boolean): RLPTypes {
 
   return {};
 }
-
-// NOTE get extension options
-// export function getEip712ExtensionOptions {
-//  const extension_options =   [
-//         {
-//           typeUrl: (() => {
-//             if (chainIsInjective) {
-//               return "/injective.types.v1beta1.ExtensionOptionsWeb3Tx";
-//             }
-
-//             return "/ethermint.types.v1.ExtensionOptionsWeb3Tx";
-//           })(),
-//           value: ExtensionOptionsWeb3Tx.encode(
-//             ExtensionOptionsWeb3Tx.fromPartial({
-//               typedDataChainId: EthermintChainIdHelper.parse(
-//                 this.chainId
-//               ).ethChainId.toString(),
-//               feePayer: !chainIsInjective
-//                 ? signResponse.signed.fee.feePayer
-//                 : undefined,
-//               feePayerSig: !chainIsInjective
-//                 ? Buffer.from(
-//                     signResponse.signature.signature,
-//                     "base64"
-//                   )
-//                 : undefined,
-//             })
-//           ).finish(),
-//         },
-//       ]
-
-//     return extension_options;
-// }
