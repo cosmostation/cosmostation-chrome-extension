@@ -399,7 +399,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
           const schema = cosSignEIP712ParamsSchema(selectedChain ? selectedChain.chainId : '');
 
-          if (currentAccount.type === 'LEDGER' && ![LEDGER_SUPPORT_COIN_TYPE.ETHEREUM].includes(selectedChain?.bip44.coinType || '')) {
+          if (currentAccount.type === 'LEDGER' && selectedChain?.bip44.coinType !== LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
             throw new CosmosRPCError(RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN, COSMOS_RPC_ERROR_MESSAGE[RPC_ERROR.LEDGER_UNSUPPORTED_CHAIN]);
           }
 

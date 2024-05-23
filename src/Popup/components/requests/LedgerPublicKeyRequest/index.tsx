@@ -102,13 +102,11 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
     if (
       (!currentAccount.cosmosPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS && chain.line === 'COSMOS') ||
-      (!currentAccount.ethereumPublicKey &&
-        chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM &&
-        chain.line === 'COSMOS' &&
-        chain.type === 'ETHERMINT') ||
       (!currentAccount.mediblocPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC && chain.line === 'COSMOS') ||
       (!currentAccount.cryptoOrgPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS && chain.line === 'COSMOS') ||
-      (!currentAccount.ethereumPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM && chain.line === 'ETHEREUM') ||
+      (!currentAccount.ethereumPublicKey &&
+        chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM &&
+        (chain.line === 'ETHEREUM' || chain.line === 'COSMOS')) ||
       (!currentAccount.suiPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI && chain.line === 'SUI')
     ) {
       const Step2 = (() => {
@@ -252,6 +250,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
                       if (accountIndex > -1) {
                         newAccounts.splice(accountIndex, 1, { ...currentAccount, ethereumPublicKey: publicKey });
+
                         await setExtensionStorage('accounts', newAccounts);
                       }
                     }
