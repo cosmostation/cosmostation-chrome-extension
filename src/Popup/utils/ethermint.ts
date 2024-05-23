@@ -3,7 +3,7 @@ import type { EIP712StructuredData, RLPTypes } from '~/types/cosmos/ethermint';
 
 import { isEthermintStyleChainId } from './regex';
 
-export const constructEip712TypedData = (chainId: string, tx: SignAminoDoc): EIP712StructuredData | undefined => {
+export function constructEip712TypedData(chainId: string, tx: SignAminoDoc): EIP712StructuredData | undefined {
   const chainIsInjective = chainId.startsWith('injective');
 
   const ethChainId = getEVMChainId(chainId);
@@ -67,7 +67,7 @@ export const constructEip712TypedData = (chainId: string, tx: SignAminoDoc): EIP
   }
 
   return types;
-};
+}
 
 export function getEVMChainId(chainId: string) {
   if (chainId.startsWith('injective')) {
