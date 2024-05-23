@@ -1,10 +1,9 @@
-import sha256 from 'crypto-js/sha256';
 import useSWR from 'swr';
 
 import { CHAINS } from '~/constants/chain';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
-import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { getAddress, getAddressKey, getKeyPair } from '~/Popup/utils/common';
 import type { AccountType } from '~/types/extensionStorage';
 
 type AccountList = {
@@ -28,9 +27,7 @@ export function useAccounts(suspense?: boolean) {
           const addresses: Record<string, string> = {};
 
           [...CHAINS, ...additionalChains].forEach((chain) => {
-            const pathWithoutAddressIndex = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}`;
-
-            const key = sha256(`${account.id}${chain.id}${pathWithoutAddressIndex}`).toString();
+            const key = getAddressKey(account, chain);
             const storageAddress = address?.[key];
 
             if (storageAddress) {
