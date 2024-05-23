@@ -206,6 +206,10 @@ export default function Init({ children }: InitType) {
         await setStorage('selectedSuiNetworkId', SUI_NETWORK_MAINNET.id);
       }
 
+      if (!originExtensionStorage.address) {
+        await setStorage('address', {});
+      }
+
       if (
         originExtensionStorage.providers?.aptos === undefined ||
         originExtensionStorage.providers?.metamask === undefined ||

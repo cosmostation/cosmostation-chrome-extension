@@ -135,6 +135,8 @@ export type ExtensionStorage = {
   ledgerTransportType: TransportType;
 
   providers: Providers;
+
+  address: Record<string, string | undefined>;
 };
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;
