@@ -155,7 +155,9 @@ export function chunkArray<T>(data: T[], chunkSize: number) {
   return Array.from({ length: Math.ceil(data.length / chunkSize) }, (_, i) => data.slice(i * chunkSize, i * chunkSize + chunkSize));
 }
 
-export function getAddressKey(account: Account, chain: Chain) {
+export function getAddressKey(account?: Account, chain?: Chain) {
+  if (!account || !chain) return '';
+
   const pathWithoutAddressIndex = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}`;
 
   return sha256(`${account.id}${chain.id}${pathWithoutAddressIndex}`).toString();
