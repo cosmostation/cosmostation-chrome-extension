@@ -5,6 +5,7 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS } from '~/constants/chain';
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
+import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
@@ -20,6 +21,7 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import { useArchIDSWR } from '~/Popup/hooks/SWR/cosmos/useArchIDSWR';
+import { useBlockLatestSWR } from '~/Popup/hooks/SWR/cosmos/useBlockLatestSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
@@ -246,6 +248,12 @@ export default function Send({ chain }: CosmosProps) {
 
   const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
 
+  const channelChainLatestBlock = useBlockLatestSWR(chain);
+
+  const latestHeight = useMemo(() => channelChainLatestBlock.data?.block?.header?.height, [channelChainLatestBlock.data?.block?.header?.height]);
+
+  const revisionHeight = useMemo(() => (latestHeight ? String(100 + parseInt(latestHeight, 10)) : undefined), [latestHeight]);
+
   const memoizedSendAminoTx = useMemo(() => {
     if (account.data?.value.account_number && addressRegex.test(currentDepositAddress) && currentDisplayAmount) {
       const sequence = String(account.data?.value.sequence || '0');
@@ -370,10 +378,6 @@ export default function Send({ chain }: CosmosProps) {
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
   const errorMessage = useMemo(() => {
-    if (currentAccount.type === 'LEDGER' && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.ledgerNotSupported');
-    }
-
     if (chainParams.data?.params?.chainlist_params?.isBankLocked) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.Send.index.bankLocked');
     }
@@ -406,9 +410,7 @@ export default function Send({ chain }: CosmosProps) {
   }, [
     address,
     addressRegex,
-    chain.bip44.coinType,
     chainParams.data?.params?.chainlist_params?.isBankLocked,
-    currentAccount.type,
     currentCoinOrToken,
     currentCoinOrTokenDisplayAvailableAmount,
     currentDepositAddress,
@@ -566,7 +568,21 @@ export default function Send({ chain }: CosmosProps) {
                       method: 'cos_signAmino',
                       params: {
                         chainName: chain.chainName,
-                        doc: { ...sendAminoTx, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }], gas: currentGas } },
+                        doc: {
+                          ...sendAminoTx,
+                          fee: {
+                            amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }],
+                            gas: currentGas,
+                            feePayer:
+                              currentAccount.type === 'LEDGER' && chain.id !== INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM
+                                ? address
+                                : undefined,
+                          },
+                          timeout_height:
+                            currentAccount.type === 'LEDGER' && chain.id === INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM
+                              ? revisionHeight
+                              : undefined,
+                        },
                         isEditFee: false,
                         isEditMemo: false,
                         isCheckBalance: false,

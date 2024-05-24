@@ -104,6 +104,7 @@ export const cosSignAminoParamsSchema = (chainNames: string[], chainId: string) 
         gas: Joi.string().required(),
         payer: Joi.string().optional(),
         granter: Joi.string().optional(),
+        feePayer: Joi.string().optional(),
       }),
       memo: Joi.string().allow(''),
       msgs: Joi.array().items(
@@ -212,6 +213,7 @@ export const cosSignEIP712ParamsSchema = (chainId: string) => {
           .optional(),
         gas: Joi.string().required(),
         payer: Joi.string().optional(),
+        feePayer: Joi.string().optional(),
         granter: Joi.string().optional(),
       }),
       memo: Joi.string().allow(''),

@@ -2,9 +2,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import secp256k1 from 'secp256k1';
 import sortKeys from 'sort-keys';
+import type { MessageTypeProperty, MessageTypes } from '@metamask/eth-sig-util';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
@@ -23,13 +25,15 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, equal, gte, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getDefaultAV, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
+import { constructEip712TypedData, getEIP712Signature } from '~/Popup/utils/ethermint';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
-import { broadcast, protoTx, protoTxBytes } from '~/Popup/utils/proto';
+import { broadcast, ethermintProtoTx, ethermintProtoTxBytes, protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
 import type { CosSignAmino, CosSignAminoResponse } from '~/types/message/cosmos';
+import type { CustomTypedMessage } from '~/types/message/ethereum';
 import type { Path } from '~/types/route';
 
 import TxMessage from './components/TxMessage';
@@ -240,99 +244,179 @@ export default function Entry({ queue, chain }: EntryProps) {
                       throw new Error('key pair does not exist');
                     }
 
-                    const signature = await (async () => {
-                      if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
-                        if (!keyPair.privateKey) {
-                          throw new Error('key does not exist');
-                        }
+                    if (currentAccount.type === 'LEDGER' && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
+                      setLoadingLedgerSigning(true);
 
-                        return signAmino(tx, keyPair.privateKey, chain);
+                      const transport = await createTransport();
+
+                      const eip712 = constructEip712TypedData(chain.chainId, tx);
+
+                      if (!eip712) {
+                        throw new Error('EIP712 typed data is not constructed');
                       }
 
-                      if (currentAccount.type === 'LEDGER') {
-                        setLoadingLedgerSigning(true);
-                        const transport = await createTransport();
+                      const typedMessageObject = {
+                        domain: eip712.domain,
+                        primaryType: eip712.primaryType,
+                        message: tx,
+                        types: eip712.types as Record<string, MessageTypeProperty[]>,
+                      } as unknown as CustomTypedMessage<MessageTypes>;
 
-                        const cosmosApp = new CosmosApp(transport);
+                      const signedTypedData = await getEIP712Signature(transport, chain, currentAccount, typedMessageObject);
 
-                        const coinType = chain.bip44.coinType.replaceAll("'", '');
+                      const base64Signature = Buffer.from(signedTypedData, 'hex').toString('base64');
 
-                        const path = [44, Number(coinType), 0, 0, Number(currentAccount.bip44.addressIndex)];
+                      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
 
-                        const { compressed_pk } = await cosmosApp.getPublicKey(path);
+                      const publicKeyType = getPublicKeyType(chain);
 
-                        const ledgerAddress = getAddress(chain, Buffer.from(compressed_pk));
+                      const pubKey = { type: publicKeyType, value: base64PublicKey };
 
-                        if (!isEqualsIgnoringCase(address, ledgerAddress)) {
-                          throw new Error('Account address and Ledger address are not the same.');
-                        }
+                      if (channel) {
+                        try {
+                          const url = cosmosURL(chain).postBroadcast();
+                          const pTx = ethermintProtoTx(tx, base64Signature, pubKey);
+                          const pTxBytes = pTx ? ethermintProtoTxBytes({ ...pTx }) : undefined;
 
-                        const result = await cosmosApp.sign(path, Buffer.from(JSON.stringify(sortKeys(tx, { deep: true }))));
+                          const response = await broadcast(url, pTxBytes);
 
-                        if (!result.signature) {
-                          throw new Error(result.error_message);
-                        }
+                          const { code, txhash } = response.tx_response;
 
-                        return secp256k1.signatureImport(result.signature);
-                      }
-
-                      throw new Error('Unknown type account');
-                    })();
-                    const base64Signature = Buffer.from(signature).toString('base64');
-
-                    const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
-
-                    const publicKeyType = getPublicKeyType(chain);
-
-                    const pubKey = { type: publicKeyType, value: base64PublicKey };
-
-                    if (channel) {
-                      try {
-                        const url = cosmosURL(chain).postBroadcast();
-                        const pTx = protoTx(tx, base64Signature, pubKey);
-                        const pTxBytes = pTx ? protoTxBytes({ ...pTx }) : undefined;
-
-                        const response = await broadcast(url, pTxBytes);
-
-                        const { code, txhash } = response.tx_response;
-
-                        if (code === 0) {
-                          if (txhash) {
-                            void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
+                          if (code === 0) {
+                            if (txhash) {
+                              void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
+                            } else {
+                              void deQueue();
+                            }
                           } else {
-                            void deQueue();
+                            throw new Error(response.tx_response.raw_log as string);
                           }
-                        } else {
-                          throw new Error(response.tx_response.raw_log as string);
+                        } catch (e) {
+                          enqueueSnackbar(
+                            (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
+                            {
+                              variant: 'error',
+                              autoHideDuration: 3000,
+                            },
+                          );
+
+                          void deQueue();
                         }
-                      } catch (e) {
-                        enqueueSnackbar(
-                          (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
-                          {
-                            variant: 'error',
-                            autoHideDuration: 3000,
+                      } else {
+                        const result: CosSignAminoResponse = {
+                          signature: base64Signature,
+                          pub_key: pubKey,
+                          signed_doc: tx,
+                        };
+
+                        responseToWeb({
+                          response: {
+                            result,
                           },
-                        );
+                          message,
+                          messageId,
+                          origin,
+                        });
 
-                        void deQueue();
+                        await deQueue();
                       }
+
+                      // NOTE 이 에러 어디에 넣어야할 지 나중에 고민 필요
+                      // throw new Error('Unknown type account');
                     } else {
-                      const result: CosSignAminoResponse = {
-                        signature: base64Signature,
-                        pub_key: pubKey,
-                        signed_doc: tx,
-                      };
+                      const signature = await (async () => {
+                        if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
+                          if (!keyPair.privateKey) {
+                            throw new Error('key does not exist');
+                          }
 
-                      responseToWeb({
-                        response: {
-                          result,
-                        },
-                        message,
-                        messageId,
-                        origin,
-                      });
+                          return signAmino(tx, keyPair.privateKey, chain);
+                        }
 
-                      await deQueue();
+                        if (currentAccount.type === 'LEDGER') {
+                          setLoadingLedgerSigning(true);
+                          const transport = await createTransport();
+
+                          const cosmosApp = new CosmosApp(transport);
+
+                          const coinType = chain.bip44.coinType.replaceAll("'", '');
+
+                          const path = [44, Number(coinType), 0, 0, Number(currentAccount.bip44.addressIndex)];
+
+                          const { compressed_pk } = await cosmosApp.getPublicKey(path);
+
+                          const ledgerAddress = getAddress(chain, Buffer.from(compressed_pk));
+
+                          if (!isEqualsIgnoringCase(address, ledgerAddress)) {
+                            throw new Error('Account address and Ledger address are not the same.');
+                          }
+
+                          const result = await cosmosApp.sign(path, Buffer.from(JSON.stringify(sortKeys(tx, { deep: true }))));
+
+                          if (!result.signature) {
+                            throw new Error(result.error_message);
+                          }
+
+                          return secp256k1.signatureImport(result.signature);
+                        }
+
+                        throw new Error('Unknown type account');
+                      })();
+                      const base64Signature = Buffer.from(signature).toString('base64');
+
+                      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+
+                      const publicKeyType = getPublicKeyType(chain);
+
+                      const pubKey = { type: publicKeyType, value: base64PublicKey };
+                      if (channel) {
+                        try {
+                          const url = cosmosURL(chain).postBroadcast();
+                          const pTx = protoTx(tx, base64Signature, pubKey);
+                          const pTxBytes = pTx ? protoTxBytes({ ...pTx }) : undefined;
+
+                          const response = await broadcast(url, pTxBytes);
+
+                          const { code, txhash } = response.tx_response;
+
+                          if (code === 0) {
+                            if (txhash) {
+                              void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
+                            } else {
+                              void deQueue();
+                            }
+                          } else {
+                            throw new Error(response.tx_response.raw_log as string);
+                          }
+                        } catch (e) {
+                          enqueueSnackbar(
+                            (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
+                            {
+                              variant: 'error',
+                              autoHideDuration: 3000,
+                            },
+                          );
+
+                          void deQueue();
+                        }
+                      } else {
+                        const result: CosSignAminoResponse = {
+                          signature: base64Signature,
+                          pub_key: pubKey,
+                          signed_doc: tx,
+                        };
+
+                        responseToWeb({
+                          response: {
+                            result,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
+
+                        await deQueue();
+                      }
                     }
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });

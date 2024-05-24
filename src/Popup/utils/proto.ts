@@ -1,12 +1,15 @@
+import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { post } from '~/Popup/utils/axios';
 import { isAminoCommission, isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
 import { cosmwasm } from '~/proto/cosmwasm-v0.28.0.js';
+import { ethermint } from '~/proto/ethermint-v0.22.0.js';
 import { ibc } from '~/proto/ibc-v7.1.0.js';
 import { osmosis } from '~/proto/osmosis-v13.1.2.js';
 import type { Msg, MsgCommission, MsgExecuteContract, MsgReward, MsgSend, MsgSwapExactAmountIn, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type {
+  EthermintTxBytesProps,
   Msg as ProtoMsg,
   MsgCommission as ProtoMsgCommission,
   MsgExecuteContract as ProtoMsgExecuteContract,
@@ -15,6 +18,8 @@ import type {
   ProtoTxBytesProps,
   PubKey,
 } from '~/types/cosmos/proto';
+
+import { getEVMChainId } from './ethermint';
 
 export function convertAminoMessageToProto(msg: Msg) {
   if (isAminoSend(msg)) {
@@ -144,12 +149,68 @@ export function getTxBodyBytes(signed: SignAminoDoc) {
   return cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
 }
 
+export function getEthermintTxBodyBytes(signed: SignAminoDoc, signature: string) {
+  const messages = signed.msgs.map((msg) => convertAminoMessageToProto(msg)).filter((item) => item !== null) as google.protobuf.Any[];
+
+  const chainIsInjective = signed.chain_id === INJECTIVE.chainId;
+
+  const typedDataChainIdaa = getEVMChainId(signed.chain_id);
+  const fee_payer = !chainIsInjective ? signed.fee.feePayer : undefined;
+  const fee_payer_sig = !chainIsInjective ? Uint8Array.from(Buffer.from(signature, 'hex')) : undefined;
+
+  const extensionOptions = new ethermint.types.v1.ExtensionOptionsWeb3Tx({
+    typed_data_chain_id: typedDataChainIdaa,
+    fee_payer,
+    fee_payer_sig,
+  });
+
+  const encodedOptions = new google.protobuf.Any({
+    type_url: (() => {
+      if (chainIsInjective) {
+        return '/injective.types.v1beta1.ExtensionOptionsWeb3Tx';
+      }
+
+      return '/ethermint.types.v1.ExtensionOptionsWeb3Tx';
+    })(),
+    value: ethermint.types.v1.ExtensionOptionsWeb3Tx.encode(extensionOptions).finish(),
+  });
+
+  const txBody = new cosmos.tx.v1beta1.TxBody({
+    messages,
+    memo: signed.memo,
+    timeout_height: Number(signed.timeout_height),
+    extension_options: [encodedOptions],
+  });
+
+  if (signed.msgs.length !== messages.length) {
+    return null;
+  }
+
+  return cosmos.tx.v1beta1.TxBody.encode(txBody).finish();
+}
+
 export function getAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
   const signerInfo = getSignerInfo(signed, pubKey, mode);
 
   const fee = new cosmos.tx.v1beta1.Fee({
     amount: signed.fee.amount,
     gas_limit: Number(signed.fee.gas),
+  });
+
+  const authInfo = new cosmos.tx.v1beta1.AuthInfo({ signer_infos: [signerInfo], fee });
+
+  return cosmos.tx.v1beta1.AuthInfo.encode(authInfo).finish();
+}
+
+export function getEthermintAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
+  const signerInfo = getSignerInfo(signed, pubKey, mode);
+
+  const chainIsInjective = signed.chain_id === INJECTIVE.chainId;
+
+  const fee = new cosmos.tx.v1beta1.Fee({
+    amount: signed.fee.amount,
+    gas_limit: Number(signed.fee.gas),
+    payer: !chainIsInjective ? signed.fee.feePayer : '',
   });
 
   const authInfo = new cosmos.tx.v1beta1.AuthInfo({ signer_infos: [signerInfo], fee });
@@ -218,6 +279,39 @@ export function protoTxBytes({ signature, txBodyBytes, authInfoBytes }: ProtoTxB
   };
 
   return tx;
+}
+
+export function ethermintProtoTxBytes({ signature, txBodyBytes, authInfoBytes }: EthermintTxBytesProps) {
+  const txRaw = new cosmos.tx.v1beta1.TxRaw({
+    body_bytes: new Uint8Array(txBodyBytes),
+    auth_info_bytes: new Uint8Array(authInfoBytes),
+    signatures: signature ? [Buffer.from(signature, 'base64')] : [new Uint8Array(0)],
+  });
+  const txRawBytes = cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
+
+  const tx = {
+    tx_bytes: Buffer.from(txRawBytes).toString('base64'),
+    mode: cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
+  };
+
+  return tx;
+}
+
+export function ethermintProtoTx(
+  signed: SignAminoDoc,
+  signature: string,
+  pubKey: PubKey,
+  mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
+) {
+  const txBodyBytes = getEthermintTxBodyBytes(signed, signature);
+
+  if (txBodyBytes === null) {
+    return null;
+  }
+
+  const authInfoBytes = getEthermintAuthInfoBytes(signed, pubKey, mode);
+
+  return { signature, txBodyBytes, authInfoBytes };
 }
 
 export function broadcast(url: string, body: unknown) {

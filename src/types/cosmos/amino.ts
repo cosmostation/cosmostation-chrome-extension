@@ -6,6 +6,7 @@ export type Fee = {
   gas: string;
   payer?: string;
   granter?: string;
+  feePayer?: string;
 };
 
 export type Msg<T = unknown> = {

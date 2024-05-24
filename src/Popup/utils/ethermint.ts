@@ -1,7 +1,17 @@
+import EthereumApp from '@ledgerhq/hw-app-eth';
+import type Transport from '@ledgerhq/hw-transport';
+import type { MessageTypes } from '@metamask/eth-sig-util';
+import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
+
+import type { CosmosChain } from '~/types/chain';
 import type { MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { EIP712StructuredData, RLPTypes } from '~/types/cosmos/ethermint';
+import type { LedgerAccount } from '~/types/extensionStorage';
+import type { CustomTypedMessage } from '~/types/message/ethereum';
 
+import { getAddress } from './common';
 import { isEthermintStyleChainId } from './regex';
+import { isEqualsIgnoringCase } from './string';
 
 export function constructEip712TypedData(chainId: string, tx: SignAminoDoc): EIP712StructuredData | undefined {
   const chainIsInjective = chainId.startsWith('injective');
@@ -201,4 +211,30 @@ export function getRLPType(tx: SignAminoDoc): RLPTypes {
   }
 
   return {};
+}
+
+export async function getEIP712Signature(transport: Transport, chain: CosmosChain, currentAccount: LedgerAccount, eip712: CustomTypedMessage<MessageTypes>) {
+  const ethereumApp = new EthereumApp(transport);
+
+  const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}`;
+
+  const { publicKey } = await ethereumApp.getAddress(path);
+
+  const accountAddress = currentAccount.ethereumPublicKey ? getAddress(chain, Buffer.from(currentAccount.ethereumPublicKey, 'hex')) : '';
+
+  const ledgerAddress = getAddress(chain, Buffer.from(publicKey, 'hex'));
+
+  if (!isEqualsIgnoringCase(accountAddress, ledgerAddress)) {
+    throw new Error('Account address and Ledger address are not the same.');
+  }
+
+  const domainSeparatorHex = TypedDataUtils.hashStruct('EIP712Domain', eip712.domain, eip712.types, SignTypedDataVersion.V4).toString('hex');
+
+  const hashStructMessageHex = TypedDataUtils.hashStruct(eip712.primaryType, eip712.message, eip712.types, SignTypedDataVersion.V4).toString('hex');
+
+  const result = await ethereumApp.signEIP712HashedMessage(path, domainSeparatorHex, hashStructMessageHex);
+
+  const v = (result.v - 27).toString(16);
+
+  return `${result.r}${result.s}${v.length < 2 ? `0${v}` : v}`;
 }

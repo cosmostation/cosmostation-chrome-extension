@@ -1,8 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
-import EthereumApp from '@ledgerhq/hw-app-eth';
-import type { MessageTypeProperty } from '@metamask/eth-sig-util';
-import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
+import type { MessageTypeProperty, MessageTypes } from '@metamask/eth-sig-util';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -24,12 +22,13 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, equal, gte, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { getEIP712Signature } from '~/Popup/utils/ethermint';
 import { responseToWeb } from '~/Popup/utils/message';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
-import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
 import type { CosSignEIP712, CosSignEIP712Response } from '~/types/message/cosmos';
+import type { CustomTypedMessage } from '~/types/message/ethereum';
 
 import { BottomButtonContainer, BottomContainer, Container, ContentsContainer, FeeContainer, MemoContainer, PaginationContainer, TabContainer } from './styled';
 import TxMessage from '../Amino/components/TxMessage';
@@ -149,12 +148,13 @@ export default function Entry({ queue, chain }: EntryProps) {
   const tx = useMemo(() => ({ ...doc, memo: signingMemo, fee: signingFee }), [doc, signingFee, signingMemo]);
 
   const typedMessageObject = useMemo(
-    () => ({
-      types: types as Record<string, MessageTypeProperty[]>,
-      domain,
-      primaryType,
-      message: tx,
-    }),
+    () =>
+      ({
+        types: types as Record<string, MessageTypeProperty[]>,
+        domain,
+        primaryType,
+        message: tx,
+      } as unknown as CustomTypedMessage<MessageTypes>),
     [domain, primaryType, tx, types],
   );
 
@@ -259,39 +259,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                         setLoadingLedgerSigning(true);
                         const transport = await createTransport();
 
-                        const ethereumApp = new EthereumApp(transport);
-
-                        const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}`;
-
-                        const { publicKey } = await ethereumApp.getAddress(path);
-
-                        const accountAddress = currentAccount.ethereumPublicKey ? getAddress(chain, Buffer.from(currentAccount.ethereumPublicKey, 'hex')) : '';
-
-                        const ledgerAddress = getAddress(chain, Buffer.from(publicKey, 'hex'));
-
-                        if (!isEqualsIgnoringCase(accountAddress, ledgerAddress)) {
-                          throw new Error('Account address and Ledger address are not the same.');
-                        }
-
-                        const domainSeparatorHex = TypedDataUtils.hashStruct(
-                          'EIP712Domain',
-                          typedMessageObject.domain,
-                          typedMessageObject.types,
-                          SignTypedDataVersion.V4,
-                        ).toString('hex');
-
-                        const hashStructMessageHex = TypedDataUtils.hashStruct(
-                          typedMessageObject.primaryType,
-                          typedMessageObject.message,
-                          typedMessageObject.types,
-                          SignTypedDataVersion.V4,
-                        ).toString('hex');
-
-                        const result = await ethereumApp.signEIP712HashedMessage(path, domainSeparatorHex, hashStructMessageHex);
-
-                        const v = (result.v - 27).toString(16);
-
-                        return `${result.r}${result.s}${v.length < 2 ? `0${v}` : v}`;
+                        return getEIP712Signature(transport, chain, currentAccount, typedMessageObject);
                       }
 
                       throw new Error('Unknown type account');
