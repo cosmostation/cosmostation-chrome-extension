@@ -146,11 +146,11 @@ export function signDirect(signDoc: SignDirectDoc, privateKey: Buffer, chain: Co
 }
 
 export const getPublicKeyType = (chain: CosmosChain) => {
-  if (chain.chainName === INJECTIVE.chainName) {
+  if (chain.id === INJECTIVE.id) {
     return PUBLIC_KEY_TYPE.INJ_SECP256K1;
   }
 
-  if (chain.chainName === ARTELA_TESTNET.chainName) {
+  if (chain.id === ARTELA_TESTNET.id) {
     return PUBLIC_KEY_TYPE.ART_SECP256K1;
   }
 
