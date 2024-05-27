@@ -1,4 +1,5 @@
 import { KAVA as COSMOS_KAVA } from '~/constants/chain/cosmos/kava';
+import kavaEVMChainImg from '~/images/chainImgs/kava_evm.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const KAVA: EthereumNetwork = {
@@ -7,7 +8,7 @@ export const KAVA: EthereumNetwork = {
   networkName: 'KAVA EVM',
   rpcURL: 'https://rpc-kava-evm.cosmostation.io',
   tokenImageURL: COSMOS_KAVA.tokenImageURL,
-  imageURL: COSMOS_KAVA.imageURL,
+  imageURL: kavaEVMChainImg,
   displayDenom: COSMOS_KAVA.displayDenom,
   decimals: 18,
   explorerURL: 'https://kavascan.io',

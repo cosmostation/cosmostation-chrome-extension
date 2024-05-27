@@ -121,6 +121,16 @@ export const FooterContainer = styled('div')({
 });
 
 export const FooterLeftContainer = styled('div')(({ theme }) => ({
+  width: '60%',
+  maxWidth: '100%',
+
+  whiteSpace: 'nowrap',
+  wordBreak: 'keep-all',
+
+  '& > *': {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
   color: theme.colors.text02,
 }));
 

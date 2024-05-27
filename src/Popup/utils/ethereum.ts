@@ -21,7 +21,7 @@ import { EVMOS } from '~/constants/chain/ethereum/network/evmos';
 import { FANTOM } from '~/constants/chain/ethereum/network/fantom';
 import { HARMONY } from '~/constants/chain/ethereum/network/harmony';
 import { KAVA } from '~/constants/chain/ethereum/network/kava';
-import { OKC } from '~/constants/chain/ethereum/network/okc';
+import { OKT } from '~/constants/chain/ethereum/network/okt';
 import { OPTIMISM } from '~/constants/chain/ethereum/network/optimism';
 import { POLYGON } from '~/constants/chain/ethereum/network/polygon';
 import { SCROLL_SEPOLIA_TESTNET } from '~/constants/chain/ethereum/network/scrollSepoliaTestnet';
@@ -351,7 +351,7 @@ export function convertEVMToAssetName(evmNetwork: EthereumNetwork) {
     [HARMONY.id]: 'harmony',
     [DYMENSION.id]: 'dymension',
     [KAVA.id]: 'kava',
-    [OKC.id]: 'okc',
+    [OKT.id]: 'okc',
     [OPTIMISM.id]: 'optimism',
     [POLYGON.id]: 'polygon',
     [SMART_CHAIN.id]: 'bnb-smart-chain',
@@ -374,7 +374,7 @@ export function convertAssetNameToEVM(assetName: string) {
     harmony: HARMONY,
     dymension: DYMENSION,
     kava: KAVA,
-    okc: OKC,
+    okc: OKT,
     optimism: OPTIMISM,
     polygon: POLYGON,
     'bnb-smart-chain': SMART_CHAIN,
