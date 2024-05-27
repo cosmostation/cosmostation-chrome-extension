@@ -31,7 +31,7 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
+import { getAddress, getAddressKey, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import { convertToValidatorAddress, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -614,6 +614,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   const { currentAccount } = useCurrentAccount();
 
   const { currentPassword } = useCurrentPassword();
+  const { extensionStorage } = useExtensionStorage();
 
   const { explorerURL } = chain;
 
@@ -622,9 +623,9 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   const [expanded, setExpanded] = useState(storageExpanded);
 
   const address = useMemo(() => {
-    const key = `${currentAccount.id}${chain.id}`;
+    const key = getAddressKey(currentAccount, chain);
 
-    const storageAddress = localStorage.getItem(key);
+    const storageAddress = extensionStorage.address?.[key];
 
     if (storageAddress) {
       return storageAddress;
@@ -633,7 +634,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
     const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
     return getAddress(chain, keyPair?.publicKey);
-  }, [chain, currentAccount, currentPassword]);
+  }, [chain, currentAccount, currentPassword, extensionStorage.address]);
 
   const params = useParamsSWR(chain);
 
@@ -802,12 +803,14 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const { currentPassword } = useCurrentPassword();
 
+  const { extensionStorage } = useExtensionStorage();
+
   const { explorerURL } = chain;
 
   const address = useMemo(() => {
-    const key = `${currentAccount.id}${chain.id}`;
+    const key = getAddressKey(currentAccount, chain);
 
-    const storageAddress = localStorage.getItem(key);
+    const storageAddress = extensionStorage.address?.[key];
 
     if (storageAddress) {
       return storageAddress;
@@ -816,7 +819,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
     const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
     return getAddress(chain, keyPair?.publicKey);
-  }, [chain, currentAccount, currentPassword]);
+  }, [chain, currentAccount, currentPassword, extensionStorage.address]);
 
   const { enqueueSnackbar } = useSnackbar();
 

@@ -3,7 +3,7 @@ import useSWR from 'swr';
 import { CHAINS } from '~/constants/chain';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
-import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { getAddress, getAddressKey, getKeyPair } from '~/Popup/utils/common';
 import type { AccountType } from '~/types/extensionStorage';
 
 type AccountList = {
@@ -13,34 +13,42 @@ type AccountList = {
 };
 
 export function useAccounts(suspense?: boolean) {
-  const { extensionStorage } = useExtensionStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { currentPassword } = useCurrentPassword();
 
-  const { accounts, additionalChains } = extensionStorage;
+  const { accounts, additionalChains, address } = extensionStorage;
 
   const fetcher = () =>
     new Promise<AccountList[]>((res) => {
       setTimeout(() => {
-        res(
-          accounts.map((account) => {
-            const addresses: Record<string, string> = {};
+        const accountAddress: Record<string, string> = {};
 
-            [...CHAINS, ...additionalChains].forEach((chain) => {
-              const key = `${account.id}${chain.id}`;
-              const storageAddress = localStorage.getItem(key);
+        const result = accounts.map((account) => {
+          const addresses: Record<string, string> = {};
 
-              if (storageAddress) {
-                addresses[chain.id] = storageAddress;
-              } else {
-                const keypair = getKeyPair(account, chain, currentPassword);
-                const address = getAddress(chain, keypair?.publicKey);
-                addresses[chain.id] = address;
-                localStorage.setItem(key, address);
-              }
-            });
-            return { id: account.id, address: addresses, type: account.type };
-          }),
-        );
+          [...CHAINS, ...additionalChains].forEach((chain) => {
+            const key = getAddressKey(account, chain);
+            const storageAddress = address?.[key];
+
+            if (storageAddress) {
+              addresses[chain.id] = storageAddress;
+              accountAddress[key] = storageAddress;
+            } else {
+              const keypair = getKeyPair(account, chain, currentPassword);
+              const chainAddress = getAddress(chain, keypair?.publicKey);
+
+              addresses[chain.id] = chainAddress;
+              accountAddress[key] = chainAddress;
+            }
+          });
+          return { id: account.id, address: addresses, type: account.type };
+        });
+
+        if (Object.keys(accountAddress).join('') !== (address && Object.keys(address).join(''))) {
+          void setExtensionStorage('address', accountAddress);
+        }
+
+        res(result);
       }, 500);
     });
 

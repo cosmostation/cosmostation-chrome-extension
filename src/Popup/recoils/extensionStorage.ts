@@ -54,6 +54,8 @@ export const extensionStorageDefault: ExtensionStorage = {
   ledgerTransportType: 'HID',
 
   providers: { keplr: false, metamask: false, aptos: false },
+
+  address: {},
 };
 
 export const extensionStorageState = atom<ExtensionStorage>({
