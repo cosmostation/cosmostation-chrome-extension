@@ -8,6 +8,7 @@ import TinySecp256k1 from 'tiny-secp256k1';
 import { keccak256 } from '@ethersproject/keccak256';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV } from '~/constants/chain';
+import { ARTELA_TESTNET } from '~/constants/chain/cosmos/artelaTestnet';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
 import { CRONOS_POS } from '~/constants/chain/cosmos/cronosPos';
 import { EMONEY } from '~/constants/chain/cosmos/emoney';
@@ -149,6 +150,10 @@ export const getPublicKeyType = (chain: CosmosChain) => {
     return PUBLIC_KEY_TYPE.INJ_SECP256K1;
   }
 
+  if (chain.chainName === ARTELA_TESTNET.chainName) {
+    return PUBLIC_KEY_TYPE.ART_SECP256K1;
+  }
+
   if (chain.type === 'ETHERMINT') {
     return PUBLIC_KEY_TYPE.ETH_SECP256K1;
   }
@@ -200,6 +205,7 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [HUMANS_AI.id]: 'humans',
     [ONOMY.id]: 'onomy-protocol',
     [UX.id]: 'umee',
+    [ARTELA_TESTNET.id]: 'artela-testnet',
   };
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
@@ -216,6 +222,7 @@ export function convertAssetNameToCosmos(assetName: string) {
     humans: HUMANS_AI,
     'onomy-protocol': ONOMY,
     umee: UX,
+    'artela-testnet': ARTELA_TESTNET,
   } as Record<string, CosmosChain | undefined>;
 
   return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);

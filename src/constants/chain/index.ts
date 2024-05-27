@@ -7,6 +7,7 @@ import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
 import { AKASH } from './cosmos/akash';
 import { ALTHEA } from './cosmos/althea';
 import { ARCHWAY } from './cosmos/archway';
+import { ARTELA_TESTNET } from './cosmos/artelaTestnet';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { AXELAR } from './cosmos/axelar';
 import { BAND } from './cosmos/band';
@@ -116,6 +117,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   AKASH,
   ALTHEA,
   ARCHWAY,
+  ARTELA_TESTNET,
   ASSET_MANTLE,
   AXELAR,
   BAND,

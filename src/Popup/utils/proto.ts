@@ -169,6 +169,10 @@ export function getSignerInfo(signed: SignAminoDoc, pubKey: PubKey, mode = cosmo
       return '/injective.crypto.v1beta1.ethsecp256k1.PubKey';
     }
 
+    if (pubKey.type === 'artela/PubKeyEthSecp256k1') {
+      return '/artela.crypto.v1.ethsecp256k1.PubKey';
+    }
+
     return '/cosmos.crypto.secp256k1.PubKey';
   })();
 
