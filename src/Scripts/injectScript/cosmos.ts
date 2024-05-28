@@ -195,7 +195,7 @@ export const cosmos: Cosmos = {
 
 const enable: Keplr['enable'] = async (chainIds?: string[] | string) => {
   if (!chainIds) {
-    throw new Error('chainIds is required');
+    throw new Error('chain id not set');
   }
 
   const inputChainIds = typeof chainIds === 'string' ? [chainIds] : chainIds;
