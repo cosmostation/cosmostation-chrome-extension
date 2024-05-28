@@ -1,3 +1,4 @@
+import TinySecp256k1 from 'tiny-secp256k1';
 import EthereumApp from '@ledgerhq/hw-app-eth';
 import type Transport from '@ledgerhq/hw-transport';
 import type { MessageTypes } from '@metamask/eth-sig-util';
@@ -220,9 +221,11 @@ export async function getEIP712Signature(transport: Transport, chain: CosmosChai
 
   const { publicKey } = await ethereumApp.getAddress(path);
 
-  const accountAddress = currentAccount.ethereumPublicKey ? getAddress(chain, Buffer.from(currentAccount.ethereumPublicKey, 'hex')) : '';
+  const compressedPublicKey = Buffer.from(TinySecp256k1.pointCompress(Buffer.from(publicKey, 'hex'), true));
 
-  const ledgerAddress = getAddress(chain, Buffer.from(publicKey, 'hex'));
+  const accountAddress = currentAccount.ethermintPublicKey ? getAddress(chain, Buffer.from(currentAccount.ethermintPublicKey, 'hex')) : '';
+
+  const ledgerAddress = getAddress(chain, compressedPublicKey);
 
   if (!isEqualsIgnoringCase(accountAddress, ledgerAddress)) {
     throw new Error('Account address and Ledger address are not the same.');

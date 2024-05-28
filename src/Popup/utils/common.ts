@@ -1,9 +1,5 @@
-import { COSMOS } from '~/constants/chain/cosmos/cosmos';
-import { CRONOS_POS } from '~/constants/chain/cosmos/cronosPos';
-import { MEDIBLOC } from '~/constants/chain/cosmos/medibloc';
-import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { SUI } from '~/constants/chain/sui/sui';
 import { LANGUAGE_TYPE } from '~/constants/extensionStorage';
+import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import { getAddress as getAptosAddress } from '~/Popup/utils/aptos';
 import { getAddress as getBech32Address, getAddressForEthermint } from '~/Popup/utils/cosmos';
 import {
@@ -81,23 +77,27 @@ export function getKeyPair(account: Account, chain: Chain, password: string | nu
   }
 
   if (account.type === 'LEDGER') {
-    if (chain.bip44.coinType === COSMOS.bip44.coinType && account.cosmosPublicKey) {
+    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS && account.cosmosPublicKey) {
       return { privateKey: null, publicKey: Buffer.from(account.cosmosPublicKey, 'hex') };
     }
 
-    if (chain.bip44.coinType === MEDIBLOC.bip44.coinType && account.mediblocPublicKey) {
+    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT && account.ethermintPublicKey) {
+      return { privateKey: null, publicKey: Buffer.from(account.ethermintPublicKey, 'hex') };
+    }
+
+    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC && account.mediblocPublicKey) {
       return { privateKey: null, publicKey: Buffer.from(account.mediblocPublicKey, 'hex') };
     }
 
-    if (chain.bip44.coinType === CRONOS_POS.bip44.coinType && account.cryptoOrgPublicKey) {
+    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS && account.cryptoOrgPublicKey) {
       return { privateKey: null, publicKey: Buffer.from(account.cryptoOrgPublicKey, 'hex') };
     }
 
-    if (chain.bip44.coinType === ETHEREUM.bip44.coinType && account.ethereumPublicKey) {
+    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM && account.ethereumPublicKey) {
       return { privateKey: null, publicKey: Buffer.from(account.ethereumPublicKey, 'hex') };
     }
 
-    if (chain.bip44.coinType === SUI.bip44.coinType && account.suiPublicKey) {
+    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI && account.suiPublicKey) {
       return { privateKey: null, publicKey: Buffer.from(account.suiPublicKey, 'hex') };
     }
 

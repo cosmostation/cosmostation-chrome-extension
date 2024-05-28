@@ -49,6 +49,7 @@ export type LedgerAccount = {
   bip44: Omit<BIP44, 'purpose' | 'coinType' | 'account' | 'change'>;
 
   cosmosPublicKey?: string;
+  ethermintPublicKey?: string;
   ethereumPublicKey?: string;
   mediblocPublicKey?: string;
   cryptoOrgPublicKey?: string;

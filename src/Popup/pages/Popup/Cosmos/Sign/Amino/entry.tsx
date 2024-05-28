@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import secp256k1 from 'secp256k1';
 import sortKeys from 'sort-keys';
-import TinySecp256k1 from 'tiny-secp256k1';
 import type { MessageTypeProperty, MessageTypes } from '@metamask/eth-sig-util';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
@@ -268,8 +267,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                       const base64Signature = Buffer.from(signedTypedData, 'hex').toString('base64');
 
-                      // NOTE 이더민트는 compressed된 public key를 사용함
-                      const base64PublicKey = Buffer.from(TinySecp256k1.pointCompress(keyPair.publicKey, true)).toString('base64');
+                      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
 
                       const publicKeyType = getPublicKeyType(chain);
 
