@@ -2,9 +2,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import secp256k1 from 'secp256k1';
 import sortKeys from 'sort-keys';
+import TinySecp256k1 from 'tiny-secp256k1';
 import type { MessageTypeProperty, MessageTypes } from '@metamask/eth-sig-util';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
+import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import Button from '~/Popup/components/common/Button';
@@ -266,7 +268,8 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                       const base64Signature = Buffer.from(signedTypedData, 'hex').toString('base64');
 
-                      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+                      // NOTE 이더민트는 compressed된 public key를 사용함
+                      const base64PublicKey = Buffer.from(TinySecp256k1.pointCompress(keyPair.publicKey, true)).toString('base64');
 
                       const publicKeyType = getPublicKeyType(chain);
 
@@ -276,7 +279,10 @@ export default function Entry({ queue, chain }: EntryProps) {
                         try {
                           const url = cosmosURL(chain).postBroadcast();
                           const pTx = ethermintProtoTx(tx, base64Signature, pubKey);
-                          const pTxBytes = pTx ? ethermintProtoTxBytes({ ...pTx }) : undefined;
+                          const pTxBytes = pTx
+                            ? // NOTE 로직 고도화 필요
+                              ethermintProtoTxBytes({ ...pTx, signature: chain.id !== INJECTIVE.id ? undefined : pTx.signature })
+                            : undefined;
 
                           const response = await broadcast(url, pTxBytes);
 
@@ -320,9 +326,6 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                         await deQueue();
                       }
-
-                      // NOTE 이 에러 어디에 넣어야할 지 나중에 고민 필요
-                      // throw new Error('Unknown type account');
                     } else {
                       const signature = await (async () => {
                         if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {

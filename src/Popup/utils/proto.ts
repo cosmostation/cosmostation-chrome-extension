@@ -156,7 +156,7 @@ export function getEthermintTxBodyBytes(signed: SignAminoDoc, signature: string)
 
   const typedDataChainIdaa = getEVMChainId(signed.chain_id);
   const fee_payer = !chainIsInjective ? signed.fee.feePayer : undefined;
-  const fee_payer_sig = !chainIsInjective ? Uint8Array.from(Buffer.from(signature, 'hex')) : undefined;
+  const fee_payer_sig = !chainIsInjective ? Buffer.from(signature, 'base64') : undefined;
 
   const extensionOptions = new ethermint.types.v1.ExtensionOptionsWeb3Tx({
     typed_data_chain_id: typedDataChainIdaa,
@@ -210,7 +210,7 @@ export function getEthermintAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey, 
   const fee = new cosmos.tx.v1beta1.Fee({
     amount: signed.fee.amount,
     gas_limit: Number(signed.fee.gas),
-    payer: !chainIsInjective ? signed.fee.feePayer : '',
+    payer: !chainIsInjective ? signed.fee.feePayer : undefined,
   });
 
   const authInfo = new cosmos.tx.v1beta1.AuthInfo({ signer_infos: [signerInfo], fee });
