@@ -1256,6 +1256,7 @@ export default function Entry() {
   ]);
 
   const errorMessage = useMemo(() => {
+    // NOTE 로직 완성되면 수정 필요
     if (
       currentAccount.type === 'LEDGER' &&
       CHAINS.find((item) => item.id === currentFromChain.baseChainUUID)?.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM

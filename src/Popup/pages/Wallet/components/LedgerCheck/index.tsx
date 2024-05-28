@@ -67,7 +67,7 @@ export default function LedgerCheck({ children }: LedgerCheckProps) {
 
   if (currentAccount.type === 'LEDGER') {
     if (
-      (![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.ETHEREUM, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS].includes(
+      (![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.ETHERMINT, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS].includes(
         currentChain.bip44.coinType,
       ) &&
         currentChain.line === 'COSMOS') ||

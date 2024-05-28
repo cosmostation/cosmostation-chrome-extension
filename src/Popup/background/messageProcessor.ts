@@ -244,7 +244,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             currentAccount.type === 'LEDGER' &&
             ![
               LEDGER_SUPPORT_COIN_TYPE.COSMOS,
-              LEDGER_SUPPORT_COIN_TYPE.ETHEREUM,
+              LEDGER_SUPPORT_COIN_TYPE.ETHERMINT,
               LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC,
               LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS,
             ].includes(chain.bip44.coinType)

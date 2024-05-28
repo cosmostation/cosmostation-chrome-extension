@@ -574,12 +574,12 @@ export default function Send({ chain }: CosmosProps) {
                             amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }],
                             gas: currentGas,
                             feePayer:
-                              currentAccount.type === 'LEDGER' && chain.id !== INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM
+                              currentAccount.type === 'LEDGER' && chain.id !== INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
                                 ? address
                                 : undefined,
                           },
                           timeout_height:
-                            currentAccount.type === 'LEDGER' && chain.id === INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM
+                            currentAccount.type === 'LEDGER' && chain.id === INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
                               ? revisionHeight
                               : undefined,
                         },

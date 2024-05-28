@@ -245,7 +245,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                       throw new Error('key pair does not exist');
                     }
 
-                    if (currentAccount.type === 'LEDGER' && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
+                    if (currentAccount.type === 'LEDGER' && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT) {
                       setLoadingLedgerSigning(true);
 
                       const transport = await createTransport();
