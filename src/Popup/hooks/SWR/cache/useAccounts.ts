@@ -27,12 +27,19 @@ export function useAccounts(suspense?: boolean) {
           const addresses: Record<string, string> = {};
 
           [...CHAINS, ...additionalChains].forEach((chain) => {
+            // 추후 삭제 예정
+            const legacyKey = `${account.id}${chain.id}`;
+            const legacyStorageAddress = localStorage.getItem(legacyKey);
+
             const key = getAddressKey(account, chain);
             const storageAddress = address?.[key];
 
             if (storageAddress) {
               addresses[chain.id] = storageAddress;
               accountAddress[key] = storageAddress;
+            } else if (legacyStorageAddress) {
+              addresses[chain.id] = legacyStorageAddress;
+              accountAddress[key] = legacyStorageAddress;
             } else {
               const keypair = getKeyPair(account, chain, currentPassword);
               const chainAddress = getAddress(chain, keypair?.publicKey);
