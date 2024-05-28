@@ -193,7 +193,11 @@ export const cosmos: Cosmos = {
 
 // keplr provider start
 
-const enable: Keplr['enable'] = async (chainIds: string[] | string) => {
+const enable: Keplr['enable'] = async (chainIds?: string[] | string) => {
+  if (!chainIds) {
+    throw new Error('chainIds is required');
+  }
+
   const inputChainIds = typeof chainIds === 'string' ? [chainIds] : chainIds;
 
   const response = (await request({ method: 'cos_supportedChainIds' })) as CosSupportedChainIdsResponse;
