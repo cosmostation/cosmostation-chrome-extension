@@ -72,12 +72,12 @@ export default function Ethereum({ chain }: EthereumProps) {
   const tokenBalance = useTokenBalanceSWR({ token: currentToken });
 
   const [currentAddress, setCurrentAddress] = useState('');
-  const [debouncedContractAddress] = useDebounce(currentAddress, 500);
-  const ens = useEnsSWR(currentEthereumNetwork, debouncedContractAddress);
+  const [debouncedCurrentAddress] = useDebounce(currentAddress, 500);
+  const ens = useEnsSWR(currentEthereumNetwork, debouncedCurrentAddress);
 
   const nameResolvedAddress = useMemo(() => ens?.data, [ens.data]);
 
-  const toAddress = useMemo(() => ens.data || debouncedContractAddress, [debouncedContractAddress, ens.data]);
+  const toAddress = useMemo(() => ens.data || debouncedCurrentAddress, [debouncedCurrentAddress, ens.data]);
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
