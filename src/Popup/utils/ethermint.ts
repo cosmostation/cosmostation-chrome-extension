@@ -241,3 +241,7 @@ export async function getEIP712Signature(transport: Transport, chain: CosmosChai
 
   return `${result.r}${result.s}${v.length < 2 ? `0${v}` : v}`;
 }
+
+export function generateTimeoutTimestamp() {
+  return ((Date.now() + 1_000_000) * 1_000_000).toString();
+}

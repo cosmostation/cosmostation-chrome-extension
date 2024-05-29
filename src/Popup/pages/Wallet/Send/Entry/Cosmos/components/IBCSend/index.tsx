@@ -5,6 +5,7 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS } from '~/constants/chain';
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
+import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import unknownChainImg from '~/images/chainImgs/unknown.png';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
@@ -12,7 +13,7 @@ import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import AssetBottomSheetButton from '~/Popup/components/common/AssetBottomSheetButton';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
-import Number from '~/Popup/components/common/Number';
+import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
@@ -40,6 +41,7 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, convertCosmosToAssetName, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { generateTimeoutTimestamp } from '~/Popup/utils/ethermint';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
@@ -366,6 +368,15 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number],
   );
 
+  const sourceChainLatestBlock = useBlockLatestSWR(chain);
+
+  const sourceChainBlockHeight = useMemo(() => sourceChainLatestBlock.data?.block?.header?.height, [sourceChainLatestBlock.data?.block?.header?.height]);
+
+  const sourceChainRevisionHeight = useMemo(
+    () => (sourceChainBlockHeight ? String(100 + parseInt(sourceChainBlockHeight, 10)) : undefined),
+    [sourceChainBlockHeight],
+  );
+
   const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain);
 
   const sendGas = useMemo(
@@ -429,6 +440,12 @@ export default function IBCSend({ chain }: IBCSendProps) {
                   amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
                   denom: currentCoinOrToken.baseDenom,
                 },
+                memo:
+                  currentAccount.type === 'LEDGER' && chain.id === INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
+                    ? 'IBC Transfer'
+                    : undefined,
+                timeout_timestamp:
+                  currentAccount.type === 'LEDGER' && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT ? generateTimeoutTimestamp() : undefined,
               },
             },
           ],
@@ -478,16 +495,19 @@ export default function IBCSend({ chain }: IBCSendProps) {
   }, [
     account.data?.value.account_number,
     account.data?.value.sequence,
+    chain.bip44.coinType,
     chain.chainId,
+    chain.id,
     chain.type,
+    currentAccount.type,
     currentCoinOrToken,
+    currentDepositAddress,
     currentDisplayAmount,
     currentFeeCoin.baseDenom,
     currentFeeGasRate,
     currentGasRateKey,
     currentMemo,
     nodeInfo.data?.default_node_info?.network,
-    currentDepositAddress,
     revisionHeight,
     revisionNumber,
     selectedReceiverIBC,
@@ -532,10 +552,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
   }, [currentCoinOrToken, currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount, currentFeeCoin.baseDenom]);
 
   const errorMessage = useMemo(() => {
-    if (currentAccount.type === 'LEDGER' && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
-      return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.ledgerNotSupported');
-    }
-
     if (chainParams.data?.params?.chainlist_params?.isBankLocked) {
       return t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.index.bankLocked');
     }
@@ -570,9 +586,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     return '';
   }, [
     addressRegex,
-    chain.bip44.coinType,
     chainParams.data?.params?.chainlist_params?.isBankLocked,
-    currentAccount.type,
     currentCoinOrToken,
     currentCoinOrTokenDisplayAvailableAmount,
     currentDepositAddress,
@@ -682,9 +696,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
                         <Typography variant="h6n"> :</Typography>{' '}
                         <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
                           <span>
-                            <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
+                            <NumberText typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
                               {currentCoinOrTokenDisplayAvailableAmount}
-                            </Number>
+                            </NumberText>
                           </span>
                         </Tooltip>
                       </>
@@ -771,7 +785,18 @@ export default function IBCSend({ chain }: IBCSendProps) {
                         chainName: chain.chainName,
                         doc: {
                           ...ibcSendAminoTx,
-                          fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }], gas: currentGas },
+                          fee: {
+                            amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }],
+                            gas: currentGas,
+                            feePayer:
+                              currentAccount.type === 'LEDGER' && chain.id !== INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
+                                ? senderAddress
+                                : undefined,
+                          },
+                          timeout_height:
+                            currentAccount.type === 'LEDGER' && chain.id === INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
+                              ? sourceChainRevisionHeight
+                              : undefined,
                         },
                         isEditFee: false,
                         isEditMemo: false,

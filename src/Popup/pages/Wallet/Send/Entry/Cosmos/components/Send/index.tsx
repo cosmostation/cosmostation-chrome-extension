@@ -248,11 +248,15 @@ export default function Send({ chain }: CosmosProps) {
 
   const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
 
-  const channelChainLatestBlock = useBlockLatestSWR(chain);
+  // NOTE 조건에 맞을때만 fetching하도록 수정
+  const sourceChainLatestBlock = useBlockLatestSWR(chain);
 
-  const latestHeight = useMemo(() => channelChainLatestBlock.data?.block?.header?.height, [channelChainLatestBlock.data?.block?.header?.height]);
+  const sourceChainBlockHeight = useMemo(() => sourceChainLatestBlock.data?.block?.header?.height, [sourceChainLatestBlock.data?.block?.header?.height]);
 
-  const revisionHeight = useMemo(() => (latestHeight ? String(100 + parseInt(latestHeight, 10)) : undefined), [latestHeight]);
+  const sourceChainRevisionHeight = useMemo(
+    () => (sourceChainBlockHeight ? String(100 + parseInt(sourceChainBlockHeight, 10)) : undefined),
+    [sourceChainBlockHeight],
+  );
 
   const memoizedSendAminoTx = useMemo(() => {
     if (account.data?.value.account_number && addressRegex.test(currentDepositAddress) && currentDisplayAmount) {
@@ -574,13 +578,14 @@ export default function Send({ chain }: CosmosProps) {
                             amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }],
                             gas: currentGas,
                             feePayer:
+                              // NOTE 조건 가독성 있게 리팩토링 필요
                               currentAccount.type === 'LEDGER' && chain.id !== INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
                                 ? address
                                 : undefined,
                           },
                           timeout_height:
                             currentAccount.type === 'LEDGER' && chain.id === INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
-                              ? revisionHeight
+                              ? sourceChainRevisionHeight
                               : undefined,
                         },
                         isEditFee: false,

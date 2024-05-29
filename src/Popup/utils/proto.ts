@@ -1,3 +1,5 @@
+import Long from 'long';
+
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { post } from '~/Popup/utils/axios';
 import { isAminoCommission, isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from '~/Popup/utils/cosmos';
@@ -70,10 +72,10 @@ export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
     sender: msg.value.sender,
     receiver: msg.value.receiver,
     timeout_height: {
-      revision_height: msg.value.timeout_height.revision_height as unknown as Long,
-      revision_number: msg.value.timeout_height.revision_number as unknown as Long,
+      revision_height: Long.fromString(msg.value.timeout_height.revision_height),
+      revision_number: Long.fromString(msg.value.timeout_height.revision_number),
     },
-    timeout_timestamp: msg.value.timeout_timestamp as unknown as Long,
+    timeout_timestamp: msg.value.timeout_timestamp ? Long.fromString(msg.value.timeout_timestamp) : undefined,
     memo: msg.value.memo,
   });
 

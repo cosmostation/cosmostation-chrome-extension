@@ -1,3 +1,4 @@
+import Long from 'long';
 import { v4 as uuidv4 } from 'uuid';
 import type { CosmosRegisterWallet } from '@cosmostation/wallets';
 
@@ -287,7 +288,7 @@ const signDirect: Keplr['signDirect'] = async (chainId, _, signDoc, signOptions)
   })) as CosSignDirectResponse;
   return {
     signed: {
-      accountNumber: response.signed_doc.account_number as unknown as Long,
+      accountNumber: Long.fromString(response.signed_doc.account_number),
       chainId: response.signed_doc.chain_id,
       authInfoBytes: new Uint8Array(response.signed_doc.auth_info_bytes),
       bodyBytes: new Uint8Array(response.signed_doc.body_bytes),
