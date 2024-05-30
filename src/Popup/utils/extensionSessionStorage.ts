@@ -12,7 +12,7 @@ export async function getSessionStorage<T extends ExtensionSessionStorageKeys>(k
       });
     });
   }
-  const localStorage = await browser.storage.local.get(key);
+  const localStorage = await browser.storage.session.get(key);
 
   return localStorage[key] as ExtensionSessionStorage[T];
 }
@@ -28,7 +28,7 @@ export async function getAllSessionStorage(): Promise<ExtensionSessionStorage> {
       });
     });
   }
-  const localStorage = await browser.storage.local.get();
+  const localStorage = await browser.storage.session.get();
 
   return localStorage as ExtensionSessionStorage;
 }
@@ -44,7 +44,9 @@ export async function setSessionStorage<T extends ExtensionSessionStorageKeys>(k
       });
     });
   }
-  await browser.storage.local.set({ [key]: value });
+
+  await browser.storage.session.set({ [key]: value });
+
   return true;
 }
 
