@@ -1,8 +1,8 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
+import { ARTELA_TESTNET } from '~/constants/chain/cosmos/artelaTestnet';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
-import { ARTELA_TESTNET as ETHEREUM_NETWORK__ARTELA_TESTNET } from '~/constants/chain/ethereum/network/artelaTestnet';
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -94,9 +94,9 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.8.5') {
+        if (extensionManifest.version === '0.8.7') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), ETHEREUM_NETWORK__ARTELA_TESTNET.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), ARTELA_TESTNET.id]);
           })();
         }
       }
@@ -134,6 +134,8 @@ function background() {
         await setStorage('selectedEthereumNetworkId', ETHEREUM_NETWORKS[0].id);
         await setStorage('selectedAptosNetworkId', APTOS_NETWORKS[0].id);
         await setStorage('selectedSuiNetworkId', SUI_NETWORKS[0].id);
+
+        await setStorage('address', {});
 
         await setSessionStorage('password', null);
 

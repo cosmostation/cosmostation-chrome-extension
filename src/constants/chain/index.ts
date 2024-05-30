@@ -7,6 +7,7 @@ import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
 import { AKASH } from './cosmos/akash';
 import { ALTHEA } from './cosmos/althea';
 import { ARCHWAY } from './cosmos/archway';
+import { ARTELA_TESTNET } from './cosmos/artelaTestnet';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { AXELAR } from './cosmos/axelar';
 import { BAND } from './cosmos/band';
@@ -80,7 +81,7 @@ import { EVMOS as ETHEREUM_NETWORK__EVMOS } from './ethereum/network/evmos';
 import { FANTOM as ETHEREUM_NETWORK__FANTOM } from './ethereum/network/fantom';
 import { HARMONY as ETHEREUM_NETWORK__HARMONY } from './ethereum/network/harmony';
 import { KAVA as ETHEREUM_NETWORK__KAVA } from './ethereum/network/kava';
-import { OKC as ETHEREUM_NETWORK__OKC } from './ethereum/network/okc';
+import { OKT as ETHEREUM_NETWORK__OKT } from './ethereum/network/okt';
 import { OPTIMISM as ETHEREUM_NETWORK__OPTIMISM } from './ethereum/network/optimism';
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SCROLL_SEPOLIA_TESTNET as ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET } from './ethereum/network/scrollSepoliaTestnet';
@@ -116,6 +117,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   AKASH,
   ALTHEA,
   ARCHWAY,
+  ARTELA_TESTNET,
   ASSET_MANTLE,
   AXELAR,
   BAND,
@@ -194,7 +196,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__HARMONY,
   ETHEREUM_NETWORK_DYMENSION,
   ETHEREUM_NETWORK__KAVA,
-  ETHEREUM_NETWORK__OKC,
+  ETHEREUM_NETWORK__OKT,
   ETHEREUM_NETWORK__OPTIMISM,
   ETHEREUM_NETWORK__POLYGON,
   ETHEREUM_NETWORK__SMART_CHAIN,

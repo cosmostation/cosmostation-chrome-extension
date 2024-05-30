@@ -22,7 +22,7 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getAddress, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
+import { getAddress, getAddressKey, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
 import type { EthereumChain } from '~/types/chain';
 import type { Path } from '~/types/route';
 
@@ -186,6 +186,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
+  const { extensionStorage } = useExtensionStorage();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -194,9 +195,9 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   const { explorerURL, displayDenom, tokenImageURL } = currentEthereumNetwork;
 
   const address = useMemo(() => {
-    const key = `${currentAccount.id}${chain.id}`;
+    const key = getAddressKey(currentAccount, chain);
 
-    const storageAddress = localStorage.getItem(key);
+    const storageAddress = extensionStorage.address?.[key];
 
     if (storageAddress) {
       return storageAddress;
@@ -205,7 +206,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
     const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
     return getAddress(chain, keyPair?.publicKey);
-  }, [chain, currentAccount, currentPassword]);
+  }, [chain, currentAccount, currentPassword, extensionStorage.address]);
 
   const handleOnClickCopy = () => {
     if (copy(address)) {
@@ -276,6 +277,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
+  const { extensionStorage } = useExtensionStorage();
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -284,9 +286,9 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
   const { explorerURL, displayDenom, tokenImageURL } = currentEthereumNetwork;
 
   const address = useMemo(() => {
-    const key = `${currentAccount.id}${chain.id}`;
+    const key = getAddressKey(currentAccount, chain);
 
-    const storageAddress = localStorage.getItem(key);
+    const storageAddress = extensionStorage.address?.[key];
 
     if (storageAddress) {
       return storageAddress;
@@ -295,7 +297,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
     const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
     return getAddress(chain, keyPair?.publicKey);
-  }, [chain, currentAccount, currentPassword]);
+  }, [chain, currentAccount, currentPassword, extensionStorage.address]);
 
   const handleOnClickCopy = () => {
     if (copy(address)) {
