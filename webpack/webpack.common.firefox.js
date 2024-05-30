@@ -74,7 +74,6 @@ module.exports = {
       ],
       options: {},
     }),
-
     new HtmlWebpackPlugin({
       filename: '../popup.html',
       excludeChunks: ['background', 'contentScript', 'injectScript'],
