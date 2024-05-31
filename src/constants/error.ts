@@ -96,3 +96,8 @@ export const COSMOS_ADD_NFT_ERROR = {
 export const TRASACTION_RECEIPT_ERROR_MESSAGE = {
   PENDING: 'Pending State',
 } as const;
+
+export const LEDGER_TRANSPORT_STATUS_ERROR = {
+  STILL_HOME_SCREEN: 25873,
+  OPENED_WRONG_APP: 28160,
+} as const;

@@ -5,8 +5,6 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_IBC_SEND_GAS, COSMOS_DEFAULT_IBC_TRANSFER_GAS } from '~/constants/chain';
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
-import { INJECTIVE } from '~/constants/chain/cosmos/injective';
-import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import unknownChainImg from '~/images/chainImgs/unknown.png';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
@@ -36,6 +34,7 @@ import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useEthermintLedgerSign } from '~/Popup/hooks/useEthermintLedgerSign';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
@@ -101,6 +100,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { extensionStorage } = useExtensionStorage();
   const { currency, additionalChains } = extensionStorage;
+  const { isEthermintLedgerSign, isInjectiveChain } = useEthermintLedgerSign(chain);
   const params = useParams();
 
   const chainParams = useParamsSWR(chain);
@@ -368,15 +368,6 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number],
   );
 
-  const sourceChainLatestBlock = useBlockLatestSWR(chain);
-
-  const sourceChainBlockHeight = useMemo(() => sourceChainLatestBlock.data?.block?.header?.height, [sourceChainLatestBlock.data?.block?.header?.height]);
-
-  const sourceChainRevisionHeight = useMemo(
-    () => (sourceChainBlockHeight ? String(100 + parseInt(sourceChainBlockHeight, 10)) : undefined),
-    [sourceChainBlockHeight],
-  );
-
   const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain);
 
   const sendGas = useMemo(
@@ -440,12 +431,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
                   amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
                   denom: currentCoinOrToken.baseDenom,
                 },
-                memo:
-                  currentAccount.type === 'LEDGER' && chain.id === INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
-                    ? 'IBC Transfer'
-                    : undefined,
-                timeout_timestamp:
-                  currentAccount.type === 'LEDGER' && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT ? generateTimeoutTimestamp() : undefined,
+                memo: isEthermintLedgerSign && isInjectiveChain ? 'IBC Transfer' : undefined,
+                timeout_timestamp: isEthermintLedgerSign ? generateTimeoutTimestamp() : undefined,
               },
             },
           ],
@@ -495,11 +482,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
   }, [
     account.data?.value.account_number,
     account.data?.value.sequence,
-    chain.bip44.coinType,
     chain.chainId,
-    chain.id,
     chain.type,
-    currentAccount.type,
     currentCoinOrToken,
     currentDepositAddress,
     currentDisplayAmount,
@@ -507,6 +491,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
     currentFeeGasRate,
     currentGasRateKey,
     currentMemo,
+    isEthermintLedgerSign,
+    isInjectiveChain,
     nodeInfo.data?.default_node_info?.network,
     revisionHeight,
     revisionNumber,
@@ -788,15 +774,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                           fee: {
                             amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }],
                             gas: currentGas,
-                            feePayer:
-                              currentAccount.type === 'LEDGER' && chain.id !== INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
-                                ? senderAddress
-                                : undefined,
                           },
-                          timeout_height:
-                            currentAccount.type === 'LEDGER' && chain.id === INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
-                              ? sourceChainRevisionHeight
-                              : undefined,
                         },
                         isEditFee: false,
                         isEditMemo: false,

@@ -5,9 +5,7 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_SEND_GAS, COSMOS_DEFAULT_TRANSFER_GAS } from '~/constants/chain';
 import { ARCHWAY } from '~/constants/chain/cosmos/archway';
-import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { SHENTU } from '~/constants/chain/cosmos/shentu';
-import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
 import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import AssetBottomSheetButton from '~/Popup/components/common/AssetBottomSheetButton';
@@ -21,7 +19,6 @@ import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
 import { useArchIDSWR } from '~/Popup/hooks/SWR/cosmos/useArchIDSWR';
-import { useBlockLatestSWR } from '~/Popup/hooks/SWR/cosmos/useBlockLatestSWR';
 import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
@@ -247,16 +244,6 @@ export default function Send({ chain }: CosmosProps) {
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
 
   const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
-
-  // NOTE 조건에 맞을때만 fetching하도록 수정
-  const sourceChainLatestBlock = useBlockLatestSWR(chain);
-
-  const sourceChainBlockHeight = useMemo(() => sourceChainLatestBlock.data?.block?.header?.height, [sourceChainLatestBlock.data?.block?.header?.height]);
-
-  const sourceChainRevisionHeight = useMemo(
-    () => (sourceChainBlockHeight ? String(100 + parseInt(sourceChainBlockHeight, 10)) : undefined),
-    [sourceChainBlockHeight],
-  );
 
   const memoizedSendAminoTx = useMemo(() => {
     if (account.data?.value.account_number && addressRegex.test(currentDepositAddress) && currentDisplayAmount) {
@@ -577,16 +564,7 @@ export default function Send({ chain }: CosmosProps) {
                           fee: {
                             amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }],
                             gas: currentGas,
-                            feePayer:
-                              // NOTE 조건 가독성 있게 리팩토링 필요
-                              currentAccount.type === 'LEDGER' && chain.id !== INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
-                                ? address
-                                : undefined,
                           },
-                          timeout_height:
-                            currentAccount.type === 'LEDGER' && chain.id === INJECTIVE.id && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT
-                              ? sourceChainRevisionHeight
-                              : undefined,
                         },
                         isEditFee: false,
                         isEditMemo: false,

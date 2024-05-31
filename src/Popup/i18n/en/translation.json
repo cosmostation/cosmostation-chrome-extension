@@ -781,6 +781,7 @@
               "detailTab": "Details",
               "failedTransfer": "Failed to transfer",
               "insufficientFeeAmount": "Insufficient fee",
+              "notOpendEthApp": "Please open the Ethereum application on your Ledger device and try again.",
               "signButton": "Sign"
             }
           },

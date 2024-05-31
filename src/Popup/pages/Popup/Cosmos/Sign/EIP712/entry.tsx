@@ -265,7 +265,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                       throw new Error('Unknown type account');
                     })();
 
-                    const base64Signature = Buffer.from(signedTypedData, 'hex').toString('base64');
+                    const base64Signature = Buffer.from(signedTypedData).toString('base64');
 
                     const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
 

@@ -2,12 +2,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import secp256k1 from 'secp256k1';
 import sortKeys from 'sort-keys';
+import { TransportStatusError } from '@ledgerhq/hw-transport';
 import type { MessageTypeProperty, MessageTypes } from '@metamask/eth-sig-util';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
-import { INJECTIVE } from '~/constants/chain/cosmos/injective';
-import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
-import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
+import { LEDGER_TRANSPORT_STATUS_ERROR, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
@@ -15,11 +14,13 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import PopupHeader from '~/Popup/components/PopupHeader';
+import { useBlockLatestSWR } from '~/Popup/hooks/SWR/cosmos/useBlockLatestSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useEthermintLedgerSign } from '~/Popup/hooks/useEthermintLedgerSign';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -29,7 +30,7 @@ import { cosmosURL, getDefaultAV, getPublicKeyType, signAmino } from '~/Popup/ut
 import { constructEip712TypedData, getEIP712Signature } from '~/Popup/utils/ethermint';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
-import { broadcast, ethermintProtoTx, ethermintProtoTxBytes, protoTx, protoTxBytes } from '~/Popup/utils/proto';
+import { broadcast, ethermintProtoTx, protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
@@ -65,6 +66,7 @@ export default function Entry({ queue, chain }: EntryProps) {
   const [isProgress, setIsProgress] = useState(false);
 
   const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain, { suspense: true });
+  const { isEthermintLedgerSign, isInjectiveChain } = useEthermintLedgerSign(chain);
 
   const { message, messageId, origin, channel } = queue;
 
@@ -151,7 +153,31 @@ export default function Entry({ queue, chain }: EntryProps) {
     [ceilBaseFee, currentFeeBaseDenom, currentGas, fee, isFeeUpdateAllowed],
   );
 
-  const tx = useMemo(() => ({ ...doc, memo: signingMemo, fee: signingFee }), [doc, signingFee, signingMemo]);
+  const feePayerAddress = useMemo(
+    () => fee.feePayer || (isEthermintLedgerSign && !isInjectiveChain ? address : undefined),
+    [address, fee.feePayer, isEthermintLedgerSign, isInjectiveChain],
+  );
+
+  const sourceChainLatestBlock = useBlockLatestSWR(chain);
+
+  const ethermintledgerSignTimeout = useMemo(() => {
+    if (doc.timeout_height) {
+      return doc.timeout_height;
+    }
+
+    const sourceChainBlockHeight = sourceChainLatestBlock.data?.block?.header?.height;
+
+    if (isEthermintLedgerSign && isInjectiveChain && sourceChainBlockHeight) {
+      return String(100 + parseInt(sourceChainBlockHeight, 10));
+    }
+
+    return undefined;
+  }, [doc.timeout_height, isEthermintLedgerSign, isInjectiveChain, sourceChainLatestBlock.data?.block?.header?.height]);
+
+  const tx = useMemo(
+    () => ({ ...doc, memo: signingMemo, fee: { ...signingFee, feePayer: feePayerAddress }, timeout_height: ethermintledgerSignTimeout }),
+    [doc, ethermintledgerSignTimeout, feePayerAddress, signingFee, signingMemo],
+  );
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -245,182 +271,136 @@ export default function Entry({ queue, chain }: EntryProps) {
                       throw new Error('key pair does not exist');
                     }
 
-                    if (currentAccount.type === 'LEDGER' && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT) {
-                      setLoadingLedgerSigning(true);
+                    // TODO 여기 체인 플래그를 세워서 로직태우도록 수정하기
+                    const signature = await (async () => {
+                      if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
+                        if (!keyPair.privateKey) {
+                          throw new Error('key does not exist');
+                        }
 
-                      const transport = await createTransport();
-
-                      const eip712 = constructEip712TypedData(chain.chainId, tx);
-
-                      if (!eip712) {
-                        throw new Error('EIP712 typed data is not constructed');
+                        return signAmino(tx, keyPair.privateKey, chain);
                       }
 
-                      const typedMessageObject = {
-                        domain: eip712.domain,
-                        primaryType: eip712.primaryType,
-                        message: tx,
-                        types: eip712.types as Record<string, MessageTypeProperty[]>,
-                      } as unknown as CustomTypedMessage<MessageTypes>;
+                      if (currentAccount.type === 'LEDGER') {
+                        setLoadingLedgerSigning(true);
+                        const transport = await createTransport();
 
-                      const signedTypedData = await getEIP712Signature(transport, chain, currentAccount, typedMessageObject);
+                        if (isEthermintLedgerSign) {
+                          const eip712 = constructEip712TypedData(chain.chainId, tx);
 
-                      const base64Signature = Buffer.from(signedTypedData, 'hex').toString('base64');
-
-                      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
-
-                      const publicKeyType = getPublicKeyType(chain);
-
-                      const pubKey = { type: publicKeyType, value: base64PublicKey };
-
-                      if (channel) {
-                        try {
-                          const url = cosmosURL(chain).postBroadcast();
-                          const pTx = ethermintProtoTx(tx, base64Signature, pubKey);
-                          const pTxBytes = pTx
-                            ? // NOTE 로직 고도화 필요
-                              ethermintProtoTxBytes({ ...pTx, signature: chain.id !== INJECTIVE.id ? undefined : pTx.signature })
-                            : undefined;
-
-                          const response = await broadcast(url, pTxBytes);
-
-                          const { code, txhash } = response.tx_response;
-
-                          if (code === 0) {
-                            if (txhash) {
-                              void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
-                            } else {
-                              void deQueue();
-                            }
-                          } else {
-                            throw new Error(response.tx_response.raw_log as string);
+                          if (!eip712) {
+                            throw new Error('EIP712 typed data is not constructed');
                           }
-                        } catch (e) {
-                          enqueueSnackbar(
-                            (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
-                            {
-                              variant: 'error',
-                              autoHideDuration: 3000,
-                            },
-                          );
 
-                          void deQueue();
+                          const typedMessageObject = {
+                            domain: eip712.domain,
+                            primaryType: eip712.primaryType,
+                            message: tx,
+                            types: eip712.types as Record<string, MessageTypeProperty[]>,
+                          } as unknown as CustomTypedMessage<MessageTypes>;
+
+                          return getEIP712Signature(transport, chain, currentAccount, typedMessageObject);
                         }
-                      } else {
-                        const result: CosSignAminoResponse = {
-                          signature: base64Signature,
-                          pub_key: pubKey,
-                          signed_doc: tx,
-                        };
+                        const cosmosApp = new CosmosApp(transport);
 
-                        responseToWeb({
-                          response: {
-                            result,
+                        const coinType = chain.bip44.coinType.replaceAll("'", '');
+
+                        const path = [44, Number(coinType), 0, 0, Number(currentAccount.bip44.addressIndex)];
+
+                        const { compressed_pk } = await cosmosApp.getPublicKey(path);
+
+                        const ledgerAddress = getAddress(chain, Buffer.from(compressed_pk));
+
+                        if (!isEqualsIgnoringCase(address, ledgerAddress)) {
+                          throw new Error('Account address and Ledger address are not the same.');
+                        }
+
+                        const result = await cosmosApp.sign(path, Buffer.from(JSON.stringify(sortKeys(tx, { deep: true }))));
+
+                        if (!result.signature) {
+                          throw new Error(result.error_message);
+                        }
+
+                        return secp256k1.signatureImport(result.signature);
+                      }
+
+                      throw new Error('Unknown type account');
+                    })();
+
+                    const base64Signature = Buffer.from(signature).toString('base64');
+
+                    const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
+
+                    const publicKeyType = getPublicKeyType(chain);
+
+                    const pubKey = { type: publicKeyType, value: base64PublicKey };
+                    if (channel) {
+                      try {
+                        const url = cosmosURL(chain).postBroadcast();
+                        const pTx = isEthermintLedgerSign ? ethermintProtoTx(tx, base64Signature, pubKey) : protoTx(tx, base64Signature, pubKey);
+                        const pTxBytes = pTx
+                          ? protoTxBytes({
+                              ...pTx,
+                              signature: isEthermintLedgerSign && !isInjectiveChain ? undefined : pTx.signature,
+                            })
+                          : undefined;
+
+                        const response = await broadcast(url, pTxBytes);
+
+                        const { code, txhash } = response.tx_response;
+
+                        if (code === 0) {
+                          if (txhash) {
+                            void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
+                          } else {
+                            void deQueue();
+                          }
+                        } else {
+                          throw new Error(response.tx_response.raw_log as string);
+                        }
+                      } catch (e) {
+                        enqueueSnackbar(
+                          (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
+                          {
+                            variant: 'error',
+                            autoHideDuration: 3000,
                           },
-                          message,
-                          messageId,
-                          origin,
-                        });
+                        );
 
-                        await deQueue();
+                        void deQueue();
                       }
                     } else {
-                      const signature = await (async () => {
-                        if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
-                          if (!keyPair.privateKey) {
-                            throw new Error('key does not exist');
-                          }
+                      const result: CosSignAminoResponse = {
+                        signature: base64Signature,
+                        pub_key: pubKey,
+                        signed_doc: tx,
+                      };
 
-                          return signAmino(tx, keyPair.privateKey, chain);
-                        }
+                      responseToWeb({
+                        response: {
+                          result,
+                        },
+                        message,
+                        messageId,
+                        origin,
+                      });
 
-                        if (currentAccount.type === 'LEDGER') {
-                          setLoadingLedgerSigning(true);
-                          const transport = await createTransport();
-
-                          const cosmosApp = new CosmosApp(transport);
-
-                          const coinType = chain.bip44.coinType.replaceAll("'", '');
-
-                          const path = [44, Number(coinType), 0, 0, Number(currentAccount.bip44.addressIndex)];
-
-                          const { compressed_pk } = await cosmosApp.getPublicKey(path);
-
-                          const ledgerAddress = getAddress(chain, Buffer.from(compressed_pk));
-
-                          if (!isEqualsIgnoringCase(address, ledgerAddress)) {
-                            throw new Error('Account address and Ledger address are not the same.');
-                          }
-
-                          const result = await cosmosApp.sign(path, Buffer.from(JSON.stringify(sortKeys(tx, { deep: true }))));
-
-                          if (!result.signature) {
-                            throw new Error(result.error_message);
-                          }
-
-                          return secp256k1.signatureImport(result.signature);
-                        }
-
-                        throw new Error('Unknown type account');
-                      })();
-                      const base64Signature = Buffer.from(signature).toString('base64');
-
-                      const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
-
-                      const publicKeyType = getPublicKeyType(chain);
-
-                      const pubKey = { type: publicKeyType, value: base64PublicKey };
-                      if (channel) {
-                        try {
-                          const url = cosmosURL(chain).postBroadcast();
-                          const pTx = protoTx(tx, base64Signature, pubKey);
-                          const pTxBytes = pTx ? protoTxBytes({ ...pTx }) : undefined;
-
-                          const response = await broadcast(url, pTxBytes);
-
-                          const { code, txhash } = response.tx_response;
-
-                          if (code === 0) {
-                            if (txhash) {
-                              void deQueue(`/popup/tx-receipt/${txhash}/${chain.id}` as unknown as Path);
-                            } else {
-                              void deQueue();
-                            }
-                          } else {
-                            throw new Error(response.tx_response.raw_log as string);
-                          }
-                        } catch (e) {
-                          enqueueSnackbar(
-                            (e as { message?: string }).message ? (e as { message?: string }).message : t('pages.Popup.Cosmos.Sign.Amino.entry.failedTransfer'),
-                            {
-                              variant: 'error',
-                              autoHideDuration: 3000,
-                            },
-                          );
-
-                          void deQueue();
-                        }
-                      } else {
-                        const result: CosSignAminoResponse = {
-                          signature: base64Signature,
-                          pub_key: pubKey,
-                          signed_doc: tx,
-                        };
-
-                        responseToWeb({
-                          response: {
-                            result,
-                          },
-                          message,
-                          messageId,
-                          origin,
-                        });
-
-                        await deQueue();
-                      }
+                      await deQueue();
                     }
                   } catch (e) {
-                    enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+                    if (e instanceof TransportStatusError) {
+                      const transportError = e as Error & { statusCode?: number };
+
+                      if (
+                        isEthermintLedgerSign &&
+                        (transportError?.statusCode === LEDGER_TRANSPORT_STATUS_ERROR.OPENED_WRONG_APP ||
+                          transportError?.statusCode === LEDGER_TRANSPORT_STATUS_ERROR.STILL_HOME_SCREEN)
+                      ) {
+                        enqueueSnackbar(t('pages.Popup.Cosmos.Sign.Amino.entry.notOpendEthApp'), { variant: 'error' });
+                      }
+                    } else {
+                      enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+                    }
                   } finally {
                     setLoadingLedgerSigning(false);
                     setIsProgress(false);

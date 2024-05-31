@@ -11,7 +11,6 @@ import { osmosis } from '~/proto/osmosis-v13.1.2.js';
 import type { Msg, MsgCommission, MsgExecuteContract, MsgReward, MsgSend, MsgSwapExactAmountIn, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type {
-  EthermintTxBytesProps,
   Msg as ProtoMsg,
   MsgCommission as ProtoMsgCommission,
   MsgExecuteContract as ProtoMsgExecuteContract,
@@ -154,21 +153,16 @@ export function getTxBodyBytes(signed: SignAminoDoc) {
 export function getEthermintTxBodyBytes(signed: SignAminoDoc, signature: string) {
   const messages = signed.msgs.map((msg) => convertAminoMessageToProto(msg)).filter((item) => item !== null) as google.protobuf.Any[];
 
-  const chainIsInjective = signed.chain_id === INJECTIVE.chainId;
-
-  const typedDataChainIdaa = getEVMChainId(signed.chain_id);
-  const fee_payer = !chainIsInjective ? signed.fee.feePayer : undefined;
-  const fee_payer_sig = !chainIsInjective ? Buffer.from(signature, 'base64') : undefined;
+  const isInjectiveChain = signed.chain_id === INJECTIVE.chainId;
 
   const extensionOptions = new ethermint.types.v1.ExtensionOptionsWeb3Tx({
-    typed_data_chain_id: typedDataChainIdaa,
-    fee_payer,
-    fee_payer_sig,
+    typed_data_chain_id: getEVMChainId(signed.chain_id),
+    ...(!isInjectiveChain ? { fee_payer: signed.fee.feePayer, fee_payer_sig: Buffer.from(signature, 'base64') } : {}),
   });
 
   const encodedOptions = new google.protobuf.Any({
     type_url: (() => {
-      if (chainIsInjective) {
+      if (isInjectiveChain) {
         return '/injective.types.v1beta1.ExtensionOptionsWeb3Tx';
       }
 
@@ -207,12 +201,12 @@ export function getAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey, mode = co
 export function getEthermintAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
   const signerInfo = getSignerInfo(signed, pubKey, mode);
 
-  const chainIsInjective = signed.chain_id === INJECTIVE.chainId;
+  const isInjectiveChain = signed.chain_id === INJECTIVE.chainId;
 
   const fee = new cosmos.tx.v1beta1.Fee({
     amount: signed.fee.amount,
     gas_limit: Number(signed.fee.gas),
-    payer: !chainIsInjective ? signed.fee.feePayer : undefined,
+    payer: !isInjectiveChain ? signed.fee.feePayer : undefined,
   });
 
   const authInfo = new cosmos.tx.v1beta1.AuthInfo({ signer_infos: [signerInfo], fee });
@@ -272,22 +266,6 @@ export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey,
 }
 
 export function protoTxBytes({ signature, txBodyBytes, authInfoBytes }: ProtoTxBytesProps) {
-  const txRaw = new cosmos.tx.v1beta1.TxRaw({
-    body_bytes: new Uint8Array(txBodyBytes),
-    auth_info_bytes: new Uint8Array(authInfoBytes),
-    signatures: [Buffer.from(signature, 'base64')],
-  });
-  const txRawBytes = cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
-
-  const tx = {
-    tx_bytes: Buffer.from(txRawBytes).toString('base64'),
-    mode: cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
-  };
-
-  return tx;
-}
-
-export function ethermintProtoTxBytes({ signature, txBodyBytes, authInfoBytes }: EthermintTxBytesProps) {
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
     body_bytes: new Uint8Array(txBodyBytes),
     auth_info_bytes: new Uint8Array(authInfoBytes),

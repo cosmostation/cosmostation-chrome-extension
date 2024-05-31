@@ -239,7 +239,9 @@ export async function getEIP712Signature(transport: Transport, chain: CosmosChai
 
   const v = (result.v - 27).toString(16);
 
-  return `${result.r}${result.s}${v.length < 2 ? `0${v}` : v}`;
+  const signature = `${result.r}${result.s}${v.length < 2 ? `0${v}` : v}`;
+
+  return new Uint8Array(Buffer.from(signature, 'hex'));
 }
 
 export function generateTimeoutTimestamp() {
