@@ -39,7 +39,6 @@ export type SuiExecuteSerializedMoveCall = {
   id?: number | string;
 };
 
-// export type SuiExecuteSerializedMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
 type SuiSignAndExecuteTransactionBlockSerializedInput = Omit<SuiSignAndExecuteTransactionBlockInput, 'transactionBlock' | 'chain' | 'account'> & {
   transactionBlockSerialized: string;
 };
@@ -48,6 +47,27 @@ export type SuiSignAndExecuteTransactionBlock = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION_BLOCK;
   params: [SuiSignAndExecuteTransactionBlockSerializedInput];
   id?: number | string;
+};
+
+export type SuiSignMessageInput = {
+  message: string;
+  accountAddress: string;
+};
+
+export type SuiSignMessage = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_MESSAGE;
+  params: SuiSignMessageInput;
+  id?: number | string;
+};
+
+export type SuiSignMessageResposne = {
+  messageBytes: string;
+  signature: string;
+};
+
+export type SuiSignPersonalMessageResposne = {
+  bytes: string;
+  signature: string;
 };
 
 export type SuiGetAccountResponse = {

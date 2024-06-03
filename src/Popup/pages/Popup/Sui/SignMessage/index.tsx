@@ -3,7 +3,7 @@ import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/extensionStorage';
-import type { AptosSignMessage } from '~/types/message/aptos';
+import type { SuiSignMessage } from '~/types/message/sui';
 
 import Entry from './entry';
 import Layout from './layout';
@@ -27,6 +27,6 @@ export default function SignMessage() {
   return null;
 }
 
-function isSignMessage(queue: Queue): queue is Queue<AptosSignMessage> {
-  return queue?.message?.method === 'aptos_signMessage';
+function isSignMessage(queue: Queue): queue is Queue<SuiSignMessage> {
+  return queue?.message?.method === 'sui_signMessage';
 }

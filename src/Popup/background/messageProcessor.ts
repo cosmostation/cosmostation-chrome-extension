@@ -80,14 +80,7 @@ import type {
   WalletSwitchEthereumChainResponse,
   WalletWatchAsset,
 } from '~/types/message/ethereum';
-import type {
-  SuiConnect,
-  SuiConnectResponse,
-  // SuiExecuteMoveCall,
-  // SuiExecuteSerializedMoveCall,
-  SuiGetAccountResponse,
-  SuiGetChainResponse,
-} from '~/types/message/sui';
+import type { SuiConnect, SuiConnectResponse, SuiGetAccountResponse, SuiGetChainResponse, SuiSignMessage } from '~/types/message/sui';
 
 import {
   aptosSignMessageSchema,
@@ -110,6 +103,7 @@ import {
   ethSignTypedDataParamsSchema,
   personalSignParamsSchema,
   suiConnectSchema,
+  suiSignMessageSchema,
   // suiExecuteMoveCallSchema,
   // suiExecuteSerializedMoveCallSchema,
   walletAddEthereumChainParamsSchema,
@@ -1797,65 +1791,35 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         }
 
-        // if (method === 'sui_executeMoveCall') {
-        //   const { params } = message;
+        if (method === 'sui_signMessage') {
+          const { params } = message;
 
-        //   try {
-        //     const schema = suiExecuteMoveCallSchema();
+          try {
+            const schema = suiSignMessageSchema();
 
-        //     const validatedParams = (await schema.validateAsync(params)) as SuiExecuteMoveCall['params'];
+            const validatedParams = (await schema.validateAsync(params)) as SuiSignMessage['params'];
 
-        //     if (
-        //       currentAccountAllowedOrigins.includes(origin) &&
-        //       currentAccountSuiPermissions.includes('viewAccount') &&
-        //       currentAccountSuiPermissions.includes('suggestTransactions')
-        //     ) {
-        //       localQueues.push({
-        //         ...request,
-        //         message: { ...request.message, method: 'sui_signAndExecuteTransactionBlock', params: [{ kind: 'moveCall', data: validatedParams[0] }] },
-        //       });
-        //       void setQueues();
-        //     } else {
-        //       throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
-        //     }
-        //   } catch (e) {
-        //     if (e instanceof SuiRPCError) {
-        //       throw e;
-        //     }
+            if (
+              currentAccountAllowedOrigins.includes(origin) &&
+              currentAccountSuiPermissions.includes('viewAccount') &&
+              currentAccountSuiPermissions.includes('suggestTransactions')
+            ) {
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method: 'sui_signMessage', params: validatedParams },
+              });
+              void setQueues();
+            } else {
+              throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+            }
+          } catch (e) {
+            if (e instanceof SuiRPCError) {
+              throw e;
+            }
 
-        //     throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
-        //   }
-        // }
-
-        // if (method === 'sui_executeSerializedMoveCall') {
-        //   const { params } = message;
-
-        //   try {
-        //     const schema = suiExecuteSerializedMoveCallSchema();
-
-        //     const validatedParams = (await schema.validateAsync(params)) as SuiExecuteSerializedMoveCall['params'];
-
-        //     if (
-        //       currentAccountAllowedOrigins.includes(origin) &&
-        //       currentAccountSuiPermissions.includes('viewAccount') &&
-        //       currentAccountSuiPermissions.includes('suggestTransactions')
-        //     ) {
-        //       localQueues.push({
-        //         ...request,
-        //         message: { ...request.message, method: 'sui_signAndExecuteTransactionBlock', params: [validatedParams[0]] },
-        //       });
-        //       void setQueues();
-        //     } else {
-        //       throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
-        //     }
-        //   } catch (e) {
-        //     if (e instanceof SuiRPCError) {
-        //       throw e;
-        //     }
-
-        //     throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
-        //   }
-        // }
+            throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
+          }
+        }
 
         if (method === 'sui_signAndExecuteTransactionBlock') {
           if (

@@ -1,22 +1,22 @@
+import { useMemo } from 'react';
 import { useSnackbar } from 'notistack';
-import nacl from 'tweetnacl';
 import { Typography } from '@mui/material';
+import { Connection, Ed25519Keypair, fromB64, JsonRpcProvider, RawSigner } from '@mysten/sui.js';
 
-import { APTOS } from '~/constants/chain/aptos/aptos';
+import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import Header from '~/Popup/pages/Popup/Aptos/components/Header';
-import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/extensionStorage';
-import type { AptosSignMessage, AptosSignMessageResponse } from '~/types/message/aptos';
+import type { SuiSignMessage } from '~/types/message/sui';
 
 import {
   BottomButtonContainer,
@@ -28,49 +28,53 @@ import {
   MessageTitleContainer,
   TitleContainer,
 } from './styled';
+import Header from '../components/Header';
 
 type EntryProps = {
-  queue: Queue<AptosSignMessage>;
+  queue: Queue<SuiSignMessage>;
 };
 
 export default function Entry({ queue }: EntryProps) {
-  const chain = APTOS;
+  const chain = SUI;
   const { deQueue } = useCurrentQueue();
 
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { currentAptosNetwork } = useCurrentAptosNetwork();
+  const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { t } = useTranslation();
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-  const address = getAddress(chain, keyPair?.publicKey);
 
-  const { chainId } = currentAptosNetwork;
+  // TODO param으로 들어온 주소랑 이 주소랑 다르면 에러를 뱉어야하나?
+  // const address = getAddress(chain, keyPair?.publicKey);
 
-  const prefix = 'APTOS';
+  const provider = useMemo(
+    () =>
+      new JsonRpcProvider(
+        new Connection({
+          fullnode: currentSuiNetwork.rpcURL,
+        }),
+      ),
+    [currentSuiNetwork.rpcURL],
+  );
 
   const { message, messageId, origin } = queue;
 
-  const params = message.params[0];
+  const { params } = message;
 
-  const isAddress = !!params.address;
-  const isApplication = !!params.application;
-  const isChainId = !!params.chainId;
+  const aa = useMemo(() => fromB64(params.message), [params.message]);
 
-  const messageAddress = isAddress ? `\naddress: ${address}` : '';
-  const messageApplication = isApplication ? `\napplication: ${origin}` : '';
-  const messageChainId = isChainId ? `\nchainId: ${chainId}` : '';
-
-  const fullMessage = `${prefix}${messageAddress}${messageApplication}${messageChainId}\nmessage: ${params.message}\nnonce: ${params.nonce}`;
+  const decodedMessage = useMemo(() => new TextDecoder().decode(fromB64(params.message)), [params.message]);
 
   return (
     <Container>
-      <Header network={currentAptosNetwork} origin={origin} />
+      <Header network={currentSuiNetwork} origin={origin} />
       <ContentContainer>
         <TitleContainer>
+          {/* NOTE APTOS -> SUI */}
           <Typography variant="h2">{t('pages.Popup.Aptos.Sign.entry.signatureRequest')}</Typography>
         </TitleContainer>
         <MessageContainer>
@@ -78,7 +82,7 @@ export default function Entry({ queue }: EntryProps) {
             <Typography variant="h5">{t('pages.Popup.Aptos.Sign.entry.message')}</Typography>
           </MessageTitleContainer>
           <MessageContentContainer>
-            <Typography variant="h6">{params.message}</Typography>
+            <Typography variant="h6">{decodedMessage}</Typography>
           </MessageContentContainer>
         </MessageContainer>
       </ContentContainer>
@@ -106,33 +110,34 @@ export default function Entry({ queue }: EntryProps) {
           <Button
             onClick={async () => {
               try {
-                const signKeyPair = nacl.sign.keyPair.fromSeed(keyPair!.privateKey!);
+                // NOTE 니모닉 분기 처리 필요 없을듯
+                if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
+                  const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
-                const msg = Buffer.from(fullMessage, 'utf8');
+                  const rawSigner = new RawSigner(keypair, provider);
 
-                const signature = nacl.sign(msg, signKeyPair.secretKey);
+                  const response = await rawSigner.signMessage({ message: aa });
 
-                const result: AptosSignMessageResponse = {
-                  address,
-                  application: origin,
-                  chainId,
-                  fullMessage,
-                  message: params.message,
-                  nonce: params.nonce,
-                  prefix,
-                  signature: `0x${Buffer.from(signature).toString('hex')}`,
-                };
+                  const result = {
+                    signature: response.signature,
+                    messageBytes: response.messageBytes,
+                  };
 
-                responseToWeb({
-                  response: {
-                    result,
-                  },
-                  message,
-                  messageId,
-                  origin,
-                });
+                  responseToWeb({
+                    response: {
+                      result,
+                    },
+                    message,
+                    messageId,
+                    origin,
+                  });
 
-                await deQueue();
+                  await deQueue();
+                }
+
+                if (currentAccount.type === 'LEDGER') {
+                  throw new Error('not support');
+                }
               } catch (e) {
                 enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
               }

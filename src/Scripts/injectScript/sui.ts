@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import { v4 as uuidv4 } from 'uuid';
-import { TransactionBlock } from '@mysten/sui.js';
-import type { IdentifierArray, SuiSignAndExecuteTransactionBlockInput, SuiSignTransactionBlockOutput, Wallet, WalletAccount } from '@mysten/wallet-standard';
+import { toB64, TransactionBlock } from '@mysten/sui.js';
+import type {
+  IdentifierArray,
+  SuiSignAndExecuteTransactionBlockInput,
+  SuiSignMessageMethod,
+  SuiSignMessageOutput,
+  SuiSignTransactionBlockOutput,
+  Wallet,
+  WalletAccount,
+} from '@mysten/wallet-standard';
 
 import { LINE_TYPE } from '~/constants/chain';
 import { COSMOSTATION_WALLET_NAME } from '~/constants/common';
 import { MESSAGE_TYPE } from '~/constants/message';
 import type { SuiPermissionType } from '~/types/extensionStorage';
 import type { ContentScriptToWebEventMessage, ListenerMessage, ResponseMessage, SuiListenerType, SuiRequestMessage } from '~/types/message';
-import type {
-  SuiDisconnectResponse,
-  // SuiExecuteMoveCall,
-  // SuiExecuteMoveCallResponse,
-  // SuiExecuteSerializedMoveCall,
-  SuiGetAccountResponse,
-  SuiGetChainResponse,
-  SuiGetPermissionsResponse,
-} from '~/types/message/sui';
+import type { SuiDisconnectResponse, SuiGetAccountResponse, SuiGetChainResponse, SuiGetPermissionsResponse } from '~/types/message/sui';
 
 const request = (message: SuiRequestMessage) =>
   new Promise((res, rej) => {
@@ -98,6 +98,15 @@ const signAndExecuteTransactionBlock = (data: Omit<SuiSignAndExecuteTransactionB
   }) as Promise<SuiSignTransactionBlockOutput>;
 };
 
+const signMessage: SuiSignMessageMethod = ({ message, account }) =>
+  request({
+    method: 'sui_signMessage',
+    params: {
+      message: toB64(message),
+      accountAddress: account?.address,
+    },
+  }) as Promise<SuiSignMessageOutput>;
+
 const off = (eventName: SuiListenerType, eventHandler?: (data: unknown) => void) => {
   const handlerInfos = window.cosmostation.handlerInfos.filter(
     (item) => item.line === 'SUI' && item.eventName === eventName && item.originHandler === eventHandler,
@@ -169,7 +178,7 @@ class SuiStandard implements Wallet {
                   address: address[0],
                   publicKey: new Uint8Array(Buffer.from(publicKey.substring(2), 'hex')),
                   chains: [`sui:${currentChain}`],
-                  features: ['sui:signAndExecuteTransactionBlock'],
+                  features: ['sui:signAndExecuteTransactionBlock', 'sui:signMessage'],
                 },
               ];
             }
@@ -185,6 +194,11 @@ class SuiStandard implements Wallet {
       'sui:signAndExecuteTransactionBlock': {
         version: '1.0.0',
         signAndExecuteTransactionBlock,
+      },
+
+      'sui:signMessage': {
+        version: '1.0.0',
+        signMessage,
       },
     };
     void (async () => {
@@ -222,6 +236,7 @@ export const sui: Sui = {
   request,
   requestPermissions,
   signAndExecuteTransactionBlock,
+  signMessage,
 };
 
 export { SuiStandard };

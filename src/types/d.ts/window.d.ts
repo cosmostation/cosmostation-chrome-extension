@@ -117,6 +117,7 @@ type Sui = {
   getPublicKey: () => Promise<string>;
   getChain: () => Promise<string>;
   signAndExecuteTransactionBlock: (data: SuiSignAndExecuteTransactionBlockInput) => Promise<SuiSignTransactionBlockOutput>;
+  signMessage: (data: SuiSignMessageInput) => Promise<SuiSignMessageOutput>;
   on: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
   off: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
 };

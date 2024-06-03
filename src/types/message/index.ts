@@ -59,6 +59,7 @@ import type {
   SuiGetChain,
   SuiGetPermissions,
   SuiSignAndExecuteTransactionBlock,
+  SuiSignMessage,
 } from './sui';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
@@ -129,6 +130,7 @@ export type SuiRequestMessage =
   | SuiExecuteMoveCall
   | SuiExecuteSerializedMoveCall
   | SuiSignAndExecuteTransactionBlock
+  | SuiSignMessage
   | SuiDisconnect
   | SuiGetChain;
 

@@ -117,6 +117,10 @@ export default function Routes({ children }: RoutesType) {
       if (extensionStorage.queues[0].message.method === 'sui_signAndExecuteTransactionBlock') {
         navigate('/popup/sui/transaction');
       }
+
+      if (extensionStorage.queues[0].message.method === 'sui_signMessage') {
+        navigate('/popup/sui/sign-message');
+      }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -2,7 +2,7 @@ import { COSMOS_TYPE } from '~/constants/cosmos';
 import { TOKEN_TYPE } from '~/constants/ethereum';
 import { PERMISSION } from '~/constants/sui';
 import Joi from '~/Popup/utils/joi';
-import { ethereumAddressRegex, getCosmosAddressRegex } from '~/Popup/utils/regex';
+import { ethereumAddressRegex, getCosmosAddressRegex, suiAddressRegex } from '~/Popup/utils/regex';
 import type { CosmosChain, GasRate } from '~/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Amount } from '~/types/cosmos/common';
@@ -28,6 +28,7 @@ import type {
   WalletSwitchEthereumChain,
   WalletWatchAsset,
 } from '~/types/message/ethereum';
+import type { SuiSignMessageInput } from '~/types/message/sui';
 
 // import type { SuiExecuteMoveCall } from '~/types/message/sui';
 import { getChainIdRegex } from '../utils/common';
@@ -433,22 +434,10 @@ export const suiConnectSchema = () =>
         .required(),
     );
 
-// export const suiExecuteMoveCallSchema = () =>
-//   Joi.array()
-//     .label('params')
-//     .min(1)
-//     .max(1)
-//     .required()
-//     .items(
-//       Joi.object<SuiExecuteMoveCall['params'][0]>({
-//         packageObjectId: Joi.string().required(),
-//         module: Joi.string().required(),
-//         function: Joi.string().required(),
-//         gasPayment: Joi.string().optional(),
-//         gasBudget: Joi.number().required(),
-//         typeArguments: Joi.array().required(),
-//         arguments: Joi.array().required(),
-//       }).unknown(),
-//     );
+export const suiSignMessageSchema = () =>
+  Joi.object<SuiSignMessageInput>({
+    message: Joi.string().base64(),
+    accountAddress: Joi.string().pattern(suiAddressRegex).optional(),
+  }).required();
 
 export const suiExecuteSerializedMoveCallSchema = () => Joi.array().label('params').min(1).max(1).required().items(Joi.string().base64());
