@@ -37,6 +37,7 @@ import { JUNO } from './cosmos/juno';
 import { KAVA } from './cosmos/kava';
 import { KI } from './cosmos/ki';
 import { KYVE } from './cosmos/kyve';
+import { LAVA } from './cosmos/lava';
 import { LIKE_COIN } from './cosmos/likeCoin';
 import { LUM } from './cosmos/lum';
 import { MARS } from './cosmos/mars';
@@ -146,6 +147,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   KAVA,
   KI,
   KYVE,
+  LAVA,
   LIKE_COIN,
   LUM,
   MARS,

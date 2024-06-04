@@ -193,6 +193,7 @@ export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {
   return true;
 }
 
+// NOTE 라바의 api네임에 따라 수정필요
 export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
   const nameMap = {
     [CRONOS_POS.id]: 'crypto-org',
@@ -210,6 +211,7 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
   return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
 }
 
+// NOTE 라바의 api네임에 따라 수정필요
 export function convertAssetNameToCosmos(assetName: string) {
   const nameMap = {
     'crypto-org': CRONOS_POS,
