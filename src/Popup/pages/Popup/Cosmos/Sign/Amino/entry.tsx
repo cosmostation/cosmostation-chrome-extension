@@ -65,33 +65,28 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const balance = useBalanceSWR(chain);
 
-  const selectableFeeCoins = useMemo<FeeCoin[]>(
-    () =>
-      assets.data.map((asset) => ({
-        originBaseDenom: asset.origin_denom,
-        baseDenom: asset.denom,
-        decimals: asset.decimals,
-        displayDenom: asset.symbol,
-        coinGeckoId: asset.coinGeckoId,
-        availableAmount: balance.data?.balance?.find((item) => item.denom === asset.denom)?.amount || '0',
-      })),
-
-    [assets.data, balance.data?.balance],
-  );
-
   const { feeCoins: supportedFeeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain, { suspense: true });
 
-  const feeCoins = useMemo(() => {
-    const aggregatedCoins = [...supportedFeeCoins, ...selectableFeeCoins];
+  const availableFeeCoins = useMemo(() => {
+    const availableCoins = assets.data.map((asset) => ({
+      originBaseDenom: asset.origin_denom,
+      baseDenom: asset.denom,
+      decimals: asset.decimals,
+      displayDenom: asset.symbol,
+      coinGeckoId: asset.coinGeckoId,
+      availableAmount: balance.data?.balance?.find((item) => item.denom === asset.denom)?.amount || '0',
+    }));
 
-    const uniqueFeeCoins = aggregatedCoins.reduce((acc: FeeCoin[], current) => {
+    const aggregatedFeeCoins = [...supportedFeeCoins, ...availableCoins];
+
+    const uniqueFeeCoins = aggregatedFeeCoins.reduce((acc: FeeCoin[], current) => {
       if (!acc.find((coin) => coin.baseDenom === current.baseDenom)) {
         return [...acc, current];
       }
       return acc;
     }, []);
     return uniqueFeeCoins;
-  }, [selectableFeeCoins, supportedFeeCoins]);
+  }, [assets.data, balance.data?.balance, supportedFeeCoins]);
 
   const { message, messageId, origin, channel } = queue;
 
@@ -115,12 +110,12 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const inputFee = useMemo(
     () =>
-      fee.amount?.find((item) => feeCoins.map((feeCoin) => feeCoin.baseDenom).includes(item.denom)) ||
+      fee.amount?.find((item) => availableFeeCoins.map((feeCoin) => feeCoin.baseDenom).includes(item.denom)) ||
       fee.amount?.[0] || {
         denom: chain.baseDenom,
         amount: '0',
       },
-    [chain.baseDenom, fee.amount, feeCoins],
+    [chain.baseDenom, fee.amount, availableFeeCoins],
   );
 
   const inputFeeAmount = useMemo(() => inputFee.amount, [inputFee.amount]);
@@ -129,14 +124,14 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const currentFeeCoin = useMemo(
     () =>
-      feeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) || {
+      availableFeeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) || {
         availableAmount: '0',
         decimals: 0,
         baseDenom: inputFee.denom,
         originBaseDenom: inputFee.denom,
         displayDenom: 'UNKNOWN',
       },
-    [currentFeeBaseDenom, inputFee.denom, feeCoins],
+    [currentFeeBaseDenom, inputFee.denom, availableFeeCoins],
   );
 
   const memoizedProtoTx = useMemo(() => {
