@@ -22,7 +22,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { ceil, divide, equal, gte, times } from '~/Popup/utils/big';
+import { ceil, divide, equal, gt, gte, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getDefaultAV, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
@@ -79,7 +79,7 @@ export default function Entry({ queue, chain }: EntryProps) {
     [assets.data, balance.data?.balance],
   );
 
-  const { feeCoins: supportedFeeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain);
+  const { feeCoins: supportedFeeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain, { suspense: true });
 
   const feeCoins = useMemo(() => {
     const aggregatedCoins = [...supportedFeeCoins, ...selectableFeeCoins];
@@ -166,16 +166,25 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const initialGasRate = useMemo(() => (equal(inputGas, '0') ? '0' : divide(inputFeeAmount, inputGas)), [inputFeeAmount, inputGas]);
 
-  const currentFeeGasRate = useMemo(
-    () =>
-      currentFeeCoin.gasRate ||
-      gasRate || {
+  const currentFeeGasRate = useMemo(() => {
+    if (currentFeeCoin.gasRate) {
+      return currentFeeCoin.gasRate;
+    }
+
+    if (gasRate) {
+      return gasRate;
+    }
+
+    if (gt(initialGasRate, '0')) {
+      return {
         average: initialGasRate,
         low: initialGasRate,
         tiny: initialGasRate,
-      },
-    [currentFeeCoin.gasRate, gasRate, initialGasRate],
-  );
+      };
+    }
+
+    return chain.gasRate;
+  }, [chain.gasRate, currentFeeCoin.gasRate, gasRate, initialGasRate]);
 
   const signingMemo = useMemo(() => (isEditMemo ? memo : doc.memo), [doc.memo, isEditMemo, memo]);
 
