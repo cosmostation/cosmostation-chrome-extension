@@ -66,8 +66,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const balance = useBalanceSWR(chain);
 
   const selectableFeeCoins = useMemo<FeeCoin[]>(
-    () => [
-      ...assets.data.map((asset) => ({
+    () =>
+      assets.data.map((asset) => ({
         originBaseDenom: asset.origin_denom,
         baseDenom: asset.denom,
         decimals: asset.decimals,
@@ -75,7 +75,7 @@ export default function Entry({ queue, chain }: EntryProps) {
         coinGeckoId: asset.coinGeckoId,
         availableAmount: balance.data?.balance?.find((item) => item.denom === asset.denom)?.amount || '0',
       })),
-    ],
+
     [assets.data, balance.data?.balance],
   );
 
