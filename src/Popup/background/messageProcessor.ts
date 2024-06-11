@@ -1821,6 +1821,19 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         }
 
+        if (method === 'sui_signTransactionBlock') {
+          if (
+            currentAccountAllowedOrigins.includes(origin) &&
+            currentAccountSuiPermissions.includes('viewAccount') &&
+            currentAccountSuiPermissions.includes('suggestTransactions')
+          ) {
+            localQueues.push(request);
+            void setQueues();
+          } else {
+            throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+          }
+        }
+
         if (method === 'sui_signAndExecuteTransactionBlock') {
           if (
             currentAccountAllowedOrigins.includes(origin) &&

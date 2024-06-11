@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import { v4 as uuidv4 } from 'uuid';
+import type { SuiTransactionBlockResponse } from '@mysten/sui.js';
 import { toB64, TransactionBlock } from '@mysten/sui.js';
 import type {
   IdentifierArray,
   SuiSignAndExecuteTransactionBlockInput,
   SuiSignMessageMethod,
   SuiSignMessageOutput,
+  SuiSignTransactionBlockMethod,
   SuiSignTransactionBlockOutput,
   Wallet,
   WalletAccount,
@@ -86,6 +88,18 @@ const hasPermissions = async (permissions: SuiPermissionType[] = ['suggestTransa
   }
 };
 
+const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {
+  if (!TransactionBlock.is(data.transactionBlock)) {
+    throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
+  }
+
+  return request({
+    method: 'sui_signTransactionBlock',
+    // @ts-ignore:next-line
+    params: [{ ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined }],
+  }) as Promise<SuiSignTransactionBlockOutput>;
+};
+
 const signAndExecuteTransactionBlock = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {
   if (!TransactionBlock.is(data.transactionBlock)) {
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
@@ -95,7 +109,7 @@ const signAndExecuteTransactionBlock = (data: Omit<SuiSignAndExecuteTransactionB
     method: 'sui_signAndExecuteTransactionBlock',
     // @ts-ignore:next-line
     params: [{ ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined }],
-  }) as Promise<SuiSignTransactionBlockOutput>;
+  }) as Promise<SuiTransactionBlockResponse>;
 };
 
 const signMessage: SuiSignMessageMethod = ({ message, account }) =>
@@ -191,15 +205,35 @@ class SuiStandard implements Wallet {
         on,
       },
 
+      'sui:signTransactionBlock': {
+        version: '1.0.0',
+        signTransactionBlock,
+      },
+
+      // 'sui:signTransaction': {
+      //   version: '2.0.0',
+      //   signTransaction: signAndExecuteTransactionBlock,
+      // },
+
       'sui:signAndExecuteTransactionBlock': {
         version: '1.0.0',
         signAndExecuteTransactionBlock,
       },
 
+      // 'sui:signAndExecuteTransaction': {
+      //   version: '2.0.0',
+      //   signAndExecuteTransaction: signAndExecuteTransactionBlock,
+      // },
+
       'sui:signMessage': {
         version: '1.0.0',
         signMessage,
       },
+
+      // 'sui:signPersonalMessage': {
+      //   version: '1.0.0',
+      //   signPersonalMessage: signMessage,
+      // },
     };
     void (async () => {
       try {

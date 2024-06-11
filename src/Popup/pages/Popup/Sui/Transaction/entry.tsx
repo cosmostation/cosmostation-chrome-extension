@@ -40,7 +40,7 @@ import { gt, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big'
 import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/extensionStorage';
-import type { SuiSignAndExecuteTransactionBlock } from '~/types/message/sui';
+import type { SuiSignAndExecuteTransactionBlock, SuiSignTransactionBlock } from '~/types/message/sui';
 import type { Path } from '~/types/route';
 
 import Tx from './components/Tx';
@@ -66,7 +66,7 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 
 type EntryProps = {
-  queue: Queue<SuiSignAndExecuteTransactionBlock>;
+  queue: Queue<SuiSignAndExecuteTransactionBlock | SuiSignTransactionBlock>;
 };
 
 export default function Entry({ queue }: EntryProps) {
@@ -303,71 +303,89 @@ export default function Entry({ queue }: EntryProps) {
                       const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
                       const rawSigner = new RawSigner(keypair, provider);
+                      if (message.method === 'sui_signTransactionBlock') {
+                        const response = await rawSigner.signTransactionBlock(transactionBlockInput);
 
-                      const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
+                        responseToWeb({
+                          response: {
+                            result: response,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
 
-                      responseToWeb({
-                        response: {
-                          result: response,
-                        },
-                        message,
-                        messageId,
-                        origin,
-                      });
-
-                      if (queue.channel === 'inApp' && response.digest) {
-                        await deQueue(`/popup/tx-receipt/${response.digest}` as unknown as Path);
-                      } else {
                         await deQueue();
+                      }
+
+                      if (message.method === 'sui_signAndExecuteTransactionBlock') {
+                        const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
+
+                        responseToWeb({
+                          response: {
+                            result: response,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
+
+                        if (queue.channel === 'inApp' && response.digest) {
+                          await deQueue(`/popup/tx-receipt/${response.digest}` as unknown as Path);
+                        } else {
+                          await deQueue();
+                        }
                       }
                     }
 
                     if (currentAccount.type === 'LEDGER') {
-                      setLoadingLedgerSigning(true);
-                      const transport = await createTransport();
-                      const suiApp = new Sui(transport);
+                      if (message.method === 'sui_signAndExecuteTransactionBlock') {
+                        setLoadingLedgerSigning(true);
+                        const transport = await createTransport();
+                        const suiApp = new Sui(transport);
 
-                      const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
+                        const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
 
-                      const transactionBlockBytes = await transactionBlock.build({ provider });
+                        const transactionBlockBytes = await transactionBlock.build({ provider });
 
-                      const intentMessage = messageWithIntent(IntentScope.TransactionData, transactionBlockBytes);
+                        const intentMessage = messageWithIntent(IntentScope.TransactionData, transactionBlockBytes);
 
-                      const { signature } = await suiApp.signTransaction(path, intentMessage);
+                        const { signature } = await suiApp.signTransaction(path, intentMessage);
 
-                      if (!keyPair?.publicKey) {
-                        throw new Error('public key is not found');
+                        if (!keyPair?.publicKey) {
+                          throw new Error('public key is not found');
+                        }
+
+                        const pubKey = new Ed25519PublicKey(keyPair.publicKey);
+
+                        const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', pubKey });
+
+                        const response = await provider.executeTransactionBlock({
+                          transactionBlock: transactionBlockBytes,
+                          signature: serializedSignature,
+                        });
+
+                        const txBlock = await provider.getTransactionBlock({
+                          digest: response.digest,
+                          options: {
+                            showInput: true,
+                            showEffects: true,
+                            showEvents: true,
+                            ...params[0]?.options,
+                          },
+                        });
+
+                        responseToWeb({
+                          response: {
+                            result: txBlock,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
+
+                        await deQueue();
                       }
-
-                      const pubKey = new Ed25519PublicKey(keyPair.publicKey);
-
-                      const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', pubKey });
-
-                      const response = await provider.executeTransactionBlock({
-                        transactionBlock: transactionBlockBytes,
-                        signature: serializedSignature,
-                      });
-
-                      const txBlock = await provider.getTransactionBlock({
-                        digest: response.digest,
-                        options: {
-                          showInput: true,
-                          showEffects: true,
-                          showEvents: true,
-                          ...params[0]?.options,
-                        },
-                      });
-
-                      responseToWeb({
-                        response: {
-                          result: txBlock,
-                        },
-                        message,
-                        messageId,
-                        origin,
-                      });
-
-                      await deQueue();
                     }
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });

@@ -31,11 +31,19 @@ export type SuiExecuteMoveCall = {
   id?: number | string;
 };
 
-// export type SuiExecuteMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
-
 export type SuiExecuteSerializedMoveCall = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__EXECUTE_SERIALIZED_MOVE_CALL;
   params: [string];
+  id?: number | string;
+};
+
+type SuiSignTransactionBlockSerializedInput = Omit<SuiSignAndExecuteTransactionBlockInput, 'transactionBlock' | 'chain' | 'account'> & {
+  transactionBlockSerialized: string;
+};
+
+export type SuiSignTransactionBlock = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_TRANSACTION_BLOCK;
+  params: [SuiSignTransactionBlockSerializedInput];
   id?: number | string;
 };
 

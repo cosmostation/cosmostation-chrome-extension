@@ -3,7 +3,7 @@ import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/extensionStorage';
-import type { SuiSignAndExecuteTransactionBlock } from '~/types/message/sui';
+import type { SuiSignAndExecuteTransactionBlock, SuiSignTransactionBlock } from '~/types/message/sui';
 
 import Entry from './entry';
 import Layout from './layout';
@@ -28,6 +28,6 @@ export default function Transaction() {
   return null;
 }
 
-function isSuiTransaction(queue: Queue): queue is Queue<SuiSignAndExecuteTransactionBlock> {
-  return queue?.message?.method === 'sui_signAndExecuteTransactionBlock';
+function isSuiTransaction(queue: Queue): queue is Queue<SuiSignAndExecuteTransactionBlock | SuiSignTransactionBlock> {
+  return queue?.message?.method === 'sui_signAndExecuteTransactionBlock' || queue?.message?.method === 'sui_signTransactionBlock';
 }
