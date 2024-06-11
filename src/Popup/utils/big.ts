@@ -1,5 +1,6 @@
 import type { RoundingMode } from 'big.js';
 import Big from 'big.js';
+import Long from 'long';
 import { Dec, Int } from '@keplr-wallet/unit';
 
 export function pow(base: number | string, exponent: number) {
@@ -122,4 +123,12 @@ export function toDec(number: string) {
 
 export function toInt(number: string) {
   return new Int(number);
+}
+
+export function toLong(number?: string | number) {
+  if (number === undefined) {
+    return Long.fromValue(0);
+  }
+
+  return Long.fromValue(number);
 }

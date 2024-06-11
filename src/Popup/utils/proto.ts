@@ -1,5 +1,3 @@
-import Long from 'long';
-
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { post } from '~/Popup/utils/axios';
 import { isAminoCommission, isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from '~/Popup/utils/cosmos';
@@ -20,6 +18,7 @@ import type {
   PubKey,
 } from '~/types/cosmos/proto';
 
+import { toLong } from './big';
 import { getEVMChainId } from './ethermint';
 
 export function convertAminoMessageToProto(msg: Msg) {
@@ -71,10 +70,10 @@ export function convertIBCAminoSendMessageToProto(msg: Msg<MsgTransfer>) {
     sender: msg.value.sender,
     receiver: msg.value.receiver,
     timeout_height: {
-      revision_height: Long.fromString(msg.value.timeout_height.revision_height),
-      revision_number: Long.fromString(msg.value.timeout_height.revision_number),
+      revision_height: toLong(msg.value.timeout_height.revision_height),
+      revision_number: toLong(msg.value.timeout_height.revision_number),
     },
-    timeout_timestamp: msg.value.timeout_timestamp ? Long.fromString(msg.value.timeout_timestamp) : undefined,
+    timeout_timestamp: toLong(msg.value.timeout_timestamp),
     memo: msg.value.memo,
   });
 
