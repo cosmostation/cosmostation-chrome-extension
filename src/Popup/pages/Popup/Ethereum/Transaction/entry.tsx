@@ -265,7 +265,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const displayFee = useMemo(() => toDisplayDenomAmount(baseFee, decimals), [baseFee, decimals]);
 
-  const displayValue = useMemo(() => times(displayFee, price), [displayFee, price]);
+  const displayFeeValue = useMemo(() => times(displayFee, price), [displayFee, price]);
 
   const isERC20 = useMemo(() => {
     const erc20Types = [ETHEREUM_TX_TYPE.TOKEN_METHOD_APPROVE, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER, ETHEREUM_TX_TYPE.TOKEN_METHOD_TRANSFER_FROM] as string[];
@@ -277,10 +277,17 @@ export default function Entry({ queue }: EntryProps) {
     [allTokens, ethereumTx.to, txType.data?.type],
   );
 
+  const payableNativeCoinDisplayAmount = useMemo(
+    () => toDisplayDenomAmount(BigInt(toHex(ethereumTx.value || '0x0', { addPrefix: true, isStringNumber: true })).toString(10), decimals),
+    [decimals, ethereumTx.value],
+  );
+
+  const isSpendNativeCoin = useMemo(() => gt(payableNativeCoinDisplayAmount, '0'), [payableNativeCoinDisplayAmount]);
+
   const sendDisplayAmount = useMemo(() => {
-    if (txType.data?.type === 'simpleSend') {
+    if (isSpendNativeCoin) {
       try {
-        return toDisplayDenomAmount(BigInt(toHex(ethereumTx.value || '0x0', { addPrefix: true, isStringNumber: true })).toString(10), decimals);
+        return payableNativeCoinDisplayAmount;
       } catch {
         return '0';
       }
@@ -297,7 +304,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return '0';
-  }, [decimals, ethereumTx.value, token?.decimals, txType.data?.txDescription?.args, txType.data?.type]);
+  }, [isSpendNativeCoin, payableNativeCoinDisplayAmount, token?.decimals, txType.data?.txDescription?.args, txType.data?.type]);
 
   const sendDisplayDenom = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
@@ -311,23 +318,26 @@ export default function Entry({ queue }: EntryProps) {
     return '';
   }, [currentEthereumNetwork.displayDenom, token?.displayDenom, txType.data?.type]);
 
-  const totalDisplayAmount = useMemo(() => {
-    if (txType.data?.type === 'simpleSend') {
+  const totalPayableNativeCoinDisplayAmount = useMemo(() => {
+    if (isSpendNativeCoin) {
       return plus(sendDisplayAmount, displayFee);
     }
 
     return displayFee;
-  }, [displayFee, sendDisplayAmount, txType.data?.type]);
+  }, [displayFee, isSpendNativeCoin, sendDisplayAmount]);
 
-  const totalBaseAmount = useMemo(() => toBaseDenomAmount(totalDisplayAmount, decimals), [decimals, totalDisplayAmount]);
+  const totalPayableNativeCoinBaseAmount = useMemo(
+    () => toBaseDenomAmount(totalPayableNativeCoinDisplayAmount, decimals),
+    [decimals, totalPayableNativeCoinDisplayAmount],
+  );
 
   const baseBalance = useMemo(() => BigInt(balance.data?.result || '0').toString(10), [balance.data?.result]);
   const errorMessage = useMemo(() => {
-    if (gt(totalBaseAmount, baseBalance)) {
+    if (gt(totalPayableNativeCoinBaseAmount, baseBalance)) {
       return t('pages.Popup.Ethereum.SignTransaction.entry.insufficientAmount');
     }
     return '';
-  }, [baseBalance, t, totalBaseAmount]);
+  }, [baseBalance, t, totalPayableNativeCoinBaseAmount]);
 
   const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);
@@ -396,7 +406,7 @@ export default function Entry({ queue }: EntryProps) {
                     </FeeRightAmountContainer>
                     <FeeRightValueContainer>
                       <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                        {displayValue}
+                        {displayFeeValue}
                       </Number>
                     </FeeRightValueContainer>
                   </FeeRightColumnContainer>
@@ -439,41 +449,49 @@ export default function Entry({ queue }: EntryProps) {
                   <Typography variant="h5">{t('pages.Popup.Ethereum.SignTransaction.entry.total')}</Typography>
                 </TotalLeftContainer>
                 <TotalRightContainer>
-                  <Typography variant="h7">{['transfer', 'simpleSend'].includes(txType.data?.type || '') ? 'Amount + Max fee' : 'Max fee'}</Typography>
+                  <Typography variant="h7">{txType.data?.type === 'transfer' || isSpendNativeCoin ? 'Amount + Max fee' : 'Max fee'}</Typography>
                 </TotalRightContainer>
               </TotalContainer>
-
               <TotalAmountContainer>
-                {txType.data?.type === 'transfer' ? (
-                  <>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={token?.decimals ? (token.decimals > 8 ? 8 : token.decimals) : 0}>
-                      {sendDisplayAmount}
-                    </Number>
-                    &nbsp;
-                    <Typography variant="h5n">{sendDisplayDenom}</Typography>&nbsp;<Typography variant="h5n">+</Typography>&nbsp;
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={8}>
-                      {displayFee}
-                    </Number>
-                    &nbsp;
-                    <Typography variant="h5n">{displayDenom}</Typography>
-                  </>
-                ) : txType.data?.type === 'simpleSend' ? (
-                  <>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                      {plus(displayFee, sendDisplayAmount, currentEthereumNetwork.decimals)}
-                    </Number>
-                    &nbsp;
-                    <Typography variant="h5n">{displayDenom}</Typography>
-                  </>
-                ) : (
-                  <>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                      {displayFee}
-                    </Number>
-                    &nbsp;
-                    <Typography variant="h5n">{displayDenom}</Typography>
-                  </>
-                )}
+                {(() => {
+                  if (txType.data?.type === 'transfer') {
+                    return (
+                      <>
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={token?.decimals ? (token.decimals > 8 ? 8 : token.decimals) : 0}>
+                          {sendDisplayAmount}
+                        </Number>
+                        &nbsp;
+                        <Typography variant="h5n">{sendDisplayDenom}</Typography>&nbsp;<Typography variant="h5n">+</Typography>&nbsp;
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={8}>
+                          {displayFee}
+                        </Number>
+                        &nbsp;
+                        <Typography variant="h5n">{displayDenom}</Typography>
+                      </>
+                    );
+                  }
+
+                  if (isSpendNativeCoin) {
+                    return (
+                      <>
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                          {plus(displayFee, sendDisplayAmount, currentEthereumNetwork.decimals)}
+                        </Number>
+                        &nbsp;
+                        <Typography variant="h5n">{displayDenom}</Typography>
+                      </>
+                    );
+                  }
+                  return (
+                    <>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                        {displayFee}
+                      </Number>
+                      &nbsp;
+                      <Typography variant="h5n">{displayDenom}</Typography>
+                    </>
+                  );
+                })()}
               </TotalAmountContainer>
             </FeeContainer>
           </StyledTabPanel>
