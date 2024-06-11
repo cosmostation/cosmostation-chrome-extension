@@ -18,7 +18,7 @@ import { isEthermintStyleChainId } from './regex';
 import { isEqualsIgnoringCase } from './string';
 
 export function constructEip712TypedData(chainId: string, tx: SignAminoDoc): EIP712StructuredData | undefined {
-  const chainIsInjective = chainId.startsWith('injective');
+  const isInjectiveChain = chainId.startsWith('injective');
 
   const ethChainId = getEVMChainId(chainId);
 
@@ -68,7 +68,7 @@ export function constructEip712TypedData(chainId: string, tx: SignAminoDoc): EIP
     primaryType: 'Tx',
   };
 
-  if (chainIsInjective) {
+  if (isInjectiveChain) {
     types.types.Tx = [...types.types.Tx, { name: 'timeout_height', type: 'string' }];
     types.domain.name = 'Injective Web3';
     types.domain.chainId = `0x${ethChainId.toString(16)}`;

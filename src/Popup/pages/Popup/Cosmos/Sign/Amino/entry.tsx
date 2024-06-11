@@ -159,7 +159,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const sourceChainLatestBlock = useBlockLatestSWR(chain);
 
-  const ethermintledgerSignTimeout = useMemo(() => {
+  const timeoutHeight = useMemo(() => {
     if (doc.timeout_height) {
       return doc.timeout_height;
     }
@@ -174,8 +174,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   }, [doc.timeout_height, isEthermintLedgerSign, isInjectiveChain, sourceChainLatestBlock.data?.block?.header?.height]);
 
   const tx = useMemo(
-    () => ({ ...doc, memo: signingMemo, fee: { ...signingFee, feePayer: feePayerAddress }, timeout_height: ethermintledgerSignTimeout }),
-    [doc, ethermintledgerSignTimeout, feePayerAddress, signingFee, signingMemo],
+    () => ({ ...doc, memo: signingMemo, fee: { ...signingFee, feePayer: feePayerAddress }, timeout_height: timeoutHeight }),
+    [doc, timeoutHeight, feePayerAddress, signingFee, signingMemo],
   );
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {

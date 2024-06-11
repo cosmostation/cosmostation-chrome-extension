@@ -1,4 +1,3 @@
-import Long from 'long';
 import { v4 as uuidv4 } from 'uuid';
 import type { CosmosRegisterWallet } from '@cosmostation/wallets';
 
@@ -6,6 +5,7 @@ import { LINE_TYPE } from '~/constants/chain';
 import { COSMOSTATION_ENCODED_LOGO_IMAGE, COSMOSTATION_WALLET_NAME } from '~/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
+import { toLong } from '~/Popup/utils/big';
 import { CosmosRPCError } from '~/Popup/utils/error';
 import type { SignAminoDoc } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
@@ -303,7 +303,7 @@ const signDirect: Keplr['signDirect'] = async (chainId, _, signDoc, signOptions)
   })) as CosSignDirectResponse;
   return {
     signed: {
-      accountNumber: Long.fromString(response.signed_doc.account_number),
+      accountNumber: toLong(response.signed_doc.account_number),
       chainId: response.signed_doc.chain_id,
       authInfoBytes: new Uint8Array(response.signed_doc.auth_info_bytes),
       bodyBytes: new Uint8Array(response.signed_doc.body_bytes),
