@@ -129,13 +129,13 @@ export default function Entry({ queue, chain }: EntryProps) {
   const currentFeeCoin = useMemo(
     () =>
       availableFeeCoins.find((item) => item.baseDenom === currentFeeBaseDenom) || {
-        availableAmount: '0',
+        availableAmount: balance.data?.balance?.find((item) => item.denom === inputFee.denom)?.amount || '0',
         decimals: 0,
         baseDenom: inputFee.denom || '',
         originBaseDenom: inputFee.denom || '',
         displayDenom: 'UNKNOWN',
       },
-    [currentFeeBaseDenom, inputFee.denom, availableFeeCoins],
+    [availableFeeCoins, balance.data?.balance, currentFeeBaseDenom, inputFee.denom],
   );
 
   const memoizedProtoTx = useMemo(() => {
