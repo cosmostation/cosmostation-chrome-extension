@@ -41,7 +41,7 @@ import { gt, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popu
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { requestRPC } from '~/Popup/utils/ethereum';
 import { responseToWeb } from '~/Popup/utils/message';
-import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
+import { hexOrDecimalToDecimal, isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import type { OneInchSwapTxData } from '~/types/1inch/contract';
 import type { ResponseRPC } from '~/types/ethereum/rpc';
 import type { Queue } from '~/types/extensionStorage';
@@ -158,13 +158,11 @@ export default function Entry({ queue }: EntryProps) {
   );
 
   const [feeMode, setFeeMode] = useState<'tiny' | 'low' | 'average' | 'custom'>(isCustomFee ? 'custom' : 'low');
-  const [gas, setGas] = useState(originEthereumTx.gas ? BigInt(toHex(originEthereumTx.gas, { addPrefix: true, isStringNumber: true })).toString(10) : '21000');
+  const [gas, setGas] = useState(originEthereumTx.gas ? hexOrDecimalToDecimal(originEthereumTx.gas) : '21000');
 
-  const [gasPrice, setGasPrice] = useState(BigInt(toHex(originEthereumTx.gasPrice || '0', { addPrefix: true, isStringNumber: true })).toString(10));
-  const [maxFeePerGas, setMaxFeePerGas] = useState(BigInt(toHex(originEthereumTx.maxFeePerGas || '0', { addPrefix: true, isStringNumber: true })).toString(10));
-  const [maxPriorityFeePerGas, setMaxPriorityFeePerGas] = useState(
-    BigInt(toHex(originEthereumTx.maxPriorityFeePerGas || '0', { addPrefix: true, isStringNumber: true })).toString(10),
-  );
+  const [gasPrice, setGasPrice] = useState(hexOrDecimalToDecimal(originEthereumTx.gasPrice || '0'));
+  const [maxFeePerGas, setMaxFeePerGas] = useState(hexOrDecimalToDecimal(originEthereumTx.maxFeePerGas || '0'));
+  const [maxPriorityFeePerGas, setMaxPriorityFeePerGas] = useState(hexOrDecimalToDecimal(originEthereumTx.maxPriorityFeePerGas || '0'));
 
   const ethereumTx = useMemo(() => {
     const nonce =
@@ -277,17 +275,16 @@ export default function Entry({ queue }: EntryProps) {
     [allTokens, ethereumTx.to, txType.data?.type],
   );
 
-  const payableNativeCoinDisplayAmount = useMemo(
-    () => toDisplayDenomAmount(BigInt(toHex(ethereumTx.value || '0x0', { addPrefix: true, isStringNumber: true })).toString(10), decimals),
-    [decimals, ethereumTx.value],
-  );
+  const nativeCoinTransferBaseAmount = useMemo(() => hexOrDecimalToDecimal(ethereumTx.value || '0x0'), [ethereumTx.value]);
 
-  const isSpendNativeCoin = useMemo(() => gt(payableNativeCoinDisplayAmount, '0'), [payableNativeCoinDisplayAmount]);
+  const nativeCoinTransferDisplayAmount = useMemo(() => toDisplayDenomAmount(nativeCoinTransferBaseAmount, decimals), [decimals, nativeCoinTransferBaseAmount]);
+
+  const isSpendNativeCoin = useMemo(() => gt(nativeCoinTransferDisplayAmount, '0'), [nativeCoinTransferDisplayAmount]);
 
   const sendDisplayAmount = useMemo(() => {
     if (isSpendNativeCoin) {
       try {
-        return payableNativeCoinDisplayAmount;
+        return nativeCoinTransferDisplayAmount;
       } catch {
         return '0';
       }
@@ -304,7 +301,7 @@ export default function Entry({ queue }: EntryProps) {
     }
 
     return '0';
-  }, [isSpendNativeCoin, payableNativeCoinDisplayAmount, token?.decimals, txType.data?.txDescription?.args, txType.data?.type]);
+  }, [isSpendNativeCoin, nativeCoinTransferDisplayAmount, token?.decimals, txType.data?.txDescription?.args, txType.data?.type]);
 
   const sendDisplayDenom = useMemo(() => {
     if (txType.data?.type === 'simpleSend') {
@@ -318,7 +315,7 @@ export default function Entry({ queue }: EntryProps) {
     return '';
   }, [currentEthereumNetwork.displayDenom, token?.displayDenom, txType.data?.type]);
 
-  const totalPayableNativeCoinDisplayAmount = useMemo(() => {
+  const totalNativeCoinTransferDisplayAmount = useMemo(() => {
     if (isSpendNativeCoin) {
       return plus(sendDisplayAmount, displayFee);
     }
@@ -326,18 +323,18 @@ export default function Entry({ queue }: EntryProps) {
     return displayFee;
   }, [displayFee, isSpendNativeCoin, sendDisplayAmount]);
 
-  const totalPayableNativeCoinBaseAmount = useMemo(
-    () => toBaseDenomAmount(totalPayableNativeCoinDisplayAmount, decimals),
-    [decimals, totalPayableNativeCoinDisplayAmount],
+  const totalNativeCoinTransferBaseAmount = useMemo(
+    () => toBaseDenomAmount(totalNativeCoinTransferDisplayAmount, decimals),
+    [decimals, totalNativeCoinTransferDisplayAmount],
   );
 
   const baseBalance = useMemo(() => BigInt(balance.data?.result || '0').toString(10), [balance.data?.result]);
   const errorMessage = useMemo(() => {
-    if (gt(totalPayableNativeCoinBaseAmount, baseBalance)) {
+    if (gt(totalNativeCoinTransferBaseAmount, baseBalance)) {
       return t('pages.Popup.Ethereum.SignTransaction.entry.insufficientAmount');
     }
     return '';
-  }, [baseBalance, t, totalPayableNativeCoinBaseAmount]);
+  }, [baseBalance, t, totalNativeCoinTransferBaseAmount]);
 
   const handleChange = useCallback((_: React.SyntheticEvent, newTabValue: number) => {
     setTabValue(newTabValue);

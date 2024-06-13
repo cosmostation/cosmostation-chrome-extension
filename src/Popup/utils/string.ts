@@ -68,3 +68,9 @@ export function hexToDecimal(hex?: string) {
 
   return BigInt(hex).toString(10);
 }
+
+export function hexOrDecimalToDecimal(datum?: number | string) {
+  const hexValue = toHex(datum, { addPrefix: true, isStringNumber: true });
+
+  return hexToDecimal(hexValue);
+}
