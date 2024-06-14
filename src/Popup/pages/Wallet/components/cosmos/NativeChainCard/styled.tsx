@@ -189,6 +189,10 @@ export const ClaimButtonContainer = styled('div')({
   columnGap: '0.8rem',
 });
 
+export const ClaimButtonWrapper = styled('div')({
+  width: '100%',
+});
+
 export const StyledAccordion = styled((props: AccordionProps) => <Accordion disableGutters elevation={0} square {...props} />)({
   border: 0,
 
