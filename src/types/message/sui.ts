@@ -68,16 +68,6 @@ export type SuiSignMessage = {
   id?: number | string;
 };
 
-export type SuiSignMessageResposne = {
-  messageBytes: string;
-  signature: string;
-};
-
-export type SuiSignPersonalMessageResposne = {
-  bytes: string;
-  signature: string;
-};
-
 export type SuiGetAccountResponse = {
   address: string;
   publicKey: string;

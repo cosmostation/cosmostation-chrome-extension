@@ -213,30 +213,15 @@ class SuiStandard implements Wallet {
         signTransactionBlock,
       },
 
-      // 'sui:signTransaction': {
-      //   version: '2.0.0',
-      //   signTransaction: signAndExecuteTransactionBlock,
-      // },
-
       'sui:signAndExecuteTransactionBlock': {
         version: '1.0.0',
         signAndExecuteTransactionBlock,
       },
 
-      // 'sui:signAndExecuteTransaction': {
-      //   version: '2.0.0',
-      //   signAndExecuteTransaction: signAndExecuteTransactionBlock,
-      // },
-
       'sui:signMessage': {
         version: '1.0.0',
         signMessage,
       },
-
-      // 'sui:signPersonalMessage': {
-      //   version: '1.0.0',
-      //   signPersonalMessage: signMessage,
-      // },
     };
     void (async () => {
       try {

@@ -104,8 +104,6 @@ import {
   personalSignParamsSchema,
   suiConnectSchema,
   suiSignMessageSchema,
-  // suiExecuteMoveCallSchema,
-  // suiExecuteSerializedMoveCallSchema,
   walletAddEthereumChainParamsSchema,
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,
