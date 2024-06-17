@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
-import { Connection, Ed25519Keypair, fromB64, JsonRpcProvider, RawSigner } from '@mysten/sui.js';
+import { Connection, Ed25519Keypair, JsonRpcProvider, RawSigner } from '@mysten/sui.js';
 
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -13,8 +13,9 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { getKeyPair } from '~/Popup/utils/common';
+import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { Queue } from '~/types/extensionStorage';
 import type { SuiSignMessage } from '~/types/message/sui';
 
@@ -48,8 +49,7 @@ export default function Entry({ queue }: EntryProps) {
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-  // TODO param으로 들어온 주소랑 이 주소랑 다르면 에러를 뱉어야하나?
-  // const address = getAddress(chain, keyPair?.publicKey);
+  const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
 
   const provider = useMemo(
     () =>
@@ -65,21 +65,42 @@ export default function Entry({ queue }: EntryProps) {
 
   const { params } = message;
 
-  const aa = useMemo(() => fromB64(params.message), [params.message]);
+  const encodedMessage = useMemo(() => Buffer.from(params.message, 'base64'), [params.message]);
 
-  const decodedMessage = useMemo(() => new TextDecoder().decode(fromB64(params.message)), [params.message]);
+  const decodedMessage = useMemo(() => encodedMessage.toString('utf8'), [encodedMessage]);
+
+  useEffect(() => {
+    void (async () => {
+      if (!isEqualsIgnoringCase(address, params.accountAddress)) {
+        responseToWeb({
+          response: {
+            error: {
+              code: RPC_ERROR.INVALID_PARAMS,
+              message: 'Invalid address',
+            },
+          },
+          message,
+          messageId,
+          origin,
+        });
+
+        await deQueue();
+      }
+    })();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container>
       <Header network={currentSuiNetwork} origin={origin} />
       <ContentContainer>
         <TitleContainer>
-          {/* NOTE APTOS -> SUI */}
-          <Typography variant="h2">{t('pages.Popup.Aptos.Sign.entry.signatureRequest')}</Typography>
+          <Typography variant="h2">{t('pages.Popup.Sui.SignMessage.entry.signatureRequest')}</Typography>
         </TitleContainer>
         <MessageContainer>
           <MessageTitleContainer>
-            <Typography variant="h5">{t('pages.Popup.Aptos.Sign.entry.message')}</Typography>
+            <Typography variant="h5">{t('pages.Popup.Sui.SignMessage.entry.message')}</Typography>
           </MessageTitleContainer>
           <MessageContentContainer>
             <Typography variant="h6">{decodedMessage}</Typography>
@@ -105,18 +126,17 @@ export default function Entry({ queue }: EntryProps) {
               await deQueue();
             }}
           >
-            {t('pages.Popup.Aptos.Sign.entry.cancelButton')}
+            {t('pages.Popup.Sui.SignMessage.entry.cancelButton')}
           </OutlineButton>
           <Button
             onClick={async () => {
               try {
-                // NOTE 니모닉 분기 처리 필요 없을듯
                 if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
                   const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
                   const rawSigner = new RawSigner(keypair, provider);
 
-                  const response = await rawSigner.signMessage({ message: aa });
+                  const response = await rawSigner.signMessage({ message: encodedMessage });
 
                   const result = {
                     signature: response.signature,
@@ -143,7 +163,7 @@ export default function Entry({ queue }: EntryProps) {
               }
             }}
           >
-            {t('pages.Popup.Aptos.Sign.entry.signButton')}
+            {t('pages.Popup.Sui.SignMessage.entry.signButton')}
           </Button>
         </BottomButtonContainer>
       </BottomContainer>

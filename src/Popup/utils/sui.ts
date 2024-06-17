@@ -18,7 +18,7 @@ export function isExists(object: Result<GetObject>): object is Result<GetObjectE
   return object.result?.status === 'Exists';
 }
 
-export function getCoinType(type?: string) {
+export function getCoinType(type?: string | null) {
   if (!type || type?.split('::')[1] !== 'coin') {
     return '';
   }
@@ -33,7 +33,7 @@ export function getCoinType(type?: string) {
   return '';
 }
 
-export function getNFTType(type?: string) {
+export function getNFTType(type?: string | null) {
   return type?.split('::')[2] || '';
 }
 
@@ -61,7 +61,7 @@ export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMeta {
           ? objectOwner.ObjectOwner
           : '',
       objectFieldData: { ...data.data?.content.fields },
-      type: data.data.type,
+      type: data.data.type || '',
       rarity: '',
     };
   }

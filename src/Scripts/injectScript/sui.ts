@@ -2,7 +2,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import type { SuiTransactionBlockResponse } from '@mysten/sui.js';
-import { toB64, TransactionBlock } from '@mysten/sui.js';
+import { TransactionBlock } from '@mysten/sui.js';
 import type {
   IdentifierArray,
   SuiSignAndExecuteTransactionBlockInput,
@@ -116,7 +116,7 @@ const signMessage: SuiSignMessageMethod = ({ message, account }) =>
   request({
     method: 'sui_signMessage',
     params: {
-      message: toB64(message),
+      message: Buffer.from(message).toString('base64'),
       accountAddress: account?.address,
     },
   }) as Promise<SuiSignMessageOutput>;
