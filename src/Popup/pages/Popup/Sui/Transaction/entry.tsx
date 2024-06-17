@@ -339,27 +339,45 @@ export default function Entry({ queue }: EntryProps) {
                     }
 
                     if (currentAccount.type === 'LEDGER') {
+                      setLoadingLedgerSigning(true);
+                      const transport = await createTransport();
+                      const suiApp = new Sui(transport);
+
+                      const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
+
+                      const transactionBlockBytes = await transactionBlock.build({ provider });
+
+                      const intentMessage = messageWithIntent(IntentScope.TransactionData, transactionBlockBytes);
+
+                      const { signature } = await suiApp.signTransaction(path, intentMessage);
+
+                      if (!keyPair?.publicKey) {
+                        throw new Error('public key is not found');
+                      }
+
+                      const pubKey = new Ed25519PublicKey(keyPair.publicKey);
+
+                      const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', pubKey });
+
+                      if (message.method === 'sui_signTransactionBlock') {
+                        const response = {
+                          transactionBlockBytes: Buffer.from(transactionBlockBytes).toString('base64'),
+                          signature: serializedSignature,
+                        };
+
+                        responseToWeb({
+                          response: {
+                            result: response,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
+
+                        await deQueue();
+                      }
+
                       if (message.method === 'sui_signAndExecuteTransactionBlock') {
-                        setLoadingLedgerSigning(true);
-                        const transport = await createTransport();
-                        const suiApp = new Sui(transport);
-
-                        const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
-
-                        const transactionBlockBytes = await transactionBlock.build({ provider });
-
-                        const intentMessage = messageWithIntent(IntentScope.TransactionData, transactionBlockBytes);
-
-                        const { signature } = await suiApp.signTransaction(path, intentMessage);
-
-                        if (!keyPair?.publicKey) {
-                          throw new Error('public key is not found');
-                        }
-
-                        const pubKey = new Ed25519PublicKey(keyPair.publicKey);
-
-                        const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', pubKey });
-
                         const response = await provider.executeTransactionBlock({
                           transactionBlock: transactionBlockBytes,
                           signature: serializedSignature,
