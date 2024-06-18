@@ -1467,7 +1467,6 @@
                   "insufficientFeeAmount": "Insufficient fee",
                   "invalidAddress": "Invalid address",
                   "invalidAmount": "Invalid amount",
-                  "ledgerNotSupported": "Not support signing with Ledger on Ethermint-like chains",
                   "memoPlaceholder": "Memo (option)",
                   "recipientAddressPlaceholder": "Recipient address",
                   "sendButton": "Send",
@@ -1483,7 +1482,6 @@
                   "insufficientFeeAmount": "Insufficient fee",
                   "invalidAddress": "Invalid address",
                   "invalidAmount": "Invalid amount",
-                  "ledgerNotSupported": "Not support signing with Ledger on Ethermint-like chains",
                   "memoPlaceholder": "Memo (option)",
                   "recipientAddressPlaceholder": "Recipient address",
                   "sendButton": "Send"

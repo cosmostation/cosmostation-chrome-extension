@@ -2,10 +2,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import secp256k1 from 'secp256k1';
 import sortKeys from 'sort-keys';
+import { TransportStatusError } from '@ledgerhq/hw-transport';
 import type { MessageTypeProperty, MessageTypes } from '@metamask/eth-sig-util';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
-import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
+import { LEDGER_TRANSPORT_STATUS_ERROR, RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import Button from '~/Popup/components/common/Button';
 import OutlineButton from '~/Popup/components/common/OutlineButton';
 import { Tab, TabPanel, Tabs } from '~/Popup/components/common/Tab';
@@ -402,7 +403,19 @@ export default function Entry({ queue, chain }: EntryProps) {
       }
       throw new Error('Unknown type account');
     } catch (e) {
-      enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+      if (e instanceof TransportStatusError) {
+        const transportError = e as Error & { statusCode?: number };
+
+        if (
+          isEthermintLedgerSign &&
+          (transportError?.statusCode === LEDGER_TRANSPORT_STATUS_ERROR.OPENED_WRONG_APP ||
+            transportError?.statusCode === LEDGER_TRANSPORT_STATUS_ERROR.STILL_HOME_SCREEN)
+        ) {
+          enqueueSnackbar(t('pages.Popup.Cosmos.Sign.Amino.entry.notOpendEthApp'), { variant: 'error' });
+        }
+      } else {
+        enqueueSnackbar((e as { message: string }).message, { variant: 'error' });
+      }
     } finally {
       setLoadingLedgerSigning(false);
       setIsProgress(false);

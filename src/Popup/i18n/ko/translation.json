@@ -1467,7 +1467,6 @@
                   "insufficientFeeAmount": "수수료가 부족합니다.",
                   "invalidAddress": "유효하지 않은 주소입니다.",
                   "invalidAmount": "수량을 입력하세요.",
-                  "ledgerNotSupported": "Ethermint 계열 체인에서는 Ledger 서명이 지원되지 않습니다.",
                   "memoPlaceholder": "메모 (선택)",
                   "recipientAddressPlaceholder": "입금 주소",
                   "sendButton": "보내기",
@@ -1483,7 +1482,6 @@
                   "insufficientFeeAmount": "수수료가 부족합니다.",
                   "invalidAddress": "유효하지 않은 주소입니다.",
                   "invalidAmount": "수량을 입력하세요.",
-                  "ledgerNotSupported": "Ethermint 계열 체인에서는 Ledger 서명이 지원되지 않습니다.",
                   "memoPlaceholder": "메모 (선택)",
                   "recipientAddressPlaceholder": "입금 주소",
                   "sendButton": "보내기"
