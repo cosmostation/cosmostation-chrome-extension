@@ -127,19 +127,27 @@ export default function Entry({ queue }: EntryProps) {
     return txBlock;
   }, [address, params]);
 
-  const transactionBlockInput = useMemo(
-    () => ({
-      ...params[0],
-      options: {
+  const transactionBlockResponseOptions = useMemo(() => {
+    if (message.method === 'sui_signAndExecuteTransactionBlock' && 'options' in params[0]) {
+      return {
         showInput: true,
         showEffects: true,
         showEvents: true,
         ...params[0]?.options,
-      },
+      };
+    }
+
+    return undefined;
+  }, [message.method, params]);
+
+  const transactionBlockInput = useMemo(
+    () => ({
+      ...params[0],
+      options: transactionBlockResponseOptions,
       transactionBlockSerialized: undefined,
       transactionBlock,
     }),
-    [params, transactionBlock],
+    [transactionBlockResponseOptions, params, transactionBlock],
   );
   const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ transactionBlock });
 
@@ -385,12 +393,7 @@ export default function Entry({ queue }: EntryProps) {
 
                         const txBlock = await provider.getTransactionBlock({
                           digest: response.digest,
-                          options: {
-                            showInput: true,
-                            showEffects: true,
-                            showEvents: true,
-                            ...params[0]?.options,
-                          },
+                          options: transactionBlockResponseOptions,
                         });
 
                         responseToWeb({

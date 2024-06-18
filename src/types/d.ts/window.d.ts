@@ -116,8 +116,13 @@ type Sui = {
   getAccounts: () => Promise<string[]>;
   getPublicKey: () => Promise<string>;
   getChain: () => Promise<string>;
-  signAndExecuteTransactionBlock: (data: SuiSignAndExecuteTransactionBlockInput) => Promise<SuiSignTransactionBlockOutput>;
-  signMessage: (data: SuiSignMessageInput) => Promise<SuiSignMessageOutput>;
+  signTransactionBlock: (
+    data: import('@mysten/wallet-standard').SuiSignTransactionBlockInput,
+  ) => Promise<import('@mysten/wallet-standard').SuiSignTransactionBlockOutput>;
+  signAndExecuteTransactionBlock: (
+    data: import('@mysten/wallet-standard').SuiSignAndExecuteTransactionBlockInput,
+  ) => Promise<import('@mysten/wallet-standard').SuiSignAndExecuteTransactionBlockOutput>;
+  signMessage: (data: import('@mysten/wallet-standard').SuiSignMessageInput) => Promise<import('@mysten/wallet-standard').SuiSignMessageOutput>;
   on: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
   off: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
 };

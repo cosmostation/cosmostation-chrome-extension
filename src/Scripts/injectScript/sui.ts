@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import { v4 as uuidv4 } from 'uuid';
-import type { SuiTransactionBlockResponse } from '@mysten/sui.js';
 import { TransactionBlock } from '@mysten/sui.js';
 import type {
   IdentifierArray,
   SuiSignAndExecuteTransactionBlockInput,
+  SuiSignAndExecuteTransactionBlockMethod,
+  SuiSignAndExecuteTransactionBlockOutput,
   SuiSignMessageMethod,
   SuiSignMessageOutput,
+  SuiSignTransactionBlockInput,
   SuiSignTransactionBlockMethod,
   SuiSignTransactionBlockOutput,
   Wallet,
@@ -88,28 +88,34 @@ const hasPermissions = async (permissions: SuiPermissionType[] = ['suggestTransa
   }
 };
 
-const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {
+const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignTransactionBlockInput, 'chain' | 'account'>) => {
   if (!TransactionBlock.is(data.transactionBlock)) {
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
+
+  const inputParam = { ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined };
+
+  delete inputParam.transactionBlock;
 
   return request({
     method: 'sui_signTransactionBlock',
-    // @ts-ignore:next-line
-    params: [{ ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined }],
+    params: [inputParam],
   }) as Promise<SuiSignTransactionBlockOutput>;
 };
 
-const signAndExecuteTransactionBlock = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {
+const signAndExecuteTransactionBlock: SuiSignAndExecuteTransactionBlockMethod = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {
   if (!TransactionBlock.is(data.transactionBlock)) {
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
 
+  const inputParam = { ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined };
+
+  delete inputParam.transactionBlock;
+
   return request({
     method: 'sui_signAndExecuteTransactionBlock',
-    // @ts-ignore:next-line
-    params: [{ ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined }],
-  }) as Promise<SuiTransactionBlockResponse>;
+    params: [inputParam],
+  }) as Promise<SuiSignAndExecuteTransactionBlockOutput>;
 };
 
 const signMessage: SuiSignMessageMethod = ({ message, account }) =>
@@ -257,6 +263,7 @@ export const sui: Sui = {
   on,
   request,
   requestPermissions,
+  signTransactionBlock,
   signAndExecuteTransactionBlock,
   signMessage,
 };
