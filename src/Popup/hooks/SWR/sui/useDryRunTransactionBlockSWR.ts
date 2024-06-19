@@ -2,7 +2,9 @@ import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
-import { Connection, JsonRpcProvider, toB64, TransactionBlock } from '@mysten/sui.js';
+import { SuiClient } from '@mysten/sui/client';
+import { Transaction } from '@mysten/sui/transactions';
+import { toB64 } from '@mysten/sui/utils';
 
 import { isAxiosError, post } from '~/Popup/utils/axios';
 import type { SuiNetwork } from '~/types/chain';
@@ -12,40 +14,31 @@ import { useCurrentSuiNetwork } from '../../useCurrent/useCurrentSuiNetwork';
 
 type FetchParams = {
   url: string;
-  transactionBlock: TransactionBlock | string | Uint8Array;
+  transaction: Transaction | string | Uint8Array;
   method: string;
 };
 
+// NOTE Block이름 떼기
 type UseDryRunTransactionBlockSWRProps = {
   network?: SuiNetwork;
-  transactionBlock?: TransactionBlock | string | Uint8Array;
+  transaction?: Transaction | string | Uint8Array;
 };
 
-export function useDryRunTransactionBlockSWR({ transactionBlock, network }: UseDryRunTransactionBlockSWRProps, config?: SWRConfiguration) {
+export function useDryRunTransactionBlockSWR({ transaction, network }: UseDryRunTransactionBlockSWRProps, config?: SWRConfiguration) {
   const { currentSuiNetwork } = useCurrentSuiNetwork();
 
   const { rpcURL } = network || currentSuiNetwork;
 
-  const provider = useMemo(
-    () =>
-      new JsonRpcProvider(
-        new Connection({
-          fullnode: currentSuiNetwork.rpcURL,
-        }),
-      ),
-    [currentSuiNetwork.rpcURL],
-  );
+  const client = useMemo(() => new SuiClient({ url: rpcURL }), [rpcURL]);
 
   const fetcher = async (params: FetchParams) => {
-    if (!params.transactionBlock) {
+    if (!params.transaction) {
       return null;
     }
     const originTransaction =
-      typeof params.transactionBlock === 'string' || params.transactionBlock instanceof Uint8Array
-        ? TransactionBlock.from(params.transactionBlock)
-        : params.transactionBlock;
+      typeof params.transaction === 'string' || params.transaction instanceof Uint8Array ? Transaction.from(params.transaction) : params.transaction;
 
-    const buildedTransaction = await originTransaction.build({ provider });
+    const buildedTransaction = await originTransaction.build({ client });
 
     try {
       return await post<DryRunTransactionBlockSWRResponse>(params.url, {
@@ -65,14 +58,14 @@ export function useDryRunTransactionBlockSWR({ transactionBlock, network }: UseD
   };
 
   const { data, error, mutate } = useSWR<DryRunTransactionBlockSWRResponse | null, AxiosError>(
-    { url: rpcURL, transactionBlock, method: 'sui_dryRunTransactionBlock' },
+    { url: rpcURL, transaction, method: 'sui_dryRunTransactionBlock' },
     fetcher,
     {
       revalidateOnFocus: false,
       revalidateIfStale: false,
       revalidateOnReconnect: false,
       errorRetryCount: 0,
-      isPaused: () => !transactionBlock,
+      isPaused: () => !transaction,
       ...config,
     },
   );

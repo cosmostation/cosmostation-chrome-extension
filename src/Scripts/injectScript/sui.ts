@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { isTransactionBlock } from '@mysten/sui.js/transactions';
 import type {
   IdentifierArray,
+  SignedTransaction,
   SuiSignAndExecuteTransactionBlockInput,
   SuiSignAndExecuteTransactionBlockMethod,
   SuiSignAndExecuteTransactionBlockOutput,
@@ -12,7 +13,7 @@ import type {
   SuiSignTransactionBlockInput,
   SuiSignTransactionBlockMethod,
   SuiSignTransactionBlockOutput,
-  SuiSignTransactionMethod,
+  SuiSignTransactionInput,
   Wallet,
   WalletAccount,
 } from '@mysten/wallet-standard';
@@ -96,7 +97,6 @@ const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignT
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
 
-  // FIXME 여기에 transaction이라는 값이 추가로 들어와서 문제를 일으키고 있음. 아예 언디파인드 처리하거나 지정된 타입에 해당하는 데이터만 가져오도록 변경할 것
   const inputParam = { ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined };
 
   delete inputParam.transactionBlock;
@@ -107,22 +107,12 @@ const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignT
   }) as Promise<SuiSignTransactionBlockOutput>;
 };
 
-const signTransaction: SuiSignTransactionMethod = async ({ transaction, ...input }) => {
-  // if (!TransactionBlock.is(data.transactionBlock)) {
-  //   throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
-  // }
-
+const signTransaction = async ({ transaction, ...input }: SuiSignTransactionInput) => {
   const inputParam = {
     ...input,
-    // NOTE 구현에 필요하다면 추가하기
-    // accountAddress: account?.address || address[0] || '',
-
-    // transaction: await transaction.toJSON(),
     transactionBlockSerialized: await transaction.toJSON(),
     transaction: undefined,
   };
-
-  // const inputParam = { ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined };
 
   delete inputParam.transaction;
 
@@ -131,10 +121,12 @@ const signTransaction: SuiSignTransactionMethod = async ({ transaction, ...input
     params: [inputParam],
   })) as SuiSignTransactionBlockOutput;
 
-  return {
+  const result: SignedTransaction = {
     bytes: response.transactionBlockBytes,
     signature: response.signature,
   };
+
+  return result;
 };
 
 const signAndExecuteTransactionBlock: SuiSignAndExecuteTransactionBlockMethod = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {

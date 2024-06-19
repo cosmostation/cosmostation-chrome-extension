@@ -48,13 +48,11 @@ export type SuiSignTransactionBlock = {
 };
 
 type SuiSignTransactionSerializedInput = Omit<SuiSignTransactionInput, 'transaction' | 'chain' | 'account'> & {
-  // NOTE 변경하거나 수정 고려
   transactionBlockSerialized: string;
 };
 
 export type SuiSignTransaction = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_TRANSACTION;
-  // NOTE 수정필요
   params: [SuiSignTransactionSerializedInput];
   id?: number | string;
 };

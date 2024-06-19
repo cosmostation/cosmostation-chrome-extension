@@ -95,7 +95,6 @@ export const PATH = {
 
   // popup sui
   POPUP__SUI__TRANSACTION: '/popup/sui/transaction',
-  POPUP__SUI__TRANSACTION_V2: '/popup/sui/transaction-v2',
   POPUP__SUI__SIGN_MESSAGE: '/popup/sui/sign-message',
 
   POPUP__TX_RECEIPT: '/popup/tx-receipt',

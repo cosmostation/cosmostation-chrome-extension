@@ -155,6 +155,8 @@ export default function Entry({ queue }: EntryProps) {
                 if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
                   const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
+                  // NOTE const aa = await keypair.signPersonalMessage(encodedMessage)
+
                   const rawSigner = new RawSigner(keypair, provider);
 
                   const response = await rawSigner.signMessage({ message: encodedMessage });

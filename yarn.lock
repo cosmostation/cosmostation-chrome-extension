@@ -2626,7 +2626,7 @@
     superstruct "^1.0.3"
     tweetnacl "^1.0.3"
 
-"@mysten/sui@1.1.2":
+"@mysten/sui@1.1.2", "@mysten/sui@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.1.2.tgz#6c84d5c74b491e23f560a9d72ded020efa5e1dcd"
   integrity sha512-S1MfGvbkUxKGd39bfA6G21UVwJSSgJW8uKHinSByjt86+YKvSZxlF5zr6RVKcP4Rn8gl5ytMbZQfCPn+0nuGTg==
