@@ -23,7 +23,15 @@ import { COSMOSTATION_WALLET_NAME } from '~/constants/common';
 import { MESSAGE_TYPE } from '~/constants/message';
 import type { SuiPermissionType } from '~/types/extensionStorage';
 import type { ContentScriptToWebEventMessage, ListenerMessage, ResponseMessage, SuiListenerType, SuiRequestMessage } from '~/types/message';
-import type { SuiDisconnectResponse, SuiGetAccountResponse, SuiGetChainResponse, SuiGetPermissionsResponse } from '~/types/message/sui';
+import type {
+  SuiDisconnectResponse,
+  SuiGetAccountResponse,
+  SuiGetChainResponse,
+  SuiGetPermissionsResponse,
+  SuiSignAndExecuteTransactionBlockSerializedInput,
+  SuiSignTransactionBlockSerializedInput,
+  SuiSignTransactionSerializedInput,
+} from '~/types/message/sui';
 
 const request = (message: SuiRequestMessage) =>
   new Promise((res, rej) => {
@@ -97,9 +105,7 @@ const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignT
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
 
-  const inputParam = { ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined };
-
-  delete inputParam.transactionBlock;
+  const inputParam: SuiSignTransactionBlockSerializedInput = { transactionBlockSerialized: data.transactionBlock.serialize() };
 
   return request({
     method: 'sui_signTransactionBlock',
@@ -107,14 +113,11 @@ const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignT
   }) as Promise<SuiSignTransactionBlockOutput>;
 };
 
-const signTransaction = async ({ transaction, ...input }: SuiSignTransactionInput) => {
-  const inputParam = {
-    ...input,
-    transactionBlockSerialized: await transaction.toJSON(),
-    transaction: undefined,
+const signTransaction = async (data: Omit<SuiSignTransactionInput, 'chain' | 'account'>) => {
+  const inputParam: SuiSignTransactionSerializedInput = {
+    transactionBlockSerialized: await data.transaction.toJSON(),
+    signal: data.signal,
   };
-
-  delete inputParam.transaction;
 
   const response = (await request({
     method: 'sui_signTransaction',
@@ -134,9 +137,11 @@ const signAndExecuteTransactionBlock: SuiSignAndExecuteTransactionBlockMethod = 
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
 
-  const inputParam = { ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined };
-
-  delete inputParam.transactionBlock;
+  const inputParam: SuiSignAndExecuteTransactionBlockSerializedInput = {
+    transactionBlockSerialized: data.transactionBlock.serialize(),
+    options: data.options,
+    requestType: data.requestType,
+  };
 
   return request({
     method: 'sui_signAndExecuteTransactionBlock',

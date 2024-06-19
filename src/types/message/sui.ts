@@ -37,7 +37,7 @@ export type SuiExecuteSerializedMoveCall = {
   id?: number | string;
 };
 
-type SuiSignTransactionBlockSerializedInput = Omit<SuiSignTransactionBlockInput, 'transactionBlock' | 'chain' | 'account'> & {
+export type SuiSignTransactionBlockSerializedInput = Omit<SuiSignTransactionBlockInput, 'transactionBlock' | 'chain' | 'account'> & {
   transactionBlockSerialized: string;
 };
 
@@ -47,7 +47,7 @@ export type SuiSignTransactionBlock = {
   id?: number | string;
 };
 
-type SuiSignTransactionSerializedInput = Omit<SuiSignTransactionInput, 'transaction' | 'chain' | 'account'> & {
+export type SuiSignTransactionSerializedInput = Omit<SuiSignTransactionInput, 'transaction' | 'chain' | 'account'> & {
   transactionBlockSerialized: string;
 };
 
@@ -57,7 +57,7 @@ export type SuiSignTransaction = {
   id?: number | string;
 };
 
-type SuiSignAndExecuteTransactionBlockSerializedInput = Omit<SuiSignAndExecuteTransactionBlockInput, 'transactionBlock' | 'chain' | 'account'> & {
+export type SuiSignAndExecuteTransactionBlockSerializedInput = Omit<SuiSignAndExecuteTransactionBlockInput, 'transactionBlock' | 'chain' | 'account'> & {
   transactionBlockSerialized: string;
 };
 
