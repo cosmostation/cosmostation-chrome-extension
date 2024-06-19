@@ -100,7 +100,7 @@ const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignT
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
 
-  const inputParam = { transactionBlockSerialized: data.transactionBlock.serialize() } as SuiSignTransactionBlockSerializedInput;
+  const inputParam: SuiSignTransactionBlockSerializedInput = { transactionBlockSerialized: data.transactionBlock.serialize() };
 
   return request({
     method: 'sui_signTransactionBlock',
@@ -113,11 +113,11 @@ const signAndExecuteTransactionBlock: SuiSignAndExecuteTransactionBlockMethod = 
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
 
-  const inputParam = {
+  const inputParam: SuiSignAndExecuteTransactionBlockSerializedInput = {
     transactionBlockSerialized: data.transactionBlock.serialize(),
     options: data.options,
     requestType: data.requestType,
-  } as SuiSignAndExecuteTransactionBlockSerializedInput;
+  };
 
   return request({
     method: 'sui_signAndExecuteTransactionBlock',
