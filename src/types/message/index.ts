@@ -60,6 +60,7 @@ import type {
   SuiGetPermissions,
   SuiSignAndExecuteTransactionBlock,
   SuiSignMessage,
+  SuiSignTransaction,
   SuiSignTransactionBlock,
 } from './sui';
 
@@ -131,8 +132,11 @@ export type SuiRequestMessage =
   | SuiExecuteMoveCall
   | SuiExecuteSerializedMoveCall
   | SuiSignAndExecuteTransactionBlock
+  // | SuiSignAndExecuteTransaction
   | SuiSignTransactionBlock
+  | SuiSignTransaction
   | SuiSignMessage
+  // | SuiSignPersonalMessage
   | SuiDisconnect
   | SuiGetChain;
 

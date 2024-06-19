@@ -55,6 +55,8 @@ import PopupEthereumTransaction from '~/Popup/pages/Popup/Ethereum/Transaction';
 import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
 import PopupSuiSignMessage from '~/Popup/pages/Popup/Sui/SignMessage';
 import PopupSuiTransaction from '~/Popup/pages/Popup/Sui/Transaction';
+// NOTE 구현 로직 살펴보고 v2로 아예 분리시킬지 확인 필요
+// import PopupSuiTransactionV2 from '~/Popup/pages/Popup/Sui/TransactionV2';
 import PopupTxReceipt from '~/Popup/pages/Popup/TxReceipt';
 import SettingAddressBook from '~/Popup/pages/Setting/AddressBook';
 import SettingAddressBookAdd from '~/Popup/pages/Setting/AddressBook/Add';
@@ -170,6 +172,7 @@ export default function Routes() {
           <Route path={PATH.POPUP__APTOS__SIGN_MESSAGE} element={<PopupAptosSignMessage />} />
 
           <Route path={PATH.POPUP__SUI__TRANSACTION} element={<PopupSuiTransaction />} />
+          {/* <Route path={PATH.POPUP__SUI__TRANSACTION_V2} element={<PopupSuiTransactionV2 />} /> */}
           <Route path={PATH.POPUP__SUI__SIGN_MESSAGE} element={<PopupSuiSignMessage />} />
 
           <Route path={PATH.POPUP__TX_RECEIPT} element={<PopupTxReceipt />}>

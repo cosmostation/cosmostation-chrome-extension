@@ -7,9 +7,12 @@ import type {
   SuiSignAndExecuteTransactionBlockOutput,
   SuiSignMessageMethod,
   SuiSignMessageOutput,
+  SuiSignPersonalMessageMethod,
+  SuiSignPersonalMessageOutput,
   SuiSignTransactionBlockInput,
   SuiSignTransactionBlockMethod,
   SuiSignTransactionBlockOutput,
+  SuiSignTransactionMethod,
   Wallet,
   WalletAccount,
 } from '@mysten/wallet-standard';
@@ -93,6 +96,7 @@ const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignT
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
 
+  // FIXME 여기에 transaction이라는 값이 추가로 들어와서 문제를 일으키고 있음. 아예 언디파인드 처리하거나 지정된 타입에 해당하는 데이터만 가져오도록 변경할 것
   const inputParam = { ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined };
 
   delete inputParam.transactionBlock;
@@ -101,6 +105,36 @@ const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignT
     method: 'sui_signTransactionBlock',
     params: [inputParam],
   }) as Promise<SuiSignTransactionBlockOutput>;
+};
+
+const signTransaction: SuiSignTransactionMethod = async ({ transaction, ...input }) => {
+  // if (!TransactionBlock.is(data.transactionBlock)) {
+  //   throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
+  // }
+
+  const inputParam = {
+    ...input,
+    // NOTE 구현에 필요하다면 추가하기
+    // accountAddress: account?.address || address[0] || '',
+
+    // transaction: await transaction.toJSON(),
+    transactionBlockSerialized: await transaction.toJSON(),
+    transaction: undefined,
+  };
+
+  // const inputParam = { ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined };
+
+  delete inputParam.transaction;
+
+  const response = (await request({
+    method: 'sui_signTransaction',
+    params: [inputParam],
+  })) as SuiSignTransactionBlockOutput;
+
+  return {
+    bytes: response.transactionBlockBytes,
+    signature: response.signature,
+  };
 };
 
 const signAndExecuteTransactionBlock: SuiSignAndExecuteTransactionBlockMethod = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {
@@ -126,6 +160,15 @@ const signMessage: SuiSignMessageMethod = ({ message, account }) =>
       accountAddress: account?.address,
     },
   }) as Promise<SuiSignMessageOutput>;
+
+const signPersonalMessage: SuiSignPersonalMessageMethod = ({ message, account }) =>
+  request({
+    method: 'sui_signMessage',
+    params: {
+      message: Buffer.from(message).toString('base64'),
+      accountAddress: account?.address,
+    },
+  }) as Promise<SuiSignPersonalMessageOutput>;
 
 const off = (eventName: SuiListenerType, eventHandler?: (data: unknown) => void) => {
   const handlerInfos = window.cosmostation.handlerInfos.filter(
@@ -219,6 +262,11 @@ class SuiStandard implements Wallet {
         signTransactionBlock,
       },
 
+      'sui:signTransaction': {
+        version: '2.0.0',
+        signTransaction,
+      },
+
       'sui:signAndExecuteTransactionBlock': {
         version: '1.0.0',
         signAndExecuteTransactionBlock,
@@ -227,6 +275,11 @@ class SuiStandard implements Wallet {
       'sui:signMessage': {
         version: '1.0.0',
         signMessage,
+      },
+
+      'sui:signPersonalMessage': {
+        version: '1.0.0',
+        signPersonalMessage,
       },
     };
     void (async () => {

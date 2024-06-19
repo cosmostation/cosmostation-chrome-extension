@@ -121,6 +121,13 @@ export default function Routes({ children }: RoutesType) {
         navigate('/popup/sui/transaction');
       }
 
+      if (
+        // NOTE 여기에 추가해야할듯?
+        extensionStorage.queues[0].message.method === 'sui_signTransaction'
+      ) {
+        navigate('/popup/sui/transaction-v2');
+      }
+
       if (extensionStorage.queues[0].message.method === 'sui_signMessage') {
         navigate('/popup/sui/sign-message');
       }
