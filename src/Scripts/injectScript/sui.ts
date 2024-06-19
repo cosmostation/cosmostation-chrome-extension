@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { TransactionBlock } from '@mysten/sui.js';
+import { isTransactionBlock } from '@mysten/sui.js/transactions';
 import type {
   IdentifierArray,
   SuiSignAndExecuteTransactionBlockInput,
@@ -89,7 +89,7 @@ const hasPermissions = async (permissions: SuiPermissionType[] = ['suggestTransa
 };
 
 const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignTransactionBlockInput, 'chain' | 'account'>) => {
-  if (!TransactionBlock.is(data.transactionBlock)) {
+  if (!isTransactionBlock(data.transactionBlock)) {
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
 
@@ -104,7 +104,7 @@ const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignT
 };
 
 const signAndExecuteTransactionBlock: SuiSignAndExecuteTransactionBlockMethod = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {
-  if (!TransactionBlock.is(data.transactionBlock)) {
+  if (!isTransactionBlock(data.transactionBlock)) {
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
 
