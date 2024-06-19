@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { TransactionBlock } from '@mysten/sui.js';
+import { isTransactionBlock } from '@mysten/sui.js/transactions';
 import type {
   IdentifierArray,
   SuiSignAndExecuteTransactionBlockInput,
@@ -19,7 +19,14 @@ import { COSMOSTATION_WALLET_NAME } from '~/constants/common';
 import { MESSAGE_TYPE } from '~/constants/message';
 import type { SuiPermissionType } from '~/types/extensionStorage';
 import type { ContentScriptToWebEventMessage, ListenerMessage, ResponseMessage, SuiListenerType, SuiRequestMessage } from '~/types/message';
-import type { SuiDisconnectResponse, SuiGetAccountResponse, SuiGetChainResponse, SuiGetPermissionsResponse } from '~/types/message/sui';
+import type {
+  SuiDisconnectResponse,
+  SuiGetAccountResponse,
+  SuiGetChainResponse,
+  SuiGetPermissionsResponse,
+  SuiSignAndExecuteTransactionBlockSerializedInput,
+  SuiSignTransactionBlockSerializedInput,
+} from '~/types/message/sui';
 
 const request = (message: SuiRequestMessage) =>
   new Promise((res, rej) => {
@@ -89,13 +96,11 @@ const hasPermissions = async (permissions: SuiPermissionType[] = ['suggestTransa
 };
 
 const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignTransactionBlockInput, 'chain' | 'account'>) => {
-  if (!TransactionBlock.is(data.transactionBlock)) {
+  if (!isTransactionBlock(data.transactionBlock)) {
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
 
-  const inputParam = { ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined };
-
-  delete inputParam.transactionBlock;
+  const inputParam = { transactionBlockSerialized: data.transactionBlock.serialize() } as SuiSignTransactionBlockSerializedInput;
 
   return request({
     method: 'sui_signTransactionBlock',
@@ -104,13 +109,15 @@ const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignT
 };
 
 const signAndExecuteTransactionBlock: SuiSignAndExecuteTransactionBlockMethod = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {
-  if (!TransactionBlock.is(data.transactionBlock)) {
+  if (!isTransactionBlock(data.transactionBlock)) {
     throw new Error('Unexpect transaction format found. Ensure that you are using the `Transaction` class.');
   }
 
-  const inputParam = { ...data, transactionBlockSerialized: data.transactionBlock.serialize(), transactionBlock: undefined };
-
-  delete inputParam.transactionBlock;
+  const inputParam = {
+    transactionBlockSerialized: data.transactionBlock.serialize(),
+    options: data.options,
+    requestType: data.requestType,
+  } as SuiSignAndExecuteTransactionBlockSerializedInput;
 
   return request({
     method: 'sui_signAndExecuteTransactionBlock',
