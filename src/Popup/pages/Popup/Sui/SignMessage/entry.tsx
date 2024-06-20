@@ -2,17 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 import Sui from '@mysten/ledgerjs-hw-app-sui';
-import {
-  Connection,
-  Ed25519Keypair,
-  Ed25519PublicKey,
-  IntentScope,
-  JsonRpcProvider,
-  messageWithIntent,
-  RawSigner,
-  toSerializedSignature,
-} from '@mysten/sui.js';
-import { bcs } from '@mysten/sui.js/bcs';
+import { bcs } from '@mysten/sui/bcs';
+import { messageWithIntent, toSerializedSignature } from '@mysten/sui/cryptography';
+import { Ed25519Keypair, Ed25519PublicKey } from '@mysten/sui/keypairs/ed25519';
 
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -68,16 +60,6 @@ export default function Entry({ queue }: EntryProps) {
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
   const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
-
-  const provider = useMemo(
-    () =>
-      new JsonRpcProvider(
-        new Connection({
-          fullnode: currentSuiNetwork.rpcURL,
-        }),
-      ),
-    [currentSuiNetwork.rpcURL],
-  );
 
   const { message, messageId, origin } = queue;
 
@@ -155,15 +137,11 @@ export default function Entry({ queue }: EntryProps) {
                 if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
                   const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
-                  // NOTE const aa = await keypair.signPersonalMessage(encodedMessage)
-
-                  const rawSigner = new RawSigner(keypair, provider);
-
-                  const response = await rawSigner.signMessage({ message: encodedMessage });
+                  const response = await keypair.signPersonalMessage(encodedMessage);
 
                   const result = {
                     signature: response.signature,
-                    messageBytes: response.messageBytes,
+                    messageBytes: response.bytes,
                   };
 
                   responseToWeb({
@@ -189,13 +167,13 @@ export default function Entry({ queue }: EntryProps) {
 
                   const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
 
-                  const intentMessage = messageWithIntent(IntentScope.PersonalMessage, bcs.ser(['vector', 'u8'], encodedMessage).toBytes());
+                  const intentMessage = messageWithIntent('PersonalMessage', bcs.vector(bcs.u8()).serialize(encodedMessage).toBytes());
 
                   const { signature } = await suiApp.signTransaction(path, intentMessage);
 
-                  const pubKey = new Ed25519PublicKey(keyPair.publicKey);
+                  const publicKey = new Ed25519PublicKey(keyPair.publicKey);
 
-                  const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', pubKey });
+                  const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', publicKey });
 
                   const result = {
                     signature: serializedSignature,

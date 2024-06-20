@@ -359,7 +359,7 @@ export default function Entry({ queue }: EntryProps) {
 
                       const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', publicKey });
 
-                      if (message.method === 'sui_signTransactionBlock') {
+                      if (message.method === 'sui_signTransactionBlock' || message.method === 'sui_signTransaction') {
                         const response = {
                           transactionBlockBytes: Buffer.from(transactionBlockBytes).toString('base64'),
                           signature: serializedSignature,

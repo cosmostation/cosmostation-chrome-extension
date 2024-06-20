@@ -88,7 +88,7 @@ export function useTokenBalanceObjectsSWR({ network, address, options }: UseToke
           ? suiObjectResponses
               .filter((item) => type === item.data?.type && item.data?.content?.dataType === 'moveObject' && item.data.content.hasPublicTransfer)
               .reduce((ac, cu) => {
-                if (cu.data?.content?.dataType === 'moveObject' && typeof cu.data?.content.fields.balance === 'string')
+                if (cu.data?.content?.dataType === 'moveObject' && 'balance' in cu.data.content.fields && typeof cu.data?.content.fields.balance === 'string')
                   return plus(ac, cu.data?.content.fields.balance || '0');
 
                 return ac;
