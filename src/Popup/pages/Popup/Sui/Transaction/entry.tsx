@@ -156,7 +156,8 @@ export default function Entry({ queue }: EntryProps) {
     setTabValue(newTabValue);
   }, []);
 
-  const baseBudgetFee = useMemo(() => transaction.getData().gasData.budget || 0, [transaction]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const baseBudgetFee = useMemo(() => transaction.getData().gasData.budget || '0', [transaction.getData().gasData.budget]);
 
   const displayBudgetFee = useMemo(() => toDisplayDenomAmount(baseBudgetFee, decimals), [baseBudgetFee, decimals]);
 

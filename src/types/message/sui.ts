@@ -1,4 +1,9 @@
-import type { SuiSignAndExecuteTransactionBlockInput, SuiSignTransactionBlockInput, SuiSignTransactionInput } from '@mysten/wallet-standard';
+import type {
+  SuiSignAndExecuteTransactionBlockInput,
+  SuiSignAndExecuteTransactionInput,
+  SuiSignTransactionBlockInput,
+  SuiSignTransactionInput,
+} from '@mysten/wallet-standard';
 
 import type { SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 
@@ -49,6 +54,16 @@ export type SuiSignAndExecuteTransactionBlockSerializedInput = Omit<SuiSignAndEx
 export type SuiSignAndExecuteTransactionBlock = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION_BLOCK;
   params: [SuiSignAndExecuteTransactionBlockSerializedInput];
+  id?: number | string;
+};
+
+export type SuiSignAndExecuteTransactionSerializedInput = Omit<SuiSignAndExecuteTransactionInput, 'transaction' | 'chain' | 'account'> & {
+  transactionBlockSerialized: string;
+};
+
+export type SuiSignAndExecuteTransaction = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION;
+  params: [SuiSignAndExecuteTransactionSerializedInput];
   id?: number | string;
 };
 

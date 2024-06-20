@@ -119,10 +119,17 @@ type Sui = {
   signTransactionBlock: (
     data: import('@mysten/wallet-standard').SuiSignTransactionBlockInput,
   ) => Promise<import('@mysten/wallet-standard').SuiSignTransactionBlockOutput>;
+  signTransaction: (data: import('@mysten/wallet-standard').SuiSignTransactionInput) => Promise<import('@mysten/wallet-standard').SignedTransaction>;
   signAndExecuteTransactionBlock: (
     data: import('@mysten/wallet-standard').SuiSignAndExecuteTransactionBlockInput,
   ) => Promise<import('@mysten/wallet-standard').SuiSignAndExecuteTransactionBlockOutput>;
+  signAndExecuteTransaction: (
+    data: import('@mysten/wallet-standard').SuiSignAndExecuteTransactionInput,
+  ) => Promise<import('@mysten/wallet-standard').SuiSignAndExecuteTransactionOutput>;
   signMessage: (data: import('@mysten/wallet-standard').SuiSignMessageInput) => Promise<import('@mysten/wallet-standard').SuiSignMessageOutput>;
+  signPersonalMessage: (
+    data: import('@mysten/wallet-standard').SuiSignPersonalMessageInput,
+  ) => Promise<import('@mysten/wallet-standard').SuiSignPersonalMessageOutput>;
   on: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
   off: (eventName: import('~/types/message').SuiListenerType, eventHandler: (data: unknown) => void) => void;
 };

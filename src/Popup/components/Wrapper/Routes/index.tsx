@@ -116,6 +116,7 @@ export default function Routes({ children }: RoutesType) {
 
       if (
         extensionStorage.queues[0].message.method === 'sui_signAndExecuteTransactionBlock' ||
+        extensionStorage.queues[0].message.method === 'sui_signAndExecuteTransaction' ||
         extensionStorage.queues[0].message.method === 'sui_signTransactionBlock' ||
         extensionStorage.queues[0].message.method === 'sui_signTransaction'
       ) {

@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { bcs } from '@mysten/sui/bcs';
 import { isTransaction } from '@mysten/sui/transactions';
 import type {
   IdentifierArray,
@@ -6,6 +7,9 @@ import type {
   SuiSignAndExecuteTransactionBlockInput,
   SuiSignAndExecuteTransactionBlockMethod,
   SuiSignAndExecuteTransactionBlockOutput,
+  SuiSignAndExecuteTransactionInput,
+  SuiSignAndExecuteTransactionMethod,
+  SuiSignAndExecuteTransactionOutput,
   SuiSignMessageMethod,
   SuiSignMessageOutput,
   SuiSignPersonalMessageMethod,
@@ -30,6 +34,7 @@ import type {
   SuiGetChainResponse,
   SuiGetPermissionsResponse,
   SuiSignAndExecuteTransactionBlockSerializedInput,
+  SuiSignAndExecuteTransactionSerializedInput,
   SuiSignTransactionBlockSerializedInput,
   SuiSignTransactionSerializedInput,
 } from '~/types/message/sui';
@@ -148,6 +153,36 @@ const signAndExecuteTransactionBlock: SuiSignAndExecuteTransactionBlockMethod = 
     method: 'sui_signAndExecuteTransactionBlock',
     params: [inputParam],
   }) as Promise<SuiSignAndExecuteTransactionBlockOutput>;
+};
+
+const signAndExecuteTransaction: SuiSignAndExecuteTransactionMethod = async (data: Omit<SuiSignAndExecuteTransactionInput, 'chain' | 'account'>) => {
+  const inputParam: SuiSignAndExecuteTransactionSerializedInput = {
+    transactionBlockSerialized: await data.transaction.toJSON(),
+    signal: data.signal,
+  };
+
+  const response = (await request({
+    method: 'sui_signAndExecuteTransaction',
+    params: [inputParam],
+  })) as SuiSignAndExecuteTransactionBlockOutput;
+
+  const [
+    {
+      txSignatures: [signature],
+      intentMessage: { value: bcsTransaction },
+    },
+  ] = bcs.SenderSignedData.parse(Buffer.from(response.rawTransaction!, 'base64'));
+
+  const bytes = bcs.TransactionData.serialize(bcsTransaction).toBase64();
+
+  const result: SuiSignAndExecuteTransactionOutput = {
+    digest: response.digest,
+    effects: Buffer.from(new Uint8Array(response.rawEffects!)).toString('base64'),
+    bytes,
+    signature,
+  };
+
+  return result;
 };
 
 const signMessage: SuiSignMessageMethod = ({ message, account }) =>
@@ -278,13 +313,18 @@ class SuiStandard implements Wallet {
         signAndExecuteTransactionBlock,
       },
 
+      'sui:signAndExecuteTransaction': {
+        version: '2.0.0',
+        signAndExecuteTransaction,
+      },
+
       'sui:signMessage': {
         version: '1.0.0',
         signMessage,
       },
 
       'sui:signPersonalMessage': {
-        version: '1.0.0',
+        version: '2.0.0',
         signPersonalMessage,
       },
     };
@@ -323,8 +363,11 @@ export const sui: Sui = {
   request,
   requestPermissions,
   signTransactionBlock,
+  signTransaction,
   signAndExecuteTransactionBlock,
+  signAndExecuteTransaction,
   signMessage,
+  signPersonalMessage,
 };
 
 export { SuiStandard };

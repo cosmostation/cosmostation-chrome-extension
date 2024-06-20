@@ -1832,7 +1832,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         }
 
-        if (method === 'sui_signAndExecuteTransactionBlock') {
+        if (method === 'sui_signAndExecuteTransactionBlock' || method === 'sui_signAndExecuteTransaction') {
           if (
             currentAccountAllowedOrigins.includes(origin) &&
             currentAccountSuiPermissions.includes('viewAccount') &&

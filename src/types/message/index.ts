@@ -56,6 +56,7 @@ import type {
   SuiGetAccount,
   SuiGetChain,
   SuiGetPermissions,
+  SuiSignAndExecuteTransaction,
   SuiSignAndExecuteTransactionBlock,
   SuiSignMessage,
   SuiSignPersonalMessage,
@@ -129,7 +130,7 @@ export type SuiRequestMessage =
   | SuiConnect
   | SuiGetAccount
   | SuiSignAndExecuteTransactionBlock
-  // | SuiSignAndExecuteTransaction
+  | SuiSignAndExecuteTransaction
   | SuiSignTransactionBlock
   | SuiSignTransaction
   | SuiSignMessage
