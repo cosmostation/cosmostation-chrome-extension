@@ -248,7 +248,7 @@ class SuiStandard implements Wallet {
               address: address[0],
               publicKey: new Uint8Array(Buffer.from(publicKey.substring(2), 'hex')),
               chains: [`sui:${currentChain}`],
-              features: ['sui:signAndExecuteTransactionBlock'],
+              features: ['sui:signAndExecuteTransactionBlock', 'sui:signMessage', 'sui:signTransactionBlock'],
             },
           ];
         }
