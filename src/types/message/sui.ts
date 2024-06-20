@@ -1,4 +1,3 @@
-import type { MoveCallTransaction } from '@mysten/sui.js';
 import type { SuiSignAndExecuteTransactionBlockInput, SuiSignTransactionBlockInput, SuiSignTransactionInput } from '@mysten/wallet-standard';
 
 import type { SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
@@ -20,20 +19,6 @@ export type SuiConnectResponse = null;
 export type SuiGetAccount = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__GET_ACCOUNT;
   params: unknown;
-  id?: number | string;
-};
-
-export type SuiExecuteMoveCallParam = MoveCallTransaction;
-
-export type SuiExecuteMoveCall = {
-  method: typeof SUI_POPUP_METHOD_TYPE.SUI__EXECUTE_MOVE_CALL;
-  params: [SuiExecuteMoveCallParam];
-  id?: number | string;
-};
-
-export type SuiExecuteSerializedMoveCall = {
-  method: typeof SUI_POPUP_METHOD_TYPE.SUI__EXECUTE_SERIALIZED_MOVE_CALL;
-  params: [string];
   id?: number | string;
 };
 
@@ -75,6 +60,17 @@ export type SuiSignMessageInput = {
 export type SuiSignMessage = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_MESSAGE;
   params: SuiSignMessageInput;
+  id?: number | string;
+};
+
+export type SuiSignPersonalMessageInput = {
+  message: string;
+  accountAddress: string;
+};
+
+export type SuiSignPersonalMessage = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_PERSONAL_MESSAGE;
+  params: SuiSignPersonalMessageInput;
   id?: number | string;
 };
 

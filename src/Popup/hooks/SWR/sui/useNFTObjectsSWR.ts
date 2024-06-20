@@ -1,9 +1,8 @@
 import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
-import type { SuiObjectResponse } from '@mysten/sui.js';
-import { getObjectDisplay } from '@mysten/sui.js';
+import type { SuiObjectResponse } from '@mysten/sui/client';
 
-import { isKiosk } from '~/Popup/utils/sui';
+import { getObjectDisplay, isKiosk } from '~/Popup/utils/sui';
 import type { SuiNetwork } from '~/types/chain';
 
 import { useGetDynamicFieldsSWR } from './useGetDynamicFieldsSWR';
@@ -73,12 +72,12 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
       ?.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), [])
       .filter((item) => item);
 
-    return suiObjectResponses?.filter((item) => getObjectDisplay(item).data) || [];
+    return suiObjectResponses?.filter((item) => getObjectDisplay(item)?.data) || [];
   }, [objects]);
 
   const kioskObject = useMemo(() => nftObjects.find((item) => item.data && isKiosk(item.data)), [nftObjects]);
 
-  const kioskObjectParentId = useMemo(() => (kioskObject ? getObjectDisplay(kioskObject).data?.kiosk : ''), [kioskObject]);
+  const kioskObjectParentId = useMemo(() => (kioskObject ? getObjectDisplay(kioskObject)?.data?.kiosk : ''), [kioskObject]);
 
   const { data: kioskObjectDynamicFields, mutate: mutateGetDynamicFields } = useGetDynamicFieldsSWR(
     {
@@ -117,7 +116,7 @@ export function useNFTObjectsSWR({ network, address, options }: UseNFTObjectsSWR
       ? kioskObjects.reduce((acc: SuiObjectResponse[], item) => (item && item.result ? [...acc, ...item.result] : acc), []).filter((item) => item)
       : [];
 
-    return suiKioskObjectResponses.filter((item) => getObjectDisplay(item).data) || [];
+    return suiKioskObjectResponses.filter((item) => getObjectDisplay(item)?.data) || [];
   }, [kioskObjects]);
 
   const ownedNFTObjects = useMemo(() => [...kioskNFTObjects, ...nftObjects], [kioskNFTObjects, nftObjects]);

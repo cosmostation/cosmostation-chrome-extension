@@ -14,6 +14,7 @@ import type {
   SuiSignTransactionBlockMethod,
   SuiSignTransactionBlockOutput,
   SuiSignTransactionInput,
+  SuiSignTransactionMethod,
   Wallet,
   WalletAccount,
 } from '@mysten/wallet-standard';
@@ -113,7 +114,7 @@ const signTransactionBlock: SuiSignTransactionBlockMethod = (data: Omit<SuiSignT
   }) as Promise<SuiSignTransactionBlockOutput>;
 };
 
-const signTransaction = async (data: Omit<SuiSignTransactionInput, 'chain' | 'account'>) => {
+const signTransaction: SuiSignTransactionMethod = async (data: Omit<SuiSignTransactionInput, 'chain' | 'account'>) => {
   const inputParam: SuiSignTransactionSerializedInput = {
     transactionBlockSerialized: await data.transaction.toJSON(),
     signal: data.signal,
@@ -158,14 +159,22 @@ const signMessage: SuiSignMessageMethod = ({ message, account }) =>
     },
   }) as Promise<SuiSignMessageOutput>;
 
-const signPersonalMessage: SuiSignPersonalMessageMethod = ({ message, account }) =>
-  request({
-    method: 'sui_signMessage',
+const signPersonalMessage: SuiSignPersonalMessageMethod = async ({ message, account }) => {
+  const response = (await request({
+    method: 'sui_signPersonalMessage',
     params: {
       message: Buffer.from(message).toString('base64'),
       accountAddress: account?.address,
     },
-  }) as Promise<SuiSignPersonalMessageOutput>;
+  })) as SuiSignMessageOutput;
+
+  const result: SuiSignPersonalMessageOutput = {
+    bytes: response.messageBytes,
+    signature: response.signature,
+  };
+
+  return result;
+};
 
 const off = (eventName: SuiListenerType, eventHandler?: (data: unknown) => void) => {
   const handlerInfos = window.cosmostation.handlerInfos.filter(

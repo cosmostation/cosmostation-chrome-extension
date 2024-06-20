@@ -22,7 +22,7 @@ import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { Queue } from '~/types/extensionStorage';
-import type { SuiSignMessage } from '~/types/message/sui';
+import type { SuiSignMessage, SuiSignPersonalMessage } from '~/types/message/sui';
 
 import {
   BottomButtonContainer,
@@ -37,7 +37,7 @@ import {
 import Header from '../components/Header';
 
 type EntryProps = {
-  queue: Queue<SuiSignMessage>;
+  queue: Queue<SuiSignMessage | SuiSignPersonalMessage>;
 };
 
 export default function Entry({ queue }: EntryProps) {
@@ -135,61 +135,65 @@ export default function Entry({ queue }: EntryProps) {
                 setIsProgress(true);
 
                 if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
-                  const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
+                  if (message.method === 'sui_signMessage' || message.method === 'sui_signPersonalMessage') {
+                    const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
 
-                  const response = await keypair.signPersonalMessage(encodedMessage);
+                    const response = await keypair.signPersonalMessage(encodedMessage);
 
-                  const result = {
-                    signature: response.signature,
-                    messageBytes: response.bytes,
-                  };
+                    const result = {
+                      signature: response.signature,
+                      messageBytes: response.bytes,
+                    };
 
-                  responseToWeb({
-                    response: {
-                      result,
-                    },
-                    message,
-                    messageId,
-                    origin,
-                  });
+                    responseToWeb({
+                      response: {
+                        result,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
 
-                  await deQueue();
+                    await deQueue();
+                  }
                 }
 
                 if (currentAccount.type === 'LEDGER') {
-                  if (!keyPair?.publicKey) {
-                    throw new Error('key does not exist');
+                  if (message.method === 'sui_signMessage' || message.method === 'sui_signPersonalMessage') {
+                    if (!keyPair?.publicKey) {
+                      throw new Error('key does not exist');
+                    }
+
+                    setLoadingLedgerSigning(true);
+                    const transport = await createTransport();
+                    const suiApp = new Sui(transport);
+
+                    const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
+
+                    const intentMessage = messageWithIntent('PersonalMessage', bcs.vector(bcs.u8()).serialize(encodedMessage).toBytes());
+
+                    const { signature } = await suiApp.signTransaction(path, intentMessage);
+
+                    const publicKey = new Ed25519PublicKey(keyPair.publicKey);
+
+                    const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', publicKey });
+
+                    const result = {
+                      signature: serializedSignature,
+                      messageBytes: params.message,
+                    };
+
+                    responseToWeb({
+                      response: {
+                        result,
+                      },
+                      message,
+                      messageId,
+                      origin,
+                    });
+
+                    await deQueue();
                   }
-
-                  setLoadingLedgerSigning(true);
-                  const transport = await createTransport();
-                  const suiApp = new Sui(transport);
-
-                  const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
-
-                  const intentMessage = messageWithIntent('PersonalMessage', bcs.vector(bcs.u8()).serialize(encodedMessage).toBytes());
-
-                  const { signature } = await suiApp.signTransaction(path, intentMessage);
-
-                  const publicKey = new Ed25519PublicKey(keyPair.publicKey);
-
-                  const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', publicKey });
-
-                  const result = {
-                    signature: serializedSignature,
-                    messageBytes: params.message,
-                  };
-
-                  responseToWeb({
-                    response: {
-                      result,
-                    },
-                    message,
-                    messageId,
-                    origin,
-                  });
-
-                  await deQueue();
                 }
               } catch (e) {
                 enqueueSnackbar((e as { message: string }).message, { variant: 'error' });

@@ -172,7 +172,6 @@ export default function Routes() {
           <Route path={PATH.POPUP__APTOS__SIGN_MESSAGE} element={<PopupAptosSignMessage />} />
 
           <Route path={PATH.POPUP__SUI__TRANSACTION} element={<PopupSuiTransaction />} />
-          {/* <Route path={PATH.POPUP__SUI__TRANSACTION_V2} element={<PopupSuiTransactionV2 />} /> */}
           <Route path={PATH.POPUP__SUI__SIGN_MESSAGE} element={<PopupSuiSignMessage />} />
 
           <Route path={PATH.POPUP__TX_RECEIPT} element={<PopupTxReceipt />}>

@@ -122,7 +122,7 @@ export default function Routes({ children }: RoutesType) {
         navigate('/popup/sui/transaction');
       }
 
-      if (extensionStorage.queues[0].message.method === 'sui_signMessage') {
+      if (extensionStorage.queues[0].message.method === 'sui_signMessage' || extensionStorage.queues[0].message.method === 'sui_signPersonalMessage') {
         navigate('/popup/sui/sign-message');
       }
     }

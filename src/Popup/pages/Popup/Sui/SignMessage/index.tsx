@@ -28,5 +28,5 @@ export default function SignMessage() {
 }
 
 function isSignMessage(queue: Queue): queue is Queue<SuiSignMessage> {
-  return queue?.message?.method === 'sui_signMessage';
+  return queue?.message?.method === 'sui_signMessage' || queue?.message?.method === 'sui_signPersonalMessage';
 }

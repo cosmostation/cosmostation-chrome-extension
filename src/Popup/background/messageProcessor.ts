@@ -1789,7 +1789,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         }
 
-        if (method === 'sui_signMessage') {
+        if (method === 'sui_signMessage' || method === 'sui_signPersonalMessage') {
           const { params } = message;
 
           try {
@@ -1804,7 +1804,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             ) {
               localQueues.push({
                 ...request,
-                message: { ...request.message, method: 'sui_signMessage', params: validatedParams },
+                message: { ...request.message, method, params: validatedParams },
               });
               void setQueues();
             } else {

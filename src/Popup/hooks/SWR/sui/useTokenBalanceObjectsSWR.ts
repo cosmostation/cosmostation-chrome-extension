@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
-import type { SuiObjectResponse } from '@mysten/sui.js';
+import type { SuiObjectResponse } from '@mysten/sui/client';
 
 import { SUI_COIN } from '~/constants/sui';
 import { plus } from '~/Popup/utils/big';
