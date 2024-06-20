@@ -1,21 +1,68 @@
-const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
+const path = require('path');
+const webpack = require('webpack');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const srcDir = path.join(__dirname, '..', 'src');
+
 const CopyPlugin = require('copy-webpack-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-module.exports = merge(common, {
-  optimization: {
-    splitChunks: {
-      chunks(chunk) {
-        const notChunks = ['injectScript'];
-        return !notChunks.includes(chunk.name);
+module.exports = {
+  entry: {
+    popup: path.join(srcDir, 'Popup/index.tsx'),
+    background: path.join(srcDir, 'Popup/background/index.ts'),
+    contentScript: path.join(srcDir, 'Scripts/contentScript.ts'),
+    injectScript: { import: path.join(srcDir, 'Scripts/injectScript/index.ts') },
+    warningScript: { import: path.join(srcDir, 'Scripts/warningScript.ts') },
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       },
-      name: 'vendor',
-      maxSize: 3145728,
+      {
+        test: /\.(png|jpe?g|gif|ttf)$/,
+        type: 'asset/resource',
+        generator: {
+          filename: '[path][name][ext]',
+        },
+      },
+      {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack'],
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js'],
+    plugins: [new TsconfigPathsPlugin()],
+    fallback: {
+      stream: 'stream-browserify',
+      assert: 'assert',
+      os: 'os-browserify',
+      url: 'url',
+      http: 'stream-http',
+      https: 'https-browserify',
+      crypto: 'crypto-browserify',
     },
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer'],
+    }),
     new CopyPlugin({
       patterns: [
         {
@@ -27,7 +74,6 @@ module.exports = merge(common, {
       ],
       options: {},
     }),
-
     new HtmlWebpackPlugin({
       filename: '../popup.html',
       excludeChunks: ['background', 'contentScript', 'injectScript'],
@@ -49,4 +95,20 @@ module.exports = merge(common, {
       },
     }),
   ],
-});
+  optimization: {
+    splitChunks: {
+      chunks(chunk) {
+        const notChunks = ['injectScript'];
+        return !notChunks.includes(chunk.name);
+      },
+      name: false,
+      cacheGroups: {
+        default: {
+          maxSize: 3145728,
+          maxInitialRequests: 100,
+          maxAsyncRequests: 100,
+        },
+      },
+    },
+  },
+};

@@ -193,10 +193,25 @@ export const cosmos: Cosmos = {
 
 // keplr provider start
 
-const enable = () =>
-  new Promise<void>((res) => {
-    res();
-  });
+const enable: Keplr['enable'] = async (chainIds?: string[] | string) => {
+  if (!chainIds) {
+    throw new Error('chain id not set');
+  }
+
+  const inputChainIds = typeof chainIds === 'string' ? [chainIds] : chainIds;
+
+  const response = (await request({ method: 'cos_supportedChainIds' })) as CosSupportedChainIdsResponse;
+
+  const suppotedChainIds = [...response.official, ...response.unofficial];
+
+  const invalidChainId = inputChainIds.find((chainId) => !suppotedChainIds.includes(chainId));
+
+  if (invalidChainId) {
+    throw new Error(`There is no chain info for ${invalidChainId}`);
+  }
+
+  await request({ method: 'cos_requestAccount', params: { chainName: inputChainIds[0] } });
+};
 
 const getKey: Keplr['getKey'] = async (chainId) => {
   try {

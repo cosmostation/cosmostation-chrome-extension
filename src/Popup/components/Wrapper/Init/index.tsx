@@ -43,18 +43,12 @@ export default function Init({ children }: InitType) {
 
   const handleOnStorageChange = (_: unknown, areaName: string) => {
     void (async () => {
-      if (process.env.BROWSER === 'chrome') {
-        if (areaName === 'local') {
-          setExtensionStorage({ ...extensionStorageDefault, ...(await getAllStorage()) });
-        }
+      if (areaName === 'local') {
+        setExtensionStorage({ ...extensionStorageDefault, ...(await getAllStorage()) });
+      }
 
-        if (areaName === 'session') {
-          setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...(await getAllSessionStorage()) });
-        }
-      } else {
-        const allStorage = await getAllStorage();
-        setExtensionStorage({ ...extensionStorageDefault, ...allStorage });
-        setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...allStorage });
+      if (areaName === 'session') {
+        setExtensionSessionStorage({ ...extensionSessionStorageDefault, ...(await getAllSessionStorage()) });
       }
     })();
   };
@@ -204,6 +198,10 @@ export default function Init({ children }: InitType) {
 
       if (!originExtensionStorage.selectedSuiNetworkId) {
         await setStorage('selectedSuiNetworkId', SUI_NETWORK_MAINNET.id);
+      }
+
+      if (!originExtensionStorage.address) {
+        await setStorage('address', {});
       }
 
       if (

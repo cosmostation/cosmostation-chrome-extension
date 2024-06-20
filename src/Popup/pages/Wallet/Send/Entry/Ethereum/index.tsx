@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useDebouncedCallback } from 'use-debounce';
+import { useDebounce, useDebouncedCallback } from 'use-debounce';
 import Web3 from 'web3';
 import type { AbiItem } from 'web3-utils';
 import { InputAdornment, Typography } from '@mui/material';
@@ -13,6 +13,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
+import { useEnsSWR } from '~/Popup/hooks/SWR/ethereum/useEnsSWR';
 import { useEstimateGasSWR } from '~/Popup/hooks/SWR/ethereum/useEstimateGasSWR';
 import { useFeeSWR } from '~/Popup/hooks/SWR/ethereum/useFeeSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
@@ -32,10 +33,11 @@ import type { ERC20ContractMethods } from '~/types/ethereum/contract';
 
 import CoinButton from './components/CoinButton';
 import CoinListBottomSheet from './components/CoinListBottomSheet';
-import { BottomContainer, Container, Div, MaxButton, StyledInput } from './styled';
+import { Address, AddressContainer, BottomContainer, CheckAddressIconContainer, Container, Div, MaxButton, StyledInput } from './styled';
 
 import AccountAddressIcon from '~/images/icons/AccountAddress.svg';
 import AddressBook24Icon from '~/images/icons/AddressBook24.svg';
+import CheckAddress16Icon from '~/images/icons/CheckAddress16.svg';
 
 type EthereumProps = {
   chain: EthereumChain;
@@ -45,6 +47,7 @@ export default function Ethereum({ chain }: EthereumProps) {
   const { currentAccount } = useCurrentAccount();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { currentEthereumTokens } = useCurrentEthereumTokens();
+
   const params = useParams();
 
   const chainParams = useParamsSWR(currentEthereumNetwork);
@@ -52,7 +55,11 @@ export default function Ethereum({ chain }: EthereumProps) {
   const { enQueue } = useCurrentQueue();
 
   const accounts = useAccounts(true);
-  const address = accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '';
+  const address = useMemo(
+    () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '',
+    [accounts.data, chain.id, currentAccount.id],
+  );
+
   const { t } = useTranslation();
 
   const [isDisabled, setIsDisabled] = useState(false);
@@ -65,6 +72,12 @@ export default function Ethereum({ chain }: EthereumProps) {
   const tokenBalance = useTokenBalanceSWR({ token: currentToken });
 
   const [currentAddress, setCurrentAddress] = useState('');
+  const [debouncedCurrentAddress] = useDebounce(currentAddress, 500);
+  const ens = useEnsSWR(currentEthereumNetwork, debouncedCurrentAddress);
+
+  const nameResolvedAddress = useMemo(() => ens?.data, [ens.data]);
+
+  const toAddress = useMemo(() => ens.data || debouncedCurrentAddress, [debouncedCurrentAddress, ens.data]);
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
   const [isOpenedMyAddressBook, setIsOpenedMyAddressBook] = useState(false);
@@ -85,7 +98,7 @@ export default function Ethereum({ chain }: EthereumProps) {
     if (currentToken === null) {
       return {
         from: address,
-        to: currentAddress,
+        to: toAddress,
         value: amount,
       };
     }
@@ -103,14 +116,14 @@ export default function Ethereum({ chain }: EthereumProps) {
     const contract = new web3.eth.Contract(ERC20_ABI as AbiItem[], currentToken.address);
     const methods = contract.methods as ERC20ContractMethods;
 
-    const data = ethereumAddressRegex.test(currentAddress) ? methods.transfer(currentAddress, amount).encodeABI() : undefined;
+    const data = ethereumAddressRegex.test(toAddress) ? methods.transfer(toAddress, amount).encodeABI() : undefined;
 
     return {
       from: address,
       to: currentToken.address,
       data,
     };
-  }, [address, currentAddress, currentDisplayAmount, currentEthereumNetwork.rpcURL, currentToken, decimals]);
+  }, [address, currentDisplayAmount, currentEthereumNetwork.rpcURL, currentToken, decimals, toAddress]);
 
   const estimateGas = useEstimateGasSWR([sendTx]);
 
@@ -140,11 +153,11 @@ export default function Ethereum({ chain }: EthereumProps) {
       return t('pages.Wallet.Send.Entry.Ethereum.index.bankLocked');
     }
 
-    if (!ethereumAddressRegex.test(currentAddress)) {
+    if (!ethereumAddressRegex.test(toAddress)) {
       return t('pages.Wallet.Send.Entry.Ethereum.index.invalidAddress');
     }
 
-    if (address.toLowerCase() === currentAddress.toLowerCase()) {
+    if (address.toLowerCase() === toAddress.toLowerCase()) {
       return t('pages.Wallet.Send.Entry.Ethereum.index.invalidAddress');
     }
 
@@ -169,7 +182,7 @@ export default function Ethereum({ chain }: EthereumProps) {
     }
 
     return '';
-  }, [address, baseAmount, baseBalance, baseFee, baseTokenBalance, chainParams.data?.params?.chainlist_params?.isBankLocked, currentAddress, currentToken, t]);
+  }, [address, baseAmount, baseBalance, baseFee, baseTokenBalance, chainParams.data?.params?.chainlist_params?.isBankLocked, currentToken, t, toAddress]);
 
   const handleOnClickMax = () => {
     if (currentToken === null) {
@@ -204,6 +217,16 @@ export default function Ethereum({ chain }: EthereumProps) {
           onChange={(e) => setCurrentAddress(e.currentTarget.value)}
           value={currentAddress}
         />
+        {nameResolvedAddress && (
+          <AddressContainer>
+            <CheckAddressIconContainer>
+              <CheckAddress16Icon />
+            </CheckAddressIconContainer>
+            <Address>
+              <Typography variant="h7">{nameResolvedAddress}</Typography>
+            </Address>
+          </AddressContainer>
+        )}
       </Div>
       <Div sx={{ marginTop: '0.8rem' }}>
         <CoinButton

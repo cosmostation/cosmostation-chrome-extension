@@ -36,7 +36,7 @@ import { extensionSessionStorage } from '~/Popup/utils/extensionSessionStorage';
 import { extensionStorage, getStorage, setStorage } from '~/Popup/utils/extensionStorage';
 import { openWindow } from '~/Popup/utils/extensionWindows';
 import { responseToWeb } from '~/Popup/utils/message';
-import { toHex } from '~/Popup/utils/string';
+import { isEqualsIgnoringCase, toHex } from '~/Popup/utils/string';
 import { requestRPC as suiRequestRPC } from '~/Popup/utils/sui';
 import type { CosmosChain, CosmosToken } from '~/types/chain';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
@@ -1074,18 +1074,25 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const schema = personalSignParamsSchema();
 
           try {
-            const validatedParams = (await schema.validateAsync(params)) as PersonalSign['params'];
+            const reorderedParams = (() => {
+              if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
+                const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+                const address = getAddress(chain, keyPair?.publicKey);
 
-            if (currentAccountAllowedOrigins.includes(origin) && currentPassword) {
-              const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-              const address = getAddress(chain, keyPair?.publicKey);
+                const updatedParams = params.some((item, index) => isEqualsIgnoringCase(item, address) && index !== 1) ? [params[1], params[0]] : params;
 
-              if ((currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey) || currentAccount.type !== 'LEDGER') {
-                if (address.toLowerCase() !== validatedParams[1].toLowerCase()) {
-                  throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                if ((currentAccount.type === 'LEDGER' && currentAccount.ethereumPublicKey) || currentAccount.type !== 'LEDGER') {
+                  if (address.toLowerCase() !== updatedParams[1].toLowerCase()) {
+                    throw new EthereumRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', message.id);
+                  }
                 }
+
+                return updatedParams;
               }
-            }
+              return [];
+            })();
+
+            const validatedParams = (await schema.validateAsync(reorderedParams)) as PersonalSign['params'];
 
             localQueues.push({
               ...request,

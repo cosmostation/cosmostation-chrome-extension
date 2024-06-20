@@ -134,9 +134,11 @@ export default function SwapCoinContainer({ isChainAvailable = true, ...remainde
         <FooterContainer>
           <FooterLeftContainer>
             {gt(remainder.tokenAmountPrice, '0') && (
-              <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2} currency={currency}>
-                {remainder.tokenAmountPrice}
-              </NumberText>
+              <div>
+                <NumberText typoOfIntegers="h6n" typoOfDecimals="h7n" fixed={2} currency={currency}>
+                  {remainder.tokenAmountPrice}
+                </NumberText>
+              </div>
             )}
           </FooterLeftContainer>
           <FooterRightContainer>

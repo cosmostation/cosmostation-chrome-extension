@@ -1,7 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { v4 as uuidv4 } from 'uuid';
 
-import { CHAINS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -17,7 +16,7 @@ export function useCurrentAccount() {
   const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { currentPassword } = useCurrentPassword();
 
-  const { selectedAccountId, accounts, accountName, allowedOrigins, additionalChains, suiPermissions } = extensionStorage;
+  const { selectedAccountId, accounts, accountName, allowedOrigins, suiPermissions } = extensionStorage;
 
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
 
@@ -38,6 +37,9 @@ export function useCurrentAccount() {
 
   const removeAllowedOrigin = async (origin: string) => {
     const newAllowedOrigins = allowedOrigins.filter((allowedOrigin) => !(allowedOrigin.accountId === selectedAccountId && allowedOrigin.origin === origin));
+
+    emitToWeb({ line: 'ETHEREUM', type: 'accountsChanged', message: { result: [] } }, [origin]);
+
     await setExtensionStorage('allowedOrigins', newAllowedOrigins);
   };
 
@@ -104,12 +106,6 @@ export function useCurrentAccount() {
     delete deepCopiedAccountName[account.id];
 
     await setExtensionStorage('accountName', deepCopiedAccountName);
-
-    [...CHAINS, ...additionalChains].forEach((item) => {
-      const key = `${account.id}${item.id}`;
-
-      localStorage.removeItem(key);
-    });
 
     if (newAccounts.length === 0) {
       await openTab();
