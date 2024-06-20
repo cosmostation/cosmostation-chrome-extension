@@ -9,8 +9,7 @@ export const LAVA: CosmosChain = {
   type: '',
   chainId: 'lava-mainnet-1',
   chainName: 'LAVA',
-  // NOTE 수정필요
-  restURL: 'https://lcd-iris.cosmostation.io',
+  restURL: 'https://lcd-lava.cosmostation.io',
   tokenImageURL: lavaTokenImg,
   imageURL: lavaChainImg,
   baseDenom: 'ulava',
@@ -24,7 +23,6 @@ export const LAVA: CosmosChain = {
   },
   bech32Prefix: { address: 'lava' },
   coinGeckoId: 'lava-network',
-  // NOTE 수정필요
   explorerURL: `${MINTSCAN_URL}/lava`,
   gasRate: {
     tiny: '0.00005',
