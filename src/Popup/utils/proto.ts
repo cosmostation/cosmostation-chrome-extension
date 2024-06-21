@@ -9,6 +9,7 @@ import { osmosis } from '~/proto/osmosis-v13.1.2.js';
 import type { Msg, MsgCommission, MsgExecuteContract, MsgReward, MsgSend, MsgSwapExactAmountIn, MsgTransfer, SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type {
+  EthermintProtoTxBytesProps,
   Msg as ProtoMsg,
   MsgCommission as ProtoMsgCommission,
   MsgExecuteContract as ProtoMsgExecuteContract,
@@ -268,7 +269,7 @@ export function protoTxBytes({ signature, txBodyBytes, authInfoBytes }: ProtoTxB
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
     body_bytes: new Uint8Array(txBodyBytes),
     auth_info_bytes: new Uint8Array(authInfoBytes),
-    signatures: signature ? [Buffer.from(signature, 'base64')] : [new Uint8Array(0)],
+    signatures: [Buffer.from(signature, 'base64')],
   });
   const txRawBytes = cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
 
@@ -295,6 +296,22 @@ export function ethermintProtoTx(
   const authInfoBytes = getEthermintAuthInfoBytes(signed, pubKey, mode);
 
   return { signature, txBodyBytes, authInfoBytes };
+}
+
+export function ethermintProtoTxBytes({ signature, txBodyBytes, authInfoBytes }: EthermintProtoTxBytesProps) {
+  const txRaw = new cosmos.tx.v1beta1.TxRaw({
+    body_bytes: new Uint8Array(txBodyBytes),
+    auth_info_bytes: new Uint8Array(authInfoBytes),
+    signatures: signature ? [Buffer.from(signature, 'base64')] : [new Uint8Array(0)],
+  });
+  const txRawBytes = cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
+
+  const tx = {
+    tx_bytes: Buffer.from(txRawBytes).toString('base64'),
+    mode: cosmos.tx.v1beta1.BroadcastMode.BROADCAST_MODE_SYNC,
+  };
+
+  return tx;
 }
 
 export function broadcast(url: string, body: unknown) {

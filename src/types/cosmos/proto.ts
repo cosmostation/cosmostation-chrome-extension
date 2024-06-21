@@ -49,6 +49,12 @@ export type SignDirectDoc = {
 };
 
 export type ProtoTxBytesProps = {
+  signature: string;
+  txBodyBytes: Uint8Array;
+  authInfoBytes: Uint8Array;
+};
+
+export type EthermintProtoTxBytesProps = {
   signature?: string;
   txBodyBytes: Uint8Array;
   authInfoBytes: Uint8Array;

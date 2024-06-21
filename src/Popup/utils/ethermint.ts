@@ -185,7 +185,12 @@ export function getRLPType(tx: SignAminoDoc): RLPTypes {
   return {};
 }
 
-export async function getEIP712Signature(transport: Transport, chain: CosmosChain, currentAccount: LedgerAccount, eip712: CustomTypedMessage<MessageTypes>) {
+export async function getEIP712Signature(
+  transport: Transport,
+  chain: CosmosChain,
+  currentAccount: LedgerAccount,
+  typedMessage: CustomTypedMessage<MessageTypes>,
+) {
   try {
     const ethereumApp = new EthereumApp(transport);
 
@@ -203,9 +208,14 @@ export async function getEIP712Signature(transport: Transport, chain: CosmosChai
       throw new Error('Account address and Ledger address are not the same.');
     }
 
-    const domainSeparatorHex = TypedDataUtils.hashStruct('EIP712Domain', eip712.domain, eip712.types, SignTypedDataVersion.V4).toString('hex');
+    const domainSeparatorHex = TypedDataUtils.hashStruct('EIP712Domain', typedMessage.domain, typedMessage.types, SignTypedDataVersion.V4).toString('hex');
 
-    const hashStructMessageHex = TypedDataUtils.hashStruct(eip712.primaryType, eip712.message, eip712.types, SignTypedDataVersion.V4).toString('hex');
+    const hashStructMessageHex = TypedDataUtils.hashStruct(
+      typedMessage.primaryType,
+      typedMessage.message,
+      typedMessage.types,
+      SignTypedDataVersion.V4,
+    ).toString('hex');
 
     const result = await ethereumApp.signEIP712HashedMessage(path, domainSeparatorHex, hashStructMessageHex);
 
