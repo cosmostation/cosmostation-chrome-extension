@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
 import { COSMOS_NON_NATIVE_GAS_RATES } from '~/constants/chain';
+import { gt } from '~/Popup/utils/big';
 import type { CosmosChain, GasRate, GasRateKey } from '~/types/chain';
 
+import { useFeemarketSWR } from './useFeemarketSWR';
 import { useParamsSWR } from '../useParamsSWR';
 
 const PARAM_BASE_GAS_RATE_OPTIONS = {
@@ -20,6 +22,7 @@ const PARAM_BASE_GAS_RATE_KEY: Record<string, GasRateKey> = {
 
 export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const { data, error, mutate } = useParamsSWR(chain, config);
+  const feemarketData = useFeemarketSWR({ chain }, config);
 
   const defaultGasRateKey = useMemo(() => {
     const baseGasRateKey = data?.params?.chainlist_params?.fee?.base;
@@ -32,10 +35,10 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
   }, [data?.params?.chainlist_params?.fee]);
 
   const gasRate: Record<string, GasRate> = useMemo(() => {
-    const chainlistFeeRates = data ? data.params?.chainlist_params?.fee?.rate ?? [] : [];
+    const chainlistGasRates = data ? data.params?.chainlist_params?.fee?.rate ?? [] : [];
     const result: Record<string, GasRate> = {};
 
-    if (chainlistFeeRates.length === 0) {
+    if (chainlistGasRates.length === 0) {
       const nonNativeGasRates = COSMOS_NON_NATIVE_GAS_RATES.filter((item) => item.chainId === chain.id);
 
       return nonNativeGasRates
@@ -46,51 +49,54 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
         : { [chain.baseDenom]: chain.gasRate };
     }
 
-    chainlistFeeRates.forEach((gr, idx) => {
+    chainlistGasRates.forEach((gr, idx) => {
       const splitedItems = gr.split(',');
 
       splitedItems.forEach((splitedItem) => {
         const subIndex = splitedItem.search(/(?![0-9.])+/);
 
-        const rate = splitedItem.substring(0, subIndex);
         const denom = splitedItem.substring(subIndex);
+
+        const chainlistGasRate = splitedItem.substring(0, subIndex);
+        const feemarketGasRate = feemarketData.data?.prices.find((item) => item.denom === denom)?.amount || '0';
+        const selectedGasRate = gt(feemarketGasRate, chainlistGasRate) ? feemarketGasRate : chainlistGasRate;
 
         if (idx === 0) {
           result[denom] = {
-            tiny: rate,
-            low: rate,
-            average: rate,
+            tiny: selectedGasRate,
+            low: selectedGasRate,
+            average: selectedGasRate,
           };
         }
 
         if (idx === 1) {
           if (!result[denom]) {
             result[denom] = {
-              tiny: rate,
-              low: rate,
-              average: rate,
+              tiny: selectedGasRate,
+              low: selectedGasRate,
+              average: selectedGasRate,
             };
           } else {
-            result[denom] = { ...result[denom], low: rate, average: rate };
+            result[denom] = { ...result[denom], low: selectedGasRate, average: selectedGasRate };
           }
         }
 
         if (idx === 2) {
           if (!result[denom]) {
             result[denom] = {
-              tiny: rate,
-              low: rate,
-              average: rate,
+              tiny: selectedGasRate,
+              low: selectedGasRate,
+              average: selectedGasRate,
             };
           } else {
-            result[denom] = { ...result[denom], average: rate };
+            result[denom] = { ...result[denom], average: selectedGasRate };
           }
         }
       });
     });
 
     return result;
-  }, [chain.baseDenom, chain.gasRate, chain.id, data]);
+  }, [feemarketData.data?.prices, chain.baseDenom, chain.gasRate, chain.id, data]);
 
   const returnData = useMemo(
     () => ({
@@ -100,5 +106,17 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
     [defaultGasRateKey, gasRate],
   );
 
-  return { data: returnData, error, mutate };
+  const returnError = useMemo(() => {
+    if (error) {
+      return error;
+    }
+
+    if (feemarketData.error) {
+      return feemarketData.error;
+    }
+
+    return undefined;
+  }, [feemarketData.error, error]);
+
+  return { data: returnData, error: returnError, mutate };
 }

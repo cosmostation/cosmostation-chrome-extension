@@ -75,6 +75,7 @@ export function cosmosURL(chain: CosmosChain) {
     getTxInfo: (txHash: string) => `${restURL}/cosmos/tx/v1beta1/txs/${txHash}`,
     getBlockLatest: () => (id === GRAVITY_BRIDGE.id ? `${restURL}/blocks/latest` : `${restURL}/cosmos/base/tendermint/v1beta1/blocks/latest`),
     getCommission: (validatorAddress: string) => `${restURL}/cosmos/distribution/v1beta1/validators/${validatorAddress}/commission`,
+    getFeemarket: (denom?: string) => `${restURL}/feemarket/v1/gas_prices/${denom || ''}`,
   };
 }
 
