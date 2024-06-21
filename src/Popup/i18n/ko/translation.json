@@ -318,7 +318,7 @@
           "entry": {
             "description1": "코스모스 & 이더리움 생태계를 위한",
             "description2": "암호화폐 지갑입니다",
-            "permissionError": "권한 요청이 거부되었습니다.",
+            "permissionError": "권한 요청이 거부되었습니다. 지갑을 사용하려면 권한을 허용해주세요.",
             "startButton": "시작하기",
             "termsAgreement1": "서비스 이용약관 및 이용안내",
             "termsAgreement2": "에 동의합니다",
