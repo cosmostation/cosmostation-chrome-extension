@@ -318,6 +318,7 @@
           "entry": {
             "description1": "Gateway to the Interchain &",
             "description2": "Ethereum ecosystem",
+            "permissionError": "Permission request denied. Please allow permissions to use the wallet.",
             "startButton": "Start",
             "termsAgreement1": "I have read and agree to the ",
             "termsAgreement2": "Terms of use",
