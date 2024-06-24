@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { bcs } from '@mysten/sui/bcs';
 import { isTransaction } from '@mysten/sui/transactions';
 import type {
   IdentifierArray,
@@ -125,17 +124,10 @@ const signTransaction: SuiSignTransactionMethod = async (data: Omit<SuiSignTrans
     signal: data.signal,
   };
 
-  const response = (await request({
+  return request({
     method: 'sui_signTransaction',
     params: [inputParam],
-  })) as SuiSignTransactionBlockOutput;
-
-  const result: SignedTransaction = {
-    bytes: response.transactionBlockBytes,
-    signature: response.signature,
-  };
-
-  return result;
+  }) as Promise<SignedTransaction>;
 };
 
 const signAndExecuteTransactionBlock: SuiSignAndExecuteTransactionBlockMethod = (data: Omit<SuiSignAndExecuteTransactionBlockInput, 'chain' | 'account'>) => {
@@ -159,30 +151,16 @@ const signAndExecuteTransaction: SuiSignAndExecuteTransactionMethod = async (dat
   const inputParam: SuiSignAndExecuteTransactionSerializedInput = {
     transactionBlockSerialized: await data.transaction.toJSON(),
     signal: data.signal,
+    options: {
+      showRawEffects: true,
+      showRawInput: true,
+    },
   };
 
-  const response = (await request({
+  return request({
     method: 'sui_signAndExecuteTransaction',
     params: [inputParam],
-  })) as SuiSignAndExecuteTransactionBlockOutput;
-
-  const [
-    {
-      txSignatures: [signature],
-      intentMessage: { value: bcsTransaction },
-    },
-  ] = bcs.SenderSignedData.parse(Buffer.from(response.rawTransaction!, 'base64'));
-
-  const bytes = bcs.TransactionData.serialize(bcsTransaction).toBase64();
-
-  const result: SuiSignAndExecuteTransactionOutput = {
-    digest: response.digest,
-    effects: Buffer.from(new Uint8Array(response.rawEffects!)).toString('base64'),
-    bytes,
-    signature,
-  };
-
-  return result;
+  }) as Promise<SuiSignAndExecuteTransactionOutput>;
 };
 
 const signMessage: SuiSignMessageMethod = ({ message, account }) =>
@@ -194,22 +172,14 @@ const signMessage: SuiSignMessageMethod = ({ message, account }) =>
     },
   }) as Promise<SuiSignMessageOutput>;
 
-const signPersonalMessage: SuiSignPersonalMessageMethod = async ({ message, account }) => {
-  const response = (await request({
+const signPersonalMessage: SuiSignPersonalMessageMethod = async ({ message, account }) =>
+  request({
     method: 'sui_signPersonalMessage',
     params: {
       message: Buffer.from(message).toString('base64'),
       accountAddress: account?.address,
     },
-  })) as SuiSignMessageOutput;
-
-  const result: SuiSignPersonalMessageOutput = {
-    bytes: response.messageBytes,
-    signature: response.signature,
-  };
-
-  return result;
-};
+  }) as Promise<SuiSignPersonalMessageOutput>;
 
 const off = (eventName: SuiListenerType, eventHandler?: (data: unknown) => void) => {
   const handlerInfos = window.cosmostation.handlerInfos.filter(
@@ -282,7 +252,14 @@ class SuiStandard implements Wallet {
                   address: address[0],
                   publicKey: new Uint8Array(Buffer.from(publicKey.substring(2), 'hex')),
                   chains: [`sui:${currentChain}`],
-                  features: ['sui:signAndExecuteTransactionBlock', 'sui:signMessage', 'sui:signTransactionBlock'],
+                  features: [
+                    'sui:signAndExecuteTransactionBlock',
+                    'sui:signMessage',
+                    'sui:signTransactionBlock',
+                    'sui:signTransaction',
+                    'sui:signPersonalMessage',
+                    'sui:signAndExecuteTransaction',
+                  ],
                 },
               ];
 
@@ -340,7 +317,14 @@ class SuiStandard implements Wallet {
               address: address[0],
               publicKey: new Uint8Array(Buffer.from(publicKey.substring(2), 'hex')),
               chains: [`sui:${currentChain}`],
-              features: ['sui:signAndExecuteTransactionBlock'],
+              features: [
+                'sui:signAndExecuteTransactionBlock',
+                'sui:signMessage',
+                'sui:signTransactionBlock',
+                'sui:signTransaction',
+                'sui:signPersonalMessage',
+                'sui:signAndExecuteTransaction',
+              ],
             },
           ];
         }

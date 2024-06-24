@@ -1,3 +1,4 @@
+import type { SuiTransactionBlockResponseOptions } from '@mysten/sui/client';
 import type {
   SuiSignAndExecuteTransactionBlockInput,
   SuiSignAndExecuteTransactionInput,
@@ -59,6 +60,7 @@ export type SuiSignAndExecuteTransactionBlock = {
 
 export type SuiSignAndExecuteTransactionSerializedInput = Omit<SuiSignAndExecuteTransactionInput, 'transaction' | 'chain' | 'account'> & {
   transactionBlockSerialized: string;
+  options?: SuiTransactionBlockResponseOptions;
 };
 
 export type SuiSignAndExecuteTransaction = {

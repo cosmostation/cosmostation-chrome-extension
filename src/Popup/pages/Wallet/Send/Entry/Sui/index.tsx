@@ -265,8 +265,16 @@ export default function Sui({ chain }: SuiProps) {
                     origin: '',
                     channel: 'inApp',
                     message: {
-                      method: 'sui_signAndExecuteTransactionBlock',
-                      params: [{ transactionBlockSerialized: sendTxBlock.serialize() }],
+                      method: 'sui_signAndExecuteTransaction',
+                      params: [
+                        {
+                          transactionBlockSerialized: await sendTxBlock.toJSON(),
+                          options: {
+                            showRawEffects: true,
+                            showRawInput: true,
+                          },
+                        },
+                      ],
                     },
                   });
                 }
