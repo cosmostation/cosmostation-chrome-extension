@@ -324,7 +324,6 @@ export default function Entry({ queue, chain }: EntryProps) {
 
                       throw new Error('Unknown type account');
                     })();
-
                     const base64Signature = Buffer.from(signature).toString('base64');
 
                     const base64PublicKey = Buffer.from(keyPair.publicKey).toString('base64');
@@ -332,6 +331,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     const publicKeyType = getPublicKeyType(chain);
 
                     const pubKey = { type: publicKeyType, value: base64PublicKey };
+
                     if (channel) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();

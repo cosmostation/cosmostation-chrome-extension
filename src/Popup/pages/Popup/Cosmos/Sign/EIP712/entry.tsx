@@ -12,6 +12,7 @@ import Fee from '~/Popup/components/Fee';
 import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
+import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -21,7 +22,7 @@ import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, equal, gte, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { getDefaultAV, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { getPublicKeyType } from '~/Popup/utils/cosmos';
 import { getEIP712Signature } from '~/Popup/utils/ethermint';
 import { responseToWeb } from '~/Popup/utils/message';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
@@ -56,6 +57,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { t } = useTranslation();
 
   const [isProgress, setIsProgress] = useState(false);
+
+  const { data: gasMultiply } = useGasMultiplySWR(chain);
 
   const { feeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain, { suspense: true });
 
@@ -114,8 +117,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const simulate = useSimulateSWR({ chain, txBytes: memoizedProtoTx?.tx_bytes });
 
   const simulatedGas = useMemo(
-    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
-    [chain, simulate.data?.gas_info?.gas_used],
+    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, gasMultiply, 0) : undefined),
+    [gasMultiply, simulate.data?.gas_info?.gas_used],
   );
 
   const currentGas = useMemo(
