@@ -18,7 +18,6 @@ type FetchParams = {
   method: string;
 };
 
-// NOTE Block이름 떼기
 type UseDryRunTransactionBlockSWRProps = {
   network?: SuiNetwork;
   transaction?: Transaction | string | Uint8Array;

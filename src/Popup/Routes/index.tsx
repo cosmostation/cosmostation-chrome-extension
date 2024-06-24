@@ -55,8 +55,6 @@ import PopupEthereumTransaction from '~/Popup/pages/Popup/Ethereum/Transaction';
 import PopupRequestAccount from '~/Popup/pages/Popup/RequestAccount';
 import PopupSuiSignMessage from '~/Popup/pages/Popup/Sui/SignMessage';
 import PopupSuiTransaction from '~/Popup/pages/Popup/Sui/Transaction';
-// NOTE 구현 로직 살펴보고 v2로 아예 분리시킬지 확인 필요
-// import PopupSuiTransactionV2 from '~/Popup/pages/Popup/Sui/TransactionV2';
 import PopupTxReceipt from '~/Popup/pages/Popup/TxReceipt';
 import SettingAddressBook from '~/Popup/pages/Setting/AddressBook';
 import SettingAddressBookAdd from '~/Popup/pages/Setting/AddressBook/Add';
