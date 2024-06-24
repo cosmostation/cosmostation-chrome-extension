@@ -43,7 +43,7 @@ const on = (eventName: EthereumListenerType, eventHandler: (data: unknown) => vo
       if (eventName === 'accountsChanged' && Array.isArray(event.data?.message?.result) && event.data?.message?.result.length === 0) {
         void (async () => {
           try {
-            const account = (await request({ method: 'eth_requestAccounts', params: {} })) as EthRequestAccountsResponse;
+            const account = (await request({ method: 'eth_accounts', params: {} })) as EthRequestAccountsResponse;
 
             eventHandler(account);
           } catch {
