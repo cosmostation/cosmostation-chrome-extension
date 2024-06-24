@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 
-import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import type { CosmosChain } from '~/types/chain';
 
@@ -14,7 +13,7 @@ export function useEthermintLedgerSign(chain: CosmosChain) {
 
   const isEthermintLedgerSign = useMemo(() => isLedgerAccount && isEthermintChain, [isEthermintChain, isLedgerAccount]);
 
-  const isInjectiveChain = useMemo(() => chain.id === INJECTIVE.id, [chain.id]);
+  const isInjectiveChain = useMemo(() => chain.id.startsWith('injective'), [chain.id]);
 
   return { isEthermintLedgerSign, isInjectiveChain };
 }

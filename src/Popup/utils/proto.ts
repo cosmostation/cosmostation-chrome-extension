@@ -1,4 +1,3 @@
-import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { post } from '~/Popup/utils/axios';
 import { isAminoCommission, isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from '~/Popup/utils/cosmos';
 import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
@@ -153,7 +152,7 @@ export function getTxBodyBytes(signed: SignAminoDoc) {
 export function getEthermintTxBodyBytes(signed: SignAminoDoc, signature: string) {
   const messages = signed.msgs.map((msg) => convertAminoMessageToProto(msg)).filter((item) => item !== null) as google.protobuf.Any[];
 
-  const isInjectiveChain = signed.chain_id === INJECTIVE.chainId;
+  const isInjectiveChain = signed.chain_id.startsWith('injective');
 
   const extensionOptions = new ethermint.types.v1.ExtensionOptionsWeb3Tx({
     typed_data_chain_id: getEVMChainId(signed.chain_id),
@@ -201,7 +200,7 @@ export function getAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey, mode = co
 export function getEthermintAuthInfoBytes(signed: SignAminoDoc, pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
   const signerInfo = getSignerInfo(signed, pubKey, mode);
 
-  const isInjectiveChain = signed.chain_id === INJECTIVE.chainId;
+  const isInjectiveChain = signed.chain_id.startsWith('injective');
 
   const fee = new cosmos.tx.v1beta1.Fee({
     amount: signed.fee.amount,
