@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 import Sui from '@mysten/ledgerjs-hw-app-sui';
@@ -18,9 +18,8 @@ import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetw
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
-import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { Queue } from '~/types/extensionStorage';
 import type { SuiSignMessage, SuiSignPersonalMessage } from '~/types/message/sui';
 
@@ -59,8 +58,6 @@ export default function Entry({ queue }: EntryProps) {
 
   const keyPair = getKeyPair(currentAccount, chain, currentPassword);
 
-  const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
-
   const { message, messageId, origin } = queue;
 
   const { params } = message;
@@ -68,28 +65,6 @@ export default function Entry({ queue }: EntryProps) {
   const encodedMessage = useMemo(() => Buffer.from(params.message, 'base64'), [params.message]);
 
   const decodedMessage = useMemo(() => encodedMessage.toString('utf8'), [encodedMessage]);
-
-  useEffect(() => {
-    void (async () => {
-      if (!isEqualsIgnoringCase(address, params.accountAddress)) {
-        responseToWeb({
-          response: {
-            error: {
-              code: RPC_ERROR.INVALID_PARAMS,
-              message: 'Invalid address',
-            },
-          },
-          message,
-          messageId,
-          origin,
-        });
-
-        await deQueue();
-      }
-    })();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <Container>

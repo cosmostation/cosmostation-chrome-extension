@@ -29,7 +29,7 @@ import { COMMON_METHOD_TYPE, COMMON_NO_POPUP_METHOD_TYPE } from '~/constants/mes
 import { COSMOS_METHOD_TYPE, COSMOS_NO_POPUP_METHOD_TYPE, COSMOS_POPUP_METHOD_TYPE } from '~/constants/message/cosmos';
 import { ETHEREUM_METHOD_TYPE, ETHEREUM_NO_POPUP_METHOD_TYPE, ETHEREUM_POPUP_METHOD_TYPE } from '~/constants/message/ethereum';
 import { SUI_METHOD_TYPE, SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
-import { getAddress, getKeyPair } from '~/Popup/utils/common';
+import { getAddress, getAddressKey, getKeyPair } from '~/Popup/utils/common';
 import { AptosRPCError, CommonRPCError, CosmosRPCError, EthereumRPCError, SuiRPCError } from '~/Popup/utils/error';
 import { requestRPC as ethereumRequestRPC, signTypedData } from '~/Popup/utils/ethereum';
 import { extensionSessionStorage } from '~/Popup/utils/extensionSessionStorage';
@@ -1698,7 +1698,11 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
     const suiPopupMethods = Object.values(SUI_POPUP_METHOD_TYPE) as string[];
     const suiNoPopupMethods = Object.values(SUI_NO_POPUP_METHOD_TYPE) as string[];
 
-    const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins, currentSuiNetwork } = await extensionStorage();
+    const { currentAccountAllowedOrigins, currentAccount, suiPermissions, allowedOrigins, currentSuiNetwork, address } = await extensionStorage();
+
+    const addressKey = getAddressKey(currentAccount, chain);
+
+    const currentAddress = address[addressKey] || '';
 
     const { currentPassword } = await extensionSessionStorage();
 
@@ -1757,11 +1761,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             if (currentAccountAllowedOrigins.includes(origin) && currentAccountSuiPermissions.includes('viewAccount')) {
               if (currentPassword) {
                 const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-                const address = getAddress(chain, keyPair?.publicKey);
 
                 const publicKey = `0x${keyPair?.publicKey.toString('hex') || ''}`;
                 const result: SuiGetAccountResponse = {
-                  address,
+                  address: currentAddress,
                   publicKey,
                 };
 
@@ -1793,6 +1796,10 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const { params } = message;
 
           try {
+            if (!isEqualsIgnoringCase(currentAddress, params.accountAddress)) {
+              throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', id);
+            }
+
             const schema = suiSignMessageSchema();
 
             const validatedParams = (await schema.validateAsync(params)) as SuiSignMessage['params'];
