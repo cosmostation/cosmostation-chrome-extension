@@ -179,7 +179,13 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     if (rewardAminoTx) {
       const pTx = protoTx(rewardAminoTx, '', { type: getPublicKeyType(chain), value: '' });
 
-      return pTx ? protoTxBytes({ ...pTx }) : undefined;
+      return pTx
+        ? protoTxBytes({
+            signatures: [pTx.signature],
+            txBodyBytes: pTx.txBodyBytes,
+            authInfoBytes: pTx.authInfoBytes,
+          })
+        : undefined;
     }
 
     return undefined;
@@ -254,7 +260,13 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     if (commissionAminoTx) {
       const pTx = protoTx(commissionAminoTx, '', { type: getPublicKeyType(chain), value: '' }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
 
-      return pTx ? protoTxBytes({ ...pTx }) : undefined;
+      return pTx
+        ? protoTxBytes({
+            signatures: [pTx.signature],
+            txBodyBytes: pTx.txBodyBytes,
+            authInfoBytes: pTx.authInfoBytes,
+          })
+        : undefined;
     }
 
     return undefined;

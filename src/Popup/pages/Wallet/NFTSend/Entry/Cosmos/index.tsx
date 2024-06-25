@@ -169,7 +169,13 @@ export default function Cosmos({ chain }: CosmosProps) {
     if (sendAminoTx) {
       const pTx = protoTx(sendAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
 
-      return pTx ? protoTxBytes({ ...pTx }) : null;
+      return pTx
+        ? protoTxBytes({
+            signatures: [pTx.signature],
+            txBodyBytes: pTx.txBodyBytes,
+            authInfoBytes: pTx.authInfoBytes,
+          })
+        : null;
     }
     return null;
   }, [chain, sendAminoTx]);

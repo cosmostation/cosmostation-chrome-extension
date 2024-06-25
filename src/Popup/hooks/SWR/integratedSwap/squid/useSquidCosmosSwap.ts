@@ -353,7 +353,14 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
         value: '',
       });
 
-      return pTx && protoTxBytes({ ...pTx });
+      return (
+        pTx &&
+        protoTxBytes({
+          signatures: [pTx.signature],
+          txBodyBytes: pTx.txBodyBytes,
+          authInfoBytes: pTx.authInfoBytes,
+        })
+      );
     }
     return null;
   }, [fromChain, squidSwapAminoTx]);

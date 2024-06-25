@@ -499,7 +499,13 @@ export default function IBCSend({ chain }: IBCSendProps) {
     if (ibcSendAminoTx) {
       const pTx = protoTx(ibcSendAminoTx, '', { type: getPublicKeyType(chain), value: '' });
 
-      return pTx ? protoTxBytes({ ...pTx }) : null;
+      return pTx
+        ? protoTxBytes({
+            signatures: [pTx.signature],
+            txBodyBytes: pTx.txBodyBytes,
+            authInfoBytes: pTx.authInfoBytes,
+          })
+        : null;
     }
     return null;
   }, [chain, ibcSendAminoTx]);

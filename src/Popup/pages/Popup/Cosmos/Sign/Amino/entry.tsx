@@ -107,7 +107,13 @@ export default function Entry({ queue, chain }: EntryProps) {
         { type: getPublicKeyType(chain), value: '' },
       );
 
-      return pTx ? protoTxBytes({ ...pTx }) : null;
+      return pTx
+        ? protoTxBytes({
+            signatures: [pTx.signature],
+            txBodyBytes: pTx.txBodyBytes,
+            authInfoBytes: pTx.authInfoBytes,
+          })
+        : null;
     }
     return null;
   }, [chain, currentFeeCoin.baseDenom, doc, isEditFee]);
@@ -290,7 +296,13 @@ export default function Entry({ queue, chain }: EntryProps) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
                         const pTx = protoTx(tx, base64Signature, pubKey);
-                        const pTxBytes = pTx ? protoTxBytes({ ...pTx }) : undefined;
+                        const pTxBytes = pTx
+                          ? protoTxBytes({
+                              signatures: [pTx.signature],
+                              txBodyBytes: pTx.txBodyBytes,
+                              authInfoBytes: pTx.authInfoBytes,
+                            })
+                          : undefined;
 
                         const response = await broadcast(url, pTxBytes);
 
