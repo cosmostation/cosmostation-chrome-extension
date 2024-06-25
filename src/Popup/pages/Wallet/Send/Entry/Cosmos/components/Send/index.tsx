@@ -25,6 +25,7 @@ import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
+import { useTimeoutHeightSWR } from '~/Popup/hooks/SWR/cosmos/useTimeoutHeightSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
 import { useTokensBalanceSWR as useCosmosTokensBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokensBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -245,6 +246,8 @@ export default function Send({ chain }: CosmosProps) {
 
   const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
 
+  const { data: timeoutHeight } = useTimeoutHeightSWR(chain);
+
   const memoizedSendAminoTx = useMemo(() => {
     if (account.data?.value.account_number && addressRegex.test(currentDepositAddress) && currentDisplayAmount) {
       const sequence = String(account.data?.value.sequence || '0');
@@ -274,6 +277,7 @@ export default function Send({ chain }: CosmosProps) {
               },
             },
           ],
+          timeout_height: timeoutHeight,
         };
       }
 
@@ -308,6 +312,7 @@ export default function Send({ chain }: CosmosProps) {
               },
             },
           ],
+          timeout_height: timeoutHeight,
         };
       }
     }
@@ -321,14 +326,15 @@ export default function Send({ chain }: CosmosProps) {
     chain.chainId,
     chain.chainName,
     chain.type,
-    currentDepositAddress,
     currentCoinOrToken,
+    currentDepositAddress,
     currentDisplayAmount,
     currentFeeCoin.baseDenom,
     currentFeeGasRate,
     currentGasRateKey,
     currentMemo,
     nodeInfo.data?.default_node_info?.network,
+    timeoutHeight,
   ]);
 
   const [sendAminoTx] = useDebounce(memoizedSendAminoTx, 700);

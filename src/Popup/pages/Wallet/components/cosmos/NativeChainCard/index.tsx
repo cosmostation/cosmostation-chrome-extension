@@ -22,6 +22,7 @@ import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useRewardSWR } from '~/Popup/hooks/SWR/cosmos/useRewardSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
+import { useTimeoutHeightSWR } from '~/Popup/hooks/SWR/cosmos/useTimeoutHeightSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -139,6 +140,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const currentFeeCoin = useMemo(() => feeCoins[0], [feeCoins]);
 
+  const { data: timeoutHeight } = useTimeoutHeightSWR(chain);
+
   const rewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
     if (reward.data?.rewards?.length && account.data?.value.account_number && account.data.value.sequence) {
       return {
@@ -159,6 +162,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
           value: { delegator_address: currentAddress, validator_address: item.validator_address },
         })),
         memo: '',
+        timeout_height: timeoutHeight,
       };
     }
     return undefined;
@@ -173,6 +177,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     currentFeeCoin.gasRate,
     defaultGasRateKey,
     reward.data?.rewards,
+    timeoutHeight,
   ]);
 
   const rewardProtoTx = useMemo(() => {
@@ -234,6 +239,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
           },
         ],
         memo: '',
+        timeout_height: timeoutHeight,
       };
     }
     return undefined;
@@ -247,6 +253,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     currentFeeCoin.gasRate,
     defaultGasRateKey,
     isValidatorAccount,
+    timeoutHeight,
     validatorAddress,
   ]);
 

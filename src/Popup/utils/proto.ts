@@ -135,6 +135,7 @@ export function getTxBodyBytes(signed: SignAminoDoc) {
   const txBody = new cosmos.tx.v1beta1.TxBody({
     messages,
     memo: signed.memo,
+    timeout_height: Number(signed.timeout_height),
   });
 
   if (signed.msgs.length !== messages.length) {

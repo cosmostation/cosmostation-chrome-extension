@@ -18,6 +18,7 @@ import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
+import { useTimeoutHeightSWR } from '~/Popup/hooks/SWR/cosmos/useTimeoutHeightSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosNFTs } from '~/Popup/hooks/useCurrent/useCurrentCosmosNFTs';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -109,6 +110,8 @@ export default function Cosmos({ chain }: CosmosProps) {
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
 
+  const { data: timeoutHeight } = useTimeoutHeightSWR(chain);
+
   const memoizedSendAminoTx = useMemo(() => {
     if (account.data?.value.account_number && addressRegex.test(currentReceipientAddress)) {
       const sequence = String(account.data?.value.sequence || '0');
@@ -143,24 +146,26 @@ export default function Cosmos({ chain }: CosmosProps) {
             },
           },
         ],
+        timeout_height: timeoutHeight,
       };
     }
     return undefined;
   }, [
     account.data?.value.account_number,
     account.data?.value.sequence,
+    address,
     addressRegex,
-    currentReceipientAddress,
-    nodeInfo.data?.default_node_info?.network,
     chain.chainId,
     chain.type,
     currentFeeCoin.baseDenom,
     currentFeeGasRate,
     currentGasRateKey,
     currentMemo,
-    address,
     currentNFT.address,
     currentNFT.tokenId,
+    currentReceipientAddress,
+    nodeInfo.data?.default_node_info?.network,
+    timeoutHeight,
   ]);
 
   const [sendAminoTx] = useDebounce(memoizedSendAminoTx, 700);

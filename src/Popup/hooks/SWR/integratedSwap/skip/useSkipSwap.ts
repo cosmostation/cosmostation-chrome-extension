@@ -23,6 +23,7 @@ import { useClientStateSWR } from '../../cosmos/useClientStateSWR';
 import { useGasMultiplySWR } from '../../cosmos/useGasMultiplySWR';
 import { useNodeInfoSWR } from '../../cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '../../cosmos/useSimulateSWR';
+import { useTimeoutHeightSWR } from '../../cosmos/useTimeoutHeightSWR';
 
 type UseSkipSwapProps = {
   inputBaseAmount: string;
@@ -205,6 +206,8 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
     [revisionHeight, revisionNumber, skipSwapParsedTx],
   );
 
+  const { data: timeoutHeight } = useTimeoutHeightSWR(fromChain);
+
   const memoizedSkipSwapAminoTx = useMemo(() => {
     if (
       gt(inputBaseAmount, '0') &&
@@ -225,6 +228,7 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
           type: item?.msg_type_url || '',
           value: item?.msg,
         })),
+        timeout_height: timeoutHeight,
       };
     }
 
@@ -237,6 +241,7 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
     inputBaseAmount,
     nodeInfo.data?.default_node_info?.network,
     skipSwapAminoTxMsgs,
+    timeoutHeight,
   ]);
 
   const [skipSwapAminoTx] = useDebounce(memoizedSkipSwapAminoTx, 700);

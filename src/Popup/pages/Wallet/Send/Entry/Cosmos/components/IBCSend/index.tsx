@@ -27,6 +27,7 @@ import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
+import { useTimeoutHeightSWR } from '~/Popup/hooks/SWR/cosmos/useTimeoutHeightSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
 import { useTokensBalanceSWR as useCosmosTokensBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokensBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -393,6 +394,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const currentCoinOrTokenDisplayDenom = currentCoinOrToken.displayDenom;
   const currentDisplayMaxDecimals = useMemo(() => getDisplayMaxDecimals(currentCoinOrTokenDecimals), [currentCoinOrTokenDecimals]);
 
+  const { data: timeoutHeight } = useTimeoutHeightSWR(chain);
+
   const memoizedIBCSendAminoTx = useMemo(() => {
     if (account.data?.value.account_number && selectedReceiverIBC && currentDisplayAmount) {
       const sequence = String(account.data?.value.sequence || '0');
@@ -431,6 +434,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
               },
             },
           ],
+          timeout_height: timeoutHeight,
         };
       }
 
@@ -469,6 +473,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
               },
             },
           ],
+          timeout_height: timeoutHeight,
         };
       }
     }
@@ -480,17 +485,18 @@ export default function IBCSend({ chain }: IBCSendProps) {
     chain.chainId,
     chain.type,
     currentCoinOrToken,
+    currentDepositAddress,
     currentDisplayAmount,
     currentFeeCoin.baseDenom,
     currentFeeGasRate,
     currentGasRateKey,
     currentMemo,
     nodeInfo.data?.default_node_info?.network,
-    currentDepositAddress,
     revisionHeight,
     revisionNumber,
     selectedReceiverIBC,
     senderAddress,
+    timeoutHeight,
   ]);
 
   const [ibcSendAminoTx] = useDebounce(memoizedIBCSendAminoTx, 700);

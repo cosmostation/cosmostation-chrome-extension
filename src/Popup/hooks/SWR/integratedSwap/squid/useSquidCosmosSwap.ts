@@ -22,6 +22,7 @@ import { useClientStateSWR } from '../../cosmos/useClientStateSWR';
 import { useGasMultiplySWR } from '../../cosmos/useGasMultiplySWR';
 import { useNodeInfoSWR } from '../../cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '../../cosmos/useSimulateSWR';
+import { useTimeoutHeightSWR } from '../../cosmos/useTimeoutHeightSWR';
 import { useCoinGeckoPriceSWR } from '../../useCoinGeckoPriceSWR';
 
 type UseSquidCosmosSwapProps = {
@@ -261,6 +262,8 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
     [clientState.data?.identified_client_state?.client_state?.latest_height?.revision_number],
   );
 
+  const { data: timeoutHeight } = useTimeoutHeightSWR(fromChain);
+
   const memoizedSquidSwapAminoTx = useMemo(() => {
     if (
       gt(inputBaseAmount, '0') &&
@@ -297,6 +300,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
               },
             },
           ],
+          timeout_height: timeoutHeight,
         };
       }
 
@@ -323,6 +327,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
               },
             },
           ],
+          timeout_height: timeoutHeight,
         };
       }
     }
@@ -342,6 +347,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
     revisionNumber,
     senderAddress,
     squidCosmosRoute.data?.route.estimate.fromAmount,
+    timeoutHeight,
   ]);
 
   const [squidSwapAminoTx] = useDebounce(memoizedSquidSwapAminoTx, 700);
