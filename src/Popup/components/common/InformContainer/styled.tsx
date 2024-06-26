@@ -20,7 +20,7 @@ type TextContainerProps = {
 
 export const TextContainer = styled('div')<TextContainerProps>(({ theme, ...props }) => ({
   marginLeft: '0.4rem',
-  color: props['data-varient'] === 'info' ? theme.accentColors.white : theme.accentColors.red,
+  color: props['data-varient'] === 'info' ? theme.colors.text01 : theme.accentColors.red,
 }));
 
 type IconContainerProps = {
