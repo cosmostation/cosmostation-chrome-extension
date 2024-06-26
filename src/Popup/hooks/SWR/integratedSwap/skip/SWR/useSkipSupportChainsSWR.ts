@@ -4,10 +4,11 @@ import useSWR from 'swr';
 
 import { SKIP_BASE_URL } from '~/constants/skip';
 import { get } from '~/Popup/utils/axios';
+import { buildRequestUrl } from '~/Popup/utils/fetch';
 import type { SupportedSkipChain } from '~/types/swap/asset';
 
 export function useSkipSupportChainsSWR(config?: SWRConfiguration) {
-  const requestURL = `${SKIP_BASE_URL}/v1/info/chains?client_id=cosmostation_extension`;
+  const requestURL = buildRequestUrl(SKIP_BASE_URL, '/v2/info/chains');
 
   const fetcher = (fetchUrl: string) => get<SupportedSkipChain>(fetchUrl);
 

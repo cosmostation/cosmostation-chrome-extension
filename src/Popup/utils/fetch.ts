@@ -46,3 +46,21 @@ export async function get<T>(URL: string) {
 
   return responseJSON;
 }
+
+export function buildRequestUrl(baseUrl: string, methodName?: string, queryParams?: Record<string, string | number | boolean>) {
+  const requestUrl = `${baseUrl}${methodName || ''}`;
+
+  if (queryParams) {
+    const params = new URLSearchParams();
+
+    Object.entries(queryParams).forEach(([key, value]) => {
+      params.append(key, String(value));
+    });
+
+    const query = params.toString();
+
+    return `${requestUrl}?${query}`;
+  }
+
+  return requestUrl;
+}

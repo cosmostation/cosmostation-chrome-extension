@@ -4,6 +4,7 @@ import useSWR from 'swr';
 
 import { SKIP_BASE_URL } from '~/constants/skip';
 import { post } from '~/Popup/utils/axios';
+import { buildRequestUrl } from '~/Popup/utils/fetch';
 import type { Affiliates, SkipRoutePayload, SkipSwapTxPayload } from '~/types/swap/skip';
 
 type SkipRouteError = {
@@ -19,7 +20,7 @@ type FetchProps = {
 type SkipSwapTxParamProps = {
   addresses: string[];
   slippage: string;
-  affiliates?: Affiliates[];
+  affiliates?: Affiliates;
 };
 
 export type SkipSwapTxParam = SkipRoutePayload & SkipSwapTxParamProps;
@@ -29,7 +30,7 @@ type UseSkipSwapTxSWRProps = {
 };
 
 export function useSkipSwapTxSWR({ skipSwapTxParam: swapTxParam }: UseSkipSwapTxSWRProps, config?: SWRConfiguration) {
-  const requestURL = `${SKIP_BASE_URL}/v1/fungible/msgs?client_id=cosmostation_extension`;
+  const requestURL = buildRequestUrl(SKIP_BASE_URL, '/v2/fungible/msgs');
 
   const fetcher = async ({ fetchUrl, skipSwapTxParam }: FetchProps) =>
     post<SkipSwapTxPayload>(fetchUrl, {
@@ -42,7 +43,7 @@ export function useSkipSwapTxSWR({ skipSwapTxParam: swapTxParam }: UseSkipSwapTx
       operations: skipSwapTxParam?.operations,
       amount_out: skipSwapTxParam?.amount_out,
       slippage_tolerance_percent: skipSwapTxParam?.slippage,
-      affiliates: skipSwapTxParam?.affiliates || [],
+      chain_ids_to_affiliates: skipSwapTxParam?.affiliates || {},
     });
 
   const { data, isValidating, error, mutate } = useSWR<SkipSwapTxPayload, AxiosError<SkipRouteError>>(
