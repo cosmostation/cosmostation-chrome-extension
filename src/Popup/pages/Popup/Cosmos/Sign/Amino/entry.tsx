@@ -73,13 +73,14 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { feeCoins: supportedFeeCoins, defaultGasRateKey } = useCurrentFeesSWR(chain, { suspense: true });
 
   const availableFeeCoins = useMemo(() => {
-    const availableCoins = assets.data.map((asset) => ({
+    const availableCoins: FeeCoin[] = assets.data.map((asset) => ({
       originBaseDenom: asset.origin_denom,
       baseDenom: asset.denom,
       decimals: asset.decimals,
       displayDenom: asset.symbol,
       coinGeckoId: asset.coinGeckoId,
       availableAmount: balance.data?.balance?.find((item) => item.denom === asset.denom)?.amount || '0',
+      gasRate: undefined,
     }));
 
     const aggregatedFeeCoins = [...supportedFeeCoins, ...availableCoins];
@@ -137,6 +138,7 @@ export default function Entry({ queue, chain }: EntryProps) {
         baseDenom: inputFee.denom,
         originBaseDenom: inputFee.denom,
         displayDenom: 'UNKNOWN',
+        gasRate: undefined,
       },
     [availableFeeCoins, balance.data?.balance, currentFeeBaseDenom, inputFee.denom],
   );
