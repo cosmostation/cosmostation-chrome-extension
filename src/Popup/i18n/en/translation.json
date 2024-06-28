@@ -29,6 +29,17 @@
         }
       }
     },
+    "ErrorPage": {
+      "index": {
+        "confirm": "Confirm",
+        "description1": "An error has occurred\nwhile processing your request.",
+        "description2": "Please try again later.",
+        "emailSendFailure": "Failed to send email",
+        "error": "Error detected",
+        "feedback": "Feedback?",
+        "sendReportEmail": "Send report email"
+      }
+    },
     "Fee": {
       "components": {
         "FeeSettingDialog": {

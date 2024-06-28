@@ -29,6 +29,17 @@
         }
       }
     },
+    "ErrorPage": {
+      "index": {
+        "confirm": "확인",
+        "description1": "요청을 처리하는 중에 오류가 발생했습니다.",
+        "description2": "나중에 다시 시도 해주십시오.",
+        "emailSendFailure": "이메일 전송 실패",
+        "error": "오류가 발생했습니다.",
+        "feedback": "문제가 계속 발생하나요?",
+        "sendReportEmail": "오류 보고 이메일 전송하기"
+      }
+    },
     "Fee": {
       "components": {
         "FeeSettingDialog": {
