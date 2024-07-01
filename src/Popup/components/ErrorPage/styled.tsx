@@ -25,6 +25,13 @@ export const ContentsContainer = styled('div')({
   marginTop: '10rem',
 });
 
+export const WrapperContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+
+  alignItems: 'center',
+});
+
 export const BottomContainer = styled('div')({
   position: 'absolute',
 
@@ -32,10 +39,6 @@ export const BottomContainer = styled('div')({
   left: '1.6rem',
 
   width: 'calc(100% - 3.2rem)',
-});
-
-export const BottomButtonContainer = styled('div')({
-  display: 'flex',
 });
 
 export const TitleContainer = styled('div')(({ theme }) => ({

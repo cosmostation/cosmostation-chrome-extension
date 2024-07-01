@@ -20,7 +20,9 @@ import {
 import { getAddress as getEthereumAddress } from '~/Popup/utils/ethereum';
 import { getAddress as getSuiAddress } from '~/Popup/utils/sui';
 import type { Chain } from '~/types/chain';
-import type { Account } from '~/types/extensionStorage';
+import type { Account, Queue } from '~/types/extensionStorage';
+
+import { extension } from './extension';
 
 export function getAddress(chain: Chain, publicKey?: Buffer) {
   if (!publicKey) {
@@ -161,4 +163,46 @@ export function getAddressKey(account?: Account, chain?: Chain) {
   const pathWithoutAddressIndex = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}`;
 
   return sha256(`${account.id}${chain.id}${pathWithoutAddressIndex}`).toString();
+}
+
+type FormattedEmailProps = {
+  error: Error;
+  pathname: string;
+  chainName?: string;
+  queue?: Queue;
+};
+
+export function generateMailtoReportLink({ error, pathname, chainName, queue }: FormattedEmailProps) {
+  const extensionManifest = extension.runtime.getManifest();
+
+  const emailSubject = encodeURIComponent(`Cosmostation Extension Issue Report - Version ${extensionManifest.version}`);
+
+  const emailBody = encodeURIComponent(
+    [
+      `Hello Cosmostation Support Team,\n`,
+      `I would like to report an issue encountered in the app.\n`,
+      `Error Description:`,
+      `Please describe the error you encountered here.`,
+      `-\n`,
+      `Error Details:`,
+      `- App Version: ${extensionManifest.version}`,
+      `- Name: ${error.name ?? ''}`,
+      `- Message: ${error.message ?? ''}`,
+      `- Chain: ${chainName ?? ''}`,
+      `- Path: ${pathname ?? ''}`,
+      `${queue?.origin || queue?.channel ? `- Origin: ${queue?.origin || queue?.channel || ''}` : ''}`,
+      `${queue?.message.method ? `- Action: ${queue.message.method}` : ''}`,
+      `${queue?.message ? `- Request Received: ${JSON.stringify(queue.message)}` : ''}`,
+      `\nAdditional Information:`,
+      `Please provide any additional information that may help us understand the issue better.`,
+      `-\n`,
+      `Thank you for your assistance.\n`,
+      `Best regards,`,
+      `Cosmostation Extension User`,
+    ]
+      .filter((line) => line.trim() !== '')
+      .join('\n'),
+  );
+
+  return `mailto:support@cosmostation.io?subject=${emailSubject}&body=${emailBody}`;
 }

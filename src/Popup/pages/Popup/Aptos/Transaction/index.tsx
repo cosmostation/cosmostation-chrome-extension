@@ -1,3 +1,7 @@
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+import ErrorPage from '~/Popup/components/ErrorPage';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
@@ -17,7 +21,14 @@ export default function Transaction() {
         <LedgerPublicKeyRequest>
           <AccessRequest>
             <Layout>
-              <Entry queue={currentQueue} />
+              <ErrorBoundary
+                // eslint-disable-next-line react/no-unstable-nested-components
+                FallbackComponent={(props) => <ErrorPage queue={currentQueue} {...props} />}
+              >
+                <Suspense fallback={null}>
+                  <Entry queue={currentQueue} />
+                </Suspense>
+              </ErrorBoundary>
             </Layout>
           </AccessRequest>
         </LedgerPublicKeyRequest>
