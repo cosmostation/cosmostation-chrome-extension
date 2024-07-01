@@ -179,13 +179,11 @@ export function generateMailtoReportLink({ error, pathname, chainName, queue }: 
 
   const emailBody = encodeURIComponent(
     [
-      `Hello Cosmostation Support Team,\n`,
-      `I would like to report an issue encountered in the app.\n`,
-      `Error Description:`,
-      `Please describe the error you encountered here.`,
+      `Dear Cosmostation Support Team,\n`,
+      `I am writing to report an error that occurred while using the Cosmostation extension wallet. Below are the details of the issue:`,
       `-\n`,
-      `Error Details:`,
-      `- App Version: ${extensionManifest.version}`,
+      `Details of the Error:`,
+      `- Extension wallet version: ${extensionManifest.version}`,
       `- Name: ${error.name ?? ''}`,
       `- Message: ${error.message ?? ''}`,
       `- Chain: ${chainName ?? ''}`,
@@ -193,10 +191,10 @@ export function generateMailtoReportLink({ error, pathname, chainName, queue }: 
       `${queue?.origin || queue?.channel ? `- Origin: ${queue?.origin || queue?.channel || ''}` : ''}`,
       `${queue?.message.method ? `- Action: ${queue.message.method}` : ''}`,
       `${queue?.message ? `- Request Received: ${JSON.stringify(queue.message)}` : ''}`,
-      `\nAdditional Information:`,
-      `Please provide any additional information that may help us understand the issue better.`,
+      `\nDescription of Error:`,
+      `(Please describe the details of the error that you encountered. This description helps our developers to understand and investigate the situation better)`,
       `-\n`,
-      `Thank you for your assistance.\n`,
+      `Thank you and I look forward to hearing back from the team\n`,
       `Best regards,`,
       `Cosmostation Extension User`,
     ]
