@@ -165,14 +165,14 @@ export function getAddressKey(account?: Account, chain?: Chain) {
   return sha256(`${account.id}${chain.id}${pathWithoutAddressIndex}`).toString();
 }
 
-type FormattedEmailProps = {
+type GenerateMailtoReportLink = {
   error: Error;
   pathname: string;
   chainName?: string;
   queue?: Queue;
 };
 
-export function generateMailtoReportLink({ error, pathname, chainName, queue }: FormattedEmailProps) {
+export function generateMailtoReportLink({ error, pathname, chainName, queue }: GenerateMailtoReportLink) {
   const extensionManifest = extension.runtime.getManifest();
 
   const emailSubject = encodeURIComponent(`Cosmostation Extension Issue Report - Version ${extensionManifest.version}`);
