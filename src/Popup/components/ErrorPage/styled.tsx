@@ -1,8 +1,6 @@
 import { styled } from '@mui/material/styles';
 
-import { THEME_TYPE } from '~/constants/theme';
 import { darkEnTheme, lightEnTheme } from '~/Popup/styles/theme';
-import type { ThemeType } from '~/types/theme';
 
 export const Container = styled('div')({
   padding: '0 0 1.6rem 0',
@@ -53,12 +51,8 @@ export const DescriptionContainer = styled('div')(({ theme }) => ({
   textAlign: 'center',
 }));
 
-type Description2ContainerProps = {
-  'data-theme-type': ThemeType;
-};
-
-export const Description2Container = styled('div')<Description2ContainerProps>(({ theme, ...props }) => ({
-  color: props['data-theme-type'] === THEME_TYPE.LIGHT ? darkEnTheme.colors.base05 : lightEnTheme.colors.base05,
+export const Description2Container = styled('div')(({ theme }) => ({
+  color: theme.mode === 'light' ? darkEnTheme.colors.base05 : lightEnTheme.colors.base05,
 
   fontFamily: theme.typography.h4.fontFamily,
   fontStyle: theme.typography.h4.fontStyle,

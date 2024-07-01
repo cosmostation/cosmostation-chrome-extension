@@ -12,7 +12,6 @@ import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
-import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { generateMailtoReportLink } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
@@ -46,8 +45,6 @@ export default function ErrorPage({ queue, chain, ...rest }: EntryProps & Fallba
   const { t } = useTranslation();
 
   const { pathname } = useLocation();
-
-  const { extensionStorage } = useExtensionStorage();
 
   const { currentAccount } = useCurrentAccount();
   const accounts = useAccounts();
@@ -117,7 +114,7 @@ export default function ErrorPage({ queue, chain, ...rest }: EntryProps & Fallba
           </TitleContainer>
           <DescriptionContainer>
             <Typography variant="h5">{t('components.ErrorPage.index.description1')}</Typography>
-            <Description2Container data-theme-type={extensionStorage.theme}>{t('components.ErrorPage.index.description2')}</Description2Container>
+            <Description2Container>{t('components.ErrorPage.index.description2')}</Description2Container>
           </DescriptionContainer>
         </ContentsContainer>
 
