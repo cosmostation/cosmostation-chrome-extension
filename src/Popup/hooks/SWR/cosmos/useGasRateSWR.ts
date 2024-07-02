@@ -24,6 +24,8 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const { data, error, mutate } = useParamsSWR(chain, config);
   const feemarketData = useFeemarketSWR({ chain }, config);
 
+  const isFeemarket = useMemo(() => gt(feemarketData.data?.prices.length || '0', '1'), [feemarketData.data?.prices.length]);
+
   const defaultGasRateKey = useMemo(() => {
     const baseGasRateKey = data?.params?.chainlist_params?.fee?.base;
 
@@ -35,10 +37,25 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
   }, [data?.params?.chainlist_params?.fee]);
 
   const gasRate: Record<string, GasRate> = useMemo(() => {
-    const chainlistGasRates = data ? data.params?.chainlist_params?.fee?.rate ?? [] : [];
     const result: Record<string, GasRate> = {};
 
-    if (chainlistGasRates.length === 0) {
+    if (isFeemarket) {
+      feemarketData.data?.prices.forEach((price) => {
+        const { denom, amount } = price;
+
+        result[denom] = {
+          tiny: amount,
+          low: amount,
+          average: amount,
+        };
+      });
+
+      return result;
+    }
+
+    const chainlistFeeRates = data ? data.params?.chainlist_params?.fee?.rate ?? [] : [];
+
+    if (chainlistFeeRates.length === 0) {
       const nonNativeGasRates = COSMOS_NON_NATIVE_GAS_RATES.filter((item) => item.chainId === chain.id);
 
       return nonNativeGasRates
@@ -49,61 +66,59 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
         : { [chain.baseDenom]: chain.gasRate };
     }
 
-    chainlistGasRates.forEach((gr, idx) => {
+    chainlistFeeRates.forEach((gr, idx) => {
       const splitedItems = gr.split(',');
 
       splitedItems.forEach((splitedItem) => {
         const subIndex = splitedItem.search(/(?![0-9.])+/);
 
+        const rate = splitedItem.substring(0, subIndex);
         const denom = splitedItem.substring(subIndex);
-
-        const chainlistGasRate = splitedItem.substring(0, subIndex);
-        const feemarketGasRate = feemarketData.data?.prices.find((item) => item.denom === denom)?.amount || '0';
-        const selectedGasRate = gt(feemarketGasRate, chainlistGasRate) ? feemarketGasRate : chainlistGasRate;
 
         if (idx === 0) {
           result[denom] = {
-            tiny: selectedGasRate,
-            low: selectedGasRate,
-            average: selectedGasRate,
+            tiny: rate,
+            low: rate,
+            average: rate,
           };
         }
 
         if (idx === 1) {
           if (!result[denom]) {
             result[denom] = {
-              tiny: selectedGasRate,
-              low: selectedGasRate,
-              average: selectedGasRate,
+              tiny: rate,
+              low: rate,
+              average: rate,
             };
           } else {
-            result[denom] = { ...result[denom], low: selectedGasRate, average: selectedGasRate };
+            result[denom] = { ...result[denom], low: rate, average: rate };
           }
         }
 
         if (idx === 2) {
           if (!result[denom]) {
             result[denom] = {
-              tiny: selectedGasRate,
-              low: selectedGasRate,
-              average: selectedGasRate,
+              tiny: rate,
+              low: rate,
+              average: rate,
             };
           } else {
-            result[denom] = { ...result[denom], average: selectedGasRate };
+            result[denom] = { ...result[denom], average: rate };
           }
         }
       });
     });
 
     return result;
-  }, [feemarketData.data?.prices, chain.baseDenom, chain.gasRate, chain.id, data]);
+  }, [chain.baseDenom, chain.gasRate, chain.id, data, feemarketData.data?.prices, isFeemarket]);
 
   const returnData = useMemo(
     () => ({
       gasRate,
       defaultGasRateKey,
+      isFeemarket,
     }),
-    [defaultGasRateKey, gasRate],
+    [defaultGasRateKey, gasRate, isFeemarket],
   );
 
   const returnError = useMemo(() => {
