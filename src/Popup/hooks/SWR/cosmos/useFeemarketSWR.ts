@@ -2,7 +2,7 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { get, isAxiosError } from '~/Popup/utils/axios';
+import { get } from '~/Popup/utils/axios';
 import { cosmosURL } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { FeemarketPayload } from '~/types/cosmos/feemarket';
@@ -21,12 +21,7 @@ export function useFeemarketSWR({ chain, denom }: UseFeemarketSWRProps, config?:
     try {
       return await get<FeemarketPayload>(fetchUrl);
     } catch (e: unknown) {
-      if (isAxiosError(e)) {
-        if (e.response?.status === 404) {
-          return null;
-        }
-      }
-      throw e;
+      return null;
     }
   };
 
