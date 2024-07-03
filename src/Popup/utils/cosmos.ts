@@ -27,7 +27,7 @@ import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
 import { UX } from '~/constants/chain/cosmos/ux';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
-import { cosmos } from '~/proto/cosmos-v0.44.2.js';
+import { cosmos } from '~/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '~/types/chain';
 import type {
   Msg,

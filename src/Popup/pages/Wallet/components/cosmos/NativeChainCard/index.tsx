@@ -35,7 +35,7 @@ import { getAddress, getAddressKey, getDisplayMaxDecimals, getKeyPair } from '~/
 import { convertToValidatorAddress, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
-import { cosmos } from '~/proto/cosmos-v0.44.2.js';
+import { cosmos } from '~/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgCommission, MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Path } from '~/types/route';
