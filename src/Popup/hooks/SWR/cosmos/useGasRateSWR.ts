@@ -28,7 +28,7 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const feemarketData = useFeemarketSWR({ chain }, config);
 
   const isFeemarketActive = useMemo(
-    () => isEnabledFeemarket && gt(feemarketData.data?.prices.length || '0', '1'),
+    () => isEnabledFeemarket && gt(feemarketData.data?.prices.length || '0', '0'),
     [feemarketData.data?.prices.length, isEnabledFeemarket],
   );
 
