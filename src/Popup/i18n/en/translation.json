@@ -45,7 +45,8 @@
       },
       "index": {
         "average": "Average",
-        "fee": "Fee",
+        "fee": "Tx Fee",
+        "feeInfo": "Fees and tips are paid to the chain, not the wallet",
         "gasSettings": "Gas settings",
         "low": "Low",
         "tiny": "Tiny"

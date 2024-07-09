@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Typography } from '@mui/material';
 
+import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
@@ -11,23 +12,32 @@ import type { FeeCoin, GasRate, GasRateKey } from '~/types/chain';
 import FeeSettingDialog from './components/FeeSettingDialog';
 import GasSettingDialog from './components/GasSettingDialog';
 import {
+  ArrowIconContainer,
+  BodyContainer,
   Container,
-  EditContainer,
-  EditLeftContainer,
-  EditRightContainer,
   FeeButton,
   FeeButtonContainer,
+  FeeCoinButton,
+  FeeCoinContentContainer,
+  FeeCoinContentLeftContainer,
+  FeeCoinDenomContainer,
+  FeeCoinImageContainer,
   FeeInfoContainer,
-  FeeSettingButton,
   GasButton,
+  HeaderContainer,
+  HeaderLeftContainer,
+  HeaderLeftIconContainer,
   LeftContainer,
   RightAmountContainer,
   RightColumnContainer,
   RightContainer,
   RightValueContainer,
 } from './styled';
+import Tooltip from '../common/Tooltip';
 
-import ChangeIcon from '~/images/icons/Change.svg';
+import BottomArrow from '~/images/icons/BottomArrow.svg';
+import Info16Icon from '~/images/icons/Info16.svg';
+import UpArrow from '~/images/icons/UpArrow.svg';
 
 type FeeProps = {
   feeCoin: FeeCoin;
@@ -55,7 +65,7 @@ export default function Fee({
   onChangeFeeCoin,
 }: FeeProps) {
   const { extensionStorage } = useExtensionStorage();
-  const { decimals, displayDenom, coinGeckoId } = feeCoin;
+  const { decimals, displayDenom, coinGeckoId, imageURL } = feeCoin;
 
   const { average, tiny, low } = gasRate;
 
@@ -107,71 +117,98 @@ export default function Fee({
     return (
       <>
         <Container>
-          <FeeInfoContainer>
-            <LeftContainer>
-              <FeeSettingButton type="button" onClick={() => setIsOpenFeeDialog(true)}>
-                <Typography variant="h5">{t('components.Fee.index.fee')}</Typography>
-                <ChangeIcon />
-              </FeeSettingButton>
-            </LeftContainer>
+          <HeaderContainer>
+            <HeaderLeftContainer>
+              <Typography variant="h5">{t('components.Fee.index.fee')}</Typography>
+              <Tooltip title={t('components.Fee.index.feeInfo')} arrow placement="top">
+                <HeaderLeftIconContainer>
+                  <Info16Icon />
+                </HeaderLeftIconContainer>
+              </Tooltip>
+            </HeaderLeftContainer>
             <RightContainer>
-              <RightColumnContainer>
-                <RightAmountContainer>
-                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-                    {displayFee}
-                  </Number>
-                  &nbsp;
-                  <Typography variant="h5n">{displayDenom}</Typography>
-                </RightAmountContainer>
-                <RightValueContainer>
-                  <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
-                    {value}
-                  </Number>
-                </RightValueContainer>
-              </RightColumnContainer>
-            </RightContainer>
-          </FeeInfoContainer>
-          <EditContainer>
-            <EditLeftContainer>
               <GasButton type="button" onClick={() => setIsOpenGasDialog(true)}>
                 <Typography variant="h6">{t('components.Fee.index.gasSettings')}</Typography>
               </GasButton>
-            </EditLeftContainer>
-            <EditRightContainer>
-              <FeeButtonContainer>
-                <FeeButton
-                  type="button"
-                  onClick={() => {
-                    onChangeFee?.(times(tiny, gas));
-                    onChangeGasRateKey?.('tiny');
-                  }}
-                  data-is-active={equal(currentGasRate, tiny) ? 1 : 0}
-                >
-                  {t('components.Fee.index.tiny')}
-                </FeeButton>
-                <FeeButton
-                  type="button"
-                  onClick={() => {
-                    onChangeFee?.(times(low, gas));
-                    onChangeGasRateKey?.('low');
-                  }}
-                  data-is-active={equal(currentGasRate, low) ? 1 : 0}
-                >
-                  {t('components.Fee.index.low')}
-                </FeeButton>
-                <FeeButton
-                  type="button"
-                  onClick={() => {
-                    onChangeFee?.(times(average, gas));
-                    onChangeGasRateKey?.('average');
-                  }}
-                  data-is-active={equal(currentGasRate, average) ? 1 : 0}
-                >
-                  {t('components.Fee.index.average')}
-                </FeeButton>
-              </FeeButtonContainer>
-            </EditRightContainer>
-          </EditContainer>
+            </RightContainer>
+          </HeaderContainer>
+          <BodyContainer>
+            <FeeCoinButton
+              onClick={() => {
+                setIsOpenFeeDialog(true);
+              }}
+              type="button"
+            >
+              <FeeCoinContentContainer>
+                <FeeCoinContentLeftContainer>
+                  <FeeCoinImageContainer>
+                    <Image src={imageURL} />
+                  </FeeCoinImageContainer>
+                  <FeeCoinDenomContainer>
+                    <div>
+                      <Typography variant="h7">{displayDenom}</Typography>
+                    </div>
+                  </FeeCoinDenomContainer>
+                </FeeCoinContentLeftContainer>
+                <ArrowIconContainer>{isOpenFeeDialog ? <UpArrow /> : <BottomArrow />}</ArrowIconContainer>
+              </FeeCoinContentContainer>
+            </FeeCoinButton>
+
+            <RightColumnContainer>
+              <RightAmountContainer>
+                <FeeCoinDenomContainer>
+                  <div>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                      {displayFee}
+                    </Number>
+                  </div>
+                </FeeCoinDenomContainer>
+                &nbsp;
+                <FeeCoinDenomContainer>
+                  <div>
+                    <Typography variant="h5n">{displayDenom}</Typography>
+                  </div>
+                </FeeCoinDenomContainer>
+              </RightAmountContainer>
+              <RightValueContainer>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={currency}>
+                  {value}
+                </Number>
+              </RightValueContainer>
+            </RightColumnContainer>
+          </BodyContainer>
+          <FeeButtonContainer>
+            <FeeButton
+              type="button"
+              onClick={() => {
+                onChangeFee?.(times(tiny, gas));
+                onChangeGasRateKey?.('tiny');
+              }}
+              data-is-active={equal(currentGasRate, tiny) ? 1 : 0}
+            >
+              <Typography variant="h7">{t('components.Fee.index.tiny')}</Typography>
+            </FeeButton>
+            <FeeButton
+              type="button"
+              onClick={() => {
+                onChangeFee?.(times(low, gas));
+                onChangeGasRateKey?.('low');
+              }}
+              data-is-active={equal(currentGasRate, low) ? 1 : 0}
+            >
+              <Typography variant="h7">{t('components.Fee.index.low')}</Typography>
+            </FeeButton>
+            <FeeButton
+              type="button"
+              onClick={() => {
+                onChangeFee?.(times(average, gas));
+                onChangeGasRateKey?.('average');
+              }}
+              data-is-active={equal(currentGasRate, average) ? 1 : 0}
+            >
+              <Typography variant="h7">{t('components.Fee.index.average')}</Typography>
+            </FeeButton>
+          </FeeButtonContainer>
         </Container>
         <GasSettingDialog
           open={isOpenGasDialog}

@@ -45,7 +45,8 @@
       },
       "index": {
         "average": "평균",
-        "fee": "수수료",
+        "fee": "Tx 수수료",
+        "feeInfo": "Fee와 Tip은 지갑이 아닌 체인에 지불됩니다",
         "gasSettings": "가스량 설정",
         "low": "낮음",
         "tiny": "최소"
