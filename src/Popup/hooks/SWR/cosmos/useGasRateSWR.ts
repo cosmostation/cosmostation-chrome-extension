@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
 import { COSMOS_NON_NATIVE_GAS_RATES } from '~/constants/chain';
-import { gt } from '~/Popup/utils/big';
+import { gt, times } from '~/Popup/utils/big';
 import type { CosmosChain, GasRate, GasRateKey } from '~/types/chain';
 
 import { useFeemarketSWR } from './useFeemarketSWR';
@@ -46,15 +46,23 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
     const result: Record<string, GasRate> = {};
 
     if (isFeemarketActive) {
-      feemarketData.data?.prices.forEach((price) => {
-        const { denom, amount } = price;
+      feemarketData.data?.prices
+        .sort((a) => {
+          if (a.denom === chain.baseDenom) {
+            return -1;
+          }
 
-        result[denom] = {
-          tiny: amount,
-          low: amount,
-          average: amount,
-        };
-      });
+          return 1;
+        })
+        .forEach((price) => {
+          const { denom, amount } = price;
+
+          result[denom] = {
+            tiny: times(amount, '1.1'),
+            low: times(amount, '1.2'),
+            average: times(amount, '1.3'),
+          };
+        });
 
       return result;
     }
