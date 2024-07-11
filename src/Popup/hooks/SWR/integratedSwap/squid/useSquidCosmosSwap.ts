@@ -348,19 +348,12 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
 
   const squidSwapProtoTx = useMemo(() => {
     if (squidSwapAminoTx && fromChain?.line === 'COSMOS') {
-      const pTx = protoTx(squidSwapAminoTx, '', {
+      const pTx = protoTx(squidSwapAminoTx, [''], {
         type: getPublicKeyType(fromChain),
         value: '',
       });
 
-      return (
-        pTx &&
-        protoTxBytes({
-          signatures: [pTx.signature],
-          txBodyBytes: pTx.txBodyBytes,
-          authInfoBytes: pTx.authInfoBytes,
-        })
-      );
+      return pTx && protoTxBytes({ ...pTx });
     }
     return null;
   }, [fromChain, squidSwapAminoTx]);

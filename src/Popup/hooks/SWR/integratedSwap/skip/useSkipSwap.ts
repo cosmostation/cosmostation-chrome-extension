@@ -243,19 +243,12 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
 
   const skipSwapProtoTx = useMemo(() => {
     if (skipSwapAminoTx && fromChain) {
-      const pTx = protoTx(skipSwapAminoTx, '', {
+      const pTx = protoTx(skipSwapAminoTx, [''], {
         type: getPublicKeyType(fromChain),
         value: '',
       });
 
-      return (
-        pTx &&
-        protoTxBytes({
-          signatures: [pTx.signature],
-          txBodyBytes: pTx.txBodyBytes,
-          authInfoBytes: pTx.authInfoBytes,
-        })
-      );
+      return pTx && protoTxBytes({ ...pTx });
     }
     return null;
   }, [fromChain, skipSwapAminoTx]);
