@@ -20,6 +20,7 @@ import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { EVMOS } from '~/constants/chain/ethereum/network/evmos';
 import { FANTOM } from '~/constants/chain/ethereum/network/fantom';
 import { HARMONY } from '~/constants/chain/ethereum/network/harmony';
+import { HUMANS_AI } from '~/constants/chain/ethereum/network/humansAi';
 import { KAVA } from '~/constants/chain/ethereum/network/kava';
 import { OKT } from '~/constants/chain/ethereum/network/okt';
 import { OPTIMISM } from '~/constants/chain/ethereum/network/optimism';
@@ -347,10 +348,11 @@ export function convertEVMToAssetName(evmNetwork: EthereumNetwork) {
     [AVALANCHE.id]: 'avalanche',
     [BASE.id]: 'base',
     [CRONOS.id]: 'cronos',
+    [DYMENSION.id]: 'dymension',
     [EVMOS.id]: 'evmos',
     [FANTOM.id]: 'fantom',
     [HARMONY.id]: 'harmony',
-    [DYMENSION.id]: 'dymension',
+    [HUMANS_AI.id]: 'humans',
     [KAVA.id]: 'kava',
     [OKT.id]: 'okc',
     [OPTIMISM.id]: 'optimism',
@@ -371,10 +373,11 @@ export function convertAssetNameToEVM(assetName: string) {
     avalanche: AVALANCHE,
     base: BASE,
     cronos: CRONOS,
+    dymension: DYMENSION,
     evmos: EVMOS,
     fantom: FANTOM,
     harmony: HARMONY,
-    dymension: DYMENSION,
+    humans: HUMANS_AI,
     kava: KAVA,
     okc: OKT,
     optimism: OPTIMISM,
