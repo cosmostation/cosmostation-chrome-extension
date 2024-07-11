@@ -72,6 +72,7 @@ import { ALTHEA as ETHEREUM_NETWORK__ALTHEA } from './ethereum/network/althea';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
 import { ARTELA_TESTNET as ETHEREUM_NETWORK__ARTELA_TESTNET } from './ethereum/network/artelaTestnet';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
+import { BASE as ETHEREUM_NETWORK__BASE } from './ethereum/network/base';
 import { CRONOS as ETHEREUM_NETWORK__CRONOS } from './ethereum/network/cronos';
 import { DYMENSION as ETHEREUM_NETWORK_DYMENSION } from './ethereum/network/dymension';
 import { ETHEREUM as ETHEREUM_NETWORK__ETHEREUM } from './ethereum/network/ethereum';
@@ -84,6 +85,7 @@ import { OPTIMISM as ETHEREUM_NETWORK__OPTIMISM } from './ethereum/network/optim
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SCROLL_SEPOLIA_TESTNET as ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET } from './ethereum/network/scrollSepoliaTestnet';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
+import { XPLA as ETHEREUM_NETWORK__XPLA } from './ethereum/network/xpla';
 import { DEVNET as SUI_NETWORK__DEVNET } from './sui/network/devnet';
 import { MAINNET as SUI_NETWORK__MAINNET } from './sui/network/mainnet';
 import { TESTNET as SUI_NETWORK__TESTNET } from './sui/network/testnet';
@@ -186,6 +188,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__ARBITRUM,
   ETHEREUM_NETWORK__ARTELA_TESTNET,
   ETHEREUM_NETWORK__AVALANCHE,
+  ETHEREUM_NETWORK__BASE,
   ETHEREUM_NETWORK__CRONOS,
   ETHEREUM_NETWORK__EVMOS,
   ETHEREUM_NETWORK__FANTOM,
@@ -197,6 +200,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__POLYGON,
   ETHEREUM_NETWORK__SMART_CHAIN,
   ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET,
+  ETHEREUM_NETWORK__XPLA,
 ];
 
 export const APTOS_CHAINS: AptosChain[] = [APTOS];

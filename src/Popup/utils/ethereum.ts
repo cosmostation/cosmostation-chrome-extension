@@ -13,6 +13,7 @@ import { ALTHEA } from '~/constants/chain/ethereum/network/althea';
 import { ARBITRUM } from '~/constants/chain/ethereum/network/arbitrum';
 import { ARTELA_TESTNET } from '~/constants/chain/ethereum/network/artelaTestnet';
 import { AVALANCHE } from '~/constants/chain/ethereum/network/avalanche';
+import { BASE } from '~/constants/chain/ethereum/network/base';
 import { CRONOS } from '~/constants/chain/ethereum/network/cronos';
 import { DYMENSION } from '~/constants/chain/ethereum/network/dymension';
 import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
@@ -25,6 +26,7 @@ import { OPTIMISM } from '~/constants/chain/ethereum/network/optimism';
 import { POLYGON } from '~/constants/chain/ethereum/network/polygon';
 import { SCROLL_SEPOLIA_TESTNET } from '~/constants/chain/ethereum/network/scrollSepoliaTestnet';
 import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
+import { XPLA } from '~/constants/chain/ethereum/network/xpla';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID, ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE, TOKEN_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
@@ -343,6 +345,7 @@ export function convertEVMToAssetName(evmNetwork: EthereumNetwork) {
     [ARBITRUM.id]: 'arbitrum',
     [ARTELA_TESTNET.id]: 'artela-testnet',
     [AVALANCHE.id]: 'avalanche',
+    [BASE.id]: 'base',
     [CRONOS.id]: 'cronos',
     [EVMOS.id]: 'evmos',
     [FANTOM.id]: 'fantom',
@@ -354,6 +357,7 @@ export function convertEVMToAssetName(evmNetwork: EthereumNetwork) {
     [POLYGON.id]: 'polygon',
     [SMART_CHAIN.id]: 'bnb-smart-chain',
     [SCROLL_SEPOLIA_TESTNET.id]: 'scroll-sepolia-testnet',
+    [XPLA.id]: 'xpla',
   };
   return nameMap[evmNetwork.id] || evmNetwork.networkName.toLowerCase();
 }
@@ -365,6 +369,7 @@ export function convertAssetNameToEVM(assetName: string) {
     arbitrum: ARBITRUM,
     'artela-testnet': ARTELA_TESTNET,
     avalanche: AVALANCHE,
+    base: BASE,
     cronos: CRONOS,
     evmos: EVMOS,
     fantom: FANTOM,
@@ -376,6 +381,7 @@ export function convertAssetNameToEVM(assetName: string) {
     polygon: POLYGON,
     'bnb-smart-chain': SMART_CHAIN,
     'scroll-sepolia-testnet': SCROLL_SEPOLIA_TESTNET,
+    xpla: XPLA,
   } as Record<string, EthereumNetwork | undefined>;
 
   return nameMap[assetName] || ETHEREUM_NETWORKS.find((item) => item.networkName.toLowerCase() === assetName);
