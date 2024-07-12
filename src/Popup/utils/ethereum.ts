@@ -14,6 +14,7 @@ import { ARBITRUM } from '~/constants/chain/ethereum/network/arbitrum';
 import { ARTELA_TESTNET } from '~/constants/chain/ethereum/network/artelaTestnet';
 import { AVALANCHE } from '~/constants/chain/ethereum/network/avalanche';
 import { BASE } from '~/constants/chain/ethereum/network/base';
+import { CANTO } from '~/constants/chain/ethereum/network/canto';
 import { CRONOS } from '~/constants/chain/ethereum/network/cronos';
 import { DYMENSION } from '~/constants/chain/ethereum/network/dymension';
 import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
@@ -347,6 +348,7 @@ export function convertEVMToAssetName(evmNetwork: EthereumNetwork) {
     [ARTELA_TESTNET.id]: 'artela-testnet',
     [AVALANCHE.id]: 'avalanche',
     [BASE.id]: 'base',
+    [CANTO.id]: 'canto',
     [CRONOS.id]: 'cronos',
     [DYMENSION.id]: 'dymension',
     [EVMOS.id]: 'evmos',
@@ -372,6 +374,7 @@ export function convertAssetNameToEVM(assetName: string) {
     'artela-testnet': ARTELA_TESTNET,
     avalanche: AVALANCHE,
     base: BASE,
+    canto: CANTO,
     cronos: CRONOS,
     dymension: DYMENSION,
     evmos: EVMOS,
