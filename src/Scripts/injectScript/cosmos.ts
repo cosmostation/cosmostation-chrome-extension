@@ -5,6 +5,7 @@ import { LINE_TYPE } from '~/constants/chain';
 import { COSMOSTATION_ENCODED_LOGO_IMAGE, COSMOSTATION_WALLET_NAME } from '~/constants/common';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
+import { toLong } from '~/Popup/utils/big';
 import { CosmosRPCError } from '~/Popup/utils/error';
 import type { SignAminoDoc } from '~/types/cosmos/amino';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
@@ -16,6 +17,7 @@ import type {
   CosSignAminoResponse,
   CosSignDirectParams,
   CosSignDirectResponse,
+  CosSignEIP712Response,
   CosSignMessageResponse,
   CosSupportedChainIdsResponse,
   CosVerifyMessageResponse,
@@ -301,7 +303,7 @@ const signDirect: Keplr['signDirect'] = async (chainId, _, signDoc, signOptions)
   })) as CosSignDirectResponse;
   return {
     signed: {
-      accountNumber: response.signed_doc.account_number as unknown as Long,
+      accountNumber: toLong(response.signed_doc.account_number),
       chainId: response.signed_doc.chain_id,
       authInfoBytes: new Uint8Array(response.signed_doc.auth_info_bytes),
       bodyBytes: new Uint8Array(response.signed_doc.body_bytes),
@@ -402,6 +404,27 @@ const suggestToken: Keplr['suggestToken'] = async (chainId, contractAddress) => 
   }
 };
 
+const experimentalSignEIP712CosmosTx_v0: Keplr['experimentalSignEIP712CosmosTx_v0'] = async (chainId, signer, eip712, signDoc, signOptions) => {
+  try {
+    const response = (await request({
+      method: 'cos_signEIP712',
+      params: {
+        chainId,
+        signer,
+        eip712,
+        doc: signDoc as unknown as SignAminoDoc,
+        isEditFee: !(signOptions?.preferNoSetFee ?? window.cosmostation.providers.keplr.defaultOptions.sign?.preferNoSetFee),
+        isEditMemo: !(signOptions?.preferNoSetMemo ?? window.cosmostation.providers.keplr.defaultOptions.sign?.preferNoSetMemo),
+        isCheckBalance: !(signOptions?.disableBalanceCheck ?? window.cosmostation.providers.keplr.defaultOptions.sign?.disableBalanceCheck),
+      },
+    })) as CosSignEIP712Response;
+
+    return { signed: response.signed_doc, signature: { pub_key: response.pub_key, signature: response.signature } };
+  } catch (e) {
+    throw new Error((e as { message?: string }).message || 'Unknown Error');
+  }
+};
+
 export const keplr: Keplr = {
   version: '0.0.0',
   mode: 'extension',
@@ -420,6 +443,7 @@ export const keplr: Keplr = {
   signArbitrary,
   verifyArbitrary,
   suggestToken,
+  experimentalSignEIP712CosmosTx_v0,
 };
 
 // keplr provider end

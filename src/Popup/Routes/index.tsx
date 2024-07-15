@@ -44,6 +44,7 @@ import PopupCosmosAddNFTs from '~/Popup/pages/Popup/Cosmos/AddNFTs';
 import PopupCosmosAddTokens from '~/Popup/pages/Popup/Cosmos/AddTokens';
 import PopupCosmosSignAmino from '~/Popup/pages/Popup/Cosmos/Sign/Amino';
 import PopupCosmosSignDirect from '~/Popup/pages/Popup/Cosmos/Sign/Direct';
+import PopupCosmosSignEIP712 from '~/Popup/pages/Popup/Cosmos/Sign/EIP712';
 import PopupCosmosSignMessage from '~/Popup/pages/Popup/Cosmos/Sign/Message';
 import PopupEthereumAddNetwork from '~/Popup/pages/Popup/Ethereum/AddNetwork';
 import PopupEthereumAddTokens from '~/Popup/pages/Popup/Ethereum/AddTokens';
@@ -164,6 +165,7 @@ export default function Routes() {
           <Route path={PATH.POPUP__COSMOS__SIGN__AMINO} element={<PopupCosmosSignAmino />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__DIRECT} element={<PopupCosmosSignDirect />} />
           <Route path={PATH.POPUP__COSMOS__SIGN__MESSAGE} element={<PopupCosmosSignMessage />} />
+          <Route path={PATH.POPUP__COSMOS__SIGN__EIP712} element={<PopupCosmosSignEIP712 />} />
 
           <Route path={PATH.POPUP__APTOS__TRANSACTION} element={<PopupAptosTransaction />} />
           <Route path={PATH.POPUP__APTOS__SIGN_MESSAGE} element={<PopupAptosSignMessage />} />

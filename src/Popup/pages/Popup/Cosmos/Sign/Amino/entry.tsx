@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import secp256k1 from 'secp256k1';
 import sortKeys from 'sort-keys';
+import type { MessageTypeProperty, MessageTypes } from '@metamask/eth-sig-util';
 
 import { COSMOS_DEFAULT_GAS } from '~/constants/chain';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -14,24 +15,28 @@ import LedgerToTab from '~/Popup/components/Loading/LedgerToTab';
 import PopupHeader from '~/Popup/components/PopupHeader';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
+import { useBlockLatestSWR } from '~/Popup/hooks/SWR/cosmos/useBlockLatestSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useEthermintLedgerSign } from '~/Popup/hooks/useEthermintLedgerSign';
 import { useLedgerTransport } from '~/Popup/hooks/useLedgerTransport';
 import { useLoading } from '~/Popup/hooks/useLoading';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, equal, gt, gte, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
 import { cosmosURL, getDefaultAV, getPublicKeyType, signAmino } from '~/Popup/utils/cosmos';
+import { constructEip712TypedData, getEIP712Signature } from '~/Popup/utils/ethermint';
 import CosmosApp from '~/Popup/utils/ledger/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
-import { broadcast, protoTx, protoTxBytes } from '~/Popup/utils/proto';
+import { broadcast, ethermintProtoTx, ethermintProtoTxBytes, protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain, FeeCoin, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
 import type { CosSignAmino, CosSignAminoResponse } from '~/types/message/cosmos';
+import type { CustomTypedMessage } from '~/types/message/ethereum';
 import type { Path } from '~/types/route';
 
 import TxMessage from './components/TxMessage';
@@ -88,6 +93,8 @@ export default function Entry({ queue, chain }: EntryProps) {
     }, []);
     return uniqueFeeCoins;
   }, [assets.data, balance.data?.balance, supportedFeeCoins]);
+
+  const { isEthermintLedgerSign, isInjectiveChain } = useEthermintLedgerSign(chain);
 
   const { message, messageId, origin, channel } = queue;
 
@@ -201,7 +208,31 @@ export default function Entry({ queue, chain }: EntryProps) {
     [ceilBaseFee, currentFeeBaseDenom, currentGas, fee, isFeeUpdateAllowed],
   );
 
-  const tx = useMemo(() => ({ ...doc, memo: signingMemo, fee: signingFee }), [doc, signingFee, signingMemo]);
+  const feePayerAddress = useMemo(
+    () => fee.feePayer || (isEthermintLedgerSign && !isInjectiveChain ? address : undefined),
+    [address, fee.feePayer, isEthermintLedgerSign, isInjectiveChain],
+  );
+
+  const sourceChainLatestBlock = useBlockLatestSWR(chain);
+
+  const timeoutHeight = useMemo(() => {
+    if (doc.timeout_height) {
+      return doc.timeout_height;
+    }
+
+    const sourceChainBlockHeight = sourceChainLatestBlock.data?.block?.header?.height;
+
+    if (isEthermintLedgerSign && isInjectiveChain && sourceChainBlockHeight) {
+      return String(100 + parseInt(sourceChainBlockHeight, 10));
+    }
+
+    return undefined;
+  }, [doc.timeout_height, isEthermintLedgerSign, isInjectiveChain, sourceChainLatestBlock.data?.block?.header?.height]);
+
+  const tx = useMemo(
+    () => ({ ...doc, memo: signingMemo, fee: { ...signingFee, feePayer: feePayerAddress }, timeout_height: timeoutHeight }),
+    [doc, timeoutHeight, feePayerAddress, signingFee, signingMemo],
+  );
 
   const handleChange = useCallback((_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -309,6 +340,22 @@ export default function Entry({ queue, chain }: EntryProps) {
                         setLoadingLedgerSigning(true);
                         const transport = await createTransport();
 
+                        if (isEthermintLedgerSign) {
+                          const eip712TypedData = constructEip712TypedData(chain.chainId, tx);
+
+                          if (!eip712TypedData) {
+                            throw new Error('EIP712 typed data is not constructed');
+                          }
+
+                          const typedMessage = {
+                            domain: eip712TypedData.domain,
+                            primaryType: eip712TypedData.primaryType,
+                            message: tx,
+                            types: eip712TypedData.types as Record<string, MessageTypeProperty[]>,
+                          } as unknown as CustomTypedMessage<MessageTypes>;
+
+                          return getEIP712Signature(transport, chain, currentAccount, typedMessage);
+                        }
                         const cosmosApp = new CosmosApp(transport);
 
                         const coinType = chain.bip44.coinType.replaceAll("'", '');
@@ -345,8 +392,21 @@ export default function Entry({ queue, chain }: EntryProps) {
                     if (channel) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
-                        const pTx = protoTx(tx, base64Signature, pubKey);
-                        const pTxBytes = pTx ? protoTxBytes({ ...pTx }) : undefined;
+                        const pTx = isEthermintLedgerSign ? ethermintProtoTx(tx, base64Signature, pubKey) : protoTx(tx, base64Signature, pubKey);
+                        const pTxBytes = (() => {
+                          if (!pTx) return undefined;
+
+                          if (isEthermintLedgerSign && !isInjectiveChain) {
+                            return ethermintProtoTxBytes({
+                              ...pTx,
+                              signature: undefined,
+                            });
+                          }
+
+                          return protoTxBytes({
+                            ...pTx,
+                          });
+                        })();
 
                         const response = await broadcast(url, pTxBytes);
 

@@ -53,3 +53,9 @@ export type ProtoTxBytesProps = {
   txBodyBytes: Uint8Array;
   authInfoBytes: Uint8Array;
 };
+
+export type EthermintProtoTxBytesProps = {
+  signature?: string;
+  txBodyBytes: Uint8Array;
+  authInfoBytes: Uint8Array;
+};

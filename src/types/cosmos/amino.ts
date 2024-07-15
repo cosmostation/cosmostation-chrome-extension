@@ -6,6 +6,7 @@ export type Fee = {
   gas: string;
   payer?: string;
   granter?: string;
+  feePayer?: string;
 };
 
 export type Msg<T = unknown> = {
@@ -36,7 +37,7 @@ export type MsgTransfer = {
   source_channel: string;
   source_port: string;
   timeout_height: Height;
-  timeout_timestamp: number;
+  timeout_timestamp?: string;
   token: Amount;
   memo: string;
 };

@@ -401,10 +401,10 @@ export default function Send({ chain }: CosmosProps) {
   }, [
     address,
     addressRegex,
-    currentDepositAddress,
     chainParams.data?.params?.chainlist_params?.isBankLocked,
     currentCoinOrToken,
     currentCoinOrTokenDisplayAvailableAmount,
+    currentDepositAddress,
     currentDisplayAmount,
     currentDisplayFeeAmount,
     currentFeeCoin.baseDenom,

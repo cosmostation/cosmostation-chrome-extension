@@ -6,6 +6,7 @@ import { ethereumAddressRegex, getCosmosAddressRegex } from '~/Popup/utils/regex
 import type { CosmosChain, GasRate } from '~/types/chain';
 import type { Fee, Msg, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Amount } from '~/types/cosmos/common';
+import type { EIP712StructuredData } from '~/types/cosmos/ethermint';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 import type { AptosSignMessage, AptosSignTransaction } from '~/types/message/aptos';
 import type {
@@ -17,6 +18,7 @@ import type {
   CosSendTransaction,
   CosSignAmino,
   CosSignDirect,
+  CosSignEIP712,
   CosSignMessage,
   CosVerifyMessage,
 } from '~/types/message/cosmos';
@@ -102,6 +104,7 @@ export const cosSignAminoParamsSchema = (chainNames: string[], chainId: string) 
         gas: Joi.string().required(),
         payer: Joi.string().optional(),
         granter: Joi.string().optional(),
+        feePayer: Joi.string().optional(),
       }),
       memo: Joi.string().allow(''),
       msgs: Joi.array().items(
@@ -137,6 +140,98 @@ export const cosSignMessageParamsSchema = (chainNames: string[]) =>
     .label('params')
     .required();
 
+export const cosSignEIP712ParamsSchema = (chainId: string) => {
+  const chainIdRegex = getChainIdRegex(chainId);
+
+  return Joi.object<CosSignEIP712['params']>({
+    chainId: Joi.string().trim().pattern(chainIdRegex).required(),
+    signer: Joi.string().required(),
+    eip712: Joi.object<EIP712StructuredData>({
+      types: Joi.object({
+        EIP712Domain: Joi.array()
+          .items(
+            Joi.object<{
+              name: string;
+              type: string;
+            }>({
+              name: Joi.string().valid('name').required(),
+              type: Joi.string().valid('string').required(),
+            }),
+            Joi.object<{
+              name: string;
+              type: string;
+            }>({
+              name: Joi.string().valid('version').required(),
+              type: Joi.string().valid('string').required(),
+            }),
+            Joi.object<{
+              name: string;
+              type: string;
+            }>({
+              name: Joi.string().valid('chainId').required(),
+              type: Joi.string().valid('uint256').required(),
+            }),
+            Joi.object<{
+              name: string;
+              type: string;
+            }>({
+              name: Joi.string().valid('verifyingContract').required(),
+              type: Joi.string().valid('address', 'string').required(),
+            }),
+            Joi.object<{
+              name: string;
+              type: string;
+            }>({
+              name: Joi.string().valid('salt').required(),
+              type: Joi.string().valid('bytes32', 'string').required(),
+            }),
+          )
+          .unique()
+          .min(1)
+          .custom((value) => {
+            const domainFieldNames: Array<string> = ['name', 'version', 'chainId', 'verifyingContract', 'salt'];
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+            return value.sort((a: { name: string }, b: { name: string }) => domainFieldNames.indexOf(a.name) - domainFieldNames.indexOf(b.name));
+          })
+          .required(),
+      })
+        .unknown(true)
+        .required(),
+      domain: Joi.object().required(),
+      primaryType: Joi.string().required(),
+    })
+      .unknown(true)
+      .required(),
+    doc: Joi.object<SignAminoDoc>({
+      chain_id: Joi.string().trim().pattern(chainIdRegex).required(),
+      sequence: Joi.string().required(),
+      account_number: Joi.string().required(),
+      fee: Joi.object<Fee>({
+        amount: Joi.array()
+          .items(Joi.object<Amount>({ amount: Joi.string().required(), denom: Joi.string().required() }))
+          .optional(),
+        gas: Joi.string().required(),
+        payer: Joi.string().optional(),
+        feePayer: Joi.string().optional(),
+        granter: Joi.string().optional(),
+      }),
+      memo: Joi.string().allow(''),
+      msgs: Joi.array().items(
+        Joi.object<Msg>({
+          type: Joi.string().required(),
+          value: Joi.any(),
+        }),
+      ),
+      timeout_height: Joi.string().optional(),
+    }).required(),
+    isEditFee: Joi.boolean().default(true),
+    isEditMemo: Joi.boolean().default(false),
+    isCheckBalance: Joi.boolean().default(true),
+  })
+    .label('params')
+    .required();
+};
 export const cosVerifyMessageParamsSchema = (chainNames: string[]) =>
   Joi.object<CosVerifyMessage['params']>({
     chainName: Joi.string()

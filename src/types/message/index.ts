@@ -28,6 +28,7 @@ import type {
   CosSendTransaction,
   CosSignAmino,
   CosSignDirect,
+  CosSignEIP712,
   CosSignMessage,
   CosSupportedChainIds,
   CosSupportedChainNames,
@@ -97,6 +98,7 @@ export type CosmosRequestMessage =
   | CosAddChain
   | CosSignAmino
   | CosSignDirect
+  | CosSignEIP712
   | CosSupportedChainNames
   | CosSupportedChainIds
   | CosActivatedChainNames

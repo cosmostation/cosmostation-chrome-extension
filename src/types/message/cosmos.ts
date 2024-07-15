@@ -5,6 +5,8 @@ import type { SignAminoDoc } from '~/types/cosmos/amino';
 import type { SendTransactionPayload } from '~/types/cosmos/common';
 import type { PubKey, SignDirectDoc } from '~/types/cosmos/proto';
 
+import type { EIP712StructuredData } from '../cosmos/ethermint';
+
 export type CosmosNoPopupMethodType = ValueOf<typeof COSMOS_NO_POPUP_METHOD_TYPE>;
 export type CosmosPopupMethodType = ValueOf<typeof COSMOS_POPUP_METHOD_TYPE>;
 
@@ -202,6 +204,28 @@ export type CosSignDirectResponse = {
     value: string;
   };
   signed_doc: SignDirectDoc;
+};
+
+export type CosSignEIP712Params = {
+  chainId: string;
+  signer: string;
+  eip712: EIP712StructuredData;
+  doc: SignAminoDoc;
+} & CosSignOptions;
+
+export type CosSignEIP712 = {
+  method: typeof COSMOS_POPUP_METHOD_TYPE.COS__SIGN_EIP712;
+  params: CosSignEIP712Params;
+  id?: number | string;
+};
+
+export type CosSignEIP712Response = {
+  signature: string;
+  pub_key: {
+    type: PublicKeyType;
+    value: string;
+  };
+  signed_doc: SignAminoDoc;
 };
 
 export type CosAddTokensCW20Token = {

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useSnackbar } from 'notistack';
+import TinySecp256k1 from 'tiny-secp256k1';
 import EthereumApp from '@ledgerhq/hw-app-eth';
 import { Typography } from '@mui/material';
 import Sui from '@mysten/ledgerjs-hw-app-sui';
@@ -92,7 +93,9 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
   if (currentAccount.type === 'LEDGER' && chain && currentQueue) {
     if (
-      ![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS].includes(chain.bip44.coinType) &&
+      ![LEDGER_SUPPORT_COIN_TYPE.COSMOS, LEDGER_SUPPORT_COIN_TYPE.ETHERMINT, LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC, LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS].includes(
+        chain.bip44.coinType,
+      ) &&
       chain.line === 'COSMOS'
     ) {
       return null;
@@ -100,6 +103,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
     if (
       (!currentAccount.cosmosPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS && chain.line === 'COSMOS') ||
+      (!currentAccount.ethermintPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT && chain.line === 'COSMOS') ||
       (!currentAccount.mediblocPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC && chain.line === 'COSMOS') ||
       (!currentAccount.cryptoOrgPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS && chain.line === 'COSMOS') ||
       (!currentAccount.ethereumPublicKey && chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM && chain.line === 'ETHEREUM') ||
@@ -107,7 +111,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
     ) {
       const Step2 = (() => {
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) return Step2CosmosIcon;
-        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) return Step2EthereumIcon;
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM || chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT) return Step2EthereumIcon;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) return Step2Medibloc;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS) return Step2CryptoOrg;
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI) return Step2Sui;
@@ -116,7 +120,7 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
 
       const appName = (() => {
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.COSMOS) return 'Cosmos';
-        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) return 'Ethereum';
+        if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM || chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT) return 'Ethereum';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.MEDIBLOC) return 'Medibloc';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.CRONOS_POS) return 'Cronos POS';
         if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.SUI) return 'Sui';
@@ -236,7 +240,10 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                       }
                     }
 
-                    if (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM) {
+                    if (
+                      chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHEREUM ||
+                      (chain.bip44.coinType === LEDGER_SUPPORT_COIN_TYPE.ETHERMINT && chain.line === 'COSMOS')
+                    ) {
                       const ethereumApp = new EthereumApp(transport);
 
                       const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}`;
@@ -245,8 +252,13 @@ export default function LedgerPublicKeyRequest({ children }: AccessRequestProps)
                       const { publicKey } = result;
 
                       if (accountIndex > -1) {
-                        newAccounts.splice(accountIndex, 1, { ...currentAccount, ethereumPublicKey: publicKey });
+                        if (chain.line === 'COSMOS') {
+                          const compressedPublicKey = Buffer.from(TinySecp256k1.pointCompress(Buffer.from(publicKey, 'hex'), true)).toString('hex');
 
+                          newAccounts.splice(accountIndex, 1, { ...currentAccount, ethermintPublicKey: compressedPublicKey });
+                        } else {
+                          newAccounts.splice(accountIndex, 1, { ...currentAccount, ethereumPublicKey: publicKey });
+                        }
                         await setExtensionStorage('accounts', newAccounts);
                       }
                     }

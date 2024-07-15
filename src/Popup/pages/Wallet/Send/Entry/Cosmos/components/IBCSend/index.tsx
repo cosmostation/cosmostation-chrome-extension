@@ -11,7 +11,7 @@ import AddressBookBottomSheet from '~/Popup/components/AddressBookBottomSheet';
 import AssetBottomSheetButton from '~/Popup/components/common/AssetBottomSheetButton';
 import Button from '~/Popup/components/common/Button';
 import Image from '~/Popup/components/common/Image';
-import Number from '~/Popup/components/common/Number';
+import NumberText from '~/Popup/components/common/Number';
 import Tooltip from '~/Popup/components/common/Tooltip';
 import Fee from '~/Popup/components/Fee';
 import InputAdornmentIconButton from '~/Popup/components/InputAdornmentIconButton';
@@ -34,11 +34,13 @@ import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
+import { useEthermintLedgerSign } from '~/Popup/hooks/useEthermintLedgerSign';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, gt, gte, isDecimal, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getDisplayMaxDecimals } from '~/Popup/utils/common';
 import { convertAssetNameToCosmos, convertCosmosToAssetName, getPublicKeyType } from '~/Popup/utils/cosmos';
+import { generateTimeoutTimestamp } from '~/Popup/utils/ethermint';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
 import { getCosmosAddressRegex } from '~/Popup/utils/regex';
@@ -98,6 +100,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { extensionStorage } = useExtensionStorage();
   const { currency, additionalChains } = extensionStorage;
+  const { isEthermintLedgerSign, isInjectiveChain } = useEthermintLedgerSign(chain);
   const params = useParams();
 
   const chainParams = useParamsSWR(chain);
@@ -428,6 +431,8 @@ export default function IBCSend({ chain }: IBCSendProps) {
                   amount: toBaseDenomAmount(currentDisplayAmount, currentCoinOrToken.decimals || 0),
                   denom: currentCoinOrToken.baseDenom,
                 },
+                memo: isEthermintLedgerSign && isInjectiveChain ? 'IBC Transfer' : undefined,
+                timeout_timestamp: isEthermintLedgerSign ? generateTimeoutTimestamp() : undefined,
               },
             },
           ],
@@ -480,13 +485,15 @@ export default function IBCSend({ chain }: IBCSendProps) {
     chain.chainId,
     chain.type,
     currentCoinOrToken,
+    currentDepositAddress,
     currentDisplayAmount,
     currentFeeCoin.baseDenom,
     currentFeeGasRate,
     currentGasRateKey,
     currentMemo,
+    isEthermintLedgerSign,
+    isInjectiveChain,
     nodeInfo.data?.default_node_info?.network,
-    currentDepositAddress,
     revisionHeight,
     revisionNumber,
     selectedReceiverIBC,
@@ -565,16 +572,16 @@ export default function IBCSend({ chain }: IBCSendProps) {
     return '';
   }, [
     addressRegex,
-    currentDepositAddress,
     chainParams.data?.params?.chainlist_params?.isBankLocked,
     currentCoinOrToken,
     currentCoinOrTokenDisplayAvailableAmount,
+    currentDepositAddress,
     currentDisplayAmount,
     currentDisplayFeeAmount,
     currentFeeCoin.baseDenom,
     currentFeeCoinDisplayAvailableAmount,
-    t,
     latestHeight,
+    t,
   ]);
 
   const debouncedEnabled = useDebouncedCallback(() => {
@@ -675,9 +682,9 @@ export default function IBCSend({ chain }: IBCSendProps) {
                         <Typography variant="h6n"> :</Typography>{' '}
                         <Tooltip title={currentCoinOrTokenDisplayAvailableAmount} arrow placement="top">
                           <span>
-                            <Number typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
+                            <NumberText typoOfDecimals="h8n" typoOfIntegers="h6n" fixed={currentDisplayMaxDecimals}>
                               {currentCoinOrTokenDisplayAvailableAmount}
-                            </Number>
+                            </NumberText>
                           </span>
                         </Tooltip>
                       </>
