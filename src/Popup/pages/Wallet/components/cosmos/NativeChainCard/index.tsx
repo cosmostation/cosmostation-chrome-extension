@@ -139,6 +139,11 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const currentFeeCoin = useMemo(() => feeCoins[0], [feeCoins]);
 
+  const currentFeeCoinDisplayAvailableAmount = useMemo(
+    () => toDisplayDenomAmount(currentFeeCoin.availableAmount, currentFeeCoin.decimals),
+    [currentFeeCoin.availableAmount, currentFeeCoin.decimals],
+  );
+
   const rewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
     if (reward.data?.rewards?.length && account.data?.value.account_number && account.data.value.sequence) {
       return {
@@ -339,31 +344,34 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const displayMaxDecimals = getDisplayMaxDecimals(decimals);
 
-  const estimatedRewardDisplayFeeAmount = useMemo(() => toDisplayDenomAmount(currentCeilRewardFeeAmount, decimals), [currentCeilRewardFeeAmount, decimals]);
+  const estimatedRewardDisplayFeeAmount = useMemo(
+    () => toDisplayDenomAmount(currentCeilRewardFeeAmount, currentFeeCoin.decimals),
+    [currentCeilRewardFeeAmount, currentFeeCoin.decimals],
+  );
 
   const estimatedCommissionDisplayFeeAmount = useMemo(
-    () => toDisplayDenomAmount(currentCeilCommissionFeeAmount, decimals),
-    [currentCeilCommissionFeeAmount, decimals],
+    () => toDisplayDenomAmount(currentCeilCommissionFeeAmount, currentFeeCoin.decimals),
+    [currentCeilCommissionFeeAmount, currentFeeCoin.decimals],
   );
 
   const claimRewardErrorMessage = useMemo(() => {
     if (!gt(displayRewardAmount, '0')) {
       return t('pages.Wallet.components.cosmos.NativeChainCard.index.invalidRewardAmount');
     }
-    if (!gt(displayAvailableAmount, estimatedRewardDisplayFeeAmount)) {
+    if (!gt(currentFeeCoinDisplayAvailableAmount, estimatedRewardDisplayFeeAmount)) {
       return t('pages.Wallet.components.cosmos.NativeChainCard.index.insufficientFeeAmount');
     }
     if (!rewardAminoTx) {
       return t('pages.Wallet.components.cosmos.NativeChainCard.index.invalidRewardTx');
     }
     return '';
-  }, [displayAvailableAmount, displayRewardAmount, estimatedRewardDisplayFeeAmount, rewardAminoTx, t]);
+  }, [currentFeeCoinDisplayAvailableAmount, displayRewardAmount, estimatedRewardDisplayFeeAmount, rewardAminoTx, t]);
 
   const claimCommissionErrorMessage = useMemo(() => {
     if (commission.data?.commission?.commission?.length === 0) {
       return t('pages.Wallet.components.cosmos.NativeChainCard.index.invalidCommissionAmount');
     }
-    if (!gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount)) {
+    if (!gt(currentFeeCoinDisplayAvailableAmount, estimatedCommissionDisplayFeeAmount)) {
       return t('pages.Wallet.components.cosmos.NativeChainCard.index.insufficientFeeAmount');
     }
     if (currentAccount.type === 'LEDGER') {
@@ -377,7 +385,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     commission.data?.commission?.commission?.length,
     commissionDirectTx,
     currentAccount.type,
-    displayAvailableAmount,
+    currentFeeCoinDisplayAvailableAmount,
     estimatedCommissionDisplayFeeAmount,
     t,
   ]);

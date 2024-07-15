@@ -104,7 +104,7 @@ export default function Send({ chain }: CosmosProps) {
     [accounts.data, chain.id, currentAccount.id],
   );
 
-  const { decimals, gas, gasRate } = chain;
+  const { gas, gasRate } = chain;
 
   const coinAll = useMemo(
     () => [
@@ -357,7 +357,7 @@ export default function Send({ chain }: CosmosProps) {
 
   const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
 
-  const currentDisplayFeeAmount = toDisplayDenomAmount(currentCeilFeeAmount, decimals);
+  const currentDisplayFeeAmount = toDisplayDenomAmount(currentCeilFeeAmount, currentFeeCoin.decimals);
 
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
