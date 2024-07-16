@@ -1,6 +1,6 @@
 import { post } from '~/Popup/utils/axios';
 import { isAminoCommission, isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from '~/Popup/utils/cosmos';
-import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
+import { cosmos, google } from '~/proto/cosmos-sdk-v0.47.4.js';
 import { cosmwasm } from '~/proto/cosmwasm-v0.28.0.js';
 import { ibc } from '~/proto/ibc-v7.1.0.js';
 import { osmosis } from '~/proto/osmosis-v13.1.2.js';
