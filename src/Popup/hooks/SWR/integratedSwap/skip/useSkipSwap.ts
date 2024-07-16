@@ -243,7 +243,7 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
 
   const skipSwapProtoTx = useMemo(() => {
     if (skipSwapAminoTx && fromChain) {
-      const pTx = protoTx(skipSwapAminoTx, '', {
+      const pTx = protoTx(skipSwapAminoTx, [''], {
         type: getPublicKeyType(fromChain),
         value: '',
       });
