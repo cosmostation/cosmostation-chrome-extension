@@ -1,6 +1,6 @@
 import { post } from '~/Popup/utils/axios';
 import { isAminoCommission, isAminoExecuteContract, isAminoIBCSend, isAminoReward, isAminoSend, isAminoSwapExactAmountIn } from '~/Popup/utils/cosmos';
-import { cosmos, google } from '~/proto/cosmos-v0.44.2.js';
+import { cosmos, google } from '~/proto/cosmos-sdk-v0.47.4.js';
 import { cosmwasm } from '~/proto/cosmwasm-v0.28.0.js';
 import { ibc } from '~/proto/ibc-v7.1.0.js';
 import { osmosis } from '~/proto/osmosis-v13.1.2.js';
@@ -196,7 +196,7 @@ export function getPubKey(pubKey: PubKey) {
   return publicKey;
 }
 
-export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
+export function protoTx(signed: SignAminoDoc, signatures: string[], pubKey: PubKey, mode = cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_LEGACY_AMINO_JSON) {
   const txBodyBytes = getTxBodyBytes(signed);
 
   if (txBodyBytes === null) {
@@ -205,14 +205,14 @@ export function protoTx(signed: SignAminoDoc, signature: string, pubKey: PubKey,
 
   const authInfoBytes = getAuthInfoBytes(signed, pubKey, mode);
 
-  return { signature, txBodyBytes, authInfoBytes };
+  return { signatures, txBodyBytes, authInfoBytes };
 }
 
-export function protoTxBytes({ signature, txBodyBytes, authInfoBytes }: ProtoTxBytesProps) {
+export function protoTxBytes({ signatures, txBodyBytes, authInfoBytes }: ProtoTxBytesProps) {
   const txRaw = new cosmos.tx.v1beta1.TxRaw({
     body_bytes: new Uint8Array(txBodyBytes),
     auth_info_bytes: new Uint8Array(authInfoBytes),
-    signatures: [Buffer.from(signature, 'base64')],
+    signatures: signatures.map((signature) => Buffer.from(signature, 'base64')),
   });
   const txRawBytes = cosmos.tx.v1beta1.TxRaw.encode(txRaw).finish();
 

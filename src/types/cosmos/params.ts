@@ -58,6 +58,7 @@ export type Fee = {
   isSimulable: boolean;
   simul_gas_multiply: number;
   fee_threshold: string;
+  feemarket?: boolean;
 };
 
 export type GrpcEndpoint = {
