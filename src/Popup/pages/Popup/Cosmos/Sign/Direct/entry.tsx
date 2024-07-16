@@ -99,7 +99,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
 
-  const { fee } = decodedAuthInfoBytes;
+  const { fee, signer_infos } = decodedAuthInfoBytes;
 
   const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
   const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
@@ -142,14 +142,16 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const memoizedProtoTx = useMemo(() => {
     if (isEditFee) {
+      const signatures = signer_infos.map(() => Buffer.from(new Uint8Array(64)).toString('base64'));
+
       return protoTxBytes({
-        signature: Buffer.from(new Uint8Array(64)).toString('base64'),
+        signatures,
         txBodyBytes: body_bytes,
         authInfoBytes: auth_info_bytes,
       });
     }
     return null;
-  }, [auth_info_bytes, body_bytes, isEditFee]);
+  }, [auth_info_bytes, body_bytes, isEditFee, signer_infos]);
 
   const simulate = useSimulateSWR({ chain, txBytes: memoizedProtoTx?.tx_bytes });
 
@@ -353,7 +355,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
                         const pTxBytes = protoTxBytes({
-                          signature: base64Signature,
+                          signatures: [base64Signature],
                           txBodyBytes: signedDoc.body_bytes,
                           authInfoBytes: signedDoc.auth_info_bytes,
                         });

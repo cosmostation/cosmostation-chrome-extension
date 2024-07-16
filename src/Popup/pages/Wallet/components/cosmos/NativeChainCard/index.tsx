@@ -182,7 +182,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const rewardProtoTx = useMemo(() => {
     if (rewardAminoTx) {
-      const pTx = protoTx(rewardAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(rewardAminoTx, [''], { type: getPublicKeyType(chain), value: '' });
 
       return pTx ? protoTxBytes({ ...pTx }) : undefined;
     }
@@ -257,7 +257,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const commissionProtoTx = useMemo(() => {
     if (commissionAminoTx) {
-      const pTx = protoTx(commissionAminoTx, '', { type: getPublicKeyType(chain), value: '' }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
+      const pTx = protoTx(commissionAminoTx, [''], { type: getPublicKeyType(chain), value: '' }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
 
       return pTx ? protoTxBytes({ ...pTx }) : undefined;
     }
@@ -304,7 +304,12 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
       const publicKeyType = getPublicKeyType(chain);
 
-      const pTx = protoTx(commissionSimulatedAminoTx, '', { type: publicKeyType, value: base64PublicKey }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
+      const pTx = protoTx(
+        commissionSimulatedAminoTx,
+        [''],
+        { type: publicKeyType, value: base64PublicKey },
+        cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+      );
 
       return pTx
         ? {

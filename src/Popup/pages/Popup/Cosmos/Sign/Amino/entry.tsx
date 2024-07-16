@@ -140,7 +140,7 @@ export default function Entry({ queue, chain }: EntryProps) {
     if (isEditFee) {
       const pTx = protoTx(
         { ...doc, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: '1' }], gas: COSMOS_DEFAULT_GAS } },
-        Buffer.from(new Uint8Array(64)).toString('base64'),
+        [Buffer.from(new Uint8Array(64)).toString('base64')],
         { type: getPublicKeyType(chain), value: '' },
       );
 
@@ -345,7 +345,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                     if (channel) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
-                        const pTx = protoTx(tx, base64Signature, pubKey);
+                        const pTx = protoTx(tx, [base64Signature], pubKey);
                         const pTxBytes = pTx ? protoTxBytes({ ...pTx }) : undefined;
 
                         const response = await broadcast(url, pTxBytes);

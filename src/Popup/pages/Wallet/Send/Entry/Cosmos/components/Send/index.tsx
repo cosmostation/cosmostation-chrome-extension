@@ -335,7 +335,7 @@ export default function Send({ chain }: CosmosProps) {
 
   const sendProtoTx = useMemo(() => {
     if (sendAminoTx) {
-      const pTx = protoTx(sendAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(sendAminoTx, [Buffer.from(new Uint8Array(64)).toString('base64')], { type: getPublicKeyType(chain), value: '' });
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
