@@ -327,7 +327,7 @@ export default function Cosmos({ chain }: CosmosProps) {
                           doc: { ...sendAminoTx, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }], gas: currentGas } },
                           isEditFee: false,
                           isEditMemo: false,
-                          isCheckBalance: false,
+                          isCheckBalance: true,
                         },
                       },
                     });

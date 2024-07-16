@@ -564,7 +564,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                                   gas: rewardTxGas,
                                 },
                               },
-                              isEditFee: true,
+                              isEditFee: false,
                               isEditMemo: true,
                               isCheckBalance: true,
                             },
@@ -602,7 +602,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                                 doc: {
                                   ...commissionDirectTx,
                                 },
-                                isEditFee: true,
+                                isEditFee: false,
                                 isEditMemo: true,
                                 isCheckBalance: true,
                               },

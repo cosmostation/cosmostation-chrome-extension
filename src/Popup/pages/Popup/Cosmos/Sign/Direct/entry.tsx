@@ -11,6 +11,7 @@ import PopupHeader from '~/Popup/components/PopupHeader';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
+import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useProtoBuilderDecodeSWR } from '~/Popup/hooks/SWR/cosmos/useProtoBuilderDecodeSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -19,7 +20,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, equal, gt, gte, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { cosmosURL, getDefaultAV, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
+import { cosmosURL, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, decodeProtobufMessage, protoTxBytes } from '~/Popup/utils/proto';
 import { cosmos } from '~/proto/cosmos-sdk-v0.47.4.js';
@@ -51,6 +52,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { t } = useTranslation();
 
   const [isProgress, setIsProgress] = useState(false);
+
+  const { data: gasMultiply } = useGasMultiplySWR(chain);
 
   const assets = useAssetsSWR(chain);
 
@@ -156,8 +159,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const simulate = useSimulateSWR({ chain, txBytes: memoizedProtoTx?.tx_bytes });
 
   const simulatedGas = useMemo(
-    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
-    [chain, simulate.data?.gas_info?.gas_used],
+    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, gasMultiply, 0) : undefined),
+    [gasMultiply, simulate.data?.gas_info?.gas_used],
   );
 
   const currentGas = useMemo(
