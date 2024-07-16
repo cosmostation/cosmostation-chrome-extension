@@ -163,7 +163,7 @@
     "webpack-manifest-plugin": "^5.0.0"
   },
   "engines": {
-    "node": ">=16.0.0",
+    "node": ">=20.10.0 < 21.0.0",
     "yarn": ">=1.22.0",
     "npm": "please-use-yarn"
   }
