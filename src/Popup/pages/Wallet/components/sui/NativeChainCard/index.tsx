@@ -187,7 +187,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {explorerURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/account/${currentAddress}}`);
+                window.open(`${explorerURL}/account/${currentAddress}`);
               }}
             >
               <ExplorerIcon />
