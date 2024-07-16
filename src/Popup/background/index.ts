@@ -96,7 +96,7 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.8.11') {
+        if (extensionManifest.version === '0.8.12') {
           void (async () => {
             await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), BASE.id, ETHEREUM_NETWORK__XPLA.id, ETHEREUM_NETWORK__HUMANS_AI.id]);
           })();
