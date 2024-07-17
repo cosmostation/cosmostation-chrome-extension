@@ -31,6 +31,7 @@ export type ChainlistParams = {
     pubkey_style?: string;
     pubkey_type?: string;
   };
+  tx_timeout_add?: number;
   fee?: Fee;
   grpc_endpoint?: GrpcEndpoint[];
   about?: About;

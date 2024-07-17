@@ -16,3 +16,5 @@ export const TOKEN_TYPE = {
   CW20: 'CW20',
   CW721: 'CW721',
 } as const;
+
+export const DEFAULT_TIMEOUT_HEIGHT = 30;
