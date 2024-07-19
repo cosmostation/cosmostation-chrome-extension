@@ -11,7 +11,6 @@ import type { EthereumNetwork, EthereumToken } from '~/types/chain';
 import type { ERC20ContractBalancesOfPayload, ERC20ContractMethods } from '~/types/ethereum/contract';
 
 import { useCurrentAccount } from '../../useCurrent/useCurrentAccount';
-import { useCurrentChain } from '../../useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNetwork';
 import { useAccounts } from '../cache/useAccounts';
 
@@ -31,13 +30,13 @@ type UseTokensBalanceSWR = {
 };
 
 export function useTokensBalanceSWR({ network, tokens }: UseTokensBalanceSWR, config?: SWRConfiguration) {
-  const { currentChain } = useCurrentChain();
+  const chain = ETHEREUM;
   const accounts = useAccounts(config?.suspense);
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const { currentAccount } = useCurrentAccount();
 
-  const address = accounts.data?.find((account) => account.id === currentAccount.id)?.address[currentChain.id] || '';
+  const address = accounts.data?.find((account) => account.id === currentAccount.id)?.address[chain.id] || '';
 
   const rpcURL = network?.rpcURL || currentEthereumNetwork.rpcURL;
 
@@ -78,7 +77,7 @@ export function useTokensBalanceSWR({ network, tokens }: UseTokensBalanceSWR, co
     dedupingInterval: 14000,
     refreshInterval: 15000,
     errorRetryCount: 0,
-    isPaused: () => currentChain.id !== ETHEREUM.id || !address || !tokens || !rpcURL,
+    isPaused: () => !address || !tokens || !network,
     ...config,
   });
 

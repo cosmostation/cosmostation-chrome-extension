@@ -3,17 +3,21 @@ import type { FallbackProps } from 'react-error-boundary';
 import { useSetRecoilState } from 'recoil';
 
 import { APTOS_COIN } from '~/constants/aptos';
+import { DEVNET } from '~/constants/chain/aptos/network/devnet';
+import { TESTNET } from '~/constants/chain/aptos/network/testnet';
 import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourceSWR';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/aptos/useAssetsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
+import { useCurrentAptosCoins } from '~/Popup/hooks/useCurrent/useCurrentAptosCoins';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
-import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { getCoinAddress } from '~/Popup/utils/aptos';
+import { plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import type { AptosChain, AptosNetwork } from '~/types/chain';
 
 type AptosChainItemProps = {
@@ -31,6 +35,7 @@ export default function AptosChainItem({ chain, network }: AptosChainItemProps) 
 
   const setDashboard = useSetRecoilState(dashboardState);
 
+  const { currentAptosCoins: currentAptosTokens } = useCurrentAptosCoins(network);
   const { data: aptosCoin } = useAccountResourceSWR({ resourceType: '0x1::coin::CoinStore', resourceTarget: APTOS_COIN, network }, { suspense: true });
   const { data: aptosInfo } = useAccountResourceSWR(
     { resourceType: '0x1::coin::CoinInfo', resourceTarget: APTOS_COIN, address: '0x1', network },
@@ -56,14 +61,39 @@ export default function AptosChainItem({ chain, network }: AptosChainItemProps) 
     [asset?.coinGeckoId, extensionStorage.currency, coinGeckoData],
   );
 
+  const totalCoinAssetsValue = useMemo(() => {
+    if ([TESTNET.id, DEVNET.id].includes(network.id)) {
+      return '0';
+    }
+
+    const coinValue = times(toDisplayDenomAmount(totalAmount, decimals), price) || '0';
+
+    const filteredCurrentAptosTokens = currentAptosTokens.filter((item) => !item.type.includes('0x1::aptos_coin::AptosCoin'));
+
+    const tokensValue = filteredCurrentAptosTokens.reduce((acc, token) => {
+      const tokenBaseAmount = token.data.coin.value;
+
+      const tokenAsset = assets.data.find((item) => item.address === getCoinAddress(token.type));
+
+      const tokenValue = times(
+        toDisplayDenomAmount(tokenBaseAmount, tokenAsset?.decimals || 0),
+        (tokenAsset?.coinGeckoId && coinGeckoData?.[tokenAsset.coinGeckoId]?.[extensionStorage.currency]) || 0,
+      );
+
+      return plus(acc, tokenValue);
+    }, '0');
+
+    return plus(coinValue, tokensValue);
+  }, [assets.data, coinGeckoData, currentAptosTokens, decimals, extensionStorage.currency, network.id, price, totalAmount]);
+
   useEffect(() => {
     setDashboard((prev) => ({
       [currentAccount.id]: {
         ...prev?.[currentAccount.id],
-        [network.id]: times(toDisplayDenomAmount(totalAmount, decimals), price) || '0',
+        [network.id]: totalCoinAssetsValue,
       },
     }));
-  }, [currentAccount.id, decimals, network.id, price, setDashboard, totalAmount]);
+  }, [currentAccount.id, network.id, setDashboard, totalCoinAssetsValue]);
 
   useEffect(
     () => () => {
@@ -91,6 +121,7 @@ export default function AptosChainItem({ chain, network }: AptosChainItemProps) 
       decimals={decimals}
       coinGeckoId={asset?.coinGeckoId}
       amount={totalAmount}
+      totalValue={totalCoinAssetsValue}
       displayDenom={displayDenom}
       imageURL={imageURL}
     />

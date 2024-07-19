@@ -36,6 +36,7 @@ import RetryIcon from '~/images/icons/Retry.svg';
 type ChainItemProps = {
   chainName: string;
   amount: string;
+  totalValue: string;
   decimals: number;
   displayDenom: string;
   coinGeckoId?: string;
@@ -43,7 +44,7 @@ type ChainItemProps = {
   onClick?: () => void;
 };
 
-export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, decimals, displayDenom, onClick }: ChainItemProps) {
+export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, totalValue, decimals, displayDenom, onClick }: ChainItemProps) {
   const { extensionStorage } = useExtensionStorage();
   const { data } = useCoinGeckoPriceSWR();
 
@@ -58,6 +59,8 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
 
   const displayAmount = toDisplayDenomAmount(amount, decimals);
 
+  // NOTE : Ready to use
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const value = times(displayAmount, price);
 
   return (
@@ -82,7 +85,7 @@ export default function ChainItem({ chainName, coinGeckoId, imageURL, amount, de
         <RightTextContainer>
           <RightTextValueContainer>
             <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
-              {value}
+              {totalValue}
             </Number>
           </RightTextValueContainer>
 

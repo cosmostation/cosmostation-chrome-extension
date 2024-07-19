@@ -2,17 +2,20 @@ import { useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
-import type { EthereumToken } from '~/types/chain';
+import type { EthereumNetwork, EthereumToken } from '~/types/chain';
 
 import { useCurrentEthereumNetwork } from './useCurrentEthereumNetwork';
 import { useTokensSWR } from '../SWR/ethereum/useTokensSWR';
 
 type AddEthereumTokenParams = Omit<EthereumToken, 'id' | 'ethereumNetworkId'>;
 
-export function useCurrentEthereumTokens() {
+export function useCurrentEthereumTokens(network?: EthereumNetwork) {
   const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
-  const { data } = useTokensSWR();
+
+  const currentNetwork = useMemo(() => network || currentEthereumNetwork, [currentEthereumNetwork, network]);
+
+  const { data } = useTokensSWR(currentNetwork);
 
   const defaultTokens: EthereumToken[] = useMemo(
     () =>

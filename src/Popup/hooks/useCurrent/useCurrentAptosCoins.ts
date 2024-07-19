@@ -5,14 +5,17 @@ import { ACCOUNT_TYPE, APTOS_COIN } from '~/constants/aptos';
 import { getCoinAddress } from '~/Popup/utils/aptos';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { X1CoinCoinstore } from '~/types/aptos/accounts';
+import type { AptosNetwork } from '~/types/chain';
 
 import { useCurrentAptosNetwork } from './useCurrentAptosNetwork';
 import { useAccountResourcesSWR } from '../SWR/aptos/useAccountResourcesSWR';
 
-export function useCurrentAptosCoins(config?: SWRConfiguration) {
+export function useCurrentAptosCoins(network?: AptosNetwork, config?: SWRConfiguration) {
   const { currentAptosNetwork } = useCurrentAptosNetwork();
 
-  const accountResources = useAccountResourcesSWR({ network: currentAptosNetwork }, config);
+  const currentNetwork = useMemo(() => network || currentAptosNetwork, [currentAptosNetwork, network]);
+
+  const accountResources = useAccountResourcesSWR({ network: currentNetwork }, config);
 
   const currentAptosCoins = useMemo(
     () =>

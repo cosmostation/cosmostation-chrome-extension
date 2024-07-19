@@ -11,6 +11,7 @@ import { useAccountResourceSWR } from '~/Popup/hooks/SWR/aptos/useAccountResourc
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentAptosCoins } from '~/Popup/hooks/useCurrent/useCurrentAptosCoins';
+import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { getCoinAddress } from '~/Popup/utils/aptos';
@@ -32,7 +33,8 @@ type AptosProps = {
 
 export default function Aptos({ chain }: AptosProps) {
   const { currentAccount } = useCurrentAccount();
-  const { currentAptosCoins } = useCurrentAptosCoins({ suspense: true });
+  const { currentAptosNetwork } = useCurrentAptosNetwork();
+  const { currentAptosCoins } = useCurrentAptosCoins(currentAptosNetwork, { suspense: true });
   const params = useParams();
 
   const { enQueue } = useCurrentQueue();

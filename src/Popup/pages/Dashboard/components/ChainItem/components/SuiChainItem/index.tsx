@@ -2,7 +2,10 @@ import { useEffect, useMemo } from 'react';
 import type { FallbackProps } from 'react-error-boundary';
 import { useSetRecoilState } from 'recoil';
 
+import { DEVNET } from '~/constants/chain/sui/network/devnet';
+import { TESTNET } from '~/constants/chain/sui/network/testnet';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
+import { SUI_COIN } from '~/constants/sui';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAmountSWR } from '~/Popup/hooks/SWR/sui/useAmountSWR';
 import { useTokenBalanceObjectsSWR } from '~/Popup/hooks/SWR/sui/useTokenBalanceObjectsSWR';
@@ -15,7 +18,7 @@ import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
-import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import type { SuiChain, SuiNetwork } from '~/types/chain';
 
@@ -45,19 +48,42 @@ export default function SuiChainItem({ chain, network }: SuiChainItemProps) {
 
   const { totalAmount } = useAmountSWR({ address: currentAddress, network });
 
-  const price = useMemo(
-    () => (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[extensionStorage.currency]) || 0,
-    [extensionStorage.currency, coinGeckoData, coinGeckoId],
-  );
+  const { tokenBalanceObjects } = useTokenBalanceObjectsSWR({ address: currentAddress, network });
+
+  const totalCoinAssetsValue = useMemo(() => {
+    if ([TESTNET.id, DEVNET.id].includes(network.id)) {
+      return '0';
+    }
+
+    const coinValue =
+      times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[extensionStorage.currency]) || 0) || '0';
+
+    const tokenList = tokenBalanceObjects.filter((item) => item.coinType !== SUI_COIN);
+
+    const tokensValue = tokenList.reduce((acc, token) => {
+      const tokenBaseAmount = token.balance;
+
+      const tokenValue = token.decimals
+        ? times(
+            toDisplayDenomAmount(tokenBaseAmount, token.decimals),
+            (token.coinGeckoId && coinGeckoData?.[token.coinGeckoId]?.[extensionStorage.currency]) || 0,
+          )
+        : '0';
+
+      return plus(acc, tokenValue);
+    }, '0');
+
+    return plus(coinValue, tokensValue);
+  }, [coinGeckoData, coinGeckoId, decimals, extensionStorage.currency, network.id, tokenBalanceObjects, totalAmount]);
 
   useEffect(() => {
     setDashboard((prev) => ({
       [currentAccount.id]: {
         ...prev?.[currentAccount.id],
-        [network.id]: times(toDisplayDenomAmount(totalAmount, decimals), price) || '0',
+        [network.id]: totalCoinAssetsValue,
       },
     }));
-  }, [currentAccount.id, decimals, network.id, price, setDashboard, totalAmount]);
+  }, [currentAccount.id, network.id, setDashboard, totalCoinAssetsValue]);
 
   useEffect(
     () => () => {
@@ -85,6 +111,7 @@ export default function SuiChainItem({ chain, network }: SuiChainItemProps) {
       decimals={decimals}
       coinGeckoId={coinGeckoId}
       amount={totalAmount}
+      totalValue={totalCoinAssetsValue}
       displayDenom={displayDenom}
       imageURL={imageURL}
     />

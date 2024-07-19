@@ -1,4 +1,4 @@
-import { Suspense } from 'react';
+import { Suspense, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useRecoilValue } from 'recoil';
 import { Typography } from '@mui/material';
@@ -69,21 +69,29 @@ export default function Entry() {
 
   const chainList: ChainList = currentAllowedChains.map((chain) => ({ chain, amount: '0' }));
 
-  const cosmosChainList = chainList.filter(isCosmos);
-  const ethereumChainList = chainList.filter(isEthereum);
-  const aptosChainList = chainList.filter(isAptos);
-  const suiChainList = chainList.filter(isSui);
+  const cosmosChainList = useMemo(() => chainList.filter(isCosmos), [chainList]);
+  const ethereumChainList = useMemo(() => chainList.filter(isEthereum), [chainList]);
+  const aptosChainList = useMemo(() => chainList.filter(isAptos), [chainList]);
+  const suiChainList = useMemo(() => chainList.filter(isSui), [chainList]);
 
-  const cosmosChainNames = cosmosChainList.map((item) => item.chain.chainName);
-  const ethereumNetworkList =
-    ethereumChainList.length > 0 ? currentShownEthereumNetwork.filter((network) => !cosmosChainNames.includes(network.networkName)) : [];
-  const aptosNetworkList = aptosChainList.length > 0 ? currentShownAptosNetwork : [];
-  const suiNetworkList = suiChainList.length > 0 ? currentShownSuiNetwork : [];
+  const cosmosChainNames = useMemo(() => cosmosChainList.map((item) => item.chain.chainName), [cosmosChainList]);
+  const ethereumNetworkList = useMemo(
+    () => (ethereumChainList.length > 0 ? currentShownEthereumNetwork.filter((network) => !cosmosChainNames.includes(network.networkName)) : []),
+    [cosmosChainNames, currentShownEthereumNetwork, ethereumChainList.length],
+  );
 
-  const chainCnt = cosmosChainList.length + ethereumNetworkList.length + aptosNetworkList.length + suiNetworkList.length;
+  const aptosNetworkList = useMemo(() => (aptosChainList.length > 0 ? currentShownAptosNetwork : []), [aptosChainList.length, currentShownAptosNetwork]);
+  const suiNetworkList = useMemo(() => (suiChainList.length > 0 ? currentShownSuiNetwork : []), [currentShownSuiNetwork, suiChainList.length]);
 
-  const totalAmount =
-    typeof dashboard?.[currentAccount.id] === 'object' ? Object.values(dashboard[currentAccount.id]).reduce((acc, cur) => plus(acc, cur), '0') : '0';
+  const chainCnt = useMemo(
+    () => cosmosChainList.length + ethereumNetworkList.length + aptosNetworkList.length + suiNetworkList.length,
+    [aptosNetworkList.length, cosmosChainList.length, ethereumNetworkList.length, suiNetworkList.length],
+  );
+
+  const totalAmount = useMemo(
+    () => (typeof dashboard?.[currentAccount.id] === 'object' ? Object.values(dashboard[currentAccount.id]).reduce((acc, cur) => plus(acc, cur), '0') : '0'),
+    [currentAccount.id, dashboard],
+  );
 
   return (
     <Container>

@@ -1,19 +1,24 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { FallbackProps } from 'react-error-boundary';
 import { useSetRecoilState } from 'recoil';
 
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
+import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+import { useCoinListSWR } from '~/Popup/hooks/SWR/cosmos/useCoinListSWR';
+import { useTokensBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokensBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
+import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton, ChainItemTerminated } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
-import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain } from '~/types/chain';
 
 type CosmosChainItemProps = {
@@ -23,22 +28,68 @@ type CosmosChainItemProps = {
 export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
   const { extensionStorage } = useExtensionStorage();
   const setDashboard = useSetRecoilState(dashboardState);
+  const accounts = useAccounts();
   const { currentAccount } = useCurrentAccount();
   const { data } = useCoinGeckoPriceSWR();
+  const { coins, ibcCoins } = useCoinListSWR(chain);
+  const { currentCosmosTokens } = useCurrentCosmosTokens(chain);
   const { totalAmount } = useAmountSWR(chain, true);
   const { chainName, decimals, displayDenom, coinGeckoId, imageURL } = chain;
 
   const { setCurrentChain } = useCurrentChain();
   const { navigate } = useNavigate();
 
+  const address = useMemo(
+    () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '',
+    [accounts.data, chain.id, currentAccount.id],
+  );
+
+  const cosmosTokensBalance = useTokensBalanceSWR({ chain, contractAddresses: currentCosmosTokens.map((item) => item.address), address });
+
+  const totalCoinAssetsValue = useMemo(() => {
+    const coinValue = times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0);
+
+    const nativeCoinsValue = coins.reduce((acc: string, coin) => {
+      const nativeCoinValue = times(
+        toDisplayDenomAmount(coin.availableAmount, coin.decimals),
+        (coin.coinGeckoId && data?.[coin.coinGeckoId]?.[extensionStorage.currency]) || 0,
+      );
+
+      return plus(acc, nativeCoinValue);
+    }, '0');
+
+    const ibcCoinsValue = ibcCoins.reduce((acc: string, ibcCoin) => {
+      const ibcCoinValue = times(
+        toDisplayDenomAmount(ibcCoin.availableAmount, ibcCoin.decimals),
+        (ibcCoin.coinGeckoId && data?.[ibcCoin.coinGeckoId]?.[extensionStorage.currency]) || 0,
+      );
+
+      return plus(acc, ibcCoinValue);
+    }, '0');
+
+    const tokensValue = currentCosmosTokens.reduce((acc: string, token) => {
+      const tokenBaseAmount = cosmosTokensBalance.data.find((item) => isEqualsIgnoringCase(item.contractAddress, token.address))?.balance || '0';
+
+      const tokenValue = times(
+        toDisplayDenomAmount(tokenBaseAmount, token.decimals),
+        (token.coinGeckoId && data?.[token.coinGeckoId]?.[extensionStorage.currency]) || 0,
+      );
+      return plus(acc, tokenValue);
+    }, '0');
+
+    const summedValue = [coinValue, nativeCoinsValue, ibcCoinsValue, tokensValue].reduce((acc, value) => plus(acc, value), '0');
+
+    return summedValue;
+  }, [coinGeckoId, coins, cosmosTokensBalance.data, currentCosmosTokens, data, decimals, extensionStorage.currency, ibcCoins, totalAmount]);
+
   useEffect(() => {
     setDashboard((prev) => ({
       [currentAccount.id]: {
         ...prev?.[currentAccount.id],
-        [chain.id]: times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0) || '0',
+        [chain.id]: totalCoinAssetsValue,
       },
     }));
-  }, [chain.id, extensionStorage.currency, coinGeckoId, data, decimals, setDashboard, totalAmount, currentAccount.id]);
+  }, [chain.id, currentAccount.id, setDashboard, totalCoinAssetsValue]);
 
   useEffect(
     () => () => {
@@ -63,6 +114,7 @@ export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
       onClick={handleOnClick}
       chainName={chainName}
       amount={totalAmount}
+      totalValue={totalCoinAssetsValue}
       decimals={decimals}
       displayDenom={displayDenom}
       coinGeckoId={coinGeckoId}

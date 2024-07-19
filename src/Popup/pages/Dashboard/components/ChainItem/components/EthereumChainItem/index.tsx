@@ -1,20 +1,23 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import type { FallbackProps } from 'react-error-boundary';
 import { useSetRecoilState } from 'recoil';
 
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
+import { useTokensBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokensBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
+import { useCurrentEthereumTokens } from '~/Popup/hooks/useCurrent/useCurrentEthereumTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import ChainItem, { ChainItemError, ChainItemLedgerCheck, ChainItemSkeleton } from '~/Popup/pages/Dashboard/components/ChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
-import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
+import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { EthereumChain, EthereumNetwork } from '~/types/chain';
 
 type EthereumChainItemProps = {
@@ -32,20 +35,41 @@ export default function EthereumChainItem({ chain, network }: EthereumChainItemP
 
   const setDashboard = useSetRecoilState(dashboardState);
   const { data } = useBalanceSWR(network, { suspense: true });
+  const { currentEthereumTokens } = useCurrentEthereumTokens(network);
 
-  const totalAmount = BigInt(data?.result || '0').toString();
+  const tokensBalance = useTokensBalanceSWR({ network, tokens: currentEthereumTokens });
+
+  const totalAmount = useMemo(() => BigInt(data?.result || '0').toString(), [data?.result]);
 
   const { decimals, networkName, coinGeckoId, displayDenom, imageURL } = network;
+
+  const totalCoinAssetsValue = useMemo(() => {
+    const coinValue = times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[extensionStorage.currency]) || '0');
+
+    const tokensValue = currentEthereumTokens.reduce((acc, token) => {
+      const foundToken = tokensBalance.data?.find((item) => item.status === 'fulfilled' && isEqualsIgnoringCase(item.value.id, token.address));
+
+      const tokenBaseAmount = foundToken?.status === 'fulfilled' ? foundToken.value.balance : '0';
+
+      const tokenValue = times(
+        toDisplayDenomAmount(tokenBaseAmount, token.decimals),
+        (token.coinGeckoId && coinGeckoData?.[token.coinGeckoId]?.[extensionStorage.currency]) || 0,
+      );
+
+      return plus(acc, tokenValue);
+    }, '0');
+
+    return plus(coinValue, tokensValue);
+  }, [tokensBalance.data, coinGeckoData, coinGeckoId, currentEthereumTokens, decimals, extensionStorage.currency, totalAmount]);
 
   useEffect(() => {
     setDashboard((prev) => ({
       [currentAccount.id]: {
         ...prev?.[currentAccount.id],
-        [network.id]:
-          times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[extensionStorage.currency]) || 0) || '0',
+        [network.id]: totalCoinAssetsValue,
       },
     }));
-  }, [extensionStorage.currency, coinGeckoData, coinGeckoId, currentAccount.id, decimals, network.id, setDashboard, totalAmount]);
+  }, [currentAccount.id, network.id, setDashboard, totalCoinAssetsValue]);
 
   useEffect(
     () => () => {
@@ -73,6 +97,7 @@ export default function EthereumChainItem({ chain, network }: EthereumChainItemP
       decimals={decimals}
       coinGeckoId={coinGeckoId}
       amount={totalAmount}
+      totalValue={totalCoinAssetsValue}
       displayDenom={displayDenom}
       imageURL={imageURL}
     />
