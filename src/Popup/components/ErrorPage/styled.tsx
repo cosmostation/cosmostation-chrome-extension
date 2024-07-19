@@ -3,9 +3,9 @@ import { styled } from '@mui/material/styles';
 import { darkEnTheme, lightEnTheme } from '~/Popup/styles/theme';
 
 export const Container = styled('div')({
-  padding: '0 0 1.6rem 0',
-
-  position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
 
   height: '100%',
 });
@@ -18,25 +18,21 @@ export const ContentsContainer = styled('div')({
 
   rowGap: '0.8rem',
 
-  padding: '0 1.6rem 0 1.6rem',
-
-  marginTop: '10rem',
+  flexGrow: 1,
 });
 
 export const WrapperContainer = styled('div')({
+  height: '100%',
+
   display: 'flex',
   flexDirection: 'column',
-
   alignItems: 'center',
+
+  padding: '0 1.6rem 1.6rem 1.6rem',
 });
 
 export const BottomContainer = styled('div')({
-  position: 'absolute',
-
-  bottom: '1.6rem',
-  left: '1.6rem',
-
-  width: 'calc(100% - 3.2rem)',
+  width: '100%',
 });
 
 export const TitleContainer = styled('div')(({ theme }) => ({
@@ -47,7 +43,6 @@ export const DescriptionContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text02,
 
   whiteSpace: 'pre-wrap',
-
   textAlign: 'center',
 }));
 
