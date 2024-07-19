@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
 import { COSMOS_NON_NATIVE_GAS_RATES } from '~/constants/chain';
+import { gt, times } from '~/Popup/utils/big';
 import type { CosmosChain, GasRate, GasRateKey } from '~/types/chain';
 
+import { useFeemarketSWR } from './useFeemarketSWR';
 import { useParamsSWR } from '../useParamsSWR';
 
 const PARAM_BASE_GAS_RATE_OPTIONS = {
@@ -21,7 +23,20 @@ const PARAM_BASE_GAS_RATE_KEY: Record<string, GasRateKey> = {
 export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const { data, error, mutate } = useParamsSWR(chain, config);
 
+  const isEnabledFeemarket = useMemo(() => data?.params?.chainlist_params?.fee?.feemarket, [data?.params?.chainlist_params?.fee?.feemarket]);
+
+  const feemarketData = useFeemarketSWR({ chain }, config);
+
+  const isFeemarketActive = useMemo(
+    () => isEnabledFeemarket && gt(feemarketData.data?.prices.length || '0', '0'),
+    [feemarketData.data?.prices.length, isEnabledFeemarket],
+  );
+
   const defaultGasRateKey = useMemo(() => {
+    if (isFeemarketActive) {
+      return PARAM_BASE_GAS_RATE_KEY[PARAM_BASE_GAS_RATE_OPTIONS.LOW];
+    }
+
     const baseGasRateKey = data?.params?.chainlist_params?.fee?.base;
 
     if (baseGasRateKey && baseGasRateKey in PARAM_BASE_GAS_RATE_KEY) {
@@ -29,11 +44,34 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
     }
 
     return PARAM_BASE_GAS_RATE_KEY[PARAM_BASE_GAS_RATE_OPTIONS.LOW];
-  }, [data?.params?.chainlist_params?.fee]);
+  }, [data?.params?.chainlist_params?.fee?.base, isFeemarketActive]);
 
   const gasRate: Record<string, GasRate> = useMemo(() => {
-    const chainlistFeeRates = data ? data.params?.chainlist_params?.fee?.rate ?? [] : [];
     const result: Record<string, GasRate> = {};
+
+    if (isFeemarketActive) {
+      feemarketData.data?.prices
+        .sort((a) => {
+          if (a.denom === chain.baseDenom) {
+            return -1;
+          }
+
+          return 1;
+        })
+        .forEach((price) => {
+          const { denom, amount } = price;
+
+          result[denom] = {
+            tiny: times(amount, '1.1'),
+            low: times(amount, '1.2'),
+            average: times(amount, '1.3'),
+          };
+        });
+
+      return result;
+    }
+
+    const chainlistFeeRates = data ? data.params?.chainlist_params?.fee?.rate ?? [] : [];
 
     if (chainlistFeeRates.length === 0) {
       const nonNativeGasRates = COSMOS_NON_NATIVE_GAS_RATES.filter((item) => item.chainId === chain.id);
@@ -90,15 +128,28 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
     });
 
     return result;
-  }, [chain.baseDenom, chain.gasRate, chain.id, data]);
+  }, [chain.baseDenom, chain.gasRate, chain.id, data, feemarketData.data?.prices, isFeemarketActive]);
 
   const returnData = useMemo(
     () => ({
       gasRate,
       defaultGasRateKey,
+      isFeemarketActive,
     }),
-    [defaultGasRateKey, gasRate],
+    [defaultGasRateKey, gasRate, isFeemarketActive],
   );
 
-  return { data: returnData, error, mutate };
+  const returnError = useMemo(() => {
+    if (error) {
+      return error;
+    }
+
+    if (feemarketData.error) {
+      return feemarketData.error;
+    }
+
+    return undefined;
+  }, [feemarketData.error, error]);
+
+  return { data: returnData, error: returnError, mutate };
 }
