@@ -35,7 +35,7 @@ import { getAddress, getAddressKey, getDisplayMaxDecimals, getKeyPair } from '~/
 import { convertToValidatorAddress, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
-import { cosmos } from '~/proto/cosmos-v0.44.2.js';
+import { cosmos } from '~/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgCommission, MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Path } from '~/types/route';
@@ -139,6 +139,11 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const currentFeeCoin = useMemo(() => feeCoins[0], [feeCoins]);
 
+  const currentFeeCoinDisplayAvailableAmount = useMemo(
+    () => toDisplayDenomAmount(currentFeeCoin.availableAmount, currentFeeCoin.decimals),
+    [currentFeeCoin.availableAmount, currentFeeCoin.decimals],
+  );
+
   const rewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
     if (reward.data?.rewards?.length && account.data?.value.account_number && account.data.value.sequence) {
       return {
@@ -177,7 +182,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const rewardProtoTx = useMemo(() => {
     if (rewardAminoTx) {
-      const pTx = protoTx(rewardAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(rewardAminoTx, [''], { type: getPublicKeyType(chain), value: '' });
 
       return pTx ? protoTxBytes({ ...pTx }) : undefined;
     }
@@ -252,7 +257,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const commissionProtoTx = useMemo(() => {
     if (commissionAminoTx) {
-      const pTx = protoTx(commissionAminoTx, '', { type: getPublicKeyType(chain), value: '' }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
+      const pTx = protoTx(commissionAminoTx, [''], { type: getPublicKeyType(chain), value: '' }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
 
       return pTx ? protoTxBytes({ ...pTx }) : undefined;
     }
@@ -299,7 +304,12 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
       const publicKeyType = getPublicKeyType(chain);
 
-      const pTx = protoTx(commissionSimulatedAminoTx, '', { type: publicKeyType, value: base64PublicKey }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
+      const pTx = protoTx(
+        commissionSimulatedAminoTx,
+        [''],
+        { type: publicKeyType, value: base64PublicKey },
+        cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+      );
 
       return pTx
         ? {
@@ -339,31 +349,34 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const displayMaxDecimals = getDisplayMaxDecimals(decimals);
 
-  const estimatedRewardDisplayFeeAmount = useMemo(() => toDisplayDenomAmount(currentCeilRewardFeeAmount, decimals), [currentCeilRewardFeeAmount, decimals]);
+  const estimatedRewardDisplayFeeAmount = useMemo(
+    () => toDisplayDenomAmount(currentCeilRewardFeeAmount, currentFeeCoin.decimals),
+    [currentCeilRewardFeeAmount, currentFeeCoin.decimals],
+  );
 
   const estimatedCommissionDisplayFeeAmount = useMemo(
-    () => toDisplayDenomAmount(currentCeilCommissionFeeAmount, decimals),
-    [currentCeilCommissionFeeAmount, decimals],
+    () => toDisplayDenomAmount(currentCeilCommissionFeeAmount, currentFeeCoin.decimals),
+    [currentCeilCommissionFeeAmount, currentFeeCoin.decimals],
   );
 
   const claimRewardErrorMessage = useMemo(() => {
     if (!gt(displayRewardAmount, '0')) {
       return t('pages.Wallet.components.cosmos.NativeChainCard.index.invalidRewardAmount');
     }
-    if (!gt(displayAvailableAmount, estimatedRewardDisplayFeeAmount)) {
+    if (!gt(currentFeeCoinDisplayAvailableAmount, estimatedRewardDisplayFeeAmount)) {
       return t('pages.Wallet.components.cosmos.NativeChainCard.index.insufficientFeeAmount');
     }
     if (!rewardAminoTx) {
       return t('pages.Wallet.components.cosmos.NativeChainCard.index.invalidRewardTx');
     }
     return '';
-  }, [displayAvailableAmount, displayRewardAmount, estimatedRewardDisplayFeeAmount, rewardAminoTx, t]);
+  }, [currentFeeCoinDisplayAvailableAmount, displayRewardAmount, estimatedRewardDisplayFeeAmount, rewardAminoTx, t]);
 
   const claimCommissionErrorMessage = useMemo(() => {
     if (commission.data?.commission?.commission?.length === 0) {
       return t('pages.Wallet.components.cosmos.NativeChainCard.index.invalidCommissionAmount');
     }
-    if (!gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount)) {
+    if (!gt(currentFeeCoinDisplayAvailableAmount, estimatedCommissionDisplayFeeAmount)) {
       return t('pages.Wallet.components.cosmos.NativeChainCard.index.insufficientFeeAmount');
     }
     if (currentAccount.type === 'LEDGER') {
@@ -377,7 +390,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
     commission.data?.commission?.commission?.length,
     commissionDirectTx,
     currentAccount.type,
-    displayAvailableAmount,
+    currentFeeCoinDisplayAvailableAmount,
     estimatedCommissionDisplayFeeAmount,
     t,
   ]);
@@ -551,7 +564,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                                   gas: rewardTxGas,
                                 },
                               },
-                              isEditFee: true,
+                              isEditFee: false,
                               isEditMemo: true,
                               isCheckBalance: true,
                             },
@@ -589,7 +602,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                                 doc: {
                                   ...commissionDirectTx,
                                 },
-                                isEditFee: true,
+                                isEditFee: false,
                                 isEditMemo: true,
                                 isCheckBalance: true,
                               },

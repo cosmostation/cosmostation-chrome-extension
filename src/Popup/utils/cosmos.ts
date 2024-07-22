@@ -11,7 +11,6 @@ import { COSMOS_CHAINS, COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_ESTIMATE_EXCE
 import { ARTELA_TESTNET } from '~/constants/chain/cosmos/artelaTestnet';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
 import { CRONOS_POS } from '~/constants/chain/cosmos/cronosPos';
-import { EMONEY } from '~/constants/chain/cosmos/emoney';
 import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { HUMANS_AI } from '~/constants/chain/cosmos/humansAi';
@@ -27,7 +26,7 @@ import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
 import { UX } from '~/constants/chain/cosmos/ux';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
-import { cosmos } from '~/proto/cosmos-v0.44.2.js';
+import { cosmos } from '~/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '~/types/chain';
 import type {
   Msg,
@@ -48,7 +47,6 @@ import { toBase64 } from './string';
 export function cosmosURL(chain: CosmosChain) {
   const { restURL, id } = chain;
 
-  const isV1BetaClientState = [EMONEY.id].includes(chain.id);
   // reward 중첩 typing!
   return {
     getNodeInfo: () => `${restURL}/cosmos/base/tendermint/v1beta1/node_info`,
@@ -69,12 +67,12 @@ export function cosmosURL(chain: CosmosChain) {
     getCW721ContractInfo: (contractAddress: string) => `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"contract_info":{}}')}`,
     getCW721NumTokens: (contractAddress: string) => `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"num_tokens":{}}')}`,
     getCW721CollectionInfo: (contractAddress: string) => `${restURL}/cosmwasm/wasm/v1/contract/${contractAddress}/smart/${toBase64('{"collection_info":{}}')}`,
-    getClientState: (channelId: string, port?: string) =>
-      `${restURL}/ibc/core/channel/${isV1BetaClientState ? 'v1beta1' : 'v1'}/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
+    getClientState: (channelId: string, port?: string) => `${restURL}/ibc/core/channel/v1/channels/${channelId}/ports/${port || 'transfer'}/client_state`,
     simulate: () => `${restURL}/cosmos/tx/v1beta1/simulate`,
     getTxInfo: (txHash: string) => `${restURL}/cosmos/tx/v1beta1/txs/${txHash}`,
     getBlockLatest: () => (id === GRAVITY_BRIDGE.id ? `${restURL}/blocks/latest` : `${restURL}/cosmos/base/tendermint/v1beta1/blocks/latest`),
     getCommission: (validatorAddress: string) => `${restURL}/cosmos/distribution/v1beta1/validators/${validatorAddress}/commission`,
+    getFeemarket: (denom?: string) => `${restURL}/feemarket/v1/gas_prices${denom ? `/${denom}` : ''}`,
   };
 }
 
