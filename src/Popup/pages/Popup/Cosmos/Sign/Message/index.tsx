@@ -1,6 +1,8 @@
 import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import { COSMOS_CHAINS } from '~/constants/chain';
+import ErrorPage from '~/Popup/components/ErrorPage';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
@@ -25,9 +27,14 @@ export default function Message() {
           <LedgerPublicKeyRequest>
             <AccessRequest>
               <Layout>
-                <Suspense fallback={null}>
-                  <Entry queue={currentQueue} chain={selectedChain} />
-                </Suspense>
+                <ErrorBoundary
+                  // eslint-disable-next-line react/no-unstable-nested-components
+                  FallbackComponent={(props) => <ErrorPage queue={currentQueue} chain={selectedChain} {...props} />}
+                >
+                  <Suspense fallback={null}>
+                    <Entry queue={currentQueue} chain={selectedChain} />
+                  </Suspense>
+                </ErrorBoundary>
               </Layout>
             </AccessRequest>
           </LedgerPublicKeyRequest>
