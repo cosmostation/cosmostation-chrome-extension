@@ -1,4 +1,8 @@
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
 import { COSMOS_CHAINS } from '~/constants/chain';
+import ErrorPage from '~/Popup/components/ErrorPage';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
@@ -21,7 +25,14 @@ export default function AddTokens() {
         <Lock>
           <AccessRequest>
             <Layout>
-              <Entry queue={currentQueue} chain={selectedChain} />
+              <ErrorBoundary
+                // eslint-disable-next-line react/no-unstable-nested-components
+                FallbackComponent={(props) => <ErrorPage queue={currentQueue} chain={selectedChain} {...props} />}
+              >
+                <Suspense fallback={null}>
+                  <Entry queue={currentQueue} chain={selectedChain} />
+                </Suspense>
+              </ErrorBoundary>
             </Layout>
           </AccessRequest>
         </Lock>

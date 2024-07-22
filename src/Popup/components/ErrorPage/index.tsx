@@ -4,18 +4,18 @@ import { useLocation } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import { APTOS } from '~/constants/chain/aptos/aptos';
+import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
-import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
-import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
-import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { generateMailtoReportLink } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
-import type { Chain } from '~/types/chain';
+import type { AptosNetwork, Chain, EthereumNetwork, SuiNetwork } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
 
 import {
@@ -35,11 +35,12 @@ import PopupHeader from '../PopupHeader';
 import Error80Icon from '~/images/icons/Error80.svg';
 
 type EntryProps = {
-  queue?: Queue;
   chain?: Chain;
+  network?: EthereumNetwork | AptosNetwork | SuiNetwork;
+  queue?: Queue;
 };
 
-export default function ErrorPage({ queue, chain, ...rest }: EntryProps & FallbackProps) {
+export default function ErrorPage({ chain, network, queue, ...rest }: EntryProps & FallbackProps) {
   const { deQueue } = useCurrentQueue();
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
@@ -49,61 +50,46 @@ export default function ErrorPage({ queue, chain, ...rest }: EntryProps & Fallba
   const { currentAccount } = useCurrentAccount();
   const accounts = useAccounts();
 
-  const { currentChain } = useCurrentChain();
-  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
-  const { currentAptosNetwork } = useCurrentAptosNetwork();
-  const { currentSuiNetwork } = useCurrentSuiNetwork();
-
-  const selectedChain = useMemo(() => chain || currentChain, [chain, currentChain]);
-
   const chainName = useMemo(() => {
-    if (selectedChain.line === 'COSMOS') {
-      return selectedChain.chainName;
+    if (chain) {
+      if (chain.line === COSMOS.line) {
+        return chain?.chainName;
+      }
+      if ([ETHEREUM.line, SUI.line, APTOS.line].includes(chain.line)) {
+        return network?.networkName || chain?.chainName;
+      }
     }
-    if (selectedChain.line === 'ETHEREUM') {
-      return currentEthereumNetwork.networkName;
-    }
-    if (selectedChain.line === 'SUI') {
-      return `${selectedChain.chainName} (${currentSuiNetwork.networkName})`;
-    }
-    if (selectedChain.line === 'APTOS') {
-      return `${selectedChain.chainName} (${currentAptosNetwork.networkName})`;
-    }
-
     return '';
-  }, [currentAptosNetwork.networkName, currentEthereumNetwork.networkName, currentSuiNetwork.networkName, selectedChain.chainName, selectedChain.line]);
+  }, [chain, network?.networkName]);
 
   const chainImageURL = useMemo(() => {
-    if (selectedChain.line === 'COSMOS') {
-      return selectedChain.imageURL;
-    }
-    if (selectedChain.line === 'ETHEREUM') {
-      return currentEthereumNetwork.imageURL;
-    }
-    if (selectedChain.line === 'SUI') {
-      return currentSuiNetwork.imageURL;
-    }
-    if (selectedChain.line === 'APTOS') {
-      return currentAptosNetwork.imageURL;
+    if (chain) {
+      if (chain?.line === COSMOS.line) {
+        return chain?.imageURL;
+      }
+      if ([ETHEREUM.line, SUI.line, APTOS.line].includes(chain.line)) {
+        return network?.imageURL || chain?.imageURL;
+      }
     }
 
     return '';
-  }, [currentAptosNetwork.imageURL, currentEthereumNetwork.imageURL, currentSuiNetwork.imageURL, selectedChain.imageURL, selectedChain.line]);
+  }, [chain, network?.imageURL]);
 
   const isDisplayPopupHeader = useMemo(() => !!queue, [queue]);
 
   const address = useMemo(
-    () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[selectedChain.id] || '-',
-    [selectedChain.id, accounts.data, currentAccount.id],
+    () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain?.id || ''] || '',
+    [accounts.data, chain?.id, currentAccount.id],
   );
 
   return (
     <Container>
       {isDisplayPopupHeader && (
         <PopupHeader
-          account={{ ...currentAccount, address }}
+          account={address ? { ...currentAccount, address } : undefined}
           chain={!!chainName && !!chainImageURL ? { name: chainName, imageURL: chainImageURL } : undefined}
           origin={queue?.origin || '-'}
+          className={!address && (!chainName || !chainImageURL) ? 'marginTop' : undefined}
         />
       )}
       <WrapperContainer>

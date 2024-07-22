@@ -1,3 +1,7 @@
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+import ErrorPage from '~/Popup/components/ErrorPage';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -15,7 +19,14 @@ export default function AddChain() {
       <Lock>
         <AccessRequest>
           <Layout>
-            <Entry queue={currentQueue} />
+            <ErrorBoundary
+              // eslint-disable-next-line react/no-unstable-nested-components
+              FallbackComponent={(props) => <ErrorPage queue={currentQueue} {...props} />}
+            >
+              <Suspense fallback={null}>
+                <Entry queue={currentQueue} />
+              </Suspense>
+            </ErrorBoundary>
           </Layout>
         </AccessRequest>
       </Lock>

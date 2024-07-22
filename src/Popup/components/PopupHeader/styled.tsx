@@ -7,6 +7,10 @@ export const Container = styled('div')({
   flexDirection: 'column',
 
   alignItems: 'center',
+
+  '&.marginTop': {
+    marginTop: '0.8rem',
+  },
 });
 
 export const ChainNameContainer = styled('div')(({ theme }) => ({

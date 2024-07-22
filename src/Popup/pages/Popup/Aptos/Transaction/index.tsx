@@ -1,10 +1,12 @@
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
+import { APTOS } from '~/constants/chain/aptos/aptos';
 import ErrorPage from '~/Popup/components/ErrorPage';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
+import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/extensionStorage';
 import type { AptosSignAndSubmitTransaction, AptosSignTransaction } from '~/types/message/aptos';
@@ -14,6 +16,7 @@ import Layout from './layout';
 
 export default function Transaction() {
   const { currentQueue } = useCurrentQueue();
+  const { currentAptosNetwork } = useCurrentAptosNetwork();
 
   if (currentQueue && isAptosTransaction(currentQueue)) {
     return (
@@ -23,7 +26,7 @@ export default function Transaction() {
             <Layout>
               <ErrorBoundary
                 // eslint-disable-next-line react/no-unstable-nested-components
-                FallbackComponent={(props) => <ErrorPage queue={currentQueue} {...props} />}
+                FallbackComponent={(props) => <ErrorPage queue={currentQueue} chain={APTOS} network={currentAptosNetwork} {...props} />}
               >
                 <Suspense fallback={null}>
                   <Entry queue={currentQueue} />
