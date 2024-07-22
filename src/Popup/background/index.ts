@@ -3,8 +3,6 @@ import { APTOS } from '~/constants/chain/aptos/aptos';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { BASE } from '~/constants/chain/ethereum/network/base';
-import { HUMANS_AI as ETHEREUM_NETWORK__HUMANS_AI } from '~/constants/chain/ethereum/network/humansAi';
-import { XPLA as ETHEREUM_NETWORK__XPLA } from '~/constants/chain/ethereum/network/xpla';
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -98,7 +96,7 @@ function background() {
         const extensionManifest = chrome.runtime.getManifest();
         if (extensionManifest.version === '0.8.12') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), BASE.id, ETHEREUM_NETWORK__XPLA.id, ETHEREUM_NETWORK__HUMANS_AI.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), BASE.id]);
           })();
         }
       }

@@ -21,14 +21,12 @@ import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
 import { EVMOS } from '~/constants/chain/ethereum/network/evmos';
 import { FANTOM } from '~/constants/chain/ethereum/network/fantom';
 import { HARMONY } from '~/constants/chain/ethereum/network/harmony';
-import { HUMANS_AI } from '~/constants/chain/ethereum/network/humansAi';
 import { KAVA } from '~/constants/chain/ethereum/network/kava';
 import { OKT } from '~/constants/chain/ethereum/network/okt';
 import { OPTIMISM } from '~/constants/chain/ethereum/network/optimism';
 import { POLYGON } from '~/constants/chain/ethereum/network/polygon';
 import { SCROLL_SEPOLIA_TESTNET } from '~/constants/chain/ethereum/network/scrollSepoliaTestnet';
 import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
-import { XPLA } from '~/constants/chain/ethereum/network/xpla';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID, ETHEREUM_CONTRACT_KIND, ETHEREUM_TX_TYPE, TOKEN_TYPE } from '~/constants/ethereum';
 import { EthereumRPCError } from '~/Popup/utils/error';
@@ -354,14 +352,12 @@ export function convertEVMToAssetName(evmNetwork: EthereumNetwork) {
     [EVMOS.id]: 'evmos',
     [FANTOM.id]: 'fantom',
     [HARMONY.id]: 'harmony',
-    [HUMANS_AI.id]: 'humans',
     [KAVA.id]: 'kava',
     [OKT.id]: 'okc',
     [OPTIMISM.id]: 'optimism',
     [POLYGON.id]: 'polygon',
     [SMART_CHAIN.id]: 'bnb-smart-chain',
     [SCROLL_SEPOLIA_TESTNET.id]: 'scroll-sepolia-testnet',
-    [XPLA.id]: 'xpla',
   };
   return nameMap[evmNetwork.id] || evmNetwork.networkName.toLowerCase();
 }
@@ -380,14 +376,12 @@ export function convertAssetNameToEVM(assetName: string) {
     evmos: EVMOS,
     fantom: FANTOM,
     harmony: HARMONY,
-    humans: HUMANS_AI,
     kava: KAVA,
     okc: OKT,
     optimism: OPTIMISM,
     polygon: POLYGON,
     'bnb-smart-chain': SMART_CHAIN,
     'scroll-sepolia-testnet': SCROLL_SEPOLIA_TESTNET,
-    xpla: XPLA,
   } as Record<string, EthereumNetwork | undefined>;
 
   return nameMap[assetName] || ETHEREUM_NETWORKS.find((item) => item.networkName.toLowerCase() === assetName);

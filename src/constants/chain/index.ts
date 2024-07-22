@@ -81,14 +81,12 @@ import { ETHEREUM as ETHEREUM_NETWORK__ETHEREUM } from './ethereum/network/ether
 import { EVMOS as ETHEREUM_NETWORK__EVMOS } from './ethereum/network/evmos';
 import { FANTOM as ETHEREUM_NETWORK__FANTOM } from './ethereum/network/fantom';
 import { HARMONY as ETHEREUM_NETWORK__HARMONY } from './ethereum/network/harmony';
-import { HUMANS_AI as ETHEREUM_NETWORK__HUMANS_AI } from './ethereum/network/humansAi';
 import { KAVA as ETHEREUM_NETWORK__KAVA } from './ethereum/network/kava';
 import { OKT as ETHEREUM_NETWORK__OKT } from './ethereum/network/okt';
 import { OPTIMISM as ETHEREUM_NETWORK__OPTIMISM } from './ethereum/network/optimism';
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SCROLL_SEPOLIA_TESTNET as ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET } from './ethereum/network/scrollSepoliaTestnet';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
-import { XPLA as ETHEREUM_NETWORK__XPLA } from './ethereum/network/xpla';
 import { DEVNET as SUI_NETWORK__DEVNET } from './sui/network/devnet';
 import { MAINNET as SUI_NETWORK__MAINNET } from './sui/network/mainnet';
 import { TESTNET as SUI_NETWORK__TESTNET } from './sui/network/testnet';
@@ -199,14 +197,12 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__EVMOS,
   ETHEREUM_NETWORK__FANTOM,
   ETHEREUM_NETWORK__HARMONY,
-  ETHEREUM_NETWORK__HUMANS_AI,
   ETHEREUM_NETWORK__KAVA,
   ETHEREUM_NETWORK__OKT,
   ETHEREUM_NETWORK__OPTIMISM,
   ETHEREUM_NETWORK__POLYGON,
   ETHEREUM_NETWORK__SMART_CHAIN,
   ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET,
-  ETHEREUM_NETWORK__XPLA,
 ];
 
 export const APTOS_CHAINS: AptosChain[] = [APTOS];
