@@ -1,4 +1,4 @@
-import type { LINE_TYPE } from '~/constants/chain';
+import type { CHAIN_BADGE_TYPE, LINE_TYPE } from '~/constants/chain';
 import type { COSMOS_TYPE, TOKEN_TYPE as COSMOS_TOKEN_TYPE } from '~/constants/cosmos';
 import type { TOKEN_TYPE as ETHEREUM_TOKEN_TYPE } from '~/constants/ethereum';
 
@@ -165,3 +165,5 @@ export type EthereumERC20Token = {
 export type Chain = CosmosChain | EthereumChain | AptosChain | SuiChain;
 
 export type EthereumToken = EthereumERC20Token;
+
+export type ChainBadgeType = keyof typeof CHAIN_BADGE_TYPE;

@@ -212,3 +212,9 @@ export const SUI_CHAINS: SuiChain[] = [SUI];
 export const SUI_NETWORKS: SuiNetwork[] = [SUI_NETWORK__MAINNET, SUI_NETWORK__TESTNET, SUI_NETWORK__DEVNET];
 
 export const CHAINS = [...ETHEREUM_CHAINS, ...COSMOS_CHAINS, ...APTOS_CHAINS, ...SUI_CHAINS];
+
+export const LEGACY_CHAINS = [KAVA];
+
+export const CHAIN_BADGE_TYPE = {
+  OLD: 'OLD',
+} as const;

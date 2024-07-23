@@ -1,7 +1,9 @@
 import { styled } from '@mui/material/styles';
 
+import { CHAIN_BADGE_TYPE } from '~/constants/chain';
 import AbsoluteLoading from '~/Popup/components/AbsoluteLoading';
 import IconButton from '~/Popup/components/common/IconButton';
+import type { ChainBadgeType } from '~/types/chain';
 
 export const ButtonContainer = styled('div')({
   position: 'relative',
@@ -86,6 +88,27 @@ export const LeftTextContainer = styled('div')({
 
 export const LeftTextChainContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
+}));
+
+type LeftBadgeContainerProps = {
+  'data-badge-type': ChainBadgeType;
+};
+
+export const LeftBadgeContainer = styled('div')<LeftBadgeContainerProps>(({ theme, ...props }) => ({
+  width: 'fit-content',
+
+  padding: '0.2rem 0.6rem',
+
+  borderRadius: '1.6rem',
+
+  color: theme.colors.text01,
+
+  backgroundColor: (() => {
+    if (props['data-badge-type'] === CHAIN_BADGE_TYPE.OLD) {
+      return theme.colors.base05;
+    }
+    return theme.colors.base06;
+  })(),
 }));
 
 export const LeftTextErrorContainer = styled('div')(({ theme }) => ({

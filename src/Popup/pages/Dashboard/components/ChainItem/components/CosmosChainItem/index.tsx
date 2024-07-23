@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import type { FallbackProps } from 'react-error-boundary';
 import { useSetRecoilState } from 'recoil';
 
+import { CHAIN_BADGE_TYPE, LEGACY_CHAINS } from '~/constants/chain';
 import { LEDGER_SUPPORT_COIN_TYPE } from '~/constants/ledger';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
@@ -43,6 +44,14 @@ export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
     () => accounts.data?.find((item) => item.id === currentAccount.id)?.address[chain.id] || '',
     [accounts.data, chain.id, currentAccount.id],
   );
+
+  const chainBadgeType = useMemo(() => {
+    if (LEGACY_CHAINS.some((item) => item.id === chain.id)) {
+      return CHAIN_BADGE_TYPE.OLD;
+    }
+
+    return undefined;
+  }, [chain.id]);
 
   const cosmosTokensBalance = useTokensBalanceSWR({ chain, contractAddresses: currentCosmosTokens.map((item) => item.address), address });
 
@@ -109,7 +118,7 @@ export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
     navigate('/wallet');
   };
 
-  return <ChainItem onClick={handleOnClick} chainName={chainName} totalValue={totalCoinAssetsValue} imageURL={imageURL} />;
+  return <ChainItem onClick={handleOnClick} chainName={chainName} totalValue={totalCoinAssetsValue} badgeType={chainBadgeType} imageURL={imageURL} />;
 }
 
 export function CosmosChainItemSkeleton({ chain }: CosmosChainItemProps) {

@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import { Typography } from '@mui/material';
 
+import { CHAIN_BADGE_TYPE } from '~/constants/chain';
 import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import type { ChainBadgeType } from '~/types/chain';
 
 import {
   ButtonContainer,
   LedgerCheckConnectContainer,
   LedgerCheckConnectTextContainer,
   LedgerCheckNotSupportedTextContainer,
+  LeftBadgeContainer,
   LeftContainer,
   LeftImageContainer,
   LeftTextChainContainer,
@@ -32,11 +35,12 @@ import RetryIcon from '~/images/icons/Retry.svg';
 type ChainItemProps = {
   chainName: string;
   totalValue: string;
+  badgeType?: ChainBadgeType;
   imageURL?: string;
   onClick?: () => void;
 };
 
-export default function ChainItem({ chainName, imageURL, totalValue, onClick }: ChainItemProps) {
+export default function ChainItem({ chainName, totalValue, badgeType, imageURL, onClick }: ChainItemProps) {
   const { extensionStorage } = useExtensionStorage();
 
   const { showBalance } = extensionStorage;
@@ -51,6 +55,18 @@ export default function ChainItem({ chainName, imageURL, totalValue, onClick }: 
           <LeftTextChainContainer>
             <Typography variant="h5">{chainName}</Typography>
           </LeftTextChainContainer>
+          {badgeType && (
+            <LeftBadgeContainer data-badge-type={badgeType}>
+              <Typography
+                variant="h7"
+                style={{
+                  fontSize: '0.9rem',
+                }}
+              >
+                {CHAIN_BADGE_TYPE[badgeType]}
+              </Typography>
+            </LeftBadgeContainer>
+          )}
         </LeftTextContainer>
       </LeftContainer>
       <RightContainer>
