@@ -127,7 +127,6 @@ export default function Entry() {
             onClick={() => {
               void setExtensionStorage('showBalance', !showBalance);
             }}
-            edge="end"
           >
             {showBalance ? <StyledVisibility /> : <StyledVisibilityOff />}
           </VisibilityIconButton>

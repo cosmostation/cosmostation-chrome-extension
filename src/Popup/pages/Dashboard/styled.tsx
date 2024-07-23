@@ -104,7 +104,13 @@ export const ChainList = styled('div')({
 });
 
 export const VisibilityIconButton = styled(IconButton)(({ theme }) => ({
-  padding: '0 0 0 0.6rem',
+  padding: '0',
+
+  marginLeft: '0.6rem',
+
+  '&:hover': {
+    opacity: 0.8,
+  },
 
   '& > svg': {
     '& > path': {
