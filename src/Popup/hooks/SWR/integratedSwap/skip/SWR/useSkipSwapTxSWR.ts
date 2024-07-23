@@ -7,6 +7,8 @@ import { post } from '~/Popup/utils/axios';
 import { buildRequestUrl } from '~/Popup/utils/fetch';
 import type { Affiliates, SkipRoutePayload, SkipSwapTxPayload } from '~/types/swap/skip';
 
+import { useSkipAPIKeySWR } from './useSkipAPIKeySWR';
+
 type SkipRouteError = {
   code: string;
   message: string;
@@ -14,6 +16,7 @@ type SkipRouteError = {
 
 type FetchProps = {
   fetchUrl: string;
+  apiKey?: string;
   skipSwapTxParam?: SkipSwapTxParam;
 };
 
@@ -30,24 +33,34 @@ type UseSkipSwapTxSWRProps = {
 };
 
 export function useSkipSwapTxSWR({ skipSwapTxParam: swapTxParam }: UseSkipSwapTxSWRProps, config?: SWRConfiguration) {
+  const skipAPIKey = useSkipAPIKeySWR(config);
+
   const requestURL = buildRequestUrl(SKIP_BASE_URL, '/v2/fungible/msgs');
 
-  const fetcher = async ({ fetchUrl, skipSwapTxParam }: FetchProps) =>
-    post<SkipSwapTxPayload>(fetchUrl, {
-      source_asset_denom: skipSwapTxParam?.source_asset_denom,
-      source_asset_chain_id: skipSwapTxParam?.source_asset_chain_id,
-      dest_asset_denom: skipSwapTxParam?.dest_asset_denom,
-      dest_asset_chain_id: skipSwapTxParam?.dest_asset_chain_id,
-      amount_in: skipSwapTxParam?.amount_in,
-      address_list: skipSwapTxParam?.addresses,
-      operations: skipSwapTxParam?.operations,
-      amount_out: skipSwapTxParam?.amount_out,
-      slippage_tolerance_percent: skipSwapTxParam?.slippage,
-      chain_ids_to_affiliates: skipSwapTxParam?.affiliates || {},
-    });
+  const fetcher = async ({ fetchUrl, apiKey, skipSwapTxParam }: FetchProps) =>
+    post<SkipSwapTxPayload>(
+      fetchUrl,
+      {
+        source_asset_denom: skipSwapTxParam?.source_asset_denom,
+        source_asset_chain_id: skipSwapTxParam?.source_asset_chain_id,
+        dest_asset_denom: skipSwapTxParam?.dest_asset_denom,
+        dest_asset_chain_id: skipSwapTxParam?.dest_asset_chain_id,
+        amount_in: skipSwapTxParam?.amount_in,
+        address_list: skipSwapTxParam?.addresses,
+        operations: skipSwapTxParam?.operations,
+        amount_out: skipSwapTxParam?.amount_out,
+        slippage_tolerance_percent: skipSwapTxParam?.slippage,
+        chain_ids_to_affiliates: skipSwapTxParam?.affiliates || {},
+      },
+      apiKey ? { headers: { authorization: `${apiKey}` } } : undefined,
+    );
 
   const { data, isValidating, error, mutate } = useSWR<SkipSwapTxPayload, AxiosError<SkipRouteError>>(
-    { fetchUrl: requestURL, skipSwapTxParam: swapTxParam },
+    {
+      fetchUrl: requestURL,
+      apiKey: skipAPIKey.data?.key,
+      skipSwapTxParam: swapTxParam,
+    },
     fetcher,
     {
       revalidateOnFocus: false,

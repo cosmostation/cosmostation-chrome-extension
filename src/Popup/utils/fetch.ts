@@ -47,8 +47,8 @@ export async function get<T>(URL: string) {
   return responseJSON;
 }
 
-export function buildRequestUrl(baseUrl: string, methodName?: string, queryParams?: Record<string, string | number | boolean>) {
-  const requestUrl = `${baseUrl}${methodName || ''}`;
+export function buildRequestUrl(baseUrl: string, path?: string, queryParams?: Record<string, string | number | boolean>) {
+  const requestUrl = `${baseUrl}${path || ''}`;
 
   if (queryParams) {
     const params = new URLSearchParams();
