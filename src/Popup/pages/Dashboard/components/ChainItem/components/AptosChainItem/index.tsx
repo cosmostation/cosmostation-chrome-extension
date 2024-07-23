@@ -52,8 +52,6 @@ export default function AptosChainItem({ chain, network }: AptosChainItemProps) 
 
   const imageURL = useMemo(() => network.imageURL || asset?.image, [asset?.image, network.imageURL]);
 
-  const displayDenom = useMemo(() => asset?.symbol || aptosInfo?.data.symbol || '', [aptosInfo?.data.symbol, asset?.symbol]);
-
   const { networkName } = network;
 
   const price = useMemo(
@@ -114,18 +112,7 @@ export default function AptosChainItem({ chain, network }: AptosChainItemProps) 
     navigate('/wallet');
   };
 
-  return (
-    <ChainItem
-      onClick={handleOnClick}
-      chainName={networkName}
-      decimals={decimals}
-      coinGeckoId={asset?.coinGeckoId}
-      amount={totalAmount}
-      totalValue={totalCoinAssetsValue}
-      displayDenom={displayDenom}
-      imageURL={imageURL}
-    />
-  );
+  return <ChainItem onClick={handleOnClick} chainName={networkName} totalValue={totalCoinAssetsValue} imageURL={imageURL} />;
 }
 
 export function AptosChainItemSkeleton({ chain, network }: AptosChainItemProps) {

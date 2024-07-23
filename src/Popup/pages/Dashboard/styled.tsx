@@ -1,5 +1,10 @@
 import { styled } from '@mui/material/styles';
 
+import IconButton from '~/Popup/components/common/IconButton';
+
+import Visibility from '~/images/icons/Visibility.svg';
+import VisibilityOff from '~/images/icons/VisibilityOff.svg';
+
 export const Container = styled('div')({
   padding: '0 1.2rem',
 
@@ -37,6 +42,8 @@ export const TotalValueTextContainer = styled('div')(({ theme }) => ({
 }));
 
 export const TotalValueContainer = styled('div')(({ theme }) => ({
+  height: '4.1rem',
+
   paddingTop: '0.2rem',
 
   display: 'flex',
@@ -94,4 +101,24 @@ export const ChainList = styled('div')({
   display: 'grid',
   gridTemplateColumns: '1fr',
   rowGap: '0.8rem',
+});
+
+export const VisibilityIconButton = styled(IconButton)(({ theme }) => ({
+  padding: '0 0 0 0.6rem',
+
+  '& > svg': {
+    '& > path': {
+      fill: theme.colors.base05,
+    },
+  },
+}));
+
+export const StyledVisibility = styled(Visibility)({
+  width: '1.65rem',
+  height: '1.65rem',
+});
+
+export const StyledVisibilityOff = styled(VisibilityOff)({
+  width: '1.65rem',
+  height: '1.65rem',
 });

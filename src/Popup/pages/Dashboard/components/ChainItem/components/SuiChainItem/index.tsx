@@ -32,7 +32,7 @@ export default function SuiChainItem({ chain, network }: SuiChainItemProps) {
   const { currentAccount } = useCurrentAccount();
   const { data: coinGeckoData } = useCoinGeckoPriceSWR();
   const { setCurrentSuiNetwork } = useCurrentSuiNetwork();
-  const { networkName, decimals, displayDenom, coinGeckoId, imageURL } = network;
+  const { networkName, decimals, coinGeckoId, imageURL } = network;
 
   const accounts = useAccounts(true);
 
@@ -104,18 +104,7 @@ export default function SuiChainItem({ chain, network }: SuiChainItemProps) {
     navigate('/wallet');
   };
 
-  return (
-    <ChainItem
-      onClick={handleOnClick}
-      chainName={networkName}
-      decimals={decimals}
-      coinGeckoId={coinGeckoId}
-      amount={totalAmount}
-      totalValue={totalCoinAssetsValue}
-      displayDenom={displayDenom}
-      imageURL={imageURL}
-    />
-  );
+  return <ChainItem onClick={handleOnClick} chainName={networkName} totalValue={totalCoinAssetsValue} imageURL={imageURL} />;
 }
 
 export function SuiChainItemSkeleton({ chain, network }: SuiChainItemProps) {

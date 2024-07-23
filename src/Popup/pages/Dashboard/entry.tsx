@@ -42,10 +42,13 @@ import {
   CountLeftContainer,
   CountRightContainer,
   HeaderContainer,
+  StyledVisibility,
+  StyledVisibilityOff,
   SubInfoContainer,
   TotalContainer,
   TotalValueContainer,
   TotalValueTextContainer,
+  VisibilityIconButton,
 } from './styled';
 
 type ChainItem<T = Chain> = {
@@ -56,7 +59,7 @@ type ChainItem<T = Chain> = {
 type ChainList<T = Chain> = ChainItem<T>[];
 
 export default function Entry() {
-  const { extensionStorage } = useExtensionStorage();
+  const { extensionStorage, setExtensionStorage } = useExtensionStorage();
   const { currentAllowedChains } = useCurrentAllowedChains();
   const { currentAccount } = useCurrentAccount();
   const { currentShownEthereumNetwork } = useCurrentShownEthereumNetworks();
@@ -64,6 +67,8 @@ export default function Entry() {
   const { currentShownSuiNetwork } = useCurrentShownSuiNetworks();
 
   const dashboard = useRecoilValue(dashboardState);
+
+  const { showBalance } = extensionStorage;
 
   const { navigate } = useNavigate();
 
@@ -103,9 +108,29 @@ export default function Entry() {
           <Typography variant="h5">Total Value</Typography>
         </TotalValueTextContainer>
         <TotalValueContainer>
-          <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={extensionStorage.currency}>
-            {totalAmount}
-          </Number>
+          {showBalance ? (
+            <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={extensionStorage.currency}>
+              {totalAmount}
+            </Number>
+          ) : (
+            <Typography
+              variant="h1"
+              style={{
+                height: '2.5rem',
+              }}
+            >
+              ****
+            </Typography>
+          )}
+
+          <VisibilityIconButton
+            onClick={() => {
+              void setExtensionStorage('showBalance', !showBalance);
+            }}
+            edge="end"
+          >
+            {showBalance ? <StyledVisibility /> : <StyledVisibilityOff />}
+          </VisibilityIconButton>
         </TotalValueContainer>
       </TotalContainer>
       <SubInfoContainer>

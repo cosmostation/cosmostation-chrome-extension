@@ -56,6 +56,8 @@ export const extensionStorageDefault: ExtensionStorage = {
   providers: { keplr: false, metamask: false, aptos: false },
 
   address: {},
+
+  showBalance: true,
 };
 
 export const extensionStorageState = atom<ExtensionStorage>({

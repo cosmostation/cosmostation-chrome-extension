@@ -34,7 +34,7 @@ export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
   const { coins, ibcCoins } = useCoinListSWR(chain);
   const { currentCosmosTokens } = useCurrentCosmosTokens(chain);
   const { totalAmount } = useAmountSWR(chain, true);
-  const { chainName, decimals, displayDenom, coinGeckoId, imageURL } = chain;
+  const { chainName, decimals, coinGeckoId, imageURL } = chain;
 
   const { setCurrentChain } = useCurrentChain();
   const { navigate } = useNavigate();
@@ -109,18 +109,7 @@ export default function CosmosChainItem({ chain }: CosmosChainItemProps) {
     navigate('/wallet');
   };
 
-  return (
-    <ChainItem
-      onClick={handleOnClick}
-      chainName={chainName}
-      amount={totalAmount}
-      totalValue={totalCoinAssetsValue}
-      decimals={decimals}
-      displayDenom={displayDenom}
-      coinGeckoId={coinGeckoId}
-      imageURL={imageURL}
-    />
-  );
+  return <ChainItem onClick={handleOnClick} chainName={chainName} totalValue={totalCoinAssetsValue} imageURL={imageURL} />;
 }
 
 export function CosmosChainItemSkeleton({ chain }: CosmosChainItemProps) {

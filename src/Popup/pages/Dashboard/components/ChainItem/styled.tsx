@@ -88,10 +88,6 @@ export const LeftTextChainContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
 }));
 
-export const LeftTextChainAmountContainer = styled('div')(({ theme }) => ({
-  color: theme.colors.text02,
-}));
-
 export const LeftTextErrorContainer = styled('div')(({ theme }) => ({
   color: theme.accentColors.red,
 }));
@@ -114,14 +110,6 @@ export const RightTextContainer = styled('div')({
 
 export const RightTextValueContainer = styled('div')(({ theme }) => ({
   color: theme.colors.text01,
-}));
-
-type RightTextChangeRateContainerProps = {
-  'data-color'?: 'red' | 'green' | 'grey';
-};
-
-export const RightTextChangeRateContainer = styled('div')<RightTextChangeRateContainerProps>(({ theme, ...props }) => ({
-  color: props['data-color'] === 'red' ? theme.accentColors.red : props['data-color'] === 'green' ? theme.accentColors.green01 : theme.colors.text02,
 }));
 
 export const StyledAbsoluteLoading = styled(AbsoluteLoading)({

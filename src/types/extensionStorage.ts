@@ -137,6 +137,8 @@ export type ExtensionStorage = {
   providers: Providers;
 
   address: Record<string, string | undefined>;
+
+  showBalance: boolean;
 };
 
 export type ExtensionStorageKeys = keyof ExtensionStorage;

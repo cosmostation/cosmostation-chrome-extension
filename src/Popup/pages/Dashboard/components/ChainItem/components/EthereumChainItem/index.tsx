@@ -41,7 +41,7 @@ export default function EthereumChainItem({ chain, network }: EthereumChainItemP
 
   const totalAmount = useMemo(() => BigInt(data?.result || '0').toString(), [data?.result]);
 
-  const { decimals, networkName, coinGeckoId, displayDenom, imageURL } = network;
+  const { decimals, networkName, coinGeckoId, imageURL } = network;
 
   const totalCoinAssetsValue = useMemo(() => {
     const coinValue = times(toDisplayDenomAmount(totalAmount, decimals), (coinGeckoId && coinGeckoData?.[coinGeckoId]?.[extensionStorage.currency]) || '0');
@@ -90,18 +90,7 @@ export default function EthereumChainItem({ chain, network }: EthereumChainItemP
     navigate('/wallet');
   };
 
-  return (
-    <ChainItem
-      onClick={handleOnClick}
-      chainName={networkName}
-      decimals={decimals}
-      coinGeckoId={coinGeckoId}
-      amount={totalAmount}
-      totalValue={totalCoinAssetsValue}
-      displayDenom={displayDenom}
-      imageURL={imageURL}
-    />
-  );
+  return <ChainItem onClick={handleOnClick} chainName={networkName} totalValue={totalCoinAssetsValue} imageURL={imageURL} />;
 }
 
 export function EthereumChainItemSkeleton({ chain, network }: EthereumChainItemProps) {
