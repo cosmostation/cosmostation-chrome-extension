@@ -51,15 +51,9 @@ export function buildRequestUrl(baseUrl: string, path?: string, queryParams?: Re
   const requestUrl = `${baseUrl}${path || ''}`;
 
   if (queryParams) {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams(Object.entries(queryParams).map(([key, value]) => [key, String(value)]));
 
-    Object.entries(queryParams).forEach(([key, value]) => {
-      params.append(key, String(value));
-    });
-
-    const query = params.toString();
-
-    return `${requestUrl}?${query}`;
+    return `${requestUrl}?${params.toString()}`;
   }
 
   return requestUrl;
