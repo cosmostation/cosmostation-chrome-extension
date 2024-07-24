@@ -7,8 +7,6 @@ import { post } from '~/Popup/utils/axios';
 import { buildRequestUrl } from '~/Popup/utils/fetch';
 import type { Affiliates, SkipRoutePayload, SkipSwapTxPayload } from '~/types/swap/skip';
 
-import { useSkipAPIKeySWR } from './useSkipAPIKeySWR';
-
 type SkipRouteError = {
   code: string;
   message: string;
@@ -16,7 +14,6 @@ type SkipRouteError = {
 
 type FetchProps = {
   fetchUrl: string;
-  apiKey?: string;
   skipSwapTxParam?: SkipSwapTxParam;
 };
 
@@ -33,11 +30,9 @@ type UseSkipSwapTxSWRProps = {
 };
 
 export function useSkipSwapTxSWR({ skipSwapTxParam: swapTxParam }: UseSkipSwapTxSWRProps, config?: SWRConfiguration) {
-  const skipAPIKey = useSkipAPIKeySWR(config);
-
   const requestURL = buildRequestUrl(SKIP_BASE_URL, '/v2/fungible/msgs');
 
-  const fetcher = async ({ fetchUrl, apiKey, skipSwapTxParam }: FetchProps) =>
+  const fetcher = async ({ fetchUrl, skipSwapTxParam }: FetchProps) =>
     post<SkipSwapTxPayload>(
       fetchUrl,
       {
@@ -52,13 +47,12 @@ export function useSkipSwapTxSWR({ skipSwapTxParam: swapTxParam }: UseSkipSwapTx
         slippage_tolerance_percent: skipSwapTxParam?.slippage,
         chain_ids_to_affiliates: skipSwapTxParam?.affiliates || {},
       },
-      apiKey ? { headers: { authorization: `${apiKey}` } } : undefined,
+      { headers: { authorization: `${String(process.env.SKIP_API_KEY)}` } },
     );
 
   const { data, isValidating, error, mutate } = useSWR<SkipSwapTxPayload, AxiosError<SkipRouteError>>(
     {
       fetchUrl: requestURL,
-      apiKey: skipAPIKey.data?.key,
       skipSwapTxParam: swapTxParam,
     },
     fetcher,

@@ -7,8 +7,6 @@ import { post } from '~/Popup/utils/axios';
 import { buildRequestUrl } from '~/Popup/utils/fetch';
 import type { SkipRoutePayload } from '~/types/swap/skip';
 
-import { useSkipAPIKeySWR } from './useSkipAPIKeySWR';
-
 type SkipRouteError = {
   code: string;
   message: string;
@@ -16,7 +14,6 @@ type SkipRouteError = {
 
 type FetchProps = {
   fetchUrl: string;
-  apiKey?: string;
   skipRouteParam?: SkipRouteProps;
 };
 
@@ -34,11 +31,9 @@ type UseSkipRouteSWRProps = {
 };
 
 export function useSkipRouteSWR({ routeParam }: UseSkipRouteSWRProps, config?: SWRConfiguration) {
-  const skipAPIKey = useSkipAPIKeySWR(config);
-
   const requestURL = buildRequestUrl(SKIP_BASE_URL, '/v2/fungible/route');
 
-  const fetcher = async ({ fetchUrl, apiKey, skipRouteParam }: FetchProps) =>
+  const fetcher = async ({ fetchUrl, skipRouteParam }: FetchProps) =>
     post<SkipRoutePayload>(
       fetchUrl,
       {
@@ -49,11 +44,11 @@ export function useSkipRouteSWR({ routeParam }: UseSkipRouteSWRProps, config?: S
         dest_asset_chain_id: skipRouteParam?.destAssetChainId,
         cumulative_affiliate_fee_bps: skipRouteParam?.cumulativeAffiliateFeeBps,
       },
-      apiKey ? { headers: { authorization: `${apiKey}` } } : undefined,
+      { headers: { authorization: `${String(process.env.SKIP_API_KEY)}` } },
     );
 
   const { data, isValidating, error, mutate } = useSWR<SkipRoutePayload, AxiosError<SkipRouteError>>(
-    { fetchUrl: requestURL, apiKey: skipAPIKey.data?.key, skipRouteParam: routeParam },
+    { fetchUrl: requestURL, skipRouteParam: routeParam },
     fetcher,
     {
       revalidateOnFocus: false,
