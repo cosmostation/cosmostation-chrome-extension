@@ -68,6 +68,7 @@ import { TERITORI } from './cosmos/teritori';
 import { TERRA } from './cosmos/terra';
 import { UX } from './cosmos/ux';
 import { XPLA } from './cosmos/xpla';
+import { ZETA } from './cosmos/zeta';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ALTHEA as ETHEREUM_NETWORK__ALTHEA } from './ethereum/network/althea';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
@@ -86,6 +87,7 @@ import { OPTIMISM as ETHEREUM_NETWORK__OPTIMISM } from './ethereum/network/optim
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SCROLL_SEPOLIA_TESTNET as ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET } from './ethereum/network/scrollSepoliaTestnet';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
+import { ZETA as ETHEREUM_NETWORK__ZETA } from './ethereum/network/zeta';
 import { DEVNET as SUI_NETWORK__DEVNET } from './sui/network/devnet';
 import { MAINNET as SUI_NETWORK__MAINNET } from './sui/network/mainnet';
 import { TESTNET as SUI_NETWORK__TESTNET } from './sui/network/testnet';
@@ -177,6 +179,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   TERRA,
   UX,
   XPLA,
+  ZETA,
 ];
 
 export const COSMOS_NON_NATIVE_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES, ...NOBLE_GAS_RATES];
@@ -201,6 +204,7 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__POLYGON,
   ETHEREUM_NETWORK__SMART_CHAIN,
   ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET,
+  ETHEREUM_NETWORK__ZETA,
 ];
 
 export const APTOS_CHAINS: AptosChain[] = [APTOS];
