@@ -104,7 +104,3 @@ type Msgs = {
 export type SkipSwapTxPayload = {
   msgs: Msgs[];
 };
-
-export type SkipAPIKeyPayload = {
-  key: string;
-};
