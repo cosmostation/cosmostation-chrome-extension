@@ -29,5 +29,5 @@ export const AGORIC: CosmosChain = {
     low: '0.05',
     average: '0.07',
   },
-  gas: {},
+  gas: { send: '100000' },
 };
