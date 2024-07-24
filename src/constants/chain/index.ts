@@ -4,6 +4,7 @@ import { APTOS } from './aptos/aptos';
 import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
 import { MAINNET as APTOS_NETWORK__MAINNET } from './aptos/network/mainnet';
 import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
+import { AGORIC } from './cosmos/agoric';
 import { AKASH } from './cosmos/akash';
 import { ALTHEA } from './cosmos/althea';
 import { ARCHWAY } from './cosmos/archway';
@@ -114,6 +115,7 @@ export const COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV = '1.4';
 
 export const COSMOS_CHAINS: CosmosChain[] = [
   COSMOS,
+  AGORIC,
   AKASH,
   ALTHEA,
   ARCHWAY,
