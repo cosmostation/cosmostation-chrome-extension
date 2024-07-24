@@ -51,10 +51,7 @@ export function useSkipSwapTxSWR({ skipSwapTxParam: swapTxParam }: UseSkipSwapTx
     );
 
   const { data, isValidating, error, mutate } = useSWR<SkipSwapTxPayload, AxiosError<SkipRouteError>>(
-    {
-      fetchUrl: requestURL,
-      skipSwapTxParam: swapTxParam,
-    },
+    { fetchUrl: requestURL, skipSwapTxParam: swapTxParam },
     fetcher,
     {
       revalidateOnFocus: false,
