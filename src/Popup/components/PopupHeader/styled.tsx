@@ -8,7 +8,7 @@ export const Container = styled('div')({
 
   alignItems: 'center',
 
-  '&.marginTop': {
+  '&.address-only': {
     marginTop: '0.8rem',
   },
 });

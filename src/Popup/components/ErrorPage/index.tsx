@@ -50,30 +50,24 @@ export default function ErrorPage({ chain, network, queue, ...rest }: EntryProps
   const { currentAccount } = useCurrentAccount();
   const accounts = useAccounts();
 
-  const chainName = useMemo(() => {
+  const { chainName, chainImageURL } = useMemo(() => {
     if (chain) {
       if (chain.line === COSMOS.line) {
-        return chain?.chainName;
+        return {
+          chainName: chain?.chainName,
+          chainImageURL: chain?.imageURL,
+        };
       }
+
       if ([ETHEREUM.line, SUI.line, APTOS.line].includes(chain.line)) {
-        return network?.networkName || chain?.chainName;
+        return {
+          chainName: network?.networkName || chain?.chainName,
+          chainImageURL: network?.imageURL || chain?.imageURL,
+        };
       }
     }
-    return '';
-  }, [chain, network?.networkName]);
-
-  const chainImageURL = useMemo(() => {
-    if (chain) {
-      if (chain?.line === COSMOS.line) {
-        return chain?.imageURL;
-      }
-      if ([ETHEREUM.line, SUI.line, APTOS.line].includes(chain.line)) {
-        return network?.imageURL || chain?.imageURL;
-      }
-    }
-
-    return '';
-  }, [chain, network?.imageURL]);
+    return {};
+  }, [chain, network?.imageURL, network?.networkName]);
 
   const isDisplayPopupHeader = useMemo(() => !!queue, [queue]);
 
@@ -89,7 +83,7 @@ export default function ErrorPage({ chain, network, queue, ...rest }: EntryProps
           account={address ? { ...currentAccount, address } : undefined}
           chain={!!chainName && !!chainImageURL ? { name: chainName, imageURL: chainImageURL } : undefined}
           origin={queue?.origin || '-'}
-          className={!address && (!chainName || !chainImageURL) ? 'marginTop' : undefined}
+          className={!address && (!chainName || !chainImageURL) ? 'address-only' : undefined}
         />
       )}
       <WrapperContainer>

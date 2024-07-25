@@ -1,5 +1,11 @@
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import ErrorPage from '~/Popup/components/ErrorPage';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
+import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import type { Queue } from '~/types/extensionStorage';
 import type { EthcSwitchNetwork } from '~/types/message/ethereum';
@@ -9,13 +15,21 @@ import Layout from './layout';
 
 export default function SwitchNetwork() {
   const { currentQueue } = useCurrentQueue();
+  const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   if (currentQueue && isEthAddNetwork(currentQueue)) {
     return (
       <Lock>
         <AccessRequest>
           <Layout>
-            <Entry queue={currentQueue} />
+            <ErrorBoundary
+              // eslint-disable-next-line react/no-unstable-nested-components
+              FallbackComponent={(props) => <ErrorPage queue={currentQueue} chain={ETHEREUM} network={currentEthereumNetwork} {...props} />}
+            >
+              <Suspense fallback={null}>
+                <Entry queue={currentQueue} />
+              </Suspense>
+            </ErrorBoundary>
           </Layout>
         </AccessRequest>
       </Lock>
