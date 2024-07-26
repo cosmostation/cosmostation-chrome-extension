@@ -53,8 +53,6 @@ import {
   LeftImageContainer,
   LeftInfoContainer,
   MarginTop8Div,
-  MarginTop12Div,
-  MarginTop16Div,
   MaxButton,
   StyledInput,
   StyledTextarea,
@@ -517,7 +515,7 @@ export default function Send({ chain }: CosmosProps) {
         />
       </MarginTop8Div>
 
-      <MarginTop16Div>
+      <MarginTop8Div>
         <StyledTextarea
           multiline
           minRows={3}
@@ -526,9 +524,9 @@ export default function Send({ chain }: CosmosProps) {
           onChange={(e) => setCurrentMemo(e.currentTarget.value)}
           value={currentMemo}
         />
-      </MarginTop16Div>
+      </MarginTop8Div>
 
-      <MarginTop12Div>
+      <MarginTop8Div>
         <Fee
           feeCoin={currentFeeCoin}
           feeCoinList={feeCoins}
@@ -542,7 +540,7 @@ export default function Send({ chain }: CosmosProps) {
           onChangeGasRateKey={(gasRateKey) => setCustomGasRateKey(gasRateKey)}
           isEdit
         />
-      </MarginTop12Div>
+      </MarginTop8Div>
       <BottomContainer>
         <Tooltip varient="error" title={errorMessage} placement="top" arrow>
           <div>

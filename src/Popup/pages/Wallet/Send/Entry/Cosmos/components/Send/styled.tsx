@@ -47,14 +47,6 @@ export const MarginTop8Div = styled('div')({
   marginTop: '0.8rem',
 });
 
-export const MarginTop12Div = styled('div')({
-  marginTop: '1.2rem',
-});
-
-export const MarginTop16Div = styled('div')({
-  marginTop: '1.6rem',
-});
-
 export const AddressContainer = styled('div')({
   marginTop: '0.8rem',
 
