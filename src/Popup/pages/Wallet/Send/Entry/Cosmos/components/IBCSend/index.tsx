@@ -112,7 +112,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
     [accounts.data, chain.id, currentAccount.id],
   );
 
-  const { decimals, gas, gasRate } = chain;
+  const { gas, gasRate } = chain;
 
   const filteredCosmosChainAssets = useMemo(() => cosmosChainsAssets.data.filter((item) => cosmosAssetNames.includes(item.chain)), [cosmosChainsAssets.data]);
   const filteredCurrentChainAssets = useMemo(
@@ -497,7 +497,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const ibcSendProtoTx = useMemo(() => {
     if (ibcSendAminoTx) {
-      const pTx = protoTx(ibcSendAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(ibcSendAminoTx, [''], { type: getPublicKeyType(chain), value: '' });
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
@@ -519,7 +519,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
 
   const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
 
-  const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, decimals);
+  const currentDisplayFeeAmount = toDisplayDenomAmount(currentFeeAmount, currentFeeCoin.decimals);
 
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
@@ -768,7 +768,7 @@ export default function IBCSend({ chain }: IBCSendProps) {
                         },
                         isEditFee: false,
                         isEditMemo: false,
-                        isCheckBalance: false,
+                        isCheckBalance: true,
                       },
                     },
                   });

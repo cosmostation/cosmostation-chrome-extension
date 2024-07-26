@@ -104,7 +104,7 @@ export default function Send({ chain }: CosmosProps) {
     [accounts.data, chain.id, currentAccount.id],
   );
 
-  const { decimals, gas, gasRate } = chain;
+  const { gas, gasRate } = chain;
 
   const coinAll = useMemo(
     () => [
@@ -335,7 +335,7 @@ export default function Send({ chain }: CosmosProps) {
 
   const sendProtoTx = useMemo(() => {
     if (sendAminoTx) {
-      const pTx = protoTx(sendAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(sendAminoTx, [Buffer.from(new Uint8Array(64)).toString('base64')], { type: getPublicKeyType(chain), value: '' });
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }
@@ -357,7 +357,7 @@ export default function Send({ chain }: CosmosProps) {
 
   const currentCeilFeeAmount = useMemo(() => ceil(currentFeeAmount), [currentFeeAmount]);
 
-  const currentDisplayFeeAmount = toDisplayDenomAmount(currentCeilFeeAmount, decimals);
+  const currentDisplayFeeAmount = toDisplayDenomAmount(currentCeilFeeAmount, currentFeeCoin.decimals);
 
   const maxDisplayAmount = useMemo(() => {
     const maxAmount = minus(currentCoinOrTokenDisplayAvailableAmount, currentDisplayFeeAmount);
@@ -562,7 +562,7 @@ export default function Send({ chain }: CosmosProps) {
                         doc: { ...sendAminoTx, fee: { amount: [{ denom: currentFeeCoin.baseDenom, amount: currentCeilFeeAmount }], gas: currentGas } },
                         isEditFee: false,
                         isEditMemo: false,
-                        isCheckBalance: false,
+                        isCheckBalance: true,
                       },
                     },
                   });

@@ -11,6 +11,7 @@ import PopupHeader from '~/Popup/components/PopupHeader';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
+import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useProtoBuilderDecodeSWR } from '~/Popup/hooks/SWR/cosmos/useProtoBuilderDecodeSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
@@ -19,10 +20,10 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, equal, gt, gte, times } from '~/Popup/utils/big';
 import { getAddress, getKeyPair } from '~/Popup/utils/common';
-import { cosmosURL, getDefaultAV, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
+import { cosmosURL, getPublicKeyType, signDirect } from '~/Popup/utils/cosmos';
 import { responseToWeb } from '~/Popup/utils/message';
 import { broadcast, decodeProtobufMessage, protoTxBytes } from '~/Popup/utils/proto';
-import { cosmos } from '~/proto/cosmos-v0.44.2.js';
+import { cosmos } from '~/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain, FeeCoin, GasRateKey } from '~/types/chain';
 import type { Queue } from '~/types/extensionStorage';
 import type { CosSignDirect, CosSignDirectResponse } from '~/types/message/cosmos';
@@ -51,6 +52,8 @@ export default function Entry({ queue, chain }: EntryProps) {
   const { t } = useTranslation();
 
   const [isProgress, setIsProgress] = useState(false);
+
+  const { data: gasMultiply } = useGasMultiplySWR(chain);
 
   const assets = useAssetsSWR(chain);
 
@@ -99,7 +102,7 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const [memo, setMemo] = useState(decodedBodyBytes.memo || '');
 
-  const { fee } = decodedAuthInfoBytes;
+  const { fee, signer_infos } = decodedAuthInfoBytes;
 
   const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
   const address = useMemo(() => getAddress(chain, keyPair?.publicKey), [chain, keyPair?.publicKey]);
@@ -142,20 +145,22 @@ export default function Entry({ queue, chain }: EntryProps) {
 
   const memoizedProtoTx = useMemo(() => {
     if (isEditFee) {
+      const signatures = signer_infos.map(() => Buffer.from(new Uint8Array(64)).toString('base64'));
+
       return protoTxBytes({
-        signature: Buffer.from(new Uint8Array(64)).toString('base64'),
+        signatures,
         txBodyBytes: body_bytes,
         authInfoBytes: auth_info_bytes,
       });
     }
     return null;
-  }, [auth_info_bytes, body_bytes, isEditFee]);
+  }, [auth_info_bytes, body_bytes, isEditFee, signer_infos]);
 
   const simulate = useSimulateSWR({ chain, txBytes: memoizedProtoTx?.tx_bytes });
 
   const simulatedGas = useMemo(
-    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, getDefaultAV(chain), 0) : undefined),
-    [chain, simulate.data?.gas_info?.gas_used],
+    () => (simulate.data?.gas_info?.gas_used ? times(simulate.data.gas_info.gas_used, gasMultiply, 0) : undefined),
+    [gasMultiply, simulate.data?.gas_info?.gas_used],
   );
 
   const currentGas = useMemo(
@@ -353,7 +358,7 @@ export default function Entry({ queue, chain }: EntryProps) {
                       try {
                         const url = cosmosURL(chain).postBroadcast();
                         const pTxBytes = protoTxBytes({
-                          signature: base64Signature,
+                          signatures: [base64Signature],
                           txBodyBytes: signedDoc.body_bytes,
                           authInfoBytes: signedDoc.auth_info_bytes,
                         });

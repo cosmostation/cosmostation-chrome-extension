@@ -382,7 +382,7 @@ export default function Entry({ chain }: EntryProps) {
 
   const swapProtoTx = useMemo(() => {
     if (swapAminoTx) {
-      const pTx = protoTx(swapAminoTx, Buffer.from(new Uint8Array(64)).toString('base64'), { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(swapAminoTx, [Buffer.from(new Uint8Array(64)).toString('base64')], { type: getPublicKeyType(chain), value: '' });
 
       return pTx ? protoTxBytes({ ...pTx }) : null;
     }

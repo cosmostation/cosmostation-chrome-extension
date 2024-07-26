@@ -49,7 +49,7 @@ export type SignDirectDoc = {
 };
 
 export type ProtoTxBytesProps = {
-  signature: string;
+  signatures: string[];
   txBodyBytes: Uint8Array;
   authInfoBytes: Uint8Array;
 };

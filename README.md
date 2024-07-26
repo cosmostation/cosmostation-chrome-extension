@@ -23,6 +23,7 @@ With Cosmostation, users can create personal crypto wallets, safely sign on-chai
 ## Downloads
 
 - [Chrome Extension](https://chrome.google.com/webstore/detail/cosmostation/fpkhgmpbidmiogeglndfbkegfdlnajnf)
+- [Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/cosmostation-wallet)
 
 ## Guides
 
