@@ -48,11 +48,8 @@ export default function TokenListBottomSheet({
     () =>
       search.length > 1
         ? availableTokenList
-            ?.filter(
-              (item) =>
-                item.displayDenom.toLowerCase().indexOf(search.toLowerCase()) > -1 ||
-                item.name.toLowerCase().indexOf(search.toLowerCase()) > -1 ||
-                item.tokenAddressOrDenom.toLowerCase().indexOf(search.toLowerCase()) > -1,
+            ?.filter((item) =>
+              [item.displayDenom, item.name, item.tokenAddressOrDenom].map((str) => str.toLowerCase()).some((str) => str.indexOf(search.toLowerCase()) > -1),
             )
             .slice(0, viewLimit) || []
         : availableTokenList?.slice(0, viewLimit) || [],
