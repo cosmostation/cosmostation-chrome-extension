@@ -8,8 +8,9 @@ import type { AptosChain } from '~/types/chain';
 
 import CoinList from '../components/aptos/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/aptos/NativeChainCard';
+import TotalChainValue from '../components/aptos/TotalChainValue';
 import LedgerCheck from '../components/LedgerCheck';
-import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer } from '../styled';
+import { BottomContainer, Container, ContentsContainer, HeaderContainer, NativeChainCardContainer } from '../styled';
 
 type AptosProps = {
   chain: AptosChain;
@@ -30,7 +31,9 @@ export default function Aptos({ chain }: AptosProps) {
         <Header />
       </HeaderContainer>
       <LedgerCheck>
-        <>
+        <ContentsContainer>
+          <TotalChainValue network={currentAptosNetwork} />
+
           <NativeChainCardContainer>
             <ErrorBoundary
               // eslint-disable-next-line react/no-unstable-nested-components
@@ -44,7 +47,7 @@ export default function Aptos({ chain }: AptosProps) {
           <BottomContainer>
             <CoinList />
           </BottomContainer>
-        </>
+        </ContentsContainer>
       </LedgerCheck>
     </Container>
   );

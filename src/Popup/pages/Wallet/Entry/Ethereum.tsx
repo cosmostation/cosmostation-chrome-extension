@@ -13,8 +13,9 @@ import type { EthereumChain } from '~/types/chain';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/ethereum/NativeChainCard';
 import NFTList from '../components/ethereum/NFTList';
 import TokenList from '../components/ethereum/TokenList';
+import TotalChainValue from '../components/ethereum/TotalChainValue';
 import LedgerCheck from '../components/LedgerCheck';
-import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer, StyledTabPanel } from '../styled';
+import { BottomContainer, Container, ContentsContainer, HeaderContainer, NativeChainCardContainer, StyledTabPanel } from '../styled';
 
 type EthereumProps = {
   chain: EthereumChain;
@@ -52,7 +53,8 @@ export default function Ethereum({ chain }: EthereumProps) {
         <Header />
       </HeaderContainer>
       <LedgerCheck>
-        <>
+        <ContentsContainer>
+          <TotalChainValue network={currentEthereumNetwork} />
           <NativeChainCardContainer>
             <ErrorBoundary
               // eslint-disable-next-line react/no-unstable-nested-components
@@ -82,7 +84,7 @@ export default function Ethereum({ chain }: EthereumProps) {
               </ErrorBoundary>
             </BottomContainer>
           </StyledTabPanel>
-        </>
+        </ContentsContainer>
       </LedgerCheck>
     </Container>
   );

@@ -157,20 +157,28 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <SecondLineRightTextContainer>
-            <Tooltip title={displayAmount} arrow placement="bottom-end">
-              <span>
-                <Number typoOfIntegers="h4n" typoOfDecimals="h5n" fixed={getDisplayMaxDecimals(decimals)}>
-                  {displayAmount}
+          {extensionStorage.showBalance ? (
+            <>
+              <SecondLineRightTextContainer>
+                <Tooltip title={displayAmount} arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h4n" typoOfDecimals="h5n" fixed={getDisplayMaxDecimals(decimals)}>
+                      {displayAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
+              </SecondLineRightTextContainer>
+              <SecondLineRightSubTextContainer>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
+                  {value}
                 </Number>
-              </span>
-            </Tooltip>
-          </SecondLineRightTextContainer>
-          <SecondLineRightSubTextContainer>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
-              {value}
-            </Number>
-          </SecondLineRightSubTextContainer>
+              </SecondLineRightSubTextContainer>
+            </>
+          ) : (
+            <SecondLineRightTextContainer>
+              <Typography variant="h5">****</Typography>
+            </SecondLineRightTextContainer>
+          )}
         </SecondLineRightContainer>
       </SecondLineContainer>
 

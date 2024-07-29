@@ -216,20 +216,28 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <SecondLineRightTextContainer>
-            <Tooltip title={displayTotalAmount} arrow placement="bottom-end">
-              <span>
-                <Number typoOfIntegers="h4n" typoOfDecimals="h5n" fixed={getDisplayMaxDecimals(decimals)}>
-                  {displayTotalAmount}
+          {extensionStorage.showBalance ? (
+            <>
+              <SecondLineRightTextContainer>
+                <Tooltip title={displayTotalAmount} arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h4n" typoOfDecimals="h5n" fixed={getDisplayMaxDecimals(decimals)}>
+                      {displayTotalAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
+              </SecondLineRightTextContainer>
+              <SecondLineRightSubTextContainer>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
+                  {value}
                 </Number>
-              </span>
-            </Tooltip>
-          </SecondLineRightTextContainer>
-          <SecondLineRightSubTextContainer>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
-              {value}
-            </Number>
-          </SecondLineRightSubTextContainer>
+              </SecondLineRightSubTextContainer>
+            </>
+          ) : (
+            <SecondLineRightTextContainer>
+              <Typography variant="h5">****</Typography>
+            </SecondLineRightTextContainer>
+          )}
         </SecondLineRightContainer>
       </SecondLineContainer>
 
@@ -243,13 +251,17 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
                 <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.available')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
-                <Tooltip title={displayAvailableAmount} arrow placement="bottom-end">
-                  <span>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={decimals}>
-                      {displayAvailableAmount}
-                    </Number>
-                  </span>
-                </Tooltip>
+                {extensionStorage.showBalance ? (
+                  <Tooltip title={displayAvailableAmount} arrow placement="bottom-end">
+                    <span>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={decimals}>
+                        {displayAvailableAmount}
+                      </Number>
+                    </span>
+                  </Tooltip>
+                ) : (
+                  <Typography variant="h5">****</Typography>
+                )}
               </FourthLineContainerItemRight>
             </FourthLineContainerItem>
             <FourthLineContainerItem>
@@ -257,13 +269,17 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
                 <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.staked')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
-                <Tooltip title={displayDelegationAmount} arrow placement="bottom-end">
-                  <span>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={decimals}>
-                      {displayDelegationAmount}
-                    </Number>
-                  </span>
-                </Tooltip>
+                {extensionStorage.showBalance ? (
+                  <Tooltip title={displayDelegationAmount} arrow placement="bottom-end">
+                    <span>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={decimals}>
+                        {displayDelegationAmount}
+                      </Number>
+                    </span>
+                  </Tooltip>
+                ) : (
+                  <Typography variant="h5">****</Typography>
+                )}
               </FourthLineContainerItemRight>
             </FourthLineContainerItem>
 
@@ -272,13 +288,17 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
                 <Typography variant="h6">{t('pages.Wallet.components.sui.NativeChainCard.index.earned')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
-                <Tooltip title={displayTotalReward} arrow placement="bottom-end">
-                  <span>
-                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={decimals}>
-                      {displayTotalReward}
-                    </Number>
-                  </span>
-                </Tooltip>
+                {extensionStorage.showBalance ? (
+                  <Tooltip title={displayTotalReward} arrow placement="bottom-end">
+                    <span>
+                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={decimals}>
+                        {displayTotalReward}
+                      </Number>
+                    </span>
+                  </Tooltip>
+                ) : (
+                  <Typography variant="h5">****</Typography>
+                )}
               </FourthLineContainerItemRight>
             </FourthLineContainerItem>
           </FourthLineContainer>

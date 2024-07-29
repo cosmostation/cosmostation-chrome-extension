@@ -430,20 +430,28 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
-          <SecondLineRightTextContainer>
-            <Tooltip title={displayAmount} arrow placement="bottom-end">
-              <span>
-                <Number typoOfIntegers="h4n" typoOfDecimals="h5n" fixed={displayMaxDecimals}>
-                  {displayAmount}
+          {extensionStorage.showBalance ? (
+            <>
+              <SecondLineRightTextContainer>
+                <Tooltip title={displayAmount} arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h4n" typoOfDecimals="h5n" fixed={displayMaxDecimals}>
+                      {displayAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
+              </SecondLineRightTextContainer>
+              <SecondLineRightSubTextContainer>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
+                  {value}
                 </Number>
-              </span>
-            </Tooltip>
-          </SecondLineRightTextContainer>
-          <SecondLineRightSubTextContainer>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
-              {value}
-            </Number>
-          </SecondLineRightSubTextContainer>
+              </SecondLineRightSubTextContainer>
+            </>
+          ) : (
+            <SecondLineRightTextContainer>
+              <Typography variant="h5">****</Typography>
+            </SecondLineRightTextContainer>
+          )}
         </SecondLineRightContainer>
       </SecondLineContainer>
 
@@ -458,13 +466,17 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                   <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.available')}</Typography>
                 </FourthLineContainerItemLeft>
                 <FourthLineContainerItemRight>
-                  <Tooltip title={displayAvailableAmount} arrow placement="bottom-end">
-                    <span>
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                        {displayAvailableAmount}
-                      </Number>
-                    </span>
-                  </Tooltip>
+                  {extensionStorage.showBalance ? (
+                    <Tooltip title={displayAvailableAmount} arrow placement="bottom-end">
+                      <span>
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                          {displayAvailableAmount}
+                        </Number>
+                      </span>
+                    </Tooltip>
+                  ) : (
+                    <Typography variant="h5">****</Typography>
+                  )}
                 </FourthLineContainerItemRight>
               </FourthLineContainerItem>
               <FourthLineContainerItem>
@@ -472,13 +484,17 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                   <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.delegated')}</Typography>
                 </FourthLineContainerItemLeft>
                 <FourthLineContainerItemRight>
-                  <Tooltip title={displayDelegationAmount} arrow placement="bottom-end">
-                    <span>
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                        {displayDelegationAmount}
-                      </Number>
-                    </span>
-                  </Tooltip>
+                  {extensionStorage.showBalance ? (
+                    <Tooltip title={displayDelegationAmount} arrow placement="bottom-end">
+                      <span>
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                          {displayDelegationAmount}
+                        </Number>
+                      </span>
+                    </Tooltip>
+                  ) : (
+                    <Typography variant="h5">****</Typography>
+                  )}
                 </FourthLineContainerItemRight>
               </FourthLineContainerItem>
               <FourthLineContainerItem>
@@ -486,13 +502,17 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                   <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.unbonding')}</Typography>
                 </FourthLineContainerItemLeft>
                 <FourthLineContainerItemRight>
-                  <Tooltip title={displayUnDelegationAmount} arrow placement="bottom-end">
-                    <span>
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                        {displayUnDelegationAmount}
-                      </Number>
-                    </span>
-                  </Tooltip>
+                  {extensionStorage.showBalance ? (
+                    <Tooltip title={displayUnDelegationAmount} arrow placement="bottom-end">
+                      <span>
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                          {displayUnDelegationAmount}
+                        </Number>
+                      </span>
+                    </Tooltip>
+                  ) : (
+                    <Typography variant="h5">****</Typography>
+                  )}
                 </FourthLineContainerItemRight>
               </FourthLineContainerItem>
               <FourthLineContainerItem>
@@ -500,13 +520,17 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                   <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.reward')}</Typography>
                 </FourthLineContainerItemLeft>
                 <FourthLineContainerItemRight>
-                  <Tooltip title={displayRewardAmount} arrow placement="bottom-end">
-                    <span>
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                        {displayRewardAmount}
-                      </Number>
-                    </span>
-                  </Tooltip>
+                  {extensionStorage.showBalance ? (
+                    <Tooltip title={displayRewardAmount} arrow placement="bottom-end">
+                      <span>
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                          {displayRewardAmount}
+                        </Number>
+                      </span>
+                    </Tooltip>
+                  ) : (
+                    <Typography variant="h5">****</Typography>
+                  )}
                 </FourthLineContainerItemRight>
               </FourthLineContainerItem>
               <FourthLineContainerItem>
@@ -514,13 +538,17 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                   <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.vesting')}</Typography>
                 </FourthLineContainerItemLeft>
                 <FourthLineContainerItemRight>
-                  <Tooltip title={displayVestingNotDelegationAmount} arrow placement="bottom-end">
-                    <span>
-                      <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                        {displayVestingNotDelegationAmount}
-                      </Number>
-                    </span>
-                  </Tooltip>
+                  {extensionStorage.showBalance ? (
+                    <Tooltip title={displayVestingNotDelegationAmount} arrow placement="bottom-end">
+                      <span>
+                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                          {displayVestingNotDelegationAmount}
+                        </Number>
+                      </span>
+                    </Tooltip>
+                  ) : (
+                    <Typography variant="h5">****</Typography>
+                  )}
                 </FourthLineContainerItemRight>
               </FourthLineContainerItem>
               {chain.id === KAVA.id && (
@@ -529,13 +557,17 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                     <Typography variant="h6">{t('pages.Wallet.components.cosmos.NativeChainCard.index.incentive')}</Typography>
                   </FourthLineContainerItemLeft>
                   <FourthLineContainerItemRight>
-                    <Tooltip title={displayIncentiveAmount} arrow placement="bottom-end">
-                      <span>
-                        <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
-                          {displayIncentiveAmount}
-                        </Number>
-                      </span>
-                    </Tooltip>
+                    {extensionStorage.showBalance ? (
+                      <Tooltip title={displayIncentiveAmount} arrow placement="bottom-end">
+                        <span>
+                          <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                            {displayIncentiveAmount}
+                          </Number>
+                        </span>
+                      </Tooltip>
+                    ) : (
+                      <Typography variant="h5">****</Typography>
+                    )}
                   </FourthLineContainerItemRight>
                 </FourthLineContainerItem>
               )}

@@ -37,7 +37,7 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: coin.coinType });
 
-  const { currency } = extensionStorage;
+  const { currency, showBalance } = extensionStorage;
 
   const displayAmount = useMemo(
     () => toDisplayDenomAmount(coin.balance, coinMetadata?.result?.decimals || SUI_TOKEN_TEMPORARY_DECIMALS),
@@ -80,16 +80,24 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
       </LeftContainer>
       <RightContainer>
         <RightTextContainer>
-          <RightTextValueContainer>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-              {displayAmount}
-            </Number>
-          </RightTextValueContainer>
-          <RightTextChangeRateContainer>
-            <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={currency}>
-              {displayValue}
-            </Number>
-          </RightTextChangeRateContainer>
+          {showBalance ? (
+            <>
+              <RightTextValueContainer>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                  {displayAmount}
+                </Number>
+              </RightTextValueContainer>
+              <RightTextChangeRateContainer>
+                <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={currency}>
+                  {displayValue}
+                </Number>
+              </RightTextChangeRateContainer>
+            </>
+          ) : (
+            <RightTextValueContainer>
+              <Typography variant="h5">****</Typography>
+            </RightTextValueContainer>
+          )}
         </RightTextContainer>
       </RightContainer>
     </StyledButton>

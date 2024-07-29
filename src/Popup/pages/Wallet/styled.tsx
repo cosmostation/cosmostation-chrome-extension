@@ -13,13 +13,23 @@ export const Container = styled('div')({
 });
 
 export const HeaderContainer = styled('div')({
-  marginTop: '0.4rem',
+  margin: '0.4rem 0 1.2rem',
 
   flexShrink: 0,
 });
 
+export const ContentsContainer = styled('div')({
+  display: 'flex',
+  flexDirection: 'column',
+
+  overflow: 'auto',
+
+  margin: '0 -1.2rem',
+  padding: '0 1.2rem ',
+});
+
 export const NativeChainCardContainer = styled('div')({
-  marginTop: '1.6rem',
+  marginTop: '1.2rem',
 
   flexShrink: 0,
 });
@@ -29,13 +39,10 @@ export const BottomContainer = styled('div')({
 
   display: 'flex',
   flexDirection: 'column',
-  overflow: 'hidden',
 });
 
 export const StyledTabPanel = styled(TabPanel)({
   marginTop: '0',
   display: 'flex',
   flexDirection: 'column',
-
-  overflow: 'hidden',
 });

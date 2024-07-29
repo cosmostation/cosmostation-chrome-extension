@@ -79,9 +79,13 @@ export const RightContainer = styled('div')({
 });
 
 export const RightTextContainer = styled('div')({
-  display: 'grid',
+  height: '4rem',
 
-  gridTemplateColumns: '1fr',
+  display: 'flex',
+  flexDirection: 'column',
+
+  justifyContent: 'center',
+  alignItems: 'flex-end',
 
   rowGap: '0.3rem',
 });

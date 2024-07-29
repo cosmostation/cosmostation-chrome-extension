@@ -107,6 +107,8 @@ export const SecondLineLeftSubTextEmptyContainer = styled('div')({
 });
 
 export const SecondLineRightContainer = styled('div')({
+  height: '4.4rem',
+
   display: 'flex',
   flexDirection: 'column',
 
@@ -160,6 +162,8 @@ export const FourthLineContainerItemLeft = styled('div')(({ theme }) => ({
 }));
 
 export const FourthLineContainerItemRight = styled('div')(({ theme }) => ({
+  height: '1.9rem',
+
   display: 'flex',
   justifyContent: 'flex-end',
   alignItems: 'center',

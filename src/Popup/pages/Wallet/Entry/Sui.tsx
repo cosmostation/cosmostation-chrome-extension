@@ -14,7 +14,8 @@ import LedgerCheck from '../components/LedgerCheck';
 import CoinList from '../components/sui/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/sui/NativeChainCard';
 import NFTList from '../components/sui/NFTList';
-import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer, StyledTabPanel } from '../styled';
+import TotalChainValue from '../components/sui/TotalChainValue';
+import { BottomContainer, Container, ContentsContainer, HeaderContainer, NativeChainCardContainer, StyledTabPanel } from '../styled';
 
 type SuiProps = {
   chain: SuiChain;
@@ -49,7 +50,9 @@ export default function Sui({ chain }: SuiProps) {
         <Header />
       </HeaderContainer>
       <LedgerCheck>
-        <>
+        <ContentsContainer>
+          <TotalChainValue network={currentSuiNetwork} />
+
           <NativeChainCardContainer>
             <ErrorBoundary
               // eslint-disable-next-line react/no-unstable-nested-components
@@ -83,7 +86,7 @@ export default function Sui({ chain }: SuiProps) {
               </ErrorBoundary>
             </BottomContainer>
           </StyledTabPanel>
-        </>
+        </ContentsContainer>
       </LedgerCheck>
     </Container>
   );

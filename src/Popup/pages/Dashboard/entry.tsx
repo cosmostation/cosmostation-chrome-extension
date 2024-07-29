@@ -38,6 +38,7 @@ import {
   ChainList,
   ChainListContainer,
   Container,
+  ContentsContainer,
   CountContainer,
   CountLeftContainer,
   CountRightContainer,
@@ -103,119 +104,121 @@ export default function Entry() {
       <HeaderContainer>
         <Header isShowChain={false} />
       </HeaderContainer>
-      <TotalContainer>
-        <TotalValueTextContainer>
-          <Typography variant="h5">Total Value</Typography>
-        </TotalValueTextContainer>
-        <TotalValueContainer>
-          {showBalance ? (
-            <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={extensionStorage.currency}>
-              {totalAmount}
-            </Number>
-          ) : (
-            <Typography
-              variant="h1"
-              style={{
-                height: '2.5rem',
+      <ContentsContainer>
+        <TotalContainer>
+          <TotalValueTextContainer>
+            <Typography variant="h5">Total Value</Typography>
+          </TotalValueTextContainer>
+          <TotalValueContainer>
+            {showBalance ? (
+              <Number typoOfIntegers="h1n" typoOfDecimals="h2n" currency={extensionStorage.currency}>
+                {totalAmount}
+              </Number>
+            ) : (
+              <Typography
+                variant="h1"
+                style={{
+                  height: '2.5rem',
+                }}
+              >
+                ****
+              </Typography>
+            )}
+
+            <VisibilityIconButton
+              onClick={() => {
+                void setExtensionStorage('showBalance', !showBalance);
               }}
             >
-              ****
-            </Typography>
-          )}
+              {showBalance ? <StyledVisibility /> : <StyledVisibilityOff />}
+            </VisibilityIconButton>
+          </TotalValueContainer>
+        </TotalContainer>
+        <SubInfoContainer>
+          <CountContainer>
+            <CountLeftContainer>
+              <Typography variant="h6">Chain</Typography>
+            </CountLeftContainer>
+            <CountRightContainer>
+              <Typography variant="h6">{chainCnt}</Typography>
+            </CountRightContainer>
+          </CountContainer>
+          <AddButton onClick={() => navigate('/chain/management/use')}>Add chain</AddButton>
+        </SubInfoContainer>
+        <ChainListContainer>
+          <ChainList>
+            {ethereumChainList.map((item) =>
+              ethereumNetworkList.map((network) => (
+                <EthereumChainItemLedgerCheck key={`${currentAccount.id}${item.chain.id}${network.id}`} chain={item.chain} network={network}>
+                  <ErrorBoundary
+                    FallbackComponent={
+                      // eslint-disable-next-line react/no-unstable-nested-components
+                      (props) => <EthereumChainItemError {...props} chain={item.chain} network={network} />
+                    }
+                  >
+                    <Suspense fallback={<EthereumChainItemSkeleton chain={item.chain} network={network} />}>
+                      <EthereumChainItem key={item.chain.id} chain={item.chain} network={network} />
+                    </Suspense>
+                  </ErrorBoundary>
+                </EthereumChainItemLedgerCheck>
+              )),
+            )}
 
-          <VisibilityIconButton
-            onClick={() => {
-              void setExtensionStorage('showBalance', !showBalance);
-            }}
-          >
-            {showBalance ? <StyledVisibility /> : <StyledVisibilityOff />}
-          </VisibilityIconButton>
-        </TotalValueContainer>
-      </TotalContainer>
-      <SubInfoContainer>
-        <CountContainer>
-          <CountLeftContainer>
-            <Typography variant="h6">Chain</Typography>
-          </CountLeftContainer>
-          <CountRightContainer>
-            <Typography variant="h6">{chainCnt}</Typography>
-          </CountRightContainer>
-        </CountContainer>
-        <AddButton onClick={() => navigate('/chain/management/use')}>Add chain</AddButton>
-      </SubInfoContainer>
-      <ChainListContainer>
-        <ChainList>
-          {ethereumChainList.map((item) =>
-            ethereumNetworkList.map((network) => (
-              <EthereumChainItemLedgerCheck key={`${currentAccount.id}${item.chain.id}${network.id}`} chain={item.chain} network={network}>
-                <ErrorBoundary
-                  FallbackComponent={
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    (props) => <EthereumChainItemError {...props} chain={item.chain} network={network} />
-                  }
-                >
-                  <Suspense fallback={<EthereumChainItemSkeleton chain={item.chain} network={network} />}>
-                    <EthereumChainItem key={item.chain.id} chain={item.chain} network={network} />
-                  </Suspense>
-                </ErrorBoundary>
-              </EthereumChainItemLedgerCheck>
-            )),
-          )}
+            {cosmosChainList.map((item) =>
+              item.chain.isTerminated ? (
+                <CosmosChainItemTerminated chain={item.chain} key={`${currentAccount.id}${item.chain.id}`} />
+              ) : (
+                <CosmosChainLedgerCheck key={`${currentAccount.id}${item.chain.id}`} chain={item.chain}>
+                  <ErrorBoundary
+                    FallbackComponent={
+                      // eslint-disable-next-line react/no-unstable-nested-components
+                      (props) => <CosmosChainItemError {...props} chain={item.chain} />
+                    }
+                  >
+                    <Suspense fallback={<CosmosChainItemSkeleton chain={item.chain} />}>
+                      <CosmosChainItem chain={item.chain} />
+                    </Suspense>
+                  </ErrorBoundary>
+                </CosmosChainLedgerCheck>
+              ),
+            )}
 
-          {cosmosChainList.map((item) =>
-            item.chain.isTerminated ? (
-              <CosmosChainItemTerminated chain={item.chain} key={`${currentAccount.id}${item.chain.id}`} />
-            ) : (
-              <CosmosChainLedgerCheck key={`${currentAccount.id}${item.chain.id}`} chain={item.chain}>
-                <ErrorBoundary
-                  FallbackComponent={
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    (props) => <CosmosChainItemError {...props} chain={item.chain} />
-                  }
-                >
-                  <Suspense fallback={<CosmosChainItemSkeleton chain={item.chain} />}>
-                    <CosmosChainItem chain={item.chain} />
-                  </Suspense>
-                </ErrorBoundary>
-              </CosmosChainLedgerCheck>
-            ),
-          )}
+            {aptosChainList.map((item) =>
+              aptosNetworkList.map((network) => (
+                <AptosChainItemLedgerCheck key={`${currentAccount.id}${item.chain.id}${network.id}`} network={network}>
+                  <ErrorBoundary
+                    FallbackComponent={
+                      // eslint-disable-next-line react/no-unstable-nested-components
+                      (props) => <AptosChainItemError {...props} chain={item.chain} network={network} />
+                    }
+                  >
+                    <Suspense fallback={<AptosChainItemSkeleton chain={item.chain} network={network} />}>
+                      <AptosChainItem key={item.chain.id} chain={item.chain} network={network} />
+                    </Suspense>
+                  </ErrorBoundary>
+                </AptosChainItemLedgerCheck>
+              )),
+            )}
 
-          {aptosChainList.map((item) =>
-            aptosNetworkList.map((network) => (
-              <AptosChainItemLedgerCheck key={`${currentAccount.id}${item.chain.id}${network.id}`} network={network}>
-                <ErrorBoundary
-                  FallbackComponent={
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    (props) => <AptosChainItemError {...props} chain={item.chain} network={network} />
-                  }
-                >
-                  <Suspense fallback={<AptosChainItemSkeleton chain={item.chain} network={network} />}>
-                    <AptosChainItem key={item.chain.id} chain={item.chain} network={network} />
-                  </Suspense>
-                </ErrorBoundary>
-              </AptosChainItemLedgerCheck>
-            )),
-          )}
-
-          {suiChainList.map((item) =>
-            suiNetworkList.map((network) => (
-              <SuiChainItemLedgerCheck chain={item.chain} key={`${currentAccount.id}${item.chain.id}${network.id}`} network={network}>
-                <ErrorBoundary
-                  FallbackComponent={
-                    // eslint-disable-next-line react/no-unstable-nested-components
-                    (props) => <SuiChainItemError {...props} chain={item.chain} network={network} />
-                  }
-                >
-                  <Suspense fallback={<SuiChainItemSkeleton chain={item.chain} network={network} />}>
-                    <SuiChainItem key={item.chain.id} chain={item.chain} network={network} />
-                  </Suspense>
-                </ErrorBoundary>
-              </SuiChainItemLedgerCheck>
-            )),
-          )}
-        </ChainList>
-      </ChainListContainer>
+            {suiChainList.map((item) =>
+              suiNetworkList.map((network) => (
+                <SuiChainItemLedgerCheck chain={item.chain} key={`${currentAccount.id}${item.chain.id}${network.id}`} network={network}>
+                  <ErrorBoundary
+                    FallbackComponent={
+                      // eslint-disable-next-line react/no-unstable-nested-components
+                      (props) => <SuiChainItemError {...props} chain={item.chain} network={network} />
+                    }
+                  >
+                    <Suspense fallback={<SuiChainItemSkeleton chain={item.chain} network={network} />}>
+                      <SuiChainItem key={item.chain.id} chain={item.chain} network={network} />
+                    </Suspense>
+                  </ErrorBoundary>
+                </SuiChainItemLedgerCheck>
+              )),
+            )}
+          </ChainList>
+        </ChainListContainer>
+      </ContentsContainer>
     </Container>
   );
 }

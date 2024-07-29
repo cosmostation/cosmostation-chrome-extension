@@ -46,7 +46,7 @@ export default function TokenItem({ token, disabled, onClick, onClickDelete }: T
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const tokenBalance = useTokenBalanceSWR({ token }, { suspense: true });
 
-  const { currency } = extensionStorage;
+  const { currency, showBalance } = extensionStorage;
   const amount = useMemo(() => tokenBalance.data || '0', [tokenBalance.data]);
   const price = useMemo(
     () => (token.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[currency]) || 0,
@@ -54,8 +54,8 @@ export default function TokenItem({ token, disabled, onClick, onClickDelete }: T
   );
 
   const cap = useMemo(
-    () => (token.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[`${extensionStorage.currency}_24h_change`]) || 0,
-    [coinGeckoPrice.data, extensionStorage.currency, token.coinGeckoId],
+    () => (token.coinGeckoId && coinGeckoPrice.data?.[token.coinGeckoId]?.[`${currency}_24h_change`]) || 0,
+    [coinGeckoPrice.data, currency, token.coinGeckoId],
   );
 
   const displayAmount = useMemo(() => toDisplayDenomAmount(amount, token.decimals), [amount, token.decimals]);
@@ -89,16 +89,24 @@ export default function TokenItem({ token, disabled, onClick, onClickDelete }: T
       </LeftContainer>
       <RightContainer>
         <RightTextContainer>
-          <RightTextValueContainer>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-              {displayAmount}
-            </Number>
-          </RightTextValueContainer>
-          <RightTextChangeRateContainer>
-            <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={currency}>
-              {value}
-            </Number>
-          </RightTextChangeRateContainer>
+          {showBalance ? (
+            <>
+              <RightTextValueContainer>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                  {displayAmount}
+                </Number>
+              </RightTextValueContainer>
+              <RightTextChangeRateContainer>
+                <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={currency}>
+                  {value}
+                </Number>
+              </RightTextChangeRateContainer>
+            </>
+          ) : (
+            <RightTextValueContainer>
+              <Typography variant="h5">****</Typography>
+            </RightTextValueContainer>
+          )}
         </RightTextContainer>
         {!token.default && (
           <DeleteButton

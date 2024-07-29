@@ -4,7 +4,6 @@ export const Container = styled('div')({
   display: 'flex',
   paddingBottom: '1.6rem',
   flexDirection: 'column',
-  overflow: 'hidden',
 });
 
 export const ListTitleContainer = styled('div')({
@@ -30,8 +29,6 @@ export const ListContainer = styled('div')({
   display: 'grid',
   gridTemplateColumns: '1fr',
   rowGap: '0.8rem',
-
-  overflow: 'auto',
 });
 
 export const AddTokenButton = styled('button')(({ theme }) => ({

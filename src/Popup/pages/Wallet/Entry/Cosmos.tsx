@@ -15,8 +15,9 @@ import CoinList from '../components/cosmos/CoinList';
 import NativeChainCard, { NativeChainCardError, NativeChainCardSkeleton } from '../components/cosmos/NativeChainCard';
 import NFTList from '../components/cosmos/NFTList';
 import TerminatedNativeChainCard from '../components/cosmos/TerminatedNativeChainCard';
+import TotalChainValue from '../components/cosmos/TotalChainValue';
 import LedgerCheck from '../components/LedgerCheck';
-import { BottomContainer, Container, HeaderContainer, NativeChainCardContainer, StyledTabPanel } from '../styled';
+import { BottomContainer, Container, ContentsContainer, HeaderContainer, NativeChainCardContainer, StyledTabPanel } from '../styled';
 
 type CosmosProps = {
   chain: CosmosChain;
@@ -56,7 +57,9 @@ export default function Cosmos({ chain }: CosmosProps) {
         {chain.isTerminated ? (
           <TerminatedNativeChainCard chain={chain} isCustom={isCustom} />
         ) : (
-          <>
+          <ContentsContainer>
+            <TotalChainValue chain={chain} />
+
             <NativeChainCardContainer>
               <ErrorBoundary
                 // eslint-disable-next-line react/no-unstable-nested-components
@@ -103,7 +106,7 @@ export default function Cosmos({ chain }: CosmosProps) {
                 </ErrorBoundary>
               </BottomContainer>
             )}
-          </>
+          </ContentsContainer>
         )}
       </LedgerCheck>
     </Container>

@@ -76,17 +76,25 @@ export default function CoinItem({ disabled, imageURL, amount, decimals = 0, dis
       </LeftContainer>
       <RightContainer>
         <RightTextContainer>
-          <RightTextValueContainer>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-              {displayAmount}
-            </Number>
-          </RightTextValueContainer>
+          {extensionStorage.showBalance ? (
+            <>
+              <RightTextValueContainer>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                  {displayAmount}
+                </Number>
+              </RightTextValueContainer>
 
-          <RightTextChangeRateContainer>
-            <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={extensionStorage.currency}>
-              {value}
-            </Number>
-          </RightTextChangeRateContainer>
+              <RightTextChangeRateContainer>
+                <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={extensionStorage.currency}>
+                  {value}
+                </Number>
+              </RightTextChangeRateContainer>
+            </>
+          ) : (
+            <RightTextValueContainer>
+              <Typography variant="h5">****</Typography>
+            </RightTextValueContainer>
+          )}
         </RightTextContainer>
       </RightContainer>
     </StyledButton>

@@ -16,14 +16,23 @@ export const Container = styled('div')({
 });
 
 export const HeaderContainer = styled('div')({
-  marginTop: '0.4rem',
+  margin: '0.4rem 0 1.6rem',
 
   flexShrink: 0,
 });
 
-export const TotalContainer = styled('div')(({ theme }) => ({
-  marginTop: '1.6rem',
+export const ContentsContainer = styled('div')({
+  height: '100%',
+  overflow: 'auto',
 
+  display: 'flex',
+  flexDirection: 'column',
+
+  margin: '0 -1.2rem',
+  padding: '0 1.2rem ',
+});
+
+export const TotalContainer = styled('div')(({ theme }) => ({
   padding: '1.6rem 0',
 
   borderRadius: '0.8rem',
@@ -44,7 +53,7 @@ export const TotalValueTextContainer = styled('div')(({ theme }) => ({
 export const TotalValueContainer = styled('div')(({ theme }) => ({
   height: '4.1rem',
 
-  paddingTop: '0.2rem',
+  paddingTop: '0.4rem',
 
   display: 'flex',
   justifyContent: 'center',
@@ -88,8 +97,6 @@ export const CountRightContainer = styled('div')(({ theme }) => ({
 export const ChainListContainer = styled('div')({
   marginTop: '1rem',
 
-  overflow: 'hidden',
-
   display: 'flex',
   flexDirection: 'column',
 
@@ -97,7 +104,6 @@ export const ChainListContainer = styled('div')({
 });
 
 export const ChainList = styled('div')({
-  overflow: 'auto',
   display: 'grid',
   gridTemplateColumns: '1fr',
   rowGap: '0.8rem',

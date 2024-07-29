@@ -89,16 +89,24 @@ export default function CoinItem({ coin, onClick, disabled }: CoinItemProps) {
       </LeftContainer>
       <RightContainer>
         <RightTextContainer>
-          <RightTextValueContainer>
-            <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
-              {displayAmount}
-            </Number>
-          </RightTextValueContainer>
-          <RightTextChangeRateContainer>
-            <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={currency}>
-              {displayValue}
-            </Number>
-          </RightTextChangeRateContainer>
+          {extensionStorage.showBalance ? (
+            <>
+              <RightTextValueContainer>
+                <Number typoOfIntegers="h5n" typoOfDecimals="h7n">
+                  {displayAmount}
+                </Number>
+              </RightTextValueContainer>
+              <RightTextChangeRateContainer>
+                <Number typoOfIntegers="h6n" typoOfDecimals="h8n" currency={currency}>
+                  {displayValue}
+                </Number>
+              </RightTextChangeRateContainer>
+            </>
+          ) : (
+            <RightTextValueContainer>
+              <Typography variant="h5">****</Typography>
+            </RightTextValueContainer>
+          )}
         </RightTextContainer>
       </RightContainer>
     </StyledButton>
