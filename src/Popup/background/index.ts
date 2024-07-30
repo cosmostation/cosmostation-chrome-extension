@@ -1,5 +1,6 @@
 import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
+import { AGORIC } from '~/constants/chain/cosmos/agoric';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ZETA } from '~/constants/chain/cosmos/zeta';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
@@ -98,7 +99,7 @@ function background() {
         const extensionManifest = chrome.runtime.getManifest();
         if (extensionManifest.version === '0.8.12') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), BASE.id, ZETA.id, ETHEREUM_NETWORK__ZETA.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), AGORIC.id, BASE.id, ZETA.id, ETHEREUM_NETWORK__ZETA.id]);
           })();
         }
       }
