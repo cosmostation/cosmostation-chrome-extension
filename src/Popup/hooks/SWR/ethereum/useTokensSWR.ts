@@ -1,32 +1,25 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { ETHEREUM } from '~/constants/chain/ethereum/network/ethereum';
-import { KAVA } from '~/constants/chain/ethereum/network/kava';
-import { SMART_CHAIN } from '~/constants/chain/ethereum/network/smartChain';
 import { MINTSCAN_FRONT_API_URL } from '~/constants/common';
 import { get } from '~/Popup/utils/axios';
+import { convertEVMToAssetName } from '~/Popup/utils/ethereum';
 import { toHex } from '~/Popup/utils/string';
 import type { EthereumNetwork } from '~/types/chain';
 import type { AssetPayload, ModifiedAsset } from '~/types/ethereum/asset';
 
 import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNetwork';
 
-const nameMap = {
-  [ETHEREUM.id]: 'ethereum',
-  [SMART_CHAIN.id]: 'smart-chain',
-  [KAVA.id]: 'kava',
-};
-
 export function useTokensSWR(chain?: EthereumNetwork, config?: SWRConfiguration) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
 
   const currentChain = chain || currentEthereumNetwork;
 
-  const mappingName = nameMap[currentChain.id] || currentChain.networkName.toLowerCase();
+  const mappingName = useMemo(() => convertEVMToAssetName(currentChain), [currentChain]);
 
-  const requestURL = `${MINTSCAN_FRONT_API_URL}/assets/${mappingName}/erc20/info`;
+  const requestURL = useMemo(() => `${MINTSCAN_FRONT_API_URL}/assets/${mappingName}/erc20/info`, [mappingName]);
 
   const fetcher = async (fetchUrl: string) => {
     try {
