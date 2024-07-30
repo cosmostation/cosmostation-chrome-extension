@@ -272,13 +272,13 @@ export default function Entry({ queue }: EntryProps) {
               <FeeEditLeftContainer />
               <FeeEditRightContainer>
                 <FeeButton type="button" onClick={() => setGasMode('low')} data-is-active={gasMode === 'low' ? 1 : 0}>
-                  {t('pages.Popup.Aptos.Transaction.entry.low')}
+                  <Typography variant="h7">{t('pages.Popup.Aptos.Transaction.entry.low')}</Typography>
                 </FeeButton>
                 <FeeButton type="button" onClick={() => setGasMode('average')} data-is-active={gasMode === 'average' ? 1 : 0}>
-                  {t('pages.Popup.Aptos.Transaction.entry.average')}
+                  <Typography variant="h7">{t('pages.Popup.Aptos.Transaction.entry.average')}</Typography>
                 </FeeButton>
                 <FeeButton type="button" onClick={() => setGasMode('high')} data-is-active={gasMode === 'high' ? 1 : 0}>
-                  {t('pages.Popup.Aptos.Transaction.entry.high')}
+                  <Typography variant="h7">{t('pages.Popup.Aptos.Transaction.entry.high')}</Typography>
                 </FeeButton>
               </FeeEditRightContainer>
             </FeeEditContainer>

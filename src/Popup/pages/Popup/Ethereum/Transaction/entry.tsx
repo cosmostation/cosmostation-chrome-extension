@@ -419,20 +419,20 @@ export default function Entry({ queue }: EntryProps) {
                   {currentFee.type === 'EIP-1559' && (
                     <>
                       <FeeButton type="button" onClick={() => setFeeMode('tiny')} data-is-active={feeMode === 'tiny' ? 1 : 0}>
-                        {t('pages.Popup.Ethereum.SignTransaction.entry.tiny')}
+                        <Typography variant="h7">{t('pages.Popup.Ethereum.SignTransaction.entry.tiny')}</Typography>
                       </FeeButton>
                       <FeeButton type="button" onClick={() => setFeeMode('low')} data-is-active={feeMode === 'low' ? 1 : 0}>
-                        {t('pages.Popup.Ethereum.SignTransaction.entry.low')}
+                        <Typography variant="h7">{t('pages.Popup.Ethereum.SignTransaction.entry.low')}</Typography>
                       </FeeButton>
                       <FeeButton type="button" onClick={() => setFeeMode('average')} data-is-active={feeMode === 'average' ? 1 : 0}>
-                        {t('pages.Popup.Ethereum.SignTransaction.entry.average')}
+                        <Typography variant="h7">{t('pages.Popup.Ethereum.SignTransaction.entry.average')}</Typography>
                       </FeeButton>
                     </>
                   )}
 
                   {currentFee.type === 'BASIC' && (
                     <FeeButton type="button" onClick={() => setFeeMode('low')} data-is-active={feeMode === 'low' ? 1 : 0}>
-                      {t('pages.Popup.Ethereum.SignTransaction.entry.current')}
+                      <Typography variant="h7">{t('pages.Popup.Ethereum.SignTransaction.entry.current')}</Typography>
                     </FeeButton>
                   )}
                   <FeeEditButton type="button" onClick={() => setIsOpenGasPriceDialog(true)} data-is-active={feeMode === 'custom' ? 1 : 0}>
