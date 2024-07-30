@@ -73,19 +73,26 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
   const currentAccountAddresses = useMemo(() => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address, [accounts?.data, currentAccount.id]);
 
   const apiRequiredAddresses = useMemo(
-    () => skipRoute.data?.chain_ids.map((chainId) => currentAccountAddresses?.[COSMOS_CHAINS.find((item) => item.chainId === chainId)?.id || ''] || '') || [],
-    [currentAccountAddresses, skipRoute.data?.chain_ids],
+    () =>
+      skipRoute.data?.required_chain_addresses.map(
+        (chainId) => currentAccountAddresses?.[COSMOS_CHAINS.find((item) => item.chainId === chainId)?.id || ''] || '',
+      ) || [],
+    [currentAccountAddresses, skipRoute.data?.required_chain_addresses],
   );
 
-  const affiliates = useMemo<Affiliates[]>(() => {
+  const affiliates = useMemo<Affiliates>(() => {
     if (gt(DEFAULT_BPF, '0')) {
-      return AFFILIATES.cosmos.find((item) => item.chainId === skipRoute.data?.swap_venue?.chain_id)?.affiliate || [];
+      return AFFILIATES.cosmos.reduce((acc: Affiliates, item) => {
+        acc[item.chainId] = { affiliates: item.affiliate };
+
+        return acc;
+      }, {});
     }
-    return [];
-  }, [skipRoute.data?.swap_venue?.chain_id]);
+    return {};
+  }, []);
 
   const skipSwapTxParam = useMemo<SkipSwapTxParam | undefined>(() => {
-    if (skipRoute.data && skipRoute.data.chain_ids.length > 0 && skipRoute.data.operations.length > 0 && apiRequiredAddresses) {
+    if (skipRoute.data && skipRoute.data.required_chain_addresses.length > 0 && skipRoute.data.operations.length > 0 && apiRequiredAddresses) {
       return {
         ...skipRoute.data,
         affiliates,
@@ -103,13 +110,15 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
   const skipSwapParsedTx = useMemo(
     () =>
       skipSwapTx.data?.msgs.map((item) => {
-        if (item.msg_type_url === '/ibc.applications.transfer.v1.MsgTransfer') {
-          const parsedMsg = JSON.parse(item.msg) as MsgTransfer;
+        const msg = item.multi_chain_msg;
+
+        if (msg?.msg_type_url === '/ibc.applications.transfer.v1.MsgTransfer') {
+          const parsedMsg = JSON.parse(msg.msg) as MsgTransfer;
 
           return {
-            chain_id: item.chain_id,
-            path: item.path,
-            msg_type_url: convertDirectMsgTypeToAminoMsgType(item.msg_type_url),
+            chain_id: msg.chain_id,
+            path: msg.path,
+            msg_type_url: convertDirectMsgTypeToAminoMsgType(msg.msg_type_url),
             msg: {
               source_port: parsedMsg.source_port,
               source_channel: parsedMsg.source_channel,
@@ -125,13 +134,13 @@ export function useSkipSwap(skipSwapProps?: UseSkipSwapProps) {
             },
           };
         }
-        if (item.msg_type_url === '/cosmwasm.wasm.v1.MsgExecuteContract') {
-          const parsedMsg = JSON.parse(item.msg) as MsgExecuteContract;
+        if (msg?.msg_type_url === '/cosmwasm.wasm.v1.MsgExecuteContract') {
+          const parsedMsg = JSON.parse(msg.msg) as MsgExecuteContract;
 
           return {
-            chain_id: item.chain_id,
-            path: item.path,
-            msg_type_url: convertDirectMsgTypeToAminoMsgType(item.msg_type_url),
+            chain_id: msg.chain_id,
+            path: msg.path,
+            msg_type_url: convertDirectMsgTypeToAminoMsgType(msg.msg_type_url),
             msg: {
               sender: parsedMsg.sender,
               contract: parsedMsg.contract,

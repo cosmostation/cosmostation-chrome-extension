@@ -74,9 +74,10 @@ import { ALTHEA as ETHEREUM_NETWORK__ALTHEA } from './ethereum/network/althea';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
 import { ARTELA_TESTNET as ETHEREUM_NETWORK__ARTELA_TESTNET } from './ethereum/network/artelaTestnet';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
+import { BASE as ETHEREUM_NETWORK__BASE } from './ethereum/network/base';
 import { CANTO as ETHEREUM_NETWORK__CANTO } from './ethereum/network/canto';
 import { CRONOS as ETHEREUM_NETWORK__CRONOS } from './ethereum/network/cronos';
-import { DYMENSION as ETHEREUM_NETWORK_DYMENSION } from './ethereum/network/dymension';
+import { DYMENSION as ETHEREUM_NETWORK__DYMENSION } from './ethereum/network/dymension';
 import { ETHEREUM as ETHEREUM_NETWORK__ETHEREUM } from './ethereum/network/ethereum';
 import { EVMOS as ETHEREUM_NETWORK__EVMOS } from './ethereum/network/evmos';
 import { FANTOM as ETHEREUM_NETWORK__FANTOM } from './ethereum/network/fantom';
@@ -191,12 +192,13 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__ARBITRUM,
   ETHEREUM_NETWORK__ARTELA_TESTNET,
   ETHEREUM_NETWORK__AVALANCHE,
+  ETHEREUM_NETWORK__BASE,
   ETHEREUM_NETWORK__CANTO,
   ETHEREUM_NETWORK__CRONOS,
+  ETHEREUM_NETWORK__DYMENSION,
   ETHEREUM_NETWORK__EVMOS,
   ETHEREUM_NETWORK__FANTOM,
   ETHEREUM_NETWORK__HARMONY,
-  ETHEREUM_NETWORK_DYMENSION,
   ETHEREUM_NETWORK__KAVA,
   ETHEREUM_NETWORK__OKT,
   ETHEREUM_NETWORK__OPTIMISM,

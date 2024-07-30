@@ -4,6 +4,7 @@ import useSWR from 'swr';
 
 import { SKIP_BASE_URL } from '~/constants/skip';
 import { post } from '~/Popup/utils/axios';
+import { buildRequestUrl } from '~/Popup/utils/fetch';
 import type { Affiliates, SkipRoutePayload, SkipSwapTxPayload } from '~/types/swap/skip';
 
 type SkipRouteError = {
@@ -19,7 +20,7 @@ type FetchProps = {
 type SkipSwapTxParamProps = {
   addresses: string[];
   slippage: string;
-  affiliates?: Affiliates[];
+  affiliates?: Affiliates;
 };
 
 export type SkipSwapTxParam = SkipRoutePayload & SkipSwapTxParamProps;
@@ -29,21 +30,25 @@ type UseSkipSwapTxSWRProps = {
 };
 
 export function useSkipSwapTxSWR({ skipSwapTxParam: swapTxParam }: UseSkipSwapTxSWRProps, config?: SWRConfiguration) {
-  const requestURL = `${SKIP_BASE_URL}/v1/fungible/msgs?client_id=cosmostation_extension`;
+  const requestURL = buildRequestUrl(SKIP_BASE_URL, '/v2/fungible/msgs');
 
   const fetcher = async ({ fetchUrl, skipSwapTxParam }: FetchProps) =>
-    post<SkipSwapTxPayload>(fetchUrl, {
-      source_asset_denom: skipSwapTxParam?.source_asset_denom,
-      source_asset_chain_id: skipSwapTxParam?.source_asset_chain_id,
-      dest_asset_denom: skipSwapTxParam?.dest_asset_denom,
-      dest_asset_chain_id: skipSwapTxParam?.dest_asset_chain_id,
-      amount_in: skipSwapTxParam?.amount_in,
-      address_list: skipSwapTxParam?.addresses,
-      operations: skipSwapTxParam?.operations,
-      amount_out: skipSwapTxParam?.amount_out,
-      slippage_tolerance_percent: skipSwapTxParam?.slippage,
-      affiliates: skipSwapTxParam?.affiliates || [],
-    });
+    post<SkipSwapTxPayload>(
+      fetchUrl,
+      {
+        source_asset_denom: skipSwapTxParam?.source_asset_denom,
+        source_asset_chain_id: skipSwapTxParam?.source_asset_chain_id,
+        dest_asset_denom: skipSwapTxParam?.dest_asset_denom,
+        dest_asset_chain_id: skipSwapTxParam?.dest_asset_chain_id,
+        amount_in: skipSwapTxParam?.amount_in,
+        address_list: skipSwapTxParam?.addresses,
+        operations: skipSwapTxParam?.operations,
+        amount_out: skipSwapTxParam?.amount_out,
+        slippage_tolerance_percent: skipSwapTxParam?.slippage,
+        chain_ids_to_affiliates: skipSwapTxParam?.affiliates || {},
+      },
+      { headers: { authorization: `${String(process.env.SKIP_API_KEY)}` } },
+    );
 
   const { data, isValidating, error, mutate } = useSWR<SkipSwapTxPayload, AxiosError<SkipRouteError>>(
     { fetchUrl: requestURL, skipSwapTxParam: swapTxParam },

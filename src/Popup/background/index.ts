@@ -3,6 +3,7 @@ import { APTOS } from '~/constants/chain/aptos/aptos';
 import { AGORIC } from '~/constants/chain/cosmos/agoric';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
+import { BASE } from '~/constants/chain/ethereum/network/base';
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { MESSAGE_TYPE } from '~/constants/message';
@@ -96,7 +97,7 @@ function background() {
         const extensionManifest = chrome.runtime.getManifest();
         if (extensionManifest.version === '0.8.12') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), AGORIC.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), AGORIC.id, BASE.id]);
           })();
         }
       }
