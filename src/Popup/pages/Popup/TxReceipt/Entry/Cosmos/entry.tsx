@@ -3,6 +3,7 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
+import { CANTO } from '~/constants/chain/cosmos/canto';
 import { TX_CONFIRMED_STATUS } from '~/constants/txConfirmedStatus';
 import unknownChainImg from '~/images/chainImgs/unknown.png';
 import customBeltImg from '~/images/etc/customBelt.png';
@@ -14,6 +15,7 @@ import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
 import { useTxInfoSWR } from '~/Popup/hooks/SWR/cosmos/useTxInfoSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
+import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -67,6 +69,7 @@ export default function Cosmos({ chain, txHash }: CosmosProps) {
   const { t } = useTranslation();
   const { navigate } = useNavigate();
 
+  const params = useParamsSWR(chain);
   const { currentAdditionalChains } = useCurrentAdditionalChains();
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
@@ -77,13 +80,36 @@ export default function Cosmos({ chain, txHash }: CosmosProps) {
 
   const txInfo = useTxInfoSWR(chain, txHash);
 
-  const explorerURL = useMemo(() => chain.explorerURL, [chain.explorerURL]);
-
-  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/tx/${txHash}` : ''), [explorerURL, txHash]);
-  const blockDetailExplorerURL = useMemo(
-    () => (explorerURL && txInfo.data?.tx_response.height ? `${explorerURL}/block/${txInfo.data.tx_response.height}` : ''),
-    [explorerURL, txInfo.data?.tx_response.height],
+  const explorerURL = useMemo(
+    () => params.data?.params?.chainlist_params?.explorer?.url || chain.explorerURL,
+    [chain.explorerURL, params.data?.params?.chainlist_params?.explorer?.url],
   );
+
+  const txDetailExplorerURL = useMemo(() => {
+    const explorerTxBaseURL = params.data?.params?.chainlist_params?.explorer?.tx;
+
+    if (explorerTxBaseURL) {
+      // eslint-disable-next-line no-template-curly-in-string
+      return explorerTxBaseURL.replace('${hash}', txHash);
+    }
+
+    if (explorerURL) {
+      return `${explorerURL}/tx/${txHash}`;
+    }
+    return '';
+  }, [explorerURL, params.data?.params?.chainlist_params?.explorer, txHash]);
+
+  const blockDetailExplorerURL = useMemo(() => {
+    if (explorerURL && txInfo.data?.tx_response.height) {
+      if (chain.id === CANTO.id) {
+        return `${explorerURL}/blocks/${txInfo.data?.tx_response.height}`;
+      }
+
+      return `${explorerURL}/block/${txInfo.data.tx_response.height}`;
+    }
+
+    return '';
+  }, [chain.id, explorerURL, txInfo.data?.tx_response.height]);
 
   const formattedTimestamp = useMemo(() => {
     if (txInfo.data?.tx_response.timestamp) {

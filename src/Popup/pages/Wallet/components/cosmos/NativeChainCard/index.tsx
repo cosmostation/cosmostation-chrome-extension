@@ -194,6 +194,23 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const params = useParamsSWR(chain);
 
+  const explorerAccountURL = useMemo(() => {
+    const explorerAccountBaseURL = params.data?.params?.chainlist_params?.explorer?.account;
+
+    if (explorerAccountBaseURL) {
+      // eslint-disable-next-line no-template-curly-in-string
+      return explorerAccountBaseURL.replace('${address}', currentAddress);
+    }
+
+    const explorerBaseURL = params.data?.params?.chainlist_params?.explorer?.url || explorerURL;
+
+    if (explorerBaseURL) {
+      return `${explorerBaseURL}/address/${currentAddress}`;
+    }
+
+    return '';
+  }, [currentAddress, explorerURL, params.data?.params?.chainlist_params?.explorer?.account, params.data?.params?.chainlist_params?.explorer?.url]);
+
   const validatorAddressPrefix = useMemo(
     () => params.data?.params?.chainlist_params?.bechValidatorPrefix || '',
     [params.data?.params?.chainlist_params?.bechValidatorPrefix],
@@ -402,8 +419,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
           <AddressButton onClick={handleOnClickCopy}>{currentAddress}</AddressButton>
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
-          {explorerURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${currentAddress}`)}>
+          {explorerAccountURL && (
+            <StyledIconButton onClick={() => window.open(`${explorerAccountURL}/address/${currentAddress}`)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
@@ -687,6 +704,22 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 
   const params = useParamsSWR(chain);
 
+  const explorerAccountURL = useMemo(() => {
+    const explorerAccountBaseURL = params.data?.params?.chainlist_params?.explorer?.account;
+
+    if (explorerAccountBaseURL) {
+      // eslint-disable-next-line no-template-curly-in-string
+      return explorerAccountBaseURL.replace('${address}', address);
+    }
+
+    const explorerBaseURL = params.data?.params?.chainlist_params?.explorer?.url || explorerURL;
+
+    if (explorerBaseURL) {
+      return `${explorerBaseURL}/address/${address}`;
+    }
+    return '';
+  }, [address, explorerURL, params.data?.params?.chainlist_params?.explorer?.account, params.data?.params?.chainlist_params?.explorer?.url]);
+
   const validatorAddressPrefix = useMemo(
     () => params.data?.params?.chainlist_params?.bechValidatorPrefix || '',
     [params.data?.params?.chainlist_params?.bechValidatorPrefix],
@@ -713,8 +746,8 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
           <AddressButton onClick={handleOnClickCopy}>{address}</AddressButton>
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
-          {explorerURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${address}`)}>
+          {explorerAccountURL && (
+            <StyledIconButton onClick={() => window.open(`${explorerAccountURL}/address/${address}`)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
@@ -856,6 +889,8 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const { explorerURL } = chain;
 
+  const params = useParamsSWR(chain);
+
   const address = useMemo(() => {
     const key = getAddressKey(currentAccount, chain);
 
@@ -869,6 +904,23 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
     return getAddress(chain, keyPair?.publicKey);
   }, [chain, currentAccount, currentPassword, extensionStorage.address]);
+
+  const explorerAccountURL = useMemo(() => {
+    const explorerAccountBaseURL = params.data?.params?.chainlist_params?.explorer?.account;
+
+    if (explorerAccountBaseURL) {
+      // eslint-disable-next-line no-template-curly-in-string
+      return explorerAccountBaseURL.replace('${address}', address);
+    }
+
+    const explorerBaseURL = params.data?.params?.chainlist_params?.explorer?.url || explorerURL;
+
+    if (explorerBaseURL) {
+      return `${explorerBaseURL}/address/${address}`;
+    }
+
+    return '';
+  }, [address, explorerURL, params.data?.params?.chainlist_params?.explorer?.account, params.data?.params?.chainlist_params?.explorer?.url]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -885,8 +937,8 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           <AddressButton onClick={handleOnClickCopy}>{address}</AddressButton>
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
-          {explorerURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${address}`)}>
+          {explorerAccountURL && (
+            <StyledIconButton onClick={() => window.open(`${explorerAccountURL}/address/${address}`)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}

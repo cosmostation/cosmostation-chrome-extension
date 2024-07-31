@@ -15,6 +15,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
+import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
@@ -66,6 +67,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
   const { extensionStorage } = useExtensionStorage();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
   const { enqueueSnackbar } = useSnackbar();
+  const params = useParamsSWR(currentEthereumNetwork);
   const accounts = useAccounts(true);
   const balance = useBalanceSWR(undefined, { suspense: true });
 
@@ -95,13 +97,34 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     [accounts?.data, chain.id, currentAccount.id],
   );
 
+  const explorerAccountURL = useMemo(() => {
+    const explorerAccountBaseURL = params.data?.params?.chainlist_params?.evm_explorer?.account || params.data?.params?.chainlist_params?.explorer?.account;
+
+    if (explorerAccountBaseURL) {
+      // eslint-disable-next-line no-template-curly-in-string
+      return explorerAccountBaseURL.replace('${address}', currentAddress);
+    }
+
+    const explorerBaseURL = params.data?.params?.chainlist_params?.evm_explorer?.url || params.data?.params?.chainlist_params?.explorer?.url || explorerURL;
+
+    if (explorerBaseURL) {
+      return `${explorerBaseURL}/address/${currentAddress}`;
+    }
+    return '';
+  }, [
+    currentAddress,
+    explorerURL,
+    params.data?.params?.chainlist_params?.evm_explorer?.account,
+    params.data?.params?.chainlist_params?.evm_explorer?.url,
+    params.data?.params?.chainlist_params?.explorer?.account,
+    params.data?.params?.chainlist_params?.explorer?.url,
+  ]);
+
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
       enqueueSnackbar(t('pages.Wallet.components.ethereum.NativeChainCard.index.copied'));
     }
   };
-
-  const explorerAccountURL = useMemo(() => explorerURL && `${explorerURL}/address/${currentAddress}`, [currentAddress, explorerURL]);
 
   return (
     <Container>
@@ -188,6 +211,8 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   const { currentPassword } = useCurrentPassword();
   const { extensionStorage } = useExtensionStorage();
 
+  const params = useParamsSWR(currentEthereumNetwork);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const { t } = useTranslation();
@@ -208,6 +233,29 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
     return getAddress(chain, keyPair?.publicKey);
   }, [chain, currentAccount, currentPassword, extensionStorage.address]);
 
+  const explorerAccountURL = useMemo(() => {
+    const explorerAccountBaseURL = params.data?.params?.chainlist_params?.evm_explorer?.account || params.data?.params?.chainlist_params?.explorer?.account;
+
+    if (explorerAccountBaseURL) {
+      // eslint-disable-next-line no-template-curly-in-string
+      return explorerAccountBaseURL.replace('${address}', address);
+    }
+
+    const explorerBaseURL = params.data?.params?.chainlist_params?.evm_explorer?.url || params.data?.params?.chainlist_params?.explorer?.url || explorerURL;
+
+    if (explorerBaseURL) {
+      return `${explorerBaseURL}/address/${address}`;
+    }
+    return '';
+  }, [
+    address,
+    explorerURL,
+    params.data?.params?.chainlist_params?.evm_explorer?.account,
+    params.data?.params?.chainlist_params?.evm_explorer?.url,
+    params.data?.params?.chainlist_params?.explorer?.account,
+    params.data?.params?.chainlist_params?.explorer?.url,
+  ]);
+
   const handleOnClickCopy = () => {
     if (copy(address)) {
       enqueueSnackbar(`copied!`);
@@ -221,10 +269,10 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
           <AddressButton onClick={handleOnClickCopy}>{address}</AddressButton>
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
-          {explorerURL && (
+          {explorerAccountURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/address/${address}`);
+                window.open(`${explorerAccountURL}/address/${address}`);
               }}
             >
               <ExplorerIcon />
@@ -279,6 +327,8 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
   const { currentPassword } = useCurrentPassword();
   const { extensionStorage } = useExtensionStorage();
 
+  const params = useParamsSWR(currentEthereumNetwork);
+
   const { enqueueSnackbar } = useSnackbar();
 
   const { t } = useTranslation();
@@ -299,6 +349,29 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
     return getAddress(chain, keyPair?.publicKey);
   }, [chain, currentAccount, currentPassword, extensionStorage.address]);
 
+  const explorerAccountURL = useMemo(() => {
+    const explorerAccountBaseURL = params.data?.params?.chainlist_params?.evm_explorer?.account || params.data?.params?.chainlist_params?.explorer?.account;
+
+    if (explorerAccountBaseURL) {
+      // eslint-disable-next-line no-template-curly-in-string
+      return explorerAccountBaseURL.replace('${address}', address);
+    }
+
+    const explorerBaseURL = params.data?.params?.chainlist_params?.evm_explorer?.url || params.data?.params?.chainlist_params?.explorer?.url || explorerURL;
+
+    if (explorerBaseURL) {
+      return `${explorerBaseURL}/address/${address}`;
+    }
+    return '';
+  }, [
+    address,
+    explorerURL,
+    params.data?.params?.chainlist_params?.evm_explorer?.account,
+    params.data?.params?.chainlist_params?.evm_explorer?.url,
+    params.data?.params?.chainlist_params?.explorer?.account,
+    params.data?.params?.chainlist_params?.explorer?.url,
+  ]);
+
   const handleOnClickCopy = () => {
     if (copy(address)) {
       enqueueSnackbar(`copied!`);
@@ -312,10 +385,10 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           <AddressButton onClick={handleOnClickCopy}>{address}</AddressButton>
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
-          {explorerURL && (
+          {explorerAccountURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/address/${address}`);
+                window.open(`${explorerAccountURL}/address/${address}`);
               }}
             >
               <ExplorerIcon />

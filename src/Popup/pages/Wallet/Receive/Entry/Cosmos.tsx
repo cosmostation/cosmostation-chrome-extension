@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import QRCode from 'qrcode.react';
 import { Typography } from '@mui/material';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain } from '~/types/chain';
@@ -29,6 +31,7 @@ type CosmosProps = {
 
 export default function Cosmos({ chain }: CosmosProps) {
   const accounts = useAccounts(true);
+  const params = useParamsSWR(chain);
   const { currentAccount } = useCurrentAccount();
   const { enqueueSnackbar } = useSnackbar();
 
@@ -37,6 +40,23 @@ export default function Cosmos({ chain }: CosmosProps) {
   const { explorerURL } = chain;
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
+
+  const explorerAccountURL = useMemo(() => {
+    const explorerAccountBaseURL = params.data?.params?.chainlist_params?.explorer?.account;
+
+    if (explorerAccountBaseURL) {
+      // eslint-disable-next-line no-template-curly-in-string
+      return explorerAccountBaseURL.replace('${address}', currentAddress);
+    }
+
+    const explorerBaseURL = params.data?.params?.chainlist_params?.explorer?.url || explorerURL;
+
+    if (explorerBaseURL) {
+      return `${explorerBaseURL}/address/${currentAddress}`;
+    }
+
+    return '';
+  }, [currentAddress, explorerURL, params.data?.params?.chainlist_params?.explorer?.account, params.data?.params?.chainlist_params?.explorer?.url]);
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
@@ -51,8 +71,8 @@ export default function Cosmos({ chain }: CosmosProps) {
             <Typography variant="h6">{t('pages.Wallet.Receive.Entry.Cosmos.address')}</Typography>
           </TitleContainer>
           <ButtonContainer>
-            {explorerURL && (
-              <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${currentAddress}`)}>
+            {explorerAccountURL && (
+              <StyledIconButton onClick={() => window.open(`${explorerAccountURL}/address/${currentAddress}`)}>
                 <ExplorerIcon />
               </StyledIconButton>
             )}
