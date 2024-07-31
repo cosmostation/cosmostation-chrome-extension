@@ -36,10 +36,16 @@ export type Operations = {
   swap?: SwapWrapper;
 };
 
-export type Affiliates = {
+export type AffiliateJSON = {
   basis_points_fee: string;
   address: string;
 };
+
+export type ChainAffiliatesJSON = {
+  affiliates: AffiliateJSON[];
+};
+
+export type Affiliates = Record<string, ChainAffiliatesJSON>;
 
 export const WARNING_TYPE = {
   BAD_PRICE_WARNING: 'BAD_PRICE_WARNING',
@@ -59,6 +65,7 @@ export type SkipRoutePayload = {
   amount_in: string;
   operations: Operations[];
   chain_ids: string[];
+  required_chain_addresses: string[];
   does_swap: boolean;
   amount_out: string;
   swap_price_impact_percent?: string;
@@ -69,13 +76,31 @@ export type SkipRoutePayload = {
   warning?: Warning;
 };
 
-export type Msg = {
+type EvmTx = {
+  chain_id: string;
+  data: string;
+  required_erc20_approvals: {
+    amount?: string;
+    spender?: string;
+    token_contract?: string;
+  }[];
+  signer_address: string;
+  to: string;
+  value: string;
+};
+
+type MultiChainMsg = {
   chain_id: string;
   path: string[];
   msg: string;
   msg_type_url: string;
 };
 
+type Msgs = {
+  multi_chain_msg?: MultiChainMsg;
+  evm_tx?: EvmTx;
+};
+
 export type SkipSwapTxPayload = {
-  msgs: Msg[];
+  msgs: Msgs[];
 };

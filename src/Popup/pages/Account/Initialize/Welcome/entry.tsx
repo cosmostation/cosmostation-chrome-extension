@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
 import Button from '~/Popup/components/common/Button';
 import Checkbox from '~/Popup/components/common/Checkbox';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
+import { extension } from '~/Popup/utils/extension';
 
 import {
   BottomContainer,
@@ -29,6 +31,9 @@ export default function Entry() {
   const [checked, setChecked] = useState(false);
 
   const { navigate } = useNavigate();
+  const [isProgress, setIsProgress] = useState(false);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <Container>
@@ -80,7 +85,31 @@ export default function Entry() {
             </>
           )}
         </TermContainer>
-        <Button onClick={() => navigate('/account/initialize')} disabled={!checked}>
+        <Button
+          onClick={async () => {
+            if (process.env.BROWSER === 'chrome') {
+              navigate('/account/initialize');
+            } else {
+              setIsProgress(true);
+
+              try {
+                const result = await extension.permissions.request({ origins: ['<all_urls>'], permissions: ['clipboardWrite', 'activeTab', 'webRequest'] });
+
+                if (!result) {
+                  throw new Error('permissionError');
+                }
+
+                navigate('/account/initialize');
+              } catch {
+                enqueueSnackbar(t('pages.Account.Initialize.Welcome.entry.permissionError'), { variant: 'error' });
+              } finally {
+                setIsProgress(false);
+              }
+            }
+          }}
+          disabled={!checked}
+          isProgress={isProgress}
+        >
           {t('pages.Account.Initialize.Welcome.entry.startButton')}
         </Button>
       </BottomContainer>

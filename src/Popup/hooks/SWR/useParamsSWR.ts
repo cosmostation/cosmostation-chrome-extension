@@ -12,11 +12,6 @@ import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { CosmosChain, EthereumNetwork } from '~/types/chain';
 import type { ChainParams, ParamsResponse } from '~/types/cosmos/params';
 
-type FetchParams = {
-  fetchUrl: string;
-  mappingName: string;
-};
-
 export function useParamsSWR(chain: CosmosChain | EthereumNetwork, config?: SWRConfiguration) {
   const requestURL = `${MINTSCAN_FRONT_API_URL}/utils/params`;
 
@@ -34,24 +29,30 @@ export function useParamsSWR(chain: CosmosChain | EthereumNetwork, config?: SWRC
     return '';
   }, [chain]);
 
-  const fetcher = async (params: FetchParams) => {
+  const fetcher = async (fetchUrl: string) => {
     try {
-      const data = await get<ParamsResponse>(params.fetchUrl);
-
-      return data?.[params.mappingName] || {};
+      return await get<ParamsResponse>(fetchUrl);
     } catch {
       return null;
     }
   };
 
-  const { data, error, mutate } = useSWR<ChainParams | null, AxiosError>({ fetchUrl: requestURL, mappingName }, fetcher, {
+  const { data, error, mutate } = useSWR<ParamsResponse | null, AxiosError>(requestURL, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 0,
+    revalidateIfStale: false,
+    revalidateOnReconnect: false,
     errorRetryCount: 0,
     isPaused: () => !chain,
     ...config,
   });
 
-  return { data, error, mutate };
+  const returnData = useMemo<ChainParams | null>(() => {
+    if (!data) {
+      return null;
+    }
+
+    return data[mappingName] || {};
+  }, [data, mappingName]);
+
+  return { data: returnData, error, mutate };
 }

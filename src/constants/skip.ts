@@ -1,7 +1,9 @@
+import { ARCHWAY } from './chain/cosmos/archway';
 import { CHIHUAHUA } from './chain/cosmos/chihuahua';
 import { INJECTIVE } from './chain/cosmos/injective';
 import { NEUTRON } from './chain/cosmos/neutron';
 import { OSMOSIS } from './chain/cosmos/osmosis';
+import { PERSISTENCE } from './chain/cosmos/persistence';
 import { SEI } from './chain/cosmos/sei';
 import { TERRA } from './chain/cosmos/terra';
 
@@ -65,5 +67,28 @@ export const AFFILIATES = {
         },
       ],
     },
+    {
+      chainId: PERSISTENCE.chainId,
+      affiliate: [
+        {
+          address: 'persistence1rq598kexpsdmhxq63qq74v3tf22u6yvl2a47xk',
+          basis_points_fee: DEFAULT_BPF,
+        },
+      ],
+    },
+    {
+      chainId: ARCHWAY.chainId,
+      affiliate: [
+        {
+          address: 'archway1lq9la9sh5kjla8x7pg74p7djy2f74u6g6t6ags',
+          basis_points_fee: DEFAULT_BPF,
+        },
+      ],
+    },
   ],
 };
+
+export const SKIP_SUPPORTED_CHAIN_TYPE = {
+  COSMOS: 'cosmos',
+  ETHEREUM: 'evm',
+} as const;

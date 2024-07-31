@@ -35,7 +35,7 @@ import { getAddress, getAddressKey, getDisplayMaxDecimals, getKeyPair } from '~/
 import { convertToValidatorAddress, getPublicKeyType } from '~/Popup/utils/cosmos';
 import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { protoTx, protoTxBytes } from '~/Popup/utils/proto';
-import { cosmos } from '~/proto/cosmos-v0.44.2.js';
+import { cosmos } from '~/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '~/types/chain';
 import type { MsgCommission, MsgReward, SignAminoDoc } from '~/types/cosmos/amino';
 import type { Path } from '~/types/route';
@@ -44,6 +44,7 @@ import ClaimButton from './components/ClaimButton';
 import {
   ButtonContainer,
   ClaimButtonContainer,
+  ClaimButtonWrapper,
   Container,
   ErrorDescriptionContainer,
   ExpandedButton,
@@ -138,6 +139,11 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const currentFeeCoin = useMemo(() => feeCoins[0], [feeCoins]);
 
+  const currentFeeCoinDisplayAvailableAmount = useMemo(
+    () => toDisplayDenomAmount(currentFeeCoin.availableAmount, currentFeeCoin.decimals),
+    [currentFeeCoin.availableAmount, currentFeeCoin.decimals],
+  );
+
   const rewardAminoTx = useMemo<SignAminoDoc<MsgReward> | undefined>(() => {
     if (reward.data?.rewards?.length && account.data?.value.account_number && account.data.value.sequence) {
       return {
@@ -176,7 +182,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const rewardProtoTx = useMemo(() => {
     if (rewardAminoTx) {
-      const pTx = protoTx(rewardAminoTx, '', { type: getPublicKeyType(chain), value: '' });
+      const pTx = protoTx(rewardAminoTx, [''], { type: getPublicKeyType(chain), value: '' });
 
       return pTx ? protoTxBytes({ ...pTx }) : undefined;
     }
@@ -251,7 +257,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const commissionProtoTx = useMemo(() => {
     if (commissionAminoTx) {
-      const pTx = protoTx(commissionAminoTx, '', { type: getPublicKeyType(chain), value: '' }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
+      const pTx = protoTx(commissionAminoTx, [''], { type: getPublicKeyType(chain), value: '' }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
 
       return pTx ? protoTxBytes({ ...pTx }) : undefined;
     }
@@ -298,7 +304,12 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
       const publicKeyType = getPublicKeyType(chain);
 
-      const pTx = protoTx(commissionSimulatedAminoTx, '', { type: publicKeyType, value: base64PublicKey }, cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT);
+      const pTx = protoTx(
+        commissionSimulatedAminoTx,
+        [''],
+        { type: publicKeyType, value: base64PublicKey },
+        cosmos.tx.signing.v1beta1.SignMode.SIGN_MODE_DIRECT,
+      );
 
       return pTx
         ? {
@@ -338,22 +349,51 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const displayMaxDecimals = getDisplayMaxDecimals(decimals);
 
-  const estimatedRewardDisplayFeeAmount = useMemo(() => toDisplayDenomAmount(currentCeilRewardFeeAmount, decimals), [currentCeilRewardFeeAmount, decimals]);
+  const estimatedRewardDisplayFeeAmount = useMemo(
+    () => toDisplayDenomAmount(currentCeilRewardFeeAmount, currentFeeCoin.decimals),
+    [currentCeilRewardFeeAmount, currentFeeCoin.decimals],
+  );
 
   const estimatedCommissionDisplayFeeAmount = useMemo(
-    () => toDisplayDenomAmount(currentCeilCommissionFeeAmount, decimals),
-    [currentCeilCommissionFeeAmount, decimals],
+    () => toDisplayDenomAmount(currentCeilCommissionFeeAmount, currentFeeCoin.decimals),
+    [currentCeilCommissionFeeAmount, currentFeeCoin.decimals],
   );
 
-  const isPossibleClaimReward = useMemo(
-    () => !!rewardAminoTx && gt(displayRewardAmount, '0') && gt(displayAvailableAmount, estimatedRewardDisplayFeeAmount),
-    [displayAvailableAmount, displayRewardAmount, estimatedRewardDisplayFeeAmount, rewardAminoTx],
-  );
+  const claimRewardErrorMessage = useMemo(() => {
+    if (!gt(displayRewardAmount, '0')) {
+      return t('pages.Wallet.components.cosmos.NativeChainCard.index.invalidRewardAmount');
+    }
+    if (!gt(currentFeeCoinDisplayAvailableAmount, estimatedRewardDisplayFeeAmount)) {
+      return t('pages.Wallet.components.cosmos.NativeChainCard.index.insufficientFeeAmount');
+    }
+    if (!rewardAminoTx) {
+      return t('pages.Wallet.components.cosmos.NativeChainCard.index.invalidRewardTx');
+    }
+    return '';
+  }, [currentFeeCoinDisplayAvailableAmount, displayRewardAmount, estimatedRewardDisplayFeeAmount, rewardAminoTx, t]);
 
-  const isPossibleClaimCommission = useMemo(
-    () => !!commissionDirectTx && gt(displayAvailableAmount, estimatedCommissionDisplayFeeAmount) && currentAccount.type !== 'LEDGER',
-    [commissionDirectTx, currentAccount.type, displayAvailableAmount, estimatedCommissionDisplayFeeAmount],
-  );
+  const claimCommissionErrorMessage = useMemo(() => {
+    if (commission.data?.commission?.commission?.length === 0) {
+      return t('pages.Wallet.components.cosmos.NativeChainCard.index.invalidCommissionAmount');
+    }
+    if (!gt(currentFeeCoinDisplayAvailableAmount, estimatedCommissionDisplayFeeAmount)) {
+      return t('pages.Wallet.components.cosmos.NativeChainCard.index.insufficientFeeAmount');
+    }
+    if (currentAccount.type === 'LEDGER') {
+      return t('pages.Wallet.components.cosmos.NativeChainCard.index.ledgerNotSupport');
+    }
+    if (!commissionDirectTx) {
+      return t('pages.Wallet.components.cosmos.NativeChainCard.index.invalidCommissionTx');
+    }
+    return '';
+  }, [
+    commission.data?.commission?.commission?.length,
+    commissionDirectTx,
+    currentAccount.type,
+    currentFeeCoinDisplayAvailableAmount,
+    estimatedCommissionDisplayFeeAmount,
+    t,
+  ]);
 
   return (
     <Container data-is-no-expanded={chain.custom === 'no-stake'}>
@@ -501,71 +541,80 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
               )}
             </FourthLineContainer>
             <ClaimButtonContainer>
-              <ClaimButton
-                Icon={Reward16Icon}
-                type="button"
-                disabled={!isPossibleClaimReward}
-                onClick={async () => {
-                  if (rewardAminoTx && isPossibleClaimReward) {
-                    await enQueue({
-                      messageId: '',
-                      origin: '',
-                      channel: 'inApp',
-                      message: {
-                        method: 'cos_signAmino',
-                        params: {
-                          chainName: chain.chainName,
-                          doc: {
-                            ...rewardAminoTx,
-                            fee: {
-                              amount: [{ amount: currentCeilRewardFeeAmount, denom: currentFeeCoin.baseDenom }],
-                              gas: rewardTxGas,
+              <Tooltip varient="error" title={claimRewardErrorMessage} arrow placement="top">
+                <ClaimButtonWrapper>
+                  <ClaimButton
+                    Icon={Reward16Icon}
+                    type="button"
+                    disabled={!!claimRewardErrorMessage}
+                    onClick={async () => {
+                      if (rewardAminoTx && !claimRewardErrorMessage) {
+                        await enQueue({
+                          messageId: '',
+                          origin: '',
+                          channel: 'inApp',
+                          message: {
+                            method: 'cos_signAmino',
+                            params: {
+                              chainName: chain.chainName,
+                              doc: {
+                                ...rewardAminoTx,
+                                fee: {
+                                  amount: [{ amount: currentCeilRewardFeeAmount, denom: currentFeeCoin.baseDenom }],
+                                  gas: rewardTxGas,
+                                },
+                              },
+                              isEditFee: false,
+                              isEditMemo: true,
+                              isCheckBalance: true,
                             },
                           },
-                          isEditFee: true,
-                          isEditMemo: true,
-                          isCheckBalance: true,
-                        },
-                      },
-                    });
+                        });
 
-                    if (currentAccount.type === 'LEDGER') {
-                      await debouncedOpenTab();
-                    }
-                  }
-                }}
-              >
-                {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
-              </ClaimButton>
+                        if (currentAccount.type === 'LEDGER') {
+                          await debouncedOpenTab();
+                        }
+                      }
+                    }}
+                  >
+                    {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimRewardButton')}
+                  </ClaimButton>
+                </ClaimButtonWrapper>
+              </Tooltip>
+
               {isValidatorAccount && (
-                <ClaimButton
-                  Icon={Reward16Icon}
-                  type="button"
-                  disabled={!isPossibleClaimCommission}
-                  onClick={async () => {
-                    if (commissionDirectTx && isPossibleClaimCommission) {
-                      await enQueue({
-                        messageId: '',
-                        origin: '',
-                        channel: 'inApp',
-                        message: {
-                          method: 'cos_signDirect',
-                          params: {
-                            chainName: chain.chainName,
-                            doc: {
-                              ...commissionDirectTx,
+                <Tooltip varient="error" title={claimCommissionErrorMessage} arrow placement="top">
+                  <ClaimButtonWrapper>
+                    <ClaimButton
+                      Icon={Reward16Icon}
+                      type="button"
+                      disabled={!!claimCommissionErrorMessage}
+                      onClick={async () => {
+                        if (commissionDirectTx && !claimCommissionErrorMessage) {
+                          await enQueue({
+                            messageId: '',
+                            origin: '',
+                            channel: 'inApp',
+                            message: {
+                              method: 'cos_signDirect',
+                              params: {
+                                chainName: chain.chainName,
+                                doc: {
+                                  ...commissionDirectTx,
+                                },
+                                isEditFee: false,
+                                isEditMemo: true,
+                                isCheckBalance: true,
+                              },
                             },
-                            isEditFee: true,
-                            isEditMemo: true,
-                            isCheckBalance: true,
-                          },
-                        },
-                      });
-                    }
-                  }}
-                >
-                  {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
-                </ClaimButton>
+                          });
+                        }
+                      }}
+                    >
+                      {t('pages.Wallet.components.cosmos.NativeChainCard.index.claimCommissionButton')}
+                    </ClaimButton>
+                  </ClaimButtonWrapper>
+                </Tooltip>
               )}
             </ClaimButtonContainer>
           </StyledAccordionDetails>

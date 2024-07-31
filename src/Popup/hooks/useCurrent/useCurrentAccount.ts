@@ -37,6 +37,9 @@ export function useCurrentAccount() {
 
   const removeAllowedOrigin = async (origin: string) => {
     const newAllowedOrigins = allowedOrigins.filter((allowedOrigin) => !(allowedOrigin.accountId === selectedAccountId && allowedOrigin.origin === origin));
+
+    emitToWeb({ line: 'ETHEREUM', type: 'accountsChanged', message: { result: [] } }, [origin]);
+
     await setExtensionStorage('allowedOrigins', newAllowedOrigins);
   };
 

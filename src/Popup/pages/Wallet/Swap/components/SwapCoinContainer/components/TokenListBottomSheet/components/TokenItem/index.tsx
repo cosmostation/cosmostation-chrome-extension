@@ -91,7 +91,7 @@ const TokenItem = forwardRef<HTMLButtonElement, TokenItemProps>(({ tokenInfo, on
               </div>
             </Tooltip>
           </TokenRightTitleContainer>
-          {coinPrice && (
+          {gt(coinPrice, '0') && (
             <TokenRightSubTitleContainer>
               <Number typoOfIntegers="h7n" typoOfDecimals="h8n" fixed={2} currency={currency}>
                 {coinAmountPrice}

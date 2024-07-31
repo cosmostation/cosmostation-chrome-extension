@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
@@ -130,5 +131,14 @@ export function useNFTMetaSWR({ chain, contractAddress, tokenId }: UseNFTMetaSWR
     },
   );
 
-  return { data, isValidating, error, mutate };
+  const returnData = useMemo(
+    () => ({
+      name: toDisplayTokenId(tokenId),
+      description: contractAddress,
+      ...data,
+    }),
+    [contractAddress, data, tokenId],
+  );
+
+  return { data: returnData, isValidating, error, mutate };
 }

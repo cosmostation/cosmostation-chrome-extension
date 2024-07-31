@@ -110,9 +110,9 @@ export const FeeButton = styled('button')<FeeButtonProps>(({ theme, ...props }) 
   color: props['data-is-active'] ? theme.accentColors.white : theme.colors.text02,
 
   '& > svg': {
-    fill: props['data-is-active'] ? theme.colors.text01 : theme.colors.text02,
+    fill: props['data-is-active'] ? theme.accentColors.white : theme.colors.text02,
     '& > path': {
-      fill: props['data-is-active'] ? theme.colors.text01 : theme.colors.text02,
+      fill: props['data-is-active'] ? theme.accentColors.white : theme.colors.text02,
     },
   },
 
