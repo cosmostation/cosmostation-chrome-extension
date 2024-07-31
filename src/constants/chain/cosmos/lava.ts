@@ -1,4 +1,3 @@
-import { MINTSCAN_URL } from '~/constants/common';
 import lavaChainImg from '~/images/chainImgs/lava.png';
 import lavaTokenImg from '~/images/symbols/lava.png';
 import type { CosmosChain } from '~/types/chain';
