@@ -20,7 +20,7 @@ export const LAVA: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  bech32Prefix: { address: 'lava' },
+  bech32Prefix: { address: 'lava@' },
   coinGeckoId: 'lava-network',
   explorerURL: 'https://lava-explorer.w3coins.io',
   gasRate: {
