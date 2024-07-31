@@ -272,7 +272,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
           {explorerAccountURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerAccountURL}/address/${address}`);
+                window.open(explorerAccountURL);
               }}
             >
               <ExplorerIcon />
@@ -388,7 +388,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           {explorerAccountURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerAccountURL}/address/${address}`);
+                window.open(explorerAccountURL);
               }}
             >
               <ExplorerIcon />

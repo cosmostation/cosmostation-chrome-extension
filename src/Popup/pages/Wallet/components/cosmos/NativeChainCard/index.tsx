@@ -420,7 +420,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
           {explorerAccountURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerAccountURL}/address/${currentAddress}`)}>
+            <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
@@ -747,7 +747,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
           {explorerAccountURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerAccountURL}/address/${address}`)}>
+            <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
@@ -938,7 +938,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
           {explorerAccountURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerAccountURL}/address/${address}`)}>
+            <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}

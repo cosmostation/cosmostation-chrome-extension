@@ -72,7 +72,7 @@ export default function Cosmos({ chain }: CosmosProps) {
           </TitleContainer>
           <ButtonContainer>
             {explorerAccountURL && (
-              <StyledIconButton onClick={() => window.open(`${explorerAccountURL}/address/${currentAddress}`)}>
+              <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
                 <ExplorerIcon />
               </StyledIconButton>
             )}

@@ -80,7 +80,7 @@ export default function Ethereum({ chain }: EthereumProps) {
           </TitleContainer>
           <ButtonContainer>
             {explorerAccountURL && (
-              <StyledIconButton onClick={() => window.open(`${explorerAccountURL}/address/${currentAddress}`)}>
+              <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
                 <ExplorerIcon />
               </StyledIconButton>
             )}
