@@ -6,6 +6,7 @@ import SettingAccordion from '~/Popup/components/SettingAccordion';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { getSiteIconURL } from '~/Popup/utils/common';
+import { emitToWeb } from '~/Popup/utils/message';
 
 import {
   Container,
@@ -74,6 +75,10 @@ export default function Entry() {
                         onClick={async () => {
                           const newAllowedOrigins = allowedOrigins.filter((item) => !(origin.accountId === item.accountId && origin.origin === item.origin));
                           await setExtensionStorage('allowedOrigins', newAllowedOrigins);
+
+                          if (isCurrentAccount) {
+                            emitToWeb({ line: 'ETHEREUM', type: 'accountsChanged', message: { result: [] } }, [origin.origin]);
+                          }
                         }}
                       >
                         <Close16Icon />

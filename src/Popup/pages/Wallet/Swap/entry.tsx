@@ -1235,7 +1235,7 @@ export default function Entry() {
               ...integratedCosmosSwapTx,
               fee: { amount: [{ denom: currentFeeToken.tokenAddressOrDenom, amount: estimatedFeeBaseAmount }], gas: estimatedGas },
             },
-            isEditFee: true,
+            isEditFee: false,
             isEditMemo: true,
             isCheckBalance: true,
           },

@@ -1,6 +1,6 @@
 {
   "name": "cosmostation",
-  "version": "0.8.8",
+  "version": "0.8.12",
   "description": "chrome extension cosmos wallet",
   "scripts": {
     "postinstall": "git config --local core.hooksPath ./git-hooks",
@@ -28,7 +28,7 @@
     "update:env:firefox": "sed -i \"\" -e \"/^VERSION=/s/=.*/=$(cat package.json | jq '.version' | sed 's/\"//g')/\" .env.firefox",
     "update:env:chrome:dev": "sed -i \"\" -e \"/^VERSION=/s/=.*/=$(cat package.json | jq '.version' | sed 's/\"//g')/\" .env.chrome.development",
     "update:env:firefox:dev": "sed -i \"\" -e \"/^VERSION=/s/=.*/=$(cat package.json | jq '.version' | sed 's/\"//g')/\" .env.firefox.development",
-    "update:version": "yarn run update:manifest:chrome && yarn run update:manifest:firefox && yarn run update:env:chrome && yarn run update:env:firefox && yarn run update:env:chrome:dev && yarn run update:env:firefox:dev"
+    "update:version": "concurrently 'yarn run update:manifest:chrome' 'yarn run update:manifest:firefox' 'yarn run update:env:chrome' 'yarn run update:env:firefox' 'yarn run update:env:chrome:dev' 'yarn run update:env:firefox:dev'"
   },
   "author": "",
   "license": "MIT",
@@ -128,6 +128,7 @@
     "@typescript-eslint/parser": "^5.20.0",
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
+    "concurrently": "^8.2.2",
     "copy-webpack-plugin": "^10.2.4",
     "crypto-browserify": "^3.12.0",
     "css-loader": "^6.7.1",
@@ -163,7 +164,7 @@
     "webpack-manifest-plugin": "^5.0.0"
   },
   "engines": {
-    "node": ">=16.0.0",
+    "node": ">=20.10.0 < 21.0.0",
     "yarn": ">=1.22.0",
     "npm": "please-use-yarn"
   }

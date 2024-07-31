@@ -1,4 +1,4 @@
-import { MINTSCAN_URL } from '~/constants/common';
+import { MINTSCAN_URL } from '~/constants/cosmos';
 import cantoChainImg from '~/images/chainImgs/canto.png';
 import cantoTokenImg from '~/images/symbols/canto.png';
 import type { CosmosChain } from '~/types/chain';

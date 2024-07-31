@@ -12,10 +12,12 @@ export async function get<T>(path: string, config?: AxiosRequestConfig): Promise
   return data;
 }
 
-export async function post<T>(path: string, body?: unknown): Promise<T> {
+export async function post<T>(path: string, body?: unknown, config?: AxiosRequestConfig): Promise<T> {
   const { data } = await axios.post<T>(path, body, {
+    ...config,
     headers: {
       Cosmostation: `extension/${String(process.env.VERSION)}`,
+      ...config?.headers,
     },
   });
   return data;

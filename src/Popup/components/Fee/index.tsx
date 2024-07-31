@@ -147,7 +147,7 @@ export default function Fee({
                   }}
                   data-is-active={equal(currentGasRate, tiny) ? 1 : 0}
                 >
-                  {t('components.Fee.index.tiny')}
+                  <Typography variant="h7">{t('components.Fee.index.tiny')}</Typography>
                 </FeeButton>
                 <FeeButton
                   type="button"
@@ -157,7 +157,7 @@ export default function Fee({
                   }}
                   data-is-active={equal(currentGasRate, low) ? 1 : 0}
                 >
-                  {t('components.Fee.index.low')}
+                  <Typography variant="h7">{t('components.Fee.index.low')}</Typography>
                 </FeeButton>
                 <FeeButton
                   type="button"
@@ -167,7 +167,7 @@ export default function Fee({
                   }}
                   data-is-active={equal(currentGasRate, average) ? 1 : 0}
                 >
-                  {t('components.Fee.index.average')}
+                  <Typography variant="h7">{t('components.Fee.index.average')}</Typography>
                 </FeeButton>
               </FeeButtonContainer>
             </EditRightContainer>

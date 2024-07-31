@@ -71,5 +71,5 @@ export function useCurrentFeesSWR(chain: CosmosChain, config?: SWRConfiguration)
     return sortedFeeCoinList.length > 0 ? sortedFeeCoinList : [coinAll[0]];
   }, [assetGasRate.data, coinAll, currentChainAssets.data]);
 
-  return { feeCoins, defaultGasRateKey: assetGasRate.data.defaultGasRateKey };
+  return { feeCoins, defaultGasRateKey: assetGasRate.data.defaultGasRateKey, isFeemarketActive: assetGasRate.data.isFeemarketActive };
 }
