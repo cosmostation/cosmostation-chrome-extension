@@ -35,6 +35,7 @@ export default function Ethereum({ chain }: EthereumProps) {
   const { enqueueSnackbar } = useSnackbar();
   const { currentAccount } = useCurrentAccount();
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
+
   const { t } = useTranslation();
 
   const { getExplorerAccountURL } = useBlockExplorerURLSWR(currentEthereumNetwork);
