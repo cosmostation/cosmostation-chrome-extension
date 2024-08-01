@@ -6,11 +6,11 @@ import type { CosmosChain } from '~/types/chain';
 import type { ChainParams } from '~/types/cosmos/params';
 
 import { useAllParamsSWR } from '../useAllParamsSWR';
-import { useChainIdToApiNameMapsSWR } from '../useChainIdToApiNameMapsSWR';
+import { useChainIdToAssetNameMapsSWR } from '../useChainIdToAssetNameMapsSWR';
 
 export function useParamsSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const { data, error, mutate } = useAllParamsSWR(config);
-  const apiNameMaps = useChainIdToApiNameMapsSWR(config);
+  const apiNameMaps = useChainIdToAssetNameMapsSWR(config);
 
   const mappingName = useMemo(() => {
     if (apiNameMaps.chainIdToAssetNameMaps[chain.chainId]) {

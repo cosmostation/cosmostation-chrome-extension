@@ -5,7 +5,7 @@ import type { ChainIdToAssetNameMapsResponse } from '~/types/cosmos/asset';
 
 import { useAllParamsSWR } from './useAllParamsSWR';
 
-export function useChainIdToApiNameMapsSWR(config?: SWRConfiguration) {
+export function useChainIdToAssetNameMapsSWR(config?: SWRConfiguration) {
   const allParams = useAllParamsSWR(config);
 
   const chainIdToAssetNameMaps = useMemo<ChainIdToAssetNameMapsResponse>(() => {
