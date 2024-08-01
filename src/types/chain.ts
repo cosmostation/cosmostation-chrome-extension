@@ -51,6 +51,9 @@ export type CosmosChain = {
   };
   coinGeckoId?: string;
   explorerURL?: string;
+  accountExplorerURL?: string;
+  txDetailExplorerURL?: string;
+  blockDetailExplorerURL?: string;
   gasRate: GasRate;
   gas: Gas;
   cosmWasm?: boolean;
@@ -114,6 +117,9 @@ export type EthereumNetwork = {
   tokenImageURL?: string;
   imageURL?: string;
   explorerURL?: string;
+  accountExplorerURL?: string;
+  txDetailExplorerURL?: string;
+  blockDetailExplorerURL?: string;
   coinGeckoId?: string;
 };
 

@@ -5,7 +5,7 @@ import QRCode from 'qrcode.react';
 import { Typography } from '@mui/material';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
+import { useBlockExplorerURLSWR } from '~/Popup/hooks/SWR/cosmos/useBlockExplorerURLSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain } from '~/types/chain';
@@ -31,32 +31,16 @@ type CosmosProps = {
 
 export default function Cosmos({ chain }: CosmosProps) {
   const accounts = useAccounts(true);
-  const params = useParamsSWR(chain);
   const { currentAccount } = useCurrentAccount();
   const { enqueueSnackbar } = useSnackbar();
 
   const { t } = useTranslation();
 
-  const { explorerURL } = chain;
+  const { getExplorerAccountURL } = useBlockExplorerURLSWR(chain);
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
 
-  const explorerAccountURL = useMemo(() => {
-    const explorerAccountBaseURL = params.data?.params?.chainlist_params?.explorer?.account;
-
-    if (explorerAccountBaseURL) {
-      // eslint-disable-next-line no-template-curly-in-string
-      return explorerAccountBaseURL.replace('${address}', currentAddress);
-    }
-
-    const explorerBaseURL = params.data?.params?.chainlist_params?.explorer?.url || explorerURL;
-
-    if (explorerBaseURL) {
-      return `${explorerBaseURL}/address/${currentAddress}`;
-    }
-
-    return '';
-  }, [currentAddress, explorerURL, params.data?.params?.chainlist_params?.explorer?.account, params.data?.params?.chainlist_params?.explorer?.url]);
+  const explorerAccountURL = useMemo(() => getExplorerAccountURL(currentAddress), [currentAddress, getExplorerAccountURL]);
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {

@@ -17,6 +17,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+import { useBlockExplorerURLSWR } from '~/Popup/hooks/SWR/cosmos/useBlockExplorerURLSWR';
 import { useCommissionSWR } from '~/Popup/hooks/SWR/cosmos/useCommissionSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
@@ -96,6 +97,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const { extensionStorage } = useExtensionStorage();
   const reward = useRewardSWR(chain);
 
+  const { getExplorerAccountURL } = useBlockExplorerURLSWR(chain);
+
   const account = useAccountSWR(chain);
   const accounts = useAccounts(true);
   const { enQueue } = useCurrentQueue();
@@ -115,7 +118,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const { navigate } = useNavigate();
 
-  const { decimals, coinGeckoId, explorerURL } = chain;
+  const { decimals, coinGeckoId } = chain;
 
   const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [extensionStorage.currency, coinGeckoId, data]);
 
@@ -194,22 +197,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const params = useParamsSWR(chain);
 
-  const explorerAccountURL = useMemo(() => {
-    const explorerAccountBaseURL = params.data?.params?.chainlist_params?.explorer?.account;
-
-    if (explorerAccountBaseURL) {
-      // eslint-disable-next-line no-template-curly-in-string
-      return explorerAccountBaseURL.replace('${address}', currentAddress);
-    }
-
-    const explorerBaseURL = params.data?.params?.chainlist_params?.explorer?.url || explorerURL;
-
-    if (explorerBaseURL) {
-      return `${explorerBaseURL}/address/${currentAddress}`;
-    }
-
-    return '';
-  }, [currentAddress, explorerURL, params.data?.params?.chainlist_params?.explorer?.account, params.data?.params?.chainlist_params?.explorer?.url]);
+  const explorerAccountURL = useMemo(() => getExplorerAccountURL(currentAddress), [currentAddress, getExplorerAccountURL]);
 
   const validatorAddressPrefix = useMemo(
     () => params.data?.params?.chainlist_params?.bechValidatorPrefix || '',
@@ -682,7 +670,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   const { currentPassword } = useCurrentPassword();
   const { extensionStorage } = useExtensionStorage();
 
-  const { explorerURL } = chain;
+  const { getExplorerAccountURL } = useBlockExplorerURLSWR(chain);
 
   const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
 
@@ -704,21 +692,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
 
   const params = useParamsSWR(chain);
 
-  const explorerAccountURL = useMemo(() => {
-    const explorerAccountBaseURL = params.data?.params?.chainlist_params?.explorer?.account;
-
-    if (explorerAccountBaseURL) {
-      // eslint-disable-next-line no-template-curly-in-string
-      return explorerAccountBaseURL.replace('${address}', address);
-    }
-
-    const explorerBaseURL = params.data?.params?.chainlist_params?.explorer?.url || explorerURL;
-
-    if (explorerBaseURL) {
-      return `${explorerBaseURL}/address/${address}`;
-    }
-    return '';
-  }, [address, explorerURL, params.data?.params?.chainlist_params?.explorer?.account, params.data?.params?.chainlist_params?.explorer?.url]);
+  const explorerAccountURL = useMemo(() => getExplorerAccountURL(address), [address, getExplorerAccountURL]);
 
   const validatorAddressPrefix = useMemo(
     () => params.data?.params?.chainlist_params?.bechValidatorPrefix || '',
@@ -887,9 +861,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const { extensionStorage } = useExtensionStorage();
 
-  const { explorerURL } = chain;
-
-  const params = useParamsSWR(chain);
+  const { getExplorerAccountURL } = useBlockExplorerURLSWR(chain);
 
   const address = useMemo(() => {
     const key = getAddressKey(currentAccount, chain);
@@ -905,22 +877,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
     return getAddress(chain, keyPair?.publicKey);
   }, [chain, currentAccount, currentPassword, extensionStorage.address]);
 
-  const explorerAccountURL = useMemo(() => {
-    const explorerAccountBaseURL = params.data?.params?.chainlist_params?.explorer?.account;
-
-    if (explorerAccountBaseURL) {
-      // eslint-disable-next-line no-template-curly-in-string
-      return explorerAccountBaseURL.replace('${address}', address);
-    }
-
-    const explorerBaseURL = params.data?.params?.chainlist_params?.explorer?.url || explorerURL;
-
-    if (explorerBaseURL) {
-      return `${explorerBaseURL}/address/${address}`;
-    }
-
-    return '';
-  }, [address, explorerURL, params.data?.params?.chainlist_params?.explorer?.account, params.data?.params?.chainlist_params?.explorer?.url]);
+  const explorerAccountURL = useMemo(() => getExplorerAccountURL(address), [address, getExplorerAccountURL]);
 
   const { enqueueSnackbar } = useSnackbar();
 

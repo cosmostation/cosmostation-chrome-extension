@@ -13,10 +13,10 @@ import Image from '~/Popup/components/common/Image';
 import NumberText from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import EmptyAsset from '~/Popup/components/EmptyAsset';
+import { useBlockExplorerURLSWR } from '~/Popup/hooks/SWR/ethereum/useBlockExplorerURLSWR';
 import { useBlockInfoByHashSWR } from '~/Popup/hooks/SWR/ethereum/useBlockInfoByHashSWR';
 import { useTxInfoSWR } from '~/Popup/hooks/SWR/ethereum/useTxInfoSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
@@ -70,7 +70,8 @@ export default function Ethereum({ txHash }: EthereumProps) {
   const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
   const { imageURL, networkName, decimals, coinGeckoId, displayDenom, id } = currentEthereumNetwork;
 
-  const params = useParamsSWR(currentEthereumNetwork);
+  const { getExplorerTxDetailURL } = useBlockExplorerURLSWR(currentEthereumNetwork);
+
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
   const { currency, language } = extensionStorage;
@@ -83,25 +84,7 @@ export default function Ethereum({ txHash }: EthereumProps) {
 
   const blockInfo = useBlockInfoByHashSWR(blockHash);
 
-  const explorerURL = useMemo(
-    () =>
-      params.data?.params?.chainlist_params?.evm_explorer?.url || params.data?.params?.chainlist_params?.explorer?.url || currentEthereumNetwork.explorerURL,
-    [currentEthereumNetwork.explorerURL, params.data?.params?.chainlist_params?.evm_explorer?.url, params.data?.params?.chainlist_params?.explorer?.url],
-  );
-
-  const txDetailExplorerURL = useMemo(() => {
-    const explorerTxBaseURL = params.data?.params?.chainlist_params?.evm_explorer?.tx || params.data?.params?.chainlist_params?.explorer?.tx;
-
-    if (explorerTxBaseURL) {
-      // eslint-disable-next-line no-template-curly-in-string
-      return explorerTxBaseURL.replace('${hash}', txHash);
-    }
-
-    if (explorerURL) {
-      return `${explorerURL}/tx/${txHash}`;
-    }
-    return '';
-  }, [explorerURL, params.data?.params?.chainlist_params?.evm_explorer, params.data?.params?.chainlist_params?.explorer, txHash]);
+  const txDetailExplorerURL = useMemo(() => getExplorerTxDetailURL(txHash), [getExplorerTxDetailURL, txHash]);
 
   const txConfirmedStatus = useMemo(() => {
     if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING) return TX_CONFIRMED_STATUS.PENDING;
