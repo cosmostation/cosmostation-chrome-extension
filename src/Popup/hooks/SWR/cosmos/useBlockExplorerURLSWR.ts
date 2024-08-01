@@ -20,8 +20,7 @@ export function useBlockExplorerURLSWR(chain: CosmosChain, config?: SWRConfigura
 
       const explorerAccountURL = chainParams.data?.params?.chainlist_params?.explorer?.account || chain.accountExplorerURL;
 
-      // eslint-disable-next-line no-template-curly-in-string
-      return explorerAccountURL?.replace('${address}', address) || '';
+      return explorerAccountURL?.replace(`\${address}`, address) || '';
     },
     [chain.accountExplorerURL, chainParams.data?.params?.chainlist_params?.explorer?.account],
   );
@@ -32,8 +31,7 @@ export function useBlockExplorerURLSWR(chain: CosmosChain, config?: SWRConfigura
 
       const explorerTxDetailURL = chainParams.data?.params?.chainlist_params?.explorer?.tx || chain.txDetailExplorerURL;
 
-      // eslint-disable-next-line no-template-curly-in-string
-      return explorerTxDetailURL?.replace('${hash}', txHash) || '';
+      return explorerTxDetailURL?.replace(`\${hash}`, txHash) || '';
     },
     [chain.txDetailExplorerURL, chainParams.data?.params?.chainlist_params?.explorer?.tx],
   );
@@ -42,8 +40,7 @@ export function useBlockExplorerURLSWR(chain: CosmosChain, config?: SWRConfigura
     (blockHeight?: string) => {
       if (!blockHeight) return '';
 
-      // eslint-disable-next-line no-template-curly-in-string
-      return chain.blockDetailExplorerURL?.replace('${blockHeight}', blockHeight) || '';
+      return chain.blockDetailExplorerURL?.replace(`\${blockHeight}`, blockHeight) || '';
     },
     [chain.blockDetailExplorerURL],
   );

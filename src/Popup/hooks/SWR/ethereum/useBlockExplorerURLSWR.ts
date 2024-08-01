@@ -22,8 +22,7 @@ export function useBlockExplorerURLSWR(network: EthereumNetwork, config?: SWRCon
 
       const explorerAccountURL = chainlistExplorer?.account || network.accountExplorerURL;
 
-      // eslint-disable-next-line no-template-curly-in-string
-      return explorerAccountURL?.replace('${address}', address) || '';
+      return explorerAccountURL?.replace(`\${address}`, address) || '';
     },
     [chainlistExplorer?.account, network.accountExplorerURL],
   );
@@ -34,8 +33,7 @@ export function useBlockExplorerURLSWR(network: EthereumNetwork, config?: SWRCon
 
       const explorerTxDetailURL = chainlistExplorer?.tx || network.txDetailExplorerURL;
 
-      // eslint-disable-next-line no-template-curly-in-string
-      return explorerTxDetailURL?.replace('${hash}', txHash) || '';
+      return explorerTxDetailURL?.replace(`\${hash}`, txHash) || '';
     },
     [chainlistExplorer?.tx, network.txDetailExplorerURL],
   );
@@ -44,8 +42,7 @@ export function useBlockExplorerURLSWR(network: EthereumNetwork, config?: SWRCon
     (blockHeight?: string) => {
       if (!blockHeight) return '';
 
-      // eslint-disable-next-line no-template-curly-in-string
-      return network.blockDetailExplorerURL?.replace('${blockHeight}', blockHeight) || '';
+      return network.blockDetailExplorerURL?.replace(`\${blockHeight}`, blockHeight) || '';
     },
     [network.blockDetailExplorerURL],
   );
