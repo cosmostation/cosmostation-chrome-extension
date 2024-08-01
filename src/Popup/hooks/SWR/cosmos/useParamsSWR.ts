@@ -10,15 +10,15 @@ import { useChainIdToAssetNameMapsSWR } from '../useChainIdToAssetNameMapsSWR';
 
 export function useParamsSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const { data, error, mutate } = useAllParamsSWR(config);
-  const apiNameMaps = useChainIdToAssetNameMapsSWR(config);
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR(config);
 
   const mappingName = useMemo(() => {
-    if (apiNameMaps.chainIdToAssetNameMaps[chain.chainId]) {
-      return apiNameMaps.chainIdToAssetNameMaps[chain.chainId];
+    if (chainIdToAssetNameMaps[chain.chainId]) {
+      return chainIdToAssetNameMaps[chain.chainId];
     }
 
     return convertCosmosToAssetName(chain);
-  }, [apiNameMaps.chainIdToAssetNameMaps, chain]);
+  }, [chainIdToAssetNameMaps, chain]);
 
   const returnData = useMemo<ChainParams | null>(() => {
     if (!data) {
