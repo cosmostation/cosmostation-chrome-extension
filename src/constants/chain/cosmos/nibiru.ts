@@ -1,4 +1,4 @@
-import { MINTSCAN_URL } from '~/constants/common';
+import { BLOCK_EXPLORER_PATH } from '~/constants/common';
 import nibiruChainImg from '~/images/chainImgs/nibiru.png';
 import nibiruTokenImg from '~/images/symbols/nibi.png';
 import type { CosmosChain } from '~/types/chain';
@@ -23,7 +23,10 @@ export const NIBIRU: CosmosChain = {
   },
   bech32Prefix: { address: 'nibi' },
   coinGeckoId: 'nibiru',
-  explorerURL: `${MINTSCAN_URL}/nibiru`,
+  explorerURL: 'https://explorer.nibiru.fi',
+  accountExplorerURL: `https://explorer.nibiru.fi/cataclysm-1/account/\${${BLOCK_EXPLORER_PATH.ACCOUNT}}`,
+  txDetailExplorerURL: `https://explorer.nibiru.fi/cataclysm-1/tx/\${${BLOCK_EXPLORER_PATH.TX}}`,
+  blockDetailExplorerURL: `https://explorer.nibiru.fi/cataclysm-1/block/\${${BLOCK_EXPLORER_PATH.BLOCK}}`,
   gasRate: {
     tiny: '0.025',
     low: '0.05',
