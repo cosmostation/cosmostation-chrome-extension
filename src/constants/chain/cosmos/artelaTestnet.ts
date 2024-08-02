@@ -1,3 +1,4 @@
+import { BLOCK_EXPLORER_PATH } from '~/constants/common';
 import artelaChainImg from '~/images/chainImgs/artela.png';
 import artelaTokenImg from '~/images/symbols/art.png';
 import type { CosmosChain } from '~/types/chain';
@@ -22,6 +23,9 @@ export const ARTELA_TESTNET: CosmosChain = {
   },
   bech32Prefix: { address: 'art' },
   explorerURL: `https://explorer.nodestake.org/artela-testnet`,
+  accountExplorerURL: `https://explorer.nodestake.org/artela-testnet/account/\${${BLOCK_EXPLORER_PATH.ACCOUNT}}`,
+  txDetailExplorerURL: `https://explorer.nodestake.org/artela-testnet/tx/\${${BLOCK_EXPLORER_PATH.TX}}`,
+  blockDetailExplorerURL: `https://explorer.nodestake.org/artela-testnet/block/\${${BLOCK_EXPLORER_PATH.BLOCK}}`,
   gasRate: {
     tiny: '80000000000',
     low: '80000000000',

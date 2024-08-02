@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
+import { BLOCK_EXPLORER_PATH } from '~/constants/common';
 import { removeTrailSlash } from '~/Popup/utils/fetch';
 import type { EthereumNetwork } from '~/types/chain';
 
@@ -22,9 +23,14 @@ export function useBlockExplorerURLSWR(network: EthereumNetwork, config?: SWRCon
 
       const explorerAccountURL = chainlistExplorer?.account || network.accountExplorerURL;
 
-      return explorerAccountURL?.replace(`\${address}`, address) || '';
+      if (explorerAccountURL) {
+        return explorerAccountURL.replace(`\${${BLOCK_EXPLORER_PATH.ACCOUNT}}`, address);
+      }
+
+      const explorerBaseURL = getExplorerURL();
+      return explorerBaseURL ? `${explorerBaseURL}/address/${address}` : '';
     },
-    [chainlistExplorer?.account, network.accountExplorerURL],
+    [chainlistExplorer?.account, getExplorerURL, network.accountExplorerURL],
   );
 
   const getExplorerTxDetailURL = useCallback(
@@ -33,18 +39,28 @@ export function useBlockExplorerURLSWR(network: EthereumNetwork, config?: SWRCon
 
       const explorerTxDetailURL = chainlistExplorer?.tx || network.txDetailExplorerURL;
 
-      return explorerTxDetailURL?.replace(`\${hash}`, txHash) || '';
+      if (explorerTxDetailURL) {
+        return explorerTxDetailURL?.replace(`\${${BLOCK_EXPLORER_PATH.TX}}`, txHash) || '';
+      }
+
+      const explorerBaseURL = getExplorerURL();
+      return explorerBaseURL ? `${explorerBaseURL}/tx/${txHash}` : '';
     },
-    [chainlistExplorer?.tx, network.txDetailExplorerURL],
+    [chainlistExplorer?.tx, getExplorerURL, network.txDetailExplorerURL],
   );
 
   const getExplorerBlockDetailURL = useCallback(
     (blockHeight?: string) => {
       if (!blockHeight) return '';
 
-      return network.blockDetailExplorerURL?.replace(`\${blockHeight}`, blockHeight) || '';
+      if (network.blockDetailExplorerURL) {
+        return network.blockDetailExplorerURL.replace(`\${${BLOCK_EXPLORER_PATH.BLOCK}}`, blockHeight) || '';
+      }
+
+      const explorerBaseURL = getExplorerURL();
+      return explorerBaseURL ? `${explorerBaseURL}/block/${blockHeight}` : '';
     },
-    [network.blockDetailExplorerURL],
+    [getExplorerURL, network.blockDetailExplorerURL],
   );
 
   return { getExplorerURL, getExplorerAccountURL, getExplorerTxDetailURL, getExplorerBlockDetailURL };

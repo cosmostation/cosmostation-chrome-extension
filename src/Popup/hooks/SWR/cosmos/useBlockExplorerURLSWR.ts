@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import type { SWRConfiguration } from 'swr';
 
+import { BLOCK_EXPLORER_PATH } from '~/constants/common';
 import { removeTrailSlash } from '~/Popup/utils/fetch';
 import type { CosmosChain } from '~/types/chain';
 
@@ -20,9 +21,14 @@ export function useBlockExplorerURLSWR(chain: CosmosChain, config?: SWRConfigura
 
       const explorerAccountURL = chainParams.data?.params?.chainlist_params?.explorer?.account || chain.accountExplorerURL;
 
-      return explorerAccountURL?.replace(`\${address}`, address) || '';
+      if (explorerAccountURL) {
+        return explorerAccountURL.replace(`\${${BLOCK_EXPLORER_PATH.ACCOUNT}}`, address);
+      }
+
+      const explorerBaseURL = getExplorerURL();
+      return explorerBaseURL ? `${explorerBaseURL}/address/${address}` : '';
     },
-    [chain.accountExplorerURL, chainParams.data?.params?.chainlist_params?.explorer?.account],
+    [chain.accountExplorerURL, chainParams.data?.params?.chainlist_params?.explorer?.account, getExplorerURL],
   );
 
   const getExplorerTxDetailURL = useCallback(
@@ -31,18 +37,28 @@ export function useBlockExplorerURLSWR(chain: CosmosChain, config?: SWRConfigura
 
       const explorerTxDetailURL = chainParams.data?.params?.chainlist_params?.explorer?.tx || chain.txDetailExplorerURL;
 
-      return explorerTxDetailURL?.replace(`\${hash}`, txHash) || '';
+      if (explorerTxDetailURL) {
+        return explorerTxDetailURL?.replace(`\${${BLOCK_EXPLORER_PATH.TX}}`, txHash) || '';
+      }
+
+      const explorerBaseURL = getExplorerURL();
+      return explorerBaseURL ? `${explorerBaseURL}/tx/${txHash}` : '';
     },
-    [chain.txDetailExplorerURL, chainParams.data?.params?.chainlist_params?.explorer?.tx],
+    [chain.txDetailExplorerURL, chainParams.data?.params?.chainlist_params?.explorer?.tx, getExplorerURL],
   );
 
   const getExplorerBlockDetailURL = useCallback(
     (blockHeight?: string) => {
       if (!blockHeight) return '';
 
-      return chain.blockDetailExplorerURL?.replace(`\${blockHeight}`, blockHeight) || '';
+      if (chain.blockDetailExplorerURL) {
+        return chain.blockDetailExplorerURL.replace(`\${${BLOCK_EXPLORER_PATH.BLOCK}}`, blockHeight) || '';
+      }
+
+      const explorerBaseURL = getExplorerURL();
+      return explorerBaseURL ? `${explorerBaseURL}/block/${blockHeight}` : '';
     },
-    [chain.blockDetailExplorerURL],
+    [chain.blockDetailExplorerURL, getExplorerURL],
   );
 
   return { getExplorerURL, getExplorerAccountURL, getExplorerTxDetailURL, getExplorerBlockDetailURL };
