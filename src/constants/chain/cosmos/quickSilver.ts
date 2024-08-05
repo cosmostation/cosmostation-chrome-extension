@@ -1,4 +1,4 @@
-import { MINTSCAN_URL } from '~/constants/common';
+import { BLOCK_EXPLORER_PATH } from '~/constants/common';
 import quickSilverChainImg from '~/images/chainImgs/quicksilver.png';
 import quickSilverTokenImg from '~/images/symbols/qck.png';
 import type { CosmosChain } from '~/types/chain';
@@ -9,7 +9,7 @@ export const QUICK_SILVER: CosmosChain = {
   type: '',
   chainId: 'quicksilver-2',
   chainName: 'QUICKSILVER',
-  restURL: 'https://lcd-quicksilver.cosmostation.io',
+  restURL: 'https://lcd.quicksilver.zone',
   tokenImageURL: quickSilverTokenImg,
   imageURL: quickSilverChainImg,
   baseDenom: 'uqck',
@@ -23,7 +23,10 @@ export const QUICK_SILVER: CosmosChain = {
   },
   bech32Prefix: { address: 'quick' },
   coinGeckoId: 'quicksilver',
-  explorerURL: `${MINTSCAN_URL}/quicksilver`,
+  explorerURL: `https://quicksilver.explorers.guru`,
+  accountExplorerURL: `https://quicksilver.explorers.guru/account/\${${BLOCK_EXPLORER_PATH.ACCOUNT}}`,
+  txDetailExplorerURL: `https://quicksilver.explorers.guru/transaction/\${${BLOCK_EXPLORER_PATH.TX}}`,
+  blockDetailExplorerURL: `https://quicksilver.explorers.guru/block/\${${BLOCK_EXPLORER_PATH.BLOCK}}`,
   gasRate: {
     tiny: '0.0001',
     low: '0.00015',

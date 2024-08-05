@@ -1,4 +1,4 @@
-import { MINTSCAN_URL } from '~/constants/common';
+import { BLOCK_EXPLORER_PATH } from '~/constants/common';
 import ixoChainImg from '~/images/chainImgs/ixo.png';
 import ixoTokenImg from '~/images/symbols/ixo.png';
 import type { CosmosChain } from '~/types/chain';
@@ -22,7 +22,10 @@ export const IXO: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'ixo' },
-  explorerURL: `${MINTSCAN_URL}/ixo`,
+  explorerURL: `https://atomscan.com/ixo`,
+  accountExplorerURL: `https://atomscan.com/ixo/accounts/\${${BLOCK_EXPLORER_PATH.ACCOUNT}}`,
+  txDetailExplorerURL: `https://atomscan.com/ixo/transactions/\${${BLOCK_EXPLORER_PATH.TX}}`,
+  blockDetailExplorerURL: `https://atomscan.com/ixo/blocks/\${${BLOCK_EXPLORER_PATH.BLOCK}}`,
   coinGeckoId: 'ixo',
   gasRate: {
     tiny: '0.025',
