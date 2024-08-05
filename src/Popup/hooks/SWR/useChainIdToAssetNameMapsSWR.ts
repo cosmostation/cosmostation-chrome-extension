@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { SWRConfiguration } from 'swr';
 
+import { CHAIN_ID_TO_ASSET_NAME_MAPS } from '~/constants/params';
 import type { ChainIdToAssetNameMapsResponse } from '~/types/cosmos/asset';
 
 import { useAllParamsSWR } from './useAllParamsSWR';
@@ -10,7 +11,7 @@ export function useChainIdToAssetNameMapsSWR(config?: SWRConfiguration) {
 
   const chainIdToAssetNameMaps = useMemo<ChainIdToAssetNameMapsResponse>(() => {
     if (!allParams.data) {
-      return {};
+      return CHAIN_ID_TO_ASSET_NAME_MAPS;
     }
 
     const keyValueSwappedMaps = Object.entries(allParams.data).reduce((acc: ChainIdToAssetNameMapsResponse, [key, value]) => {

@@ -11,13 +11,15 @@ import type { EthereumNetwork } from '~/types/chain';
 import type { AssetPayload, ModifiedAsset } from '~/types/ethereum/asset';
 
 import { useCurrentEthereumNetwork } from '../../useCurrent/useCurrentEthereumNetwork';
+import { useChainIdToAssetNameMapsSWR } from '../useChainIdToAssetNameMapsSWR';
 
 export function useTokensSWR(chain?: EthereumNetwork, config?: SWRConfiguration) {
   const { currentEthereumNetwork } = useCurrentEthereumNetwork();
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
 
   const currentChain = chain || currentEthereumNetwork;
 
-  const mappingName = useMemo(() => convertEVMToAssetName(currentChain), [currentChain]);
+  const mappingName = useMemo(() => convertEVMToAssetName(currentChain, chainIdToAssetNameMaps), [chainIdToAssetNameMaps, currentChain]);
 
   const requestURL = useMemo(() => `${MINTSCAN_FRONT_API_URL}/assets/${mappingName}/erc20/info`, [mappingName]);
 

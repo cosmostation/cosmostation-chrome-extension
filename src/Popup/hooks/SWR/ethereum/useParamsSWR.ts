@@ -10,15 +10,9 @@ import { useChainIdToAssetNameMapsSWR } from '../useChainIdToAssetNameMapsSWR';
 
 export function useParamsSWR(network: EthereumNetwork, config?: SWRConfiguration) {
   const { data, error, mutate } = useAllParamsSWR(config);
-  const apiNameMaps = useChainIdToAssetNameMapsSWR(config);
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR(config);
 
-  const mappingName = useMemo(() => {
-    if (apiNameMaps.chainIdToAssetNameMaps[network.chainId]) {
-      return apiNameMaps.chainIdToAssetNameMaps[network.chainId];
-    }
-
-    return convertEVMToAssetName(network);
-  }, [apiNameMaps.chainIdToAssetNameMaps, network]);
+  const mappingName = useMemo(() => convertEVMToAssetName(network, chainIdToAssetNameMaps), [chainIdToAssetNameMaps, network]);
 
   const returnData = useMemo<ChainParams | null>(() => {
     if (!data) {

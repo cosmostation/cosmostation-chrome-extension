@@ -12,13 +12,7 @@ export function useParamsSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const { data, error, mutate } = useAllParamsSWR(config);
   const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR(config);
 
-  const mappingName = useMemo(() => {
-    if (chainIdToAssetNameMaps[chain.chainId]) {
-      return chainIdToAssetNameMaps[chain.chainId];
-    }
-
-    return convertCosmosToAssetName(chain);
-  }, [chainIdToAssetNameMaps, chain]);
+  const mappingName = useMemo(() => convertCosmosToAssetName(chain, chainIdToAssetNameMaps), [chainIdToAssetNameMaps, chain]);
 
   const returnData = useMemo<ChainParams | null>(() => {
     if (!data) {

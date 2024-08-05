@@ -9,8 +9,12 @@ import { convertCosmosToAssetName } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { CW20AssetResponse } from '~/types/cosmos/asset';
 
+import { useChainIdToAssetNameMapsSWR } from '../useChainIdToAssetNameMapsSWR';
+
 export function useTokensSWR(chain: CosmosChain, config?: SWRConfiguration) {
-  const mappingName = convertCosmosToAssetName(chain);
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR(config);
+
+  const mappingName = useMemo(() => convertCosmosToAssetName(chain, chainIdToAssetNameMaps), [chain, chainIdToAssetNameMaps]);
 
   const requestURL = `${MINTSCAN_FRONT_API_URL}/assets/${mappingName}/cw20`;
 
