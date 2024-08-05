@@ -9,7 +9,7 @@ export const DESMOS: CosmosChain = {
   type: '',
   chainId: 'desmos-mainnet',
   chainName: 'DESMOS',
-  restURL: 'https://lcd-desmos.cosmostation.io',
+  restURL: 'https://api.mainnet.desmos.network',
   tokenImageURL: desmosTokenImg,
   imageURL: desmosChainImg,
   baseDenom: 'udsm',
