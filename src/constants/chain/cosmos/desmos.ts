@@ -1,4 +1,3 @@
-import { BLOCK_EXPLORER_PATH } from '~/constants/common';
 import desmosChainImg from '~/images/chainImgs/desmos.png';
 import desmosTokenImg from '~/images/symbols/dsm.png';
 import type { CosmosChain } from '~/types/chain';
@@ -23,9 +22,6 @@ export const DESMOS: CosmosChain = {
   },
   bech32Prefix: { address: 'desmos' },
   explorerURL: `https://bigdipper.live/desmos`,
-  accountExplorerURL: `https://bigdipper.live/desmos/accounts/\${${BLOCK_EXPLORER_PATH.ACCOUNT}}`,
-  txDetailExplorerURL: `https://bigdipper.live/desmos/transactions/\${${BLOCK_EXPLORER_PATH.TX}}`,
-  blockDetailExplorerURL: `https://bigdipper.live/desmos/blocks/\${${BLOCK_EXPLORER_PATH.BLOCK}}`,
   coinGeckoId: 'desmos',
   gasRate: {
     tiny: '0.001',

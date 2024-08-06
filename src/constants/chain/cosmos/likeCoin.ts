@@ -1,4 +1,3 @@
-import { BLOCK_EXPLORER_PATH } from '~/constants/common';
 import likeCoinChainImg from '~/images/chainImgs/likecoin.png';
 import likeCoinTokenImg from '~/images/symbols/like.png';
 import type { CosmosChain } from '~/types/chain';
@@ -24,9 +23,6 @@ export const LIKE_COIN: CosmosChain = {
   bech32Prefix: { address: 'like' },
   coinGeckoId: 'likecoin',
   explorerURL: `https://atomscan.com/likecoin`,
-  accountExplorerURL: `https://atomscan.com/likecoin/accounts/\${${BLOCK_EXPLORER_PATH.ACCOUNT}}`,
-  txDetailExplorerURL: `https://atomscan.com/likecoin/transactions/\${${BLOCK_EXPLORER_PATH.TX}}`,
-  blockDetailExplorerURL: `https://atomscan.com/likecoin/blocks/\${${BLOCK_EXPLORER_PATH.BLOCK}}`,
   gasRate: {
     tiny: '1',
     low: '1.1',

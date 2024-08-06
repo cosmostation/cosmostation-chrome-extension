@@ -21,7 +21,7 @@ export function useBlockExplorerURLSWR(network: EthereumNetwork, config?: SWRCon
     (address?: string) => {
       if (!address) return '';
 
-      const explorerAccountURL = chainlistExplorer?.account || network.accountExplorerURL;
+      const explorerAccountURL = chainlistExplorer?.account;
 
       if (explorerAccountURL) {
         return explorerAccountURL.replace(`\${${BLOCK_EXPLORER_PATH.ACCOUNT}}`, address);
@@ -30,37 +30,33 @@ export function useBlockExplorerURLSWR(network: EthereumNetwork, config?: SWRCon
       const explorerBaseURL = getExplorerURL();
       return explorerBaseURL ? `${explorerBaseURL}/address/${address}` : '';
     },
-    [chainlistExplorer?.account, getExplorerURL, network.accountExplorerURL],
+    [chainlistExplorer?.account, getExplorerURL],
   );
 
   const getExplorerTxDetailURL = useCallback(
     (txHash?: string) => {
       if (!txHash) return '';
 
-      const explorerTxDetailURL = chainlistExplorer?.tx || network.txDetailExplorerURL;
+      const explorerTxDetailURL = chainlistExplorer?.tx;
 
       if (explorerTxDetailURL) {
-        return explorerTxDetailURL?.replace(`\${${BLOCK_EXPLORER_PATH.TX}}`, txHash) || '';
+        return explorerTxDetailURL.replace(`\${${BLOCK_EXPLORER_PATH.TX}}`, txHash);
       }
 
       const explorerBaseURL = getExplorerURL();
       return explorerBaseURL ? `${explorerBaseURL}/tx/${txHash}` : '';
     },
-    [chainlistExplorer?.tx, getExplorerURL, network.txDetailExplorerURL],
+    [chainlistExplorer?.tx, getExplorerURL],
   );
 
   const getExplorerBlockDetailURL = useCallback(
     (blockHeight?: string) => {
       if (!blockHeight) return '';
 
-      if (network.blockDetailExplorerURL) {
-        return network.blockDetailExplorerURL.replace(`\${${BLOCK_EXPLORER_PATH.BLOCK}}`, blockHeight) || '';
-      }
-
       const explorerBaseURL = getExplorerURL();
       return explorerBaseURL ? `${explorerBaseURL}/block/${blockHeight}` : '';
     },
-    [getExplorerURL, network.blockDetailExplorerURL],
+    [getExplorerURL],
   );
 
   return { getExplorerURL, getExplorerAccountURL, getExplorerTxDetailURL, getExplorerBlockDetailURL };
