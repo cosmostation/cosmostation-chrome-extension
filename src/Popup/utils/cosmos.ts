@@ -11,7 +11,7 @@ import { COSMOS_CHAINS, COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_ESTIMATE_EXCE
 import { ARTELA_TESTNET } from '~/constants/chain/cosmos/artelaTestnet';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
 import { CRONOS_POS } from '~/constants/chain/cosmos/cronosPos';
-import { FETCH_AI } from '~/constants/chain/cosmos/fetchAi';
+import { ASI_ALLIANCE } from '~/constants/chain/cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { HUMANS_AI } from '~/constants/chain/cosmos/humansAi';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
@@ -199,7 +199,7 @@ export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
     [GRAVITY_BRIDGE.id]: 'gravity-bridge',
     [KI.id]: 'ki-chain',
     [STAFIHUB.id]: 'stafi',
-    [FETCH_AI.id]: 'fetchai',
+    [ASI_ALLIANCE.id]: 'fetchai',
     [MARS.id]: 'mars-protocol',
     [HUMANS_AI.id]: 'humans',
     [ONOMY.id]: 'onomy-protocol',
@@ -217,7 +217,7 @@ export function convertAssetNameToCosmos(assetName: string) {
     'gravity-bridge': GRAVITY_BRIDGE,
     'ki-chain': KI,
     stafi: STAFIHUB,
-    fetchai: FETCH_AI,
+    fetchai: ASI_ALLIANCE,
     'mars-protocol': MARS,
     humans: HUMANS_AI,
     'onomy-protocol': ONOMY,
