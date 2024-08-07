@@ -9,9 +9,9 @@ import { keccak256 } from '@ethersproject/keccak256';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV } from '~/constants/chain';
 import { ARTELA_TESTNET } from '~/constants/chain/cosmos/artelaTestnet';
+import { ASI_ALLIANCE } from '~/constants/chain/cosmos/asiAlliance';
 import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
 import { CRONOS_POS } from '~/constants/chain/cosmos/cronosPos';
-import { ASI_ALLIANCE } from '~/constants/chain/cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
 import { HUMANS_AI } from '~/constants/chain/cosmos/humansAi';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
