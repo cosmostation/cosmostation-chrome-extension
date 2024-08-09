@@ -5,7 +5,7 @@ import { BLOCK_EXPLORER_PATH } from '~/constants/common';
 import { removeTrailSlash } from '~/Popup/utils/fetch';
 import type { EthereumNetwork } from '~/types/chain';
 
-import { useParamsSWR } from '../useParamsSWR';
+import { useParamsSWR } from './useParamsSWR';
 
 export function useBlockExplorerURLSWR(network: EthereumNetwork, config?: SWRConfiguration) {
   const chainParams = useParamsSWR(network, config);

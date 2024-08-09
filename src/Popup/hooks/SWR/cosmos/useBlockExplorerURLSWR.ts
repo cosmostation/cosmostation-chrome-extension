@@ -5,7 +5,7 @@ import { BLOCK_EXPLORER_PATH } from '~/constants/common';
 import { removeTrailSlash } from '~/Popup/utils/fetch';
 import type { CosmosChain } from '~/types/chain';
 
-import { useParamsSWR } from '../useParamsSWR';
+import { useParamsSWR } from './useParamsSWR';
 
 export function useBlockExplorerURLSWR(chain: CosmosChain, config?: SWRConfiguration) {
   const chainParams = useParamsSWR(chain, config);
