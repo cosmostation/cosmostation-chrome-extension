@@ -9,6 +9,7 @@ import { AKASH } from './cosmos/akash';
 import { ALTHEA } from './cosmos/althea';
 import { ARCHWAY } from './cosmos/archway';
 import { ARTELA_TESTNET } from './cosmos/artelaTestnet';
+import { ASI_ALLIANCE } from './cosmos/asiAlliance';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { AXELAR } from './cosmos/axelar';
 import { BAND } from './cosmos/band';
@@ -26,7 +27,6 @@ import { DESMOS } from './cosmos/desmos';
 import { DYDX } from './cosmos/dydx';
 import { DYMENSION } from './cosmos/dymension';
 import { EVMOS } from './cosmos/evmos';
-import { FETCH_AI } from './cosmos/fetchAi';
 import { FINSCHIA } from './cosmos/finschia';
 import { GOVGEN } from './cosmos/govgen';
 import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
@@ -123,6 +123,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   ALTHEA,
   ARCHWAY,
   ARTELA_TESTNET,
+  ASI_ALLIANCE,
   ASSET_MANTLE,
   AXELAR,
   BAND,
@@ -139,7 +140,6 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   DYDX,
   DYMENSION,
   EVMOS,
-  FETCH_AI,
   FINSCHIA,
   GOVGEN,
   GRAVITY_BRIDGE,
