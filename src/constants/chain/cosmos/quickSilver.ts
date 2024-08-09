@@ -1,4 +1,3 @@
-import { MINTSCAN_URL } from '~/constants/common';
 import quickSilverChainImg from '~/images/chainImgs/quicksilver.png';
 import quickSilverTokenImg from '~/images/symbols/qck.png';
 import type { CosmosChain } from '~/types/chain';
@@ -23,7 +22,7 @@ export const QUICK_SILVER: CosmosChain = {
   },
   bech32Prefix: { address: 'quick' },
   coinGeckoId: 'quicksilver',
-  explorerURL: `${MINTSCAN_URL}/quicksilver`,
+  explorerURL: `https://quicksilver.explorers.guru`,
   gasRate: {
     tiny: '0.0001',
     low: '0.00015',

@@ -12,6 +12,7 @@ import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import EmptyAsset from '~/Popup/components/EmptyAsset';
 import { useAssetsSWR } from '~/Popup/hooks/SWR/cosmos/useAssetsSWR';
+import { useBlockExplorerURLSWR } from '~/Popup/hooks/SWR/cosmos/useBlockExplorerURLSWR';
 import { useTxInfoSWR } from '~/Popup/hooks/SWR/cosmos/useTxInfoSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
@@ -67,6 +68,8 @@ export default function Cosmos({ chain, txHash }: CosmosProps) {
   const { t } = useTranslation();
   const { navigate } = useNavigate();
 
+  const { getExplorerTxDetailURL, getExplorerBlockDetailURL } = useBlockExplorerURLSWR(chain);
+
   const { currentAdditionalChains } = useCurrentAdditionalChains();
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
@@ -77,12 +80,11 @@ export default function Cosmos({ chain, txHash }: CosmosProps) {
 
   const txInfo = useTxInfoSWR(chain, txHash);
 
-  const explorerURL = useMemo(() => chain.explorerURL, [chain.explorerURL]);
+  const txDetailExplorerURL = useMemo(() => getExplorerTxDetailURL(txHash), [getExplorerTxDetailURL, txHash]);
 
-  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/tx/${txHash}` : ''), [explorerURL, txHash]);
   const blockDetailExplorerURL = useMemo(
-    () => (explorerURL && txInfo.data?.tx_response.height ? `${explorerURL}/block/${txInfo.data.tx_response.height}` : ''),
-    [explorerURL, txInfo.data?.tx_response.height],
+    () => getExplorerBlockDetailURL(txInfo.data?.tx_response.height),
+    [getExplorerBlockDetailURL, txInfo.data?.tx_response.height],
   );
 
   const formattedTimestamp = useMemo(() => {

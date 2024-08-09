@@ -1,4 +1,3 @@
-import { MINTSCAN_URL } from '~/constants/common';
 import desmosChainImg from '~/images/chainImgs/desmos.png';
 import desmosTokenImg from '~/images/symbols/dsm.png';
 import type { CosmosChain } from '~/types/chain';
@@ -22,7 +21,7 @@ export const DESMOS: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'desmos' },
-  explorerURL: `${MINTSCAN_URL}/desmos`,
+  explorerURL: `https://bigdipper.live/desmos`,
   coinGeckoId: 'desmos',
   gasRate: {
     tiny: '0.001',

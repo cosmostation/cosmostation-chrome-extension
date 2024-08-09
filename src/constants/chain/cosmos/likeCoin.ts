@@ -1,4 +1,3 @@
-import { MINTSCAN_URL } from '~/constants/common';
 import likeCoinChainImg from '~/images/chainImgs/likecoin.png';
 import likeCoinTokenImg from '~/images/symbols/like.png';
 import type { CosmosChain } from '~/types/chain';
@@ -23,7 +22,7 @@ export const LIKE_COIN: CosmosChain = {
   },
   bech32Prefix: { address: 'like' },
   coinGeckoId: 'likecoin',
-  explorerURL: `${MINTSCAN_URL}/likecoin`,
+  explorerURL: `https://atomscan.com/likecoin`,
   gasRate: {
     tiny: '1',
     low: '1.1',

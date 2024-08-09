@@ -17,6 +17,7 @@ import Tooltip from '~/Popup/components/common/Tooltip';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useAccountSWR } from '~/Popup/hooks/SWR/cosmos/useAccountSWR';
 import { useAmountSWR } from '~/Popup/hooks/SWR/cosmos/useAmountSWR';
+import { useBlockExplorerURLSWR } from '~/Popup/hooks/SWR/cosmos/useBlockExplorerURLSWR';
 import { useCommissionSWR } from '~/Popup/hooks/SWR/cosmos/useCommissionSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
@@ -96,6 +97,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const { extensionStorage } = useExtensionStorage();
   const reward = useRewardSWR(chain);
 
+  const { getExplorerAccountURL } = useBlockExplorerURLSWR(chain);
+
   const account = useAccountSWR(chain);
   const accounts = useAccounts(true);
   const { enQueue } = useCurrentQueue();
@@ -115,7 +118,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const { navigate } = useNavigate();
 
-  const { decimals, coinGeckoId, explorerURL } = chain;
+  const { decimals, coinGeckoId } = chain;
 
   const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [extensionStorage.currency, coinGeckoId, data]);
 
@@ -193,6 +196,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
   const rewardSimulate = useSimulateSWR({ chain, txBytes: rewardProtoTx?.tx_bytes });
 
   const params = useParamsSWR(chain);
+
+  const explorerAccountURL = useMemo(() => getExplorerAccountURL(currentAddress), [currentAddress, getExplorerAccountURL]);
 
   const validatorAddressPrefix = useMemo(
     () => params.data?.params?.chainlist_params?.bechValidatorPrefix || '',
@@ -402,8 +407,8 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
           <AddressButton onClick={handleOnClickCopy}>{currentAddress}</AddressButton>
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
-          {explorerURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${currentAddress}`)}>
+          {explorerAccountURL && (
+            <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
@@ -665,7 +670,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   const { currentPassword } = useCurrentPassword();
   const { extensionStorage } = useExtensionStorage();
 
-  const { explorerURL } = chain;
+  const { getExplorerAccountURL } = useBlockExplorerURLSWR(chain);
 
   const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
 
@@ -686,6 +691,8 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   }, [chain, currentAccount, currentPassword, extensionStorage.address]);
 
   const params = useParamsSWR(chain);
+
+  const explorerAccountURL = useMemo(() => getExplorerAccountURL(address), [address, getExplorerAccountURL]);
 
   const validatorAddressPrefix = useMemo(
     () => params.data?.params?.chainlist_params?.bechValidatorPrefix || '',
@@ -713,8 +720,8 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
           <AddressButton onClick={handleOnClickCopy}>{address}</AddressButton>
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
-          {explorerURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${address}`)}>
+          {explorerAccountURL && (
+            <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
@@ -854,7 +861,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
   const { extensionStorage } = useExtensionStorage();
 
-  const { explorerURL } = chain;
+  const { getExplorerAccountURL } = useBlockExplorerURLSWR(chain);
 
   const address = useMemo(() => {
     const key = getAddressKey(currentAccount, chain);
@@ -869,6 +876,8 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
 
     return getAddress(chain, keyPair?.publicKey);
   }, [chain, currentAccount, currentPassword, extensionStorage.address]);
+
+  const explorerAccountURL = useMemo(() => getExplorerAccountURL(address), [address, getExplorerAccountURL]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -885,8 +894,8 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
           <AddressButton onClick={handleOnClickCopy}>{address}</AddressButton>
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
-          {explorerURL && (
-            <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${address}`)}>
+          {explorerAccountURL && (
+            <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}

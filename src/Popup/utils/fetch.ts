@@ -58,3 +58,7 @@ export function buildRequestUrl(baseUrl: string, path?: string, queryParams?: Re
 
   return requestUrl;
 }
+
+export function removeTrailSlash(url?: string) {
+  return url?.replace(/\/$/, '');
+}
