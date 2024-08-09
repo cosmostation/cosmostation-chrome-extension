@@ -22,7 +22,6 @@ import { useAssetsSWR as useCosmosAssetsSWR } from '~/Popup/hooks/SWR/cosmos/use
 import { useBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useBalanceSWR';
 import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasRateSWR } from '~/Popup/hooks/SWR/cosmos/useGasRateSWR';
-import { useSupportChainsSWR } from '~/Popup/hooks/SWR/cosmos/useSupportChainsSWR';
 import { useBalanceSWR as useNativeBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useTokenBalanceSWR';
 import { useTokensSWR } from '~/Popup/hooks/SWR/ethereum/useTokensSWR';
@@ -117,7 +116,6 @@ export default function Entry() {
   const supportedSwapChains = useSupportSwapChainsSWR({ suspense: true });
 
   const skipSupportedChains = useSkipSupportChainsSWR({ suspense: true });
-  const supportedCosmosChain = useSupportChainsSWR({ suspense: true });
 
   const { squidChains, filterSquidTokens } = useSquidAssetsSWR();
 
@@ -173,19 +171,14 @@ export default function Entry() {
 
   const squidCosmosChains = useMemo(
     () =>
-      COSMOS_CHAINS.filter((item) =>
-        squidChains?.find(
-          (squidChain) =>
-            squidChain.chainType === 'cosmos' &&
-            item.chainId === squidChain.chainId &&
-            supportedCosmosChain.data?.chains.find((cosmosChain) => cosmosChain.chain_id === squidChain.chainId),
-        ),
-      ).map((item) => ({
-        ...item,
-        baseChainUUID: item.id,
-        networkName: item.chainName,
-      })),
-    [squidChains, supportedCosmosChain.data?.chains],
+      COSMOS_CHAINS.filter((item) => squidChains?.find((squidChain) => squidChain.chainType === 'cosmos' && item.chainId === squidChain.chainId)).map(
+        (item) => ({
+          ...item,
+          baseChainUUID: item.id,
+          networkName: item.chainName,
+        }),
+      ),
+    [squidChains],
   );
 
   const skipSwapChains = useMemo(
