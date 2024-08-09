@@ -1,3 +1,7 @@
+import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+import Empty from '~/Popup/components/common/Empty';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
@@ -17,7 +21,11 @@ export default function Transaction() {
         <LedgerPublicKeyRequest>
           <AccessRequest>
             <Layout>
-              <Entry queue={currentQueue} />
+              <ErrorBoundary fallback={<Empty />}>
+                <Suspense fallback={null}>
+                  <Entry queue={currentQueue} />
+                </Suspense>
+              </ErrorBoundary>
             </Layout>
           </AccessRequest>
         </LedgerPublicKeyRequest>
