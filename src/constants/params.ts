@@ -1,7 +1,7 @@
 import { ARTELA_TESTNET } from './chain/cosmos/artelaTestnet';
+import { ASI_ALLIANCE } from './chain/cosmos/asiAlliance';
 import { ASSET_MANTLE } from './chain/cosmos/assetMantle';
 import { CRONOS_POS } from './chain/cosmos/cronosPos';
-import { FETCH_AI } from './chain/cosmos/fetchAi';
 import { GRAVITY_BRIDGE } from './chain/cosmos/gravityBridge';
 import { HUMANS_AI } from './chain/cosmos/humansAi';
 import { KI } from './chain/cosmos/ki';
@@ -36,7 +36,7 @@ export const CHAIN_ID_TO_ASSET_NAME_MAPS = {
   [GRAVITY_BRIDGE.chainId]: 'gravity-bridge',
   [KI.chainId]: 'ki-chain',
   [STAFIHUB.chainId]: 'stafi',
-  [FETCH_AI.chainId]: 'fetchai',
+  [ASI_ALLIANCE.chainId]: 'fetchai',
   [MARS.chainId]: 'mars-protocol',
   [HUMANS_AI.chainId]: 'humans',
   [ONOMY.chainId]: 'onomy-protocol',
