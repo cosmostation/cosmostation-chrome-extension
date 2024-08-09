@@ -37,6 +37,7 @@ import { useSquidAssetsSWR } from '~/Popup/hooks/SWR/integratedSwap/squid/SWR/us
 import { useSquidCosmosSwap } from '~/Popup/hooks/SWR/integratedSwap/squid/useSquidCosmosSwap';
 import { useSquidSwap } from '~/Popup/hooks/SWR/integratedSwap/squid/useSquidSwap';
 import { useSupportSwapChainsSWR } from '~/Popup/hooks/SWR/integratedSwap/useSupportSwapChainsSWR';
+import { useChainIdToAssetNameMapsSWR } from '~/Popup/hooks/SWR/useChainIdToAssetNameMapsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
@@ -119,6 +120,8 @@ export default function Entry() {
   const supportedCosmosChain = useSupportChainsSWR({ suspense: true });
 
   const { squidChains, filterSquidTokens } = useSquidAssetsSWR();
+
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
 
   const { enQueue } = useCurrentQueue();
 
@@ -410,7 +413,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase() || '',
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -475,7 +478,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase() || '',
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -515,22 +518,23 @@ export default function Entry() {
 
     return [];
   }, [
-    currentSwapAPI,
-    supportedSkipFromTokens.data,
-    oneInchTokens.data,
-    currentFromChain.line,
+    chainIdToAssetNameMaps,
+    coinGeckoPrice.data,
+    cosmosFromChainBalance.data?.balance,
+    cosmosFromTokenAssets.data,
+    currentEthereumNetwork.coinGeckoId,
     currentFromChain.chainId,
     currentFromChain?.displayDenom,
+    currentFromChain.line,
     currentFromChain.tokenImageURL,
-    cosmosFromTokenAssets.data,
-    coinGeckoPrice.data,
-    extensionStorage.currency,
-    cosmosFromChainBalance.data?.balance,
     currentFromEVMNativeBalance.data?.result,
-    currentEthereumNetwork.coinGeckoId,
     currentFromEthereumTokens,
-    supportedOneInchTokens,
+    currentSwapAPI,
+    extensionStorage.currency,
     filterSquidTokens,
+    oneInchTokens.data,
+    supportedOneInchTokens,
+    supportedSkipFromTokens.data,
   ]);
 
   const currentFromTokenBalance = useMemo(() => {
@@ -583,7 +587,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase() || '',
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -674,7 +678,7 @@ export default function Entry() {
             balance,
             price,
             imageURL: item.image,
-            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain)?.chainName || item.prevChain?.toUpperCase() || '',
+            name: convertAssetNameToCosmos(item.prevChain || item.origin_chain, chainIdToAssetNameMaps)?.chainName || item.prevChain?.toUpperCase() || '',
             displayDenom: item.symbol,
             symbol: undefined,
           };
@@ -688,22 +692,23 @@ export default function Entry() {
 
     return [];
   }, [
+    chainIdToAssetNameMaps,
+    coinGeckoPrice.data,
+    cosmosToChainBalance.data?.balance,
+    cosmosToTokenAssets.data,
+    currentEthereumNetwork.coinGeckoId,
     currentSwapAPI,
-    oneInchTokens.data,
-    currentToChain?.line,
     currentToChain?.chainId,
     currentToChain?.displayDenom,
+    currentToChain?.line,
     currentToChain?.tokenImageURL,
-    cosmosToTokenAssets.data,
-    supportedSkipToTokens.data?.chain_to_assets_map,
-    coinGeckoPrice.data,
-    extensionStorage.currency,
-    cosmosToChainBalance.data?.balance,
     currentToEVMNativeBalance.data?.result,
-    currentEthereumNetwork.coinGeckoId,
     currentToEthereumTokens,
-    supportedOneInchTokens,
+    extensionStorage.currency,
     filterSquidTokens,
+    oneInchTokens.data,
+    supportedOneInchTokens,
+    supportedSkipToTokens.data?.chain_to_assets_map,
   ]);
 
   const currentToTokenBalance = useMemo(() => {

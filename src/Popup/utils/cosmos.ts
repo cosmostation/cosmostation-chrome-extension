@@ -9,23 +9,13 @@ import { keccak256 } from '@ethersproject/keccak256';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_ESTIMATE_AV, COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV } from '~/constants/chain';
 import { ARTELA_TESTNET } from '~/constants/chain/cosmos/artelaTestnet';
-import { ASI_ALLIANCE } from '~/constants/chain/cosmos/asiAlliance';
-import { ASSET_MANTLE } from '~/constants/chain/cosmos/assetMantle';
-import { CRONOS_POS } from '~/constants/chain/cosmos/cronosPos';
 import { GRAVITY_BRIDGE } from '~/constants/chain/cosmos/gravityBridge';
-import { HUMANS_AI } from '~/constants/chain/cosmos/humansAi';
 import { INJECTIVE } from '~/constants/chain/cosmos/injective';
 import { IXO } from '~/constants/chain/cosmos/ixo';
 import { KAVA } from '~/constants/chain/cosmos/kava';
-import { KI } from '~/constants/chain/cosmos/ki';
-import { MARS } from '~/constants/chain/cosmos/mars';
-import { ONOMY } from '~/constants/chain/cosmos/onomy';
 import { PROVENANCE } from '~/constants/chain/cosmos/provenance';
 import { SEI } from '~/constants/chain/cosmos/sei';
-import { STAFIHUB } from '~/constants/chain/cosmos/stafihub';
 import { TERITORI } from '~/constants/chain/cosmos/teritori';
-import { UX } from '~/constants/chain/cosmos/ux';
-import { ZETA } from '~/constants/chain/cosmos/zeta';
 import { PUBLIC_KEY_TYPE } from '~/constants/cosmos';
 import { cosmos } from '~/proto/cosmos-sdk-v0.47.4.js';
 import type { CosmosChain } from '~/types/chain';
@@ -41,6 +31,7 @@ import type {
   MsgTransfer,
   SignAminoDoc,
 } from '~/types/cosmos/amino';
+import type { ChainIdToAssetNameMapsResponse as ChainIdToAssetNameMaps } from '~/types/cosmos/asset';
 import type { SignDirectDoc } from '~/types/cosmos/proto';
 
 import { toBase64 } from './string';
@@ -192,41 +183,14 @@ export function isAminoCustom(msg: Msg): msg is Msg<MsgCustom> {
   return true;
 }
 
-export function convertCosmosToAssetName(cosmosChain: CosmosChain) {
-  const nameMap = {
-    [CRONOS_POS.id]: 'crypto-org',
-    [ASSET_MANTLE.id]: 'asset-mantle',
-    [GRAVITY_BRIDGE.id]: 'gravity-bridge',
-    [KI.id]: 'ki-chain',
-    [STAFIHUB.id]: 'stafi',
-    [ASI_ALLIANCE.id]: 'fetchai',
-    [MARS.id]: 'mars-protocol',
-    [HUMANS_AI.id]: 'humans',
-    [ONOMY.id]: 'onomy-protocol',
-    [UX.id]: 'umee',
-    [ARTELA_TESTNET.id]: 'artela-testnet',
-    [ZETA.id]: 'zeta',
-  };
-  return nameMap[cosmosChain.id] || cosmosChain.chainName.toLowerCase();
+export function convertCosmosToAssetName(cosmosChain: CosmosChain, chainIdToApiNameMaps: ChainIdToAssetNameMaps) {
+  return chainIdToApiNameMaps[cosmosChain.chainId] || cosmosChain.chainName.toLowerCase();
 }
 
-export function convertAssetNameToCosmos(assetName: string) {
-  const nameMap = {
-    'crypto-org': CRONOS_POS,
-    'asset-mantle': ASSET_MANTLE,
-    'gravity-bridge': GRAVITY_BRIDGE,
-    'ki-chain': KI,
-    stafi: STAFIHUB,
-    fetchai: ASI_ALLIANCE,
-    'mars-protocol': MARS,
-    humans: HUMANS_AI,
-    'onomy-protocol': ONOMY,
-    umee: UX,
-    'artela-testnet': ARTELA_TESTNET,
-    zeta: ZETA,
-  } as Record<string, CosmosChain | undefined>;
+export function convertAssetNameToCosmos(assetName: string, chainIdToApiNameMaps: ChainIdToAssetNameMaps) {
+  const assetNameToChainIdMaps = Object.fromEntries(Object.entries(chainIdToApiNameMaps).map(([key, value]) => [value, key]));
 
-  return nameMap[assetName] || COSMOS_CHAINS.find((item) => item.chainName.toLowerCase() === assetName);
+  return COSMOS_CHAINS.find((item) => item.chainId === assetNameToChainIdMaps[assetName] || item.chainName.toLowerCase() === assetName);
 }
 
 export function findCosmosChainByAddress(address?: string) {
