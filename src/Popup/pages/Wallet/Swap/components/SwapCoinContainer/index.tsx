@@ -80,7 +80,7 @@ export default function SwapCoinContainer({ isChainAvailable = true, ...remainde
               isActive={isOpenedChainList}
               leftProps={
                 <ContentLeftContainer>
-                  {remainder.currentSelectedChain?.imageURL && remainder.currentSelectedChain?.networkName ? (
+                  {remainder.currentSelectedChain ? (
                     <>
                       <ContentLeftChainImageContainer>
                         <ContentLeftAbsoluteChainImageContainer>
@@ -107,7 +107,7 @@ export default function SwapCoinContainer({ isChainAvailable = true, ...remainde
               isActive={isOpenedCoinList}
               leftProps={
                 <ContentLeftContainer>
-                  {remainder.currentSelectedCoin?.imageURL && remainder.currentSelectedCoin?.displayDenom ? (
+                  {remainder.currentSelectedCoin ? (
                     <>
                       <ContentLeftImageContainer>
                         <ContentLeftAbsoluteImageContainer>
