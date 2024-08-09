@@ -2048,7 +2048,6 @@ export default function Entry() {
               <div>
                 <StyledButton
                   type="button"
-                  data-is-skip={currentSwapAPI === 'skip'}
                   disabled={isSwapButtonDisabled}
                   onClick={async () => {
                     if (isNoticeButtonEnabled) {
