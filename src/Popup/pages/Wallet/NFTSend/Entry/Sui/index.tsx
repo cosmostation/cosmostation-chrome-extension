@@ -23,6 +23,7 @@ import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetw
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { suiAddressRegex } from '~/Popup/utils/regex';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { SuiChain } from '~/types/chain';
@@ -292,6 +293,10 @@ export default function Sui({ chain }: SuiProps) {
                         ],
                       },
                     });
+
+                    if (currentAccount.type === 'LEDGER') {
+                      await debouncedOpenTab();
+                    }
                   }
                 }}
               >
