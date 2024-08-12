@@ -80,14 +80,7 @@ import type {
   WalletSwitchEthereumChainResponse,
   WalletWatchAsset,
 } from '~/types/message/ethereum';
-import type {
-  SuiConnect,
-  SuiConnectResponse,
-  // SuiExecuteMoveCall,
-  // SuiExecuteSerializedMoveCall,
-  SuiGetAccountResponse,
-  SuiGetChainResponse,
-} from '~/types/message/sui';
+import type { SuiConnect, SuiConnectResponse, SuiGetAccountResponse, SuiGetChainResponse, SuiSignMessage } from '~/types/message/sui';
 
 import {
   aptosSignMessageSchema,
@@ -110,8 +103,7 @@ import {
   ethSignTypedDataParamsSchema,
   personalSignParamsSchema,
   suiConnectSchema,
-  // suiExecuteMoveCallSchema,
-  // suiExecuteSerializedMoveCallSchema,
+  suiSignMessageSchema,
   walletAddEthereumChainParamsSchema,
   walletSwitchEthereumChainParamsSchema,
   WalletWatchAssetParamsSchema,
@@ -1797,67 +1789,58 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           }
         }
 
-        // if (method === 'sui_executeMoveCall') {
-        //   const { params } = message;
+        if (method === 'sui_signMessage' || method === 'sui_signPersonalMessage') {
+          const { params } = message;
 
-        //   try {
-        //     const schema = suiExecuteMoveCallSchema();
+          try {
+            if (
+              currentAccountAllowedOrigins.includes(origin) &&
+              currentAccountSuiPermissions.includes('viewAccount') &&
+              currentAccountSuiPermissions.includes('suggestTransactions') &&
+              currentPassword
+            ) {
+              const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+              const address = getAddress(chain, keyPair?.publicKey);
 
-        //     const validatedParams = (await schema.validateAsync(params)) as SuiExecuteMoveCall['params'];
+              if (!isEqualsIgnoringCase(address, params.accountAddress)) {
+                throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', id);
+              }
 
-        //     if (
-        //       currentAccountAllowedOrigins.includes(origin) &&
-        //       currentAccountSuiPermissions.includes('viewAccount') &&
-        //       currentAccountSuiPermissions.includes('suggestTransactions')
-        //     ) {
-        //       localQueues.push({
-        //         ...request,
-        //         message: { ...request.message, method: 'sui_signAndExecuteTransactionBlock', params: [{ kind: 'moveCall', data: validatedParams[0] }] },
-        //       });
-        //       void setQueues();
-        //     } else {
-        //       throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
-        //     }
-        //   } catch (e) {
-        //     if (e instanceof SuiRPCError) {
-        //       throw e;
-        //     }
+              const schema = suiSignMessageSchema();
 
-        //     throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
-        //   }
-        // }
+              const validatedParams = (await schema.validateAsync(params)) as SuiSignMessage['params'];
 
-        // if (method === 'sui_executeSerializedMoveCall') {
-        //   const { params } = message;
+              localQueues.push({
+                ...request,
+                message: { ...request.message, method, params: validatedParams },
+              });
+              void setQueues();
+            } else {
+              throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+            }
+          } catch (e) {
+            if (e instanceof SuiRPCError) {
+              throw e;
+            }
 
-        //   try {
-        //     const schema = suiExecuteSerializedMoveCallSchema();
+            throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
+          }
+        }
 
-        //     const validatedParams = (await schema.validateAsync(params)) as SuiExecuteSerializedMoveCall['params'];
+        if (method === 'sui_signTransactionBlock' || method === 'sui_signTransaction') {
+          if (
+            currentAccountAllowedOrigins.includes(origin) &&
+            currentAccountSuiPermissions.includes('viewAccount') &&
+            currentAccountSuiPermissions.includes('suggestTransactions')
+          ) {
+            localQueues.push(request);
+            void setQueues();
+          } else {
+            throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
+          }
+        }
 
-        //     if (
-        //       currentAccountAllowedOrigins.includes(origin) &&
-        //       currentAccountSuiPermissions.includes('viewAccount') &&
-        //       currentAccountSuiPermissions.includes('suggestTransactions')
-        //     ) {
-        //       localQueues.push({
-        //         ...request,
-        //         message: { ...request.message, method: 'sui_signAndExecuteTransactionBlock', params: [validatedParams[0]] },
-        //       });
-        //       void setQueues();
-        //     } else {
-        //       throw new SuiRPCError(RPC_ERROR.UNAUTHORIZED, SUI_RPC_ERROR_MESSAGE[RPC_ERROR.UNAUTHORIZED], id);
-        //     }
-        //   } catch (e) {
-        //     if (e instanceof SuiRPCError) {
-        //       throw e;
-        //     }
-
-        //     throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, `${e as string}`, id);
-        //   }
-        // }
-
-        if (method === 'sui_signAndExecuteTransactionBlock') {
+        if (method === 'sui_signAndExecuteTransactionBlock' || method === 'sui_signAndExecuteTransaction') {
           if (
             currentAccountAllowedOrigins.includes(origin) &&
             currentAccountSuiPermissions.includes('viewAccount') &&

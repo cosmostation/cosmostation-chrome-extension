@@ -34,7 +34,10 @@ export function useDelegationSWR({ address, network }: UseDelegationSWR, config?
           (allValidatorRewardsSum, item) =>
             plus(
               allValidatorRewardsSum,
-              item.stakes.reduce((eachValidatorRewardSum, stakeItem) => plus(eachValidatorRewardSum, stakeItem.estimatedReward || '0'), '0'),
+              item.stakes.reduce(
+                (eachValidatorRewardSum, stakeItem) => plus(eachValidatorRewardSum, 'estimatedReward' in stakeItem ? stakeItem.estimatedReward : '0'),
+                '0',
+              ),
             ),
           '0',
         ) || '0',

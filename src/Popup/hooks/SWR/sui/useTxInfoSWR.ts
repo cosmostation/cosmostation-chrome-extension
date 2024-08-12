@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
-import type { SuiTransactionBlockResponseOptions } from '@mysten/sui.js';
+import type { SuiTransactionBlockResponseOptions } from '@mysten/sui/client';
 
 import { TRASACTION_RECEIPT_ERROR_MESSAGE } from '~/constants/error';
 import { post } from '~/Popup/utils/axios';
