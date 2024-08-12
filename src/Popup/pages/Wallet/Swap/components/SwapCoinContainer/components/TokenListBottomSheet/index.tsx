@@ -197,8 +197,8 @@ export default function TokenListBottomSheet({
           <ContentContainer>
             <EmptyAsset
               Icon={extensionStorage.theme === THEME_TYPE.LIGHT ? NoResultLightIcon : NoResultDarkIcon}
-              headerText={t('pages.Wallet.Swap.components.SwapCoinContainer.components.TokenListBottomSheet.index.noResult')}
-              subHeaderText={t('pages.Wallet.Swap.components.SwapCoinContainer.components.TokenListBottomSheet.index.noResultSub')}
+              headerText={t('pages.Wallet.Swap.components.SwapCoinContainer.components.TokenListBottomSheet.index.noResultHeader')}
+              subHeaderText={t('pages.Wallet.Swap.components.SwapCoinContainer.components.TokenListBottomSheet.index.noResultSubHeader')}
             />
           </ContentContainer>
         )}

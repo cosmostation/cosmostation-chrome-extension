@@ -1580,13 +1580,15 @@
                 },
                 "index": {
                   "chainBottomListTitle": "Select a chain",
+                  "noResultHeader": "No result",
+                  "noResultSubHeader": "The searched chain is not currently supported.",
                   "searchChainPlaceholder": "Search chains"
                 }
               },
               "TokenListBottomSheet": {
                 "index": {
-                  "noResult": "No result",
-                  "noResultSub": "The searched token is not currently supported.",
+                  "noResultHeader": "No result",
+                  "noResultSubHeader": "The searched token is not currently supported.",
                   "searchTokenPlaceholder": "Search name or paste address",
                   "tokenBottomListTitle": "Select a token"
                 }

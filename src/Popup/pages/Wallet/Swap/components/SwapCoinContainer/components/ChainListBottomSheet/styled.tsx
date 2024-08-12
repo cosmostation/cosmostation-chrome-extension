@@ -6,7 +6,9 @@ import Input from '~/Popup/components/common/Input';
 import Search20Icon from '~/images/icons/Search20.svg';
 
 export const Container = styled('div')({
-  padding: '1.6rem',
+  height: '100%',
+
+  padding: '1.6rem 1.6rem 0',
   overflow: 'hidden',
 
   display: 'flex',
@@ -49,7 +51,7 @@ export const AssetList = styled('div')({
 
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
-    maxHeight: '44rem',
+    height: '54.8rem',
 
     width: '36rem',
 
@@ -71,3 +73,12 @@ export const StyledButton = styled('button')(({ theme }) => ({
     fill: theme.colors.base05,
   },
 }));
+
+export const ContentContainer = styled('div')({
+  width: '100%',
+  height: '100%',
+
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+});

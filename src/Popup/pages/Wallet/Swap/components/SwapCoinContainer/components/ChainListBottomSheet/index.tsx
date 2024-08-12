@@ -1,13 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { InputAdornment, Typography } from '@mui/material';
 
+import { THEME_TYPE } from '~/constants/theme';
+import EmptyAsset from '~/Popup/components/EmptyAsset';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { IntegratedSwapChain } from '~/types/swap/asset';
 
 import ChainItem from './components/ChainItem';
-import { AssetList, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
+import { AssetList, Container, ContentContainer, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
 
 import Close24Icon from '~/images/icons/Close24.svg';
+import NoResultDarkIcon from '~/images/icons/NoResultDark.svg';
+import NoResultLightIcon from '~/images/icons/NoResultLight.svg';
 
 type ChainListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   availableChainList?: IntegratedSwapChain[];
@@ -16,6 +21,7 @@ type ChainListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSh
 };
 
 export default function ChainListBottomSheet({ currentSelectedChain, availableChainList, onClickChain, onClose, ...remainder }: ChainListBottomSheetProps) {
+  const { extensionStorage } = useExtensionStorage();
   const { t } = useTranslation();
 
   const ref = useRef<HTMLButtonElement>(null);
@@ -29,7 +35,7 @@ export default function ChainListBottomSheet({ currentSelectedChain, availableCh
   const [search, setSearch] = useState('');
 
   const filteredChainList = useMemo(
-    () => (search ? availableChainList?.filter((item) => item.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1) : availableChainList),
+    () => (search ? availableChainList?.filter((item) => item.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1) || [] : availableChainList || []),
     [availableChainList, search],
   );
 
@@ -69,25 +75,35 @@ export default function ChainListBottomSheet({ currentSelectedChain, availableCh
             setSearch(event.currentTarget.value);
           }}
         />
-        <AssetList>
-          {filteredChainList?.map((item) => {
-            const isActive = item.id === currentSelectedChain?.id;
-            return (
-              <ChainItem
-                isActive={isActive}
-                key={item.id}
-                ref={isActive ? ref : undefined}
-                chainInfo={item}
-                onClickChain={(clickedChain) => {
-                  onClickChain(clickedChain);
-                  setSearch('');
+        {filteredChainList?.length > 0 ? (
+          <AssetList>
+            {filteredChainList?.map((item) => {
+              const isActive = item.id === currentSelectedChain?.id;
+              return (
+                <ChainItem
+                  isActive={isActive}
+                  key={item.id}
+                  ref={isActive ? ref : undefined}
+                  chainInfo={item}
+                  onClickChain={(clickedChain) => {
+                    onClickChain(clickedChain);
+                    setSearch('');
 
-                  onClose?.({}, 'escapeKeyDown');
-                }}
-              />
-            );
-          })}
-        </AssetList>
+                    onClose?.({}, 'escapeKeyDown');
+                  }}
+                />
+              );
+            })}
+          </AssetList>
+        ) : (
+          <ContentContainer>
+            <EmptyAsset
+              Icon={extensionStorage.theme === THEME_TYPE.LIGHT ? NoResultLightIcon : NoResultDarkIcon}
+              headerText={t('pages.Wallet.Swap.components.SwapCoinContainer.components.ChainListBottomSheet.index.noResultHeader')}
+              subHeaderText={t('pages.Wallet.Swap.components.SwapCoinContainer.components.ChainListBottomSheet.index.noResultSubHeader')}
+            />
+          </ContentContainer>
+        )}
       </Container>
     </StyledBottomSheet>
   );
