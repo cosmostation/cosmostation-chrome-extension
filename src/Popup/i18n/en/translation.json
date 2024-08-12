@@ -1585,7 +1585,9 @@
               },
               "TokenListBottomSheet": {
                 "index": {
-                  "searchTokenPlaceholder": "Search tokens",
+                  "noResult": "No result",
+                  "noResultSub": "The searched token is not currently supported.",
+                  "searchTokenPlaceholder": "Search name or paste address",
                   "tokenBottomListTitle": "Select a token"
                 }
               }

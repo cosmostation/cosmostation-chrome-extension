@@ -1585,7 +1585,9 @@
               },
               "TokenListBottomSheet": {
                 "index": {
-                  "searchTokenPlaceholder": "토큰 검색",
+                  "noResult": "결과가 없습니다",
+                  "noResultSub": "검색한 토큰은 현재 지원되지 않습니다.",
+                  "searchTokenPlaceholder": "토큰 이름 또는 컨트랙트 주소를 입력하세요",
                   "tokenBottomListTitle": "토큰을 선택하세요"
                 }
               }
