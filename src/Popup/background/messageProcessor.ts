@@ -1793,22 +1793,23 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
           const { params } = message;
 
           try {
-            const keyPair = getKeyPair(currentAccount, chain, currentPassword);
-            const address = getAddress(chain, keyPair?.publicKey);
-
-            if (!isEqualsIgnoringCase(address, params.accountAddress)) {
-              throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', id);
-            }
-
-            const schema = suiSignMessageSchema();
-
-            const validatedParams = (await schema.validateAsync(params)) as SuiSignMessage['params'];
-
             if (
               currentAccountAllowedOrigins.includes(origin) &&
               currentAccountSuiPermissions.includes('viewAccount') &&
-              currentAccountSuiPermissions.includes('suggestTransactions')
+              currentAccountSuiPermissions.includes('suggestTransactions') &&
+              currentPassword
             ) {
+              const keyPair = getKeyPair(currentAccount, chain, currentPassword);
+              const address = getAddress(chain, keyPair?.publicKey);
+
+              if (!isEqualsIgnoringCase(address, params.accountAddress)) {
+                throw new SuiRPCError(RPC_ERROR.INVALID_PARAMS, 'Invalid address', id);
+              }
+
+              const schema = suiSignMessageSchema();
+
+              const validatedParams = (await schema.validateAsync(params)) as SuiSignMessage['params'];
+
               localQueues.push({
                 ...request,
                 message: { ...request.message, method, params: validatedParams },
