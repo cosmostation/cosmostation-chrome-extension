@@ -8,7 +8,7 @@ import { cosmosURL } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { FeemarketPayload } from '~/types/cosmos/feemarket';
 
-import { useParamsSWR } from '../useParamsSWR';
+import { useParamsSWR } from './useParamsSWR';
 
 type UseFeemarketSWRProps = {
   chain: CosmosChain;

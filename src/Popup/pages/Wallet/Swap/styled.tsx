@@ -298,20 +298,7 @@ export const ButtonTextIconContaier = styled('div')({
   columnGap: '0.4rem',
 });
 
-type StyledButtonProps = {
-  'data-is-skip'?: boolean;
-};
-
-export const StyledButton = styled(Button)<StyledButtonProps>(({ theme, ...props }) => ({
-  '&:disabled': {
-    '& svg': {
-      '& > path': {
-        stroke: props['data-is-skip'] ? theme.colors.text02 : 'none',
-        strokeWidth: props['data-is-skip'] ? '0.02rem' : 'none',
-      },
-    },
-  },
-}));
+export const StyledButton = styled(Button)({});
 
 export const SwapVenueImageContainer = styled('div')({
   width: '1.6rem',

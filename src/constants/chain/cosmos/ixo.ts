@@ -1,4 +1,3 @@
-import { MINTSCAN_URL } from '~/constants/common';
 import ixoChainImg from '~/images/chainImgs/ixo.png';
 import ixoTokenImg from '~/images/symbols/ixo.png';
 import type { CosmosChain } from '~/types/chain';
@@ -22,7 +21,7 @@ export const IXO: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'ixo' },
-  explorerURL: `${MINTSCAN_URL}/ixo`,
+  explorerURL: `https://atomscan.com/ixo`,
   coinGeckoId: 'ixo',
   gasRate: {
     tiny: '0.025',

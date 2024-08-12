@@ -1,17 +1,19 @@
 import unknownImg from '~/images/symbols/unknown.png';
 
 type ImageProps = {
-  src?: string;
+  src?: string | null;
   defaultImgSrc?: string;
   alt?: string;
   className?: string;
 };
 
 export default function Image({ src = 'https://', defaultImgSrc = unknownImg, alt, className }: ImageProps) {
+  const validSrc = src || 'https://';
+
   return (
     <img
       className={className}
-      src={src}
+      src={validSrc}
       alt={alt}
       onError={(event) => {
         // eslint-disable-next-line no-param-reassign
