@@ -1,6 +1,6 @@
 {
   "name": "cosmostation",
-  "version": "0.8.12",
+  "version": "0.8.13",
   "description": "chrome extension cosmos wallet",
   "scripts": {
     "postinstall": "git config --local core.hooksPath ./git-hooks",
