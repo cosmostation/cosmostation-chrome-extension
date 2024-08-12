@@ -1,15 +1,32 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
+import { THEME_TYPE } from '~/constants/theme';
+import EmptyAsset from '~/Popup/components/EmptyAsset';
 import IntersectionObserver from '~/Popup/components/IntersectionObserver';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 
 import CoinItem from './components/CoinItem';
-import { AssetList, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
+import {
+  AssetList,
+  Container,
+  ContentContainer,
+  Header,
+  HeaderTitle,
+  StyledBottomSheet,
+  StyledButton,
+  StyledCircularProgress,
+  StyledInput,
+  StyledSearch20Icon,
+} from './styled';
 import type { CoinOrTokenInfo } from '../..';
 
 import Close24Icon from '~/images/icons/Close24.svg';
+import NoResultDarkIcon from '~/images/icons/NoResultDark.svg';
+import NoResultLightIcon from '~/images/icons/NoResultLight.svg';
 
 type CoinListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomSheet>, 'children'> & {
   currentCoinOrTokenInfo: CoinOrTokenInfo;
@@ -18,6 +35,7 @@ type CoinListBottomSheetProps = Omit<React.ComponentProps<typeof StyledBottomShe
 };
 
 export default function CoinListBottomSheet({ coinOrTokenInfos, currentCoinOrTokenInfo, onClickCoinOrToken, onClose, ...remainder }: CoinListBottomSheetProps) {
+  const { extensionStorage } = useExtensionStorage();
   const { t } = useTranslation();
 
   const ref = useRef<HTMLButtonElement>(null);
@@ -25,6 +43,7 @@ export default function CoinListBottomSheet({ coinOrTokenInfos, currentCoinOrTok
 
   const [viewLimit, setViewLimit] = useState(30);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, { isPending, flush }] = useDebounce(search, 300);
 
   useEffect(() => {
     if (remainder.open) {
@@ -34,19 +53,25 @@ export default function CoinListBottomSheet({ coinOrTokenInfos, currentCoinOrTok
 
   const filteredCoinOrTokenList = useMemo(
     () =>
-      search.length > 1
-        ? coinOrTokenInfos?.filter((item) => item.displayDenom.toLowerCase().indexOf(search.toLowerCase()) > -1).slice(0, viewLimit) || []
+      debouncedSearch.length > 1
+        ? coinOrTokenInfos?.filter((item) => item.displayDenom.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1).slice(0, viewLimit) || []
         : coinOrTokenInfos?.slice(0, viewLimit) || [],
-    [coinOrTokenInfos, viewLimit, search],
+    [coinOrTokenInfos, viewLimit, debouncedSearch],
   );
 
   useEffect(() => {
-    if (search.length > 1) {
+    if (debouncedSearch.length > 1) {
       setTimeout(() => topRef.current?.scrollIntoView(), 0);
 
       setViewLimit(30);
     }
-  }, [search.length]);
+  }, [debouncedSearch.length]);
+
+  useEffect(() => {
+    if (search === '') {
+      flush();
+    }
+  }, [flush, search]);
 
   return (
     <StyledBottomSheet
@@ -86,38 +111,53 @@ export default function CoinListBottomSheet({ coinOrTokenInfos, currentCoinOrTok
             setSearch(event.currentTarget.value);
           }}
         />
-        <AssetList>
-          <div ref={topRef} />
-          {filteredCoinOrTokenList?.map((item) => {
-            const isActive =
-              currentCoinOrTokenInfo.type === 'coin' && item.type === 'coin'
-                ? isEqualsIgnoringCase(item.baseDenom, currentCoinOrTokenInfo.baseDenom)
-                : currentCoinOrTokenInfo.type === 'token' && item.type === 'token'
-                ? isEqualsIgnoringCase(item.address, currentCoinOrTokenInfo.address)
-                : false;
-            return (
-              <CoinItem
-                isActive={isActive}
-                key={item.type === 'coin' ? item.baseDenom : item.address}
-                ref={isActive ? ref : undefined}
-                coinInfo={item}
-                onClickCoin={(clickedCoin) => {
-                  onClickCoinOrToken?.(clickedCoin);
-                  setSearch('');
 
-                  onClose?.({}, 'escapeKeyDown');
+        {isPending() ? (
+          <ContentContainer>
+            <StyledCircularProgress size="2.8rem" />
+          </ContentContainer>
+        ) : filteredCoinOrTokenList.length > 0 ? (
+          <AssetList>
+            <div ref={topRef} />
+            {filteredCoinOrTokenList?.map((item) => {
+              const isActive =
+                currentCoinOrTokenInfo.type === 'coin' && item.type === 'coin'
+                  ? isEqualsIgnoringCase(item.baseDenom, currentCoinOrTokenInfo.baseDenom)
+                  : currentCoinOrTokenInfo.type === 'token' && item.type === 'token'
+                  ? isEqualsIgnoringCase(item.address, currentCoinOrTokenInfo.address)
+                  : false;
+              return (
+                <CoinItem
+                  isActive={isActive}
+                  key={item.type === 'coin' ? item.baseDenom : item.address}
+                  ref={isActive ? ref : undefined}
+                  coinInfo={item}
+                  onClickCoin={(clickedCoin) => {
+                    onClickCoinOrToken?.(clickedCoin);
+                    setSearch('');
+
+                    onClose?.({}, 'escapeKeyDown');
+                  }}
+                />
+              );
+            })}
+            {filteredCoinOrTokenList?.length > viewLimit - 1 && (
+              <IntersectionObserver
+                onIntersect={() => {
+                  setViewLimit((limit) => limit + 30);
                 }}
               />
-            );
-          })}
-          {filteredCoinOrTokenList?.length > viewLimit - 1 && (
-            <IntersectionObserver
-              onIntersect={() => {
-                setViewLimit((limit) => limit + 30);
-              }}
+            )}
+          </AssetList>
+        ) : (
+          <ContentContainer>
+            <EmptyAsset
+              Icon={extensionStorage.theme === THEME_TYPE.LIGHT ? NoResultLightIcon : NoResultDarkIcon}
+              headerText={t('pages.Wallet.Send.Entry.Cosmos.components.CoinListBottomSheet.index.noResultHeader')}
+              subHeaderText={t('pages.Wallet.Send.Entry.Cosmos.components.CoinListBottomSheet.index.noResultSubHeader')}
             />
-          )}
-        </AssetList>
+          </ContentContainer>
+        )}
       </Container>
     </StyledBottomSheet>
   );

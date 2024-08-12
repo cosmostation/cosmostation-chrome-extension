@@ -85,8 +85,6 @@ export const ContentContainer = styled('div')({
 });
 
 export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
-  marginLeft: '0.4rem',
-
   '&.MuiCircularProgress-root': {
     color: theme.accentColors.purple01,
   },

@@ -1404,6 +1404,8 @@
             "components": {
               "CoinListBottomSheet": {
                 "index": {
+                  "noResultHeader": "결과가 없습니다",
+                  "noResultSubHeader": "검색한 코인은 현재 지원되지 않습니다.",
                   "searchPlaceholder": "검색",
                   "title": "코인을 선택하세요"
                 }
@@ -1422,6 +1424,8 @@
             "components": {
               "CoinListBottomSheet": {
                 "index": {
+                  "noResultHeader": "결과가 없습니다",
+                  "noResultSubHeader": "검색한 코인은 현재 지원되지 않습니다.",
                   "searchPlaceholder": "검색",
                   "title": "코인을 선택하세요"
                 }
@@ -1442,6 +1446,8 @@
                 "components": {
                   "RecipientIBCBottomSheet": {
                     "index": {
+                      "noResultHeader": "결과가 없습니다",
+                      "noResultSubHeader": "검색한 체인은 현재 지원되지 않습니다.",
                       "searchPlaceholder": "검색",
                       "title": "체인을 선택하세요"
                     }
@@ -1493,7 +1499,9 @@
               },
               "CoinListBottomSheet": {
                 "index": {
-                  "searchPlaceholder": "검색",
+                  "noResultHeader": "결과가 없습니다",
+                  "noResultSubHeader": "검색한 토큰은 현재 지원되지 않습니다.",
+                  "searchPlaceholder": "토큰 이름 또는 컨트랙트 주소를 입력하세요",
                   "title": "코인을 선택하세요"
                 }
               }
@@ -1518,6 +1526,8 @@
               },
               "CoinListBottomSheet": {
                 "index": {
+                  "noResultHeader": "결과가 없습니다",
+                  "noResultSubHeader": "검색한 코인은 현재 지원되지 않습니다.",
                   "searchPlaceholder": "검색",
                   "title": "코인을 선택하세요"
                 }

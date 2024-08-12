@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
 import { THEME_TYPE } from '~/constants/theme';
@@ -8,7 +9,18 @@ import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { IntegratedSwapChain } from '~/types/swap/asset';
 
 import ChainItem from './components/ChainItem';
-import { AssetList, Container, ContentContainer, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
+import {
+  AssetList,
+  Container,
+  ContentContainer,
+  Header,
+  HeaderTitle,
+  StyledBottomSheet,
+  StyledButton,
+  StyledCircularProgress,
+  StyledInput,
+  StyledSearch20Icon,
+} from './styled';
 
 import Close24Icon from '~/images/icons/Close24.svg';
 import NoResultDarkIcon from '~/images/icons/NoResultDark.svg';
@@ -26,18 +38,29 @@ export default function ChainListBottomSheet({ currentSelectedChain, availableCh
 
   const ref = useRef<HTMLButtonElement>(null);
 
+  const [search, setSearch] = useState('');
+
+  const [debouncedSearch, { isPending, flush }] = useDebounce(search, 300);
+
+  const filteredChainList = useMemo(
+    () =>
+      debouncedSearch
+        ? availableChainList?.filter((item) => item.networkName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) || []
+        : availableChainList || [],
+    [availableChainList, debouncedSearch],
+  );
+
   useEffect(() => {
     if (remainder.open) {
       setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0);
     }
   }, [remainder.open]);
 
-  const [search, setSearch] = useState('');
-
-  const filteredChainList = useMemo(
-    () => (search ? availableChainList?.filter((item) => item.networkName.toLowerCase().indexOf(search.toLowerCase()) > -1) || [] : availableChainList || []),
-    [availableChainList, search],
-  );
+  useEffect(() => {
+    if (search === '') {
+      flush();
+    }
+  }, [flush, search]);
 
   return (
     <StyledBottomSheet
@@ -75,7 +98,11 @@ export default function ChainListBottomSheet({ currentSelectedChain, availableCh
             setSearch(event.currentTarget.value);
           }}
         />
-        {filteredChainList?.length > 0 ? (
+        {isPending() ? (
+          <ContentContainer>
+            <StyledCircularProgress size="2.8rem" />
+          </ContentContainer>
+        ) : filteredChainList?.length > 0 ? (
           <AssetList>
             {filteredChainList?.map((item) => {
               const isActive = item.id === currentSelectedChain?.id;

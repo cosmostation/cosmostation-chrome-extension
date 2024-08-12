@@ -1,13 +1,30 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
+import { THEME_TYPE } from '~/constants/theme';
+import EmptyAsset from '~/Popup/components/EmptyAsset';
+import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain } from '~/types/chain';
 
 import ChainButtonItem from './components/ChainButtonItem';
-import { AssetList, Container, Header, HeaderTitle, StyledBottomSheet, StyledButton, StyledInput, StyledSearch20Icon } from './styled';
+import {
+  AssetList,
+  Container,
+  ContentContainer,
+  Header,
+  HeaderTitle,
+  StyledBottomSheet,
+  StyledButton,
+  StyledCircularProgress,
+  StyledInput,
+  StyledSearch20Icon,
+} from './styled';
 
 import Close24Icon from '~/images/icons/Close24.svg';
+import NoResultDarkIcon from '~/images/icons/NoResultDark.svg';
+import NoResultLightIcon from '~/images/icons/NoResultLight.svg';
 
 export type RecipientIBC = {
   chain: CosmosChain;
@@ -28,14 +45,19 @@ export default function RecipientIBCListBottomSheet({
   recipientList,
   ...remainder
 }: RecipientIBCListBottomSheetProps) {
+  const { extensionStorage } = useExtensionStorage();
   const { t } = useTranslation();
   const ref = useRef<HTMLButtonElement>(null);
 
   const [search, setSearch] = useState('');
+  const [debouncedSearch, { isPending, flush }] = useDebounce(search, 300);
 
   const filteredRecipientList = useMemo(
-    () => (search.length > 1 ? recipientList?.filter((item) => item.chain.chainName.toLowerCase().indexOf(search.toLowerCase()) > -1) || [] : recipientList),
-    [search, recipientList],
+    () =>
+      debouncedSearch.length > 1
+        ? recipientList?.filter((item) => item.chain.chainName.toLowerCase().indexOf(debouncedSearch.toLowerCase()) > -1) || []
+        : recipientList,
+    [debouncedSearch, recipientList],
   );
 
   useEffect(() => {
@@ -43,6 +65,12 @@ export default function RecipientIBCListBottomSheet({
       setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0);
     }
   }, [remainder.open]);
+
+  useEffect(() => {
+    if (search === '') {
+      flush();
+    }
+  }, [flush, search]);
 
   return (
     <StyledBottomSheet
@@ -78,27 +106,41 @@ export default function RecipientIBCListBottomSheet({
             setSearch(event.currentTarget.value);
           }}
         />
-        <AssetList>
-          {filteredRecipientList.map((item) => {
-            const isActive =
-              selectedRecipientIBC?.chain.id === item.chain.id && selectedRecipientIBC?.channel === item.channel && selectedRecipientIBC?.port === item.port;
+        {isPending() ? (
+          <ContentContainer>
+            <StyledCircularProgress size="2.8rem" />
+          </ContentContainer>
+        ) : filteredRecipientList.length > 0 ? (
+          <AssetList>
+            {filteredRecipientList.map((item) => {
+              const isActive =
+                selectedRecipientIBC?.chain.id === item.chain.id && selectedRecipientIBC?.channel === item.channel && selectedRecipientIBC?.port === item.port;
 
-            return (
-              <ChainButtonItem
-                isActive={isActive}
-                key={item.chain.id}
-                ref={isActive ? ref : undefined}
-                recipientIBCInfo={item}
-                onClickChain={(clickedChain) => {
-                  onClickChain?.(clickedChain);
-                  setSearch('');
+              return (
+                <ChainButtonItem
+                  isActive={isActive}
+                  key={item.chain.id}
+                  ref={isActive ? ref : undefined}
+                  recipientIBCInfo={item}
+                  onClickChain={(clickedChain) => {
+                    onClickChain?.(clickedChain);
+                    setSearch('');
 
-                  onClose?.({}, 'backdropClick');
-                }}
-              />
-            );
-          })}
-        </AssetList>
+                    onClose?.({}, 'backdropClick');
+                  }}
+                />
+              );
+            })}
+          </AssetList>
+        ) : (
+          <ContentContainer>
+            <EmptyAsset
+              Icon={extensionStorage.theme === THEME_TYPE.LIGHT ? NoResultLightIcon : NoResultDarkIcon}
+              headerText={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.components.RecipientIBCBottomSheet.index.noResultHeader')}
+              subHeaderText={t('pages.Wallet.Send.Entry.Cosmos.components.IBCSend.components.RecipientIBCBottomSheet.index.noResultSubHeader')}
+            />
+          </ContentContainer>
+        )}
       </Container>
     </StyledBottomSheet>
   );

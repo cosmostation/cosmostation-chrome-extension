@@ -1404,6 +1404,8 @@
             "components": {
               "CoinListBottomSheet": {
                 "index": {
+                  "noResultHeader": "No result",
+                  "noResultSubHeader": "The searched coin is not currently supported.",
                   "searchPlaceholder": "Search",
                   "title": "Select a coin"
                 }
@@ -1422,6 +1424,8 @@
             "components": {
               "CoinListBottomSheet": {
                 "index": {
+                  "noResultHeader": "No result",
+                  "noResultSubHeader": "The searched coin is not currently supported.",
                   "searchPlaceholder": "Search",
                   "title": "Select a coin"
                 }
@@ -1442,6 +1446,8 @@
                 "components": {
                   "RecipientIBCBottomSheet": {
                     "index": {
+                      "noResultHeader": "No result",
+                      "noResultSubHeader": "The searched chain is not currently supported.",
                       "searchPlaceholder": "Search",
                       "title": "Select a chain"
                     }
@@ -1493,7 +1499,9 @@
               },
               "CoinListBottomSheet": {
                 "index": {
-                  "searchPlaceholder": "Search",
+                  "noResultHeader": "No result",
+                  "noResultSubHeader": "The searched token is not currently supported.",
+                  "searchPlaceholder": "Search name or paste address",
                   "title": "Select a coin"
                 }
               }
@@ -1518,6 +1526,8 @@
               },
               "CoinListBottomSheet": {
                 "index": {
+                  "noResultHeader": "No result",
+                  "noResultSubHeader": "The searched coin is not currently supported.",
                   "searchPlaceholder": "Search",
                   "title": "Select a coin"
                 }

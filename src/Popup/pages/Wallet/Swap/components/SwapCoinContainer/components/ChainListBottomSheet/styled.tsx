@@ -1,3 +1,4 @@
+import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 import BottomSheet from '~/Popup/components/common/BottomSheet';
@@ -82,3 +83,9 @@ export const ContentContainer = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
 });
+
+export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
+  '&.MuiCircularProgress-root': {
+    color: theme.accentColors.purple01,
+  },
+}));

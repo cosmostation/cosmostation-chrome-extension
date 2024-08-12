@@ -56,7 +56,6 @@ export default function TokenListBottomSheet({
   const [viewLimit, setViewLimit] = useState(30);
 
   const [search, setSearch] = useState('');
-
   const [debouncedSearch, { isPending, flush }] = useDebounce(search, 300);
 
   const filteredTokenList = useMemo(
@@ -160,7 +159,7 @@ export default function TokenListBottomSheet({
             setSearch(event.currentTarget.value);
           }}
         />
-        {isPending() && search !== '' ? (
+        {isPending() ? (
           <ContentContainer>
             <StyledCircularProgress size="2.8rem" />
           </ContentContainer>
