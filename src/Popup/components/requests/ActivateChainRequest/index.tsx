@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Typography } from '@mui/material';
 
 import { CHAINS } from '~/constants/chain';
@@ -50,7 +51,7 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
   const ethereumPopupMethods = Object.values(ETHEREUM_POPUP_METHOD_TYPE) as string[];
   const aptosPopupMethods = Object.values(APTOS_POPUP_METHOD_TYPE) as string[];
 
-  const chain = (() => {
+  const chain = useMemo(() => {
     if (
       isCosmos(currentQueue) &&
       !!currentQueue?.message?.params?.chainName &&
@@ -69,7 +70,7 @@ export default function ActivateChainRequest({ children }: AccessRequestProps) {
     }
 
     return undefined;
-  })();
+  }, [allowedChains, aptosPopupMethods, currentCosmosAdditionalChainNames, currentQueue, ethereumPopupMethods]);
 
   if (chain && currentQueue) {
     return (
