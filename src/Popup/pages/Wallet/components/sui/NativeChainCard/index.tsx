@@ -3,7 +3,7 @@ import type { FallbackProps } from 'react-error-boundary';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
-import { Connection, JsonRpcProvider } from '@mysten/sui.js';
+import { getFaucetHost, requestSuiFromFaucetV1 } from '@mysten/sui/faucet';
 
 import { DEVNET } from '~/constants/chain/sui/network/devnet';
 import { TESTNET } from '~/constants/chain/sui/network/testnet';
@@ -144,17 +144,6 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
     }
   };
 
-  const provider = useMemo(
-    () =>
-      new JsonRpcProvider(
-        new Connection({
-          fullnode: currentSuiNetwork.rpcURL,
-          faucet: DEVNET.id === currentSuiNetwork.id ? 'https://faucet.devnet.sui.io/gas' : 'https://faucet.testnet.sui.io/gas',
-        }),
-      ),
-    [currentSuiNetwork.id, currentSuiNetwork.rpcURL],
-  );
-
   const handleOnFaucet = async () => {
     try {
       if (!currentAddress) {
@@ -162,7 +151,12 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
       }
       setIsDiabledFaucet(true);
 
-      const response = await provider.requestSuiFromFaucet(currentAddress);
+      const networkName = currentSuiNetwork.id === DEVNET.id ? 'devnet' : 'testnet';
+
+      const response = await requestSuiFromFaucetV1({
+        host: getFaucetHost(networkName),
+        recipient: currentAddress,
+      });
 
       if (!response.error) {
         setTimeout(() => {
@@ -187,7 +181,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
           {explorerURL && (
             <StyledIconButton
               onClick={() => {
-                window.open(`${explorerURL}/account/${currentAddress}}`);
+                window.open(`${explorerURL}/account/${currentAddress}`);
               }}
             >
               <ExplorerIcon />

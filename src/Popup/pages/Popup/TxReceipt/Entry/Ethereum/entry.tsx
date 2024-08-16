@@ -13,6 +13,7 @@ import Image from '~/Popup/components/common/Image';
 import NumberText from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import EmptyAsset from '~/Popup/components/EmptyAsset';
+import { useBlockExplorerURLSWR } from '~/Popup/hooks/SWR/ethereum/useBlockExplorerURLSWR';
 import { useBlockInfoByHashSWR } from '~/Popup/hooks/SWR/ethereum/useBlockInfoByHashSWR';
 import { useTxInfoSWR } from '~/Popup/hooks/SWR/ethereum/useTxInfoSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
@@ -67,7 +68,9 @@ export default function Ethereum({ txHash }: EthereumProps) {
   const { t } = useTranslation();
   const { navigate } = useNavigate();
   const { currentEthereumNetwork, additionalEthereumNetworks } = useCurrentEthereumNetwork();
-  const { imageURL, explorerURL, networkName, decimals, coinGeckoId, displayDenom, id } = currentEthereumNetwork;
+  const { imageURL, networkName, decimals, coinGeckoId, displayDenom, id } = currentEthereumNetwork;
+
+  const { getExplorerTxDetailURL } = useBlockExplorerURLSWR(currentEthereumNetwork);
 
   const { extensionStorage } = useExtensionStorage();
   const coinGeckoPrice = useCoinGeckoPriceSWR();
@@ -81,7 +84,7 @@ export default function Ethereum({ txHash }: EthereumProps) {
 
   const blockInfo = useBlockInfoByHashSWR(blockHash);
 
-  const txDetailExplorerURL = useMemo(() => (explorerURL ? `${explorerURL}/tx/${txHash}` : ''), [explorerURL, txHash]);
+  const txDetailExplorerURL = useMemo(() => getExplorerTxDetailURL(txHash), [getExplorerTxDetailURL, txHash]);
 
   const txConfirmedStatus = useMemo(() => {
     if (txInfo.error?.message === TRASACTION_RECEIPT_ERROR_MESSAGE.PENDING) return TX_CONFIRMED_STATUS.PENDING;

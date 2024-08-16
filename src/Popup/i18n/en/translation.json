@@ -1020,6 +1020,14 @@
         }
       },
       "Sui": {
+        "SignMessage": {
+          "entry": {
+            "cancelButton": "Cancel",
+            "message": "Message",
+            "signButton": "Sign",
+            "signatureRequest": "Signature request"
+          }
+        },
         "Transaction": {
           "entry": {
             "cancelButton": "Cancel",

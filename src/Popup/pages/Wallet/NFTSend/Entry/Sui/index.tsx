@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { InputAdornment, Typography } from '@mui/material';
-import type { TransactionBlock as TransactionBlockType } from '@mysten/sui.js';
-import { TransactionBlock } from '@mysten/sui.js';
+import type { Transaction as TransactionType } from '@mysten/sui/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { SUI_COIN, SUI_TOKEN_TEMPORARY_DECIMALS } from '~/constants/sui';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
@@ -23,6 +23,7 @@ import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetw
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { suiAddressRegex } from '~/Popup/utils/regex';
 import { isEqualsIgnoringCase } from '~/Popup/utils/string';
 import type { SuiChain } from '~/types/chain';
@@ -119,7 +120,7 @@ export default function Sui({ chain }: SuiProps) {
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isOpenPopover = Boolean(popoverAnchorEl);
 
-  const sendTxBlock = useMemo<TransactionBlockType | undefined>(() => {
+  const sendTxBlock = useMemo<TransactionType | undefined>(() => {
     if (
       !currentNFTObject?.data?.objectId ||
       !recipientAddress ||
@@ -128,14 +129,14 @@ export default function Sui({ chain }: SuiProps) {
       return undefined;
     }
 
-    const tx = new TransactionBlock();
+    const tx = new Transaction();
     tx.setSenderIfNotSet(address);
-    tx.transferObjects([tx.object(currentNFTObject.data.objectId)], tx.pure(recipientAddress));
+    tx.transferObjects([tx.object(currentNFTObject.data.objectId)], recipientAddress);
     return tx;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentNFTObject?.data?.objectId, currentNFTObject?.data?.content?.dataType, recipientAddress]);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ transactionBlock: sendTxBlock });
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ transaction: sendTxBlock });
 
   const expectedBaseFee = useMemo(() => {
     if (dryRunTransaction?.result?.effects.status.status === 'success') {
@@ -280,10 +281,22 @@ export default function Sui({ chain }: SuiProps) {
                       origin: '',
                       channel: 'inApp',
                       message: {
-                        method: 'sui_signAndExecuteTransactionBlock',
-                        params: [{ transactionBlockSerialized: sendTxBlock.serialize() }],
+                        method: 'sui_signAndExecuteTransaction',
+                        params: [
+                          {
+                            transactionBlockSerialized: await sendTxBlock.toJSON(),
+                            options: {
+                              showRawEffects: true,
+                              showRawInput: true,
+                            },
+                          },
+                        ],
                       },
                     });
+
+                    if (currentAccount.type === 'LEDGER') {
+                      await debouncedOpenTab();
+                    }
                   }
                 }}
               >

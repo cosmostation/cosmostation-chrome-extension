@@ -1,7 +1,7 @@
 import type { ComponentProps } from 'react';
 import { forwardRef, useMemo } from 'react';
 import { Typography } from '@mui/material';
-import type { SuiObjectResponse } from '@mysten/sui.js';
+import type { SuiObjectResponse } from '@mysten/sui/client';
 
 import unknownNFTImg from '~/images/etc/unknownNFT.png';
 import Image from '~/Popup/components/common/Image';

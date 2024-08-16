@@ -4,10 +4,12 @@ import { APTOS } from './aptos/aptos';
 import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
 import { MAINNET as APTOS_NETWORK__MAINNET } from './aptos/network/mainnet';
 import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
+import { AGORIC } from './cosmos/agoric';
 import { AKASH } from './cosmos/akash';
 import { ALTHEA } from './cosmos/althea';
 import { ARCHWAY } from './cosmos/archway';
 import { ARTELA_TESTNET } from './cosmos/artelaTestnet';
+import { ASI_ALLIANCE } from './cosmos/asiAlliance';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
 import { AXELAR } from './cosmos/axelar';
 import { BAND } from './cosmos/band';
@@ -25,7 +27,6 @@ import { DESMOS } from './cosmos/desmos';
 import { DYDX } from './cosmos/dydx';
 import { DYMENSION } from './cosmos/dymension';
 import { EVMOS } from './cosmos/evmos';
-import { FETCH_AI } from './cosmos/fetchAi';
 import { FINSCHIA } from './cosmos/finschia';
 import { GOVGEN } from './cosmos/govgen';
 import { GRAVITY_BRIDGE } from './cosmos/gravityBridge';
@@ -37,6 +38,7 @@ import { JUNO } from './cosmos/juno';
 import { KAVA } from './cosmos/kava';
 import { KI } from './cosmos/ki';
 import { KYVE } from './cosmos/kyve';
+import { LAVA } from './cosmos/lava';
 import { LIKE_COIN } from './cosmos/likeCoin';
 import { LUM } from './cosmos/lum';
 import { MARS } from './cosmos/mars';
@@ -68,14 +70,16 @@ import { TERITORI } from './cosmos/teritori';
 import { TERRA } from './cosmos/terra';
 import { UX } from './cosmos/ux';
 import { XPLA } from './cosmos/xpla';
+import { ZETA } from './cosmos/zeta';
 import { ETHEREUM } from './ethereum/ethereum';
 import { ALTHEA as ETHEREUM_NETWORK__ALTHEA } from './ethereum/network/althea';
 import { ARBITRUM as ETHEREUM_NETWORK__ARBITRUM } from './ethereum/network/arbitrum';
 import { ARTELA_TESTNET as ETHEREUM_NETWORK__ARTELA_TESTNET } from './ethereum/network/artelaTestnet';
 import { AVALANCHE as ETHEREUM_NETWORK__AVALANCHE } from './ethereum/network/avalanche';
+import { BASE as ETHEREUM_NETWORK__BASE } from './ethereum/network/base';
 import { CANTO as ETHEREUM_NETWORK__CANTO } from './ethereum/network/canto';
 import { CRONOS as ETHEREUM_NETWORK__CRONOS } from './ethereum/network/cronos';
-import { DYMENSION as ETHEREUM_NETWORK_DYMENSION } from './ethereum/network/dymension';
+import { DYMENSION as ETHEREUM_NETWORK__DYMENSION } from './ethereum/network/dymension';
 import { ETHEREUM as ETHEREUM_NETWORK__ETHEREUM } from './ethereum/network/ethereum';
 import { EVMOS as ETHEREUM_NETWORK__EVMOS } from './ethereum/network/evmos';
 import { FANTOM as ETHEREUM_NETWORK__FANTOM } from './ethereum/network/fantom';
@@ -86,6 +90,7 @@ import { OPTIMISM as ETHEREUM_NETWORK__OPTIMISM } from './ethereum/network/optim
 import { POLYGON as ETHEREUM_NETWORK__POLYGON } from './ethereum/network/polygon';
 import { SCROLL_SEPOLIA_TESTNET as ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET } from './ethereum/network/scrollSepoliaTestnet';
 import { SMART_CHAIN as ETHEREUM_NETWORK__SMART_CHAIN } from './ethereum/network/smartChain';
+import { ZETA as ETHEREUM_NETWORK__ZETA } from './ethereum/network/zeta';
 import { DEVNET as SUI_NETWORK__DEVNET } from './sui/network/devnet';
 import { MAINNET as SUI_NETWORK__MAINNET } from './sui/network/mainnet';
 import { TESTNET as SUI_NETWORK__TESTNET } from './sui/network/testnet';
@@ -114,10 +119,12 @@ export const COSMOS_DEFAULT_ESTIMATE_EXCEPTED_AV = '1.4';
 
 export const COSMOS_CHAINS: CosmosChain[] = [
   COSMOS,
+  AGORIC,
   AKASH,
   ALTHEA,
   ARCHWAY,
   ARTELA_TESTNET,
+  ASI_ALLIANCE,
   ASSET_MANTLE,
   AXELAR,
   BAND,
@@ -134,7 +141,6 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   DYDX,
   DYMENSION,
   EVMOS,
-  FETCH_AI,
   FINSCHIA,
   GOVGEN,
   GRAVITY_BRIDGE,
@@ -146,6 +152,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   KAVA,
   KI,
   KYVE,
+  LAVA,
   LIKE_COIN,
   LUM,
   MARS,
@@ -177,6 +184,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   TERRA,
   UX,
   XPLA,
+  ZETA,
 ];
 
 export const COSMOS_NON_NATIVE_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES, ...NOBLE_GAS_RATES];
@@ -189,18 +197,20 @@ export const ETHEREUM_NETWORKS: EthereumNetwork[] = [
   ETHEREUM_NETWORK__ARBITRUM,
   ETHEREUM_NETWORK__ARTELA_TESTNET,
   ETHEREUM_NETWORK__AVALANCHE,
+  ETHEREUM_NETWORK__BASE,
   ETHEREUM_NETWORK__CANTO,
   ETHEREUM_NETWORK__CRONOS,
+  ETHEREUM_NETWORK__DYMENSION,
   ETHEREUM_NETWORK__EVMOS,
   ETHEREUM_NETWORK__FANTOM,
   ETHEREUM_NETWORK__HARMONY,
-  ETHEREUM_NETWORK_DYMENSION,
   ETHEREUM_NETWORK__KAVA,
   ETHEREUM_NETWORK__OKT,
   ETHEREUM_NETWORK__OPTIMISM,
   ETHEREUM_NETWORK__POLYGON,
   ETHEREUM_NETWORK__SMART_CHAIN,
   ETHEREUM_NETWORK__SCROLL_SEPOLIA_TESTNET,
+  ETHEREUM_NETWORK__ZETA,
 ];
 
 export const APTOS_CHAINS: AptosChain[] = [APTOS];

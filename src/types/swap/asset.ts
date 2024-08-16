@@ -1,3 +1,5 @@
+import type { SKIP_SUPPORTED_CHAIN_TYPE } from '~/constants/skip';
+
 import type { CosmosChain, EthereumNetwork, EthereumToken } from '../chain';
 import type { AssetV3 } from '../cosmos/asset';
 
@@ -57,19 +59,41 @@ export type SupportedChain = {
   cosmos: ChainData;
 };
 
+export type SkipSupportedChainType = ValueOf<typeof SKIP_SUPPORTED_CHAIN_TYPE>;
+
+type CosmosModuleSupport = {
+  authz: boolean;
+  feegrant: boolean;
+};
+
+type SkipFeeAsset = {
+  denom?: string;
+  gas_price_info?: {
+    average: string;
+    high: string;
+    low: string;
+  };
+};
+
+type IbcCapabilities = {
+  cosmos_pfm: boolean;
+  cosmos_ibc_hooks: boolean;
+  cosmos_memo: boolean;
+  cosmos_autopilot: boolean;
+};
+
 export type SupportedSkipChain = {
   chains: {
     chain_name: string;
     chain_id: string;
     pfm_enabled?: boolean;
-    cosmos_sdk_version: string;
-    modules: {
-      [modulePath: string]: {
-        path: string;
-        version: string;
-        sum?: string;
-      };
-    };
+    cosmos_module_support: CosmosModuleSupport;
+    supports_memo: boolean;
+    logo_uri?: string;
+    bech32_prefix: string;
+    fee_assets: SkipFeeAsset[];
+    chain_type: SkipSupportedChainType;
+    ibc_capabilities: IbcCapabilities;
   }[];
 };
 
@@ -79,10 +103,14 @@ export type SupportedSkipAsset = {
   origin_denom: string;
   origin_chain_id: string;
   trace: string;
-  symbol: string;
-  name: string;
-  logo_uri: string;
-  decimals: number;
+  is_cw20: boolean;
+  is_evm: boolean;
+  is_svm: boolean;
+  symbol?: string;
+  name?: string;
+  logo_uri?: string;
+  decimals?: number;
+  coingecko_id?: string;
 };
 
 export type SupportedSkipToken = {

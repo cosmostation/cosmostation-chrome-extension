@@ -24,11 +24,12 @@ import { useCurrentFeesSWR } from '~/Popup/hooks/SWR/cosmos/useCurrentFeesSWR';
 import { useGasMultiplySWR } from '~/Popup/hooks/SWR/cosmos/useGasMultiplySWR';
 import { useICNSSWR } from '~/Popup/hooks/SWR/cosmos/useICNSSWR';
 import { useNodeInfoSWR } from '~/Popup/hooks/SWR/cosmos/useNodeinfoSWR';
+import { useParamsSWR } from '~/Popup/hooks/SWR/cosmos/useParamsSWR';
 import { useSimulateSWR } from '~/Popup/hooks/SWR/cosmos/useSimulateSWR';
 import { useTokenBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokenBalanceSWR';
 import { useTokensBalanceSWR as useCosmosTokensBalanceSWR } from '~/Popup/hooks/SWR/cosmos/useTokensBalanceSWR';
+import { useChainIdToAssetNameMapsSWR } from '~/Popup/hooks/SWR/useChainIdToAssetNameMapsSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
-import { useParamsSWR } from '~/Popup/hooks/SWR/useParamsSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentCosmosTokens } from '~/Popup/hooks/useCurrent/useCurrentCosmosTokens';
 import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
@@ -88,6 +89,7 @@ export default function Send({ chain }: CosmosProps) {
   const params = useParams();
 
   const chainParams = useParamsSWR(chain);
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -140,7 +142,7 @@ export default function Send({ chain }: CosmosProps) {
       ...coinAll.map((item) => ({
         ...item,
         type: TYPE.COIN,
-        name: convertAssetNameToCosmos(item.baseChainName || '')?.chainName || item.baseChainName?.toUpperCase() || '',
+        name: convertAssetNameToCosmos(item.baseChainName || '', chainIdToAssetNameMaps)?.chainName || item.baseChainName?.toUpperCase() || '',
       })),
       ...currentCosmosTokens.map((item) => ({
         ...item,
@@ -161,7 +163,7 @@ export default function Send({ chain }: CosmosProps) {
       .sort((a, b) => (gt(a.availableAmount, b.availableAmount) ? -1 : 1))
       .sort((a, b) => (gt(a.price, b.price) ? -1 : 1))
       .sort((a) => (a.displayDenom === chain.displayDenom ? -1 : 1));
-  }, [chain.chainName, chain.displayDenom, coinAll, coinGeckoPrice.data, cosmosTokensBalance.data, currency, currentCosmosTokens]);
+  }, [chain.chainName, chain.displayDenom, chainIdToAssetNameMaps, coinAll, coinGeckoPrice.data, cosmosTokensBalance.data, currency, currentCosmosTokens]);
 
   const [currentCoinOrTokenId, setCurrentCoinOrTokenId] = useState(params.id || chain.baseDenom);
 

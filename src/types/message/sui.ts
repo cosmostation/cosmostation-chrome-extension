@@ -1,5 +1,10 @@
-import type { MoveCallTransaction } from '@mysten/sui.js';
-import type { SuiSignAndExecuteTransactionBlockInput } from '@mysten/wallet-standard';
+import type { SuiTransactionBlockResponseOptions } from '@mysten/sui/client';
+import type {
+  SuiSignAndExecuteTransactionBlockInput,
+  SuiSignAndExecuteTransactionInput,
+  SuiSignTransactionBlockInput,
+  SuiSignTransactionInput,
+} from '@mysten/wallet-standard';
 
 import type { SUI_NO_POPUP_METHOD_TYPE, SUI_POPUP_METHOD_TYPE } from '~/constants/message/sui';
 
@@ -23,30 +28,66 @@ export type SuiGetAccount = {
   id?: number | string;
 };
 
-export type SuiExecuteMoveCallParam = MoveCallTransaction;
+export type SuiSignTransactionBlockSerializedInput = Omit<SuiSignTransactionBlockInput, 'transactionBlock' | 'chain' | 'account'> & {
+  transactionBlockSerialized: string;
+};
 
-export type SuiExecuteMoveCall = {
-  method: typeof SUI_POPUP_METHOD_TYPE.SUI__EXECUTE_MOVE_CALL;
-  params: [SuiExecuteMoveCallParam];
+export type SuiSignTransactionBlock = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_TRANSACTION_BLOCK;
+  params: [SuiSignTransactionBlockSerializedInput];
   id?: number | string;
 };
 
-// export type SuiExecuteMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
+export type SuiSignTransactionSerializedInput = Omit<SuiSignTransactionInput, 'transaction' | 'chain' | 'account'> & {
+  transactionBlockSerialized: string;
+};
 
-export type SuiExecuteSerializedMoveCall = {
-  method: typeof SUI_POPUP_METHOD_TYPE.SUI__EXECUTE_SERIALIZED_MOVE_CALL;
-  params: [string];
+export type SuiSignTransaction = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_TRANSACTION;
+  params: [SuiSignTransactionSerializedInput];
   id?: number | string;
 };
 
-// export type SuiExecuteSerializedMoveCallResponse = { certificate: CertifiedTransaction; effects: Pick<SuiFinalizedEffects, 'effects'> };
-type SuiSignAndExecuteTransactionBlockSerializedInput = Omit<SuiSignAndExecuteTransactionBlockInput, 'transactionBlock' | 'chain' | 'account'> & {
+export type SuiSignAndExecuteTransactionBlockSerializedInput = Omit<SuiSignAndExecuteTransactionBlockInput, 'transactionBlock' | 'chain' | 'account'> & {
   transactionBlockSerialized: string;
 };
 
 export type SuiSignAndExecuteTransactionBlock = {
   method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION_BLOCK;
   params: [SuiSignAndExecuteTransactionBlockSerializedInput];
+  id?: number | string;
+};
+
+export type SuiSignAndExecuteTransactionSerializedInput = Omit<SuiSignAndExecuteTransactionInput, 'transaction' | 'chain' | 'account'> & {
+  transactionBlockSerialized: string;
+  options?: SuiTransactionBlockResponseOptions;
+};
+
+export type SuiSignAndExecuteTransaction = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_AND_EXECUTE_TRANSACTION;
+  params: [SuiSignAndExecuteTransactionSerializedInput];
+  id?: number | string;
+};
+
+export type SuiSignMessageInput = {
+  message: string;
+  accountAddress: string;
+};
+
+export type SuiSignMessage = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_MESSAGE;
+  params: SuiSignMessageInput;
+  id?: number | string;
+};
+
+export type SuiSignPersonalMessageInput = {
+  message: string;
+  accountAddress: string;
+};
+
+export type SuiSignPersonalMessage = {
+  method: typeof SUI_POPUP_METHOD_TYPE.SUI__SIGN_PERSONAL_MESSAGE;
+  params: SuiSignPersonalMessageInput;
   id?: number | string;
 };
 

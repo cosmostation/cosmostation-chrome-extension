@@ -1,6 +1,5 @@
 import { DYMENSION as COSMOS_DYMENSION } from '~/constants/chain/cosmos/dymension';
 import { MINTSCAN_URL } from '~/constants/common';
-import dymensionEVMChainImg from '~/images/chainImgs/dymension_evm.png';
 import type { EthereumNetwork } from '~/types/chain';
 
 export const DYMENSION: EthereumNetwork = {
@@ -9,7 +8,7 @@ export const DYMENSION: EthereumNetwork = {
   networkName: COSMOS_DYMENSION.chainName,
   rpcURL: 'https://rpc-dymension-evm.cosmostation.io',
   tokenImageURL: COSMOS_DYMENSION.tokenImageURL,
-  imageURL: dymensionEVMChainImg,
+  imageURL: COSMOS_DYMENSION.imageURL,
   displayDenom: COSMOS_DYMENSION.displayDenom,
   decimals: COSMOS_DYMENSION.decimals,
   explorerURL: `${MINTSCAN_URL}/dymension`,

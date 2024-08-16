@@ -26,6 +26,7 @@ export type ChainlistParams = {
   symbol_image?: string;
   bechAccountPrefix?: string;
   bechValidatorPrefix?: string;
+  api_name?: string;
   accountType?: {
     hd_path?: string;
     pubkey_style?: string;
@@ -33,6 +34,19 @@ export type ChainlistParams = {
   };
   fee?: Fee;
   grpc_endpoint?: GrpcEndpoint[];
+  explorer?: {
+    name?: string;
+    url?: string;
+    account?: string;
+    tx?: string;
+    proposal?: string;
+  };
+  evm_explorer?: {
+    name: string;
+    url: string;
+    account?: string;
+    tx?: string;
+  };
   about?: About;
   description?: Description;
   isBankLocked?: boolean;

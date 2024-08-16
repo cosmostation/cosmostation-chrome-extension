@@ -6,7 +6,7 @@ import { gt, times } from '~/Popup/utils/big';
 import type { CosmosChain, GasRate, GasRateKey } from '~/types/chain';
 
 import { useFeemarketSWR } from './useFeemarketSWR';
-import { useParamsSWR } from '../useParamsSWR';
+import { useParamsSWR } from './useParamsSWR';
 
 const PARAM_BASE_GAS_RATE_OPTIONS = {
   TINY: '0',
