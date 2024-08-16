@@ -1019,6 +1019,14 @@
         }
       },
       "Sui": {
+        "SignMessage": {
+          "entry": {
+            "cancelButton": "취소",
+            "message": "메세지",
+            "signButton": "서명",
+            "signatureRequest": "서명 요청"
+          }
+        },
         "Transaction": {
           "entry": {
             "cancelButton": "취소",

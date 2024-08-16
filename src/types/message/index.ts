@@ -53,12 +53,15 @@ import type {
 import type {
   SuiConnect,
   SuiDisconnect,
-  SuiExecuteMoveCall,
-  SuiExecuteSerializedMoveCall,
   SuiGetAccount,
   SuiGetChain,
   SuiGetPermissions,
+  SuiSignAndExecuteTransaction,
   SuiSignAndExecuteTransactionBlock,
+  SuiSignMessage,
+  SuiSignPersonalMessage,
+  SuiSignTransaction,
+  SuiSignTransactionBlock,
 } from './sui';
 
 export type MessageType = ValueOf<typeof MESSAGE_TYPE>;
@@ -126,9 +129,12 @@ export type SuiRequestMessage =
   | SuiGetPermissions
   | SuiConnect
   | SuiGetAccount
-  | SuiExecuteMoveCall
-  | SuiExecuteSerializedMoveCall
   | SuiSignAndExecuteTransactionBlock
+  | SuiSignAndExecuteTransaction
+  | SuiSignTransactionBlock
+  | SuiSignTransaction
+  | SuiSignMessage
+  | SuiSignPersonalMessage
   | SuiDisconnect
   | SuiGetChain;
 

@@ -1,5 +1,5 @@
-import type { SuiObjectData, SuiObjectResponse } from '@mysten/sui.js';
-import { Ed25519PublicKey, getObjectDisplay, getObjectOwner } from '@mysten/sui.js';
+import type { SuiObjectData, SuiObjectResponse } from '@mysten/sui/client';
+import { Ed25519PublicKey } from '@mysten/sui/keypairs/ed25519';
 
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import { extensionStorage } from '~/Popup/utils/extensionStorage';
@@ -18,7 +18,7 @@ export function isExists(object: Result<GetObject>): object is Result<GetObjectE
   return object.result?.status === 'Exists';
 }
 
-export function getCoinType(type?: string) {
+export function getCoinType(type?: string | null) {
   if (!type || type?.split('::')[1] !== 'coin') {
     return '';
   }
@@ -33,7 +33,7 @@ export function getCoinType(type?: string) {
   return '';
 }
 
-export function getNFTType(type?: string) {
+export function getNFTType(type?: string | null) {
   return type?.split('::')[2] || '';
 }
 
@@ -43,7 +43,7 @@ export function isKiosk(data: SuiObjectData) {
 
 export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMeta {
   if (data && data.data?.content?.dataType === 'moveObject') {
-    const { name, description, creator, image_url, link, project_url } = getObjectDisplay(data).data || {};
+    const { name, description, creator, image_url, link, project_url } = getObjectDisplay(data)?.data || {};
 
     const objectOwner = getObjectOwner(data);
     return {
@@ -61,11 +61,26 @@ export function getNFTMeta(data?: SuiObjectResponse): SuiNFTMeta {
           ? objectOwner.ObjectOwner
           : '',
       objectFieldData: { ...data.data?.content.fields },
-      type: data.data.type,
+      type: data.data.type || '',
       rarity: '',
     };
   }
   return {};
+}
+
+export function getObjectOwner(data?: SuiObjectResponse) {
+  if (data?.data?.owner) {
+    return data.data.owner;
+  }
+  return undefined;
+}
+
+export function getObjectDisplay(data?: SuiObjectResponse | null) {
+  if (data && data.data?.content?.dataType === 'moveObject' && data.data.display) {
+    return data.data.display;
+  }
+
+  return undefined;
 }
 
 export async function requestRPC<T>(method: string, params: unknown, id?: string | number, url?: string) {

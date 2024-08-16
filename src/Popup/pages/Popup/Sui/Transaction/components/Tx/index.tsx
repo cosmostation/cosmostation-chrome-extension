@@ -1,16 +1,16 @@
 import { Typography } from '@mui/material';
-import type { TransactionBlock } from '@mysten/sui.js';
+import type { Transaction } from '@mysten/sui/transactions';
 
 import { Container } from './styled';
 
 type TxProps = {
-  transactionBlock: TransactionBlock;
+  transaction: Transaction;
 };
 
-export default function Tx({ transactionBlock }: TxProps) {
+export default function Tx({ transaction }: TxProps) {
   return (
     <Container>
-      <Typography variant="h6">{JSON.stringify(transactionBlock.blockData, null, 4)}</Typography>
+      <Typography variant="h6">{JSON.stringify(transaction.getData(), null, 4)}</Typography>
     </Container>
   );
 }
