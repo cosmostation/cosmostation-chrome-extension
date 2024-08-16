@@ -34,7 +34,7 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
 
   const defaultGasRateKey = useMemo(() => {
     if (isFeemarketActive) {
-      return PARAM_BASE_GAS_RATE_KEY[PARAM_BASE_GAS_RATE_OPTIONS.LOW];
+      return 'default';
     }
 
     const baseGasRateKey = data?.params?.chainlist_params?.fee?.base;
@@ -62,9 +62,10 @@ export function useGasRateSWR(chain: CosmosChain, config?: SWRConfiguration) {
           const { denom, amount } = price;
 
           result[denom] = {
-            tiny: times(amount, '1.1'),
-            low: times(amount, '1.2'),
-            average: times(amount, '1.3'),
+            default: amount,
+            fast: times(amount, '1.2'),
+            faster: times(amount, '1.5'),
+            instant: times(amount, '2'),
           };
         });
 

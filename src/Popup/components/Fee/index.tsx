@@ -7,6 +7,7 @@ import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { ceil, divide, equal, gt, times, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { getCapitalize } from '~/Popup/utils/common';
 import type { FeeCoin, GasRate, GasRateKey } from '~/types/chain';
 
 import FeeSettingDialog from './components/FeeSettingDialog';
@@ -67,8 +68,6 @@ export default function Fee({
   const { extensionStorage } = useExtensionStorage();
   const { decimals, displayDenom, coinGeckoId, imageURL } = feeCoin;
 
-  const { average, tiny, low } = gasRate;
-
   const { t } = useTranslation();
 
   const [isOpenGasDialog, setIsOpenGasDialog] = useState(false);
@@ -88,30 +87,26 @@ export default function Fee({
   const displayFee = useMemo(() => toDisplayDenomAmount(ceiledBaseFee, decimals), [ceiledBaseFee, decimals]);
   const value = useMemo(() => times(displayFee, chainPrice), [chainPrice, displayFee]);
 
+  const gasRateKeys = useMemo(() => Object.keys(gasRate), [gasRate]);
+
   const baseFeeValues = useMemo(
-    () => ({
-      tinyBaseFee: ceil(times(tiny, gas)),
-      lowBaseFee: ceil(times(low, gas)),
-      averageBaseFee: ceil(times(average, gas)),
-    }),
-    [tiny, low, average, gas],
+    () =>
+      gasRateKeys.reduce((acc: GasRate, key) => {
+        acc[key] = ceil(times(gasRate[key], gas));
+        return acc;
+      }, {}),
+    [gas, gasRate, gasRateKeys],
   );
 
   const currentGasRate = useMemo(() => {
-    if (equal(baseFeeValues.tinyBaseFee, ceiledBaseFee)) {
-      return tiny;
-    }
+    const matchedKey = gasRateKeys.find((key) => equal(baseFeeValues[key], ceiledBaseFee));
 
-    if (equal(baseFeeValues.lowBaseFee, ceiledBaseFee)) {
-      return low;
-    }
-
-    if (equal(baseFeeValues.averageBaseFee, ceiledBaseFee)) {
-      return average;
+    if (matchedKey) {
+      return gasRate[matchedKey];
     }
 
     return gt(gas, '0') ? divide(baseFee, gas) : '0';
-  }, [average, baseFee, baseFeeValues.averageBaseFee, baseFeeValues.lowBaseFee, baseFeeValues.tinyBaseFee, ceiledBaseFee, gas, low, tiny]);
+  }, [baseFee, baseFeeValues, ceiledBaseFee, gas, gasRate, gasRateKeys]);
 
   if (isEdit) {
     return (
@@ -178,36 +173,25 @@ export default function Fee({
             </RightColumnContainer>
           </BodyContainer>
           <FeeButtonContainer>
-            <FeeButton
-              type="button"
-              onClick={() => {
-                onChangeFee?.(times(tiny, gas));
-                onChangeGasRateKey?.('tiny');
-              }}
-              data-is-active={equal(currentGasRate, tiny) ? 1 : 0}
-            >
-              <Typography variant="h7">{t('components.Fee.index.tiny')}</Typography>
-            </FeeButton>
-            <FeeButton
-              type="button"
-              onClick={() => {
-                onChangeFee?.(times(low, gas));
-                onChangeGasRateKey?.('low');
-              }}
-              data-is-active={equal(currentGasRate, low) ? 1 : 0}
-            >
-              <Typography variant="h7">{t('components.Fee.index.low')}</Typography>
-            </FeeButton>
-            <FeeButton
-              type="button"
-              onClick={() => {
-                onChangeFee?.(times(average, gas));
-                onChangeGasRateKey?.('average');
-              }}
-              data-is-active={equal(currentGasRate, average) ? 1 : 0}
-            >
-              <Typography variant="h7">{t('components.Fee.index.average')}</Typography>
-            </FeeButton>
+            {gasRateKeys.map((key) => {
+              const gasRateValue = gasRate[key];
+
+              const buttonText = getCapitalize(key);
+
+              return (
+                <FeeButton
+                  key={key}
+                  type="button"
+                  onClick={() => {
+                    onChangeFee?.(times(gasRateValue, gas));
+                    onChangeGasRateKey?.(key);
+                  }}
+                  data-is-active={equal(currentGasRate, gasRateValue) ? 1 : 0}
+                >
+                  <Typography variant="h7">{buttonText}</Typography>
+                </FeeButton>
+              );
+            })}
           </FeeButtonContainer>
         </Container>
         <GasSettingDialog

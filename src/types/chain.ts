@@ -22,13 +22,9 @@ export type CommonChain = {
   imageURL?: string;
 };
 
-export type GasRate = {
-  tiny: string;
-  low: string;
-  average: string;
-};
+export type GasRate = Record<string, string>;
 
-export type GasRateKey = keyof GasRate;
+export type GasRateKey = string;
 
 export type Gas = {
   send?: string;

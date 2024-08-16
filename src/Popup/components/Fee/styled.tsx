@@ -89,8 +89,8 @@ export const GasButton = styled('button')(({ theme }) => ({
 }));
 
 export const FeeButtonContainer = styled('div')({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr',
+  display: 'flex',
+
   columnGap: '0.6rem',
 });
 
@@ -101,11 +101,10 @@ type FeeButtonProps = {
 export const FeeButton = styled('button')<FeeButtonProps>(({ theme, ...props }) => ({
   border: 0,
 
+  width: '100%',
   height: '2rem',
 
   borderRadius: '5rem',
-
-  minWidth: '5.6rem',
 
   backgroundColor: props['data-is-active'] ? theme.accentColors.purple01 : theme.colors.base03,
   color: props['data-is-active'] ? theme.accentColors.white : theme.colors.text02,
