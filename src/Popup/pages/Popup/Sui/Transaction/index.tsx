@@ -1,8 +1,8 @@
-import { SUI } from '~/constants/chain/sui/sui';
-import ErrorPage from '~/Popup/components/ErrorPage';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
+import { SUI } from '~/constants/chain/sui/sui';
+import ErrorPage from '~/Popup/components/ErrorPage';
 import Lock from '~/Popup/components/Lock';
 import AccessRequest from '~/Popup/components/requests/AccessRequest';
 import LedgerPublicKeyRequest from '~/Popup/components/requests/LedgerPublicKeyRequest';
