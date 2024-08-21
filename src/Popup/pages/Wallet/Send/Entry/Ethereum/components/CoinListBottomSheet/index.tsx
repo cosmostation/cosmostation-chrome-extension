@@ -46,11 +46,8 @@ export default function CoinListBottomSheet({ currentToken, onClickCoin, onClose
   const [search, setSearch] = useState('');
   const [debouncedSearch, { isPending, flush }] = useDebounce(search, 300);
 
-  useEffect(() => {
-    if (remainder.open) {
-      setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0);
-    }
-  }, [remainder.open]);
+  const isPendingDebounce = isPending();
+  const isSearchLoading = useMemo(() => isPendingDebounce && search.length > 1, [isPendingDebounce, search.length]);
 
   const tokens = useMemo(() => [null, ...currentEthereumTokens], [currentEthereumTokens]);
 
@@ -67,6 +64,12 @@ export default function CoinListBottomSheet({ currentToken, onClickCoin, onClose
         : tokens.slice(0, viewLimit) || [],
     [debouncedSearch, tokens, viewLimit],
   );
+
+  useEffect(() => {
+    if (remainder.open) {
+      setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 0);
+    }
+  }, [remainder.open]);
 
   useEffect(() => {
     if (debouncedSearch.length > 1) {
@@ -120,7 +123,7 @@ export default function CoinListBottomSheet({ currentToken, onClickCoin, onClose
             setSearch(event.currentTarget.value);
           }}
         />
-        {isPending() ? (
+        {isSearchLoading ? (
           <ContentContainer>
             <StyledCircularProgress size="2.8rem" />
           </ContentContainer>

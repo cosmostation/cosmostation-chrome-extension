@@ -48,6 +48,9 @@ export default function CoinListBottomSheet({ currentCoinType, onClickCoin, onCl
   const [search, setSearch] = useState('');
   const [debouncedSearch, { isPending, flush }] = useDebounce(search, 300);
 
+  const isPendingDebounce = isPending();
+  const isSearchLoading = useMemo(() => isPendingDebounce && search.length > 1, [isPendingDebounce, search.length]);
+
   const ref = useRef<HTMLButtonElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
 
@@ -148,7 +151,7 @@ export default function CoinListBottomSheet({ currentCoinType, onClickCoin, onCl
             setSearch(event.currentTarget.value);
           }}
         />
-        {isPending() ? (
+        {isSearchLoading ? (
           <ContentContainer>
             <StyledCircularProgress size="2.8rem" />
           </ContentContainer>

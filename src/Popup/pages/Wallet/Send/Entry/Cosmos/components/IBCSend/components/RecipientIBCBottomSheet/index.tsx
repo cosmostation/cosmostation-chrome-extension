@@ -52,6 +52,9 @@ export default function RecipientIBCListBottomSheet({
   const [search, setSearch] = useState('');
   const [debouncedSearch, { isPending, flush }] = useDebounce(search, 300);
 
+  const isPendingDebounce = isPending();
+  const isSearchLoading = useMemo(() => isPendingDebounce && search.length > 1, [isPendingDebounce, search.length]);
+
   const filteredRecipientList = useMemo(
     () =>
       debouncedSearch.length > 1
@@ -106,7 +109,7 @@ export default function RecipientIBCListBottomSheet({
             setSearch(event.currentTarget.value);
           }}
         />
-        {isPending() ? (
+        {isSearchLoading ? (
           <ContentContainer>
             <StyledCircularProgress size="2.8rem" />
           </ContentContainer>
