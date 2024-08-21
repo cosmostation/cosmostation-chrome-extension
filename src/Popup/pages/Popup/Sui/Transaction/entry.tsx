@@ -2,17 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 import Sui from '@mysten/ledgerjs-hw-app-sui';
-import {
-  Connection,
-  Ed25519Keypair,
-  Ed25519PublicKey,
-  IntentScope,
-  JsonRpcProvider,
-  messageWithIntent,
-  RawSigner,
-  toSerializedSignature,
-  TransactionBlock,
-} from '@mysten/sui.js';
+import { bcs } from '@mysten/sui/bcs';
+import { SuiClient } from '@mysten/sui/client';
+import { messageWithIntent, toSerializedSignature } from '@mysten/sui/cryptography';
+import { Ed25519Keypair, Ed25519PublicKey } from '@mysten/sui/keypairs/ed25519';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { SUI } from '~/constants/chain/sui/sui';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
@@ -40,7 +34,7 @@ import { gt, minus, plus, times, toDisplayDenomAmount } from '~/Popup/utils/big'
 import { getKeyPair } from '~/Popup/utils/common';
 import { responseToWeb } from '~/Popup/utils/message';
 import type { Queue } from '~/types/extensionStorage';
-import type { SuiSignAndExecuteTransactionBlock } from '~/types/message/sui';
+import type { SuiSignAndExecuteTransaction, SuiSignAndExecuteTransactionBlock, SuiSignTransaction, SuiSignTransactionBlock } from '~/types/message/sui';
 import type { Path } from '~/types/route';
 
 import Tx from './components/Tx';
@@ -66,7 +60,7 @@ import {
 import Info16Icon from '~/images/icons/Info16.svg';
 
 type EntryProps = {
-  queue: Queue<SuiSignAndExecuteTransactionBlock>;
+  queue: Queue<SuiSignAndExecuteTransactionBlock | SuiSignTransactionBlock | SuiSignAndExecuteTransaction | SuiSignTransaction>;
 };
 
 export default function Entry({ queue }: EntryProps) {
@@ -110,38 +104,31 @@ export default function Entry({ queue }: EntryProps) {
 
   const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
 
-  const provider = useMemo(
-    () =>
-      new JsonRpcProvider(
-        new Connection({
-          fullnode: currentSuiNetwork.rpcURL,
-        }),
-      ),
-    [currentSuiNetwork.rpcURL],
-  );
+  const client = useMemo(() => new SuiClient({ url: currentSuiNetwork.rpcURL }), [currentSuiNetwork.rpcURL]);
 
-  const transactionBlock = useMemo(() => {
-    const txBlock = TransactionBlock.from(params[0].transactionBlockSerialized);
+  const transaction = useMemo(() => {
+    const txBlock = Transaction.from(params[0].transactionBlockSerialized);
     txBlock.setSenderIfNotSet(address);
 
     return txBlock;
   }, [address, params]);
 
-  const transactionBlockInput = useMemo(
-    () => ({
-      ...params[0],
-      options: {
+  const transactionBlockResponseOptions = useMemo(() => {
+    if (message.method === 'sui_signAndExecuteTransactionBlock' || message.method === 'sui_signAndExecuteTransaction') {
+      const inputOptions = 'options' in params[0] ? params[0].options : undefined;
+
+      return {
         showInput: true,
         showEffects: true,
         showEvents: true,
-        ...params[0]?.options,
-      },
-      transactionBlockSerialized: undefined,
-      transactionBlock,
-    }),
-    [params, transactionBlock],
-  );
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ transactionBlock });
+        ...inputOptions,
+      };
+    }
+
+    return undefined;
+  }, [message.method, params]);
+
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ transaction });
 
   const { data: coinMetadata } = useGetCoinMetadataSWR({ coinType: SUI_COIN });
 
@@ -172,7 +159,8 @@ export default function Entry({ queue }: EntryProps) {
     setTabValue(newTabValue);
   }, []);
 
-  const baseBudgetFee = useMemo(() => transactionBlock.blockData?.gasConfig?.budget || 0, [transactionBlock.blockData?.gasConfig?.budget]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const baseBudgetFee = useMemo(() => transaction.getData().gasData.budget || '0', [transaction.getData().gasData.budget]);
 
   const displayBudgetFee = useMemo(() => toDisplayDenomAmount(baseBudgetFee, decimals), [baseBudgetFee, decimals]);
 
@@ -209,7 +197,7 @@ export default function Entry({ queue }: EntryProps) {
           <Tab label="Data" />
         </Tabs>
         <StyledTabPanel value={tabValue} index={0}>
-          <TxMessage transactionBlock={transactionBlock} />
+          <TxMessage transaction={transaction} />
           <FeeContainer>
             <FeeInfoContainer>
               <FeeLeftContainer>
@@ -256,7 +244,7 @@ export default function Entry({ queue }: EntryProps) {
           </FeeContainer>
         </StyledTabPanel>
         <StyledTabPanel value={tabValue} index={1}>
-          <Tx transactionBlock={transactionBlock} />
+          <Tx transaction={transaction} />
         </StyledTabPanel>
       </ContentContainer>
       <BottomContainer>
@@ -300,25 +288,106 @@ export default function Entry({ queue }: EntryProps) {
                     setIsProgress(true);
 
                     if (currentAccount.type === 'MNEMONIC' || currentAccount.type === 'PRIVATE_KEY') {
-                      const keypair = Ed25519Keypair.fromSecretKey(keyPair!.privateKey!);
+                      if (!keyPair?.privateKey) {
+                        throw new Error('key does not exist');
+                      }
 
-                      const rawSigner = new RawSigner(keypair, provider);
+                      const keypair = Ed25519Keypair.fromSecretKey(keyPair.privateKey);
 
-                      const response = await rawSigner.signAndExecuteTransactionBlock(transactionBlockInput);
+                      if (message.method === 'sui_signTransactionBlock' || message.method === 'sui_signTransaction') {
+                        const encoded = await transaction.build({
+                          client,
+                        });
 
-                      responseToWeb({
-                        response: {
-                          result: response,
-                        },
-                        message,
-                        messageId,
-                        origin,
-                      });
+                        const response = await keypair.signTransaction(encoded);
 
-                      if (queue.channel === 'inApp' && response.digest) {
-                        await deQueue(`/popup/tx-receipt/${response.digest}` as unknown as Path);
-                      } else {
+                        const result = (() => {
+                          if (message.method === 'sui_signTransactionBlock') {
+                            return {
+                              transactionBlockBytes: response.bytes,
+                              signature: response.signature,
+                            };
+                          }
+
+                          if (message.method === 'sui_signTransaction') {
+                            return {
+                              bytes: response.bytes,
+                              signature: response.signature,
+                            };
+                          }
+
+                          return undefined;
+                        })();
+
+                        if (!result) {
+                          throw new Error('Failed to sign transaction');
+                        }
+
+                        responseToWeb({
+                          response: {
+                            result,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
+
                         await deQueue();
+                      }
+
+                      if (message.method === 'sui_signAndExecuteTransactionBlock' || message.method === 'sui_signAndExecuteTransaction') {
+                        const response = await client.signAndExecuteTransaction({
+                          signer: keypair,
+                          transaction,
+                          options: transactionBlockResponseOptions,
+                        });
+
+                        const result = (() => {
+                          if (message.method === 'sui_signAndExecuteTransactionBlock') {
+                            return {
+                              ...response,
+                            };
+                          }
+
+                          if (message.method === 'sui_signAndExecuteTransaction') {
+                            const [
+                              {
+                                txSignatures: [transactionSignature],
+                                intentMessage: { value: bcsTransaction },
+                              },
+                            ] = bcs.SenderSignedData.parse(Buffer.from(response.rawTransaction!, 'base64'));
+
+                            const bytes = bcs.TransactionData.serialize(bcsTransaction).toBase64();
+
+                            return {
+                              digest: response.digest,
+                              effects: Buffer.from(new Uint8Array(response.rawEffects!)).toString('base64'),
+                              bytes,
+                              signature: transactionSignature,
+                            };
+                          }
+
+                          return undefined;
+                        })();
+
+                        if (!result) {
+                          throw new Error('Failed to sign and execute transaction');
+                        }
+
+                        responseToWeb({
+                          response: {
+                            result,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
+
+                        if (queue.channel === 'inApp' && response.digest) {
+                          await deQueue(`/popup/tx-receipt/${response.digest}` as unknown as Path);
+                        } else {
+                          await deQueue();
+                        }
                       }
                     }
 
@@ -329,9 +398,9 @@ export default function Entry({ queue }: EntryProps) {
 
                       const path = `${chain.bip44.purpose}/${chain.bip44.coinType}/${chain.bip44.account}/${chain.bip44.change}/${currentAccount.bip44.addressIndex}'`;
 
-                      const transactionBlockBytes = await transactionBlock.build({ provider });
+                      const transactionBlockBytes = await transaction.build({ client });
 
-                      const intentMessage = messageWithIntent(IntentScope.TransactionData, transactionBlockBytes);
+                      const intentMessage = messageWithIntent('TransactionData', transactionBlockBytes);
 
                       const { signature } = await suiApp.signTransaction(path, intentMessage);
 
@@ -339,35 +408,99 @@ export default function Entry({ queue }: EntryProps) {
                         throw new Error('public key is not found');
                       }
 
-                      const pubKey = new Ed25519PublicKey(keyPair.publicKey);
+                      const publicKey = new Ed25519PublicKey(keyPair.publicKey);
 
-                      const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', pubKey });
+                      const serializedSignature = toSerializedSignature({ signature, signatureScheme: 'ED25519', publicKey });
 
-                      const response = await provider.executeTransactionBlock({
-                        transactionBlock: transactionBlockBytes,
-                        signature: serializedSignature,
-                      });
+                      if (message.method === 'sui_signTransactionBlock' || message.method === 'sui_signTransaction') {
+                        const result = (() => {
+                          if (message.method === 'sui_signTransactionBlock') {
+                            return {
+                              transactionBlockBytes: Buffer.from(transactionBlockBytes).toString('base64'),
+                              signature: serializedSignature,
+                            };
+                          }
 
-                      const txBlock = await provider.getTransactionBlock({
-                        digest: response.digest,
-                        options: {
-                          showInput: true,
-                          showEffects: true,
-                          showEvents: true,
-                          ...params[0]?.options,
-                        },
-                      });
+                          if (message.method === 'sui_signTransaction') {
+                            return {
+                              bytes: Buffer.from(transactionBlockBytes).toString('base64'),
+                              signature: serializedSignature,
+                            };
+                          }
 
-                      responseToWeb({
-                        response: {
-                          result: txBlock,
-                        },
-                        message,
-                        messageId,
-                        origin,
-                      });
+                          return undefined;
+                        })();
 
-                      await deQueue();
+                        if (!result) {
+                          throw new Error('Failed to sign transaction');
+                        }
+
+                        responseToWeb({
+                          response: {
+                            result,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
+
+                        await deQueue();
+                      }
+
+                      if (message.method === 'sui_signAndExecuteTransactionBlock' || message.method === 'sui_signAndExecuteTransaction') {
+                        const response = await client.executeTransactionBlock({
+                          transactionBlock: transactionBlockBytes,
+                          signature: serializedSignature,
+                        });
+
+                        const txBlock = await client.getTransactionBlock({
+                          digest: response.digest,
+                          options: transactionBlockResponseOptions,
+                        });
+
+                        const result = (() => {
+                          if (message.method === 'sui_signAndExecuteTransactionBlock') {
+                            return {
+                              ...txBlock,
+                            };
+                          }
+
+                          if (message.method === 'sui_signAndExecuteTransaction') {
+                            const [
+                              {
+                                txSignatures: [transactionSignature],
+                                intentMessage: { value: bcsTransaction },
+                              },
+                            ] = bcs.SenderSignedData.parse(Buffer.from(txBlock.rawTransaction!, 'base64'));
+
+                            const bytes = bcs.TransactionData.serialize(bcsTransaction).toBase64();
+
+                            return {
+                              digest: txBlock.digest,
+                              effects: Buffer.from(new Uint8Array(txBlock.rawEffects!)).toString('base64'),
+                              bytes,
+                              signature: transactionSignature,
+                            };
+                          }
+
+                          return undefined;
+                        })();
+
+                        if (!result) {
+                          throw new Error('Failed to sign and execute transaction');
+                        }
+
+                        responseToWeb({
+                          response: {
+                            result: txBlock,
+                          },
+                          message,
+                          messageId,
+                          origin,
+                        });
+
+                        await deQueue();
+                      }
                     }
                   } catch (e) {
                     enqueueSnackbar((e as { message: string }).message, { variant: 'error' });

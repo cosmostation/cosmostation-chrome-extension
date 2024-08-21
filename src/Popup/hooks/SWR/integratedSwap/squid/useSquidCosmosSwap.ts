@@ -22,6 +22,7 @@ import { useClientStateSWR } from '../../cosmos/useClientStateSWR';
 import { useGasMultiplySWR } from '../../cosmos/useGasMultiplySWR';
 import { useNodeInfoSWR } from '../../cosmos/useNodeinfoSWR';
 import { useSimulateSWR } from '../../cosmos/useSimulateSWR';
+import { useChainIdToAssetNameMapsSWR } from '../../useChainIdToAssetNameMapsSWR';
 import { useCoinGeckoPriceSWR } from '../../useCoinGeckoPriceSWR';
 
 type UseSquidCosmosSwapProps = {
@@ -64,6 +65,7 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
   const account = useAccountSWR(fromChain || COSMOS_CHAINS[0]);
   const nodeInfo = useNodeInfoSWR(fromChain || COSMOS_CHAINS[0]);
   const cosmosFromTokenAssets = useCosmosAssetsSWR(fromChain?.line === COSMOS.line ? fromChain : undefined);
+  const { chainIdToAssetNameMaps } = useChainIdToAssetNameMapsSWR();
 
   const { extensionStorage } = useExtensionStorage();
 
@@ -242,13 +244,13 @@ export function useSquidCosmosSwap(squidSwapProps?: UseSquidCosmosSwapProps) {
     const asset = assets.data?.find((item) => item.channel === chainInfo.channelId && item.port === chainInfo.port);
 
     if (asset?.origin_chain) {
-      return convertAssetNameToCosmos(asset.origin_chain);
+      return convertAssetNameToCosmos(asset.origin_chain, chainIdToAssetNameMaps);
     }
 
     const transferMsg = parsedSquidSwapTx?.msgTypeUrl === '/ibc.applications.transfer.v1.MsgTransfer' ? parsedSquidSwapTx : undefined;
 
     return findCosmosChainByAddress(transferMsg?.msg.receiver);
-  }, [assets.data, parsedSquidSwapTx, chainInfo.channelId, chainInfo.port]);
+  }, [assets.data, chainIdToAssetNameMaps, chainInfo.channelId, chainInfo.port, parsedSquidSwapTx]);
 
   const channelChainLatestBlock = useBlockLatestSWR(channelChain);
 

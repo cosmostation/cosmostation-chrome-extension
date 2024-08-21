@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import QRCode from 'qrcode.react';
 import { Typography } from '@mui/material';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useBlockExplorerURLSWR } from '~/Popup/hooks/SWR/ethereum/useBlockExplorerURLSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
@@ -36,9 +38,11 @@ export default function Ethereum({ chain }: EthereumProps) {
 
   const { t } = useTranslation();
 
-  const { explorerURL } = currentEthereumNetwork;
+  const { getExplorerAccountURL } = useBlockExplorerURLSWR(currentEthereumNetwork);
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
+
+  const explorerAccountURL = useMemo(() => getExplorerAccountURL(currentAddress), [currentAddress, getExplorerAccountURL]);
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
@@ -53,8 +57,8 @@ export default function Ethereum({ chain }: EthereumProps) {
             <Typography variant="h6">{t('pages.Wallet.Receive.Entry.Ethereum.address')}</Typography>
           </TitleContainer>
           <ButtonContainer>
-            {explorerURL && (
-              <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${currentAddress}`)}>
+            {explorerAccountURL && (
+              <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
                 <ExplorerIcon />
               </StyledIconButton>
             )}

@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
-import type { TransactionBlock as TransactionBlockType } from '@mysten/sui.js';
-import { TransactionBlock } from '@mysten/sui.js';
+import type { Transaction as TransactionType } from '@mysten/sui/transactions';
+import { Transaction } from '@mysten/sui/transactions';
 
 import { SUI_COIN, SUI_TOKEN_TEMPORARY_DECIMALS } from '~/constants/sui';
 import AccountAddressBookBottomSheet from '~/Popup/components/AccountAddressBookBottomSheet';
@@ -21,6 +21,7 @@ import { useCurrentQueue } from '~/Popup/hooks/useCurrent/useCurrentQueue';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { gt, isDecimal, lte, minus, plus, times, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
+import { debouncedOpenTab } from '~/Popup/utils/extensionTabs';
 import { suiAddressRegex } from '~/Popup/utils/regex';
 import type { SuiChain } from '~/types/chain';
 
@@ -88,20 +89,20 @@ export default function Sui({ chain }: SuiProps) {
 
   const filteredOwnedEqualCoins = useMemo(() => ownedEqualCoins?.result?.data.filter((item) => !item.lockedUntilEpoch), [ownedEqualCoins?.result?.data]);
 
-  const sendTxBlock = useMemo<TransactionBlockType | undefined>(() => {
-    if (!debouncedCurrentDisplayAmount) {
+  const sendTxBlock = useMemo<TransactionType | undefined>(() => {
+    if (!debouncedCurrentDisplayAmount || !currentAddress) {
       return undefined;
     }
-    const tx = new TransactionBlock();
+    const tx = new Transaction();
 
     tx.setSenderIfNotSet(address);
 
     const [primaryCoin, ...mergeCoins] = filteredOwnedEqualCoins?.filter((coin) => coin.coinType === currentCoinType) || [];
 
     if (currentCoinType === SUI_COIN) {
-      const [coin] = tx.splitCoins(tx.gas, [tx.pure(baseAmount)]);
+      const [coin] = tx.splitCoins(tx.gas, [baseAmount]);
 
-      tx.transferObjects([coin], tx.pure(currentAddress));
+      tx.transferObjects([coin], currentAddress);
     } else if (primaryCoin) {
       const primaryCoinInput = tx.object(primaryCoin.coinObjectId);
       if (mergeCoins.length) {
@@ -110,14 +111,14 @@ export default function Sui({ chain }: SuiProps) {
           mergeCoins.map((coin) => tx.object(coin.coinObjectId)),
         );
       }
-      const coin = tx.splitCoins(primaryCoinInput, [tx.pure(baseAmount)]);
-      tx.transferObjects([coin], tx.pure(currentAddress));
+      const coin = tx.splitCoins(primaryCoinInput, [baseAmount]);
+      tx.transferObjects([coin], currentAddress);
     }
 
     return tx;
   }, [address, baseAmount, currentAddress, currentCoinType, debouncedCurrentDisplayAmount, filteredOwnedEqualCoins]);
 
-  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ transactionBlock: sendTxBlock });
+  const { data: dryRunTransaction, error: dryRunTransactionError } = useDryRunTransactionBlockSWR({ transaction: sendTxBlock });
 
   const currentGasBudget = useMemo(() => {
     if (dryRunTransaction?.result?.effects.status.status === 'success') {
@@ -265,10 +266,22 @@ export default function Sui({ chain }: SuiProps) {
                     origin: '',
                     channel: 'inApp',
                     message: {
-                      method: 'sui_signAndExecuteTransactionBlock',
-                      params: [{ transactionBlockSerialized: sendTxBlock.serialize() }],
+                      method: 'sui_signAndExecuteTransaction',
+                      params: [
+                        {
+                          transactionBlockSerialized: await sendTxBlock.toJSON(),
+                          options: {
+                            showRawEffects: true,
+                            showRawInput: true,
+                          },
+                        },
+                      ],
                     },
                   });
+
+                  if (currentAccount.type === 'LEDGER') {
+                    await debouncedOpenTab();
+                  }
                 }
               }}
             >

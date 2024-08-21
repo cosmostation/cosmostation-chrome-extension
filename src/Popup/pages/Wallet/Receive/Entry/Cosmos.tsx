@@ -1,9 +1,11 @@
+import { useMemo } from 'react';
 import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import QRCode from 'qrcode.react';
 import { Typography } from '@mui/material';
 
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
+import { useBlockExplorerURLSWR } from '~/Popup/hooks/SWR/cosmos/useBlockExplorerURLSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import type { CosmosChain } from '~/types/chain';
@@ -34,9 +36,11 @@ export default function Cosmos({ chain }: CosmosProps) {
 
   const { t } = useTranslation();
 
-  const { explorerURL } = chain;
+  const { getExplorerAccountURL } = useBlockExplorerURLSWR(chain);
 
   const currentAddress = accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '';
+
+  const explorerAccountURL = useMemo(() => getExplorerAccountURL(currentAddress), [currentAddress, getExplorerAccountURL]);
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
@@ -51,8 +55,8 @@ export default function Cosmos({ chain }: CosmosProps) {
             <Typography variant="h6">{t('pages.Wallet.Receive.Entry.Cosmos.address')}</Typography>
           </TitleContainer>
           <ButtonContainer>
-            {explorerURL && (
-              <StyledIconButton onClick={() => window.open(`${explorerURL}/address/${currentAddress}`)}>
+            {explorerAccountURL && (
+              <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
                 <ExplorerIcon />
               </StyledIconButton>
             )}

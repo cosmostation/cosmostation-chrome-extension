@@ -8,9 +8,9 @@ import { convertToValidatorAddress, cosmosURL } from '~/Popup/utils/cosmos';
 import type { CosmosChain } from '~/types/chain';
 import type { CommissionPayload } from '~/types/cosmos/commission';
 
+import { useParamsSWR } from './useParamsSWR';
 import { useExtensionStorage } from '../../useExtensionStorage';
 import { useAccounts } from '../cache/useAccounts';
-import { useParamsSWR } from '../useParamsSWR';
 
 export function useCommissionSWR(chain: CosmosChain, validatorAddress?: string, config?: SWRConfiguration) {
   const accounts = useAccounts();

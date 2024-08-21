@@ -25,9 +25,9 @@ export const ARCHWAY: CosmosChain = {
   coinGeckoId: 'archway',
   explorerURL: `${MINTSCAN_URL}/archway`,
   gasRate: {
-    tiny: '0',
-    low: '0',
-    average: '0',
+    tiny: '140000000000',
+    low: '140000000000',
+    average: '140000000000',
   },
   gas: { send: '100000' },
   cosmWasm: true,

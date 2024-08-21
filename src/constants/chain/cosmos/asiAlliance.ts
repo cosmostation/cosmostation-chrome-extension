@@ -1,17 +1,17 @@
 import { MINTSCAN_URL } from '~/constants/common';
-import fetchaiChainImg from '~/images/chainImgs/fetchai.png';
-import fetchaiTokenImg from '~/images/symbols/fet.png';
+import asiAllianceChainImg from '~/images/chainImgs/asiAlliance.png';
+import asiAllianceTokenImg from '~/images/symbols/asi-alliance.png';
 import type { CosmosChain } from '~/types/chain';
 
-export const FETCH_AI: CosmosChain = {
+export const ASI_ALLIANCE: CosmosChain = {
   id: '3b8e015e-ab6c-4095-9dd8-57e62f437f4f',
   line: 'COSMOS',
   type: '',
   chainId: 'fetchhub-4',
-  chainName: 'FETCH.AI',
+  chainName: 'ASI ALLIANCE',
   restURL: 'https://lcd-fetchai.cosmostation.io',
-  tokenImageURL: fetchaiTokenImg,
-  imageURL: fetchaiChainImg,
+  tokenImageURL: asiAllianceTokenImg,
+  imageURL: asiAllianceChainImg,
   baseDenom: 'afet',
   displayDenom: 'FET',
   decimals: 18,

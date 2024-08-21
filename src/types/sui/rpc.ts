@@ -1,4 +1,4 @@
-import type { DelegatedStake, DryRunTransactionBlockResponse, SuiObjectResponse, SuiSystemStateSummary, SuiTransactionBlockResponse } from '@mysten/sui.js';
+import type { DelegatedStake, DryRunTransactionBlockResponse, SuiObjectResponse, SuiSystemStateSummary, SuiTransactionBlockResponse } from '@mysten/sui/client';
 
 export type Body = {
   method: string;

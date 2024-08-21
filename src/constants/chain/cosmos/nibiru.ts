@@ -1,4 +1,3 @@
-import { MINTSCAN_URL } from '~/constants/common';
 import nibiruChainImg from '~/images/chainImgs/nibiru.png';
 import nibiruTokenImg from '~/images/symbols/nibi.png';
 import type { CosmosChain } from '~/types/chain';
@@ -23,7 +22,7 @@ export const NIBIRU: CosmosChain = {
   },
   bech32Prefix: { address: 'nibi' },
   coinGeckoId: 'nibiru',
-  explorerURL: `${MINTSCAN_URL}/nibiru`,
+  explorerURL: 'https://explorer.nibiru.fi',
   gasRate: {
     tiny: '0.025',
     low: '0.05',
