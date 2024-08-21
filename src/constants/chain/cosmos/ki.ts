@@ -21,6 +21,7 @@ export const KI: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'f850280f-316c-44ab-9624-c8d760dbca8c', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'ki' },
   coinGeckoId: 'ki',
   explorerURL: `${MINTSCAN_URL}/ki-chain`,

@@ -21,6 +21,7 @@ export const BITSONG: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'b00c564c-d7cd-4918-9a24-b0e46628456f', path: "m/44'/639'/0'/0" }],
   bech32Prefix: { address: 'bitsong' },
   explorerURL: `${MINTSCAN_URL}/bitsong`,
   coinGeckoId: 'bitsong',

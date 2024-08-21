@@ -21,6 +21,7 @@ export const AGORIC: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '8fcd8f46-90cf-4677-8dd6-ce90d08473cf', path: "m/44'/564'/0'/0" }],
   bech32Prefix: { address: 'agoric' },
   coinGeckoId: 'agoric',
   explorerURL: `${MINTSCAN_URL}/agoric`,

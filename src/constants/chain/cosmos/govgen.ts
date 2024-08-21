@@ -21,6 +21,7 @@ export const GOVGEN: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '110c75d9-1daa-46dc-a1e2-af0d832a7877', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'govgen' },
   explorerURL: `${MINTSCAN_URL}/govgen`,
   gasRate: {

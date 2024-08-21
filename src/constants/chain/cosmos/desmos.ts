@@ -20,6 +20,7 @@ export const DESMOS: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'd858b1e3-a202-4915-8699-214bb789077b', path: "m/44'/852'/0'/0" }],
   bech32Prefix: { address: 'desmos' },
   explorerURL: `https://bigdipper.live/desmos`,
   coinGeckoId: 'desmos',

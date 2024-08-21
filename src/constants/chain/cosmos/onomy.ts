@@ -21,6 +21,7 @@ export const ONOMY: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '784e1edd-37bd-4e93-bc2e-4a2b03f7cbbe', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'onomy' },
   coinGeckoId: 'onomy-protocol',
   explorerURL: `${MINTSCAN_URL}/onomy-protocol`,

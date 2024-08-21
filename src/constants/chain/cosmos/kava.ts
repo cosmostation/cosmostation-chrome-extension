@@ -21,6 +21,7 @@ export const KAVA: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '634e5e88-0a26-4ef5-92b5-dbf4cf040a8a', path: "m/44'/459'/0'/0" }],
   bech32Prefix: { address: 'kava' },
   coinGeckoId: 'kava',
   explorerURL: `${MINTSCAN_URL}/kava`,

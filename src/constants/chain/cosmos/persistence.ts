@@ -21,6 +21,7 @@ export const PERSISTENCE: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '58c55107-2df3-4851-a68e-fee203308be2', path: "m/44'/750'/0'/0" }],
   bech32Prefix: { address: 'persistence' },
   coinGeckoId: 'persistence',
   explorerURL: `${MINTSCAN_URL}/persistence`,

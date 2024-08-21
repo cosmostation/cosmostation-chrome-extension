@@ -14,4 +14,5 @@ export const APTOS: AptosChain = {
     account: "0'",
     change: "0'",
   },
+  derivationPaths: [{ id: 'a7476f2a-09bc-4c40-876a-57d8ebb73d49', path: "m/44'/637'/0'/0" }],
 };

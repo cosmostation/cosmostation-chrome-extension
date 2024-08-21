@@ -6,6 +6,12 @@ export type LineType = ValueOf<typeof LINE_TYPE>;
 
 export type CosmosType = ValueOf<typeof COSMOS_TYPE>;
 
+export type DerivationPath = {
+  id: string;
+  path: string;
+  algo?: string;
+};
+
 export type BIP44 = {
   purpose: string;
   coinType: string;
@@ -17,6 +23,7 @@ export type BIP44 = {
 export type CommonChain = {
   id: string;
   chainName: string;
+  derivationPaths: DerivationPath[];
   bip44: Omit<BIP44, 'addressIndex'>;
   tokenImageURL?: string;
   imageURL?: string;

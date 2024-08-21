@@ -21,6 +21,7 @@ export const COREUM: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'ba442a81-f6cc-449c-9b53-657006634413', path: "m/44'/990'/0'/0" }],
   bech32Prefix: { address: 'core' },
   coinGeckoId: 'coreum',
   explorerURL: `${MINTSCAN_URL}/coreum`,

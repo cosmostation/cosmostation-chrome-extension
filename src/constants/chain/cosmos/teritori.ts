@@ -21,6 +21,7 @@ export const TERITORI: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '61672fc9-c139-460a-9b2b-97ef3a9e98ee', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'tori' },
   coinGeckoId: 'teritori',
   explorerURL: `${MINTSCAN_URL}/teritori`,

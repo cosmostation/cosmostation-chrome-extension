@@ -21,6 +21,7 @@ export const SOMMELIER: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'aa957e00-b841-4151-8bc3-37ebb7b53e5b', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'somm' },
   coinGeckoId: 'sommelier',
   explorerURL: `${MINTSCAN_URL}/sommelier`,

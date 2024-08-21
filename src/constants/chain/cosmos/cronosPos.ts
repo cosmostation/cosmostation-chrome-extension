@@ -21,6 +21,7 @@ export const CRONOS_POS: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'a2d8ce76-33e5-48ce-add8-38c9967728fe', path: "m/44'/394'/0'/0" }],
   bech32Prefix: { address: 'cro' },
   coinGeckoId: 'crypto-com-chain',
   explorerURL: `${MINTSCAN_URL}/crypto-org`,

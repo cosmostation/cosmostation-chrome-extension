@@ -21,6 +21,7 @@ export const PASSAGE: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '551b0fe2-2fe1-458e-b801-13e1337cc09b', path: "m/44'/118'/0'/0" }],
   coinGeckoId: 'passage',
   bech32Prefix: { address: 'pasg' },
   explorerURL: `${MINTSCAN_URL}/passage`,

@@ -21,6 +21,7 @@ export const PROVENANCE: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'b2326658-5a8b-4bfd-a852-b7ff3859f08c', path: "m/44'/505'/0'/0" }],
   bech32Prefix: { address: 'pb' },
   coinGeckoId: 'provenance',
   explorerURL: `${MINTSCAN_URL}/provenance`,

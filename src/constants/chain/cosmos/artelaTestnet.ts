@@ -20,6 +20,7 @@ export const ARTELA_TESTNET: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'fd33cd1d-57b4-4367-9adc-ad2dfdcfb371', path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'art' },
   explorerURL: `https://explorer.nodestake.org/artela-testnet`,
   gasRate: {

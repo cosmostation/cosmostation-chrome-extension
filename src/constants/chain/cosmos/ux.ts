@@ -21,6 +21,7 @@ export const UX: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '760481cc-5a53-42dd-a805-c7f38c363114', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'umee' },
   coinGeckoId: 'umee',
   explorerURL: `${MINTSCAN_URL}/umee`,

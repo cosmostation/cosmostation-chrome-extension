@@ -21,6 +21,7 @@ export const TERRA: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '9b08c918-d24d-4179-bc06-64a4a85c027e', path: "m/44'/330'/0'/0" }],
   bech32Prefix: { address: 'terra' },
   coinGeckoId: 'terra-luna-2',
   explorerURL: `${MINTSCAN_URL}/terra`,

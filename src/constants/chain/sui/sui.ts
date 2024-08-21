@@ -14,4 +14,5 @@ export const SUI: SuiChain = {
     account: "0'",
     change: "0'",
   },
+  derivationPaths: [{ id: 'b647feb9-f58d-4c0b-8d5a-383350b11d0f', path: "m/44'/784'/0'/0" }],
 };

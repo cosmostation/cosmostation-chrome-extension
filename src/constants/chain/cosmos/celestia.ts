@@ -21,6 +21,7 @@ export const CELESTIA: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '7fbbf631-07ac-4e9f-81aa-68c1e2c2ca49', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'celestia' },
   coinGeckoId: 'celestia',
   explorerURL: `${MINTSCAN_URL}/celestia`,

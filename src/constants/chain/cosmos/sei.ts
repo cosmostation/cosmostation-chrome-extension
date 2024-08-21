@@ -21,6 +21,7 @@ export const SEI: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'cd62e03e-8325-4064-bae9-6be22f74d176', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'sei' },
   coinGeckoId: 'sei-network',
   explorerURL: `${MINTSCAN_URL}/sei`,

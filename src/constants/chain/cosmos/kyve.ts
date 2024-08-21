@@ -21,6 +21,7 @@ export const KYVE: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '238f7de7-6d0d-4dc9-bf35-4f0ab9abdbdd', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'kyve' },
   coinGeckoId: 'kyve-network',
   explorerURL: `${MINTSCAN_URL}/kyve`,

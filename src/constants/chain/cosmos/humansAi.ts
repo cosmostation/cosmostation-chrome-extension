@@ -21,6 +21,7 @@ export const HUMANS_AI: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '9c4dc554-d9cb-4ab4-a993-7ad88bac1243', path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'human' },
   coinGeckoId: 'humans-ai',
   explorerURL: `${MINTSCAN_URL}/humans`,

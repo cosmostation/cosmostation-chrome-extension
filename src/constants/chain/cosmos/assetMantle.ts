@@ -21,6 +21,7 @@ export const ASSET_MANTLE: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'e45dbc17-1233-40e9-92c0-59152b79750d', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'mantle' },
   coinGeckoId: 'assetmantle',
   explorerURL: `${MINTSCAN_URL}/asset-mantle`,

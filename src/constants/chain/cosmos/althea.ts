@@ -21,6 +21,7 @@ export const ALTHEA: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '4f23e45c-32ae-4779-ac83-2dbbb48b558b', path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'althea' },
   coinGeckoId: 'althea',
   explorerURL: `${MINTSCAN_URL}/althea`,

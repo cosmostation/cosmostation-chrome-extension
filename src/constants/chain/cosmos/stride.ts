@@ -21,6 +21,7 @@ export const STRIDE: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '6fc2729b-2261-4306-9d64-bc8f463b229f', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'stride' },
   coinGeckoId: 'stride',
   explorerURL: `${MINTSCAN_URL}/stride`,

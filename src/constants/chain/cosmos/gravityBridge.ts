@@ -21,6 +21,7 @@ export const GRAVITY_BRIDGE: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'f21c887b-08ec-42dc-b907-aeaf5113d9f4', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'gravity' },
   explorerURL: `${MINTSCAN_URL}/gravity-bridge`,
   coinGeckoId: 'graviton',

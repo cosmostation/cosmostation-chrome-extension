@@ -21,6 +21,7 @@ export const REGEN: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '4df87360-9802-4418-a23b-22ef8a4d8cd4', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'regen' },
   coinGeckoId: 'regen',
   explorerURL: `${MINTSCAN_URL}/regen`,

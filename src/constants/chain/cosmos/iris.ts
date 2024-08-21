@@ -21,6 +21,7 @@ export const IRIS: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'd86e2b4e-e422-4b58-b687-f1de03cde152', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'iaa' },
   coinGeckoId: 'iris-network',
   explorerURL: `${MINTSCAN_URL}/iris`,

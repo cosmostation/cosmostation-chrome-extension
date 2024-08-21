@@ -21,6 +21,7 @@ export const RIZON: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '2be3f1c4-8c2e-4fc9-80c8-5877b0bb77c8', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'rizon' },
   coinGeckoId: 'rizon',
   explorerURL: `${MINTSCAN_URL}/rizon`,

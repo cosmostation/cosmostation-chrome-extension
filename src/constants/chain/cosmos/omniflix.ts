@@ -21,6 +21,7 @@ export const OMNIFLIX: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '21806ff6-d8ef-47d9-beaf-9077723e83f5', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'omniflix' },
   coinGeckoId: 'omniflix-network',
   explorerURL: `${MINTSCAN_URL}/omniflix`,

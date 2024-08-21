@@ -22,6 +22,7 @@ export const STARGAZE: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'df309f02-4dd7-4a44-9050-6dd2b5e348bc', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'stars' },
   explorerURL: `${MINTSCAN_URL}/stargaze`,
   gasRate: {

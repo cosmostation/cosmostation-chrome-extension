@@ -21,6 +21,7 @@ export const DYDX: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '70867501-f3ce-4b18-8467-a98de3b153be', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'dydx' },
   explorerURL: `${MINTSCAN_URL}/dydx`,
   coinGeckoId: 'dydx-chain',

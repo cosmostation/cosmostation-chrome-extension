@@ -21,6 +21,7 @@ export const ARCHWAY: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '5b39234a-6682-4112-8156-6fe277b4a1df', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'archway' },
   coinGeckoId: 'archway',
   explorerURL: `${MINTSCAN_URL}/archway`,

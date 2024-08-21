@@ -21,6 +21,7 @@ export const NYX: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'f7d12742-2a2f-49d0-a1cd-3c38092f670b', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'n' },
   explorerURL: `${MINTSCAN_URL}/nyx`,
   gasRate: {

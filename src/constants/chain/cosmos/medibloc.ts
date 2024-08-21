@@ -21,6 +21,7 @@ export const MEDIBLOC: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '1272070c-b1f0-455e-9bb7-ff434b5011e9', path: "m/44'/371'/0'/0" }],
   bech32Prefix: { address: 'panacea' },
   coinGeckoId: 'medibloc',
   explorerURL: `${MINTSCAN_URL}/medibloc`,

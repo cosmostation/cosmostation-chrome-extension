@@ -20,6 +20,7 @@ export const NIBIRU: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '88129745-42bd-4fef-93fb-09c5946eb93d', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'nibi' },
   coinGeckoId: 'nibiru',
   explorerURL: 'https://explorer.nibiru.fi',

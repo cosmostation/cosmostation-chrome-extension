@@ -21,6 +21,7 @@ export const SAGA: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'd5137da7-a8ce-4005-ba5b-1049b6610166', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'saga' },
   coinGeckoId: 'saga-2',
   explorerURL: `${MINTSCAN_URL}/saga`,

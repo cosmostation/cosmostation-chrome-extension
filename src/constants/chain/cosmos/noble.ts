@@ -21,6 +21,7 @@ export const NOBLE: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'd0c01aa8-dfc3-4c30-80c1-4faa8b0279a6', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'noble' },
   explorerURL: `${MINTSCAN_URL}/noble`,
   gasRate: {

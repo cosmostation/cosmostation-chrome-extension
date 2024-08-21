@@ -21,6 +21,7 @@ export const SHENTU: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'adb9dbc1-3f8d-459b-884d-7eff03111d94', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'shentu' },
   coinGeckoId: 'certik',
   explorerURL: `${MINTSCAN_URL}/shentu`,

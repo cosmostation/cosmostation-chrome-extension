@@ -21,6 +21,7 @@ export const BAND: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'c3e5474b-8cf7-467e-b6a8-706d2b694e5a', path: "m/44'/494'/0'/0" }],
   bech32Prefix: { address: 'band' },
   coinGeckoId: 'band-protocol',
   explorerURL: `${MINTSCAN_URL}/band`,

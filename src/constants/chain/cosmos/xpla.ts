@@ -21,6 +21,7 @@ export const XPLA: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '4d3ffa1b-be1b-4877-92db-efeefaeb7593', path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'xpla' },
   coinGeckoId: 'xpla',
   explorerURL: `${MINTSCAN_URL}/xpla`,

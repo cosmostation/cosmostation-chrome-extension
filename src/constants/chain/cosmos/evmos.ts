@@ -21,6 +21,7 @@ export const EVMOS: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '086983eb-26dd-4792-a4bb-c8b280b854e3', path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'evmos' },
   coinGeckoId: 'evmos',
   explorerURL: `${MINTSCAN_URL}/evmos`,

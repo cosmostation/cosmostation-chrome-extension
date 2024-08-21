@@ -21,6 +21,7 @@ export const ZETA: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '54d1a2c7-e05c-4f17-8d0e-4735b78a2ebc', path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'zeta' },
   coinGeckoId: 'zetachain',
   explorerURL: `${MINTSCAN_URL}/zeta`,

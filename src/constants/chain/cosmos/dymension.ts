@@ -21,6 +21,7 @@ export const DYMENSION: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '26d38114-b574-4a81-a0fe-781771aa70b1', path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'dym' },
   coinGeckoId: 'dymension',
   explorerURL: `${MINTSCAN_URL}/dymension`,

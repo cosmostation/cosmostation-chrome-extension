@@ -21,6 +21,7 @@ export const SENTINEL: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '8c72318f-8279-4d37-a457-1cd4c0b1f160', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'sent' },
   coinGeckoId: 'sentinel',
   explorerURL: `${MINTSCAN_URL}/sentinel`,

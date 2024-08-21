@@ -21,6 +21,7 @@ export const FINSCHIA: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '107ebcef-bf2e-4fd6-b582-4bcb22cf9138', path: "m/44'/438'/0'/0" }],
   bech32Prefix: { address: 'link' },
   coinGeckoId: 'link',
   explorerURL: `${MINTSCAN_URL}/finschia`,

@@ -20,6 +20,7 @@ export const LIKE_COIN: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '024316b6-fd43-4023-9dcc-9f1eafba6730', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'like' },
   coinGeckoId: 'likecoin',
   explorerURL: `https://atomscan.com/likecoin`,

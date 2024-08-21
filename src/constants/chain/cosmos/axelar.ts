@@ -21,6 +21,7 @@ export const AXELAR: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '363e8d9c-eb47-4889-90a0-ddb3e28d1e7e', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'axelar' },
   coinGeckoId: 'axelar',
   explorerURL: `${MINTSCAN_URL}/axelar`,

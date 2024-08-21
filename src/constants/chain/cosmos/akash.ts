@@ -21,6 +21,7 @@ export const AKASH: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: 'b869bcf8-f489-443a-9be4-56cac21f6f53', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'akash' },
   coinGeckoId: 'akash-network',
   explorerURL: `${MINTSCAN_URL}/akash`,

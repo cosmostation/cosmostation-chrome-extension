@@ -21,6 +21,7 @@ export const SECRET: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '3269fe63-ff47-4837-aa4a-ef8f4a806493', path: "m/44'/529'/0'/0" }],
   bech32Prefix: { address: 'secret' },
   coinGeckoId: 'secret',
   explorerURL: `${MINTSCAN_URL}/secret`,

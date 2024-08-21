@@ -21,6 +21,7 @@ export const NEUTRON: CosmosChain = {
     account: "0'",
     change: '0',
   },
+  derivationPaths: [{ id: '04c17220-88ee-478c-84c8-44c716b8562e', path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'neutron' },
   explorerURL: `${MINTSCAN_URL}/neutron`,
   coinGeckoId: 'neutron-3',
