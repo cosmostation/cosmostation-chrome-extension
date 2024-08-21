@@ -1,6 +1,6 @@
 import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/extensionStorage';
 import type { PERMISSION } from '~/constants/sui';
-import type { AptosNetwork, BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken, SuiNetwork } from '~/types/chain';
+import type { AptosNetwork, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken, SuiNetwork } from '~/types/chain';
 import type { TransportType } from '~/types/ledger';
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
@@ -32,7 +32,7 @@ export type AccountName = Record<AccountCommon['id'], string>;
 export type MnemonicAccount = {
   type: typeof ACCOUNT_TYPE.MNEMONIC;
   encryptedMnemonic: string;
-  bip44: Omit<BIP44, 'purpose' | 'coinType' | 'account' | 'change'>;
+  bip44: { addressIndex: string };
   encryptedPassword: string;
   encryptedRestoreString: string;
 };
@@ -46,7 +46,7 @@ export type PrivateKeyAccount = {
 
 export type LedgerAccount = {
   type: typeof ACCOUNT_TYPE.LEDGER;
-  bip44: Omit<BIP44, 'purpose' | 'coinType' | 'account' | 'change'>;
+  bip44: { addressIndex: string };
 
   cosmosPublicKey?: string;
   ethereumPublicKey?: string;
