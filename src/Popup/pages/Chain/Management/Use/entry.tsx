@@ -3,8 +3,9 @@ import { useSnackbar } from 'notistack';
 import { useDebounce } from 'use-debounce';
 import { InputAdornment, Typography } from '@mui/material';
 
-import { APTOS_NETWORKS, COSMOS_CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
+import { APTOS_NETWORKS, BITCOIN_NETWORKS, COSMOS_CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
+import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -12,11 +13,12 @@ import Divider from '~/Popup/components/common/Divider';
 import Image from '~/Popup/components/common/Image';
 import { useCurrentAllowedChains } from '~/Popup/hooks/useCurrent/useCurrentAllowedChains';
 import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
+import { useCurrentShownBitcoinNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownBitcoinNetworks';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useCurrentShownSuiNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownSuiNetworks';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
-import type { AptosNetwork, Chain, EthereumNetwork, SuiNetwork } from '~/types/chain';
+import type { AptosNetwork, BitcoinNetwork, Chain, EthereumNetwork, SuiNetwork } from '~/types/chain';
 
 import SubItem from './components/SubItem';
 import {
@@ -45,12 +47,15 @@ export default function Entry() {
   const { addShownEthereumNetwork, removeShownEthereumNetwork } = useCurrentShownEthereumNetworks();
   const { addShownAptosNetwork, removeShownAptosNetwork } = useCurrentShownAptosNetworks();
   const { addShownSuiNetwork, removeShownSuiNetwork } = useCurrentShownSuiNetworks();
+  const { addShownBitcoinNetwork, removeShownBitcoinNetwork } = useCurrentShownBitcoinNetworks();
+
   const [isExpandedEthereum, setIsExpandedEthereum] = useState<boolean>(false);
   const [isExpandedCosmos, setIsExpandedCosmos] = useState<boolean>(false);
   const [isExpandedAptos, setIsExpandedAptos] = useState<boolean>(false);
   const [isExpandedSui, setIsExpandedSui] = useState<boolean>(false);
+  const [isExpandedBitcoin, setIsExpandedBitcoin] = useState<boolean>(false);
 
-  const handleChange = (panel: 'ethereum' | 'cosmos' | 'aptos' | 'sui') => (_: React.SyntheticEvent, newExpanded: boolean) => {
+  const handleChange = (panel: 'ethereum' | 'cosmos' | 'aptos' | 'sui' | 'bitcoin') => (_: React.SyntheticEvent, newExpanded: boolean) => {
     if (panel === 'ethereum') {
       setIsExpandedEthereum(newExpanded);
     } else if (panel === 'cosmos') {
@@ -59,6 +64,8 @@ export default function Entry() {
       setIsExpandedAptos(newExpanded);
     } else if (panel === 'sui') {
       setIsExpandedSui(newExpanded);
+    } else if (panel === 'bitcoin') {
+      setIsExpandedBitcoin(newExpanded);
     }
   };
 
@@ -66,7 +73,7 @@ export default function Entry() {
 
   const { t } = useTranslation();
 
-  const { allowedChainIds, shownEthereumNetworkIds, shownAptosNetworkIds, shownSuiNetworkIds } = extensionStorage;
+  const { allowedChainIds, shownEthereumNetworkIds, shownAptosNetworkIds, shownSuiNetworkIds, shownBitcoinNetworkIds } = extensionStorage;
 
   const filteredEthereumNetworks = useMemo(() => {
     if (debouncedOpenSearch) {
@@ -92,6 +99,14 @@ export default function Entry() {
     }
 
     return debouncedCloseSearch ? (SUI.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1 ? SUI_NETWORKS : []) : SUI_NETWORKS;
+  }, [debouncedCloseSearch, debouncedOpenSearch]);
+
+  const filteredBitcoinNetworks = useMemo(() => {
+    if (debouncedOpenSearch) {
+      return BITCOIN.chainName.toLowerCase().indexOf(debouncedOpenSearch.toLowerCase()) > -1 ? BITCOIN_NETWORKS : [];
+    }
+
+    return debouncedCloseSearch ? (BITCOIN.chainName.toLowerCase().indexOf(debouncedCloseSearch.toLowerCase()) > -1 ? BITCOIN_NETWORKS : []) : BITCOIN_NETWORKS;
   }, [debouncedCloseSearch, debouncedOpenSearch]);
 
   const filteredCosmosChains = useMemo(() => {
@@ -168,6 +183,24 @@ export default function Entry() {
     }
   };
 
+  const handleOnChangeBitcoinNetwork = async (checked: boolean, network: BitcoinNetwork) => {
+    if (checked) {
+      if (shownBitcoinNetworkIds.length === 0) {
+        await addAllowedChainId(BITCOIN);
+      }
+      await addShownBitcoinNetwork(network);
+    } else if (shownBitcoinNetworkIds.length === 1) {
+      if (allowedChainIds.length < 2) {
+        enqueueSnackbar(t('pages.Chain.Management.Use.entry.removeAllowedChainError'), { variant: 'error' });
+      } else {
+        await removeShownBitcoinNetwork(network);
+        await removeAllowedChainId(BITCOIN);
+      }
+    } else {
+      await removeShownBitcoinNetwork(network);
+    }
+  };
+
   return (
     <Container>
       <StyledInput
@@ -207,6 +240,47 @@ export default function Entry() {
                     checked: shownEthereumNetworkIds.includes(network.id),
                     onChange: (_, checked) => {
                       void handleOnChangeEthereumNetwork(checked, network);
+                    },
+                  }}
+                >
+                  {network.networkName}
+                </SubItem>
+              ))
+            ) : (
+              <NoResultsContainer>
+                <NoResults16Icon />
+                <Typography variant="h6">No Results</Typography>
+              </NoResultsContainer>
+            )}
+          </StyledChainAccordionDetails>
+        </StyledChainAccordion>
+
+        <StyledChainAccordion expanded={!!debouncedOpenSearch || isExpandedBitcoin} onChange={handleChange('bitcoin')}>
+          <StyledChainAccordionSummary
+            data-is-expanded={!!debouncedOpenSearch || isExpandedBitcoin}
+            data-is-exists={!!filteredBitcoinNetworks.length}
+            aria-controls="ethereum-content"
+            id="ethereum-header"
+          >
+            <ItemLeftContainer>
+              <ItemLeftImageContainer>
+                <Image src={BITCOIN.imageURL} />
+              </ItemLeftImageContainer>
+              <ItemLeftTextContainer>
+                <Typography variant="h5">Bitcoin Networks</Typography>
+              </ItemLeftTextContainer>
+            </ItemLeftContainer>
+          </StyledChainAccordionSummary>
+          <StyledChainAccordionDetails data-is-exists={!!filteredBitcoinNetworks.length}>
+            {filteredBitcoinNetworks.length ? (
+              filteredBitcoinNetworks.map((network) => (
+                <SubItem
+                  key={network.id}
+                  imageProps={{ alt: network.networkName, src: network.imageURL }}
+                  switchProps={{
+                    checked: shownBitcoinNetworkIds.includes(network.id),
+                    onChange: (_, checked) => {
+                      void handleOnChangeBitcoinNetwork(checked, network);
                     },
                   }}
                 >

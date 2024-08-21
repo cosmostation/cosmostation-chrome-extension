@@ -162,6 +162,24 @@ export type EthereumERC20Token = {
   default?: boolean;
 };
 
-export type Chain = CosmosChain | EthereumChain | AptosChain | SuiChain;
+export type BitcoinChain = {
+  line: typeof LINE_TYPE.BITCOIN;
+  chainName: string;
+} & CommonChain;
+
+export type BitcoinNetwork = {
+  id: string;
+  networkName: string;
+  rpcURL: string;
+  displayDenom: string;
+  tokenImageURL?: string;
+  imageURL?: string;
+  explorerURL?: string;
+  coinGeckoId?: string;
+  decimals: number;
+  utxoURL: string;
+};
+
+export type Chain = CosmosChain | EthereumChain | AptosChain | SuiChain | BitcoinChain;
 
 export type EthereumToken = EthereumERC20Token;

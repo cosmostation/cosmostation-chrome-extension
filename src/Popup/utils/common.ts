@@ -7,6 +7,7 @@ import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
 import { LANGUAGE_TYPE } from '~/constants/extensionStorage';
 import { getAddress as getAptosAddress } from '~/Popup/utils/aptos';
+import { getAddress as getBitcoinAddress } from '~/Popup/utils/bitcoin';
 import { getAddress as getBech32Address, getAddressForEthermint } from '~/Popup/utils/cosmos';
 import {
   aesDecrypt,
@@ -43,6 +44,10 @@ export function getAddress(chain: Chain, publicKey?: Buffer) {
 
   if (chain.line === 'SUI') {
     return getSuiAddress(publicKey);
+  }
+
+  if (chain.line === 'BITCOIN') {
+    return getBitcoinAddress(publicKey);
   }
 
   return '';
