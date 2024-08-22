@@ -5,7 +5,7 @@ export const CANTO: EthereumNetwork = {
   id: 'd25243d2-cf65-4768-bbc0-ec439683568d',
   chainId: '0x1e14',
   networkName: COSMOS_CANTO.chainName,
-  rpcURL: 'https://rpc-canto-evm.cosmostation.io',
+  rpcURL: 'https://canto.slingshot.finance',
   tokenImageURL: COSMOS_CANTO.tokenImageURL,
   imageURL: COSMOS_CANTO.imageURL,
   displayDenom: COSMOS_CANTO.displayDenom,
