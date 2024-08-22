@@ -22,7 +22,7 @@ module.exports = {
         use: {
           loader: 'ts-loader',
           options: {
-            transpileOnly: true,
+            reportFiles: ['src/**/*.{ts,tsx}'],
           },
         },
         exclude: /node_modules/,
