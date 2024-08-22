@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import quasarChainImg from '~/images/chainImgs/quasar.png';
 import quasarTokenImg from '~/images/symbols/qsr.png';
 import type { CosmosChain } from '~/types/chain';
@@ -22,7 +23,7 @@ export const QUASAR: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '91ebd780-c673-4d47-8657-770db158f217', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '91ebd780-c673-4d47-8657-770db158f217', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'quasar' },
   explorerURL: `${MINTSCAN_URL}/quasar`,
   gasRate: {

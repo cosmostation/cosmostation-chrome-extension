@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import regenChainImg from '~/images/chainImgs/regen.png';
 import regenTokenImg from '~/images/symbols/regen.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const REGEN: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '4df87360-9802-4418-a23b-22ef8a4d8cd4', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '4df87360-9802-4418-a23b-22ef8a4d8cd4', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'regen' },
   coinGeckoId: 'regen',
   explorerURL: `${MINTSCAN_URL}/regen`,

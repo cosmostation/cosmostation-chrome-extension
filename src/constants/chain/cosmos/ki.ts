@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import kiChainImg from '~/images/chainImgs/ki.png';
 import kiTokenImg from '~/images/symbols/xki.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const KI: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'f850280f-316c-44ab-9624-c8d760dbca8c', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'f850280f-316c-44ab-9624-c8d760dbca8c', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'ki' },
   coinGeckoId: 'ki',
   explorerURL: `${MINTSCAN_URL}/ki-chain`,

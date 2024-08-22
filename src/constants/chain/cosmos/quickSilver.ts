@@ -1,3 +1,4 @@
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import quickSilverChainImg from '~/images/chainImgs/quicksilver.png';
 import quickSilverTokenImg from '~/images/symbols/qck.png';
 import type { CosmosChain } from '~/types/chain';
@@ -20,7 +21,7 @@ export const QUICK_SILVER: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '69209a86-82d8-45d5-847a-472ff9b99a13', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '69209a86-82d8-45d5-847a-472ff9b99a13', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'quick' },
   coinGeckoId: 'quicksilver',
   explorerURL: `https://quicksilver.explorers.guru`,

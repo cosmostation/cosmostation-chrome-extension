@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import axelarChainImg from '~/images/chainImgs/axelar.png';
 import axelarTokenImg from '~/images/symbols/axl.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const AXELAR: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '363e8d9c-eb47-4889-90a0-ddb3e28d1e7e', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '363e8d9c-eb47-4889-90a0-ddb3e28d1e7e', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'axelar' },
   coinGeckoId: 'axelar',
   explorerURL: `${MINTSCAN_URL}/axelar`,

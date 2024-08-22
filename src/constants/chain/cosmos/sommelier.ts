@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import sommelierChainImg from '~/images/chainImgs/sommelier.png';
 import sommelierTokenImg from '~/images/symbols/somm.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const SOMMELIER: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'aa957e00-b841-4151-8bc3-37ebb7b53e5b', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'aa957e00-b841-4151-8bc3-37ebb7b53e5b', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'somm' },
   coinGeckoId: 'sommelier',
   explorerURL: `${MINTSCAN_URL}/sommelier`,

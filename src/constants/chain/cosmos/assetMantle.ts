@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import assetmantleChainImg from '~/images/chainImgs/assetmantle.png';
 import assetmantleTokenImg from '~/images/symbols/mntl.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const ASSET_MANTLE: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'e45dbc17-1233-40e9-92c0-59152b79750d', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'e45dbc17-1233-40e9-92c0-59152b79750d', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'mantle' },
   coinGeckoId: 'assetmantle',
   explorerURL: `${MINTSCAN_URL}/asset-mantle`,

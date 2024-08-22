@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import stargazeChainImg from '~/images/chainImgs/stargaze.png';
 import stargazeTokenImg from '~/images/symbols/stars.png';
 import type { CosmosChain } from '~/types/chain';
@@ -22,7 +23,7 @@ export const STARGAZE: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'df309f02-4dd7-4a44-9050-6dd2b5e348bc', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'df309f02-4dd7-4a44-9050-6dd2b5e348bc', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'stars' },
   explorerURL: `${MINTSCAN_URL}/stargaze`,
   gasRate: {

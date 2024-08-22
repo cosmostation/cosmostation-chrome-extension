@@ -16,3 +16,8 @@ export const TOKEN_TYPE = {
   CW20: 'CW20',
   CW721: 'CW721',
 } as const;
+
+export const DERIVATION_PATH_TYPE = {
+  SECP256K1: 'secp256k1',
+  ETHSECP256K1: 'ethsecp256k1',
+};

@@ -1,3 +1,4 @@
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import nibiruChainImg from '~/images/chainImgs/nibiru.png';
 import nibiruTokenImg from '~/images/symbols/nibi.png';
 import type { CosmosChain } from '~/types/chain';
@@ -20,7 +21,7 @@ export const NIBIRU: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '88129745-42bd-4fef-93fb-09c5946eb93d', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '88129745-42bd-4fef-93fb-09c5946eb93d', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'nibi' },
   coinGeckoId: 'nibiru',
   explorerURL: 'https://explorer.nibiru.fi',

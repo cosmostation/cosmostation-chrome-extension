@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import asiAllianceChainImg from '~/images/chainImgs/asiAlliance.png';
 import asiAllianceTokenImg from '~/images/symbols/asi-alliance.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const ASI_ALLIANCE: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '3b8e015e-ab6c-4095-9dd8-57e62f437f4f', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '3b8e015e-ab6c-4095-9dd8-57e62f437f4f', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'fetch' },
   coinGeckoId: 'fetch-ai',
   explorerURL: `${MINTSCAN_URL}/fetchai`,

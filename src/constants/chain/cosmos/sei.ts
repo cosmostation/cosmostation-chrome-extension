@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import seiChainImg from '~/images/chainImgs/sei.png';
 import seiTokenImg from '~/images/symbols/sei.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const SEI: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'cd62e03e-8325-4064-bae9-6be22f74d176', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'cd62e03e-8325-4064-bae9-6be22f74d176', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'sei' },
   coinGeckoId: 'sei-network',
   explorerURL: `${MINTSCAN_URL}/sei`,

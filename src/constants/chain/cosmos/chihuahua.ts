@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import chihuahuaChainImg from '~/images/chainImgs/chihuahua.png';
 import chihuahuaTokenImg from '~/images/symbols/huahua.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const CHIHUAHUA: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'e7387477-d28e-4081-9152-64235c5f998b', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'e7387477-d28e-4081-9152-64235c5f998b', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'chihuahua' },
   coinGeckoId: 'chihuahua-token',
   explorerURL: `${MINTSCAN_URL}/chihuahua`,

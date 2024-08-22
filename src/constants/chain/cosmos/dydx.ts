@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import dydxChainImg from '~/images/chainImgs/dydx.png';
 import dydxTokenImg from '~/images/symbols/dydx.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const DYDX: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '70867501-f3ce-4b18-8467-a98de3b153be', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '70867501-f3ce-4b18-8467-a98de3b153be', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'dydx' },
   explorerURL: `${MINTSCAN_URL}/dydx`,
   coinGeckoId: 'dydx-chain',

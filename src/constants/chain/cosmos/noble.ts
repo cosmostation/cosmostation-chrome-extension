@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import nobleChainImg from '~/images/chainImgs/noble.png';
 import nobleTokenImg from '~/images/symbols/stake.png';
 import type { CosmosChain, CosmosGasRate } from '~/types/chain';
@@ -21,7 +22,7 @@ export const NOBLE: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'd0c01aa8-dfc3-4c30-80c1-4faa8b0279a6', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'd0c01aa8-dfc3-4c30-80c1-4faa8b0279a6', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'noble' },
   explorerURL: `${MINTSCAN_URL}/noble`,
   gasRate: {

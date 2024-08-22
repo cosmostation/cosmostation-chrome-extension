@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import akashChainImg from '~/images/chainImgs/akash.png';
 import akashTokenImg from '~/images/symbols/akt.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const AKASH: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'b869bcf8-f489-443a-9be4-56cac21f6f53', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'b869bcf8-f489-443a-9be4-56cac21f6f53', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'akash' },
   coinGeckoId: 'akash-network',
   explorerURL: `${MINTSCAN_URL}/akash`,

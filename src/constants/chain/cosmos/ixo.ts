@@ -1,3 +1,4 @@
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import ixoChainImg from '~/images/chainImgs/ixo.png';
 import ixoTokenImg from '~/images/symbols/ixo.png';
 import type { CosmosChain } from '~/types/chain';
@@ -20,7 +21,7 @@ export const IXO: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '9ae49caf-35b3-44d4-9fc4-4b29ff1c59d0', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '9ae49caf-35b3-44d4-9fc4-4b29ff1c59d0', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'ixo' },
   explorerURL: `https://atomscan.com/ixo`,
   coinGeckoId: 'ixo',

@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import bandChainImg from '~/images/chainImgs/band.png';
 import bandTokenImg from '~/images/symbols/band.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const BAND: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'c3e5474b-8cf7-467e-b6a8-706d2b694e5a', path: "m/44'/494'/0'/0" }],
+  derivationPaths: [{ id: 'c3e5474b-8cf7-467e-b6a8-706d2b694e5a', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/494'/0'/0" }],
   bech32Prefix: { address: 'band' },
   coinGeckoId: 'band-protocol',
   explorerURL: `${MINTSCAN_URL}/band`,

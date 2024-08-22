@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import marsChainImg from '~/images/chainImgs/mars.png';
 import marsTokenImg from '~/images/symbols/mars.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const MARS: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'acc298c0-ee4f-48e6-bcd5-3b974a553cf7', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'acc298c0-ee4f-48e6-bcd5-3b974a553cf7', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'mars' },
   coinGeckoId: 'mars-protocol-a7fcbcfb-fd61-4017-92f0-7ee9f9cc6da3',
   explorerURL: `${MINTSCAN_URL}/mars-protocol`,

@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import lumChainImg from '~/images/chainImgs/lum.png';
 import lumTokenImg from '~/images/symbols/lum.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const LUM: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '888c0bfe-3f2f-4387-ba94-14102522040f', path: "m/44'/880'/0'/0" }],
+  derivationPaths: [{ id: '888c0bfe-3f2f-4387-ba94-14102522040f', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/880'/0'/0" }],
   bech32Prefix: { address: 'lum' },
   coinGeckoId: 'lum-network',
   explorerURL: `${MINTSCAN_URL}/lum`,

@@ -8,8 +8,8 @@ export type CosmosType = ValueOf<typeof COSMOS_TYPE>;
 
 export type DerivationPath = {
   id: string;
+  type?: string;
   path: string;
-  algo?: string;
 };
 
 export type BIP44 = {

@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import kavaChainImg from '~/images/chainImgs/kava.png';
 import kavaTokenImg from '~/images/symbols/kava.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const KAVA: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '634e5e88-0a26-4ef5-92b5-dbf4cf040a8a', path: "m/44'/459'/0'/0" }],
+  derivationPaths: [{ id: '634e5e88-0a26-4ef5-92b5-dbf4cf040a8a', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/459'/0'/0" }],
   bech32Prefix: { address: 'kava' },
   coinGeckoId: 'kava',
   explorerURL: `${MINTSCAN_URL}/kava`,

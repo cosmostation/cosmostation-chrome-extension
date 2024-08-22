@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import cronosPosChainImg from '~/images/chainImgs/cronos.png';
 import cronosPosTokenImg from '~/images/symbols/cro.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const CRONOS_POS: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'a2d8ce76-33e5-48ce-add8-38c9967728fe', path: "m/44'/394'/0'/0" }],
+  derivationPaths: [{ id: 'a2d8ce76-33e5-48ce-add8-38c9967728fe', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/394'/0'/0" }],
   bech32Prefix: { address: 'cro' },
   coinGeckoId: 'crypto-com-chain',
   explorerURL: `${MINTSCAN_URL}/crypto-org`,

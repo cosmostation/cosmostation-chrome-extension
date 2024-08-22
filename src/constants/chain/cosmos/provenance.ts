@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import provenanceChainImg from '~/images/chainImgs/provenance.png';
 import provenanceTokenImg from '~/images/symbols/hash.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const PROVENANCE: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'b2326658-5a8b-4bfd-a852-b7ff3859f08c', path: "m/44'/505'/0'/0" }],
+  derivationPaths: [{ id: 'b2326658-5a8b-4bfd-a852-b7ff3859f08c', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/505'/0'/0" }],
   bech32Prefix: { address: 'pb' },
   coinGeckoId: 'provenance',
   explorerURL: `${MINTSCAN_URL}/provenance`,

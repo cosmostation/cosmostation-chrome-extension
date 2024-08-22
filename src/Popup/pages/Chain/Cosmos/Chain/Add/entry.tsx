@@ -6,6 +6,7 @@ import { joiResolver } from '@hookform/resolvers/joi';
 import { Typography } from '@mui/material';
 
 import { COSMOS_CHAINS, COSMOS_DEFAULT_SEND_GAS } from '~/constants/chain';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import Button from '~/Popup/components/common/Button';
 import Input from '~/Popup/components/common/Input';
 import { useCurrentAdditionalChains } from '~/Popup/hooks/useCurrent/useCurrentAdditionalChains';
@@ -60,6 +61,8 @@ export default function Entry() {
       if (invalidChainIds.includes(nodeInfo?.default_node_info?.network)) {
         throw new Error(t('pages.Chain.Cosmos.Chain.Add.entry.chainID.invalid'));
       }
+
+      const coinType = data.coinType ? (data.coinType.endsWith("'") ? data.coinType : `${data.coinType}'`) : "118'";
       const newChain: CosmosChain = {
         id: uuidv4(),
         line: 'COSMOS',
@@ -78,6 +81,13 @@ export default function Entry() {
           change: '0',
           coinType: data.coinType ? (data.coinType.endsWith("'") ? data.coinType : `${data.coinType}'`) : "118'",
         },
+        derivationPaths: [
+          {
+            id: uuidv4(),
+            type: data.type === 'ETHERMINT' ? DERIVATION_PATH_TYPE.ETHSECP256K1 : DERIVATION_PATH_TYPE.SECP256K1,
+            path: `m/44'/${coinType}/0'/0`,
+          },
+        ],
         decimals: data.decimals ?? 6,
         gasRate: { average: data.gasRateAverage ?? '0.025', low: data.gasRateLow ?? '0.0025', tiny: data.gasRateTiny ?? '0.00025' },
         tokenImageURL: data.tokenImageURL || data.imageURL,

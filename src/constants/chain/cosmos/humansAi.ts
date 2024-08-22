@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import humansAiChainImg from '~/images/chainImgs/humans.png';
 import humansAiTokenImg from '~/images/symbols/heart.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const HUMANS_AI: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '9c4dc554-d9cb-4ab4-a993-7ad88bac1243', path: "m/44'/60'/0'/0" }],
+  derivationPaths: [{ id: '9c4dc554-d9cb-4ab4-a993-7ad88bac1243', type: DERIVATION_PATH_TYPE.ETHSECP256K1, path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'human' },
   coinGeckoId: 'humans-ai',
   explorerURL: `${MINTSCAN_URL}/humans`,

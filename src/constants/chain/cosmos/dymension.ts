@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import dymensionChainImg from '~/images/chainImgs/dymension.png';
 import dymensionTokenImg from '~/images/symbols/dym.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const DYMENSION: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '26d38114-b574-4a81-a0fe-781771aa70b1', path: "m/44'/60'/0'/0" }],
+  derivationPaths: [{ id: '26d38114-b574-4a81-a0fe-781771aa70b1', type: DERIVATION_PATH_TYPE.ETHSECP256K1, path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'dym' },
   coinGeckoId: 'dymension',
   explorerURL: `${MINTSCAN_URL}/dymension`,

@@ -1,3 +1,4 @@
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import likeCoinChainImg from '~/images/chainImgs/likecoin.png';
 import likeCoinTokenImg from '~/images/symbols/like.png';
 import type { CosmosChain } from '~/types/chain';
@@ -20,7 +21,7 @@ export const LIKE_COIN: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '024316b6-fd43-4023-9dcc-9f1eafba6730', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '024316b6-fd43-4023-9dcc-9f1eafba6730', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'like' },
   coinGeckoId: 'likecoin',
   explorerURL: `https://atomscan.com/likecoin`,

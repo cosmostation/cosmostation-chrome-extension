@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import osmosisChainImg from '~/images/chainImgs/osmosis.png';
 import osmosisTokenImg from '~/images/symbols/osmo.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const OSMOSIS: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'd17852e4-351a-4b91-af44-358e5ed1dbf0', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'd17852e4-351a-4b91-af44-358e5ed1dbf0', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'osmo' },
   coinGeckoId: 'osmosis',
   explorerURL: `${MINTSCAN_URL}/osmosis`,

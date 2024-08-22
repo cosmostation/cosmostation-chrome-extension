@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import sagaChainImg from '~/images/chainImgs/saga.png';
 import sagaTokenImg from '~/images/symbols/saga.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const SAGA: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'd5137da7-a8ce-4005-ba5b-1049b6610166', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'd5137da7-a8ce-4005-ba5b-1049b6610166', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'saga' },
   coinGeckoId: 'saga-2',
   explorerURL: `${MINTSCAN_URL}/saga`,

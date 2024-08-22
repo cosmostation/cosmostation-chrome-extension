@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import finschiaChainImg from '~/images/chainImgs/finschia.png';
 import finschiaTokenImg from '~/images/symbols/fnsa.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const FINSCHIA: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '107ebcef-bf2e-4fd6-b582-4bcb22cf9138', path: "m/44'/438'/0'/0" }],
+  derivationPaths: [{ id: '107ebcef-bf2e-4fd6-b582-4bcb22cf9138', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/438'/0'/0" }],
   bech32Prefix: { address: 'link' },
   coinGeckoId: 'link',
   explorerURL: `${MINTSCAN_URL}/finschia`,

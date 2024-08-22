@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import bitcannaChainImg from '~/images/chainImgs/bitcanna.png';
 import bitcannaTokenImg from '~/images/symbols/bcna.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const BITCANNA: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'c5abe1b8-7b89-4e8b-bdc3-733a410a4486', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'c5abe1b8-7b89-4e8b-bdc3-733a410a4486', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'bcna' },
   coinGeckoId: 'bitcanna',
   explorerURL: `${MINTSCAN_URL}/bitcanna`,

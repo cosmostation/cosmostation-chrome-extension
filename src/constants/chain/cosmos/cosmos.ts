@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import cosmosChainImg from '~/images/chainImgs/cosmos.png';
 import cosmosTokenImg from '~/images/symbols/atom.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const COSMOS: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '62a8e13a-3107-40ef-ade4-58de45aa6c1f', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '62a8e13a-3107-40ef-ade4-58de45aa6c1f', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'cosmos' },
   coinGeckoId: 'cosmos',
   explorerURL: `${MINTSCAN_URL}/cosmos`,

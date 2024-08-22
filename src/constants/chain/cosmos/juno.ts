@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import junoChainImg from '~/images/chainImgs/juno.png';
 import junoTokenImg from '~/images/symbols/juno.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const JUNO: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '23076a4e-8bba-4e36-8563-2c30948f290c', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '23076a4e-8bba-4e36-8563-2c30948f290c', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'juno' },
   coinGeckoId: 'juno-network',
   explorerURL: `${MINTSCAN_URL}/juno`,

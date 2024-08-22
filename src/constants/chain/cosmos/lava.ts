@@ -1,3 +1,4 @@
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import lavaChainImg from '~/images/chainImgs/lava.png';
 import lavaTokenImg from '~/images/symbols/lava.png';
 import type { CosmosChain } from '~/types/chain';
@@ -20,7 +21,7 @@ export const LAVA: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '73c48d9a-3bb4-4633-89b9-9615f833192c', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '73c48d9a-3bb4-4633-89b9-9615f833192c', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'lava@' },
   coinGeckoId: 'lava-network',
   explorerURL: 'https://lava-explorer.w3coins.io/Lava',

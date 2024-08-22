@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import shentuChainImg from '~/images/chainImgs/shentu.png';
 import shentuTokenImg from '~/images/symbols/ctk.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const SHENTU: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'adb9dbc1-3f8d-459b-884d-7eff03111d94', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: 'adb9dbc1-3f8d-459b-884d-7eff03111d94', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'shentu' },
   coinGeckoId: 'certik',
   explorerURL: `${MINTSCAN_URL}/shentu`,

@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import archwayChainImg from '~/images/chainImgs/archway.png';
 import archwayTokenImg from '~/images/symbols/arch.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const ARCHWAY: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '5b39234a-6682-4112-8156-6fe277b4a1df', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '5b39234a-6682-4112-8156-6fe277b4a1df', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'archway' },
   coinGeckoId: 'archway',
   explorerURL: `${MINTSCAN_URL}/archway`,

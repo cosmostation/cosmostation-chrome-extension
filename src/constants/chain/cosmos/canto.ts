@@ -20,7 +20,7 @@ export const CANTO: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'a27cc3f4-12b7-4986-aa71-e9d40549ebf2', path: "m/44'/60'/0'/0" }],
+  derivationPaths: [{ id: 'a27cc3f4-12b7-4986-aa71-e9d40549ebf2', type: '/ethermint.crypto.v1.ethsecp256k1.PubKey', path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'canto' },
   coinGeckoId: 'canto',
   explorerURL: 'https://atomscan.com/canto',

@@ -1,3 +1,4 @@
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import desmosChainImg from '~/images/chainImgs/desmos.png';
 import desmosTokenImg from '~/images/symbols/dsm.png';
 import type { CosmosChain } from '~/types/chain';
@@ -20,7 +21,7 @@ export const DESMOS: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'd858b1e3-a202-4915-8699-214bb789077b', path: "m/44'/852'/0'/0" }],
+  derivationPaths: [{ id: 'd858b1e3-a202-4915-8699-214bb789077b', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/852'/0'/0" }],
   bech32Prefix: { address: 'desmos' },
   explorerURL: `https://bigdipper.live/desmos`,
   coinGeckoId: 'desmos',

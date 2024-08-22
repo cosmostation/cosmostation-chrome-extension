@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import injectiveChainImg from '~/images/chainImgs/injective.png';
 import injectiveTokenImg from '~/images/symbols/inj.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const INJECTIVE: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: 'a26df150-42e4-4712-86da-fa7239ff0c41', path: "m/44'/60'/0'/0" }],
+  derivationPaths: [{ id: 'a26df150-42e4-4712-86da-fa7239ff0c41', type: DERIVATION_PATH_TYPE.ETHSECP256K1, path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'inj' },
   coinGeckoId: 'injective-protocol',
   explorerURL: `${MINTSCAN_URL}/injective`,

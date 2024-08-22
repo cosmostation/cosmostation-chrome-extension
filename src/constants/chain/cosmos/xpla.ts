@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import xplaChainImg from '~/images/chainImgs/xpla.png';
 import xplaTokenImg from '~/images/symbols/xpla.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const XPLA: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '4d3ffa1b-be1b-4877-92db-efeefaeb7593', path: "m/44'/60'/0'/0" }],
+  derivationPaths: [{ id: '4d3ffa1b-be1b-4877-92db-efeefaeb7593', type: DERIVATION_PATH_TYPE.ETHSECP256K1, path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'xpla' },
   coinGeckoId: 'xpla',
   explorerURL: `${MINTSCAN_URL}/xpla`,

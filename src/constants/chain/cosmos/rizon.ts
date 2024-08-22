@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import rizonChainImg from '~/images/chainImgs/rizon.png';
 import rizonTokenImg from '~/images/symbols/atolo.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const RIZON: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '2be3f1c4-8c2e-4fc9-80c8-5877b0bb77c8', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '2be3f1c4-8c2e-4fc9-80c8-5877b0bb77c8', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'rizon' },
   coinGeckoId: 'rizon',
   explorerURL: `${MINTSCAN_URL}/rizon`,

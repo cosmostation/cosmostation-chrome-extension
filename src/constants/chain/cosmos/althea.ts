@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import altheaChainImg from '~/images/chainImgs/althea.png';
 import altheaTokenImg from '~/images/symbols/altg.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const ALTHEA: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '4f23e45c-32ae-4779-ac83-2dbbb48b558b', path: "m/44'/60'/0'/0" }],
+  derivationPaths: [{ id: '4f23e45c-32ae-4779-ac83-2dbbb48b558b', type: DERIVATION_PATH_TYPE.ETHSECP256K1, path: "m/44'/60'/0'/0" }],
   bech32Prefix: { address: 'althea' },
   coinGeckoId: 'althea',
   explorerURL: `${MINTSCAN_URL}/althea`,

@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import neutronChainImg from '~/images/chainImgs/neutron.png';
 import neutronTokenImg from '~/images/symbols/ntrn.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const NEUTRON: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '04c17220-88ee-478c-84c8-44c716b8562e', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '04c17220-88ee-478c-84c8-44c716b8562e', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'neutron' },
   explorerURL: `${MINTSCAN_URL}/neutron`,
   coinGeckoId: 'neutron-3',

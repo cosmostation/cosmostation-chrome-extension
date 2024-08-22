@@ -1,4 +1,5 @@
 import { MINTSCAN_URL } from '~/constants/common';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import sentinelChainImg from '~/images/chainImgs/sentinel.png';
 import sentinelTokenImg from '~/images/symbols/dvpn.png';
 import type { CosmosChain } from '~/types/chain';
@@ -21,7 +22,7 @@ export const SENTINEL: CosmosChain = {
     account: "0'",
     change: '0',
   },
-  derivationPaths: [{ id: '8c72318f-8279-4d37-a457-1cd4c0b1f160', path: "m/44'/118'/0'/0" }],
+  derivationPaths: [{ id: '8c72318f-8279-4d37-a457-1cd4c0b1f160', type: DERIVATION_PATH_TYPE.SECP256K1, path: "m/44'/118'/0'/0" }],
   bech32Prefix: { address: 'sent' },
   coinGeckoId: 'sentinel',
   explorerURL: `${MINTSCAN_URL}/sentinel`,
