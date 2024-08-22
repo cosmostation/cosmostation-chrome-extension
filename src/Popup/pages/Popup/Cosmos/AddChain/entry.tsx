@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Typography } from '@mui/material';
 
 import { COSMOS_DEFAULT_SEND_GAS } from '~/constants/chain';
+import { DERIVATION_PATH_TYPE } from '~/constants/cosmos';
 import { RPC_ERROR, RPC_ERROR_MESSAGE } from '~/constants/error';
 import logoImg from '~/images/etc/logo.png';
 import Button from '~/Popup/components/common/Button';
@@ -133,6 +134,8 @@ export default function Entry({ queue }: EntryProps) {
 
               const filteredAdditionalChains = additionalChains.filter((item) => item.chainName.toLowerCase() !== chainName.toLowerCase());
 
+              const resultCoinType = coinType ? (coinType.endsWith("'") ? coinType : `${coinType}'`) : "118'";
+
               const newChain: CosmosChain = {
                 id: uuidv4(),
                 line: 'COSMOS',
@@ -148,8 +151,15 @@ export default function Entry({ queue }: EntryProps) {
                   purpose: "44'",
                   account: "0'",
                   change: '0',
-                  coinType: coinType ? (coinType.endsWith("'") ? coinType : `${coinType}'`) : "118'",
+                  coinType: resultCoinType,
                 },
+                derivationPaths: [
+                  {
+                    id: uuidv4(),
+                    type: type === 'ETHERMINT' ? DERIVATION_PATH_TYPE.ETHSECP256K1 : DERIVATION_PATH_TYPE.SECP256K1,
+                    path: `m/44'/${resultCoinType}/0'/0`,
+                  },
+                ],
                 decimals: decimals ?? 6,
                 gasRate: gasRate ?? { average: '0.025', low: '0.0025', tiny: '0.00025' },
                 tokenImageURL: tokenImageURL || imageURL,

@@ -79,7 +79,7 @@ export default function Entry() {
           purpose: "44'",
           account: "0'",
           change: '0',
-          coinType: data.coinType ? (data.coinType.endsWith("'") ? data.coinType : `${data.coinType}'`) : "118'",
+          coinType,
         },
         derivationPaths: [
           {
