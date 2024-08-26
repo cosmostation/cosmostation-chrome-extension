@@ -4,10 +4,10 @@ import agoricChainImg from '~/images/chainImgs/agoric.png';
 import agoricTokenImg from '~/images/symbols/bld.png';
 import type { BitcoinChain } from '~/types/chain';
 
-export const BITCOIN: BitcoinChain = {
-  id: 'b0c2453d-1cf2-4a54-877d-cf2352e9b801',
+export const TESTNET4: BitcoinChain = {
+  id: '66edcd6b-1ea3-4029-84ff-d8715b605dcf',
   line: 'BITCOIN',
-  chainName: 'BITCOIN',
+  chainName: 'TESTNET4',
   tokenImageURL: agoricTokenImg,
   imageURL: agoricChainImg,
   bip44: {
@@ -16,11 +16,10 @@ export const BITCOIN: BitcoinChain = {
     account: "0'",
     change: '0',
   },
-  rpcURL: 'https://rpc-office.cosmostation.io/bitcoin/',
-  displayDenom: 'BTC',
+  rpcURL: 'https://go.getblock.io/90459b5896ce4150a635c7a05b75ed2e',
+  displayDenom: 'tBTC',
   decimals: 8,
-  explorerURL: 'https://mempool.space',
-  coinGeckoId: 'bitcoin',
-  mempoolURL: 'https://mempool.space/api',
-  network: networks.bitcoin,
+  explorerURL: 'https://mempool.space/testnet4',
+  mempoolURL: 'https://mempool.space/testnet4/api',
+  network: networks.testnet,
 };

@@ -1713,6 +1713,18 @@
             }
           }
         },
+        "bitcoin": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "Copied",
+              "depositButton": "Deposit",
+              "mempoolFunded": "Pending Receive",
+              "mempoolSpent": "Pending Send",
+              "networkError": "Network error",
+              "sendButton": "Send"
+            }
+          }
+        },
         "cosmos": {
           "CoinList": {
             "components": {

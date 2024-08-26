@@ -1,22 +1,12 @@
-import type {
-  AptosChain,
-  AptosNetwork,
-  BitcoinChain,
-  BitcoinNetwork,
-  CosmosChain,
-  CosmosGasRate,
-  EthereumChain,
-  EthereumNetwork,
-  SuiChain,
-  SuiNetwork,
-} from '~/types/chain';
+import type { AptosChain, AptosNetwork, BitcoinChain, CosmosChain, CosmosGasRate, EthereumChain, EthereumNetwork, SuiChain, SuiNetwork } from '~/types/chain';
 
 import { APTOS } from './aptos/aptos';
 import { DEVNET as APTOS_NETWORK__DEVNET } from './aptos/network/devnet';
 import { MAINNET as APTOS_NETWORK__MAINNET } from './aptos/network/mainnet';
 import { TESTNET as APTOS_NETWORK__TESTNET } from './aptos/network/testnet';
-import { BITCOIN } from './bitcoin/bitcoin';
-import { BITCOIN as BITCOIN_NETWORK__BITCOIN } from './bitcoin/networks/bitcoin';
+import { BITCOIN as BITCOIN__BITCOIN } from './bitcoin/bitcoin';
+import { TESTNET3 as BITCOIN__TESTNET3 } from './bitcoin/testnet3';
+import { TESTNET4 as BITCOIN__TESTNET4 } from './bitcoin/testnet4';
 import { AGORIC } from './cosmos/agoric';
 import { AKASH } from './cosmos/akash';
 import { ALTHEA } from './cosmos/althea';
@@ -235,8 +225,6 @@ export const SUI_CHAINS: SuiChain[] = [SUI];
 
 export const SUI_NETWORKS: SuiNetwork[] = [SUI_NETWORK__MAINNET, SUI_NETWORK__TESTNET, SUI_NETWORK__DEVNET];
 
-export const BITCOIN_CHAINS: BitcoinChain[] = [BITCOIN];
-
-export const BITCOIN_NETWORKS: BitcoinNetwork[] = [BITCOIN_NETWORK__BITCOIN];
+export const BITCOIN_CHAINS: BitcoinChain[] = [BITCOIN__BITCOIN, BITCOIN__TESTNET3, BITCOIN__TESTNET4];
 
 export const CHAINS = [...ETHEREUM_CHAINS, ...COSMOS_CHAINS, ...APTOS_CHAINS, ...SUI_CHAINS, ...BITCOIN_CHAINS];

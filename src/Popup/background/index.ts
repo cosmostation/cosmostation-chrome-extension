@@ -127,6 +127,7 @@ function background() {
           cosmos: 0,
           sui: 0,
           aptos: 0,
+          bitcoin: 0,
         });
 
         await setStorage('language', '' as LanguageType);

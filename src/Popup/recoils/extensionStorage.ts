@@ -13,7 +13,6 @@ export const extensionStorageDefault: ExtensionStorage = {
   additionalEthereumNetworks: [],
   additionalAptosNetworks: [],
   additionalSuiNetworks: [],
-  additionalBitcoinNetworks: [],
 
   encryptedPassword: null,
   windowId: null,
@@ -39,13 +38,11 @@ export const extensionStorageDefault: ExtensionStorage = {
   shownEthereumNetworkIds: [],
   shownAptosNetworkIds: [],
   shownSuiNetworkIds: [],
-  shownBitcoinNetworkIds: [],
 
   selectedChainId: '',
   selectedEthereumNetworkId: '',
   selectedAptosNetworkId: '',
   selectedSuiNetworkId: '',
-  selectedBitcoinNetworkId: '',
 
   suiPermissions: [],
 

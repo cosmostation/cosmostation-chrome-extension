@@ -1,0 +1,100 @@
+POST https://rpc-office.cosmostation.io/bitcoin/
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "estimatesmartfee",
+  "params": [2]
+}
+
+### 
+
+POST https://go.getblock.io/90459b5896ce4150a635c7a05b75ed2e
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "estimatesmartfee",
+  "params": [1]
+}
+
+### 
+
+POST https://go.getblock.io/90459b5896ce4150a635c7a05b75ed2e
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "sendrawtransaction",
+  "params": ["020000000001014217fc3da0fcbfbb40bc0dbe18adf7bc4f67ce53fa8cfbd0cd3f792eab20aa010100000000ffffffff02e8030000000000001976a914bc7c53df1f3fd1195a5c5e9f640c5aa5b9f2b49b88acb151000000000000160014bc7c53df1f3fd1195a5c5e9f640c5aa5b9f2b49b0247304402202aec89bb4ea837d39e0589367f2dd1936c9b2b464108661c1d5d37fa28ea903a02205becff3cd0ef529aa8dabbccb0d910019757e6d17805b17a41ab634ff5306047012103a9390597b4667b5added9831c6dd33f4df2a1e1129109a4c05f4ffbc85f1d53600000000"]
+}
+
+### 
+
+POST https://go.getblock.io/90459b5896ce4150a635c7a05b75ed2e
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getrawtransaction",
+  "params": ["3596fc98eb7ec5c3480f2ca5817041d86a43c97afa0404489a4b019e3ca29912", 1]
+}
+
+### 
+
+GET https://mempool.space/testnet4/api/address/tb1qc0p5h8s9z8ved0u37aam5zskpe764rs9yqv85d/txs
+
+### 
+
+GET https://mempool.space/api/address/bc1quzlhwmqu6ev7ve0j3f6j6jvgkn7u6w97tev78k
+
+###
+
+GET https://mempool.space/api/address/bc1quzlhwmqu6ev7ve0j3f6j6jvgkn7u6w97tev78k/utxo
+
+{
+  "address": "bc1quzlhwmqu6ev7ve0j3f6j6jvgkn7u6w97tev78k",
+  "chain_stats": {
+    "funded_txo_count": 2,
+    "funded_txo_sum": 6900000,
+    "spent_txo_count": 0,
+    "spent_txo_sum": 0,
+    "tx_count": 2
+  },
+  "mempool_stats": {
+    "funded_txo_count": 1,
+    "funded_txo_sum": 4899235,
+    "spent_txo_count": 1,
+    "spent_txo_sum": 5900000,
+    "tx_count": 1
+  }
+}
+
+[
+  {
+    "txid": "e1358c2cb0cf9b7f7a811c97e317675d93d6808b89c9903b4549ecb8405e93b1",
+    "vout": 0,
+    "status": {
+      "confirmed": true,
+      "block_height": 857891,
+      "block_hash": "00000000000000000001ccf284bcafd8eb457a8483a2689b51986409e23bba3a",
+      "block_time": 1724319419
+    },
+    "value": 4898422
+  },
+  {
+    "txid": "345f178a84c6b39f978f7751c13b43d14e87bdacf2a030a7e3142bb772cf19a4",
+    "vout": 0,
+    "status": {
+      "confirmed": true,
+      "block_height": 857879,
+      "block_hash": "00000000000000000001294c1d267a18f88eb9e0ca8a9e63ef3d98a5d4e3a86e",
+      "block_time": 1724312634
+    },
+    "value": 1000000
+  }
+]

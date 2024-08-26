@@ -1,15 +1,7 @@
-import { bech32 } from 'bech32';
-import encHex from 'crypto-js/enc-hex';
-import ripemd160 from 'crypto-js/ripemd160';
-import sha256 from 'crypto-js/sha256';
+import type { Network } from 'bitcoinjs-lib';
+import { payments } from 'bitcoinjs-lib';
 
-export function getAddress(publicKey: Buffer, prefix = 'bc') {
-  const encodedBySha256 = sha256(encHex.parse(publicKey.toString('hex'))).toString(encHex);
-
-  const encodedByRipemd160 = ripemd160(encHex.parse(encodedBySha256)).toString(encHex);
-
-  const words = bech32.toWords(Buffer.from(encodedByRipemd160, 'hex'));
-  const result = bech32.encode(prefix, words);
-
-  return result;
+export function getAddress(publicKey: Buffer, network?: Network) {
+  const p2wpkh = payments.p2wpkh({ pubkey: publicKey, network });
+  return p2wpkh.address!;
 }

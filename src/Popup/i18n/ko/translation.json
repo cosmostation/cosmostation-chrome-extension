@@ -1713,6 +1713,18 @@
             }
           }
         },
+        "bitcoin": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "복사 되었습니다.",
+              "depositButton": "입금",
+              "mempoolFunded": "수신 대기 중",
+              "mempoolSpent": "전송 대기 중",
+              "networkError": "네트워크 오류",
+              "sendButton": "보내기"
+            }
+          }
+        },
         "cosmos": {
           "CoinList": {
             "components": {

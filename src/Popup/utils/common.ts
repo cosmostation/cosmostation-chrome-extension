@@ -47,7 +47,7 @@ export function getAddress(chain: Chain, publicKey?: Buffer) {
   }
 
   if (chain.line === 'BITCOIN') {
-    return getBitcoinAddress(publicKey);
+    return getBitcoinAddress(publicKey, chain.network);
   }
 
   return '';

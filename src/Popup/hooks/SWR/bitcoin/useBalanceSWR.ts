@@ -3,39 +3,39 @@ import type { AxiosError } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import useSWR from 'swr';
 
-import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useCurrentBitcoinNetwork } from '~/Popup/hooks/useCurrent/useCurrentBitcoinNetwork';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { get } from '~/Popup/utils/axios';
-import type { UtxoPayload } from '~/types/bitcoin/balance';
-import type { BitcoinNetwork } from '~/types/chain';
+import type { AddressDetail } from '~/types/bitcoin/balance';
+import type { BitcoinChain } from '~/types/chain';
 
 type FetchParams = {
+  url: string;
   address?: string;
 };
 
-export function useBalanceSWR(network?: BitcoinNetwork, config?: SWRConfiguration) {
-  const chain = BITCOIN;
+export function useBalanceSWR(chain: BitcoinChain, config?: SWRConfiguration) {
   const accounts = useAccounts(config?.suspense);
   const { extensionStorage } = useExtensionStorage();
-  const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
 
-  const bitcoinNetwork = useMemo(() => network || currentBitcoinNetwork, [network, currentBitcoinNetwork]);
-
-  const utxoURL = useMemo(() => bitcoinNetwork.utxoURL, [bitcoinNetwork]);
-
-  const address = accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '';
+  const address = useMemo(
+    () => accounts.data?.find((account) => account.id === extensionStorage.selectedAccountId)?.address[chain.id] || '',
+    [accounts.data, chain.id, extensionStorage.selectedAccountId],
+  );
 
   const fetcher = (params: FetchParams) => {
-    const url = utxoURL.replace('{address}', params.address || '');
-    return get<UtxoPayload>(url);
+    if (!params.address) {
+      throw new Error('Address is required');
+    }
+
+    const url = `${params.url}/address/${params.address}`;
+    return get<AddressDetail>(url);
   };
 
-  const { data, error, mutate } = useSWR<UtxoPayload, AxiosError>({ address }, fetcher, {
+  const { data, error, mutate } = useSWR<AddressDetail, AxiosError>({ url: chain.mempoolURL, address }, fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 14000,
-    refreshInterval: 15000,
+    dedupingInterval: 59000,
+    refreshInterval: 60000,
     errorRetryCount: 0,
     isPaused: () => !address,
     ...config,

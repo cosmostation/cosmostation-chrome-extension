@@ -6,11 +6,9 @@ import { APTOS_CHAINS, BITCOIN_CHAINS, COSMOS_CHAINS, ETHEREUM_CHAINS, SUI_CHAIN
 import Divider from '~/Popup/components/common/Divider';
 import Popover from '~/Popup/components/common/Popover';
 import { useCurrentAptosNetwork } from '~/Popup/hooks/useCurrent/useCurrentAptosNetwork';
-import { useCurrentBitcoinNetwork } from '~/Popup/hooks/useCurrent/useCurrentBitcoinNetwork';
 import { useCurrentChain } from '~/Popup/hooks/useCurrent/useCurrentChain';
 import { useCurrentEthereumNetwork } from '~/Popup/hooks/useCurrent/useCurrentEthereumNetwork';
 import { useCurrentShownAptosNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownAptosNetworks';
-import { useCurrentShownBitcoinNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownBitcoinNetworks';
 import { useCurrentShownEthereumNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownEthereumNetworks';
 import { useCurrentShownSuiNetworks } from '~/Popup/hooks/useCurrent/useCurrentShownSuiNetworks';
 import { useCurrentSuiNetwork } from '~/Popup/hooks/useCurrent/useCurrentSuiNetwork';
@@ -52,9 +50,6 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
 
   const { currentSuiNetwork, setCurrentSuiNetwork, removeSuiNetwork } = useCurrentSuiNetwork();
   const { currentShownSuiNetwork } = useCurrentShownSuiNetworks();
-
-  const { currentBitcoinNetwork, setCurrentBitcoinNetwork } = useCurrentBitcoinNetwork();
-  const { currentShownBitcoinNetwork } = useCurrentShownBitcoinNetworks();
 
   const { t } = useTranslation();
 
@@ -151,47 +146,26 @@ export default function ChainPopover({ onClose, currentChain, onClickChain, isOn
                 <Typography variant="h6">Bitcoin</Typography>
               </ChainTitleContainer>
               <ChainListContainer>
-                {allowedBitcoinChain.map((chain) => {
-                  if (isOnlyChain) {
-                    return (
-                      <ChainItemButton
-                        key={chain.id}
-                        isActive={currentChain.id === chain.id}
-                        imgSrc={chain.imageURL}
-                        onClick={() => {
-                          onClickChain?.(chain);
-                          onClose?.({}, 'backdropClick');
-                        }}
-                      >
-                        {chain.chainName}
-                      </ChainItemButton>
-                    );
-                  }
-                  return [
-                    ...currentShownBitcoinNetwork.map((network) => (
-                      <ChainItemButton
-                        key={`${chain.id}-${network.id}`}
-                        isActive={currentChain.id === chain.id && currentBitcoinNetwork.id === network.id}
-                        isBackgroundActive={currentBitcoinNetwork.id === network.id}
-                        imgSrc={network.imageURL}
-                        onClick={async () => {
-                          await setCurrentBitcoinNetwork(network);
-                          onClickChain?.(chain);
-                          onClose?.({}, 'backdropClick');
-                        }}
-                      >
-                        {network.networkName}
-                      </ChainItemButton>
-                    )),
-                  ];
-                })}
+                {allowedBitcoinChain.map((chain) => (
+                  <ChainItemButton
+                    key={chain.id}
+                    isActive={currentChain.id === chain.id}
+                    imgSrc={chain.imageURL}
+                    onClick={() => {
+                      onClickChain?.(chain);
+                      onClose?.({}, 'backdropClick');
+                    }}
+                  >
+                    {chain.chainName}
+                  </ChainItemButton>
+                ))}
               </ChainListContainer>
             </>
           )}
 
           {allowedCosmosChain.length > 0 && (
             <>
-              {allowedEthereumChain.length > 0 && <StyledDivider />}
+              {[...allowedEthereumChain, ...allowedBitcoinChain].length > 0 && <StyledDivider />}
               <ChainTitleContainer>
                 <Typography variant="h6">Cosmos chains</Typography>
               </ChainTitleContainer>

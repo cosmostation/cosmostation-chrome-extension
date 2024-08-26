@@ -4,7 +4,6 @@ import copy from 'copy-to-clipboard';
 import { useSnackbar } from 'notistack';
 import { Typography } from '@mui/material';
 
-import { ACCENT_COLORS } from '~/constants/theme';
 import customBeltImg from '~/images/etc/customBelt.png';
 import AddressButton from '~/Popup/components/AddressButton';
 import Button from '~/Popup/components/common/Button';
@@ -12,28 +11,30 @@ import Image from '~/Popup/components/common/Image';
 import Number from '~/Popup/components/common/Number';
 import Skeleton from '~/Popup/components/common/Skeleton';
 import Tooltip from '~/Popup/components/common/Tooltip';
+import { useBalanceSWR } from '~/Popup/hooks/SWR/bitcoin/useBalanceSWR';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
-import { useBalanceSWR } from '~/Popup/hooks/SWR/ethereum/useBalanceSWR';
 import { useCoinGeckoPriceSWR } from '~/Popup/hooks/SWR/useCoinGeckoPriceSWR';
 import { useCurrentAccount } from '~/Popup/hooks/useCurrent/useCurrentAccount';
-import { useCurrentBitcoinNetwork } from '~/Popup/hooks/useCurrent/useCurrentBitcoinNetwork';
 import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { useNavigate } from '~/Popup/hooks/useNavigate';
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { times, toDisplayDenomAmount } from '~/Popup/utils/big';
-import { getAddress, getAddressKey, getDisplayMaxDecimals, getKeyPair } from '~/Popup/utils/common';
+import { getAddress, getAddressKey, getKeyPair } from '~/Popup/utils/common';
 import type { BitcoinChain } from '~/types/chain';
-import type { Path } from '~/types/route';
 
 import {
+  ButtonContainer,
   Container,
   ErrorDescriptionContainer,
+  ExpandedButton,
   FirstLineContainer,
   FirstLineLeftContainer,
   FirstLineRightContainer,
-  FourthLineCenterContainer,
   FourthLineContainer,
+  FourthLineContainerItem,
+  FourthLineContainerItemLeft,
+  FourthLineContainerItemRight,
   SecondLineContainer,
   SecondLineLeftAbsoluteImageContainer,
   SecondLineLeftContainer,
@@ -45,61 +46,106 @@ import {
   SecondLineRightSubTextContainer,
   SecondLineRightTextContainer,
   StyledAbsoluteLoading,
+  StyledAccordion,
+  StyledAccordionDetails,
+  StyledAccordionSummary,
+  StyledDivider,
   StyledIconButton,
   StyledRetryIconButton,
   TextChangeRateContainer,
 } from './styled';
 
+import BottomArrow20Icon from '~/images/icons/BottomArrow20.svg';
 import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
 import SendIcon from '~/images/icons/Send.svg';
-import SwapIcon16 from '~/images/icons/Swap16.svg';
 
 type NativeChainCardProps = {
   chain: BitcoinChain;
   isCustom?: boolean;
 };
 
-export default function NativeChainCard({ chain, isCustom }: NativeChainCardProps) {
-  const { currentAccount } = useCurrentAccount();
-  const { extensionStorage } = useExtensionStorage();
-  const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
-  const { enqueueSnackbar } = useSnackbar();
-  const accounts = useAccounts(true);
-  const balance = useBalanceSWR(undefined, { suspense: true });
+const EXPANDED_KEY = 'wallet-bitcoin-expanded';
 
+export default function NativeChainCard({ chain, isCustom = false }: NativeChainCardProps) {
   const { t } = useTranslation();
-
   const { navigate } = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const { coinGeckoId, decimals, tokenImageURL } = currentBitcoinNetwork;
+  const { decimals } = chain;
+
+  const { extensionStorage } = useExtensionStorage();
+
+  const { currentAccount } = useCurrentAccount();
 
   const { data } = useCoinGeckoPriceSWR();
 
-  const amount = useMemo(() => BigInt(balance?.data?.result || '0').toString(), [balance?.data?.result]);
+  const accounts = useAccounts(true);
 
-  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [coinGeckoId, data, extensionStorage.currency]);
+  const balance = useBalanceSWR(chain, { suspense: true });
+
+  const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
+
+  const [expanded, setExpanded] = useState(storageExpanded);
+
+  const availableAmount = useMemo(() => {
+    if (!balance.data) {
+      return 0;
+    }
+
+    return balance.data.chain_stats.funded_txo_sum - balance.data.chain_stats.spent_txo_sum + balance.data.mempool_stats.spent_txo_sum;
+  }, [balance.data]);
+
+  const pendingSpentAmount = useMemo(() => {
+    if (!balance.data) {
+      return 0;
+    }
+
+    return balance.data.mempool_stats.spent_txo_sum;
+  }, [balance.data]);
+
+  const pendingFundedAmount = useMemo(() => {
+    if (!balance.data) {
+      return 0;
+    }
+
+    return balance.data.mempool_stats.funded_txo_sum;
+  }, [balance.data]);
+
+  const availableDisplayAmount = useMemo(() => toDisplayDenomAmount(availableAmount, decimals), [availableAmount, decimals]);
+  const pendingSpentDisplayAmount = useMemo(() => toDisplayDenomAmount(pendingSpentAmount, decimals), [pendingSpentAmount, decimals]);
+  const pendingFundedDisplayAmount = useMemo(() => toDisplayDenomAmount(pendingFundedAmount, decimals), [pendingFundedAmount, decimals]);
+
+  const coinGeckoId = useMemo(() => chain.coinGeckoId, [chain.coinGeckoId]);
+
+  const price = useMemo(() => (coinGeckoId && data?.[coinGeckoId]?.[extensionStorage.currency]) || 0, [extensionStorage.currency, coinGeckoId, data]);
 
   const cap = useMemo(
     () => (coinGeckoId && data?.[coinGeckoId]?.[`${extensionStorage.currency}_24h_change`]) || 0,
     [coinGeckoId, data, extensionStorage.currency],
   );
 
-  const displayAmount = useMemo(() => toDisplayDenomAmount(amount, decimals), [amount, decimals]);
-
-  const value = useMemo(() => times(price, displayAmount), [displayAmount, price]);
-
   const currentAddress = useMemo(
-    () => accounts?.data?.find((account) => account.id === currentAccount.id)?.address?.[chain.id] || '',
+    () => accounts?.data?.find((ac) => ac.id === currentAccount.id)?.address?.[chain.id] || '',
     [accounts?.data, chain.id, currentAccount.id],
   );
 
-  const explorerAccountURL = '';
+  const explorerAccountURL = useMemo(() => {
+    if (!chain.explorerURL) {
+      return '';
+    }
+
+    return `${chain.explorerURL}/address/${currentAddress}`;
+  }, [currentAddress, chain.explorerURL]);
+
+  const displayMaxDecimals = decimals;
+
+  const value = useMemo(() => times(availableAmount, price), [availableAmount, price]);
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {
-      enqueueSnackbar(t('pages.Wallet.components.ethereum.NativeChainCard.index.copied'));
+      enqueueSnackbar(t('pages.Wallet.components.bitcoin.NativeChainCard.index.copied'));
     }
   };
 
@@ -111,11 +157,7 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
           {explorerAccountURL && (
-            <StyledIconButton
-              onClick={() => {
-                window.open(explorerAccountURL);
-              }}
-            >
+            <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
@@ -123,9 +165,9 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={chain.tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h4">{currentBitcoinNetwork.displayDenom}</Typography>
+            <Typography variant="h4">{chain.displayDenom}</Typography>
             <SecondLineLeftSubTextContainer>
               <Number typoOfIntegers="h5n" typoOfDecimals="h7n" currency={extensionStorage.currency}>
                 {String(price)}
@@ -143,10 +185,10 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
         </SecondLineLeftContainer>
         <SecondLineRightContainer>
           <SecondLineRightTextContainer>
-            <Tooltip title={displayAmount} arrow placement="bottom-end">
+            <Tooltip title={availableDisplayAmount} arrow placement="bottom-end">
               <span>
-                <Number typoOfIntegers="h4n" typoOfDecimals="h5n" fixed={getDisplayMaxDecimals(decimals)}>
-                  {displayAmount}
+                <Number typoOfIntegers="h4n" typoOfDecimals="h5n" fixed={displayMaxDecimals}>
+                  {availableDisplayAmount}
                 </Number>
               </span>
             </Tooltip>
@@ -159,40 +201,79 @@ export default function NativeChainCard({ chain, isCustom }: NativeChainCardProp
         </SecondLineRightContainer>
       </SecondLineContainer>
 
-      <FourthLineContainer>
+      <StyledAccordion expanded={expanded}>
+        <StyledAccordionSummary />
+        <StyledAccordionDetails>
+          <StyledDivider />
+          <FourthLineContainer>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.bitcoin.NativeChainCard.index.mempoolSpent')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Tooltip title="test" arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                      {pendingSpentDisplayAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.bitcoin.NativeChainCard.index.mempoolFunded')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Tooltip title="test" arrow placement="bottom-end">
+                  <span>
+                    <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
+                      {pendingFundedDisplayAmount}
+                    </Number>
+                  </span>
+                </Tooltip>
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+          </FourthLineContainer>
+        </StyledAccordionDetails>
+      </StyledAccordion>
+
+      <ButtonContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" onClick={() => navigate('/wallet/receive')}>
-          {t('pages.Wallet.components.ethereum.NativeChainCard.index.depositButton')}
+          {t('pages.Wallet.components.bitcoin.NativeChainCard.index.depositButton')}
         </Button>
-        <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" onClick={() => navigate('/wallet/send')}>
-          {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
+          {t('pages.Wallet.components.bitcoin.NativeChainCard.index.sendButton')}
         </Button>
-        <FourthLineCenterContainer />
-        <Button
-          Icon={SwapIcon16}
-          accentColor={ACCENT_COLORS.GREEN01}
-          hoverAccentColor={ACCENT_COLORS.GREEN02}
-          typoVarient="h5"
-          onClick={() => navigate(`/wallet/swap/${currentBitcoinNetwork.id}` as unknown as Path)}
-        >
-          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
-        </Button>
-      </FourthLineContainer>
+      </ButtonContainer>
+      <ExpandedButton
+        data-is-expanded={expanded ? 1 : 0}
+        type="button"
+        onClick={() => {
+          setExpanded((prev) => {
+            localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
+            return !prev;
+          });
+        }}
+      >
+        <BottomArrow20Icon />
+      </ExpandedButton>
     </Container>
   );
 }
 
 export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProps) {
-  const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
-  const { currentAccount } = useCurrentAccount();
-  const { currentPassword } = useCurrentPassword();
-  const { extensionStorage } = useExtensionStorage();
-
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { t } = useTranslation();
+  const { extensionStorage } = useExtensionStorage();
 
-  const { displayDenom, tokenImageURL } = currentBitcoinNetwork;
+  const { currentAccount } = useCurrentAccount();
+  const { currentPassword } = useCurrentPassword();
+
+  const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
+
+  const [expanded, setExpanded] = useState(storageExpanded);
 
   const address = useMemo(() => {
     const key = getAddressKey(currentAccount, chain);
@@ -208,11 +289,17 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
     return getAddress(chain, keyPair?.publicKey);
   }, [chain, currentAccount, currentPassword, extensionStorage.address]);
 
-  const explorerAccountURL = '';
+  const explorerAccountURL = useMemo(() => {
+    if (!chain.explorerURL) {
+      return '';
+    }
+
+    return `${chain.explorerURL}/address/${address}`;
+  }, [address, chain.explorerURL]);
 
   const handleOnClickCopy = () => {
     if (copy(address)) {
-      enqueueSnackbar(`copied!`);
+      enqueueSnackbar(t('pages.Wallet.components.bitcoin.NativeChainCard.index.copied'));
     }
   };
 
@@ -224,11 +311,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
           {explorerAccountURL && (
-            <StyledIconButton
-              onClick={() => {
-                window.open(explorerAccountURL);
-              }}
-            >
+            <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
@@ -236,9 +319,9 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={chain.tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h4">{displayDenom}</Typography>
+            <Typography variant="h4">{chain.displayDenom}</Typography>
             <SecondLineLeftSubTextContainer>
               <Skeleton width="7rem" height="1.9rem" />
             </SecondLineLeftSubTextContainer>
@@ -254,38 +337,65 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
         </SecondLineRightContainer>
       </SecondLineContainer>
 
-      <FourthLineContainer>
+      <StyledAccordion expanded={expanded}>
+        <StyledAccordionSummary />
+        <StyledAccordionDetails>
+          <StyledDivider />
+          <FourthLineContainer>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.bitcoin.NativeChainCard.index.mempoolSpent')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+            <FourthLineContainerItem>
+              <FourthLineContainerItemLeft>
+                <Typography variant="h6">{t('pages.Wallet.components.bitcoin.NativeChainCard.index.mempoolFunded')}</Typography>
+              </FourthLineContainerItemLeft>
+              <FourthLineContainerItemRight>
+                <Skeleton width="8rem" height="1.9rem" />
+              </FourthLineContainerItemRight>
+            </FourthLineContainerItem>
+          </FourthLineContainer>
+        </StyledAccordionDetails>
+      </StyledAccordion>
+
+      <ButtonContainer>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.ethereum.NativeChainCard.index.depositButton')}
+          {t('pages.Wallet.components.bitcoin.NativeChainCard.index.depositButton')}
         </Button>
-        <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
+          {t('pages.Wallet.components.bitcoin.NativeChainCard.index.sendButton')}
         </Button>
-        <FourthLineCenterContainer />
-        <Button Icon={SwapIcon16} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
-        </Button>
-      </FourthLineContainer>
+      </ButtonContainer>
+      <ExpandedButton
+        data-is-expanded={expanded ? 1 : 0}
+        type="button"
+        onClick={() => {
+          setExpanded((prev) => {
+            localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
+            return !prev;
+          });
+        }}
+      >
+        <BottomArrow20Icon />
+      </ExpandedButton>
     </Container>
   );
 }
 
 export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: NativeChainCardProps & FallbackProps) {
-  useBalanceSWR();
-
-  const [isLoading, setIsloading] = useState(false);
-
-  const { currentBitcoinNetwork } = useCurrentBitcoinNetwork();
-  const { currentAccount } = useCurrentAccount();
-  const { currentPassword } = useCurrentPassword();
-  const { extensionStorage } = useExtensionStorage();
-
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { t } = useTranslation();
+  const { extensionStorage } = useExtensionStorage();
 
-  const { displayDenom, tokenImageURL } = currentBitcoinNetwork;
+  const { currentAccount } = useCurrentAccount();
+  const { currentPassword } = useCurrentPassword();
+
+  const [isLoading, setIsloading] = useState(false);
 
   const address = useMemo(() => {
     const key = getAddressKey(currentAccount, chain);
@@ -301,13 +411,19 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
     return getAddress(chain, keyPair?.publicKey);
   }, [chain, currentAccount, currentPassword, extensionStorage.address]);
 
-  const explorerAccountURL = '';
-
   const handleOnClickCopy = () => {
     if (copy(address)) {
-      enqueueSnackbar(`copied!`);
+      enqueueSnackbar(t('pages.Wallet.components.bitcoin.NativeChainCard.index.copied'));
     }
   };
+
+  const explorerAccountURL = useMemo(() => {
+    if (!chain.explorerURL) {
+      return '';
+    }
+
+    return `${chain.explorerURL}/address/${address}`;
+  }, [address, chain.explorerURL]);
 
   return (
     <Container>
@@ -317,11 +433,7 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
         </FirstLineLeftContainer>
         <FirstLineRightContainer>
           {explorerAccountURL && (
-            <StyledIconButton
-              onClick={() => {
-                window.open(explorerAccountURL);
-              }}
-            >
+            <StyledIconButton onClick={() => window.open(explorerAccountURL)}>
               <ExplorerIcon />
             </StyledIconButton>
           )}
@@ -329,9 +441,9 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
       </FirstLineContainer>
       <SecondLineContainer>
         <SecondLineLeftContainer>
-          <SecondLineLeftImage imageURL={tokenImageURL} isCustom={isCustom} />
+          <SecondLineLeftImage imageURL={chain.tokenImageURL} isCustom={isCustom} />
           <SecondLineLeftTextContainer>
-            <Typography variant="h4">{displayDenom}</Typography>
+            <Typography variant="h4">{chain.displayDenom}</Typography>
             <SecondLineLeftSubTextEmptyContainer />
           </SecondLineLeftTextContainer>
         </SecondLineLeftContainer>
@@ -349,24 +461,19 @@ export function NativeChainCardError({ chain, isCustom, resetErrorBoundary }: Na
             <RetryIcon />
           </StyledRetryIconButton>
           <ErrorDescriptionContainer>
-            <Typography variant="h6">{t('pages.Wallet.components.ethereum.NativeChainCard.index.networkError')}</Typography>
+            <Typography variant="h6">{t('pages.Wallet.components.bitcoin.NativeChainCard.index.networkError')}</Typography>
           </ErrorDescriptionContainer>
         </SecondLineRightContainer>
       </SecondLineContainer>
 
-      <FourthLineContainer>
+      <ButtonContainer sx={{ paddingBottom: '1.6rem' }}>
         <Button Icon={ReceiveIcon} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.ethereum.NativeChainCard.index.depositButton')}
+          {t('pages.Wallet.components.bitcoin.NativeChainCard.index.depositButton')}
         </Button>
-        <FourthLineCenterContainer />
         <Button Icon={SendIcon} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.ethereum.NativeChainCard.index.sendButton')}
+          {t('pages.Wallet.components.bitcoin.NativeChainCard.index.sendButton')}
         </Button>
-        <FourthLineCenterContainer />
-        <Button Icon={SwapIcon16} typoVarient="h5" disabled>
-          {t('pages.Wallet.components.cosmos.NativeChainCard.index.swapButton')}
-        </Button>
-      </FourthLineContainer>
+      </ButtonContainer>
       {isLoading && <StyledAbsoluteLoading size="2.5rem" />}
     </Container>
   );

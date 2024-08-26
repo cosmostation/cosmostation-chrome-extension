@@ -1,6 +1,6 @@
 import type { ACCOUNT_TYPE, CURRENCY_TYPE, LANGUAGE_TYPE } from '~/constants/extensionStorage';
 import type { PERMISSION } from '~/constants/sui';
-import type { AptosNetwork, BIP44, BitcoinNetwork, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken, SuiNetwork } from '~/types/chain';
+import type { AptosNetwork, BIP44, Chain, CommonChain, CosmosToken, EthereumNetwork, EthereumToken, SuiNetwork } from '~/types/chain';
 import type { TransportType } from '~/types/ledger';
 import type { Path } from '~/types/route';
 import type { ThemeType } from '~/types/theme';
@@ -114,7 +114,6 @@ export type ExtensionStorage = {
   shownEthereumNetworkIds: EthereumNetwork['id'][];
   shownAptosNetworkIds: AptosNetwork['id'][];
   shownSuiNetworkIds: SuiNetwork['id'][];
-  shownBitcoinNetworkIds: BitcoinNetwork['id'][];
 
   selectedChainId: Chain['id'];
 
@@ -126,9 +125,6 @@ export type ExtensionStorage = {
 
   additionalSuiNetworks: SuiNetwork[];
   selectedSuiNetworkId: SuiNetwork['id'];
-
-  additionalBitcoinNetworks: BitcoinNetwork[];
-  selectedBitcoinNetworkId: BitcoinNetwork['id'];
 
   cosmosTokens: CosmosToken[];
   ethereumTokens: EthereumToken[];
