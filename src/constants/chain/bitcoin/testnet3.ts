@@ -22,4 +22,5 @@ export const TESTNET3: BitcoinChain = {
   explorerURL: 'https://mempool.space/testnet',
   mempoolURL: 'https://mempool.space/testnet/api',
   network: networks.testnet,
+  isTestnet: true,
 };

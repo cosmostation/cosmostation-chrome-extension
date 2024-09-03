@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import { useAccounts } from '~/Popup/hooks/SWR/cache/useAccounts';
 import { useExtensionStorage } from '~/Popup/hooks/useExtensionStorage';
 import { get } from '~/Popup/utils/axios';
-import type { AddressDetail } from '~/types/bitcoin/balance';
+import type { AccountDetail } from '~/types/bitcoin/balance';
 import type { BitcoinChain } from '~/types/chain';
 
 type FetchParams = {
@@ -29,10 +29,10 @@ export function useBalanceSWR(chain: BitcoinChain, config?: SWRConfiguration) {
     }
 
     const url = `${params.url}/address/${params.address}`;
-    return get<AddressDetail>(url);
+    return get<AccountDetail>(url);
   };
 
-  const { data, error, mutate } = useSWR<AddressDetail, AxiosError>({ url: chain.mempoolURL, address }, fetcher, {
+  const { data, error, mutate } = useSWR<AccountDetail, AxiosError>({ url: chain.mempoolURL, address }, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 59000,
     refreshInterval: 60000,

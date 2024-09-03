@@ -10,7 +10,7 @@ export type Utxo = {
   value: number;
 };
 
-export type AddressDetail = {
+export type AccountDetail = {
   address: string;
   chain_stats: {
     funded_txo_count: number;
@@ -26,4 +26,36 @@ export type AddressDetail = {
     spent_txo_sum: number;
     tx_count: number;
   };
+};
+
+export type AddressInfo = {
+  jsonrpc: string;
+  result?: {
+    address: string;
+    scriptPubKey: string;
+    ismine: boolean;
+    solvable: boolean;
+    iswatchonly: boolean;
+    isscript: boolean;
+    iswitness: boolean;
+    ischange: boolean;
+  };
+  error?: {
+    code: number;
+    message: string;
+  };
+  id: string | number;
+};
+
+export type Estimatesmartfee = {
+  jsonrpc: string;
+  result?: {
+    feerate: number;
+    blocks: number;
+  };
+  error?: {
+    code: number;
+    message: string;
+  };
+  id: string | number;
 };

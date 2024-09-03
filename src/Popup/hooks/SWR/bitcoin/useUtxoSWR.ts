@@ -14,7 +14,7 @@ type FetchParams = {
   address?: string;
 };
 
-export function useBalanceSWR(chain: BitcoinChain, config?: SWRConfiguration) {
+export function useUtxoSWR(chain: BitcoinChain, config?: SWRConfiguration) {
   const accounts = useAccounts(config?.suspense);
   const { extensionStorage } = useExtensionStorage();
 
@@ -32,7 +32,7 @@ export function useBalanceSWR(chain: BitcoinChain, config?: SWRConfiguration) {
     return get<Utxo[]>(url);
   };
 
-  const { data, error, mutate } = useSWR<Utxo[], AxiosError>({ address }, fetcher, {
+  const { data, error, mutate } = useSWR<Utxo[], AxiosError>({ url: chain.mempoolURL, address }, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 59000,
     refreshInterval: 60000,

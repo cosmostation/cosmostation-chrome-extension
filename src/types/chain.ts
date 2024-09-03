@@ -174,6 +174,7 @@ export type BitcoinChain = {
   decimals: number;
   mempoolURL: string;
   network?: Network;
+  isTestnet?: boolean;
 } & CommonChain;
 
 export type Chain = CosmosChain | EthereumChain | AptosChain | SuiChain | BitcoinChain;

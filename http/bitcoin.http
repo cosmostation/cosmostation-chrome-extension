@@ -10,14 +10,14 @@ Content-Type: application/json
 
 ### 
 
-POST https://go.getblock.io/90459b5896ce4150a635c7a05b75ed2e
+POST https://rpc-office.cosmostation.io/bitcoin-testnet
 Content-Type: application/json
 
 {
   "jsonrpc": "2.0",
   "id": 1,
   "method": "estimatesmartfee",
-  "params": [1]
+  "params": [2]
 }
 
 ### 
@@ -41,7 +41,7 @@ Content-Type: application/json
   "jsonrpc": "2.0",
   "id": 1,
   "method": "getrawtransaction",
-  "params": ["3596fc98eb7ec5c3480f2ca5817041d86a43c97afa0404489a4b019e3ca29912", 1]
+  "params": ["20e38f147a0f120d738ce7524d7a13194c211ce2d3c8552b2f2aea844c788e41", 1]
 }
 
 ### 
@@ -56,45 +56,33 @@ GET https://mempool.space/api/address/bc1quzlhwmqu6ev7ve0j3f6j6jvgkn7u6w97tev78k
 
 GET https://mempool.space/api/address/bc1quzlhwmqu6ev7ve0j3f6j6jvgkn7u6w97tev78k/utxo
 
+###
+
+POST https://rpc-office.cosmostation.io/bitcoin/
+Content-Type: application/json
+
 {
-  "address": "bc1quzlhwmqu6ev7ve0j3f6j6jvgkn7u6w97tev78k",
-  "chain_stats": {
-    "funded_txo_count": 2,
-    "funded_txo_sum": 6900000,
-    "spent_txo_count": 0,
-    "spent_txo_sum": 0,
-    "tx_count": 2
-  },
-  "mempool_stats": {
-    "funded_txo_count": 1,
-    "funded_txo_sum": 4899235,
-    "spent_txo_count": 1,
-    "spent_txo_sum": 5900000,
-    "tx_count": 1
-  }
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getaddressinfo",
+  "params": ["18Tpn3xpza66b2rs3uNDxb7xvDAbJQ5zwZ"]
 }
 
-[
-  {
-    "txid": "e1358c2cb0cf9b7f7a811c97e317675d93d6808b89c9903b4549ecb8405e93b1",
-    "vout": 0,
-    "status": {
-      "confirmed": true,
-      "block_height": 857891,
-      "block_hash": "00000000000000000001ccf284bcafd8eb457a8483a2689b51986409e23bba3a",
-      "block_time": 1724319419
-    },
-    "value": 4898422
-  },
-  {
-    "txid": "345f178a84c6b39f978f7751c13b43d14e87bdacf2a030a7e3142bb772cf19a4",
-    "vout": 0,
-    "status": {
-      "confirmed": true,
-      "block_height": 857879,
-      "block_hash": "00000000000000000001294c1d267a18f88eb9e0ca8a9e63ef3d98a5d4e3a86e",
-      "block_time": 1724312634
-    },
-    "value": 1000000
-  }
-]
+### 
+
+POST https://go.getblock.io/90459b5896ce4150a635c7a05b75ed2e
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "getaddressinfo",
+  "params": ["tb1qc0p5h8s9z8ved0u37aam5zskpe764rs9yqv85d"]
+}
+
+###
+
+POST https://mempool.space/testnet4/api/tx
+Content-Type: text/plain
+
+0200000000010604afc85dd0dff98503cf5bd60c17e4241eb1bc59116fa08435171c3cd482128a0100000000ffffffff68afb76764741dadf0e60e64263e256e34535514ade6c70e779cf46843ea39a40100000000ffffffff4f919a731cfe07d7f4108dc55c7e7a799020b84ceb01200f63458442de6f8d8b0100000000ffffffff08f5b8d18670606f0a9a1fc04f977beead0f7fa210e65fd56a0148e96a5aaee20100000000ffffffff7e89f7f2a155d0b0292c94a408aae46bdd2f5f5187942718775d2a2df9a7e71b0100000000ffffffffe85e3406262a7001a9dec8593d449c3a00aba3546249c1910cd082b471dcb99d0100000000ffffffff02a02526000000000016001462f5fcab18cc7089d8cb39869a71224afe90b1551b55250000000000160014c3c34b9e0511d996bf91f77bba0a160e7daa8e0502483045022100c0ba6da9fb81284f72f4362cee90abc2b4113277dbe22792f9916141c61fb43a022045cbcb2bcbff0569d3908cf4af6bb5280abcd00f766be2aea3c570e5ed85b93a01210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a2902473044022047b202422a491602700f32977c75644ea936ac261f35afb2dc3f753dcd7a3157022050205ba7915828b8c5b01cd49ddcdb755d4c7e4d20a6a861106e061f21046e4d01210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a2902483045022100a8477ae5e0e9bbb32b252eaa1565b861a4c965becc1ab76af82ff5b213485da302201031f1369731b92178b68501057878bbf7cb82da3128ee669ce1f1aa54c6c1b901210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a290247304402200ae6ebfec1f000003ba8ddbc472955bce46d4f7e092acc42c10bf38974ee8e1c02204ee23bdcd196b614bd8518bbfe6f63d1baa796a5526481737cc3453a06f4070901210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a2902483045022100b5b0a63cc8b2644b6df4ef2069181189dad7b944324dc47ad2e98f305435c665022070d9bf9d50c9cdd59cf7e793018d8796780347b9ed0f711349415d9609bec96901210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a2902483045022100c3efb2b0b74c4e60a75aaa6a9b363a5204905c870e1bd95f85a6fcbca3afff7502200a9777846a2102107504b8fde999ac80b8906e1db0a82c85f21969e0dfe1f87601210300c7a069f6dad7e978cbf4f49549051af5a4411bb1d7da9b5743f36e23e77a2900000000

@@ -1386,6 +1386,11 @@
             "copied": "복사 되었습니다.",
             "scanQrCode": "QR코드 스캔"
           },
+          "Bitcoin": {
+            "address": "주소",
+            "copied": "복사 되었습니다.",
+            "scanQrCode": "QR코드 스캔"
+          },
           "Cosmos": {
             "address": "주소",
             "copied": "복사 되었습니다.",
@@ -1422,6 +1427,13 @@
               "insufficientAmount": "수량이 부족합니다.",
               "invalidAddress": "유효하지 않은 주소입니다.",
               "invalidAmount": "수량을 입력하세요.",
+              "recipientAddressPlaceholder": "입금 주소",
+              "sendButton": "보내기"
+            }
+          },
+          "Bitcoin": {
+            "index": {
+              "amountPlaceholder": "수량",
               "recipientAddressPlaceholder": "입금 주소",
               "sendButton": "보내기"
             }

@@ -1386,6 +1386,11 @@
             "copied": "Copied",
             "scanQrCode": "Scan QR code"
           },
+          "Bitcoin": {
+            "address": "Address",
+            "copied": "Copied",
+            "scanQrCode": "Scan QR code"
+          },
           "Cosmos": {
             "address": "Address",
             "copied": "Copied",
@@ -1422,6 +1427,13 @@
               "insufficientAmount": "Insufficient amount",
               "invalidAddress": "Invalid address",
               "invalidAmount": "Invalid amount",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send"
+            }
+          },
+          "Bitcoin": {
+            "index": {
+              "amountPlaceholder": "Amount",
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"
             }

@@ -94,7 +94,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
       return 0;
     }
 
-    return balance.data.chain_stats.funded_txo_sum - balance.data.chain_stats.spent_txo_sum + balance.data.mempool_stats.spent_txo_sum;
+    return balance.data.chain_stats.funded_txo_sum - balance.data.chain_stats.spent_txo_sum - balance.data.mempool_stats.spent_txo_sum;
   }, [balance.data]);
 
   const pendingSpentAmount = useMemo(() => {
@@ -211,7 +211,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                 <Typography variant="h6">{t('pages.Wallet.components.bitcoin.NativeChainCard.index.mempoolSpent')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
-                <Tooltip title="test" arrow placement="bottom-end">
+                <Tooltip title={pendingSpentDisplayAmount} arrow placement="bottom-end">
                   <span>
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
                       {pendingSpentDisplayAmount}
@@ -225,7 +225,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
                 <Typography variant="h6">{t('pages.Wallet.components.bitcoin.NativeChainCard.index.mempoolFunded')}</Typography>
               </FourthLineContainerItemLeft>
               <FourthLineContainerItemRight>
-                <Tooltip title="test" arrow placement="bottom-end">
+                <Tooltip title={pendingFundedDisplayAmount} arrow placement="bottom-end">
                   <span>
                     <Number typoOfIntegers="h5n" typoOfDecimals="h7n" fixed={displayMaxDecimals}>
                       {pendingFundedDisplayAmount}
