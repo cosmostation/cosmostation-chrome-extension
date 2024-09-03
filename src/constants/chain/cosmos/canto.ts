@@ -8,7 +8,7 @@ export const CANTO: CosmosChain = {
   type: 'ETHERMINT',
   chainId: 'canto_7700-1',
   chainName: 'CANTO',
-  restURL: 'https://lcd-canto.cosmostation.io',
+  restURL: 'https://canto-api.polkachu.com',
   tokenImageURL: cantoTokenImg,
   imageURL: cantoChainImg,
   baseDenom: 'acanto',
