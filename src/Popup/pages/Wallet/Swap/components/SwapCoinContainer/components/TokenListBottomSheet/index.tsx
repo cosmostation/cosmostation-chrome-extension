@@ -24,6 +24,7 @@ import {
   StyledBottomSheet,
   StyledButton,
   StyledCircularProgress,
+  StyledCircularProgressContainer,
   StyledInput,
   StyledSearch20Icon,
 } from './styled';
@@ -162,48 +163,48 @@ export default function TokenListBottomSheet({
             setSearch(event.currentTarget.value);
           }}
         />
-        {isSearchLoading ? (
-          <ContentContainer>
-            <StyledCircularProgress size="2.8rem" />
-          </ContentContainer>
-        ) : sortedTokenList?.length > 0 ? (
-          <AssetList>
-            <div ref={topRef} />
-            {sortedTokenList?.map((item) => {
-              const isActive = isEqualsIgnoringCase(item.tokenAddressOrDenom, currentSelectedToken?.tokenAddressOrDenom);
-              return (
-                <TokenItem
-                  isActive={isActive}
-                  key={item.tokenAddressOrDenom}
-                  ref={isActive ? ref : undefined}
-                  tokenInfo={item}
-                  onClickToken={(clickedToken) => {
-                    onClickToken(clickedToken);
-                    setSearch('');
+        <ContentContainer>
+          {isSearchLoading ? (
+            <StyledCircularProgressContainer>
+              <StyledCircularProgress size="2.8rem" />
+            </StyledCircularProgressContainer>
+          ) : sortedTokenList?.length > 0 ? (
+            <AssetList>
+              <div ref={topRef} />
+              {sortedTokenList?.map((item) => {
+                const isActive = isEqualsIgnoringCase(item.tokenAddressOrDenom, currentSelectedToken?.tokenAddressOrDenom);
+                return (
+                  <TokenItem
+                    isActive={isActive}
+                    key={item.tokenAddressOrDenom}
+                    ref={isActive ? ref : undefined}
+                    tokenInfo={item}
+                    onClickToken={(clickedToken) => {
+                      onClickToken(clickedToken);
+                      setSearch('');
 
-                    onClose?.({}, 'escapeKeyDown');
+                      onClose?.({}, 'escapeKeyDown');
+                    }}
+                  />
+                );
+              })}
+
+              {filteredTokenList?.length > viewLimit - 1 && (
+                <IntersectionObserver
+                  onIntersect={() => {
+                    setViewLimit((limit) => limit + 30);
                   }}
                 />
-              );
-            })}
-
-            {filteredTokenList?.length > viewLimit - 1 && (
-              <IntersectionObserver
-                onIntersect={() => {
-                  setViewLimit((limit) => limit + 30);
-                }}
-              />
-            )}
-          </AssetList>
-        ) : (
-          <ContentContainer>
+              )}
+            </AssetList>
+          ) : (
             <EmptyAsset
               Icon={extensionStorage.theme === THEME_TYPE.LIGHT ? NoResultLightIcon : NoResultDarkIcon}
               headerText={t('pages.Wallet.Swap.components.SwapCoinContainer.components.TokenListBottomSheet.index.noResultHeader')}
               subHeaderText={t('pages.Wallet.Swap.components.SwapCoinContainer.components.TokenListBottomSheet.index.noResultSubHeader')}
             />
-          </ContentContainer>
-        )}
+          )}
+        </ContentContainer>
       </Container>
     </StyledBottomSheet>
   );

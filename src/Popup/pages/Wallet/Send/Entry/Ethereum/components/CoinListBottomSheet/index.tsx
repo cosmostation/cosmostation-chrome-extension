@@ -20,6 +20,7 @@ import {
   StyledBottomSheet,
   StyledButton,
   StyledCircularProgress,
+  StyledCircularProgressContainer,
   StyledInput,
   StyledSearch20Icon,
 } from './styled';
@@ -123,47 +124,47 @@ export default function CoinListBottomSheet({ currentToken, onClickCoin, onClose
             setSearch(event.currentTarget.value);
           }}
         />
-        {isSearchLoading ? (
-          <ContentContainer>
-            <StyledCircularProgress size="2.8rem" />
-          </ContentContainer>
-        ) : filteredTokenList.length > 0 ? (
-          <AssetList>
-            <div ref={topRef} />
-            {filteredTokenList?.map((item) => {
-              const isActive = currentToken?.id === item?.id;
+        <ContentContainer>
+          {isSearchLoading ? (
+            <StyledCircularProgressContainer>
+              <StyledCircularProgress size="2.8rem" />
+            </StyledCircularProgressContainer>
+          ) : filteredTokenList.length > 0 ? (
+            <AssetList>
+              <div ref={topRef} />
+              {filteredTokenList?.map((item) => {
+                const isActive = currentToken?.id === item?.id;
 
-              return (
-                <CoinItem
-                  key={item?.id || 'native'}
-                  token={item}
-                  isActive={isActive}
-                  ref={isActive ? ref : undefined}
-                  onClick={() => {
-                    onClickCoin?.(item);
-                    setSearch('');
-                    onClose?.({}, 'escapeKeyDown');
+                return (
+                  <CoinItem
+                    key={item?.id || 'native'}
+                    token={item}
+                    isActive={isActive}
+                    ref={isActive ? ref : undefined}
+                    onClick={() => {
+                      onClickCoin?.(item);
+                      setSearch('');
+                      onClose?.({}, 'escapeKeyDown');
+                    }}
+                  />
+                );
+              })}
+              {filteredTokenList?.length > viewLimit - 1 && (
+                <IntersectionObserver
+                  onIntersect={() => {
+                    setViewLimit((limit) => limit + 30);
                   }}
                 />
-              );
-            })}
-            {filteredTokenList?.length > viewLimit - 1 && (
-              <IntersectionObserver
-                onIntersect={() => {
-                  setViewLimit((limit) => limit + 30);
-                }}
-              />
-            )}
-          </AssetList>
-        ) : (
-          <ContentContainer>
+              )}
+            </AssetList>
+          ) : (
             <EmptyAsset
               Icon={extensionStorage.theme === THEME_TYPE.LIGHT ? NoResultLightIcon : NoResultDarkIcon}
               headerText={t('pages.Wallet.Send.Entry.Ethereum.components.CoinListBottomSheet.index.noResultHeader')}
               subHeaderText={t('pages.Wallet.Send.Entry.Ethereum.components.CoinListBottomSheet.index.noResultSubHeader')}
             />
-          </ContentContainer>
-        )}
+          )}
+        </ContentContainer>
       </Container>
     </StyledBottomSheet>
   );

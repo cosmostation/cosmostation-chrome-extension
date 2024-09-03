@@ -37,18 +37,7 @@ export const StyledInput = styled(Input)({
   margin: '1.6rem 0',
 });
 
-export const AssetList = styled('div')({
-  margin: '0 -1.6rem',
-  padding: '0 1.6rem',
-
-  display: 'grid',
-  gridTemplateColumns: '1fr',
-  rowGap: '0.8rem',
-
-  overflow: 'auto',
-
-  paddingBottom: '0.8rem',
-});
+export const AssetList = styled('div')({});
 
 export const StyledBottomSheet = styled(BottomSheet)({
   '& .MuiPaper-root': {
@@ -76,12 +65,18 @@ export const StyledButton = styled('button')(({ theme }) => ({
 }));
 
 export const ContentContainer = styled('div')({
-  width: '100%',
   height: '100%',
 
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  margin: '0 -1.6rem',
+  padding: '0 1.6rem',
+
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  rowGap: '0.8rem',
+
+  overflow: 'auto',
+
+  paddingBottom: '0.8rem',
 });
 
 export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
@@ -89,3 +84,9 @@ export const StyledCircularProgress = styled(CircularProgress)(({ theme }) => ({
     color: theme.accentColors.purple01,
   },
 }));
+
+export const StyledCircularProgressContainer = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+});

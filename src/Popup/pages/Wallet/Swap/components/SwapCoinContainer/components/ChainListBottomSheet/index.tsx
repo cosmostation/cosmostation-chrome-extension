@@ -18,6 +18,7 @@ import {
   StyledBottomSheet,
   StyledButton,
   StyledCircularProgress,
+  StyledCircularProgressContainer,
   StyledInput,
   StyledSearch20Icon,
 } from './styled';
@@ -101,39 +102,39 @@ export default function ChainListBottomSheet({ currentSelectedChain, availableCh
             setSearch(event.currentTarget.value);
           }}
         />
-        {isSearchLoading ? (
-          <ContentContainer>
-            <StyledCircularProgress size="2.8rem" />
-          </ContentContainer>
-        ) : filteredChainList?.length > 0 ? (
-          <AssetList>
-            {filteredChainList?.map((item) => {
-              const isActive = item.id === currentSelectedChain?.id;
-              return (
-                <ChainItem
-                  isActive={isActive}
-                  key={item.id}
-                  ref={isActive ? ref : undefined}
-                  chainInfo={item}
-                  onClickChain={(clickedChain) => {
-                    onClickChain(clickedChain);
-                    setSearch('');
+        <ContentContainer>
+          {isSearchLoading ? (
+            <StyledCircularProgressContainer>
+              <StyledCircularProgress size="2.8rem" />
+            </StyledCircularProgressContainer>
+          ) : filteredChainList?.length > 0 ? (
+            <AssetList>
+              {filteredChainList?.map((item) => {
+                const isActive = item.id === currentSelectedChain?.id;
+                return (
+                  <ChainItem
+                    isActive={isActive}
+                    key={item.id}
+                    ref={isActive ? ref : undefined}
+                    chainInfo={item}
+                    onClickChain={(clickedChain) => {
+                      onClickChain(clickedChain);
+                      setSearch('');
 
-                    onClose?.({}, 'escapeKeyDown');
-                  }}
-                />
-              );
-            })}
-          </AssetList>
-        ) : (
-          <ContentContainer>
+                      onClose?.({}, 'escapeKeyDown');
+                    }}
+                  />
+                );
+              })}
+            </AssetList>
+          ) : (
             <EmptyAsset
               Icon={extensionStorage.theme === THEME_TYPE.LIGHT ? NoResultLightIcon : NoResultDarkIcon}
               headerText={t('pages.Wallet.Swap.components.SwapCoinContainer.components.ChainListBottomSheet.index.noResultHeader')}
               subHeaderText={t('pages.Wallet.Swap.components.SwapCoinContainer.components.ChainListBottomSheet.index.noResultSubHeader')}
             />
-          </ContentContainer>
-        )}
+          )}
+        </ContentContainer>
       </Container>
     </StyledBottomSheet>
   );

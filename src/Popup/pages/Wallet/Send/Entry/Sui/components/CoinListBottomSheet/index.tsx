@@ -25,6 +25,7 @@ import {
   StyledBottomSheet,
   StyledButton,
   StyledCircularProgress,
+  StyledCircularProgressContainer,
   StyledInput,
   StyledSearch20Icon,
 } from './styled';
@@ -151,47 +152,47 @@ export default function CoinListBottomSheet({ currentCoinType, onClickCoin, onCl
             setSearch(event.currentTarget.value);
           }}
         />
-        {isSearchLoading ? (
-          <ContentContainer>
-            <StyledCircularProgress size="2.8rem" />
-          </ContentContainer>
-        ) : filteredCoinList.length > 0 ? (
-          <AssetList>
-            <div ref={topRef} />
-            {filteredCoinList?.map((item) => {
-              const isActive = currentCoinType === item.coinType;
+        <ContentContainer>
+          {isSearchLoading ? (
+            <StyledCircularProgressContainer>
+              <StyledCircularProgress size="2.8rem" />
+            </StyledCircularProgressContainer>
+          ) : filteredCoinList.length > 0 ? (
+            <AssetList>
+              <div ref={topRef} />
+              {filteredCoinList?.map((item) => {
+                const isActive = currentCoinType === item.coinType;
 
-              return (
-                <CoinItem
-                  key={item.coinType}
-                  coin={item}
-                  isActive={isActive}
-                  ref={isActive ? ref : undefined}
-                  onClick={() => {
-                    onClickCoin?.(item.coinType);
-                    setSearch('');
-                    onClose?.({}, 'escapeKeyDown');
+                return (
+                  <CoinItem
+                    key={item.coinType}
+                    coin={item}
+                    isActive={isActive}
+                    ref={isActive ? ref : undefined}
+                    onClick={() => {
+                      onClickCoin?.(item.coinType);
+                      setSearch('');
+                      onClose?.({}, 'escapeKeyDown');
+                    }}
+                  />
+                );
+              })}
+              {filteredCoinList?.length > viewLimit - 1 && (
+                <IntersectionObserver
+                  onIntersect={() => {
+                    setViewLimit((limit) => limit + 30);
                   }}
                 />
-              );
-            })}
-            {filteredCoinList?.length > viewLimit - 1 && (
-              <IntersectionObserver
-                onIntersect={() => {
-                  setViewLimit((limit) => limit + 30);
-                }}
-              />
-            )}
-          </AssetList>
-        ) : (
-          <ContentContainer>
+              )}
+            </AssetList>
+          ) : (
             <EmptyAsset
               Icon={extensionStorage.theme === THEME_TYPE.LIGHT ? NoResultLightIcon : NoResultDarkIcon}
               headerText={t('pages.Wallet.Send.Entry.Sui.components.CoinListBottomSheet.index.noResultHeader')}
               subHeaderText={t('pages.Wallet.Send.Entry.Sui.components.CoinListBottomSheet.index.noResultSubHeader')}
             />
-          </ContentContainer>
-        )}
+          )}
+        </ContentContainer>
       </Container>
     </StyledBottomSheet>
   );
