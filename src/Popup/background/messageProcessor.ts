@@ -1334,7 +1334,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
 
             if (validatedParams[0].chainId !== response.result) {
               throw new EthereumRPCError(
-                RPC_ERROR.INVALID_PARAMS,
+                RPC_ERROR.UNRECOGNIZED_CHAIN,
                 `Chain ID returned by RPC URL ${validatedParams[0].rpcUrls[0]} does not match ${validatedParams[0].chainId}`,
                 message.id,
                 { chainId: response.result },
@@ -1411,7 +1411,7 @@ export async function cstob(request: ContentScriptToBackgroundEventMessage<Reque
             }
 
             throw new EthereumRPCError(
-              RPC_ERROR.INVALID_PARAMS,
+              RPC_ERROR.UNRECOGNIZED_CHAIN,
               `Unrecognized chain ID ${params?.[0]?.chainId}. Try adding the chain using wallet_addEthereumChain first.`,
               message.id,
             );
