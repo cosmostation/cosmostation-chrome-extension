@@ -237,7 +237,11 @@ export default function Entry({ queue }: EntryProps) {
     currentEthereumNetwork.chainId,
   ]);
 
-  const oneInchTokens = useOneInchTokensSWR(queue.channel === 'inApp' ? String(parseInt(currentEthereumNetwork.chainId, 16)) : '');
+  const oneInchTokens = useOneInchTokensSWR(
+    queue.channel === 'inApp' && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)
+      ? String(parseInt(currentEthereumNetwork.chainId, 16))
+      : '',
+  );
 
   const oneInchSwapDstToken = useMemo(() => {
     if (txType.data?.type === 'swap' && oneInchTokens.data && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
