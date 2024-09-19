@@ -23,16 +23,17 @@ export function useBalanceSWR(chain: BitcoinChain, config?: SWRConfiguration) {
     [accounts.data, chain.id, extensionStorage.selectedAccountId],
   );
 
+  const url = useMemo(() => `${chain.mempoolURL}/address/${address}`, [address, chain.mempoolURL]);
+
   const fetcher = (params: FetchParams) => {
     if (!params.address) {
       throw new Error('Address is required');
     }
 
-    const url = `${params.url}/address/${params.address}`;
-    return get<AccountDetail>(url);
+    return get<AccountDetail>(params.url);
   };
 
-  const { data, error, mutate } = useSWR<AccountDetail, AxiosError>({ url: chain.mempoolURL, address }, fetcher, {
+  const { data, error, mutate } = useSWR<AccountDetail, AxiosError>({ url, address }, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 59000,
     refreshInterval: 60000,

@@ -1434,6 +1434,11 @@
           "Bitcoin": {
             "index": {
               "amountPlaceholder": "수량",
+              "failedCreateTxHex": "트랜잭션 생성 실패",
+              "failedLoadFee": "네트워크 에러",
+              "invalidAddress": "유효하지 않은 주소입니다.",
+              "memoPlaceholder": "메모 (선택)",
+              "noAvailableAmount": "잔액이 충분하지 않습니다.",
               "recipientAddressPlaceholder": "입금 주소",
               "sendButton": "보내기"
             }

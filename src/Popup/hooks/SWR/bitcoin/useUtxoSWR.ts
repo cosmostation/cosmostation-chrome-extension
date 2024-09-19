@@ -23,16 +23,17 @@ export function useUtxoSWR(chain: BitcoinChain, config?: SWRConfiguration) {
     [accounts.data, chain.id, extensionStorage.selectedAccountId],
   );
 
+  const url = useMemo(() => `${chain.mempoolURL}/address/${address}/utxo`, [address, chain.mempoolURL]);
+
   const fetcher = (params: FetchParams) => {
     if (!params.address) {
       throw new Error('Address is required');
     }
 
-    const url = `${params.url}/address/${params.address}/utxo`;
     return get<Utxo[]>(url);
   };
 
-  const { data, error, mutate } = useSWR<Utxo[], AxiosError>({ url: chain.mempoolURL, address }, fetcher, {
+  const { data, error, mutate } = useSWR<Utxo[], AxiosError>({ url, address }, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 59000,
     refreshInterval: 60000,

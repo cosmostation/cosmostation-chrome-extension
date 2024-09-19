@@ -1434,6 +1434,11 @@
           "Bitcoin": {
             "index": {
               "amountPlaceholder": "Amount",
+              "failedCreateTxHex": "Failed to create transaction hex",
+              "failedLoadFee": "Network error",
+              "invalidAddress": "Invalid address",
+              "memoPlaceholder": "Memo (option)",
+              "noAvailableAmount": "Insufficient amount",
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"
             }

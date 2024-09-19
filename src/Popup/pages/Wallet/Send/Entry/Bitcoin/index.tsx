@@ -18,6 +18,7 @@ import { useCurrentPassword } from '~/Popup/hooks/useCurrent/useCurrentPassword'
 import { useTranslation } from '~/Popup/hooks/useTranslation';
 import { isDecimal, toBaseDenomAmount, toDisplayDenomAmount } from '~/Popup/utils/big';
 import { getKeyPair } from '~/Popup/utils/common';
+import { ecpairFromPrivateKey } from '~/Popup/utils/crypto';
 import type { BitcoinChain } from '~/types/chain';
 
 import Coin from './components/Coin';
@@ -40,10 +41,11 @@ export default function Bitcoin({ chain }: BitcoinProps) {
 
   const { currentAccount } = useCurrentAccount();
 
-  const [isDisabled, setIsDisabled] = useState(false);
   const [currentDisplayAmount, setCurrentDisplayAmount] = useState('');
 
   const [currentAddress, setCurrentAddress] = useState('');
+  const [currentMemo, setCurrentMemo] = useState('');
+
   const [debouncedCurrentAddress] = useDebounce(currentAddress, 500);
 
   const [isOpenedAddressBook, setIsOpenedAddressBook] = useState(false);
@@ -65,7 +67,7 @@ export default function Bitcoin({ chain }: BitcoinProps) {
 
   const keyPair = useMemo(() => getKeyPair(currentAccount, chain, currentPassword), [chain, currentAccount, currentPassword]);
 
-  const p2wpkh = payments.p2wpkh({ pubkey: keyPair!.publicKey, network });
+  const p2wpkh = useMemo(() => payments.p2wpkh({ pubkey: keyPair!.publicKey, network }), [keyPair, network]);
 
   const availableAmount = useMemo(() => {
     if (!balance.data) {
@@ -77,6 +79,56 @@ export default function Bitcoin({ chain }: BitcoinProps) {
 
   const availableDisplayAmount = useMemo(() => toDisplayDenomAmount(availableAmount, decimals), [availableAmount, decimals]);
 
+  const currentAmount = useMemo(() => Number(toBaseDenomAmount(currentDisplayAmount || '0', decimals)), [currentDisplayAmount, decimals]);
+
+  const fee = useMemo(() => {
+    if (!utxo.data?.length) {
+      return 0;
+    }
+
+    return Math.ceil((utxo.data.length || 0) * P2WPKH__V_BYTES.INPUT + 2 * P2WPKH__V_BYTES.OUTPUT + P2WPKH__V_BYTES.OVERHEAD);
+  }, [utxo.data]);
+
+  const change = useMemo(() => availableAmount - currentAmount - fee, [availableAmount, currentAmount, fee]);
+
+  const txHex = useMemo(() => {
+    try {
+      const psbt = new Psbt({ network });
+
+      const inputs = utxo.data?.map((u) => ({
+        hash: u.txid,
+        index: u.vout,
+        witnessUtxo: {
+          script: p2wpkh.output!,
+          value: u.value,
+        },
+      }));
+
+      if (inputs) {
+        psbt.addInputs(inputs);
+      }
+
+      psbt.addOutputs([
+        {
+          address: currentAddress,
+          value: currentAmount,
+        },
+        {
+          address: p2wpkh.address!,
+          value: change,
+        },
+      ]);
+
+      return psbt.signAllInputs(ecpairFromPrivateKey(keyPair!.privateKey!)).finalizeAllInputs().extractTransaction().toHex();
+    } catch {
+      return null;
+    }
+  }, [change, currentAddress, currentAmount, keyPair, network, p2wpkh.address, p2wpkh.output, utxo.data]);
+
+  const handleOnClickMax = () => {
+    setCurrentDisplayAmount(toDisplayDenomAmount(availableAmount - fee, chain.decimals));
+  };
+
   const errorMessage = useMemo(() => {
     if (currentAddress !== debouncedCurrentAddress || !validate(debouncedCurrentAddress)) {
       return t('pages.Wallet.Send.Entry.Bitcoin.index.invalidAddress');
@@ -86,52 +138,16 @@ export default function Bitcoin({ chain }: BitcoinProps) {
       return t('pages.Wallet.Send.Entry.Bitcoin.index.failedLoadFee');
     }
 
+    if (availableAmount === 0 || availableAmount - Number(toBaseDenomAmount(currentDisplayAmount || '0', decimals)) - fee < 0) {
+      return t('pages.Wallet.Send.Entry.Bitcoin.index.noAvailableAmount');
+    }
+
+    if (!txHex) {
+      return t('pages.Wallet.Send.Entry.Bitcoin.index.failedCreateTxHex');
+    }
+
     return '';
-  }, [currentAddress, debouncedCurrentAddress, gasRate, t]);
-
-  const currentAmount = useMemo(() => Number(toBaseDenomAmount(currentDisplayAmount || '0', decimals)), [currentDisplayAmount, decimals]);
-
-  const fee = useMemo(() => {
-    if (!utxo.data?.length) {
-      return 0;
-    }
-
-    return Math.ceil(utxo.data.length * P2WPKH__V_BYTES.INPUT + 2 * P2WPKH__V_BYTES.OUTPUT + P2WPKH__V_BYTES.OVERHEAD);
-  }, [utxo.data]);
-
-  const change = useMemo(() => availableAmount - currentAmount - fee, [availableAmount, currentAmount, fee]);
-
-  const txHex = useMemo(() => {
-    const psbt = new Psbt({ network });
-
-    const inputs = utxo.data?.map((u) => ({
-      hash: u.txid,
-      index: u.vout,
-      witnessUtxo: {
-        script: p2wpkh.output!,
-        value: u.value,
-      },
-    }));
-
-    if (inputs) {
-      psbt.addInputs(inputs);
-    }
-
-    psbt.addOutputs([
-      {
-        address: currentAddress,
-        value: currentAmount,
-      },
-      {
-        address: p2wpkh.address!,
-        value: change,
-      },
-    ]);
-
-    return psbt.toHex();
-  }, [change, currentAddress, currentAmount, network, p2wpkh.address, p2wpkh.output, utxo.data]);
-
-  const handleOnClickMax = () => txHex;
+  }, [availableAmount, currentAddress, currentDisplayAmount, debouncedCurrentAddress, decimals, fee, gasRate, t, txHex]);
 
   return (
     <Container>
@@ -174,18 +190,30 @@ export default function Bitcoin({ chain }: BitcoinProps) {
               return;
             }
 
-            setIsDisabled(true);
-
             setCurrentDisplayAmount(e.currentTarget.value);
           }}
           value={currentDisplayAmount}
         />
       </Div>
 
+      <Div sx={{ marginTop: '0.8rem' }}>
+        <StyledInput
+          placeholder={t('pages.Wallet.Send.Entry.Bitcoin.index.memoPlaceholder')}
+          onChange={(e) => setCurrentMemo(e.currentTarget.value)}
+          value={currentMemo}
+        />
+      </Div>
+
       <BottomContainer>
         <Tooltip varient="error" title={errorMessage} placement="top" arrow>
           <div>
-            <Button type="button" disabled={isDisabled || !!errorMessage} onClick={() => ''}>
+            <Button
+              type="button"
+              disabled={!!errorMessage}
+              onClick={() => {
+                // console.log('txHex', txHex);
+              }}
+            >
               {t('pages.Wallet.Send.Entry.Bitcoin.index.sendButton')}
             </Button>
           </div>
