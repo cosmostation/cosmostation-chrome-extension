@@ -9,7 +9,7 @@ export const MARS: CosmosChain = {
   type: '',
   chainId: 'mars-1',
   chainName: 'MARS',
-  restURL: 'https://lcd-mars-protocol.cosmostation.io',
+  restURL: 'https://mars-api.polkachu.com',
   tokenImageURL: marsTokenImg,
   imageURL: marsChainImg,
   baseDenom: 'umars',
