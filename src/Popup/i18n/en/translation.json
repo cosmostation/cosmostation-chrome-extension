@@ -1626,7 +1626,7 @@
           "invalidSwapTx": "Invalid tx data",
           "lessThanFeeWarningDescription1": "You do not have enough balance to cover the estimated gas costs for this transaction. Make sure you have more than",
           "lessThanFeeWarningDescription2": "before trying again.",
-          "liquidityWarning": "The size of this trade is large compared to the available liquidity. Reduce the swap amount to get a better price.",
+          "liquidityWarning": "There will be a large difference between your input and output values due to current liquidity.",
           "minimumReceived": "Minimum received after slippage",
           "minutes": "minutes",
           "multiTxSwap": "Swap with multiple transactions is unavailable",
