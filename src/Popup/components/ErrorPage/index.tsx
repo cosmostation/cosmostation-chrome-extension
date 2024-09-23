@@ -114,9 +114,7 @@ export default function ErrorPage({ chain, network, queue, ...rest }: EntryProps
                 }
               }}
             >
-              <Typography variant="h6">
-                <u>{t('components.ErrorPage.index.sendReportEmail')}</u>
-              </Typography>
+              <Typography variant="h6">{t('components.ErrorPage.index.sendReportEmail')}</Typography>
             </ReportButton>
           </ReportContainer>
           <Button

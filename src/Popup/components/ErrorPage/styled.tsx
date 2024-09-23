@@ -77,6 +77,8 @@ export const ReportButton = styled('button')(({ theme }) => ({
 
   position: 'relative',
 
+  textDecorationLine: 'underline',
+
   '&:hover': {
     color: theme.accentColors.purple02,
   },
