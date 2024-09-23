@@ -16,7 +16,7 @@ export const TESTNET4: BitcoinChain = {
     account: "0'",
     change: '0',
   },
-  rpcURL: 'https://go.getblock.io/90459b5896ce4150a635c7a05b75ed2e',
+  rpcURL: 'https://rpc-office.cosmostation.io/bitcoin-testnet',
   displayDenom: 'tBTC',
   decimals: 8,
   explorerURL: 'https://mempool.space/testnet4',

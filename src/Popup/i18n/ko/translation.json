@@ -1432,15 +1432,29 @@
             }
           },
           "Bitcoin": {
+            "components": {
+              "ConfirmDialog": {
+                "index": {
+                  "cancel": "취소",
+                  "confirm": "확인",
+                  "confirmText": "트랜잭션을 전송하시겠습니까?"
+                }
+              }
+            },
             "index": {
               "amountPlaceholder": "수량",
               "failedCreateTxHex": "트랜잭션 생성 실패",
               "failedLoadFee": "네트워크 에러",
+              "failureSend": "알 수 없는 에러",
+              "fee": "수수료",
               "invalidAddress": "유효하지 않은 주소입니다.",
-              "memoPlaceholder": "메모 (선택)",
+              "memoMaxLength": "OP_RETURN은 80바이트 이하로 입력하세요.",
+              "memoPlaceholder": "OP_RETURN (선택)",
+              "noAmount": "수량을 입력하세요.",
               "noAvailableAmount": "잔액이 충분하지 않습니다.",
               "recipientAddressPlaceholder": "입금 주소",
-              "sendButton": "보내기"
+              "sendButton": "보내기",
+              "successSend": "트랜잭션이 성공적으로 전송되었습니다."
             }
           },
           "Cosmos": {
@@ -1498,7 +1512,7 @@
                   "insufficientFeeAmount": "수수료가 부족합니다.",
                   "invalidAddress": "유효하지 않은 주소입니다.",
                   "invalidAmount": "수량을 입력하세요.",
-                  "memoPlaceholder": "메모 (선택)",
+                  "memoPlaceholder": "OP_RETURN (선택)",
                   "recipientAddressPlaceholder": "입금 주소",
                   "sendButton": "보내기"
                 }
