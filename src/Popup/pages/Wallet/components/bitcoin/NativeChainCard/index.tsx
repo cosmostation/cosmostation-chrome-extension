@@ -27,7 +27,6 @@ import {
   ButtonContainer,
   Container,
   ErrorDescriptionContainer,
-  ExpandedButton,
   FirstLineContainer,
   FirstLineLeftContainer,
   FirstLineRightContainer,
@@ -55,7 +54,6 @@ import {
   TextChangeRateContainer,
 } from './styled';
 
-import BottomArrow20Icon from '~/images/icons/BottomArrow20.svg';
 import ExplorerIcon from '~/images/icons/Explorer.svg';
 import ReceiveIcon from '~/images/icons/Receive.svg';
 import RetryIcon from '~/images/icons/Retry.svg';
@@ -65,8 +63,6 @@ type NativeChainCardProps = {
   chain: BitcoinChain;
   isCustom?: boolean;
 };
-
-const EXPANDED_KEY = 'wallet-bitcoin-expanded';
 
 export default function NativeChainCard({ chain, isCustom = false }: NativeChainCardProps) {
   const { t } = useTranslation();
@@ -85,9 +81,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const balance = useBalanceSWR(chain, { suspense: true });
 
-  const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
-
-  const [expanded, setExpanded] = useState(storageExpanded);
+  const expanded = true;
 
   const availableAmount = useMemo(() => {
     if (!balance.data) {
@@ -246,18 +240,6 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
           {t('pages.Wallet.components.bitcoin.NativeChainCard.index.sendButton')}
         </Button>
       </ButtonContainer>
-      <ExpandedButton
-        data-is-expanded={expanded ? 1 : 0}
-        type="button"
-        onClick={() => {
-          setExpanded((prev) => {
-            localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
-            return !prev;
-          });
-        }}
-      >
-        <BottomArrow20Icon />
-      </ExpandedButton>
     </Container>
   );
 }
@@ -271,9 +253,7 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
   const { currentAccount } = useCurrentAccount();
   const { currentPassword } = useCurrentPassword();
 
-  const storageExpanded = localStorage.getItem(EXPANDED_KEY) === null ? true : !!localStorage.getItem(EXPANDED_KEY);
-
-  const [expanded, setExpanded] = useState(storageExpanded);
+  const expanded = true;
 
   const address = useMemo(() => {
     const key = getAddressKey(currentAccount, chain);
@@ -370,18 +350,6 @@ export function NativeChainCardSkeleton({ chain, isCustom }: NativeChainCardProp
           {t('pages.Wallet.components.bitcoin.NativeChainCard.index.sendButton')}
         </Button>
       </ButtonContainer>
-      <ExpandedButton
-        data-is-expanded={expanded ? 1 : 0}
-        type="button"
-        onClick={() => {
-          setExpanded((prev) => {
-            localStorage.setItem(EXPANDED_KEY, !prev ? '1' : '');
-            return !prev;
-          });
-        }}
-      >
-        <BottomArrow20Icon />
-      </ExpandedButton>
     </Container>
   );
 }

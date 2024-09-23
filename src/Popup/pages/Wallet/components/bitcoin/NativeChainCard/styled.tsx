@@ -10,14 +10,14 @@ type ContainerProps = {
   'data-is-no-expanded'?: boolean;
 };
 
-export const Container = styled('div')<ContainerProps>(({ theme, ...props }) => ({
+export const Container = styled('div')<ContainerProps>(({ theme }) => ({
   backgroundColor: theme.colors.base02,
 
   width: '100%',
 
   borderRadius: '0.8rem',
 
-  padding: props['data-is-no-expanded'] ? '1.6rem 1.6rem 0.6rem' : '1.6rem 1.6rem 0',
+  padding: '1.6rem 1.6rem 0.6rem',
 
   position: 'relative',
 }));
