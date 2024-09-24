@@ -175,11 +175,16 @@ export default function Bitcoin({ chain }: BitcoinProps) {
 
       psbt.addOutputs(currentOutputs);
 
+      if (currentMemoBytes > 0) {
+        const memo = Buffer.from(currentMemo, 'utf8');
+        psbt.addOutput({ script: payments.embed({ data: [memo] }).output!, value: 0 });
+      }
+
       return psbt.signAllInputs(ecpairFromPrivateKey(keyPair!.privateKey!)).finalizeAllInputs().extractTransaction().toHex();
     } catch {
       return null;
     }
-  }, [currentInputs, currentOutputs, keyPair, network]);
+  }, [currentInputs, currentMemo, currentMemoBytes, currentOutputs, keyPair, network]);
 
   const handleOnClickMax = () => {
     setCurrentDisplayAmount(toDisplayDenomAmount(availableAmount - fee, chain.decimals));
