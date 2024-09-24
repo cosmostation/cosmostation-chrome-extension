@@ -12,11 +12,10 @@ import { Div, LeftAvailableContainer, LeftContainer, LeftDisplayDenomContainer, 
 
 type CoinButtonProps = ComponentProps<typeof Div> & {
   chain: BitcoinChain;
-  imageURL?: string;
   displayAmount?: string;
 };
 
-export default function Coin({ chain, imageURL, displayAmount, ...remainder }: CoinButtonProps) {
+export default function Coin({ chain, displayAmount, ...remainder }: CoinButtonProps) {
   const { t } = useTranslation();
 
   const displayDenom = useMemo(() => chain.displayDenom, [chain.displayDenom]);
@@ -27,7 +26,7 @@ export default function Coin({ chain, imageURL, displayAmount, ...remainder }: C
     <Div {...remainder}>
       <LeftContainer>
         <LeftImageContainer>
-          <Image src={imageURL} />
+          <Image src={chain.tokenImageURL} />
         </LeftImageContainer>
         <LeftInfoContainer>
           <LeftDisplayDenomContainer>

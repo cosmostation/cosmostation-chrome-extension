@@ -16,7 +16,7 @@ export const BITCOIN: BitcoinChain = {
     account: "0'",
     change: '0',
   },
-  rpcURL: 'https://rpc-office.cosmostation.io/bitcoin/',
+  rpcURL: 'https://rpc-office.cosmostation.io/bitcoin',
   displayDenom: 'BTC',
   decimals: 8,
   explorerURL: 'https://mempool.space',

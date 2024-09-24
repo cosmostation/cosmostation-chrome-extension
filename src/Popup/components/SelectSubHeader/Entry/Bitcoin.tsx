@@ -16,7 +16,7 @@ type BitcoinProps = {
   chain: BitcoinChain;
 };
 
-export default function Cosmos({ chain, isShowChain }: BitcoinProps) {
+export default function Bitcoin({ chain, isShowChain }: BitcoinProps) {
   const { currentAccount } = useCurrentAccount();
   const { setCurrentChain } = useCurrentChain();
 

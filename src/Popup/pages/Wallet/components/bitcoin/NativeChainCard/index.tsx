@@ -135,7 +135,7 @@ export default function NativeChainCard({ chain, isCustom = false }: NativeChain
 
   const displayMaxDecimals = decimals;
 
-  const value = useMemo(() => times(availableAmount, price), [availableAmount, price]);
+  const value = useMemo(() => times(availableDisplayAmount, price), [availableDisplayAmount, price]);
 
   const handleOnClickCopy = () => {
     if (copy(currentAddress)) {

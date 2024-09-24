@@ -240,7 +240,6 @@ export default function Bitcoin({ chain }: BitcoinProps) {
 
       setIsOpenedConfirmDialog(false);
     } catch (e) {
-      // enqueueSnackbar(e.error.message, { variant: 'error' });
       enqueueSnackbar(t('pages.Wallet.Send.Entry.Bitcoin.index.failureSend'), { variant: 'error' });
     }
   };

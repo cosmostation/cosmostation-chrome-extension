@@ -5,6 +5,7 @@ import { InputAdornment, Typography } from '@mui/material';
 
 import { APTOS_NETWORKS, BITCOIN_CHAINS, COSMOS_CHAINS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/chain';
 import { APTOS } from '~/constants/chain/aptos/aptos';
+import { BITCOIN } from '~/constants/chain/bitcoin/bitcoin';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -255,7 +256,7 @@ export default function Entry() {
           >
             <ItemLeftContainer>
               <ItemLeftImageContainer>
-                <Image src={COSMOS.imageURL} />
+                <Image src={BITCOIN.imageURL} />
               </ItemLeftImageContainer>
               <ItemLeftTextContainer>
                 <Typography variant="h5">Bitcoin Chains</Typography>
