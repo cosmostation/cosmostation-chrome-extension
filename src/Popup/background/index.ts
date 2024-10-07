@@ -98,6 +98,7 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
+        // NOTE need to add new chainId to allowedChainIds
         if (extensionManifest.version === '0.8.13') {
           void (async () => {
             await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), AGORIC.id, BASE.id, LAVA.id, ZETA.id, ETHEREUM_NETWORK__ZETA.id]);

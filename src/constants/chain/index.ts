@@ -11,6 +11,7 @@ import { ARCHWAY } from './cosmos/archway';
 import { ARTELA_TESTNET } from './cosmos/artelaTestnet';
 import { ASI_ALLIANCE } from './cosmos/asiAlliance';
 import { ASSET_MANTLE } from './cosmos/assetMantle';
+import { ATOM_ONE } from './cosmos/atomOne';
 import { AXELAR } from './cosmos/axelar';
 import { BAND } from './cosmos/band';
 import { BITCANNA } from './cosmos/bitcanna';
@@ -126,6 +127,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   ARTELA_TESTNET,
   ASI_ALLIANCE,
   ASSET_MANTLE,
+  ATOM_ONE,
   AXELAR,
   BAND,
   BITCANNA,
