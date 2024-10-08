@@ -53,6 +53,7 @@ import { OSMOSIS } from './cosmos/osmosis';
 import { PASSAGE } from './cosmos/passage';
 import { PERSISTENCE } from './cosmos/persistence';
 import { PROVENANCE } from './cosmos/provenance';
+import { PRYZM, PRYZM_GAS_RATES } from './cosmos/pryzm';
 import { QUASAR } from './cosmos/quasar';
 import { QUICK_SILVER } from './cosmos/quickSilver';
 import { REGEN } from './cosmos/regen';
@@ -167,6 +168,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   PASSAGE,
   PERSISTENCE,
   PROVENANCE,
+  PRYZM,
   QUASAR,
   QUICK_SILVER,
   REGEN,
@@ -187,7 +189,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   ZETA,
 ];
 
-export const COSMOS_NON_NATIVE_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES, ...NOBLE_GAS_RATES];
+export const COSMOS_NON_NATIVE_GAS_RATES: CosmosGasRate[] = [...NYX_GAS_RATES, ...NOBLE_GAS_RATES, ...PRYZM_GAS_RATES];
 
 export const ETHEREUM_CHAINS: EthereumChain[] = [ETHEREUM];
 
