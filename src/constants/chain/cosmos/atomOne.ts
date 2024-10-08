@@ -1,7 +1,6 @@
 import { MINTSCAN_URL } from '~/constants/common';
-// NOTE need to add new chain imgs
-import atomOneChainImg from '~/images/chainImgs/assetmantle.png';
-import atomOneTokenImg from '~/images/symbols/mntl.png';
+import atomOneChainImg from '~/images/chainImgs/atomone.png';
+import atomOneTokenImg from '~/images/symbols/atone.png';
 import type { CosmosChain } from '~/types/chain';
 
 export const ATOM_ONE: CosmosChain = {
@@ -25,7 +24,6 @@ export const ATOM_ONE: CosmosChain = {
   bech32Prefix: { address: 'atone' },
   coinGeckoId: 'atomone',
   explorerURL: `${MINTSCAN_URL}/atomone`,
-  // NOTE need to check cosmwasam
   gasRate: {
     tiny: '0',
     low: '0.025',
