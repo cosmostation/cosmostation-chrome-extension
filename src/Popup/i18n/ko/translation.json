@@ -1626,7 +1626,7 @@
           "invalidSwapTx": "Invalid tx data",
           "lessThanFeeWarningDescription1": "예상 가스비를 위한 잔액이 부족합니다. 잔액이",
           "lessThanFeeWarningDescription2": "이상인지 확인하세요.",
-          "liquidityWarning": "해당 스왑을 진행하기에 풀 유동성이 부족합니다. 스왑 금액을 낮추고 다시 시도하세요.",
+          "liquidityWarning": "유동성이 부족하여 보다 적은 수량의 토큰을 수령하게 됩니다.",
           "minimumReceived": "슬리피지 이후 받을 최소 수량",
           "minutes": "분",
           "multiTxSwap": "2개 이상의 트랜잭션이 포함된 스왑은 현재 이용할 수 없습니다.",

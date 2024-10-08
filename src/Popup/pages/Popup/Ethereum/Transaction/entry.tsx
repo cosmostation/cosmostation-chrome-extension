@@ -237,15 +237,19 @@ export default function Entry({ queue }: EntryProps) {
     currentEthereumNetwork.chainId,
   ]);
 
-  const oneInchTokens = useOneInchTokensSWR(queue.channel === 'inApp' ? String(parseInt(currentEthereumNetwork.chainId, 16)) : '');
+  const oneInchTokens = useOneInchTokensSWR(
+    queue.channel === 'inApp' && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)
+      ? String(parseInt(currentEthereumNetwork.chainId, 16))
+      : '',
+  );
 
   const oneInchSwapDstToken = useMemo(() => {
-    if (txType.data?.type === 'swap' && oneInchTokens.data && isEqualsIgnoringCase(originEthereumTx.to, ONEINCH_CONTRACT_ADDRESS)) {
+    if (txType.data?.type === 'swap' && oneInchTokens.data) {
       const oneInchSwapTxData = txType.data.txDescription?.args as unknown as OneInchSwapTxData;
       return oneInchTokens.data.find((item) => isEqualsIgnoringCase(item.address, oneInchSwapTxData.desc.dstToken));
     }
     return undefined;
-  }, [oneInchTokens.data, originEthereumTx.to, txType.data?.txDescription?.args, txType.data?.type]);
+  }, [oneInchTokens.data, txType.data?.txDescription?.args, txType.data?.type]);
 
   const baseFee = useMemo(() => {
     if (ethereumTx.maxFeePerGas) {
