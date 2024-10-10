@@ -2,6 +2,7 @@ import { APTOS_NETWORKS, ETHEREUM_NETWORKS, SUI_NETWORKS } from '~/constants/cha
 import { APTOS } from '~/constants/chain/aptos/aptos';
 import { ATOM_ONE } from '~/constants/chain/cosmos/atomOne';
 import { COSMOS } from '~/constants/chain/cosmos/cosmos';
+import { MANTRA } from '~/constants/chain/cosmos/mantra';
 import { PRYZM } from '~/constants/chain/cosmos/pryzm';
 import { ETHEREUM } from '~/constants/chain/ethereum/ethereum';
 import { SUI } from '~/constants/chain/sui/sui';
@@ -95,9 +96,9 @@ function background() {
     void (async () => {
       if (details.reason === 'update') {
         const extensionManifest = chrome.runtime.getManifest();
-        if (extensionManifest.version === '0.8.16') {
+        if (extensionManifest.version === '0.8.17') {
           void (async () => {
-            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), PRYZM.id, ATOM_ONE.id]);
+            await setStorage('allowedChainIds', [...(await getStorage('allowedChainIds')), PRYZM.id, ATOM_ONE.id, MANTRA.id]);
           })();
         }
       }
