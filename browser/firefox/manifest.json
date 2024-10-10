@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Cosmostation Wallet",
+  "description": "Non-custodial multi-chain extension wallet powered by Cosmostation, the interchain validator.",
+  "action": {
+    "default_icon": {
+      "16": "extension-assets/icon16-dark.png",
+      "19": "extension-assets/icon19-dark.png",
+      "32": "extension-assets/icon32-dark.png",
+      "38": "extension-assets/icon38-dark.png",
+      "64": "extension-assets/icon64-dark.png",
+      "128": "extension-assets/icon128-dark.png",
+      "512": "extension-assets/icon512-dark.png"
+    },
+    "default_title": "Cosmostation Wallet",
+    "default_popup": "popup.html"
+  },
+  "author": "Cosmostation",
+  "icons": {
+    "16": "extension-assets/icon16-dark.png",
+    "19": "extension-assets/icon19-dark.png",
+    "32": "extension-assets/icon32-dark.png",
+    "38": "extension-assets/icon38-dark.png",
+    "48": "extension-assets/icon48-dark.png",
+    "64": "extension-assets/icon64-dark.png",
+    "128": "extension-assets/icon128-dark.png",
+    "256": "extension-assets/icon256-dark.png",
+    "512": "extension-assets/icon512-dark.png"
+  },
+  "permissions": ["storage", "unlimitedStorage", "clipboardWrite", "activeTab", "webRequest"],
+  "optional_permissions": ["clipboardWrite", "activeTab", "webRequest"],
+  "host_permissions": ["<all_urls>"],
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "support@cosmostation.io"
+    }
+  }
+}
