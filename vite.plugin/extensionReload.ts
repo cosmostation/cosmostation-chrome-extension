@@ -2,22 +2,22 @@ import type { PluginOption } from 'vite';
 import { WebSocketServer } from 'ws';
 
 export default function extensionReloadPlugin(mode: string, port: number): PluginOption {
-  let startflag = true;
+  let startFlag = true;
   return {
     name: 'extension-reload',
     buildStart() {
       if (mode === 'development') {
-        if (WebSocketSingleton.getInstance(port) && startflag) {
+        if (WebSocketSingleton.getInstance(port) && startFlag) {
           this.info(`WebSocket::buildStart::port:${port}`);
         }
       }
     },
     closeBundle() {
-      if (!startflag) {
+      if (!startFlag) {
         this.info('WebSocket::closeBundle::requestReload');
         WebSocketSingleton.requestReload();
       } else {
-        startflag = false;
+        startFlag = false;
       }
     },
   };
