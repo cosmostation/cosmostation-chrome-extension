@@ -1,4 +1,4 @@
-import { useLocation } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 
 export default function Home() {
   const aa = useLocation();
@@ -8,6 +8,9 @@ export default function Home() {
   return (
     <div className="p-2">
       <h3>Welcome Home!</h3>
+      <Link to="/about" className="[&.active]:font-bold">
+        go Home
+      </Link>{' '}
     </div>
   );
 }
