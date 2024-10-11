@@ -3,6 +3,7 @@ import { resolve } from 'path';
 import { NormalizedOutputOptions, OutputBundle } from 'rollup';
 import { defineConfig, PluginOption } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import tsconfigPaths from 'vite-tsconfig-paths';
 import react from '@vitejs/plugin-react';
 
 import extensionReloadPlugin from './vite.plugin/extensionReload';
@@ -29,6 +30,7 @@ export default defineConfig(({ mode }) => {
         targets: [{ src: 'browser/common/*', dest: 'extension-assets' }],
       }),
       firefoxManifestPlugin(),
+      tsconfigPaths(),
       ...modePlugins,
     ],
     build: {
