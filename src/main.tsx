@@ -3,7 +3,7 @@ import './index.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import App from './App.tsx';
+import App from './App';
 
 if (__APP_MODE__ === 'development') {
   const socket = new WebSocket(`ws://localhost:${__APP_DEV_WEBSOCKET_PORT__}`);

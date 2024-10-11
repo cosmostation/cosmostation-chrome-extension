@@ -50,7 +50,7 @@ export default defineConfig(({ mode }) => {
           {
             entryFileNames: 'js/[name]-[hash].js',
             assetFileNames: 'assets/[name]-[hash].[ext]',
-            format: 'cjs',
+            format: 'es',
           },
         ],
       },
