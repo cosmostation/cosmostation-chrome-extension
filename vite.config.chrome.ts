@@ -3,6 +3,7 @@ import { resolve } from 'path';
 import { NormalizedOutputOptions, OutputBundle } from 'rollup';
 import { defineConfig, PluginOption } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
@@ -17,6 +18,7 @@ export default defineConfig(({ mode }) => {
         targets: [{ src: 'browser/common/*', dest: 'extension-assets' }],
       }),
       chromeManifestPlugin(),
+      TanStackRouterVite(),
     ],
     build: {
       outDir: dir,
