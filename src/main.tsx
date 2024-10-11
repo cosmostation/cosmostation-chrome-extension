@@ -8,9 +8,9 @@ import App from './App.tsx';
 if (__APP_MODE__ === 'development') {
   const socket = new WebSocket(`ws://localhost:${__APP_DEV_WEBSOCKET_PORT__}`);
 
-  socket.onopen = () => {
-    console.log('WebSocket connection established');
-  };
+  // socket.onopen = () => {
+  //   console.log('WebSocket connection established');
+  // };
 
   socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
@@ -19,9 +19,9 @@ if (__APP_MODE__ === 'development') {
     }
   };
 
-  socket.onclose = () => {
-    console.log('WebSocket connection closed');
-  };
+  // socket.onclose = () => {
+  //   console.log('WebSocket connection closed');
+  // };
 }
 
 createRoot(document.getElementById('root')!).render(
