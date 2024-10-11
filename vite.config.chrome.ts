@@ -1,21 +1,29 @@
-import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { NormalizedOutputOptions, OutputBundle } from 'rollup';
-import { defineConfig, PluginOption } from 'vite';
+import { defineConfig } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 
 import extensionReloadPlugin from './vite.plugin/extensionReload';
-import watchFilesPlugin from './vite.plugin/watchFiles';
+import { chromeManifestPlugin } from './vite.plugin/manifest';
 
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
 
-  const dir = isProduction ? 'dist' : 'dist-dev';
+  const outDir = isProduction ? 'dist' : 'dist-dev';
 
   const webSocketPort = 5959;
 
-  const modePlugins = isProduction ? [] : [extensionReloadPlugin(mode, webSocketPort), watchFilesPlugin(['src/**'])];
+  const modePlugins = isProduction ? [] : [extensionReloadPlugin(mode, webSocketPort)];
+
+  const watch = isProduction
+    ? null
+    : {
+        include: ['src/**', 'browser/**'],
+      };
+
+  const manifestPath = resolve(__dirname, 'browser/chrome/manifest.json');
 
   return {
     define: {
@@ -25,20 +33,18 @@ export default defineConfig(({ mode }) => {
       __APP_DEV_WEBSOCKET_PORT__: JSON.stringify(webSocketPort),
     },
     plugins: [
+      TanStackRouterVite({ routesDirectory: 'src/pages' }),
       react(),
       viteStaticCopy({
         targets: [{ src: 'browser/common/*', dest: 'extension-assets' }],
       }),
-      chromeManifestPlugin(),
+      chromeManifestPlugin(manifestPath),
+      tsconfigPaths({ configNames: ['tsconfig.app.json'] }),
       ...modePlugins,
     ],
     build: {
-      outDir: dir,
-      watch: isProduction
-        ? null
-        : {
-            include: ['src/**', 'browser/**'],
-          },
+      outDir,
+      watch,
       sourcemap: !isProduction,
       rollupOptions: {
         input: {
@@ -58,54 +64,3 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
-
-function chromeManifestPlugin(): PluginOption {
-  const manifestPath = resolve(__dirname, 'browser/chrome/manifest.json');
-  return {
-    name: 'chrome-manifest',
-    enforce: 'post',
-    buildStart() {
-      this.addWatchFile(manifestPath);
-    },
-    async generateBundle(_: NormalizedOutputOptions, bundle: OutputBundle) {
-      const chromeManifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
-      const prefix = 'js';
-      const files = Object.keys(bundle);
-
-      const filesWithoutMap = files.filter((file) => !file.endsWith('.map'));
-
-      const serviceWorker = filesWithoutMap.find((file) => file.includes(`${prefix}/service_worker`));
-      const inject = filesWithoutMap.filter((file) => file.includes(`${prefix}/inject`));
-      const content = filesWithoutMap.filter((file) => file.includes(`${prefix}/content`));
-
-      const withJs = {
-        version: process.env.npm_package_version,
-        background: {
-          service_worker: serviceWorker,
-        },
-        web_accessible_resources: [
-          {
-            resources: inject,
-            matches: ['<all_urls>'],
-          },
-        ],
-        content_scripts: [
-          {
-            matches: ['<all_urls>'],
-            js: content,
-            run_at: 'document_start',
-            all_frames: true,
-          },
-        ],
-      };
-
-      const manifest = { ...chromeManifest, ...withJs };
-
-      this.emitFile({
-        type: 'asset',
-        fileName: 'manifest.json',
-        source: JSON.stringify(manifest),
-      });
-    },
-  };
-}

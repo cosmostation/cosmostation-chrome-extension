@@ -15,6 +15,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.12.0",
+    "@tanstack/router-devtools": "^1.64.0",
+    "@tanstack/router-plugin": "^1.64.0",
     "@types/chrome": "^0.0.277",
     "@types/node": "^22.7.4",
     "@types/react": "^18.3.10",
@@ -34,6 +36,7 @@
     "typescript-eslint": "^8.8.1",
     "vite": "^5.4.8",
     "vite-plugin-static-copy": "^2.0.0",
+    "vite-tsconfig-paths": "^5.0.1",
     "ws": "^8.18.0"
   },
   "engines": {
