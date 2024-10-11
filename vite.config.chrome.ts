@@ -6,12 +6,25 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 
+import extensionReloadPlugin from './vite.plugin/extensionReload';
+import watchFilesPlugin from './vite.plugin/watchFiles';
+
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
 
   const dir = isProduction ? 'dist' : 'dist-dev';
 
+  const webSocketPort = 5959;
+
+  const modePlugins = isProduction ? [] : [extensionReloadPlugin(mode, webSocketPort), watchFilesPlugin(['src/**'])];
+
   return {
+    define: {
+      __APP_BROWSER__: JSON.stringify('chrome'),
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+      __APP_MODE__: JSON.stringify(mode),
+      __APP_DEV_WEBSOCKET_PORT__: JSON.stringify(webSocketPort),
+    },
     plugins: [
       react(),
       viteStaticCopy({
@@ -19,6 +32,7 @@ export default defineConfig(({ mode }) => {
       }),
       chromeManifestPlugin(),
       TanStackRouterVite(),
+      ...modePlugins,
     ],
     resolve: {
       alias: [
@@ -52,7 +66,7 @@ export default defineConfig(({ mode }) => {
           {
             entryFileNames: 'js/[name]-[hash].js',
             assetFileNames: 'assets/[name]-[hash].[ext]',
-            format: 'cjs',
+            format: 'es',
           },
         ],
       },
@@ -62,14 +76,11 @@ export default defineConfig(({ mode }) => {
 
 function chromeManifestPlugin(): PluginOption {
   const manifestPath = resolve(__dirname, 'browser/chrome/manifest.json');
-  const tmpPath = resolve(__dirname, 'src/routes/tmp.tsx');
-  console.log(process.env.npm_package_version);
   return {
     name: 'chrome-manifest',
     enforce: 'post',
     buildStart() {
       this.addWatchFile(manifestPath);
-      this.addWatchFile(tmpPath);
     },
     async generateBundle(_: NormalizedOutputOptions, bundle: OutputBundle) {
       const chromeManifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
