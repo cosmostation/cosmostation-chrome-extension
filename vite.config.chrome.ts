@@ -20,6 +20,19 @@ export default defineConfig(({ mode }) => {
       chromeManifestPlugin(),
       TanStackRouterVite(),
     ],
+    resolve: {
+      alias: [
+        { find: '@', replacement: resolve(__dirname, 'src/') },
+        {
+          find: '@components',
+          replacement: resolve(__dirname, 'src/components'),
+        },
+        {
+          find: '@pages',
+          replacement: resolve(__dirname, 'src/pages'),
+        },
+      ],
+    },
     build: {
       outDir: dir,
       watch: isProduction
@@ -49,12 +62,14 @@ export default defineConfig(({ mode }) => {
 
 function chromeManifestPlugin(): PluginOption {
   const manifestPath = resolve(__dirname, 'browser/chrome/manifest.json');
+  const tmpPath = resolve(__dirname, 'src/routes/tmp.tsx');
   console.log(process.env.npm_package_version);
   return {
     name: 'chrome-manifest',
     enforce: 'post',
     buildStart() {
       this.addWatchFile(manifestPath);
+      this.addWatchFile(tmpPath);
     },
     async generateBundle(_: NormalizedOutputOptions, bundle: OutputBundle) {
       const chromeManifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
