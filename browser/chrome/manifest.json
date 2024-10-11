@@ -20,6 +20,6 @@
     "128": "extension-assets/icon128-dark.png",
     "256": "extension-assets/icon256-dark.png"
   },
-  "permissions": ["storage", "unlimitedStorage", "tabs", "sidePanel"],
+  "permissions": ["storage", "unlimitedStorage", "tabs", "sidePanel", "debugger"],
   "host_permissions": ["<all_urls>"]
 }

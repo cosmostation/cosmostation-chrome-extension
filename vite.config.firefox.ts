@@ -5,18 +5,31 @@ import { defineConfig, PluginOption } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import react from '@vitejs/plugin-react';
 
+import extensionReloadPlugin from './vite.plugin/extensionReload';
+
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
 
   const dir = isProduction ? 'dist' : 'dist-dev';
 
+  const webSocketPort = 5959;
+
+  const modePlugins = isProduction ? [] : [extensionReloadPlugin(mode, webSocketPort)];
+
   return {
+    define: {
+      __APP_BROWSER__: JSON.stringify('firefox'),
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+      __APP_MODE__: JSON.stringify(mode),
+      __APP_DEV_WEBSOCKET_PORT__: JSON.stringify(webSocketPort),
+    },
     plugins: [
       react(),
       viteStaticCopy({
         targets: [{ src: 'browser/common/*', dest: 'extension-assets' }],
       }),
       firefoxManifestPlugin(),
+      ...modePlugins,
     ],
     build: {
       outDir: dir,
