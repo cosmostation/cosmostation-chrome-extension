@@ -32,3 +32,15 @@ const router = createRouter({
 - createRootRoute에 component로 넘어가는 컴포넌트에는 전역적으로 적용되는 컴포넌트들을 넣어주면 된다.
 
 - `<Outlet />` 여기에는 자식 라우트('/', '/about')들이 렌더링됨
+
+이것을 사용하는 이유
+
+```ts
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+```
+
+TanStack Router provides amazing support for TypeScript, even for things you wouldn't expect like bare imports straight from the library! To make this possible, you must register your router's types using TypeScripts' Declaration Merging feature. This is done by extending the Register interface on @tanstack/react-router with a router property that has the type of your router instance:

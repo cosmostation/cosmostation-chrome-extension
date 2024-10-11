@@ -11,18 +11,66 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SearchImport } from './routes/search'
 import { Route as AboutImport } from './routes/about'
+import { Route as LayoutImport } from './routes/_layout'
 import { Route as IndexImport } from './routes/index'
+import { Route as ProfileIndexImport } from './routes/profile/index'
+import { Route as ProfileProfileAImport } from './routes/profile/profileA'
+import { Route as PostsPostIdImport } from './routes/posts/$postId'
+import { Route as LayoutLayoutAImport } from './routes/_layout/layoutA'
+import { Route as groupWithoutPathTestBImport } from './routes/(groupWithoutPath)/testB'
+import { Route as groupWithoutPathTestAImport } from './routes/(groupWithoutPath)/testA'
 
 // Create/Update Routes
+
+const SearchRoute = SearchImport.update({
+  path: '/search',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AboutRoute = AboutImport.update({
   path: '/about',
   getParentRoute: () => rootRoute,
 } as any)
 
+const LayoutRoute = LayoutImport.update({
+  id: '/_layout',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ProfileIndexRoute = ProfileIndexImport.update({
+  path: '/profile/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ProfileProfileARoute = ProfileProfileAImport.update({
+  path: '/profile/profileA',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const PostsPostIdRoute = PostsPostIdImport.update({
+  path: '/posts/$postId',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LayoutLayoutARoute = LayoutLayoutAImport.update({
+  path: '/layoutA',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const groupWithoutPathTestBRoute = groupWithoutPathTestBImport.update({
+  path: '/testB',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const groupWithoutPathTestARoute = groupWithoutPathTestAImport.update({
+  path: '/testA',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -37,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/_layout': {
+      id: '/_layout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof LayoutImport
+      parentRoute: typeof rootRoute
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -44,44 +99,173 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchImport
+      parentRoute: typeof rootRoute
+    }
+    '/(groupWithoutPath)/testA': {
+      id: '/testA'
+      path: '/testA'
+      fullPath: '/testA'
+      preLoaderRoute: typeof groupWithoutPathTestAImport
+      parentRoute: typeof rootRoute
+    }
+    '/(groupWithoutPath)/testB': {
+      id: '/testB'
+      path: '/testB'
+      fullPath: '/testB'
+      preLoaderRoute: typeof groupWithoutPathTestBImport
+      parentRoute: typeof rootRoute
+    }
+    '/_layout/layoutA': {
+      id: '/_layout/layoutA'
+      path: '/layoutA'
+      fullPath: '/layoutA'
+      preLoaderRoute: typeof LayoutLayoutAImport
+      parentRoute: typeof LayoutImport
+    }
+    '/posts/$postId': {
+      id: '/posts/$postId'
+      path: '/posts/$postId'
+      fullPath: '/posts/$postId'
+      preLoaderRoute: typeof PostsPostIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/profile/profileA': {
+      id: '/profile/profileA'
+      path: '/profile/profileA'
+      fullPath: '/profile/profileA'
+      preLoaderRoute: typeof ProfileProfileAImport
+      parentRoute: typeof rootRoute
+    }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
+interface LayoutRouteChildren {
+  LayoutLayoutARoute: typeof LayoutLayoutARoute
+}
+
+const LayoutRouteChildren: LayoutRouteChildren = {
+  LayoutLayoutARoute: LayoutLayoutARoute,
+}
+
+const LayoutRouteWithChildren =
+  LayoutRoute._addFileChildren(LayoutRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '': typeof LayoutRouteWithChildren
   '/about': typeof AboutRoute
+  '/search': typeof SearchRoute
+  '/testA': typeof groupWithoutPathTestARoute
+  '/testB': typeof groupWithoutPathTestBRoute
+  '/layoutA': typeof LayoutLayoutARoute
+  '/posts/$postId': typeof PostsPostIdRoute
+  '/profile/profileA': typeof ProfileProfileARoute
+  '/profile': typeof ProfileIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '': typeof LayoutRouteWithChildren
   '/about': typeof AboutRoute
+  '/search': typeof SearchRoute
+  '/testA': typeof groupWithoutPathTestARoute
+  '/testB': typeof groupWithoutPathTestBRoute
+  '/layoutA': typeof LayoutLayoutARoute
+  '/posts/$postId': typeof PostsPostIdRoute
+  '/profile/profileA': typeof ProfileProfileARoute
+  '/profile': typeof ProfileIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/_layout': typeof LayoutRouteWithChildren
   '/about': typeof AboutRoute
+  '/search': typeof SearchRoute
+  '/testA': typeof groupWithoutPathTestARoute
+  '/testB': typeof groupWithoutPathTestBRoute
+  '/_layout/layoutA': typeof LayoutLayoutARoute
+  '/posts/$postId': typeof PostsPostIdRoute
+  '/profile/profileA': typeof ProfileProfileARoute
+  '/profile/': typeof ProfileIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths:
+    | '/'
+    | ''
+    | '/about'
+    | '/search'
+    | '/testA'
+    | '/testB'
+    | '/layoutA'
+    | '/posts/$postId'
+    | '/profile/profileA'
+    | '/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to:
+    | '/'
+    | ''
+    | '/about'
+    | '/search'
+    | '/testA'
+    | '/testB'
+    | '/layoutA'
+    | '/posts/$postId'
+    | '/profile/profileA'
+    | '/profile'
+  id:
+    | '__root__'
+    | '/'
+    | '/_layout'
+    | '/about'
+    | '/search'
+    | '/testA'
+    | '/testB'
+    | '/_layout/layoutA'
+    | '/posts/$postId'
+    | '/profile/profileA'
+    | '/profile/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LayoutRoute: typeof LayoutRouteWithChildren
   AboutRoute: typeof AboutRoute
+  SearchRoute: typeof SearchRoute
+  groupWithoutPathTestARoute: typeof groupWithoutPathTestARoute
+  groupWithoutPathTestBRoute: typeof groupWithoutPathTestBRoute
+  PostsPostIdRoute: typeof PostsPostIdRoute
+  ProfileProfileARoute: typeof ProfileProfileARoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LayoutRoute: LayoutRouteWithChildren,
   AboutRoute: AboutRoute,
+  SearchRoute: SearchRoute,
+  groupWithoutPathTestARoute: groupWithoutPathTestARoute,
+  groupWithoutPathTestBRoute: groupWithoutPathTestBRoute,
+  PostsPostIdRoute: PostsPostIdRoute,
+  ProfileProfileARoute: ProfileProfileARoute,
+  ProfileIndexRoute: ProfileIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +281,49 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about"
+        "/_layout",
+        "/about",
+        "/search",
+        "/testA",
+        "/testB",
+        "/posts/$postId",
+        "/profile/profileA",
+        "/profile/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/_layout": {
+      "filePath": "_layout.tsx",
+      "children": [
+        "/_layout/layoutA"
+      ]
+    },
     "/about": {
       "filePath": "about.tsx"
+    },
+    "/search": {
+      "filePath": "search.tsx"
+    },
+    "/testA": {
+      "filePath": "(groupWithoutPath)/testA.tsx"
+    },
+    "/testB": {
+      "filePath": "(groupWithoutPath)/testB.tsx"
+    },
+    "/_layout/layoutA": {
+      "filePath": "_layout/layoutA.tsx",
+      "parent": "/_layout"
+    },
+    "/posts/$postId": {
+      "filePath": "posts/$postId.tsx"
+    },
+    "/profile/profileA": {
+      "filePath": "profile/profileA.tsx"
+    },
+    "/profile/": {
+      "filePath": "profile/index.tsx"
     }
   }
 }
