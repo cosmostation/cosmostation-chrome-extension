@@ -6,6 +6,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 import react from '@vitejs/plugin-react';
 
 import extensionReloadPlugin from './vite.plugin/extensionReload';
+import watchFilesPlugin from './vite.plugin/watchFiles';
 
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
@@ -14,7 +15,7 @@ export default defineConfig(({ mode }) => {
 
   const webSocketPort = 5959;
 
-  const modePlugins = isProduction ? [] : [extensionReloadPlugin(mode, webSocketPort)];
+  const modePlugins = isProduction ? [] : [extensionReloadPlugin(mode, webSocketPort), watchFilesPlugin(['src/**'])];
 
   return {
     define: {
