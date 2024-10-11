@@ -3,8 +3,6 @@ import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
 import NotFound from '../pages/NotFound';
 
-// 첫 화면 팝업 시 패스가 /popup.html로 되어있음.
-
 export const Route = createRootRoute({
   component: () => (
     <>
@@ -24,3 +22,6 @@ export const Route = createRootRoute({
   // notFoundComponent: () => <Navigate to={'/'} />,
   notFoundComponent: NotFound,
 });
+
+// NOTE 해시 라우팅?
+// NOTE 저장 시 import영역 정렬이 안되는건 린트 설정이 원인?
