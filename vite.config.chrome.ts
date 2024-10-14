@@ -1,5 +1,6 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
@@ -40,6 +41,7 @@ export default defineConfig(({ mode }) => {
       }),
       chromeManifestPlugin(manifestPath),
       tsconfigPaths({ configNames: ['tsconfig.app.json'] }),
+      nodePolyfills(),
       ...modePlugins,
     ],
     build: {
