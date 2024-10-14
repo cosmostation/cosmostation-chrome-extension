@@ -21,6 +21,7 @@ export type TextTypos = {
   h10: Record<string, unknown>;
   h20: Record<string, unknown>;
   h30: Record<string, unknown>;
+  h40: Record<string, unknown>;
 };
 
 export type NumberTypos = {

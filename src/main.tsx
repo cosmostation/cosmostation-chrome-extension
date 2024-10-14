@@ -1,11 +1,14 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
+import { CssBaseline } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { createHashHistory, createRouter, RouterProvider } from '@tanstack/react-router';
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
 import { darkTheme } from './styles/theme';
+
+import './styles/fonts.css';
 
 const hashHistorhy = createHashHistory();
 // Create a new router instance
@@ -51,6 +54,7 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <ThemeProvider theme={theme}>
+        <CssBaseline />
         <RouterProvider router={router} />
       </ThemeProvider>
     </StrictMode>,
