@@ -18,7 +18,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as ProfileIndexImport } from './routes/profile/index'
 import { Route as ProfileProfileAImport } from './routes/profile/profileA'
 import { Route as PostsPostIdImport } from './routes/posts/$postId'
-import { Route as LayoutLayoutAImport } from './routes/_layout/layoutA'
+import { Route as LayoutLayoutBImport } from './routes/_layout/layoutB'
 import { Route as groupWithoutPathTestBImport } from './routes/(groupWithoutPath)/testB'
 import { Route as groupWithoutPathTestAImport } from './routes/(groupWithoutPath)/testA'
 
@@ -59,8 +59,8 @@ const PostsPostIdRoute = PostsPostIdImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LayoutLayoutARoute = LayoutLayoutAImport.update({
-  path: '/layoutA',
+const LayoutLayoutBRoute = LayoutLayoutBImport.update({
+  path: '/layoutB',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -120,11 +120,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof groupWithoutPathTestBImport
       parentRoute: typeof rootRoute
     }
-    '/_layout/layoutA': {
-      id: '/_layout/layoutA'
-      path: '/layoutA'
-      fullPath: '/layoutA'
-      preLoaderRoute: typeof LayoutLayoutAImport
+    '/_layout/layoutB': {
+      id: '/_layout/layoutB'
+      path: '/layoutB'
+      fullPath: '/layoutB'
+      preLoaderRoute: typeof LayoutLayoutBImport
       parentRoute: typeof LayoutImport
     }
     '/posts/$postId': {
@@ -154,11 +154,11 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface LayoutRouteChildren {
-  LayoutLayoutARoute: typeof LayoutLayoutARoute
+  LayoutLayoutBRoute: typeof LayoutLayoutBRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
-  LayoutLayoutARoute: LayoutLayoutARoute,
+  LayoutLayoutBRoute: LayoutLayoutBRoute,
 }
 
 const LayoutRouteWithChildren =
@@ -171,7 +171,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/testA': typeof groupWithoutPathTestARoute
   '/testB': typeof groupWithoutPathTestBRoute
-  '/layoutA': typeof LayoutLayoutARoute
+  '/layoutB': typeof LayoutLayoutBRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/profile/profileA': typeof ProfileProfileARoute
   '/profile': typeof ProfileIndexRoute
@@ -184,7 +184,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/testA': typeof groupWithoutPathTestARoute
   '/testB': typeof groupWithoutPathTestBRoute
-  '/layoutA': typeof LayoutLayoutARoute
+  '/layoutB': typeof LayoutLayoutBRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/profile/profileA': typeof ProfileProfileARoute
   '/profile': typeof ProfileIndexRoute
@@ -198,7 +198,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/testA': typeof groupWithoutPathTestARoute
   '/testB': typeof groupWithoutPathTestBRoute
-  '/_layout/layoutA': typeof LayoutLayoutARoute
+  '/_layout/layoutB': typeof LayoutLayoutBRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/profile/profileA': typeof ProfileProfileARoute
   '/profile/': typeof ProfileIndexRoute
@@ -213,7 +213,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/testA'
     | '/testB'
-    | '/layoutA'
+    | '/layoutB'
     | '/posts/$postId'
     | '/profile/profileA'
     | '/profile'
@@ -225,7 +225,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/testA'
     | '/testB'
-    | '/layoutA'
+    | '/layoutB'
     | '/posts/$postId'
     | '/profile/profileA'
     | '/profile'
@@ -237,7 +237,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/testA'
     | '/testB'
-    | '/_layout/layoutA'
+    | '/_layout/layoutB'
     | '/posts/$postId'
     | '/profile/profileA'
     | '/profile/'
@@ -297,7 +297,7 @@ export const routeTree = rootRoute
     "/_layout": {
       "filePath": "_layout.tsx",
       "children": [
-        "/_layout/layoutA"
+        "/_layout/layoutB"
       ]
     },
     "/about": {
@@ -312,8 +312,8 @@ export const routeTree = rootRoute
     "/testB": {
       "filePath": "(groupWithoutPath)/testB.tsx"
     },
-    "/_layout/layoutA": {
-      "filePath": "_layout/layoutA.tsx",
+    "/_layout/layoutB": {
+      "filePath": "_layout/layoutB.tsx",
       "parent": "/_layout"
     },
     "/posts/$postId": {

@@ -32,7 +32,7 @@ export default function Home() {
           go Home
         </Link>{' '}
         <Link
-          to="/layoutA"
+          to="/layoutB"
           className="[&.active]:font-bold"
           activeProps={{
             style: {
@@ -40,7 +40,7 @@ export default function Home() {
             },
           }}
         >
-          go Layout A
+          go Layout B
         </Link>{' '}
         {/* NOTE 상위 폴더가 있지만 패스앞단에 안두고 같은 폴더로 구성하고 싶을떄 */}
         <Link to="/testA" className="[&.active]:font-bold">
