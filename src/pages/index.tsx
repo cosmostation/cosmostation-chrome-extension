@@ -6,7 +6,7 @@ export const Route = createFileRoute('/')({
 });
 
 function Index() {
-  // Buffer.from('Hello from Index!').toString('base64');
+  Buffer.from('Hello from Index!').toString('base64');
   return (
     <div className="p-2">
       <h3>Welcome Home!</h3>
