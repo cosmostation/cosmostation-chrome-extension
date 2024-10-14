@@ -5,14 +5,13 @@ import pluginReactHooks from 'eslint-plugin-react-hooks';
 import pluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import pluginJs from '@eslint/js';
+import eslint from '@eslint/js';
 
 export default [
   { ignores: ['**/dist/', '**/dist-dev/'] },
   { files: ['**/src/*.{js,mjs,cjs,ts,jsx,tsx}'] },
   { languageOptions: { globals: globals.browser } },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...tseslint.config(eslint.configs.recommended, ...tseslint.configs.recommended, ...tseslint.configs.stylistic),
   {
     ...pluginReact.configs.flat.recommended,
     settings: { react: { version: 'detect' } },
@@ -25,7 +24,6 @@ export default [
     rules: pluginReactHooks.configs.recommended.rules,
   },
   {
-    files: ['**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}'],
     plugins: {
       'jsx-a11y': jsxA11y,
     },
@@ -42,6 +40,8 @@ export default [
       'simple-import-sort': pluginSimpleImportSort,
       import: pluginImport,
     },
+  },
+  {
     rules: {
       // 유사한 항목을 그룹으로 묶어서 정렬합니다.
       'simple-import-sort/imports': [
@@ -51,17 +51,20 @@ export default [
             // Side effect imports
             ['^\\u0000'],
             // Packages. 'react' related packages come first.
-            ['^react', '^\\w', '^@'],
+            ['^react', '^\\w', '^@(?!/|components/).*$'],
             // Aliases imports.
-            ['^~'],
+            ['^@/'],
+            ['^@components/'],
             // Relative imports. Put same-folder imports first and parent imports last.
             ['^\\.', '^\\.\\.'],
             // SVG icons
             ['^.+\\.svg$'],
+            // PNG icons
+            ['^.+\\.png$'],
             // json files
             ['^.+\\.json$'],
             // Style imports.
-            ['^.+\\.scss$'],
+            ['^.+\\.s?css$'],
           ],
         },
       ],
@@ -80,6 +83,12 @@ export default [
 
       // 한 파일에 하나의 export만 있더라도 여러 개로 늘어날 가능성을 고려하여 default export를 하지 않는 경우가 훨씬 많습니다.
       'import/prefer-default-export': 'off',
+
+      // import type을 사용합니다.
+      '@typescript-eslint/consistent-type-imports': 'error',
+
+      // <div></div> 대신 <div />를 사용합니다.
+      'react/self-closing-comp': 'error',
     },
   },
 ];

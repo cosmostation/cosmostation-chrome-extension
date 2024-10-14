@@ -1,16 +1,11 @@
-import { Link, useLocation } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 
-export default function About() {
-  const aa = useLocation();
+import Test from '@components/test';
 
-  console.log('🚀 ~ Index ~ aa:', aa.pathname);
+export const Route = createFileRoute('/about')({
+  component: About,
+});
 
-  return (
-    <div className="p-2">
-      <h3>Welcome About!</h3>
-      <Link to="/" className="[&.active]:font-bold">
-        go Home
-      </Link>{' '}
-    </div>
-  );
+function About() {
+  return <Test />;
 }

@@ -10,67 +10,25 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as SearchImport } from './routes/search'
-import { Route as AboutImport } from './routes/about'
-import { Route as LayoutImport } from './routes/_layout'
-import { Route as IndexImport } from './routes/index'
-import { Route as ProfileIndexImport } from './routes/profile/index'
-import { Route as ProfileProfileAImport } from './routes/profile/profileA'
-import { Route as PostsPostIdImport } from './routes/posts/$postId'
-import { Route as LayoutLayoutBImport } from './routes/_layout/layoutB'
-import { Route as groupWithoutPathTestBImport } from './routes/(groupWithoutPath)/testB'
-import { Route as groupWithoutPathTestAImport } from './routes/(groupWithoutPath)/testA'
+import { Route as rootRoute } from './pages/__root'
+import { Route as AboutImport } from './pages/about'
+import { Route as HomeImport } from './pages/Home'
+import { Route as IndexImport } from './pages/index'
 
 // Create/Update Routes
-
-const SearchRoute = SearchImport.update({
-  path: '/search',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const AboutRoute = AboutImport.update({
   path: '/about',
   getParentRoute: () => rootRoute,
 } as any)
 
-const LayoutRoute = LayoutImport.update({
-  id: '/_layout',
+const HomeRoute = HomeImport.update({
+  path: '/Home',
   getParentRoute: () => rootRoute,
 } as any)
 
 const IndexRoute = IndexImport.update({
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ProfileIndexRoute = ProfileIndexImport.update({
-  path: '/profile/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ProfileProfileARoute = ProfileProfileAImport.update({
-  path: '/profile/profileA',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const PostsPostIdRoute = PostsPostIdImport.update({
-  path: '/posts/$postId',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LayoutLayoutBRoute = LayoutLayoutBImport.update({
-  path: '/layoutB',
-  getParentRoute: () => LayoutRoute,
-} as any)
-
-const groupWithoutPathTestBRoute = groupWithoutPathTestBImport.update({
-  path: '/testB',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const groupWithoutPathTestARoute = groupWithoutPathTestAImport.update({
-  path: '/testA',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -85,11 +43,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/_layout': {
-      id: '/_layout'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof LayoutImport
+    '/Home': {
+      id: '/Home'
+      path: '/Home'
+      fullPath: '/Home'
+      preLoaderRoute: typeof HomeImport
       parentRoute: typeof rootRoute
     }
     '/about': {
@@ -99,173 +57,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchImport
-      parentRoute: typeof rootRoute
-    }
-    '/(groupWithoutPath)/testA': {
-      id: '/testA'
-      path: '/testA'
-      fullPath: '/testA'
-      preLoaderRoute: typeof groupWithoutPathTestAImport
-      parentRoute: typeof rootRoute
-    }
-    '/(groupWithoutPath)/testB': {
-      id: '/testB'
-      path: '/testB'
-      fullPath: '/testB'
-      preLoaderRoute: typeof groupWithoutPathTestBImport
-      parentRoute: typeof rootRoute
-    }
-    '/_layout/layoutB': {
-      id: '/_layout/layoutB'
-      path: '/layoutB'
-      fullPath: '/layoutB'
-      preLoaderRoute: typeof LayoutLayoutBImport
-      parentRoute: typeof LayoutImport
-    }
-    '/posts/$postId': {
-      id: '/posts/$postId'
-      path: '/posts/$postId'
-      fullPath: '/posts/$postId'
-      preLoaderRoute: typeof PostsPostIdImport
-      parentRoute: typeof rootRoute
-    }
-    '/profile/profileA': {
-      id: '/profile/profileA'
-      path: '/profile/profileA'
-      fullPath: '/profile/profileA'
-      preLoaderRoute: typeof ProfileProfileAImport
-      parentRoute: typeof rootRoute
-    }
-    '/profile/': {
-      id: '/profile/'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof ProfileIndexImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
 // Create and export the route tree
 
-interface LayoutRouteChildren {
-  LayoutLayoutBRoute: typeof LayoutLayoutBRoute
-}
-
-const LayoutRouteChildren: LayoutRouteChildren = {
-  LayoutLayoutBRoute: LayoutLayoutBRoute,
-}
-
-const LayoutRouteWithChildren =
-  LayoutRoute._addFileChildren(LayoutRouteChildren)
-
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof LayoutRouteWithChildren
+  '/Home': typeof HomeRoute
   '/about': typeof AboutRoute
-  '/search': typeof SearchRoute
-  '/testA': typeof groupWithoutPathTestARoute
-  '/testB': typeof groupWithoutPathTestBRoute
-  '/layoutB': typeof LayoutLayoutBRoute
-  '/posts/$postId': typeof PostsPostIdRoute
-  '/profile/profileA': typeof ProfileProfileARoute
-  '/profile': typeof ProfileIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof LayoutRouteWithChildren
+  '/Home': typeof HomeRoute
   '/about': typeof AboutRoute
-  '/search': typeof SearchRoute
-  '/testA': typeof groupWithoutPathTestARoute
-  '/testB': typeof groupWithoutPathTestBRoute
-  '/layoutB': typeof LayoutLayoutBRoute
-  '/posts/$postId': typeof PostsPostIdRoute
-  '/profile/profileA': typeof ProfileProfileARoute
-  '/profile': typeof ProfileIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/_layout': typeof LayoutRouteWithChildren
+  '/Home': typeof HomeRoute
   '/about': typeof AboutRoute
-  '/search': typeof SearchRoute
-  '/testA': typeof groupWithoutPathTestARoute
-  '/testB': typeof groupWithoutPathTestBRoute
-  '/_layout/layoutB': typeof LayoutLayoutBRoute
-  '/posts/$postId': typeof PostsPostIdRoute
-  '/profile/profileA': typeof ProfileProfileARoute
-  '/profile/': typeof ProfileIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | ''
-    | '/about'
-    | '/search'
-    | '/testA'
-    | '/testB'
-    | '/layoutB'
-    | '/posts/$postId'
-    | '/profile/profileA'
-    | '/profile'
+  fullPaths: '/' | '/Home' | '/about'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | ''
-    | '/about'
-    | '/search'
-    | '/testA'
-    | '/testB'
-    | '/layoutB'
-    | '/posts/$postId'
-    | '/profile/profileA'
-    | '/profile'
-  id:
-    | '__root__'
-    | '/'
-    | '/_layout'
-    | '/about'
-    | '/search'
-    | '/testA'
-    | '/testB'
-    | '/_layout/layoutB'
-    | '/posts/$postId'
-    | '/profile/profileA'
-    | '/profile/'
+  to: '/' | '/Home' | '/about'
+  id: '__root__' | '/' | '/Home' | '/about'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LayoutRoute: typeof LayoutRouteWithChildren
+  HomeRoute: typeof HomeRoute
   AboutRoute: typeof AboutRoute
-  SearchRoute: typeof SearchRoute
-  groupWithoutPathTestARoute: typeof groupWithoutPathTestARoute
-  groupWithoutPathTestBRoute: typeof groupWithoutPathTestBRoute
-  PostsPostIdRoute: typeof PostsPostIdRoute
-  ProfileProfileARoute: typeof ProfileProfileARoute
-  ProfileIndexRoute: typeof ProfileIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LayoutRoute: LayoutRouteWithChildren,
+  HomeRoute: HomeRoute,
   AboutRoute: AboutRoute,
-  SearchRoute: SearchRoute,
-  groupWithoutPathTestARoute: groupWithoutPathTestARoute,
-  groupWithoutPathTestBRoute: groupWithoutPathTestBRoute,
-  PostsPostIdRoute: PostsPostIdRoute,
-  ProfileProfileARoute: ProfileProfileARoute,
-  ProfileIndexRoute: ProfileIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -281,49 +115,18 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_layout",
-        "/about",
-        "/search",
-        "/testA",
-        "/testB",
-        "/posts/$postId",
-        "/profile/profileA",
-        "/profile/"
+        "/Home",
+        "/about"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/_layout": {
-      "filePath": "_layout.tsx",
-      "children": [
-        "/_layout/layoutB"
-      ]
+    "/Home": {
+      "filePath": "Home.tsx"
     },
     "/about": {
       "filePath": "about.tsx"
-    },
-    "/search": {
-      "filePath": "search.tsx"
-    },
-    "/testA": {
-      "filePath": "(groupWithoutPath)/testA.tsx"
-    },
-    "/testB": {
-      "filePath": "(groupWithoutPath)/testB.tsx"
-    },
-    "/_layout/layoutB": {
-      "filePath": "_layout/layoutB.tsx",
-      "parent": "/_layout"
-    },
-    "/posts/$postId": {
-      "filePath": "posts/$postId.tsx"
-    },
-    "/profile/profileA": {
-      "filePath": "profile/profileA.tsx"
-    },
-    "/profile/": {
-      "filePath": "profile/index.tsx"
     }
   }
 }

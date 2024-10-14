@@ -1,21 +1,28 @@
-import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { NormalizedOutputOptions, OutputBundle } from 'rollup';
-import { defineConfig, PluginOption } from 'vite';
+import { defineConfig } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import react from '@vitejs/plugin-react';
 
 import extensionReloadPlugin from './vite.plugin/extensionReload';
+import { firefoxManifestPlugin } from './vite.plugin/manifest';
 
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
 
-  const dir = isProduction ? 'dist' : 'dist-dev';
+  const outDir = isProduction ? 'dist' : 'dist-dev';
 
   const webSocketPort = 5959;
 
   const modePlugins = isProduction ? [] : [extensionReloadPlugin(mode, webSocketPort)];
+
+  const watch = isProduction
+    ? null
+    : {
+        include: ['src/**', 'browser/**'],
+      };
+
+  const manifestPath = resolve(__dirname, 'browser/firefox/manifest.json');
 
   return {
     define: {
@@ -29,17 +36,13 @@ export default defineConfig(({ mode }) => {
       viteStaticCopy({
         targets: [{ src: 'browser/common/*', dest: 'extension-assets' }],
       }),
-      firefoxManifestPlugin(),
-      tsconfigPaths(),
+      firefoxManifestPlugin(manifestPath),
+      tsconfigPaths({ configNames: ['tsconfig.app.json'] }),
       ...modePlugins,
     ],
     build: {
-      outDir: dir,
-      watch: isProduction
-        ? null
-        : {
-            include: ['src/**', 'browser/**'],
-          },
+      outDir,
+      watch,
       sourcemap: !isProduction,
       rollupOptions: {
         input: {
@@ -52,61 +55,10 @@ export default defineConfig(({ mode }) => {
           {
             entryFileNames: 'js/[name]-[hash].js',
             assetFileNames: 'assets/[name]-[hash].[ext]',
-            format: 'cjs',
+            format: 'es',
           },
         ],
       },
     },
   };
 });
-
-function firefoxManifestPlugin(): PluginOption {
-  const manifestPath = resolve(__dirname, 'browser/firefox/manifest.json');
-  return {
-    name: 'firefox-manifest',
-    enforce: 'post',
-    buildStart() {
-      this.addWatchFile(manifestPath);
-    },
-    async generateBundle(_: NormalizedOutputOptions, bundle: OutputBundle) {
-      const chromeManifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
-      const prefix = 'js';
-      const files = Object.keys(bundle);
-
-      const filesWithoutMap = files.filter((file) => !file.endsWith('.map'));
-
-      const serviceWorker = filesWithoutMap.filter((file) => file.includes(`${prefix}/service_worker`));
-      const inject = filesWithoutMap.filter((file) => file.includes(`${prefix}/inject`));
-      const content = filesWithoutMap.filter((file) => file.includes(`${prefix}/content`));
-
-      const withJs = {
-        version: process.env.npm_package_version,
-        background: {
-          scripts: serviceWorker,
-        },
-        web_accessible_resources: [
-          {
-            resources: inject,
-            matches: ['<all_urls>'],
-          },
-        ],
-        content_scripts: [
-          {
-            matches: ['<all_urls>'],
-            js: content,
-            run_at: 'document_start',
-            all_frames: true,
-          },
-        ],
-      };
-
-      const manifest = { ...chromeManifest, ...withJs };
-
-      this.emitFile({
-        type: 'asset',
-        fileName: 'manifest.json',
-        source: JSON.stringify(manifest),
-      });
-    },
-  };
-}
