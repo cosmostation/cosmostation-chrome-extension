@@ -42,19 +42,6 @@ export default defineConfig(({ mode }) => {
       tsconfigPaths({ configNames: ['tsconfig.app.json'] }),
       ...modePlugins,
     ],
-    resolve: {
-      alias: [
-        { find: '@', replacement: resolve(__dirname, 'src/') },
-        {
-          find: '@components',
-          replacement: resolve(__dirname, 'src/components'),
-        },
-        {
-          find: '@pages',
-          replacement: resolve(__dirname, 'src/pages'),
-        },
-      ],
-    },
     build: {
       outDir,
       watch,
