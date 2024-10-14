@@ -1,9 +1,11 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { createHashHistory, createRouter, RouterProvider } from '@tanstack/react-router';
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
+import { darkTheme } from './styles/theme';
 
 const hashHistorhy = createHashHistory();
 // Create a new router instance
@@ -28,13 +30,29 @@ if (__APP_MODE__ === 'development') {
   };
 }
 
+const theme = createTheme({
+  ...darkTheme,
+  typography: {
+    ...darkTheme.typography,
+    // h3: undefined,
+  },
+});
+
+// const theme = createTheme({
+//   status: {
+//     danger: '#89754f'
+//   }
+// });
+
 // Render the app
 const rootElement = document.getElementById('root')!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <RouterProvider router={router} />
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router} />
+      </ThemeProvider>
     </StrictMode>,
   );
 }
