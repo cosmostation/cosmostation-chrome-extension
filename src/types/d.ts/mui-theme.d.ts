@@ -9,9 +9,9 @@ declare module '@mui/material/styles' {
   interface ThemeOptions extends ThemeStyle {}
 
   interface TypographyVariants {
-    h7: React.CSSProperties;
-    h8: React.CSSProperties;
-    h9: React.CSSProperties;
+    h10: React.CSSProperties;
+    h20: React.CSSProperties;
+    h30: React.CSSProperties;
     h1n: React.CSSProperties;
     h2n: React.CSSProperties;
     h3n: React.CSSProperties;
@@ -24,9 +24,9 @@ declare module '@mui/material/styles' {
 
   // allow configuration using `createTheme`
   interface TypographyVariantsOptions {
-    h7: React.CSSProperties;
-    h8: React.CSSProperties;
-    h9: React.CSSProperties;
+    h10: React.CSSProperties;
+    h20: React.CSSProperties;
+    h30: React.CSSProperties;
     h1n: React.CSSProperties;
     h2n: React.CSSProperties;
     h3n: React.CSSProperties;
@@ -41,11 +41,18 @@ declare module '@mui/material/styles' {
 // Update the Typography's variant prop options
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
-    // disable h3
-    // h3: false;
-    h7: true;
-    h8: true;
-    h9: true;
+    h1: false;
+    h2: false;
+    h3: false;
+    h4: false;
+    h5: false;
+    h6: false;
+    h7: false;
+    h8: false;
+    h9: false;
+    h10: true;
+    h20: true;
+    h30: true;
     h1n: true;
     h2n: true;
     h3n: true;

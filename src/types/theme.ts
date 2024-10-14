@@ -18,15 +18,9 @@ export type ThemeStyle = {
 };
 
 export type TextTypos = {
-  h1: Record<string, unknown>;
-  h2: Record<string, unknown>;
-  h3: Record<string, unknown>;
-  h4: Record<string, unknown>;
-  h5: Record<string, unknown>;
-  h6: Record<string, unknown>;
-  h7: Record<string, unknown>;
-  h8: Record<string, unknown>;
-  h9: Record<string, unknown>;
+  h10: Record<string, unknown>;
+  h20: Record<string, unknown>;
+  h30: Record<string, unknown>;
 };
 
 export type NumberTypos = {

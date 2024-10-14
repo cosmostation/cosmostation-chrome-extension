@@ -9,13 +9,9 @@ const darkThemeColors: BaseColor = {
 
 const htmlFontSize = 10;
 
-const h1Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '2.8rem', lineHeight: '3.5rem', letterSpacing: '-0.02em' };
-const h2Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3.0rem', letterSpacing: '-0.02em' };
-const h3Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.8rem', lineHeight: '2.3rem', letterSpacing: '-0.02em' };
-const h4Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.5rem', lineHeight: '1.9rem', letterSpacing: '-0.02em' };
-const h5Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.3rem', lineHeight: '1.6rem', letterSpacing: '-0.02em' };
-const h6Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.2rem', lineHeight: '1.5rem', letterSpacing: '-0.02em' };
-const h7Ko = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.2rem', letterSpacing: '-0.02em' };
+const h10 = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '3rem', lineHeight: '3.5rem', letterSpacing: '-0.02em' };
+const h20 = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3.0rem', letterSpacing: '-0.02em' };
+const h30 = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.8rem', lineHeight: '2.3rem', letterSpacing: '-0.02em' };
 
 const h1n = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '2.8rem', lineHeight: '4.1rem', letterSpacing: 'normal' };
 const h2n = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '2.4rem', lineHeight: '3.5rem', letterSpacing: 'normal' };
@@ -26,7 +22,7 @@ const h6n = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.2rem', l
 const h7n = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1.1rem', lineHeight: '1.6rem', letterSpacing: 'normal' };
 const h8n = { fontFamily: 'Spoqa400', fontStyle: 'normal', fontSize: '1rem', lineHeight: '1.5rem', letterSpacing: 'normal' };
 
-const hKo = { h1: h1Ko, h2: h2Ko, h3: h3Ko, h4: h4Ko, h5: h5Ko, h6: h6Ko, h7: h7Ko, h8: h7Ko, h9: h7Ko };
+const hKo = { h10: h10, h20: h20, h30: h30 };
 const hn = { h1n, h2n, h3n, h4n, h5n, h6n, h7n, h8n };
 
 export const darkTheme: ThemeStyle = {

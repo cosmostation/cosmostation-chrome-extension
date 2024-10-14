@@ -32,10 +32,10 @@ if (__APP_MODE__ === 'development') {
 
 const theme = createTheme({
   ...darkTheme,
-  typography: {
-    ...darkTheme.typography,
-    // h3: undefined,
-  },
+  // typography: {
+  //   ...darkTheme.typography,
+  //   // h3: undefined,
+  // },
 });
 
 // const theme = createTheme({
