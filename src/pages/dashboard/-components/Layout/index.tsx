@@ -7,7 +7,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   return (
     <div>
-      <Typography variant="h10">dashboard layout</Typography>
+      <Typography variant="h1">dashboard layout</Typography>
       {children}
     </div>
   );

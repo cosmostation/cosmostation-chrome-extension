@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './pages/__root'
 import { Route as IndexImport } from './pages/index'
 import { Route as DashboardIndexImport } from './pages/dashboard/index'
+import { Route as AboutIndexImport } from './pages/about/index'
 
 // Create/Update Routes
 
@@ -26,6 +27,11 @@ const DashboardIndexRoute = DashboardIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AboutIndexRoute = AboutIndexImport.update({
+  path: '/about/',
+  getParentRoute: () => rootRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -35,6 +41,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/about/': {
+      id: '/about/'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutIndexImport
       parentRoute: typeof rootRoute
     }
     '/dashboard/': {
@@ -51,36 +64,41 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutIndexRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutIndexRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/about/': typeof AboutIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard'
+  fullPaths: '/' | '/about' | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard'
-  id: '__root__' | '/' | '/dashboard/'
+  to: '/' | '/about' | '/dashboard'
+  id: '__root__' | '/' | '/about/' | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutIndexRoute: typeof AboutIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutIndexRoute: AboutIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
@@ -97,11 +115,15 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/about/",
         "/dashboard/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/about/": {
+      "filePath": "about/index.tsx"
     },
     "/dashboard/": {
       "filePath": "dashboard/index.tsx"
