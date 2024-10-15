@@ -1,6 +1,8 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+import svgr from 'vite-plugin-svgr';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import react from '@vitejs/plugin-react';
 
@@ -38,6 +40,11 @@ export default defineConfig(({ mode }) => {
       }),
       firefoxManifestPlugin(manifestPath),
       tsconfigPaths({ configNames: ['tsconfig.app.json'] }),
+      nodePolyfills(),
+      svgr({
+        svgrOptions: { exportType: 'default', ref: true, svgo: false, titleProp: true },
+        include: '**/*.svg',
+      }),
       ...modePlugins,
     ],
     build: {
