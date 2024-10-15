@@ -13,4 +13,19 @@ const color = {
 
 export const theme = createTheme({
   palette: { color },
+  typography: {
+    fontFamily: 'Spoqa400',
+    h1: {
+      fontFamily: 'Spoqa400',
+      fontSize: '5rem',
+    },
+    h10: {
+      fontFamily: 'Spoqa400',
+      fontSize: '3rem',
+    },
+    h20: {
+      fontFamily: 'Spoqa400',
+      fontSize: '3rem',
+    },
+  },
 });

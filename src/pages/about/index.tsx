@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material';
 import { useColorScheme } from '@mui/material/styles';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -12,12 +13,18 @@ function About() {
 
   console.log(mode);
   return (
-    <StyledBox
-      onClick={() => {
-        setMode(mode === 'light' ? 'dark' : 'light');
-      }}
-    >
-      ddd
-    </StyledBox>
+    <>
+      <StyledBox
+        onClick={() => {
+          setMode(mode === 'light' ? 'dark' : 'light');
+        }}
+      >
+        ddd
+      </StyledBox>
+      <Typography variant="h1">hello</Typography>
+      <Typography variant="h10">hello</Typography>
+      <Typography variant="h20">hello</Typography>
+      <h1>hello</h1>
+    </>
   );
 }
