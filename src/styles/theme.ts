@@ -34,31 +34,14 @@ const darkThemeColor: Color = {
   base1300: '#F7F7F8',
 };
 
-// const lightThemeColor: Color = {
-//   base50: '#23272F',
-//   base100: '#292E38',
-//   base200: '#303541',
-//   base300: '#343A46',
-//   base400: '#434852',
-//   base500: '#4E545F',
-//   base600: '#585E6B',
-//   base700: 'red',
-//   base800: '#777F91',
-//   base900: '#838B9C',
-//   base1000: '#949BA8',
-//   base1100: '#ABB0BA',
-//   base1200: '#C7CAD1',
-//   base1300: '#F7F7F8',
-// };
-
 export const theme = createTheme({
   colorSchemes: {
     dark: {
-      palette: { color: { ...darkThemeColor } },
+      palette: { color: darkThemeColor },
     },
-    // light: {
-    //   palette: { color: { ...lightThemeColor } },
-    // },
+    light: {
+      palette: { color: darkThemeColor },
+    },
   },
   typography: {
     fontFamily: 'Spoqa400',

@@ -3,5 +3,5 @@ import { styled } from '@mui/material/styles';
 export const Container = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  backgroundColor: theme.palette.color.test1,
+  backgroundColor: theme.palette.color.base100,
 }));
