@@ -88,6 +88,9 @@ export default [
       // import type을 사용합니다.
       '@typescript-eslint/consistent-type-imports': 'error',
 
+      // type과 interface 정의를 일관되게 사용하도록 강제하지 않습니다.
+      '@typescript-eslint/consistent-type-definitions': 'off',
+
       // <div></div> 대신 <div />를 사용합니다.
       'react/self-closing-comp': 'error',
     },
