@@ -69,6 +69,7 @@ export default [
         },
       ],
       'simple-import-sort/exports': 'error',
+
       // import 문은 문서 상단에 위치합니다.
       'import/first': 'error',
 
