@@ -1,3 +1,5 @@
+import '@/lang/i18n';
+
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { ThemeProvider } from '@mui/material/styles';

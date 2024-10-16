@@ -1,0 +1,7 @@
+{
+  "test": {
+    "testA": "__STRING_NOT_TRANSLATED__",
+    "testB": "__STRING_NOT_TRANSLATED__"
+  },
+  "forTest": "__STRING_NOT_TRANSLATED__"
+}

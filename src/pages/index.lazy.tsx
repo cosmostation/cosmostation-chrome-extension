@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { createLazyFileRoute } from '@tanstack/react-router';
 
 export const Route = createLazyFileRoute('/')({
@@ -7,9 +8,11 @@ export const Route = createLazyFileRoute('/')({
 
 function Index() {
   Buffer.from('Hello from Index!').toString('base64');
+
+  const { t } = useTranslation();
   return (
     <div className="p-2">
-      <h3>Welcome Home!</h3>
+      <h3>{t('forTest')}</h3>
     </div>
   );
 }
