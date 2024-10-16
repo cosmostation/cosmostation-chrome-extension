@@ -226,7 +226,7 @@ export default function Bitcoin({ chain }: BitcoinProps) {
           jsonrpc: '2.0',
           id: '1',
           method: 'sendrawtransaction',
-          params: [txHex, gasRate! * 3],
+          params: [txHex],
         },
         { headers: { 'Content-Type': 'application/json' } },
       );
