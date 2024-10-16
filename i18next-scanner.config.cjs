@@ -1,8 +1,5 @@
 /* eslint-disable no-undef */
 
-// const typescriptTransform = require('i18next-scanner-typescript');
-// const fs = require('fs');
-
 module.exports = {
   input: [
     'src/pages/**/*.{ts,tsx}',
@@ -18,7 +15,6 @@ module.exports = {
     debug: true,
     func: {
       list: ['t'],
-      // extensions: ['.js', '.jsx'],
       extensions: ['.ts', '.tsx'],
     },
     trans: {
@@ -31,8 +27,7 @@ module.exports = {
       },
       acorn: {
         ecmaVersion: 2020,
-        sourceType: 'module', // defaults to 'module'
-        // Check out https://github.com/acornjs/acorn/tree/master/acorn#interface for additional options
+        sourceType: 'module',
       },
     },
     lngs: ['en'],
@@ -53,28 +48,4 @@ module.exports = {
       suffix: '}}',
     },
   },
-  // transform: typescriptTransform(
-  //   // options
-  //   {
-  //     // default value for extensions
-  //     extensions: ['.ts', '.tsx'],
-  //     output: 'src/lang/{{ns}}/{{lng}}.json',
-  //   },
-  // ),
-  // transform: function customTransform(file, enc, done) {
-  //   const { parser } = this;
-  //   const content = fs.readFileSync(file.path, enc);
-  //   let count = 0;
-
-  //   parser.parseFuncFromString(content, { list: ['i18next._', 'i18next.__'] }, (key, options) => {
-  //     parser.set(key, { ...options, nsSeparator: false, keySeparator: false });
-  //     count += 1;
-  //   });
-
-  //   if (count > 0) {
-  //     console.log(`i18next-scanner: count=${count}, file=${JSON.stringify(file.relative)}`);
-  //   }
-
-  //   done();
-  // },
 };
