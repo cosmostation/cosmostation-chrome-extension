@@ -8,7 +8,6 @@ import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import react from '@vitejs/plugin-react';
 
 import extensionReloadPlugin from './vite.plugin/extensionReload';
-// import i18nextScanner from './vite.plugin/i18nScanner';
 import { chromeManifestPlugin } from './vite.plugin/manifest';
 
 export default defineConfig(({ mode }) => {
@@ -48,7 +47,6 @@ export default defineConfig(({ mode }) => {
         svgrOptions: { exportType: 'default', ref: true, svgo: false, titleProp: true },
         include: '**/*.svg',
       }),
-      // i18nextScanner(),
       ...modePlugins,
     ],
     build: {
