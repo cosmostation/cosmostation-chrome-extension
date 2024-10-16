@@ -259,7 +259,7 @@ export default function Entry() {
                 <Image src={BITCOIN.imageURL} />
               </ItemLeftImageContainer>
               <ItemLeftTextContainer>
-                <Typography variant="h5">Bitcoin Chains</Typography>
+                <Typography variant="h5">Bitcoin</Typography>
               </ItemLeftTextContainer>
             </ItemLeftContainer>
           </StyledChainAccordionSummary>
