@@ -6,7 +6,7 @@
   "scripts": {
     "dev:chrome": "tsc -b && vite build --config vite.config.chrome.ts --mode development",
     "build:chrome": "tsc -b && vite build --config vite.config.chrome.ts --mode production",
-    "build:i18n": "i18next-scanner --config i18next-scanner.config.cjs",
+    "scan:i18n": "i18next-scanner --config i18next-scanner.config.cjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
