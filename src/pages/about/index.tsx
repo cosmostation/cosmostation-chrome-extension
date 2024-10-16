@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useColorScheme } from '@mui/material/styles';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -9,6 +10,7 @@ export const Route = createFileRoute('/about/')({
 
 function About() {
   const { mode, setMode } = useColorScheme();
+  const { t } = useTranslation();
 
   console.log(mode);
   return (
@@ -17,7 +19,8 @@ function About() {
         setMode(mode === 'light' ? 'dark' : 'light');
       }}
     >
-      ddd
+      {t('test.testA')}
+      {t('test.testB')}
     </StyledBox>
   );
 }
