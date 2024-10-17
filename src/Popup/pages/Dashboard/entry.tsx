@@ -31,8 +31,13 @@ import EthereumChainItem, {
 } from '~/Popup/pages/Dashboard/components/ChainItem/components/EthereumChainItem';
 import { dashboardState } from '~/Popup/recoils/dashboard';
 import { plus } from '~/Popup/utils/big';
-import type { AptosChain, Chain, CosmosChain, EthereumChain, SuiChain } from '~/types/chain';
+import type { AptosChain, BitcoinChain, Chain, CosmosChain, EthereumChain, SuiChain } from '~/types/chain';
 
+import BitcoinChainItem, {
+  BitcoinChainItemError,
+  BitcoinChainItemLedgerCheck,
+  BitcoinChainItemSkeleton,
+} from './components/ChainItem/components/BitcoinChainItem';
 import SuiChainItem, { SuiChainItemError, SuiChainItemLedgerCheck, SuiChainItemSkeleton } from './components/ChainItem/components/SuiChainItem';
 import {
   ChainList,
@@ -73,6 +78,7 @@ export default function Entry() {
   const ethereumChainList = chainList.filter(isEthereum);
   const aptosChainList = chainList.filter(isAptos);
   const suiChainList = chainList.filter(isSui);
+  const bitcoinChainList = chainList.filter(isBitcoin);
 
   const cosmosChainNames = cosmosChainList.map((item) => item.chain.chainName);
   const ethereumNetworkList =
@@ -80,7 +86,7 @@ export default function Entry() {
   const aptosNetworkList = aptosChainList.length > 0 ? currentShownAptosNetwork : [];
   const suiNetworkList = suiChainList.length > 0 ? currentShownSuiNetwork : [];
 
-  const chainCnt = cosmosChainList.length + ethereumNetworkList.length + aptosNetworkList.length + suiNetworkList.length;
+  const chainCnt = cosmosChainList.length + ethereumNetworkList.length + aptosNetworkList.length + suiNetworkList.length + bitcoinChainList.length;
 
   const totalAmount =
     typeof dashboard?.[currentAccount.id] === 'object' ? Object.values(dashboard[currentAccount.id]).reduce((acc, cur) => plus(acc, cur), '0') : '0';
@@ -129,6 +135,21 @@ export default function Entry() {
               </EthereumChainItemLedgerCheck>
             )),
           )}
+
+          {bitcoinChainList.map((item) => (
+            <BitcoinChainItemLedgerCheck key={`${currentAccount.id}${item.chain.id}`} chain={item.chain}>
+              <ErrorBoundary
+                FallbackComponent={
+                  // eslint-disable-next-line react/no-unstable-nested-components
+                  (props) => <BitcoinChainItemError {...props} chain={item.chain} />
+                }
+              >
+                <Suspense fallback={<BitcoinChainItemSkeleton chain={item.chain} />}>
+                  <BitcoinChainItem chain={item.chain} />
+                </Suspense>
+              </ErrorBoundary>
+            </BitcoinChainItemLedgerCheck>
+          ))}
 
           {cosmosChainList.map((item) =>
             item.chain.isTerminated ? (
@@ -194,6 +215,10 @@ function isCosmos(item: ChainItem): item is ChainItem<CosmosChain> {
 
 function isEthereum(item: ChainItem): item is ChainItem<EthereumChain> {
   return item.chain.line === 'ETHEREUM';
+}
+
+function isBitcoin(item: ChainItem): item is ChainItem<BitcoinChain> {
+  return item.chain.line === 'BITCOIN';
 }
 
 function isAptos(item: ChainItem): item is ChainItem<AptosChain> {

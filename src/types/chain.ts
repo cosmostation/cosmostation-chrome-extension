@@ -1,3 +1,5 @@
+import type { Network } from 'bitcoinjs-lib';
+
 import type { LINE_TYPE } from '~/constants/chain';
 import type { COSMOS_TYPE, TOKEN_TYPE as COSMOS_TOKEN_TYPE } from '~/constants/cosmos';
 import type { TOKEN_TYPE as ETHEREUM_TOKEN_TYPE } from '~/constants/ethereum';
@@ -162,6 +164,19 @@ export type EthereumERC20Token = {
   default?: boolean;
 };
 
-export type Chain = CosmosChain | EthereumChain | AptosChain | SuiChain;
+export type BitcoinChain = {
+  line: typeof LINE_TYPE.BITCOIN;
+  chainName: string;
+  rpcURL: string;
+  displayDenom: string;
+  explorerURL?: string;
+  coinGeckoId?: string;
+  decimals: number;
+  mempoolURL: string;
+  network?: Network;
+  isTestnet?: boolean;
+} & CommonChain;
+
+export type Chain = CosmosChain | EthereumChain | AptosChain | SuiChain | BitcoinChain;
 
 export type EthereumToken = EthereumERC20Token;

@@ -24,4 +24,5 @@ export const HOME_TAB_INDEX_TYPE = {
   COSMOS: 'cosmos',
   SUI: 'sui',
   APTOS: 'aptos',
+  BITCOIN: 'bitcoin',
 } as const;

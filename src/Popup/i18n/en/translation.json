@@ -1386,6 +1386,11 @@
             "copied": "Copied",
             "scanQrCode": "Scan QR code"
           },
+          "Bitcoin": {
+            "address": "Address",
+            "copied": "Copied",
+            "scanQrCode": "Scan QR code"
+          },
           "Cosmos": {
             "address": "Address",
             "copied": "Copied",
@@ -1424,6 +1429,32 @@
               "invalidAmount": "Invalid amount",
               "recipientAddressPlaceholder": "Recipient address",
               "sendButton": "Send"
+            }
+          },
+          "Bitcoin": {
+            "components": {
+              "ConfirmDialog": {
+                "index": {
+                  "cancel": "Cancel",
+                  "confirm": "Confirm",
+                  "confirmText": "Are you sure you want to send?"
+                }
+              }
+            },
+            "index": {
+              "amountPlaceholder": "Amount",
+              "failedCreateTxHex": "Failed to create transaction hex",
+              "failedLoadFee": "Network error",
+              "failureSend": "Unknown error",
+              "fee": "Fee",
+              "invalidAddress": "Invalid address",
+              "memoMaxLength": "OP_RETURN is too long (max: 80 bytes)",
+              "memoPlaceholder": "OP_RETURN (option)",
+              "noAmount": "No amount",
+              "noAvailableAmount": "Insufficient amount",
+              "recipientAddressPlaceholder": "Recipient address",
+              "sendButton": "Send",
+              "successSend": "Success"
             }
           },
           "Cosmos": {
@@ -1708,6 +1739,18 @@
             "index": {
               "copied": "Copied",
               "depositButton": "Deposit",
+              "networkError": "Network error",
+              "sendButton": "Send"
+            }
+          }
+        },
+        "bitcoin": {
+          "NativeChainCard": {
+            "index": {
+              "copied": "Copied",
+              "depositButton": "Deposit",
+              "mempoolFunded": "Pending Receive",
+              "mempoolSpent": "Pending Send",
               "networkError": "Network error",
               "sendButton": "Send"
             }
