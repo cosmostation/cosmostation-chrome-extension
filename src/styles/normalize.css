@@ -8,6 +8,11 @@
  * 2. Prevent adjustments of font size after orientation changes in iOS.
  */
 
+@font-face {
+  font-family: Spoqa400;
+  src:url(../assets/fonts//SpoqaHanSansNeo-Medium.ttf) format('truetype')
+}
+
 html {
   line-height: 1.15; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
