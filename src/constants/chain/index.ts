@@ -44,6 +44,7 @@ import { KYVE } from './cosmos/kyve';
 import { LAVA } from './cosmos/lava';
 import { LIKE_COIN } from './cosmos/likeCoin';
 import { LUM } from './cosmos/lum';
+import { MANTRA } from './cosmos/mantra';
 import { MARS } from './cosmos/mars';
 import { MEDIBLOC } from './cosmos/medibloc';
 import { NEUTRON } from './cosmos/neutron';
@@ -161,6 +162,7 @@ export const COSMOS_CHAINS: CosmosChain[] = [
   LAVA,
   LIKE_COIN,
   LUM,
+  MANTRA,
   MARS,
   MEDIBLOC,
   NEUTRON,
