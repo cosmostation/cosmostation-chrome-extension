@@ -22,12 +22,11 @@ export const MANTRA: CosmosChain = {
     change: '0',
   },
   bech32Prefix: { address: 'mantra' },
-  coinGeckoId: 'mantra-dao',
   explorerURL: `${MINTSCAN_URL}/mantra`,
   gasRate: {
-    tiny: '0.002',
-    low: '0.002',
-    average: '0.002',
+    tiny: '0.01',
+    low: '0.01',
+    average: '0.01',
   },
   gas: { send: '100000' },
 };
